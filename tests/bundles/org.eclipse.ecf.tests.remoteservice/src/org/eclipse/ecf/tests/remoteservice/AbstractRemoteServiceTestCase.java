@@ -19,6 +19,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
+import org.osgi.framework.InvalidSyntaxException;
 
 /**
  * 
@@ -33,68 +34,72 @@ public abstract class AbstractRemoteServiceTestCase extends ContainerAbstractTes
 	}
 
 	protected abstract Object createService();
-	
+
 	protected void setupRemoteServiceAdapters() throws Exception {
-		int clientCount = getClientCount();
+		final int clientCount = getClientCount();
 		for (int i = 0; i < clientCount; i++) {
-			adapters[i] = (IRemoteServiceContainerAdapter) getClients()[i]
-					.getAdapter(IRemoteServiceContainerAdapter.class);
+			adapters[i] = (IRemoteServiceContainerAdapter) getClients()[i].getAdapter(IRemoteServiceContainerAdapter.class);
 		}
 	}
 
-	protected IRemoteServiceContainerAdapter [] getRemoteServiceAdapters() {
+	protected IRemoteServiceContainerAdapter[] getRemoteServiceAdapters() {
 		return adapters;
 	}
 
 	protected IRemoteServiceListener createRemoteServiceListener() {
 		return new IRemoteServiceListener() {
 			public void handleServiceEvent(IRemoteServiceEvent event) {
-				System.out.println("handleServiceEvent("+event+")");
+				System.out.println("handleServiceEvent(" + event + ")");
 			}
 		};
 	}
 
 	protected void addRemoteServiceListeners() {
-		for (int i =0; i < adapters.length; i++) {
+		for (int i = 0; i < adapters.length; i++) {
 			adapters[i].addRemoteServiceListener(createRemoteServiceListener());
 		}
 	}
 
-	protected IRemoteServiceRegistration registerService(IRemoteServiceContainerAdapter adapter, String serviceInterface, Object service,
-			int sleepTime) {
-				IRemoteServiceRegistration result = adapter.registerRemoteService(new String[] { serviceInterface }, service, null);
-				sleep(sleepTime);
-				return result;
-			}
+	protected IRemoteServiceRegistration registerService(IRemoteServiceContainerAdapter adapter, String serviceInterface, Object service, int sleepTime) {
+		final IRemoteServiceRegistration result = adapter.registerRemoteService(new String[] {serviceInterface}, service, null);
+		sleep(sleepTime);
+		return result;
+	}
 
 	protected IRemoteServiceReference[] getRemoteServiceReferences(IRemoteServiceContainerAdapter adapter, String clazz) {
-		return adapter.getRemoteServiceReferences(null, clazz, null);
+		try {
+			return adapter.getRemoteServiceReferences(null, clazz, null);
+		} catch (final InvalidSyntaxException e) {
+			fail("should not happen");
+		}
+		return null;
 	}
 
 	protected IRemoteService getRemoteService(IRemoteServiceContainerAdapter adapter, String clazz) {
-		IRemoteServiceReference[] refs = getRemoteServiceReferences(adapter,clazz);
-		if (refs.length == 0) return null;
+		final IRemoteServiceReference[] refs = getRemoteServiceReferences(adapter, clazz);
+		if (refs.length == 0)
+			return null;
 		return adapter.getRemoteService(refs[0]);
 	}
 
-	protected IRemoteService registerAndGetRemoteService(IRemoteServiceContainerAdapter server, IRemoteServiceContainerAdapter client,
-			String serviceName, int sleepTime) {
-				registerService(server, serviceName, createService(), sleepTime);
-				return getRemoteService(client, serviceName);
-			}
+	protected IRemoteService registerAndGetRemoteService(IRemoteServiceContainerAdapter server, IRemoteServiceContainerAdapter client, String serviceName, int sleepTime) {
+		registerService(server, serviceName, createService(), sleepTime);
+		return getRemoteService(client, serviceName);
+	}
 
-	protected IRemoteCall createRemoteCall(final String method, final Object [] params) {
+	protected IRemoteCall createRemoteCall(final String method, final Object[] params) {
 		return new IRemoteCall() {
 			public String getMethod() {
 				return method;
 			}
-	
+
 			public Object[] getParameters() {
 				return params;
 			}
-	
+
 			public long getTimeout() {
 				return 3000;
-			}};
+			}
+		};
 	}
 }

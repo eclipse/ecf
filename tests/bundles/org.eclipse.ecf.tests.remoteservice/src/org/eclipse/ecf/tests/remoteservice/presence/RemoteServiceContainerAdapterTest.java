@@ -134,7 +134,7 @@ public class RemoteServiceContainerAdapterTest extends AbstractRemoteServiceTest
 		return createRemoteCall("bogus", new Object[] {first, second});
 	}
 
-	protected IRemoteService registerAndGetRemoteService() {
+	protected IRemoteService registerAndGetRemoteService() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// client [0]/adapter[0] is the service 'server'
 		// client [1]/adapter[1] is the service target (client)
