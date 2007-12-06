@@ -29,6 +29,7 @@ import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
+import org.eclipse.ecf.provider.filetransfer.retrieve.JREProxyHelper;
 
 /**
  * 
@@ -37,6 +38,13 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 	IConnectContext connectContext;
 	Proxy proxy;
+
+	JREProxyHelper proxyHelper = null;
+
+	public EFSRetrieveFileTransfer() {
+		super();
+		proxyHelper = new JREProxyHelper();
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -125,5 +133,12 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	 */
 	protected boolean doResume() {
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#setupProxy(org.eclipse.ecf.core.util.Proxy)
+	 */
+	protected void setupProxy(Proxy proxy) {
+		proxyHelper.setupProxy(proxy);
 	}
 }
