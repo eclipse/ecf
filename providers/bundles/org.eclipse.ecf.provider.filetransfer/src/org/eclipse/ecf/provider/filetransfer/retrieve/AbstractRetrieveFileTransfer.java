@@ -12,10 +12,14 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -60,6 +64,8 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	protected boolean paused = false;
 
 	protected IFileRangeSpecification rangeSpecification = null;
+
+	protected Proxy proxy;
 
 	protected URL getRemoteFileURL() {
 		return remoteFileURL;
@@ -447,6 +453,45 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			throw new IncomingFileTransferException(NLS.bind(Messages.AbstractRetrieveFileTransfer_MalformedURLException, rFileID), e);
 		}
 		this.listener = transferListener;
+		setupProxies();
 		openStreams();
+	}
+
+	/**
+	 * Setup ECF proxy.  Subclasses must override this method to do appropriate proxy setup.  This method will be called
+	 * from within {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)} and {@link #sendRetrieveRequest(IFileID, IFileRangeSpecification, IFileTransferListener, Map)},
+	 * prior to the actual call to {@link #openStreams()}.
+	 * @param proxy the proxy to be setup.  Will not be <code>null</code>.
+	 */
+	protected abstract void setupProxy(Proxy proxy);
+
+	protected void setupProxies() {
+		// If it's been set directly (via ECF API) then this overrides platform settings
+		try {
+			if (proxy == null) {
+				IProxyService proxyService = Activator.getDefault().getProxyService();
+				// Only do this if platform service exists
+				if (proxyService != null) {
+					// Setup via proxyService entry
+					URL target = getRemoteFileURL();
+					String type = IProxyData.SOCKS_PROXY_TYPE;
+					if (target.getProtocol().equalsIgnoreCase(IProxyData.HTTP_PROXY_TYPE)) {
+						type = IProxyData.HTTP_PROXY_TYPE;
+					} else if (target.getProtocol().equalsIgnoreCase(IProxyData.HTTPS_PROXY_TYPE)) {
+						type = IProxyData.HTTPS_PROXY_TYPE;
+					}
+					final IProxyData proxyData = proxyService.getProxyDataForHost(target.getHost(), type);
+					if (proxyData != null) {
+						proxy = new Proxy(((type.equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(proxyData.getHost(), proxyData.getPort()), proxyData.getUserId(), proxyData.getPassword());
+					}
+				}
+			}
+			if (proxy != null)
+				setupProxy(proxy);
+		} catch (Exception e) {
+			// If we don't even have the classes for this (i.e. the org.eclipse.core.net plugin not available)
+			// then we simply log and ignore
+			Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.ERROR, "Warning: Platform proxy API not available", e)); //$NON-NLS-1$
+		}
 	}
 }

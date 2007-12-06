@@ -28,8 +28,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	// XXX currently unused
 	protected IConnectContext connectContext;
-	// XXX currently unused
-	protected Proxy proxy;
 
 	protected long lastModifiedTime = 0L;
 
@@ -40,6 +38,13 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	protected String responseMessage = null;
 
 	protected IFileID fileid = null;
+
+	private JREProxyHelper proxyHelper = null;
+
+	public UrlConnectionRetrieveFileTransfer() {
+		super();
+		proxyHelper = new JREProxyHelper();
+	}
 
 	protected void connect() throws IOException {
 		urlConnection = getRemoteFileURL().openConnection();
@@ -134,6 +139,13 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS);
 	}
 
+	/**
+	 * @param proxy2 the ECF proxy to setup
+	 */
+	protected void setupProxy(final Proxy proxy2) {
+		proxyHelper.setupProxy(proxy2);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -161,6 +173,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		super.hardClose();
 		urlConnection = null;
 		responseCode = -1;
+		if (proxyHelper != null) {
+			proxyHelper.dispose();
+			proxyHelper = null;
+		}
 	}
 
 	/*

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.PlatformHelper;
@@ -60,6 +61,8 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker adapterManagerTracker = null;
 
+	private ServiceTracker proxyServiceTracker = null;
+
 	/**
 	 * The constructor
 	 */
@@ -73,6 +76,14 @@ public class Activator implements BundleActivator {
 			logServiceTracker.open();
 		}
 		return (LogService) logServiceTracker.getService();
+	}
+
+	public IProxyService getProxyService() {
+		if (proxyServiceTracker == null) {
+			proxyServiceTracker = new ServiceTracker(this.context, IProxyService.class.getName(), null);
+			proxyServiceTracker.open();
+		}
+		return (IProxyService) proxyServiceTracker.getService();
 	}
 
 	public void log(IStatus status) {
@@ -121,6 +132,10 @@ public class Activator implements BundleActivator {
 		if (adapterManagerTracker != null) {
 			adapterManagerTracker.close();
 			adapterManagerTracker = null;
+		}
+		if (proxyServiceTracker != null) {
+			proxyServiceTracker.close();
+			proxyServiceTracker = null;
 		}
 		this.context = null;
 		this.fileTransferProtocolMap = null;
