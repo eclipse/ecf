@@ -102,39 +102,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return new UsernamePasswordCredentials(username, password);
 	}
 
-	/*
-		private Proxy getSystemProxy() {
-			final String systemHttpProxyHost = System.getProperty(HTTP_PROXY_HOST, null);
-			final String systemHttpProxyPort = System.getProperty(HTTP_PROXY_PORT, "" //$NON-NLS-1$
-					+ HTTP_PORT);
-			int port = -1;
-			try {
-				port = Integer.parseInt(systemHttpProxyPort);
-			} catch (final Exception e) {
-				// Shouldn't happen
-			}
-			if (systemHttpProxyHost == null || systemHttpProxyHost.equals("")) //$NON-NLS-1$
-				return null;
-			return new Proxy(Proxy.Type.HTTP, new ProxyAddress(systemHttpProxyHost, port));
-		}
-		*/
-	/*
-		protected void setupProxy(String urlString) {
-			if (proxy == null)
-				proxy = getSystemProxy();
-			if (proxy != null && !Proxy.NO_PROXY.equals(proxy) && !urlUsesHttps(urlString)) {
-				final ProxyAddress address = proxy.getAddress();
-				httpClient.getHostConfiguration().setProxy(getHostFromURL(address.getHostName()), address.getPort());
-				final String proxyUsername = proxy.getUsername();
-				final String proxyPassword = proxy.getPassword();
-				if (username != null) {
-					final Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
-					final AuthScope proxyAuthScope = new AuthScope(address.getHostName(), address.getPort(), AuthScope.ANY_REALM);
-					httpClient.getState().setProxyCredentials(proxyAuthScope, credentials);
-				}
-			}
-		}
-	*/
 	protected void setupAuthentication(String urlString) throws UnsupportedCallbackException, IOException {
 		Credentials credentials = null;
 		if (username == null) {
