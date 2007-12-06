@@ -31,10 +31,6 @@ import org.eclipse.osgi.util.NLS;
 
 public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
-	private static final String HTTP_PROXY_PORT = Messages.HttpClientRetrieveFileTransfer_Http_ProxyPort_Prop;
-
-	private static final String HTTP_PROXY_HOST = Messages.HttpClientRetrieveFileTransfer_Http_ProxyHost_Prop;
-
 	private static final String USERNAME_PREFIX = Messages.HttpClientRetrieveFileTransfer_Username_Prefix;
 
 	protected static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
@@ -106,37 +102,39 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return new UsernamePasswordCredentials(username, password);
 	}
 
-	private Proxy getSystemProxy() {
-		final String systemHttpProxyHost = System.getProperty(HTTP_PROXY_HOST, null);
-		final String systemHttpProxyPort = System.getProperty(HTTP_PROXY_PORT, "" //$NON-NLS-1$
-				+ HTTP_PORT);
-		int port = -1;
-		try {
-			port = Integer.parseInt(systemHttpProxyPort);
-		} catch (final Exception e) {
-			// Shouldn't happen
+	/*
+		private Proxy getSystemProxy() {
+			final String systemHttpProxyHost = System.getProperty(HTTP_PROXY_HOST, null);
+			final String systemHttpProxyPort = System.getProperty(HTTP_PROXY_PORT, "" //$NON-NLS-1$
+					+ HTTP_PORT);
+			int port = -1;
+			try {
+				port = Integer.parseInt(systemHttpProxyPort);
+			} catch (final Exception e) {
+				// Shouldn't happen
+			}
+			if (systemHttpProxyHost == null || systemHttpProxyHost.equals("")) //$NON-NLS-1$
+				return null;
+			return new Proxy(Proxy.Type.HTTP, new ProxyAddress(systemHttpProxyHost, port));
 		}
-		if (systemHttpProxyHost == null || systemHttpProxyHost.equals("")) //$NON-NLS-1$
-			return null;
-		return new Proxy(Proxy.Type.HTTP, new ProxyAddress(systemHttpProxyHost, port));
-	}
-
-	protected void setupProxy(String urlString) {
-		if (proxy == null)
-			proxy = getSystemProxy();
-		if (proxy != null && !Proxy.NO_PROXY.equals(proxy) && !urlUsesHttps(urlString)) {
-			final ProxyAddress address = proxy.getAddress();
-			httpClient.getHostConfiguration().setProxy(getHostFromURL(address.getHostName()), address.getPort());
-			final String proxyUsername = proxy.getUsername();
-			final String proxyPassword = proxy.getPassword();
-			if (username != null) {
-				final Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
-				final AuthScope proxyAuthScope = new AuthScope(address.getHostName(), address.getPort(), AuthScope.ANY_REALM);
-				httpClient.getState().setProxyCredentials(proxyAuthScope, credentials);
+		*/
+	/*
+		protected void setupProxy(String urlString) {
+			if (proxy == null)
+				proxy = getSystemProxy();
+			if (proxy != null && !Proxy.NO_PROXY.equals(proxy) && !urlUsesHttps(urlString)) {
+				final ProxyAddress address = proxy.getAddress();
+				httpClient.getHostConfiguration().setProxy(getHostFromURL(address.getHostName()), address.getPort());
+				final String proxyUsername = proxy.getUsername();
+				final String proxyPassword = proxy.getPassword();
+				if (username != null) {
+					final Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
+					final AuthScope proxyAuthScope = new AuthScope(address.getHostName(), address.getPort(), AuthScope.ANY_REALM);
+					httpClient.getState().setProxyCredentials(proxyAuthScope, credentials);
+				}
 			}
 		}
-	}
-
+	*/
 	protected void setupAuthentication(String urlString) throws UnsupportedCallbackException, IOException {
 		Credentials credentials = null;
 		if (username == null) {
@@ -239,8 +237,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		try {
 			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_CONNECTION_TIMEOUT);
 			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
-
-			setupProxy(urlString);
 
 			setupAuthentication(urlString);
 
@@ -396,8 +392,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_CONNECTION_TIMEOUT);
 			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
 
-			setupProxy(urlString);
-
 			setupAuthentication(urlString);
 
 			setupHostAndPort(urlString);
@@ -454,6 +448,23 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		if (adapter.equals(IFileTransferPausable.class) && isHTTP11())
 			return this;
 		return super.getAdapter(adapter);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#setupProxy(org.eclipse.ecf.core.util.Proxy)
+	 */
+	protected void setupProxy(Proxy proxy) {
+		if (proxy.getType().equals(Proxy.Type.HTTP)) {
+			final ProxyAddress address = proxy.getAddress();
+			httpClient.getHostConfiguration().setProxy(getHostFromURL(address.getHostName()), address.getPort());
+			final String proxyUsername = proxy.getUsername();
+			final String proxyPassword = proxy.getPassword();
+			if (proxyUsername != null) {
+				final Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
+				final AuthScope proxyAuthScope = new AuthScope(address.getHostName(), address.getPort(), AuthScope.ANY_REALM);
+				httpClient.getState().setProxyCredentials(proxyAuthScope, credentials);
+			}
+		}
 	}
 
 }
