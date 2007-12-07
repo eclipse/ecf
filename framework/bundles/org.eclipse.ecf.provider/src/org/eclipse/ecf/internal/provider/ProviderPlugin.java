@@ -76,6 +76,10 @@ public class ProviderPlugin implements BundleActivator {
 			logServiceTracker.close();
 			logServiceTracker = null;
 		}
+		if (adapterManagerTracker != null) {
+			adapterManagerTracker.close();
+			adapterManagerTracker = null;
+		}
 		this.context = null;
 	}
 
