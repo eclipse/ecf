@@ -5,8 +5,7 @@ import java.util.Properties;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.core.util.*;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -48,6 +47,8 @@ public class Activator implements BundleActivator {
 	private ServiceTracker extensionRegistryTracker = null;
 
 	private ServiceTracker logServiceTracker = null;
+
+	private ServiceTracker adapterManagerTracker = null;
 
 	/**
 	 * The constructor
@@ -94,6 +95,10 @@ public class Activator implements BundleActivator {
 			extensionRegistryTracker.close();
 			extensionRegistryTracker = null;
 		}
+		if (adapterManagerTracker != null) {
+			adapterManagerTracker.close();
+			adapterManagerTracker = null;
+		}
 		plugin = null;
 		this.context = null;
 	}
@@ -126,6 +131,22 @@ public class Activator implements BundleActivator {
 		if (logService != null) {
 			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 		}
+	}
+
+	public IAdapterManager getAdapterManager() {
+		// First, try to get the adapter manager via
+		if (adapterManagerTracker == null) {
+			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker.open();
+		}
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
+		// Then, if the service isn't there, try to get from Platform class via
+		// PlatformHelper class
+		if (adapterManager == null)
+			adapterManager = PlatformHelper.getPlatformAdapterManager();
+		if (adapterManager == null)
+			getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Cannot get adapter manager", null)); //$NON-NLS-1$
+		return adapterManager;
 	}
 
 	/**

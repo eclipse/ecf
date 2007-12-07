@@ -57,6 +57,9 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		super();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.ISharedObject#init(org.eclipse.ecf.core.sharedobject.ISharedObjectConfig)
+	 */
 	public final void init(ISharedObjectConfig initData) throws SharedObjectInitException {
 		this.config = initData;
 		traceEntering("init", initData); //$NON-NLS-1$
@@ -90,43 +93,81 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		traceEntering("creationCompleted", null); //$NON-NLS-1$
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
+	 */
 	public void dispose(ID containerID) {
 		traceEntering("dispose", containerID); //$NON-NLS-1$
 		eventProcessors.clear();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
 	public Object getAdapter(Class adapter) {
-		return null;
+		if (adapter.isInstance(this)) {
+			return this;
+		}
+		final IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		if (adapterManager == null)
+			return null;
+		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
+	 */
 	public void handleEvent(Event event) {
 		traceEntering("handleEvent", event); //$NON-NLS-1$
 		fireEventProcessors(event);
 		traceExiting("handleEvent"); //$NON-NLS-1$
 	}
 
+	/**
+	 * Add an event processor to the set of event processors available.
+	 * @param proc the event processor to add.  Must not be <code>null</code>.
+	 * @return <code>true</code> if actually added, <code>false</code> otherwise.
+	 */
 	public boolean addEventProcessor(IEventProcessor proc) {
+		Assert.isNotNull(proc);
 		synchronized (eventProcessors) {
 			return eventProcessors.add(proc);
 		}
 	}
 
+	/**
+	 * Remove an event processor from the set of event processors available to this object.
+	 * @param proc the event processor to remove.  Must not be <code>null</code>.
+	 * @return <code>true</code> if actually removed, <code>false</code> otherwise.
+	 */
 	public boolean removeEventProcessor(IEventProcessor proc) {
+		Assert.isNotNull(proc);
 		synchronized (eventProcessors) {
 			return eventProcessors.remove(proc);
 		}
 	}
 
+	/**
+	 *  Clear event processors.
+	 */
 	public void clearEventProcessors() {
 		synchronized (eventProcessors) {
 			eventProcessors.clear();
 		}
 	}
 
+	/**
+	 * Method called when an event is not handled by any event processor.
+	 * @param event the event that was not handled.
+	 */
 	protected void handleUnhandledEvent(Event event) {
 		traceEntering("handleUnhandledEvent", event); //$NON-NLS-1$
 	}
 
+	/**
+	 * Fire the current set of event processors with given event.
+	 * @param event the event to deliver to event processors.
+	 */
 	protected void fireEventProcessors(Event event) {
 		if (event == null)
 			return;
@@ -146,6 +187,9 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
+	 */
 	public void handleEvents(Event[] events) {
 		traceEntering("handleEvents", events); //$NON-NLS-1$
 		if (events == null)
@@ -156,34 +200,65 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		traceExiting("handleEvents"); //$NON-NLS-1$
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
+	 */
 	public ID getID() {
 		return getConfig().getSharedObjectID();
 	}
 
+	/**
+	 * Get the config for this shared object.
+	 * 
+	 * @return ISharedObjectConfig for this object.  The ISharedObjectConfig is 
+	 * set within {@link #init(ISharedObjectConfig)}.  Will not be <code>null</code>.
+	 */
 	protected final ISharedObjectConfig getConfig() {
 		return config;
 	}
 
+	/**
+	 * Get the shared object context for this object.
+	 * 
+	 * @return ISharedObjectContext the context.  Will not be <code>null</code>.
+	 */
 	protected final ISharedObjectContext getContext() {
 		return getConfig().getContext();
 	}
 
+	/**
+	 * @return ID that is the home container ID (primary) for this shared object.  Will not be <code>null</code>.
+	 */
 	protected ID getHomeContainerID() {
 		return getConfig().getHomeContainerID();
 	}
 
+	/**
+	 * @return ID that is the local container ID for this shared object.  Will not be <code>null</code>.
+	 */
 	protected ID getLocalContainerID() {
 		return getContext().getLocalContainerID();
 	}
 
+	/**
+	 * @return ID the connected ID for the container that contains this shared object.  Will be non-<code>null</code>
+	 * if the surrounding container is not currently connected.
+	 */
 	protected ID getConnectedID() {
 		return getContext().getConnectedID();
 	}
 
+	/**
+	 * @return <code>true</code> if the surrounding container is currently connected, <code>false</code> otherwise.
+	 */
 	protected final boolean isConnected() {
 		return (getConnectedID() != null);
 	}
 
+	/**
+	 * @return <code>true</code> if this shared object replica is the <b>primary</b>.  The definition of primary
+	 * is whether the {@link #getLocalContainerID()} and {@link #getHomeContainerID()} values are equal.
+	 */
 	protected final boolean isPrimary() {
 		ID local = getLocalContainerID();
 		ID home = getHomeContainerID();
@@ -193,10 +268,18 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		return (local.equals(home));
 	}
 
+	/**
+	 * @return Map any properties associated with this shared object via the ISharedObjectConfig provided
+	 * upon {@link #init(ISharedObjectConfig)}.
+	 */
 	protected final Map getProperties() {
 		return getConfig().getProperties();
 	}
 
+	/**
+	 * Destroy this shared object in the context of the current container.  Destroys both local copy and
+	 * any replicas present in remote containers.
+	 */
 	protected void destroySelf() {
 		traceEntering("destroySelf"); //$NON-NLS-1$
 		if (isPrimary()) {
@@ -213,6 +296,9 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		traceExiting("destroySelf"); //$NON-NLS-1$
 	}
 
+	/**
+	 * Destroy the local copy of this shared object in the current container.
+	 */
 	protected void destroySelfLocal() {
 		traceEntering("destroySelfLocal"); //$NON-NLS-1$
 		try {
@@ -227,6 +313,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		traceExiting("destroySelfLocal"); //$NON-NLS-1$
 	}
 
+	/**
+	 * @param remoteID the ID of the remote container where the replica should be destroyed.
+	 * @throws IOException if the destroy message cannot be sent (i.e. due to disconnection, etc).
+	 */
 	protected void destroyRemote(ID remoteID) throws IOException {
 		getContext().sendDispose(remoteID);
 	}

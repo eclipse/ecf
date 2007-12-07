@@ -44,20 +44,25 @@ public class TransactionSharedObject extends BaseSharedObject {
 		configuration = config;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.BaseSharedObject#initialize()
+	 */
 	protected void initialize() throws SharedObjectInitException {
 		super.initialize();
 		if (configuration != null) {
-			TwoPhaseCommitEventProcessor trans = new TwoPhaseCommitEventProcessor(
-					this, configuration);
+			TwoPhaseCommitEventProcessor trans = new TwoPhaseCommitEventProcessor(this, configuration);
 			addEventProcessor(trans);
 			transaction = trans;
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.BaseSharedObject#getAdapter(java.lang.Class)
+	 */
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(ISharedObjectContainerTransaction.class)) {
 			return transaction;
 		}
-		return null;
+		return super.getAdapter(clazz);
 	}
 }
