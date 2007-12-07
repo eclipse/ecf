@@ -18,18 +18,6 @@
       </objectContribution>
    </extension>
    <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="org.eclipse.ecf.ui.category"
-            class="org.eclipse.ecf.example.collab.editor.preferences.ClientPreferencePage"
-            id="org.eclipse.ecf.example.collab.editor.page"
-            name="Editor Sharing">
-         <keywordReference
-               id="org.eclipse.ecf.example.collab.editor.keywords">
-         </keywordReference>
-      </page>
-   </extension>
-   <extension
          point="org.eclipse.ui.keywords">
       <keyword
             id="org.eclipse.ecf.example.collab.editor.keywords"
