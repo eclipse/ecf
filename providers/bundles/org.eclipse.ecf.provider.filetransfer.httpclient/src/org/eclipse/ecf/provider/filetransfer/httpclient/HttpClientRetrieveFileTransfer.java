@@ -222,7 +222,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				fireReceiveStartEvent();
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.getResponseBody();
-				// login or reauthenticate due to an expired session
 				getMethod.releaseConnection();
 				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
