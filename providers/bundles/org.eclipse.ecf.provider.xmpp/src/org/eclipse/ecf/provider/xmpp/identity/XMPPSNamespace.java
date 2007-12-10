@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.xmpp.identity;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.internal.provider.xmpp.Messages;
 
 public class XMPPSNamespace extends Namespace {
 
@@ -25,7 +26,7 @@ public class XMPPSNamespace extends Namespace {
 		try {
 			return new XMPPSID(this, (String) args[0]);
 		} catch (Exception e) {
-			throw new IDCreateException("XMPP ID creation exception", e);
+			throw new IDCreateException(Messages.XMPPSNamespace_EXCEPTION_ID_CREATE, e);
 		}
 	}
 

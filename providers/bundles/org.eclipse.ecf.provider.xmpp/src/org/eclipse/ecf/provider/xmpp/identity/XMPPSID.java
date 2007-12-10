@@ -22,8 +22,8 @@ public class XMPPSID extends XMPPID {
 	}
 	
 	public String toString() {
-		StringBuffer sb = new StringBuffer("XMPPSID[");
-		sb.append(uri.toString()).append("]");
+		StringBuffer sb = new StringBuffer("XMPPSID["); //$NON-NLS-1$
+		sb.append(uri.toString()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 

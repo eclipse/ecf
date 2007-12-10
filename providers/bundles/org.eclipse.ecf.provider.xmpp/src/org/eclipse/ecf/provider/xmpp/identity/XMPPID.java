@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.internal.provider.xmpp.Messages;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.presence.im.IChatID;
 
@@ -34,18 +35,18 @@ public class XMPPID extends BaseID implements IChatID {
 	protected static String fixEscape(String src) {
 		if (src == null)
 			return null;
-		return src.replaceAll("%", "%25");
+		return src.replaceAll("%", "%25"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
 		super(namespace);
 		unamehost = fixEscape(unamehost);
 		if (unamehost == null)
-			throw new URISyntaxException(unamehost, "username/host string cannot be null");
+			throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_XMPPID_USERNAME_NOT_NULL);
 		// Handle parsing of user@host/resource string
 		int atIndex = unamehost.lastIndexOf(USER_HOST_DELIMITER);
 		if (atIndex == -1)
-			throw new URISyntaxException(unamehost, "username/host string not valid.  Must be of form <username>@<hostname>[:port]");
+			throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_HOST_PORT_NOT_VALID);
 		username = unamehost.substring(0, atIndex);
 		final String remainder = unamehost.substring(atIndex + 1);
 		// Handle parsing of host:port
@@ -58,7 +59,7 @@ public class XMPPID extends BaseID implements IChatID {
 				else
 					port = Integer.parseInt(remainder.substring(atIndex + 1));
 			} catch (final NumberFormatException e) {
-				throw new URISyntaxException(unamehost, "invalid port value");
+				throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_INVALID_PORT);
 			}
 			hostname = remainder.substring(0, atIndex);
 		}
@@ -112,7 +113,7 @@ public class XMPPID extends BaseID implements IChatID {
 	}
 
 	public String getUsernameAtHost() {
-		return getUsername() + "@" + getHostname();
+		return getUsername() + "@" + getHostname(); //$NON-NLS-1$
 	}
 
 	public String getFQName() {
@@ -120,8 +121,8 @@ public class XMPPID extends BaseID implements IChatID {
 	}
 
 	public String toString() {
-		final StringBuffer sb = new StringBuffer("XMPPID[");
-		sb.append(uri.toString()).append("]");
+		final StringBuffer sb = new StringBuffer("XMPPID["); //$NON-NLS-1$
+		sb.append(uri.toString()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 

@@ -17,8 +17,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.FileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
@@ -26,14 +28,15 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
-import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPFileID;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPFileNamespace;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 
-public class XMPPOutgoingFileTransferHelper implements
-		IOutgoingFileTransferContainerAdapter {
+public class XMPPOutgoingFileTransferHelper implements IOutgoingFileTransferContainerAdapter {
 
 	List transferListeners = new ArrayList();
 
@@ -69,38 +72,35 @@ public class XMPPOutgoingFileTransferHelper implements
 	public void addListener(IIncomingFileTransferRequestListener listener) {
 		if (listener == null)
 			return;
-		XMPPFileTransferRequestListener xmppListener = new XMPPFileTransferRequestListener(
-				container, listener);
+		final XMPPFileTransferRequestListener xmppListener = new XMPPFileTransferRequestListener(container, listener);
 		incomingListeners.add(xmppListener);
 		if (this.manager != null)
 			this.manager.addFileTransferListener(xmppListener);
 	}
 
-	public void sendOutgoingRequest(ID targetReceiver,
-			IFileTransferInfo localFileToSend,
-			IFileTransferListener progressListener, Map options)
-			throws OutgoingFileTransferException {
+	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener progressListener, Map options) throws OutgoingFileTransferException {
 
 		if (manager == null)
 			throw new OutgoingFileTransferException("not connected");
 
-		XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(
-				manager, (XMPPID) targetReceiver, localFileToSend,
-				progressListener);
+		if (!(targetReceiver instanceof XMPPFileID))
+			throw new OutgoingFileTransferException("target receiver not XMPPFileID type.");
+
+		final XMPPFileID fileID = (XMPPFileID) targetReceiver;
+
+		final XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(manager, fileID.getXMPPID(), localFileToSend, progressListener);
 
 		try {
-			fileTransfer.startSend(localFileToSend.getFile(), localFileToSend
-					.getDescription());
-		} catch (XMPPException e) {
-			throw new OutgoingFileTransferException(
-					"Exception sending outgoing file transfer request", e);
+			fileTransfer.startSend(localFileToSend.getFile(), localFileToSend.getDescription());
+		} catch (final XMPPException e) {
+			throw new OutgoingFileTransferException("Exception sending outgoing file transfer request", e);
 		}
 	}
 
 	protected void fireFileTransferEvent(IFileTransferEvent event) {
 		synchronized (transferListeners) {
-			for (Iterator i = transferListeners.iterator(); i.hasNext();) {
-				IFileTransferListener l = (IFileTransferListener) i.next();
+			for (final Iterator i = transferListeners.iterator(); i.hasNext();) {
+				final IFileTransferListener l = (IFileTransferListener) i.next();
 				l.handleTransferEvent(event);
 			}
 		}
@@ -114,9 +114,8 @@ public class XMPPOutgoingFileTransferHelper implements
 		if (listener == null)
 			return false;
 		synchronized (incomingListeners) {
-			for (Iterator i = incomingListeners.iterator(); i.hasNext();) {
-				XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i
-						.next();
+			for (final Iterator i = incomingListeners.iterator(); i.hasNext();) {
+				final XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i.next();
 				if (ftl.hasListener(listener)) {
 					this.manager.removeFileTransferListener(ftl);
 					i.remove();
@@ -127,11 +126,8 @@ public class XMPPOutgoingFileTransferHelper implements
 		return true;
 	}
 
-	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend,
-			IFileTransferListener transferListener, Map options)
-			throws OutgoingFileTransferException {
-		sendOutgoingRequest(targetReceiver, new FileTransferInfo(
-				localFileToSend), transferListener, options);
+	public void sendOutgoingRequest(IFileID targetReceiver, File localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException {
+		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend), transferListener, options);
 	}
 
 	/**
@@ -141,24 +137,40 @@ public class XMPPOutgoingFileTransferHelper implements
 		if (connection != null) {
 			synchronized (incomingListeners) {
 				this.manager = new FileTransferManager(connection);
-				for (Iterator i = incomingListeners.iterator(); i.hasNext();) {
-					XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i
-							.next();
+				for (final Iterator i = incomingListeners.iterator(); i.hasNext();) {
+					final XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i.next();
 					this.manager.addFileTransferListener(ftl);
 				}
 			}
 		} else {
 			if (this.manager != null) {
 				synchronized (incomingListeners) {
-					for (Iterator i = incomingListeners.iterator(); i.hasNext();) {
-						XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i
-								.next();
+					for (final Iterator i = incomingListeners.iterator(); i.hasNext();) {
+						final XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i.next();
 						this.manager.removeFileTransferListener(ftl);
 					}
 					this.manager = null;
 				}
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
+	 */
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+		// XXX no authentication for XMPP file transfer...ignore calls
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
+	 */
+	public void setProxy(Proxy proxy) {
+		// TODO Auto-generated method stub
+	}
+
+	public Namespace getOutgoingNamespace() {
+		return IDFactory.getDefault().getNamespaceByName(XMPPFileNamespace.NAME);
 	}
 
 }

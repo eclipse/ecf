@@ -40,6 +40,14 @@
    </extension>
 
    <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.provider.xmpp.identity.XMPPFileNamespace"
+            description="XMPP File Namespace"
+            name="ecf.provider.filetransfer.xmpp"/>
+   </extension>
+
+   <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
             adaptableType="org.eclipse.ecf.provider.xmpp.XMPPContainer"

@@ -13,19 +13,20 @@ package org.eclipse.ecf.provider.xmpp.identity;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.internal.provider.xmpp.Messages;
 
 public class XMPPNamespace extends Namespace {
 
 	private static final long serialVersionUID = 3257569499003041590L;
 
-	private static final String XMPP_PROTOCOL = "xmpp";
+	private static final String XMPP_PROTOCOL = "xmpp"; //$NON-NLS-1$
 	
 	public ID createInstance(Object[] args)
 			throws IDCreateException {
 		try {
 			return new XMPPID(this, (String) args[0]);
 		} catch (Exception e) {
-			throw new IDCreateException("XMPP ID creation exception", e);
+			throw new IDCreateException(Messages.XMPPNamespace_EXCEPTION_ID_CREATE, e);
 		}
 	}
 

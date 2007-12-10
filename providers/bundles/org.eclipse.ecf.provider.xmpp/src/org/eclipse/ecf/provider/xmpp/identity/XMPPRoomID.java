@@ -14,24 +14,25 @@ import java.net.URISyntaxException;
 
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.internal.provider.xmpp.Messages;
 import org.eclipse.ecf.presence.im.IChatID;
 import org.jivesoftware.smack.XMPPConnection;
 
 public class XMPPRoomID extends BaseID implements IChatID {
 
 	private static final long serialVersionUID = -4843967090539640622L;
-	public static final String DOMAIN_DEFAULT = "conference";
-	public static final String NICKNAME = "nickname";
-	public static final String AT_SIGN = "@";
-	public static final String DOT = ".";
-	public static final String SLASH = "/";
+	public static final String DOMAIN_DEFAULT = "conference"; //$NON-NLS-1$
+	public static final String NICKNAME = "nickname"; //$NON-NLS-1$
+	public static final String AT_SIGN = "@"; //$NON-NLS-1$
+	public static final String DOT = "."; //$NON-NLS-1$
+	public static final String SLASH = "/"; //$NON-NLS-1$
 	public static final char DOT_CHAR = DOT.charAt(0);
 	
 	String domain;
 	String host;
 	String username;
 	String roomname;
-	String nickname = "";
+	String nickname = ""; //$NON-NLS-1$
 	String longName;
 
 	public static String fixConferenceDomain(String domain, String host) {
@@ -133,11 +134,11 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	}
 	
 	public String toString() {
-		StringBuffer sb = new StringBuffer("XMPPRoomID[");
+		StringBuffer sb = new StringBuffer("XMPPRoomID["); //$NON-NLS-1$
 		sb.append(
-				getNamespace().getScheme() + "://" + getUsername() + AT_SIGN
+				getNamespace().getScheme() + "://" + getUsername() + AT_SIGN //$NON-NLS-1$
 						+ this.domain + DOT + this.host + SLASH + this.roomname)
-				.append("]");
+				.append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 
