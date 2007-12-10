@@ -14,11 +14,11 @@ package org.eclipse.ecf.filetransfer.ui.actions;
 import java.io.File;
 import java.util.Map;
 import org.eclipse.core.runtime.*;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.IExceptionHandler;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.filetransfer.ui.Activator;
 import org.eclipse.ecf.internal.filetransfer.ui.Messages;
 import org.eclipse.jface.action.Action;
@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public abstract class AbstractFileSendAction extends Action {
 
-	protected ID targetReceiver;
+	protected IFileID targetReceiver;
 
 	protected IFileTransferInfo fileTransferInfo;
 
@@ -43,11 +43,11 @@ public abstract class AbstractFileSendAction extends Action {
 
 	protected IExceptionHandler exceptionHandler = null;
 
-	public void setTargetReceiver(ID targetReceiver) {
+	public void setTargetReceiver(IFileID targetReceiver) {
 		this.targetReceiver = targetReceiver;
 	}
 
-	public ID getTargetReceiver() {
+	public IFileID getTargetReceiver() {
 		return this.targetReceiver;
 	}
 
@@ -130,7 +130,7 @@ public abstract class AbstractFileSendAction extends Action {
 	protected abstract IOutgoingFileTransferContainerAdapter getOutgoingFileTransferAdapter();
 
 	protected void sendFileToTarget() throws Exception {
-		ID target = getTargetReceiver();
+		IFileID target = getTargetReceiver();
 		Assert.isNotNull(target, Messages.getString("AbstractFileSendAction.RECEIVER_NOT_NULL")); //$NON-NLS-1$
 		IOutgoingFileTransferContainerAdapter adapter = getOutgoingFileTransferAdapter();
 		Assert.isNotNull(adapter, Messages.getString("AbstractFileSendAction.ADAPTER_NOT_NULL")); //$NON-NLS-1$
