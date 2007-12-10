@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 import org.eclipse.ecf.internal.filetransfer.Messages;
 
@@ -50,8 +50,7 @@ public class FileTransferInfo implements IFileTransferInfo, Serializable {
 	}
 
 	public FileTransferInfo(File file, Map properties, String description, String mimeType) {
-		if (file == null)
-			throw new NullPointerException(Messages.BaseFileTransferInfo_File_Not_Null);
+		Assert.isNotNull(file, Messages.BaseFileTransferInfo_File_Not_Null);
 		this.file = file;
 		this.properties = (properties == null) ? defaultProperties : properties;
 		this.description = description;
