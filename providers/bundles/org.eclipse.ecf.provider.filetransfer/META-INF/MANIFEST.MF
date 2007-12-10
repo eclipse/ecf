@@ -23,4 +23,6 @@ Import-Package: org.eclipse.core.net.proxy;resolution:=optional,
 Bundle-ClassPath: .
 Export-Package: org.eclipse.ecf.internal.provider.filetransfer;x-internal:=true,
  org.eclipse.ecf.provider.filetransfer.identity;x-internal:=false,
- org.eclipse.ecf.provider.filetransfer.retrieve;x-internal:=false
+ org.eclipse.ecf.provider.filetransfer.outgoing,
+ org.eclipse.ecf.provider.filetransfer.retrieve;x-internal:=false,
+ org.eclipse.ecf.provider.filetransfer.util

@@ -16,6 +16,7 @@ import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
+import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
 public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTransfer {

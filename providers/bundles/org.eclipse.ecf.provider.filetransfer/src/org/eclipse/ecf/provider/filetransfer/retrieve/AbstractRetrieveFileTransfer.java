@@ -103,8 +103,10 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 		protected IStatus run(IProgressMonitor monitor) {
 			final byte[] buf = new byte[buff_length];
-			final int totalWork = ((fileLength == -1) ? 100 : (int) fileLength);
-			monitor.beginTask(getRemoteFileURL().toString() + Messages.AbstractRetrieveFileTransfer_Progress_Data, totalWork);
+			final long totalWork = ((fileLength == -1) ? 100 : fileLength);
+			double factor = (totalWork > Integer.MAX_VALUE) ? (((double) Integer.MAX_VALUE) / ((double) totalWork)) : 1.0;
+			int work = (totalWork > Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) totalWork;
+			monitor.beginTask(getRemoteFileURL().toString() + Messages.AbstractRetrieveFileTransfer_Progress_Data, work);
 			try {
 				while (!isDone() && !isPaused()) {
 					if (monitor.isCanceled())
@@ -114,7 +116,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 						bytesReceived += bytes;
 						localFileContents.write(buf, 0, bytes);
 						fireTransferReceiveDataEvent();
-						monitor.worked(bytes);
+						monitor.worked((int) Math.round(factor * bytes));
 					} else
 						done = true;
 				}

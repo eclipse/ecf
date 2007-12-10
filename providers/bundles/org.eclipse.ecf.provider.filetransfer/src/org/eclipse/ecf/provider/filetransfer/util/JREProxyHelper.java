@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.provider.filetransfer.retrieve;
+package org.eclipse.ecf.provider.filetransfer.util;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
