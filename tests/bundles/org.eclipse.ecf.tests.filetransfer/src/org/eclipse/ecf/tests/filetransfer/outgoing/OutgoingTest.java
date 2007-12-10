@@ -25,6 +25,9 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.filetransfer.identity.FileCreateException;
+import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 /**
@@ -115,6 +118,10 @@ public class OutgoingTest extends ContainerAbstractTestCase {
 		}
 	}
 
+	protected IFileID createFileID(IOutgoingFileTransferContainerAdapter adapter, ID clientID, String filename) throws FileCreateException {
+		return FileIDFactory.getDefault().createFileID(adapter.getOutgoingNamespace(), new Object[] {clientID, filename});
+	}
+
 	public void testTwoClientsToSendAndReceive() throws Exception {
 		// Setup two clients.  Client 0 is the receiver, client 1 is the sender
 		setClientCount(2);
@@ -126,7 +133,8 @@ public class OutgoingTest extends ContainerAbstractTestCase {
 			connectClient(i);
 		}
 
-		adapter1.sendOutgoingRequest(getServerConnectID(0), new File(TESTSRCFILE), senderTransferListener, null);
+		final IFileID targetID = createFileID(adapter1, getServerConnectID(0), TESTSRCFILE);
+		adapter1.sendOutgoingRequest(targetID, new File(TESTSRCFILE), senderTransferListener, null);
 
 		sleep(20000);
 
