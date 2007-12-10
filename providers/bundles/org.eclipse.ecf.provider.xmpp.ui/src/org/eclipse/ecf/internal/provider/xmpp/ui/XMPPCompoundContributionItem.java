@@ -16,9 +16,10 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
-import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
+import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
@@ -77,7 +78,8 @@ public class XMPPCompoundContributionItem extends AbstractRosterEntryContributio
 		if (res != null) {
 			final File aFile = new File(res);
 			try {
-				fileTransfer.sendOutgoingRequest(targetID, aFile, new IFileTransferListener() {
+				final IFileID targetFileID = FileIDFactory.getDefault().createFileID(fileTransfer.getOutgoingNamespace(), new Object[] {targetID, res});
+				fileTransfer.sendOutgoingRequest(targetFileID, aFile, new IFileTransferListener() {
 					public void handleTransferEvent(final IFileTransferEvent event) {
 						Display.getDefault().asyncExec(new Runnable() {
 							public void run() {
@@ -92,7 +94,7 @@ public class XMPPCompoundContributionItem extends AbstractRosterEntryContributio
 						});
 					}
 				}, null);
-			} catch (final OutgoingFileTransferException e) {
+			} catch (final Exception e) {
 				MessageDialog.openError(shell, Messages.XMPPCompoundContributionItem_SEND_ERROR_TITLE, NLS.bind(Messages.XMPPCompoundContributionItem_SEND_ERROR_MESSAGE, res, e.getLocalizedMessage()));
 			}
 		}
