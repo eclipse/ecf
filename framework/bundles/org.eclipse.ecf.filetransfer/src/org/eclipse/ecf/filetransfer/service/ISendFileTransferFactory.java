@@ -12,16 +12,17 @@
 package org.eclipse.ecf.filetransfer.service;
 
 /**
- * Retrieve file transfer factory. This service interface is used by clients to
- * create a new IRetrieveFileTransfer instance.
+ * Send file transfer factory. This service interface is used by clients to
+ * create a new ISendFileTransfer instance, used to send file to remote
+ * clients.
  */
-public interface IRetrieveFileTransferFactory {
+public interface ISendFileTransferFactory {
 
 	/**
-	 * Get new instance of IRetrieveFileTransfer.
+	 * Get new instance of ISendFileTransfer.
 	 * 
-	 * @return IRetrieveFileTransfer for initiating a retrieval of a remote file.
+	 * @return ISendFileTransfer for initiating send of a local file.
 	 */
-	public IRetrieveFileTransfer newInstance();
+	public ISendFileTransfer newInstance();
 
 }

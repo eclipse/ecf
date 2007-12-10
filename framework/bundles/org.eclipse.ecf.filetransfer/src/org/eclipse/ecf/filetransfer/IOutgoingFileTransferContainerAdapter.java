@@ -10,15 +10,12 @@ package org.eclipse.ecf.filetransfer;
 
 import java.io.File;
 import java.util.Map;
-
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
-import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
-import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDataEvent;
-import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.filetransfer.events.*;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 /**
  * Entry point outgoing file transfer container adapter. This adapter interface
@@ -97,7 +94,7 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
-	public void sendOutgoingRequest(ID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException;
+	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException;
 
 	/**
 	 * Send request for outgoing file transfer. This method is used to initiate
@@ -124,7 +121,7 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
-	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException;
+	public void sendOutgoingRequest(IFileID targetReceiver, File localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException;
 
 	/**
 	 * Add incoming file transfer listener. If the underlying provider supports
@@ -144,5 +141,41 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 * @return true if listener actually removed, false otherwise
 	 */
 	public boolean removeListener(IIncomingFileTransferRequestListener listener);
+
+	/**
+	 * Get namespace for outgoing file transfer.
+	 * @return Namespace for outgoing IFileID instances.  Will not return <code>null</code>.
+	 */
+	public Namespace getOutgoingNamespace();
+
+	/**
+	 * Set connect context for authentication upon subsequent
+	 * {@link #sendOutgoingRequest(IFileID, IFileTransferInfo, IFileTransferListener, Map)}. This
+	 * method should be called with a non-null connectContext in order to allow
+	 * authentication to occur during call to
+	 * {@link #sendOutgoingRequest(IFileID, IFileTransferInfo, IFileTransferListener, Map)}.
+	 * 
+	 * @param connectContext
+	 *            the connect context to use for authenticating during
+	 *            subsequent call to
+	 *            {@link #sendOutgoingRequest(IFileID, IFileTransferInfo, IFileTransferListener, Map)}.
+	 *            If <code>null</code>, then no authentication will be
+	 *            attempted.
+	 */
+	public void setConnectContextForAuthentication(IConnectContext connectContext);
+
+	/**
+	 * Set proxy for use upon subsequent
+	 * {@link #sendOutgoingRequest(IFileID, IFileTransferInfo, IFileTransferListener, Map)}. This
+	 * method should be called with a non-null proxy to allow the given proxy to
+	 * be used in subsequent calls to
+	 * {@link #sendOutgoingRequest(IFileID, IFileTransferInfo, IFileTransferListener, Map)}.
+	 * 
+	 * @param proxy
+	 *            the proxy to use for subsequent calls to
+	 *            {@link #sendOutgoingRequest(IFileID, IFileTransferInfo, IFileTransferListener, Map)}.
+	 *            If <code>null</code>, then no proxy will be used.
+	 */
+	public void setProxy(Proxy proxy);
 
 }
