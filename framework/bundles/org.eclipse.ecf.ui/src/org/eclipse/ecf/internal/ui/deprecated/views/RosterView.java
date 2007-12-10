@@ -10,98 +10,44 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.ui.deprecated.views;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.security.Callback;
-import org.eclipse.ecf.core.security.CallbackHandler;
-import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.security.NameCallback;
-import org.eclipse.ecf.core.security.UnsupportedCallbackException;
+import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.filetransfer.IFileTransferInfo;
-import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
-import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
-import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
-import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
-import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
+import org.eclipse.ecf.filetransfer.*;
+import org.eclipse.ecf.filetransfer.events.*;
+import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.Messages;
-import org.eclipse.ecf.presence.IAccountManager;
-import org.eclipse.ecf.presence.IIMMessageEvent;
-import org.eclipse.ecf.presence.IIMMessageListener;
-import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.IPresenceListener;
-import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
-import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.*;
+import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.ui.SharedImages;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IViewReference;
-import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 
-public class RosterView extends ViewPart implements IIMMessageListener,
-		IChatRoomViewCloseListener {
+public class RosterView extends ViewPart implements IIMMessageListener, IChatRoomViewCloseListener {
 	public static final String VIEW_ID = "org.eclipse.ecf.ui.view.rosterview"; //$NON-NLS-1$
 
 	private static final String CHAT_ROOM_VIEW_CLASS = "org.eclipse.ecf.ui.views.ChatRoomView"; //$NON-NLS-1$
@@ -133,27 +79,15 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	protected Hashtable chatRooms = new Hashtable();
 
 	protected IIncomingFileTransferRequestListener requestListener = new IIncomingFileTransferRequestListener() {
-		public void handleFileTransferRequest(
-				final IFileTransferRequestEvent event) {
+		public void handleFileTransferRequest(final IFileTransferRequestEvent event) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					String username = event.getRequesterID().getName();
-					IFileTransferInfo transferInfo = event
-							.getFileTransferInfo();
+					IFileTransferInfo transferInfo = event.getFileTransferInfo();
 					String fileName = transferInfo.getFile().getName();
-					Object[] bindings = new Object[] {
-							username,
-							fileName,
-							((transferInfo.getFileSize() == -1) ? "unknown"
-									: (transferInfo.getFileSize() + " bytes")),
-							(transferInfo.getDescription() == null) ? "none"
-									: transferInfo.getDescription() };
-					if (MessageDialog.openQuestion(getSite().getShell(), NLS
-							.bind(Messages.RosterView_ReceiveFile_title,
-									username), NLS.bind(
-							Messages.RosterView_ReceiveFile_message, bindings))) {
-						FileDialog fd = new FileDialog(getSite().getShell(),
-								SWT.OPEN);
+					Object[] bindings = new Object[] {username, fileName, ((transferInfo.getFileSize() == -1) ? "unknown" : (transferInfo.getFileSize() + " bytes")), (transferInfo.getDescription() == null) ? "none" : transferInfo.getDescription()};
+					if (MessageDialog.openQuestion(getSite().getShell(), NLS.bind(Messages.RosterView_ReceiveFile_title, username), NLS.bind(Messages.RosterView_ReceiveFile_message, bindings))) {
+						FileDialog fd = new FileDialog(getSite().getShell(), SWT.OPEN);
 						// XXX this should be some default path gotten from
 						// preference. For now we'll have it be the user.home
 						// system property
@@ -161,23 +95,18 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 						fd.setFileName(fileName);
 						int suffixLoc = fileName.lastIndexOf('.');
 						if (suffixLoc != -1) {
-							String ext = fileName.substring(fileName
-									.lastIndexOf('.'));
-							fd.setFilterExtensions(new String[] { ext });
+							String ext = fileName.substring(fileName.lastIndexOf('.'));
+							fd.setFilterExtensions(new String[] {ext});
 						}
-						fd.setText(NLS.bind(
-								Messages.RosterView_ReceiveFile_filesavetitle,
-								username));
+						fd.setText(NLS.bind(Messages.RosterView_ReceiveFile_filesavetitle, username));
 						final String res = fd.open();
 						if (res == null)
 							event.reject();
 						else {
 							try {
-								final FileOutputStream fos = new FileOutputStream(
-										new File(res));
+								final FileOutputStream fos = new FileOutputStream(new File(res));
 								event.accept(fos, new IFileTransferListener() {
-									public void handleTransferEvent(
-											IFileTransferEvent event) {
+									public void handleTransferEvent(IFileTransferEvent event) {
 										// XXX Should have some some UI
 										// for transfer events
 										if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
@@ -189,18 +118,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 									}
 								});
 							} catch (Exception e) {
-								MessageDialog
-										.openError(
-												getSite().getShell(),
-												Messages.RosterView_ReceiveFile_acceptexception_title,
-												NLS
-														.bind(
-																Messages.RosterView_ReceiveFile_acceptexception_message,
-																new Object[] {
-																		fileName,
-																		username,
-																		e
-																				.getLocalizedMessage() }));
+								MessageDialog.openError(getSite().getShell(), Messages.RosterView_ReceiveFile_acceptexception_title, NLS.bind(Messages.RosterView_ReceiveFile_acceptexception_message, new Object[] {fileName, username, e.getLocalizedMessage()}));
 							}
 						}
 					} else
@@ -220,20 +138,17 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	 * @param account
 	 *            the RosterUserAccount to add the shared object to
 	 */
-	protected ISharedObject createAndAddSharedObjectForAccount(
-			RosterUserAccount account) {
+	protected ISharedObject createAndAddSharedObjectForAccount(RosterUserAccount account) {
 		return null;
 	}
 
 	protected void addAccount(RosterUserAccount account) {
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null) {
 			ID accountID = account.getServiceID();
 			if (accountID != null) {
 				vcp.addAccount(accountID, accountID.getName());
-				IOutgoingFileTransferContainerAdapter ft = getFileTransferAdapterForContainer(account
-						.getContainer());
+				IOutgoingFileTransferContainerAdapter ft = getFileTransferAdapterForContainer(account.getContainer());
 				if (ft != null)
 					ft.addListener(requestListener);
 				accounts.put(accountID, account);
@@ -246,14 +161,11 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		return (RosterUserAccount) accounts.get(serviceID);
 	}
 
-	protected IOutgoingFileTransferContainerAdapter getFileTransferAdapterForContainer(
-			IContainer container) {
-		return (IOutgoingFileTransferContainerAdapter) container
-				.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+	protected IOutgoingFileTransferContainerAdapter getFileTransferAdapterForContainer(IContainer container) {
+		return (IOutgoingFileTransferContainerAdapter) container.getAdapter(IOutgoingFileTransferContainerAdapter.class);
 	}
 
-	protected IOutgoingFileTransferContainerAdapter getFileTransferAdapterForAccount(
-			ID accountID) {
+	protected IOutgoingFileTransferContainerAdapter getFileTransferAdapterForAccount(ID accountID) {
 		RosterUserAccount account = getAccount(accountID);
 		if (account == null)
 			return null;
@@ -353,56 +265,33 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		manager.add(openChatRoomAction);
 	}
 
-	private void sendFileToTarget(
-			IOutgoingFileTransferContainerAdapter fileTransfer,
-			final ID targetID) {
+	private void sendFileToTarget(IOutgoingFileTransferContainerAdapter fileTransfer, final ID targetID) {
 		FileDialog fd = new FileDialog(getSite().getShell(), SWT.OPEN);
 		// XXX this should be some default path set by preferences
 		fd.setFilterPath(System.getProperty("user.home"));
-		fd.setText(NLS.bind(Messages.RosterView_SendFile_title, targetID
-				.getName()));
+		fd.setText(NLS.bind(Messages.RosterView_SendFile_title, targetID.getName()));
 		final String res = fd.open();
 		if (res != null) {
 			File aFile = new File(res);
 			try {
-				fileTransfer.sendOutgoingRequest(targetID, aFile,
-						new IFileTransferListener() {
-							public void handleTransferEvent(
-									final IFileTransferEvent event) {
-								Display.getDefault().asyncExec(new Runnable() {
-									public void run() {
-										// XXX This should be handled more
-										// gracefully/with better UI (progress
-										// bar?)
-										if (event instanceof IOutgoingFileTransferResponseEvent) {
-											if (!((IOutgoingFileTransferResponseEvent) event)
-													.requestAccepted())
-												MessageDialog
-														.openInformation(
-																getSite()
-																		.getShell(),
-																Messages.RosterView_SendFile_response_title,
-																NLS
-																		.bind(
-																				Messages.RosterView_SendFile_response_message,
-																				res,
-																				targetID
-																						.getName()));
-										}
-									}
-								});
+				final IFileID targetFileID = FileIDFactory.getDefault().createFileID(fileTransfer.getOutgoingNamespace(), new Object[] {targetID, res});
+				fileTransfer.sendOutgoingRequest(targetFileID, aFile, new IFileTransferListener() {
+					public void handleTransferEvent(final IFileTransferEvent event) {
+						Display.getDefault().asyncExec(new Runnable() {
+							public void run() {
+								// XXX This should be handled more
+								// gracefully/with better UI (progress
+								// bar?)
+								if (event instanceof IOutgoingFileTransferResponseEvent) {
+									if (!((IOutgoingFileTransferResponseEvent) event).requestAccepted())
+										MessageDialog.openInformation(getSite().getShell(), Messages.RosterView_SendFile_response_title, NLS.bind(Messages.RosterView_SendFile_response_message, res, targetID.getName()));
+								}
 							}
-						}, null);
-			} catch (OutgoingFileTransferException e) {
-				MessageDialog
-						.openError(
-								getSite().getShell(),
-								Messages.RosterView_SendFile_requestexception_title,
-								NLS
-										.bind(
-												Messages.RosterView_SendFile_requestexception_message,
-												new Object[] { res,
-														e.getLocalizedMessage() }));
+						});
+					}
+				}, null);
+			} catch (Exception e) {
+				MessageDialog.openError(getSite().getShell(), Messages.RosterView_SendFile_requestexception_title, NLS.bind(Messages.RosterView_SendFile_requestexception_message, new Object[] {res, e.getLocalizedMessage()}));
 			}
 		}
 	}
@@ -428,35 +317,25 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 						openChatWindowForTarget(targetID);
 					}
 				};
-				selectedChatAction.setText(NLS.bind(
-						Messages.RosterView_SendIM_menutext, rosterObject
-								.getID().getName()));
-				selectedChatAction.setImageDescriptor(SharedImages
-						.getImageDescriptor(SharedImages.IMG_MESSAGE));
+				selectedChatAction.setText(NLS.bind(Messages.RosterView_SendIM_menutext, rosterObject.getID().getName()));
+				selectedChatAction.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_MESSAGE));
 				manager.add(selectedChatAction);
 				manager.add(new Separator());
 
-				final IOutgoingFileTransferContainerAdapter fileTransfer = getFileTransferAdapterForAccount(tb
-						.getServiceID());
+				final IOutgoingFileTransferContainerAdapter fileTransfer = getFileTransferAdapterForAccount(tb.getServiceID());
 
 				fileSendAction = new Action() {
 					public void run() {
 						sendFileToTarget(fileTransfer, targetID);
 					}
 				};
-				fileSendAction.setText(NLS.bind(
-						Messages.RosterView_SendFile_menutext, rosterObject
-								.getID().getName()));
-				fileSendAction.setImageDescriptor(PlatformUI.getWorkbench()
-						.getSharedImages().getImageDescriptor(
-								ISharedImages.IMG_OBJ_FILE));
+				fileSendAction.setText(NLS.bind(Messages.RosterView_SendFile_menutext, rosterObject.getID().getName()));
+				fileSendAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 				manager.add(fileSendAction);
 				manager.add(new Separator());
 				IPresence presence = tb.getPresence();
-				boolean type = (presence == null) ? false : presence.getType()
-						.equals(IPresence.Type.AVAILABLE);
-				boolean mode = (presence == null) ? false : presence.getMode()
-						.equals(IPresence.Mode.AVAILABLE);
+				boolean type = (presence == null) ? false : presence.getType().equals(IPresence.Type.AVAILABLE);
+				boolean mode = (presence == null) ? false : presence.getMode().equals(IPresence.Mode.AVAILABLE);
 				fileSendAction.setEnabled(fileTransfer != null && type && mode);
 
 				RosterObject parent = rosterObject.getParent();
@@ -471,15 +350,11 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 					}
 				};
 				if (rosterGroup != null) {
-					removeUserAction.setText("Remove " + rosterObject.getName()
-							+ " from " + rosterGroup.getName() + " group");
+					removeUserAction.setText("Remove " + rosterObject.getName() + " from " + rosterGroup.getName() + " group");
 				} else {
-					removeUserAction
-							.setText("Remove " + rosterObject.getName());
+					removeUserAction.setText("Remove " + rosterObject.getName());
 				}
-				removeUserAction.setImageDescriptor(PlatformUI.getWorkbench()
-						.getSharedImages().getImageDescriptor(
-								ISharedImages.IMG_TOOL_DELETE));
+				removeUserAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 				manager.add(removeUserAction);
 
 			} else if (rosterObject instanceof RosterAccount) {
@@ -492,8 +367,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 							sendRosterAdd(accountID, null);
 						}
 					};
-					addBuddyToGroupAction.setImageDescriptor(SharedImages
-							.getImageDescriptor(SharedImages.IMG_ADD_BUDDY));
+					addBuddyToGroupAction.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_ADD_BUDDY));
 					addBuddyToGroupAction.setText("Add Buddy");
 					addBuddyToGroupAction.setEnabled(true);
 
@@ -503,11 +377,9 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 							showChatRoomsForAccount(ua);
 						}
 					};
-					openChatRoomAccountAction
-							.setText("Show chat rooms for account");
+					openChatRoomAccountAction.setText("Show chat rooms for account");
 					openChatRoomAccountAction.setEnabled(true);
-					openChatRoomAccountAction.setImageDescriptor(SharedImages
-							.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
+					openChatRoomAccountAction.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
 
 					manager.add(openChatRoomAccountAction);
 
@@ -517,24 +389,20 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 						}
 					};
 					changePasswordAction.setText("Change Password");
-					changePasswordAction
-							.setToolTipText("Change password for account");
+					changePasswordAction.setToolTipText("Change password for account");
 					changePasswordAction.setEnabled(true);
 					manager.add(changePasswordAction);
 
 					disconnectAccountAction = new Action() {
 						public void run() {
-							if (MessageDialog.openConfirm(RosterView.this
-									.getViewSite().getShell(), "Disconnect",
-									"Disconnect from account?")) {
+							if (MessageDialog.openConfirm(RosterView.this.getViewSite().getShell(), "Disconnect", "Disconnect from account?")) {
 								ua.getInputHandler().disconnect();
 							}
 						}
 					};
 					disconnectAccountAction.setText("Disconnect from account");
 					disconnectAccountAction.setEnabled(true);
-					disconnectAccountAction.setImageDescriptor(SharedImages
-							.getImageDescriptor(SharedImages.IMG_DISCONNECT));
+					disconnectAccountAction.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_DISCONNECT));
 					manager.add(disconnectAccountAction);
 
 				}
@@ -548,12 +416,9 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 					}
 				};
 				String accountName = rosterGroup.getID().getName();
-				removeGroupAction.setText("Remove " + rosterObject.getName()
-						+ " for account " + accountName);
+				removeGroupAction.setText("Remove " + rosterObject.getName() + " for account " + accountName);
 				removeGroupAction.setEnabled(rosterGroup.getTotalCount() == 0);
-				removeGroupAction.setImageDescriptor(PlatformUI.getWorkbench()
-						.getSharedImages().getImageDescriptor(
-								ISharedImages.IMG_TOOL_DELETE));
+				removeGroupAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 				if (removeGroupAction.isEnabled())
 					manager.add(removeGroupAction);
 
@@ -569,15 +434,13 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		if (account != null) {
 			IPresenceContainerAdapter pc = account.getPresenceContainer();
 			IAccountManager am = pc.getAccountManager();
-			ChangePasswordDialog cpd = new ChangePasswordDialog(viewer
-					.getControl().getShell());
+			ChangePasswordDialog cpd = new ChangePasswordDialog(viewer.getControl().getShell());
 			cpd.open();
 			if (cpd.getResult() == Window.OK) {
 				try {
 					am.changePassword(cpd.getNewPassword());
 				} catch (ECFException e) {
-					MessageDialog.openError(viewer.getControl().getShell(),
-							"Password not changed", "Error changing password");
+					MessageDialog.openError(viewer.getControl().getShell(), "Password not changed", "Error changing password");
 				}
 			}
 		}
@@ -591,19 +454,16 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		String[] groupNames = this.getAllGroupNamesForAccount(svcID);
 		List g = Arrays.asList(groupNames);
 		int selected = (groupName == null) ? -1 : g.indexOf(groupName);
-		AddBuddyDialog sg = new AddBuddyDialog(viewer.getControl().getShell(),
-				username, groupNames, selected);
+		AddBuddyDialog sg = new AddBuddyDialog(viewer.getControl().getShell(), username, groupNames, selected);
 		sg.open();
 		if (sg.getResult() == Window.OK) {
 			String group = sg.getGroup();
 			String user = sg.getUser();
 			String nickname = sg.getNickname();
 			sg.close();
-			String[] sendGroups = (group == null) ? null
-					: new String[] { group };
+			String[] sendGroups = (group == null) ? null : new String[] {group};
 			// Finally, send the information and request subscription
-			getAccount(svcID).getInputHandler().sendRosterAdd(user, nickname,
-					sendGroups);
+			getAccount(svcID).getInputHandler().sendRosterAdd(user, nickname, sendGroups);
 		}
 	}
 
@@ -628,9 +488,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	protected ID inputIMTarget() {
-		InputDialog dlg = new InputDialog(getSite().getShell(), "Send IM",
-				"Please enter the ID of the person you would like to IM", "",
-				null);
+		InputDialog dlg = new InputDialog(getSite().getShell(), "Send IM", "Please enter the ID of the person you would like to IM", "", null);
 		dlg.setBlockOnOpen(true);
 		int res = dlg.open();
 		if (res == Window.OK) {
@@ -639,8 +497,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 				try {
 					return IDFactory.getDefault().createStringID(strres);
 				} catch (Exception e) {
-					MessageDialog.openError(getSite().getShell(), "Error",
-							"Error in IM target");
+					MessageDialog.openError(getSite().getShell(), "Error", "Error in IM target");
 					return null;
 				}
 			}
@@ -655,8 +512,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 
 		String secondaryID;
 
-		RoomWithAView(IChatRoomContainer container, ChatRoomView view,
-				String secondaryID) {
+		RoomWithAView(IChatRoomContainer container, ChatRoomView view, String secondaryID) {
 			this.container = container;
 			this.view = view;
 			this.secondaryID = secondaryID;
@@ -690,18 +546,13 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
-					public void handle(Callback[] callbacks)
-							throws IOException, UnsupportedCallbackException {
+					public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 						if (callbacks == null)
 							return;
 						for (int i = 0; i < callbacks.length; i++) {
 							if (callbacks[i] instanceof NameCallback) {
 								NameCallback ncb = (NameCallback) callbacks[i];
-								InputDialog id = new InputDialog(
-										RosterView.this.getViewSite()
-												.getShell(), windowText, ncb
-												.getPrompt(), ncb
-												.getDefaultName(), null);
+								InputDialog id = new InputDialog(RosterView.this.getViewSite().getShell(), windowText, ncb.getPrompt(), ncb.getDefaultName(), null);
 								id.setBlockOnOpen(true);
 								id.open();
 								if (id.getReturnCode() != Window.OK)
@@ -717,18 +568,16 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	protected void showChatRoomsForAccount(RosterUserAccount ua) {
-		IChatRoomManager manager = ua.getPresenceContainer()
-				.getChatRoomManager();
+		IChatRoomManager manager = ua.getPresenceContainer().getChatRoomManager();
 		if (manager != null)
-			showChatRooms(new IChatRoomManager[] { manager });
+			showChatRooms(new IChatRoomManager[] {manager});
 		else
 			showChatRooms(new IChatRoomManager[] {});
 	}
 
 	protected void showChatRooms(IChatRoomManager[] managers) {
 		// Create chat room selection dialog with managers, open
-		ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(
-				RosterView.this.getViewSite().getShell(), managers);
+		ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(RosterView.this.getViewSite().getShell(), managers);
 		dialog.setBlockOnOpen(true);
 		dialog.open();
 		// If selection cancelled then simply return
@@ -739,26 +588,20 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		IChatRoomInfo selectedInfo = room.getRoomInfo();
 		// If they are null then we can't proceed
 		if (room == null || selectedInfo == null) {
-			MessageDialog.openInformation(RosterView.this.getViewSite()
-					.getShell(), "No room selected",
-					"Cannot connect to null room");
+			MessageDialog.openInformation(RosterView.this.getViewSite().getShell(), "No room selected", "Cannot connect to null room");
 			return;
 		}
 		// Now get the secondary ID from the selected room id
 		String secondaryID = getChatRoomSecondaryID(selectedInfo.getRoomID());
 		if (secondaryID == null) {
-			MessageDialog.openError(RosterView.this.getViewSite().getShell(),
-					"Could not get identifier for room",
-					"Could not get proper identifier for chat room "
-							+ selectedInfo.getRoomID());
+			MessageDialog.openError(RosterView.this.getViewSite().getShell(), "Could not get identifier for room", "Could not get proper identifier for chat room " + selectedInfo.getRoomID());
 			return;
 		}
 		// Check to make sure that we are not already connected to the
 		// selected room.
 		// If we are simply activate the existing view for the room and
 		// done
-		IWorkbenchWindow ww = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
+		IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage wp = ww.getActivePage();
 		RoomWithAView roomView = getRoomView(secondaryID);
 		if (roomView != null) {
@@ -774,103 +617,76 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		try {
 			chatRoom = selectedInfo.createChatRoomContainer();
 		} catch (ContainerCreateException e1) {
-			MessageDialog.openError(RosterView.this.getViewSite().getShell(),
-					"Could not create chat room",
-					"Could not create chat room for account");
+			MessageDialog.openError(RosterView.this.getViewSite().getShell(), "Could not create chat room", "Could not create chat room for account");
 		}
 		// Get the chat message sender callback so that we can send
 		// messages to chat room
 		IChatRoomMessageSender sender = chatRoom.getChatRoomMessageSender();
 		IViewPart view = null;
 		try {
-			IViewReference ref = wp.findViewReference(CHAT_ROOM_VIEW_CLASS,
-					secondaryID);
+			IViewReference ref = wp.findViewReference(CHAT_ROOM_VIEW_CLASS, secondaryID);
 			if (ref == null) {
-				view = wp.showView(CHAT_ROOM_VIEW_CLASS, secondaryID,
-						IWorkbenchPage.VIEW_ACTIVATE);
+				view = wp.showView(CHAT_ROOM_VIEW_CLASS, secondaryID, IWorkbenchPage.VIEW_ACTIVATE);
 			} else {
 				view = ref.getView(true);
 			}
 			final ChatRoomView chatroomview = (ChatRoomView) view;
 			// initialize the chatroomview with the necessary
 			// information
-			chatroomview.initialize(RosterView.this, secondaryID, chatRoom,
-					selectedInfo, sender);
+			chatroomview.initialize(RosterView.this, secondaryID, chatRoom, selectedInfo, sender);
 			// Add listeners so that the new chat room gets
 			// asynch notifications of various relevant chat room events
 			chatRoom.addMessageListener(new IIMMessageListener() {
 
 				public void handleMessageEvent(IIMMessageEvent messageEvent) {
 					if (messageEvent instanceof IChatRoomMessageEvent) {
-						IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
-								.getChatRoomMessage();
-						chatroomview.handleMessage(m.getFromID(), m
-								.getMessage());
+						IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
+						chatroomview.handleMessage(m.getFromID(), m.getMessage());
 					}
 
 				}
 			});
-			chatRoom
-					.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-						public void handlePresenceUpdated(ID fromID,
-								IPresence presence) {
-							chatroomview.handlePresence(fromID, presence);
-						}
+			chatRoom.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
+				public void handlePresenceUpdated(ID fromID, IPresence presence) {
+					chatroomview.handlePresence(fromID, presence);
+				}
 
-						public void handleArrived(IUser participant) {
-							chatroomview.handleJoin(participant);
-						}
+				public void handleArrived(IUser participant) {
+					chatroomview.handleJoin(participant);
+				}
 
-						public void handleDeparted(IUser participant) {
-							chatroomview.handleLeave(participant);
-						}
+				public void handleDeparted(IUser participant) {
+					chatroomview.handleLeave(participant);
+				}
 
-						public void handleUpdated(IUser updatedParticipant) {
-							chatroomview.handleUpdated(updatedParticipant);
-						}
-					});
+				public void handleUpdated(IUser updatedParticipant) {
+					chatroomview.handleUpdated(updatedParticipant);
+				}
+			});
 		} catch (PartInitException e) {
-			Activator.log(
-					"Exception in chat room view initialization for chat room "
-							+ selectedInfo.getRoomID(), e);
-			MessageDialog.openError(getViewSite().getShell(),
-					"Can't initialize chat room view",
-					"Unexpected error initializing for chat room: "
-							+ selectedInfo.getName()
-							+ ".  Please see Error Log for details");
+			Activator.log("Exception in chat room view initialization for chat room " + selectedInfo.getRoomID(), e);
+			MessageDialog.openError(getViewSite().getShell(), "Can't initialize chat room view", "Unexpected error initializing for chat room: " + selectedInfo.getName() + ".  Please see Error Log for details");
 			return;
 		}
 		// Now actually connect to chatroom
 		try {
-			chatRoom
-					.connect(selectedInfo.getRoomID(),
-							getChatJoinContext("Nickname for "
-									+ selectedInfo.getName()));
+			chatRoom.connect(selectedInfo.getRoomID(), getChatJoinContext("Nickname for " + selectedInfo.getName()));
 		} catch (ContainerConnectException e1) {
-			Activator.log("Exception connecting to chat room "
-					+ selectedInfo.getRoomID(), e1);
-			MessageDialog.openError(RosterView.this.getViewSite().getShell(),
-					"Could not connect", "Cannot connect to chat room "
-							+ selectedInfo.getName() + ", message: "
-							+ e1.getMessage());
+			Activator.log("Exception connecting to chat room " + selectedInfo.getRoomID(), e1);
+			MessageDialog.openError(RosterView.this.getViewSite().getShell(), "Could not connect", "Cannot connect to chat room " + selectedInfo.getName() + ", message: " + e1.getMessage());
 			return;
 		}
 		// If connect successful...we create a room with a view and add
 		// it to our known set
-		addRoomView(new RoomWithAView(chatRoom, (ChatRoomView) view,
-				secondaryID));
+		addRoomView(new RoomWithAView(chatRoom, (ChatRoomView) view, secondaryID));
 
 	}
 
 	public void showChatRoom(final IChatRoomInfo selectedInfo) {
 		// Now get the secondary ID from the selected room id
-		final String secondaryID = getChatRoomSecondaryID(selectedInfo
-				.getRoomID());
+		final String secondaryID = getChatRoomSecondaryID(selectedInfo.getRoomID());
 		if (secondaryID == null) {
-			MessageDialog.openError(RosterView.this.getViewSite().getShell(),
-					"Could not get identifier for room",
-					"Could not get proper identifier for chat room "
-							+ selectedInfo.getRoomID());
+			MessageDialog.openError(RosterView.this.getViewSite().getShell(), "Could not get identifier for room", "Could not get proper identifier for chat room " + selectedInfo.getRoomID());
 			return;
 		}
 		// Check to make sure that we are not already connected to the
@@ -879,135 +695,95 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		// done
 		final RoomWithAView roomView = getRoomView(secondaryID);
 
-		RosterView.this.getViewSite().getShell().getDisplay().syncExec(
-				new Runnable() {
-					public void run() {
-						IWorkbenchWindow ww = PlatformUI.getWorkbench()
-								.getActiveWorkbenchWindow();
-						IWorkbenchPage wp = ww.getActivePage();
-						if (roomView != null) {
-							// We've already connected to this room
-							// So just show it.
-							final ChatRoomView view = roomView.getView();
-							wp.activate(view);
-							return;
-						}
-						// If we don't already have a connection/view to this
-						// room then
-						// now, create chat room instance
-						IChatRoomContainer chatRoom = null;
-						try {
-							chatRoom = selectedInfo.createChatRoomContainer();
-						} catch (ContainerCreateException e1) {
-							MessageDialog.openError(RosterView.this
-									.getViewSite().getShell(),
-									"Could not create chat room",
-									"Could not create chat room for account");
-						}
+		RosterView.this.getViewSite().getShell().getDisplay().syncExec(new Runnable() {
+			public void run() {
+				IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				IWorkbenchPage wp = ww.getActivePage();
+				if (roomView != null) {
+					// We've already connected to this room
+					// So just show it.
+					final ChatRoomView view = roomView.getView();
+					wp.activate(view);
+					return;
+				}
+				// If we don't already have a connection/view to this
+				// room then
+				// now, create chat room instance
+				IChatRoomContainer chatRoom = null;
+				try {
+					chatRoom = selectedInfo.createChatRoomContainer();
+				} catch (ContainerCreateException e1) {
+					MessageDialog.openError(RosterView.this.getViewSite().getShell(), "Could not create chat room", "Could not create chat room for account");
+				}
 
-						// Get the chat message sender callback so that we can
-						// send
-						// messages to chat room
-						IChatRoomMessageSender sender = chatRoom
-								.getChatRoomMessageSender();
-						IViewPart view = null;
-						try {
-							IViewReference ref = wp.findViewReference(
-									CHAT_ROOM_VIEW_CLASS, secondaryID);
-							if (ref == null) {
-								view = wp.showView(CHAT_ROOM_VIEW_CLASS,
-										secondaryID,
-										IWorkbenchPage.VIEW_ACTIVATE);
-							} else {
-								view = ref.getView(true);
-							}
-							final ChatRoomView chatroomview = (ChatRoomView) view;
-							// initialize the chatroomview with the necessary
-							// information
-							chatroomview
-									.initialize(RosterView.this, secondaryID,
-											chatRoom, selectedInfo, sender);
-							// Add listeners so that the new chat room gets
-							// asynch notifications of various relevant chat
-							// room events
-							chatRoom
-									.addMessageListener(new IIMMessageListener() {
-
-										public void handleMessageEvent(
-												IIMMessageEvent messageEvent) {
-											if (messageEvent instanceof IChatRoomMessageEvent) {
-												IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
-														.getChatRoomMessage();
-												chatroomview.handleMessage(m
-														.getFromID(), m
-														.getMessage());
-											}
-
-										}
-									});
-							chatRoom
-									.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-										public void handlePresenceUpdated(
-												ID fromID, IPresence presence) {
-											chatroomview.handlePresence(fromID,
-													presence);
-										}
-
-										public void handleArrived(
-												IUser participant) {
-											chatroomview
-													.handleJoin(participant);
-										}
-
-										public void handleUpdated(
-												IUser updatedParticipant) {
-											chatroomview
-													.handleUpdated(updatedParticipant);
-										}
-
-										public void handleDeparted(
-												IUser participant) {
-											chatroomview
-													.handleLeave(participant);
-										}
-									});
-
-						} catch (PartInitException e) {
-							Activator.log(
-									"Exception in chat room view initialization for chat room "
-											+ selectedInfo.getRoomID(), e);
-							MessageDialog
-									.openError(
-											getViewSite().getShell(),
-											"Can't initialize chat room view",
-											"Unexpected error initializing for chat room: "
-													+ selectedInfo.getName()
-													+ ".  Please see Error Log for details");
-							return;
-						}
-						// Now actually connect to chatroom
-						try {
-							chatRoom.connect(selectedInfo.getRoomID(), null);
-							// getChatJoinContext("Nickname for "
-							// + selectedInfo.getName())
-						} catch (ContainerConnectException e1) {
-							Activator.log("Exception connecting to chat room "
-									+ selectedInfo.getRoomID(), e1);
-							MessageDialog.openError(RosterView.this
-									.getViewSite().getShell(),
-									"Could not connect",
-									"Cannot connect to chat room "
-											+ selectedInfo.getName()
-											+ ", message: " + e1.getMessage());
-							return;
-						}
-						// If connect successful...we create a room with a view
-						// and add
-						// it to our known set
-						addRoomView(new RoomWithAView(chatRoom,
-								(ChatRoomView) view, secondaryID));
+				// Get the chat message sender callback so that we can
+				// send
+				// messages to chat room
+				IChatRoomMessageSender sender = chatRoom.getChatRoomMessageSender();
+				IViewPart view = null;
+				try {
+					IViewReference ref = wp.findViewReference(CHAT_ROOM_VIEW_CLASS, secondaryID);
+					if (ref == null) {
+						view = wp.showView(CHAT_ROOM_VIEW_CLASS, secondaryID, IWorkbenchPage.VIEW_ACTIVATE);
+					} else {
+						view = ref.getView(true);
 					}
-				});
+					final ChatRoomView chatroomview = (ChatRoomView) view;
+					// initialize the chatroomview with the necessary
+					// information
+					chatroomview.initialize(RosterView.this, secondaryID, chatRoom, selectedInfo, sender);
+					// Add listeners so that the new chat room gets
+					// asynch notifications of various relevant chat
+					// room events
+					chatRoom.addMessageListener(new IIMMessageListener() {
+
+						public void handleMessageEvent(IIMMessageEvent messageEvent) {
+							if (messageEvent instanceof IChatRoomMessageEvent) {
+								IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
+								chatroomview.handleMessage(m.getFromID(), m.getMessage());
+							}
+
+						}
+					});
+					chatRoom.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
+						public void handlePresenceUpdated(ID fromID, IPresence presence) {
+							chatroomview.handlePresence(fromID, presence);
+						}
+
+						public void handleArrived(IUser participant) {
+							chatroomview.handleJoin(participant);
+						}
+
+						public void handleUpdated(IUser updatedParticipant) {
+							chatroomview.handleUpdated(updatedParticipant);
+						}
+
+						public void handleDeparted(IUser participant) {
+							chatroomview.handleLeave(participant);
+						}
+					});
+
+				} catch (PartInitException e) {
+					Activator.log("Exception in chat room view initialization for chat room " + selectedInfo.getRoomID(), e);
+					MessageDialog.openError(getViewSite().getShell(), "Can't initialize chat room view", "Unexpected error initializing for chat room: " + selectedInfo.getName() + ".  Please see Error Log for details");
+					return;
+				}
+				// Now actually connect to chatroom
+				try {
+					chatRoom.connect(selectedInfo.getRoomID(), null);
+					// getChatJoinContext("Nickname for "
+					// + selectedInfo.getName())
+				} catch (ContainerConnectException e1) {
+					Activator.log("Exception connecting to chat room " + selectedInfo.getRoomID(), e1);
+					MessageDialog.openError(RosterView.this.getViewSite().getShell(), "Could not connect", "Cannot connect to chat room " + selectedInfo.getName() + ", message: " + e1.getMessage());
+					return;
+				}
+				// If connect successful...we create a room with a view
+				// and add
+				// it to our known set
+				addRoomView(new RoomWithAView(chatRoom, (ChatRoomView) view, secondaryID));
+			}
+		});
 
 	}
 
@@ -1022,15 +798,13 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		};
 		disconnectAction = new Action() {
 			public void run() {
-				if (MessageDialog.openConfirm(RosterView.this.getViewSite()
-						.getShell(), "Disconnect", "Disconnect all accounts?")) {
+				if (MessageDialog.openConfirm(RosterView.this.getViewSite().getShell(), "Disconnect", "Disconnect all accounts?")) {
 					// Disconnect all accounts
 					Set entrySet = new HashSet();
 					entrySet.addAll(accounts.entrySet());
 					for (Iterator i = entrySet.iterator(); i.hasNext();) {
 						Map.Entry entry = (Map.Entry) i.next();
-						RosterUserAccount account = (RosterUserAccount) entry
-								.getValue();
+						RosterUserAccount account = (RosterUserAccount) entry.getValue();
 						account.getInputHandler().disconnect();
 					}
 					setToolbarEnabled(false);
@@ -1041,30 +815,25 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		disconnectAction.setText("Disconnect");
 		disconnectAction.setToolTipText("Disconnect from all accounts");
 		disconnectAction.setEnabled(false);
-		disconnectAction.setImageDescriptor(SharedImages
-				.getImageDescriptor(SharedImages.IMG_DISCONNECT));
-		disconnectAction.setDisabledImageDescriptor(SharedImages
-				.getImageDescriptor(SharedImages.IMG_DISCONNECT_DISABLED));
+		disconnectAction.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_DISCONNECT));
+		disconnectAction.setDisabledImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_DISCONNECT_DISABLED));
 		openChatRoomAction = new Action() {
 			public void run() {
 				// Get managers for all accounts currently connected to
 				List list = new ArrayList();
 				for (Iterator i = accounts.values().iterator(); i.hasNext();) {
 					RosterUserAccount ua = (RosterUserAccount) i.next();
-					IChatRoomManager man = ua.getPresenceContainer()
-							.getChatRoomManager();
+					IChatRoomManager man = ua.getPresenceContainer().getChatRoomManager();
 					if (man != null)
 						list.add(man);
 				}
 				// get chat rooms, allow user to choose desired one and open it
-				showChatRooms((IChatRoomManager[]) list
-						.toArray(new IChatRoomManager[] {}));
+				showChatRooms((IChatRoomManager[]) list.toArray(new IChatRoomManager[] {}));
 			}
 		};
 		openChatRoomAction.setText("Enter Chatroom");
 		openChatRoomAction.setToolTipText("Show chat rooms for all accounts");
-		openChatRoomAction.setImageDescriptor(SharedImages
-				.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
+		openChatRoomAction.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
 		openChatRoomAction.setEnabled(false);
 
 	}
@@ -1106,9 +875,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		RosterUserAccount account = getAccountForUser(targetID);
 		if (account == null)
 			return null;
-		ChatWindow window = new ChatWindow(RosterView.this, targetID.getName(),
-				getWindowInitText(targetID), account.getUser(), new User(
-						targetID));
+		ChatWindow window = new ChatWindow(RosterView.this, targetID.getName(), getWindowInitText(targetID), account.getUser(), new User(targetID));
 		window.create();
 		chatThreads.put(targetID, window);
 		return window;
@@ -1130,8 +897,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	protected RosterUserAccount getAccountForUser(ID userID) {
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp == null)
 			return null;
 		RosterBuddy buddy = vcp.findBuddyWithUserID(userID);
@@ -1177,12 +943,10 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 					if (inputHandler != null) {
 						inputHandler.updatePresence(userID, presence);
 					} else
-						System.err.println("updatePresence(" + userID + ","
-								+ presence + ")");
+						System.err.println("updatePresence(" + userID + "," + presence + ")");
 				}
 
-				public void sendRosterAdd(String user, String name,
-						String[] groups) {
+				public void sendRosterAdd(String user, String name, String[] groups) {
 				}
 
 				public void sendRosterRemove(ID userID) {
@@ -1202,8 +966,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	protected String getWindowInitText(ID targetID) {
-		String result = "chat with " + targetID.getName() + " started "
-				+ getDateAndTime() + "\n\n";
+		String result = "chat with " + targetID.getName() + " started " + getDateAndTime() + "\n\n";
 		return result;
 	}
 
@@ -1222,16 +985,12 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		// finally, show message
 		if (window != null) {
 			window.handleMessageEvent(messageEvent);
-			window.setStatus("last message received at "
-					+ (new SimpleDateFormat("hh:mm:ss").format(new Date())));
+			window.setStatus("last message received at " + (new SimpleDateFormat("hh:mm:ss").format(new Date())));
 		}
 	}
 
-	public void addAccount(ID account, IUser user, ILocalInputHandler handler,
-			IContainer container, IPresenceContainerAdapter presenceContainer,
-			ISharedObjectContainer soContainer) {
-		addAccount(new RosterUserAccount(this, account, user, handler,
-				container, presenceContainer, soContainer));
+	public void addAccount(ID account, IUser user, ILocalInputHandler handler, IContainer container, IPresenceContainerAdapter presenceContainer, ISharedObjectContainer soContainer) {
+		addAccount(new RosterUserAccount(this, account, user, handler, container, presenceContainer, soContainer));
 		setToolbarEnabled(true);
 	}
 
@@ -1247,16 +1006,14 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		}
 	}
 
-	protected void disposeAllChatWindowsForAccount(RosterUserAccount account,
-			String status) {
+	protected void disposeAllChatWindowsForAccount(RosterUserAccount account, String status) {
 		synchronized (chatThreads) {
 			for (Iterator i = chatThreads.values().iterator(); i.hasNext();) {
 				ChatWindow window = (ChatWindow) i.next();
 				ID userID = window.getLocalUser().getID();
 				RosterUserAccount rosterUserAccount = getAccountForUser(userID);
 				if (rosterUserAccount != null) {
-					if (rosterUserAccount.getServiceID().equals(
-							account.getServiceID())) {
+					if (rosterUserAccount.getServiceID().equals(account.getServiceID())) {
 						window.setDisposed(status);
 						i.remove();
 					}
@@ -1266,8 +1023,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	protected void removeAllRosterEntriesForAccount(RosterUserAccount account) {
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null) {
 			vcp.removeAllEntriesForAccount(account);
 			refreshView();
@@ -1275,8 +1031,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	public String[] getAllGroupNamesForAccount(ID accountID) {
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null)
 			return vcp.getAllGroupNamesForAccount(accountID);
 		else
@@ -1295,8 +1050,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	public void addGroup(ID svcID, String name) {
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null) {
 			vcp.addGroup(svcID, name);
 			refreshView();
@@ -1304,8 +1058,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	public void removeGroup(String name) {
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null) {
 			vcp.removeGroup(name);
 			refreshView();
@@ -1313,8 +1066,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	public void removeRosterEntry(ID id) {
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null) {
 			vcp.handleRosterEntryRemove(id);
 			refreshView();
@@ -1323,8 +1075,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 
 	protected void handleAccountDisconnected(RosterUserAccount account) {
 		removeAllRosterEntriesForAccount(account);
-		disposeAllChatWindowsForAccount(account,
-				"Disconnected from server.  Chat is inactive");
+		disposeAllChatWindowsForAccount(account, "Disconnected from server.  Chat is inactive");
 		removeAccount(account.getServiceID());
 		if (accounts.size() == 0)
 			setToolbarEnabled(false);
@@ -1333,8 +1084,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	public void handleRosterEntryAdd(ID groupID, IRosterEntry entry) {
 		if (entry == null)
 			return;
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null) {
 			vcp.handleRosterEntryAdd(groupID, entry);
 			refreshView();
@@ -1342,8 +1092,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null) {
 			vcp.handlePresence(groupID, userID, presence);
 			refreshView();
@@ -1354,8 +1103,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	public void handleRosterEntryUpdate(ID groupID, IRosterEntry entry) {
 		if (groupID == null || entry == null)
 			return;
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null) {
 			vcp.handleRosterEntryUpdate(groupID, entry);
 			refreshView();
@@ -1365,8 +1113,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	public void handleRosterEntryRemove(ID groupID, IRosterEntry entry) {
 		if (groupID == null || entry == null)
 			return;
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer.getContentProvider();
 		if (vcp != null)
 			vcp.handleRosterEntryRemove(entry.getUser().getID());
 		refreshView();
