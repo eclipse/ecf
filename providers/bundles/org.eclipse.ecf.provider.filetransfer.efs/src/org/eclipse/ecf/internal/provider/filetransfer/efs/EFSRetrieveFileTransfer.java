@@ -29,7 +29,7 @@ import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
-import org.eclipse.ecf.provider.filetransfer.retrieve.JREProxyHelper;
+import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 
 /**
  * 
