@@ -9,6 +9,7 @@
 package org.eclipse.ecf.provider.filetransfer.outgoing;
 
 import java.io.*;
+import java.net.ProtocolException;
 import java.net.URLConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -125,22 +126,6 @@ public class UrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTrans
 		}
 	}
 
-	private void getSendResult() {
-		/*
-		 XXX Under construction
-		try {
-			DataInputStream input = new DataInputStream(urlConnection.getInputStream());
-			String string;
-			while (null != ((string = input.readLine()))) {
-				System.out.println(string);
-			}
-			input.close();
-		} catch (IOException e) {
-
-		}
-		*/
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -148,9 +133,11 @@ public class UrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTrans
 	 */
 	protected void hardClose() {
 		super.hardClose();
-		getSendResult();
+		int rCode = getResponseCode();
+		if (rCode != OK_RESPONSE_CODE) {
+			exception = new ProtocolException(NLS.bind("{0} {1}", new Integer(rCode), responseMessage)); //$NON-NLS-1$
+		}
 		urlConnection = null;
-		responseCode = -1;
 		if (proxyHelper != null) {
 			proxyHelper.dispose();
 			proxyHelper = null;
