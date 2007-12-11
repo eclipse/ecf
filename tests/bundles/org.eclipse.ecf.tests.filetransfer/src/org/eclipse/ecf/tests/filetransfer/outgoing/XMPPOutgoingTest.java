@@ -33,7 +33,7 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 /**
  * 
  */
-public class OutgoingTest extends ContainerAbstractTestCase {
+public class XMPPOutgoingTest extends ContainerAbstractTestCase {
 
 	private static final String TESTSRCPATH = "test.src";
 	private static final String TESTSRCFILE = TESTSRCPATH + "/test.txt";
