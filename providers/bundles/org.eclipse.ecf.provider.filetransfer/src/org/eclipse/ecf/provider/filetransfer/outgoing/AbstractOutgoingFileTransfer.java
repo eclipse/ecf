@@ -72,6 +72,10 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		remoteFileContents = outs;
 	}
 
+	protected IFileTransferInfo getFileTransferInfo() {
+		return fileTransferInfo;
+	}
+
 	protected Map getOptions() {
 		return options;
 	}
@@ -91,19 +95,20 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 			final long totalWork = ((fileTransferInfo.getFileSize() == -1) ? 100 : fileTransferInfo.getFileSize());
 			double factor = (totalWork > Integer.MAX_VALUE) ? (((double) Integer.MAX_VALUE) / ((double) totalWork)) : 1.0;
 			int work = (totalWork > Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) totalWork;
-			monitor.beginTask(getRemoteFileURL().toString() + Messages.AbstractRetrieveFileTransfer_Progress_Data, work);
+			monitor.beginTask(getRemoteFileURL().toString() + Messages.AbstractOutgoingFileTransfer_Progress_Data, work);
 			try {
 				while (!isDone()) {
 					if (monitor.isCanceled())
-						throw new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
+						throw new UserCancelledException(Messages.AbstractOutgoingFileTransfer_Exception_User_Cancelled);
 					final int bytes = localFileContents.read(buf);
 					if (bytes != -1) {
 						bytesSent += bytes;
 						remoteFileContents.write(buf, 0, bytes);
 						fireTransferSendDataEvent();
 						monitor.worked((int) Math.round(factor * bytes));
-					} else
+					} else {
 						done = true;
+					}
 				}
 			} catch (final Exception e) {
 				exception = e;
@@ -120,11 +125,11 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 
 	protected IStatus getFinalStatus(Throwable exception1) {
 		if (exception1 == null)
-			return new Status(IStatus.OK, Activator.getDefault().getBundle().getSymbolicName(), 0, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK, null);
+			return new Status(IStatus.OK, Activator.getDefault().getBundle().getSymbolicName(), 0, Messages.AbstractOutgoingFileTransfer_Status_Transfer_Completed_OK, null);
 		else if (exception1 instanceof UserCancelledException)
-			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled, exception1);
+			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractOutgoingFileTransfer_Exception_User_Cancelled, exception1);
 		else
-			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception, exception1);
+			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractOutgoingFileTransfer_Status_Transfer_Exception, exception1);
 	}
 
 	protected void hardClose() {
@@ -307,8 +312,8 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	}
 
 	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map ops) throws OutgoingFileTransferException {
-		Assert.isNotNull(targetReceiver, Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
-		Assert.isNotNull(transferListener, Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
+		Assert.isNotNull(targetReceiver, Messages.AbstractOutgoingFileTransfer_RemoteFileID_Not_Null);
+		Assert.isNotNull(transferListener, Messages.AbstractOutgoingFileTransfer_TransferListener_Not_Null);
 		Assert.isNotNull(localFileToSend, Messages.AbstractOutgoingFileTransfer_EXCEPTION_FILE_TRANSFER_INFO_NOT_NULL);
 		this.done = false;
 		this.bytesSent = 0;
@@ -320,11 +325,12 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		try {
 			this.remoteFileURL = targetReceiver.getURL();
 		} catch (final MalformedURLException e) {
-			throw new OutgoingFileTransferException(NLS.bind(Messages.AbstractRetrieveFileTransfer_MalformedURLException, targetReceiver), e);
+			throw new OutgoingFileTransferException(NLS.bind(Messages.AbstractOutgoingFileTransfer_MalformedURLException, targetReceiver), e);
 		}
 		this.listener = transferListener;
 		setupProxies();
 		openStreams();
+		setupAndScheduleJob();
 	}
 
 	public void sendOutgoingRequest(IFileID targetReceiver, final File localFileToSend, IFileTransferListener transferListener, Map ops) throws OutgoingFileTransferException {

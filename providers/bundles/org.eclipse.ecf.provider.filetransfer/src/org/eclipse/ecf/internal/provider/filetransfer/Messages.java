@@ -26,6 +26,13 @@ public class Messages extends NLS {
 	public static String AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK;
 	public static String AbstractRetrieveFileTransfer_Status_Transfer_Exception;
 	public static String AbstractRetrieveFileTransfer_TransferListener_Not_Null;
+	public static String AbstractOutgoingFileTransfer_MalformedURLException;
+	public static String AbstractOutgoingFileTransfer_Progress_Data;
+	public static String AbstractOutgoingFileTransfer_Exception_User_Cancelled;
+	public static String AbstractOutgoingFileTransfer_RemoteFileID_Not_Null;
+	public static String AbstractOutgoingFileTransfer_Status_Transfer_Completed_OK;
+	public static String AbstractOutgoingFileTransfer_Status_Transfer_Exception;
+	public static String AbstractOutgoingFileTransfer_TransferListener_Not_Null;
 	public static String Activator_EXCEPTION_URLConnection_CANNOT_BE_CREATED;
 	public static String UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR;
 	public static String UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST;
@@ -35,6 +42,7 @@ public class Messages extends NLS {
 	public static String UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT;
 	public static String UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE;
 	public static String UrlConnectionRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO;
+	public static String UrlConnectionOutgoingFileTransfer_EXCEPTION_COULD_NOT_CONNECT;
 	public static String FileTransferNamespace_Exception_Args_Null;
 	public static String FileTransferNamespace_Exception_Create_Instance;
 	public static String FileTransferNamespace_Exception_Create_Instance_Failed;

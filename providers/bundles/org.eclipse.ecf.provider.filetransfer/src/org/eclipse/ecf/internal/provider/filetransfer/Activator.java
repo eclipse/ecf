@@ -18,8 +18,7 @@ import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.PlatformHelper;
-import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
-import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
+import org.eclipse.ecf.filetransfer.service.*;
 import org.eclipse.ecf.provider.filetransfer.retrieve.MultiProtocolRetrieveAdapter;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.*;
@@ -247,6 +246,10 @@ public class Activator implements BundleActivator {
 		final IRetrieveFileTransferFactory factory = (IRetrieveFileTransferFactory) fileTransferProtocolMap.get(protocol);
 		if (factory != null)
 			return factory.newInstance();
+		return null;
+	}
+
+	public ISendFileTransfer getSendFileTransfer(String protocol) {
 		return null;
 	}
 

@@ -11,6 +11,14 @@
       </factory>
    </extension>
    <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.ecf.core.BaseContainer"
+            class="org.eclipse.ecf.provider.filetransfer.outgoing.MultiProtocolRetrieveAdapterFactory">
+         <adapter type="org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter"/>
+      </factory>
+   </extension>
+   <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace"
