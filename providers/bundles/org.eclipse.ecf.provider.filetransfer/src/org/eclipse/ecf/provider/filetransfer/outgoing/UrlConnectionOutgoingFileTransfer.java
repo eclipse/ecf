@@ -126,6 +126,8 @@ public class UrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTrans
 	}
 
 	private void getSendResult() {
+		/*
+		 XXX Under construction
 		try {
 			DataInputStream input = new DataInputStream(urlConnection.getInputStream());
 			String string;
@@ -136,6 +138,7 @@ public class UrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTrans
 		} catch (IOException e) {
 
 		}
+		*/
 	}
 
 	/*
