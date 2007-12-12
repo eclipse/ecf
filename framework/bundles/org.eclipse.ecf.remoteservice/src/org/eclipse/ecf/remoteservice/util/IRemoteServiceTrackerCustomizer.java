@@ -39,7 +39,6 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
  * <code>IRemoteServiceTrackerCustomizer</code> implementations must also be
  * thread-safe.
  * 
- * @ThreadSafe
  */
 public interface IRemoteServiceTrackerCustomizer {
 	/**
