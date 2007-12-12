@@ -11,29 +11,32 @@ package org.eclipse.ecf.core.security;
 import org.eclipse.ecf.internal.core.Messages;
 
 /**
- * Callback that handles String types
+ * Callback that handles Boolean types
  * 
  */
-public class NameCallback implements Callback, java.io.Serializable {
+public class BooleanCallback implements Callback, java.io.Serializable {
 
-	private static final long serialVersionUID = -2506493444608585718L;
+	private static final long serialVersionUID = 8660509222691671868L;
 
 	private String prompt;
 
-	private String defaultName;
+	private boolean defaultValue;
 
-	private String inputName;
+	private boolean value;
 
 	/**
-	 * Construct a <code>NameCallback</code> with a prompt.
+	 * Construct a <code>BooleanCallback</code> with a prompt.
+	 * 
+	 * <p>
 	 * 
 	 * @param prompt
-	 *            the prompt used to request the name.
+	 *            the prompt used to request the boolean value.
 	 * 
 	 * @exception IllegalArgumentException
-	 *                if <code>prompt</code> is null.
+	 *                if <code>prompt</code> is null or if <code>prompt</code>
+	 *                has a length of 0.
 	 */
-	public NameCallback(String prompt) {
+	public BooleanCallback(String prompt) {
 		if (prompt == null)
 			throw new IllegalArgumentException(Messages.BooleanCallback_EXCEPTION_INVALID_BOOLEAN_ARGUMENT);
 		this.prompt = prompt;
@@ -48,68 +51,61 @@ public class NameCallback implements Callback, java.io.Serializable {
 	 *            the prompt used to request the information.
 	 *            <p>
 	 * 
-	 * @param defaultName
-	 *            the name to be used as the default name displayed with the
+	 * @param defaultValue
+	 *            the value to be used as the default value displayed with the
 	 *            prompt.
 	 * 
 	 * @exception IllegalArgumentException
 	 *                if <code>prompt</code> is null.
 	 */
-	public NameCallback(String prompt, String defaultName) {
+	public BooleanCallback(String prompt, boolean defaultValue) {
 		if (prompt == null)
 			throw new IllegalArgumentException(Messages.BooleanCallback_EXCEPTION_INVALID_BOOLEAN_ARGUMENT);
+
 		this.prompt = prompt;
-		this.defaultName = defaultName;
+		this.defaultValue = defaultValue;
 	}
 
 	/**
 	 * Get the prompt.
 	 * 
-	 * <p>
-	 * 
-	 * @return the prompt.
+	 * @return the prompt value.
 	 */
 	public String getPrompt() {
 		return prompt;
 	}
 
 	/**
-	 * Get the default name.
+	 * Get the default value.
 	 * 
-	 * <p>
-	 * 
-	 * @return the default name, or null if this <code>NameCallback</code> was
-	 *         not instantiated with a <code>defaultName</code>.
+	 * @return the default value, or null if this <code>BooleanCallback</code> was
+	 *         not instantiated with a <code>defaultValue</code>.
 	 */
-	public String getDefaultName() {
-		return defaultName;
+	public boolean getDefaultValue() {
+		return defaultValue;
 	}
 
 	/**
 	 * Set the retrieved name.
 	 * 
-	 * <p>
+	 * @param val
+	 *            the retrieved value <code>true</code> or <code>false</code>.
 	 * 
-	 * @param name
-	 *            the retrieved name (which may be null).
-	 * 
-	 * @see #getName
+	 * @see #getValue
 	 */
-	public void setName(String name) {
-		this.inputName = name;
+	public void setValue(boolean val) {
+		this.value = val;
 	}
 
 	/**
-	 * Get the retrieved name.
+	 * Get the retrieved value.
 	 * 
-	 * <p>
+	 * @return the retrieved value <code>true</code> or <code>false</code>.
 	 * 
-	 * @return the retrieved name (which may be null)
-	 * 
-	 * @see #setName
+	 * @see #setValue
 	 */
-	public String getName() {
-		return inputName;
+	public boolean getValue() {
+		return value;
 	}
 
 }
