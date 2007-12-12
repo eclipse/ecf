@@ -15,10 +15,10 @@
             name="ecf.bittorrent"/>
    </extension>
    <extension
-         point="org.eclipse.ecf.provider.filetransfer.fileTransferProtocolFactory">
-      <fileTransferProtocolFactory
+         point="org.eclipse.ecf.provider.filetransfer.retrieveFileTransferProtocolFactory">
+      <retrieveFileTransferProtocolFactory
             class="org.eclipse.ecf.internal.provider.bittorrent.BitTorrentRetrieveFileTransferFactory"
             protocol="torrent">
-      </fileTransferProtocolFactory>
+      </retrieveFileTransferProtocolFactory>
    </extension>
 </plugin>
