@@ -124,15 +124,15 @@ public abstract class AbstractFileSendAction extends Action {
 	 * Get the container adapter for actually initiating the file transer
 	 * request.
 	 * 
-	 * @return IOutgoingFileTransferContainerAdapter to use for the action
+	 * @return ISendFileTransferContainerAdapter to use for the action
 	 *         {@link #run()}. Must not return <code>null</code>.
 	 */
-	protected abstract IOutgoingFileTransferContainerAdapter getOutgoingFileTransferAdapter();
+	protected abstract ISendFileTransferContainerAdapter getOutgoingFileTransferAdapter();
 
 	protected void sendFileToTarget() throws Exception {
 		IFileID target = getTargetReceiver();
 		Assert.isNotNull(target, Messages.getString("AbstractFileSendAction.RECEIVER_NOT_NULL")); //$NON-NLS-1$
-		IOutgoingFileTransferContainerAdapter adapter = getOutgoingFileTransferAdapter();
+		ISendFileTransferContainerAdapter adapter = getOutgoingFileTransferAdapter();
 		Assert.isNotNull(adapter, Messages.getString("AbstractFileSendAction.ADAPTER_NOT_NULL")); //$NON-NLS-1$
 		IFileTransferListener listener = getFileTransferListener();
 		if (listener == null)
