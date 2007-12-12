@@ -1,48 +1,44 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>fileTransferProtocolFactory</title>
+<title>sendFileTransferProtocolFactory</title>
 <style>@import url("../../book.css");</style>
 <style>@import url("../../schema.css");</style>
 </HEAD>
 <BODY>
-<H1><CENTER>fileTransferProtocolFactory</CENTER></H1>
+<H1><CENTER>sendFileTransferProtocolFactory</CENTER></H1>
 <p></p>
-<h6 class=CaptionFigColumn id=header>Identifier: </h6>org.eclipse.ecf.provider.filetransfer.fileTransferProtocolFactory<p></p>
+<h6 class=CaptionFigColumn id=header>Identifier: </h6>org.eclipse.ecf.provider.filetransfer.sendFileTransferProtocolFactory<p></p>
 <h6 class=CaptionFigColumn id=header>Since: </h6>1.0.0
 <p></p>
 
 <p>
 <h6 class=CaptionFigColumn id=header>Description: </h6>This extension point allows IRetrieveFileTransferFactorys to be defined for given file transfer protocols.</p>
 <p><h6 class=CaptionFigColumn id=header>Configuration Markup:</h6></p>
-<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.fileTransferProtocolFactory">fileTransferProtocolFactory</a>*)&gt;</p>
+<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.sendFileTransferProtocolFactory">sendFileTransferProtocolFactory</a>*)&gt;</p>
 <p class=code id=dtd>&lt;!ATTLIST extension</p>
 <p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
 <p></p>
 <ul class=ConfigMarkup id=attlistDesc>
 </ul>
-<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.fileTransferProtocolFactory">fileTransferProtocolFactory</a> EMPTY&gt;</p>
-<p class=code id=dtd>&lt;!ATTLIST fileTransferProtocolFactory</p>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.sendFileTransferProtocolFactory">sendFileTransferProtocolFactory</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST sendFileTransferProtocolFactory</p>
 <p class=code id=dtdAttlist>protocol&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>class&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED&gt;</p>
 <p></p>
 <p class=ConfigMarkup id=elementDesc>
-File transfer protocol factory extention point</p>
+Send  file transfer protocol factory extention point</p>
 <br>
 <ul class=ConfigMarkup id=attlistDesc>
 <li><b>protocol</b> - Protocol to define factory for.  For example, http, https, ftp, bittorrent, my.favorite.protocol.</li>
-<li><b>class</b> - The factory class to use for given protocol.  Must implement <b>org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory</b></li>
+<li><b>class</b> - The factory class to use for given protocol.  Must implement <b>org.eclipse.ecf.filetransfer.service.ISendFileTransferFactory</b></li>
 </ul>
 <br><h6 class=CaptionFigColumn id=header>Examples: </h6><pre>
    <p class=code id=tag>&lt;extension
-         point=<p class=code id=cstring>&quot;org.eclipse.ecf.provider.filetransfer.fileTransferProtocolFactory&quot;</p><p class=code id=tag>&gt;</p>
-      <p class=code id=tag>&lt;fileTransferProtocolFactory
-            class=<p class=code id=cstring>&quot;org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransferFactory&quot;</p><p class=code id=tag>
-            protocol=<p class=code id=cstring>&quot;http&quot;</p><p class=code id=tag>&gt;</p>
-      <p class=code id=tag>&lt;/fileTransferProtocolFactory&gt;</p>
-      <p class=code id=tag>&lt;fileTransferProtocolFactory
-            class=<p class=code id=cstring>&quot;org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransferFactory&quot;</p><p class=code id=tag>
-            protocol=<p class=code id=cstring>&quot;https&quot;</p><p class=code id=tag>&gt;</p>
-      <p class=code id=tag>&lt;/fileTransferProtocolFactory&gt;</p>
+         point=<p class=code id=cstring>&quot;org.eclipse.ecf.provider.filetransfer.sendFileTransferProtocolFactory&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;sendFileTransferProtocolFactory
+            class=<p class=code id=cstring>&quot;org.eclipse.ecf.provider.filetransfer.ssh.ScpOutgoingFileTransferFactory&quot;</p><p class=code id=tag>
+            protocol=<p class=code id=cstring>&quot;scp&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;/sendFileTransferProtocolFactory&gt;</p>
    <p class=code id=tag>&lt;/extension&gt;</p>
 
 </pre>
