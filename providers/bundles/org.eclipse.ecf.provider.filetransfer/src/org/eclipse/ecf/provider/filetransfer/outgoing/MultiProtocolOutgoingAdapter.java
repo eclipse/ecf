@@ -72,9 +72,10 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 		ISendFileTransferContainerAdapter fileTransfer = null;
 		fileTransfer = Activator.getDefault().getSendFileTransfer(protocol);
 
-		// If no handler setup for this protocol we give up and throw.
-		if (fileTransfer == null)
+		// If no handler setup for this protocol then throw
+		if (fileTransfer == null) {
 			throw new SendFileTransferException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, targetID));
+		}
 
 		fileTransfer.setConnectContextForAuthentication(connectContext);
 		fileTransfer.setProxy(proxy);
@@ -110,9 +111,10 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 		ISendFileTransferContainerAdapter fileTransfer = null;
 		fileTransfer = Activator.getDefault().getSendFileTransfer(protocol);
 
-		// If no handler setup for this protocol we give up and throw.
-		if (fileTransfer == null)
+		// If no handler setup for this protocol then throw
+		if (fileTransfer == null) {
 			throw new SendFileTransferException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, targetID));
+		}
 
 		fileTransfer.setConnectContextForAuthentication(connectContext);
 		fileTransfer.setProxy(proxy);
