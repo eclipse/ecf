@@ -25,8 +25,8 @@ import org.eclipse.ecf.filetransfer.FileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
-import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
+import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.SendFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
@@ -36,7 +36,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 
-public class XMPPOutgoingFileTransferHelper implements IOutgoingFileTransferContainerAdapter {
+public class XMPPOutgoingFileTransferHelper implements ISendFileTransferContainerAdapter {
 
 	List transferListeners = new ArrayList();
 
@@ -78,13 +78,13 @@ public class XMPPOutgoingFileTransferHelper implements IOutgoingFileTransferCont
 			this.manager.addFileTransferListener(xmppListener);
 	}
 
-	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener progressListener, Map options) throws OutgoingFileTransferException {
+	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener progressListener, Map options) throws SendFileTransferException {
 
 		if (manager == null)
-			throw new OutgoingFileTransferException("not connected");
+			throw new SendFileTransferException("not connected");
 
 		if (!(targetReceiver instanceof XMPPFileID))
-			throw new OutgoingFileTransferException("target receiver not XMPPFileID type.");
+			throw new SendFileTransferException("target receiver not XMPPFileID type.");
 
 		final XMPPFileID fileID = (XMPPFileID) targetReceiver;
 
@@ -93,7 +93,7 @@ public class XMPPOutgoingFileTransferHelper implements IOutgoingFileTransferCont
 		try {
 			fileTransfer.startSend(localFileToSend.getFile(), localFileToSend.getDescription());
 		} catch (final XMPPException e) {
-			throw new OutgoingFileTransferException("Exception sending outgoing file transfer request", e);
+			throw new SendFileTransferException("Exception sending outgoing file transfer request", e);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class XMPPOutgoingFileTransferHelper implements IOutgoingFileTransferCont
 		return true;
 	}
 
-	public void sendOutgoingRequest(IFileID targetReceiver, File localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException {
+	public void sendOutgoingRequest(IFileID targetReceiver, File localFileToSend, IFileTransferListener transferListener, Map options) throws SendFileTransferException {
 		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend), transferListener, options);
 	}
 
@@ -156,14 +156,14 @@ public class XMPPOutgoingFileTransferHelper implements IOutgoingFileTransferCont
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		// XXX no authentication for XMPP file transfer...ignore calls
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
 	 */
 	public void setProxy(Proxy proxy) {
 		// TODO Auto-generated method stub

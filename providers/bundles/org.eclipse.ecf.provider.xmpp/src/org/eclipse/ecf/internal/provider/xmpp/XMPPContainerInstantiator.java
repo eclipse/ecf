@@ -12,7 +12,7 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
@@ -60,7 +60,7 @@ public class XMPPContainerInstantiator extends GenericContainerInstantiator {
 			ContainerTypeDescription description) {
 		return new String[] { IChatRoomManager.class.getName(),
 				IPresenceContainerAdapter.class.getName(),
-				IOutgoingFileTransferContainerAdapter.class.getName(),
+				ISendFileTransferContainerAdapter.class.getName(),
 				ISharedObjectContainer.class.getName() };
 	}
 

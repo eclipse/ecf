@@ -29,7 +29,7 @@ import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.internal.provider.xmpp.Messages;
 import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomContainer;
 import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomManager;
@@ -235,7 +235,7 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(IPresenceContainerAdapter.class))
 			return this;
-		if (clazz.equals(IOutgoingFileTransferContainerAdapter.class))
+		if (clazz.equals(ISendFileTransferContainerAdapter.class))
 			return outgoingFileTransferContainerAdapter;
 		else
 			return super.getAdapter(clazz);
