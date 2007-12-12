@@ -29,8 +29,8 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
  * To request and initiate sending a local file to a remote user:
  * 
  * <pre>
- *      // Get IOutgoingFileTransferContainerAdapter adapter
- *       IOutgoingFileTransferContainerAdapter ftc = (IOutgoingFileTransferContainerAdapter) container.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+ *      // Get ISendFileTransferContainerAdapter adapter
+ *       ISendFileTransferContainerAdapter ftc = (ISendFileTransferContainerAdapter) container.getAdapter(ISendFileTransferContainerAdapter.class);
  *       if (ftc != null) {
  *         // Create listener for receiving/responding to asynchronous file transfer events
  *     	     IFileTransferListener listener = new IFileTransferListener() {
@@ -67,7 +67,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
  * <li>{@link IIncomingFileTransferReceiveDoneEvent}</li>
  * </ul>
  */
-public interface IOutgoingFileTransferContainerAdapter {
+public interface ISendFileTransferContainerAdapter {
 	/**
 	 * Send request for outgoing file transfer. This method is used to initiate
 	 * a file transfer to a targetReceiver (first parameter) of the
@@ -90,11 +90,11 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 *            a Map of options associated with sendOutgoingRequest. The
 	 *            particular name/value pairs will be unique to the individual
 	 *            providers. May be should not be <code>null</code>..
-	 * @throws OutgoingFileTransferException
+	 * @throws SendFileTransferException
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
-	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException;
+	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map options) throws SendFileTransferException;
 
 	/**
 	 * Send request for outgoing file transfer. This method is used to initiate
@@ -117,11 +117,11 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 *            a Map of options associated with sendOutgoingRequest. The
 	 *            particular name/value pairs will be unique to the individual
 	 *            providers. May be <code>null</code>.
-	 * @throws OutgoingFileTransferException
+	 * @throws SendFileTransferException
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
-	public void sendOutgoingRequest(IFileID targetReceiver, File localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException;
+	public void sendOutgoingRequest(IFileID targetReceiver, File localFileToSend, IFileTransferListener transferListener, Map options) throws SendFileTransferException;
 
 	/**
 	 * Add incoming file transfer listener. If the underlying provider supports

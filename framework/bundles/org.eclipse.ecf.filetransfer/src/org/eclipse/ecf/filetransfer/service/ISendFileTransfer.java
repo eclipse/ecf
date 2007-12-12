@@ -11,9 +11,9 @@
 
 package org.eclipse.ecf.filetransfer.service;
 
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 
-public interface ISendFileTransfer extends IOutgoingFileTransferContainerAdapter {
+public interface ISendFileTransfer extends ISendFileTransferContainerAdapter {
 	// no methods for interface
 
 }

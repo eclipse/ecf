@@ -15,27 +15,27 @@ import org.eclipse.ecf.core.util.ECFException;
  * Outgoing file transfer exception
  * 
  */
-public class OutgoingFileTransferException extends ECFException {
+public class SendFileTransferException extends ECFException {
 
 	private static final long serialVersionUID = -3752377147967128446L;
 
-	public OutgoingFileTransferException(IStatus status) {
+	public SendFileTransferException(IStatus status) {
 		super(status);
 	}
 
-	public OutgoingFileTransferException() {
+	public SendFileTransferException() {
 		// null constructor
 	}
 
-	public OutgoingFileTransferException(String message) {
+	public SendFileTransferException(String message) {
 		super(message);
 	}
 
-	public OutgoingFileTransferException(Throwable cause) {
+	public SendFileTransferException(Throwable cause) {
 		super(cause);
 	}
 
-	public OutgoingFileTransferException(String message, Throwable cause) {
+	public SendFileTransferException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

@@ -13,9 +13,9 @@ import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 /**
  * Listener for incoming file transfer requests. Instances implementing this
  * interface are registered via the
- * {@link IOutgoingFileTransferContainerAdapter#addListener(IIncomingFileTransferRequestListener)}
+ * {@link ISendFileTransferContainerAdapter#addListener(IIncomingFileTransferRequestListener)}
  * 
- * @see IOutgoingFileTransferContainerAdapter#addListener(IIncomingFileTransferRequestListener)
+ * @see ISendFileTransferContainerAdapter#addListener(IIncomingFileTransferRequestListener)
  */
 public interface IIncomingFileTransferRequestListener {
 	/**
