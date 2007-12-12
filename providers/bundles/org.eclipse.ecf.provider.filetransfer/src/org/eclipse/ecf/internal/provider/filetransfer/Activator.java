@@ -33,7 +33,6 @@ public class Activator implements BundleActivator {
 
 	private static final String CLASS_ATTR = "class"; //$NON-NLS-1$
 	private static final String PROTOCOL_ATTR = "protocol"; //$NON-NLS-1$
-
 	private static final String[] jvmSchemes = new String[] {Messages.FileTransferNamespace_Http_Protocol, Messages.FileTransferNamespace_Ftp_Protocol, Messages.FileTransferNamespace_File_Protocol, Messages.FileTransferNamespace_Jar_Protocol, Messages.FileTransferNamespace_Https_Protocol, Messages.FileTransferNamespace_Mailto_Protocol, Messages.FileTransferNamespace_Gopher_Protocol};
 
 	private static final String URL_HANDLER_PROTOCOL_NAME = "url.handler.protocol"; //$NON-NLS-1$
@@ -43,8 +42,11 @@ public class Activator implements BundleActivator {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer"; //$NON-NLS-1$
 
-	private static final String FILETRANSFER_PROTOCOL_FACTORY_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
-			+ "fileTransferProtocolFactory"; //$NON-NLS-1$
+	private static final String RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
+			+ "retrieveFileTransferProtocolFactory"; //$NON-NLS-1$
+
+	private static final String SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
+			+ "sendFileTransferProtocolFactory"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
@@ -56,7 +58,9 @@ public class Activator implements BundleActivator {
 	private ServiceTracker logServiceTracker = null;
 	private ServiceTracker extensionRegistryTracker = null;
 
-	private Map fileTransferProtocolMap = null;
+	private Map retrieveFileTransferProtocolMap = null;
+
+	private Map sendFileTransferProtocolMap = null;
 
 	private ServiceTracker adapterManagerTracker = null;
 
@@ -137,7 +141,8 @@ public class Activator implements BundleActivator {
 			proxyServiceTracker = null;
 		}
 		this.context = null;
-		this.fileTransferProtocolMap = null;
+		this.retrieveFileTransferProtocolMap = null;
+		this.sendFileTransferProtocolMap = null;
 	}
 
 	/**
@@ -184,31 +189,62 @@ public class Activator implements BundleActivator {
 
 	// TODO we need to be dynamic here
 	private void loadProtocolHandlers() {
-		this.fileTransferProtocolMap = new HashMap(3);
+		this.retrieveFileTransferProtocolMap = new HashMap(3);
+		this.sendFileTransferProtocolMap = new HashMap(3);
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
-			final IExtensionPoint extensionPoint = reg.getExtensionPoint(FILETRANSFER_PROTOCOL_FACTORY_EPOINT);
-			if (extensionPoint == null) {
-				return;
-			}
-			final IConfigurationElement[] configurationElements = extensionPoint.getConfigurationElements();
-
 			final String[] existingSchemes = getPlatformSupportedSchemes();
-
-			for (int i = 0; i < configurationElements.length; i++) {
+			final IExtensionPoint retrieveExtensionPoint = reg.getExtensionPoint(RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT);
+			if (retrieveExtensionPoint == null)
+				return;
+			final IConfigurationElement[] retrieveConfigurationElements = retrieveExtensionPoint.getConfigurationElements();
+			for (int i = 0; i < retrieveConfigurationElements.length; i++) {
 				try {
-					final String protocol = configurationElements[i].getAttribute(PROTOCOL_ATTR);
-					// If the protocol is not already registered as a scheme
-					// with platform
-					// then register
+					final String protocol = retrieveConfigurationElements[i].getAttribute(PROTOCOL_ATTR);
+					if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
+						continue;
+					if (retrieveFileTransferProtocolMap.containsKey(protocol)) {
+						// Give warning
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_RETRIEVE_PROTOCOL_CONTRIBUTION_WILL_BE_IGNORED, protocol, retrieveExtensionPoint.getContributor().getName()), null));
+						// And continue
+						continue;
+					}
+					final IRetrieveFileTransferFactory clazz = (IRetrieveFileTransferFactory) retrieveConfigurationElements[i].createExecutableExtension(CLASS_ATTR);
 					if (!isSchemeRegistered(protocol, existingSchemes))
 						registerScheme(protocol);
-					final IRetrieveFileTransferFactory clazz = (IRetrieveFileTransferFactory) configurationElements[i].createExecutableExtension(CLASS_ATTR);
-					fileTransferProtocolMap.put(protocol, clazz);
+					// Finally, put clazz in map with protocol as key
+					retrieveFileTransferProtocolMap.put(protocol, clazz);
 				} catch (final CoreException e) {
-					e.printStackTrace();
+					Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.Activator_EXCEPTION_LOADING_EXTENSION_POINT, RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e));
 				}
 			}
+			// Now do it with send
+			final IExtensionPoint sendExtensionPoint = reg.getExtensionPoint(SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT);
+			if (sendExtensionPoint == null) {
+				return;
+			}
+			final IConfigurationElement[] sendConfigurationElements = sendExtensionPoint.getConfigurationElements();
+			for (int i = 0; i < sendConfigurationElements.length; i++) {
+				try {
+					final String protocol = sendConfigurationElements[i].getAttribute(PROTOCOL_ATTR);
+					if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
+						continue;
+					if (sendFileTransferProtocolMap.containsKey(protocol)) {
+						// Give warning
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_SEND_PROTOCOL_CONTRIBUTION_IGNORED, protocol, sendExtensionPoint.getContributor().getName()), null));
+						// And continue
+						continue;
+					}
+					final ISendFileTransferFactory clazz = (ISendFileTransferFactory) sendConfigurationElements[i].createExecutableExtension(CLASS_ATTR);
+					if (!isSchemeRegistered(protocol, existingSchemes))
+						registerScheme(protocol);
+					// Finally, put clazz in map with protocol as key
+					sendFileTransferProtocolMap.put(protocol, clazz);
+				} catch (final CoreException e) {
+					Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.Activator_EXCEPTION_LOADING_EXTENSION_POINT, SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e));
+				}
+			}
+
 		}
 	}
 
@@ -241,15 +277,17 @@ public class Activator implements BundleActivator {
 		context.registerService(URLStreamHandlerService.class.getName(), dummyService, properties);
 	}
 
-	// TODO we can be more lazy here
 	public IRetrieveFileTransfer getFileTransfer(String protocol) {
-		final IRetrieveFileTransferFactory factory = (IRetrieveFileTransferFactory) fileTransferProtocolMap.get(protocol);
+		final IRetrieveFileTransferFactory factory = (IRetrieveFileTransferFactory) retrieveFileTransferProtocolMap.get(protocol);
 		if (factory != null)
 			return factory.newInstance();
 		return null;
 	}
 
 	public ISendFileTransfer getSendFileTransfer(String protocol) {
+		final ISendFileTransferFactory factory = (ISendFileTransferFactory) sendFileTransferProtocolMap.get(protocol);
+		if (factory != null)
+			return factory.newInstance();
 		return null;
 	}
 

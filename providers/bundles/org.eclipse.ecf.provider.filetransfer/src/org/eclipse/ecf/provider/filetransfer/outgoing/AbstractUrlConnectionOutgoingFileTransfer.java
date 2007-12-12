@@ -11,18 +11,16 @@ package org.eclipse.ecf.provider.filetransfer.outgoing;
 import java.io.*;
 import java.net.ProtocolException;
 import java.net.URLConnection;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
-import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
-import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.filetransfer.SendFileTransferException;
 import org.eclipse.ecf.filetransfer.service.ISendFileTransfer;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
-public class UrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTransfer implements ISendFileTransfer {
+public abstract class AbstractUrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTransfer implements ISendFileTransfer {
 
 	private static final int OK_RESPONSE_CODE = 200;
 
@@ -39,21 +37,21 @@ public class UrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTrans
 
 	protected String responseMessage = null;
 
-	protected IFileID fileid = null;
-
 	private JREProxyHelper proxyHelper = null;
 
-	public UrlConnectionOutgoingFileTransfer() {
+	public AbstractUrlConnectionOutgoingFileTransfer() {
 		super();
 		proxyHelper = new JREProxyHelper();
 	}
 
-	protected void connect() throws IOException {
-		urlConnection = getRemoteFileURL().openConnection();
-		urlConnection.setDoOutput(true);
-		urlConnection.setUseCaches(false);
-		urlConnection.setDoInput(true);
-	}
+	/**
+	 * Setup and connect.  Subclasses should override as appropriate.  After calling is complete,
+	 * the <code>urlConnection</code> member variable should be non-null, and ready to have it's
+	 * getInputStream() method called.
+	 * 
+	 * @throws IOException if the connection cannot be opened.
+	 */
+	protected abstract void connect() throws IOException;
 
 	protected boolean isConnected() {
 		return (urlConnection != null);
@@ -111,7 +109,7 @@ public class UrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTrans
 	 * 
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
-	protected void openStreams() throws OutgoingFileTransferException {
+	protected void openStreams() throws SendFileTransferException {
 		try {
 			File localFile = getFileTransferInfo().getFile();
 			// Set input stream from local file
@@ -122,7 +120,7 @@ public class UrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTrans
 			setOutputStream(urlConnection.getOutputStream());
 			fireSendStartEvent();
 		} catch (final Exception e) {
-			throw new OutgoingFileTransferException(NLS.bind(Messages.UrlConnectionOutgoingFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e);
+			throw new SendFileTransferException(NLS.bind(Messages.UrlConnectionOutgoingFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e);
 		}
 	}
 
@@ -162,22 +160,18 @@ public class UrlConnectionOutgoingFileTransfer extends AbstractOutgoingFileTrans
 		this.proxy = proxy;
 	}
 
-	public ID getID() {
-		return fileid;
-	}
-
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#addListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#addListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
 	 */
 	public void addListener(IIncomingFileTransferRequestListener l) {
-		// No listeners for incoming url connection requests.
+		// No listeners for outgoing url connection requests.
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#removeListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#removeListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
 	 */
 	public boolean removeListener(IIncomingFileTransferRequestListener l) {
-		// No listeners for incoming url connection requests.
+		// No listeners for outgoing url connection requests.
 		return false;
 	}
 

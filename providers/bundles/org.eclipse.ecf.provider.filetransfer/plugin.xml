@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-   <extension-point id="fileTransferProtocolFactory" name="fileTransferProtocolFactory" schema="schema/fileTransferProtocolFactory.exsd"/>
+   <extension-point id="retrieveFileTransferProtocolFactory" name="retrieveFileTransferProtocolFactory" schema="schema/retrieveFileTransferProtocolFactory.exsd"/>
+   <extension-point id="sendFileTransferProtocolFactory" name="sendFileTransferProtocolFactory" schema="schema/sendFileTransferProtocolFactory.exsd"/>
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
@@ -15,7 +16,7 @@
       <factory
             adaptableType="org.eclipse.ecf.core.BaseContainer"
             class="org.eclipse.ecf.provider.filetransfer.outgoing.MultiProtocolRetrieveAdapterFactory">
-         <adapter type="org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter"/>
+         <adapter type="org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter"/>
       </factory>
    </extension>
    <extension

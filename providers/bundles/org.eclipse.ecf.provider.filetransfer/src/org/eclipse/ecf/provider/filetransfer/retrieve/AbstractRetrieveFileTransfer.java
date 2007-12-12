@@ -67,6 +67,13 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected Proxy proxy;
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
+	 */
+	public void setProxy(Proxy proxy) {
+		this.proxy = proxy;
+	}
+
 	protected URL getRemoteFileURL() {
 		return remoteFileURL;
 	}
@@ -441,20 +448,26 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	public void sendRetrieveRequest(IFileID rFileID, IFileRangeSpecification rangeSpec, IFileTransferListener transferListener, Map ops) throws IncomingFileTransferException {
 		Assert.isNotNull(rFileID, Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
 		Assert.isNotNull(transferListener, Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
-		this.done = false;
-		this.bytesReceived = 0;
-		this.exception = null;
-		this.fileLength = 0;
+		this.job = null;
+		this.remoteFileURL = null;
 		this.remoteFileID = rFileID;
-		this.rangeSpecification = rangeSpec;
+		this.listener = transferListener;
+		this.remoteFileContents = null;
+		this.localFileContents = null;
+		this.closeOutputStream = true;
+		this.done = false;
+		this.exception = null;
+		this.bytesReceived = 0;
+		this.fileLength = -1;
 		this.options = ops;
+		this.paused = false;
+		this.rangeSpecification = rangeSpec;
 
 		try {
 			this.remoteFileURL = rFileID.getURL();
 		} catch (final MalformedURLException e) {
 			throw new IncomingFileTransferException(NLS.bind(Messages.AbstractRetrieveFileTransfer_MalformedURLException, rFileID), e);
 		}
-		this.listener = transferListener;
 		setupProxies();
 		openStreams();
 	}

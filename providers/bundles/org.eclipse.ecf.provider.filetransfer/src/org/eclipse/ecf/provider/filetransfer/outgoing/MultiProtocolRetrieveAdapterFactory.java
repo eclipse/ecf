@@ -13,14 +13,14 @@ package org.eclipse.ecf.provider.filetransfer.outgoing;
 
 import org.eclipse.ecf.core.AbstractContainerAdapterFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 
 /**
  * 
  */
 public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapterFactory {
 
-	IOutgoingFileTransferContainerAdapter multiProtocolAdapter = new MultiProtocolOutgoingAdapter();
+	ISendFileTransferContainerAdapter multiProtocolAdapter = new MultiProtocolOutgoingAdapter();
 
 	/*
 	 * (non-Javadoc)
@@ -28,7 +28,7 @@ public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapte
 	 * @see org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory#getAdapterList()
 	 */
 	public Class[] getAdapterList() {
-		return new Class[] {IOutgoingFileTransferContainerAdapter.class};
+		return new Class[] {ISendFileTransferContainerAdapter.class};
 	}
 
 	/*
@@ -38,7 +38,7 @@ public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapte
 	 *      java.lang.Class)
 	 */
 	protected Object getContainerAdapter(IContainer container, Class adapterType) {
-		if (adapterType.equals(IOutgoingFileTransferContainerAdapter.class)) {
+		if (adapterType.equals(ISendFileTransferContainerAdapter.class)) {
 			return multiProtocolAdapter;
 		}
 		return null;

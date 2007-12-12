@@ -16,8 +16,7 @@ import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.*;
@@ -150,6 +149,10 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		localFileContents = null;
 	}
 
+	public ID getID() {
+		return remoteFileID;
+	}
+
 	protected void fireTransferSendDoneEvent() {
 		listener.handleTransferEvent(new IOutgoingFileTransferSendDoneEvent() {
 
@@ -238,9 +241,9 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	 * must be non-<code>null</code> after successful completion of the
 	 * implementation of this method.
 	 * 
-	 * @throws OutgoingFileTransferException
+	 * @throws SendFileTransferException
 	 */
-	protected abstract void openStreams() throws OutgoingFileTransferException;
+	protected abstract void openStreams() throws SendFileTransferException;
 
 	public Namespace getOutgoingNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(FileTransferNamespace.PROTOCOL);
@@ -311,7 +314,7 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		}
 	}
 
-	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map ops) throws OutgoingFileTransferException {
+	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map ops) throws SendFileTransferException {
 		Assert.isNotNull(targetReceiver, Messages.AbstractOutgoingFileTransfer_RemoteFileID_Not_Null);
 		Assert.isNotNull(transferListener, Messages.AbstractOutgoingFileTransfer_TransferListener_Not_Null);
 		Assert.isNotNull(localFileToSend, Messages.AbstractOutgoingFileTransfer_EXCEPTION_FILE_TRANSFER_INFO_NOT_NULL);
@@ -325,7 +328,7 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		try {
 			this.remoteFileURL = targetReceiver.getURL();
 		} catch (final MalformedURLException e) {
-			throw new OutgoingFileTransferException(NLS.bind(Messages.AbstractOutgoingFileTransfer_MalformedURLException, targetReceiver), e);
+			throw new SendFileTransferException(NLS.bind(Messages.AbstractOutgoingFileTransfer_MalformedURLException, targetReceiver), e);
 		}
 		this.listener = transferListener;
 		setupProxies();
@@ -333,7 +336,7 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		setupAndScheduleJob();
 	}
 
-	public void sendOutgoingRequest(IFileID targetReceiver, final File localFileToSend, IFileTransferListener transferListener, Map ops) throws OutgoingFileTransferException {
+	public void sendOutgoingRequest(IFileID targetReceiver, final File localFileToSend, IFileTransferListener transferListener, Map ops) throws SendFileTransferException {
 		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend, null, null), transferListener, ops);
 	}
 

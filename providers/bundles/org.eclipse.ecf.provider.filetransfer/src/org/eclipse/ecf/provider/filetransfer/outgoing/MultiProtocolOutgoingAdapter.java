@@ -24,6 +24,7 @@ import org.eclipse.ecf.filetransfer.service.ISendFileTransfer;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * Multi protocol handler for outgoing file transfer. Multiplexes between Apache
@@ -36,7 +37,7 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 	Proxy proxy = null;
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#getOutgoingNamespace()
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#getOutgoingNamespace()
 	 */
 	public Namespace getOutgoingNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(FileTransferNamespace.PROTOCOL);
@@ -60,44 +61,35 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 		this.proxy = proxy;
 	}
 
-	public void sendOutgoingRequest(IFileID remoteFileID, File outgoingFile, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException {
-
+	public void sendOutgoingRequest(IFileID targetID, File outgoingFile, IFileTransferListener transferListener, Map options) throws SendFileTransferException {
 		String protocol = null;
 		try {
-			protocol = remoteFileID.getURL().getProtocol();
+			protocol = targetID.getURL().getProtocol();
 		} catch (final MalformedURLException e) {
-			throw new OutgoingFileTransferException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
+			throw new SendFileTransferException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
 		}
 
-		IOutgoingFileTransferContainerAdapter fileTransfer = null;
+		ISendFileTransferContainerAdapter fileTransfer = null;
 		fileTransfer = Activator.getDefault().getSendFileTransfer(protocol);
 
-		// We will default to JRE-provided file transfer if nothing else
-		// available
-		// for given protocol
+		// If no handler setup for this protocol we give up and throw.
 		if (fileTransfer == null)
-			fileTransfer = new UrlConnectionOutgoingFileTransfer();
+			throw new SendFileTransferException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, targetID));
 
-		// Set connect context
 		fileTransfer.setConnectContextForAuthentication(connectContext);
-		// Set Proxy
 		fileTransfer.setProxy(proxy);
-
-		// send request using given file transfer protocol
-		fileTransfer.sendOutgoingRequest(remoteFileID, outgoingFile, transferListener, options);
-
+		fileTransfer.sendOutgoingRequest(targetID, outgoingFile, transferListener, options);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#addListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#addListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
 	 */
 	public void addListener(IIncomingFileTransferRequestListener listener) {
-		// TODO Auto-generated method stub
-
+		// We don't have any listeners
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#removeListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#removeListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
 	 */
 	public boolean removeListener(IIncomingFileTransferRequestListener listener) {
 		// TODO Auto-generated method stub
@@ -105,33 +97,26 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter#sendOutgoingRequest(org.eclipse.ecf.filetransfer.identity.IFileID, org.eclipse.ecf.filetransfer.IFileTransferInfo, org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#sendOutgoingRequest(org.eclipse.ecf.filetransfer.identity.IFileID, org.eclipse.ecf.filetransfer.IFileTransferInfo, org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
 	 */
-	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException {
+	public void sendOutgoingRequest(IFileID targetID, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map options) throws SendFileTransferException {
 		String protocol = null;
 		try {
-			protocol = targetReceiver.getURL().getProtocol();
+			protocol = targetID.getURL().getProtocol();
 		} catch (final MalformedURLException e) {
-			throw new OutgoingFileTransferException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
+			throw new SendFileTransferException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
 		}
 
-		IOutgoingFileTransferContainerAdapter fileTransfer = null;
+		ISendFileTransferContainerAdapter fileTransfer = null;
 		fileTransfer = Activator.getDefault().getSendFileTransfer(protocol);
 
-		// We will default to JRE-provided file transfer if nothing else
-		// available
-		// for given protocol
+		// If no handler setup for this protocol we give up and throw.
 		if (fileTransfer == null)
-			fileTransfer = new UrlConnectionOutgoingFileTransfer();
+			throw new SendFileTransferException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, targetID));
 
-		// Set connect context
 		fileTransfer.setConnectContextForAuthentication(connectContext);
-		// Set Proxy
 		fileTransfer.setProxy(proxy);
-
-		// send request using given file transfer protocol
-		fileTransfer.sendOutgoingRequest(targetReceiver, localFileToSend, transferListener, options);
-
+		fileTransfer.sendOutgoingRequest(targetID, localFileToSend, transferListener, options);
 	}
 
 }

@@ -3,17 +3,17 @@
 <schema targetNamespace="org.eclipse.ecf.provider.filetransfer">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf.provider.filetransfer" id="fileTransferProtocolFactory" name="fileTransferProtocolFactory"/>
+         <meta.schema plugin="org.eclipse.ecf.provider.filetransfer" id="retrieveFileTransferProtocolFactory" name="retrieveFileTransferProtocolFactory"/>
       </appInfo>
       <documentation>
-         This extension point allows IRetrieveFileTransferFactorys to be defined for given file transfer protocols. 
+         This extension point allows IRetrieveFileTransferFactorys to be defined for given file transfer protocols.
       </documentation>
    </annotation>
 
    <element name="extension">
       <complexType>
          <sequence>
-            <element ref="fileTransferProtocolFactory" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="retrieveFileTransferProtocolFactory" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -42,10 +42,10 @@
       </complexType>
    </element>
 
-   <element name="fileTransferProtocolFactory">
+   <element name="retrieveFileTransferProtocolFactory">
       <annotation>
          <documentation>
-            File transfer protocol factory extention point
+            Retrieve file transfer protocol factory extention point
          </documentation>
       </annotation>
       <complexType>
@@ -85,15 +85,15 @@
       <documentation>
          &lt;pre&gt;
    &lt;extension
-         point=&quot;org.eclipse.ecf.provider.filetransfer.fileTransferProtocolFactory&quot;&gt;
-      &lt;fileTransferProtocolFactory
+         point=&quot;org.eclipse.ecf.provider.filetransfer.retrieveFileTransferProtocolFactory&quot;&gt;
+      &lt;retrieveFileTransferProtocolFactory
             class=&quot;org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransferFactory&quot;
             protocol=&quot;http&quot;&gt;
-      &lt;/fileTransferProtocolFactory&gt;
-      &lt;fileTransferProtocolFactory
+      &lt;/retrieveFileTransferProtocolFactory&gt;
+      &lt;retrieveFileTransferProtocolFactory
             class=&quot;org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransferFactory&quot;
             protocol=&quot;https&quot;&gt;
-      &lt;/fileTransferProtocolFactory&gt;
+      &lt;/retrieveFileTransferProtocolFactory&gt;
    &lt;/extension&gt;
 
 &lt;/pre&gt;
@@ -114,16 +114,15 @@
  */
 public interface IRetrieveFileTransferFactory {
 
-	/**
-	 * Get new instance of IRetrieveFileTransfer.
-	 * 
-	 * @return IRetrieveFileTransfer for a given file transfer
-	 */
-	public IRetrieveFileTransfer newInstance();
+ /**
+  * Get new instance of IRetrieveFileTransfer.
+  * 
+  * @return IRetrieveFileTransfer for a given file transfer
+  */
+ public IRetrieveFileTransfer newInstance();
 
 }
 &lt;/pre&gt;
-
       </documentation>
    </annotation>
 

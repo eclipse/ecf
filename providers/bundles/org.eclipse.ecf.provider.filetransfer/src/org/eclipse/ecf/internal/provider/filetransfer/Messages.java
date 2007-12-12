@@ -33,7 +33,10 @@ public class Messages extends NLS {
 	public static String AbstractOutgoingFileTransfer_Status_Transfer_Completed_OK;
 	public static String AbstractOutgoingFileTransfer_Status_Transfer_Exception;
 	public static String AbstractOutgoingFileTransfer_TransferListener_Not_Null;
+	public static String Activator_EXCEPTION_LOADING_EXTENSION_POINT;
 	public static String Activator_EXCEPTION_URLConnection_CANNOT_BE_CREATED;
+	public static String Activator_WARNING_RETRIEVE_PROTOCOL_CONTRIBUTION_WILL_BE_IGNORED;
+	public static String Activator_WARNING_SEND_PROTOCOL_CONTRIBUTION_IGNORED;
 	public static String UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR;
 	public static String UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST;
 	public static String UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START;
@@ -60,6 +63,7 @@ public class Messages extends NLS {
 	public static String HttpClientRetrieveFileTransfer_Unauthorized;
 	public static String HttpClientRetrieveFileTransfer_Username_Prefix;
 	public static String FileTransferID_Exception_Url_Not_Null;
+	public static String MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER;
 	public static String SslProtocolSocketFactory_SSLContext_Instance;
 	public static String SslProtocolSocketFactory_Status_Create_Error;
 
