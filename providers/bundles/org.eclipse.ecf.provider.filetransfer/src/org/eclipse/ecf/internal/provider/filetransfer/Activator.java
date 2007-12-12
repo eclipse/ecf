@@ -141,8 +141,14 @@ public class Activator implements BundleActivator {
 			proxyServiceTracker = null;
 		}
 		this.context = null;
-		this.retrieveFileTransferProtocolMap = null;
-		this.sendFileTransferProtocolMap = null;
+		if (this.retrieveFileTransferProtocolMap != null) {
+			this.retrieveFileTransferProtocolMap.clear();
+			this.retrieveFileTransferProtocolMap = null;
+		}
+		if (this.sendFileTransferProtocolMap != null) {
+			this.sendFileTransferProtocolMap.clear();
+			this.sendFileTransferProtocolMap = null;
+		}
 	}
 
 	/**
@@ -193,7 +199,7 @@ public class Activator implements BundleActivator {
 		this.sendFileTransferProtocolMap = new HashMap(3);
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
-			final String[] existingSchemes = getPlatformSupportedSchemes();
+			String[] existingSchemes = getPlatformSupportedSchemes();
 			final IExtensionPoint retrieveExtensionPoint = reg.getExtensionPoint(RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT);
 			if (retrieveExtensionPoint == null)
 				return;
@@ -224,6 +230,7 @@ public class Activator implements BundleActivator {
 				return;
 			}
 			final IConfigurationElement[] sendConfigurationElements = sendExtensionPoint.getConfigurationElements();
+			existingSchemes = getPlatformSupportedSchemes();
 			for (int i = 0; i < sendConfigurationElements.length; i++) {
 				try {
 					final String protocol = sendConfigurationElements[i].getAttribute(PROTOCOL_ATTR);
