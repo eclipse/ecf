@@ -25,6 +25,7 @@ public class Messages extends NLS {
 	public static String JMDNSDiscoveryContainer_EXCEPTION_CREATE_JMDNS_INSTANCE;
 	public static String JMDNSDiscoveryContainer_DISCOVERY_NOT_INITIALIZED;
 	public static String JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE;
+	public static String JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID;
 	public static String JMDNSDiscoveryContainer_JMDNS_LOCAL_SUFFIX;
 	public static String JMDNSDiscoveryContainer_SERVICE_NAME_NOT_NULL;
 	public static String JMDNSNamespace_EXCEPTION_ID_CREATE_SERVICE_TYPE_CANNOT_BE_EMPTY;

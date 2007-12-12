@@ -11,6 +11,7 @@
 package org.eclipse.ecf.provider.jmdns.container;
 
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.net.InetAddress;
 import java.util.*;
 import javax.jmdns.*;
@@ -249,7 +250,10 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 */
 	public void serviceTypeAdded(final ServiceEvent arg0) {
 		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceTypeAdded(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		final IServiceTypeID serviceType = createServiceTypeID(arg0.getType());
+		String st = arg0.getType();
+		if (st == null)
+			return;
+		final IServiceTypeID serviceType = createServiceTypeID(st);
 		runInThread(new Runnable() {
 			public void run() {
 				if (jmdns != null) {
@@ -336,13 +340,22 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	}
 
 	private IServiceTypeID createServiceTypeID(String type) {
-		return createServiceID(type, null).getServiceTypeID();
+		IServiceID serviceID = createServiceID(type, null);
+		if (serviceID == null)
+			return null;
+		return serviceID.getServiceTypeID();
 	}
 
 	IServiceInfo createIServiceInfoFromServiceInfo(final ServiceInfo serviceInfo) throws Exception {
 		if (serviceInfo == null)
 			return null;
+		String st = serviceInfo.getType();
+		String n = serviceInfo.getName();
+		if (st == null || n == null)
+			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);
 		final ServiceID sID = createServiceID(serviceInfo.getType(), serviceInfo.getName());
+		if (sID == null)
+			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);
 		final InetAddress addr = serviceInfo.getAddress();
 		final int port = serviceInfo.getPort();
 		final int priority = serviceInfo.getPriority();
