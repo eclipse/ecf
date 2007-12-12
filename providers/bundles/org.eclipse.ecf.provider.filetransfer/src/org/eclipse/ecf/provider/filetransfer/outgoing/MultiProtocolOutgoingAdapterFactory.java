@@ -18,7 +18,7 @@ import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 /**
  * 
  */
-public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapterFactory {
+public class MultiProtocolOutgoingAdapterFactory extends AbstractContainerAdapterFactory {
 
 	ISendFileTransferContainerAdapter multiProtocolAdapter = new MultiProtocolOutgoingAdapter();
 
