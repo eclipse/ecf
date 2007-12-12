@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
@@ -42,16 +42,16 @@ public class XMPPOutgoingTest extends ContainerAbstractTestCase {
 
 	static final String XMPP_CONTAINER = "ecf.xmpp.smack";
 
-	protected IOutgoingFileTransferContainerAdapter adapter0, adapter1 = null;
+	protected ISendFileTransferContainerAdapter adapter0, adapter1 = null;
 
 	protected String getClientContainerName() {
 		return XMPP_CONTAINER;
 	}
 
-	protected IOutgoingFileTransferContainerAdapter getOutgoingFileTransfer(int client) {
+	protected ISendFileTransferContainerAdapter getOutgoingFileTransfer(int client) {
 		final IContainer c = getClient(client);
 		if (c != null)
-			return (IOutgoingFileTransferContainerAdapter) c.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+			return (ISendFileTransferContainerAdapter) c.getAdapter(ISendFileTransferContainerAdapter.class);
 		else
 			return null;
 	}
@@ -118,7 +118,7 @@ public class XMPPOutgoingTest extends ContainerAbstractTestCase {
 		}
 	}
 
-	protected IFileID createFileID(IOutgoingFileTransferContainerAdapter adapter, ID clientID, String filename) throws FileCreateException {
+	protected IFileID createFileID(ISendFileTransferContainerAdapter adapter, ID clientID, String filename) throws FileCreateException {
 		return FileIDFactory.getDefault().createFileID(adapter.getOutgoingNamespace(), new Object[] {clientID, filename});
 	}
 

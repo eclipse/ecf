@@ -27,12 +27,12 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 /**
  * 
  */
-public class HTTPOutgoingTest extends ContainerAbstractTestCase {
+public class SCPOutgoingTest extends ContainerAbstractTestCase {
 
 	private static final String TESTSRCPATH = "test.src";
 	private static final String TESTSRCFILE = TESTSRCPATH + "/test.txt";
 
-	private static final String TESTTARGETURL = "http://localhost:8080/webdav/test.txt";
+	private static final String TESTTARGETURL = "scp://ecf2.osuosl.org/test.txt";
 
 	protected ISendFileTransferContainerAdapter adapter = null;
 	protected IFileTransferListener senderTransferListener = null;
