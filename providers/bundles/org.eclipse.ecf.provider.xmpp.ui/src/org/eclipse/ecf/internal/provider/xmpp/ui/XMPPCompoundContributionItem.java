@@ -15,7 +15,7 @@ import java.io.File;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
@@ -51,7 +51,7 @@ public class XMPPCompoundContributionItem extends AbstractRosterEntryContributio
 		final IContainer container = getContainerForRosterEntry(entry);
 		if (container instanceof XMPPContainer) {
 			final IContributionItem[] contributions = new IContributionItem[1];
-			final IOutgoingFileTransferContainerAdapter ioftca = (IOutgoingFileTransferContainerAdapter) container.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+			final ISendFileTransferContainerAdapter ioftca = (ISendFileTransferContainerAdapter) container.getAdapter(ISendFileTransferContainerAdapter.class);
 			if (!(ioftca != null && isAvailable(entry)))
 				return EMPTY_ARRAY;
 			final IAction fileSendAction = new Action() {
@@ -68,7 +68,7 @@ public class XMPPCompoundContributionItem extends AbstractRosterEntryContributio
 		}
 	}
 
-	private void sendFileToTarget(IOutgoingFileTransferContainerAdapter fileTransfer, final ID targetID) {
+	private void sendFileToTarget(ISendFileTransferContainerAdapter fileTransfer, final ID targetID) {
 		final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		final FileDialog fd = new FileDialog(shell, SWT.OPEN);
 		// XXX this should be some default path set by preferences

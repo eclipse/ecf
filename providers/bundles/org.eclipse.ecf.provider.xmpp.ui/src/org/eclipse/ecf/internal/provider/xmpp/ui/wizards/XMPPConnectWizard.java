@@ -26,7 +26,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
@@ -286,8 +286,8 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 			}
 		});
 
-		IOutgoingFileTransferContainerAdapter ioftca = (IOutgoingFileTransferContainerAdapter) container
-				.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+		ISendFileTransferContainerAdapter ioftca = (ISendFileTransferContainerAdapter) container
+				.getAdapter(ISendFileTransferContainerAdapter.class);
 		ioftca.addListener(requestListener);
 		// Connect
 		new AsynchContainerConnectAction(container, targetID, connectContext, null, new Runnable() {
