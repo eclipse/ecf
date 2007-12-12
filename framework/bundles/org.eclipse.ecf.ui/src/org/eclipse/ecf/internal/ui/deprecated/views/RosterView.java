@@ -148,7 +148,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 			ID accountID = account.getServiceID();
 			if (accountID != null) {
 				vcp.addAccount(accountID, accountID.getName());
-				IOutgoingFileTransferContainerAdapter ft = getFileTransferAdapterForContainer(account.getContainer());
+				ISendFileTransferContainerAdapter ft = getFileTransferAdapterForContainer(account.getContainer());
 				if (ft != null)
 					ft.addListener(requestListener);
 				accounts.put(accountID, account);
@@ -161,11 +161,11 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		return (RosterUserAccount) accounts.get(serviceID);
 	}
 
-	protected IOutgoingFileTransferContainerAdapter getFileTransferAdapterForContainer(IContainer container) {
-		return (IOutgoingFileTransferContainerAdapter) container.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+	protected ISendFileTransferContainerAdapter getFileTransferAdapterForContainer(IContainer container) {
+		return (ISendFileTransferContainerAdapter) container.getAdapter(ISendFileTransferContainerAdapter.class);
 	}
 
-	protected IOutgoingFileTransferContainerAdapter getFileTransferAdapterForAccount(ID accountID) {
+	protected ISendFileTransferContainerAdapter getFileTransferAdapterForAccount(ID accountID) {
 		RosterUserAccount account = getAccount(accountID);
 		if (account == null)
 			return null;
@@ -265,7 +265,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		manager.add(openChatRoomAction);
 	}
 
-	private void sendFileToTarget(IOutgoingFileTransferContainerAdapter fileTransfer, final ID targetID) {
+	private void sendFileToTarget(ISendFileTransferContainerAdapter fileTransfer, final ID targetID) {
 		FileDialog fd = new FileDialog(getSite().getShell(), SWT.OPEN);
 		// XXX this should be some default path set by preferences
 		fd.setFilterPath(System.getProperty("user.home"));
@@ -322,7 +322,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 				manager.add(selectedChatAction);
 				manager.add(new Separator());
 
-				final IOutgoingFileTransferContainerAdapter fileTransfer = getFileTransferAdapterForAccount(tb.getServiceID());
+				final ISendFileTransferContainerAdapter fileTransfer = getFileTransferAdapterForAccount(tb.getServiceID());
 
 				fileSendAction = new Action() {
 					public void run() {
