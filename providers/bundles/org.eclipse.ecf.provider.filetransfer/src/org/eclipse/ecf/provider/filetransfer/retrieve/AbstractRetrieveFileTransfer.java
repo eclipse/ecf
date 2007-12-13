@@ -16,8 +16,7 @@ import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.*;
@@ -102,6 +101,16 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		//
 	}
 
+	protected void handleReceivedData(byte[] buf, int bytes, double factor, IProgressMonitor monitor) throws IOException {
+		if (bytes != -1) {
+			bytesReceived += bytes;
+			localFileContents.write(buf, 0, bytes);
+			fireTransferReceiveDataEvent();
+			monitor.worked((int) Math.round(factor * bytes));
+		} else
+			done = true;
+	}
+
 	public class FileTransferJob extends Job {
 
 		public FileTransferJob(String name) {
@@ -119,13 +128,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 					if (monitor.isCanceled())
 						throw new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
 					final int bytes = remoteFileContents.read(buf);
-					if (bytes != -1) {
-						bytesReceived += bytes;
-						localFileContents.write(buf, 0, bytes);
-						fireTransferReceiveDataEvent();
-						monitor.worked((int) Math.round(factor * bytes));
-					} else
-						done = true;
+					handleReceivedData(buf, bytes, factor, monitor);
 				}
 			} catch (final Exception e) {
 				exception = e;
@@ -141,6 +144,13 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			return getFinalStatus(exception);
 		}
 
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
+	 */
+	public ID getID() {
+		return remoteFileID;
 	}
 
 	protected IStatus getFinalStatus(Throwable exception1) {
