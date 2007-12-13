@@ -48,6 +48,12 @@ public class ConnectContextFactory {
 							} else if (callbacks[i] instanceof ObjectCallback) {
 								ObjectCallback ocb = (ObjectCallback) callbacks[i];
 								ocb.setObject(password);
+							} else if (callbacks[i] instanceof PasswordCallback && password instanceof String) {
+								PasswordCallback pc = (PasswordCallback) callbacks[i];
+								pc.setPassword((String) password);
+							} else if (callbacks[i] instanceof PassphraseCallback && password instanceof String) {
+								PassphraseCallback pc = (PassphraseCallback) callbacks[i];
+								pc.setPassphrase((String) password);
 							}
 						}
 					}
@@ -80,6 +86,12 @@ public class ConnectContextFactory {
 							if (callbacks[i] instanceof ObjectCallback) {
 								ObjectCallback ocb = (ObjectCallback) callbacks[i];
 								ocb.setObject(password);
+							} else if (callbacks[i] instanceof PasswordCallback) {
+								PasswordCallback pc = (PasswordCallback) callbacks[i];
+								pc.setPassword(password);
+							} else if (callbacks[i] instanceof PassphraseCallback) {
+								PassphraseCallback pc = (PassphraseCallback) callbacks[i];
+								pc.setPassphrase(password);
 							}
 						}
 					}
