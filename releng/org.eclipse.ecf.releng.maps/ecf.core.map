@@ -42,7 +42,9 @@ plugin@org.eclipse.ecf.protocol.msn=@CVSTag@,:pserver:anonymous@dev.eclipse.org:
 plugin@org.eclipse.ecf.provider.msn=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.msn
 plugin@org.eclipse.ecf.provider.msn.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.msn.ui
 plugin@org.eclipse.ecf.docshare=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.docshare
+plugin@org.eclipse.ecf.provider.filetransfer.scp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.filetransfer.scp
 
-plugin@org.apache.commons.httpclient,3.0.1=GET,http://download.eclipse.org/tools/orbit/downloads/drops/I200712030607/bundles/org.apache.commons.httpclient_3.0.1.v200711021015.jar
-plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/I200712030607/bundles/org.apache.commons.codec_1.2.0.v200711021015.jar
-plugin@org.apache.commons.logging,1.0.4=GET,http://download.eclipse.org/tools/orbit/downloads/drops/I200712030607/bundles/org.apache.commons.logging_1.0.4.v200711021015.jar
+plugin@org.apache.commons.httpclient,3.0.1=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S200712072116/bundles/org.apache.commons.httpclient_3.0.1.v200711021015.jar
+plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S200712072116/bundles/org.apache.commons.codec_1.2.0.v200711021015.jar
+plugin@org.apache.commons.logging,1.0.4=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S200712072116/bundles/org.apache.commons.logging_1.0.4.v200711021015.jar
+plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S200712072116/bundles/com.jcraft.jsch_0.1.31.jar
