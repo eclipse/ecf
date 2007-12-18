@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %plugin.name
+Bundle-SymbolicName: org.eclipse.ecf.tests.provider.filetransfer.xmpp
+Bundle-Version: 1.0.0
+Bundle-Activator: org.eclipse.ecf.tests.provider.filetransfer.xmpp.Activator
+Bundle-Vendor: %plugin.provider
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.junit,
+ org.eclipse.ecf.tests,
+ org.eclipse.ecf.tests.filetransfer,
+ org.eclipse.ecf,
+ org.eclipse.ecf.filetransfer
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Eclipse-LazyStart: true
