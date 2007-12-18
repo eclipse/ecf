@@ -21,10 +21,10 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
-public class RetrieveTest extends AbstractRetrieveTestCase {
+public class CancelTest extends AbstractRetrieveTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
-	protected static final String HTTPS_RETRIEVE = "https://www.verisign.com/";
+	private static final String HTTPS_RETRIEVE = RetrieveTest.HTTPS_RETRIEVE;
 
 	File tmpFile = null;
 
@@ -64,20 +64,30 @@ public class RetrieveTest extends AbstractRetrieveTestCase {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase#handleDataEvent(org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent)
+	 */
+	protected void handleDataEvent(IIncomingFileTransferReceiveDataEvent event) {
+		super.handleDataEvent(event);
+		if (incomingFileTransfer != null && incomingFileTransfer.getPercentComplete() > 0.50) {
+			incomingFileTransfer.cancel();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase#handleDoneEvent(org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent)
+	 */
+	protected void handleDoneEvent(IIncomingFileTransferReceiveDoneEvent event) {
+		super.handleDoneEvent(event);
+		assertTrue(incomingFileTransfer.getException() != null);
+	}
+
 	protected void testReceive(String url) throws Exception {
 		assertNotNull(retrieveAdapter);
 		final IFileTransferListener listener = createFileTransferListener();
 		final IFileID fileID = createFileID(new URL(url));
 		retrieveAdapter.sendRetrieveRequest(fileID, listener, null);
-
-		waitForDone(10000);
-
-		assertHasEvent(startEvents, IIncomingFileTransferReceiveStartEvent.class);
-		assertHasMoreThanEventCount(dataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);
-		assertHasEvent(doneEvents, IIncomingFileTransferReceiveDoneEvent.class);
-
-		assertTrue(tmpFile.exists());
-		assertTrue(tmpFile.length() > 0);
+		waitForDone(20000);
 	}
 
 	public void testReceiveFile() throws Exception {

@@ -21,31 +21,19 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
-import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
-import org.eclipse.ecf.tests.ContainerAbstractTestCase;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 
-public class MultiRetrieveTest extends ContainerAbstractTestCase {
+public class MultiRetrieveTest extends AbstractRetrieveTestCase {
 
 	private static final String TESTSRCPATH = "test.src";
 	private static final String TESTTARGETPATH = "test.target";
 
 	private static List srcFiles = new ArrayList();
-
-	protected IContainer createClient(int index) throws Exception {
-		return ContainerFactory.getDefault().createContainer();
-	}
-
-	protected int getClientCount() {
-		return 1;
-	}
 
 	File targetDir = null;
 
@@ -56,7 +44,6 @@ public class MultiRetrieveTest extends ContainerAbstractTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		clients = createClients();
 		final Enumeration files = Activator.getDefault().getBundle().getEntryPaths(TESTSRCPATH);
 		for (; files.hasMoreElements();) {
 			final URL url = Activator.getDefault().getBundle().getEntry((String) files.nextElement());
@@ -76,7 +63,6 @@ public class MultiRetrieveTest extends ContainerAbstractTestCase {
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	protected void tearDown() throws Exception {
-		cleanUpClients();
 		super.tearDown();
 		targetDir.delete();
 	}
@@ -85,55 +71,58 @@ public class MultiRetrieveTest extends ContainerAbstractTestCase {
 		System.out.println(prefix + ";" + event + ";length=" + targetFile.length() + ";file=" + targetFile.getAbsolutePath());
 	}
 
+	File srcFile = null;
+	File targetFile = null;
+	BufferedOutputStream bufferedStream = null;
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase#handleStartEvent(org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent)
+	 */
+	protected void handleStartEvent(IIncomingFileTransferReceiveStartEvent event) {
+		super.handleStartEvent(event);
+		targetFile = new File(TESTTARGETPATH, event.getFileID().getFilename());
+		try {
+			bufferedStream = new BufferedOutputStream(new FileOutputStream(targetFile));
+			incomingFileTransfer = event.receive(bufferedStream);
+		} catch (final IOException e) {
+			fail(e.getLocalizedMessage());
+		}
+		printFileInfo("START", event, targetFile);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase#handleDataEvent(org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent)
+	 */
+	protected void handleDataEvent(IIncomingFileTransferReceiveDataEvent event) {
+		super.handleDataEvent(event);
+		printFileInfo("DATA", event, targetFile);
+	}
+
+	protected void handleDoneEvent(IIncomingFileTransferReceiveDoneEvent event) {
+		super.handleDoneEvent(event);
+		try {
+			bufferedStream.flush();
+			printFileInfo("DONE", event, targetFile);
+			assertTrue(srcFile.length() == targetFile.length());
+		} catch (final IOException e) {
+			fail(e.getLocalizedMessage());
+		}
+	}
+
 	protected void testReceive(String url) throws Exception {
-		final File srcFile = new File(url);
-		final IRetrieveFileTransferContainerAdapter retrieveAdapter = (IRetrieveFileTransferContainerAdapter) getClients()[0].getAdapter(IRetrieveFileTransferContainerAdapter.class);
+		new File(url);
 		assertNotNull(retrieveAdapter);
-		final IFileTransferListener listener = new IFileTransferListener() {
-			File targetFile = null;
-			BufferedOutputStream bufferedStream = null;
+		final IFileTransferListener listener = createFileTransferListener();
+		final IFileID fileID = createFileID(new URL(url));
+		retrieveAdapter.sendRetrieveRequest(fileID, listener, null);
 
-			public void handleTransferEvent(IFileTransferEvent event) {
-				if (event instanceof IIncomingFileTransferReceiveStartEvent) {
-					IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
-					targetFile = new File(TESTTARGETPATH, rse.getFileID().getFilename());
-					printFileInfo("START", event, targetFile);
-					try {
-						bufferedStream = new BufferedOutputStream(new FileOutputStream(targetFile));
-						rse.receive(bufferedStream);
-					} catch (IOException e) {
-						e.printStackTrace();
-						fail(e.getLocalizedMessage());
-					}
-				} else if (event instanceof IIncomingFileTransferReceiveDataEvent) {
-					printFileInfo("DATA", event, targetFile);
-				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-					try {
-						bufferedStream.flush();
-						printFileInfo("DONE", event, targetFile);
-						assertTrue(srcFile.length() == targetFile.length());
-					} catch (IOException e) {
-						e.printStackTrace();
-						fail(e.getLocalizedMessage());
-					} finally {
-						if (targetFile != null)
-							targetFile.delete();
-						targetFile = null;
-					}
-				} else {
-					printFileInfo("OTHER", event, targetFile);
-				}
-			}
-		};
-
-		retrieveAdapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(retrieveAdapter.getRetrieveNamespace(), url), listener, null);
+		waitForDone(20000);
 	}
 
 	public void testReceives() throws Exception {
 		for (final Iterator i = srcFiles.iterator(); i.hasNext();) {
 			testReceive((String) i.next());
 		}
-		sleep(10000, "Starting sleeping", "Ending sleeping");
 	}
 
 }
