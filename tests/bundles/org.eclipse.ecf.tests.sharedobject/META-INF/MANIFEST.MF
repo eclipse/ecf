@@ -9,6 +9,8 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common,
  org.junit,
  org.eclipse.ecf,
- org.eclipse.ecf.sharedobject
+ org.eclipse.ecf.sharedobject,
+ org.eclipse.ecf.tests
 Eclipse-LazyStart: true
 Import-Package: org.osgi.framework;version="1.4.0"
+Export-Package: org.eclipse.ecf.tests.sharedobject
