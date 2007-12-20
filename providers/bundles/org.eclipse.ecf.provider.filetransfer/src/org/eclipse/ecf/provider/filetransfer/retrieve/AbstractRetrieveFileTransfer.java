@@ -511,12 +511,12 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			return proxies[0];
 		// If more than one proxy is available, then if http/https protocol then look for that
 		// one...if not found then use first
-		if (protocol.equalsIgnoreCase(IProxyData.HTTP_PROXY_TYPE)) {
+		if (protocol.equalsIgnoreCase("http")) { //$NON-NLS-1$
 			for (int i = 0; i < proxies.length; i++) {
 				if (proxies[i].getType().equals(IProxyData.HTTP_PROXY_TYPE))
 					return proxies[i];
 			}
-		} else if (protocol.equalsIgnoreCase(IProxyData.HTTPS_PROXY_TYPE)) {
+		} else if (protocol.equalsIgnoreCase("https")) { //$NON-NLS-1$
 			for (int i = 0; i < proxies.length; i++) {
 				if (proxies[i].getType().equals(IProxyData.HTTPS_PROXY_TYPE))
 					return proxies[i];
