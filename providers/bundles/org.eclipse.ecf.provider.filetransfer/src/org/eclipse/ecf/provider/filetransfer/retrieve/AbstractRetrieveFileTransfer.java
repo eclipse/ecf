@@ -490,6 +490,42 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 */
 	protected abstract void setupProxy(Proxy proxy);
 
+	/**
+	 * Select a single proxy from a set of proxies available for the given host.  This implementation
+	 * selects in the following manner:  1) If proxies provided is null or array of 0 length, null 
+	 * is returned.  If only one proxy is available (array of length 1) then the entry is returned.
+	 * If proxies provided is length > 1, then if the type of a proxy in the array matches the given
+	 * protocol (e.g. http, https), then the first matching proxy is returned.  If the protocol does
+	 * not match any of the proxies, then the *first* proxy (i.e. proxies[0]) is returned.  Subclasses may
+	 * override if desired.
+	 * 
+	 * @param protocol the target protocol (e.g. http, https, scp, etc).  Will not be <code>null</code>.
+	 * @param proxies the proxies to select from.  May be <code>null</code> or array of length 0.
+	 * @return proxy data selected from the proxies provided.  
+	 */
+	protected IProxyData selectProxyFromProxies(String protocol, IProxyData[] proxies) {
+		if (proxies == null || proxies.length == 0)
+			return null;
+		// If only one proxy is available, then use that
+		if (proxies.length == 1)
+			return proxies[0];
+		// If more than one proxy is available, then if http/https protocol then look for that
+		// one...if not found then use first
+		if (protocol.equalsIgnoreCase(IProxyData.HTTP_PROXY_TYPE)) {
+			for (int i = 0; i < proxies.length; i++) {
+				if (proxies[i].getType().equals(IProxyData.HTTP_PROXY_TYPE))
+					return proxies[i];
+			}
+		} else if (protocol.equalsIgnoreCase(IProxyData.HTTPS_PROXY_TYPE)) {
+			for (int i = 0; i < proxies.length; i++) {
+				if (proxies[i].getType().equals(IProxyData.HTTPS_PROXY_TYPE))
+					return proxies[i];
+			}
+		}
+		// If we haven't found it yet, then return the first one.
+		return proxies[0];
+	}
+
 	protected void setupProxies() {
 		// If it's been set directly (via ECF API) then this overrides platform settings
 		try {
@@ -499,15 +535,10 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 				if (proxyService != null) {
 					// Setup via proxyService entry
 					URL target = getRemoteFileURL();
-					String type = IProxyData.SOCKS_PROXY_TYPE;
-					if (target.getProtocol().equalsIgnoreCase(IProxyData.HTTP_PROXY_TYPE)) {
-						type = IProxyData.HTTP_PROXY_TYPE;
-					} else if (target.getProtocol().equalsIgnoreCase(IProxyData.HTTPS_PROXY_TYPE)) {
-						type = IProxyData.HTTPS_PROXY_TYPE;
-					}
-					final IProxyData proxyData = proxyService.getProxyDataForHost(target.getHost(), type);
-					if (proxyData != null) {
-						proxy = new Proxy(((type.equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(proxyData.getHost(), proxyData.getPort()), proxyData.getUserId(), proxyData.getPassword());
+					final IProxyData[] proxies = proxyService.getProxyDataForHost(target.getHost());
+					IProxyData selectedProxy = selectProxyFromProxies(target.getProtocol(), proxies);
+					if (selectedProxy != null) {
+						proxy = new Proxy(((selectedProxy.getType().equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(selectedProxy.getHost(), selectedProxy.getPort()), selectedProxy.getUserId(), selectedProxy.getPassword());
 					}
 				}
 			}
