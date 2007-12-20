@@ -27,6 +27,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
+import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
 public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
@@ -69,9 +70,12 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected long lastModifiedTime = 0L;
 
+	protected JREProxyHelper proxyHelper = null;
+
 	public HttpClientRetrieveFileTransfer(HttpClient httpClient) {
 		this.httpClient = httpClient;
 		Assert.isNotNull(this.httpClient);
+		proxyHelper = new JREProxyHelper();
 	}
 
 	/*
@@ -86,6 +90,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			getMethod = null;
 		}
 		responseCode = -1;
+		if (proxyHelper != null) {
+			proxyHelper.dispose();
+			proxyHelper = null;
+		}
 	}
 
 	protected Credentials getFileRequestCredentials() throws UnsupportedCallbackException, IOException {
@@ -430,6 +438,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				final AuthScope proxyAuthScope = new AuthScope(address.getHostName(), address.getPort(), AuthScope.ANY_REALM);
 				httpClient.getState().setProxyCredentials(proxyAuthScope, credentials);
 			}
+		} else if (proxy.getType().equals(Proxy.Type.SOCKS)) {
+			proxyHelper.setupProxy(proxy);
 		}
 	}
 
