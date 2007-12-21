@@ -2,46 +2,46 @@
 <HTML>
 <HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>ECF Connect Wizard</title>
-<style>@import url("../../book.css");</style>
-<style>@import url("../../schema.css");</style>
+<style type="text/css">@import url("../../book.css");</style>
+<style type="text/css">@import url("../../schema.css");</style>
 </HEAD>
 <BODY>
-<H1><CENTER>ECF Connect Wizard</CENTER></H1>
+<H1 style="text-align:center">ECF Connect Wizard</H1>
 <p></p>
-<h6 class=CaptionFigColumn id=header>Identifier: </h6>org.eclipse.ecf.ui.connectWizards<p></p>
-<h6 class=CaptionFigColumn id=header>Since: </h6>ECF 0.9.4
+<h6 class="CaptionFigColumn SchemaHeader">Identifier: </h6>org.eclipse.ecf.ui.connectWizards<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Since: </h6>ECF 0.9.4
 <p></p>
 
-<p>
-<h6 class=CaptionFigColumn id=header>Description: </h6>This extension point allows providers to register wizards for connecting IContainer
-instances.</p>
-<p><h6 class=CaptionFigColumn id=header>Configuration Markup:</h6></p>
-<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.category">category</a> | <a href="#e.wizard">wizard</a>)*&gt;</p>
-<p class=code id=dtd>&lt;!ATTLIST extension</p>
-<p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<h6 class="CaptionFigColumn SchemaHeader">Description: </h6>This extension point allows providers to register wizards for connecting IContainer
+instances.<p></p>
+<h6 class="CaptionFigColumn SchemaHeader">Configuration Markup:</h6>
 <p></p>
-<ul class=ConfigMarkup id=attlistDesc>
+<p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.category">category</a> | <a href="#e.wizard">wizard</a>)*&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST extension</p>
+<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class="ConfigMarkupAttlistDesc">
 <li><b>point</b> - a fully qualified identifier of the target extension point</li>
 <li><b>id</b> - an optional identifier of the extension instance</li>
 <li><b>name</b> - an optional name of the extension instance</li>
 </ul>
-<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.category">category</a> EMPTY&gt;</p>
-<p class=code id=dtd>&lt;!ATTLIST category</p>
-<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>parentCategory&nbsp;CDATA #IMPLIED&gt;</p>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.category">category</a> EMPTY&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST category</p>
+<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">parentCategory&nbsp;CDATA #IMPLIED&gt;</p>
 <p></p>
-<ul class=ConfigMarkup id=attlistDesc>
+<ul class="ConfigMarkupAttlistDesc">
 <li><b>id</b> - a unique name that can be used to identify this category</li>
 <li><b>name</b> - a translatable name of the category that will be used in the dialog box</li>
 <li><b>parentCategory</b> - a path to another category if this category should be added as a child</li>
 </ul>
-<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.wizard">wizard</a> (<a href="#e.description">description</a>?)&gt;</p>
-<p class=code id=dtd>&lt;!ATTLIST wizard</p>
-<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>category&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>icon&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>containerFactoryName&nbsp;CDATA #REQUIRED&gt;</p>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.wizard">wizard</a> (<a href="#e.description">description</a>?)&gt;</p>
+<p class="code SchemaDtd">&lt;!ATTLIST wizard</p>
+<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">category&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">icon&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">containerFactoryName&nbsp;CDATA #REQUIRED&gt;</p>
 <p></p>
-<p class=ConfigMarkup id=elementDesc>
+<p class="ConfigMarkupElementDesc">
 an element that will be used to create export wizard</p>
 <br>
-<ul class=ConfigMarkup id=attlistDesc>
+<ul class="ConfigMarkupAttlistDesc">
 <li><b>id</b> - a unique name that will be used to identify this wizard</li>
 <li><b>name</b> - a translatable name that will be used in the dialog box to represent this wizard</li>
 <li><b>category</b> - a slash-delimited path ('/') of category IDs. Each token in the
@@ -54,35 +54,35 @@ interface</li>
 alongside the wizard name in the export engine listing.</li>
 <li><b>containerFactoryName</b> - The ContainerTypeName of the container to be created.  For example, "ecf.generic.client".</li>
 </ul>
-<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.description">description</a> (#PCDATA)&gt;</p>
+<br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.description">description</a> (#PCDATA)&gt;</p>
 <p></p>
-<p class=ConfigMarkup id=elementDesc>
+<p class="ConfigMarkupElementDesc">
 an optional subelement whose body should represent a short description
 of the export engine functionality.</p>
 <br><br>
-<h6 class=CaptionFigColumn id=header>Examples: </h6>Implementers of this extension point must specify an extension of the <b>org.eclipse.ecf.ui.connectWizards</b> extension point.
+<h6 class="CaptionFigColumn SchemaHeader">Examples: </h6>Implementers of this extension point must specify an extension of the <b>org.eclipse.ecf.ui.connectWizards</b> extension point.
 
-<pre>
-  <p class=code id=tag>&lt;extension
-        point=<p class=code id=cstring>&quot;org.eclipse.ecf.ui.connectWizards&quot;</p><p class=code id=tag>&gt;</p>
-     <p class=code id=tag>&lt;wizard
-           class=<p class=code id=cstring>&quot;org.my.client.MyClientConnectWizard&quot;</p><p class=code id=tag>
-           containerFactoryName=<p class=code id=cstring>&quot;org.my.client&quot;</p><p class=code id=tag>
-           id=<p class=code id=cstring>&quot;my.client.connect.wizard&quot;</p><p class=code id=tag>
-           name=<p class=code id=cstring>&quot;My Client Connect Wizard&quot;</p><p class=code id=tag>
-           icon=<p class=code id=cstring>&quot;icons/connect.png&quot;</p><p class=code id=tag>&gt;</p>
-     <p class=code id=tag>&lt;/wizard&gt;</p>
-  <p class=code id=tag>&lt;/extension&gt;</p>
-</pre>
+<pre class="Example"><span class="code SchemaTag">
+  &lt;extension
+        point=</span><span class="code SchemaCstring">&quot;org.eclipse.ecf.ui.connectWizards&quot;</span><span class="code SchemaTag">&gt;
+     &lt;wizard
+           class=</span><span class="code SchemaCstring">&quot;org.my.client.MyClientConnectWizard&quot;</span><span class="code SchemaTag">
+           containerFactoryName=</span><span class="code SchemaCstring">&quot;org.my.client&quot;</span><span class="code SchemaTag">
+           id=</span><span class="code SchemaCstring">&quot;my.client.connect.wizard&quot;</span><span class="code SchemaTag">
+           name=</span><span class="code SchemaCstring">&quot;My Client Connect Wizard&quot;</span><span class="code SchemaTag">
+           icon=</span><span class="code SchemaCstring">&quot;icons/connect.png&quot;</span><span class="code SchemaTag">&gt;
+     &lt;/wizard&gt;
+  &lt;/extension&gt;
+</span></pre>
 <p></p>
 
-<h6 class=CaptionFigColumn id=header>API Information: </h6>The "class" attribute (required) must have a class that implements the <b>org.eclipse.ecf.ui.IConfigurationWizard</b> interface:
+<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>The "class" attribute (required) must have a class that implements the <b>org.eclipse.ecf.ui.IConfigurationWizard</b> interface:
 
-<pre>
+<pre class="Example"><span class="code SchemaTag">
 /**
- * Required interface for implementing <p class=code id=tag>&lt;b&gt;</p>org.eclipse.ecf.ui.connectWizards<p class=code id=tag>&lt;/b&gt;</p>
+ * Required interface for implementing &lt;b&gt;org.eclipse.ecf.ui.connectWizards&lt;/b&gt;
  * extension point. Extensions for extension point
- * <p class=code id=tag>&lt;b&gt;</p>org.eclipse.ecf.ui.connectWizards<p class=code id=tag>&lt;/b&gt;</p> must provide a class implementing
+ * &lt;b&gt;org.eclipse.ecf.ui.connectWizards&lt;/b&gt; must provide a class implementing
  * this interface.
  */
 public interface IConnectWizard extends IWizard {
@@ -98,11 +98,11 @@ public interface IConnectWizard extends IWizard {
  public void init(IWorkbench workbench, IContainer container);
 }
 
-</pre>
+</span></pre>
 <p></p>
 
 <br>
-<p class=note id=copyright>
+<p class="note SchemaCopyright">
 /****************************************************************************
  * Copyright (c) 2004 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
@@ -113,7 +113,6 @@ public interface IConnectWizard extends IWizard {
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-<p></p>
 
 </p>
 </BODY>
