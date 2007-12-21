@@ -154,6 +154,10 @@ public class Activator implements BundleActivator {
 			this.sendFileTransferProtocolMap.clear();
 			this.sendFileTransferProtocolMap = null;
 		}
+		if (this.browseFileTransferProtocolMap != null) {
+			this.browseFileTransferProtocolMap.clear();
+			this.browseFileTransferProtocolMap = null;
+		}
 	}
 
 	/**
