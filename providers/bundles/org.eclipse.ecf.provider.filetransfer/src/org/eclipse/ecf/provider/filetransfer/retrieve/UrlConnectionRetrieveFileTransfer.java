@@ -10,25 +10,22 @@ package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.io.IOException;
 import java.net.*;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
-import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
 public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
+	private static final String USERNAME_PREFIX = Messages.UrlConnectionRetrieveFileTransfer_USERNAME_PROMPT;
+
 	private static final int HTTP_RANGE_RESPONSE = 206;
 
 	private static final int OK_RESPONSE_CODE = 200;
 
 	protected URLConnection urlConnection;
-
-	// XXX currently unused
-	protected IConnectContext connectContext;
 
 	protected long lastModifiedTime = 0L;
 
@@ -38,9 +35,11 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	protected String responseMessage = null;
 
-	protected IFileID fileid = null;
-
 	private JREProxyHelper proxyHelper = null;
+
+	protected String username = null;
+
+	protected String password = null;
 
 	public UrlConnectionRetrieveFileTransfer() {
 		super();
@@ -147,6 +146,45 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		proxyHelper.setupProxy(proxy2);
 	}
 
+	private void setupAuthentication() throws IOException, UnsupportedCallbackException {
+		if (connectContext == null)
+			return;
+		final CallbackHandler callbackHandler = connectContext.getCallbackHandler();
+		if (callbackHandler == null)
+			return;
+		final NameCallback usernameCallback = new NameCallback(USERNAME_PREFIX);
+		final ObjectCallback passwordCallback = new ObjectCallback();
+		// Call callback with username and password callbacks
+		callbackHandler.handle(new Callback[] {usernameCallback, passwordCallback});
+		username = usernameCallback.getName();
+		Object o = passwordCallback.getObject();
+		if (!(o instanceof String))
+			throw new UnsupportedCallbackException(passwordCallback, Messages.UrlConnectionRetrieveFileTransfer_UnsupportedCallbackException);
+		password = (String) passwordCallback.getObject();
+		// Now set authenticator to our authenticator with user and password
+		Authenticator.setDefault(new UrlConnectionAuthenticator());
+	}
+
+	class UrlConnectionAuthenticator extends Authenticator {
+		/* (non-Javadoc)
+		 * @see java.net.Authenticator#getPasswordAuthentication()
+		 */
+		protected PasswordAuthentication getPasswordAuthentication() {
+			return new PasswordAuthentication(username, password.toCharArray());
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
+	 */
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+		super.setConnectContextForAuthentication(connectContext);
+		this.username = null;
+		this.password = null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -154,6 +192,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
 		try {
+			setupAuthentication();
 			connect();
 			setRequestHeaderValues();
 			// Make actual GET request
@@ -178,15 +217,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			proxyHelper.dispose();
 			proxyHelper = null;
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
-	 */
-	public void setConnectContextForAuthentication(IConnectContext connectContext) {
-		this.connectContext = connectContext;
 	}
 
 	/*
@@ -232,6 +262,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		final URL theURL = getRemoteFileURL();
 		try {
 			remoteFileURL = new URL(theURL.toString());
+			setupAuthentication();
 			connect();
 			setResumeRequestHeaderValues();
 			// Make actual GET request
@@ -247,10 +278,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			fireTransferReceiveDoneEvent();
 			return false;
 		}
-	}
-
-	public ID getID() {
-		return fileid;
 	}
 
 }

@@ -45,7 +45,11 @@ public class Messages extends NLS {
 	public static String UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT;
 	public static String UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE;
 	public static String UrlConnectionRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO;
+	public static String UrlConnectionRetrieveFileTransfer_UnsupportedCallbackException;
+	public static String UrlConnectionRetrieveFileTransfer_USERNAME_PROMPT;
 	public static String UrlConnectionOutgoingFileTransfer_EXCEPTION_COULD_NOT_CONNECT;
+	public static String FileSystemBrowser_EXCEPTION_DIRECTORY_DOES_NOT_EXIST;
+	public static String FileSystemBrowser_EXCEPTION_NOT_DIRECTORY;
 	public static String FileTransferNamespace_Exception_Args_Null;
 	public static String FileTransferNamespace_Exception_Create_Instance;
 	public static String FileTransferNamespace_Exception_Create_Instance_Failed;
@@ -63,6 +67,8 @@ public class Messages extends NLS {
 	public static String HttpClientRetrieveFileTransfer_Unauthorized;
 	public static String HttpClientRetrieveFileTransfer_Username_Prefix;
 	public static String FileTransferID_Exception_Url_Not_Null;
+	public static String LocalFileOutgoingFileTransfer_EXCEPTION_OPENING_FOR_INPUT;
+	public static String LocalFileOutgoingFileTransfer_EXCEPTION_OPENING_FOR_OUTPUT;
 	public static String MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER;
 	public static String SslProtocolSocketFactory_SSLContext_Instance;
 	public static String SslProtocolSocketFactory_Status_Create_Error;

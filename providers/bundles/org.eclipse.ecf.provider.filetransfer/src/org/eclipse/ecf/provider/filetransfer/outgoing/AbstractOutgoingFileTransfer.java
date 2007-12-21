@@ -17,17 +17,19 @@ import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.filetransfer.service.ISendFileTransfer;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 import org.eclipse.osgi.util.NLS;
 
-public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTransfer {
+public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTransfer, ISendFileTransfer {
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
@@ -56,6 +58,8 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	protected IFileTransferInfo fileTransferInfo;
 
 	protected Map options = null;
+
+	protected IConnectContext connectContext;
 
 	protected Proxy proxy;
 
@@ -338,6 +342,34 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 
 	public void sendOutgoingRequest(IFileID targetReceiver, final File localFileToSend, IFileTransferListener transferListener, Map ops) throws SendFileTransferException {
 		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend, null, null), transferListener, ops);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#addListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
+	 */
+	public void addListener(IIncomingFileTransferRequestListener l) {
+		// Not needed
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#removeListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
+	 */
+	public boolean removeListener(IIncomingFileTransferRequestListener l) {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
+	 */
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+		this.connectContext = connectContext;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
+	 */
+	public void setProxy(Proxy proxy) {
+		this.proxy = proxy;
 	}
 
 }

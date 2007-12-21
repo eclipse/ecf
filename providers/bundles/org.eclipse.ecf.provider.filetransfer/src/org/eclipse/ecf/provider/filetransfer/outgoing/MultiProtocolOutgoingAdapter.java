@@ -14,6 +14,7 @@ package org.eclipse.ecf.provider.filetransfer.outgoing;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Map;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -74,6 +75,12 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 
 		// If no handler setup for this protocol then throw
 		if (fileTransfer == null) {
+			if (protocol.equalsIgnoreCase("file")) { //$NON-NLS-1$
+				fileTransfer = new LocalFileOutgoingFileTransfer();
+			}
+		}
+
+		if (fileTransfer == null) {
 			throw new SendFileTransferException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, targetID));
 		}
 
@@ -93,7 +100,6 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#removeListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
 	 */
 	public boolean removeListener(IIncomingFileTransferRequestListener listener) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -119,6 +125,18 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 		fileTransfer.setConnectContextForAuthentication(connectContext);
 		fileTransfer.setProxy(proxy);
 		fileTransfer.sendOutgoingRequest(targetID, localFileToSend, transferListener, options);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter == null)
+			return null;
+		final IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		if (adapterManager == null)
+			return null;
+		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 }

@@ -11,9 +11,7 @@ package org.eclipse.ecf.provider.filetransfer.outgoing;
 import java.io.*;
 import java.net.ProtocolException;
 import java.net.URLConnection;
-import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
 import org.eclipse.ecf.filetransfer.SendFileTransferException;
 import org.eclipse.ecf.filetransfer.service.ISendFileTransfer;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
@@ -25,9 +23,6 @@ public abstract class AbstractUrlConnectionOutgoingFileTransfer extends Abstract
 	private static final int OK_RESPONSE_CODE = 200;
 
 	protected URLConnection urlConnection;
-
-	// XXX currently unused
-	protected IConnectContext connectContext;
 
 	protected long lastModifiedTime = 0L;
 
@@ -140,39 +135,6 @@ public abstract class AbstractUrlConnectionOutgoingFileTransfer extends Abstract
 			proxyHelper.dispose();
 			proxyHelper = null;
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
-	 */
-	public void setConnectContextForAuthentication(IConnectContext connectContext) {
-		this.connectContext = connectContext;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
-	 */
-	public void setProxy(Proxy proxy) {
-		this.proxy = proxy;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#addListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
-	 */
-	public void addListener(IIncomingFileTransferRequestListener l) {
-		// No listeners for outgoing url connection requests.
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#removeListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
-	 */
-	public boolean removeListener(IIncomingFileTransferRequestListener l) {
-		// No listeners for outgoing url connection requests.
-		return false;
 	}
 
 }

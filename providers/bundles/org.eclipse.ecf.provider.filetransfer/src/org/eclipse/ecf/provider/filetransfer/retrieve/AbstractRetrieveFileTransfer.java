@@ -17,6 +17,7 @@ import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.*;
@@ -65,6 +66,12 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	protected IFileRangeSpecification rangeSpecification = null;
 
 	protected Proxy proxy;
+
+	protected IConnectContext connectContext;
+
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+		this.connectContext = connectContext;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
