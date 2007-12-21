@@ -21,10 +21,10 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
-public class CancelTest extends AbstractRetrieveTestCase {
+public class URLCancelTest extends AbstractRetrieveTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
-	private static final String HTTPS_RETRIEVE = RetrieveTest.HTTPS_RETRIEVE;
+	private static final String HTTPS_RETRIEVE = URLRetrieveTest.HTTPS_RETRIEVE;
 
 	File tmpFile = null;
 

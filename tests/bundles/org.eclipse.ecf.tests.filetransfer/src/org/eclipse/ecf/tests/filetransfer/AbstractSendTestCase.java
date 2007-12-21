@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.tests.filetransfer;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,9 +26,9 @@ import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDataEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
@@ -64,17 +65,17 @@ public abstract class AbstractSendTestCase extends TestCase {
 		trace("handleUnexpectedEvent(" + event + ")");
 	}
 
-	protected void handleStartEvent(IIncomingFileTransferReceiveStartEvent event) {
+	protected void handleStartEvent(IOutgoingFileTransferResponseEvent event) {
 		trace("handleStartEvent(" + event + ")");
 		startEvents.add(event);
 	}
 
-	protected void handleDataEvent(IIncomingFileTransferReceiveDataEvent event) {
+	protected void handleDataEvent(IOutgoingFileTransferSendDataEvent event) {
 		trace("handleDataEvent(" + event + ")");
 		dataEvents.add(event);
 	}
 
-	protected void handleDoneEvent(IIncomingFileTransferReceiveDoneEvent event) {
+	protected void handleDoneEvent(IOutgoingFileTransferSendDoneEvent event) {
 		trace("handleDoneEvent(" + event + ")");
 		doneEvents.add(event);
 		synchronized (lock) {
@@ -85,18 +86,22 @@ public abstract class AbstractSendTestCase extends TestCase {
 	protected IFileTransferListener createFileTransferListener() {
 		return new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
-				if (event instanceof IIncomingFileTransferReceiveStartEvent) {
-					handleStartEvent((IIncomingFileTransferReceiveStartEvent) event);
-				} else if (event instanceof IIncomingFileTransferReceiveDataEvent) {
-					handleDataEvent((IIncomingFileTransferReceiveDataEvent) event);
-				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-					handleDoneEvent((IIncomingFileTransferReceiveDoneEvent) event);
+				if (event instanceof IOutgoingFileTransferResponseEvent) {
+					handleStartEvent((IOutgoingFileTransferResponseEvent) event);
+				} else if (event instanceof IOutgoingFileTransferSendDataEvent) {
+					handleDataEvent((IOutgoingFileTransferSendDataEvent) event);
+				} else if (event instanceof IOutgoingFileTransferSendDoneEvent) {
+					handleDoneEvent((IOutgoingFileTransferSendDoneEvent) event);
 				} else {
 					handleUnexpectedEvent(event);
 				}
 			}
 
 		};
+	}
+
+	protected void testSendForFile(URL target, File inputFile) throws Exception {
+		sendAdapter.sendOutgoingRequest(createFileID(target), inputFile, createFileTransferListener(), null);
 	}
 
 	/* (non-Javadoc)

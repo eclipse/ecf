@@ -30,7 +30,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
-public class PartialFileRetrieveTest extends ContainerAbstractTestCase {
+public class URLPartialRetrieveTest extends ContainerAbstractTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/technology/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
 

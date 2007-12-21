@@ -21,7 +21,7 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
-public class RetrieveTest extends AbstractRetrieveTestCase {
+public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
 	protected static final String HTTPS_RETRIEVE = "https://www.verisign.com/";
