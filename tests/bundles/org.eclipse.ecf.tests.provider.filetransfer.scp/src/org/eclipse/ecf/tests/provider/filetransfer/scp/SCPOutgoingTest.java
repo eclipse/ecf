@@ -13,14 +13,12 @@ package org.eclipse.ecf.tests.provider.filetransfer.scp;
 
 import java.io.File;
 import java.net.URL;
-
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
@@ -30,12 +28,12 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
  */
 public class SCPOutgoingTest extends ContainerAbstractTestCase {
 
-	private static final String TESTSRCFILE = "test.txt";
+	private static final String TESTSRCFILE = "test.txt"; //$NON-NLS-1$
 
 	// URL (example:  scp://slewis@ecf1.osuosl.org/test.txt 
-	private static final String TESTTARGETURL = System.getProperty("url");
+	private static final String TESTTARGETURL = System.getProperty("url"); //$NON-NLS-1$
 
-	String password = System.getProperty("password");
+	String password = System.getProperty("password"); //$NON-NLS-1$
 
 	protected ISendFileTransferContainerAdapter adapter = null;
 	protected IFileTransferListener senderTransferListener = null;
@@ -43,10 +41,7 @@ public class SCPOutgoingTest extends ContainerAbstractTestCase {
 	protected IFileTransferListener getFileTransferListener(final String prefix) {
 		return new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
-				System.out.println(prefix + ".handleTransferEvent(" + event + ")");
-				if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-
-				}
+				System.out.println(prefix + ".handleTransferEvent(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		};
 	}
@@ -55,7 +50,7 @@ public class SCPOutgoingTest extends ContainerAbstractTestCase {
 		super.setUp();
 		final IContainer container = ContainerFactory.getDefault().createContainer();
 		adapter = (ISendFileTransferContainerAdapter) container.getAdapter(ISendFileTransferContainerAdapter.class);
-		senderTransferListener = getFileTransferListener("localhost");
+		senderTransferListener = getFileTransferListener("localhost"); //$NON-NLS-1$
 	}
 
 	protected void tearDown() throws Exception {

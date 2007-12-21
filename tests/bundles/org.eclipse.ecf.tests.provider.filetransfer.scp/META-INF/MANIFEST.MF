@@ -5,11 +5,13 @@ Bundle-SymbolicName: org.eclipse.ecf.tests.provider.filetransfer.scp
 Bundle-Version: 1.0.0
 Bundle-Activator: org.eclipse.ecf.internal.tests.provider.filetransfer.scp.Activator
 Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.filetransfer,
- org.junit,
- org.eclipse.ecf.tests.filetransfer,
- org.eclipse.ecf.tests
+ org.eclipse.ecf.tests,
+ org.junit
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Eclipse-LazyStart: true
+Export-Package: org.eclipse.ecf.internal.tests.provider.filetransfer.scp;x-internal:=true,
+ org.eclipse.ecf.tests.provider.filetransfer.scp

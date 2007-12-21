@@ -14,22 +14,18 @@ package org.eclipse.ecf.tests.provider.filetransfer.scp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
-import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.eclipse.ecf.filetransfer.events.*;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 public class SCPRetrieveTest extends ContainerAbstractTestCase {
 
-	private static final String SCP_RETRIEVE = "scp://ecf1.osuosl.org/test.txt";
+	private static final String SCP_RETRIEVE = "scp://ecf1.osuosl.org/test.txt"; //$NON-NLS-1$
 
 	IRetrieveFileTransferContainerAdapter adapter = null;
 
@@ -82,10 +78,10 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 			}
 		};
 
-		adapter.setConnectContextForAuthentication(ConnectContextFactory.createPasswordConnectContext(System.getProperty("password")));
+		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(System.getProperty("username"), System.getProperty("password"))); //$NON-NLS-1$ //$NON-NLS-2$
 		adapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(adapter.getRetrieveNamespace(), SCP_RETRIEVE), listener, null);
 		// Wait for 5 seconds
-		sleep(5000, "Starting 5 second wait", "Ending 5 second wait");
+		sleep(5000, "Starting 5 second wait", "Ending 5 second wait"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		assertHasEvent(receiveStartEvents, IIncomingFileTransferReceiveStartEvent.class);
 		assertHasMoreThanEventCount(receiveDataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);

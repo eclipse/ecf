@@ -9,15 +9,16 @@ import org.osgi.framework.BundleContext;
 public class Activator extends Plugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.tests.provider.filetransfer.scp";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.tests.provider.filetransfer.scp"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
 	public Activator() {
+		// nothing
 	}
 
 	/*
