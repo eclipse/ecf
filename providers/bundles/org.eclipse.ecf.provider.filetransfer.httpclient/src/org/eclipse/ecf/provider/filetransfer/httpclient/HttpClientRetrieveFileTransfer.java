@@ -54,8 +54,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	private HttpClient httpClient = null;
 
-	private IConnectContext fileRequestConnectContext = null;
-
 	private String username;
 
 	private String password;
@@ -97,9 +95,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	protected Credentials getFileRequestCredentials() throws UnsupportedCallbackException, IOException {
-		if (fileRequestConnectContext == null)
+		if (connectContext == null)
 			return null;
-		final CallbackHandler callbackHandler = fileRequestConnectContext.getCallbackHandler();
+		final CallbackHandler callbackHandler = connectContext.getCallbackHandler();
 		if (callbackHandler == null)
 			return null;
 		final NameCallback usernameCallback = new NameCallback(USERNAME_PREFIX);
@@ -251,18 +249,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
-		this.fileRequestConnectContext = connectContext;
+		super.setConnectContextForAuthentication(connectContext);
 		this.username = null;
 		this.password = null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
-	 */
-	public void setProxy(Proxy proxy) {
-		this.proxy = proxy;
 	}
 
 	protected static String getHostFromURL(String url) {
