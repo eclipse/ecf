@@ -44,6 +44,7 @@ args[0] is C:\Documents and Settings\slewis\workspace.ecf\org.eclipse.ecf.doc\ht
 <topic label="org.eclipse.ecf.provider.filetransfer.identity" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/filetransfer/identity/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.filetransfer.outgoing" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/filetransfer/outgoing/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.filetransfer.retrieve" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/filetransfer/retrieve/package-summary.html"/>
+<topic label="org.eclipse.ecf.provider.filetransfer.browse" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/filetransfer/browse/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.filetransfer.util" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/filetransfer/util/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.generic" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/generic/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.generic.gmm" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/generic/gmm/package-summary.html"/>
