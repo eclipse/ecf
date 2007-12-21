@@ -9,15 +9,13 @@
 package org.eclipse.ecf.filetransfer;
 
 import java.util.Map;
-
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.eclipse.ecf.filetransfer.events.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 /**
@@ -66,7 +64,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
  * <li>{@link IIncomingFileTransferReceiveDoneEvent}</li>
  * </ul>
  */
-public interface IRetrieveFileTransferContainerAdapter {
+public interface IRetrieveFileTransferContainerAdapter extends IAdaptable {
 
 	/**
 	 * Send request for transfer of a remote file to local file storage. This

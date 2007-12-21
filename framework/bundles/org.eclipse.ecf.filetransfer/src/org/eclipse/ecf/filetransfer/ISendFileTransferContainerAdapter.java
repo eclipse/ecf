@@ -10,6 +10,7 @@ package org.eclipse.ecf.filetransfer;
 
 import java.io.File;
 import java.util.Map;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -67,7 +68,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
  * <li>{@link IIncomingFileTransferReceiveDoneEvent}</li>
  * </ul>
  */
-public interface ISendFileTransferContainerAdapter {
+public interface ISendFileTransferContainerAdapter extends IAdaptable {
 	/**
 	 * Send request for outgoing file transfer. This method is used to initiate
 	 * a file transfer to a targetReceiver (first parameter) of the
