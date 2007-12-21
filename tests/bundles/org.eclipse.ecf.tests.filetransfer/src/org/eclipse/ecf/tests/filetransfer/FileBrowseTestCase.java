@@ -20,5 +20,6 @@ public class FileBrowseTestCase extends AbstractBrowseTestCase {
 
 	public void testFileBrowse() throws Exception {
 		testListDirectory(new URL("file:///c:/"));
+		Thread.sleep(5000);
 	}
 }

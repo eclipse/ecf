@@ -8,5 +8,12 @@
             serviceClass="org.eclipse.ecf.tests.filetransfer.URLStreamHandlerServiceTest">
       </urlStreamHandlerService>
    </extension>
+   <extension
+         point="org.eclipse.ecf.provider.filetransfer.browseFileTransferProtocolFactory">
+      <browseFileTransferProtocolFactory
+            class="org.eclipse.ecf.tests.filetransfer.RemoteFileSystemBrowserFactory"
+            protocol="file">
+      </browseFileTransferProtocolFactory>
+   </extension>
 
 </plugin>
