@@ -173,4 +173,11 @@ public class XMPPOutgoingFileTransferHelper implements ISendFileTransferContaine
 		return IDFactory.getDefault().getNamespaceByName(XMPPFileNamespace.NAME);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		return null;
+	}
+
 }
