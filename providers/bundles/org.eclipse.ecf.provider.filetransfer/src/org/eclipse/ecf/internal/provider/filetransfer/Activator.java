@@ -259,7 +259,7 @@ public class Activator implements BundleActivator {
 			}
 			// Now for browse
 			final IExtensionPoint browseExtensionPoint = reg.getExtensionPoint(BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT);
-			if (sendExtensionPoint == null) {
+			if (browseExtensionPoint == null) {
 				return;
 			}
 			final IConfigurationElement[] browseConfigurationElements = browseExtensionPoint.getConfigurationElements();

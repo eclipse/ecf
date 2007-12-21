@@ -81,10 +81,10 @@ public class MultiProtocolFileSystemBrowserAdapter implements IRemoteFileSystemB
 				FileSystemBrowser fsb = new FileSystemBrowser(directoryID, url, listener);
 				return fsb.sendDirectoryRequest();
 			}
+			throw new RemoteFileSystemException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, directoryID));
 		}
 
-		throw new RemoteFileSystemException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, directoryID));
-
+		return fileSystemBrowser.sendDirectoryRequest(directoryID, listener);
 	}
 
 	/* (non-Javadoc)

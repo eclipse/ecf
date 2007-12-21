@@ -96,6 +96,8 @@ public class FileSystemBrowser {
 		if (!localDirectory.isDirectory())
 			throw new RemoteFileSystemException(NLS.bind(Messages.FileSystemBrowser_EXCEPTION_NOT_DIRECTORY, localDirectory));
 
+		job = new DirectoryJob();
+		job.schedule();
 		return new IRemoteFileSystemRequest() {
 
 			public void cancel() {
