@@ -17,16 +17,14 @@ import java.net.URL;
 import java.util.Map;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
 import org.eclipse.ecf.filetransfer.SendFileTransferException;
-import org.eclipse.ecf.filetransfer.service.ISendFileTransfer;
 import org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer;
 import org.eclipse.osgi.util.NLS;
 
 /**
  *
  */
-public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implements ISendFileTransfer, IScpFileTransfer {
+public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implements IScpFileTransfer {
 
 	private static final String SCP_COMMAND = "scp -p -t "; //$NON-NLS-1$
 	private static final String SCP_EXEC = "exec"; //$NON-NLS-1$
@@ -36,8 +34,6 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 	private Channel channel;
 
 	private InputStream responseStream;
-	private IConnectContext connectContext;
-
 	private ScpUtil scpUtil;
 
 	/* (non-Javadoc)
@@ -49,7 +45,7 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 			// Set input stream from local file
 			setInputStream(new BufferedInputStream(new FileInputStream(localFile)));
 			final URL url = getRemoteFileURL();
-			this.username = (url.getUserInfo() == null) ? System.getProperty("user.name") : url.getUserInfo(); //$NON-NLS-1$
+			this.username = url.getUserInfo();
 			scpUtil = new ScpUtil(this);
 			final Session s = scpUtil.getSession();
 			s.connect();
@@ -128,45 +124,24 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#addListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
+	 * @see org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getUsername()
 	 */
-	public void addListener(IIncomingFileTransferRequestListener l) {
-		// SCP doesn't have listener
+	public String getUsername() {
+		return username;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#removeListener(org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener)
-	 */
-	public boolean removeListener(IIncomingFileTransferRequestListener l) {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
-	 */
-	public void setConnectContextForAuthentication(IConnectContext connectContext) {
-		this.connectContext = connectContext;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
-	 */
-	public void setProxy(Proxy proxy) {
-		this.proxy = proxy;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getConnectContext()
+	 * @see org.eclipse.ecf.internal.provider.filetransfer.scp.IScpFileTransfer#getConnectContext()
 	 */
 	public IConnectContext getConnectContext() {
 		return connectContext;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getUsername()
+	 * @see org.eclipse.ecf.internal.provider.filetransfer.scp.IScpFileTransfer#setUsername(java.lang.String)
 	 */
-	public String getUsername() {
-		return username;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }

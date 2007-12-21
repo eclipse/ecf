@@ -28,6 +28,7 @@ public class Messages extends NLS {
 	public static String ScpRetrieveFileTransfer_EXCEPTION_ERROR_READING_FILE;
 	public static String ScpRetrieveFileTransfer_EXCEPTION_SCP_PROTOCOL;
 	public static String ScpUtil_EXCEPTION_UNKNOWN_SCP_ERROR;
+	public static String ScpUtil_EXCEPTION_USERNAME_NOT_NULL;
 	public static String ScpUtil_SCP_ERROR;
 	static {
 		// initialize resource bundle

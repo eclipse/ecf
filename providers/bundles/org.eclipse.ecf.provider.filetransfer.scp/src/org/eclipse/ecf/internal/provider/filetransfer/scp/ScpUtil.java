@@ -41,7 +41,7 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 	private String keyFile = null;
 	private String knownHostsFile = null;
 
-	public ScpUtil(IScpFileTransfer handler) throws JSchException {
+	public ScpUtil(IScpFileTransfer handler) throws JSchException, IOException, UnsupportedCallbackException {
 		this.handler = handler;
 		final JSch jsch = new JSch();
 		final URL url = handler.getTargetURL();
@@ -49,6 +49,10 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 		if (port == -1)
 			port = DEFAULT_SCP_PORT;
 		setupOptions(jsch);
+		promptUsername();
+		String username = handler.getUsername();
+		if (username == null)
+			throw new IOException(Messages.ScpUtil_EXCEPTION_USERNAME_NOT_NULL);
 		session = jsch.getSession(handler.getUsername(), url.getHost(), port);
 		setupProxy();
 		session.setUserInfo(this);
@@ -56,6 +60,24 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 
 	Session getSession() {
 		return session;
+	}
+
+	void promptUsername() throws IOException, UnsupportedCallbackException {
+		final IConnectContext connectContext = handler.getConnectContext();
+		if (connectContext != null) {
+			final CallbackHandler callbackHandler = connectContext.getCallbackHandler();
+			if (handler != null) {
+				final Callback[] callbacks = new Callback[2];
+				final NameCallback nc = new NameCallback(Messages.ScpOutgoingFileTransfer_USERNAME_PROMPT);
+				String user = handler.getUsername();
+				if (user != null)
+					nc.setName(user);
+				callbacks[0] = nc;
+				callbacks[1] = new PasswordCallback(Messages.ScpOutgoingFileTransfer_PASSWORD_PROMPT);
+				callbackHandler.handle(callbacks);
+				handler.setUsername(nc.getName());
+			}
+		}
 	}
 
 	String promptCredentials(boolean usePassphrase) {
@@ -66,13 +88,16 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 				if (handler != null) {
 					final Callback[] callbacks = new Callback[2];
 					final NameCallback nc = new NameCallback(Messages.ScpOutgoingFileTransfer_USERNAME_PROMPT);
-					nc.setName(handler.getUsername());
+					String user = handler.getUsername();
+					if (user != null)
+						nc.setName(user);
 					callbacks[0] = nc;
 					if (usePassphrase) {
 						callbacks[1] = new PassphraseCallback(Messages.ScpOutgoingFileTransfer_PASSPHRASE_PROMPT);
 					} else
 						callbacks[1] = new PasswordCallback(Messages.ScpOutgoingFileTransfer_PASSWORD_PROMPT);
 					callbackHandler.handle(callbacks);
+					handler.setUsername(nc.getName());
 					if (usePassphrase) {
 						passphrase = ((PassphraseCallback) callbacks[1]).getPassphrase();
 					} else

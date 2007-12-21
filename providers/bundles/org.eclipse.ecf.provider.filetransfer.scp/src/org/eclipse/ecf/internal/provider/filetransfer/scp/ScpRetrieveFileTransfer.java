@@ -11,12 +11,10 @@
 
 package org.eclipse.ecf.internal.provider.filetransfer.scp;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.jcraft.jsch.*;
+import java.io.*;
 import java.net.URL;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
@@ -24,10 +22,6 @@ import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
 import org.eclipse.osgi.util.NLS;
-
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.Session;
 
 /**
  *
@@ -42,8 +36,6 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 	Channel channel;
 
 	OutputStream responseStream;
-
-	private IConnectContext connectContext;
 
 	private ScpUtil scpUtil;
 
@@ -76,7 +68,7 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 		try {
 			// Set input stream from local file
 			final URL url = getRemoteFileURL();
-			this.username = (url.getUserInfo() == null) ? System.getProperty("user.name") : url.getUserInfo(); //$NON-NLS-1$
+			this.username = url.getUserInfo();
 
 			scpUtil = new ScpUtil(this);
 			final Session s = scpUtil.getSession();
@@ -203,13 +195,6 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
-	 */
-	public void setConnectContextForAuthentication(IConnectContext connectContext) {
-		this.connectContext = connectContext;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getConnectContext()
 	 */
 	public IConnectContext getConnectContext() {
@@ -221,6 +206,10 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 	 */
 	public String getUsername() {
 		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	/* (non-Javadoc)
