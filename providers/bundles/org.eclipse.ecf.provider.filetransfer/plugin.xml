@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="retrieveFileTransferProtocolFactory" name="retrieveFileTransferProtocolFactory" schema="schema/retrieveFileTransferProtocolFactory.exsd"/>
    <extension-point id="sendFileTransferProtocolFactory" name="sendFileTransferProtocolFactory" schema="schema/sendFileTransferProtocolFactory.exsd"/>
+   <extension-point id="browseFileTransferProtocolFactory" name="browseFileTransferProtocolFactory" schema="schema/browseFileTransferProtocolFactory.exsd"/>
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory

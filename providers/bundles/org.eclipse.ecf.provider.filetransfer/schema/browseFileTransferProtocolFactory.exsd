@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.ecf.provider.filetransfer">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.ecf.provider.filetransfer" id="browseFileTransferProtocolFactory" name="browseFileTransferProtocolFactory"/>
+      </appInfo>
+      <documentation>
+         This extension point allows IRemoteFileSystemBrowserFactorys to be defined for given file transfer protocols.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <element ref="browseFileTransferProtocolFactory" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="browseFileTransferProtocolFactory">
+      <annotation>
+         <documentation>
+            Browse remote file system protocol factory extention point
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="protocol" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Protocol to define factory for.  For example, http, https, ftp, bittorrent, my.favorite.protocol.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The factory class to use for given protocol.  Must implement &lt;b&gt;org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory&lt;/b&gt;
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         1.0.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;pre&gt;
+   &lt;extension
+         point=&quot;org.eclipse.ecf.provider.filetransfer.browseFileTransferProtocolFactory&quot;&gt;
+      &lt;browseFileTransferProtocolFactory
+            class=&quot;org.eclipse.ecf.provider.filetransfer.ssh.ScpBrowseFileTransferFactory&quot;
+            protocol=&quot;scp&quot;&gt;
+      &lt;/browseFileTransferProtocolFactory&gt;
+   &lt;/extension&gt;
+
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         Here is the &lt;b&gt;org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory&lt;/b&gt;
+
+&lt;pre&gt;
+/**
+ * Remote file browser factory. This service interface is used by clients to
+ * create a new IRemoteFileSystemBrowser instance.
+ */
+public interface IRemoteFileSystemBrowserFactory {
+
+	/**
+	 * Get new instance of IRemoteFileSystemBrowser.
+	 * 
+	 * @return IRemoteFileSystemBrowser for initiating a retrieval of a remote file.
+	 */
+	public IRemoteFileSystemBrowser newInstance();
+
+}
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         None
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2004 Composent, Inc., IBM and others.
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation, IBM, Inc. - Initial API and implementation
+      </documentation>
+   </annotation>
+
+</schema>

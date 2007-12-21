@@ -48,6 +48,9 @@ public class Activator implements BundleActivator {
 	private static final String SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
 			+ "sendFileTransferProtocolFactory"; //$NON-NLS-1$
 
+	private static final String BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
+			+ "browseFileTransferProtocolFactory"; //$NON-NLS-1$
+
 	// The shared instance
 	private static Activator plugin;
 
@@ -61,6 +64,8 @@ public class Activator implements BundleActivator {
 	private Map retrieveFileTransferProtocolMap = null;
 
 	private Map sendFileTransferProtocolMap = null;
+
+	private Map browseFileTransferProtocolMap = null;
 
 	private ServiceTracker adapterManagerTracker = null;
 
@@ -197,6 +202,7 @@ public class Activator implements BundleActivator {
 	private void loadProtocolHandlers() {
 		this.retrieveFileTransferProtocolMap = new HashMap(3);
 		this.sendFileTransferProtocolMap = new HashMap(3);
+		this.browseFileTransferProtocolMap = new HashMap(3);
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
 			String[] existingSchemes = getPlatformSupportedSchemes();
@@ -251,6 +257,33 @@ public class Activator implements BundleActivator {
 					Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.Activator_EXCEPTION_LOADING_EXTENSION_POINT, SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e));
 				}
 			}
+			// Now for browse
+			final IExtensionPoint browseExtensionPoint = reg.getExtensionPoint(BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT);
+			if (sendExtensionPoint == null) {
+				return;
+			}
+			final IConfigurationElement[] browseConfigurationElements = browseExtensionPoint.getConfigurationElements();
+			existingSchemes = getPlatformSupportedSchemes();
+			for (int i = 0; i < browseConfigurationElements.length; i++) {
+				try {
+					final String protocol = browseConfigurationElements[i].getAttribute(PROTOCOL_ATTR);
+					if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
+						continue;
+					if (browseFileTransferProtocolMap.containsKey(protocol)) {
+						// Give warning
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_BROWSE_PROTOCOL_CONTRIBUTION_IGNORED, protocol, browseExtensionPoint.getContributor().getName()), null));
+						// And continue
+						continue;
+					}
+					final IRemoteFileSystemBrowserFactory clazz = (IRemoteFileSystemBrowserFactory) browseConfigurationElements[i].createExecutableExtension(CLASS_ATTR);
+					if (!isSchemeRegistered(protocol, existingSchemes))
+						registerScheme(protocol);
+					// Finally, put clazz in map with protocol as key
+					browseFileTransferProtocolMap.put(protocol, clazz);
+				} catch (final CoreException e) {
+					Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.Activator_EXCEPTION_LOADING_EXTENSION_POINT, BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e));
+				}
+			}
 
 		}
 	}
@@ -293,6 +326,13 @@ public class Activator implements BundleActivator {
 
 	public ISendFileTransfer getSendFileTransfer(String protocol) {
 		final ISendFileTransferFactory factory = (ISendFileTransferFactory) sendFileTransferProtocolMap.get(protocol);
+		if (factory != null)
+			return factory.newInstance();
+		return null;
+	}
+
+	public IRemoteFileSystemBrowser getBrowseFileTransfer(String protocol) {
+		final IRemoteFileSystemBrowserFactory factory = (IRemoteFileSystemBrowserFactory) browseFileTransferProtocolMap.get(protocol);
 		if (factory != null)
 			return factory.newInstance();
 		return null;

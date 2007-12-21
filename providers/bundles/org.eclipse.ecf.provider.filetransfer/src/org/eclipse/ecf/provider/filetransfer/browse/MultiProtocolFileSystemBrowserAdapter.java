@@ -74,7 +74,7 @@ public class MultiProtocolFileSystemBrowserAdapter implements IRemoteFileSystemB
 		}
 
 		IRemoteFileSystemBrowserContainerAdapter fileSystemBrowser = null;
-		//fileSystemBrowser = Activator.getDefault().getFileSystemBrowser(protocol);
+		fileSystemBrowser = Activator.getDefault().getBrowseFileTransfer(url.getProtocol());
 
 		if (fileSystemBrowser == null) {
 			if (url.getProtocol().equalsIgnoreCase("file")) { //$NON-NLS-1$
