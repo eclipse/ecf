@@ -6,13 +6,13 @@ import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
 /**
  * EFS factory
  */
-public class EFSRetrieveFileTransferFactory implements IRetrieveFileTransferFactory {
+public class RetrieveFileTransferFactory implements IRetrieveFileTransferFactory {
 
 	/**
 	 * @see org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory#newInstance()
 	 */
 	public IRetrieveFileTransfer newInstance() {
-		return new EFSRetrieveFileTransfer();
+		return new RetrieveFileTransfer();
 	}
 
 }

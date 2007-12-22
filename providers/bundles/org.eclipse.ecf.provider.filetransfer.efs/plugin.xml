@@ -4,9 +4,17 @@
    <extension
          point="org.eclipse.ecf.provider.filetransfer.retrieveFileTransferProtocolFactory">
       <retrieveFileTransferProtocolFactory
-            class="org.eclipse.ecf.internal.provider.filetransfer.efs.EFSRetrieveFileTransferFactory"
+            class="org.eclipse.ecf.internal.provider.filetransfer.efs.RetrieveFileTransferFactory"
             protocol="efs">
       </retrieveFileTransferProtocolFactory>
+   </extension>
+
+   <extension
+         point="org.eclipse.ecf.provider.filetransfer.sendFileTransferProtocolFactory">
+      <sendFileTransferProtocolFactory
+            class="org.eclipse.ecf.internal.provider.filetransfer.efs.SendFileTransferFactory"
+            protocol="efs">
+      </sendFileTransferProtocolFactory>
    </extension>
 
 </plugin>

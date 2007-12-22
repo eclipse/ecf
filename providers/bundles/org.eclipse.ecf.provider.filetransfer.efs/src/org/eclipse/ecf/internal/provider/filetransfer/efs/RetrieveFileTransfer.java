@@ -21,8 +21,6 @@ import java.net.URI;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
@@ -34,16 +32,24 @@ import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 /**
  * 
  */
-public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
-
-	IConnectContext connectContext;
-	Proxy proxy;
+public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 	JREProxyHelper proxyHelper = null;
 
-	public EFSRetrieveFileTransfer() {
+	public RetrieveFileTransfer() {
 		super();
 		proxyHelper = new JREProxyHelper();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
+	 */
+	protected void hardClose() {
+		super.hardClose();
+		if (proxyHelper != null) {
+			proxyHelper.dispose();
+			proxyHelper = null;
+		}
 	}
 
 	/*
@@ -69,7 +75,7 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 					setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
 					job = new FileTransferJob(getRemoteFileURL().toString());
 					job.schedule();
-					return EFSRetrieveFileTransfer.this;
+					return RetrieveFileTransfer.this;
 				}
 
 				public String toString() {
@@ -89,7 +95,7 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 					setCloseOutputStream(false);
 					job = new FileTransferJob(getRemoteFileURL().toString());
 					job.schedule();
-					return EFSRetrieveFileTransfer.this;
+					return RetrieveFileTransfer.this;
 				}
 
 			});
@@ -97,28 +103,6 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 		} catch (final Exception e) {
 			throw new IncomingFileTransferException(e);
 		}
-	}
-
-	/**
-	 * 
-	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
-	 */
-	public ID getID() {
-		return remoteFileID;
-	}
-
-	/**
-	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
-	 */
-	public void setConnectContextForAuthentication(IConnectContext connectContext) {
-		this.connectContext = connectContext;
-	}
-
-	/**
-	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
-	 */
-	public void setProxy(Proxy proxy) {
-		this.proxy = proxy;
 	}
 
 	/* (non-Javadoc)
