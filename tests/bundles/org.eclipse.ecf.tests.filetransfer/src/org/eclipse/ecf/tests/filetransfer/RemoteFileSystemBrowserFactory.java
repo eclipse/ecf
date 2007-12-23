@@ -1,7 +1,5 @@
 package org.eclipse.ecf.tests.filetransfer;
 
-import java.net.MalformedURLException;
-
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
@@ -27,12 +25,7 @@ public class RemoteFileSystemBrowserFactory implements IRemoteFileSystemBrowserF
 			}
 
 			public IRemoteFileSystemRequest sendDirectoryRequest(IFileID directoryID, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
-				FileSystemBrowser fsb;
-				try {
-					fsb = new FileSystemBrowser(directoryID, directoryID.getURL(), listener);
-				} catch (final MalformedURLException e) {
-					throw new RemoteFileSystemException("Malformed URL Exception", e);
-				}
+				final FileSystemBrowser fsb = new FileSystemBrowser(directoryID, listener);
 				return fsb.sendDirectoryRequest();
 			}
 
