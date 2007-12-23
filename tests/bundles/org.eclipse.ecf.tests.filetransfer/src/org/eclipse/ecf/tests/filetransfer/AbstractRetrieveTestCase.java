@@ -19,6 +19,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
@@ -122,6 +123,11 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 		dataEvents = null;
 		doneEvents = null;
 		super.tearDown();
+	}
+
+	protected void testRetrieve(URL fileToRetrieve) throws Exception {
+		Assert.isNotNull(fileToRetrieve);
+		retrieveAdapter.sendRetrieveRequest(createFileID(fileToRetrieve), createFileTransferListener(), null);
 	}
 
 	protected void waitForDone(int timeout) throws Exception {

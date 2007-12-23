@@ -12,7 +12,9 @@
 package org.eclipse.ecf.tests.filetransfer;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
@@ -21,6 +23,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.util.TimeoutException;
+import org.eclipse.ecf.filetransfer.IRemoteFile;
+import org.eclipse.ecf.filetransfer.IRemoteFileAttributes;
+import org.eclipse.ecf.filetransfer.IRemoteFileInfo;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemBrowserContainerAdapter;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemRequest;
@@ -131,6 +136,34 @@ public abstract class AbstractBrowseTestCase extends TestCase {
 				count++;
 		}
 		assertTrue(count > eventCount);
+	}
+
+	/**
+	 * @param remoteFiles
+	 */
+	protected void verifyRemoteFiles(final IRemoteFile[] remoteFiles) {
+		for (int i = 0; i < remoteFiles.length; i++) {
+			final IRemoteFile first = remoteFiles[i];
+			final IRemoteFileInfo firstInfo = first.getInfo();
+			assertNotNull(firstInfo);
+			final IFileID firstID = first.getID();
+			assertNotNull(firstID);
+			System.out.println("firstID=" + firstID);
+			// Now check out info
+			assertNotNull(firstInfo.getName());
+			assertTrue(firstInfo.getLastModified() > 0);
+			System.out.println("lastModified=" + new SimpleDateFormat().format(new Date(firstInfo.getLastModified())));
+			System.out.println("length=" + firstInfo.getLength());
+			System.out.println("isDirectory=" + firstInfo.isDirectory());
+			final IRemoteFileAttributes attributes = firstInfo.getAttributes();
+			assertNotNull(attributes);
+			final Iterator attrNames = attributes.getAttributeKeys();
+			for (; attrNames.hasNext();) {
+				final String key = (String) attrNames.next();
+				System.out.print("attrname=" + key);
+				System.out.println(" attrvalue=" + attributes.getAttribute(key));
+			}
+		}
 	}
 
 }
