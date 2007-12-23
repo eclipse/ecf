@@ -78,7 +78,7 @@ public class MultiProtocolFileSystemBrowserAdapter implements IRemoteFileSystemB
 
 		if (fileSystemBrowser == null) {
 			if (url.getProtocol().equalsIgnoreCase("file")) { //$NON-NLS-1$
-				FileSystemBrowser fsb = new FileSystemBrowser(directoryID, url, listener);
+				FileSystemBrowser fsb = new FileSystemBrowser(directoryID, listener);
 				return fsb.sendDirectoryRequest();
 			}
 			throw new RemoteFileSystemException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, directoryID));

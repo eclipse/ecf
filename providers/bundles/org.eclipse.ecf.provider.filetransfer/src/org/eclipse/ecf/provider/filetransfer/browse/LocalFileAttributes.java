@@ -22,7 +22,7 @@ public class LocalFileAttributes implements IRemoteFileAttributes {
 
 	File file = null;
 
-	static String[] fileAttributes = {IRemoteFileAttributes.READ_ATTRIBUTE, IRemoteFileAttributes.WRITE_ATTRIBUTE, IRemoteFileAttributes.HIDDEN_ATTRIBUTE};
+	static String[] fileAttributes = {IRemoteFileAttributes.READ_ATTRIBUTE, IRemoteFileAttributes.WRITE_ATTRIBUTE, IRemoteFileAttributes.HIDDEN_ATTRIBUTE, IRemoteFileAttributes.EXEC_ATTRIBUTE, IRemoteFileAttributes.ARCHIVE_ATTRIBUTE};
 	static List attributeKeys = new ArrayList(Arrays.asList(fileAttributes));
 
 	public LocalFileAttributes(File file) {
@@ -44,6 +44,10 @@ public class LocalFileAttributes implements IRemoteFileAttributes {
 		} else if (key.equals(IRemoteFileAttributes.HIDDEN_ATTRIBUTE)) {
 			if (file.isHidden())
 				return Boolean.TRUE.toString();
+		} else if (key.equals(IRemoteFileAttributes.EXEC_ATTRIBUTE)) {
+			return Boolean.TRUE.toString();
+		} else if (key.equals(IRemoteFileAttributes.ARCHIVE_ATTRIBUTE)) {
+			return Boolean.TRUE.toString();
 		}
 		return null;
 	}
