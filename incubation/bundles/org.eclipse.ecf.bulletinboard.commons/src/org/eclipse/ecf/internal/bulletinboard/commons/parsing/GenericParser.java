@@ -25,9 +25,9 @@ import org.eclipse.ecf.internal.bulletinboard.commons.util.StringUtil;
 
 public class GenericParser {
 
-	private Namespace namespace;
+	private final Namespace namespace;
 
-	private URL baseURL;
+	private final URL baseURL;
 
 	public GenericParser(Namespace namespace, URL baseURL) {
 		super();
@@ -35,24 +35,16 @@ public class GenericParser {
 		this.baseURL = baseURL;
 	}
 
-	public IBBObject parseSingleIdName(IPatternDescriptor pattern,
-			CharSequence sequence, IBBObjectFactory factory) {
-		return (IBBObject) parseIdNamePairs(pattern, sequence, factory, false,
-				false);
+	public IBBObject parseSingleIdName(IPatternDescriptor pattern, CharSequence sequence, IBBObjectFactory factory) {
+		return (IBBObject) parseIdNamePairs(pattern, sequence, factory, false, false);
 	}
 
-	@SuppressWarnings("unchecked")
-	public Map<ID, IBBObject> parseMultiIdName(IPatternDescriptor pattern,
-			CharSequence sequence, IBBObjectFactory factory,
-			boolean preserveOrder) {
-		return (Map<ID, IBBObject>) parseIdNamePairs(pattern, sequence,
-				factory, true, preserveOrder);
+	public Map<ID, IBBObject> parseMultiIdName(IPatternDescriptor pattern, CharSequence sequence, IBBObjectFactory factory, boolean preserveOrder) {
+		return (Map<ID, IBBObject>) parseIdNamePairs(pattern, sequence, factory, true, preserveOrder);
 	}
 
-	private Object parseIdNamePairs(IPatternDescriptor pattern,
-			CharSequence sequence, IBBObjectFactory factory,
-			boolean expectMultipleMatches, boolean preserveOrder) {
-		Matcher m = pattern.getPattern().matcher(sequence);
+	private Object parseIdNamePairs(IPatternDescriptor pattern, CharSequence sequence, IBBObjectFactory factory, boolean expectMultipleMatches, boolean preserveOrder) {
+		final Matcher m = pattern.getPattern().matcher(sequence);
 		Map<ID, IBBObject> objectMap = null;
 		if (expectMultipleMatches) {
 			if (preserveOrder) {
@@ -62,16 +54,16 @@ public class GenericParser {
 			}
 		}
 		while (m.find()) {
-			Map<String, Object> values = pattern.getValueMap(m);
+			final Map<String, Object> values = pattern.getValueMap(m);
 			ID id = null;
 			try {
 				id = factory.createBBObjectId(namespace, baseURL, (String) values.get(IPatternDescriptor.ID_PARAM));
-			} catch (IDCreateException e) {
+			} catch (final IDCreateException e) {
 				// TODO autogen e
 				e.printStackTrace();
 			}
-			String name = StringUtil.stripHTMLTrim((String) values.get(IPatternDescriptor.NAME_PARAM));
-			IBBObject obj = factory.createBBObject(id, new String(name), values);
+			final String name = StringUtil.stripHTMLTrim((String) values.get(IPatternDescriptor.NAME_PARAM));
+			final IBBObject obj = factory.createBBObject(id, new String(name), values);
 			if (expectMultipleMatches) {
 				objectMap.put(id, obj);
 			} else {
