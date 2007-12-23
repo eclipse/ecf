@@ -14,6 +14,7 @@ package org.eclipse.ecf.filetransfer;
 /**
  * Information about a remote file.  Last modified day/time, length in bytes,
  * whether the remote file is a directory, a name, and file attributes.
+ * @see IRemoteFile
  */
 public interface IRemoteFileInfo {
 
