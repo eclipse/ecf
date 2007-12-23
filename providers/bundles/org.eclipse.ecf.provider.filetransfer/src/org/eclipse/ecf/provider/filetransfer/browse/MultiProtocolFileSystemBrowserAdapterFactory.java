@@ -16,7 +16,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemBrowserContainerAdapter;
 
 /**
- * 
+ * Adapter factory for handling multiple protocols.
  */
 public class MultiProtocolFileSystemBrowserAdapterFactory extends AbstractContainerAdapterFactory {
 

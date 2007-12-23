@@ -16,7 +16,7 @@ import java.util.*;
 import org.eclipse.ecf.filetransfer.IRemoteFileAttributes;
 
 /**
- *
+ * File attributes for {@link LocalFile} instances.
  */
 public class LocalFileAttributes implements IRemoteFileAttributes {
 

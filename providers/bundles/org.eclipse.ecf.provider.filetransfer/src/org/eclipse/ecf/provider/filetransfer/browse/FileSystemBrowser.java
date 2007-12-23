@@ -20,7 +20,7 @@ import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.osgi.util.NLS;
 
 /**
- *
+ * A class for asynchronously browsing a {@link java.io.File}-based filesystem.
  */
 public class FileSystemBrowser extends AbstractFileSystemBrowser {
 

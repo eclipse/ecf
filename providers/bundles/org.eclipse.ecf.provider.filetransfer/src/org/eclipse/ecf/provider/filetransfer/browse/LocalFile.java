@@ -20,7 +20,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 
 /**
- *
+ * Local representation of an {@link IRemoteFile}.
  */
 public class LocalFile implements IRemoteFile {
 

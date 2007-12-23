@@ -21,7 +21,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 
 /**
- *
+ * Abstract class for browsing an efs file system.
  */
 public abstract class AbstractFileSystemBrowser {
 
@@ -62,6 +62,11 @@ public abstract class AbstractFileSystemBrowser {
 		}
 	}
 
+	/**
+	 * Run the actual directory request.  This method is called within the job created to actually get the
+	 * directory information.
+	 * @throws Exception if some problem with making the request or receiving response to the request.
+	 */
 	protected abstract void runDirectoryRequest() throws Exception;
 
 	public AbstractFileSystemBrowser(IFileID directoryID2, IRemoteFileSystemListener listener) {
