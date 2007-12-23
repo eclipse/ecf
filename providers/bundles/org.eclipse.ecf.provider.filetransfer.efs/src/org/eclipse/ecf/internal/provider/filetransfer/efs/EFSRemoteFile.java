@@ -54,4 +54,9 @@ public class EFSRemoteFile implements IRemoteFile {
 		return null;
 	}
 
+	public String toString() {
+		final StringBuffer buf = new StringBuffer("EFSRemoteFile["); //$NON-NLS-1$
+		buf.append("name=").append(getInfo().getName()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		return buf.toString();
+	}
 }

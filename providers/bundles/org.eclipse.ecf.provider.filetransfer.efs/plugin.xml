@@ -17,4 +17,12 @@
       </sendFileTransferProtocolFactory>
    </extension>
 
+   <extension
+         point="org.eclipse.ecf.provider.filetransfer.browseFileTransferProtocolFactory">
+      <browseFileTransferProtocolFactory 
+            class="org.eclipse.ecf.internal.provider.filetransfer.efs.EFSRemoteFileSystemBrowseFactory"
+            protocol="efs">
+      </browseFileTransferProtocolFactory>
+   </extension>
+
 </plugin>

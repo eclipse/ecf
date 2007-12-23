@@ -52,7 +52,7 @@ public class FileStoreBrowser extends AbstractFileSystemBrowser {
 		final IFileInfo[] fileInfos = fileStore.childInfos(EFS.NONE, null);
 		remoteFiles = new IRemoteFile[fileInfos.length];
 		for (int i = 0; i < fileInfos.length; i++) {
-			remoteFiles[i] = new EFSRemoteFile(FileIDFactory.getDefault().createFileID(directoryID.getNamespace(), new URL(efsDirectory + "/" + fileInfos[i].getName())), fileInfos[i]);
+			remoteFiles[i] = new EFSRemoteFile(FileIDFactory.getDefault().createFileID(directoryID.getNamespace(), new URL(efsDirectory + "/" + fileInfos[i].getName())), fileInfos[i]); //$NON-NLS-1$
 		}
 	}
 

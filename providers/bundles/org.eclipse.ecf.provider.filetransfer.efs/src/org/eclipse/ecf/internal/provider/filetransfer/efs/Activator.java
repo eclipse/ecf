@@ -11,7 +11,7 @@ public class Activator extends Plugin {
 	/**
 	 * Plugin ID
 	 */
-	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer.efs";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer.efs"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;

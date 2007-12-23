@@ -27,11 +27,12 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowser;
 import org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
+import org.eclipse.osgi.util.NLS;
 
 /**
  *
  */
-public class EFSRemoteBrowse implements IRemoteFileSystemBrowserFactory {
+public class EFSRemoteFileSystemBrowseFactory implements IRemoteFileSystemBrowserFactory {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory#newInstance()
@@ -56,7 +57,7 @@ public class EFSRemoteBrowse implements IRemoteFileSystemBrowserFactory {
 				}
 				final IFileInfo directoryStoreInfo = directoryStore.fetchInfo();
 				if (!directoryStoreInfo.isDirectory())
-					throw new RemoteFileSystemException("{0} is not a directory.");
+					throw new RemoteFileSystemException(NLS.bind(Messages.EFSRemoteFileSystemBrowseFactory_EXCEPTION_NOT_DIRECTORY, directoryID));
 				final FileStoreBrowser rfs = new FileStoreBrowser(directoryStore, efsDirectory, directoryID, listener);
 				return rfs.sendDirectoryRequest();
 
