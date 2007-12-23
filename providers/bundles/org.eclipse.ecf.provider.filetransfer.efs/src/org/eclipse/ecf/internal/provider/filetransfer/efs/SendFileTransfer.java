@@ -55,7 +55,7 @@ public class SendFileTransfer extends AbstractOutgoingFileTransfer {
 			// Get/open input file
 			setInputStream(new BufferedInputStream(new FileInputStream(getFileTransferInfo().getFile())));
 			// Open target
-			final IFileStore fileStore = EFS.getStore(new URI(getRemoteFileURL().getFile()));
+			final IFileStore fileStore = EFS.getStore(new URI(getRemoteFileURL().getPath()));
 			setOutputStream(fileStore.openOutputStream(0, null));
 			// Notify listener
 			listener.handleTransferEvent(new IOutgoingFileTransferResponseEvent() {

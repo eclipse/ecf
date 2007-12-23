@@ -59,7 +59,7 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
 		try {
-			final IFileStore fileStore = EFS.getStore(new URI(getRemoteFileURL().getFile()));
+			final IFileStore fileStore = EFS.getStore(new URI(getRemoteFileURL().getPath()));
 			final IFileInfo info = fileStore.fetchInfo();
 			setFileLength(info.getLength());
 			setInputStream(fileStore.openInputStream(0, null));

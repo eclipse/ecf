@@ -11,7 +11,7 @@
 
    <extension
          point="org.eclipse.ecf.provider.filetransfer.sendFileTransferProtocolFactory">
-      <sendFileTransferProtocolFactory
+      <sendFileTransferProtocolFactory 
             class="org.eclipse.ecf.internal.provider.filetransfer.efs.SendFileTransferFactory"
             protocol="efs">
       </sendFileTransferProtocolFactory>
