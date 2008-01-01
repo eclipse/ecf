@@ -35,7 +35,6 @@ import org.eclipse.ecf.internal.example.collab.ui.EditorHelper;
 import org.eclipse.ecf.internal.example.collab.ui.FileReceiverUI;
 import org.eclipse.ecf.internal.example.collab.ui.ImageWrapper;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatClientView;
-import org.eclipse.ecf.internal.example.collab.ui.LineChatHandler;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatView;
 import org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -55,7 +54,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-public class EclipseCollabSharedObject extends GenericSharedObject implements LineChatHandler {
+public class EclipseCollabSharedObject extends GenericSharedObject {
 	private static final String HANDLE_SHOW_VIEW_MSG = "handleShowView";
 	private static final String HANDLE_SHOW_VIEW_WITH_ID_MSG = "handleShowViewWithID";
 	private static final String HANDLE_LAUNCH_EDITOR_FOR_FILE_MSG = "handleLaunchEditorForFile";
@@ -505,34 +504,39 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements Li
 		}
 	}
 
-	public void sendImage(ImageWrapper wrapper) {
+	public void sendImage(ID toID, ImageWrapper wrapper) {
 		try {
-			forwardMsgTo(null, SharedObjectMsg.createMsg(null, HANDLE_SHOW_IMAGE_MSG, localContainerID, wrapper));
+			forwardMsgTo(toID, SharedObjectMsg.createMsg(null, HANDLE_SHOW_IMAGE_MSG, localContainerID, wrapper));
 		} catch (final Exception e) {
 			log("Exception on sendShowTextMsg to remote clients", e);
 		}
 	}
 
-	protected void handleShowImage(ID id, ImageWrapper wrapper) {
+	protected void handleShowImage(ID id, final ImageWrapper wrapper) {
 		final Display display = localGUI.getTextControl().getDisplay();
-		final Image image = new Image(display, wrapper.createImageData());
 		display.asyncExec(new Runnable() {
 			public void run() {
-				final Shell shell = new Shell(display);
-				shell.setBounds(image.getBounds());
-				shell.addDisposeListener(new DisposeListener() {
-					public void widgetDisposed(DisposeEvent e) {
-						image.dispose();
-					}
-				});
+				try {
+					final Image image = new Image(display, wrapper.createImageData());
+					final Shell shell = new Shell(display);
+					shell.setBounds(image.getBounds());
+					shell.addDisposeListener(new DisposeListener() {
+						public void widgetDisposed(DisposeEvent e) {
+							image.dispose();
+						}
+					});
 
-				shell.addPaintListener(new PaintListener() {
-					public void paintControl(PaintEvent e) {
-						e.gc.drawImage(image, 0, 0);
-					}
-				});
+					shell.addPaintListener(new PaintListener() {
+						public void paintControl(PaintEvent e) {
+							e.gc.drawImage(image, 0, 0);
+						}
+					});
+					shell.open();
+				} catch (final IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
-				shell.open();
 			}
 		});
 	}

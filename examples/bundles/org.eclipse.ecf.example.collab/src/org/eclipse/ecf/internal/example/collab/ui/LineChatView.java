@@ -13,6 +13,8 @@ package org.eclipse.ecf.internal.example.collab.ui;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
@@ -88,9 +90,9 @@ public class LineChatView extends ViewPart {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				try {
-					IWorkbenchPage wp = LineChatView.this.getSite().getPage();
+					final IWorkbenchPage wp = LineChatView.this.getSite().getPage();
 					wp.hideView(LineChatView.this);
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -102,9 +104,7 @@ public class LineChatView extends ViewPart {
 			singleton.setPartName(name);
 	}
 
-	public static LineChatClientView createClientView(
-			final LineChatHandler lch, final String name,
-			final String initText, String downloaddir) throws Exception {
+	public static LineChatClientView createClientView(final EclipseCollabSharedObject lch, final String name, final String initText, String downloaddir) throws Exception {
 		LineChatClientView newView = null;
 		synchronized (clientViews) {
 			if (singleton == null)
@@ -115,13 +115,11 @@ public class LineChatView extends ViewPart {
 			}
 
 			if (singleton.tabFolder == null) {
-				singleton.tabFolder = new TabFolder(singleton.parentComposite,
-						SWT.NORMAL);
+				singleton.tabFolder = new TabFolder(singleton.parentComposite, SWT.NORMAL);
 			}
 
-			newView = new LineChatClientView(lch, singleton, name, initText,
-					downloaddir);
-			TabItem ti = new TabItem(singleton.tabFolder, SWT.NULL);
+			newView = new LineChatClientView(lch, singleton, name, initText, downloaddir);
+			final TabItem ti = new TabItem(singleton.tabFolder, SWT.NULL);
 			ti.setControl(newView.getTeamChat());
 			ti.setText(newView.name);
 			singleton.addClientView(newView, ti);
@@ -154,7 +152,7 @@ public class LineChatView extends ViewPart {
 
 	public void createPartControl(Composite parent) {
 		singleton = this;
-		IViewSite viewSite = this.getViewSite();
+		final IViewSite viewSite = this.getViewSite();
 		actionBars = viewSite.getActionBars();
 		toolbarManager = actionBars.getToolBarManager();
 		parentComposite = parent;
@@ -188,8 +186,8 @@ public class LineChatView extends ViewPart {
 	}
 
 	protected void closeAllClients() {
-		for (Enumeration e = clientViews.keys(); e.hasMoreElements();) {
-			LineChatClientView vc = (LineChatClientView) e.nextElement();
+		for (final Enumeration e = clientViews.keys(); e.hasMoreElements();) {
+			final LineChatClientView vc = (LineChatClientView) e.nextElement();
 			vc.closeClient();
 		}
 	}
@@ -198,11 +196,11 @@ public class LineChatView extends ViewPart {
 		if (name == null)
 			return;
 		if (tabFolder != null) {
-			TabItem[] items = tabFolder.getItems();
+			final TabItem[] items = tabFolder.getItems();
 			if (items == null)
 				return;
 			for (int i = 0; i < items.length; i++) {
-				String itemName = items[i].getText();
+				final String itemName = items[i].getText();
 				if (name.equals(itemName)) {
 					tabFolder.setSelection(i);
 				}

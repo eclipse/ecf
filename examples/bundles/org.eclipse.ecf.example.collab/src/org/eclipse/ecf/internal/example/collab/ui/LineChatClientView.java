@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.HelloMessageSharedObject;
 import org.eclipse.ecf.example.collab.share.TreeItem;
 import org.eclipse.ecf.example.collab.share.User;
@@ -50,36 +51,27 @@ import org.eclipse.ui.part.ViewPart;
 public class LineChatClientView implements FileSenderUI {
 	public static final String DEFAULT_UNIX_BROWSER = "mozilla";
 	public static final String ENTER_STRING = "ARRIVED";
-	public static final String EXECPROGARGTYPES[] = { ID.class.getName(),
-			"[Ljava.lang.String;", "[Ljava.lang.String;",
-			Boolean.class.getName(), Boolean.class.getName() };
-	public static final String EXECPROGCLASSNAME = StartProgramSharedObject.class
-			.getName();
+	public static final String EXECPROGARGTYPES[] = {ID.class.getName(), "[Ljava.lang.String;", "[Ljava.lang.String;", Boolean.class.getName(), Boolean.class.getName()};
+	public static final String EXECPROGCLASSNAME = StartProgramSharedObject.class.getName();
 	public static final String LEFT_STRING = "LEFT";
-	public static final String MESSAGECLASSNAME = HelloMessageSharedObject.class
-			.getName();
+	public static final String MESSAGECLASSNAME = HelloMessageSharedObject.class.getName();
 	public static final String REMOTEFILEPATH = null;
-	public static final String SHOWURLARGTYPES[] = { ID.class.getName(),
-			"java.lang.String" };
-	public static final String SHOWURLCLASSNAME = ShowURLSharedObject.class
-			.getName();
+	public static final String SHOWURLARGTYPES[] = {ID.class.getName(), "java.lang.String"};
+	public static final String SHOWURLCLASSNAME = ShowURLSharedObject.class.getName();
 
-	private boolean showTimestamp = ClientPlugin.getDefault()
-			.getPreferenceStore().getBoolean(
-					ClientPlugin.PREF_DISPLAY_TIMESTAMP);
-	private SimpleDateFormat df = new SimpleDateFormat("MM/dd hh:mm a"); //$NON-NLS-1$
+	private boolean showTimestamp = ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_DISPLAY_TIMESTAMP);
+	private final SimpleDateFormat df = new SimpleDateFormat("MM/dd hh:mm a"); //$NON-NLS-1$
 	String downloaddir;
-	LineChatHandler lch;
+	EclipseCollabSharedObject lch;
 	Hashtable myNames = new Hashtable();
 	String name;
-	private TeamChat teamChat;
+	private final TeamChat teamChat;
 	User userdata;
 	LineChatView view;
 
-	private List users;
+	private final List users;
 
-	public LineChatClientView(LineChatHandler lch, LineChatView view,
-			String name, String initText, String downloaddir) {
+	public LineChatClientView(EclipseCollabSharedObject lch, LineChatView view, String name, String initText, String downloaddir) {
 		super();
 		this.lch = lch;
 		this.view = view;
@@ -92,29 +84,20 @@ public class LineChatClientView implements FileSenderUI {
 		if (userdata != null)
 			addUser(userdata);
 
-		ClientPlugin.getDefault().getPreferenceStore()
-				.addPropertyChangeListener(new IPropertyChangeListener() {
+		ClientPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
 
-					public void propertyChange(PropertyChangeEvent event) {
-						if (event.getProperty().equals(
-								ClientPlugin.PREF_DISPLAY_TIMESTAMP)) {
-							showTimestamp = ((Boolean) event.getNewValue())
-									.booleanValue();
-						}
-					}
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty().equals(ClientPlugin.PREF_DISPLAY_TIMESTAMP)) {
+					showTimestamp = ((Boolean) event.getNewValue()).booleanValue();
+				}
+			}
 
-				});
+		});
 
-		JFaceResources.getColorRegistry().put(ViewerToolTip.HEADER_BG_COLOR,
-				new RGB(255, 255, 255));
-		JFaceResources.getFontRegistry().put(
-				ViewerToolTip.HEADER_FONT,
-				JFaceResources.getFontRegistry().getBold(
-						JFaceResources.getDefaultFont().getFontData()[0]
-								.getName()).getFontData());
+		JFaceResources.getColorRegistry().put(ViewerToolTip.HEADER_BG_COLOR, new RGB(255, 255, 255));
+		JFaceResources.getFontRegistry().put(ViewerToolTip.HEADER_FONT, JFaceResources.getFontRegistry().getBold(JFaceResources.getDefaultFont().getFontData()[0].getName()).getFontData());
 
-		ToolTip toolTip = new ViewerToolTip(teamChat.getTableViewer()
-				.getControl());
+		final ToolTip toolTip = new ViewerToolTip(teamChat.getTableViewer().getControl());
 		toolTip.setHideOnMouseDown(false);
 		toolTip.setPopupDelay(200);
 	}
@@ -134,14 +117,13 @@ public class LineChatClientView implements FileSenderUI {
 	public boolean addUser(User ud) {
 		if (ud == null)
 			return false;
-		ID userID = ud.getUserID();
-		String username = ud.getNickname();
+		final ID userID = ud.getUserID();
+		final String username = ud.getNickname();
 		if (myNames.containsKey(userID)) {
-			String existingName = (String) myNames.get(userID);
+			final String existingName = (String) myNames.get(userID);
 			if (!existingName.equals(username)) {
 				myNames.put(userID, username);
-				final String str = existingName + " changed name to "
-						+ username;
+				final String str = existingName + " changed name to " + username;
 				showLine(new ChatLine(str));
 			}
 			return false;
@@ -183,7 +165,7 @@ public class LineChatClientView implements FileSenderUI {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						if (!teamChat.isDisposed()) {
-							TableViewer view = teamChat.getTableViewer();
+							final TableViewer view = teamChat.getTableViewer();
 							view.remove(user);
 							users.remove(user);
 							view.add(userdata);
@@ -204,7 +186,7 @@ public class LineChatClientView implements FileSenderUI {
 	}
 
 	protected String getCurrentDateTime() {
-		StringBuffer sb = new StringBuffer("["); //$NON-NLS-1$
+		final StringBuffer sb = new StringBuffer("["); //$NON-NLS-1$
 		sb.append(df.format(new Date())).append(']');
 		return sb.toString();
 	}
@@ -235,7 +217,7 @@ public class LineChatClientView implements FileSenderUI {
 			return null;
 		} else {
 			for (int i = 0; i < users.size(); i++) {
-				User user = (User) users.get(i);
+				final User user = (User) users.get(i);
 				if (id.equals(user.getUserID())) {
 					return user;
 				}
@@ -245,7 +227,7 @@ public class LineChatClientView implements FileSenderUI {
 	}
 
 	protected void handleTextInput(String text) {
-		ChatLine line = new ChatLine(text, getCurrentDateTime());
+		final ChatLine line = new ChatLine(text, getCurrentDateTime());
 
 		if (lch != null) {
 			line.setOriginator(userdata);
@@ -261,10 +243,9 @@ public class LineChatClientView implements FileSenderUI {
 		createObject(target, className, null, args);
 	}
 
-	protected void createObject(ID target, final String className,
-			String[] argTypes, Object[] args) {
+	protected void createObject(ID target, final String className, String[] argTypes, Object[] args) {
 		if (lch != null) {
-			HashMap map = new HashMap();
+			final HashMap map = new HashMap();
 			map.put("args", args);
 			map.put("types", argTypes);
 			try {
@@ -272,10 +253,7 @@ public class LineChatClientView implements FileSenderUI {
 			} catch (final Exception e) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						MessageDialog.openInformation(null,
-								"Make Object Exception",
-								"Exception creating instance of '" + className
-										+ "'. \nException: " + e);
+						MessageDialog.openInformation(null, "Make Object Exception", "Exception creating instance of '" + className + "'. \nException: " + e);
 					}
 				});
 				e.printStackTrace();
@@ -294,7 +272,7 @@ public class LineChatClientView implements FileSenderUI {
 	}
 
 	public void removeUser(ID id) {
-		String name = getUserData(id);
+		final String name = getUserData(id);
 		if (name != null) {
 			showLine(new ChatLine(name + " " + LEFT_STRING));
 		}
@@ -323,9 +301,8 @@ public class LineChatClientView implements FileSenderUI {
 	}
 
 	protected void runProgram(ID receiver, String program, String[] env) {
-		String[] cmds = { program };
-		Object[] args = { receiver, cmds, env, Boolean.valueOf(receiver == null),
-				Boolean.FALSE };
+		final String[] cmds = {program};
+		final Object[] args = {receiver, cmds, env, Boolean.valueOf(receiver == null), Boolean.FALSE};
 		// Do it
 		createObject(null, EXECPROGCLASSNAME, EXECPROGARGTYPES, args);
 	}
@@ -335,11 +312,9 @@ public class LineChatClientView implements FileSenderUI {
 
 	public void sendDone(File aFile, Exception e) {
 		if (e != null) {
-			showLine(new ChatLine("Exception '" + e.getMessage()
-					+ "' sending file '" + aFile.getName()));
+			showLine(new ChatLine("Exception '" + e.getMessage() + "' sending file '" + aFile.getName()));
 		} else {
-			showLine(new ChatLine("\tSend of '" + aFile.getName()
-					+ "' completed"));
+			showLine(new ChatLine("\tSend of '" + aFile.getName() + "' completed"));
 			if (lch != null)
 				lch.refreshProject();
 		}
@@ -379,7 +354,7 @@ public class LineChatClientView implements FileSenderUI {
 			return false;
 		} else {
 			for (int i = 0; i < users.size(); i++) {
-				User user = (User) users.get(i);
+				final User user = (User) users.get(i);
 				if (user.getUserID().equals(id)) {
 					teamChat.getTableViewer().refresh(user);
 					return true;
@@ -391,21 +366,17 @@ public class LineChatClientView implements FileSenderUI {
 
 	private class ViewerToolTip extends ToolTip {
 
-		public static final String HEADER_BG_COLOR = ClientPlugin.PLUGIN_ID
-				+ ".TOOLTIP_HEAD_BG_COLOR"; //$NON-NLS-1$
+		public static final String HEADER_BG_COLOR = ClientPlugin.PLUGIN_ID + ".TOOLTIP_HEAD_BG_COLOR"; //$NON-NLS-1$
 
-		public static final String HEADER_FONT = ClientPlugin.PLUGIN_ID
-				+ ".TOOLTIP_HEAD_FONT"; //$NON-NLS-1$
+		public static final String HEADER_FONT = ClientPlugin.PLUGIN_ID + ".TOOLTIP_HEAD_FONT"; //$NON-NLS-1$
 
 		public ViewerToolTip(Control control) {
 			super(control);
 		}
 
-		protected Composite createToolTipContentArea(Event event,
-				Composite parent) {
-			Widget item = teamChat.getTableViewer().getTable().getItem(
-					new Point(event.x, event.y));
-			User user = (User) item.getData();
+		protected Composite createToolTipContentArea(Event event, Composite parent) {
+			final Widget item = teamChat.getTableViewer().getTable().getItem(new Point(event.x, event.y));
+			final User user = (User) item.getData();
 
 			GridLayout gl = new GridLayout();
 			gl.marginBottom = 0;
@@ -417,12 +388,11 @@ public class LineChatClientView implements FileSenderUI {
 			gl.verticalSpacing = 1;
 			parent.setLayout(gl);
 
-			Composite topArea = new Composite(parent, SWT.NONE);
-			GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+			final Composite topArea = new Composite(parent, SWT.NONE);
+			final GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
 			data.widthHint = 200;
 			topArea.setLayoutData(data);
-			topArea.setBackground(JFaceResources.getColorRegistry().get(
-					HEADER_BG_COLOR));
+			topArea.setBackground(JFaceResources.getColorRegistry().get(HEADER_BG_COLOR));
 
 			gl = new GridLayout();
 			gl.marginBottom = 2;
@@ -434,24 +404,21 @@ public class LineChatClientView implements FileSenderUI {
 
 			topArea.setLayout(gl);
 
-			Label l = new Label(topArea, SWT.NONE);
+			final Label l = new Label(topArea, SWT.NONE);
 			l.setText(user.getNickname());
-			l.setBackground(JFaceResources.getColorRegistry().get(
-					HEADER_BG_COLOR));
+			l.setBackground(JFaceResources.getColorRegistry().get(HEADER_BG_COLOR));
 			l.setFont(JFaceResources.getFontRegistry().get(HEADER_FONT));
 			l.setLayoutData(data);
 
-			createContentArea(parent, user.getUserFields()).setLayoutData(
-					new GridData(SWT.FILL, SWT.FILL, true, true));
+			createContentArea(parent, user.getUserFields()).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 			return parent;
 		}
 
 		protected Control createContentArea(Composite parent, Vector fields) {
-			Text label = new Text(parent, SWT.READ_ONLY | SWT.MULTI);
-			label.setBackground(parent.getDisplay().getSystemColor(
-					SWT.COLOR_INFO_BACKGROUND));
-			StringBuffer buffer = new StringBuffer();
+			final Text label = new Text(parent, SWT.READ_ONLY | SWT.MULTI);
+			label.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+			final StringBuffer buffer = new StringBuffer();
 			synchronized (buffer) {
 				for (int i = 0; i < fields.size(); i++) {
 					buffer.append(fields.get(i));
@@ -459,18 +426,16 @@ public class LineChatClientView implements FileSenderUI {
 				}
 			}
 			label.setText(buffer.toString().trim());
-			label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
-					false));
+			label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 			return label;
 		}
 
 		protected boolean shouldCreateToolTip(Event e) {
 			if (super.shouldCreateToolTip(e)) {
-				Widget item = teamChat.getTableViewer().getTable().getItem(
-						new Point(e.x, e.y));
+				final Widget item = teamChat.getTableViewer().getTable().getItem(new Point(e.x, e.y));
 				if (item != null) {
-					User user = (User) item.getData();
-					Vector fields = user.getUserFields();
+					final User user = (User) item.getData();
+					final Vector fields = user.getUserFields();
 					return fields != null && !fields.isEmpty();
 				} else {
 					return false;
