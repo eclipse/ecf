@@ -10,10 +10,14 @@
  *****************************************************************************/
 package org.eclipse.ecf.example.collab.share;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -36,14 +40,13 @@ import org.eclipse.ecf.internal.example.collab.ui.FileReceiverUI;
 import org.eclipse.ecf.internal.example.collab.ui.ImageWrapper;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatClientView;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatView;
+import org.eclipse.ecf.internal.example.collab.ui.ShowImageShell;
 import org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
@@ -78,6 +81,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	public static final String ID = "chat";
 
 	private static final String DEFAULT_WINDOW_TITLE = "Chat";
+	private static final String HANDLE_SHOW_IMAGE_START_MSG = "handleShowImageStart";
+	private static final String HANDLE_SHOW_IMAGE_DATA_MSG = "handleShowImageData";
 
 	private String windowTitle = DEFAULT_WINDOW_TITLE;
 	private String downloadDirectory = "";
@@ -504,39 +509,69 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void sendImage(ID toID, ImageWrapper wrapper) {
+	private static byte[] compress(byte[] source) throws IOException {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final ZipOutputStream zos = new ZipOutputStream(bos);
+		final ByteArrayInputStream bis = new ByteArrayInputStream(source);
+		int read = 0;
+		final byte[] buf = new byte[16192];
+		zos.putNextEntry(new ZipEntry("bytes"));
+		while ((read = bis.read(buf)) != -1) {
+			zos.write(buf, 0, read);
+		}
+		zos.finish();
+		zos.flush();
+		return bos.toByteArray();
+	}
+
+	public void sendImage(ID toID, ImageData imageData) {
 		try {
-			forwardMsgTo(toID, SharedObjectMsg.createMsg(null, HANDLE_SHOW_IMAGE_MSG, localContainerID, wrapper));
+			forwardMsgTo(toID, SharedObjectMsg.createMsg(null, HANDLE_SHOW_IMAGE_START_MSG, localContainerID, localUser.getNickname(), new ImageWrapper(imageData)));
+			final byte[] compressedData = compress(imageData.data);
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream(8096);
+			int startPos = 0;
+			while (startPos <= compressedData.length) {
+				bos.reset();
+				final int length = Math.min(compressedData.length - startPos, 8096);
+				bos.write(compressedData, startPos, length);
+				startPos += 8096;
+				bos.flush();
+				final Boolean done = new Boolean((compressedData.length - startPos) < 0);
+				forwardMsgTo(toID, SharedObjectMsg.createMsg(null, HANDLE_SHOW_IMAGE_DATA_MSG, localContainerID, bos.toByteArray(), done));
+			}
 		} catch (final Exception e) {
-			log("Exception on sendShowTextMsg to remote clients", e);
+			log("Exception on sendImage", e);
 		}
 	}
 
-	protected void handleShowImage(ID id, final ImageWrapper wrapper) {
+	ShowImageShell showImageShell = null;
+
+	protected void handleShowImageStart(final ID id, final String fromUser, final ImageWrapper imageWrapper) {
 		final Display display = localGUI.getTextControl().getDisplay();
 		display.asyncExec(new Runnable() {
 			public void run() {
-				try {
-					final Image image = new Image(display, wrapper.createImageData());
-					final Shell shell = new Shell(display);
-					shell.setBounds(image.getBounds());
-					shell.addDisposeListener(new DisposeListener() {
+				if (showImageShell == null) {
+					showImageShell = new ShowImageShell(display, id, imageWrapper, new DisposeListener() {
 						public void widgetDisposed(DisposeEvent e) {
-							image.dispose();
+							showImageShell = null;
 						}
 					});
-
-					shell.addPaintListener(new PaintListener() {
-						public void paintControl(PaintEvent e) {
-							e.gc.drawImage(image, 0, 0);
-						}
-					});
-					shell.open();
-				} catch (final IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					showImageShell.setText("Screen capture from " + fromUser);
+					showImageShell.open();
 				}
+			}
+		});
+	}
 
+	protected void handleShowImageData(final ID id, final byte[] data, final Boolean done) {
+		final Display display = localGUI.getTextControl().getDisplay();
+		display.asyncExec(new Runnable() {
+			public void run() {
+				if (showImageShell != null && showImageShell.getSenderID().equals(id)) {
+					showImageShell.addData(data);
+					if (done.booleanValue())
+						showImageShell.showImage();
+				}
 			}
 		});
 	}

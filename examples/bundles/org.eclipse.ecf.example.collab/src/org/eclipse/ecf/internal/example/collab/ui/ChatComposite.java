@@ -77,6 +77,7 @@ import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -461,10 +462,11 @@ public class ChatComposite extends Composite {
 						gc.drawRectangle(downX, downY, e.x - downX, e.y - downY);
 						gc.setForeground(whiteColor);
 						gc.drawRectangle(downX - 1, downY - 1, e.x - downX + 2, e.y - downY + 2);
+						setCursor(new Cursor(getDisplay(), SWT.CURSOR_SIZESE));
 					}
 				}
 			});
-
+			shell.setCursor(new Cursor(getDisplay(), SWT.CURSOR_CROSS));
 			shell.open();
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch()) {
@@ -495,7 +497,7 @@ public class ChatComposite extends Composite {
 
 		protected void buttonPressed(int buttonId) {
 			if (buttonId == IDialogConstants.OK_ID) {
-				view.lch.sendImage(targetID, new ImageWrapper(image.getImageData()));
+				view.lch.sendImage(targetID, image.getImageData());
 			}
 			super.buttonPressed(buttonId);
 		}

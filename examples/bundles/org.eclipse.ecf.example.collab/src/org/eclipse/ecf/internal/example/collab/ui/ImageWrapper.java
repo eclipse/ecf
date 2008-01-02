@@ -10,13 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.example.collab.ui;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
@@ -29,56 +23,23 @@ public class ImageWrapper implements Serializable {
 	public final int height;
 	public final int depth;
 	public final int scanlinePad;
-	public byte[] data;
 
 	private final int redMask;
 	private final int greenMask;
 	private final int blueMask;
 
-	ImageWrapper(ImageData data) {
+	public ImageWrapper(ImageData data) {
 		width = data.width;
 		height = data.height;
 		depth = data.depth;
 		scanlinePad = data.scanlinePad;
-		this.data = null;
-		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		final ZipOutputStream zos = new ZipOutputStream(bos);
-		final ZipEntry entry = new ZipEntry("bytes");
-		final ByteArrayInputStream bis = new ByteArrayInputStream(data.data);
-		int read = 0;
-		final byte[] buf = new byte[16384];
-		try {
-			zos.putNextEntry(entry);
-			while ((read = bis.read(buf)) != -1) {
-				zos.write(buf, 0, read);
-			}
-			zos.finish();
-			zos.flush();
-		} catch (final IOException e) {
-			// Should never happen
-		}
-		this.data = bos.toByteArray();
 		redMask = data.palette.redMask;
 		greenMask = data.palette.greenMask;
 		blueMask = data.palette.blueMask;
 	}
 
-	protected byte[] getUncompressedData() throws IOException {
-		final ZipInputStream ins = new ZipInputStream(new ByteArrayInputStream(this.data));
-		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		int read = 0;
-		final byte[] buf = new byte[16384];
-		ins.getNextEntry();
-		while ((read = ins.read(buf)) > 0) {
-			bos.write(buf, 0, read);
-		}
-		bos.flush();
-		ins.close();
-		return bos.toByteArray();
-	}
-
-	public ImageData createImageData() throws IOException {
+	public ImageData createImageData(byte[] data) {
 		final PaletteData palette = new PaletteData(redMask, greenMask, blueMask);
-		return new ImageData(width, height, depth, palette, scanlinePad, getUncompressedData());
+		return new ImageData(width, height, depth, palette, scanlinePad, data);
 	}
 }
