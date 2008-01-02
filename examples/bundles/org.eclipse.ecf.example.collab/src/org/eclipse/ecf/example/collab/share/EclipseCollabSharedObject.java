@@ -58,6 +58,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class EclipseCollabSharedObject extends GenericSharedObject {
+	/**
+	 * 
+	 */
+	private static final int MAX_MESSAGE_SIZE = 8096;
 	private static final String HANDLE_SHOW_VIEW_MSG = "handleShowView";
 	private static final String HANDLE_SHOW_VIEW_WITH_ID_MSG = "handleShowViewWithID";
 	private static final String HANDLE_LAUNCH_EDITOR_FOR_FILE_MSG = "handleLaunchEditorForFile";
@@ -528,13 +532,13 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		try {
 			forwardMsgTo(toID, SharedObjectMsg.createMsg(null, HANDLE_SHOW_IMAGE_START_MSG, localContainerID, localUser.getNickname(), new ImageWrapper(imageData)));
 			final byte[] compressedData = compress(imageData.data);
-			final ByteArrayOutputStream bos = new ByteArrayOutputStream(8096);
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream(MAX_MESSAGE_SIZE);
 			int startPos = 0;
 			while (startPos <= compressedData.length) {
 				bos.reset();
-				final int length = Math.min(compressedData.length - startPos, 8096);
+				final int length = Math.min(compressedData.length - startPos, MAX_MESSAGE_SIZE);
 				bos.write(compressedData, startPos, length);
-				startPos += 8096;
+				startPos += MAX_MESSAGE_SIZE;
 				bos.flush();
 				final Boolean done = new Boolean((compressedData.length - startPos) < 0);
 				forwardMsgTo(toID, SharedObjectMsg.createMsg(null, HANDLE_SHOW_IMAGE_DATA_MSG, localContainerID, bos.toByteArray(), done));

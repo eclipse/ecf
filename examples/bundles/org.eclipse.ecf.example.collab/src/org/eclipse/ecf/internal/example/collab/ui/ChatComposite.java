@@ -541,7 +541,7 @@ public class ChatComposite extends Composite {
 
 	private void sendImage(ID targetID) {
 		final Job job = new ScreenCaptureJob(getDisplay(), targetID);
-		job.schedule();
+		job.schedule(5000);
 	}
 
 	private void fillTreeContextMenuUser(IMenuManager man, final User user) {
