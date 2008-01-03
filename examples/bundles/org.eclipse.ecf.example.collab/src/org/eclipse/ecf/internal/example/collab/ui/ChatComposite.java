@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -30,13 +29,13 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.ui.screencapture.IImageSender;
+import org.eclipse.ecf.ui.screencapture.ScreenCaptureJob;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -70,18 +69,12 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -89,7 +82,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
@@ -101,14 +93,13 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
-import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.views.IViewCategory;
 import org.eclipse.ui.views.IViewDescriptor;
 import org.eclipse.ui.views.IViewRegistry;
 
 public class ChatComposite extends Composite {
 	private static final String CHAT_OUTPUT_FONT = "ChatFont";
-	private final LineChatClientView view;
+	final LineChatClientView view;
 	private Color meColor = null;
 	private Color otherColor = null;
 	private Color systemColor = null;
@@ -392,156 +383,15 @@ public class ChatComposite extends Composite {
 		}
 	}
 
-	private class ScreenCaptureJob extends UIJob {
-
-		private final Color blackColor;
-
-		private final Color whiteColor;
-
-		private boolean isDragging = false;
-
-		private int downX = -1;
-
-		private int downY = -1;
-
-		private final ID targetID;
-
-		public ScreenCaptureJob(Display display, ID targetID) {
-			super(display, "Screen capturing...");
-			blackColor = new Color(display, 0, 0, 0);
-			whiteColor = new Color(display, 255, 255, 255);
-			this.targetID = targetID;
-		}
-
-		public IStatus runInUIThread(IProgressMonitor monitor) {
-			final Display display = getDisplay();
-			final GC context = new GC(display);
-			final Image image = new Image(display, display.getBounds());
-			context.copyArea(image, 0, 0);
-			context.dispose();
-
-			final Shell shell = new Shell(display, SWT.NO_TRIM);
-			shell.setLayout(new FillLayout());
-			shell.setBounds(display.getBounds());
-			final GC gc = new GC(shell);
-			shell.addPaintListener(new PaintListener() {
-				public void paintControl(PaintEvent e) {
-					gc.drawImage(image, 0, 0);
-				}
-			});
-
-			shell.addMouseListener(new MouseAdapter() {
-				public void mouseDown(MouseEvent e) {
-					isDragging = true;
-					downX = e.x;
-					downY = e.y;
-				}
-
-				public void mouseUp(MouseEvent e) {
-					isDragging = false;
-					final int width = Math.max(downX, e.x) - Math.min(downX, e.x);
-					final int height = Math.max(downY, e.y) - Math.min(downY, e.y);
-					if (width != 0 && height != 0) {
-						final Image copy = new Image(display, width, height);
-						gc.copyArea(copy, Math.min(downX, e.x), Math.min(downY, e.y));
-						shell.close();
-						image.dispose();
-						blackColor.dispose();
-						whiteColor.dispose();
-						final Dialog dialog = new ConfirmationDialog(getShell(), targetID, copy, width, height);
-						dialog.open();
-					}
-				}
-			});
-
-			shell.addMouseMoveListener(new MouseMoveListener() {
-				public void mouseMove(MouseEvent e) {
-					if (isDragging) {
-						gc.drawImage(image, 0, 0);
-						gc.setForeground(blackColor);
-						gc.drawRectangle(downX, downY, e.x - downX, e.y - downY);
-						gc.setForeground(whiteColor);
-						gc.drawRectangle(downX - 1, downY - 1, e.x - downX + 2, e.y - downY + 2);
-						setCursor(new Cursor(getDisplay(), SWT.CURSOR_SIZESE));
-					}
-				}
-			});
-			shell.setCursor(new Cursor(getDisplay(), SWT.CURSOR_CROSS));
-			shell.open();
-			while (!shell.isDisposed()) {
-				if (!display.readAndDispatch()) {
-					display.sleep();
-				}
-			}
-			return Status.OK_STATUS;
-		}
-	}
-
-	private class ConfirmationDialog extends Dialog {
-
-		private final Image image;
-
-		private final int width;
-
-		private final int height;
-
-		private final ID targetID;
-
-		private ConfirmationDialog(Shell shell, ID targetID, Image image, int width, int height) {
-			super(shell);
-			this.image = image;
-			this.width = width;
-			this.height = height;
-			this.targetID = targetID;
-		}
-
-		protected void buttonPressed(int buttonId) {
-			if (buttonId == IDialogConstants.OK_ID) {
-				view.lch.sendImage(targetID, image.getImageData());
-			}
-			super.buttonPressed(buttonId);
-		}
-
-		protected Control createDialogArea(Composite parent) {
-			parent = (Composite) super.createDialogArea(parent);
-			final Composite composite = new Composite(parent, SWT.NONE);
-			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			composite.setLayout(new FillLayout());
-			composite.addPaintListener(new PaintListener() {
-				public void paintControl(PaintEvent e) {
-					e.gc.drawImage(image, 0, 0);
-				}
-			});
-			return parent;
-		}
-
-		protected Point getInitialSize() {
-			final Point point = super.getInitialSize();
-			if (point.x < width) {
-				if (point.y < height) {
-					return new Point(width, height);
-				} else {
-					return new Point(width, point.y);
-				}
-			} else {
-				if (point.y < height) {
-					return new Point(point.x, height);
-				} else {
-					return new Point(point.x, point.y);
-				}
-			}
-		}
-
-		public boolean close() {
-			image.dispose();
-			return super.close();
-		}
-
-	}
-
 	private void sendImage(ID targetID) {
-		final Job job = new ScreenCaptureJob(getDisplay(), targetID);
-		job.schedule(5000);
+		if (MessageDialog.openQuestion(null, "Screen Capture", "To initiate screen capture, click OK, wait 5 seconds,\nand then select capture region with arrow cursor.")) {
+			final Job job = new ScreenCaptureJob(getDisplay(), targetID, new IImageSender() {
+				public void sendImage(ID targetID, ImageData imageData) {
+					view.lch.sendImage(targetID, imageData);
+				}
+			});
+			job.schedule(5000);
+		}
 	}
 
 	private void fillTreeContextMenuUser(IMenuManager man, final User user) {

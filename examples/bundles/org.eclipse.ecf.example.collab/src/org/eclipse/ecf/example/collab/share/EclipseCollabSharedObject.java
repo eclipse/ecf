@@ -10,14 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.example.collab.share;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -37,11 +34,12 @@ import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.internal.example.collab.ui.ChatLine;
 import org.eclipse.ecf.internal.example.collab.ui.EditorHelper;
 import org.eclipse.ecf.internal.example.collab.ui.FileReceiverUI;
-import org.eclipse.ecf.internal.example.collab.ui.ImageWrapper;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatClientView;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatView;
-import org.eclipse.ecf.internal.example.collab.ui.ShowImageShell;
 import org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector;
+import org.eclipse.ecf.ui.screencapture.ImageWrapper;
+import org.eclipse.ecf.ui.screencapture.ScreenCaptureUtil;
+import org.eclipse.ecf.ui.screencapture.ShowImageShell;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.events.DisposeEvent;
@@ -515,25 +513,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	private static byte[] compress(byte[] source) throws IOException {
-		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		final ZipOutputStream zos = new ZipOutputStream(bos);
-		final ByteArrayInputStream bis = new ByteArrayInputStream(source);
-		int read = 0;
-		final byte[] buf = new byte[16192];
-		zos.putNextEntry(new ZipEntry("bytes"));
-		while ((read = bis.read(buf)) != -1) {
-			zos.write(buf, 0, read);
-		}
-		zos.finish();
-		zos.flush();
-		return bos.toByteArray();
-	}
-
 	public void sendImage(ID toID, ImageData imageData) {
 		try {
 			forwardMsgTo(toID, SharedObjectMsg.createMsg(null, HANDLE_SHOW_IMAGE_START_MSG, localContainerID, localUser.getNickname(), new ImageWrapper(imageData)));
-			final byte[] compressedData = compress(imageData.data);
+			final byte[] compressedData = ScreenCaptureUtil.compress(imageData.data);
 			final ByteArrayOutputStream bos = new ByteArrayOutputStream(MAX_MESSAGE_SIZE);
 			int startPos = 0;
 			while (startPos <= compressedData.length) {
