@@ -19,17 +19,14 @@ import org.eclipse.ui.views.IViewCategory;
 import org.eclipse.ui.views.IViewDescriptor;
 import org.eclipse.ui.views.IViewRegistry;
 
-public class ShowViewDialogTreeContentProvider implements
-		ITreeContentProvider {
+public class ShowViewDialogTreeContentProvider implements ITreeContentProvider {
 	private HashMap parents = new HashMap();
 
 	public Object[] getChildren(Object element) {
 		if (element instanceof IViewRegistry)
-			return ((IViewRegistry) element)
-					.getCategories();
+			return ((IViewRegistry) element).getCategories();
 		else if (element instanceof IViewCategory) {
-			IViewDescriptor[] children = ((IViewCategory) element)
-					.getViews();
+			final IViewDescriptor[] children = ((IViewCategory) element).getViews();
 			for (int i = 0; i < children.length; ++i)
 				parents.put(children[i], element);
 
@@ -40,8 +37,7 @@ public class ShowViewDialogTreeContentProvider implements
 
 	public Object getParent(Object element) {
 		if (element instanceof IViewCategory)
-			return PlatformUI.getWorkbench()
-					.getViewRegistry();
+			return PlatformUI.getWorkbench().getViewRegistry();
 		else if (element instanceof IViewDescriptor)
 			return parents.get(element);
 		else
@@ -49,11 +45,9 @@ public class ShowViewDialogTreeContentProvider implements
 	}
 
 	public boolean hasChildren(Object element) {
-		if (element instanceof IViewRegistry
-				|| element instanceof IViewCategory)
+		if (element instanceof IViewRegistry || element instanceof IViewCategory)
 			return true;
-		else
-			return false;
+		return false;
 	}
 
 	public Object[] getElements(Object inputElement) {
@@ -64,8 +58,7 @@ public class ShowViewDialogTreeContentProvider implements
 		parents = null;
 	}
 
-	public void inputChanged(Viewer viewer,
-			Object oldInput, Object newInput) {
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		parents.clear();
 	}
 }

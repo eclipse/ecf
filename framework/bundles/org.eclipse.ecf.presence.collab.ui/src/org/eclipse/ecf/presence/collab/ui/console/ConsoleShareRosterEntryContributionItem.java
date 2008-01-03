@@ -19,10 +19,12 @@ import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class ConsoleShareRosterEntryContributionItem extends AbstractRosterEntryContributionItem {
 
 	public ConsoleShareRosterEntryContributionItem() {
+		// do nothing
 	}
 
 	public ConsoleShareRosterEntryContributionItem(String id) {
@@ -51,7 +53,7 @@ public class ConsoleShareRosterEntryContributionItem extends AbstractRosterEntry
 						}
 					};
 					action.setText(Messages.ConsoleShare_RosterEntryMenu);
-					action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.ConsoleShare_RosterContributionItem_CONSOLE_ICON));
+					action.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.ConsoleShare_RosterContributionItem_CONSOLE_ICON));
 					return new IAction[] {action};
 				}
 			}

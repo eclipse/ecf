@@ -34,6 +34,7 @@ public class Activator extends AbstractUIPlugin {
 	 * The constructor
 	 */
 	public Activator() {
+		// nothing
 	}
 
 	/*
@@ -41,10 +42,10 @@ public class Activator extends AbstractUIPlugin {
 	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
+	public void start(BundleContext context1) throws Exception {
+		super.start(context1);
 		plugin = this;
-		this.context = context;
+		this.context = context1;
 	}
 
 	/*
@@ -52,8 +53,8 @@ public class Activator extends AbstractUIPlugin {
 	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
+	public void stop(BundleContext context1) throws Exception {
+		super.stop(context1);
 		if (containerManagerTracker != null) {
 			containerManagerTracker.close();
 			containerManagerTracker = null;

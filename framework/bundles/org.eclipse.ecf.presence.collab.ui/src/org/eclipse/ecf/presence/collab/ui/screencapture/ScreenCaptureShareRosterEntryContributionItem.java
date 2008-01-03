@@ -8,25 +8,33 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.presence.collab.ui.view;
+package org.eclipse.ecf.presence.collab.ui.screencapture;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.internal.presence.collab.ui.Messages;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
+import org.eclipse.ecf.ui.screencapture.IImageSender;
+import org.eclipse.ecf.ui.screencapture.ScreenCaptureJob;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-public class ViewShareRosterEntryContributionItem extends AbstractRosterEntryContributionItem {
+public class ScreenCaptureShareRosterEntryContributionItem extends AbstractRosterEntryContributionItem {
 
-	public ViewShareRosterEntryContributionItem() {
-		// do nothing
+	public static final long SCREEN_CAPTURE_DELAY = 5000;
+
+	public ScreenCaptureShareRosterEntryContributionItem() {
+		// nothing
 	}
 
-	public ViewShareRosterEntryContributionItem(String id) {
+	public ScreenCaptureShareRosterEntryContributionItem(String id) {
 		super(id);
 	}
 
@@ -39,16 +47,23 @@ public class ViewShareRosterEntryContributionItem extends AbstractRosterEntryCon
 			final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c.getAdapter(IChannelContainerAdapter.class);
 			// If the container has channel container adapter and is online/available
 			if (channelAdapter != null && isAvailable(entry)) {
-				final ViewShare tmp = ViewShare.getViewShare(c.getID());
+				final ScreenCaptureShare tmp = ScreenCaptureShare.getScreenCaptureShare(c.getID());
 				// If there is an URL share associated with this container
 				if (tmp != null) {
-					final ViewShare viewshare = tmp;
+					final ScreenCaptureShare screencaptureshare = tmp;
 					final IAction action = new Action() {
 						public void run() {
-							viewshare.sendOpenViewRequest(entry.getRoster().getUser().getName(), entry.getUser().getID());
+							if (MessageDialog.openQuestion(null, Messages.ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_TITLE, Messages.ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_MESSAGE)) {
+								ScreenCaptureJob screenCaptureJob = new ScreenCaptureJob(Display.getCurrent(), entry.getUser().getID(), new IImageSender() {
+									public void sendImage(ID targetID, ImageData imageData) {
+										screencaptureshare.sendImage(entry.getRoster().getUser().getID(), entry.getRoster().getUser().getName(), targetID, imageData);
+									}
+								});
+								screenCaptureJob.schedule(SCREEN_CAPTURE_DELAY);
+							}
 						}
 					};
-					action.setText(Messages.ViewShareRosterEntryContributionItem_VIEWSHARE_MENU_TEXT);
+					action.setText(Messages.ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MENU);
 					action.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_DEF_VIEW));
 					return new IAction[] {action};
 				}

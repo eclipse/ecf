@@ -27,6 +27,7 @@ import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.presence.collab.ui.console.ConsoleShare;
+import org.eclipse.ecf.presence.collab.ui.screencapture.ScreenCaptureShare;
 import org.eclipse.ecf.presence.collab.ui.url.URLShare;
 import org.eclipse.ecf.presence.collab.ui.view.ViewShare;
 import org.eclipse.osgi.util.NLS;
@@ -56,6 +57,7 @@ public class ShareReceiversECFStart implements IECFStart {
 						URLShare.addURLShare(containerID, cca);
 						ViewShare.addViewShare(containerID, cca);
 						ConsoleShare.addStackShare(containerID, cca);
+						ScreenCaptureShare.addScreenCaptureShare(containerID, cca);
 					} catch (ECFException e) {
 						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.StartURLShareAndViewShare_STATUS_URLSHARE_NOT_CREATED, container.getID()), null));
 					}
@@ -64,6 +66,7 @@ public class ShareReceiversECFStart implements IECFStart {
 					URLShare.removeURLShare(containerID);
 					ViewShare.removeViewShare(containerID);
 					ConsoleShare.removeStackShare(containerID);
+					ScreenCaptureShare.removeScreenCaptureShare(containerID);
 				} else if (event instanceof IContainerDisposeEvent) {
 					containerManager.removeListener(containerManagerListener);
 					container.removeListener(containerListener);
@@ -94,6 +97,7 @@ public class ShareReceiversECFStart implements IECFStart {
 	};
 
 	public ShareReceiversECFStart() {
+		// do nothing
 	}
 
 	/* (non-Javadoc)

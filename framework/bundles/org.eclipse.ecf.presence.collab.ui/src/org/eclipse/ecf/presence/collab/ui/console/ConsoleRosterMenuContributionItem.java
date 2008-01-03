@@ -24,6 +24,7 @@ import org.eclipse.ui.PlatformUI;
 public class ConsoleRosterMenuContributionItem extends AbstractRosterMenuContributionItem {
 
 	public ConsoleRosterMenuContributionItem() {
+		// do nothing
 	}
 
 	public ConsoleRosterMenuContributionItem(String id) {
@@ -53,8 +54,10 @@ public class ConsoleRosterMenuContributionItem extends AbstractRosterMenuContrib
 	protected AbstractRosterMenuHandler createRosterEntryHandler(IRosterEntry rosterEntry) {
 		return new AbstractRosterMenuHandler(rosterEntry) {
 
+			/**
+			 * @throws ExecutionException  
+			 */
 			public Object execute(ExecutionEvent arg0) throws ExecutionException {
-				// TODO Auto-generated method stub
 				final Object s = getSelection();
 				System.out.println(s);
 				System.out.println(getRosterEntry());

@@ -24,7 +24,6 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.internal.presence.collab.ui.Activator;
-import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
  *
@@ -58,30 +57,26 @@ public abstract class AbstractCollabShare extends AbstractShare {
 		super(adapter, channelID, options);
 	}
 
-	protected byte[] serialize(Object o) throws Exception {
+	public byte[] serialize(Object o) throws Exception {
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		final ObjectOutputStream oos = new ObjectOutputStream(bos);
 		oos.writeObject(o);
 		return bos.toByteArray();
 	}
 
-	protected Object deserialize(byte[] bytes) throws Exception {
+	public Object deserialize(byte[] bytes) throws Exception {
 		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
 		final ObjectInputStream oins = new ObjectInputStream(bins);
 		return oins.readObject();
 	}
 
-	protected void logError(String exceptionString, Throwable e) {
+	public void logError(String exceptionString, Throwable e) {
 		Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, exceptionString, e));
 
 	}
 
-	protected void logError(IStatus status) {
+	public void logError(IStatus status) {
 		Activator.getDefault().getLog().log(status);
-	}
-
-	protected void showErrorToUser(String title, String message) {
-		MessageDialog.openError(null, title, message);
 	}
 
 }

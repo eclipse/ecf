@@ -76,7 +76,6 @@ public class ViewShare extends AbstractCollabShare {
 						wp.showView(viewID, secondaryID, mode);
 
 					} catch (final Exception e) {
-						showErrorToUser(Messages.ViewShare_VIEWSHARE_ERROR_DIALOG_TITLE, NLS.bind(Messages.ViewShare_VIEWSHARE_ERROR_DIALOG_MESSAGE, e.getLocalizedMessage()));
 						logError(Messages.ViewShare_VIEWSHARE_ERROR_LOG_MESSAGE, e);
 					}
 				}
@@ -100,9 +99,9 @@ public class ViewShare extends AbstractCollabShare {
 					public IStatus validate(Object[] selection) {
 						for (int i = 0; i < selection.length; ++i)
 							if (!(selection[i] instanceof IViewDescriptor))
-								return new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "", null); //$NON-NLS-1$
+								return new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "", null); //$NON-NLS-1$
 
-						return new Status(Status.OK, Activator.getDefault().getBundle().getSymbolicName(), 0, "", null); //$NON-NLS-1$
+						return new Status(IStatus.OK, Activator.getDefault().getBundle().getSymbolicName(), 0, "", null); //$NON-NLS-1$
 					}
 				});
 				final IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry();
@@ -123,10 +122,8 @@ public class ViewShare extends AbstractCollabShare {
 						// with selectedIDs (view IDs) to show
 						sendMessage(toID, serialize(new Object[] {senderuser, selectedIDs[i]}));
 					} catch (final ECFException e) {
-						showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
 						logError(e.getStatus());
 					} catch (final Exception e) {
-						showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
 						logError(Messages.Share_EXCEPTION_LOG_SEND, e);
 					}
 				}
@@ -144,7 +141,6 @@ public class ViewShare extends AbstractCollabShare {
 			final Object[] msg = (Object[]) deserialize(data);
 			handleOpenViewRequest((String) msg[0], (String) msg[1], null, IWorkbenchPage.VIEW_ACTIVATE);
 		} catch (final Exception e) {
-			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(Messages.Share_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
 			logError(Messages.Share_EXCEPTION_LOG_MESSAGE, e);
 		}
 	}

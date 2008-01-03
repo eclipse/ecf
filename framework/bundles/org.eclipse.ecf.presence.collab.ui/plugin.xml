@@ -36,6 +36,25 @@
          </dynamic>
       </menuContribution>
    </extension>
+   
+      <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
+         <dynamic
+               class="org.eclipse.ecf.presence.collab.ui.screencapture.ScreenCaptureShareRosterEntryContributionItem"
+               id="org.eclipse.ecf.presence.collab.ui.dynamic6">
+         </dynamic>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
+         <dynamic
+               class="org.eclipse.ecf.presence.collab.ui.screencapture.ScreenCaptureShareRosterContributionItem"
+               id="org.eclipse.ecf.presence.collab.ui.dynamic7">
+         </dynamic>
+      </menuContribution>
+   </extension>
+   
    <extension
          point="org.eclipse.ecf.presence.ui.rosterViewerDropTarget">
       <dropTarget

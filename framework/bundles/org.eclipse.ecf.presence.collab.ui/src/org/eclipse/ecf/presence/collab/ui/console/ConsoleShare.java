@@ -45,17 +45,17 @@ public class ConsoleShare extends AbstractCollabShare {
 
 	private static final Map consoleSharechannels = new Hashtable();
 
-	private static TextSelection selection = null;
-	private static boolean initialized = false;
+	static TextSelection selection = null;
+	static boolean initialized = false;
 
-	private static final ISelectionListener selectionListener = new ISelectionListener() {
-		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-			if (part instanceof IConsoleView && selection instanceof TextSelection) {
-				TextSelection s = (TextSelection) selection;
+	static final ISelectionListener selectionListener = new ISelectionListener() {
+		public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+			if (part instanceof IConsoleView && sel instanceof TextSelection) {
+				TextSelection s = (TextSelection) sel;
 				if (s == null || s.getLength() == 0)
 					ConsoleShare.selection = null;
 				else
-					ConsoleShare.selection = (TextSelection) selection;
+					ConsoleShare.selection = (TextSelection) sel;
 			}
 		}
 	};
@@ -110,27 +110,25 @@ public class ConsoleShare extends AbstractCollabShare {
 					if (consoles.length == 0) {
 						MessageDialog.openInformation(null, NLS.bind(Messages.ConsoleShare_STACK_TRACE_FROM_TITLE, user), NLS.bind(Messages.ConsoleShare_STACK_TRACE_FROM_MESSAGE, user));
 						return;
-					} else {
-						for (int i = 0; i < consoles.length; i++) {
-							final String consoleType = consoles[i].getType();
-							if (consoleType != null && consoleType.equals("javaStackTraceConsole")) { //$NON-NLS-1$
-								final TextConsole textConsole = (TextConsole) consoles[i];
-								textConsole.activate();
-								final IDocument document = textConsole.getDocument();
-								final String text = document.get() + getConsoleSelectionToShow(user, consoleSelection);
-								document.set(text);
-							}
+					}
+					for (int i = 0; i < consoles.length; i++) {
+						final String consoleType = consoles[i].getType();
+						if (consoleType != null && consoleType.equals("javaStackTraceConsole")) { //$NON-NLS-1$
+							final TextConsole textConsole = (TextConsole) consoles[i];
+							textConsole.activate();
+							final IDocument document = textConsole.getDocument();
+							final String text = document.get() + getConsoleSelectionToShow(user, consoleSelection);
+							document.set(text);
 						}
 					}
 				} catch (final Exception e) {
-					showErrorToUser(Messages.ConsoleShare_STACKSHARE_ERROR_DIALOG_TITLE, NLS.bind(Messages.ConsoleShare_STACKSHARE_ERROR_DIALOG_MESSAGE, e.getLocalizedMessage()));
 					logError(Messages.ConsoleShare_STACKSHARE_ERROR_LOG_MESSAGE, e);
 				}
 			}
 		});
 	}
 
-	private String getConsoleSelectionToShow(String user, String stackTrace) {
+	String getConsoleSelectionToShow(String user, String stackTrace) {
 		return NLS.bind(Messages.ConsoleShare_STACK_TRACE_CONTENT, user, stackTrace);
 	}
 
@@ -140,10 +138,8 @@ public class ConsoleShare extends AbstractCollabShare {
 				try {
 					sendMessage(toID, serialize(new Object[] {senderuser, consoleSelection}));
 				} catch (final ECFException e) {
-					showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
 					logError(e.getStatus());
 				} catch (final Exception e) {
-					showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
 					logError(Messages.Share_EXCEPTION_LOG_SEND, e);
 				}
 			}
@@ -160,7 +156,6 @@ public class ConsoleShare extends AbstractCollabShare {
 			final Object[] msg = (Object[]) deserialize(data);
 			handleShowConsoleSelection((String) msg[0], (String) msg[1]);
 		} catch (final Exception e) {
-			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(Messages.Share_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
 			logError(Messages.Share_EXCEPTION_LOG_MESSAGE, e);
 		}
 	}

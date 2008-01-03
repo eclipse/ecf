@@ -31,8 +31,8 @@ public class URLRosterViewerDropTarget implements IRosterViewerDropTarget {
 		return true;
 	}
 
-	private URLShare getURLShare(IRosterEntry rosterEntry) {
-		final IPresenceContainerAdapter pca = rosterEntry.getRoster().getPresenceContainerAdapter();
+	private URLShare getURLShare(IRosterEntry rosterEntry1) {
+		final IPresenceContainerAdapter pca = rosterEntry1.getRoster().getPresenceContainerAdapter();
 		if (pca == null)
 			return null;
 		final IContainer container = (IContainer) pca.getAdapter(IContainer.class);

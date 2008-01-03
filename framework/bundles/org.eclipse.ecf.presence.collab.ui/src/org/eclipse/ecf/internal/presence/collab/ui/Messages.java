@@ -22,6 +22,10 @@ public class Messages extends NLS {
 	public static String URLShare_ENTER_URL_DIALOG_TEXT;
 	public static String URLShare_ERROR_BROWSER_MESSAGE;
 	public static String URLShare_ERROR_BROWSER_TITLE;
+	public static String ScreenCaptureShare_SCREEN_CAPTURE_RECEIVE_TITLE;
+	public static String ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MENU;
+	public static String ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_MESSAGE;
+	public static String ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_TITLE;
 	public static String Share_ERROR_RECEIVE_MESSAGE;
 	public static String Share_ERROR_RECEIVE_TITLE;
 	public static String Share_ERROR_SEND_MESSAGE;
@@ -67,5 +71,6 @@ public class Messages extends NLS {
 	}
 
 	private Messages() {
+		// do nothing
 	}
 }

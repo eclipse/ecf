@@ -20,10 +20,12 @@ import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterContributionItem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class URLShareRosterContributionItem extends AbstractRosterContributionItem {
 
 	public URLShareRosterContributionItem() {
+		// do nothing
 	}
 
 	public URLShareRosterContributionItem(String id) {
@@ -42,7 +44,7 @@ public class URLShareRosterContributionItem extends AbstractRosterContributionIt
 			}
 		};
 		action.setText(Messages.URLShareRosterContributionItem_ADD_URL_SHARE_MENU_TEXT);
-		action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
+		action.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
 		return new IAction[] {action};
 	}
 
@@ -54,7 +56,7 @@ public class URLShareRosterContributionItem extends AbstractRosterContributionIt
 			}
 		};
 		action.setText(Messages.URLShareRosterContributionItem_REMOVE_URL_SHARE_MENU_TEXT);
-		action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
+		action.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
 		return new IAction[] {action};
 	}
 
@@ -69,10 +71,8 @@ public class URLShareRosterContributionItem extends AbstractRosterContributionIt
 				// If it does exist already, then create action to remove
 				if (urlshare != null)
 					return createActionRemove(c.getID(), urlshare);
-				else {
-					final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c.getAdapter(IChannelContainerAdapter.class);
-					return (channelAdapter == null) ? null : createActionAdd(c.getID(), channelAdapter);
-				}
+				final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c.getAdapter(IChannelContainerAdapter.class);
+				return (channelAdapter == null) ? null : createActionAdd(c.getID(), channelAdapter);
 			}
 		}
 		return null;

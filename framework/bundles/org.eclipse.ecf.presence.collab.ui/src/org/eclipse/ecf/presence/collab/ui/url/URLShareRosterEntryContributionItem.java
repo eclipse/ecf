@@ -18,10 +18,12 @@ import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class URLShareRosterEntryContributionItem extends AbstractRosterEntryContributionItem {
 
 	public URLShareRosterEntryContributionItem() {
+		// do nothing
 	}
 
 	public URLShareRosterEntryContributionItem(String id) {
@@ -47,7 +49,7 @@ public class URLShareRosterEntryContributionItem extends AbstractRosterEntryCont
 						}
 					};
 					action.setText(Messages.URLShareRosterEntryContributionItem_SEND_URL_MENU_TEXT);
-					action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
+					action.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
 					return new IAction[] {action};
 				}
 			}

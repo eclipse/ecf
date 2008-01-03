@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.presence.collab.ui.view;
+package org.eclipse.ecf.presence.collab.ui.screencapture;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -22,13 +22,13 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-public class ViewShareRosterContributionItem extends AbstractRosterContributionItem {
+public class ScreenCaptureShareRosterContributionItem extends AbstractRosterContributionItem {
 
-	public ViewShareRosterContributionItem() {
+	public ScreenCaptureShareRosterContributionItem() {
 		// nothing
 	}
 
-	public ViewShareRosterContributionItem(String id) {
+	public ScreenCaptureShareRosterContributionItem(String id) {
 		super(id);
 	}
 
@@ -36,7 +36,7 @@ public class ViewShareRosterContributionItem extends AbstractRosterContributionI
 		final IAction action = new Action() {
 			public void run() {
 				try {
-					ViewShare.addViewShare(containerID, channelAdapter);
+					ScreenCaptureShare.addScreenCaptureShare(containerID, channelAdapter);
 				} catch (ECFException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -48,11 +48,11 @@ public class ViewShareRosterContributionItem extends AbstractRosterContributionI
 		return new IAction[] {action};
 	}
 
-	private IAction[] createActionRemove(final ID containerID, final ViewShare viewShare) {
+	private IAction[] createActionRemove(final ID containerID, final ScreenCaptureShare screenCaptureShare) {
 		final IAction action = new Action() {
 			public void run() {
-				ViewShare.removeViewShare(containerID);
-				viewShare.dispose();
+				ScreenCaptureShare.removeScreenCaptureShare(containerID);
+				screenCaptureShare.dispose();
 			}
 		};
 		action.setText(Messages.ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_REMOVE_TEXT);
@@ -65,11 +65,11 @@ public class ViewShareRosterContributionItem extends AbstractRosterContributionI
 			// Roster is selected
 			final IContainer c = getContainerForRoster(roster);
 			if (c != null) {
-				// Get existing ViewShare for this container (if it exists)
-				final ViewShare viewShare = ViewShare.getViewShare(c.getID());
+				// Get existing ScreenCaptureShare for this container (if it exists)
+				final ScreenCaptureShare screenCaptureShare = ScreenCaptureShare.getScreenCaptureShare(c.getID());
 				// If it does exist already, then create action to remove
-				if (viewShare != null)
-					return createActionRemove(c.getID(), viewShare);
+				if (screenCaptureShare != null)
+					return createActionRemove(c.getID(), screenCaptureShare);
 				final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c.getAdapter(IChannelContainerAdapter.class);
 				return (channelAdapter == null) ? null : createActionAdd(c.getID(), channelAdapter);
 			}

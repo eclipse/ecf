@@ -21,6 +21,7 @@ import org.eclipse.ecf.internal.presence.collab.ui.Messages;
 import org.eclipse.ecf.presence.collab.ui.AbstractCollabShare;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
@@ -61,7 +62,6 @@ public class URLShare extends AbstractCollabShare {
 						browser = support.createBrowser(null);
 						browser.openURL(new URL(url));
 					} catch (final Exception e) {
-						showErrorToUser(Messages.URLShare_ERROR_BROWSER_TITLE, NLS.bind(Messages.URLShare_ERROR_BROWSER_MESSAGE, e.getLocalizedMessage()));
 						logError(Messages.URLShare_EXCEPTION_LOG_BROWSER, e);
 					}
 				}
@@ -73,10 +73,8 @@ public class URLShare extends AbstractCollabShare {
 		try {
 			sendMessage(toID, serialize(new Object[] {senderuser, theURL}));
 		} catch (final ECFException e) {
-			showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
 			logError(e.getStatus());
 		} catch (final Exception e) {
-			showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
 			logError(Messages.Share_EXCEPTION_LOG_SEND, e);
 		}
 	}
@@ -87,16 +85,14 @@ public class URLShare extends AbstractCollabShare {
 				final InputDialog input = new InputDialog(null, Messages.URLShare_INPUT_URL_DIALOG_TITLE, Messages.URLShare_ENTER_URL_DIALOG_TEXT, Messages.URLShare_ENTER_URL_DEFAULT_URL, null);
 				input.setBlockOnOpen(true);
 				final int result = input.open();
-				if (result == InputDialog.OK) {
+				if (result == Window.OK) {
 					final String send = input.getValue();
 					if (send != null && !send.equals("")) { //$NON-NLS-1$
 						try {
 							sendMessage(toID, serialize(new Object[] {senderuser, send}));
 						} catch (final ECFException e) {
-							showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
 							logError(e.getStatus());
 						} catch (final Exception e) {
-							showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
 							logError(Messages.Share_EXCEPTION_LOG_SEND, e);
 						}
 					}
@@ -115,7 +111,6 @@ public class URLShare extends AbstractCollabShare {
 			final Object[] msg = (Object[]) deserialize(data);
 			showURL((String) msg[0], (String) msg[1]);
 		} catch (final Exception e) {
-			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(Messages.Share_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
 			logError(Messages.Share_EXCEPTION_LOG_MESSAGE, e);
 		}
 	}
