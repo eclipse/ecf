@@ -6,19 +6,17 @@ Bundle-Activator: org.eclipse.ecf.internal.ui.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
-Provide-Package: org.eclipse.ecf.ui,
- org.eclipse.ecf.ui.dialogs,
- org.eclipse.ecf.ui.views,
- org.eclipse.ecf.ui.wizards
 Export-Package: org.eclipse.ecf.internal.ui;x-internal:=true,
  org.eclipse.ecf.internal.ui.actions;x-internal:=true,
  org.eclipse.ecf.internal.ui.deprecated;x-internal:=true,
  org.eclipse.ecf.internal.ui.deprecated.views;x-internal:=true,
+ org.eclipse.ecf.internal.ui.perspectives;x-internal:=true,
  org.eclipse.ecf.internal.ui.wizards;x-internal:=true,
  org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.actions,
  org.eclipse.ecf.ui.dialogs,
  org.eclipse.ecf.ui.hyperlink,
+ org.eclipse.ecf.ui.screencapture,
  org.eclipse.ecf.ui.util,
  org.eclipse.ecf.ui.wizards
 Eclipse-RegisterBuddy: org.eclipse.ecf
@@ -32,5 +30,5 @@ Require-Bundle: org.eclipse.ecf,
  org.eclipse.core.runtime,
  org.eclipse.ecf.filetransfer,
  org.eclipse.ecf.sharedobject
-Import-Package: org.eclipse.ui.editors.text;optional=true
+Import-Package: org.eclipse.ui.editors.text;optional=true;resolution:=optional
 
