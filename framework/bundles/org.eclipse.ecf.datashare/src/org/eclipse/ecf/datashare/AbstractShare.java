@@ -93,7 +93,7 @@ public abstract class AbstractShare {
 	 */
 	protected abstract void handleMessage(ID fromContainerID, byte[] data);
 
-	protected synchronized void sendMessage(ID toID, byte[] data) throws ECFException {
+	public synchronized void sendMessage(ID toID, byte[] data) throws ECFException {
 		if (channel != null)
 			channel.sendMessage(toID, data);
 	}
