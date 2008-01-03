@@ -62,6 +62,22 @@ public class ShowImageShell {
 		shell.open();
 	}
 
+	public void close() {
+		if (shell != null) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					try {
+						if (!shell.isDisposed())
+							shell.close();
+						shell = null;
+					} catch (final Exception e) {
+						// do nothing
+					}
+				}
+			});
+		}
+	}
+
 	public ID getSenderID() {
 		return senderID;
 	}

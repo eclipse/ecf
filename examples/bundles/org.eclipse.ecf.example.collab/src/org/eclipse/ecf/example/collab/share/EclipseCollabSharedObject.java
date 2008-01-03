@@ -71,7 +71,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	private static final String HANDLE_UPDATE_TREE_DISPLAY_MSG = "handleUpdateTreeDisplay";
 	private static final String HANDLE_UNREGISTER_PROXY_MSG = "handleUnregisterProxy";
 	private static final String HANDLE_SHOW_TEXT_MSG = "handleShowTextMsg";
-	private static final String HANDLE_SHOW_IMAGE_MSG = "handleShowImage";
 	private static final String HANDLE_USER_MSG = "handleUserMessage";
 	private static final String HANDLE_CVS_PROJECT_UPDATE_REQUEST_MSG = "handleCVSProjectUpdateRequest";
 	private static final String HANDLE_REQUEST_USER_UPDATE_MSG = "handleRequestUserUpdate";
@@ -135,6 +134,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 				localGUI.disposeClient();
 				localGUI = null;
 			}
+		}
+		if (showImageShell != null) {
+			showImageShell.close();
 		}
 		if (sharedObjectEventListener != null) {
 			sharedObjectEventListener = null;
