@@ -13,7 +13,6 @@ package org.eclipse.ecf.presence;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.internal.presence.PresencePlugin;
 
@@ -41,14 +40,13 @@ public class Presence implements IPresence {
 	}
 
 	public Presence(Type type) {
-		this(type, "", Mode.AVAILABLE); //$NON-NLS-1$
+		this(type, null, Mode.AVAILABLE);
 	}
 
-	public Presence(Type type, String status, Mode mode, Map props,
-			byte[] picture) {
-		this.type = type;
+	public Presence(Type type, String status, Mode mode, Map props, byte[] picture) {
+		this.type = (type == null) ? IPresence.Type.AVAILABLE : type;
 		this.status = status;
-		this.mode = mode;
+		this.mode = (mode == null) ? IPresence.Mode.AVAILABLE : mode;
 		this.properties = (props == null) ? new HashMap() : props;
 		this.pictureData = (picture == null) ? new byte[0] : picture;
 	}
@@ -104,7 +102,8 @@ public class Presence implements IPresence {
 	 */
 	public Object getAdapter(Class adapter) {
 		IAdapterManager adapterManager = PresencePlugin.getDefault().getAdapterManager();
-		if (adapterManager == null) return null;
+		if (adapterManager == null)
+			return null;
 		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
