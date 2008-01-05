@@ -93,6 +93,7 @@ public class Messages extends NLS {
 	public static String SelectProviderAction_selectProviderDialog_title;
 	public static String SelectProviderAction_selectProviderDialog_message;
 
+	public static String ScreenCaptureScreenCaptureConfirmationDialog;
 	static {
 		// load message values from bundle file
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
