@@ -38,7 +38,7 @@ public class ShareReceiversECFStart implements IECFStart {
 			IContainer container = containerManager.getContainer(event.getLocalContainerID());
 			if (container == null)
 				return;
-			if (event instanceof IContainerConnectedEvent || event instanceof IContainerDisconnectedEvent) {
+			if (event instanceof IContainerConnectedEvent || event instanceof IContainerDisconnectedEvent || event instanceof IContainerDisposeEvent) {
 				// connected
 				IChannelContainerAdapter cca = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
 				if (cca == null)
