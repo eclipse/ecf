@@ -11,17 +11,9 @@
 
 package org.eclipse.ecf.internal.presence.collab.ui;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.core.IContainerManagerListener;
-import org.eclipse.ecf.core.events.IContainerConnectedEvent;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.IContainerDisposeEvent;
-import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.ECFException;
@@ -55,11 +47,23 @@ public class ShareReceiversECFStart implements IECFStart {
 				if (event instanceof IContainerConnectedEvent) {
 					try {
 						URLShare.addURLShare(containerID, cca);
+					} catch (ECFException e) {
+						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ShareReceiversECFStart_STATUS_URLSHARE_NOT_CREATED, container.getID()), null));
+					}
+					try {
 						ViewShare.addViewShare(containerID, cca);
+					} catch (ECFException e) {
+						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ShareReceiversECFStart_STATUS_VIEWSHARE_NOT_CREATED, container.getID()), null));
+					}
+					try {
 						ConsoleShare.addStackShare(containerID, cca);
+					} catch (ECFException e) {
+						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ShareReceiversECFStart_STATUS_CAPTURESHARE_NOT_CREATED, container.getID()), null));
+					}
+					try {
 						ScreenCaptureShare.addScreenCaptureShare(containerID, cca);
 					} catch (ECFException e) {
-						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.StartURLShareAndViewShare_STATUS_URLSHARE_NOT_CREATED, container.getID()), null));
+						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ShareReceiversECFStart_STATUS_SCREENCAPTURESHARE_NOT_CREATED, container.getID()), null));
 					}
 				} else if (event instanceof IContainerDisconnectedEvent) {
 					// disconnected

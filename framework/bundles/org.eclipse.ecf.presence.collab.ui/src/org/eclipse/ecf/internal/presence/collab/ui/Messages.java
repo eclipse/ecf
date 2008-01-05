@@ -20,31 +20,26 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.presence.collab.ui.messages"; //$NON-NLS-1$
 	public static String URLShare_ENTER_URL_DEFAULT_URL;
 	public static String URLShare_ENTER_URL_DIALOG_TEXT;
-	public static String URLShare_ERROR_BROWSER_MESSAGE;
-	public static String URLShare_ERROR_BROWSER_TITLE;
 	public static String ScreenCaptureShare_SCREEN_CAPTURE_RECEIVE_TITLE;
 	public static String ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MENU;
 	public static String ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_MESSAGE;
 	public static String ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_TITLE;
-	public static String Share_ERROR_RECEIVE_MESSAGE;
-	public static String Share_ERROR_RECEIVE_TITLE;
-	public static String Share_ERROR_SEND_MESSAGE;
-	public static String Share_ERROR_SEND_TITLE;
 	public static String URLShare_EXCEPTION_LOG_BROWSER;
 	public static String Share_EXCEPTION_LOG_MESSAGE;
 	public static String Share_EXCEPTION_LOG_SEND;
+	public static String ShareReceiversECFStart_STATUS_CAPTURESHARE_NOT_CREATED;
+	public static String ShareReceiversECFStart_STATUS_SCREENCAPTURESHARE_NOT_CREATED;
+	public static String ShareReceiversECFStart_STATUS_VIEWSHARE_NOT_CREATED;
 	public static String URLShare_INPUT_URL_DIALOG_TITLE;
 	public static String URLShare_RECEIVED_URL_MESSAGE;
 	public static String URLShare_RECEIVED_URL_TITLE;
 	public static String StartURLShareAndViewShare_ERROR_CONTAINERMANAGER_NOT_ACCESSIBLE;
-	public static String StartURLShareAndViewShare_STATUS_URLSHARE_NOT_CREATED;
+	public static String ShareReceiversECFStart_STATUS_URLSHARE_NOT_CREATED;
 	public static String URLShareRosterContributionItem_ADD_URL_SHARE_MENU_TEXT;
 	public static String URLShareRosterContributionItem_BROWSER_ICON;
 	public static String URLShareRosterContributionItem_REMOVE_URL_SHARE_MENU_TEXT;
 	public static String URLShareRosterEntryContributionItem_SEND_URL_MENU_TEXT;
 	public static String ViewShare_EXCEPTION_WORKBENCHPAGE_NULL;
-	public static String ViewShare_VIEWSHARE_ERROR_DIALOG_MESSAGE;
-	public static String ViewShare_VIEWSHARE_ERROR_DIALOG_TITLE;
 	public static String ViewShare_VIEWSHARE_ERROR_LOG_MESSAGE;
 	public static String ViewShare_VIEWSHARE_RECEIVED_REQUEST_MESSAGE;
 	public static String ViewShare_VIEWSHARE_RECEIVED_REQUEST_TITLE;
@@ -55,8 +50,6 @@ public class Messages extends NLS {
 	public static String ViewShareRosterEntryContributionItem_VIEWSHARE_MENU_TEXT;
 	public static String ConsoleShare_RosterContributionItem_CONSOLE_ICON;
 
-	public static String ConsoleShare_STACKSHARE_ERROR_DIALOG_TITLE;
-	public static String ConsoleShare_STACKSHARE_ERROR_DIALOG_MESSAGE;
 	public static String ConsoleShare_EXCEPTION_WP_NOT_AVAILABLE;
 	public static String ConsoleShare_EXCEPTION_WW_NOT_AVAILABLE;
 	public static String ConsoleShare_STACK_TRACE_FROM_MESSAGE;
