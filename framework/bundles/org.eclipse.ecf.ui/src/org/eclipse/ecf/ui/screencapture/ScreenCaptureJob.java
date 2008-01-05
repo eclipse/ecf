@@ -70,7 +70,6 @@ public class ScreenCaptureJob extends UIJob {
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.ESC)
 					shell.close();
-
 			}
 
 			public void keyReleased(KeyEvent e) {
