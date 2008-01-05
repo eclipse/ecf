@@ -34,15 +34,18 @@ public class ScreenCaptureJob extends UIJob {
 
 	int downY = -1;
 
-	final ID targetID;
-
 	final IImageSender imageSender;
 
-	public ScreenCaptureJob(Display display, ID targetID, IImageSender imageSender) {
+	final ID targetID;
+
+	final String nickName;
+
+	public ScreenCaptureJob(Display display, ID targetID, String nickName, IImageSender imageSender) {
 		super(display, "Capturing screen..."); //$NON-NLS-1$
 		blackColor = new Color(display, 0, 0, 0);
 		whiteColor = new Color(display, 255, 255, 255);
 		this.targetID = targetID;
+		this.nickName = nickName;
 		this.imageSender = imageSender;
 	}
 
@@ -63,6 +66,18 @@ public class ScreenCaptureJob extends UIJob {
 			}
 		});
 
+		shell.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+				if (e.character == SWT.ESC)
+					shell.close();
+
+			}
+
+			public void keyReleased(KeyEvent e) {
+				if (e.character == SWT.ESC)
+					shell.close();
+			}
+		});
 		shell.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				isDragging = true;
@@ -79,7 +94,7 @@ public class ScreenCaptureJob extends UIJob {
 					gc.copyArea(copy, Math.min(downX, e.x), Math.min(downY, e.y));
 					blackColor.dispose();
 					whiteColor.dispose();
-					final Dialog dialog = new ScreenCaptureConfirmationDialog(shell, targetID, copy, width, height, imageSender);
+					final Dialog dialog = new ScreenCaptureConfirmationDialog(shell, targetID, nickName, copy, width, height, imageSender);
 					dialog.open();
 					shell.close();
 					image.dispose();
@@ -107,4 +122,5 @@ public class ScreenCaptureJob extends UIJob {
 		}
 		return Status.OK_STATUS;
 	}
+
 }

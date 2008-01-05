@@ -12,8 +12,10 @@
 package org.eclipse.ecf.ui.screencapture;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -31,16 +33,19 @@ public class ScreenCaptureConfirmationDialog extends Dialog {
 
 	private final int height;
 
-	private final ID targetID;
-
 	private final IImageSender imageSender;
 
-	public ScreenCaptureConfirmationDialog(Shell shell, ID targetID, Image image, int width, int height, IImageSender imageSender) {
+	private final ID targetID;
+
+	private final String nickName;
+
+	public ScreenCaptureConfirmationDialog(Shell shell, ID targetID, String nickName, Image image, int width, int height, IImageSender imageSender) {
 		super(shell);
+		this.targetID = targetID;
+		this.nickName = nickName;
 		this.image = image;
 		this.width = width;
 		this.height = height;
-		this.targetID = targetID;
 		this.imageSender = imageSender;
 	}
 
@@ -49,6 +54,11 @@ public class ScreenCaptureConfirmationDialog extends Dialog {
 			imageSender.sendImage(targetID, image.getImageData());
 		}
 		super.buttonPressed(buttonId);
+	}
+
+	protected void configureShell(Shell shell) {
+		super.configureShell(shell);
+		shell.setText(NLS.bind(Messages.ScreenCaptureScreenCaptureConfirmationDialog, nickName));
 	}
 
 	protected Control createDialogArea(Composite parent) {
