@@ -383,11 +383,11 @@ public class ChatComposite extends Composite {
 		}
 	}
 
-	private void sendImage(ID targetID) {
+	private void sendImage(final User toUser) {
 		if (MessageDialog.openQuestion(null, "Screen Capture", "To initiate screen capture, click OK, wait 5 seconds,\nand then select capture region with arrow cursor.")) {
-			final Job job = new ScreenCaptureJob(getDisplay(), targetID, new IImageSender() {
+			final Job job = new ScreenCaptureJob(getDisplay(), toUser.getUserID(), toUser.getNickname(), new IImageSender() {
 				public void sendImage(ID targetID, ImageData imageData) {
-					view.lch.sendImage(targetID, imageData);
+					view.lch.sendImage(toUser.getUserID(), imageData);
 				}
 			});
 			job.schedule(5000);
@@ -405,7 +405,7 @@ public class ChatComposite extends Composite {
 		if (!toUs) {
 			final Action sendImageToUser = new Action() {
 				public void run() {
-					sendImage(user.getUserID());
+					sendImage(user);
 				}
 			};
 			sendImageToUser.setText("Send Screen Capture to " + user.getNickname());
