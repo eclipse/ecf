@@ -21,9 +21,13 @@ public class Messages extends NLS {
 	public static String URLShare_ENTER_URL_DEFAULT_URL;
 	public static String URLShare_ENTER_URL_DIALOG_TEXT;
 	public static String ScreenCaptureShare_SCREEN_CAPTURE_RECEIVE_TITLE;
+	public static String ScreenCaptureShareRosterContributionItem_SCREENCAPTURESHARE_LISTENER_MENU_ADD_TEXT;
+	public static String ScreenCaptureShareRosterContributionItem_SCREENCAPTURESHARE_LISTENER_MENU_REMOVE_TEXT;
 	public static String ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MENU;
 	public static String ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_MESSAGE;
 	public static String ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_TITLE;
+	public static String ScreenCaptureShareRosterEntryContributionItem_VERIFY_CANCEL_BUTTON_TEXT;
+	public static String ScreenCaptureShareRosterEntryContributionItem_VERIFY_SEND_BUTTON_TEXT;
 	public static String URLShare_EXCEPTION_LOG_BROWSER;
 	public static String Share_EXCEPTION_LOG_MESSAGE;
 	public static String Share_EXCEPTION_LOG_SEND;

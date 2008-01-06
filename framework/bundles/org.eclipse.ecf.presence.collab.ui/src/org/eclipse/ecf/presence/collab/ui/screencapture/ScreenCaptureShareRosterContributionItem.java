@@ -43,7 +43,7 @@ public class ScreenCaptureShareRosterContributionItem extends AbstractRosterCont
 				}
 			}
 		};
-		action.setText(Messages.ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_ADD_TEXT);
+		action.setText(Messages.ScreenCaptureShareRosterContributionItem_SCREENCAPTURESHARE_LISTENER_MENU_ADD_TEXT);
 		action.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_DEF_VIEW));
 		return new IAction[] {action};
 	}
@@ -55,7 +55,7 @@ public class ScreenCaptureShareRosterContributionItem extends AbstractRosterCont
 				screenCaptureShare.dispose();
 			}
 		};
-		action.setText(Messages.ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_REMOVE_TEXT);
+		action.setText(Messages.ScreenCaptureShareRosterContributionItem_SCREENCAPTURESHARE_LISTENER_MENU_REMOVE_TEXT);
 		return new IAction[] {action};
 	}
 

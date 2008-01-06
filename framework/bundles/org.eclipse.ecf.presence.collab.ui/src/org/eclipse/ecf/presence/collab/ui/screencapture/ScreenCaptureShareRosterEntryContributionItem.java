@@ -22,6 +22,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
@@ -54,7 +55,7 @@ public class ScreenCaptureShareRosterEntryContributionItem extends AbstractRoste
 					final ScreenCaptureShare screencaptureshare = tmp;
 					final IAction action = new Action() {
 						public void run() {
-							MessageDialog dialog = new MessageDialog(null, Messages.ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_TITLE, MessageDialog.getDefaultImage(), Messages.ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_MESSAGE, MessageDialog.QUESTION, new String[] {" Send to " + entry.getName() + " ", "Cancel"}, 0);
+							MessageDialog dialog = new MessageDialog(null, Messages.ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_TITLE, Window.getDefaultImage(), Messages.ScreenCaptureShareRosterEntryContributionItem_SCREEN_CAPTURE_MESSAGEBOX_MESSAGE, MessageDialog.QUESTION, new String[] {NLS.bind(Messages.ScreenCaptureShareRosterEntryContributionItem_VERIFY_SEND_BUTTON_TEXT, entry.getName()), Messages.ScreenCaptureShareRosterEntryContributionItem_VERIFY_CANCEL_BUTTON_TEXT}, 0);
 							if (dialog.open() == Window.OK) {
 								ScreenCaptureJob screenCaptureJob = new ScreenCaptureJob(Display.getCurrent(), entry.getUser().getID(), entry.getUser().getName(), new IImageSender() {
 									public void sendImage(ID targetID, ImageData imageData) {
