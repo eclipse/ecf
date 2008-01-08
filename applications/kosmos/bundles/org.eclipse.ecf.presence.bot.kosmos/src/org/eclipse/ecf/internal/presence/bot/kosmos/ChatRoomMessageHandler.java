@@ -89,6 +89,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	private static final String BUG_DATABASE_POSTFIX = "&ctype=xml"; //$NON-NLS-1$
 	private static final String SUM_OPEN_TAG = "<short_desc>"; //$NON-NLS-1$
 	private static final String SUM_CLOSE_TAG = "</short_desc>"; //$NON-NLS-1$
+	private static final String BUG_NOT_FOUND_TAG = "<bug error=\"NotFound\">"; //$NON-NLS-1$
 	private static final File HTML_FILE_MESSAGES = new File(
 		System.getProperty("user.home") + File.separator + "public_html" + File.separator + "messages.html"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	private static final File HTML_FILE_COMMANDS = new File(
@@ -96,9 +97,11 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 
 	private static final String URL_REGEX = "(http://.+|https://.+|ftp://.+)"; //$NON-NLS-1$
 	private static final String CMD_REGEX = "(~.+)"; //$NON-NLS-1$
+	private static final String BINDING_REGEX = "(\\{[0-9]+\\})"; //$NON-NLS-1$
 
 	private static final Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
 	private static final Pattern CMD_PATTERN = Pattern.compile(CMD_REGEX);
+	private static final Pattern BINDING_PATTERN = Pattern.compile(BINDING_REGEX);
 
 	private Map messageSenders;
 	private Map newsgroups;
@@ -263,194 +266,116 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		if (comment != null) {
 			urlString = urlString + "#c" + comment; //$NON-NLS-1$
 		}
-		if (target == null) {
+		try {
+			HttpURLConnection hURL = (HttpURLConnection) new URL(
+					BUG_DATABASE_PREFIX + number + BUG_DATABASE_POSTFIX)
+					.openConnection();
+			hURL.setAllowUserInteraction(true);
+			hURL.connect();
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(hURL.getInputStream()));
+			StringBuffer buffer = new StringBuffer();
 			try {
-				HttpURLConnection hURL = (HttpURLConnection) new URL(
-						BUG_DATABASE_PREFIX + number + BUG_DATABASE_POSTFIX)
-						.openConnection();
-				hURL.setAllowUserInteraction(true);
-				hURL.connect();
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(hURL.getInputStream()));
-				StringBuffer buffer = new StringBuffer();
-				try {
-					if (hURL.getResponseCode() != HttpURLConnection.HTTP_OK) {
-						sendMessage(roomID, NLS.bind(CustomMessages.Bug,
-								number, urlString));
-						return;
-					}
-
-					String input = reader.readLine();
-					buffer.append(input);
-					while (input.indexOf(SUM_CLOSE_TAG) == -1) {
-						input = reader.readLine();
-						buffer.append(input);
-					}
-					hURL.disconnect();
-				} catch (EOFException e) {
-					hURL.disconnect();
-					sendMessage(roomID, NLS.bind(CustomMessages.Bug, number,
-							urlString));
-					e.printStackTrace();
+				if (hURL.getResponseCode() != HttpURLConnection.HTTP_OK) {
+					sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.Bug,
+							number, urlString));
 					return;
 				}
-				String webPage = buffer.toString();
-				int summaryStartIndex = webPage.indexOf(SUM_OPEN_TAG);
-				int summaryEndIndex = webPage.indexOf(SUM_CLOSE_TAG,
-						summaryStartIndex);
-				if (summaryStartIndex != -1 & summaryEndIndex != -1) {
-					String summary = webPage.substring(summaryStartIndex
-							+ SUM_OPEN_TAG.length(), summaryEndIndex);
-					sendMessage(roomID, NLS.bind(CustomMessages
-							.getString(CustomMessages.BugContent),
-							new Object[] { number, xmlDecode(summary),
-									urlString }));
-				} else {
-					sendMessage(roomID, NLS.bind(CustomMessages
-							.getString(CustomMessages.BugContent),
-							new Object[] { number, urlString }));
+
+				String input = reader.readLine();
+				buffer.append(input);
+				while (input != null && input.indexOf(SUM_CLOSE_TAG) == -1) { 
+					if (input.indexOf(BUG_NOT_FOUND_TAG)>=0) { /* handle case where bug does not exist, eg. ~bug1234 */
+						sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
+								.getString(CustomMessages.Bug_Not_Found), number));
+						return;
+					}
+					input = reader.readLine();
+					buffer.append(input);
 				}
-			} catch (IOException e) {
-				sendMessage(roomID, NLS.bind(CustomMessages
-						.getString(CustomMessages.Bug), new Object[] { number,
-						urlString }));
+				hURL.disconnect();
+			} catch (EOFException e) {
+				hURL.disconnect();
+				sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.Bug, number, urlString));
 				e.printStackTrace();
+				return;
 			}
-		} else {
-			try {
-				HttpURLConnection hURL = (HttpURLConnection) new URL(
-						BUG_DATABASE_PREFIX + number + BUG_DATABASE_POSTFIX)
-						.openConnection();
-				hURL.setAllowUserInteraction(true);
-				hURL.connect();
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(hURL.getInputStream()));
-				StringBuffer buffer = new StringBuffer();
-				try {
-					if (hURL.getResponseCode() != HttpURLConnection.HTTP_OK) {
-						sendMessage(roomID, NLS.bind(CustomMessages
-								.getString(CustomMessages.Bug_Reply),
-								new Object[] { target, number, urlString }));
-						return;
-					}
-
-					String input = reader.readLine();
-					buffer.append(input);
-					while (input.indexOf(SUM_CLOSE_TAG) == -1) {
-						input = reader.readLine();
-						buffer.append(input);
-					}
-					hURL.disconnect();
-				} catch (EOFException e) {
-					hURL.disconnect();
-					sendMessage(roomID, NLS.bind(CustomMessages
-							.getString(CustomMessages.Bug_Reply), new Object[] {
-							target, number, urlString }));
-					return;
-				}
-				String webPage = buffer.toString();
-				int summaryStartIndex = webPage.indexOf(SUM_OPEN_TAG);
-				int summaryEndIndex = webPage.indexOf(SUM_CLOSE_TAG,
-						summaryStartIndex);
-				if (summaryStartIndex != -1 & summaryEndIndex != -1) {
-					String summary = webPage.substring(summaryStartIndex
-							+ SUM_OPEN_TAG.length(), summaryEndIndex);
-					sendMessage(roomID, NLS.bind(CustomMessages
-							.getString(CustomMessages.BugContent_Reply),
-							new Object[] { target, number, xmlDecode(summary),
-									urlString }));
-				} else {
-					sendMessage(roomID, NLS.bind(CustomMessages
-							.getString(CustomMessages.BugContent_Reply),
-							new Object[] { target, number, urlString }));
-				}
-			} catch (IOException e) {
-				sendMessage(roomID, NLS.bind(CustomMessages
-						.getString(CustomMessages
-								.getString(CustomMessages.Bug_Reply)),
-						new Object[] { target, number, urlString }));
+			String webPage = buffer.toString();
+			int summaryStartIndex = webPage.indexOf(SUM_OPEN_TAG);
+			int summaryEndIndex = webPage.indexOf(SUM_CLOSE_TAG, summaryStartIndex);
+			if (summaryStartIndex != -1 & summaryEndIndex != -1) {
+				String summary = webPage.substring(summaryStartIndex
+					+ SUM_OPEN_TAG.length(), summaryEndIndex);
+				sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.BugContent),
+					new Object[] { number, xmlDecode(summary), urlString }));
+			} else {
+				sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.BugContent),
+					new Object[] { number, urlString }));
 			}
+		} catch (IOException e) {
+			sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.Bug), 
+			    new Object[] { number, urlString }));
+			e.printStackTrace();
 		}
 	}
 
 	private void sendNewsgroupSearch(ID roomID, String target, String query) {
 		String[] strings = query.split(" "); //$NON-NLS-1$
 		if (strings.length == 1) {
-			// no search terms provided
+			sendMessage(roomID, (target != null ? target + ": " : "") + CustomMessages
+					.getString(CustomMessages.NewsgroupSearch_Invalid));
 			return;
 		}
 		for (int i = 0; i < strings.length; i++) {
+		    System.out.println(i + ": " + strings[i]);
 			try {
 				strings[i] = URLEncoder.encode(strings[i].trim(), "UTF-8"); //$NON-NLS-1$
 			} catch (UnsupportedEncodingException e) {
-				// technically this should never happen, but better safe than
-				// sorry
+				// technically this should never happen, but better safe than sorry
 				strings[i] = URLEncoder.encode(strings[i].trim());
 			}
 		}
-		String newsgroup = (String) newsgroups.get(strings[0]);
-		if (target == null) {
-			StringBuffer buffer = new StringBuffer();
-			synchronized (buffer) {
-				for (int i = 1; i < strings.length; i++) {
-					buffer.append(strings[i] + '+');
-				}
-				buffer.deleteCharAt(buffer.length() - 1);
-			}
-			sendMessage(roomID, NLS.bind(CustomMessages
-					.getString(CustomMessages.NewsgroupSearch), buffer
-					.toString(), newsgroup));
-		} else {
-			StringBuffer buffer = new StringBuffer();
-			synchronized (buffer) {
-				for (int i = 1; i < strings.length; i++) {
-					buffer.append(strings[i] + '+');
-				}
-				buffer.deleteCharAt(buffer.length() - 1);
-			}
-			sendMessage(roomID, NLS.bind(CustomMessages
-					.getString(CustomMessages.NewsgroupSearch_Reply),
-					new Object[] { target, buffer.toString(), newsgroup }));
+
+		/* support either a lookup in the newsgroups static list, or input of eclipse.foo.bar as a presumed valid group */
+		String newsgroup = strings[0].startsWith("eclipse.") ? "news." + strings[0] : (String) newsgroups.get(strings[0]);
+		
+        /* if newsgroup doesn't start with "eclipse." and lookup fails, we get back null; help the user when this happens */
+		if (newsgroup == null)
+		{
+          sendMessage(roomID, (target != null ? target + ": " : "") + CustomMessages
+                  .getString(CustomMessages.NewsgroupSearch_InvalidGroup));
+          return;
 		}
+		StringBuffer buffer = new StringBuffer();
+		synchronized (buffer) {
+			for (int i = 1; i < strings.length; i++) {
+				buffer.append(strings[i] + '+');
+			}
+			buffer.deleteCharAt(buffer.length() - 1);
+		}
+		sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
+				.getString(CustomMessages.NewsgroupSearch), newsgroup, buffer.toString()));
 	}
 
 	private void sendGoogle(ID roomID, String target, String searchString) {
 		searchString = searchString.replace(' ', '+');
-		if (target == null) {
-			sendMessage(roomID, NLS.bind(CustomMessages
-					.getString(CustomMessages.Google), searchString));
-		} else {
-			sendMessage(roomID, NLS.bind(CustomMessages
-					.getString(CustomMessages.Google_Reply), target,
-					searchString));
-		}
+		sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
+				.getString(CustomMessages.Google), searchString));
 	}
 
 	private void sendWiki(ID roomID, String target, String articleName) {
 		articleName = articleName.replace(' ', '_');
-		if (target == null) {
-			sendMessage(roomID, NLS.bind(CustomMessages
-					.getString(CustomMessages.Wiki), articleName));
-		} else {
-			sendMessage(roomID, NLS.bind(CustomMessages
-					.getString(CustomMessages.Wiki_Reply), target, articleName));
-		}
+		sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
+				.getString(CustomMessages.Wiki), articleName));
 	}
 
 	private void sendEclipseHelp(ID roomID, String target, String searchString) {
 		searchString = searchString.replace(' ', '+');
-		if (target == null) {
-			sendMessage(roomID, NLS.bind(CustomMessages
-					.getString(CustomMessages.EclipseHelp), searchString));
-		} else {
-			sendMessage(roomID, NLS.bind(CustomMessages
-					.getString(CustomMessages.EclipseHelp_Reply), target,
-					searchString));
-		}
+		sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
+				.getString(CustomMessages.EclipseHelp), searchString));
 	}
 
 	private void sendJavaDoc(ID roomID, String target, String parameter) {
-		String append = target == null ? "" : target + ": ";
 		String message = null;
 		int index = parameter.indexOf('#');
 		if (index == -1) {
@@ -474,16 +399,11 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 						+ analyzer.getJavadocs(className, method, parameters);
 			}
 		}
-		sendMessage(roomID, append + message);
+		sendMessage(roomID, (target != null ? target + ": " : "") + message);
 	}
 
 	private void sendMessageList(ID roomID, String target) {
-		if (target == null) {
-			sendMessage(roomID, CustomMessages.getString(CustomMessages.MessageList));
-		} else {
-			sendMessage(roomID, NLS.bind(CustomMessages
-					.getString(CustomMessages.MessageList_Reply), target));
-		}
+		sendMessage(roomID, (target != null ? target + ": " : "") + CustomMessages.getString(CustomMessages.MessageList));
 	}
 
 	private void writeToHTML(File file, String title, Properties properties) throws IOException {
@@ -518,7 +438,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 
 	private String formatTableRow(String key, String val) {
 		return "<tr valign=\"top\"><td><b>" //$NON-NLS-1$
-				+ key
+				+ key.replaceAll(" ", "&#160;") //$NON-NLS-1$ //$NON-NLS-2$ 
 				+ "</b></td><td>" //$NON-NLS-1$
 				+ text2html(val)
 				+ "</td></tr>\n<tr><td colspan=\"2\"><hr noshade=\"noshade\" size=\"1\" width=\"100%\"/></td></tr>\n\n"; //$NON-NLS-1$
@@ -534,7 +454,23 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				sb.append("<a href=\""); //$NON-NLS-1$
 				sb.append(patternMatcher.group(1));
 				sb.append("\">"); //$NON-NLS-1$
-				sb.append(patternMatcher.group(1));
+				if (patternMatcher.group(1).length() >= 120) // break long URLs
+				{
+					StringTokenizer st2 = new StringTokenizer(patternMatcher.group(1), " /&", true); //$NON-NLS-1$
+					StringBuffer sb2 = new StringBuffer();
+					while (st2.hasMoreTokens()) {
+						sb2.append(st2.nextToken());
+						if (sb2.length() >= 100)
+						{
+							sb2.append(" "); //$NON-NLS-1$ 
+						}
+					}
+					sb.append(sb2.toString().replaceAll(BINDING_REGEX, "<b style=\"color:green\">$1</b>")); //$NON-NLS-1$ 
+				}
+				else
+				{
+					sb.append(patternMatcher.group(1).replaceAll(BINDING_REGEX, "<b style=\"color:green\">$1</b>")); //$NON-NLS-1$ 
+				}
 				sb.append("</a>"); //$NON-NLS-1$
 			} else {
 				Matcher cmdMatcher = CMD_PATTERN.matcher(tok);
@@ -543,7 +479,16 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 					sb.append(cmdMatcher.group(1));
 					sb.append("</b>"); //$NON-NLS-1$
 				} else {
-					sb.append(tok);
+					Matcher bindingMatcher = BINDING_PATTERN.matcher(tok);
+					if (bindingMatcher.matches()) {
+						sb.append("<b style=\"color:green\">"); //$NON-NLS-1$
+						sb.append(bindingMatcher.group(1));
+						sb.append("</b>"); //$NON-NLS-1$
+					}
+					else
+					{
+						sb.append(tok);
+					}
 				}
 			}
 		}
@@ -555,11 +500,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		if (reply == null) {
 			return false;
 		}
-		if (target == null) {
-			sendMessage(roomID, reply);
-		} else {
-			sendMessage(roomID, target + ": " + reply); //$NON-NLS-1$
-		}
+		sendMessage(roomID, (target != null ? target + ": " : "") + reply); //$NON-NLS-1$
 		return true;
 	}
 
@@ -658,7 +599,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 						roomID, NLS.bind(CustomMessages
 										.getString(CustomMessages.No_Operation_Privileges), fromID.getName()));
 				}				
-			} else if (cmdMatcher.group(1).equals("set ")) { //$NON-NLS-1$
+			} else if (cmdMatcher.group(1).equals("set ") || cmdMatcher.group(1).equals("update ")) { //$NON-NLS-1$ //$NON-NLS-2$
 				if (operators.contains(fromID.getName())) {
 					update(roomID, cmdMatcher.group(2));
 				} else {
