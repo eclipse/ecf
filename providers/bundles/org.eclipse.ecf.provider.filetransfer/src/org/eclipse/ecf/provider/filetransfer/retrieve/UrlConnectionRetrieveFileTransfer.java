@@ -81,15 +81,15 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		if (responseCode != -1)
 			return responseCode;
 		if (isHTTP()) {
-			final String response = urlConnection.getHeaderField(0);
+			String response = urlConnection.getHeaderField(0);
 			if (response == null) {
 				responseCode = -1;
 				httpVersion = 1;
 				return responseCode;
 			}
-			if (response == null || !response.startsWith("HTTP/")) //$NON-NLS-1$
+			if (!response.startsWith("HTTP/")) //$NON-NLS-1$
 				return -1;
-			response.trim();
+			response = response.trim();
 			final int mark = response.indexOf(" ") + 1; //$NON-NLS-1$
 			if (mark == 0)
 				return -1;
