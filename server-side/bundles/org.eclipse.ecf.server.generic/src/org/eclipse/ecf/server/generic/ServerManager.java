@@ -22,7 +22,6 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.server.generic.Activator;
 import org.eclipse.ecf.internal.server.generic.Messages;
@@ -184,7 +183,6 @@ public class ServerManager {
 		final IDiscoveryService discovery = Activator.getDefault().getDiscovery();
 		if (discovery != null) {
 			try {
-				final IServiceID sID = ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), SERVICE_TYPE);
 				final String rawGroupName = group.getRawName();
 				final Connector connector = group.getConnector();
 				final Properties props = new Properties();
