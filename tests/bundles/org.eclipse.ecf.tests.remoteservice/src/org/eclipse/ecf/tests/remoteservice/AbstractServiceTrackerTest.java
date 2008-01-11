@@ -9,14 +9,8 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.tests.remoteservice.presence;
+package org.eclipse.ecf.tests.remoteservice;
 
-/**
- *
- */
-public interface IConcatService {
+public abstract class AbstractServiceTrackerTest extends AbstractRemoteServiceTest {
 
-	public String concat(String string1, String string2);
-	
-	
 }

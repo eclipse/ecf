@@ -9,21 +9,28 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.tests.remoteservice;
+package org.eclipse.ecf.tests.remoteservice.generic;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.eclipse.ecf.remoteservice.Constants;
-import org.eclipse.ecf.remoteservice.IRemoteCall;
-import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
+import org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest;
+import org.eclipse.ecf.tests.remoteservice.Activator;
+import org.eclipse.ecf.tests.remoteservice.IConcatService;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 
-public class ServiceTrackerTest extends AbstractRemoteServiceTestCase {
+public class TransparentProxyTest extends AbstractRemoteServiceTest {
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest#getClientContainerName()
+	 */
+	protected String getClientContainerName() {
+		return Generic.CLIENT_CONTAINER_NAME;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -49,17 +56,7 @@ public class ServiceTrackerTest extends AbstractRemoteServiceTestCase {
 		super.tearDown();
 	}
 
-	protected Object createService() {
-		return new IConcatService() {
-			public String concat(String string1, String string2) {
-				final String result = string1.concat(string2);
-				System.out.println("SERVICE.concat(" + string1 + "," + string2 + ") returning " + result);
-				return string1.concat(string2);
-			}
-		};
-	}
-
-	public void testServiceTracker() throws Exception {
+	public void testTransparentProxy() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// client [0]/adapter[0] is the service 'server'
 		// client [1]/adapter[1] is the service target (client)
@@ -71,32 +68,21 @@ public class ServiceTrackerTest extends AbstractRemoteServiceTestCase {
 		// Give some time for propagation
 		sleep(3000);
 
-		final ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(), IConcatService.class.getName(), null);
-		assertNotNull(st);
-		st.open();
-		final IConcatService concatService = (IConcatService) st.getService();
+		final BundleContext bc = Activator.getDefault().getContext();
+		assertNotNull(bc);
+		final ServiceReference ref = bc.getServiceReference(IConcatService.class.getName());
+		assertNotNull(ref);
+		final IConcatService concatService = (IConcatService) bc.getService(ref);
 		assertNotNull(concatService);
 		System.out.println("proxy call start");
 		final String result = concatService.concat("OSGi ", "is cool");
 		System.out.println("proxy call end. result=" + result);
 		sleep(3000);
-		st.close();
+		bc.ungetService(ref);
 		sleep(3000);
 	}
 
-	protected IRemoteCall createRemoteConcat(String first, String second) {
-		return createRemoteCall("concat", new Object[] {first, second});
-	}
-
-	protected IRemoteCallListener createRemoteCallListener() {
-		return new IRemoteCallListener() {
-			public void handleEvent(IRemoteCallEvent event) {
-				System.out.println("CLIENT.handleEvent(" + event + ")");
-			}
-		};
-	}
-
-	public void testRemoteServiceWithServiceTracker() throws Exception {
+	public void testIRemoteService() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// client [0]/adapter[0] is the service 'server'
 		// client [1]/adapter[1] is the service target (client)
@@ -108,18 +94,15 @@ public class ServiceTrackerTest extends AbstractRemoteServiceTestCase {
 		// Give some time for propagation
 		sleep(3000);
 
-		final ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(), IConcatService.class.getName(), null);
-		assertNotNull(st);
-		st.open();
-		final ServiceReference ref = st.getServiceReference();
+		final BundleContext bc = Activator.getDefault().getContext();
+		assertNotNull(bc);
+		final ServiceReference ref = bc.getServiceReference(IConcatService.class.getName());
 		assertNotNull(ref);
 		final IRemoteService remoteService = (IRemoteService) ref.getProperty(Constants.REMOTE_SERVICE);
 		assertNotNull(remoteService);
 		// Call it asynch with listener
 		remoteService.callAsynch(createRemoteConcat("OSGi ", "Sucks (sic)"), createRemoteCallListener());
-
 		sleep(3000);
-		st.close();
 	}
 
 }
