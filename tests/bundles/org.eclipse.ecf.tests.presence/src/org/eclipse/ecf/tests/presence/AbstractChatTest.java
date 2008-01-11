@@ -27,7 +27,7 @@ import org.eclipse.ecf.presence.im.IChatMessageEvent;
 /**
  * 
  */
-public class ChatTest extends PresenceAbstractTestCase {
+public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 
 	IChatManager chat0, chat1 = null;
 	public static final int WAITTIME = 3000;
@@ -37,8 +37,7 @@ public class ChatTest extends PresenceAbstractTestCase {
 	IIMMessageListener listener = new IIMMessageListener() {
 		public void handleMessageEvent(IIMMessageEvent messageEvent) {
 			if (messageEvent instanceof IChatMessageEvent) {
-				IChatMessage chatmessage = ((IChatMessageEvent) messageEvent)
-						.getChatMessage();
+				IChatMessage chatmessage = ((IChatMessageEvent) messageEvent).getChatMessage();
 				System.out.println("received chat message=" + chatmessage);
 				receivedChatMessages.add(chatmessage);
 			}
@@ -48,7 +47,7 @@ public class ChatTest extends PresenceAbstractTestCase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.tests.presence.PresenceAbstractTestCase#setUp()
+	 * @see org.eclipse.ecf.tests.presence.AbstractPresenceTestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
 		setClientCount(2);
@@ -72,67 +71,63 @@ public class ChatTest extends PresenceAbstractTestCase {
 	}
 
 	public void testSendIM() throws Exception {
-		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1),
-				"abcdef");
+		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1), "abcdef");
 		sleep(WAITTIME);
 		assertHasEvent(receivedChatMessages, IChatMessage.class);
-		IChatMessage message = receivedChatMessages.get(0);
+		final IChatMessage message = receivedChatMessages.get(0);
 		assertTrue(message.getBody().equals("abcdef"));
 		assertTrue(message.getType().equals(IChatMessage.Type.CHAT));
-		ID fromID = message.getFromID();
+		final ID fromID = message.getFromID();
 		assertTrue(fromID.equals(getServerConnectID(0)));
 		assertNull(message.getSubject());
-		Map props = message.getProperties();
+		final Map props = message.getProperties();
 		assertNotNull(props);
 		assertTrue(props.size() == 0);
 	}
 
 	public void testSendIM2() throws Exception {
-		Map sendprops = new HashMap();
+		final Map sendprops = new HashMap();
 		sendprops.put("prop1", "this");
-		ID sendthreadid = IDFactory.getDefault().createStringID("thread1");
+		final ID sendthreadid = IDFactory.getDefault().createStringID("thread1");
 		// Send the whole thing
-		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1),
-				sendthreadid, IChatMessage.Type.CHAT, "subject1", "uvwxyz",
-				sendprops);
+		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1), sendthreadid, IChatMessage.Type.CHAT, "subject1", "uvwxyz", sendprops);
 		sleep(WAITTIME);
 
 		assertHasEvent(receivedChatMessages, IChatMessage.class);
-		IChatMessage message = receivedChatMessages.get(0);
+		final IChatMessage message = receivedChatMessages.get(0);
 		// For some reason, the smack library doesn't seem to get this right.
 		// assertTrue(message.getThreadID().equals(sendthreadid));
 		assertTrue(message.getSubject().equals("subject1"));
 		assertTrue(message.getBody().equals("uvwxyz"));
 		assertTrue(message.getType().equals(IChatMessage.Type.CHAT));
-		ID fromID = message.getFromID();
+		final ID fromID = message.getFromID();
 		assertTrue(fromID.equals(getServerConnectID(0)));
-		Map props = message.getProperties();
+		final Map props = message.getProperties();
 		assertNotNull(props);
 		assertTrue(props.size() == 1);
-		String val = (String) props.get("prop1");
+		final String val = (String) props.get("prop1");
 		assertNotNull(val);
 		assertEquals(val, "this");
 	}
 
 	public void testSendMessageProperties() throws Exception {
-		Map sendprops = new HashMap();
+		final Map sendprops = new HashMap();
 		sendprops.put("prop2", "that");
 		// Send the whole thing
-		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1),
-				null, IChatMessage.Type.CHAT, null, null, sendprops);
+		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1), null, IChatMessage.Type.CHAT, null, null, sendprops);
 		sleep(WAITTIME);
 
 		assertHasEvent(receivedChatMessages, IChatMessage.class);
-		IChatMessage message = receivedChatMessages.get(0);
+		final IChatMessage message = receivedChatMessages.get(0);
 		assertNull(message.getSubject());
 		assertTrue(message.getBody().equals(""));
 		assertTrue(message.getType().equals(IChatMessage.Type.CHAT));
-		ID fromID = message.getFromID();
+		final ID fromID = message.getFromID();
 		assertTrue(fromID.equals(getServerConnectID(0)));
-		Map props = message.getProperties();
+		final Map props = message.getProperties();
 		assertNotNull(props);
 		assertTrue(props.size() == 1);
-		String val = (String) props.get("prop2");
+		final String val = (String) props.get("prop2");
 		assertNotNull(val);
 		assertEquals(val, "that");
 	}

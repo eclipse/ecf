@@ -22,13 +22,9 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 /**
  *
  */
-public abstract class PresenceAbstractTestCase extends ContainerAbstractTestCase {
+public abstract class AbstractPresenceTestCase extends ContainerAbstractTestCase {
 
-	static final String XMPP_CONTAINER = "ecf.xmpp.smack";
-
-	protected String getClientContainerName() {
-		return XMPP_CONTAINER;
-	}
+	protected abstract String getClientContainerName();
 
 	protected void setUp() throws Exception {
 		setClientCount(2);
@@ -36,20 +32,21 @@ public abstract class PresenceAbstractTestCase extends ContainerAbstractTestCase
 	}
 
 	protected ID getServerConnectID(int client) {
-		IContainer container = getClient(client);
-		Namespace connectNamespace = container.getConnectNamespace();
-		String username = getUsername(client);
+		final IContainer container = getClient(client);
+		final Namespace connectNamespace = container.getConnectNamespace();
+		final String username = getUsername(client);
 		try {
-			return IDFactory.getDefault().createID(connectNamespace,username);
-		} catch (IDCreateException e) {
+			return IDFactory.getDefault().createID(connectNamespace, username);
+		} catch (final IDCreateException e) {
 			fail("Could not create server connect ID");
 			return null;
 		}
 	}
 
 	protected IPresenceContainerAdapter getPresenceAdapter(int client) {
-		IContainer c = getClient(client);
-		if (c == null) return null;
+		final IContainer c = getClient(client);
+		if (c == null)
+			return null;
 		return (IPresenceContainerAdapter) c.getAdapter(IPresenceContainerAdapter.class);
 	}
 }

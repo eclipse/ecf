@@ -22,7 +22,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 /**
  * 
  */
-public class ChatRoomParticipantTest extends PresenceAbstractTestCase {
+public abstract class AbstractChatRoomParticipantTest extends AbstractPresenceTestCase {
 
 	IChatRoomContainer chatRoomContainer0, chatRoomContainer1 = null;
 	public static final int WAITTIME = 20000;
@@ -67,7 +67,7 @@ public class ChatRoomParticipantTest extends PresenceAbstractTestCase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.tests.presence.PresenceAbstractTestCase#setUp()
+	 * @see org.eclipse.ecf.tests.presence.AbstractPresenceTestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
 		setClientCount(2);

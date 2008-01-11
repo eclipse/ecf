@@ -23,66 +23,56 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 /**
  *
  */
-public class AdapterAccessTest extends ContainerAbstractTestCase {
+public abstract class AbstractAdapterAccessTest extends ContainerAbstractTestCase {
 
-	private static final String XMPP_CONTAINER = "ecf.xmpp.smack";
+	protected abstract String getClientContainerName();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.ContainerAbstractTestCase#getClientContainerName()
-	 */
-	protected String getClientContainerName() {
-		return XMPP_CONTAINER;
-	}
-	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
 		clients = createClients();
 	}
-	
+
 	protected IPresenceContainerAdapter getPresenceAdapter() {
 		return (IPresenceContainerAdapter) getClients()[0].getAdapter(IPresenceContainerAdapter.class);
 	}
-	
+
 	public void testGetPresenceContainerAdapter() {
-		IPresenceContainerAdapter adapter = getPresenceAdapter();
+		final IPresenceContainerAdapter adapter = getPresenceAdapter();
 		assertNotNull(adapter);
 	}
-	
+
 	public void testGetDescriptionsForAdapter() {
-		ContainerTypeDescription[] descs = ContainerFactory.getDefault()
-				.getDescriptionsForContainerAdapter(
-						IPresenceContainerAdapter.class);
+		final ContainerTypeDescription[] descs = ContainerFactory.getDefault().getDescriptionsForContainerAdapter(IPresenceContainerAdapter.class);
 		assertNotNull(descs);
 	}
 
-
 	public void testGetRosterManager() {
-		IPresenceContainerAdapter adapter = getPresenceAdapter();
+		final IPresenceContainerAdapter adapter = getPresenceAdapter();
 		assertNotNull(adapter);
-		IRosterManager rosterManager = adapter.getRosterManager();
+		final IRosterManager rosterManager = adapter.getRosterManager();
 		assertNotNull(rosterManager);
 	}
-	
+
 	public void testGetAccountManager() {
-		IPresenceContainerAdapter adapter = getPresenceAdapter();
+		final IPresenceContainerAdapter adapter = getPresenceAdapter();
 		assertNotNull(adapter);
-		IAccountManager accountManager = adapter.getAccountManager();
+		final IAccountManager accountManager = adapter.getAccountManager();
 		assertNotNull(accountManager);
 	}
-	
+
 	public void testGetChatManager() {
-		IPresenceContainerAdapter adapter = getPresenceAdapter();
+		final IPresenceContainerAdapter adapter = getPresenceAdapter();
 		assertNotNull(adapter);
-		IChatManager chatManager = adapter.getChatManager();
+		final IChatManager chatManager = adapter.getChatManager();
 		assertNotNull(chatManager);
 	}
-	
+
 	public void testGetChatRoomManager() {
-		IPresenceContainerAdapter adapter = getPresenceAdapter();
+		final IPresenceContainerAdapter adapter = getPresenceAdapter();
 		assertNotNull(adapter);
-		IChatRoomManager chatRoomManager = adapter.getChatRoomManager();
+		final IChatRoomManager chatRoomManager = adapter.getChatRoomManager();
 		assertNotNull(chatRoomManager);
 	}
 

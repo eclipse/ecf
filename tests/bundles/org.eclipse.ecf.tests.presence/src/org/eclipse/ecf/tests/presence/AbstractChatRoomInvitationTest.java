@@ -24,29 +24,30 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 /**
  * 
  */
-public class ChatRoomInvitationTest extends PresenceAbstractTestCase {
+public abstract class AbstractChatRoomInvitationTest extends AbstractPresenceTestCase {
 
 	IChatRoomManager chat0, chat1 = null;
 	public static final int WAITTIME = 20000;
 	public static final String CHAT_ROOM_NAME = System.getProperty("chat.room.name");
 
 	List<ID> invitationsReceived = new ArrayList<ID>();
-	
+
 	Object synchObject = new Object();
-	
+
 	IChatRoomInvitationListener invitationListener = new IChatRoomInvitationListener() {
-		public void handleInvitationReceived(ID roomID, ID from,
-				String subject, String body) {
-			System.out.println("handleInvitationReceived("+roomID+","+from+","+subject+","+body+")");
+		public void handleInvitationReceived(ID roomID, ID from, String subject, String body) {
+			System.out.println("handleInvitationReceived(" + roomID + "," + from + "," + subject + "," + body + ")");
 			invitationsReceived.add(roomID);
 			synchronized (synchObject) {
 				synchObject.notify();
 			}
-		}};
+		}
+	};
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.tests.presence.PresenceAbstractTestCase#setUp()
+	 * @see org.eclipse.ecf.tests.presence.AbstractPresenceTestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
 		setClientCount(2);
@@ -70,17 +71,17 @@ public class ChatRoomInvitationTest extends PresenceAbstractTestCase {
 	}
 
 	public void testSendInvitation() throws Exception {
-		IChatRoomInvitationSender invitationSender = chat0.getInvitationSender();
+		final IChatRoomInvitationSender invitationSender = chat0.getInvitationSender();
 		assertNotNull(invitationSender);
-		IChatRoomInfo roomInfo = chat0.getChatRoomInfo(CHAT_ROOM_NAME);
-		IChatRoomContainer chatRoomContainer = roomInfo.createChatRoomContainer();
+		final IChatRoomInfo roomInfo = chat0.getChatRoomInfo(CHAT_ROOM_NAME);
+		final IChatRoomContainer chatRoomContainer = roomInfo.createChatRoomContainer();
 		chatRoomContainer.connect(roomInfo.getRoomID(), null);
 		invitationSender.sendInvitation(roomInfo.getRoomID(), getClient(1).getConnectedID(), null, "this is an invitation");
-		try{
+		try {
 			synchronized (synchObject) {
 				synchObject.wait(WAITTIME);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw e;
 		}
 		assertHasEvent(invitationsReceived, ID.class);

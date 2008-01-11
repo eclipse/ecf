@@ -17,21 +17,21 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * 
  */
-public class ConnectTest extends PresenceAbstractTestCase {
+public abstract class AbstractConnectTest extends AbstractPresenceTestCase {
 
 	public static final int CLIENT_COUNT = 2;
-	public static final int WAITTIME= 3000;
-	
+	public static final int WAITTIME = 3000;
+
 	protected void setUp() throws Exception {
 		setClientCount(CLIENT_COUNT);
 		clients = createClients();
 	}
 
 	public void testConnectOneClient() throws Exception {
-		int clientIndex = 0;
-		IContainer client = getClient(clientIndex);
+		final int clientIndex = 0;
+		final IContainer client = getClient(clientIndex);
 		assertNull(client.getConnectedID());
-		ID serverConnectID = getServerConnectID(clientIndex);
+		final ID serverConnectID = getServerConnectID(clientIndex);
 		assertNotNull(serverConnectID);
 		connectClient(client, serverConnectID, getConnectContext(clientIndex));
 		assertEquals(serverConnectID, client.getConnectedID());
@@ -41,19 +41,19 @@ public class ConnectTest extends PresenceAbstractTestCase {
 	}
 
 	public void testConnectTwoClients() throws Exception {
-		for(int i=0; i < 2; i++) {
-			IContainer client = getClient(i);
+		for (int i = 0; i < 2; i++) {
+			final IContainer client = getClient(i);
 			assertNull(client.getConnectedID());
-			ID serverConnectID = getServerConnectID(i);
+			final ID serverConnectID = getServerConnectID(i);
 			assertNotNull(serverConnectID);
 			connectClient(client, serverConnectID, getConnectContext(i));
 			assertEquals(serverConnectID, client.getConnectedID());
 		}
-		
+
 		sleep(3000);
 
-		for(int i=0; i < 2; i++) {
-			IContainer client = getClient(i);
+		for (int i = 0; i < 2; i++) {
+			final IContainer client = getClient(i);
 			client.disconnect();
 			assertNull(client.getConnectedID());
 		}
