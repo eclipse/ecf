@@ -13,7 +13,6 @@ package org.eclipse.ecf.presence.collab.ui.console;
 
 import java.util.Hashtable;
 import java.util.Map;
-
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
@@ -25,18 +24,8 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.console.ConsolePlugin;
-import org.eclipse.ui.console.IConsole;
-import org.eclipse.ui.console.IConsoleConstants;
-import org.eclipse.ui.console.IConsoleManager;
-import org.eclipse.ui.console.IConsoleView;
-import org.eclipse.ui.console.TextConsole;
+import org.eclipse.ui.*;
+import org.eclipse.ui.console.*;
 
 /**
  * Send/receive requests to share a specific view (identified by view ID).
@@ -70,7 +59,7 @@ public class ConsoleShare extends AbstractCollabShare {
 	}
 
 	private static void initialize() {
-		Display.getDefault().syncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (!initialized) {
 					final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

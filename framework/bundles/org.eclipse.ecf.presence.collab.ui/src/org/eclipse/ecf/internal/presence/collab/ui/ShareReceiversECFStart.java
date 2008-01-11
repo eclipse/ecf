@@ -38,7 +38,7 @@ public class ShareReceiversECFStart implements IECFStart {
 			IContainer container = containerManager.getContainer(event.getLocalContainerID());
 			if (container == null)
 				return;
-			if (event instanceof IContainerConnectedEvent || event instanceof IContainerDisconnectedEvent || event instanceof IContainerDisposeEvent) {
+			if (event instanceof IContainerConnectedEvent || event instanceof IContainerDisconnectedEvent) {
 				// connected
 				IChannelContainerAdapter cca = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
 				if (cca == null)
@@ -71,10 +71,10 @@ public class ShareReceiversECFStart implements IECFStart {
 					ViewShare.removeViewShare(containerID);
 					ConsoleShare.removeStackShare(containerID);
 					ScreenCaptureShare.removeScreenCaptureShare(containerID);
-				} else if (event instanceof IContainerDisposeEvent) {
-					containerManager.removeListener(containerManagerListener);
-					container.removeListener(containerListener);
 				}
+			} else if (event instanceof IContainerDisposeEvent) {
+				containerManager.removeListener(containerManagerListener);
+				container.removeListener(containerListener);
 			}
 		}
 
