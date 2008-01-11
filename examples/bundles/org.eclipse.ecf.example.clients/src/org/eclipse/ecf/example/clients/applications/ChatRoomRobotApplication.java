@@ -29,8 +29,7 @@ import org.eclipse.equinox.app.IApplicationContext;
  * and make sure you have all required plug-ins.
  * 
  */
-public class ChatRoomRobotApplication implements IApplication,
-		IMessageReceiver, IIMMessageListener {
+public class ChatRoomRobotApplication implements IApplication, IMessageReceiver, IIMMessageListener {
 
 	private IChatRoomMessageSender sender;
 
@@ -42,48 +41,42 @@ public class ChatRoomRobotApplication implements IApplication,
 		Object[] args = context.getArguments().values().toArray();
 		while (args[0] instanceof Object[])
 			args = (Object[]) args[0];
-		Object[] arguments = (Object[]) args;
-		int l = arguments.length;
-		if (arguments[l - 1] instanceof String
-				&& arguments[l - 2] instanceof String
-				&& arguments[l - 3] instanceof String
-				&& arguments[l - 4] instanceof String) {
+		final Object[] arguments = args;
+		final int l = arguments.length;
+		if (arguments[l - 1] instanceof String && arguments[l - 2] instanceof String && arguments[l - 3] instanceof String && arguments[l - 4] instanceof String) {
 			userName = (String) arguments[l - 4];
-			String hostName = (String) arguments[l - 3];
-			String password = (String) arguments[l - 2];
-			String roomName = (String) arguments[l - 1];
+			final String hostName = (String) arguments[l - 3];
+			final String password = (String) arguments[l - 2];
+			final String roomName = (String) arguments[l - 1];
 			runRobot(hostName, password, roomName);
 			return new Integer(0);
 		}
-		System.out
-				.println("Usage: pass in four arguments (username, hostname, password, roomname)");
+		System.out.println("Usage: pass in four arguments (username, hostname, password, roomname)");
 		return new Integer(-1);
 	}
 
 	public void stop() {
 	}
 
-	private void runRobot(String hostName, String password, String roomName)
-			throws ECFException, Exception, InterruptedException {
-		XMPPChatRoomClient client = new XMPPChatRoomClient(this);
+	private synchronized void runRobot(String hostName, String password, String roomName) throws ECFException, Exception, InterruptedException {
+		final XMPPChatRoomClient client = new XMPPChatRoomClient(this);
 
 		// Then connect
-		String connectTarget = userName + "@" + hostName;
+		final String connectTarget = userName + "@" + hostName;
 
 		client.connect(connectTarget, password);
 
-		IChatRoomContainer room = client.createChatRoom(roomName);
+		final IChatRoomContainer room = client.createChatRoom(roomName);
 		room.connect(client.getChatRoomInfo().getRoomID(), null);
 
-		System.out.println("ECF chat room robot (" + connectTarget
-				+ ").  Connected to room: "
-				+ client.getChatRoomInfo().getRoomID().getName());
+		client.createSharedObject();
+
+		System.out.println("ECF chat room robot (" + connectTarget + ").  Connected to room: " + client.getChatRoomInfo().getRoomID().getName());
 
 		room.addMessageListener(this);
 		sender = room.getChatRoomMessageSender();
 		running = true;
-		sender
-				.sendMessage("Hi, I'm a robot. To get rid of me, send me a direct message.");
+		sender.sendMessage("Hi, I'm a robot. To get rid of me, send me a direct message.");
 		while (running) {
 			wait();
 		}
@@ -93,7 +86,7 @@ public class ChatRoomRobotApplication implements IApplication,
 		// direct message
 		try {
 			sender.sendMessage("gotta run");
-		} catch (ECFException e) {
+		} catch (final ECFException e) {
 			e.printStackTrace();
 		}
 		running = false;
@@ -114,15 +107,14 @@ public class ChatRoomRobotApplication implements IApplication,
 			} else {
 				sender.sendMessage("'s up?");
 			}
-		} catch (ECFException e) {
+		} catch (final ECFException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void handleMessageEvent(IIMMessageEvent messageEvent) {
 		if (messageEvent instanceof IChatRoomMessageEvent) {
-			IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
-					.getChatRoomMessage();
+			final IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
 			handleChatRoomMessage(m.getFromID(), m.getMessage());
 		}
 	}

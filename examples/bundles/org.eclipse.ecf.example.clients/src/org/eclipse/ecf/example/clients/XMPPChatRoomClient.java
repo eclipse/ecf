@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
@@ -53,8 +54,7 @@ public class XMPPChatRoomClient {
 
 	protected IContainer createContainer() throws ECFException {
 		// Create container
-		container = ContainerFactory.getDefault().createContainer(
-				CONTAINER_TYPE);
+		container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
 		namespace = container.getConnectNamespace();
 		return container;
 	}
@@ -69,18 +69,15 @@ public class XMPPChatRoomClient {
 
 	protected void setupPresenceAdapter() {
 		// Get presence adapter off of container
-		presence = (IPresenceContainerAdapter) container
-				.getAdapter(IPresenceContainerAdapter.class);
+		presence = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
 		// Get sender interface
 		sender = presence.getChatManager().getChatMessageSender();
 		// Setup message requestListener to handle incoming messages
 		presence.getChatManager().addMessageListener(new IIMMessageListener() {
 			public void handleMessageEvent(IIMMessageEvent messageEvent) {
 				if (messageEvent instanceof IChatMessageEvent) {
-					IChatMessage m = ((IChatMessageEvent) messageEvent)
-							.getChatMessage();
-					receiver
-							.handleMessage(m);
+					final IChatMessage m = ((IChatMessageEvent) messageEvent).getChatMessage();
+					receiver.handleMessage(m);
 				}
 			}
 		});
@@ -94,16 +91,27 @@ public class XMPPChatRoomClient {
 		createContainer();
 		setupPresenceAdapter();
 		// create target id
-		ID targetID = IDFactory.getDefault().createID(getNamespace(), account);
+		final ID targetID = IDFactory.getDefault().createID(getNamespace(), account);
 		// Now connect
-		getContainer().connect(targetID,
-				ConnectContextFactory.createPasswordConnectContext(password));
+		getContainer().connect(targetID, ConnectContextFactory.createPasswordConnectContext(password));
+
 		// Get a local ID for user account
 		userID = getID(account);
 	}
 
-	public IChatRoomContainer createChatRoom(String chatRoomName)
-			throws Exception {
+	/**
+	 * @throws ECFException 
+	 * 
+	 */
+	public void createSharedObject() throws ECFException {
+		final ISharedObjectContainer socontainer = (ISharedObjectContainer) chatroom.getAdapter(ISharedObjectContainer.class);
+		final ID sharedObjectID = IDFactory.getDefault().createGUID();
+		if (socontainer != null) {
+			socontainer.getSharedObjectManager().addSharedObject(sharedObjectID, new TestSharedObject("testsharedobject"), null);
+		}
+	}
+
+	public IChatRoomContainer createChatRoom(String chatRoomName) throws Exception {
 		// Create chat room container from manager
 		roomInfo = presence.getChatRoomManager().getChatRoomInfo(chatRoomName);
 		chatroom = roomInfo.createChatRoomContainer();
@@ -117,7 +125,7 @@ public class XMPPChatRoomClient {
 	private ID getID(String name) {
 		try {
 			return IDFactory.getDefault().createID(namespace, name);
-		} catch (IDCreateException e) {
+		} catch (final IDCreateException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -127,7 +135,7 @@ public class XMPPChatRoomClient {
 		if (sender != null) {
 			try {
 				sender.sendChatMessage(getID(jid), msg);
-			} catch (ECFException e) {
+			} catch (final ECFException e) {
 				e.printStackTrace();
 			}
 		}
