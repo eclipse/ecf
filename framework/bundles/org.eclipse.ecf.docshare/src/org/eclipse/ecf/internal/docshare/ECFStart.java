@@ -11,17 +11,9 @@
 
 package org.eclipse.ecf.internal.docshare;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.core.IContainerManagerListener;
-import org.eclipse.ecf.core.events.IContainerConnectedEvent;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.IContainerDisposeEvent;
-import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.ECFException;
@@ -57,10 +49,10 @@ public class ECFStart implements IECFStart {
 				} else if (event instanceof IContainerDisconnectedEvent) {
 					// disconnected
 					Activator.getDefault().removeDocShare(containerID);
-				} else if (event instanceof IContainerDisposeEvent) {
-					containerManager.removeListener(containerManagerListener);
-					container.removeListener(containerListener);
 				}
+			} else if (event instanceof IContainerDisposeEvent) {
+				containerManager.removeListener(containerManagerListener);
+				container.removeListener(containerListener);
 			}
 		}
 
