@@ -6,11 +6,12 @@ Bundle-Version: 1.2.0.qualifier
 Bundle-Activator: org.eclipse.ecf.tests.presence.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.equinox.common,
- org.junit,
+Require-Bundle: org.eclipse.ecf.tests,
  org.eclipse.ecf,
  org.eclipse.ecf.presence,
- org.eclipse.ecf.tests
+ org.eclipse.ecf.sharedobject;bundle-version="1.2.0",
+ org.junit;bundle-version="3.8.2",
+ org.eclipse.core.runtime;bundle-version="3.4.0"
 Eclipse-LazyStart: true
-Import-Package: org.osgi.framework;version="1.4.0"
-Export-Package: org.eclipse.ecf.tests.presence
+Export-Package: org.eclipse.ecf.tests.presence,
+ org.eclipse.ecf.tests.presence.sharedobject
