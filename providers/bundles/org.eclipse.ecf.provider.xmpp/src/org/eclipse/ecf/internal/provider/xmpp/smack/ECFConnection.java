@@ -48,20 +48,18 @@ public class ECFConnection implements ISynchAsynchConnection {
 	private static final String GOOGLE_TALK_HOST = "talk.google.com";
 	public static final String CLIENT_TYPE = "ECF_XMPP";
 	public static final boolean DEBUG = Boolean.getBoolean(System.getProperty("smack.debug", "false"));
-	
+
 	protected static final String STRING_ENCODING = "UTF-8";
-	public static final String OBJECT_PROPERTY_NAME = ECFConnection.class
-			.getName()
-			+ ".object";
+	public static final String OBJECT_PROPERTY_NAME = ECFConnection.class.getName() + ".object";
 	protected static final int XMPP_DEFAULT_PORT = 5222;
 	protected static final int XMPPS_DEFAULT_PORT = 5223;
-	
+
 	private XMPPConnection connection = null;
 	private IAsynchEventHandler handler = null;
 	private boolean isStarted = false;
 	private String serverName;
 	private int serverPort = -1;
-	private Map properties = null;
+	private final Map properties = null;
 	private boolean isConnected = false;
 	private Namespace namespace = null;
 
@@ -70,14 +68,14 @@ public class ECFConnection implements ISynchAsynchConnection {
 	private boolean secure = false;
 
 	private boolean disconnecting = false;
-	
-	private PacketListener packetListener = new PacketListener() {
+
+	private final PacketListener packetListener = new PacketListener() {
 		public void processPacket(Packet arg0) {
 			handlePacket(arg0);
 		}
 	};
-	
-	private ConnectionListener connectionListener = new ConnectionListener() {
+
+	private final ConnectionListener connectionListener = new ConnectionListener() {
 		public void connectionClosed() {
 			handleConnectionClosed(null);
 		}
@@ -86,7 +84,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 			handleConnectionClosed(e);
 		}
 	};
-	
+
 	protected void logException(String msg, Throwable t) {
 		XmppPlugin.log(msg, t);
 	}
@@ -103,8 +101,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		return connection;
 	}
 
-	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h,
-			boolean secure) {
+	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h, boolean secure) {
 		this.handler = h;
 		this.namespace = ns;
 		this.google = google;
@@ -119,7 +116,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		String password = null;
 		try {
 			password = (String) data;
-		} catch (ClassCastException e) {
+		} catch (final ClassCastException e) {
 			return null;
 		}
 		return password;
@@ -129,30 +126,29 @@ public class ECFConnection implements ISynchAsynchConnection {
 		XMPPID jabberID = null;
 		try {
 			jabberID = (XMPPID) remote;
-		} catch (ClassCastException e) {
+		} catch (final ClassCastException e) {
 			throw new ECFException(e);
 		}
 		return jabberID;
 	}
 
-	public synchronized Object connect(ID remote, Object data, int timeout)
-			throws ECFException {
+	public synchronized Object connect(ID remote, Object data, int timeout) throws ECFException {
 		if (connection != null)
 			throw new ECFException("already connected");
 		if (timeout > 0)
 			SmackConfiguration.setPacketReplyTimeout(timeout);
 		Roster.setDefaultSubscriptionMode(Roster.SUBSCRIPTION_MANUAL);
 
-		XMPPID jabberURI = getXMPPID(remote);
-		String username = jabberURI.getUsername();
+		final XMPPID jabberURI = getXMPPID(remote);
+		final String username = jabberURI.getUsername();
 		serverName = jabberURI.getHostname();
 		serverPort = jabberURI.getPort();
 		try {
 			if (google) {
 				if (secure) {
-					connection = new SSLXMPPConnection(GOOGLE_TALK_HOST,XMPPS_DEFAULT_PORT,jabberURI.getHostname());
+					connection = new SSLXMPPConnection(GOOGLE_TALK_HOST, XMPPS_DEFAULT_PORT, jabberURI.getHostname());
 				} else {
-					connection = new XMPPConnection(GOOGLE_TALK_HOST,XMPP_DEFAULT_PORT,jabberURI.getHostname());
+					connection = new XMPPConnection(GOOGLE_TALK_HOST, XMPP_DEFAULT_PORT, jabberURI.getHostname());
 				}
 			} else if (serverPort == -1) {
 				if (secure) {
@@ -172,20 +168,19 @@ public class ECFConnection implements ISynchAsynchConnection {
 			// Login
 			connection.login(username, (String) data, CLIENT_TYPE);
 			isConnected = true;
-		} catch (XMPPException e) {
-			if (connection != null) {
-				connection.close();
-			}
-			if (e.getMessage().equals("(401)")) throw new ContainerAuthenticationException("Password incorrect",e);
-			throw new ContainerConnectException(e.getLocalizedMessage(),e);
+		} catch (final XMPPException e) {
+			if (e.getMessage().equals("(401)"))
+				throw new ContainerAuthenticationException("Password incorrect", e);
+			throw new ContainerConnectException(e.getLocalizedMessage(), e);
 		}
 		return null;
 	}
 
 	public void sendPacket(Packet packet) throws XMPPException {
-		if (connection != null) connection.sendPacket(packet);
+		if (connection != null)
+			connection.sendPacket(packet);
 	}
-	
+
 	public synchronized void disconnect() {
 		disconnecting = true;
 		if (isStarted()) {
@@ -208,9 +203,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 		if (!isConnected())
 			return null;
 		try {
-			return IDFactory.getDefault().createID(namespace.getName(),
-					new Object[] { connection.getConnectionID() });
-		} catch (Exception e) {
+			return IDFactory.getDefault().createID(namespace.getName(), new Object[] {connection.getConnectionID()});
+		} catch (final Exception e) {
 			logException("Exception in getLocalID", e);
 			return null;
 		}
@@ -239,29 +233,26 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	protected void handlePacket(Packet arg0) {
 		try {
-			Object val = arg0.getProperty(OBJECT_PROPERTY_NAME);
+			final Object val = arg0.getProperty(OBJECT_PROPERTY_NAME);
 			if (val != null) {
-				handler.handleAsynchEvent(new ECFConnectionObjectPacketEvent(
-						this, arg0, val));
+				handler.handleAsynchEvent(new ECFConnectionObjectPacketEvent(this, arg0, val));
 			} else {
-				handler.handleAsynchEvent(new ECFConnectionPacketEvent(this,
-						arg0));
+				handler.handleAsynchEvent(new ECFConnectionPacketEvent(this, arg0));
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			logException("Exception in handleAsynchEvent", e);
 			try {
 				disconnect();
-			} catch (Exception e1) {
+			} catch (final Exception e1) {
 				logException("Exception in disconnect()", e1);
 			}
 		}
 	}
 
-	public synchronized void sendAsynch(ID receiver, byte[] data)
-			throws IOException {
+	public synchronized void sendAsynch(ID receiver, byte[] data) throws IOException {
 		if (data == null)
 			throw new IOException("no data");
-		Message aMsg = new Message();
+		final Message aMsg = new Message();
 		aMsg.setProperty(OBJECT_PROPERTY_NAME, data);
 		sendMessage(receiver, aMsg);
 	}
@@ -272,34 +263,30 @@ public class ECFConnection implements ISynchAsynchConnection {
 				throw new IOException("not connected");
 			try {
 				if (receiver == null)
-					throw new IOException(
-							"receiver cannot be null for xmpp instant messaging");
+					throw new IOException("receiver cannot be null for xmpp instant messaging");
 				else if (receiver instanceof XMPPID) {
-					XMPPID rcvr = (XMPPID) receiver;
+					final XMPPID rcvr = (XMPPID) receiver;
 					aMsg.setType(Message.Type.CHAT);
-					String userAtHost = rcvr.getUsernameAtHost();
-					Chat localChat = connection.createChat(userAtHost);
+					final String userAtHost = rcvr.getUsernameAtHost();
+					final Chat localChat = connection.createChat(userAtHost);
 					localChat.sendMessage(aMsg);
 				} else if (receiver instanceof XMPPRoomID) {
-					XMPPRoomID roomID = (XMPPRoomID) receiver;
+					final XMPPRoomID roomID = (XMPPRoomID) receiver;
 					aMsg.setType(Message.Type.GROUP_CHAT);
-					String to = roomID.getMucString();
+					final String to = roomID.getMucString();
 					aMsg.setTo(to);
 					connection.sendPacket(aMsg);
 				} else
-					throw new IOException(
-							"receiver must be of type XMPPID or XMPPRoomID");
-			} catch (XMPPException e) {
-				IOException result = new IOException(
-						"XMPPException in sendMessage: " + e.getMessage());
+					throw new IOException("receiver must be of type XMPPID or XMPPRoomID");
+			} catch (final XMPPException e) {
+				final IOException result = new IOException("XMPPException in sendMessage: " + e.getMessage());
 				result.setStackTrace(e.getStackTrace());
 				throw result;
 			}
 		}
 	}
 
-	public synchronized Object sendSynch(ID receiver, byte[] data)
-			throws IOException {
+	public synchronized Object sendSynch(ID receiver, byte[] data) throws IOException {
 		if (data == null)
 			throw new IOException("data cannot be null");
 		// This is assumed to be disconnect...so we'll just disconnect
@@ -320,28 +307,27 @@ public class ECFConnection implements ISynchAsynchConnection {
 			throw new IOException("target cannot be null");
 		if (message == null)
 			throw new IOException("message cannot be null");
-		Message aMsg = new Message();
+		final Message aMsg = new Message();
 		aMsg.setBody(message);
 		sendMessage(target, aMsg);
 	}
 
 	public static Map getPropertiesFromPacket(Packet packet) {
-		Map result = new HashMap();
-		Iterator i = packet.getPropertyNames();
+		final Map result = new HashMap();
+		final Iterator i = packet.getPropertyNames();
 		for (; i.hasNext();) {
-			String name = (String) i.next();
+			final String name = (String) i.next();
 			result.put(name, packet.getProperty(name));
 		}
 		return result;
 	}
-	
+
 	public static Packet setPropertiesInPacket(Packet input, Map properties) {
 		if (properties != null) {
-			for (Iterator i = properties.keySet().iterator(); i.hasNext();) {
-				Object keyo = i.next();
-				Object val = properties.get(keyo);
-				String key = (keyo instanceof String) ? (String) keyo : keyo
-						.toString();
+			for (final Iterator i = properties.keySet().iterator(); i.hasNext();) {
+				final Object keyo = i.next();
+				final Object val = properties.get(keyo);
+				final String key = (keyo instanceof String) ? (String) keyo : keyo.toString();
 				if (val instanceof Boolean)
 					input.setProperty(key, ((Boolean) val).booleanValue());
 				else if (val instanceof Double)
@@ -362,22 +348,26 @@ public class ECFConnection implements ISynchAsynchConnection {
 	public void sendMessage(ID target, ID thread, Type type, String subject, String body, Map properties2) throws IOException {
 		if (target == null)
 			throw new IOException("XMPP target for message cannot be null");
-		if (body == null) body = "";
-		Message aMsg = new Message();
+		if (body == null)
+			body = "";
+		final Message aMsg = new Message();
 		aMsg.setBody(body);
-		if (thread != null) aMsg.setThread(thread.getName());
-		if (type != null) aMsg.setType(type);
-		if (subject != null) aMsg.setSubject(subject);
-		setPropertiesInPacket(aMsg,properties2);
+		if (thread != null)
+			aMsg.setThread(thread.getName());
+		if (type != null)
+			aMsg.setType(type);
+		if (subject != null)
+			aMsg.setSubject(subject);
+		setPropertiesInPacket(aMsg, properties2);
 		sendMessage(target, aMsg);
 	}
 
-	public void sendPresenceUpdate(ID target, Presence presence)
-			throws IOException {
+	public void sendPresenceUpdate(ID target, Presence presence) throws IOException {
 		if (presence == null)
 			throw new IOException("presence cannot be null");
 		presence.setFrom(connection.getUser());
-		if (target != null) presence.setTo(target.getName());
+		if (target != null)
+			presence.setTo(target.getName());
 		synchronized (this) {
 			if (!isConnected())
 				throw new IOException("not connected");
@@ -385,15 +375,14 @@ public class ECFConnection implements ISynchAsynchConnection {
 		}
 	}
 
-	public void sendRosterAdd(String user, String name, String[] groups)
-			throws IOException, XMPPException {
-		Roster r = getRoster();
+	public void sendRosterAdd(String user, String name, String[] groups) throws IOException, XMPPException {
+		final Roster r = getRoster();
 		r.createEntry(user, name, groups);
 	}
 
 	public void sendRosterRemove(String user) throws XMPPException, IOException {
-		Roster r = getRoster();
-		RosterEntry re = r.getEntry(user);
+		final Roster r = getRoster();
+		final RosterEntry re = r.getEntry(user);
 		r.removeEntry(re);
 	}
 
