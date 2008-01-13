@@ -16,6 +16,9 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.core.messages"; //$NON-NLS-1$
 	public static String AbstractContainer_Exception_Callback_Handler;
+	public static String BaseContainer_EXCEPTION_CONNECT_NOT_SUPPORT;
+	public static String BaseContainer_EXCEPTION_COULD_NOT_CREATE_ID;
+	public static String BaseContainerInstantiator_EXCEPTION_CREATEINSTANCE_NOT_SUPPORTED;
 	public static String BooleanCallback_EXCEPTION_INVALID_BOOLEAN_ARGUMENT;
 	public static String ContainerFactory_Base_Container_Name;
 	public static String ContainerFactory_Exception_Adapter_Not_Null;

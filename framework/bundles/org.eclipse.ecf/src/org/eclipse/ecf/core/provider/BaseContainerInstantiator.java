@@ -15,6 +15,7 @@ import java.util.*;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
+import org.eclipse.ecf.internal.core.Messages;
 
 /**
  *
@@ -59,7 +60,7 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */
 	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
-		throw new ContainerCreateException();
+		throw new ContainerCreateException(Messages.BaseContainerInstantiator_EXCEPTION_CREATEINSTANCE_NOT_SUPPORTED);
 	}
 
 	/* (non-Javadoc)

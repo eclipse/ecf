@@ -10,9 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.core;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.provider.BaseContainerInstantiator;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.internal.core.Messages;
 
 /**
  * Base implementation of IContainer. Subclasses may be created to fill out the
@@ -27,6 +29,16 @@ public class BaseContainer extends AbstractContainer {
 		private static long nextBaseContainerID = 0L;
 
 		public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
+			try {
+				if (parameters != null && parameters.length > 0) {
+					if (parameters[0] instanceof ID)
+						return new BaseContainer((ID) parameters[0]);
+					if (parameters[0] instanceof String)
+						return new BaseContainer(IDFactory.getDefault().createStringID((String) parameters[0]));
+				}
+			} catch (IDCreateException e) {
+				throw new ContainerCreateException(Messages.BaseContainer_EXCEPTION_COULD_NOT_CREATE_ID);
+			}
 			return new BaseContainer(nextBaseContainerID++);
 		}
 
@@ -46,8 +58,13 @@ public class BaseContainer extends AbstractContainer {
 		try {
 			this.id = IDFactory.getDefault().createLongID(idl);
 		} catch (IDCreateException e) {
-			throw new ContainerCreateException(e);
+			throw new ContainerCreateException(Messages.BaseContainer_EXCEPTION_COULD_NOT_CREATE_ID, e);
 		}
+	}
+
+	protected BaseContainer(ID id) {
+		Assert.isNotNull(id);
+		this.id = id;
 	}
 
 	/*
@@ -57,7 +74,7 @@ public class BaseContainer extends AbstractContainer {
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException {
-		throw new ContainerConnectException("connect not supported"); //$NON-NLS-1$
+		throw new ContainerConnectException(Messages.BaseContainer_EXCEPTION_CONNECT_NOT_SUPPORT);
 	}
 
 	/*
