@@ -27,7 +27,7 @@ public class ContainerFactoryServiceCreateTest extends ContainerFactoryServiceAb
 
 	protected static final String CONTAINER_TYPE_NAME = ContainerFactoryServiceCreateTest.class.getName();
 
-	protected static final String BASE_CONTAINER_TYPE_NAME = "ecf.root";
+	protected static final String BASE_CONTAINER_TYPE_NAME = "ecf.base";
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.core.ContainerFactoryAbstractTestCase#setUp()
