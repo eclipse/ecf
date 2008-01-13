@@ -14,7 +14,9 @@ package org.eclipse.ecf.internal.examples.provider.trivial.container;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.BaseContainerInstantiator;
 
 /**
@@ -28,9 +30,15 @@ public class TrivialContainerInstantiator extends BaseContainerInstantiator {
 	@Override
 	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
 		try {
+			if (parameters != null && parameters.length > 0) {
+				if (parameters[0] instanceof ID)
+					return new TrivialContainer((ID) parameters[0]);
+				if (parameters[0] instanceof String)
+					return new TrivialContainer(IDFactory.getDefault().createStringID((String) parameters[0]));
+			}
 			return new TrivialContainer();
-		} catch (IDCreateException e) {
-			throw new ContainerCreateException("Exception creating trivial container", e);
+		} catch (final IDCreateException e) {
+			throw new ContainerCreateException("Exception creating ID for trivial container", e);
 		}
 	}
 

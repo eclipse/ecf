@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.internal.examples.provider.trivial.container;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
@@ -51,6 +52,12 @@ public class TrivialContainer extends AbstractContainer
 		this.containerID = IDFactory.getDefault().createGUID();
 	}
 
+	public TrivialContainer(ID id) {
+		super();
+		Assert.isNotNull(id);
+		this.containerID = id;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -78,7 +85,7 @@ public class TrivialContainer extends AbstractContainer
 	public void disconnect() {
 		fireContainerEvent(new ContainerDisconnectingEvent(getID(), targetID));
 
-		ID oldID = targetID;
+		final ID oldID = targetID;
 
 		// XXX disconnect here
 
@@ -117,7 +124,6 @@ public class TrivialContainer extends AbstractContainer
 	 * 
 	 * @see org.eclipse.ecf.core.AbstractContainer#getAdapter(java.lang.Class)
 	 */
-	@Override
 	public Object getAdapter(Class serviceType) {
 		/*
 		 * See AbstractContainer.getAdapter() implementation.
