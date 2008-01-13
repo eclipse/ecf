@@ -8,7 +8,7 @@
       <containerFactory
             class="org.eclipse.ecf.core.BaseContainer$Instantiator"
             description="ECF Base Container"
-            name="ecf.root">
+            name="ecf.base">
       </containerFactory>
    </extension>
 </plugin>
