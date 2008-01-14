@@ -20,11 +20,11 @@ public class RemoteFileSystemBrowserFactory implements IRemoteFileSystemBrowserF
 	public IRemoteFileSystemBrowser newInstance() {
 		return new IRemoteFileSystemBrowser() {
 
-			public Namespace getDirectoryNamespace() {
+			public Namespace getBrowseNamespace() {
 				return IDFactory.getDefault().getNamespaceByName(FileTransferNamespace.PROTOCOL);
 			}
 
-			public IRemoteFileSystemRequest sendDirectoryRequest(IFileID directoryID, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
+			public IRemoteFileSystemRequest sendBrowseRequest(IFileID directoryID, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
 				final FileSystemBrowser fsb = new FileSystemBrowser(directoryID, listener);
 				return fsb.sendDirectoryRequest();
 			}

@@ -80,13 +80,13 @@ public abstract class AbstractBrowseTestCase extends TestCase {
 		};
 	}
 
-	protected IFileID createDirectoryFileID(URL directory) throws Exception {
-		return FileIDFactory.getDefault().createFileID(adapter.getDirectoryNamespace(), directory);
+	protected IFileID createFileID(URL directoryOrFile) throws Exception {
+		return FileIDFactory.getDefault().createFileID(adapter.getBrowseNamespace(), directoryOrFile);
 	}
 
-	protected void testListDirectory(URL directory) throws Exception {
+	protected void testBrowse(URL directoryOrFile) throws Exception {
 		Assert.isNotNull(adapter);
-		request = adapter.sendDirectoryRequest(createDirectoryFileID(directory), createRemoteFileSystemListener());
+		request = adapter.sendBrowseRequest(createFileID(directoryOrFile), createRemoteFileSystemListener());
 	}
 
 	/**
