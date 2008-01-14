@@ -80,31 +80,26 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 		}, DESCRIPTION);
 	}
 
-	public void testCreateContainer0() throws Exception {
-		final IContainer container = ContainerFactory.getDefault().createContainer();
-		assertNotNull(container);
-	}
-
 	public void testCreateContainer1() throws Exception {
 		final IContainer container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME);
 		assertNotNull(container);
 	}
 
 	public void testCreateContainer2() throws Exception {
-		final IContainer container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME, null);
+		final IContainer container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME);
 		assertNotNull(container);
 	}
 
 	public void testCreateContainer3() throws Exception {
 		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
 		assertNotNull(desc);
-		final IContainer container = ContainerFactory.getDefault().createContainer(desc, null);
+		final IContainer container = ContainerFactory.getDefault().createContainer(desc);
 		assertNotNull(container);
 	}
 
 	public void testCreateContainer4() throws Exception {
 		try {
-			ContainerFactory.getDefault().createContainer((String) null, null);
+			ContainerFactory.getDefault().createContainer((String) null, (Object[]) null);
 			fail();
 		} catch (final ContainerCreateException e) {
 		}
@@ -112,28 +107,74 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 
 	public void testCreateContainer5() throws Exception {
 		try {
-			ContainerFactory.getDefault().createContainer((ContainerTypeDescription) null, null);
+			ContainerFactory.getDefault().createContainer((ContainerTypeDescription) null);
 			fail();
 		} catch (final ContainerCreateException e) {
 		}
 	}
 
-	public void testCreateBaseContainer() throws Exception {
-		final IContainer base = ContainerFactory.getDefault().createContainer();
-		assertNotNull(base);
+	public void testCreateContainer6() throws Exception {
+		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
+		assertNotNull(desc);
+		final IContainer container = ContainerFactory.getDefault().createContainer(desc, IDFactory.getDefault().createGUID());
+		assertNotNull(container);
+	}
+
+	public void testCreateContainer7() throws Exception {
+		final IContainer container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME, IDFactory.getDefault().createGUID());
+		assertNotNull(container);
+	}
+
+	public void testCreateContainer8() throws Exception {
+		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
+		assertNotNull(desc);
+		final IContainer container = ContainerFactory.getDefault().createContainer(desc, IDFactory.getDefault().createGUID(), new Object[] {"param"});
+		assertNotNull(container);
+	}
+
+	public void testCreateContainer9() throws Exception {
+		final IContainer container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME, IDFactory.getDefault().createGUID(), new Object[] {"param"});
+		assertNotNull(container);
 	}
 
 	public void testCreateBaseContainer0() throws Exception {
-		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(BASE_CONTAINER_TYPE_NAME);
-		assertNotNull(desc);
-		final IContainer base = ContainerFactory.getDefault().createContainer(desc, new Object[] {IDFactory.getDefault().createGUID()});
+		final IContainer base = ContainerFactory.getDefault().createContainer();
 		assertNotNull(base);
 	}
 
 	public void testCreateBaseContainer1() throws Exception {
 		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(BASE_CONTAINER_TYPE_NAME);
 		assertNotNull(desc);
+		final IContainer base = ContainerFactory.getDefault().createContainer(desc, IDFactory.getDefault().createGUID());
+		assertNotNull(base);
+	}
+
+	public void testCreateBaseContainer2() throws Exception {
+		final IContainer base = ContainerFactory.getDefault().createContainer(BASE_CONTAINER_TYPE_NAME, IDFactory.getDefault().createGUID());
+		assertNotNull(base);
+	}
+
+	public void testCreateBaseContainer3() throws Exception {
+		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(BASE_CONTAINER_TYPE_NAME);
+		assertNotNull(desc);
 		final IContainer base = ContainerFactory.getDefault().createContainer(desc, new Object[] {IDFactory.getDefault().createGUID().getName()});
+		assertNotNull(base);
+	}
+
+	public void testCreateBaseContainer4() throws Exception {
+		final IContainer base = ContainerFactory.getDefault().createContainer(BASE_CONTAINER_TYPE_NAME, new Object[] {IDFactory.getDefault().createGUID()});
+		assertNotNull(base);
+	}
+
+	public void testCreateBaseContainer5() throws Exception {
+		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(BASE_CONTAINER_TYPE_NAME);
+		assertNotNull(desc);
+		final IContainer base = ContainerFactory.getDefault().createContainer(desc, IDFactory.getDefault().createGUID(), new Object[] {"param"});
+		assertNotNull(base);
+	}
+
+	public void testCreateBaseContainer6() throws Exception {
+		final IContainer base = ContainerFactory.getDefault().createContainer(BASE_CONTAINER_TYPE_NAME, IDFactory.getDefault().createGUID(), new Object[] {"param"});
 		assertNotNull(base);
 	}
 
