@@ -20,6 +20,6 @@ public interface IRemoteFileSystemEvent {
 
 	public Exception getException();
 
-	public IFileID getDirectory();
+	public IFileID getFileID();
 
 }

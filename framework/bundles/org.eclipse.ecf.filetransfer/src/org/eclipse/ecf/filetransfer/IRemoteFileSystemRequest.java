@@ -31,7 +31,7 @@ public interface IRemoteFileSystemRequest {
 
 	/**
 	 * Get directoryID that represents the directory accessed.
-	 * @return IFileID for remote directory.  Will not return <code>null</code>.
+	 * @return IFileID for remote directory or file.  Will not return <code>null</code>.
 	 */
-	public IFileID getDirectoryID();
+	public IFileID getFileID();
 }

@@ -22,19 +22,19 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 public interface IRemoteFileSystemBrowserContainerAdapter extends IAdaptable {
 
 	/**
-	 * Get the {@link Namespace} instance for creating IFileIDs that represent remote directories.
+	 * Get the {@link Namespace} instance for creating IFileIDs that represent remote files or directories.
 	 * 
-	 * @return Namespace for directories.  Will not be <code>null</code>.
+	 * @return Namespace for remote files or directories.  Will not be <code>null</code>.
 	 */
-	public Namespace getDirectoryNamespace();
+	public Namespace getBrowseNamespace();
 
 	/**
-	 * Send a request for directory information for given directoryID.
-	 * @param directoryID the IFileID representing/specifying the remote directory to access.
+	 * Send a request for file or directory information for given directoryOrFileID.
+	 * @param directoryOrFileID the IFileID representing/specifying the remote directory or file to access.
 	 * @param listener the listener that will be notified asynchronously when a response to this request is received.  Must not be
 	 * <code>null</code>.  
 	 * @return IRemoteFileSystemRequest the request instance.
 	 */
-	public IRemoteFileSystemRequest sendDirectoryRequest(IFileID directoryID, IRemoteFileSystemListener listener) throws RemoteFileSystemException;
+	public IRemoteFileSystemRequest sendBrowseRequest(IFileID directoryOrFileID, IRemoteFileSystemListener listener) throws RemoteFileSystemException;
 
 }
