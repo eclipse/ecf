@@ -25,7 +25,7 @@ import org.eclipse.ecf.internal.provider.filetransfer.Messages;
  */
 public abstract class AbstractFileSystemBrowser {
 
-	protected IFileID directoryID = null;
+	protected IFileID fileID = null;
 	protected IRemoteFileSystemListener listener = null;
 
 	Job job = null;
@@ -37,14 +37,14 @@ public abstract class AbstractFileSystemBrowser {
 	class DirectoryJob extends Job {
 
 		public DirectoryJob() {
-			super(directoryID.getName());
+			super(fileID.getName());
 		}
 
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
 				if (monitor.isCanceled())
 					throw new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
-				runDirectoryRequest();
+				runRequest();
 			} catch (Exception e) {
 				AbstractFileSystemBrowser.this.exception = e;
 			} finally {
@@ -63,15 +63,15 @@ public abstract class AbstractFileSystemBrowser {
 	}
 
 	/**
-	 * Run the actual directory request.  This method is called within the job created to actually get the
-	 * directory information.
+	 * Run the actual request.  This method is called within the job created to actually get the
+	 * directory or file information.
 	 * @throws Exception if some problem with making the request or receiving response to the request.
 	 */
-	protected abstract void runDirectoryRequest() throws Exception;
+	protected abstract void runRequest() throws Exception;
 
-	public AbstractFileSystemBrowser(IFileID directoryID2, IRemoteFileSystemListener listener) {
-		Assert.isNotNull(directoryID2);
-		this.directoryID = directoryID2;
+	public AbstractFileSystemBrowser(IFileID directoryOrFileID, IRemoteFileSystemListener listener) {
+		Assert.isNotNull(directoryOrFileID);
+		this.fileID = directoryOrFileID;
 		Assert.isNotNull(listener);
 		this.listener = listener;
 	}
@@ -88,8 +88,8 @@ public abstract class AbstractFileSystemBrowser {
 				}
 			}
 
-			public IFileID getDirectoryID() {
-				return directoryID;
+			public IFileID getFileID() {
+				return fileID;
 			}
 
 			public IRemoteFileSystemListener getRemoteFileListener() {
@@ -106,8 +106,8 @@ public abstract class AbstractFileSystemBrowser {
 	protected IRemoteFileSystemEvent createRemoteFileEvent() {
 		return new IRemoteFileSystemDirectoryEvent() {
 
-			public IFileID getDirectory() {
-				return directoryID;
+			public IFileID getFileID() {
+				return fileID;
 			}
 
 			public Exception getException() {
@@ -116,7 +116,7 @@ public abstract class AbstractFileSystemBrowser {
 
 			public String toString() {
 				StringBuffer buf = new StringBuffer("RemoteFileSystemDirectoryEvent["); //$NON-NLS-1$
-				buf.append("directoryID=").append(directoryID).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+				buf.append("fileID=").append(fileID).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 				buf.append("files=" + Arrays.asList(remoteFiles)).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 				return buf.toString();
 			}

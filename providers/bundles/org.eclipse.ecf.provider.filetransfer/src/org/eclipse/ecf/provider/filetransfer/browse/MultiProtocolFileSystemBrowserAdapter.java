@@ -56,19 +56,19 @@ public class MultiProtocolFileSystemBrowserAdapter implements IRemoteFileSystemB
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.filetransfer.IRemoteFileSystemBrowserContainerAdapter#getDirectoryNamespace()
 	 */
-	public Namespace getDirectoryNamespace() {
+	public Namespace getBrowseNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(FileTransferNamespace.PROTOCOL);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.filetransfer.IRemoteFileSystemBrowserContainerAdapter#sendDirectoryRequest(org.eclipse.ecf.filetransfer.identity.IFileID, org.eclipse.ecf.filetransfer.IRemoteFileSystemListener)
 	 */
-	public IRemoteFileSystemRequest sendDirectoryRequest(IFileID directoryID, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
-		Assert.isNotNull(directoryID);
+	public IRemoteFileSystemRequest sendBrowseRequest(IFileID directoryOrFileID, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
+		Assert.isNotNull(directoryOrFileID);
 		Assert.isNotNull(listener);
 		URL url;
 		try {
-			url = directoryID.getURL();
+			url = directoryOrFileID.getURL();
 		} catch (final MalformedURLException e) {
 			throw new RemoteFileSystemException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
 		}
@@ -78,13 +78,13 @@ public class MultiProtocolFileSystemBrowserAdapter implements IRemoteFileSystemB
 
 		if (fileSystemBrowser == null) {
 			if (url.getProtocol().equalsIgnoreCase("file")) { //$NON-NLS-1$
-				FileSystemBrowser fsb = new FileSystemBrowser(directoryID, listener);
+				FileSystemBrowser fsb = new FileSystemBrowser(directoryOrFileID, listener);
 				return fsb.sendDirectoryRequest();
 			}
-			throw new RemoteFileSystemException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, directoryID));
+			throw new RemoteFileSystemException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, directoryOrFileID));
 		}
 
-		return fileSystemBrowser.sendDirectoryRequest(directoryID, listener);
+		return fileSystemBrowser.sendBrowseRequest(directoryOrFileID, listener);
 	}
 
 	/* (non-Javadoc)
