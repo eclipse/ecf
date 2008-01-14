@@ -41,10 +41,7 @@ public class EFSFileAttributes implements IRemoteFileAttributes {
 		if (key == null)
 			return null;
 		if (key.equalsIgnoreCase(IRemoteFileAttributes.READ_ATTRIBUTE)) {
-			if (fileInfo.getAttribute(EFS.ATTRIBUTE_READ_ONLY))
-				return Boolean.TRUE.toString();
-			else
-				return Boolean.FALSE.toString();
+			return Boolean.TRUE.toString();
 		} else if (key.equalsIgnoreCase(IRemoteFileAttributes.WRITE_ATTRIBUTE)) {
 			if (!fileInfo.getAttribute(EFS.ATTRIBUTE_READ_ONLY))
 				return Boolean.TRUE.toString();

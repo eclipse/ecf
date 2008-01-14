@@ -11,15 +11,13 @@
 
 package org.eclipse.ecf.internal.provider.filetransfer.efs;
 
-import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileInfo;
-import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemRequest;
 import org.eclipse.ecf.filetransfer.RemoteFileSystemException;
@@ -27,7 +25,6 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowser;
 import org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
-import org.eclipse.osgi.util.NLS;
 
 /**
  *
@@ -40,27 +37,23 @@ public class EFSRemoteFileSystemBrowseFactory implements IRemoteFileSystemBrowse
 	public IRemoteFileSystemBrowser newInstance() {
 		return new IRemoteFileSystemBrowser() {
 
-			public Namespace getDirectoryNamespace() {
+			public Namespace getBrowseNamespace() {
 				return IDFactory.getDefault().getNamespaceByName(FileTransferNamespace.PROTOCOL);
 			}
 
-			public IRemoteFileSystemRequest sendDirectoryRequest(IFileID directoryID, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
-				Assert.isNotNull(directoryID);
+			public IRemoteFileSystemRequest sendBrowseRequest(IFileID directoryOrFileID, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
+				Assert.isNotNull(directoryOrFileID);
 				Assert.isNotNull(listener);
-				IFileStore directoryStore;
 				URL efsDirectory = null;
+				FileStoreBrowser fsb = null;
 				try {
-					efsDirectory = directoryID.getURL();
-					directoryStore = EFS.getStore(new URI(efsDirectory.getPath()));
+					efsDirectory = directoryOrFileID.getURL();
+					final String path = StringUtils.replaceAll(efsDirectory.getPath(), " ", "%20"); //$NON-NLS-1$ //$NON-NLS-2$
+					fsb = new FileStoreBrowser(EFS.getStore(new URL(path).toURI()), efsDirectory, directoryOrFileID, listener);
 				} catch (final Exception e) {
 					throw new RemoteFileSystemException(e);
 				}
-				final IFileInfo directoryStoreInfo = directoryStore.fetchInfo();
-				if (!directoryStoreInfo.isDirectory())
-					throw new RemoteFileSystemException(NLS.bind(Messages.EFSRemoteFileSystemBrowseFactory_EXCEPTION_NOT_DIRECTORY, directoryID));
-				final FileStoreBrowser rfs = new FileStoreBrowser(directoryStore, efsDirectory, directoryID, listener);
-				return rfs.sendDirectoryRequest();
-
+				return fsb.sendDirectoryRequest();
 			}
 
 			public Object getAdapter(Class adapter) {
