@@ -81,75 +81,10 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.IContainerManager#addContainer(org.eclipse.ecf.core.IContainer)
-	 */
-	public IContainer addContainer(IContainer container) {
-		Assert.isNotNull(container);
-		ID containerID = container.getID();
-		Assert.isNotNull(containerID, Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
-		IContainer result = null;
-		synchronized (containers) {
-			result = (IContainer) containers.put(containerID, container);
-		}
-		if (result == null)
-			fireContainerAdded(container);
-		return result;
-	}
-
-	/**
-	 * @param result
-	 */
-	private void fireContainerAdded(IContainer result) {
-		List toNotify = null;
-		synchronized (managerListeners) {
-			toNotify = new ArrayList(managerListeners);
-		}
-		for (Iterator i = toNotify.iterator(); i.hasNext();) {
-			IContainerManagerListener cml = (IContainerManagerListener) i.next();
-			cml.containerAdded(result);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainerManager#removeContainer(org.eclipse.ecf.core.IContainer)
-	 */
-	public IContainer removeContainer(IContainer container) {
-		Assert.isNotNull(container);
-		ID containerID = container.getID();
-		if (containerID == null)
-			return null;
-		IContainer result = null;
-		synchronized (containers) {
-			result = (IContainer) containers.remove(containerID);
-		}
-		if (result != null)
-			fireContainerRemoved(result);
-		return result;
-	}
-
-	/**
-	 * @param result
-	 */
-	private void fireContainerRemoved(IContainer result) {
-		List toNotify = null;
-		synchronized (managerListeners) {
-			toNotify = new ArrayList(managerListeners);
-		}
-		for (Iterator i = toNotify.iterator(); i.hasNext();) {
-			IContainerManagerListener cml = (IContainerManagerListener) i.next();
-			cml.containerRemoved(result);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.ecf.core.IContainerFactory#addDescription(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public ContainerTypeDescription addDescription(ContainerTypeDescription scd) {
-		return addDescription0(scd);
+	public ContainerTypeDescription addDescription(ContainerTypeDescription containerTypeDescription) {
+		return addDescription0(containerTypeDescription);
 	}
 
 	/*
@@ -167,11 +102,11 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		}
 	}
 
-	protected ContainerTypeDescription addDescription0(ContainerTypeDescription n) {
-		if (n == null)
+	protected ContainerTypeDescription addDescription0(ContainerTypeDescription containerTypeDescription) {
+		if (containerTypeDescription == null)
 			return null;
 		synchronized (containerdescriptions) {
-			return (ContainerTypeDescription) containerdescriptions.put(n.getName(), n);
+			return (ContainerTypeDescription) containerdescriptions.put(containerTypeDescription.getName(), containerTypeDescription);
 		}
 	}
 
@@ -180,31 +115,31 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * 
 	 * @see org.eclipse.ecf.core.IContainerFactory#containsDescription(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public boolean containsDescription(ContainerTypeDescription scd) {
-		return containsDescription0(scd);
+	public boolean containsDescription(ContainerTypeDescription containerTypeDescription) {
+		return containsDescription0(containerTypeDescription);
 	}
 
-	protected boolean containsDescription0(ContainerTypeDescription scd) {
-		if (scd == null)
+	protected boolean containsDescription0(ContainerTypeDescription containerTypeDescription) {
+		if (containerTypeDescription == null)
 			return false;
 		synchronized (containerdescriptions) {
-			return containerdescriptions.containsKey(scd.getName());
+			return containerdescriptions.containsKey(containerTypeDescription.getName());
 		}
 	}
 
-	protected ContainerTypeDescription getDescription0(ContainerTypeDescription scd) {
-		if (scd == null)
+	protected ContainerTypeDescription getDescription0(ContainerTypeDescription containerTypeDescription) {
+		if (containerTypeDescription == null)
 			return null;
 		synchronized (containerdescriptions) {
-			return (ContainerTypeDescription) containerdescriptions.get(scd.getName());
+			return (ContainerTypeDescription) containerdescriptions.get(containerTypeDescription.getName());
 		}
 	}
 
-	protected ContainerTypeDescription getDescription0(String name) {
-		if (name == null)
+	protected ContainerTypeDescription getDescription0(String containerTypeDescriptionName) {
+		if (containerTypeDescriptionName == null)
 			return null;
 		synchronized (containerdescriptions) {
-			return (ContainerTypeDescription) containerdescriptions.get(name);
+			return (ContainerTypeDescription) containerdescriptions.get(containerTypeDescriptionName);
 		}
 	}
 
@@ -213,77 +148,8 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * 
 	 * @see org.eclipse.ecf.core.IContainerFactory#getDescriptionByName(java.lang.String)
 	 */
-	public ContainerTypeDescription getDescriptionByName(String name) {
-		return getDescription0(name);
-	}
-
-	protected void throwContainerCreateException(String message, Throwable cause, String method) throws ContainerCreateException {
-		ContainerCreateException except = (cause == null) ? new ContainerCreateException(message) : new ContainerCreateException(message, cause);
-		Trace.throwing(ECFPlugin.PLUGIN_ID, ECFDebugOptions.EXCEPTIONS_THROWING, ContainerFactory.class, method, except);
-		throw except;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer()
-	 */
-	public IContainer createContainer() throws ContainerCreateException {
-		return createContainer(BASE_CONTAINER_NAME);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription,
-	 *      java.lang.Object[])
-	 */
-	public IContainer createContainer(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
-		String method = "createContainer"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class, method, new Object[] {description, Trace.getArgumentsString(parameters)});
-		if (description == null)
-			throwContainerCreateException(Messages.ContainerFactory_Exception_Create_Container, null, method);
-		ContainerTypeDescription cd = getDescription0(description);
-		if (cd == null)
-			throwContainerCreateException("ContainerTypeDescription '" //$NON-NLS-1$
-					+ description.getName() + "' not found", null, method); //$NON-NLS-1$
-		IContainerInstantiator instantiator = null;
-		try {
-			instantiator = cd.getInstantiator();
-		} catch (Exception e) {
-			throwContainerCreateException("createContainer cannot get IContainerInstantiator for description : " //$NON-NLS-1$
-					+ description, e, method);
-		}
-		// Ask instantiator to actually create instance
-		IContainer container = instantiator.createInstance(description, parameters);
-		if (container == null)
-			throwContainerCreateException("Instantiator returned null for '" //$NON-NLS-1$
-					+ cd.getName() + "'", null, method); //$NON-NLS-1$
-		// Add to containers map if container.getID() provides a valid value.
-		ID containerID = container.getID();
-		if (containerID != null)
-			addContainer(container);
-		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, ContainerFactory.class, method, container);
-		return container;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String)
-	 */
-	public IContainer createContainer(String name) throws ContainerCreateException {
-		return createContainer(getDescriptionByName(name), null);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String,
-	 *      java.lang.Object[])
-	 */
-	public IContainer createContainer(String name, Object[] parameters) throws ContainerCreateException {
-		return createContainer(getDescriptionByName(name), parameters);
+	public ContainerTypeDescription getDescriptionByName(String containerTypeDescriptionName) {
+		return getDescription0(containerTypeDescriptionName);
 	}
 
 	/*
@@ -291,16 +157,16 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * 
 	 * @see org.eclipse.ecf.core.IContainerFactory#removeDescription(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public ContainerTypeDescription removeDescription(ContainerTypeDescription scd) {
-		return removeDescription0(scd);
+	public ContainerTypeDescription removeDescription(ContainerTypeDescription containerTypeDescription) {
+		return removeDescription0(containerTypeDescription);
 
 	}
 
-	protected ContainerTypeDescription removeDescription0(ContainerTypeDescription n) {
-		if (n == null)
+	protected ContainerTypeDescription removeDescription0(ContainerTypeDescription containerTypeDescription) {
+		if (containerTypeDescription == null)
 			return null;
 		synchronized (containerdescriptions) {
-			return (ContainerTypeDescription) containerdescriptions.remove(n.getName());
+			return (ContainerTypeDescription) containerdescriptions.remove(containerTypeDescription.getName());
 		}
 	}
 
@@ -325,6 +191,129 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 			}
 		}
 		return (ContainerTypeDescription[]) result.toArray(new ContainerTypeDescription[] {});
+	}
+
+	protected void throwContainerCreateException(String message, Throwable cause, String method) throws ContainerCreateException {
+		ContainerCreateException except = (cause == null) ? new ContainerCreateException(message) : new ContainerCreateException(message, cause);
+		Trace.throwing(ECFPlugin.PLUGIN_ID, ECFDebugOptions.EXCEPTIONS_THROWING, ContainerFactory.class, method, except);
+		throw except;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer()
+	 */
+	public IContainer createContainer() throws ContainerCreateException {
+		return createContainer(BASE_CONTAINER_NAME);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.identity.ID)
+	 */
+	public IContainer createContainer(ID containerID) throws ContainerCreateException {
+		if (containerID == null)
+			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+		return createContainer(BASE_CONTAINER_NAME, new Object[] {containerID});
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription)
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription) throws ContainerCreateException {
+		return createContainer(containerTypeDescription, (Object[]) null);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String)
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName) throws ContainerCreateException {
+		return createContainer(getDescriptionByName(containerTypeDescriptionName), (Object[]) null);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription,
+	 *      java.lang.Object[])
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, Object[] parameters) throws ContainerCreateException {
+		String method = "createContainer"; //$NON-NLS-1$
+		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class, method, new Object[] {containerTypeDescription, Trace.getArgumentsString(parameters)});
+		if (containerTypeDescription == null)
+			throwContainerCreateException(Messages.ContainerFactory_Exception_Create_Container, null, method);
+		ContainerTypeDescription cd = getDescription0(containerTypeDescription);
+		if (cd == null)
+			throwContainerCreateException("ContainerTypeDescription '" //$NON-NLS-1$
+					+ containerTypeDescription.getName() + "' not found", null, method); //$NON-NLS-1$
+		IContainerInstantiator instantiator = null;
+		try {
+			instantiator = cd.getInstantiator();
+		} catch (Exception e) {
+			throwContainerCreateException("createContainer cannot get IContainerInstantiator for description : " //$NON-NLS-1$
+					+ containerTypeDescription, e, method);
+		}
+		// Ask instantiator to actually create instance
+		IContainer container = instantiator.createInstance(containerTypeDescription, parameters);
+		if (container == null)
+			throwContainerCreateException("Instantiator returned null for '" //$NON-NLS-1$
+					+ cd.getName() + "'", null, method); //$NON-NLS-1$
+		// Add to containers map if container.getID() provides a valid value.
+		ID containerID = container.getID();
+		if (containerID != null)
+			addContainer(container);
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, ContainerFactory.class, method, container);
+		return container;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String,
+	 *      java.lang.Object[])
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, Object[] parameters) throws ContainerCreateException {
+		return createContainer(getDescriptionByName(containerTypeDescriptionName), parameters);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription, org.eclipse.ecf.core.identity.ID, java.lang.Object[])
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, ID containerID, Object[] parameters) throws ContainerCreateException {
+		if (containerID == null)
+			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+		Object[] params = (parameters == null || parameters.length == 0) ? new Object[1] : new Object[parameters.length + 1];
+		params[0] = containerID;
+		if (parameters != null && parameters.length != 0)
+			System.arraycopy(parameters, 0, params, 1, parameters.length);
+		return createContainer(containerTypeDescription, params);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String, org.eclipse.ecf.core.identity.ID, java.lang.Object[])
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, ID containerID, Object[] parameters) throws ContainerCreateException {
+		if (containerID == null)
+			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+		return createContainer(getDescriptionByName(containerTypeDescriptionName), containerID, parameters);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription, org.eclipse.ecf.core.identity.ID)
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, ID containerID) throws ContainerCreateException {
+		if (containerID == null)
+			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+		return createContainer(containerTypeDescription, new Object[] {containerID});
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String, org.eclipse.ecf.core.identity.ID)
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, ID containerID) throws ContainerCreateException {
+		return createContainer(getDescriptionByName(containerTypeDescriptionName), new Object[] {containerID});
 	}
 
 	/*
@@ -389,4 +378,70 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 			return managerListeners.remove(listener);
 		}
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.IContainerManager#addContainer(org.eclipse.ecf.core.IContainer)
+	 */
+	public IContainer addContainer(IContainer container) {
+		Assert.isNotNull(container);
+		ID containerID = container.getID();
+		Assert.isNotNull(containerID, Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
+		IContainer result = null;
+		synchronized (containers) {
+			result = (IContainer) containers.put(containerID, container);
+		}
+		if (result == null)
+			fireContainerAdded(container);
+		return result;
+	}
+
+	/**
+	 * @param result
+	 */
+	private void fireContainerAdded(IContainer result) {
+		List toNotify = null;
+		synchronized (managerListeners) {
+			toNotify = new ArrayList(managerListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
+			IContainerManagerListener cml = (IContainerManagerListener) i.next();
+			cml.containerAdded(result);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.IContainerManager#removeContainer(org.eclipse.ecf.core.IContainer)
+	 */
+	public IContainer removeContainer(IContainer container) {
+		Assert.isNotNull(container);
+		ID containerID = container.getID();
+		if (containerID == null)
+			return null;
+		IContainer result = null;
+		synchronized (containers) {
+			result = (IContainer) containers.remove(containerID);
+		}
+		if (result != null)
+			fireContainerRemoved(result);
+		return result;
+	}
+
+	/**
+	 * @param result
+	 */
+	private void fireContainerRemoved(IContainer result) {
+		List toNotify = null;
+		synchronized (managerListeners) {
+			toNotify = new ArrayList(managerListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
+			IContainerManagerListener cml = (IContainerManagerListener) i.next();
+			cml.containerRemoved(result);
+		}
+	}
+
 }

@@ -9,6 +9,7 @@
 package org.eclipse.ecf.core;
 
 import java.util.List;
+import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Container factory contract {@link ContainerFactory} for default
@@ -18,13 +19,13 @@ public interface IContainerFactory {
 	/**
 	 * Add a ContainerTypeDescription to the set of known ContainerDescriptions.
 	 * 
-	 * @param description
+	 * @param containerTypeDescription
 	 *            the ContainerTypeDescription to add to this factory. Must not
-	 *            be null.
+	 *            be <code>null</code>.
 	 * @return ContainerTypeDescription the old description of the same name,
 	 *         null if none found
 	 */
-	public ContainerTypeDescription addDescription(ContainerTypeDescription description);
+	public ContainerTypeDescription addDescription(ContainerTypeDescription containerTypeDescription);
 
 	/**
 	 * Get a collection of the ContainerDescriptions currently known to this
@@ -40,28 +41,93 @@ public interface IContainerFactory {
 	 * Check to see if a given named description is already contained by this
 	 * factory
 	 * 
-	 * @param description
+	 * @param containerTypeDescription
 	 *            the ContainerTypeDescription to look for
 	 * @return true if description is already known to factory, false otherwise
 	 */
-	public boolean containsDescription(ContainerTypeDescription description);
+	public boolean containsDescription(ContainerTypeDescription containerTypeDescription);
 
 	/**
 	 * Get the known ContainerTypeDescription given it's name.
 	 * 
-	 * @param name
-	 *            the name to use as key to find ContainerTypeDescription
+	 * @param containerTypeDescriptionName
+	 *            the name to use as key to find ContainerTypeDescription.  Must not be <code>null</code>.
 	 * @return ContainerTypeDescription found. Null if not found.
 	 */
-	public ContainerTypeDescription getDescriptionByName(String name);
+	public ContainerTypeDescription getDescriptionByName(String containerTypeDescriptionName);
+
+	/**
+	 * Remove given description from set known to this factory.
+	 * 
+	 * @param containerTypeDescription
+	 *            the ContainerTypeDescription to remove
+	 * @return the removed ContainerTypeDescription, null if nothing removed
+	 */
+	public ContainerTypeDescription removeDescription(ContainerTypeDescription containerTypeDescription);
+
+	/**
+	 * Get container type descriptions that support the given containerAdapter
+	 * 
+	 * @param containerAdapter the container adapter.  Must not be null.
+	 * @return ContainerTypeDescription[] of descriptions that support the given container adapter.  If no 
+	 * ContainerTypeDescriptions found that support the given adapter, an empty array will be returned.
+	 */
+	public ContainerTypeDescription[] getDescriptionsForContainerAdapter(Class containerAdapter);
 
 	/**
 	 * Make a base IContainer instance.
 	 * 
-	 * @return IContainer instance.  A non-null instance will be returned.
+	 * @return IContainer instance.  A non-<code>null</code> instance will be returned.
 	 * @throws ContainerCreateException if some problem creating a base IContainer instance.
 	 */
 	public IContainer createContainer() throws ContainerCreateException;
+
+	/**
+	 * Make a base IContainer instance.
+	 * 
+	 * @param containerID the container's new ID.  Must not be <code>null</code>.
+	 * @return IContainer instance.  A non-<code>null</code>. instance will be returned.
+	 * @throws ContainerCreateException if some problem creating a base IContainer instance.
+	 */
+	public IContainer createContainer(ID containerID) throws ContainerCreateException;
+
+	/**
+	 * Make IContainer instance. Given a ContainerTypeDescription, this
+	 * method will
+	 * <p>
+	 * <ul>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
+	 * instance of IContainer</li>
+	 * </ul>
+	 * 
+	 * @param containerTypeDescription
+	 *            the ContainerTypeDescription name to use. Must not be <code>null</code>.
+	 * @return a valid instance of IContainer. Will not be <code>null</code>.
+	 * @throws ContainerCreateException
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription) throws ContainerCreateException;
+
+	/**
+	 * Make IContainer instance. Given a ContainerTypeDescription name, this
+	 * method will
+	 * <p>
+	 * <ul>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
+	 * instance of IContainer</li>
+	 * </ul>
+	 * 
+	 * @param containerTypeDescriptionName
+	 *            the ContainerTypeDescription name to lookup. Must not be <code>null</code>.
+	 * @return a valid instance of IContainer. Will not be <code>null</code>.
+	 * @throws ContainerCreateException
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName) throws ContainerCreateException;
 
 	/**
 	 * Make IContainer instance. Given a ContainerTypeDescription object, a
@@ -76,15 +142,61 @@ public interface IContainerFactory {
 	 * instance of IContainer</li>
 	 * </ul>
 	 * 
-	 * @param description
-	 *            the ContainerTypeDescription to use to create the instance
+	 * @param containerTypeDescription
+	 *            the ContainerTypeDescription to use to create the instance. Must not be <code>null</code>.
+	 * @param parameters
+	 *            an Object [] of parameters passed to the createInstance method
+	 *            of the IContainerInstantiator
+	 * @return a valid instance of IContainer. A non-<code>null</code>. instance will be returned.
+	 * @throws ContainerCreateException
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, Object[] parameters) throws ContainerCreateException;
+
+	/**
+	 * Make IContainer instance. Given a ContainerTypeDescription name, this
+	 * method will
+	 * <p>
+	 * <ul>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
+	 * instance of IContainer</li>
+	 * </ul>
+	 * 
+	 * @param containerTypeDescriptionName
+	 *            the ContainerTypeDescription name to lookup. Must not be <code>null</code>.
+	 * @param parameters
+	 *            the Object [] of parameters passed to the
+	 *            IContainerInstantiator.createInstance method.  May be <code>null</code>.
+	 * @return a valid instance of IContainer. Will not be <code>null</code>.
+	 * @throws ContainerCreateException
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, Object[] parameters) throws ContainerCreateException;
+
+	/**
+	 * Make IContainer instance. Given a ContainerTypeDescription object, a
+	 * String [] of argument types, and an Object [] of parameters, this method
+	 * will
+	 * <p>
+	 * <ul>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
+	 * instance of IContainer</li>
+	 * </ul>
+	 * 
+	 * @param containerTypeDescription
+	 *            the ContainerTypeDescription to use to create the instance.  Must not be <code>null</code>.
+	 * @param containerID the container's new ID.  Must not be <code>null</code>.
 	 * @param parameters
 	 *            an Object [] of parameters passed to the createInstance method
 	 *            of the IContainerInstantiator
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException;
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, ID containerID, Object[] parameters) throws ContainerCreateException;
 
 	/**
 	 * Make IContainer instance. Given a ContainerTypeDescription name, this
@@ -98,51 +210,55 @@ public interface IContainerFactory {
 	 * instance of IContainer</li>
 	 * </ul>
 	 * 
-	 * @param name
-	 *            the ContainerTypeDescription name to lookup
-	 * @return a valid instance of IContainer
-	 * @throws ContainerCreateException
-	 */
-	public IContainer createContainer(String name) throws ContainerCreateException;
-
-	/**
-	 * Make IContainer instance. Given a ContainerTypeDescription name, this
-	 * method will
-	 * <p>
-	 * <ul>
-	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
-	 * <li>if found, will retrieve or create an IContainerInstantiator for that
-	 * description</li>
-	 * <li>Call the IContainerInstantiator.createInstance method to return an
-	 * instance of IContainer</li>
-	 * </ul>
-	 * 
-	 * @param name
-	 *            the ContainerTypeDescription name to lookup
+	 * @param containerTypeDescriptionName
+	 *            the ContainerTypeDescription name to lookup. Must not be <code>null</code>.
+	 * @param containerID the new container's id.  Must not be <code>null</code>.
 	 * @param parameters
 	 *            the Object [] of parameters passed to the
-	 *            IContainerInstantiator.createInstance method
-	 * @return a valid instance of IContainer
+	 *            IContainerInstantiator.createInstance method.  May be <code>null</code>.
+	 * @return a valid instance of IContainer. Will not be <code>null</code>.
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(String name, Object[] parameters) throws ContainerCreateException;
+	public IContainer createContainer(String containerTypeDescriptionName, ID containerID, Object[] parameters) throws ContainerCreateException;
 
 	/**
-	 * Remove given description from set known to this factory.
+	 * Make IContainer instance. Given a ContainerTypeDescription, this
+	 * method will
+	 * <p>
+	 * <ul>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
+	 * instance of IContainer</li>
+	 * </ul>
 	 * 
-	 * @param description
-	 *            the ContainerTypeDescription to remove
-	 * @return the removed ContainerTypeDescription, null if nothing removed
+	 * @param containerID the new container's id.  Must not be <code>null</code>.
+	 * @param containerTypeDescription
+	 *            the ContainerTypeDescription to lookup.  Must not be <code>null</code>.
+	 * @return a valid instance of IContainer.  Will not be <code>null</code>.
+	 * @throws ContainerCreateException
 	 */
-	public ContainerTypeDescription removeDescription(ContainerTypeDescription description);
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, ID containerID) throws ContainerCreateException;
 
 	/**
-	 * Get container type descriptions that support the given containerAdapter
+	 * Make IContainer instance. Given a ContainerTypeDescription name, this
+	 * method will
+	 * <p>
+	 * <ul>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
+	 * instance of IContainer</li>
+	 * </ul>
 	 * 
-	 * @param containerAdapter the container adapter.  Must not be null.
-	 * @return ContainerTypeDescription[] of descriptions that support the given container adapter.  If no 
-	 * ContainerTypeDescriptions found that support the given adapter, an empty array will be returned.
+	 * @param containerID the new container's id.  Must not be <code>null</code>.
+	 * @param containerTypeDescriptionName
+	 *            the ContainerTypeDescription name to lookup.  Must not be <code>null</code>.
+	 * @return a valid instance of IContainer.  Will not be <code>null</code>.
+	 * @throws ContainerCreateException
 	 */
-	public ContainerTypeDescription[] getDescriptionsForContainerAdapter(Class containerAdapter);
+	public IContainer createContainer(String containerTypeDescriptionName, ID containerID) throws ContainerCreateException;
 
 }
