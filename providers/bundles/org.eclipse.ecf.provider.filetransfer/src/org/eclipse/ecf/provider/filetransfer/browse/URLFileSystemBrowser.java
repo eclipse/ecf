@@ -39,7 +39,6 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 	 */
 	protected void runRequest() throws Exception {
 		URLConnection urlConnection = directoryOrFile.openConnection();
-		urlConnection.connect();
 		InputStream ins = urlConnection.getInputStream();
 		ins.close();
 		remoteFiles = new IRemoteFile[1];
