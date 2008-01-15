@@ -22,7 +22,7 @@ import org.eclipse.osgi.util.NLS;
 /**
  * A class for asynchronously browsing a {@link java.io.File}-based filesystem.
  */
-public class FileSystemBrowser extends AbstractFileSystemBrowser {
+public class LocalFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	protected File local;
 
@@ -30,7 +30,7 @@ public class FileSystemBrowser extends AbstractFileSystemBrowser {
 	 * @param listener 
 	 * @param directoryID2 
 	 */
-	public FileSystemBrowser(IFileID directoryID2, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
+	public LocalFileSystemBrowser(IFileID directoryID2, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
 		super(directoryID2, listener);
 		try {
 			local = new File(directoryID2.getURL().getPath());
@@ -44,13 +44,13 @@ public class FileSystemBrowser extends AbstractFileSystemBrowser {
 	protected void runRequest() throws Exception {
 		if (local.isDirectory()) {
 			File[] files = local.listFiles();
-			remoteFiles = new LocalFile[files.length];
+			remoteFiles = new LocalRemoteFile[files.length];
 			for (int i = 0; i < files.length; i++) {
-				remoteFiles[i] = new LocalFile(files[i]);
+				remoteFiles[i] = new LocalRemoteFile(files[i]);
 			}
 		} else {
-			remoteFiles = new LocalFile[1];
-			remoteFiles[0] = new LocalFile(local);
+			remoteFiles = new LocalRemoteFile[1];
+			remoteFiles[0] = new LocalRemoteFile(local);
 		}
 	}
 

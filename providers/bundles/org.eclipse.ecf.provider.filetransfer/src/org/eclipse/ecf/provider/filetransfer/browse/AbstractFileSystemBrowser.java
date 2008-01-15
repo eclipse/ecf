@@ -15,7 +15,7 @@ import java.util.Arrays;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.filetransfer.*;
-import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemDirectoryEvent;
+import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
@@ -76,7 +76,7 @@ public abstract class AbstractFileSystemBrowser {
 		this.listener = listener;
 	}
 
-	public IRemoteFileSystemRequest sendDirectoryRequest() {
+	public IRemoteFileSystemRequest sendBrowseRequest() {
 		job = new DirectoryJob();
 		job.schedule();
 		return new IRemoteFileSystemRequest() {
@@ -104,7 +104,7 @@ public abstract class AbstractFileSystemBrowser {
 	 * @return file system directory event
 	 */
 	protected IRemoteFileSystemEvent createRemoteFileEvent() {
-		return new IRemoteFileSystemDirectoryEvent() {
+		return new IRemoteFileSystemBrowseEvent() {
 
 			public IFileID getFileID() {
 				return fileID;
@@ -115,7 +115,7 @@ public abstract class AbstractFileSystemBrowser {
 			}
 
 			public String toString() {
-				StringBuffer buf = new StringBuffer("RemoteFileSystemDirectoryEvent["); //$NON-NLS-1$
+				StringBuffer buf = new StringBuffer("RemoteFileSystemBrowseEvent["); //$NON-NLS-1$
 				buf.append("fileID=").append(fileID).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 				buf.append("files=" + Arrays.asList(remoteFiles)).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 				return buf.toString();

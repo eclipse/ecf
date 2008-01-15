@@ -25,7 +25,6 @@ import org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowser;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
-import org.eclipse.osgi.util.NLS;
 
 /**
  * Multi protocol handler for remote file system browser. 
@@ -78,10 +77,11 @@ public class MultiProtocolFileSystemBrowserAdapter implements IRemoteFileSystemB
 
 		if (fileSystemBrowser == null) {
 			if (url.getProtocol().equalsIgnoreCase("file")) { //$NON-NLS-1$
-				FileSystemBrowser fsb = new FileSystemBrowser(directoryOrFileID, listener);
-				return fsb.sendDirectoryRequest();
+				LocalFileSystemBrowser fsb = new LocalFileSystemBrowser(directoryOrFileID, listener);
+				return fsb.sendBrowseRequest();
 			}
-			throw new RemoteFileSystemException(NLS.bind(Messages.MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER, directoryOrFileID));
+			URLFileSystemBrowser ufsb = new URLFileSystemBrowser(directoryOrFileID, listener, url);
+			return ufsb.sendBrowseRequest();
 		}
 
 		return fileSystemBrowser.sendBrowseRequest(directoryOrFileID, listener);

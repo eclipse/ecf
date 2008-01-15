@@ -16,16 +16,16 @@ import java.util.*;
 import org.eclipse.ecf.filetransfer.IRemoteFileAttributes;
 
 /**
- * File attributes for {@link LocalFile} instances.
+ * File attributes for {@link LocalRemoteFile} instances.
  */
-public class LocalFileAttributes implements IRemoteFileAttributes {
+public class LocalRemoteFileAttributes implements IRemoteFileAttributes {
 
 	File file = null;
 
 	static String[] fileAttributes = {IRemoteFileAttributes.READ_ATTRIBUTE, IRemoteFileAttributes.WRITE_ATTRIBUTE, IRemoteFileAttributes.HIDDEN_ATTRIBUTE, IRemoteFileAttributes.EXEC_ATTRIBUTE, IRemoteFileAttributes.ARCHIVE_ATTRIBUTE};
 	static List attributeKeys = new ArrayList(Arrays.asList(fileAttributes));
 
-	public LocalFileAttributes(File file) {
+	public LocalRemoteFileAttributes(File file) {
 		this.file = file;
 	}
 
@@ -66,4 +66,16 @@ public class LocalFileAttributes implements IRemoteFileAttributes {
 		// not supported
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer("LocalRemoteFileAttributes["); //$NON-NLS-1$
+		for (Iterator i = getAttributeKeys(); i.hasNext();) {
+			String key = (String) i.next();
+			buf.append(key).append("=").append(getAttribute(key)); //$NON-NLS-1$
+			buf.append(i.hasNext() ? ";" : "]"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return buf.toString();
+	}
 }
