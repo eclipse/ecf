@@ -16,11 +16,11 @@ import org.eclipse.ecf.filetransfer.IRemoteFile;
 /**
  * Event that indicates that a directory list is available via {@link #getRemoteFiles()}.
  */
-public interface IRemoteFileSystemDirectoryEvent extends IRemoteFileSystemEvent {
+public interface IRemoteFileSystemBrowseEvent extends IRemoteFileSystemEvent {
 
 	/**
 	 * Get the list of files associated with this directory event.
-	 * @return IRemoteFile[] the array of remote files for the given directory.
+	 * @return IRemoteFile[] the array of remote files for the given browse.
 	 */
 	public IRemoteFile[] getRemoteFiles();
 
