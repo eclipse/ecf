@@ -49,7 +49,7 @@ public class FileStoreBrowser extends AbstractFileSystemBrowser {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.browse.FileSystemBrowser#runDirectoryRequest()
+	 * @see org.eclipse.ecf.provider.filetransfer.browse.LocalFileSystemBrowser#runDirectoryRequest()
 	 */
 	protected void runRequest() throws Exception {
 		final IFileInfo fileStoreInfo = fileStore.fetchInfo();

@@ -53,7 +53,7 @@ public class EFSRemoteFileSystemBrowseFactory implements IRemoteFileSystemBrowse
 				} catch (final Exception e) {
 					throw new RemoteFileSystemException(e);
 				}
-				return fsb.sendDirectoryRequest();
+				return fsb.sendBrowseRequest();
 			}
 
 			public Object getAdapter(Class adapter) {
