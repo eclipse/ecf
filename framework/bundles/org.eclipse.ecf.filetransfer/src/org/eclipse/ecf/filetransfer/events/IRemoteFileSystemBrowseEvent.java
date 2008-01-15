@@ -19,7 +19,7 @@ import org.eclipse.ecf.filetransfer.IRemoteFile;
 public interface IRemoteFileSystemBrowseEvent extends IRemoteFileSystemEvent {
 
 	/**
-	 * Get the list of files associated with this directory event.
+	 * Get the list of files associated with this browse event.
 	 * @return IRemoteFile[] the array of remote files for the given browse.
 	 */
 	public IRemoteFile[] getRemoteFiles();
