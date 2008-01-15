@@ -29,7 +29,7 @@ import org.eclipse.ecf.filetransfer.IRemoteFileInfo;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemBrowserContainerAdapter;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemRequest;
-import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemDirectoryEvent;
+import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -71,8 +71,8 @@ public abstract class AbstractBrowseTestCase extends TestCase {
 	protected IRemoteFileSystemListener createRemoteFileSystemListener() {
 		return new IRemoteFileSystemListener() {
 			public void handleRemoteFileEvent(IRemoteFileSystemEvent event) {
-				if (event instanceof IRemoteFileSystemDirectoryEvent) {
-					handleDirectoryEvent((IRemoteFileSystemDirectoryEvent) event);
+				if (event instanceof IRemoteFileSystemBrowseEvent) {
+					handleFileSystemBrowseEvent((IRemoteFileSystemBrowseEvent) event);
 				} else
 					handleUnknownEvent(event);
 			}
@@ -99,8 +99,11 @@ public abstract class AbstractBrowseTestCase extends TestCase {
 	/**
 	 * @param event
 	 */
-	protected void handleDirectoryEvent(IRemoteFileSystemDirectoryEvent event) {
-		System.out.println("handleDirectoryEvent(" + event + ")");
+	protected void handleFileSystemBrowseEvent(IRemoteFileSystemBrowseEvent event) {
+		System.out.println("handleFileSystemBrowseEvent(" + event + ")");
+		if (event.getException() != null) {
+			System.out.println(event.getException());
+		}
 	}
 
 	protected void waitForDone(int timeout) throws Exception {
