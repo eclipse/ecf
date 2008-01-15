@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.ecf.filetransfer.IRemoteFile;
-import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemDirectoryEvent;
+import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent;
 import org.eclipse.ecf.tests.filetransfer.AbstractBrowseTestCase;
 
 /**
@@ -26,10 +26,10 @@ import org.eclipse.ecf.tests.filetransfer.AbstractBrowseTestCase;
 public class FileBrowseTest extends AbstractBrowseTestCase {
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.filetransfer.AbstractBrowseTestCase#handleDirectoryEvent(org.eclipse.ecf.filetransfer.events.IRemoteFileSystemDirectoryEvent)
+	 * @see org.eclipse.ecf.tests.filetransfer.AbstractBrowseTestCase#handleDirectoryEvent(org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent)
 	 */
-	protected void handleDirectoryEvent(IRemoteFileSystemDirectoryEvent event) {
-		super.handleDirectoryEvent(event);
+	protected void handleFileSystemBrowseEvent(IRemoteFileSystemBrowseEvent event) {
+		super.handleFileSystemBrowseEvent(event);
 		assertNotNull(event);
 		final IRemoteFile[] remoteFiles = event.getRemoteFiles();
 		assertNotNull(remoteFiles);
