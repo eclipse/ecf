@@ -80,9 +80,14 @@ public class MultiProtocolFileSystemBrowserAdapter implements IRemoteFileSystemB
 				LocalFileSystemBrowser fsb = new LocalFileSystemBrowser(directoryOrFileID, listener);
 				return fsb.sendBrowseRequest();
 			}
-			URLFileSystemBrowser ufsb = new URLFileSystemBrowser(directoryOrFileID, listener, url);
+			URLFileSystemBrowser ufsb = new URLFileSystemBrowser(directoryOrFileID, listener, url, connectContext, proxy);
 			return ufsb.sendBrowseRequest();
 		}
+
+		// Set connect context
+		fileSystemBrowser.setConnectContextForAuthentication(connectContext);
+		// Set Proxy
+		fileSystemBrowser.setProxy(proxy);
 
 		return fileSystemBrowser.sendBrowseRequest(directoryOrFileID, listener);
 	}

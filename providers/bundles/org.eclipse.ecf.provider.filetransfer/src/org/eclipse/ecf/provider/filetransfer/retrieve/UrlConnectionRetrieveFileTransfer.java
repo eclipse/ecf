@@ -146,7 +146,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		proxyHelper.setupProxy(proxy2);
 	}
 
-	private void setupAuthentication() throws IOException, UnsupportedCallbackException {
+	protected void setupAuthentication() throws IOException, UnsupportedCallbackException {
 		if (connectContext == null)
 			return;
 		final CallbackHandler callbackHandler = connectContext.getCallbackHandler();
