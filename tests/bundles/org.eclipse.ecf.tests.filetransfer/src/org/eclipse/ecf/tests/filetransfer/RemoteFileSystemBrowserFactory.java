@@ -2,6 +2,8 @@ package org.eclipse.ecf.tests.filetransfer;
 
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemRequest;
 import org.eclipse.ecf.filetransfer.RemoteFileSystemException;
@@ -31,6 +33,16 @@ public class RemoteFileSystemBrowserFactory implements IRemoteFileSystemBrowserF
 
 			public Object getAdapter(Class adapter) {
 				return null;
+			}
+
+			public void setConnectContextForAuthentication(IConnectContext connectContext) {
+				// TODO Auto-generated method stub
+
+			}
+
+			public void setProxy(Proxy proxy) {
+				// TODO Auto-generated method stub
+
 			}
 		};
 	}
