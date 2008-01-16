@@ -13,6 +13,8 @@ package org.eclipse.ecf.filetransfer;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 /**
@@ -36,5 +38,35 @@ public interface IRemoteFileSystemBrowserContainerAdapter extends IAdaptable {
 	 * @return IRemoteFileSystemRequest the request instance.
 	 */
 	public IRemoteFileSystemRequest sendBrowseRequest(IFileID directoryOrFileID, IRemoteFileSystemListener listener) throws RemoteFileSystemException;
+
+	/**
+	 * Set connect context for authentication upon subsequent
+	 * {@link #sendBrowseRequest(IFileID, IRemoteFileSystemListener)}. This
+	 * method should be called with a non-null connectContext in order to allow
+	 * authentication to occur during call to
+	 * {@link #sendBrowseRequest(IFileID, IRemoteFileSystemListener)}.
+	 * 
+	 * @param connectContext
+	 *            the connect context to use for authenticating during
+	 *            subsequent call to
+	 *            {@link #sendBrowseRequest(IFileID, IRemoteFileSystemListener)}.
+	 *            If <code>null</code>, then no authentication will be
+	 *            attempted.
+	 */
+	public void setConnectContextForAuthentication(IConnectContext connectContext);
+
+	/**
+	 * Set proxy for use upon subsequent
+	 * {@link #sendBrowseRequest(IFileID, IRemoteFileSystemListener)}. This
+	 * method should be called with a non-null proxy to allow the given proxy to
+	 * be used in subsequent calls to
+	 * {@link #sendBrowseRequest(IFileID, IRemoteFileSystemListener)}.
+	 * 
+	 * @param proxy
+	 *            the proxy to use for subsequent calls to
+	 *            {@link #sendBrowseRequest(IFileID, IRemoteFileSystemListener)}.
+	 *            If <code>null</code>, then no proxy will be used.
+	 */
+	public void setProxy(Proxy proxy);
 
 }
