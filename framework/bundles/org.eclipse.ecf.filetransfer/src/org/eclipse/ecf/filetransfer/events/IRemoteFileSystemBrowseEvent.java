@@ -19,8 +19,12 @@ import org.eclipse.ecf.filetransfer.IRemoteFile;
 public interface IRemoteFileSystemBrowseEvent extends IRemoteFileSystemEvent {
 
 	/**
-	 * Get the list of files associated with this browse event.
-	 * @return IRemoteFile[] the array of remote files for the given browse.
+	 * Get the list of files associated with this browse event.  If the original
+	 * file ID available via {@link IRemoteFileSystemEvent#getFileID()} is a regular
+	 * file, the array will be of length 1.  If a directory, will be of length n.
+	 * @return IRemoteFile[] the array of remote files for the given browse.  If the original
+	 * file ID available via {@link IRemoteFileSystemEvent#getFileID()} is a regular
+	 * file, the array will be of length 1.  If a directory, will be of length n.
 	 */
 	public IRemoteFile[] getRemoteFiles();
 
