@@ -688,7 +688,8 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 
 	public void handleRoomMessage(IChatRoomMessage message) {
 		ID fromID = message.getFromID(); 
-		if (fromID.getName().equals("KOS-MOS")) {
+		String name = fromID.getName();
+		if (name.charAt(0) == '#' || name.equals("KOS-MOS")) { // skip messages from the channel or self
 			return;
 		}
 		
@@ -713,12 +714,14 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			} else {
 				String[] split = msg.split("\\s"); //$NON-NLS-1$
 				for (int i = 0; i < split.length; i++) {
-					switch (split[i].charAt(0)) {
-					case '~':
-					case '!':
-						handleMessage(fromID, message
-								.getChatRoomID(), split[i].substring(1).trim());
-						break;
+					if (split[i].length() > 0) {
+						switch (split[i].charAt(0)) {
+						case '~':
+						case '!':
+							handleMessage(fromID, message
+									.getChatRoomID(), split[i].substring(1).trim());
+							break;
+						}
 					}
 				}
 			}
