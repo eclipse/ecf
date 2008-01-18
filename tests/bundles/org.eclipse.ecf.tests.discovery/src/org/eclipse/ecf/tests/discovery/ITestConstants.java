@@ -1,6 +1,5 @@
 package org.eclipse.ecf.tests.discovery;
 
-
 public interface ITestConstants {
 	public final String PROTOCOL = "tcp";
 	public final String SCOPE = "local";
@@ -15,9 +14,6 @@ public interface ITestConstants {
 	public final int PORT = 3282;
 	public final int PORT2 = 3283;
 	public final int PORT3 = 3284;
-	
-	public final String TEST_PROTOCOL = "ecftcp";
-	public final String SERVICE_NAME = System.getProperty("user.name") + "." + TEST_PROTOCOL;
-	
+
 	public final String URI = "ecf://" + System.getProperty("user.name") + "@localhost:" + PORT + "/";
 }
