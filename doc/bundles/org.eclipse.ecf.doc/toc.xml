@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="ECF Developer Guide" topic="html/overview/ecf_overview.html">
+<toc label="ECF Developer Guide" link_to="toc.xml">
    <topic label="Quick Start" href="html/gettingstarted/quickStart.html"/>
    <topic label="System Requirements" href="html/gettingstarted/prerequisites.html"/>
    <topic label="Overview" href="html/gettingstarted/ecf_overview.html"/>

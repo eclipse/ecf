@@ -11,13 +11,10 @@
    <extension point="org.eclipse.help.toc">
       <toc file="toc.xml" primary="true"/>
       <toc file="tocpics_Concepts.xml"/>
-      <toc file="topics_GettingStarted.xml"/>
       <toc file="topics_Reference.xml"/>
-      <toc file="tocapi.xml"/>
       <toc file="topics_Extpoint.xml"/>
-      <toc file="topics_Samples.xml"/>
       <toc file="topics_Tutorials.xml"/>
-   </extension>
+    </extension>
    
    
 <!-- ============================================================================= -->
