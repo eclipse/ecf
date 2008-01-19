@@ -527,13 +527,4 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		fail("null argument is not allowed in api");
 	}
 
-	/**
-	 * Test method for methods which can't do business when unconnected
-	 */
-	public void testMethodsWhichMustFailWhenUnconnected() {
-		// TODO-mkuppe which methods require the container to be connected?
-		// - listener registration/unregistration doesn't
-		// - getService* is depending on the underlying mechanism
-		fail("not yet implemented");
-	}
 }
