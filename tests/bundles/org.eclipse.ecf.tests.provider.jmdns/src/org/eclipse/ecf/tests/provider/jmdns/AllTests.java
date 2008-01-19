@@ -14,16 +14,16 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.ecf.tests.provider.jmdns.identity.JMDNSServiceIDTest;
-
+import org.eclipse.ecf.tests.provider.jmdns.remoteservice.JMDNSRemoteServiceDiscoveryTest;
 
 public class AllTests {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite(
-				"Test for org.eclipse.ecf.tests.discovery.jmdns");
+		final TestSuite suite = new TestSuite("Test for org.eclipse.ecf.tests.discovery.jmdns");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(JMDNSServiceIDTest.class);
 		suite.addTestSuite(JMDNSDiscoveryServiceTest.class);
+		suite.addTestSuite(JMDNSRemoteServiceDiscoveryTest.class);
 		//$JUnit-END$
 		return suite;
 	}

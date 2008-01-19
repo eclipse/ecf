@@ -22,7 +22,6 @@ import org.eclipse.ecf.discovery.IServiceTypeEvent;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
-import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
@@ -52,11 +51,11 @@ public class JMDNSDiscoveryServiceTest extends DiscoveryTest {
 
 		final URI uri = new URI(JMDNSNamespace.JMDNS_SCHEME, null, InetAddress.getLocalHost().getHostAddress(), TEST_PORT, null, null, null);
 
-		final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discoveryContainer.getServicesNamespace(), TEST_SERVICE_TYPE, new Date().getTime() + "");
+		serviceID = ServiceIDFactory.getDefault().createServiceID(discoveryContainer.getServicesNamespace(), TEST_SERVICE_TYPE, new Date().getTime() + "");
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties = new ServiceProperties();
 		serviceProperties.setPropertyString("serviceProperties", "serviceProperties");
-		serviceInfo = new ServiceInfo(uri, serviceID, 0, 0, serviceProperties);
+		serviceInfo = new ServiceInfo(uri, createServiceID(TEST_SERVICE_TYPE, "slewis" + System.currentTimeMillis()), 0, 0, serviceProperties);
 		assertNotNull(serviceInfo);
 
 	}
