@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.discovery;
 
+import java.net.URI;
 import java.util.Comparator;
 import java.util.Enumeration;
 
@@ -47,7 +48,9 @@ public class ServiceInfoComparator implements Comparator {
 		if (arg0 instanceof IServiceInfo && arg1 instanceof IServiceInfo) {
 			final IServiceInfo first = (IServiceInfo) arg0;
 			final IServiceInfo second = (IServiceInfo) arg1;
-			final boolean result = (first.getServiceID().equals(second.getServiceID()) && first.getLocation().equals(second.getLocation()) && first.getPriority() == second.getPriority() && first.getWeight() == second.getWeight() && compareServiceProperties(first.getServiceProperties(), second.getServiceProperties()));
+			final URI uri1 = first.getLocation();
+			final URI uri2 = second.getLocation();
+			final boolean result = (first.getServiceID().equals(second.getServiceID()) && uri1.getHost().equals(uri2.getHost()) && uri1.getPort() == uri2.getPort() && first.getPriority() == second.getPriority() && first.getWeight() == second.getWeight() && compareServiceProperties(first.getServiceProperties(), second.getServiceProperties()));
 			if (result == true) {
 				return 0;
 			}

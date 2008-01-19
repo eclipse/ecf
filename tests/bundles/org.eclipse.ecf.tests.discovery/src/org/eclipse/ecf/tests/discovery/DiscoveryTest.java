@@ -76,7 +76,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		assertNotNull(discoveryContainer);
 
 		final Properties props = new Properties();
-		final URI uri = new URI(ITestConstants.URI);
+		final URI uri = createDefaultURI();
 
 		serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE, ITestConstants.HOST});
 		assertNotNull(serviceID);
