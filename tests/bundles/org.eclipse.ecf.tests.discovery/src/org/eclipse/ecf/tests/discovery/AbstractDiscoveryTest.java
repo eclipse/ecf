@@ -20,9 +20,6 @@ import junit.framework.TestCase;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.ServiceInfo;
-import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
@@ -75,14 +72,6 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 
 	protected URI createDefaultURI() throws Exception {
 		return createURI("foo://" + getAuthority() + ":" + getPort() + "/");
-	}
-
-	protected IServiceProperties createServiceProperties() throws Exception {
-		return new ServiceProperties();
-	}
-
-	protected IServiceInfo createServiceInfo(URI uri, IServiceID serviceID, IServiceProperties serviceProperties) throws Exception {
-		return new ServiceInfo(uri, serviceID, 0, 0, serviceProperties);
 	}
 
 	protected void registerService(IServiceInfo serviceInfo) throws Exception {
