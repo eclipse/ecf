@@ -10,6 +10,7 @@
 package org.eclipse.ecf.discovery;
 
 import java.net.URI;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
 /**
@@ -17,7 +18,7 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
  * remotely discoverable service
  * 
  */
-public interface IServiceInfo {
+public interface IServiceInfo extends IAdaptable {
 	/**
 	 * Get URI for service
 	 * 

@@ -11,13 +11,16 @@ package org.eclipse.ecf.discovery;
 
 import java.io.Serializable;
 import java.net.URI;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.internal.discovery.DiscoveryPlugin;
 
 /**
  * Base implementation of {@link IServiceInfo}.  Subclasses
  * may be created as appropriate.
  */
-public class ServiceInfo implements IServiceInfo, Serializable {
+public class ServiceInfo implements IServiceInfo, Serializable, IServiceInfoAdapter {
 
 	private static final long serialVersionUID = -5651115550295457142L;
 
@@ -34,16 +37,18 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 
 	protected IServiceProperties properties;
 
-	public ServiceInfo() {
+	protected ServiceInfo() {
 		// null constructor for subclasses
 	}
 
 	public ServiceInfo(URI anURI, IServiceID serviceID, int priority, int weight, IServiceProperties props) {
 		this.uri = anURI;
+		Assert.isNotNull(this.uri);
 		this.serviceID = serviceID;
+		Assert.isNotNull(serviceID);
 		this.priority = priority;
 		this.weight = weight;
-		this.properties = props;
+		this.properties = (props == null) ? new ServiceProperties() : props;
 	}
 
 	public ServiceInfo(URI anURI, IServiceID serviceID, IServiceProperties props) {
@@ -112,4 +117,53 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		return buf.toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter.isInstance(this)) {
+			return this;
+		}
+		final IAdapterManager adapterManager = DiscoveryPlugin.getDefault().getAdapterManager();
+		if (adapterManager == null)
+			return null;
+		return adapterManager.loadAdapter(this, adapter.getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfoAdapter#getContainerFactoryName()
+	 */
+	public String getContainerFactoryName() {
+		return (properties == null) ? null : properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_FACTORY_NAME_PROPERTY);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfoAdapter#getTarget()
+	 */
+	public String getTarget() {
+		if (uri == null || properties == null)
+			return null;
+		String targetValue = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PROTOCOL);
+		StringBuffer target = new StringBuffer(targetValue);
+		String auth = uri.getAuthority();
+		String path = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_PATH);
+		if (path == null)
+			path = "/"; //$NON-NLS-1$
+		target.append("://").append(auth).append("/").append(path); //$NON-NLS-1$ //$NON-NLS-2$
+		return target.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfoAdapter#setContainerProperties(java.lang.String, java.lang.String, java.lang.String, java.lang.Boolean)
+	 */
+	public void setContainerProperties(String containerFactoryName, String connectProtocol, String connectPath, Boolean requiresPassword) {
+		Assert.isNotNull(containerFactoryName);
+		properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_FACTORY_NAME_PROPERTY, containerFactoryName);
+		Assert.isNotNull(connectProtocol);
+		properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PROTOCOL, connectProtocol);
+		if (connectPath != null)
+			properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_PATH, connectPath);
+		if (requiresPassword != null)
+			properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_REQUIRES_PASSWORD, requiresPassword.toString());
+	}
 }
