@@ -11,10 +11,17 @@
 
 package org.eclipse.ecf.tests.provider.jmdns.remoteservice;
 
+import java.net.URI;
+
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
+import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceProperties;
+import org.eclipse.ecf.discovery.IServiceInfoAdapter;
+import org.eclipse.ecf.discovery.IServiceListener;
+import org.eclipse.ecf.discovery.ServiceInfo;
+import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
 
 /**
@@ -23,11 +30,13 @@ import org.eclipse.ecf.tests.discovery.DiscoveryTest;
 public class JMDNSRemoteServiceDiscoveryTest extends DiscoveryTest {
 
 	private static final String JMDNS_CONTAINER_NAME = "ecf.discovery.jmdns";
-	public final String SCOPE = "local";
-	public final String NAMINGAUTHORITY = "IANA";
-	public final String PROTOCOL = "tcp";
+	final String SCOPE = "local";
+	final String NAMINGAUTHORITY = "IANA";
+	final String PROTOCOL = "tcp";
 
-	public final String SERVICE_TYPE = "_osgi._ecftcp._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
+	final String SERVICE_TYPE = "_ecftcp._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
+
+	final int SERVER_PORT = 3333;
 
 	IServiceInfo serviceInfo;
 
@@ -35,22 +44,63 @@ public class JMDNSRemoteServiceDiscoveryTest extends DiscoveryTest {
 		super(JMDNS_CONTAINER_NAME, 1000);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest#getPort()
+	 */
+	protected int getPort() {
+		return SERVER_PORT;
+	}
+
 	protected void setUp() throws Exception {
 		super.setUp();
 		container = ContainerFactory.getDefault().createContainer(containerUnderTest);
 		discoveryContainer = (IDiscoveryContainerAdapter) container.getAdapter(IDiscoveryContainerAdapter.class);
-		final IServiceProperties serviceProperties = createServiceProperties();
-		serviceProperties.setPropertyString("containerTypeName", "ecf.generic.client");
-		serviceProperties.setPropertyString("connectProtocol", "ecftcp");
-		serviceProperties.setPropertyString("connectUser", "guest");
-		serviceProperties.setPropertyString("requiresPassword", "false");
-		serviceProperties.setPropertyString("connectPath", "/server");
-		serviceInfo = createServiceInfo(createDefaultURI(), createServiceID(SERVICE_TYPE, "JMDNSRemoteServiceDiscoveryTest" + System.currentTimeMillis()), serviceProperties);
+		final ServiceInfo svcInfo = new ServiceInfo(createDefaultURI(), createServiceID(SERVICE_TYPE, "JMDNSRemoteServiceDiscoveryTest" + System.currentTimeMillis()));
+		svcInfo.setContainerProperties("ecf.generic.client", "ecftcp", "server", null);
+		serviceInfo = svcInfo;
 	}
 
 	public void testRegisterOSGiService() throws Exception {
 		testConnect();
+		discoveryContainer.addServiceListener(createServiceListener());
 		registerService(serviceInfo);
-		Thread.sleep(15000);
+		Thread.sleep(40000);
+	}
+
+	/**
+	 * @return
+	 */
+	private IServiceListener createServiceListener() {
+		return new IServiceListener() {
+
+			public void serviceDiscovered(IServiceEvent anEvent) {
+				System.out.println("serviceDiscovered(" + anEvent + ")");
+				final IServiceInfo serviceInfo = anEvent.getServiceInfo();
+				final URI location = serviceInfo.getLocation();
+				System.out.println("location=" + location);
+				final IServiceID serviceID = serviceInfo.getServiceID();
+				System.out.println("serviceID=" + serviceID);
+				final IServiceTypeID serviceTypeID = serviceID.getServiceTypeID();
+				System.out.println("serviceTypeID=" + serviceTypeID);
+				final IServiceInfoAdapter adapter = (IServiceInfoAdapter) serviceInfo.getAdapter(IServiceInfoAdapter.class);
+				if (adapter != null) {
+					/** 
+					 connect here!
+					try {
+						final IContainer clientContainer = ContainerFactory.getDefault().createContainer(adapter.getContainerFactoryName());
+						final String target = adapter.getTarget();
+						clientContainer.connect(IDFactory.getDefault().createID(clientContainer.getConnectNamespace(), target), null);
+					} catch (final Exception e) {
+						e.printStackTrace();
+					}
+					*/
+				}
+			}
+
+			public void serviceUndiscovered(IServiceEvent anEvent) {
+				// TODO Auto-generated method stub
+
+			}
+		};
 	}
 }
