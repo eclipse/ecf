@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceInfoAdapter;
+import org.eclipse.ecf.discovery.IContainerServiceInfoAdapter;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -82,7 +82,7 @@ public class JMDNSRemoteServiceDiscoveryTest extends DiscoveryTest {
 				System.out.println("serviceID=" + serviceID);
 				final IServiceTypeID serviceTypeID = serviceID.getServiceTypeID();
 				System.out.println("serviceTypeID=" + serviceTypeID);
-				final IServiceInfoAdapter adapter = (IServiceInfoAdapter) serviceInfo.getAdapter(IServiceInfoAdapter.class);
+				final IContainerServiceInfoAdapter adapter = (IContainerServiceInfoAdapter) serviceInfo.getAdapter(IContainerServiceInfoAdapter.class);
 				if (adapter != null) {
 					/** 
 					 connect here!
