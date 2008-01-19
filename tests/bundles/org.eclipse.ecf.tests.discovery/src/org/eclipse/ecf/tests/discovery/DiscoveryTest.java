@@ -15,34 +15,33 @@ import java.net.URI;
 import java.util.Comparator;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
+import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceTypeEvent;
+import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
-import org.eclipse.ecf.tests.discovery.listener.TestServiceListener;
+import org.eclipse.ecf.tests.discovery.listener.TestListener;
 
-public abstract class DiscoveryTest extends TestCase {
+public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 
-	protected IContainer container = null;
-	protected IDiscoveryContainerAdapter discoveryContainer = null;
-	protected String containerUnderTest;
-	protected ServiceInfo serviceInfo;
-	protected ServiceInfo serviceInfo2;
-	protected ServiceInfo serviceInfo3;
-	protected long waitTimeForProvider;
-	protected Comparator comparator;
+	protected IServiceInfo serviceInfo;
+	protected IServiceID serviceID;
+	protected IServiceInfo serviceInfo2;
+	protected IServiceID serviceID2;
+	protected IServiceInfo serviceInfo3;
+	protected IServiceID serviceID3;
 
 	/**
 	 * @param name
@@ -79,32 +78,26 @@ public abstract class DiscoveryTest extends TestCase {
 		final Properties props = new Properties();
 		final URI uri = new URI(ITestConstants.URI);
 
-		final IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE, ITestConstants.HOST});
+		serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE, ITestConstants.HOST});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
 		serviceProperties.setPropertyString("serviceProperties", "serviceProperties");
 		serviceInfo = new ServiceInfo(uri, serviceID, 0, 0, serviceProperties);
 		assertNotNull(serviceInfo);
 
-		final IServiceID serviceID2 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE2, ITestConstants.HOST});
+		serviceID2 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE2, ITestConstants.HOST});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties2 = new ServiceProperties(props);
 		serviceProperties2.setPropertyString("serviceProperties2", "serviceProperties2");
 		serviceInfo2 = new ServiceInfo(uri, serviceID2, 2, 2, serviceProperties2);
 		assertNotNull(serviceInfo2);
 
-		final IServiceID serviceID3 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE3, ITestConstants.HOST});
+		serviceID3 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE3, ITestConstants.HOST});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties3 = new ServiceProperties(props);
 		serviceProperties3.setPropertyString("serviceProperties3", "serviceProperties3");
 		serviceInfo3 = new ServiceInfo(uri, serviceID3, 3, 3, serviceProperties3);
 		assertNotNull(serviceInfo3);
-	}
-
-	protected IDiscoveryContainerAdapter getAdapter(Class clazz) {
-		final IDiscoveryContainerAdapter adapter = (IDiscoveryContainerAdapter) container.getAdapter(clazz);
-		assertNotNull("Adapter must not be null", adapter);
-		return adapter;
 	}
 
 	/*
@@ -119,6 +112,22 @@ public abstract class DiscoveryTest extends TestCase {
 		container.disconnect();
 		container.dispose();
 		container = null;
+	}
+
+	protected void registerService() {
+		try {
+			discoveryContainer.registerService(serviceInfo);
+		} catch (final ECFException e) {
+			fail("IServiceInfo may be valid with this IDCA");
+		}
+	}
+
+	protected void unregisterService() {
+		try {
+			discoveryContainer.unregisterService(serviceInfo);
+		} catch (final ECFException e) {
+			fail("unregistering of " + serviceInfo + " should just work");
+		}
 	}
 
 	public void testConnect() {
@@ -158,11 +167,7 @@ public abstract class DiscoveryTest extends TestCase {
 	 */
 	public void testGetServiceInfo() {
 		testConnect();
-		try {
-			discoveryContainer.registerService(serviceInfo);
-		} catch (final ECFException e) {
-			fail("IServiceInfo may be valid with this IDCA");
-		}
+		registerService();
 		final IServiceInfo info = discoveryContainer.getServiceInfo(serviceInfo.getServiceID());
 		assertTrue("IServiceInfo should match, expected:\n" + serviceInfo + " but:\n" + info, comparator.compare(info, serviceInfo) == 0);
 	}
@@ -185,7 +190,10 @@ public abstract class DiscoveryTest extends TestCase {
 	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServiceTypes()}.
 	 */
 	public void testGetServiceTypes() {
-		fail("Not yet implemented");
+		testConnect();
+		registerService();
+		final IServiceTypeID[] serviceTypeIDs = discoveryContainer.getServiceTypes();
+		assertTrue(serviceTypeIDs.length > 0);
 	}
 
 	/**
@@ -194,11 +202,7 @@ public abstract class DiscoveryTest extends TestCase {
 	 */
 	public void testGetServices() {
 		testConnect();
-		try {
-			discoveryContainer.registerService(serviceInfo);
-		} catch (final ECFException e) {
-			fail("IServiceInfo may be valid with this IDCA");
-		}
+		registerService();
 		final IServiceInfo[] services = discoveryContainer.getServices();
 		assertTrue(services.length >= 1);
 	}
@@ -208,7 +212,10 @@ public abstract class DiscoveryTest extends TestCase {
 	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)}.
 	 */
 	public void testGetServicesIServiceTypeID() {
-		fail("Not yet implemented");
+		testConnect();
+		registerService();
+		final IServiceInfo serviceInfo[] = discoveryContainer.getServices(serviceID.getServiceTypeID());
+		assertTrue(serviceInfo.length > 0);
 	}
 
 	/**
@@ -230,11 +237,7 @@ public abstract class DiscoveryTest extends TestCase {
 	 */
 	public void testRegisterService() {
 		testConnect();
-		try {
-			discoveryContainer.registerService(serviceInfo);
-		} catch (final ECFException e) {
-			fail("IServiceInfo may be valid with this IDCA");
-		}
+		registerService();
 		final IServiceInfo[] services = discoveryContainer.getServices();
 		assertTrue(services.length >= 1);
 		for (int i = 0; i < services.length; i++) {
@@ -268,11 +271,7 @@ public abstract class DiscoveryTest extends TestCase {
 	 */
 	public void testUnregisterService() {
 		testRegisterService();
-		try {
-			discoveryContainer.unregisterService(serviceInfo);
-		} catch (final ECFException e) {
-			fail("unregistering of " + serviceInfo + " should just work");
-		}
+		unregisterService();
 		final IServiceInfo[] services = discoveryContainer.getServices();
 		for (int i = 0; i < services.length; i++) {
 			final IServiceInfo service = services[i];
@@ -310,12 +309,21 @@ public abstract class DiscoveryTest extends TestCase {
 		fail("A disposed container must not be reusable");
 	}
 
+	protected void addServiceListener(TestListener serviceListener) {
+		discoveryContainer.addServiceListener(serviceListener);
+		addListenerRegisterAndWait(serviceListener, serviceInfo);
+		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) serviceListener.getEvent()).getServiceInfo(), serviceInfo) == 0);
+	}
+
 	/**
 	 * Test method for
 	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.IServiceListener)}.
 	 */
 	public void testAddServiceListenerIServiceListener() {
-		addListener(new TestServiceListener(), serviceInfo);
+		testConnect();
+		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
+		final TestListener tsl = new TestListener();
+		addServiceListener(tsl);
 	}
 
 	/**
@@ -336,22 +344,19 @@ public abstract class DiscoveryTest extends TestCase {
 	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)}.
 	 */
 	public void testAddServiceListenerIServiceTypeIDIServiceListener() {
-		addListener(new TestServiceListener(), serviceInfo);
-	}
-
-	private void addListener(TestServiceListener testServiceListener, IServiceInfo aServiceInfo) {
 		testConnect();
 		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
 
-		discoveryContainer.addServiceListener(testServiceListener);
+		final TestListener tsl = new TestListener();
+		discoveryContainer.addServiceListener(serviceID.getServiceTypeID(), tsl);
+		addListenerRegisterAndWait(tsl, serviceInfo);
+		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) tsl.getEvent()).getServiceInfo(), serviceInfo) == 0);
+	}
 
+	private void addListenerRegisterAndWait(TestListener testServiceListener, IServiceInfo aServiceInfo) {
 		synchronized (testServiceListener) {
 			// register a service which we expect the test listener to get notified of
-			try {
-				discoveryContainer.registerService(serviceInfo);
-			} catch (final ECFException e) {
-				fail("IServiceInfo may be valid with this IDCA");
-			}
+			registerService();
 			int i = 0;
 			while (!testServiceListener.isDone() && i++ < 10) {
 				try {
@@ -366,7 +371,6 @@ public abstract class DiscoveryTest extends TestCase {
 		}
 		assertNotNull("Test listener didn't receive discovery", testServiceListener.getEvent());
 		assertTrue("Container mismatch", testServiceListener.getEvent().getLocalContainerID().equals(container.getConnectedID()));
-		assertTrue("IServiceInfo mismatch", comparator.compare(testServiceListener.getEvent().getServiceInfo(), aServiceInfo) == 0);
 	}
 
 	/**
@@ -387,7 +391,21 @@ public abstract class DiscoveryTest extends TestCase {
 	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)}.
 	 */
 	public void testAddServiceTypeListener() {
-		fail("Not yet implemented");
+		testConnect();
+		final IServiceTypeListener serviceTypeListener = createServiceTypeListener();
+		discoveryContainer.addServiceTypeListener(serviceTypeListener);
+	}
+
+	/**
+	 * @return
+	 */
+	protected IServiceTypeListener createServiceTypeListener() {
+		return new IServiceTypeListener() {
+
+			public void serviceTypeDiscovered(IServiceTypeEvent event) {
+				System.out.println("serviceTypeDiscovered(" + event + ")");
+			}
+		};
 	}
 
 	/**
@@ -442,7 +460,10 @@ public abstract class DiscoveryTest extends TestCase {
 	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(org.eclipse.ecf.discovery.IServiceListener)}.
 	 */
 	public void testRemoveServiceListenerIServiceListener() {
-		fail("Not yet implemented");
+		testConnect();
+		final TestListener serviceListener = new TestListener();
+		addServiceListener(serviceListener);
+		discoveryContainer.removeServiceListener(serviceListener);
 	}
 
 	/**
@@ -463,7 +484,10 @@ public abstract class DiscoveryTest extends TestCase {
 	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)}.
 	 */
 	public void testRemoveServiceListenerIServiceTypeIDIServiceListener() {
-		fail("Not yet implemented");
+		testConnect();
+		final TestListener serviceListener = new TestListener();
+		addServiceListener(serviceListener);
+		discoveryContainer.removeServiceListener(serviceID.getServiceTypeID(), serviceListener);
 	}
 
 	/**
@@ -484,7 +508,10 @@ public abstract class DiscoveryTest extends TestCase {
 	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)}.
 	 */
 	public void testRemoveServiceTypeListener() {
-		fail("Not yet implemented");
+		testConnect();
+		final TestListener serviceTypeListener = new TestListener();
+		addServiceListener(serviceTypeListener);
+		discoveryContainer.removeServiceTypeListener(serviceTypeListener);
 	}
 
 	/**

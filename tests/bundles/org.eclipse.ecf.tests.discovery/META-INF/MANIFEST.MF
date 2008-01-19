@@ -6,13 +6,13 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.tests.discovery.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
-Require-Bundle: org.junit,
+Require-Bundle: org.eclipse.equinox.common,
+ org.junit,
  org.eclipse.ecf,
  org.eclipse.ecf.discovery,
- org.eclipse.equinox.common,
  org.eclipse.ecf.provider.jslp
 Eclipse-LazyStart: true
-Import-Package: org.osgi.framework;version="1.4.0"
 Export-Package: org.eclipse.ecf.tests.discovery,
  org.eclipse.ecf.tests.discovery.identity,
  org.eclipse.ecf.tests.discovery.listener
+Import-Package: org.osgi.framework

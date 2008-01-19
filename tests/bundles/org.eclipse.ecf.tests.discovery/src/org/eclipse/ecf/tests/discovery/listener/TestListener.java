@@ -10,40 +10,42 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.discovery.listener;
 
+import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
+import org.eclipse.ecf.discovery.IServiceTypeEvent;
+import org.eclipse.ecf.discovery.IServiceTypeListener;
 
-public class TestServiceListener extends AbstractTestListener implements IServiceListener {
+public class TestListener implements IServiceListener, IServiceTypeListener {
 
-	private IServiceEvent event;
+	private IContainerEvent event;
 
-	public TestServiceListener() {
-		super();
+	public TestListener() {
 	}
 
 	public boolean isDone() {
 		return event != null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+	/**
+	 * @return the event
 	 */
+	public IContainerEvent getEvent() {
+		return event;
+	}
+
 	public void serviceDiscovered(IServiceEvent anEvent) {
 		event = anEvent;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceListener#serviceUndiscovered(org.eclipse.ecf.discovery.IServiceEvent)
-	 */
 	public void serviceUndiscovered(IServiceEvent anEvent) {
-		//TODO-mkuppe implement TestServiceListener#serviceUndiscovered
 		throw new java.lang.UnsupportedOperationException("TestServiceListener#serviceUndiscovered not yet implemented");
 	}
 
-	/**
-	 * @return the event
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeDiscovered(org.eclipse.ecf.discovery.IServiceTypeEvent)
 	 */
-	public IServiceEvent getEvent() {
-		return event;
+	public void serviceTypeDiscovered(IServiceTypeEvent event) {
+		this.event = event;
 	}
 }
