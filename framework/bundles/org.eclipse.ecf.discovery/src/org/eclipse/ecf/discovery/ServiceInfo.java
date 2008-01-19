@@ -20,7 +20,7 @@ import org.eclipse.ecf.internal.discovery.DiscoveryPlugin;
  * Base implementation of {@link IServiceInfo}.  Subclasses
  * may be created as appropriate.
  */
-public class ServiceInfo implements IServiceInfo, Serializable, IServiceInfoAdapter {
+public class ServiceInfo implements IServiceInfo, Serializable, IContainerServiceInfoAdapter {
 
 	private static final long serialVersionUID = -5651115550295457142L;
 
@@ -131,16 +131,16 @@ public class ServiceInfo implements IServiceInfo, Serializable, IServiceInfoAdap
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceInfoAdapter#getContainerFactoryName()
+	 * @see org.eclipse.ecf.discovery.IContainerServiceInfoAdapter#getContainerFactoryName()
 	 */
 	public String getContainerFactoryName() {
 		return (properties == null) ? null : properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_FACTORY_NAME_PROPERTY);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceInfoAdapter#getTarget()
+	 * @see org.eclipse.ecf.discovery.IContainerServiceInfoAdapter#getTarget()
 	 */
-	public String getTarget() {
+	public String getConnectTarget() {
 		if (uri == null || properties == null)
 			return null;
 		String targetValue = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PROTOCOL);
@@ -154,7 +154,7 @@ public class ServiceInfo implements IServiceInfo, Serializable, IServiceInfoAdap
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceInfoAdapter#setContainerProperties(java.lang.String, java.lang.String, java.lang.String, java.lang.Boolean)
+	 * @see org.eclipse.ecf.discovery.IContainerServiceInfoAdapter#setContainerProperties(java.lang.String, java.lang.String, java.lang.String, java.lang.Boolean)
 	 */
 	public void setContainerProperties(String containerFactoryName, String connectProtocol, String connectPath, Boolean requiresPassword) {
 		Assert.isNotNull(containerFactoryName);
@@ -165,5 +165,15 @@ public class ServiceInfo implements IServiceInfo, Serializable, IServiceInfoAdap
 			properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_PATH, connectPath);
 		if (requiresPassword != null)
 			properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_REQUIRES_PASSWORD, requiresPassword.toString());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IContainerServiceInfoAdapter#connectRequiresPassword()
+	 */
+	public Boolean connectRequiresPassword() {
+		String b = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_REQUIRES_PASSWORD);
+		if (b == null)
+			return null;
+		return Boolean.valueOf(b);
 	}
 }
