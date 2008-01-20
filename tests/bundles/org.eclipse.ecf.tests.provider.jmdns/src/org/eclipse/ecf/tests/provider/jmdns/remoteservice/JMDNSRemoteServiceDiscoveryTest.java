@@ -14,10 +14,10 @@ package org.eclipse.ecf.tests.provider.jmdns.remoteservice;
 import java.net.URI;
 
 import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.discovery.IContainerServiceInfoAdapter;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IContainerServiceInfoAdapter;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -34,7 +34,7 @@ public class JMDNSRemoteServiceDiscoveryTest extends DiscoveryTest {
 	final String NAMINGAUTHORITY = "IANA";
 	final String PROTOCOL = "tcp";
 
-	final String SERVICE_TYPE = "_ecftcp._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
+	final String SERVICE_TYPE = "_osgi._ecftcp._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
 
 	final int SERVER_PORT = 3333;
 
