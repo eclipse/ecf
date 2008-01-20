@@ -34,7 +34,7 @@ public interface IRemoteServiceReference {
 	 * Get given property for remote service
 	 * 
 	 * @param key
-	 *            the key for the propert to get. Must not be <code>null</code> .
+	 *            the key for the property to get. Must not be <code>null</code> .
 	 * @return Object the object or <code>null</code> if does not have named
 	 *         property
 	 */
