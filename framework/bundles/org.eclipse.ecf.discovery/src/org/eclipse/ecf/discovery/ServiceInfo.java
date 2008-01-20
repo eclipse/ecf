@@ -143,10 +143,13 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 	public String getConnectTarget() {
 		if (uri == null || properties == null)
 			return null;
-		String targetValue = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PROTOCOL);
-		StringBuffer target = new StringBuffer(targetValue);
+		String connectTarget = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET);
+		if (connectTarget != null)
+			return connectTarget;
+		String t = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PROTOCOL);
+		StringBuffer target = new StringBuffer(t);
 		String auth = uri.getAuthority();
-		String path = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_PATH);
+		String path = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PATH);
 		if (path == null)
 			path = "/"; //$NON-NLS-1$
 		target.append("://").append(auth).append("/").append(path); //$NON-NLS-1$ //$NON-NLS-2$
@@ -156,15 +159,15 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IContainerServiceInfoAdapter#setContainerProperties(java.lang.String, java.lang.String, java.lang.String, java.lang.Boolean)
 	 */
-	public void setContainerProperties(String containerFactoryName, String connectProtocol, String connectPath, Boolean requiresPassword) {
+	public void setContainerProperties(String containerFactoryName, String connectProtocol, String connectPath, Boolean connectRequiresPassword) {
 		Assert.isNotNull(containerFactoryName);
 		properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_FACTORY_NAME_PROPERTY, containerFactoryName);
 		Assert.isNotNull(connectProtocol);
 		properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PROTOCOL, connectProtocol);
 		if (connectPath != null)
-			properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_PATH, connectPath);
-		if (requiresPassword != null)
-			properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_REQUIRES_PASSWORD, requiresPassword.toString());
+			properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PATH, connectPath);
+		if (connectRequiresPassword != null)
+			properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_REQUIRES_PASSWORD, connectRequiresPassword.toString());
 	}
 
 	/* (non-Javadoc)
@@ -175,5 +178,17 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 		if (b == null)
 			return null;
 		return Boolean.valueOf(b);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IContainerServiceInfoAdapter#setContainerProperties(java.lang.String, java.lang.String, java.lang.Boolean)
+	 */
+	public void setContainerProperties(String containerFactoryName, String connectTarget, Boolean connectRequiresPassword) {
+		Assert.isNotNull(containerFactoryName);
+		properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_FACTORY_NAME_PROPERTY, containerFactoryName);
+		Assert.isNotNull(connectTarget);
+		properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET, connectTarget);
+		if (connectRequiresPassword != null)
+			properties.setPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_REQUIRES_PASSWORD, connectRequiresPassword.toString());
 	}
 }

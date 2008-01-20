@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.discovery;
 
+import org.eclipse.ecf.core.IContainer;
+
 /**
  * Adapter for IServiceInfo instances.  
  */
@@ -32,8 +34,9 @@ public interface IContainerServiceInfoAdapter {
 	 * container.connect(targetID,null);
 	 * </pre>
 	 * 
-	 * @return String targetID for use in connecting to the remote container.   Will return <code>null</code>
-	 * if there is incomplete/absent information for the info.
+	 * @return String  for use in connecting to the remote container.   The returned value should be
+	 * of proper syntax to be used to create a targetID for passing to {@link IContainer#connect(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)}.
+	 * May return <code>null</code> if there is incomplete/absent information for the info.  
 	 */
 	public String getConnectTarget();
 
@@ -44,7 +47,12 @@ public interface IContainerServiceInfoAdapter {
 	public Boolean connectRequiresPassword();
 
 	/**
-	 * Set the container properties.
+	 * Set the container properties.  This method sets an implicit connect target.  On the receiver, calls to {@link #getConnectTarget()}
+	 * will complete the URI in the following way
+	 * <pre>
+	 *  <connectProtocol>://<IServiceInfo.getLocation().getAuthority()>/<connectPath>
+	 * </pre>
+	 * See {@link #getConnectTarget()}.
 	 * 
 	 * @param containerFactoryName set the containerFactoryName for this info.  May not be <code>null</code>.
 	 * @param connectProtocol set the connectProtocol for the target.  May not be <code>null</code>.
@@ -52,4 +60,14 @@ public interface IContainerServiceInfoAdapter {
 	 * @param connectRequiresPassword set whether the target requires a password.  May be <code>null</code>.
 	 */
 	public void setContainerProperties(String containerFactoryName, String connectProtocol, String connectPath, Boolean connectRequiresPassword);
+
+	/**
+	 * Set the container properties.  This method sets an explicit connectTarget.  The given connectTarget is assumed
+	 * to be complete (e.g. ecftcp://user@host:port/path).  See {@link #getConnectTarget()}.
+	 * 
+	 * @param containerFactoryName set the containerFactoryName for this info.  May not be <code>null</code>.
+	 * @param connectTarget set the connectProtocol for the target.  May not be <code>null</code>.
+	 * @param connectRequiresPassword set whether the target requires a password.  May be <code>null</code>.
+	 */
+	public void setContainerProperties(String containerFactoryName, String connectTarget, Boolean connectRequiresPassword);
 }
