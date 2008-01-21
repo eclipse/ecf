@@ -43,7 +43,7 @@ public class RemoteServiceTest extends AbstractRemoteServiceTest {
 		}
 	}
 
-	protected IRemoteServiceRegistration registerService(IRemoteServiceContainerAdapter adapter, String serviceInterface, Object service, int sleepTime) {
+	protected IRemoteServiceRegistration registerService(IRemoteServiceContainerAdapter adapter, String serviceInterface, Object service, Dictionary serviceProperties, int sleepTime) {
 		final Dictionary props = new Hashtable();
 		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClient(1).getConnectedID());
 		final IRemoteServiceRegistration result = adapter.registerRemoteService(new String[] {serviceInterface}, service, props);
