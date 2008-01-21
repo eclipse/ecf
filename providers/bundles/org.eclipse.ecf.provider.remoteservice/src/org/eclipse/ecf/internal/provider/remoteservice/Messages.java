@@ -24,6 +24,7 @@ public class Messages extends NLS {
 	public static String RegistrySharedObject_20;
 	public static String RegistrySharedObject_7;
 	public static String RegistrySharedObject_EXCEPTION_IN_REMOTE_CALL;
+	public static String RemoteFilter_EXCEPTION_FILTER_NOT_NULL;
 	public static String RemoteServiceImpl_EXCEPTION_CREATING_PROXY;
 	public static String RegistrySharedObject_EXCEPTION_INVALID_RESPONSE;
 	public static String RegistrySharedObject_EXCEPTION_INVOKING_SERVICE;

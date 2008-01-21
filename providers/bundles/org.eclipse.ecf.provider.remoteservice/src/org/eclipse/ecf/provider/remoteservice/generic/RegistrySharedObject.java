@@ -21,8 +21,7 @@ import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.provider.remoteservice.*;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.*;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.*;
 
 public class RegistrySharedObject extends BaseSharedObject implements IRemoteServiceContainerAdapter {
 
@@ -72,9 +71,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return remoteService;
 	}
 
-	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) {
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {idFilter, clazz, filter}); //$NON-NLS-1$
-		final IRemoteFilter remoteFilter = createRemoteFilterFromString(filter);
+		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
 		final List references = new ArrayList();
 		synchronized (remoteRegistrys) {
 			if (idFilter == null) {
@@ -245,11 +244,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			}
 			return ref.getRegistration();
 		}
-		return null;
-	}
-
-	private IRemoteFilter createRemoteFilterFromString(String filter) {
-		// XXX make remote filter
 		return null;
 	}
 
@@ -517,7 +511,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	private void localRegisterService(RemoteServiceRegistrationImpl registration) {
-		final Object localServiceRegistrationValue = registration.getProperty(Constants.AUTOREGISTER_REMOTE_PROXY);
+		final Object localServiceRegistrationValue = registration.getProperty(org.eclipse.ecf.remoteservice.Constants.AUTOREGISTER_REMOTE_PROXY);
 		if (localServiceRegistrationValue != null) {
 			final BundleContext context = Activator.getDefault().getContext();
 			if (context == null)
@@ -540,8 +534,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				}
 			}
 			final ID remoteContainerID = registration.getContainerID();
-			properties.put(Constants.REMOTE_SERVICE_CONTAINER_ID, remoteContainerID.getName());
-			properties.put(Constants.REMOTE_SERVICE, remoteServiceImpl);
+			properties.put(org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE_CONTAINER_ID, remoteContainerID.getName());
+			properties.put(org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE, remoteServiceImpl);
 			final ServiceRegistration serviceRegistration = context.registerService(registration.getClasses(), service, properties);
 			addLocalServiceRegistration(remoteContainerID, serviceRegistration);
 		}

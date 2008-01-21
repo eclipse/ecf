@@ -8,8 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.remoteservice;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.*;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -54,6 +53,14 @@ public class Activator implements BundleActivator {
 			plugin = new Activator();
 		}
 		return plugin;
+	}
+
+	/**
+	 * @param filter
+	 * @return Fileter created via context
+	 */
+	public Filter createFilter(String filter) throws InvalidSyntaxException {
+		return context.createFilter(filter);
 	}
 
 }
