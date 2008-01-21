@@ -329,7 +329,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		buf.append("serviceranking=").append(serviceranking).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("classes=").append(Arrays.asList(clazzes)).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("state=").append(state).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-		buf.append("sharedobject=").append(sharedObject).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("properties=").append(properties).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 
