@@ -17,9 +17,9 @@ import org.eclipse.ecf.core.util.Event;
  */
 public interface IContainerEvent extends Event {
 	/**
-	 * Get ID of local container (the container receiving this event)
+	 * Get ID of local discovery container (the discovery container receiving this event).
 	 * 
-	 * @return ID for local container. Will not return null.
+	 * @return ID for local container. Will not return <code>null</code).
 	 */
 	public ID getLocalContainerID();
 }
