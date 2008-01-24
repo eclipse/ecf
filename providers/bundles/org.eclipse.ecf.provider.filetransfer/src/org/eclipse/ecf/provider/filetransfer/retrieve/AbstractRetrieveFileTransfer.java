@@ -535,8 +535,8 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected void setupProxies() {
 		// If it's been set directly (via ECF API) then this overrides platform settings
-		try {
-			if (proxy == null) {
+		if (proxy == null) {
+			try {
 				IProxyService proxyService = Activator.getDefault().getProxyService();
 				// Only do this if platform service exists
 				if (proxyService != null) {
@@ -548,13 +548,16 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 						proxy = new Proxy(((selectedProxy.getType().equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(selectedProxy.getHost(), selectedProxy.getPort()), selectedProxy.getUserId(), selectedProxy.getPassword());
 					}
 				}
+			} catch (Exception e) {
+				// If we don't even have the classes for this (i.e. the org.eclipse.core.net plugin not available)
+				// then we simply log and ignore
+				Activator.logNoProxyWarning(e);
+			} catch (NoClassDefFoundError e) {
+				Activator.logNoProxyWarning(e);
 			}
-			if (proxy != null)
-				setupProxy(proxy);
-		} catch (Exception e) {
-			// If we don't even have the classes for this (i.e. the org.eclipse.core.net plugin not available)
-			// then we simply log and ignore
-			Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.ERROR, "Warning: Platform proxy API not available", e)); //$NON-NLS-1$
 		}
+		if (proxy != null)
+			setupProxy(proxy);
 	}
+
 }

@@ -87,11 +87,22 @@ public class Activator implements BundleActivator {
 	}
 
 	public IProxyService getProxyService() {
-		if (proxyServiceTracker == null) {
-			proxyServiceTracker = new ServiceTracker(this.context, IProxyService.class.getName(), null);
-			proxyServiceTracker.open();
+		try {
+			if (proxyServiceTracker == null) {
+				proxyServiceTracker = new ServiceTracker(this.context, IProxyService.class.getName(), null);
+				proxyServiceTracker.open();
+			}
+			return (IProxyService) proxyServiceTracker.getService();
+		} catch (Exception e) {
+			logNoProxyWarning(e);
+		} catch (NoClassDefFoundError e) {
+			logNoProxyWarning(e);
 		}
-		return (IProxyService) proxyServiceTracker.getService();
+		return null;
+	}
+
+	public static void logNoProxyWarning(Throwable e) {
+		getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.ERROR, "Warning: Platform proxy API not available", e)); //$NON-NLS-1$
 	}
 
 	public void log(IStatus status) {
