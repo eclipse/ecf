@@ -387,6 +387,9 @@ public class MessagesView extends ViewPart {
 			} catch (Exception e) {
 				Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.MessagesView_WARNING_HYPERLINKING_NOT_AVAILABLE, e));
 				return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			} catch (NoClassDefFoundError e) {
+				Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.MessagesView_WARNING_HYPERLINKING_NOT_AVAILABLE, e));
+				return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
 			}
 		}
 
