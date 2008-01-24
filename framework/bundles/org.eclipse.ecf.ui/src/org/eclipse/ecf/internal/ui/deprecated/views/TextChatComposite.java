@@ -13,49 +13,25 @@ package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.*;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.custom.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.part.ViewPart;
@@ -80,7 +56,7 @@ public class TextChatComposite extends Composite {
 
 	protected Text textinput;
 
-	protected int[] sashWeights = new int[] { 7, 2 };
+	protected int[] sashWeights = new int[] {7, 2};
 
 	protected boolean isTyping;
 
@@ -106,9 +82,7 @@ public class TextChatComposite extends Composite {
 
 	private ViewPart view = null;
 
-	public TextChatComposite(ViewPart view, Composite parent, int style,
-			String initText, ILocalInputHandler handler, IUser localUser,
-			IUser remoteUser) {
+	public TextChatComposite(ViewPart view, Composite parent, int style, String initText, ILocalInputHandler handler, IUser localUser, IUser remoteUser) {
 		super(parent, style);
 
 		this.view = view;
@@ -193,45 +167,31 @@ public class TextChatComposite extends Composite {
 		makeActions();
 		hookContextMenu();
 
-		Activator.getDefault().getPreferenceStore().addPropertyChangeListener(
-				new IPropertyChangeListener() {
-					public void propertyChange(PropertyChangeEvent event) {
-						if (event.getProperty().equals(
-								Activator.PREF_DISPLAY_TIMESTAMP)) {
-							showTimestamp = ((Boolean) event.getNewValue())
-									.booleanValue();
-						}
-					}
+		Activator.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty().equals(Activator.PREF_DISPLAY_TIMESTAMP)) {
+					showTimestamp = ((Boolean) event.getNewValue()).booleanValue();
+				}
+			}
 
-				});
+		});
 
 	}
 
 	private StyledText createStyledTextWidget(Composite parent) {
 		try {
-			SourceViewer result = new SourceViewer(parent, null, null,
-					true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
-							| SWT.READ_ONLY);
-			result.configure(new TextSourceViewerConfiguration(EditorsUI
-					.getPreferenceStore()));
+			SourceViewer result = new SourceViewer(parent, null, null, true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			result.configure(new TextSourceViewerConfiguration(EditorsUI.getPreferenceStore()));
 			result.setDocument(new Document());
 			return result.getTextWidget();
 		} catch (Exception e) {
-			Activator
-					.getDefault()
-					.getLog()
-					.log(
-							new Status(
-									IStatus.WARNING,
-									Activator.PLUGIN_ID,
-									IStatus.WARNING,
-									"Source viewer not available.  Hyperlinking will be disabled.",
-									e));
-			return new StyledText(parent, SWT.BORDER | SWT.WRAP
-					| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, "Source viewer not available.  Hyperlinking will be disabled.", e));
+			return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+		} catch (NoClassDefFoundError e) {
+			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, "Source viewer not available.  Hyperlinking will be disabled.", e));
+			return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
 		}
 	}
-
 
 	private void makeActions() {
 		outputSelectAll = new Action() {
@@ -248,9 +208,7 @@ public class TextChatComposite extends Composite {
 		};
 		outputCopy.setText("Copy");
 		outputCopy.setAccelerator(SWT.CTRL | 'C');
-		outputCopy.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_COPY));
+		outputCopy.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 
 		outputClear = new Action() {
 			public void run() {
@@ -266,15 +224,12 @@ public class TextChatComposite extends Composite {
 		};
 		outputPaste.setText("Paste");
 		outputCopy.setAccelerator(SWT.CTRL | 'V');
-		outputPaste.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_PASTE));
+		outputPaste.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 
 	}
 
 	protected void outputClear() {
-		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
-				"Are you sure you want to clear output?"))
+		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output", "Are you sure you want to clear output?"))
 			styledText.setText("");
 	}
 
@@ -307,28 +262,22 @@ public class TextChatComposite extends Composite {
 		styledText.setMenu(menu);
 		ISelectionProvider selectionProvider = new ISelectionProvider() {
 
-			public void addSelectionChangedListener(
-					ISelectionChangedListener listener) {
+			public void addSelectionChangedListener(ISelectionChangedListener listener) {
 			}
 
 			public ISelection getSelection() {
-				ISelection selection = new TextSelection(styledText
-						.getSelectionRange().x,
-						styledText.getSelectionRange().y);
+				ISelection selection = new TextSelection(styledText.getSelectionRange().x, styledText.getSelectionRange().y);
 
 				return selection;
 			}
 
-			public void removeSelectionChangedListener(
-					ISelectionChangedListener listener) {
+			public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 			}
 
 			public void setSelection(ISelection selection) {
 				if (selection instanceof ITextSelection) {
 					ITextSelection textSelection = (ITextSelection) selection;
-					styledText.setSelection(textSelection.getOffset(),
-							textSelection.getOffset()
-									+ textSelection.getLength());
+					styledText.setSelection(textSelection.getOffset(), textSelection.getOffset() + textSelection.getLength());
 				}
 			}
 
@@ -386,8 +335,7 @@ public class TextChatComposite extends Composite {
 		StringBuffer sb = new StringBuffer();
 
 		if (text.getOriginator() != null) {
-			sb.append(createLineWithTimestamp(text.getOriginator().getName()
-					+ ": "));
+			sb.append(createLineWithTimestamp(text.getOriginator().getName() + ": "));
 			StyleRange sr = new StyleRange();
 			sr.start = startRange;
 			sr.length = sb.length();
@@ -451,22 +399,10 @@ public class TextChatComposite extends Composite {
 				inputHandler.inputText(ru.getID(), text);
 				appendText(new ChatLine(text, lu));
 			} else {
-				Activator
-						.getDefault()
-						.getLog()
-						.log(
-								new Status(
-										IStatus.ERROR,
-										Activator.PLUGIN_ID,
-										100,
-										"Null localUser or remoteUser for textchatcomposite",
-										new NullPointerException()));
+				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 100, "Null localUser or remoteUser for textchatcomposite", new NullPointerException()));
 			}
 		} else {
-			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID, 100,
-							"No inputhandler available for textchatcomposite",
-							new NullPointerException()));
+			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 100, "No inputhandler available for textchatcomposite", new NullPointerException()));
 		}
 	}
 
@@ -477,22 +413,10 @@ public class TextChatComposite extends Composite {
 			if (lu != null && ru != null) {
 				inputHandler.startTyping(ru.getID());
 			} else {
-				Activator
-						.getDefault()
-						.getLog()
-						.log(
-								new Status(
-										IStatus.ERROR,
-										Activator.PLUGIN_ID,
-										100,
-										"Null localUser or remoteUser for textchatcomposite",
-										new NullPointerException()));
+				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 100, "Null localUser or remoteUser for textchatcomposite", new NullPointerException()));
 			}
 		} else {
-			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID, 100,
-							"No inputhandler available for textchatcomposite",
-							new NullPointerException()));
+			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 100, "No inputhandler available for textchatcomposite", new NullPointerException()));
 		}
 	}
 

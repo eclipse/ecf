@@ -14,13 +14,8 @@ package org.eclipse.ecf.internal.ui.deprecated.views;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
@@ -28,39 +23,20 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
+import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.im.IChatID;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.*;
 import org.eclipse.jface.text.source.SourceViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
@@ -68,8 +44,7 @@ import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-public class ChatRoomView extends ViewPart implements
-		IChatRoomInvitationListener {
+public class ChatRoomView extends ViewPart implements IChatRoomInvitationListener {
 
 	public static final String VIEW_ID = "org.eclipse.ecf.ui.views.ChatRoomView"; //$NON-NLS-1$
 
@@ -150,14 +125,12 @@ public class ChatRoomView extends ViewPart implements
 		if (color != null) {
 			color.dispose();
 		}
-		StringTokenizer st = new StringTokenizer(rgb,",");
-		String [] vals = new String [3];
-		for(int i=0; i < 3; i++) {
+		StringTokenizer st = new StringTokenizer(rgb, ",");
+		String[] vals = new String[3];
+		for (int i = 0; i < 3; i++) {
 			vals[i] = st.nextToken();
 		}
-		color = new Color(getViewSite().getShell().getDisplay(), Integer
-				.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer
-				.parseInt(vals[2]));
+		color = new Color(getViewSite().getShell().getDisplay(), Integer.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer.parseInt(vals[2]));
 		return color;
 	}
 
@@ -176,8 +149,7 @@ public class ChatRoomView extends ViewPart implements
 
 		Composite memberComp = new Composite(form, SWT.NONE);
 		memberComp.setLayout(new FillLayout());
-		memberViewer = new ListViewer(memberComp, SWT.BORDER | SWT.V_SCROLL
-				| SWT.H_SCROLL);
+		memberViewer = new ListViewer(memberComp, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 
 		Composite rightComp = new Composite(form, SWT.NONE);
 		rightComp.setLayout(new FillLayout());
@@ -199,8 +171,7 @@ public class ChatRoomView extends ViewPart implements
 
 		Composite writeComp = new Composite(rightSash, SWT.NONE);
 		writeComp.setLayout(new FillLayout());
-		writeText = new Text(writeComp, SWT.BORDER | SWT.MULTI | SWT.WRAP
-				| SWT.V_SCROLL);
+		writeText = new Text(writeComp, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		writeText.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent evt) {
 				handleKeyPressed(evt);
@@ -211,10 +182,8 @@ public class ChatRoomView extends ViewPart implements
 			}
 		});
 
-		form
-				.setWeights(new int[] { RATIO_PRESENCE_PANE,
-						RATIO_READ_WRITE_PANE });
-		rightSash.setWeights(new int[] { RATIO_READ_PANE, RATIO_WRITE_PANE });
+		form.setWeights(new int[] {RATIO_PRESENCE_PANE, RATIO_READ_WRITE_PANE});
+		rightSash.setWeights(new int[] {RATIO_READ_PANE, RATIO_WRITE_PANE});
 		setEnabled(false);
 		makeActions();
 		hookContextMenu();
@@ -222,29 +191,18 @@ public class ChatRoomView extends ViewPart implements
 
 	private StyledText createStyledTextWidget(Composite parent) {
 		try {
-			SourceViewer result = new SourceViewer(parent, null, null,
-					true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
-							| SWT.READ_ONLY);
-			result.configure(new TextSourceViewerConfiguration(EditorsUI
-					.getPreferenceStore()));
+			SourceViewer result = new SourceViewer(parent, null, null, true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			result.configure(new TextSourceViewerConfiguration(EditorsUI.getPreferenceStore()));
 			result.setDocument(new Document());
 			return result.getTextWidget();
 		} catch (Exception e) {
-			Activator
-					.getDefault()
-					.getLog()
-					.log(
-							new Status(
-									IStatus.WARNING,
-									Activator.PLUGIN_ID,
-									IStatus.WARNING,
-									"Source viewer not available.  Hyperlinking will be disabled.",
-									e));
-			return new StyledText(parent, SWT.BORDER | SWT.WRAP
-					| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, "Source viewer not available.  Hyperlinking will be disabled.", e));
+			return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+		} catch (NoClassDefFoundError e) {
+			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, "Source viewer not available.  Hyperlinking will be disabled.", e));
+			return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
 		}
 	}
-
 
 	protected void setEnabled(boolean enabled) {
 		if (!writeText.isDisposed())
@@ -257,8 +215,7 @@ public class ChatRoomView extends ViewPart implements
 
 	protected void handleTextInput(String text) {
 		if (messageSender == null) {
-			MessageDialog.openError(getViewSite().getShell(), "Not connect",
-					"Not connected to chat room");
+			MessageDialog.openError(getViewSite().getShell(), "Not connect", "Not connected to chat room");
 			return;
 		} else {
 			try {
@@ -295,9 +252,7 @@ public class ChatRoomView extends ViewPart implements
 		return roomInfo;
 	}
 
-	public void initialize(final IChatRoomViewCloseListener parent,
-			final String secondaryID, final IChatRoomContainer container,
-			final IChatRoomInfo info, final IChatRoomMessageSender sender) {
+	public void initialize(final IChatRoomViewCloseListener parent, final String secondaryID, final IChatRoomContainer container, final IChatRoomInfo info, final IChatRoomMessageSender sender) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				removeAllParticipants();
@@ -310,9 +265,7 @@ public class ChatRoomView extends ViewPart implements
 				ChatRoomView.this.roomInfo = info;
 				ID roomID = info.getRoomID();
 				ChatRoomView.this.setPartName(VIEW_PREFIX + roomInfo.getName());
-				ChatRoomView.this.setTitleToolTip("Room ID: "
-						+ roomID.getName() + ", Description: "
-						+ roomInfo.getDescription());
+				ChatRoomView.this.setTitleToolTip("Room ID: " + roomID.getName() + ", Description: " + roomInfo.getDescription());
 				setEnabled(true);
 			}
 		});
@@ -426,8 +379,7 @@ public class ChatRoomView extends ViewPart implements
 
 	protected String getDateTime() {
 		StringBuffer buf = new StringBuffer();
-		buf.append(getCurrentDate(DEFAULT_DATE_FORMAT)).append(" ").append(
-				getCurrentDate(DEFAULT_TIME_FORMAT));
+		buf.append(getCurrentDate(DEFAULT_DATE_FORMAT)).append(" ").append(getCurrentDate(DEFAULT_TIME_FORMAT));
 		return buf.toString();
 	}
 
@@ -435,8 +387,7 @@ public class ChatRoomView extends ViewPart implements
 		if (p != null) {
 			ID id = p.getID();
 			if (id != null) {
-				appendText(new ChatLine("(" + getDateTime() + ") "
-						+ trimUserID(id) + " entered", null));
+				appendText(new ChatLine("(" + getDateTime() + ") " + trimUserID(id) + " entered", null));
 				memberViewer.add(p);
 			}
 		}
@@ -477,8 +428,7 @@ public class ChatRoomView extends ViewPart implements
 		if (p != null) {
 			ID id = p.getID();
 			if (id != null) {
-				appendText(new ChatLine("(" + getDateTime() + ") "
-						+ trimUserID(id) + " left", null));
+				appendText(new ChatLine("(" + getDateTime() + ") " + trimUserID(id) + " left", null));
 				memberViewer.remove(p);
 				if (isLocalUser(id))
 					removeLocalUser();
@@ -500,8 +450,7 @@ public class ChatRoomView extends ViewPart implements
 			public void run() {
 				if (disposed)
 					return;
-				boolean isAdd = presence.getType().equals(
-						IPresence.Type.AVAILABLE);
+				boolean isAdd = presence.getType().equals(IPresence.Type.AVAILABLE);
 				Participant p = new Participant(fromID);
 				if (isAdd) {
 					if (localUser == null && !otherUsers.contains(fromID)) {
@@ -517,10 +466,8 @@ public class ChatRoomView extends ViewPart implements
 		});
 	}
 
-	public void handleInvitationReceived(ID roomID, ID from, String subject,
-			String body) {
-		System.out.println("invitation room=" + roomID + ",from=" + from
-				+ ",subject=" + subject + ",body=" + body);
+	public void handleInvitationReceived(ID roomID, ID from, String subject, String body) {
+		System.out.println("invitation room=" + roomID + ",from=" + from + ",subject=" + subject + ",body=" + body);
 	}
 
 	protected void appendText(ChatLine text) {
@@ -533,8 +480,7 @@ public class ChatRoomView extends ViewPart implements
 		StringBuffer sb = new StringBuffer();
 
 		if (text.getOriginator() != null) {
-			sb.append("(").append(getCurrentDate(DEFAULT_TIME_FORMAT)).append(
-					") ");
+			sb.append("(").append(getCurrentDate(DEFAULT_TIME_FORMAT)).append(") ");
 			StyleRange dateStyle = new StyleRange();
 			dateStyle.start = startRange;
 			dateStyle.length = sb.length();
@@ -549,8 +495,7 @@ public class ChatRoomView extends ViewPart implements
 			sr.length = sb.length();
 			sr.fontStyle = SWT.BOLD;
 
-			if (localUser != null
-					&& localUser.getID().equals(text.getOriginator().getID())) {
+			if (localUser != null && localUser.getID().equals(text.getOriginator().getID())) {
 				sr.foreground = meColor;
 			} else {
 				sr.foreground = otherColor;
@@ -582,14 +527,12 @@ public class ChatRoomView extends ViewPart implements
 		st.setSelection(t.length());
 
 		// Bold title if view is not visible.
-		IWorkbenchSiteProgressService pservice = (IWorkbenchSiteProgressService) this
-				.getSite().getAdapter(IWorkbenchSiteProgressService.class);
+		IWorkbenchSiteProgressService pservice = (IWorkbenchSiteProgressService) this.getSite().getAdapter(IWorkbenchSiteProgressService.class);
 		pservice.warnOfContentChange();
 	}
 
 	protected void outputClear() {
-		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
-				"Are you sure you want to clear output?"))
+		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output", "Are you sure you want to clear output?"))
 			readText.setText("");
 	}
 
@@ -643,9 +586,7 @@ public class ChatRoomView extends ViewPart implements
 		outputCopy.setText("Copy");
 		outputCopy.setToolTipText("Copy Selected");
 		outputCopy.setAccelerator(SWT.CTRL | 'C');
-		outputCopy.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_COPY));
+		outputCopy.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 
 		outputClear = new Action() {
 			public void run() {
@@ -663,9 +604,7 @@ public class ChatRoomView extends ViewPart implements
 		outputPaste.setText("Paste");
 		outputPaste.setToolTipText("Paste");
 		outputPaste.setAccelerator(SWT.CTRL | 'V');
-		outputPaste.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_PASTE));
+		outputPaste.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 
 	}
 
@@ -690,27 +629,22 @@ public class ChatRoomView extends ViewPart implements
 		readText.setMenu(menu);
 		ISelectionProvider selectionProvider = new ISelectionProvider() {
 
-			public void addSelectionChangedListener(
-					ISelectionChangedListener listener) {
+			public void addSelectionChangedListener(ISelectionChangedListener listener) {
 			}
 
 			public ISelection getSelection() {
-				ISelection selection = new TextSelection(readText
-						.getSelectionRange().x, readText.getSelectionRange().y);
+				ISelection selection = new TextSelection(readText.getSelectionRange().x, readText.getSelectionRange().y);
 
 				return selection;
 			}
 
-			public void removeSelectionChangedListener(
-					ISelectionChangedListener listener) {
+			public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 			}
 
 			public void setSelection(ISelection selection) {
 				if (selection instanceof ITextSelection) {
 					ITextSelection textSelection = (ITextSelection) selection;
-					readText.setSelection(textSelection.getOffset(),
-							textSelection.getOffset()
-									+ textSelection.getLength());
+					readText.setSelection(textSelection.getOffset(), textSelection.getOffset() + textSelection.getLength());
 				}
 			}
 
