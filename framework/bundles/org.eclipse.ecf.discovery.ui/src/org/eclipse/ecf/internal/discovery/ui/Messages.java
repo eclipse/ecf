@@ -22,6 +22,10 @@ public class Messages extends NLS {
 	public static String DiscoveryView_PortLabel;
 	public static String DiscoveryView_PriorityLabel;
 	public static String DiscoveryView_WeightLabel;
+	public static String DiscoveryView_REFRESH_ACTION_LABEL;
+
+	public static String DiscoveryView_REFRESH_SERVICES_TOOLTIPTEXT;
+
 	public static String DiscoveryView_RequestInfo;
 	public static String DiscoveryView_RequestInfoTooltip;
 	public static String DiscoveryView_RegisterType;
@@ -35,7 +39,30 @@ public class Messages extends NLS {
 	public static String DiscoveryView_StartDiscovery;
 	public static String DiscoveryView_StartDiscoveryTooltip;
 	public static String DiscoveryView_ConnectToService;
-	public static String DiscoveryView_RequestInfoAboutService;
+
+	public static String DiscoveryView_EXCEPTION_CREATING_SERVICEACCESSHANDLER;
+
+	public static String DiscoveryView_NO_SERVICE_HANDLER_LABEL;
+
+	public static String DiscoveryViewContentProvider_CONNECT_REQUIRES_PASSWORD_LABEL;
+
+	public static String DiscoveryViewContentProvider_CONNECT_TARGET_LABEL;
+
+	public static String DiscoveryViewContentProvider_CONTAINER_FACTORY_LABEL;
+
+	public static String DiscoveryViewContentProvider_CONTAINER_SERVICE_INFO_LABEL;
+
+	public static String DiscoveryViewContentProvider_NAME_LABEL;
+
+	public static String DiscoveryViewContentProvider_SERVICE_NAME_LABEL;
+
+	public static String DiscoveryViewContentProvider_SERVICE_NAMESPACE_LABEL;
+
+	public static String DiscoveryViewContentProvider_SERVICE_PROPERTIES_LABEL;
+
+	public static String DiscoveryViewContentProvider_TYPE_INTERNAL_LABEL;
+
+	public static String DiscoveryViewContentProvider_TYPE_NAMESPACE_LABEL;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

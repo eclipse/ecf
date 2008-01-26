@@ -10,8 +10,10 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.discovery.ui;
 
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -23,29 +25,52 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
+	private BundleContext context;
+
+	private ServiceTracker extensionRegistryTracker = null;
+
 	/**
 	 * The constructor
 	 */
 	public Activator() {
+		// nothing
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
+	public void start(BundleContext context1) throws Exception {
+		super.start(context1);
 		plugin = this;
+		this.context = context1;
+	}
+
+	public IExtensionRegistry getExtensionRegistry() {
+		if (extensionRegistryTracker == null) {
+			this.extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
+			this.extensionRegistryTracker.open();
+		}
+		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context1) throws Exception {
+		super.stop(context1);
+		if (extensionRegistryTracker != null) {
+			extensionRegistryTracker.close();
+			extensionRegistryTracker = null;
+		}
 		plugin = null;
-		super.stop(context);
+		this.context = null;
+	}
+
+	public static BundleContext getContext() {
+		return getDefault().context;
 	}
 
 	/**
