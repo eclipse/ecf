@@ -12,6 +12,7 @@ package org.eclipse.ecf.internal.provider.jmdns;
 
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.util.PlatformHelper;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -35,6 +36,10 @@ public class JMDNSPlugin implements BundleActivator {
 	}
 
 	private ServiceTracker adapterManagerTracker = null;
+
+	private ServiceTracker discoveryTracker;
+
+	private ServiceRegistration serviceRegistration;
 
 	public IAdapterManager getAdapterManager() {
 		// First, try to get the adapter manager via
@@ -63,13 +68,33 @@ public class JMDNSPlugin implements BundleActivator {
 		return context.getBundle();
 	}
 
+	protected BundleContext getContext() {
+		return context;
+	}
+
+	public IDiscoveryService getDiscoveryService() {
+		if (discoveryTracker == null) {
+			discoveryTracker = new ServiceTracker(context, IDiscoveryService.class.getName(), null);
+			discoveryTracker.open();
+		}
+		return (IDiscoveryService) discoveryTracker.getService();
+	}
+
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
+		if (serviceRegistration != null) {
+			serviceRegistration.unregister();
+			serviceRegistration = null;
+		}
 		if (adapterManagerTracker != null) {
 			adapterManagerTracker.close();
 			adapterManagerTracker = null;
+		}
+		if (discoveryTracker != null) {
+			discoveryTracker.close();
+			discoveryTracker = null;
 		}
 		this.context = ctxt;
 		plugin = null;

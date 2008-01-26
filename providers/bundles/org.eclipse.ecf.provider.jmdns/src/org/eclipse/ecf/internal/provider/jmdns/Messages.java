@@ -20,6 +20,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.jmdns.messages"; //$NON-NLS-1$
 	public static String ContainerInstantiator_EXCEPTION_CONTAINER_CREATE;
 	public static String ContainerInstantiator_EXCEPTION_GETTING_INETADDRESS;
+	public static String ECFStart_WARNING_COULD_NOT_REGISTER_DISCOVERY;
 	public static String JMDNSDiscoveryContainer_EXCEPTION_ALREADY_CONNECTED;
 	public static String JMDNSDiscoveryContainer_EXCEPTION_CONTAINER_DISPOSED;
 	public static String JMDNSDiscoveryContainer_EXCEPTION_CREATE_JMDNS_INSTANCE;
