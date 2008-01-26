@@ -10,11 +10,12 @@
 package org.eclipse.ecf.discovery;
 
 import java.io.Serializable;
-import java.net.URI;
+import java.net.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.discovery.DiscoveryPlugin;
+import org.eclipse.ecf.internal.discovery.Messages;
 
 /**
  * Base implementation of {@link IServiceInfo}.  Subclasses
@@ -26,6 +27,7 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 
 	public static final int DEFAULT_PRIORITY = 0;
 	public static final int DEFAULT_WEIGHT = 0;
+	public static final String DEFAULT_PROTOCOL = "xxxxx"; //$NON-NLS-1$
 
 	protected URI uri = null;
 
@@ -49,6 +51,31 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 		this.priority = priority;
 		this.weight = weight;
 		this.properties = (props == null) ? new ServiceProperties() : props;
+	}
+
+	public ServiceInfo(String host, int port, IServiceID serviceID, int priority, int weight, IServiceProperties props) {
+		try {
+			if (host == null)
+				host = InetAddress.getLocalHost().getHostAddress();
+			uri = new URI(DEFAULT_PROTOCOL, null, host, port, null, null, null);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException(Messages.ServiceInfo_EXCEPTION_INVALID_HOST_ARG);
+		} catch (UnknownHostException e) {
+			throw new IllegalArgumentException(Messages.ServiceInfo_EXCEPTION_NO_LOCALHOST);
+		}
+		this.serviceID = serviceID;
+		Assert.isNotNull(serviceID);
+		this.priority = priority;
+		this.weight = weight;
+		this.properties = (props == null) ? new ServiceProperties() : props;
+	}
+
+	public ServiceInfo(String host, int port, IServiceID serviceID, IServiceProperties props) {
+		this(host, port, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
+	}
+
+	public ServiceInfo(String host, int port, IServiceID serviceID) {
+		this(host, port, serviceID, new ServiceProperties());
 	}
 
 	public ServiceInfo(URI anURI, IServiceID serviceID, IServiceProperties props) {
@@ -147,6 +174,8 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 		if (connectTarget != null)
 			return connectTarget;
 		String t = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PROTOCOL);
+		if (t == null)
+			return null;
 		StringBuffer target = new StringBuffer(t);
 		String auth = uri.getAuthority();
 		String path = properties.getPropertyString(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET_PATH);

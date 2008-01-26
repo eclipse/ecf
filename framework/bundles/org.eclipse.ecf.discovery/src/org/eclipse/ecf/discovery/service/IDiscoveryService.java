@@ -20,5 +20,5 @@ import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
  */
 public interface IDiscoveryService extends IDiscoveryContainerAdapter {
 	// All methods provided by superclass
-
+	public static final String CONTAINER_ID = "org.eclipse.ecf.discovery.containerID"; //$NON-NLS-1$
 }
