@@ -144,6 +144,10 @@ public class Activator implements BundleActivator {
 	public void stop(BundleContext ctxt) throws Exception {
 		plugin = null;
 		this.context = null;
+		if (extensionRegistryTracker != null) {
+			extensionRegistryTracker.close();
+			extensionRegistryTracker = null;
+		}
 		if (fileTransferServiceRegistration != null) {
 			fileTransferServiceRegistration.unregister();
 			fileTransferServiceRegistration = null;
