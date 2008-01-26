@@ -12,10 +12,6 @@ package org.eclipse.ecf.internal.example.collab;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.ui.views.IDiscoveryController;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.widgets.Shell;
@@ -32,9 +28,8 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 
 	private FontRegistry fontRegistry = null;
 	private ServerStartup serverStartup = null;
-	private DiscoveryStartup discoveryStartup = null;
-	public static final String TCPSERVER_DISCOVERY_TYPE = "_ecftcp._tcp.local."; //$NON-NLS-1$
-	protected static String serviceTypes[] = new String[] {TCPSERVER_DISCOVERY_TYPE};
+
+	private BundleContext context;
 
 	public static void log(String message) {
 		getDefault().getLog().log(new Status(IStatus.OK, ClientPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK, message, null));
@@ -51,54 +46,6 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 		super();
 		plugin = this;
 		this.fontRegistry = new FontRegistry();
-	}
-
-	public IDiscoveryController getDiscoveryController() {
-		return new IDiscoveryController() {
-			public void connectToService(IServiceInfo service) {
-				synchronized (ClientPlugin.this) {
-					if (discoveryStartup == null)
-						return;
-					discoveryStartup.connectToServiceFromInfo(service);
-				}
-			}
-
-			public void startDiscovery() {
-				try {
-					getDefault().initDiscovery();
-				} catch (final Exception e) {
-					ClientPlugin.log("Exception initializing discovery", e);
-				}
-			}
-
-			public void stopDiscovery() {
-				getDefault().disposeDiscovery();
-			}
-
-			public IDiscoveryContainerAdapter getDiscoveryContainer() {
-				synchronized (ClientPlugin.this) {
-					if (discoveryStartup == null)
-						return null;
-					return discoveryStartup.getDiscoveryContainer();
-				}
-			}
-
-			public IContainer getContainer() {
-				synchronized (ClientPlugin.this) {
-					if (discoveryStartup == null)
-						return null;
-					return discoveryStartup.getContainer();
-				}
-			}
-
-			public String[] getServiceTypes() {
-				return serviceTypes;
-			}
-
-			public boolean isDiscoveryStarted() {
-				return getDefault().isDiscoveryActive();
-			}
-		};
 	}
 
 	protected void setPreferenceDefaults() {
@@ -119,18 +66,17 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 
 	/**
 	 * This method is called upon plug-in activation
-	 * @param context 
+	 * @param ctxt 
 	 * @throws Exception 
 	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
+	public void start(BundleContext ctxt) throws Exception {
+		super.start(ctxt);
 		setPreferenceDefaults();
+		this.context = ctxt;
 	}
 
-	public synchronized void initDiscovery() throws Exception {
-		if (discoveryStartup == null) {
-			discoveryStartup = new DiscoveryStartup();
-		}
+	protected BundleContext getContext() {
+		return context;
 	}
 
 	public synchronized void initServer() throws Exception {
@@ -139,31 +85,11 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 		}
 	}
 
-	public synchronized void registerServers() {
-		if (discoveryStartup != null && serverStartup != null) {
-			serverStartup.registerServers();
-		}
-	}
-
-	public synchronized boolean isDiscoveryActive() {
-		if (discoveryStartup == null)
-			return false;
-		else
-			return discoveryStartup.isActive();
-	}
-
 	public synchronized boolean isServerActive() {
 		if (serverStartup == null)
 			return false;
 		else
 			return serverStartup.isActive();
-	}
-
-	public synchronized void disposeDiscovery() {
-		if (discoveryStartup != null) {
-			discoveryStartup.dispose();
-			discoveryStartup = null;
-		}
 	}
 
 	public synchronized void disposeServer() {
@@ -181,8 +107,8 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
+		context = null;
 		disposeServer();
-		disposeDiscovery();
 	}
 
 	public FontRegistry getFontRegistry() {
