@@ -97,14 +97,15 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 *            an array of ID instances that will restrict the search for
 	 *            matching container ids If null, all remote containers will be
 	 *            considered in search for matching IRemoteServiceReference
-	 *            instances. May be <code>null</code> .
+	 *            instances. May be <code>null</code>.
 	 * 
 	 * @param clazz
 	 *            the fully qualified name of the interface class that describes
-	 *            the desired service. Must not be <code>null</code> .
+	 *            the desired service. Must not be <code>null</code>.
 	 * @param filter
-	 *            The filter criteria. May be <code>null</code> .
-	 * @return IRemoteServiceReference [] the matching IRemoteServiceReferences
+	 *            The filter criteria. May be <code>null</code>.
+	 * @return Array of IRemoteServiceReferences matching given search criteria or 
+	 *            <code>null</code> if no services are found that match the search.
 	 * 
 	 * @throws InvalidSyntaxException If filter contains an invalid filter string that cannot be parsed.
 	 */
