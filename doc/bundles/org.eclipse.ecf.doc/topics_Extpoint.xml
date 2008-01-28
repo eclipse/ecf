@@ -2,6 +2,7 @@
 <toc label="Extension Points">
 <topic label="org.eclipse.ecf.containerFactory" href="html/reference/extension-points/org_eclipse_ecf_containerFactory.html"/>
 <topic label="org.eclipse.ecf.identity.namespace" href="html/reference/extension-points/org_eclipse_ecf_identity_namespace.html"/>
+<topic label="org.eclipse.ecf.discovery.ui.serviceAccessHandler" href="html/reference/extension-points/org_eclipse_ecf_discovery_ui_serviceAccessHandler.html"/>
 <topic label="org.eclipse.ecf.presence.bot.chatRoomMessageHandler" href="html/reference/extension-points/org_eclipse_ecf_presence_bot_chatRoomMessageHandler.html"/>
 <topic label="org.eclipse.ecf.presence.bot.chatRoomRobot" href="html/reference/extension-points/org_eclipse_ecf_presence_bot_chatRoomRobot.html"/>
 <topic label="org.eclipse.ecf.presence.bot.imMessageHandler" href="html/reference/extension-points/org_eclipse_ecf_presence_bot_imMessageHandler.html"/>
