@@ -63,7 +63,7 @@ discovery view&apos;s context menu for accessing/invoking a remote service.
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         2.0.0M5
       </documentation>
    </annotation>
 
@@ -72,7 +72,81 @@ discovery view&apos;s context menu for accessing/invoking a remote service.
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         Here is example usage of the serviceAccessHandler extension point.  In this example, a http/http service handler is declared:
+
+&lt;pre&gt;
+   &lt;extension
+         point=&quot;org.eclipse.ecf.discovery.ui.serviceAccessHandler&quot;&gt;
+      &lt;serviceAccessHandler
+            class=&quot;org.eclipse.ecf.discovery.ui.HttpServiceAccessHandler&quot;&gt;
+      &lt;/serviceAccessHandler&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+
+Here&apos;s is implementation of the HttpServiceAccessHandler:
+
+&lt;pre&gt;
+public class HttpServiceAccessHandler implements IServiceAccessHandler {
+
+	private static final String RFC2782_PATH = &quot;path&quot;; //$NON-NLS-1$
+	//private static final String RFC2782_USERNAME = &quot;u&quot;; //$NON-NLS-1$
+	//private static final String RFC2782_PASSWORD = &quot;p&quot;; //$NON-NLS-1$
+	static final IContributionItem[] EMPTY_CONTRIBUTION = {};
+
+	public HttpServiceAccessHandler() {
+		// nothing to do
+	}
+
+	public IContributionItem[] getContributionsForService(IServiceInfo serviceInfo) {
+		IServiceID serviceID = serviceInfo.getServiceID();
+		List serviceTypes = Arrays.asList(serviceID.getServiceTypeID().getProtocols());
+		String protocol = null;
+		if (serviceTypes.contains(&quot;http&quot;)) //$NON-NLS-1$
+			protocol = &quot;http&quot;; //$NON-NLS-1$
+		else if (serviceTypes.contains(&quot;https&quot;)) //$NON-NLS-1$
+			protocol = &quot;https&quot;; //$NON-NLS-1$
+		if (protocol == null)
+			return EMPTY_CONTRIBUTION;
+		URI location = serviceInfo.getLocation();
+		StringBuffer buf = new StringBuffer(protocol);
+		buf.append(&quot;://&quot;).append(location.getHost()); //$NON-NLS-1$
+		if (location.getPort() != -1)
+			buf.append(&quot;:&quot;).append(location.getPort()).append(&quot;/&quot;); //$NON-NLS-1$ //$NON-NLS-2$
+		IServiceProperties svcProps = serviceInfo.getServiceProperties();
+		final String path = svcProps.getPropertyString(RFC2782_PATH);
+		if (path != null)
+			buf.append(path);
+		final String urlString = buf.toString();
+		//final String username = svcProps.getPropertyString(RFC2782_USERNAME);
+		//final String password = svcProps.getPropertyString(RFC2782_PASSWORD);
+		Action action = new Action() {
+			public void run() {
+				openBrowser(urlString);
+			}
+		};
+		action.setText(Messages.HttpServiceAccessHandler_MENU_TEXT + urlString);
+		return new IContributionItem[] {new ActionContributionItem(action)};
+	}
+
+	protected void openBrowser(String urlString) {
+		final IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
+		try {
+			support.createBrowser(null).openURL(new URL(urlString));
+		} catch (final Exception e) {
+			logError(Messages.HttpServiceAccessHandler_EXCEPTION_CREATEBROWSER, e);
+		}
+
+	}
+
+	protected void logError(String exceptionString, Throwable e) {
+		Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, exceptionString, e));
+
+	}
+
+}
+
+&lt;/pre&gt;
+
       </documentation>
    </annotation>
 
@@ -81,7 +155,24 @@ discovery view&apos;s context menu for accessing/invoking a remote service.
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         The IServiceAccessHandler interface must be implemented by the class defined in the extension:
+
+&lt;pre&gt;
+public interface IServiceAccessHandler {
+
+	/**
+	 * Get the menu items to contribute for the given IServiceInfo.  Implementers should return
+	 * a non-null array of IContributionItem instances (menus or menu items).  These will 
+	 * be added to the context menu of the service entry identified by the given service info.
+	 * 
+	 * @param serviceInfo the IServiceInfo for the contributions.  Will not be &lt;code&gt;null&lt;/code&gt;.
+	 * @return IContributionItem [] any contribution to the context menu for the given service info.  If &lt;code&gt;null&lt;/code&gt;,
+	 * then no items will be added to the context menu.
+	 */
+	public IContributionItem[] getContributionsForService(IServiceInfo serviceInfo);
+
+}
+&lt;/pre&gt; 
       </documentation>
    </annotation>
 
@@ -90,9 +181,27 @@ discovery view&apos;s context menu for accessing/invoking a remote service.
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         None.
       </documentation>
    </annotation>
 
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         /****************************************************************************
+ * Copyright (c) 2008 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
+
+      </documentation>
+   </annotation>
 
 </schema>
