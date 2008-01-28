@@ -64,6 +64,10 @@ public class Messages extends NLS {
 
 	public static String DiscoveryViewContentProvider_TYPE_NAMESPACE_LABEL;
 
+	public static String HttpServiceAccessHandler_EXCEPTION_CREATEBROWSER;
+
+	public static String HttpServiceAccessHandler_MENU_TEXT;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

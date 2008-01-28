@@ -2,6 +2,12 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension-point id="serviceAccessHandler" name="ECF Service Access Handler" schema="schema/serviceAccessHandler.exsd"/>
+   <extension
+         point="org.eclipse.ecf.discovery.ui.serviceAccessHandler">
+      <serviceAccessHandler
+            class="org.eclipse.ecf.discovery.ui.HttpServiceAccessHandler">
+      </serviceAccessHandler>
+   </extension>
 <!--
    <extension
          point="org.eclipse.ecf.discovery.ui.serviceAccessHandler">
