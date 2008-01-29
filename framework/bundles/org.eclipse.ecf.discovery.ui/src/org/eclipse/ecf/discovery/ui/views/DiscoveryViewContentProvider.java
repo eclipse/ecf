@@ -12,15 +12,10 @@
 package org.eclipse.ecf.discovery.ui.views;
 
 import java.util.Enumeration;
-
-import org.eclipse.ecf.discovery.IContainerServiceInfoAdapter;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceProperties;
+import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.discovery.ui.Messages;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.osgi.util.NLS;
 
 class DiscoveryViewContentProvider implements IStructuredContentProvider, ITreeContentProvider {
@@ -152,7 +147,6 @@ class DiscoveryViewContentProvider implements IStructuredContentProvider, ITreeC
 		newEntry.addChild(new DiscoveryViewTreeObject(NLS.bind(Messages.DiscoveryViewContentProvider_TYPE_INTERNAL_LABEL, svcID.getServiceTypeID().getInternal())));
 		newEntry.addChild(new DiscoveryViewTreeObject(NLS.bind(Messages.DiscoveryViewContentProvider_TYPE_NAMESPACE_LABEL, svcID.getServiceTypeID().getNamespace().getName())));
 		newEntry.addChild(new DiscoveryViewTreeObject(NLS.bind(Messages.DiscoveryViewContentProvider_SERVICE_NAME_LABEL, svcID.getServiceName())));
-		newEntry.addChild(new DiscoveryViewTreeObject(NLS.bind(Messages.DiscoveryViewContentProvider_NAME_LABEL, svcID.getServiceTypeID().getNamespace().getName())));
 		newEntry.addChild(new DiscoveryViewTreeObject(NLS.bind(Messages.DiscoveryViewContentProvider_SERVICE_NAMESPACE_LABEL, svcID.getNamespace().getName())));
 		final DiscoveryViewTreeObject prioo = new DiscoveryViewTreeObject(NLS.bind(Messages.DiscoveryView_PriorityLabel, Integer.toString(serviceInfo.getPriority())));
 		newEntry.addChild(prioo);

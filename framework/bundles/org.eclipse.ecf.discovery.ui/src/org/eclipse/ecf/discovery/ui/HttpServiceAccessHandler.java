@@ -23,6 +23,7 @@ import org.eclipse.ecf.discovery.ui.views.IServiceAccessHandler;
 import org.eclipse.ecf.internal.discovery.ui.Activator;
 import org.eclipse.ecf.internal.discovery.ui.Messages;
 import org.eclipse.jface.action.*;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
@@ -43,11 +44,11 @@ public class HttpServiceAccessHandler implements IServiceAccessHandler {
 
 	public IContributionItem[] getContributionsForService(IServiceInfo serviceInfo) {
 		IServiceID serviceID = serviceInfo.getServiceID();
-		List serviceTypes = Arrays.asList(serviceID.getServiceTypeID().getProtocols());
+		List serviceTypes = Arrays.asList(serviceID.getServiceTypeID().getServices());
 		String protocol = null;
-		if (serviceTypes.contains("http")) //$NON-NLS-1$
+		if (serviceTypes.size() == 1 && serviceTypes.contains("http")) //$NON-NLS-1$
 			protocol = "http"; //$NON-NLS-1$
-		else if (serviceTypes.contains("https")) //$NON-NLS-1$
+		else if (serviceTypes.size() == 1 && serviceTypes.contains("https")) //$NON-NLS-1$
 			protocol = "https"; //$NON-NLS-1$
 		if (protocol == null)
 			return EMPTY_CONTRIBUTION;
@@ -55,7 +56,7 @@ public class HttpServiceAccessHandler implements IServiceAccessHandler {
 		StringBuffer buf = new StringBuffer(protocol);
 		buf.append("://").append(location.getHost()); //$NON-NLS-1$
 		if (location.getPort() != -1)
-			buf.append(":").append(location.getPort()).append("/"); //$NON-NLS-1$ //$NON-NLS-2$
+			buf.append(":").append(location.getPort()); //$NON-NLS-1$ 
 		IServiceProperties svcProps = serviceInfo.getServiceProperties();
 		final String path = svcProps.getPropertyString(RFC2782_PATH);
 		if (path != null)
@@ -68,7 +69,7 @@ public class HttpServiceAccessHandler implements IServiceAccessHandler {
 				openBrowser(urlString);
 			}
 		};
-		action.setText(Messages.HttpServiceAccessHandler_MENU_TEXT + urlString);
+		action.setText(NLS.bind(Messages.HttpServiceAccessHandler_MENU_TEXT, urlString));
 		return new IContributionItem[] {new ActionContributionItem(action)};
 	}
 
