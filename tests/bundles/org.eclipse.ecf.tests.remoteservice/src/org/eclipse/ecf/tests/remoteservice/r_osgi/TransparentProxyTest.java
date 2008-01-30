@@ -13,6 +13,7 @@ package org.eclipse.ecf.tests.remoteservice.r_osgi;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -59,8 +60,7 @@ public class TransparentProxyTest extends AbstractRemoteServiceTest {
 		adapters[0] = (IRemoteServiceContainerAdapter) getServer();
 		final int clientCount = getClientCount();
 		for (int i = 0; i < clientCount; i++) {
-			adapters[i + 1] = (IRemoteServiceContainerAdapter) getClients()[i]
-					.getAdapter(IRemoteServiceContainerAdapter.class);
+			adapters[i + 1] = (IRemoteServiceContainerAdapter) getClients()[i].getAdapter(IRemoteServiceContainerAdapter.class);
 		}
 	}
 
@@ -102,22 +102,18 @@ public class TransparentProxyTest extends AbstractRemoteServiceTest {
 		// adapter[0] is the service 'server'
 		// adapter[1] is the service target (client)
 		final Dictionary props = new Hashtable();
-		props.put(Constants.SERVICE_REGISTRATION_TARGETS,
-				((IContainer) getRemoteServiceAdapters()[1]).getConnectedID());
+		props.put(Constants.SERVICE_REGISTRATION_TARGETS, ((IContainer) getRemoteServiceAdapters()[1]).getConnectedID());
 		props.put(Constants.AUTOREGISTER_REMOTE_PROXY, "true");
 		// Register
-		adapters[0].registerRemoteService(new String[] { IConcatService.class
-				.getName() }, createService(), props);
+		adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
 		// Give some time for propagation
 		sleep(3000);
 
 		final BundleContext bc = Activator.getDefault().getContext();
 		assertNotNull(bc);
-		final ServiceReference ref = bc
-				.getServiceReference(IConcatService.class.getName());
+		final ServiceReference ref = bc.getServiceReference(IConcatService.class.getName());
 		assertNotNull(ref);
-		final IConcatService concatService = (IConcatService) bc
-				.getService(ref);
+		final IConcatService concatService = (IConcatService) bc.getService(ref);
 		assertNotNull(concatService);
 		System.out.println("proxy call start");
 		final String result = concatService.concat("OSGi ", "is cool");
@@ -133,32 +129,28 @@ public class TransparentProxyTest extends AbstractRemoteServiceTest {
 	 * something similar, if the dependency on the clients array can be avoided
 	 * and the getRemoteServiceAdapters() method can be used instead (as I do it
 	 * in here).
+	 * @throws Exception 
 	 */
 	public void testIRemoteService() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// client [0]/adapter[0] is the service 'server'
 		// client [1]/adapter[1] is the service target (client)
 		final Dictionary props = new Hashtable();
-		props.put(Constants.SERVICE_REGISTRATION_TARGETS,
-				((IContainer) getRemoteServiceAdapters()[1]).getConnectedID());
+		props.put(Constants.SERVICE_REGISTRATION_TARGETS, ((IContainer) getRemoteServiceAdapters()[1]).getConnectedID());
 		props.put(Constants.AUTOREGISTER_REMOTE_PROXY, "true");
 		// Register
-		adapters[0].registerRemoteService(new String[] { IConcatService.class
-				.getName() }, createService(), props);
+		adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
 		// Give some time for propagation
 		sleep(3000);
 
 		final BundleContext bc = Activator.getDefault().getContext();
 		assertNotNull(bc);
-		final ServiceReference ref = bc
-				.getServiceReference(IConcatService.class.getName());
+		final ServiceReference ref = bc.getServiceReference(IConcatService.class.getName());
 		assertNotNull(ref);
-		final IRemoteService remoteService = (IRemoteService) ref
-				.getProperty(Constants.REMOTE_SERVICE);
+		final IRemoteService remoteService = (IRemoteService) ref.getProperty(Constants.REMOTE_SERVICE);
 		assertNotNull(remoteService);
 		// Call it asynch with listener
-		remoteService.callAsynch(createRemoteConcat("OSGi ", "Sucks (sic)"),
-				createRemoteCallListener());
+		remoteService.callAsynch(createRemoteConcat("OSGi ", "Sucks (sic)"), createRemoteCallListener());
 		sleep(3000);
 	}
 
