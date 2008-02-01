@@ -49,18 +49,27 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/* Begin implementation of IRemoteServiceContainerAdapter public interface */
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#addRemoteServiceListener(org.eclipse.ecf.remoteservice.IRemoteServiceListener)
+	 */
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
 		synchronized (serviceListeners) {
 			serviceListeners.add(listener);
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#removeRemoteServiceListener(org.eclipse.ecf.remoteservice.IRemoteServiceListener)
+	 */
 	public void removeRemoteServiceListener(IRemoteServiceListener listener) {
 		synchronized (serviceListeners) {
 			serviceListeners.remove(listener);
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#getRemoteService(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
+	 */
 	public IRemoteService getRemoteService(IRemoteServiceReference reference) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteService", reference); //$NON-NLS-1$
 		final RemoteServiceRegistrationImpl registration = getRemoteServiceRegistrationImpl(reference);
@@ -71,6 +80,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return remoteService;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#getRemoteServiceReferences(org.eclipse.ecf.core.identity.ID[], java.lang.String, java.lang.String)
+	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {idFilter, clazz, filter}); //$NON-NLS-1$
 		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
@@ -95,6 +107,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		synchronized (localRegistry) {
 			addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
 		}
+		if (references.size() == 0)
+			return null;
 		final IRemoteServiceReference[] result = (IRemoteServiceReference[]) references.toArray(new IRemoteServiceReference[references.size()]);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
 		return result;
@@ -104,6 +118,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#registerRemoteService(java.lang.String[], java.lang.Object, java.util.Dictionary)
+	 */
 	public IRemoteServiceRegistration registerRemoteService(String[] clazzes, Object service, Dictionary properties) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "registerRemoteService", new Object[] {clazzes, service, properties}); //$NON-NLS-1$
 		if (service == null) {
@@ -142,6 +159,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return reg;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#ungetRemoteService(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
+	 */
 	public boolean ungetRemoteService(IRemoteServiceReference ref) {
 		return true;
 	}
@@ -152,6 +172,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	/* End implementation of IRemoteServiceContainerAdapter public interface */
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.BaseSharedObject#initialize()
+	 */
 	public void initialize() throws SharedObjectInitException {
 		super.initialize();
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "initialize"); //$NON-NLS-1$
