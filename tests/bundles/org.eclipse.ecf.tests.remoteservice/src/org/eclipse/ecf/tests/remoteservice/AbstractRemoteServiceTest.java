@@ -203,8 +203,7 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(adapters[1], IConcatService.class.getName(), missFilter);
 
-		assertNotNull(refs);
-		assertTrue(refs.length == 0);
+		assertNull(refs);
 	}
 
 	public void testGetService() throws Exception {
