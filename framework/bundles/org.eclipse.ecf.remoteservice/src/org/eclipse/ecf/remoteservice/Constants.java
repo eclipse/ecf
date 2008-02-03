@@ -189,4 +189,36 @@ public interface Constants {
 	 */
 	public static final String REMOTE_SERVICE = "org.eclipse.ecf.remoteService"; //$NON-NLS-1$
 
+	// Constants for use with the ECF remote services API
+
+	/**
+	 * Constant defining the ECF remote services discovery service type.  This service type should
+	 * be provided in the service type id when registering a remote service.  Then clients may
+	 * identify an ECF remote service type ID and therefore be made aware of how the client can
+	 * interact with the service.  
+	 */
+	public static final String DISCOVERY_SERVICE_TYPE = "remoteservices"; //$NON-NLS-1$
+
+	/**
+	 * Discovery service property for a 'remoteservices' discovery type.  Note that this
+	 * property is <b>required</b> if the DISCOVERY_SERVICE_TYPE is as given above.
+	 */
+	public static final String DISCOVERY_TARGET_ID_NAMESPACE_PROPERTY = "tns"; //$NON-NLS-1$
+	/**
+	 * Discovery service property for specifying the remote interface type.  Note that this
+	 * property is <b>required</b> if the DISCOVERY_SERVICE_TYPE is as given.  It is expected
+	 * that clients will use the value of this property to perform service lookups with the 
+	 * 'clazz' parameter via
+	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter).  
+	 */
+	public static final String DISCOVERY_OBJECTCLASS_PROPERTY = "class"; //$NON-NLS-1$
+	/**
+	 * Discovery service property for specifying the service lookup filter for
+	 * client service lookup via 
+	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter).  
+	 * Note that this
+	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above.
+	 */
+	public static final String DISCOVERY_FILTER_PROPERTY = "fltr"; //$NON-NLS-1$
+
 }
