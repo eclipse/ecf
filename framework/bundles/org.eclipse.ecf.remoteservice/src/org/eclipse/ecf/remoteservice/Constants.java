@@ -204,6 +204,16 @@ public interface Constants {
 	 * property is <b>required</b> if the DISCOVERY_SERVICE_TYPE is as given above.
 	 */
 	public static final String DISCOVERY_TARGET_ID_NAMESPACE_PROPERTY = "tns"; //$NON-NLS-1$
+
+	/**
+	 * Discovery service property for a 'remoteservices' discovery type.  Note that this
+	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above.  It is expected
+	 * that clients will use the value of this property, along with the DISCOVERY_TARGET_ID_NAMESPACE_PROPERTY
+	 * to create an ID instance for the 'idFilter' parameter via
+	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter). 
+	 */
+	public static final String DISCOVERY_TARGET_ID_PROPERTY = "tid"; //$NON-NLS-1$
+
 	/**
 	 * Discovery service property for specifying the remote interface type.  Note that this
 	 * property is <b>required</b> if the DISCOVERY_SERVICE_TYPE is as given.  It is expected
