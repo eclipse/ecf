@@ -8,10 +8,12 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ecf.discovery,
  org.eclipse.ecf,
- org.eclipse.ecf.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.ecf.remoteservice;bundle-version="1.2.0"
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
-Export-Package: org.eclipse.ecf.discovery.ui.views,
+Export-Package: org.eclipse.ecf.discovery.ui,
+ org.eclipse.ecf.discovery.ui.handlers,
+ org.eclipse.ecf.discovery.ui.views,
  org.eclipse.ecf.internal.discovery.ui;x-internal:=true
 Bundle-Vendor: %plugin.provider

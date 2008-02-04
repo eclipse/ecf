@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.discovery.ui;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -30,11 +31,21 @@ public class Activator extends AbstractUIPlugin {
 
 	private ServiceTracker extensionRegistryTracker = null;
 
+	private ServiceTracker containerManagerTracker;
+
 	/**
 	 * The constructor
 	 */
 	public Activator() {
 		// nothing
+	}
+
+	public IContainerManager getContainerManager() {
+		if (containerManagerTracker == null) {
+			containerManagerTracker = new ServiceTracker(context, IContainerManager.class.getName(), null);
+			containerManagerTracker.open();
+		}
+		return (IContainerManager) containerManagerTracker.getService();
 	}
 
 	/*
@@ -64,6 +75,10 @@ public class Activator extends AbstractUIPlugin {
 		if (extensionRegistryTracker != null) {
 			extensionRegistryTracker.close();
 			extensionRegistryTracker = null;
+		}
+		if (containerManagerTracker != null) {
+			containerManagerTracker.close();
+			containerManagerTracker = null;
 		}
 		plugin = null;
 		this.context = null;
