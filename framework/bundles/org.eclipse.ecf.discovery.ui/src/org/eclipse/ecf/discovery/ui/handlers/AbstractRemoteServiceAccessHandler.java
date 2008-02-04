@@ -52,8 +52,7 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 	}
 
 	protected boolean matchServiceType(IServiceTypeID serviceTypeID, String service) {
-		final List serviceTypes = Arrays.asList(serviceTypeID.getServices());
-		return serviceTypes.contains(service);
+		return Arrays.asList(serviceTypeID.getServices()).contains(service);
 	}
 
 	protected List getRemoteServiceContainerAdapters(IServiceInfo serviceInfo, String targetNamespace) {
