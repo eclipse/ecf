@@ -172,7 +172,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 */
 	public Namespace getConnectNamespace() {
 		//TODO-mkuppe implement CompositeDiscoveryContainer#getConnectNamespace
-		throw new java.lang.UnsupportedOperationException("CompositeDiscoveryContainer#getConnectNamespace not yet implemented");
+		throw new java.lang.UnsupportedOperationException("CompositeDiscoveryContainer#getConnectNamespace not yet implemented"); //$NON-NLS-1$
 	}
 
 	private IServiceID getServiceIDForDiscoveryContainer(IServiceID service, IDiscoveryContainerAdapter dca) {
@@ -246,7 +246,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 */
 	public Namespace getServicesNamespace() {
 		//TODO-mkuppe implement CompositeDiscoveryContainer#getServicesNamespace
-		throw new java.lang.UnsupportedOperationException("CompositeDiscoveryContainer#getServicesNamespace not yet implemented");
+		throw new java.lang.UnsupportedOperationException("CompositeDiscoveryContainer#getServicesNamespace not yet implemented"); //$NON-NLS-1$
 	}
 
 	private IServiceTypeID getServiceTypeIDForDiscoveryContainer(IServiceTypeID type, IDiscoveryContainerAdapter dca) {
