@@ -36,7 +36,7 @@ public class ServiceURLAdapter {
 		StringBuffer buf = new StringBuffer();
 		String protocol = aServiceURL.getProtocol();
 		if (protocol == null) {
-			protocol = "unknown";
+			protocol = "unknown"; //$NON-NLS-1$
 		}
 		buf.append(protocol);
 		buf.append("://"); //$NON-NLS-1$
