@@ -130,7 +130,7 @@ public class Activator implements BundleActivator {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findServices(ch.ethz.iks.slp.ServiceType, java.util.List, java.lang.String)
 	 */
-	public ServiceLocationEnumeration findServices(ServiceType type, List scopes, String searchFilter) throws ServiceLocationException, InvalidSyntaxException {
+	public ServiceLocationEnumeration findServices(ServiceType type, List scopes, String searchFilter) throws ServiceLocationException {
 		Locator locator = getLocator();
 		if (locator != null) {
 			return locator.findServices(type, scopes, searchFilter);
