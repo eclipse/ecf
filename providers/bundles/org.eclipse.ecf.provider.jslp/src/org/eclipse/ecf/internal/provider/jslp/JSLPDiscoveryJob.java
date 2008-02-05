@@ -21,7 +21,6 @@ import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
 import org.eclipse.ecf.provider.jslp.container.JSLPServiceInfo;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.InvalidSyntaxException;
 
 public final class JSLPDiscoveryJob extends Job {
 
@@ -70,8 +69,6 @@ public final class JSLPDiscoveryJob extends Job {
 			// TODO-mkuppe if the advertiser is gone, we run into this exception
 			// but we have to let the listeners know about the gone services
 			// too
-			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "run", e); //$NON-NLS-1$
-		} catch (InvalidSyntaxException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "run", e); //$NON-NLS-1$
 		}
 

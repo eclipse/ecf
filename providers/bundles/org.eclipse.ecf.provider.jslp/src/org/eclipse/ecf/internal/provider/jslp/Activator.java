@@ -188,7 +188,7 @@ public class Activator implements BundleActivator {
 		//TODO add logging
 	}
 
-	public Collection getServiceURLs() throws ServiceLocationException, InvalidSyntaxException {
+	public Collection getServiceURLs() throws ServiceLocationException {
 		Enumeration stEnum = findServiceTypes(null, null);
 		Set aSet = new HashSet(Collections.list(stEnum));
 		Set result = new HashSet();
@@ -199,7 +199,7 @@ public class Activator implements BundleActivator {
 		return result;
 	}
 
-	public Collection getServiceURLs(JSLPServiceTypeID stid) throws ServiceLocationException, InvalidSyntaxException {
+	public Collection getServiceURLs(JSLPServiceTypeID stid) throws ServiceLocationException {
 		Set result = new HashSet();
 		//TODO-mkuppe honor the scope during service discovery
 		result.addAll(Collections.list(findServices(stid.getServiceType(), /* Arrays.asList(stid.getScopes()),*/null, null)));

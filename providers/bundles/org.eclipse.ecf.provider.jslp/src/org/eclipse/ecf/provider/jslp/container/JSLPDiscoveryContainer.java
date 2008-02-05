@@ -26,7 +26,6 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.provider.jslp.*;
 import org.eclipse.ecf.provider.jslp.identity.*;
-import org.osgi.framework.InvalidSyntaxException;
 
 public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	public static final String NAME = "ecf.discovery.jslp"; //$NON-NLS-1$
@@ -165,8 +164,6 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 			return convertToIServiceInfo(Activator.getDefault().getServiceURLs());
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(int)", e); //$NON-NLS-1$
-		} catch (InvalidSyntaxException e) {
-			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(int)", e); //$NON-NLS-1$
 		}
 		return new IServiceInfo[0];
 	}
@@ -182,8 +179,6 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		} catch (IDCreateException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(IServiceTypeID)", e); //$NON-NLS-1$
 		} catch (ServiceLocationException e) {
-			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(int)", e); //$NON-NLS-1$
-		} catch (InvalidSyntaxException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(int)", e); //$NON-NLS-1$
 		}
 		return new IServiceInfo[0];
