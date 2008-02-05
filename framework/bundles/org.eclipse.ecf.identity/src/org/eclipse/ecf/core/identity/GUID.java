@@ -9,7 +9,6 @@
 package org.eclipse.ecf.core.identity;
 
 import java.security.SecureRandom;
-
 import org.eclipse.ecf.core.util.Base64;
 import org.eclipse.ecf.internal.core.identity.Messages;
 
@@ -34,6 +33,8 @@ public class GUID extends StringID {
 				return new GUID(this);
 			else if (args.length == 1 && args[0] instanceof Integer)
 				return new GUID(this, ((Integer) args[0]).intValue());
+			else if (args.length == 1 && args[0] instanceof String)
+				return new GUID(this, ((String) args[0]));
 			else
 				return new GUID(this);
 		}
@@ -88,6 +89,10 @@ public class GUID extends StringID {
 		random.nextBytes(newBytes);
 		// Set value
 		value = Base64.encode(newBytes);
+	}
+
+	protected GUID(Namespace n, String value) {
+		super(n, value);
 	}
 
 	protected GUID(Namespace n, int byteLength) throws IDCreateException {
