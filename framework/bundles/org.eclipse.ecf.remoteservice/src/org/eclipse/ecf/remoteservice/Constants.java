@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.remoteservice;
 
+import org.eclipse.ecf.core.IContainer;
+
 /**
  * Remote service API constants.
  */
@@ -197,22 +199,40 @@ public interface Constants {
 	 * identify an ECF remote service type ID and therefore be made aware of how the client can
 	 * interact with the service.  
 	 */
-	public static final String DISCOVERY_SERVICE_TYPE = "remoteservices"; //$NON-NLS-1$
+	public static final String DISCOVERY_SERVICE_TYPE = "remotesvcs"; //$NON-NLS-1$
 
 	/**
-	 * Discovery service property for a 'remoteservices' discovery type.  Note that this
-	 * property is <b>required</b> if the DISCOVERY_SERVICE_TYPE is as given above.
+	 * Discovery service property to specify a namespace name for creating a connect id.  Note that
+	 * this property should be equal to the name of the namespace retrieved from {@link IContainer#getConnectNamespace()}.
+	 * Note that this property is <b>optional</b> if DISCOVERY_SERVICE_TYPE is specified.
 	 */
-	public static final String DISCOVERY_TARGET_ID_NAMESPACE_PROPERTY = "tns"; //$NON-NLS-1$
+	public static final String DISCOVERY_CONNECT_ID_NAMESPACE_PROPERTY = "cns"; //$NON-NLS-1$
 
 	/**
-	 * Discovery service property for a 'remoteservices' discovery type.  Note that this
+	 * Discovery service property to specify value for creating a connect id.  Note that
+	 * this property should be equal to connectID retrieved from {@link IContainer#getConnectedID()}.
+	 * Note that this property is <b>optional</b> if DISCOVERY_SERVICE_TYPE is specified.
+	 */
+	public static final String DISCOVERY_CONNECT_ID_PROPERTY = "cid"; //$NON-NLS-1$
+
+	/**
+	 * Discovery service property to specify a namespace name for creating a target service ID.
+	 * Note that this property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above. It is 
+	 * expected that clients will use the value of this property, along with the DISCOVERY_SERVICE_ID_PROPERTY
+	 * to create an ID instance for the 'idFilter' parameter via
+	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter). 
+
+	 */
+	public static final String DISCOVERY_SERVICE_ID_NAMESPACE_PROPERTY = "sns"; //$NON-NLS-1$
+
+	/**
+	 * Discovery service property for a 'remotesvcs' discovery type.  Note that this
 	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above.  It is expected
-	 * that clients will use the value of this property, along with the DISCOVERY_TARGET_ID_NAMESPACE_PROPERTY
+	 * that clients will use the value of this property, along with the DISCOVERY_CONNECT_ID_NAMESPACE_PROPERTY
 	 * to create an ID instance for the 'idFilter' parameter via
 	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter). 
 	 */
-	public static final String DISCOVERY_TARGET_ID_PROPERTY = "tid"; //$NON-NLS-1$
+	public static final String DISCOVERY_SERVICE_ID_PROPERTY = "sid"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property for specifying the remote interface type.  Note that this
@@ -221,7 +241,7 @@ public interface Constants {
 	 * 'clazz' parameter via
 	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter).  
 	 */
-	public static final String DISCOVERY_OBJECTCLASS_PROPERTY = "class"; //$NON-NLS-1$
+	public static final String DISCOVERY_OBJECTCLASS_PROPERTY = "cls"; //$NON-NLS-1$
 	/**
 	 * Discovery service property for specifying the service lookup filter for
 	 * client service lookup via 
@@ -230,5 +250,11 @@ public interface Constants {
 	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above.
 	 */
 	public static final String DISCOVERY_FILTER_PROPERTY = "fltr"; //$NON-NLS-1$
+
+	/**
+	 * Discovery service property for specifying the container factory type.  Note that this
+	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is used as given above.
+	 */
+	public static final String DISCOVERY_CONTAINER_FACTORY_PROPERTY = "cft"; //$NON-NLS-1$
 
 }
