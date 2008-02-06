@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.ecf.discovery.ui.serviceAccessHandler">
       <serviceAccessHandler
-            class="org.eclipse.ecf.internal.examples.remoteservices.client.ConcatRemoteServiceAccessHandler">
+            class="org.eclipse.ecf.internal.examples.remoteservices.client.RemoteEnvironmentInfoServiceAccessHandler">
       </serviceAccessHandler>
    </extension>
 
