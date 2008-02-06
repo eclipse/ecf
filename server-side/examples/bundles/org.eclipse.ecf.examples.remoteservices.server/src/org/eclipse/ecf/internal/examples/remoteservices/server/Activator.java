@@ -13,13 +13,14 @@ import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
-import org.eclipse.ecf.examples.remoteservices.common.IConcatService;
+import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.util.DiscoveryProperties;
 import org.eclipse.ecf.remoteservice.util.RemoteServiceProperties;
+import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -51,10 +52,20 @@ public class Activator implements BundleActivator {
 
 	private IDiscoveryContainerAdapter discovery;
 
+	private ServiceTracker environmentInfoTracker;
+
 	/**
 	 * The constructor
 	 */
 	public Activator() {
+	}
+
+	public EnvironmentInfo getEnvironmentInfo() {
+		if (environmentInfoTracker == null) {
+			environmentInfoTracker = new ServiceTracker(context, org.eclipse.osgi.service.environment.EnvironmentInfo.class.getName(), null);
+			environmentInfoTracker.open();
+		}
+		return (EnvironmentInfo) environmentInfoTracker.getService();
 	}
 
 	private void registerRemoteService(String className, Object service) {
@@ -102,7 +113,7 @@ public class Activator implements BundleActivator {
 		this.context = context;
 		setupDiscovery();
 		createAndConnectServiceHostContainer();
-		registerRemoteService(IConcatService.class.getName(), new ConcatServiceImpl());
+		registerRemoteService(IRemoteEnvironmentInfo.class.getName(), new RemoteEnvironmentInfoImpl());
 	}
 
 	private void createAndConnectServiceHostContainer() {
@@ -148,6 +159,10 @@ public class Activator implements BundleActivator {
 		if (serviceHostContainer != null) {
 			serviceHostContainer.disconnect();
 			serviceHostContainer = null;
+		}
+		if (environmentInfoTracker != null) {
+			environmentInfoTracker.close();
+			environmentInfoTracker = null;
 		}
 		this.context = null;
 	}
