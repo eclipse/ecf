@@ -201,8 +201,7 @@ public class Activator implements BundleActivator {
 
 	public Collection getServiceURLs(JSLPServiceTypeID stid) throws ServiceLocationException {
 		Set result = new HashSet();
-		//TODO-mkuppe honor the scope during service discovery
-		result.addAll(Collections.list(findServices(stid.getServiceType(), /* Arrays.asList(stid.getScopes()),*/null, null)));
+		result.addAll(Collections.list(findServices(stid.getServiceType(), Arrays.asList(stid.getScopes()), null)));
 		return result;
 	}
 }

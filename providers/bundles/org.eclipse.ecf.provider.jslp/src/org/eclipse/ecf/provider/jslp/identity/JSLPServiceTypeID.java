@@ -63,8 +63,12 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		}
 	}
 
-	JSLPServiceTypeID(Namespace namespace, ServiceURL anURL) throws IDCreateException {
+	JSLPServiceTypeID(Namespace namespace, ServiceURL anURL, String[] scopes) throws IDCreateException {
 		this(namespace, anURL.getServiceType().toString());
+
+		if (scopes != null && scopes.length > 0) {
+			this.scopes = scopes;
+		}
 
 		// set the protocol if provided
 		String protocol = anURL.getProtocol();
@@ -86,7 +90,9 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 			}
 			buf.append(":"); //$NON-NLS-1$
 		}
-		st = new ServiceType(buf.toString());
+		// remove dangling colon
+		String string = buf.toString();
+		st = new ServiceType(string.substring(0, string.length() - 1));
 	}
 
 	/**

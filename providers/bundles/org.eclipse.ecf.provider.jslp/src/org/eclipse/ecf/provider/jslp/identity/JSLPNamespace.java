@@ -33,7 +33,7 @@ public class JSLPNamespace extends Namespace {
 			throw new IDCreateException(Messages.JSLPNamespace_3);
 		} else if (parameters[0] instanceof ServiceURL) { // handles internal creation
 			ServiceURL anURL = (ServiceURL) parameters[0];
-			JSLPServiceTypeID stid = new JSLPServiceTypeID(this, anURL);
+			JSLPServiceTypeID stid = new JSLPServiceTypeID(this, anURL, (String[]) parameters[1]);
 			return new JSLPServiceID(this, stid, anURL.getHost());
 		} else if (parameters[0] instanceof JSLPServiceID) { // handles conversion call where conversion isn't necessary
 			return (ID) parameters[0];

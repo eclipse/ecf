@@ -174,8 +174,8 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	public IServiceInfo[] getServices(IServiceTypeID type) {
 		Assert.isNotNull(type);
 		try {
-			JSLPServiceID sid = (JSLPServiceID) IDFactory.getDefault().createID(getConnectNamespace(), new Object[] {type.getInternal()});
-			return convertToIServiceInfo(Activator.getDefault().getServiceURLs((JSLPServiceTypeID) sid.getServiceTypeID()));
+			JSLPServiceID sid = (JSLPServiceID) IDFactory.getDefault().createID(getConnectNamespace(), new Object[] {type, null});
+			return convertToIServiceInfo(Activator.getDefault().getServiceURLs((JSLPServiceTypeID) sid.getServiceTypeID()), type.getScopes());
 		} catch (IDCreateException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(IServiceTypeID)", e); //$NON-NLS-1$
 		} catch (ServiceLocationException e) {
@@ -191,9 +191,8 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		Assert.isNotNull(aServiceInfo);
 		try {
 			JSLPServiceInfo si = new JSLPServiceInfo(aServiceInfo);
-			//TODO-mkuppe honor the scope during service announcement
 			IServiceTypeID stid = si.getServiceID().getServiceTypeID();
-			Activator.getDefault().register(si.getServiceURL(),/* Arrays.asList(stid.getScopes()),*/si.getServiceProperties().asProperties());
+			Activator.getDefault().register(si.getServiceURL(), Arrays.asList(stid.getScopes()), si.getServiceProperties().asProperties());
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "registerService(IServiceInfo)", e); //$NON-NLS-1$
 			throw new ECFException(e.getMessage(), e);
@@ -214,10 +213,14 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	}
 
 	private IServiceInfo[] convertToIServiceInfo(Collection serviceURLs) {
+		return convertToIServiceInfo(serviceURLs, new String[0]);
+	}
+
+	private IServiceInfo[] convertToIServiceInfo(Collection serviceURLs, String[] scopes) {
 		List tmp = new ArrayList();
 		for (Iterator itr = serviceURLs.iterator(); itr.hasNext();) {
 			ServiceURL url = (ServiceURL) itr.next();
-			IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url), -1, -1, new ServiceProperties());
+			IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, scopes), -1, -1, new ServiceProperties());
 			tmp.add(serviceInfo);
 		}
 		return (IServiceInfo[]) tmp.toArray(new IServiceInfo[tmp.size()]);
