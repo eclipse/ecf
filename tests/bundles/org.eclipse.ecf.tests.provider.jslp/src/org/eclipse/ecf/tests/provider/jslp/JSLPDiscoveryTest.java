@@ -15,10 +15,26 @@ import org.eclipse.ecf.tests.discovery.DiscoveryTest;
 
 public class JSLPDiscoveryTest extends DiscoveryTest {
 
+	static {
+		// we need SA functionality
+		assertFalse("jSLP tests require net.slp.uaonly to be set to false because they need SA functionality.", new Boolean(System.getProperty("net.slp.uaonly")).booleanValue());
+		// tests need root privileges to bind to slp port 427 in SA mode
+		int port;
+		try {
+			port = Integer.parseInt(System.getProperty("net.slp.port", "427"));
+		} catch (NumberFormatException e) {
+			port = 427;
+		}
+		if(port <= 1024) {
+			System.err.println("jSLP tests require root privileges to bind to port 427 (Alternatively the port can be set to a high port via -Dnet.slp.port=theHighPort");
+		}
+	}
+
 	public JSLPDiscoveryTest() {
 		super(JSLPDiscoveryContainer.NAME, JSLPDiscoveryContainer.REDISCOVER, new JSLPTestComparator());
 	}
 	
+
 	public void testJSLPLocatorNull() {
 		//Activator.getDefault().getLocator() == null always
 		fail("not yet implemented");
