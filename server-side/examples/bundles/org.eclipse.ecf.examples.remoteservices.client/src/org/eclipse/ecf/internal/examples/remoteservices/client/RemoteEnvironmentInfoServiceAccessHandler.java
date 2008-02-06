@@ -113,7 +113,6 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 							case 1 :
 								remoteService.callAsynch(remoteCall, new IRemoteCallListener() {
 									public void handleEvent(IRemoteCallEvent event) {
-										System.out.println("handleEvent(" + event + ")");
 										if (event instanceof IRemoteCallCompleteEvent) {
 											IRemoteCallCompleteEvent complete = (IRemoteCallCompleteEvent) event;
 											if (complete.hadException()) {
