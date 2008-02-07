@@ -3,21 +3,18 @@ package org.eclipse.ecf.internal.examples.remoteservices.server;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
-import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.util.DiscoveryProperties;
 import org.eclipse.ecf.remoteservice.util.RemoteServiceProperties;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
@@ -39,7 +36,7 @@ public class Activator implements BundleActivator {
 
 	private static final String REMOTE_SERVICE_TYPE = "_" + Constants.DISCOVERY_SERVICE_TYPE + "._tcp.local.";
 
-	private static final String DEFAULT_CONNECT_TARGET = "ecftcp://ecf.eclipse.org:3282/server";
+	private static final String DEFAULT_CONNECT_TARGET = "ecftcp://ecf.eclipse.org:3283/server";
 
 	// The shared instance
 	private static Activator plugin;
@@ -74,13 +71,15 @@ public class Activator implements BundleActivator {
 			Assert.isNotNull(containerAdapter);
 			// register remote service
 			containerAdapter.registerRemoteService(new String[] {className}, service, new RemoteServiceProperties(ECF_GENERIC_CLIENT, serviceHostContainer));
+			System.out.println("Remote service registered for class " + className);
 
 			// then register for discovery
 			final String serviceName = System.getProperty("user.name") + System.currentTimeMillis();
-			// className.substring(className.lastIndexOf('.') + 1);
-			serviceInfo = new ServiceInfo(null, 80, ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), REMOTE_SERVICE_TYPE, serviceName), new ServiceProperties(new DiscoveryProperties(className, ECF_GENERIC_CLIENT, serviceHostContainer)));
+			final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), REMOTE_SERVICE_TYPE, serviceName);
+			serviceInfo = new ServiceInfo(null, 80, serviceID, new ServiceProperties(new DiscoveryProperties(className, ECF_GENERIC_CLIENT, serviceHostContainer)));
 			// register discovery here
 			discovery.registerService(serviceInfo);
+			System.out.println("Service registered for discovery with IServiceID: " + serviceID);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -91,7 +90,8 @@ public class Activator implements BundleActivator {
 			if (discovery == null) {
 				final ServiceTracker serviceTracker = new ServiceTracker(context, IDiscoveryService.class.getName(), null);
 				serviceTracker.open();
-				discovery = (IDiscoveryContainerAdapter) serviceTracker.getService();
+				// XXX this should not be done in Activator...but we're going do do it anyway
+				discovery = (IDiscoveryContainerAdapter) serviceTracker.waitForService(5000);
 				serviceTracker.close();
 				if (discovery == null) {
 					final IContainer discoveryContainer = ContainerFactory.getDefault().createContainer(ECF_DISCOVERY_JMDNS);
@@ -120,19 +120,6 @@ public class Activator implements BundleActivator {
 		try {
 			serviceHostContainer = ContainerFactory.getDefault().createContainer(ECF_GENERIC_CLIENT);
 			final ID targetID = IDFactory.getDefault().createID(serviceHostContainer.getConnectNamespace(), DEFAULT_CONNECT_TARGET);
-			serviceHostContainer.addListener(new IContainerListener() {
-				public void handleEvent(IContainerEvent event) {
-					// TODO Auto-generated method stub
-					System.out.println("serviceHostContainerEvent(" + event + ")");
-				}
-			});
-			final IRemoteServiceContainerAdapter containerAdapter = (IRemoteServiceContainerAdapter) serviceHostContainer.getAdapter(IRemoteServiceContainerAdapter.class);
-			containerAdapter.addRemoteServiceListener(new IRemoteServiceListener() {
-
-				public void handleServiceEvent(IRemoteServiceEvent event) {
-					System.out.println("remoteServiceEvent(" + event + ")");
-				}
-			});
 			serviceHostContainer.connect(targetID, null);
 		} catch (final Exception e) {
 			e.printStackTrace();
