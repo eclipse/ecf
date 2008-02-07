@@ -16,6 +16,6 @@ import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 public class JSLPDiscoveryServiceTest extends DiscoveryServiceTest {
 
 	public JSLPDiscoveryServiceTest() {
-		super(JSLPDiscoveryContainer.NAME);
+		super(JSLPDiscoveryContainer.NAME, JSLPDiscoveryContainer.REDISCOVER);
 	}
 }

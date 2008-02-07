@@ -10,32 +10,40 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.jslp;
 
-import java.net.URI;
-
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.provider.jslp.container.JSLPServiceInfo;
 import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
-import org.eclipse.ecf.tests.discovery.ITestConstants;
+import org.eclipse.ecf.tests.discovery.DiscoveryTestHelper;
 import org.eclipse.ecf.tests.discovery.ServiceInfoTest;
 
 public class JSLPServiceInfoTest extends ServiceInfoTest {
-	
+
 	public JSLPServiceInfoTest() {
-		uri = URI.create(ITestConstants.URI);
+		super();
+		uri = DiscoveryTestHelper.createDefaultURI();
 		priority = 456;
 		weight = 789;
 		serviceProperties = new ServiceProperties();
 		serviceProperties.setProperty("foobar", new String("foobar"));
-		Namespace namespace = IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME);
+		Namespace namespace = IDFactory.getDefault().getNamespaceByName(
+				JSLPNamespace.NAME);
 		try {
-			 serviceID = (IServiceID) IDFactory.getDefault().createID(namespace, ITestConstants.SERVICE_TYPE);
+			serviceID = (IServiceID) IDFactory.getDefault().createID(namespace,
+					new Object[] {DiscoveryTestHelper.SERVICE_TYPE, DiscoveryTestHelper.getHost()});
 		} catch (IDCreateException e) {
 			fail(e.getMessage());
 		}
-		serviceInfo = new JSLPServiceInfo(uri, serviceID, priority, weight, serviceProperties);
+		serviceInfo = new JSLPServiceInfo(uri, serviceID, priority, weight,
+				serviceProperties);
+	}
+
+	protected IServiceInfo getServiceInfo(IServiceInfo aServiceInfo)
+			throws IDCreateException, SecurityException {
+		return new JSLPServiceInfo(aServiceInfo);
 	}
 }
