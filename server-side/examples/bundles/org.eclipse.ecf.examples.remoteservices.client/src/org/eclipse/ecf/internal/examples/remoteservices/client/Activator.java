@@ -1,8 +1,6 @@
 package org.eclipse.ecf.internal.examples.remoteservices.client;
 
-import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -10,8 +8,6 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-
-	private static final String ECF_GENERIC_CLIENT = "ecf.generic.client";
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.examples.remoteservices.client";
@@ -34,8 +30,6 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		serviceHostContainer = ContainerFactory.getDefault().createContainer(ECF_GENERIC_CLIENT);
-		serviceHostContainer.getAdapter(IRemoteServiceContainerAdapter.class);
 	}
 
 	/*
@@ -53,6 +47,10 @@ public class Activator extends AbstractUIPlugin {
 
 	public IContainer getContainer() {
 		return serviceHostContainer;
+	}
+
+	public void setContainer(IContainer container) {
+		this.serviceHostContainer = container;
 	}
 
 	/**

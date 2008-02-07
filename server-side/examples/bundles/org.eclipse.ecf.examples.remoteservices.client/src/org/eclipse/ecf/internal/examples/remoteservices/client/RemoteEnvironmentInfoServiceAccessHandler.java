@@ -4,6 +4,7 @@ import java.io.NotSerializableException;
 import java.util.Arrays;
 
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.ui.handlers.AbstractRemoteServiceAccessHandler;
@@ -31,6 +32,17 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 	}
 
 	protected IContributionItem[] getContributionsForMatchingService() {
+		if (Activator.getDefault().getContainer() == null) {
+			try {
+				final IContainer c = createContainer();
+				final IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) c.getAdapter(IRemoteServiceContainerAdapter.class);
+				if (adapter == null)
+					return EMPTY_CONTRIBUTION;
+				Activator.getDefault().setContainer(c);
+			} catch (final ContainerCreateException e) {
+				return EMPTY_CONTRIBUTION;
+			}
+		}
 		final IContainer container = Activator.getDefault().getContainer();
 		// not connected already...so setup contribution that allows connect
 		final String ns = getConnectNamespace();
