@@ -1,9 +1,10 @@
 package org.eclipse.ecf.discovery.ui.handlers;
 
 import java.util.*;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.core.security.ConnectContextFactory;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.AdapterContainerFilter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.ui.views.IServiceAccessHandler;
@@ -102,28 +103,31 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 		return IDFactory.getDefault().createID(namespace, value);
 	}
 
+	protected IContributionItem[] getContributionsForMatchingService() {
+		// First get container manager...if we don't have one, then we're outta here
+		final List remoteServicesContainerAdapters = getRemoteServiceContainerAdapters();
+		// If we've got none, then we return 
+		if (remoteServicesContainerAdapters.size() == 0)
+			return NOT_AVAILABLE_CONTRIBUTION;
+		// If we've got one, then we do our thing
+		final List contributions = new ArrayList();
+		for (final Iterator i = remoteServicesContainerAdapters.iterator(); i.hasNext();) {
+			IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) i.next();
+			IContributionItem[] menuContributions = getContributionItemsForService(adapter);
+			if (menuContributions == null)
+				continue;
+			for (int j = 0; j < menuContributions.length; j++)
+				contributions.add(menuContributions[j]);
+		}
+		return (IContributionItem[]) contributions.toArray(new IContributionItem[] {});
+	}
+
 	public IContributionItem[] getContributionsForService(IServiceInfo svcInfo) {
 		if (svcInfo == null)
 			return EMPTY_CONTRIBUTION;
 		this.serviceInfo = svcInfo;
-		if (matchServiceType(Constants.DISCOVERY_SERVICE_TYPE)) {
-			// First get container manager...if we don't have one, then we're outta here
-			final List remoteServicesContainerAdapters = getRemoteServiceContainerAdapters();
-			// If we've got none, then we return 
-			if (remoteServicesContainerAdapters.size() == 0)
-				return NOT_AVAILABLE_CONTRIBUTION;
-			// If we've got one, then we do our thing
-			final List contributions = new ArrayList();
-			for (final Iterator i = remoteServicesContainerAdapters.iterator(); i.hasNext();) {
-				IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) i.next();
-				IContributionItem[] menuContributions = getContributionItemsForService(adapter);
-				if (menuContributions == null)
-					continue;
-				for (int j = 0; j < menuContributions.length; j++)
-					contributions.add(menuContributions[j]);
-			}
-			return (IContributionItem[]) contributions.toArray(new IContributionItem[] {});
-		}
+		if (matchServiceType(Constants.DISCOVERY_SERVICE_TYPE))
+			return getContributionsForMatchingService();
 		return EMPTY_CONTRIBUTION;
 	}
 
@@ -141,8 +145,10 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 		return ContainerFactory.getDefault().createContainer(getContainerFactory());
 	}
 
-	protected void connectContainer(IContainer container, String password) throws IDCreateException, ContainerConnectException {
-		container.connect(createID(getConnectNamespace(), getConnectID()), (password == null) ? null : ConnectContextFactory.createPasswordConnectContext(password));
+	protected void connectContainer(IContainer container, ID connectTargetID, IConnectContext connectContext) throws ContainerConnectException {
+		Assert.isNotNull(container);
+		Assert.isNotNull(connectTargetID);
+		container.connect(connectTargetID, connectContext);
 	}
 
 	/**
