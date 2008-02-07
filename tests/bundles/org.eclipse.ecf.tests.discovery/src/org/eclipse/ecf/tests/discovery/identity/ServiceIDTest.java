@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
-import org.eclipse.ecf.tests.discovery.ITestConstants;
+import org.eclipse.ecf.tests.discovery.DiscoveryTestHelper;
 
 public abstract class ServiceIDTest extends TestCase {
 
@@ -83,13 +83,13 @@ public abstract class ServiceIDTest extends TestCase {
 	 * use case: consumer instantiates a IServiceTypeID with the generic (ECF) String
 	 */
 	public void testServiceTypeIDWithString() {
-		final IServiceID sid = createIDFromString(ITestConstants.SERVICE_TYPE);
+		final IServiceID sid = createIDFromString(DiscoveryTestHelper.SERVICE_TYPE);
 		final IServiceTypeID stid = sid.getServiceTypeID();
-		assertEquals(stid.getName(), ITestConstants.SERVICE_TYPE);
-		assertEquals(stid.getNamingAuthority(), ITestConstants.NAMINGAUTHORITY);
-		assertTrue(Arrays.equals(stid.getProtocols(), new String[] {ITestConstants.PROTOCOL}));
-		assertTrue(Arrays.equals(stid.getScopes(), new String[] {ITestConstants.SCOPE}));
-		assertTrue(Arrays.equals(stid.getServices(), ITestConstants.SERVICES));
+		assertEquals(stid.getName(), DiscoveryTestHelper.SERVICE_TYPE);
+		assertEquals(stid.getNamingAuthority(), DiscoveryTestHelper.NAMINGAUTHORITY);
+		assertTrue(Arrays.equals(stid.getProtocols(), new String[] {DiscoveryTestHelper.PROTOCOL}));
+		assertTrue(Arrays.equals(stid.getScopes(), new String[] {DiscoveryTestHelper.SCOPE}));
+		assertTrue(Arrays.equals(stid.getServices(), DiscoveryTestHelper.SERVICES));
 	}
 
 	/*

@@ -11,8 +11,6 @@
 
 package org.eclipse.ecf.tests.discovery;
 
-import java.net.InetAddress;
-import java.net.URI;
 import java.util.Comparator;
 
 import junit.framework.TestCase;
@@ -56,22 +54,6 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 
 	protected IServiceID createServiceID(String serviceType, String serviceName) throws Exception {
 		return ServiceIDFactory.getDefault().createServiceID(discoveryContainer.getServicesNamespace(), serviceType, serviceName);
-	}
-
-	protected URI createURI(String uri) throws Exception {
-		return new URI(uri);
-	}
-
-	protected String getAuthority() throws Exception {
-		return System.getProperty("user.name") + "@" + InetAddress.getLocalHost().getHostAddress();
-	}
-
-	protected int getPort() {
-		return ITestConstants.PORT;
-	}
-
-	protected URI createDefaultURI() throws Exception {
-		return createURI("foo://" + getAuthority() + ":" + getPort() + "/");
 	}
 
 	protected void registerService(IServiceInfo serviceInfo) throws Exception {

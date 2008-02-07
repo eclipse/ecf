@@ -13,7 +13,6 @@ package org.eclipse.ecf.tests.discovery;
 
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
-import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
 
 
 public abstract class DiscoveryServiceTest extends DiscoveryTest {
@@ -21,8 +20,8 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 	/**
 	 * @param name
 	 */
-	public DiscoveryServiceTest(String name) {
-		super(name, JSLPDiscoveryContainer.REDISCOVER);
+	public DiscoveryServiceTest(String name, long aDiscoveryContainerInterval) {
+		super(name, aDiscoveryContainerInterval);
 	}
 
 	/* (non-Javadoc)

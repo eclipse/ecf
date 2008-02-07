@@ -11,9 +11,11 @@
 package org.eclipse.ecf.tests.discovery;
 
 import java.net.URI;
+import java.util.Comparator;
 
 import junit.framework.TestCase;
 
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -29,6 +31,7 @@ public abstract class ServiceInfoTest extends TestCase {
 	protected int weight;
 	protected IServiceProperties serviceProperties;
 	protected IServiceInfo serviceInfo;
+	protected Comparator serviceInfoComparator = new ServiceInfoComparator();
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -39,6 +42,7 @@ public abstract class ServiceInfoTest extends TestCase {
 		assertNotNull(serviceID);
 		assertNotNull(serviceProperties);
 		assertNotNull(serviceInfo);
+		assertNotNull(serviceInfoComparator);
 	}
 
 	/**
@@ -90,4 +94,21 @@ public abstract class ServiceInfoTest extends TestCase {
 	public void testEquals() {
 		fail("Not yet implemented. How should equality be defined anyway?");
 	}
+	
+	/**
+	 * Test method for {@link org.eclipse.ecf.discovery.ServiceInfo()}.
+	 */
+	public void testServiceInfo() {
+		IServiceInfo si = null;
+		try {
+			si = getServiceInfo(serviceInfo);
+		} catch (IDCreateException e) {
+			fail();
+		} catch (SecurityException e) {
+			fail();
+		}
+		assertTrue(serviceInfoComparator.compare(si, serviceInfo) == 0);
+	}
+	
+	protected abstract IServiceInfo getServiceInfo(IServiceInfo aServiceInfo) throws IDCreateException, SecurityException;
 }

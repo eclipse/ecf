@@ -76,23 +76,23 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		assertNotNull(discoveryContainer);
 
 		final Properties props = new Properties();
-		final URI uri = createDefaultURI();
+		final URI uri = DiscoveryTestHelper.createDefaultURI();
 
-		serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE, ITestConstants.HOST});
+		serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {DiscoveryTestHelper.SERVICE_TYPE, DiscoveryTestHelper.getHost()});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
 		serviceProperties.setPropertyString("serviceProperties", "serviceProperties");
 		serviceInfo = new ServiceInfo(uri, serviceID, 0, 0, serviceProperties);
 		assertNotNull(serviceInfo);
 
-		serviceID2 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE2, ITestConstants.HOST});
+		serviceID2 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {DiscoveryTestHelper.SERVICE_TYPE2, DiscoveryTestHelper.getHost()});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties2 = new ServiceProperties(props);
 		serviceProperties2.setPropertyString("serviceProperties2", "serviceProperties2");
 		serviceInfo2 = new ServiceInfo(uri, serviceID2, 2, 2, serviceProperties2);
 		assertNotNull(serviceInfo2);
 
-		serviceID3 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {ITestConstants.SERVICE_TYPE3, ITestConstants.HOST});
+		serviceID3 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {DiscoveryTestHelper.SERVICE_TYPE3, DiscoveryTestHelper.getHost()});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties3 = new ServiceProperties(props);
 		serviceProperties3.setPropertyString("serviceProperties3", "serviceProperties3");
