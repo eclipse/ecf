@@ -76,7 +76,7 @@ public class Activator implements BundleActivator {
 			// then register for discovery
 			final String serviceName = System.getProperty("user.name") + System.currentTimeMillis();
 			final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), REMOTE_SERVICE_TYPE, serviceName);
-			serviceInfo = new ServiceInfo(null, 80, serviceID, new ServiceProperties(new DiscoveryProperties(className, ECF_GENERIC_CLIENT, serviceHostContainer)));
+			serviceInfo = new ServiceInfo(Constants.DISCOVERY_SERVICE_TYPE, null, 80, serviceID, new ServiceProperties(new DiscoveryProperties(className, ECF_GENERIC_CLIENT, serviceHostContainer)));
 			// register discovery here
 			discovery.registerService(serviceInfo);
 			System.out.println("Service registered for discovery with IServiceID: " + serviceID);
