@@ -98,7 +98,7 @@ public class Activator implements BundleActivator {
 
 	private void registerService(String serviceType1, String serviceName1, String updateSiteName1, String servicePath1) throws Exception {
 		try {
-			serviceInfo = new ServiceInfo(null, getServicePort(), ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), serviceType1, serviceName1), new ServiceProperties(new UpdateSiteProperties(serviceName1, servicePath1).toProperties()));
+			serviceInfo = new ServiceInfo(UPDATE_SITE_SERVICE_TYPE, null, getServicePort(), ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), serviceType1, serviceName1), new ServiceProperties(new UpdateSiteProperties(serviceName1, servicePath1).toProperties()));
 			discovery.registerService(serviceInfo);
 		} catch (final Exception e) {
 			e.printStackTrace();
