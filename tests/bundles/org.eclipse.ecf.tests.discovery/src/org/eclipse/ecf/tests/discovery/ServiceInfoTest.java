@@ -77,7 +77,7 @@ public abstract class ServiceInfoTest extends TestCase {
 	 * Test method for {@link org.eclipse.ecf.discovery.ServiceInfo#getServiceProperties()}.
 	 */
 	public void testGetServiceProperties() {
-		IServiceProperties sprops = serviceInfo.getServiceProperties();
+		final IServiceProperties sprops = serviceInfo.getServiceProperties();
 		assertEquals(sprops, serviceProperties);
 	}
 
@@ -94,21 +94,21 @@ public abstract class ServiceInfoTest extends TestCase {
 	public void testEquals() {
 		fail("Not yet implemented. How should equality be defined anyway?");
 	}
-	
+
 	/**
-	 * Test method for {@link org.eclipse.ecf.discovery.ServiceInfo()}.
+	 * Test method for {@link org.eclipse.ecf.discovery.ServiceInfo}.
 	 */
 	public void testServiceInfo() {
 		IServiceInfo si = null;
 		try {
 			si = getServiceInfo(serviceInfo);
-		} catch (IDCreateException e) {
+		} catch (final IDCreateException e) {
 			fail();
-		} catch (SecurityException e) {
+		} catch (final SecurityException e) {
 			fail();
 		}
 		assertTrue(serviceInfoComparator.compare(si, serviceInfo) == 0);
 	}
-	
+
 	protected abstract IServiceInfo getServiceInfo(IServiceInfo aServiceInfo) throws IDCreateException, SecurityException;
 }
