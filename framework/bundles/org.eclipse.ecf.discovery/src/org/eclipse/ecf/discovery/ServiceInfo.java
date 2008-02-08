@@ -27,7 +27,7 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 
 	public static final int DEFAULT_PRIORITY = -1;
 	public static final int DEFAULT_WEIGHT = -1;
-	public static final String DEFAULT_PROTOCOL = "xxxxx"; //$NON-NLS-1$
+	public static final String UNKNOWN_PROTOCOL = "unknown"; //$NON-NLS-1$
 
 	protected URI uri = null;
 
@@ -53,11 +53,11 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 		this.properties = (props == null) ? new ServiceProperties() : props;
 	}
 
-	public ServiceInfo(String host, int port, IServiceID serviceID, int priority, int weight, IServiceProperties props) {
+	public ServiceInfo(String protocol, String host, int port, IServiceID serviceID, int priority, int weight, IServiceProperties props) {
 		try {
 			if (host == null)
 				host = InetAddress.getLocalHost().getHostAddress();
-			uri = new URI(DEFAULT_PROTOCOL, null, host, port, null, null, null);
+			uri = new URI((protocol == null) ? UNKNOWN_PROTOCOL : protocol, null, host, port, null, null, null);
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(Messages.ServiceInfo_EXCEPTION_INVALID_HOST_ARG);
 		} catch (UnknownHostException e) {
@@ -70,12 +70,12 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 		this.properties = (props == null) ? new ServiceProperties() : props;
 	}
 
-	public ServiceInfo(String host, int port, IServiceID serviceID, IServiceProperties props) {
-		this(host, port, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
+	public ServiceInfo(String protocol, String host, int port, IServiceID serviceID, IServiceProperties props) {
+		this(protocol, host, port, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
 	}
 
-	public ServiceInfo(String host, int port, IServiceID serviceID) {
-		this(host, port, serviceID, new ServiceProperties());
+	public ServiceInfo(String protocol, String host, int port, IServiceID serviceID) {
+		this(protocol, host, port, serviceID, new ServiceProperties());
 	}
 
 	public ServiceInfo(URI anURI, IServiceID serviceID, IServiceProperties props) {
