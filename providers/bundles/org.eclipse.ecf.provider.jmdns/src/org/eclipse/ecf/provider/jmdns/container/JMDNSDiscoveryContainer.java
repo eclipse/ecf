@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.jmdns.container;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.net.InetAddress;
+import java.net.URI;
 import java.util.*;
 import javax.jmdns.*;
 import javax.jmdns.ServiceInfo;
@@ -30,6 +31,9 @@ import org.eclipse.ecf.internal.provider.jmdns.*;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 
 public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IDiscoveryService, ServiceListener, ServiceTypeListener {
+
+	private static final String SCHEME_PROPERTY = "jmdns.ptcl"; //$NON-NLS-1$
+
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
 
 	private static int instanceCount = 0;
@@ -360,17 +364,20 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final int priority = serviceInfo.getPriority();
 		final int weight = serviceInfo.getWeight();
 		final Properties props = new Properties();
+		String uriProtocol = null;
 		for (final Enumeration e = serviceInfo.getPropertyNames(); e.hasMoreElements();) {
 			final String name = (String) e.nextElement();
-			Object value = serviceInfo.getPropertyString(name);
-			if (value == null)
-				value = serviceInfo.getPropertyBytes(name);
-			if (value != null)
-				props.put(name, value);
+			if (name.equals(SCHEME_PROPERTY))
+				uriProtocol = serviceInfo.getPropertyString(name);
+			else {
+				Object value = serviceInfo.getPropertyString(name);
+				if (value == null)
+					value = serviceInfo.getPropertyBytes(name);
+				if (value != null)
+					props.put(name, value);
+			}
 		}
-		final ServiceProperties svcProperties = new ServiceProperties(props);
-		final IServiceInfo newInfo = new JMDNSServiceInfo(addr, sID, port, priority, weight, svcProperties);
-		return newInfo;
+		return new org.eclipse.ecf.discovery.ServiceInfo(uriProtocol, addr.getHostAddress(), port, sID, priority, weight, new ServiceProperties(props));
 	}
 
 	private ServiceID createServiceID(String type, String name) {
@@ -399,7 +406,10 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				}
 			}
 		}
-		final ServiceInfo si = new ServiceInfo(sID.getServiceTypeID().getInternal(), sID.getServiceName(), serviceInfo.getLocation().getPort(), serviceInfo.getPriority(), serviceInfo.getWeight(), props);
+		// Add URI scheme to props
+		URI location = serviceInfo.getLocation();
+		props.put(SCHEME_PROPERTY, location.getScheme());
+		final ServiceInfo si = new ServiceInfo(sID.getServiceTypeID().getInternal(), sID.getServiceName(), location.getPort(), serviceInfo.getPriority(), serviceInfo.getWeight(), props);
 		return si;
 	}
 
