@@ -32,6 +32,9 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 	}
 
 	protected IContributionItem[] getContributionsForMatchingService() {
+		// If singleton not already set, create a new container (of type specified in serviceInfo
+		// and set the singleton to it.  If we can't create it for whatever reason, we have no
+		// contribution
 		if (Activator.getDefault().getContainer() == null) {
 			try {
 				final IContainer c = createContainer();
@@ -43,12 +46,15 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 				return EMPTY_CONTRIBUTION;
 			}
 		}
+		// The container is now not null
 		final IContainer container = Activator.getDefault().getContainer();
 		// not connected already...so setup contribution that allows connect
 		final String ns = getConnectNamespace();
 		final String id = getConnectID();
+		// If there is no connect namespace or connect id specified, then we have no contribution
 		if (container == null || ns == null || id == null)
 			return EMPTY_CONTRIBUTION;
+		// Create a new connect id from namespace and id
 		ID connectTargetID = null;
 		try {
 			connectTargetID = createID(ns, id);
@@ -56,14 +62,16 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 			return EMPTY_CONTRIBUTION;
 		}
 		final ID connectedID = container.getConnectedID();
+		// If the container is not already connected
 		if (connectedID != null) {
 			// If we're already connected, and connected to the *wrong* remote, then disconnect
 			if (!connectedID.equals(connectTargetID)) {
 				container.disconnect();
-				// Otherwise we're already connected to the right container
+				// Otherwise we're already connected to the correct container, and we get the normal contributions
 			} else
 				return super.getContributionsForMatchingService();
 		}
+		// Otherwise we need to connect so we create a contribution to allow the user to connect
 		// Now we get the contribution to make connection to correct connectTargetID
 		final ID cTargetID = connectTargetID;
 		final IAction action = new Action() {
