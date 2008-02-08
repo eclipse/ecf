@@ -17,6 +17,9 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
  * Service information contract. Defines the information associated with a
  * remotely discoverable service
  * 
+ * @see "http://www.dns-sd.org/ServiceTypes.html"
+ * @see "http://www.ietf.org/rfc/rfc2782.txt"
+ * 
  */
 public interface IServiceInfo extends IAdaptable {
 	/**
@@ -37,12 +40,20 @@ public interface IServiceInfo extends IAdaptable {
 	/**
 	 * The priority for the service
 	 * 
+	 * Priority: The priority of this target host. A client MUST attempt to contact the target host with the lowest-numbered priority it can reach; 
+	 * target hosts with the same priority SHOULD be tried in an order defined by the weight field.
+	 * 
 	 * @return int the priority. Zero if no priority information for service.
 	 */
 	public int getPriority();
 
 	/**
 	 * The weight for the service. Zero if no weight information for service.
+	 * 
+	 * Weight: A server selection mechanism. The weight field specifies a relative weight for entries with the same priority. 
+	 * Larger weights SHOULD be given a proportionately higher probability of being selected. 
+	 *  Domain administrators SHOULD use Weight 0 when there isn't any server selection to do.
+	 *  In the presence of records containing weights greater than 0, records with weight 0 should have a very small chance of being selected.
 	 * 
 	 * @return int the weight
 	 */
