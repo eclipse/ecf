@@ -25,8 +25,8 @@ public class ServiceInfo implements IServiceInfo, Serializable, IContainerServic
 
 	private static final long serialVersionUID = -5651115550295457142L;
 
-	public static final int DEFAULT_PRIORITY = 0;
-	public static final int DEFAULT_WEIGHT = 0;
+	public static final int DEFAULT_PRIORITY = -1;
+	public static final int DEFAULT_WEIGHT = -1;
 	public static final String DEFAULT_PROTOCOL = "xxxxx"; //$NON-NLS-1$
 
 	protected URI uri = null;
