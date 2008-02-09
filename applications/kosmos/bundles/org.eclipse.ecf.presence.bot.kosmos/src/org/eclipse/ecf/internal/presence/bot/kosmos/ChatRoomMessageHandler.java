@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 Remy Suen and others.
+ * Copyright (c) 2007, 2008 Remy Suen and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
  *    Markus Kuppe <mkuppe@versant.com> - bug 184036
  *    Nick Boldt <codeslave@ca.ibm.com> - bug 206528, 209410
+ *    Dominik Goepel <dominik.goepel@gmx.de> - bug 216644
  ******************************************************************************/
 package org.eclipse.ecf.internal.presence.bot.kosmos;
 
@@ -405,6 +406,12 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	private void sendMessageList(ID roomID, String target) {
 		sendMessage(roomID, (target != null ? target + ": " : "") + CustomMessages.getString(CustomMessages.MessageList));
 	}
+	
+	private void sendSearchPlugins(ID roomID, String target, String searchString) {
+		searchString = searchString.replace(' ', '+');
+		sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
+				.getString(CustomMessages.SearchPlugins), searchString));
+	}
 
 	private void writeToHTML(File file, String title, Properties properties) throws IOException {
 		FileWriter out = new FileWriter(file);
@@ -648,6 +655,8 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				sendEclipseHelp(roomID, target, cmdMatcher.group(2));
 			} else if (cmdMatcher.group(1).equals("list")) { //$NON-NLS-1$
 				sendMessageList(roomID, target);
+			} else if (cmdMatcher.group(1).equals("searchplugins ")) { //$NON-NLS-1$
+				sendSearchPlugins(roomID, target, cmdMatcher.group(2));
 			}
 		}
 	}
