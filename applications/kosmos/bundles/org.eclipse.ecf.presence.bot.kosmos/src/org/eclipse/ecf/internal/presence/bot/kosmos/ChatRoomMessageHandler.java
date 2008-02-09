@@ -66,7 +66,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 
 	private static final String LICENSE = "###############################################################################" //$NON-NLS-1$
 			+ NEWLINE
-			+ "# Copyright (c) 2007 Remy Suen and others." //$NON-NLS-1$
+			+ "# Copyright (c) 2007, 2008 Remy Suen and others." //$NON-NLS-1$
 			+ NEWLINE
 			+ "# All rights reserved. This program and the accompaning materials" //$NON-NLS-1$
 			+ NEWLINE
@@ -412,6 +412,15 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
 				.getString(CustomMessages.SearchPlugins), searchString));
 	}
+	
+	private void sendCQ(ID roomID, String target, String id, String comment) {
+		String suffix = id;
+		if (comment != null) {
+			suffix += "#c" + comment;
+		}
+		sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
+				.getString(CustomMessages.CQ), id, suffix));
+	}
 
 	private void writeToHTML(File file, String title, Properties properties) throws IOException {
 		FileWriter out = new FileWriter(file);
@@ -590,14 +599,12 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			String key = (String)keys.nextElement();
 			Pattern pattern = Pattern.compile(key);
 			cmdMatcher = pattern.matcher(msg);
-			if (cmdMatcher.matches())
-			{
+			if (cmdMatcher.matches()) {
 				break;
 			}
 		}
 		
-		if (cmdMatcher != null && cmdMatcher.matches()) 
-		{
+		if (cmdMatcher != null && cmdMatcher.matches()) {
 			if (cmdMatcher.group(1).equals("add ")) { //$NON-NLS-1$
 				if (operators.contains(fromID.getName())) {
 					learn(roomID, cmdMatcher.group(2));
@@ -627,7 +634,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				int index = msg.indexOf('c');
 				if (index == -1) {
 					try {
-						// check if what's before the 'c' is a valid number
+						// try to parse the string to see that we have a valid number
 						Integer.parseInt(msg);
 						sendBug(roomID, target, msg, null);
 					} catch (NumberFormatException e) {
@@ -635,9 +642,30 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 					}
 				} else {
 					try {
-						// check if what's before the 'c' is a valid number
+						// try to parse the string to see that we have a valid number
 						Integer.parseInt(msg.substring(0, index));
 						sendBug(roomID, target, msg.substring(0, index), msg
+								.substring(index + 1));
+					} catch (NumberFormatException e) {
+						// ignored
+					}
+				}
+			} else if (cmdMatcher.group(1).equals("cq") || cmdMatcher.group(1).equals("cq ")) { //$NON-NLS-1$ //$NON-NLS-2$
+				msg = cmdMatcher.group(2);
+				int index = msg.indexOf('c');
+				if (index == -1) {
+					try {
+						// try to parse the string to see that we have a valid number
+						Integer.parseInt(msg);
+						sendCQ(roomID, target, msg, null);
+					} catch (NumberFormatException e) {
+						// ignored
+					}
+				} else {
+					try {
+						// try to parse the string to see that we have a valid number
+						Integer.parseInt(msg.substring(0, index));
+						sendCQ(roomID, target, msg.substring(0, index), msg
 								.substring(index + 1));
 					} catch (NumberFormatException e) {
 						// ignored

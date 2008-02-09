@@ -40,6 +40,7 @@ public class CustomMessages {
 	static final String EclipseHelp = "EclipseHelp"; //$NON-NLS-1$
 	static final String MessageList = "MessageList"; //$NON-NLS-1$
 	static final String SearchPlugins = "SearchPlugins"; //$NON-NLS-1$
+	static final String CQ = "CQ"; //$NON-NLS-1$
 
 	private static final String RESOURCE_BUNDLE = "org.eclipse.ecf.internal.presence.bot.kosmos.custom"; //$NON-NLS-1$
 
