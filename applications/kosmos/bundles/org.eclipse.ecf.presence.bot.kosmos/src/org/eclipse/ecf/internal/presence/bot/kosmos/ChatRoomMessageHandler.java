@@ -88,9 +88,39 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 
 	private static final String BUG_DATABASE_PREFIX = "https://bugs.eclipse.org/bugs/show_bug.cgi?id="; //$NON-NLS-1$
 	private static final String BUG_DATABASE_POSTFIX = "&ctype=xml"; //$NON-NLS-1$
-	private static final String SUM_OPEN_TAG = "<short_desc>"; //$NON-NLS-1$
-	private static final String SUM_CLOSE_TAG = "</short_desc>"; //$NON-NLS-1$
+	
+	private static final String SHORT_DESC_OPEN_TAG = "<short_desc>"; //$NON-NLS-1$
+	private static final String SHORT_DESC_CLOSE_TAG = "</short_desc>"; //$NON-NLS-1$
+	
+	private static final String PRODUCT_OPEN_TAG = "<product>"; //$NON-NLS-1$
+	private static final String PRODUCT_CLOSE_TAG = "</product>"; //$NON-NLS-1$
+	
+	private static final String COMPONENT_OPEN_TAG = "<component>"; //$NON-NLS-1$
+	private static final String COMPONENT_CLOSE_TAG = "</component>"; //$NON-NLS-1$
+	
+	private static final String VERSION_OPEN_TAG = "<version>"; //$NON-NLS-1$
+	private static final String VERSION_CLOSE_TAG = "</version>"; //$NON-NLS-1$
+	
+	private static final String REP_PLATFORM_OPEN_TAG = "<rep_platform>"; //$NON-NLS-1$
+	private static final String REP_PLATFORM_CLOSE_TAG = "</rep_platform>"; //$NON-NLS-1$
+	
+	private static final String OP_SYS_OPEN_TAG = "<op_sys>"; //$NON-NLS-1$
+	private static final String OP_SYS_CLOSE_TAG = "</op_sys>"; //$NON-NLS-1$
+	
+	private static final String BUG_STATUS_OPEN_TAG = "<bug_status>"; //$NON-NLS-1$
+	private static final String BUG_STATUS_CLOSE_TAG = "</bug_status>"; //$NON-NLS-1$
+	
+	private static final String RESOLUTION_OPEN_TAG = "<resolution>"; //$NON-NLS-1$
+	private static final String RESOLUTION_CLOSE_TAG = "</resolution>"; //$NON-NLS-1$
+	
+	private static final String BUG_SEVERITY_OPEN_TAG = "<bug_severity>"; //$NON-NLS-1$
+	private static final String BUG_SEVERITY_CLOSE_TAG = "</bug_severity>"; //$NON-NLS-1$
+	
+	private static final String ASSIGNED_TO_OPEN_TAG = "<assigned_to>"; //$NON-NLS-1$
+	private static final String ASSIGNED_TO_CLOSE_TAG = "</assigned_to>"; //$NON-NLS-1$
+	
 	private static final String BUG_NOT_FOUND_TAG = "<bug error=\"NotFound\">"; //$NON-NLS-1$
+	
 	private static final File HTML_FILE_MESSAGES = new File(
 		System.getProperty("user.home") + File.separator + "public_html" + File.separator + "messages.html"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	private static final File HTML_FILE_COMMANDS = new File(
@@ -284,15 +314,17 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				}
 
 				String input = reader.readLine();
-				buffer.append(input);
-				while (input != null && input.indexOf(SUM_CLOSE_TAG) == -1) { 
-					if (input.indexOf(BUG_NOT_FOUND_TAG)>=0) { /* handle case where bug does not exist, eg. ~bug1234 */
-						sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
-								.getString(CustomMessages.Bug_Not_Found), number));
-						return;
-					}
-					input = reader.readLine();
+				synchronized (buffer) {
 					buffer.append(input);
+					while (input != null && input.indexOf(ASSIGNED_TO_CLOSE_TAG) == -1) { 
+						if (input.indexOf(BUG_NOT_FOUND_TAG) != -1) { /* handle case where bug does not exist, eg. ~bug1234 */
+							sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages
+									.getString(CustomMessages.Bug_Not_Found), number));
+							return;
+						}
+						input = reader.readLine();
+						buffer.append(input);
+					}
 				}
 				hURL.disconnect();
 			} catch (EOFException e) {
@@ -302,15 +334,29 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				return;
 			}
 			String webPage = buffer.toString();
-			int summaryStartIndex = webPage.indexOf(SUM_OPEN_TAG);
-			int summaryEndIndex = webPage.indexOf(SUM_CLOSE_TAG, summaryStartIndex);
+			int summaryStartIndex = webPage.indexOf(SHORT_DESC_OPEN_TAG);
+			int summaryEndIndex = webPage.indexOf(SHORT_DESC_CLOSE_TAG, summaryStartIndex);
 			if (summaryStartIndex != -1 & summaryEndIndex != -1) {
-				String summary = webPage.substring(summaryStartIndex
-					+ SUM_OPEN_TAG.length(), summaryEndIndex);
-				sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.BugContent),
-					new Object[] { number, xmlDecode(summary), urlString }));
+				try {
+					String summary = webPage.substring(summaryStartIndex
+						+ SHORT_DESC_OPEN_TAG.length(), summaryEndIndex);
+					String product = webPage.substring(webPage.indexOf(PRODUCT_OPEN_TAG) + PRODUCT_OPEN_TAG.length(), webPage.indexOf(PRODUCT_CLOSE_TAG));
+					String component = webPage.substring(webPage.indexOf(COMPONENT_OPEN_TAG) + COMPONENT_OPEN_TAG.length(), webPage.indexOf(COMPONENT_CLOSE_TAG));
+					String version = webPage.substring(webPage.indexOf(VERSION_OPEN_TAG) + VERSION_OPEN_TAG.length(), webPage.indexOf(VERSION_CLOSE_TAG));
+					String platform = webPage.substring(webPage.indexOf(REP_PLATFORM_OPEN_TAG) + REP_PLATFORM_OPEN_TAG.length(), webPage.indexOf(REP_PLATFORM_CLOSE_TAG));
+					String os = webPage.substring(webPage.indexOf(OP_SYS_OPEN_TAG) + OP_SYS_OPEN_TAG.length(), webPage.indexOf(OP_SYS_CLOSE_TAG));
+					String status = webPage.substring(webPage.indexOf(BUG_STATUS_OPEN_TAG) + BUG_STATUS_OPEN_TAG.length(), webPage.indexOf(BUG_STATUS_CLOSE_TAG));
+					String resolution = webPage.substring(webPage.indexOf(RESOLUTION_OPEN_TAG) + RESOLUTION_OPEN_TAG.length(), webPage.indexOf(RESOLUTION_CLOSE_TAG));
+					String severity = webPage.substring(webPage.indexOf(BUG_SEVERITY_OPEN_TAG) + BUG_SEVERITY_OPEN_TAG.length(), webPage.indexOf(BUG_SEVERITY_CLOSE_TAG));
+					String assignee = webPage.substring(webPage.substring(0, webPage.indexOf(ASSIGNED_TO_CLOSE_TAG)).lastIndexOf('>') + 1, webPage.indexOf(ASSIGNED_TO_CLOSE_TAG));
+					sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.BugContent),
+					new Object[] { number, urlString, product, component, version, platform, os, status, resolution, severity, assignee, xmlDecode(summary) }));
+				} catch (RuntimeException e) {
+					sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.Bug),
+							new Object[] { number, urlString }));
+				}
 			} else {
-				sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.BugContent),
+				sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.Bug),
 					new Object[] { number, urlString }));
 			}
 		} catch (IOException e) {
@@ -521,7 +567,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	}
 
 	private void learn(ID roomID, String contents) {
-		String key = contents.split(" ")[0];
+		String key = contents.split(" ")[0].toLowerCase();
 		try {
 			URL url = FileLocator.find(Activator.getBundle(), new Path(
 					"messages.properties"), null);
@@ -548,7 +594,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	}
 
 	private void update(ID roomID, String contents) {
-		String key = contents.split(" ")[0];
+		String key = contents.split(" ")[0].toLowerCase();
 		try {
 			URL url = FileLocator.find(Activator.getBundle(), new Path(
 					"messages.properties"), null);
@@ -567,7 +613,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	}
 
 	private void remove(ID roomID, String contents) {
-		String key = contents.split(" ")[0];
+		String key = contents.split(" ")[0].toLowerCase();
 		try {
 			URL url = FileLocator.find(Activator.getBundle(), new Path(
 					"messages.properties"), null);
@@ -586,7 +632,6 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	}
 
 	private void send(ID fromID, ID roomID, String target, String msg) {
-		
 		/* handle operator-added messages - see messages.properties */
 		if (isProcessed(roomID, target, msg)) {
 			return;
@@ -706,9 +751,9 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			if (tmp.equals("about")) { //$NON-NLS-1$
 				msg = msg.substring(index + 1);
 			}
-			return new String[] { user, msg };
+			return new String[] { user, msg.toLowerCase() };
 		} else {
-			return new String[] { null, msg };
+			return new String[] { null, msg.toLowerCase() };
 		}
 	}
 
@@ -731,38 +776,29 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		}
 		
 		String msg = message.getMessage();
-		switch (msg.charAt(0)) {
-		case '~':
-		case '!':
-			handleMessage(fromID, message.getChatRoomID(), msg
-					.substring(1).trim());
-			break;
-		default:
-			String upperCase = msg.toUpperCase();
-			if (upperCase.startsWith("KOS-MOS:") || upperCase.startsWith("KOS-MOS,")) {
-				msg = upperCase.substring(8).trim();
-				switch (msg.charAt(0)) {
-				case '~':
-				case '!':
-					handleMessage(fromID, message.getChatRoomID(), msg
-							.substring(1).trim());
-					break;
-				}
-			} else {
-				String[] split = msg.split("\\s"); //$NON-NLS-1$
-				for (int i = 0; i < split.length; i++) {
-					if (split[i].length() > 0) {
-						switch (split[i].charAt(0)) {
-						case '~':
-						case '!':
-							handleMessage(fromID, message
-									.getChatRoomID(), split[i].substring(1).trim());
-							break;
-						}
+		String upperCase = msg.toUpperCase();
+		if (upperCase.startsWith("KOS-MOS:") || upperCase.startsWith("KOS-MOS,")) {
+			msg = upperCase.substring(8).trim();
+			switch (msg.charAt(0)) {
+			case '~':
+			case '!':
+				handleMessage(fromID, message.getChatRoomID(), msg
+						.substring(1).trim());
+				break;
+			}
+		} else {
+			String[] split = msg.split("\\s"); //$NON-NLS-1$
+			for (int i = 0; i < split.length; i++) {
+				if (split[i].length() > 0) {
+					switch (split[i].charAt(0)) {
+					case '~':
+					case '!':
+						handleMessage(fromID, message
+								.getChatRoomID(), split[i].substring(1).trim());
+						break;
 					}
 				}
 			}
-			break;
 		}
 	}
 
