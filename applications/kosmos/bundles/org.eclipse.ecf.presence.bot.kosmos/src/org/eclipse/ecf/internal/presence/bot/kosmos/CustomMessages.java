@@ -27,6 +27,7 @@ public class CustomMessages {
 	static final String Bug = "Bug"; //$NON-NLS-1$
 	static final String Bug_Not_Found = "Bug_Not_Found"; //$NON-NLS-1$
 	static final String BugContent = "BugContent"; //$NON-NLS-1$
+	static final String BugContent2 = "BugContent2"; //$NON-NLS-1$
 
 	static final String Javadoc_NotFound = "Javadoc_NotFound"; //$NON-NLS-1$
 	static final String Javadoc_ResultsUnknown = "Javadoc_ResultsUnknown"; //$NON-NLS-1$
