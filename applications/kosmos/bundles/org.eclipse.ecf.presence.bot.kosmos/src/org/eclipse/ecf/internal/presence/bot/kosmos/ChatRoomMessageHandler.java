@@ -782,26 +782,34 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		}
 		
 		String msg = message.getMessage();
-		String upperCase = msg.toUpperCase();
-		if (upperCase.startsWith("KOS-MOS:") || upperCase.startsWith("KOS-MOS,")) {
-			msg = upperCase.substring(8).trim();
-			switch (msg.charAt(0)) {
-			case '~':
-			case '!':
-				handleMessage(fromID, message.getChatRoomID(), msg
-						.substring(1).trim());
-				break;
-			}
-		} else {
-			String[] split = msg.split("\\s"); //$NON-NLS-1$
-			for (int i = 0; i < split.length; i++) {
-				if (split[i].length() > 0) {
-					switch (split[i].charAt(0)) {
-					case '~':
-					case '!':
-						handleMessage(fromID, message
-								.getChatRoomID(), split[i].substring(1).trim());
-						break;
+		switch (msg.charAt(0)) {
+		case '~':
+		case '!':
+			handleMessage(fromID, message.getChatRoomID(), msg
+					.substring(1).trim());
+			break;
+		default:
+			String upperCase = msg.toUpperCase();
+			if (upperCase.startsWith("KOS-MOS:") || upperCase.startsWith("KOS-MOS,")) {
+				msg = upperCase.substring(8).trim();
+				switch (msg.charAt(0)) {
+				case '~':
+				case '!':
+					handleMessage(fromID, message.getChatRoomID(), msg
+							.substring(1).trim());
+					break;
+				}
+			} else {
+				String[] split = msg.split("\\s"); //$NON-NLS-1$
+				for (int i = 0; i < split.length; i++) {
+					if (split[i].length() > 0) {
+						switch (split[i].charAt(0)) {
+						case '~':
+						case '!':
+							handleMessage(fromID, message
+									.getChatRoomID(), split[i].substring(1).trim());
+							break;
+						}
 					}
 				}
 			}
