@@ -85,7 +85,6 @@ public class DiscoveryView extends ViewPart {
 
 	private void hookActionBars() {
 		final IActionBars bars = this.getViewSite().getActionBars();
-		bars.getMenuManager().add(refreshAction);
 		bars.getToolBarManager().add(refreshAction);
 	}
 
