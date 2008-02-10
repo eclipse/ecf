@@ -116,7 +116,6 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	private static final String BUG_SEVERITY_OPEN_TAG = "<bug_severity>"; //$NON-NLS-1$
 	private static final String BUG_SEVERITY_CLOSE_TAG = "</bug_severity>"; //$NON-NLS-1$
 	
-	private static final String ASSIGNED_TO_OPEN_TAG = "<assigned_to>"; //$NON-NLS-1$
 	private static final String ASSIGNED_TO_CLOSE_TAG = "</assigned_to>"; //$NON-NLS-1$
 	
 	private static final String BUG_NOT_FOUND_TAG = "<bug error=\"NotFound\">"; //$NON-NLS-1$
@@ -346,11 +345,18 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 					String platform = webPage.substring(webPage.indexOf(REP_PLATFORM_OPEN_TAG) + REP_PLATFORM_OPEN_TAG.length(), webPage.indexOf(REP_PLATFORM_CLOSE_TAG));
 					String os = webPage.substring(webPage.indexOf(OP_SYS_OPEN_TAG) + OP_SYS_OPEN_TAG.length(), webPage.indexOf(OP_SYS_CLOSE_TAG));
 					String status = webPage.substring(webPage.indexOf(BUG_STATUS_OPEN_TAG) + BUG_STATUS_OPEN_TAG.length(), webPage.indexOf(BUG_STATUS_CLOSE_TAG));
-					String resolution = webPage.substring(webPage.indexOf(RESOLUTION_OPEN_TAG) + RESOLUTION_OPEN_TAG.length(), webPage.indexOf(RESOLUTION_CLOSE_TAG));
 					String severity = webPage.substring(webPage.indexOf(BUG_SEVERITY_OPEN_TAG) + BUG_SEVERITY_OPEN_TAG.length(), webPage.indexOf(BUG_SEVERITY_CLOSE_TAG));
 					String assignee = webPage.substring(webPage.substring(0, webPage.indexOf(ASSIGNED_TO_CLOSE_TAG)).lastIndexOf('>') + 1, webPage.indexOf(ASSIGNED_TO_CLOSE_TAG));
-					sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.BugContent),
-					new Object[] { number, urlString, product, component, version, platform, os, status, resolution, severity, assignee, xmlDecode(summary) }));
+
+					int resolutionStartIndex = webPage.indexOf(RESOLUTION_OPEN_TAG);
+					if (resolutionStartIndex != -1) {
+						String resolution = webPage.substring(resolutionStartIndex + RESOLUTION_OPEN_TAG.length(), webPage.indexOf(RESOLUTION_CLOSE_TAG));
+						sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.BugContent),
+								new Object[] { number, urlString, product, component, version, platform, os, status, resolution, severity, assignee, xmlDecode(summary) }));	
+					} else {
+						sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.BugContent2),
+								new Object[] { number, urlString, product, component, version, platform, os, status, severity, assignee, xmlDecode(summary) }));						
+					}					
 				} catch (RuntimeException e) {
 					sendMessage(roomID, (target != null ? target + ": " : "") + NLS.bind(CustomMessages.getString(CustomMessages.Bug),
 							new Object[] { number, urlString }));
