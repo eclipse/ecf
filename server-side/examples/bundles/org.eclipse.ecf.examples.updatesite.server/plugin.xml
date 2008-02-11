@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-   <extension
-         point="org.eclipse.equinox.http.registry.resources">
-      <resource
-            alias="/test"
-            base-name="/web">
-      </resource>
+   <extension id="updateSiteServer"  point="org.eclipse.core.runtime.applications">
+      <application cardinality="1" thread="main" visible="true">
+         <run class="org.eclipse.ecf.internal.examples.updatesite.DiscoverableServer"/>
+      </application>
    </extension>
 </plugin>
