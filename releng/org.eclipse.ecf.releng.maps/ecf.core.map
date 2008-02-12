@@ -49,4 +49,4 @@ plugin@org.apache.commons.httpclient,3.0.1=GET,http://download.eclipse.org/tools
 plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080203062035/bundles/org.apache.commons.codec_1.2.0.v200711021015.jar
 plugin@org.apache.commons.logging,1.0.4=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080203062035/bundles/org.apache.commons.logging_1.0.4.v200711021015.jar
 plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080203062035/bundles/com.jcraft.jsch_0.1.31.jar
-plugin@ch.ethz.iks.slp,1.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080203062035/bundles/ch.ethz.iks.slp_1.0.0.RC2_v200802011126.jar
+plugin@ch.ethz.iks.slp,1.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080209163815/bundles/ch.ethz.iks.slp_1.0.0.RC2_v200802052042.jar
