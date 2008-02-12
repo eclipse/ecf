@@ -16,6 +16,8 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.discovery.ui.messages"; //$NON-NLS-1$
 
+	public static String AbstractRemoteServiceAccessHandler_DISCONNECT_MENU_TEXT;
+
 	public static String AbstractRemoteServiceAccessHandler_NOT_AVAILABLE_MENU_TEXT;
 
 	public static String DiscoveryView_Services;

@@ -104,6 +104,10 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 	}
 
 	protected IContributionItem[] getContributionsForMatchingService() {
+		return getPrimaryContributionsForMatchingService();
+	}
+
+	private IContributionItem[] getPrimaryContributionsForMatchingService() {
 		// First get container manager...if we don't have one, then we're outta here
 		final List remoteServicesContainerAdapters = getRemoteServiceContainerAdapters();
 		// If we've got none, then we return 
@@ -122,6 +126,9 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 		return (IContributionItem[]) contributions.toArray(new IContributionItem[] {});
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.ui.views.IServiceAccessHandler#getContributionsForService(org.eclipse.ecf.discovery.IServiceInfo)
+	 */
 	public IContributionItem[] getContributionsForService(IServiceInfo svcInfo) {
 		if (svcInfo == null)
 			return EMPTY_CONTRIBUTION;
@@ -157,5 +164,32 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 	 * menu.
 	 */
 	protected abstract IContributionItem[] getContributionItemsForService(final IRemoteServiceContainerAdapter adapter);
+
+	/**
+	 * Create a remote call instance.  
+	 * 
+	 * @return IRemoteCall instance.  <code>null</code> if no call available.
+	 */
+	protected abstract IRemoteCall createRemoteCall();
+
+	protected IContributionItem[] getConnectedContributions(final IContainer container) {
+		// Add disconnect and separator
+		final List results = new ArrayList();
+		final IContributionItem[] serviceItem = getPrimaryContributionsForMatchingService();
+		if (serviceItem != null) {
+			for (int i = 0; i < serviceItem.length; i++)
+				results.add(serviceItem[i]);
+		} else
+			return EMPTY_CONTRIBUTION;
+		results.add(new Separator());
+		final IAction disconnectAction = new Action() {
+			public void run() {
+				container.disconnect();
+			}
+		};
+		disconnectAction.setText(Messages.AbstractRemoteServiceAccessHandler_DISCONNECT_MENU_TEXT);
+		results.add(new ActionContributionItem(disconnectAction));
+		return (IContributionItem[]) results.toArray(new IContributionItem[] {});
+	}
 
 }
