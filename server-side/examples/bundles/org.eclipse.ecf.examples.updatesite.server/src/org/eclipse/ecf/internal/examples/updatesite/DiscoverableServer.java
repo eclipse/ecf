@@ -133,7 +133,12 @@ public class DiscoverableServer implements IApplication {
 	}
 
 	private void usage() {
-		System.out.println("usage: eclipse -console -application org.eclipse.ecf.examples.updatesite.server.updateSiteServer <updateSiteDirectoryURL>"); //$NON-NLS-1$
+		System.out.println("usage: eclipse -console [options] -application org.eclipse.ecf.examples.updatesite.server.updateSiteServer <updateSiteDirectoryURL>"); //$NON-NLS-1$
+		System.out.println("   options: [-username <username>] default=<current user>"); //$NON-NLS-1$
+		System.out.println("            [-serviceType <servicetype>] default=updatesite"); //$NON-NLS-1$
+		System.out.println("            [-serviceName <name>] default=<current user> update site"); //$NON-NLS-1$
+		System.out.println("            [-servicePath <path>] default=/update"); //$NON-NLS-1$
+		System.out.println("            [-updateSiteName <name>] default=<current user> update site"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
