@@ -11,13 +11,13 @@
 
 package org.eclipse.ecf.internal.examples.remoteservices.client;
 
-import java.io.NotSerializableException;
 import java.util.Arrays;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.IAsyncResult;
 import org.eclipse.ecf.discovery.ui.handlers.AbstractRemoteServiceAccessHandler;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
@@ -80,7 +80,7 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 				container.disconnect();
 				// Otherwise we're already connected to the correct container, and we get the normal contributions
 			} else
-				return super.getContributionsForMatchingService();
+				return getConnectedContributions(container);
 		}
 		// Otherwise we need to connect so we create a contribution to allow the user to connect
 		// Now we get the contribution to make connection to correct connectTargetID
@@ -109,8 +109,7 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 			return NOT_AVAILABLE_CONTRIBUTION;
 	}
 
-	private IRemoteCall createGetPropertyRemoteCall() throws ClassNotFoundException, NotSerializableException {
-		IRemoteEnvironmentInfo.class.getDeclaredMethods();
+	protected IRemoteCall createRemoteCall() {
 		final InputDialog input = new InputDialog(null, "Get property", "Enter property key", "user.name", null);
 		input.setBlockOnOpen(true);
 		final Object[] params = new Object[1];
@@ -157,15 +156,19 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 		final IAction action = new Action() {
 			public void run() {
 				try {
-					final IRemoteCall remoteCall = createGetPropertyRemoteCall();
+					final IRemoteCall remoteCall = createRemoteCall();
 					if (remoteCall != null) {
 						switch (invokeMode) {
 							// callSynch
 							case 0 :
-								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, remoteService.callSynch(remoteCall));
+								// Actually call
+								Object result = remoteService.callSynch(remoteCall);
+								// Show result
+								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, result);
 								break;
 							// callAsynch (listener)
 							case 1 :
+								// Actually call
 								remoteService.callAsynch(remoteCall, new IRemoteCallListener() {
 									public void handleEvent(IRemoteCallEvent event) {
 										if (event instanceof IRemoteCallCompleteEvent) {
@@ -180,21 +183,26 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 								break;
 							// callAsynch (future)
 							case 2 :
-								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, remoteService.callAsynch(remoteCall).get());
+								// Actually call
+								IAsyncResult asyncResult = remoteService.callAsynch(remoteCall);
+								// Show result
+								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, asyncResult.get());
 								break;
 							// proxy
 							case 3 :
 								IRemoteEnvironmentInfo proxy = (IRemoteEnvironmentInfo) remoteService.getProxy();
-								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, proxy.getProperty((String) remoteCall.getParameters()[0]));
+								// Actually call	
+								Object proxyResult = proxy.getProperty((String) remoteCall.getParameters()[0]);
+								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, proxyResult);
 								break;
 						}
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					MessageDialog.openError(null, "Invoke Exception", e.getLocalizedMessage());
 				}
 			}
 		};
+		// Set menu item text
 		switch (invokeMode) {
 			case 0 :
 				action.setText("getProperty (s)");
