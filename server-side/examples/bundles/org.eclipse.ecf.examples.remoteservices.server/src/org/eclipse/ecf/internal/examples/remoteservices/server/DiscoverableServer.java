@@ -40,7 +40,7 @@ import org.eclipse.equinox.app.IApplicationContext;
  */
 public class DiscoverableServer implements IApplication {
 
-	private static final String ECF_GENERIC_CLIENT = "ecf.generic.client";
+	private static final String ECF_GENERIC_CLIENT = "ecf.generic.client"; //$NON-NLS-1$
 
 	private IContainer serviceHostContainer;
 
@@ -77,10 +77,10 @@ public class DiscoverableServer implements IApplication {
 		// register remote service
 		final String className = IRemoteEnvironmentInfo.class.getName();
 		containerAdapter.registerRemoteService(new String[] {className}, new RemoteEnvironmentInfoImpl(), new RemoteServiceProperties(containerType, serviceHostContainer));
-		System.out.println("Registered remote service " + className);
+		System.out.println("Registered remote service " + className); //$NON-NLS-1$
 
 		// then register for discovery
-		final String serviceName = System.getProperty("user.name") + System.currentTimeMillis();
+		final String serviceName = System.getProperty("user.name") + System.currentTimeMillis(); //$NON-NLS-1$
 		final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), getCompleteServiceType(), serviceName);
 		serviceInfo = new ServiceInfo(serviceType, null, 80, serviceID, new ServiceProperties(new DiscoveryProperties(className, containerType, serviceHostContainer)));
 		// register discovery here
@@ -144,7 +144,7 @@ public class DiscoverableServer implements IApplication {
 		}
 		if (connectTarget == null) {
 			usage();
-			throw new InvalidParameterException("connectTarget cannot be null");
+			throw new InvalidParameterException("connectTarget cannot be null"); //$NON-NLS-1$
 		}
 		if (containerType == null)
 			containerType = ECF_GENERIC_CLIENT;
@@ -156,7 +156,10 @@ public class DiscoverableServer implements IApplication {
 	 * 
 	 */
 	private void usage() {
-		System.out.println("usage: eclipse -console -application org.eclipse.ecf.examples.remoteservices.server.remoteServicesServer <connectTarget>");
+		System.out.println("usage: eclipse -console [options] -application org.eclipse.ecf.examples.remoteservices.server.remoteServicesServer <connectTarget>"); //$NON-NLS-1$
+		System.out.println("   options: [-containerType <typename>] default=ecf.generic.client"); //$NON-NLS-1$
+		System.out.println("            [-connectPassword <password>] default=none"); //$NON-NLS-1$
+		System.out.println("            [-serviceType <serviceType>] default=remotesvcs"); //$NON-NLS-1$
 	}
 
 }

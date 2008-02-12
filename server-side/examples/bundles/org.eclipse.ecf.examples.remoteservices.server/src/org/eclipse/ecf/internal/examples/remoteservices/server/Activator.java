@@ -35,6 +35,7 @@ public class Activator implements BundleActivator {
 	 * The constructor
 	 */
 	public Activator() {
+		// nothing
 	}
 
 	public EnvironmentInfo getEnvironmentInfo() {
@@ -57,16 +58,16 @@ public class Activator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
-		this.context = context;
+		this.context = ctxt;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext ctxt) throws Exception {
 		plugin = null;
 		if (environmentInfoTracker != null) {
 			environmentInfoTracker.close();
