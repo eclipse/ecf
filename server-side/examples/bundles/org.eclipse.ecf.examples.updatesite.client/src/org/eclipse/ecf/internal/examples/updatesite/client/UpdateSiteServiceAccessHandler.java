@@ -36,6 +36,7 @@ public class UpdateSiteServiceAccessHandler implements IServiceAccessHandler {
 	static final IContributionItem[] EMPTY_CONTRIBUTION = {};
 
 	public UpdateSiteServiceAccessHandler() {
+		// nothing
 	}
 
 	/* (non-Javadoc)
