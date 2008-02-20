@@ -25,6 +25,14 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	private static final int OK_RESPONSE_CODE = 200;
 
+	private static final String JRE_CONNECT_TIMEOUT_PROPERTY = "sun.net.client.defaultConnectTimeout"; //$NON-NLS-1$
+
+	private static final String DEFAULT_CONNECT_TIMEOUT = "30000"; //$NON-NLS-1$
+
+	private static final String JRE_READ_TIMEOUT_PROPERTY = "sun.net.client.defaultConnectTimeout"; //$NON-NLS-1$
+
+	private static final String DEFAULT_READ_TIMEOUT = "30000"; //$NON-NLS-1$
+
 	protected URLConnection urlConnection;
 
 	protected long lastModifiedTime = 0L;
@@ -47,6 +55,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	}
 
 	protected void connect() throws IOException {
+		setupTimeouts();
 		urlConnection = getRemoteFileURL().openConnection();
 	}
 
@@ -253,6 +262,17 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		if (adapter.equals(IFileTransferPausable.class) && isHTTP11())
 			return this;
 		return super.getAdapter(adapter);
+	}
+
+	private void setupTimeouts() {
+		String existingTimeout = System.getProperty(JRE_CONNECT_TIMEOUT_PROPERTY);
+		if (existingTimeout == null) {
+			System.setProperty(JRE_CONNECT_TIMEOUT_PROPERTY, DEFAULT_CONNECT_TIMEOUT);
+		}
+		existingTimeout = System.getProperty(JRE_READ_TIMEOUT_PROPERTY);
+		if (existingTimeout == null) {
+			System.setProperty(JRE_READ_TIMEOUT_PROPERTY, DEFAULT_READ_TIMEOUT);
+		}
 	}
 
 	/**
