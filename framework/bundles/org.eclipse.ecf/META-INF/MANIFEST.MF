@@ -25,3 +25,4 @@ Import-Package: org.eclipse.core.runtime.jobs,
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.equinox.registry,
  org.eclipse.ecf.identity;visibility:=reexport
+Bundle-ActivationPolicy: lazy
