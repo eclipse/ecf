@@ -21,3 +21,4 @@ Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
 Bundle-ClassPath: .
 Export-Package: org.eclipse.ecf.provider.jslp.container,
  org.eclipse.ecf.provider.jslp.identity
+Bundle-ActivationPolicy: lazy

@@ -42,6 +42,6 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 
 	public ServiceURL getServiceURL() throws ServiceLocationException {
 		IServiceTypeID stid = getServiceID().getServiceTypeID();
-		return new ServiceURL(stid.getInternal() + "://" + getLocation().getScheme() + "://" + getLocation().getAuthority(), ServiceURL.LIFETIME_PERMANENT); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		return new ServiceURL(stid.getInternal() + "://" + getLocation().getScheme() + "://" + getLocation().getAuthority(), ServiceURL.LIFETIME_PERMANENT); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }
