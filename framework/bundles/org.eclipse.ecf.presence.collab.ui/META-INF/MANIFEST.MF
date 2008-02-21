@@ -24,3 +24,4 @@ Export-Package: org.eclipse.ecf.internal.presence.collab.ui;x-internal:=true,
  org.eclipse.ecf.presence.collab.ui.url,
  org.eclipse.ecf.presence.collab.ui.view
 Eclipse-BuddyPolicy: global
+Bundle-ActivationPolicy: lazy
