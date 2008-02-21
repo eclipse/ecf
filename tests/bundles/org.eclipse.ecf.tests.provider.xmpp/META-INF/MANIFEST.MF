@@ -20,3 +20,4 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.tests.provider.xmpp.remoteservice,
  org.ecllpse.ecf.tests.provider.xmpp
+Bundle-ActivationPolicy: lazy
