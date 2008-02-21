@@ -11,3 +11,4 @@ Import-Package: org.osgi.framework;version="1.3.0"
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.examples.remoteservices.common,
  org.eclipse.ecf.internal.examples.remoteservices.common;x-internal:=true
+Bundle-ActivationPolicy: lazy
