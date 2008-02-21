@@ -19,3 +19,4 @@ Import-Package: org.eclipse.osgi.util,
  org.osgi.framework,
  org.osgi.service.log;version="1.3.0",
  org.osgi.util.tracker
+Bundle-ActivationPolicy: lazy
