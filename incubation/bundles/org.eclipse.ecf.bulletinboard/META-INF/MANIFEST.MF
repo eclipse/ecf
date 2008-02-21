@@ -14,3 +14,4 @@ Export-Package: org.eclipse.ecf.bulletinboard,
 Bundle-RequiredExecutionEnvironment: CDC-1.0/Foundation-1.0,
  J2SE-1.3
 Import-Package: org.osgi.framework;version="1.4.0"
+Bundle-ActivationPolicy: lazy
