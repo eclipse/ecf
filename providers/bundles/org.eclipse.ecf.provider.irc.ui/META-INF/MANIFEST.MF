@@ -18,3 +18,4 @@ Export-Package: org.eclipse.ecf.internal.irc.ui;x-internal:=true,
  org.eclipse.ecf.internal.irc.ui.wizards;x-internal:=true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Bundle-Vendor: %plugin.provider
+Bundle-ActivationPolicy: lazy
