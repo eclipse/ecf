@@ -19,3 +19,4 @@ Import-Package: org.eclipse.core.runtime;common="split",
  org.osgi.framework,
  org.osgi.service.url,
  org.osgi.util.tracker
+Bundle-ActivationPolicy: lazy
