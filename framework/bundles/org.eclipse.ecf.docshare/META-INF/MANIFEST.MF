@@ -24,3 +24,4 @@ Export-Package: org.eclipse.ecf.docshare,
  org.eclipse.ecf.docshare.messages,
  org.eclipse.ecf.internal.docshare;x-internal:=true
 Eclipse-BuddyPolicy: global
+Bundle-ActivationPolicy: lazy
