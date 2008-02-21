@@ -25,7 +25,7 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 public class SCPRetrieveTest extends ContainerAbstractTestCase {
 
-	private static final String SCP_RETRIEVE = "scp://ecf1.osuosl.org/test.txt"; //$NON-NLS-1$
+	private static final String TESTTARGETURL = System.getProperty("url"); //$NON-NLS-1$
 
 	IRetrieveFileTransferContainerAdapter adapter = null;
 
@@ -80,7 +80,7 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 		};
 
 		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(System.getProperty("username"), System.getProperty("password"))); //$NON-NLS-1$ //$NON-NLS-2$
-		adapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(adapter.getRetrieveNamespace(), SCP_RETRIEVE), listener, null);
+		adapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(adapter.getRetrieveNamespace(), TESTTARGETURL), listener, null);
 		// Wait for 5 seconds
 		sleep(5000, "Starting 5 second wait", "Ending 5 second wait"); //$NON-NLS-1$ //$NON-NLS-2$
 
