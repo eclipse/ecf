@@ -10,12 +10,6 @@
             category="org.eclipse.ecf.ui.viewcategory"
             name="Collaboration"
             id="org.eclipse.ecf.internal.example.collab.ui.LineChatView"/>
-      <view
-            category="org.eclipse.ecf.ui.viewcategory"
-            class="org.eclipse.ecf.discovery.ui.views.DiscoveryView"
-            icon="icons/default_provider_image.gif"
-            id="org.eclipse.ecf.example.collab.discoveryview"
-            name="Service Discovery"/>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">

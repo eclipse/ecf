@@ -10,7 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.example.collab.ui.hyperlink;
 
-import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.SharedMarker;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
