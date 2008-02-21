@@ -22,3 +22,4 @@ Import-Package: org.eclipse.equinox.app;version="1.0.0",
  org.osgi.service.log,
  org.osgi.util.tracker
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-ActivationPolicy: lazy
