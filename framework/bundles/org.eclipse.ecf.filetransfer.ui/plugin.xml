@@ -13,4 +13,18 @@
             id="org.eclipse.ecf.filetransfer.ui"
             name="File Transfer"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="org.eclipse.ecf.filetransfer.ui.category"
+            name="File Transfer">
+      </category>
+      <command
+            categoryId="org.eclipse.ecf.filetransfer.ui.category"
+            defaultHandler="org.eclipse.ecf.internal.filetransfer.ui.GetFileHandler"
+            description="Use the URL specified to retrieve a file"
+            id="org.eclipse.ecf.filetransfer.ui.getFile"
+            name="Get File">
+      </command>
+   </extension>
 </plugin>
