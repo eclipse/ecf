@@ -20,3 +20,4 @@ Import-Package: org.eclipse.osgi.util,
  org.osgi.framework,
  org.osgi.util.tracker
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-ActivationPolicy: lazy
