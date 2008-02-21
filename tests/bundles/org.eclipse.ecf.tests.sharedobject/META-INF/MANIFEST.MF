@@ -14,3 +14,4 @@ Require-Bundle: org.eclipse.equinox.common,
 Eclipse-LazyStart: true
 Import-Package: org.osgi.framework;version="1.4.0"
 Export-Package: org.eclipse.ecf.tests.sharedobject
+Bundle-ActivationPolicy: lazy
