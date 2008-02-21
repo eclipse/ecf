@@ -16,3 +16,4 @@ Bundle-Vendor: %providerName
 Export-Package: org.eclipse.ecf.filetransfer.ui,
  org.eclipse.ecf.filetransfer.ui.actions,
  org.eclipse.ecf.internal.filetransfer.ui;x-internal:=true
+Bundle-ActivationPolicy: lazy
