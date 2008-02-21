@@ -8,3 +8,4 @@ Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
 Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
