@@ -15,3 +15,4 @@ Export-Package: org.eclipse.ecf.tests.discovery,
  org.eclipse.ecf.tests.discovery.identity,
  org.eclipse.ecf.tests.discovery.listener
 Import-Package: org.osgi.framework
+Bundle-ActivationPolicy: lazy
