@@ -13,7 +13,6 @@ package org.eclipse.ecf.internal.examples.remoteservices.server;
 
 import java.security.InvalidParameterException;
 import java.util.Map;
-
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -21,10 +20,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.ServiceInfo;
-import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
@@ -71,7 +67,7 @@ public class DiscoverableServer implements IApplication {
 		final IConnectContext connectContext = (connectPassword == null) ? null : ConnectContextFactory.createPasswordConnectContext(connectPassword);
 		serviceHostContainer.connect(targetID, connectContext);
 
-		discovery = Activator.getDefault().getDiscoveryService(3000);
+		discovery = Activator.getDefault().getDiscoveryService(5000);
 
 		final IRemoteServiceContainerAdapter containerAdapter = (IRemoteServiceContainerAdapter) serviceHostContainer.getAdapter(IRemoteServiceContainerAdapter.class);
 		// register remote service
