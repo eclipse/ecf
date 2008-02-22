@@ -15,6 +15,7 @@ import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.Map;
 import javax.naming.ServiceUnavailableException;
+import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -58,8 +59,11 @@ public class DiscoverableServer implements IApplication {
 		Map args = ctxt.getArguments();
 		initializeFromArguments((String[]) args.get("application.args")); //$NON-NLS-1$
 
+		// Load and start ECF core bundles (to execute ecfstart jobs like discovery providers)
+		ContainerFactory.getDefault().getDescriptions();
+
 		// get discovery service
-		discovery = Activator.getDefault().waitForDiscoveryService(2000);
+		discovery = Activator.getDefault().waitForDiscoveryService(5000);
 		if (discovery == null)
 			throw new ServiceUnavailableException("Discovery service not found."); //$NON-NLS-1$
 
