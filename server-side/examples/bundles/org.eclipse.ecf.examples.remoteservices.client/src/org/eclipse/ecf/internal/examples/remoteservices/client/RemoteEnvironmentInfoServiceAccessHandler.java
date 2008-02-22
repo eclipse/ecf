@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.IAsyncResult;
-import org.eclipse.ecf.discovery.ui.handlers.AbstractRemoteServiceAccessHandler;
+import org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
