@@ -12,18 +12,17 @@
 package org.eclipse.ecf.discovery.ui.views;
 
 import java.util.ArrayList;
-
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
-class DiscoveryViewTreeParent extends DiscoveryViewTreeObject {
+class ViewTreeService extends ViewTreeObject {
 	private final ArrayList children;
 
 	private final IServiceID id;
 
 	private final IServiceInfo serviceInfo;
 
-	public DiscoveryViewTreeParent(IServiceID id, String name, IServiceInfo svcInfo) {
+	public ViewTreeService(IServiceID id, String name, IServiceInfo svcInfo) {
 		super(name);
 		this.id = id;
 		children = new ArrayList();
@@ -38,18 +37,18 @@ class DiscoveryViewTreeParent extends DiscoveryViewTreeObject {
 		return id;
 	}
 
-	public void addChild(DiscoveryViewTreeObject child) {
+	public void addChild(ViewTreeObject child) {
 		children.add(child);
 		child.setParent(this);
 	}
 
-	public void removeChild(DiscoveryViewTreeObject child) {
+	public void removeChild(ViewTreeObject child) {
 		children.remove(child);
 		child.setParent(null);
 	}
 
-	public DiscoveryViewTreeObject[] getChildren() {
-		return (DiscoveryViewTreeObject[]) children.toArray(new DiscoveryViewTreeObject[children.size()]);
+	public ViewTreeObject[] getChildren() {
+		return (ViewTreeObject[]) children.toArray(new ViewTreeObject[children.size()]);
 	}
 
 	public boolean hasChildren() {
@@ -59,4 +58,5 @@ class DiscoveryViewTreeParent extends DiscoveryViewTreeObject {
 	public void clearChildren() {
 		children.clear();
 	}
+
 }

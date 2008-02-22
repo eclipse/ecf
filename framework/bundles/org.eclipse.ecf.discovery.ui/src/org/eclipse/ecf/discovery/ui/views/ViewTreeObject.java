@@ -13,12 +13,12 @@ package org.eclipse.ecf.discovery.ui.views;
 
 import org.eclipse.core.runtime.IAdaptable;
 
-class DiscoveryViewTreeObject implements IAdaptable {
+class ViewTreeObject implements IAdaptable {
 	private final String name;
 
-	private DiscoveryViewTreeParent parent;
+	private ViewTreeObject parent;
 
-	public DiscoveryViewTreeObject(String name) {
+	public ViewTreeObject(String name) {
 		this.name = name;
 	}
 
@@ -26,11 +26,11 @@ class DiscoveryViewTreeObject implements IAdaptable {
 		return name;
 	}
 
-	public void setParent(DiscoveryViewTreeParent parent) {
+	public void setParent(ViewTreeObject parent) {
 		this.parent = parent;
 	}
 
-	public DiscoveryViewTreeParent getParent() {
+	public ViewTreeObject getParent() {
 		return parent;
 	}
 

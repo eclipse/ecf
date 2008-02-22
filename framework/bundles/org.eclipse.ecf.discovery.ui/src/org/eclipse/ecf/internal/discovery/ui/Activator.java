@@ -12,6 +12,8 @@ package org.eclipse.ecf.internal.discovery.ui;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -56,6 +58,12 @@ public class Activator extends AbstractUIPlugin {
 		super.start(context1);
 		plugin = this;
 		this.context = context1;
+		ImageRegistry imageRegistry = getImageRegistry();
+		imageRegistry.put("serviceIcon", imageDescriptorFromPlugin(PLUGIN_ID, "icons/default_provider_image.gif").createImage()); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	public Image getServiceImage() {
+		return getImageRegistry().get("serviceIcon"); //$NON-NLS-1$
 	}
 
 	public IExtensionRegistry getExtensionRegistry() {

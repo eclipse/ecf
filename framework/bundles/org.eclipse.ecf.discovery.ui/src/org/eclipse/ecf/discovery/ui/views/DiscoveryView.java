@@ -12,43 +12,29 @@ package org.eclipse.ecf.discovery.ui.views;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.IServiceEvent;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceListener;
+import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.discovery.ui.Activator;
 import org.eclipse.ecf.internal.discovery.ui.Messages;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.action.*;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-public class DiscoveryView extends ViewPart {
+public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageContributor {
 
 	private static final IContributionItem[][] EMPTY_CONTRIBUTION = new IContributionItem[][] {{}};
 
@@ -72,15 +58,52 @@ public class DiscoveryView extends ViewPart {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor#getContributorId()
+	 */
+	public String getContributorId() {
+		return getSite().getId();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.WorkbenchPart#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter == IPropertySheetPage.class)
+			return new TabbedPropertySheetPage(this);
+		return super.getAdapter(adapter);
+	}
+
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		viewer.setContentProvider(new DiscoveryViewContentProvider(this));
-		viewer.setLabelProvider(new DiscoveryViewLabelProvider());
+		viewer.setContentProvider(new ViewContentProvider(this));
+		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setInput(getViewSite());
+		viewer.addOpenListener(new IOpenListener() {
+			public void open(OpenEvent e) {
+				openPropertiesView((IStructuredSelection) e.getSelection());
+			}
+
+		});
+
+		getSite().setSelectionProvider(viewer);
 		initializeDiscoveryContainer();
 		makeActions();
 		hookContextMenu();
 		hookActionBars();
+	}
+
+	void openPropertiesView(IStructuredSelection selection) {
+		Object element = selection.getFirstElement();
+		if (!(element instanceof ViewTreeService)) {
+			return;
+		}
+		try {
+			getSite().getWorkbenchWindow().getActivePage().showView("org.eclipse.ui.views.PropertySheet"); //$NON-NLS-1$
+		} catch (PartInitException e) {
+			MessageDialog.openError(getSite().getShell(), Messages.DiscoveryView_ERROR_SHOW_VIEW_TITLE, Messages.DiscoveryView_ERROR_SHOW_VIEW_MESSAGE);
+		}
+
 	}
 
 	private void hookActionBars() {
@@ -148,7 +171,7 @@ public class DiscoveryView extends ViewPart {
 		}
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				final DiscoveryViewContentProvider vcp = (DiscoveryViewContentProvider) viewer.getContentProvider();
+				final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 				if (vcp != null) {
 					vcp.clear();
 					refreshView();
@@ -160,7 +183,7 @@ public class DiscoveryView extends ViewPart {
 	public void addServiceTypeInfo(final String type) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				final DiscoveryViewContentProvider vcp = (DiscoveryViewContentProvider) viewer.getContentProvider();
+				final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 				if (vcp != null) {
 					vcp.addServiceTypeInfo(type);
 					refreshView();
@@ -172,7 +195,7 @@ public class DiscoveryView extends ViewPart {
 	public void addServiceInfo(final IServiceInfo serviceInfo) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				final DiscoveryViewContentProvider vcp = (DiscoveryViewContentProvider) viewer.getContentProvider();
+				final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 				if (vcp != null) {
 					vcp.addServiceInfo(serviceInfo);
 					refreshView();
@@ -184,7 +207,7 @@ public class DiscoveryView extends ViewPart {
 	public void addServiceInfo(final IServiceID id) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				final DiscoveryViewContentProvider vcp = (DiscoveryViewContentProvider) viewer.getContentProvider();
+				final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 				if (vcp != null) {
 					vcp.addServiceInfo(id);
 					refreshView();
@@ -196,7 +219,7 @@ public class DiscoveryView extends ViewPart {
 	public void removeServiceInfo(final IServiceInfo serviceInfo) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				final DiscoveryViewContentProvider vcp = (DiscoveryViewContentProvider) viewer.getContentProvider();
+				final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 				if (vcp != null) {
 					vcp.removeServiceInfo(serviceInfo);
 					refreshView();
@@ -240,10 +263,10 @@ public class DiscoveryView extends ViewPart {
 	}
 
 	void fillContextMenu(IMenuManager manager) {
-		final DiscoveryViewTreeObject discoveryViewTreeObject = getSelectedTreeObject();
-		if (discoveryViewTreeObject != null && discoveryViewTreeObject instanceof DiscoveryViewTreeParent) {
-			final DiscoveryViewTreeParent tp = (DiscoveryViewTreeParent) discoveryViewTreeObject;
-			final DiscoveryViewContentProvider vcp = (DiscoveryViewContentProvider) viewer.getContentProvider();
+		final ViewTreeObject viewTreeObject = getSelectedTreeObject();
+		if (viewTreeObject != null && viewTreeObject instanceof ViewTreeService) {
+			final ViewTreeService tp = (ViewTreeService) viewTreeObject;
+			final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 			final IServiceInfo serviceInfo = tp.getServiceInfo();
 			if ((vcp != null && vcp.isRoot(tp)) || (serviceInfo == null) || (tp.getID() == null)) {
 				// If it's root, show nothing.
@@ -267,9 +290,9 @@ public class DiscoveryView extends ViewPart {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
-	protected DiscoveryViewTreeObject getSelectedTreeObject() {
+	protected ViewTreeObject getSelectedTreeObject() {
 		final ISelection selection = viewer.getSelection();
-		return (DiscoveryViewTreeObject) ((IStructuredSelection) selection).getFirstElement();
+		return (ViewTreeObject) ((IStructuredSelection) selection).getFirstElement();
 	}
 
 	private IContributionItem[][] getContributionsForServiceInfo(IServiceInfo serviceInfo) {

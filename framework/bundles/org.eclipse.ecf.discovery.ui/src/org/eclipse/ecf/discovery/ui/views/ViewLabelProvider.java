@@ -11,24 +11,21 @@
 
 package org.eclipse.ecf.discovery.ui.views;
 
-import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-class DiscoveryViewLabelProvider extends LabelProvider {
+class ViewLabelProvider extends LabelProvider {
 
-	DiscoveryViewLabelProvider() {
+	ViewLabelProvider() {
 		// nothing to do
 	}
 
 	public String getText(Object obj) {
-		if (obj instanceof DiscoveryViewTreeParent) {
-			final DiscoveryViewTreeParent tp = (DiscoveryViewTreeParent) obj;
-			final IServiceID svcID = tp.getID();
-			if (svcID == null)
-				return cleanTypeName(tp.getName());
+		if (obj instanceof DiscoveryViewTypeTreeObject) {
+			final DiscoveryViewTypeTreeObject tp = (DiscoveryViewTypeTreeObject) obj;
+			return cleanTypeName(tp.getName());
 		}
 		return super.getText(obj);
 	}
@@ -46,14 +43,9 @@ class DiscoveryViewLabelProvider extends LabelProvider {
 	}
 
 	public Image getImage(Object obj) {
-		String imageKey = null;
-		if (obj instanceof DiscoveryViewTreeParent) {
-			if (((DiscoveryViewTreeParent) obj).getID() != null) {
-				imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			} else {
-				imageKey = ISharedImages.IMG_OBJ_FOLDER;
-			}
+		if (obj instanceof DiscoveryViewTypeTreeObject) {
+			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
 		}
-		return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
+		return org.eclipse.ecf.internal.discovery.ui.Activator.getDefault().getServiceImage();
 	}
 }
