@@ -9,22 +9,22 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.discovery.ui.views;
+package org.eclipse.ecf.internal.discovery.ui;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-class ViewLabelProvider extends LabelProvider {
+public class ViewLabelProvider extends LabelProvider {
 
-	ViewLabelProvider() {
+	public ViewLabelProvider() {
 		// nothing to do
 	}
 
 	public String getText(Object obj) {
-		if (obj instanceof DiscoveryViewTypeTreeObject) {
-			final DiscoveryViewTypeTreeObject tp = (DiscoveryViewTypeTreeObject) obj;
+		if (obj instanceof ViewTreeType) {
+			final ViewTreeType tp = (ViewTreeType) obj;
 			return cleanTypeName(tp.getName());
 		}
 		return super.getText(obj);
@@ -43,7 +43,7 @@ class ViewLabelProvider extends LabelProvider {
 	}
 
 	public Image getImage(Object obj) {
-		if (obj instanceof DiscoveryViewTypeTreeObject) {
+		if (obj instanceof ViewTreeType) {
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
 		}
 		return org.eclipse.ecf.internal.discovery.ui.Activator.getDefault().getServiceImage();

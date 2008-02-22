@@ -9,32 +9,23 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.discovery.ui.views;
+package org.eclipse.ecf.internal.discovery.ui;
 
 import java.util.ArrayList;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.identity.IServiceID;
 
-class ViewTreeService extends ViewTreeObject {
+/**
+ *
+ */
+public class ViewTreeType extends ViewTreeObject {
+
 	private final ArrayList children;
 
-	private final IServiceID id;
-
-	private final IServiceInfo serviceInfo;
-
-	public ViewTreeService(IServiceID id, String name, IServiceInfo svcInfo) {
+	/**
+	 * @param name
+	 */
+	public ViewTreeType(String name) {
 		super(name);
-		this.id = id;
 		children = new ArrayList();
-		serviceInfo = svcInfo;
-	}
-
-	public IServiceInfo getServiceInfo() {
-		return serviceInfo;
-	}
-
-	public IServiceID getID() {
-		return id;
 	}
 
 	public void addChild(ViewTreeObject child) {

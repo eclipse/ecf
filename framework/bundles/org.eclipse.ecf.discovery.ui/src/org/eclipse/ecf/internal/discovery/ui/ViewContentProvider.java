@@ -9,14 +9,14 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.discovery.ui.views;
+package org.eclipse.ecf.internal.discovery.ui;
 
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.internal.discovery.ui.Messages;
+import org.eclipse.ecf.discovery.ui.views.DiscoveryView;
 import org.eclipse.jface.viewers.*;
 
-class ViewContentProvider implements IStructuredContentProvider, ITreeContentProvider {
+public class ViewContentProvider implements IStructuredContentProvider, ITreeContentProvider {
 	/**
 	 * 
 	 */
@@ -25,7 +25,7 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 	/**
 	 * @param discoveryView
 	 */
-	ViewContentProvider(DiscoveryView discoveryView) {
+	public ViewContentProvider(DiscoveryView discoveryView) {
 		this.discoveryView = discoveryView;
 	}
 
@@ -57,16 +57,16 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 	public Object[] getChildren(Object parent) {
 		if (parent instanceof ViewTreeService)
 			return ((ViewTreeService) parent).getChildren();
-		if (parent instanceof DiscoveryViewTypeTreeObject)
-			return ((DiscoveryViewTypeTreeObject) parent).getChildren();
+		if (parent instanceof ViewTreeType)
+			return ((ViewTreeType) parent).getChildren();
 		return new Object[0];
 	}
 
 	public boolean hasChildren(Object parent) {
 		if (parent instanceof ViewTreeService)
 			return ((ViewTreeService) parent).hasChildren();
-		if (parent instanceof DiscoveryViewTypeTreeObject)
-			return ((DiscoveryViewTypeTreeObject) parent).hasChildren();
+		if (parent instanceof ViewTreeType)
+			return ((ViewTreeType) parent).hasChildren();
 		return false;
 	}
 
@@ -86,7 +86,7 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 		return false;
 	}
 
-	void replaceOrAdd(DiscoveryViewTypeTreeObject top, ViewTreeService newEntry) {
+	void replaceOrAdd(ViewTreeType top, ViewTreeService newEntry) {
 		final ViewTreeObject[] childs = top.getChildren();
 		for (int i = 0; i < childs.length; i++) {
 			if (childs[i] instanceof ViewTreeService) {
@@ -101,52 +101,52 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 		top.addChild(newEntry);
 	}
 
-	void addServiceTypeInfo(String type) {
-		final DiscoveryViewTypeTreeObject typenode = findServiceTypeNode(type);
+	public void addServiceTypeInfo(String type) {
+		final ViewTreeType typenode = findServiceTypeNode(type);
 		if (typenode == null) {
-			root.addChild(new DiscoveryViewTypeTreeObject(type));
+			root.addChild(new ViewTreeType(type));
 		}
 	}
 
-	DiscoveryViewTypeTreeObject findServiceTypeNode(String typename) {
+	ViewTreeType findServiceTypeNode(String typename) {
 		final ViewTreeObject[] types = root.getChildren();
 		for (int i = 0; i < types.length; i++) {
-			if (types[i] instanceof DiscoveryViewTypeTreeObject) {
+			if (types[i] instanceof ViewTreeType) {
 				final String type = types[i].getName();
 				if (type.equals(typename))
-					return (DiscoveryViewTypeTreeObject) types[i];
+					return (ViewTreeType) types[i];
 			}
 		}
 		return null;
 	}
 
-	void addServiceInfo(IServiceID id) {
-		DiscoveryViewTypeTreeObject typenode = findServiceTypeNode(id.getServiceTypeID().getName());
+	public void addServiceInfo(IServiceID id) {
+		ViewTreeType typenode = findServiceTypeNode(id.getServiceTypeID().getName());
 		if (typenode == null) {
-			typenode = new DiscoveryViewTypeTreeObject(id.getServiceTypeID().getName());
+			typenode = new ViewTreeType(id.getServiceTypeID().getName());
 			root.addChild(typenode);
 		}
 		final ViewTreeService newEntry = new ViewTreeService(id, id.getServiceName(), null);
 		replaceOrAdd(typenode, newEntry);
 	}
 
-	void addServiceInfo(IServiceInfo serviceInfo) {
+	public void addServiceInfo(IServiceInfo serviceInfo) {
 		if (serviceInfo == null)
 			return;
 		final IServiceID svcID = serviceInfo.getServiceID();
-		DiscoveryViewTypeTreeObject typenode = findServiceTypeNode(svcID.getServiceTypeID().getName());
+		ViewTreeType typenode = findServiceTypeNode(svcID.getServiceTypeID().getName());
 		if (typenode == null) {
-			typenode = new DiscoveryViewTypeTreeObject(svcID.getServiceTypeID().getName());
+			typenode = new ViewTreeType(svcID.getServiceTypeID().getName());
 			root.addChild(typenode);
 		}
 		replaceOrAdd(typenode, new ViewTreeService(svcID, svcID.getServiceName(), serviceInfo));
 	}
 
-	void removeServiceInfo(IServiceInfo serviceInfo) {
+	public void removeServiceInfo(IServiceInfo serviceInfo) {
 		if (serviceInfo == null)
 			return;
 		final IServiceID svcID = serviceInfo.getServiceID();
-		final DiscoveryViewTypeTreeObject typenode = findServiceTypeNode(svcID.getServiceTypeID().getName());
+		final ViewTreeType typenode = findServiceTypeNode(svcID.getServiceTypeID().getName());
 		if (typenode == null)
 			return;
 		final ViewTreeObject[] childs = typenode.getChildren();

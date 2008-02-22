@@ -15,7 +15,7 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.jface.action.IContributionItem;
 
 /**
- *
+ * serviceAccessHandler extensions must implement this interface.
  */
 public interface IServiceAccessHandler {
 

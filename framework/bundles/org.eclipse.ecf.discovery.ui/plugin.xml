@@ -20,7 +20,7 @@
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
       <propertyContributor
-            contributorId="org.eclipse.ecf.example.collab.discoveryview" labelProvider="org.eclipse.ecf.discovery.ui.views.ServicePropertiesLabelProvider">
+            contributorId="org.eclipse.ecf.example.collab.discoveryview" labelProvider="org.eclipse.ecf.internal.discovery.ui.ServicePropertiesLabelProvider">
          <propertyCategory category="discovery"/>
          
       </propertyContributor>
@@ -46,24 +46,24 @@
    <extension point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections contributorId="org.eclipse.ecf.example.collab.discoveryview">
          <propertySection
-               class="org.eclipse.ecf.discovery.ui.views.ServicePropertySection"
+               class="org.eclipse.ecf.internal.discovery.ui.ServicePropertySection"
                id="discovery.service.id.section.1"
                tab="discovery.service.name">
-            <input type="org.eclipse.ecf.discovery.ui.views.ViewTreeService"/>
+            <input type="org.eclipse.ecf.internal.discovery.ui.ViewTreeService"/>
          </propertySection>
          <propertySection
                afterSection="discovery.service.id.section.1"
-               class="org.eclipse.ecf.discovery.ui.views.ServiceTypePropertySection"
+               class="org.eclipse.ecf.internal.discovery.ui.ServiceTypePropertySection"
                id="discovery.service.id.section.2"
                tab="discovery.service.type">
-            <input type="org.eclipse.ecf.discovery.ui.views.ViewTreeService"/>
+            <input type="org.eclipse.ecf.internal.discovery.ui.ViewTreeService"/>
          </propertySection>
          <propertySection
                afterSection="discovery.service.id.section.2"
-               class="org.eclipse.ecf.discovery.ui.views.ServicePropertiesPropertySection"
+               class="org.eclipse.ecf.internal.discovery.ui.ServicePropertiesPropertySection"
                id="discovery.service.id.section.3"
                tab="discovery.service.properties">
-            <input type="org.eclipse.ecf.discovery.ui.views.ViewTreeService"/>
+            <input type="org.eclipse.ecf.internal.discovery.ui.ViewTreeService"/>
          </propertySection>
       </propertySections>
    </extension>

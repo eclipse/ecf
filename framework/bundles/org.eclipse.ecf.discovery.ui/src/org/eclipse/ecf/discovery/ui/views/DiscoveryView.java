@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * Copyright (c) 2008 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,8 +17,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
-import org.eclipse.ecf.internal.discovery.ui.Activator;
-import org.eclipse.ecf.internal.discovery.ui.Messages;
+import org.eclipse.ecf.internal.discovery.ui.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.*;

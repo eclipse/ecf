@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.discovery.ui.views;
+package org.eclipse.ecf.internal.discovery.ui;
 
 import java.util.*;
 import org.eclipse.ecf.discovery.IServiceProperties;

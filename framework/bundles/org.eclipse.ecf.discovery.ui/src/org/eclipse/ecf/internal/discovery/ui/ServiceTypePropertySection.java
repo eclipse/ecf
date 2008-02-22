@@ -1,4 +1,14 @@
-package org.eclipse.ecf.discovery.ui.views;
+/****************************************************************************
+ * Copyright (c) 2008 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
+package org.eclipse.ecf.internal.discovery.ui;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -15,7 +25,6 @@ import org.eclipse.ui.views.properties.tabbed.*;
 
 public class ServiceTypePropertySection extends AbstractPropertySection {
 
-	private Text location;
 	private Text serviceTypeID;
 	private Text serviceTypeIDInternal;
 	private Text serviceTypeIDNamespace;
@@ -34,28 +43,14 @@ public class ServiceTypePropertySection extends AbstractPropertySection {
 		Composite composite = getWidgetFactory().createFlatFormComposite(parent);
 		FormData data;
 
-		// Location
-		location = getWidgetFactory().createText(composite, ""); //$NON-NLS-1$
-		data = new FormData();
-		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
-		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(0, 0);
-		location.setLayoutData(data);
-		CLabel labelLabel = getWidgetFactory().createCLabel(composite, "Location:"); //$NON-NLS-1$
-		data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(location, -ITabbedPropertyConstants.HSPACE);
-		data.top = new FormAttachment(location, 0, SWT.CENTER);
-		labelLabel.setLayoutData(data);
-
 		// ServiceTypeID
 		serviceTypeID = getWidgetFactory().createText(composite, ""); //$NON-NLS-1$
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
 		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(location, 0);
+		data.top = new FormAttachment(0, 0);
 		serviceTypeID.setLayoutData(data);
-		labelLabel = getWidgetFactory().createCLabel(composite, "TypeID:"); //$NON-NLS-1$
+		CLabel labelLabel = getWidgetFactory().createCLabel(composite, "TypeID:"); //$NON-NLS-1$
 		data = new FormData();
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(serviceTypeID, -ITabbedPropertyConstants.HSPACE);
@@ -120,8 +115,6 @@ public class ServiceTypePropertySection extends AbstractPropertySection {
 	 */
 	public void refresh() {
 		if (serviceInfo != null) {
-			location.setText(serviceInfo.getLocation().toString());
-			location.setEditable(false);
 			serviceTypeID.setText(serviceInfo.getServiceID().getServiceTypeID().getName());
 			serviceTypeID.setEditable(false);
 			serviceTypeIDInternal.setText(serviceInfo.getServiceID().getServiceTypeID().getInternal());

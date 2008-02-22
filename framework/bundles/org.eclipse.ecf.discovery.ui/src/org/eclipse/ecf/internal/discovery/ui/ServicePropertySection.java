@@ -1,4 +1,14 @@
-package org.eclipse.ecf.discovery.ui.views;
+/****************************************************************************
+ * Copyright (c) 2008 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
+package org.eclipse.ecf.internal.discovery.ui;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -20,6 +30,7 @@ public class ServicePropertySection extends AbstractPropertySection {
 	private Text serviceIDNamespace;
 	private Text servicePriority;
 	private Text serviceWeight;
+	private Text location;
 
 	private IServiceInfo serviceInfo;
 
@@ -105,6 +116,20 @@ public class ServicePropertySection extends AbstractPropertySection {
 		data.top = new FormAttachment(serviceWeight, 0, SWT.CENTER);
 		labelLabel.setLayoutData(data);
 
+		// Location
+		location = getWidgetFactory().createText(composite, ""); //$NON-NLS-1$
+		data = new FormData();
+		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
+		data.right = new FormAttachment(100, 0);
+		data.top = new FormAttachment(serviceWeight, 0);
+		location.setLayoutData(data);
+		labelLabel = getWidgetFactory().createCLabel(composite, "Location:"); //$NON-NLS-1$
+		data = new FormData();
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(location, -ITabbedPropertyConstants.HSPACE);
+		data.top = new FormAttachment(location, 0, SWT.CENTER);
+		labelLabel.setLayoutData(data);
+
 	}
 
 	/* (non-Javadoc)
@@ -145,6 +170,8 @@ public class ServicePropertySection extends AbstractPropertySection {
 			servicePriority.setEditable(false);
 			serviceWeight.setText(serviceInfo.getWeight() + ""); //$NON-NLS-1$
 			serviceWeight.setEditable(false);
+			location.setText(serviceInfo.getLocation().toString());
+			location.setEditable(false);
 		}
 	}
 }

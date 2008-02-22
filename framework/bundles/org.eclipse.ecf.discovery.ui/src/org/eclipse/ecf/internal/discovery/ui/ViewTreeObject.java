@@ -9,11 +9,11 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.discovery.ui.views;
+package org.eclipse.ecf.internal.discovery.ui;
 
 import org.eclipse.core.runtime.IAdaptable;
 
-class ViewTreeObject implements IAdaptable {
+public class ViewTreeObject implements IAdaptable {
 	private final String name;
 
 	private ViewTreeObject parent;

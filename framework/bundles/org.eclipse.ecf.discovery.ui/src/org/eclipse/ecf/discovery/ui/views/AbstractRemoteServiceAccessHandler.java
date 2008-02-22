@@ -1,4 +1,4 @@
-package org.eclipse.ecf.discovery.ui.handlers;
+package org.eclipse.ecf.discovery.ui.views;
 
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
@@ -7,7 +7,6 @@ import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.AdapterContainerFilter;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.ui.views.IServiceAccessHandler;
 import org.eclipse.ecf.internal.discovery.ui.Activator;
 import org.eclipse.ecf.internal.discovery.ui.Messages;
 import org.eclipse.ecf.remoteservice.*;
