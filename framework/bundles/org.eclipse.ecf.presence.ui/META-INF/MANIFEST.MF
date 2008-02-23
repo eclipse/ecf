@@ -25,3 +25,4 @@ Import-Package: org.eclipse.core.expressions,
  org.eclipse.jface.text,
  org.eclipse.jface.text.source,
  org.eclipse.ui.editors.text;resolution:=optional
+Bundle-ActivationPolicy: lazy
