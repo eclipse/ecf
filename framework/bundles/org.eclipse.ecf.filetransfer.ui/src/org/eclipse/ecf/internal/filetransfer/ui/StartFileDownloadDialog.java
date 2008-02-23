@@ -11,13 +11,17 @@
 package org.eclipse.ecf.internal.filetransfer.ui;
 
 import java.io.File;
+import java.net.URL;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.*;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
 
-public class ScpDialog extends InputDialog {
+public class StartFileDownloadDialog extends InputDialog {
 
 	private Text useridText;
 	private Text passwordText;
@@ -26,58 +30,109 @@ public class ScpDialog extends InputDialog {
 	public String filename;
 	protected Text fileLocation;
 
-	public ScpDialog(Shell parentShell, String dialogTitle, String dialogMessage, String initialValue, IInputValidator validator) {
-		super(parentShell, dialogTitle, dialogMessage, initialValue, validator);
+	static private IInputValidator inputValidator = new IInputValidator() {
+		public String isValid(String newText) {
+			try {
+				new URL(newText);
+				return null;
+			} catch (Exception e) {
+				return ("".equals(newText)) ? null : NLS.bind(Messages.getString("StartFileDownloadDialog.MalformedURLException"), newText); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
+	};
+
+	public StartFileDownloadDialog(Shell parentShell) {
+		super(parentShell, Messages.getString("StartFileDownloadDialog.FileTransfer"), Messages.getString("StartFileDownloadDialog.Source"), null, inputValidator); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	Text getInputText() {
+		return getText();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.dialogs.Dialog#create()
+	 */
+	public void create() {
+		super.create();
+		Button okButton = getButton(IDialogConstants.OK_ID);
+		okButton.setText(Messages.getString("StartFileDownloadDialog.DOWNLOAD_BUTTON")); //$NON-NLS-1$
+		okButton.setToolTipText(Messages.getString("StartFileDownloadDialog.DOWNLOAD_BUTTON_TOOLTIP")); //$NON-NLS-1$
+		okButton.setEnabled(false);
 	}
 
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite) super.createDialogArea(parent);
 		Label label = new Label(composite, SWT.WRAP);
-		label.setText(Messages.getString("ScpDialog.OutputFile")); //$NON-NLS-1$
+		label.setText(Messages.getString("StartFileDownloadDialog.OutputFile")); //$NON-NLS-1$
 		GridData data = new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
 		data.widthHint = convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
 		label.setLayoutData(data);
 		label.setFont(parent.getFont());
+
+		String userhome = System.getProperty("user.home"); //$NON-NLS-1$
+		if (Platform.getOS().startsWith("win")) { //$NON-NLS-1$
+			userhome = userhome + File.separator + "Desktop"; //$NON-NLS-1$
+		}
+		final String path = userhome;
+
 		fileLocation = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		fileLocation.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		fileLocation.setText(path);
+		fileLocation.setSelection(fileLocation.getText().length());
+
+		Text text = getInputText();
+		text.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				// nothing
+			}
+
+			public void focusLost(FocusEvent e) {
+				String scp = ((Text) e.getSource()).getText();
+				String fileName = ""; //$NON-NLS-1$
+				if (scp != null && scp.length() > 0) {
+					fileName = scp.substring(scp.lastIndexOf('/') + 1);
+				}
+				fileLocation.setText(path + File.separator + fileName);
+				fileLocation.setSelection(fileLocation.getText().length());
+			}
+		});
 
 		final Button fileBrowse = new Button(composite, SWT.PUSH);
-		fileBrowse.setText(Messages.getString("ScpDialog.Browse")); //$NON-NLS-1$
+		fileBrowse.setText(Messages.getString("StartFileDownloadDialog.Browse")); //$NON-NLS-1$
 		fileBrowse.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				if (event.type == SWT.Selection) {
-					String scp = getValue();
+					String scp = getInputText().getText();
 					String fileName = ""; //$NON-NLS-1$
-					String path = System.getProperty("user.home"); //$NON-NLS-1$
-					if (Platform.getOS().startsWith("win")) { //$NON-NLS-1$
-						path = path + File.separator + "Desktop"; //$NON-NLS-1$
-					}
 					if (scp != null && scp.length() > 0) {
 						fileName = scp.substring(scp.lastIndexOf('/') + 1);
 					}
 					FileDialog fd = new FileDialog(fileBrowse.getShell(), SWT.SAVE);
-					fd.setText(Messages.getString("ScpDialog.OutputFile")); //$NON-NLS-1$
+					fd.setText(Messages.getString("StartFileDownloadDialog.OutputFile")); //$NON-NLS-1$
 					fd.setFileName(fileName);
 					fd.setFilterPath(path);
 					String fname = fd.open();
 					if (fname != null) {
 						fileLocation.setText(fname);
+						fileLocation.setSelection(fileLocation.getText().length());
 					}
 				}
 			}
 		});
 
 		label = new Label(composite, SWT.WRAP);
-		label.setText(Messages.getString("ScpDialog.Userid")); //$NON-NLS-1$
+		label.setText(Messages.getString("StartFileDownloadDialog.Userid")); //$NON-NLS-1$
 		data = new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
 		data.widthHint = convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
 		label.setLayoutData(data);
 		label.setFont(parent.getFont());
 		useridText = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		useridText.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
+		useridText.setText(System.getProperty("user.name")); //$NON-NLS-1$
+		useridText.setSelection(useridText.getText().length());
 
 		label = new Label(composite, SWT.WRAP);
-		label.setText(Messages.getString("ScpDialog.Password")); //$NON-NLS-1$
+		label.setText(Messages.getString("StartFileDownloadDialog.Password")); //$NON-NLS-1$
 		data = new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER);
 		data.widthHint = convertHorizontalDLUsToPixels(IDialogConstants.MINIMUM_MESSAGE_AREA_WIDTH);
 		label.setLayoutData(data);

@@ -28,7 +28,7 @@ public class FileTransfersView extends ViewPart {
 
 	public static final String ID = "org.eclipse.ecf.filetransfer.ui.FileTransfersView"; //$NON-NLS-1$
 
-	private static final String[] COLUMNS = {"Name", "Downloaded", "Uploaded", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	private static final String[] COLUMNS = {"Name", "Download", "Upload", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			"Done"}; //$NON-NLS-1$
 
 	private static final int[] WIDTHS = {250, 100, 100, 40};
@@ -49,11 +49,12 @@ public class FileTransfersView extends ViewPart {
 
 	private static final int DONE = UPLOADED + 1;
 
-	public static void addTransfer(IFileTransfer transfer) {
+	public static FileTransfersView addTransfer(IFileTransfer transfer) {
 		transfers.add(transfer);
 		if (instance != null) {
 			instance.add(transfer);
 		}
+		return instance;
 	}
 
 	TableViewer viewer;
@@ -170,6 +171,7 @@ public class FileTransfersView extends ViewPart {
 				}
 			}
 		};
+		resumeAction.setId("resume"); //$NON-NLS-1$
 		resumeAction.setText("&Resume"); //$NON-NLS-1$
 
 		pauseAction = new Action() {
@@ -253,7 +255,8 @@ public class FileTransfersView extends ViewPart {
 						return getTwoDigitNumber(((IOutgoingFileTransfer) transfer).getBytesSent());
 					return "N/A"; //$NON-NLS-1$
 				case DONE :
-					return Double.toString(transfer.getPercentComplete()) + '%';
+					double percentComplete = transfer.getPercentComplete();
+					return (percentComplete == 1.0) ? "yes" : Double.toString(percentComplete + '%'); //$NON-NLS-1$
 			}
 			return getText(obj);
 		}

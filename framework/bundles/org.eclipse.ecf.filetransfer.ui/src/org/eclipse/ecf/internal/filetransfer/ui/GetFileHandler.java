@@ -18,10 +18,10 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
-import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.*;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
+import org.eclipse.ecf.filetransfer.ui.FileTransfersView;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -30,12 +30,37 @@ public class GetFileHandler extends AbstractHandler {
 
 	private static final String SCP_JOB_FAMILY = "scp"; //$NON-NLS-1$
 
+	FileTransfersView fileTransfersView;
+
+	void addTransferToView(Shell shell, final IIncomingFileTransfer incoming) {
+		shell.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				fileTransfersView = FileTransfersView.addTransfer(incoming);
+			}
+		});
+	}
+
+	void updateTransferInView(Shell shell, final IIncomingFileTransfer incoming) {
+		shell.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				if (fileTransfersView != null) {
+					fileTransfersView.update(incoming);
+				}
+			}
+		});
+	}
+
+	void completeTransferInView(Shell shell, final IIncomingFileTransfer incoming) {
+		updateTransferInView(shell, incoming);
+		fileTransfersView = null;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
 	 */
 	public Object execute(ExecutionEvent o) throws ExecutionException {
-		Shell shell = HandlerUtil.getActiveShellChecked(o);
-		ScpDialog dialog = new ScpDialog(shell, Messages.getString("GetFileHandler.FileTransfer"), Messages.getString("GetFileHandler.Source"), null, null); //$NON-NLS-1$ //$NON-NLS-2$
+		final Shell shell = HandlerUtil.getActiveShellChecked(o);
+		StartFileDownloadDialog dialog = new StartFileDownloadDialog(shell);
 		if (dialog.open() == Window.OK) {
 			final String scp = dialog.getValue();
 			final String userid = dialog.userid;
@@ -49,23 +74,27 @@ public class GetFileHandler extends AbstractHandler {
 						IRetrieveFileTransferContainerAdapter adapter = (IRetrieveFileTransferContainerAdapter) container.getAdapter(IRetrieveFileTransferContainerAdapter.class);
 						final FileOutputStream out = new FileOutputStream(fileName);
 						IFileTransferListener listener = new IFileTransferListener() {
+							IIncomingFileTransfer incoming = null;
 
 							public void handleTransferEvent(IFileTransferEvent event) {
 								if (event instanceof IIncomingFileTransferReceiveStartEvent) {
 									IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
 									try {
-										rse.receive(out);
+										incoming = rse.receive(out);
+										addTransferToView(shell, incoming);
 									} catch (IOException e) {
 										Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "failed to set output file", e)); //$NON-NLS-1$
 									}
 								} else if (event instanceof IIncomingFileTransferReceiveDataEvent) {
 									monitor.worked(1);
+									updateTransferInView(shell, incoming);
 								} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 									try {
 										out.close();
 									} catch (IOException e) {
 										Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "failed to close output file", e)); //$NON-NLS-1$
 									}
+									completeTransferInView(shell, incoming);
 								}
 							}
 						};
