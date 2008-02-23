@@ -6,6 +6,7 @@
       <view
             category="org.eclipse.ecf.filetransfer.ui"
             class="org.eclipse.ecf.filetransfer.ui.FileTransfersView"
+            icon="icons/filetransfer.gif"
             id="org.eclipse.ecf.filetransfer.ui.FileTransfersView"
             name="File Transfers">
       </view>
@@ -33,11 +34,12 @@
         <command
               commandId="org.eclipse.ecf.filetransfer.ui.getFile"
               style="push"
-              icon="icons/add.gif"/>
+              icon="icons/filedownload.gif"/>
      </menuContribution>
      <menuContribution locationURI="popup:org.eclipse.ecf.filetransfer.ui.FileTransfersView">
         <command
-              commandId="org.eclipse.ecf.filetransfer.ui.getFile"/>
+              commandId="org.eclipse.ecf.filetransfer.ui.getFile"
+              icon="icons/filedownload.gif"/>
      </menuContribution>
    </extension>
 </plugin>
