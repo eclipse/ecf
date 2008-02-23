@@ -539,7 +539,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			try {
 				IProxyService proxyService = Activator.getDefault().getProxyService();
 				// Only do this if platform service exists
-				if (proxyService != null) {
+				if (proxyService != null && proxyService.isProxiesEnabled()) {
 					// Setup via proxyService entry
 					URL target = getRemoteFileURL();
 					final IProxyData[] proxies = proxyService.getProxyDataForHost(target.getHost());
