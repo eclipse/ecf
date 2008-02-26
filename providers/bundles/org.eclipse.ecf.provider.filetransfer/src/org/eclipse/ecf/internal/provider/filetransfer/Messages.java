@@ -19,8 +19,10 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.filetransfer.messages"; //$NON-NLS-1$
 	public static String AbstractOutgoingFileTransfer_EXCEPTION_FILE_TRANSFER_INFO_NOT_NULL;
+	public static String AbstractOutgoingFileTransfer_EXCEPTION_IN_FINALLY;
 	public static String AbstractRetrieveFileTransfer_MalformedURLException;
 	public static String AbstractRetrieveFileTransfer_Progress_Data;
+	public static String AbstractRetrieveFileTransfer_EXCEPTION_IN_FINALLY;
 	public static String AbstractRetrieveFileTransfer_Exception_User_Cancelled;
 	public static String AbstractRetrieveFileTransfer_RemoteFileID_Not_Null;
 	public static String AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK;

@@ -119,11 +119,14 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 			} finally {
 				hardClose();
 				monitor.done();
-				fireTransferSendDoneEvent();
+				try {
+					fireTransferSendDoneEvent();
+				} catch (Exception e) {
+					Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.AbstractOutgoingFileTransfer_EXCEPTION_IN_FINALLY, e));
+				}
 			}
 			return getFinalStatus(exception);
 		}
-
 	}
 
 	protected IStatus getFinalStatus(Throwable exception1) {

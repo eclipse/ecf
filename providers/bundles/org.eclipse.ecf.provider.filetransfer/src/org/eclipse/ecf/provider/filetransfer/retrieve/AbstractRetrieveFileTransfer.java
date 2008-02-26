@@ -143,10 +143,15 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			} finally {
 				hardClose();
 				monitor.done();
-				if (isPaused())
-					fireTransferReceivePausedEvent();
-				else
-					fireTransferReceiveDoneEvent();
+				try {
+					if (isPaused())
+						fireTransferReceivePausedEvent();
+					else
+						fireTransferReceiveDoneEvent();
+				} catch (Exception e) {
+					// simply log
+					Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.AbstractRetrieveFileTransfer_EXCEPTION_IN_FINALLY, e));
+				}
 			}
 			return getFinalStatus(exception);
 		}
