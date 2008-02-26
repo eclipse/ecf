@@ -195,4 +195,7 @@ final class TorrentFileTransfer implements IFileTransferPausable, IFileTransferR
 		return null;
 	}
 
+	public long getFileLength() {
+		return -1;
+	}
 }
