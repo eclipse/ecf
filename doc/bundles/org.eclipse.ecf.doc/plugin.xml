@@ -23,15 +23,15 @@
    <extension point="org.eclipse.ui.intro.configExtension">
       <configExtension
          configId="org.eclipse.ui.intro.universalConfig"
-         content="intro/overviewExtensionContent.xml">
+         content="$nl$/intro/overviewExtensionContent.xml">
       </configExtension>
       <configExtension
          configId="org.eclipse.ui.intro.universalConfig"
-         content="intro/whatsnewExtensionContent.xml">
+         content="$nl$/intro/whatsnewExtensionContent.xml">
       </configExtension>
       <configExtension
          configId="org.eclipse.ui.intro.universalConfig"
-         content="intro/tutorialsExtensionContent.xml">
+         content="$nl$/intro/tutorialsExtensionContent.xml">
       </configExtension>
    </extension>
 </plugin>
