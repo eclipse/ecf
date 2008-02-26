@@ -153,6 +153,9 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		localFileContents = null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
+	 */
 	public ID getID() {
 		return remoteFileID;
 	}
@@ -199,15 +202,24 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		});
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IOutgoingFileTransfer#getBytesSent()
+	 */
 	public long getBytesSent() {
 		return bytesSent;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#cancel()
+	 */
 	public void cancel() {
 		if (job != null)
 			job.cancel();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#getException()
+	 */
 	public Exception getException() {
 		return exception;
 	}
@@ -218,16 +230,29 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#getPercentComplete()
 	 */
 	public double getPercentComplete() {
-		long fileLength = fileTransferInfo.getFileSize();
+		long fileLength = getFileLength();
 		if (fileLength == -1 || fileLength == 0)
 			return fileLength;
 		return ((double) bytesSent / (double) fileLength);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#getFileLength()
+	 */
+	public long getFileLength() {
+		return fileTransferInfo.getFileSize();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#isDone()
+	 */
 	public boolean isDone() {
 		return done;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
 	public Object getAdapter(Class adapter) {
 		if (adapter == null)
 			return null;
@@ -321,6 +346,9 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#sendOutgoingRequest(org.eclipse.ecf.filetransfer.identity.IFileID, org.eclipse.ecf.filetransfer.IFileTransferInfo, org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
+	 */
 	public void sendOutgoingRequest(IFileID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map ops) throws SendFileTransferException {
 		Assert.isNotNull(targetReceiver, Messages.AbstractOutgoingFileTransfer_RemoteFileID_Not_Null);
 		Assert.isNotNull(transferListener, Messages.AbstractOutgoingFileTransfer_TransferListener_Not_Null);
@@ -343,6 +371,9 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		setupAndScheduleJob();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#sendOutgoingRequest(org.eclipse.ecf.filetransfer.identity.IFileID, java.io.File, org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
+	 */
 	public void sendOutgoingRequest(IFileID targetReceiver, final File localFileToSend, IFileTransferListener transferListener, Map ops) throws SendFileTransferException {
 		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend, null, null), transferListener, ops);
 	}

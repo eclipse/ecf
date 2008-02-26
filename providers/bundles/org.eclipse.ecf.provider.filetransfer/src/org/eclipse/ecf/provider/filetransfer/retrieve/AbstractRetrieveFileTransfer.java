@@ -246,10 +246,16 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		});
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getBytesReceived()
+	 */
 	public long getBytesReceived() {
 		return bytesReceived;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#cancel()
+	 */
 	public void cancel() {
 		if (isPaused()) {
 			done = true;
@@ -259,6 +265,9 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			job.cancel();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#getException()
+	 */
 	public Exception getException() {
 		return exception;
 	}
@@ -274,10 +283,23 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		return ((double) bytesReceived / (double) fileLength);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#getFileLength()
+	 */
+	public long getFileLength() {
+		return fileLength;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#isDone()
+	 */
 	public boolean isDone() {
 		return done;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
 	public Object getAdapter(Class adapter) {
 		if (adapter == null)
 			return null;
