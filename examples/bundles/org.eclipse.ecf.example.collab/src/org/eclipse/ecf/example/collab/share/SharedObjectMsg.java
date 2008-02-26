@@ -20,6 +20,8 @@ import java.security.PrivilegedExceptionAction;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.internal.example.collab.Messages;
+import org.eclipse.osgi.util.NLS;
 
 public class SharedObjectMsg implements Serializable {
 	static final long serialVersionUID = 571132189626558278L;
@@ -28,7 +30,7 @@ public class SharedObjectMsg implements Serializable {
 
 	class SenderID {
 
-		private ID id;
+		private final ID id;
 
 		// No instances other than ones created in SharedObjectMsg.invokeFrom/2
 		protected SenderID(ID theID) {
@@ -39,9 +41,9 @@ public class SharedObjectMsg implements Serializable {
 			return id;
 		}
 	}
+
 	// Static factory methods for creating SharedObjectMsg instances
-	public static SharedObjectMsg createMsg(String className,
-			String methodName, Object[] param) {
+	public static SharedObjectMsg createMsg(String className, String methodName, Object[] param) {
 		Assert.isNotNull(methodName);
 		Assert.isNotNull(param);
 		return new SharedObjectMsg(className, methodName, param);
@@ -59,9 +61,8 @@ public class SharedObjectMsg implements Serializable {
 		return createMsg(className, methodName, nullArgs);
 	}
 
-	public static SharedObjectMsg createMsg(String className,
-			String methodName, Object arg) {
-		Object args[] = { arg };
+	public static SharedObjectMsg createMsg(String className, String methodName, Object arg) {
+		final Object args[] = {arg};
 		return createMsg(className, methodName, args);
 	}
 
@@ -69,29 +70,23 @@ public class SharedObjectMsg implements Serializable {
 		return createMsg((String) null, methodName, arg);
 	}
 
-	public static SharedObjectMsg createMsg(String className,
-			String methodName, Object arg1, Object arg2) {
-		Object args[] = { arg1, arg2 };
+	public static SharedObjectMsg createMsg(String className, String methodName, Object arg1, Object arg2) {
+		final Object args[] = {arg1, arg2};
 		return createMsg(className, methodName, args);
 	}
 
-	public static SharedObjectMsg createMsg(String className,
-			String methodName, Object arg1, Object arg2, Object arg3) {
-		Object args[] = { arg1, arg2, arg3 };
+	public static SharedObjectMsg createMsg(String className, String methodName, Object arg1, Object arg2, Object arg3) {
+		final Object args[] = {arg1, arg2, arg3};
 		return createMsg(className, methodName, args);
 	}
 
-	public static SharedObjectMsg createMsg(String className,
-			String methodName, Object arg1, Object arg2, Object arg3,
-			Object arg4) {
-		Object args[] = { arg1, arg2, arg3, arg4 };
+	public static SharedObjectMsg createMsg(String className, String methodName, Object arg1, Object arg2, Object arg3, Object arg4) {
+		final Object args[] = {arg1, arg2, arg3, arg4};
 		return createMsg(className, methodName, args);
 	}
 
-	public static SharedObjectMsg createMsg(String className,
-			String methodName, Object arg1, Object arg2, Object arg3,
-			Object arg4, Object arg5) {
-		Object args[] = { arg1, arg2, arg3, arg4, arg5 };
+	public static SharedObjectMsg createMsg(String className, String methodName, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
+		final Object args[] = {arg1, arg2, arg3, arg4, arg5};
 		return createMsg(className, methodName, args);
 	}
 
@@ -108,8 +103,7 @@ public class SharedObjectMsg implements Serializable {
 	 * @exception ClassNotFoundException
 	 *                thrown if specified class is not found
 	 */
-	public static Class getClass(ClassLoader loader, String name)
-			throws ClassNotFoundException {
+	public static Class getClass(ClassLoader loader, String name) throws ClassNotFoundException {
 		if (name == null)
 			return null;
 		return Class.forName(name, true, loader);
@@ -167,23 +161,21 @@ public class SharedObjectMsg implements Serializable {
 	static Method findMethod(final Class clazz, String meth, Class args[]) {
 		Method methods[] = null;
 		try {
-			methods = (Method[]) AccessController
-					.doPrivileged(new PrivilegedExceptionAction() {
-						public Object run() throws Exception {
-							return clazz.getDeclaredMethods();
-						}
-					});
-		} catch (PrivilegedActionException e) {
+			methods = (Method[]) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+				public Object run() throws Exception {
+					return clazz.getDeclaredMethods();
+				}
+			});
+		} catch (final PrivilegedActionException e) {
 			return null;
 		}
 		return searchForMethod(methods, meth, args);
 	}
 
-	public static Method searchForMethod(Method meths[], String meth,
-			Class args[]) {
+	public static Method searchForMethod(Method meths[], String meth, Class args[]) {
 		// Find it from among the given set of Method objects
 		for (int i = 0; i < meths.length; i++) {
-			Method test = meths[i];
+			final Method test = meths[i];
 			if (test.getName().equals(meth)) {
 				if (test.getParameterTypes().length == args.length)
 					return test;
@@ -205,11 +197,10 @@ public class SharedObjectMsg implements Serializable {
 	 *            method for execution
 	 * @return Method instance if found, null if not found
 	 */
-	public static Method findMethodRecursive(Class clazz, String meth,
-			Class args[]) {
-		Method aMethod = findMethod(clazz, meth, args);
+	public static Method findMethodRecursive(Class clazz, String meth, Class args[]) {
+		final Method aMethod = findMethod(clazz, meth, args);
 		if (aMethod == null) {
-			Class superclazz = clazz.getSuperclass();
+			final Class superclazz = clazz.getSuperclass();
 			if (superclazz != null)
 				return findMethodRecursive(superclazz, meth, args);
 			else
@@ -229,13 +220,11 @@ public class SharedObjectMsg implements Serializable {
 	 *                thrown if any objects in args array do not implement the
 	 *                Serializable interface
 	 */
-	public static void checkForSerializable(SharedObjectMsg aMsg)
-			throws NotSerializableException {
-		Object args[] = aMsg.getArgs();
+	public static void checkForSerializable(SharedObjectMsg aMsg) throws NotSerializableException {
+		final Object args[] = aMsg.getArgs();
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] != null && !(args[i] instanceof Serializable))
-				throw new NotSerializableException("Parameter " + i
-						+ " not Serializable");
+				throw new NotSerializableException(NLS.bind(Messages.SharedObjectMsg_EXCEPTION_NOT_SERIALIZABLE, new Integer(i)));
 		}
 	}
 
@@ -274,7 +263,7 @@ public class SharedObjectMsg implements Serializable {
 	public final void setMethodName(String name) {
 		checkAlterMsg();
 		if (name == null)
-			throw new NullPointerException("methodname cannot be null");
+			throw new NullPointerException(Messages.SharedObjectMsg_EXCEPTION_METHOD_NOT_NULL);
 		myMethodName = name;
 	}
 
@@ -325,7 +314,7 @@ public class SharedObjectMsg implements Serializable {
 	Object doInvoke(final Object target) // package scope for security
 			throws Exception {
 		if (target == null)
-			throw new NoSuchMethodException("Null target");
+			throw new NoSuchMethodException(Messages.SharedObjectMsg_EXCEPTION_NULL_TARGET);
 		Method meth = null;
 		if (myClassName == null) {
 			// If not specific class is specified by SharedObjectMsg instance,
@@ -334,8 +323,7 @@ public class SharedObjectMsg implements Serializable {
 		} else {
 			// If it is specified, then load the specified class, using the
 			// target object's classloader
-			meth = findMethod(getClass(target.getClass().getClassLoader(),
-					myClassName));
+			meth = findMethod(getClass(target.getClass().getClassLoader(), myClassName));
 		}
 		// If no method was found, then throw
 		if (meth == null)
@@ -353,12 +341,11 @@ public class SharedObjectMsg implements Serializable {
 		return toCall.invoke(target, getArgs());
 	}
 
-	public final Object invokeFrom(ID fromID, final Object target)
-			throws Exception {
+	public final Object invokeFrom(ID fromID, final Object target) throws Exception {
 		// Setup new array of arguments with the fromID on the front
 		Object[] newParams = null;
-		SenderID sender = new SenderID(fromID);
-		Object args[] = getArgs();
+		final SenderID sender = new SenderID(fromID);
+		final Object args[] = getArgs();
 		if (args == null) {
 			newParams = new Object[1];
 			newParams[0] = sender;
@@ -374,19 +361,18 @@ public class SharedObjectMsg implements Serializable {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("SharedObjectMsg[").append(myClassName).append(":").append(
-				myMethodName).append("(");
+		final StringBuffer sb = new StringBuffer();
+		sb.append("SharedObjectMsg[").append(myClassName).append(":").append(myMethodName).append("("); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		if (myArgs == null) {
 			sb.append(myArgs);
 		} else {
 			for (int i = 0; i < myArgs.length; i++) {
 				if (i > 0)
-					sb.append(",");
+					sb.append(","); //$NON-NLS-1$
 				sb.append(myArgs[i]);
 			}
 		}
-		sb.append(")]");
+		sb.append(")]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

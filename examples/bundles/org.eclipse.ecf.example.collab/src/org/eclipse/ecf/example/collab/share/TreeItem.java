@@ -16,7 +16,7 @@ import java.io.Serializable;
 public class TreeItem implements Serializable {
 
 	private static final long serialVersionUID = -1223990714505395727L;
-	public static final String DEFAULT_SEPARATOR = ": ";
+	public static final String DEFAULT_SEPARATOR = ": "; //$NON-NLS-1$
 	protected String label;
 	protected String labelValue;
 	protected String name;
@@ -83,7 +83,7 @@ public class TreeItem implements Serializable {
 
 	public String toString() {
 		String lv = getLabelValue();
-		if (lv == null || lv.equals("")) {
+		if (lv == null || lv.equals("")) { //$NON-NLS-1$
 			return getLabel();
 		} else
 			return getLabel() + getSeparator() + getLabelValue();

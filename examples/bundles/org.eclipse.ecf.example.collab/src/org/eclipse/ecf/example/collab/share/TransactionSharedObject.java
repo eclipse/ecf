@@ -17,11 +17,12 @@ import java.util.Vector;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddAbortException;
+import org.eclipse.ecf.internal.example.collab.Messages;
 
 public class TransactionSharedObject extends GenericSharedObject implements
 		ISharedObjectContainerTransaction {
 
-	public static final String REPLICA_COMMIT_MSG = "replicaCommit";
+	public static final String REPLICA_COMMIT_MSG = "replicaCommit"; //$NON-NLS-1$
 
 	public static int DEFAULT_TIMEOUT = 30000;
 
@@ -72,7 +73,7 @@ public class TransactionSharedObject extends GenericSharedObject implements
 				} catch (Exception e) {
 					// If throws exception, we're doomed
 					state = ISharedObjectContainerTransaction.ABORTED;
-					log("unable to send create response to "
+					log("unable to send create response to " //$NON-NLS-1$
 							+ getHomeContainerID(), e);
 				}
 			}
@@ -145,7 +146,7 @@ public class TransactionSharedObject extends GenericSharedObject implements
 				forwardMsgTo(fromID, SharedObjectMsg.createMsg((String) null,
 						REPLICA_COMMIT_MSG));
 			} catch (Exception except) {
-				log("Exception sending commit message to " + fromID, except);
+				log("Exception sending commit message to " + fromID, except); //$NON-NLS-1$
 			}
 		}
 	}
@@ -155,8 +156,8 @@ public class TransactionSharedObject extends GenericSharedObject implements
 		if (isHost()) {
 			synchronized (lock) {
 				if (state == ISharedObjectContainerTransaction.VOTING) {
-					addRemoteParticipantFailed(member, new Exception("Member "
-							+ member + " left"));
+					addRemoteParticipantFailed(member, new Exception("Member " //$NON-NLS-1$
+							+ member + " left")); //$NON-NLS-1$
 				}
 				lock.notifyAll();
 			}
@@ -171,12 +172,12 @@ public class TransactionSharedObject extends GenericSharedObject implements
 					long wait = end - System.currentTimeMillis();
 					if (wait <= 0L)
 						throw new SharedObjectAddAbortException(
-								"Timeout waiting for create responses");
+								Messages.TransactionSharedObject_EXCEPTION_TIMEOUT);
 					// Actually wait right here
 					lock.wait(wait);
 				}
 			} catch (InterruptedException e) {
-				throw new SharedObjectAddAbortException("Wait interrupted");
+				throw new SharedObjectAddAbortException(Messages.TransactionSharedObject_EXCEPTION_INTERUPTED);
 			} catch (SharedObjectAddAbortException e1) {
 				// Aborted for some reason. Clean up.
 				doAbort(e1);
@@ -217,7 +218,7 @@ public class TransactionSharedObject extends GenericSharedObject implements
 						REPLICA_COMMIT_MSG));
 			} catch (Exception e2) {
 				doAbort(new SharedObjectAddAbortException(
-						"Exception sending commit message", e2));
+						Messages.TransactionSharedObject_EXCEPTION_ON_COMMIT_MESSAGE, e2));
 			}
 		}
 		// Set state variable to committed.
@@ -264,7 +265,7 @@ public class TransactionSharedObject extends GenericSharedObject implements
 			ID remoteID = (ID) failedParticipants.keys().nextElement();
 			Exception e = (Exception) failedParticipants.get(remoteID);
 			// Abort!
-			throw new SharedObjectAddAbortException("Abort received", e);
+			throw new SharedObjectAddAbortException(Messages.TransactionSharedObject_EXCEPTION_FROM_ABORT, e);
 			// If no problems, and the number of participants to here from is 0,
 			// then we're done
 		} else if (state == ISharedObjectContainerTransaction.VOTING

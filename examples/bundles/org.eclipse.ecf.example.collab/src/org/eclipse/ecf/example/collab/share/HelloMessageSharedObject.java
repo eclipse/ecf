@@ -26,8 +26,8 @@ public class HelloMessageSharedObject extends GenericSharedObject {
 	private String sender;
 
 	public HelloMessageSharedObject() {
-		sender = "<unknown>";
-		message = " says hello";
+		sender = "<unknown>"; //$NON-NLS-1$
+		message = " says hello"; //$NON-NLS-1$
 	}
 
 	public HelloMessageSharedObject(String message, String sender) {
@@ -68,13 +68,13 @@ public class HelloMessageSharedObject extends GenericSharedObject {
 					public void run() {
 						Display.getDefault().beep();
 						MessageDialog.openInformation(null, NLS.bind(
-								"Message from ", sender), NLS.bind(
-								"{0} says {1}", sender, message));
+								"Message from ", sender), NLS.bind( //$NON-NLS-1$
+								"{0} says {1}", sender, message)); //$NON-NLS-1$
 					}
 				});
 			}
 		} catch (Exception e) {
-			log("Exception showing message dialog ", e);
+			log("Exception showing message dialog ", e); //$NON-NLS-1$
 		}
 		destroySelf();
 	}

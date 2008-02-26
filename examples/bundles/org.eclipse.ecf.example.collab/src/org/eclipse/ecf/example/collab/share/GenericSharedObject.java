@@ -38,7 +38,7 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 
 public class GenericSharedObject implements ISharedObject {
-	protected static final String ARGS_PROPERTY_NAME = "args";
+	protected static final String ARGS_PROPERTY_NAME = "args"; //$NON-NLS-1$
 
 	protected static final class MsgMap {
 		String meth;
@@ -86,7 +86,7 @@ public class GenericSharedObject implements ISharedObject {
 				// Send destroy message to all known remotes
 				destroyRemote(null);
 			} catch (IOException e) {
-				log("Exception sending destroy message to remotes", e);
+				log("Exception sending destroy message to remotes", e); //$NON-NLS-1$
 			}
 		}
 		destroySelfLocal();
@@ -350,8 +350,8 @@ public class GenericSharedObject implements ISharedObject {
 				msgMap = new Hashtable();
 			else if (msgMap.containsKey(msg))
 				throw new IllegalArgumentException(
-						"registerProxy:  proxy already registered for "
-								+ method + " by " + target);
+						"registerProxy:  proxy already registered for " //$NON-NLS-1$
+								+ method + " by " + target); //$NON-NLS-1$
 			// Then put entry into table with msg as key
 			msgMap.put(msg, new MsgMap(target, method));
 		}
@@ -371,7 +371,7 @@ public class GenericSharedObject implements ISharedObject {
 			else
 				return;
 		} catch (IOException e) {
-			log("Exception in replicate", e);
+			log("Exception in replicate", e); //$NON-NLS-1$
 		}
 	}
 
@@ -381,7 +381,7 @@ public class GenericSharedObject implements ISharedObject {
 			queue.enqueue(new RemoteSharedObjectMsgEvent(getID(), getContext()
 					.getLocalContainerID(), msg));
 		} catch (QueueException e) {
-			log("QueueException enqueing message to self", e);
+			log("QueueException enqueing message to self", e); //$NON-NLS-1$
 		}
 	}
 
@@ -413,12 +413,12 @@ public class GenericSharedObject implements ISharedObject {
 				return getContext().getSharedObjectManager()
 						.createSharedObject(desc);
 			} catch (Exception e) {
-				log("Exception creating replicated object", e);
+				log("Exception creating replicated object", e); //$NON-NLS-1$
 				throw e;
 			}
 		} else
 			throw new Exception(
-					"Cannot send object creation request direct to target");
+					"Cannot send object creation request direct to target"); //$NON-NLS-1$
 	}
 
 	public String getUniqueString() {

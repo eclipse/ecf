@@ -32,10 +32,10 @@ public class RemoteSharedObjectMsgEvent extends RemoteSharedObjectEvent {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("RemoteSharedObjectMsgEvent[");
-		buf.append(getSenderSharedObjectID()).append(";").append(
-				getRemoteContainerID()).append(";").append(getMsg());
-		buf.append("]");
+		StringBuffer buf = new StringBuffer("RemoteSharedObjectMsgEvent["); //$NON-NLS-1$
+		buf.append(getSenderSharedObjectID()).append(";").append( //$NON-NLS-1$
+				getRemoteContainerID()).append(";").append(getMsg()); //$NON-NLS-1$
+		buf.append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }
