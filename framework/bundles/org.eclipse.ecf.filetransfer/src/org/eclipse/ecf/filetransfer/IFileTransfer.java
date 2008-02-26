@@ -83,7 +83,8 @@ public interface IFileTransfer extends IAdaptable, IIdentifiable {
 
 	/**
 	 * Return resulting file length (in bytes) for this file transfer instance.  If the length is not known,
-	 * -1 will be returned.
+	 * -1 will be returned.  Note that if a {@link IFileRangeSpecification} is provided that the returned
+	 * file length is the expected file length of just the range retrieved (and not the entire file).
 	 */
 	public long getFileLength();
 
