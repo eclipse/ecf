@@ -86,7 +86,6 @@ public class GetFileHandler extends AbstractHandler {
 										Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "failed to set output file", e)); //$NON-NLS-1$
 									}
 								} else if (event instanceof IIncomingFileTransferReceiveDataEvent) {
-									monitor.worked(1);
 									updateTransferInView(shell, incoming);
 								} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 									try {
