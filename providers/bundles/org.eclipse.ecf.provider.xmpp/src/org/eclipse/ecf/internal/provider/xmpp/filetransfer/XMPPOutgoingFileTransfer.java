@@ -57,24 +57,21 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 
 	Exception exception;
 
-	public XMPPOutgoingFileTransfer(FileTransferManager manager,
-			XMPPID remoteTarget, IFileTransferInfo fileTransferInfo,
-			IFileTransferListener listener) {
+	public XMPPOutgoingFileTransfer(FileTransferManager manager, XMPPID remoteTarget, IFileTransferInfo fileTransferInfo, IFileTransferListener listener) {
 		this.manager = manager;
 		this.remoteTarget = remoteTarget;
 		this.transferInfo = fileTransferInfo;
 		this.listener = listener;
 		this.sessionID = createSessionID();
-		String fullyQualifiedName = remoteTarget.getFQName();
+		final String fullyQualifiedName = remoteTarget.getFQName();
 		outgoingFileTransfer = manager.createOutgoingFileTransfer(fullyQualifiedName);
 	}
 
 	private ID createSessionID() {
 		try {
 			return IDFactory.getDefault().createGUID();
-		} catch (IDCreateException e) {
-			throw new NullPointerException(
-					"cannot create id for XMPPOutgoingFileTransfer");
+		} catch (final IDCreateException e) {
+			throw new NullPointerException("cannot create id for XMPPOutgoingFileTransfer");
 		}
 	}
 
@@ -104,16 +101,14 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 
 	NegotiationProgress progress = new NegotiationProgress();
 
-	public synchronized void startSend(File localFile, String description)
-			throws XMPPException {
+	public synchronized void startSend(File localFile, String description) throws XMPPException {
 		this.localFile = localFile;
 		this.fileSize = localFile.length();
 		setStatus(Status.INITIAL);
 		// outgoingFileTransfer.sendFile(localFile, description);
-		outgoingFileTransfer.sendFile(localFile.getAbsolutePath(),
-				this.fileSize, description, progress);
+		outgoingFileTransfer.sendFile(localFile.getAbsolutePath(), this.fileSize, description, progress);
 
-		Thread transferThread = new Thread(new Runnable() {
+		final Thread transferThread = new Thread(new Runnable() {
 			public void run() {
 				setStatus(outgoingFileTransfer.getStatus());
 				boolean negotiation = true;
@@ -121,17 +116,13 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 					// check the state of the progress
 					try {
 						Thread.sleep(300);
-					} catch (InterruptedException e) {
+					} catch (final InterruptedException e) {
 						return;
 					}
-					Status s = progress.getStatus();
+					final Status s = progress.getStatus();
 					setStatus(s);
-					final boolean negotiated = getStatus().equals(
-							Status.NEGOTIATED);
-					if (s.equals(Status.NEGOTIATED) || s.equals(Status.CANCLED)
-							|| s.equals(Status.COMPLETE)
-							|| s.equals(Status.ERROR)
-							|| s.equals(Status.REFUSED)) {
+					final boolean negotiated = getStatus().equals(Status.NEGOTIATED);
+					if (s.equals(Status.NEGOTIATED) || s.equals(Status.CANCLED) || s.equals(Status.COMPLETE) || s.equals(Status.ERROR) || s.equals(Status.REFUSED)) {
 						fireTransferListenerEvent(new IOutgoingFileTransferResponseEvent() {
 							private static final long serialVersionUID = -5940612388464073240L;
 
@@ -144,10 +135,8 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 							}
 
 							public String toString() {
-								StringBuffer buf = new StringBuffer(
-										"OutgoingFileTransferResponseEvent[");
-								buf.append("requestAccepted=").append(
-										requestAccepted()).append("]");
+								final StringBuffer buf = new StringBuffer("OutgoingFileTransferResponseEvent[");
+								buf.append("requestAccepted=").append(requestAccepted()).append("]");
 								return buf.toString();
 							}
 						});
@@ -156,7 +145,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 					}
 				}
 
-				OutputStream outs = progress.getOutputStream();
+				final OutputStream outs = progress.getOutputStream();
 
 				if (outs == null)
 					return;
@@ -164,13 +153,12 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 				InputStream inputStream = null;
 
 				try {
-					inputStream = new FileInputStream(
-							XMPPOutgoingFileTransfer.this.localFile);
+					inputStream = new FileInputStream(XMPPOutgoingFileTransfer.this.localFile);
 					writeToStream(inputStream, outs);
-				} catch (FileNotFoundException e) {
+				} catch (final FileNotFoundException e) {
 					setStatus(FileTransfer.Status.ERROR);
 					setException(e);
-				} catch (XMPPException e) {
+				} catch (final XMPPException e) {
 					setStatus(FileTransfer.Status.ERROR);
 					setException(e);
 				} finally {
@@ -179,13 +167,13 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 						if (inputStream != null) {
 							inputStream.close();
 						}
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						/* Do Nothing */
 					}
 					try {
 						outs.flush();
 						outs.close();
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						/* Do Nothing */
 					}
 					// Then notify that the sending is done
@@ -197,12 +185,9 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 						}
 
 						public String toString() {
-							StringBuffer buf = new StringBuffer(
-									"IOutgoingFileTransferSendDoneEvent[");
-							buf.append("isDone="+getSource().isDone());
-							buf.append(";bytesSent=").append(
-									getSource().getBytesSent()).append(
-									"]");
+							final StringBuffer buf = new StringBuffer("IOutgoingFileTransferSendDoneEvent[");
+							buf.append("isDone=" + getSource().isDone());
+							buf.append(";bytesSent=").append(getSource().getBytesSent()).append("]");
 							return buf.toString();
 						}
 
@@ -239,16 +224,14 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 	}
 
 	public boolean isDone() {
-		return status == Status.CANCLED || status == Status.ERROR
-				|| status == Status.COMPLETE;
+		return status == Status.CANCLED || status == Status.ERROR || status == Status.COMPLETE;
 	}
 
 	public ID getSessionID() {
 		return sessionID;
 	}
 
-	protected void writeToStream(final InputStream in, final OutputStream out)
-			throws XMPPException {
+	protected void writeToStream(final InputStream in, final OutputStream out) throws XMPPException {
 		final byte[] b = new byte[BUFFER_SIZE];
 		int count = 0;
 		amountWritten = 0;
@@ -256,7 +239,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 		do {
 			try {
 				out.write(b, 0, count);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new XMPPException("error writing to output stream", e);
 			}
 
@@ -265,26 +248,24 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 			if (count > 0) {
 				fireTransferListenerEvent(new IOutgoingFileTransferSendDataEvent() {
 					private static final long serialVersionUID = 2327297070577249812L;
-	
+
 					public IOutgoingFileTransfer getSource() {
 						return XMPPOutgoingFileTransfer.this;
 					}
-	
+
 					public String toString() {
-						StringBuffer buf = new StringBuffer(
-								"IOutgoingFileTransferSendDataEvent[");
+						final StringBuffer buf = new StringBuffer("IOutgoingFileTransferSendDataEvent[");
 						buf.append("bytesSent=").append(getSource().getBytesSent());
-						buf.append(";percentComplete=").append(
-								getSource().getPercentComplete()).append("]");
+						buf.append(";percentComplete=").append(getSource().getPercentComplete()).append("]");
 						return buf.toString();
 					}
-	
+
 				});
 			}
 			// read more bytes from the input stream
 			try {
 				count = in.read(b);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new XMPPException("error reading from input stream", e);
 			}
 		} while (count != -1 && !getStatus().equals(Status.CANCLED));
@@ -293,6 +274,13 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 		if (!getStatus().equals(Status.CANCLED) && amountWritten != fileSize) {
 			setStatus(Status.ERROR);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#getFileLength()
+	 */
+	public long getFileLength() {
+		return fileSize;
 	}
 
 }

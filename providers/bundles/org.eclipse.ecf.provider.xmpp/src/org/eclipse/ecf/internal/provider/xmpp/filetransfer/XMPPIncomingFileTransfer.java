@@ -244,4 +244,7 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 		return null;
 	}
 
+	public long getFileLength() {
+		return fileLength;
+	}
 }
