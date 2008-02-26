@@ -80,4 +80,11 @@ public interface IFileTransfer extends IAdaptable, IIdentifiable {
 	 *         still in progress.
 	 */
 	public boolean isDone();
+
+	/**
+	 * Return resulting file length (in bytes) for this file transfer instance.  If the length is not known,
+	 * -1 will be returned.
+	 */
+	public long getFileLength();
+
 }
