@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.filetransfer.FileTransferJob;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
@@ -138,6 +139,10 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 								final StringBuffer buf = new StringBuffer("OutgoingFileTransferResponseEvent[");
 								buf.append("requestAccepted=").append(requestAccepted()).append("]");
 								return buf.toString();
+							}
+
+							public void setFileTransferJob(FileTransferJob job) {
+								// does nothing with this implementation
 							}
 						});
 						// And negotiation is over
