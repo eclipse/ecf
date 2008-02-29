@@ -5,11 +5,11 @@
  * available at http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: Composent, Inc. - initial API and implementation
+ *               Cloudsmith, Inc. - additional API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer.events;
 
-import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
+import org.eclipse.ecf.filetransfer.*;
 
 /**
  * Asynchronous event sent to {@link IFileTransferListener} associated with
@@ -26,4 +26,12 @@ public interface IOutgoingFileTransferResponseEvent extends IOutgoingFileTransfe
 	 */
 	public boolean requestAccepted();
 
+	/**
+	 * Set the {@link FileTransferJob} to use for the actual file transfer.  This method only
+	 * has effect if the {@link #requestAccepted()} returns <code>true</code>.
+	 * @param job the job to use.  If <code>null</code>, or this method is not called, then
+	 * a default FileTransferJob is used.  NOTE: the given job should
+	 * *not* be scheduled/started prior to being provided as a parameter to this method.
+	 */
+	public void setFileTransferJob(FileTransferJob job);
 }

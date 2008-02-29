@@ -20,6 +20,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.filetransfer.messages"; //$NON-NLS-1$
 	public static String BaseFileTransferInfo_File_Not_Null;
 	public static String FileIDFactory_Exception_File_Create;
+	public static String FileTransferJob_STATUSERROR_NO_RUNNABLE;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
