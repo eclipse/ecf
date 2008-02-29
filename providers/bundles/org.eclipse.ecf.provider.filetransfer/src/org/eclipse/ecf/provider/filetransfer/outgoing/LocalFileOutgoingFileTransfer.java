@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *               Cloudsmith, Inc. - additional API and implementation
  *****************************************************************************/
 
 package org.eclipse.ecf.provider.filetransfer.outgoing;
@@ -52,8 +53,6 @@ public class LocalFileOutgoingFileTransfer extends AbstractOutgoingFileTransfer 
 			hardClose();
 			throw new SendFileTransferException(NLS.bind(Messages.LocalFileOutgoingFileTransfer_EXCEPTION_OPENING_FOR_OUTPUT, url));
 		}
-
-		fireSendStartEvent();
 	}
 
 	/* (non-Javadoc)

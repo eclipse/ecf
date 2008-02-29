@@ -5,6 +5,7 @@
  * available at http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: Composent, Inc. - initial API and implementation
+ *               Cloudsmith, Inc. - additional API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.outgoing;
 
@@ -113,7 +114,6 @@ public abstract class AbstractUrlConnectionOutgoingFileTransfer extends Abstract
 			connect();
 			// Make PUT request
 			setOutputStream(urlConnection.getOutputStream());
-			fireSendStartEvent();
 		} catch (final Exception e) {
 			throw new SendFileTransferException(NLS.bind(Messages.UrlConnectionOutgoingFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e);
 		}

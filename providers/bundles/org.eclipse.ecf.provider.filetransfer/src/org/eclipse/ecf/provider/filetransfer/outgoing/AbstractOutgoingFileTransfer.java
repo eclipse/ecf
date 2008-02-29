@@ -5,6 +5,7 @@
  * available at http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: Composent, Inc. - initial API and implementation
+ *               Cloudsmith, Inc. - additional API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.outgoing;
 
@@ -29,6 +30,9 @@ import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 import org.eclipse.osgi.util.NLS;
 
+/**
+ *
+ */
 public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTransfer, ISendFileTransfer {
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
@@ -63,37 +67,8 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 
 	protected Proxy proxy;
 
-	protected URL getRemoteFileURL() {
-		return remoteFileURL;
-	}
-
-	protected void setInputStream(InputStream ins) {
-		localFileContents = ins;
-	}
-
-	protected void setOutputStream(OutputStream outs) {
-		remoteFileContents = outs;
-	}
-
-	protected IFileTransferInfo getFileTransferInfo() {
-		return fileTransferInfo;
-	}
-
-	protected Map getOptions() {
-		return options;
-	}
-
-	public AbstractOutgoingFileTransfer() {
-		//
-	}
-
-	public class FileTransferJob extends Job {
-
-		public FileTransferJob(String name) {
-			super(name);
-		}
-
-		protected IStatus run(IProgressMonitor monitor) {
+	private final IFileTransferRunnable fileTransferRunnable = new IFileTransferRunnable() {
+		public IStatus performFileTransfer(IProgressMonitor monitor) {
 			final byte[] buf = new byte[buff_length];
 			final long totalWork = ((fileTransferInfo.getFileSize() == -1) ? 100 : fileTransferInfo.getFileSize());
 			double factor = (totalWork > Integer.MAX_VALUE) ? (((double) Integer.MAX_VALUE) / ((double) totalWork)) : 1.0;
@@ -127,6 +102,32 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 			}
 			return getFinalStatus(exception);
 		}
+	};
+
+	FileTransferJob fileTransferJob;
+
+	protected URL getRemoteFileURL() {
+		return remoteFileURL;
+	}
+
+	protected void setInputStream(InputStream ins) {
+		localFileContents = ins;
+	}
+
+	protected void setOutputStream(OutputStream outs) {
+		remoteFileContents = outs;
+	}
+
+	protected IFileTransferInfo getFileTransferInfo() {
+		return fileTransferInfo;
+	}
+
+	protected Map getOptions() {
+		return options;
+	}
+
+	public AbstractOutgoingFileTransfer() {
+		//
 	}
 
 	protected IStatus getFinalStatus(Throwable exception1) {
@@ -277,6 +278,9 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	 */
 	protected abstract void openStreams() throws SendFileTransferException;
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#getOutgoingNamespace()
+	 */
 	public Namespace getOutgoingNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(FileTransferNamespace.PROTOCOL);
 	}
@@ -285,8 +289,15 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		return listener;
 	}
 
+	protected String createJobName() {
+		return getRemoteFileURL().toString();
+	}
+
 	protected void setupAndScheduleJob() {
-		job = new FileTransferJob(getRemoteFileURL().toString());
+		if (fileTransferJob == null)
+			fileTransferJob = new FileTransferJob(createJobName());
+		fileTransferJob.setFileTransferRunnable(fileTransferRunnable);
+		job = fileTransferJob;
 		job.schedule();
 	}
 
@@ -303,12 +314,25 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 				return sb.toString();
 			}
 
+			/* (non-Javadoc)
+			 * @see org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent#requestAccepted()
+			 */
 			public boolean requestAccepted() {
 				return true;
 			}
 
+			/* (non-Javadoc)
+			 * @see org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferEvent#getSource()
+			 */
 			public IOutgoingFileTransfer getSource() {
 				return AbstractOutgoingFileTransfer.this;
+			}
+
+			/* (non-Javadoc)
+			 * @see org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent#setFileTransferJob(org.eclipse.ecf.filetransfer.FileTransferJob)
+			 */
+			public void setFileTransferJob(org.eclipse.ecf.filetransfer.FileTransferJob ftj) {
+				AbstractOutgoingFileTransfer.this.fileTransferJob = ftj;
 			}
 
 		});
@@ -371,6 +395,7 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		this.listener = transferListener;
 		setupProxies();
 		openStreams();
+		fireSendStartEvent();
 		setupAndScheduleJob();
 	}
 
