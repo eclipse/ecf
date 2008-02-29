@@ -22,6 +22,7 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.filetransfer.FileTransferJob;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -72,9 +73,12 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 				}
 
 				public IIncomingFileTransfer receive(File localFileToSave) throws IOException {
+					return receive(localFileToSave, null);
+				}
+
+				public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob) throws IOException {
 					setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
-					job = new FileTransferJob(getRemoteFileURL().toString());
-					job.schedule();
+					setupAndScheduleJob(fileTransferJob);
 					return RetrieveFileTransfer.this;
 				}
 
@@ -90,11 +94,22 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 					hardClose();
 				}
 
+				/**
+				 * @param streamToStore
+				 * @return incoming file transfer instance.
+				 * @throws IOException not thrown in this implementation.
+				 */
 				public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
+					return receive(streamToStore, null);
+				}
+
+				/**
+				 * @throws IOException not actually thrown by this implementation.
+				 */
+				public IIncomingFileTransfer receive(OutputStream streamToStore, FileTransferJob fileTransferJob) throws IOException {
 					setOutputStream(streamToStore);
 					setCloseOutputStream(false);
-					job = new FileTransferJob(getRemoteFileURL().toString());
-					job.schedule();
+					setupAndScheduleJob(fileTransferJob);
 					return RetrieveFileTransfer.this;
 				}
 

@@ -18,9 +18,7 @@ import java.net.URI;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 import org.eclipse.ecf.filetransfer.SendFileTransferException;
-import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
 import org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 
@@ -57,29 +55,6 @@ public class SendFileTransfer extends AbstractOutgoingFileTransfer {
 			// Open target
 			final IFileStore fileStore = EFS.getStore(new URI(getRemoteFileURL().getPath()));
 			setOutputStream(fileStore.openOutputStream(0, null));
-			// Notify listener
-			listener.handleTransferEvent(new IOutgoingFileTransferResponseEvent() {
-
-				private static final long serialVersionUID = 8414116325104138848L;
-
-				public String toString() {
-					final StringBuffer sb = new StringBuffer("IOutgoingFileTransferResponseEvent["); //$NON-NLS-1$
-					sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-					sb.append("bytesSent=").append( //$NON-NLS-1$
-							bytesSent).append("]"); //$NON-NLS-1$
-					return sb.toString();
-				}
-
-				public boolean requestAccepted() {
-					return true;
-				}
-
-				public IOutgoingFileTransfer getSource() {
-					return SendFileTransfer.this;
-				}
-
-			});
-
 		} catch (final Exception e) {
 			throw new SendFileTransferException(e);
 		}
