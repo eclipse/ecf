@@ -33,6 +33,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.filetransfer.FileTransferJob;
 import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
@@ -138,6 +139,24 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 				return transfer;
 			}
 
+			public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob) throws IOException {
+				if (cancelled) {
+					throw new RuntimeException(new UserCancelledException());
+				}
+
+				Assert.isNotNull(localFileToSave, NLS.bind(BitTorrentMessages.BitTorrentContainer_NullParameter, "localFileToSave")); //$NON-NLS-1$
+
+				if (localFileToSave.exists() && !localFileToSave.canWrite()) {
+					throw new IOException(NLS.bind(BitTorrentMessages.BitTorrentContainer_CannotWriteToFile, localFileToSave.getAbsolutePath()));
+				}
+
+				final TorrentFile file = new TorrentFile(((TorrentID) remoteFileReference).getFile());
+				file.setTargetFile(localFileToSave);
+				final Torrent torrent = TorrentFactory.createTorrent(file);
+				transfer = new TorrentFileTransfer(remoteFileReference, transferListener, torrent);
+				return transfer;
+			}
+
 			public void cancel() {
 				if (transfer != null) {
 					transfer.cancel();
@@ -150,6 +169,10 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 			}
 
 			public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
+				throw new UnsupportedOperationException(BitTorrentMessages.BitTorrentContainer_CannotWriteToStream);
+			}
+
+			public IIncomingFileTransfer receive(OutputStream streamToStore, FileTransferJob fileTransferJob) throws IOException {
 				throw new UnsupportedOperationException(BitTorrentMessages.BitTorrentContainer_CannotWriteToStream);
 			}
 
