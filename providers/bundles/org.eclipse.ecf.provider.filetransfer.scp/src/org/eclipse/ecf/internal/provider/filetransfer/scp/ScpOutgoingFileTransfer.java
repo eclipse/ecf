@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *               Cloudsmith, Inc. - additional API and implementation
  *****************************************************************************/
 
 package org.eclipse.ecf.internal.provider.filetransfer.scp;
@@ -59,7 +60,6 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 			scpUtil.checkAck(responseStream);
 			sendFileNameAndSize(localFile, targetFileName, outs, responseStream);
 			setOutputStream(outs);
-			fireSendStartEvent();
 		} catch (final Exception e) {
 			throw new SendFileTransferException(NLS.bind(Messages.ScpOutgoingFileTransfer_EXCEPTION_CONNECTING, getRemoteFileURL().toString()), e);
 		}
