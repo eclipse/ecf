@@ -1,16 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 Composent, Inc. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2004, 2008 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Composent, Inc. - initial API and implementation
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *    Benjamin Cabe <benjamin.cabe@anyware-tech.com> - bug 220258
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.Map;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
@@ -69,12 +73,17 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected IConnectContext connectContext;
 
+	protected long transferStartTime;
+
+	protected double downloadRateBytesPerSecond = 0L;
+
 	public AbstractRetrieveFileTransfer() {
 		//
 	}
 
 	private IFileTransferRunnable fileTransferRunnable = new IFileTransferRunnable() {
 		public IStatus performFileTransfer(IProgressMonitor monitor) {
+			transferStartTime = System.currentTimeMillis();
 			final byte[] buf = new byte[buff_length];
 			final long totalWork = ((fileLength == -1) ? 100 : fileLength);
 			double factor = (totalWork > Integer.MAX_VALUE) ? (((double) Integer.MAX_VALUE) / ((double) totalWork)) : 1.0;
@@ -136,10 +145,34 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		if (bytes != -1) {
 			bytesReceived += bytes;
 			localFileContents.write(buf, 0, bytes);
-			fireTransferReceiveDataEvent();
+			downloadRateBytesPerSecond = (bytesReceived / ((System.currentTimeMillis() + 1 - transferStartTime) / 1000.0));
+			monitor.setTaskName(createJobName() + Messages.AbstractRetrieveFileTransfer_Progress_Data + NLS.bind(Messages.AbstractRetrieveFileTransfer_InfoTransferRate, toHumanReadableBytes(downloadRateBytesPerSecond)));
 			monitor.worked((int) Math.round(factor * bytes));
+			fireTransferReceiveDataEvent();
 		} else
 			done = true;
+	}
+
+	public static String toHumanReadableBytes(double size) {
+		double convertedSize;
+		String unit;
+
+		if (size / (1024 * 1024 * 1024) >= 1) {
+			convertedSize = size / (1024 * 1024 * 1024);
+			unit = Messages.AbstractRetrieveFileTransfer_SizeUnitGB;
+		} else if (size / (1024 * 1024) >= 1) {
+			convertedSize = size / (1024 * 1024);
+			unit = Messages.AbstractRetrieveFileTransfer_SizeUnitMB;
+		} else if (size / 1024 >= 1) {
+			convertedSize = size / 1024;
+			unit = Messages.AbstractRetrieveFileTransfer_SizeUnitKB;
+		} else {
+			convertedSize = size;
+			unit = Messages.AbstractRetrieveFileTransfer_SizeUnitBytes;
+		}
+
+		DecimalFormat df = new DecimalFormat(NLS.bind(Messages.AbstractRetrieveFileTransfer_TransferRateFormat, unit));
+		return df.format(convertedSize);
 	}
 
 	/* (non-Javadoc)
