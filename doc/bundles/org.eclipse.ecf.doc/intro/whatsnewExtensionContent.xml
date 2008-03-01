@@ -4,7 +4,7 @@
 		style="css/whatsnew.css" path="whatsnew/@">
 		<group id="content-group" style-id="content-group">
 			<link label="Communications"
-				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.ecf.doc/html/whatsNew/ecf_whatsnew.html"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=http://www.eclipse.org/ecf/NewAndNoteworthy.html"
 				id="orgeclipseecfdoc-introLink" style-id="content-link">
 				<text>
 					Find out the significant changes made to ECF
