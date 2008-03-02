@@ -28,6 +28,8 @@ public class Activator extends AbstractUIPlugin {
 
 	private IContainer serviceHostContainer;
 
+	private BundleContext context;
+
 	/**
 	 * The constructor
 	 */
@@ -41,6 +43,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		this.context = context;
 	}
 
 	/*
@@ -54,6 +57,11 @@ public class Activator extends AbstractUIPlugin {
 			serviceHostContainer.disconnect();
 			serviceHostContainer = null;
 		}
+		this.context = null;
+	}
+
+	public BundleContext getContext() {
+		return context;
 	}
 
 	public IContainer getContainer() {

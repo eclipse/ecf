@@ -11,12 +11,15 @@
 
 package org.eclipse.ecf.internal.examples.remoteservices.client;
 
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.naming.ServiceUnavailableException;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IAsyncResult;
 import org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
@@ -27,21 +30,24 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
+import org.eclipse.ecf.remoteservices.ui.MethodInvocationDialog;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.osgi.util.tracker.ServiceTracker;
 
 public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteServiceAccessHandler {
 
 	public RemoteEnvironmentInfoServiceAccessHandler() {
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler#getContributionsForMatchingService()
+	 */
 	protected IContributionItem[] getContributionsForMatchingService() {
 		// If singleton not already set, create a new container (of type specified in serviceInfo
 		// and set the singleton to it.  If we can't create it for whatever reason, we have no
@@ -90,6 +96,7 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 				try {
 					// Then we connect
 					connectContainer(container, cTargetID, null);
+					showInformation("Connected", NLS.bind("Connected to {0}", cTargetID.getName()));
 				} catch (final ContainerConnectException e) {
 					showException(e);
 				}
@@ -99,6 +106,9 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 		return new IContributionItem[] {new ActionContributionItem(action)};
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler#getContributionItemsForService(org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter)
+	 */
 	protected IContributionItem[] getContributionItemsForService(final IRemoteServiceContainerAdapter adapter) {
 		final String className = getRemoteServiceClass();
 		if (className == null)
@@ -109,119 +119,145 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 			return NOT_AVAILABLE_CONTRIBUTION;
 	}
 
-	protected IRemoteCall createRemoteCall() {
-		final InputDialog input = new InputDialog(null, "Get property", "Enter property key", "user.name", null);
-		input.setBlockOnOpen(true);
-		final Object[] params = new Object[1];
-		if (input.open() == Window.OK) {
-			params[0] = input.getValue();
-			return new IRemoteCall() {
-
-				public String getMethod() {
-					return "getProperty";
-				}
-
-				public Object[] getParameters() {
-					return params;
-				}
-
-				public long getTimeout() {
-					return 30000;
-				}
-
-			};
-		} else
-			return null;
-	}
-
-	private void showResult(final String serviceInterface, final IRemoteCall remoteCall, final Object result) {
-		final Object display = (result != null && result.getClass().isArray()) ? Arrays.asList((Object[]) result) : result;
-		final Object[] bindings = new Object[] {serviceInterface, remoteCall.getMethod(), Arrays.asList(remoteCall.getParameters()), display};
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				MessageDialog.openInformation(null, "Received Response", NLS.bind("Service: {0}\n\nMethod: {1}\nParameters: {2}\n\nResult: {3}", bindings));
-			}
-		});
-	}
-
-	private void showException(final Throwable t) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				MessageDialog.openInformation(null, "Received Exception", NLS.bind("Exception: {0}", t.getLocalizedMessage()));
-			}
-		});
-	}
-
-	private IContributionItem createContributionItem(final IRemoteService remoteService, final int invokeMode) {
+	private IContributionItem createDialogContributionItem(final Class interfaceClass, final IRemoteService remoteService) {
 		final IAction action = new Action() {
 			public void run() {
-				try {
-					// XXX testing
-					//final MethodInvocationDialog mid = new MethodInvocationDialog((Shell) null, IRemoteEnvironmentInfo.class);
-					//mid.open();
+				final MethodInvocationDialog mid = new MethodInvocationDialog((Shell) null, IRemoteEnvironmentInfo.class);
+				if (mid.open() == Window.OK) {
+					final int timeout = (mid.getTimeout() > 0) ? mid.getTimeout() : 30000;
+					final String methodName = mid.getMethod().getName();
+					final Object[] methodArgs = mid.getMethodArguments();
+					final IRemoteCall remoteCall = new IRemoteCall() {
+						public String getMethod() {
+							return methodName;
+						}
 
-					final IRemoteCall remoteCall = createRemoteCall();
-					if (remoteCall != null) {
-						switch (invokeMode) {
-							// callSynch
-							case 0 :
-								// Actually call
-								final Object result = remoteService.callSynch(remoteCall);
-								// Show result
-								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, result);
+						public Object[] getParameters() {
+							return methodArgs;
+						}
+
+						public long getTimeout() {
+							return timeout;
+						}
+					};
+					final int invokeType = mid.getInvocationType();
+					try {
+						switch (invokeType) {
+							case MethodInvocationDialog.ASYNC_FIRE_AND_GO :
+								invokeAsyncFire(interfaceClass, remoteService, remoteCall);
 								break;
-							// callAsynch (listener)
-							case 1 :
-								// Actually call
-								remoteService.callAsynch(remoteCall, new IRemoteCallListener() {
-									public void handleEvent(IRemoteCallEvent event) {
-										if (event instanceof IRemoteCallCompleteEvent) {
-											final IRemoteCallCompleteEvent complete = (IRemoteCallCompleteEvent) event;
-											if (complete.hadException()) {
-												showException(complete.getException());
-											} else
-												showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, complete.getResponse());
-										}
-									}
-								});
+							case MethodInvocationDialog.ASYNC_FUTURE_RESULT :
+								invokeFuture(interfaceClass, remoteService, remoteCall);
 								break;
-							// callAsynch (future)
-							case 2 :
-								// Actually call
-								final IAsyncResult asyncResult = remoteService.callAsynch(remoteCall);
-								// Show result
-								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, asyncResult.get());
+							case MethodInvocationDialog.ASYNC_LISTENER :
+								invokeAsyncListener(interfaceClass, remoteService, remoteCall);
 								break;
-							// proxy
-							case 3 :
-								final IRemoteEnvironmentInfo proxy = (IRemoteEnvironmentInfo) remoteService.getProxy();
-								// Actually call	
-								final Object proxyResult = proxy.getProperty((String) remoteCall.getParameters()[0]);
-								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, proxyResult);
+							case MethodInvocationDialog.OSGI_SERVICE_PROXY :
+								invokeOSGiProxy(interfaceClass, remoteCall);
+								break;
+							case MethodInvocationDialog.REMOTE_SERVICE_PROXY :
+								invokeProxy(interfaceClass, remoteService, remoteCall);
+								break;
+							case MethodInvocationDialog.SYNCHRONOUS :
+								invokeSync(interfaceClass, remoteService, remoteCall);
+								break;
+							default :
 								break;
 						}
+					} catch (final Exception e) {
+						showException(e);
 					}
-				} catch (final Exception e) {
-					MessageDialog.openError(null, "Invoke Exception", e.getLocalizedMessage());
 				}
 			}
+
 		};
-		// Set menu item text
-		switch (invokeMode) {
-			case 0 :
-				action.setText("getProperty (s)");
-				break;
-			case 1 :
-				action.setText("getProperty (a)");
-				break;
-			case 2 :
-				action.setText("getProperty (f)");
-				break;
-			case 3 :
-				action.setText("getProperty (p)");
-				break;
-		}
+		action.setText(NLS.bind("Select method on IRemoteEnvironmentInfo...", IRemoteEnvironmentInfo.class.getName()));
 		return new ActionContributionItem(action);
+	}
+
+	protected void invokeProxy(Class interfaceClass, IRemoteService remoteService, IRemoteCall remoteCall) throws Exception {
+		if (interfaceClass.equals(IRemoteEnvironmentInfo.class))
+			invokeRemoteEnvironmentInfoProxy(remoteService, remoteCall);
+	}
+
+	protected void invokeOSGiProxy(Class interfaceClass, IRemoteCall remoteCall) throws Exception {
+		if (interfaceClass.equals(IRemoteEnvironmentInfo.class))
+			invokeOSGiRemoteEnvironmentInfoProxy(remoteCall);
+	}
+
+	private void invokeAsyncListener(final Class interfaceClass, final IRemoteService remoteService, final IRemoteCall remoteCall) {
+		// Make async call
+		remoteService.callAsynch(remoteCall, new IRemoteCallListener() {
+			public void handleEvent(IRemoteCallEvent event) {
+				if (event instanceof IRemoteCallCompleteEvent) {
+					final IRemoteCallCompleteEvent complete = (IRemoteCallCompleteEvent) event;
+					if (complete.hadException()) {
+						showException(complete.getException());
+					} else
+						showResult(interfaceClass.getName(), remoteCall, complete.getResponse());
+				}
+			}
+		});
+	}
+
+	private void invokeAsyncFire(Class interfaceClass, final IRemoteService remoteService, final IRemoteCall remoteCall) {
+		// Make async call
+		remoteService.callAsynch(remoteCall);
+	}
+
+	private void invokeSync(Class interfaceClass, final IRemoteService remoteService, final IRemoteCall remoteCall) throws ECFException {
+		// Make sync call
+		final Object result = remoteService.callSynch(remoteCall);
+		// Show result
+		showResult(interfaceClass.getName(), remoteCall, result);
+	}
+
+	private void invokeFuture(final Class interfaceClass, final IRemoteService remoteService, final IRemoteCall remoteCall) throws InvocationTargetException, InterruptedException {
+		// Make async call with future result
+		final IAsyncResult asyncResult = remoteService.callAsynch(remoteCall);
+		// Call blocking get and show result
+		showResult(interfaceClass.getName(), remoteCall, asyncResult.get());
+	}
+
+	private void invokeRemoteEnvironmentInfo(final IRemoteCall remoteCall, IRemoteEnvironmentInfo proxy) throws Exception {
+		Object result = null;
+		if (remoteCall.getMethod().equals("getProperty")) {
+			result = proxy.getProperty((String) remoteCall.getParameters()[0]);
+		} else if (remoteCall.getMethod().equals("getCommandLineArgs")) {
+			result = proxy.getCommandLineArgs();
+		} else if (remoteCall.getMethod().equals("getFrameworkArgs")) {
+			result = proxy.getFrameworkArgs();
+		} else if (remoteCall.getMethod().equals("getNL")) {
+			result = proxy.getNL();
+		} else if (remoteCall.getMethod().equals("getNonFrameworkArgs")) {
+			result = proxy.getNonFrameworkArgs();
+		} else if (remoteCall.getMethod().equals("getOS")) {
+			result = proxy.getOS();
+		} else if (remoteCall.getMethod().equals("getOSArch")) {
+			result = proxy.getOSArch();
+		} else if (remoteCall.getMethod().equals("getWS")) {
+			result = proxy.getWS();
+		} else {
+			showException(new Exception("Invalid method selected"));
+			return;
+		}
+		showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, result);
+	}
+
+	private void invokeRemoteEnvironmentInfoProxy(final IRemoteService remoteService, final IRemoteCall remoteCall) throws Exception {
+		invokeRemoteEnvironmentInfo(remoteCall, (IRemoteEnvironmentInfo) remoteService.getProxy());
+	}
+
+	private void invokeOSGiRemoteEnvironmentInfoProxy(final IRemoteCall remoteCall) throws Exception {
+		final ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(), IRemoteEnvironmentInfo.class.getName(), null);
+		st.open();
+		final IRemoteEnvironmentInfo proxy = (IRemoteEnvironmentInfo) st.getService();
+		st.close();
+		if (proxy == null) {
+			showException(new ServiceUnavailableException(NLS.bind("{0} remote service not available", IRemoteEnvironmentInfo.class.getName())));
+			return;
+		}
+		invokeRemoteEnvironmentInfo(remoteCall, proxy);
 	}
 
 	/**
@@ -234,7 +270,7 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 			if (references == null)
 				return NOT_AVAILABLE_CONTRIBUTION;
 			final IRemoteService remoteService = adapter.getRemoteService(references[0]);
-			return new IContributionItem[] {createContributionItem(remoteService, 0), createContributionItem(remoteService, 1), createContributionItem(remoteService, 2), createContributionItem(remoteService, 3)};
+			return new IContributionItem[] {createDialogContributionItem(IRemoteEnvironmentInfo.class, remoteService)};
 		} catch (final Exception e1) {
 			return NOT_AVAILABLE_CONTRIBUTION;
 		}
