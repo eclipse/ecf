@@ -19,6 +19,8 @@ public final class Messages extends NLS {
 	public static String MethodInvocationDialog_ShellTitle;
 	public static String MethodInvocationDialog_AvailableMethodsLabel;
 	public static String MethodInvocationDialog_ArgumentsLabel;
+
+	public static String MethodInvocationDialog_BUTTON_INVOKE_TEXT;
 	public static String MethodInvocationDialog_ParameterColumn;
 	public static String MethodInvocationDialog_ValueColumn;
 	public static String MethodInvocationDialog_TimeoutLabel;

@@ -40,6 +40,7 @@ import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -103,7 +104,7 @@ public final class MethodInvocationDialog extends Dialog {
 	 */
 	public static final int SYNCHRONOUS = REMOTE_SERVICE_PROXY + 1;
 
-	private static final String[] COLUMN_PROPERTIES = { "Parameter", "Argument" }; //$NON-NLS-1$ //$NON-NLS-2$
+	private static final String[] COLUMN_PROPERTIES = {"Parameter", "Argument"}; //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * Provide a default timeout value of 30,000 milliseconds.
@@ -115,7 +116,7 @@ public final class MethodInvocationDialog extends Dialog {
 	private Text timeoutText;
 	private Combo invocationCombo;
 
-	private RemoteMethod[] methods;
+	private final RemoteMethod[] methods;
 
 	private Method method;
 	private Object[] methodArguments;
@@ -136,10 +137,10 @@ public final class MethodInvocationDialog extends Dialog {
 		Assert.isNotNull(cls);
 
 		Method[] methods = cls.getMethods();
-		List validMethods = new ArrayList();
+		final List validMethods = new ArrayList();
 		for (int i = 0; i < methods.length; i++) {
-			Class[] parameters = methods[i].getParameterTypes();
-			String[] types = new String[parameters.length];
+			final Class[] parameters = methods[i].getParameterTypes();
+			final String[] types = new String[parameters.length];
 
 			if (types.length == 0) {
 				validMethods.add(methods[i]);
@@ -148,7 +149,7 @@ public final class MethodInvocationDialog extends Dialog {
 
 			boolean match = true;
 			for (int j = 0; j < types.length; j++) {
-				String name = parameters[j].getName();
+				final String name = parameters[j].getName();
 				if (!name.equals("char") && !name.equals("boolean") //$NON-NLS-1$ //$NON-NLS-2$
 						&& !name.equals("int") && !name.equals("double") //$NON-NLS-1$ //$NON-NLS-2$
 						&& !name.equals("float") && !name.equals("long") //$NON-NLS-1$ //$NON-NLS-2$
@@ -163,8 +164,7 @@ public final class MethodInvocationDialog extends Dialog {
 			}
 		}
 
-		methods = (Method[]) validMethods.toArray(new Method[validMethods
-				.size()]);
+		methods = (Method[]) validMethods.toArray(new Method[validMethods.size()]);
 		this.methods = new RemoteMethod[methods.length];
 		for (int i = 0; i < methods.length; i++) {
 			this.methods[i] = new RemoteMethod(methods[i]);
@@ -191,7 +191,7 @@ public final class MethodInvocationDialog extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		parent = (Composite) super.createDialogArea(parent);
 
-		Composite composite = new Composite(parent, SWT.NONE);
+		final Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		composite.setLayout(new GridLayout(2, true));
 
@@ -201,36 +201,29 @@ public final class MethodInvocationDialog extends Dialog {
 		label = new Label(composite, SWT.LEAD);
 		label.setText(Messages.MethodInvocationDialog_ArgumentsLabel);
 
-		methodsViewer = new TableViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL
-				| SWT.BORDER);
-		methodsViewer.getControl().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true));
+		methodsViewer = new TableViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		methodsViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		methodsViewer.setContentProvider(new ArrayContentProvider());
-		methodsViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-					public void selectionChanged(SelectionChangedEvent e) {
-						IStructuredSelection iss = (IStructuredSelection) e
-								.getSelection();
-						Object element = iss.getFirstElement();
-						if (element != null) {
-							getButton(IDialogConstants.OK_ID).setEnabled(
-									!timeoutText.getText().equals("")); //$NON-NLS-1$
-							RemoteMethod method = (RemoteMethod) element;
-							parametersViewer.setInput(method.getParameters());
-						}
-					}
-				});
+		methodsViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent e) {
+				final IStructuredSelection iss = (IStructuredSelection) e.getSelection();
+				final Object element = iss.getFirstElement();
+				if (element != null) {
+					getButton(IDialogConstants.OK_ID).setEnabled(!timeoutText.getText().equals("")); //$NON-NLS-1$
+					final RemoteMethod method = (RemoteMethod) element;
+					parametersViewer.setInput(method.getParameters());
+				}
+			}
+		});
 		methodsViewer.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
-				RemoteMethod method = (RemoteMethod) element;
+				final RemoteMethod method = (RemoteMethod) element;
 				return method.getReturnType() + ' ' + method.getSignature();
 			}
 		});
 
-		parametersViewer = new TableViewer(composite, SWT.V_SCROLL
-				| SWT.H_SCROLL | SWT.BORDER);
-		parametersViewer.getControl().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true));
+		parametersViewer = new TableViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		parametersViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		parametersViewer.setContentProvider(new ArrayContentProvider());
 		parametersViewer.setLabelProvider(new ITableLabelProvider() {
 			public Image getColumnImage(Object element, int columnIndex) {
@@ -238,9 +231,9 @@ public final class MethodInvocationDialog extends Dialog {
 			}
 
 			public String getColumnText(Object element, int columnIndex) {
-				Parameter p = (Parameter) element;
+				final Parameter p = (Parameter) element;
 				if (columnIndex == 0) {
-					String name = p.getParameter().getName();
+					final String name = p.getParameter().getName();
 					if (name.charAt(0) == 'j') {
 						// this is java.lang.String
 						return "String"; //$NON-NLS-1$
@@ -265,8 +258,7 @@ public final class MethodInvocationDialog extends Dialog {
 			public void removeListener(ILabelProviderListener listener) {
 			}
 		});
-		parametersViewer.setCellEditors(new CellEditor[] { null,
-				new TextCellEditor(parametersViewer.getTable()) });
+		parametersViewer.setCellEditors(new CellEditor[] {null, new TextCellEditor(parametersViewer.getTable())});
 		parametersViewer.setCellModifier(new ICellModifier() {
 			public boolean canModify(Object element, String property) {
 				return property.equals(COLUMN_PROPERTIES[1]);
@@ -279,9 +271,9 @@ public final class MethodInvocationDialog extends Dialog {
 			public void modify(Object element, String property, Object value) {
 				if (property.equals(COLUMN_PROPERTIES[1])) {
 					if (element instanceof TableItem) {
-						TableItem item = ((TableItem) element);
-						Parameter p = (Parameter) item.getData();
-						String argument = (String) value;
+						final TableItem item = ((TableItem) element);
+						final Parameter p = (Parameter) item.getData();
+						final String argument = (String) value;
 						p.setArgument(argument);
 						item.setText(1, argument);
 					}
@@ -290,7 +282,7 @@ public final class MethodInvocationDialog extends Dialog {
 		});
 		parametersViewer.setColumnProperties(COLUMN_PROPERTIES);
 
-		Table table = parametersViewer.getTable();
+		final Table table = parametersViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		TableColumn column = new TableColumn(table, SWT.LEAD);
@@ -302,84 +294,70 @@ public final class MethodInvocationDialog extends Dialog {
 
 		methodsViewer.setInput(methods);
 
-		Composite bottomComposite = new Composite(composite, SWT.NONE);
-		bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 2, 1));
-		GridLayout layout = new GridLayout(2, false);
+		final Composite bottomComposite = new Composite(composite, SWT.NONE);
+		bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		final GridLayout layout = new GridLayout(2, false);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		bottomComposite.setLayout(layout);
 
 		label = new Label(bottomComposite, SWT.LEAD);
 		label.setText(Messages.MethodInvocationDialog_TimeoutLabel);
-		label
-				.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false,
-						true));
+		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, true));
 
 		timeoutText = new Text(bottomComposite, SWT.BORDER);
 		timeoutText.setText(DEFAULT_TIMEOUT_VALUE);
 		timeoutText.addVerifyListener(new VerifyListener() {
 			public void verifyText(VerifyEvent e) {
 				switch (e.text.length()) {
-				case 0:
-					e.doit = true;
-					break;
-				case 1:
-					e.doit = Character.isDigit(e.text.charAt(0));
-					break;
-				default:
-					e.doit = false;
-					break;
+					case 0 :
+						e.doit = true;
+						break;
+					case 1 :
+						e.doit = Character.isDigit(e.text.charAt(0));
+						break;
+					default :
+						e.doit = false;
+						break;
 				}
 			}
 		});
 		timeoutText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				getButton(IDialogConstants.OK_ID).setEnabled(
-						!timeoutText.getText().equals("") //$NON-NLS-1$
-								&& !methodsViewer.getSelection().isEmpty());
+				getButton(IDialogConstants.OK_ID).setEnabled(!timeoutText.getText().equals("") //$NON-NLS-1$
+						&& !methodsViewer.getSelection().isEmpty());
 			}
 		});
-		timeoutText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
-				false));
+		timeoutText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
 		label = new Label(bottomComposite, SWT.LEAD);
 		label.setText(Messages.MethodInvocationDialog_InvocationTypeLabel);
-		label
-				.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false,
-						true));
+		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, true));
 
 		invocationCombo = new Combo(bottomComposite, SWT.READ_ONLY);
-		invocationCombo
-				.setItems(new String[] {
-						Messages.MethodInvocationDialog_InvocationTypeAsyncListener,
-						Messages.MethodInvocationDialog_InvocationTypeAsyncFutureResult,
-						Messages.MethodInvocationDialog_InvocationTypeAsyncFireAndGo,
-						Messages.MethodInvocationDialog_InvocationTypeOSGiServiceProxy,
-						Messages.MethodInvocationDialog_InvocationTypeRemoteServiceProxy,
-						Messages.MethodInvocationDialog_InvocationTypeSynchronous });
+		invocationCombo.setItems(new String[] {Messages.MethodInvocationDialog_InvocationTypeAsyncListener, Messages.MethodInvocationDialog_InvocationTypeAsyncFutureResult, Messages.MethodInvocationDialog_InvocationTypeAsyncFireAndGo, Messages.MethodInvocationDialog_InvocationTypeOSGiServiceProxy, Messages.MethodInvocationDialog_InvocationTypeRemoteServiceProxy, Messages.MethodInvocationDialog_InvocationTypeSynchronous});
 		invocationCombo.select(0);
-		bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false));
+		bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		return parent;
 	}
 
 	public void create() {
 		super.create();
-		getButton(IDialogConstants.OK_ID).setEnabled(false);
+		final Button okButton = getButton(IDialogConstants.OK_ID);
+		okButton.setEnabled(false);
+		okButton.setText(Messages.MethodInvocationDialog_BUTTON_INVOKE_TEXT);
 	}
 
 	protected void okPressed() {
-		IStructuredSelection selection = (IStructuredSelection) methodsViewer
-				.getSelection();
-		RemoteMethod remoteMethod = (RemoteMethod) selection.getFirstElement();
+		final IStructuredSelection selection = (IStructuredSelection) methodsViewer.getSelection();
+		final RemoteMethod remoteMethod = (RemoteMethod) selection.getFirstElement();
 		method = remoteMethod.getMethod();
-		Parameter[] p = remoteMethod.getParameters();
+		final Parameter[] p = remoteMethod.getParameters();
 		methodArguments = new Object[p.length];
 		for (int i = 0; i < p.length; i++) {
-			String name = p[i].getParameter().getName();
-			String arg = p[i].getArgument();
+			final String name = p[i].getParameter().getName();
+			final String arg = p[i].getArgument();
 			if (name.equals("char")) { //$NON-NLS-1$
 				methodArguments[i] = new Character(arg.charAt(0));
 			} else if (name.equals("boolean")) { //$NON-NLS-1$
