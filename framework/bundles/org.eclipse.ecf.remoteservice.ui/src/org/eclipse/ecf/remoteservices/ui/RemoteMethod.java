@@ -14,9 +14,9 @@ import java.lang.reflect.Method;
 
 class RemoteMethod {
 
-	private Method method;
-	private Parameter[] parameters;
-	private Class[] parameterTypes;
+	private final Method method;
+	private final Parameter[] parameters;
+	private final Class[] parameterTypes;
 
 	RemoteMethod(Method method) {
 		this.method = method;
@@ -28,9 +28,9 @@ class RemoteMethod {
 	}
 
 	public String[] getParameterTypes() {
-		String[] types = new String[parameterTypes.length];
+		final String[] types = new String[parameterTypes.length];
 		for (int i = 0; i < types.length; i++) {
-			String name = parameterTypes[i].getName();
+			final String name = parameterTypes[i].getName();
 			if (name.charAt(0) == 'j') {
 				types[i] = "String"; //$NON-NLS-1$
 			} else {
@@ -50,7 +50,11 @@ class RemoteMethod {
 
 	public String getReturnType() {
 		String name = method.getReturnType().getName();
-		int index = name.lastIndexOf('.');
+		// Fix array types
+		if (name.startsWith("[L")) { //$NON-NLS-1$
+			name = name.substring(2, name.length() - 1).concat("[]"); //$NON-NLS-1$
+		}
+		final int index = name.lastIndexOf('.');
 		if (index != -1) {
 			name = name.substring(index + 1);
 		}
@@ -59,10 +63,10 @@ class RemoteMethod {
 	}
 
 	public String getSignature() {
-		StringBuffer buffer = new StringBuffer(method.getName());
+		final StringBuffer buffer = new StringBuffer(method.getName());
 		synchronized (buffer) {
 			buffer.append('(');
-			String[] types = getParameterTypes();
+			final String[] types = getParameterTypes();
 			if (types.length != 0) {
 				for (int i = 0; i < types.length; i++) {
 					buffer.append(types[i]).append(", "); //$NON-NLS-1$
@@ -76,7 +80,7 @@ class RemoteMethod {
 
 	class Parameter {
 
-		private Class parameter;
+		private final Class parameter;
 		private String argument = ""; //$NON-NLS-1$
 
 		Parameter(Class parameter) {
