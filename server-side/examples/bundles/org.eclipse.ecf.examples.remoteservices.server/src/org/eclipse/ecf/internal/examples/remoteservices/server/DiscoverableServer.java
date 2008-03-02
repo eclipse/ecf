@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.examples.remoteservices.server;
 
 import java.security.InvalidParameterException;
 import java.util.Map;
+import java.util.Properties;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -72,7 +73,11 @@ public class DiscoverableServer implements IApplication {
 		final IRemoteServiceContainerAdapter containerAdapter = (IRemoteServiceContainerAdapter) serviceHostContainer.getAdapter(IRemoteServiceContainerAdapter.class);
 		// register remote service
 		final String className = IRemoteEnvironmentInfo.class.getName();
-		containerAdapter.registerRemoteService(new String[] {className}, new RemoteEnvironmentInfoImpl(), new RemoteServiceProperties(containerType, serviceHostContainer));
+		Properties props = new RemoteServiceProperties(containerType, serviceHostContainer);
+		// Add auto registration of remote proxy
+		props.put(Constants.AUTOREGISTER_REMOTE_PROXY, "true"); //$NON-NLS-1$
+
+		containerAdapter.registerRemoteService(new String[] {className}, new RemoteEnvironmentInfoImpl(), props);
 		System.out.println("Registered remote service " + className); //$NON-NLS-1$
 
 		// then register for discovery
