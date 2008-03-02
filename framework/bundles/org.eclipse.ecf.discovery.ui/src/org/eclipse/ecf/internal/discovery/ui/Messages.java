@@ -22,6 +22,14 @@ public class Messages extends NLS {
 
 	public static String AbstractRemoteServiceAccessHandler_DISCONNECT_MENU_TEXT;
 
+	public static String AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TEXT;
+
+	public static String AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TITLE;
+
+	public static String AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_RESP_TEXT;
+
+	public static String AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_RESP_TITLE;
+
 	public static String AbstractRemoteServiceAccessHandler_NOT_AVAILABLE_MENU_TEXT;
 
 	public static String DiscoveryView_Services;

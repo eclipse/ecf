@@ -11,6 +11,9 @@ import org.eclipse.ecf.internal.discovery.ui.Activator;
 import org.eclipse.ecf.internal.discovery.ui.Messages;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.jface.action.*;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.InvalidSyntaxException;
 
 public abstract class AbstractRemoteServiceAccessHandler implements IServiceAccessHandler {
@@ -164,13 +167,6 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 	 */
 	protected abstract IContributionItem[] getContributionItemsForService(final IRemoteServiceContainerAdapter adapter);
 
-	/**
-	 * Create a remote call instance.  
-	 * 
-	 * @return IRemoteCall instance.  <code>null</code> if no call available.
-	 */
-	protected abstract IRemoteCall createRemoteCall();
-
 	protected IContributionItem[] getConnectedContributions(final IContainer container) {
 		// Add disconnect and separator
 		final List results = new ArrayList();
@@ -189,6 +185,32 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 		disconnectAction.setText(Messages.AbstractRemoteServiceAccessHandler_DISCONNECT_MENU_TEXT);
 		results.add(new ActionContributionItem(disconnectAction));
 		return (IContributionItem[]) results.toArray(new IContributionItem[] {});
+	}
+
+	protected void showResult(final String serviceInterface, final IRemoteCall remoteCall, final Object result) {
+		final Object display = (result != null && result.getClass().isArray()) ? Arrays.asList((Object[]) result) : result;
+		final Object[] bindings = new Object[] {serviceInterface, remoteCall.getMethod(), Arrays.asList(remoteCall.getParameters()), display};
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MessageDialog.openInformation(null, Messages.AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_RESP_TITLE, NLS.bind(Messages.AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_RESP_TEXT, bindings));
+			}
+		});
+	}
+
+	protected void showException(final Throwable t) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MessageDialog.openInformation(null, Messages.AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TITLE, NLS.bind(Messages.AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TEXT, t.getLocalizedMessage()));
+			}
+		});
+	}
+
+	protected void showInformation(final String title, final String message) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MessageDialog.openInformation(null, title, message);
+			}
+		});
 	}
 
 }
