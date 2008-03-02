@@ -90,7 +90,7 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 				try {
 					// Then we connect
 					connectContainer(container, cTargetID, null);
-				} catch (ContainerConnectException e) {
+				} catch (final ContainerConnectException e) {
 					showException(e);
 				}
 			}
@@ -156,13 +156,17 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 		final IAction action = new Action() {
 			public void run() {
 				try {
+					// XXX testing
+					//final MethodInvocationDialog mid = new MethodInvocationDialog((Shell) null, IRemoteEnvironmentInfo.class);
+					//mid.open();
+
 					final IRemoteCall remoteCall = createRemoteCall();
 					if (remoteCall != null) {
 						switch (invokeMode) {
 							// callSynch
 							case 0 :
 								// Actually call
-								Object result = remoteService.callSynch(remoteCall);
+								final Object result = remoteService.callSynch(remoteCall);
 								// Show result
 								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, result);
 								break;
@@ -172,7 +176,7 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 								remoteService.callAsynch(remoteCall, new IRemoteCallListener() {
 									public void handleEvent(IRemoteCallEvent event) {
 										if (event instanceof IRemoteCallCompleteEvent) {
-											IRemoteCallCompleteEvent complete = (IRemoteCallCompleteEvent) event;
+											final IRemoteCallCompleteEvent complete = (IRemoteCallCompleteEvent) event;
 											if (complete.hadException()) {
 												showException(complete.getException());
 											} else
@@ -184,20 +188,20 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 							// callAsynch (future)
 							case 2 :
 								// Actually call
-								IAsyncResult asyncResult = remoteService.callAsynch(remoteCall);
+								final IAsyncResult asyncResult = remoteService.callAsynch(remoteCall);
 								// Show result
 								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, asyncResult.get());
 								break;
 							// proxy
 							case 3 :
-								IRemoteEnvironmentInfo proxy = (IRemoteEnvironmentInfo) remoteService.getProxy();
+								final IRemoteEnvironmentInfo proxy = (IRemoteEnvironmentInfo) remoteService.getProxy();
 								// Actually call	
-								Object proxyResult = proxy.getProperty((String) remoteCall.getParameters()[0]);
+								final Object proxyResult = proxy.getProperty((String) remoteCall.getParameters()[0]);
 								showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, proxyResult);
 								break;
 						}
 					}
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					MessageDialog.openError(null, "Invoke Exception", e.getLocalizedMessage());
 				}
 			}
