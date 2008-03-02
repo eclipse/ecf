@@ -30,6 +30,7 @@ plugin@org.eclipse.ecf.provider.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/
 plugin@org.eclipse.ecf.provider.xmpp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.xmpp
 plugin@org.eclipse.ecf.provider.xmpp.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.xmpp.ui
 plugin@org.eclipse.ecf.remoteservice=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.remoteservice
+plugin@org.eclipse.ecf.remoteservice.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.remoteservice.ui
 plugin@org.eclipse.ecf.server=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.server
 plugin@org.eclipse.ecf.server.generic=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.server.generic
 plugin@org.eclipse.ecf.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.ui
