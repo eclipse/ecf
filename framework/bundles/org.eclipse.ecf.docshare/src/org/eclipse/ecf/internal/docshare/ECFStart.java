@@ -28,7 +28,10 @@ public class ECFStart implements IECFStart {
 		 * @see org.eclipse.ecf.core.IContainerListener#handleEvent(org.eclipse.ecf.core.events.IContainerEvent)
 		 */
 		public void handleEvent(IContainerEvent event) {
-			final IContainerManager containerManager = Activator.getDefault().getContainerManager();
+			Activator activator = Activator.getDefault();
+			if (activator == null)
+				return;
+			final IContainerManager containerManager = activator.getContainerManager();
 			if (containerManager == null)
 				return;
 			IContainer container = containerManager.getContainer(event.getLocalContainerID());
@@ -42,9 +45,9 @@ public class ECFStart implements IECFStart {
 				ID containerID = container.getID();
 				if (event instanceof IContainerConnectedEvent) {
 					try {
-						Activator.getDefault().addDocShare(containerID, cca);
+						activator.addDocShare(containerID, cca);
 					} catch (ECFException e) {
-						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ECFStart_ERROR_DOCUMENT_SHARE_NOT_CREATED, container.getID()), null));
+						activator.getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ECFStart_ERROR_DOCUMENT_SHARE_NOT_CREATED, container.getID()), null));
 					}
 				} else if (event instanceof IContainerDisconnectedEvent) {
 					// disconnected
