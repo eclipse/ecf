@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
@@ -33,23 +34,23 @@ public class JoinGroupWizardPage extends WizardPage {
 	protected static final String CLASSNAME = JoinGroupWizardPage.class
 			.getName();
 
-	protected static final String USER_NAME_SYSTEM_PROPERTY = "user.name";
+	protected static final String USER_NAME_SYSTEM_PROPERTY = "user.name"; //$NON-NLS-1$
 
-	protected static final String PAGE_DESCRIPTION = "Complete account info and choose 'Finish' to login.";
-	protected static final String JOINGROUP_FIELDNAME = "Group ID:";
-	protected static final String NICKNAME_FIELDNAME = "Nickname:";
-	protected static final String ECF_DEFAULT_URL = "ecftcp://ecf.eclipse.org:3282/server";
-	protected static final String ECF_TEMPLATE_URL = "ecftcp://<server>:<port>/<groupname>";
-	protected static final String PAGE_TITLE = "Connect Generic Client";
+	protected static final String PAGE_DESCRIPTION = Messages.JoinGroupWizardPage_COMPLETE_ACCOUNT_INFO;
+	protected static final String JOINGROUP_FIELDNAME = Messages.JoinGroupWizardPage_GROUPID;
+	protected static final String NICKNAME_FIELDNAME = Messages.JoinGroupWizardPage_NICKNAME;
+	protected static final String ECF_DEFAULT_URL = Messages.JoinGroupWizardPage_DEFAULT_SERVER;
+	protected static final String ECF_TEMPLATE_URL = Messages.JoinGroupWizardPage_TEMPLATE;
+	protected static final String PAGE_TITLE = Messages.JoinGroupWizardPage_CONNECT_GENERIC_TITLE;
 
-	protected static final String DEFAULT_CLIENT = "ecf.generic.client";
+	protected static final String DEFAULT_CLIENT = "ecf.generic.client"; //$NON-NLS-1$
 
 	private static final String DIALOG_SETTINGS = CLASSNAME;
 
 	private String connectID = null;
 	
 	public JoinGroupWizardPage() {
-		super("wizardPage");
+		super("wizardPage"); //$NON-NLS-1$
 		setTitle(PAGE_TITLE);
 		setDescription(PAGE_DESCRIPTION);
 		setImageDescriptor(SharedImages
@@ -57,7 +58,7 @@ public class JoinGroupWizardPage extends WizardPage {
 	}
 
 	public JoinGroupWizardPage(String connectID) {
-		super("wizardPage");
+		super("wizardPage"); //$NON-NLS-1$
 		setTitle(PAGE_TITLE);
 		setDescription(PAGE_DESCRIPTION);
 		setImageDescriptor(SharedImages
@@ -72,7 +73,7 @@ public class JoinGroupWizardPage extends WizardPage {
 	protected Text joinGroupText;
 	protected Combo combo;
 	protected List containerDescriptions = new ArrayList();
-	protected String urlPrefix = "";
+	protected String urlPrefix = ""; //$NON-NLS-1$
 
 // private Button autoLogin = null;
 	private boolean autoLoginFlag = false;
@@ -87,7 +88,7 @@ public class JoinGroupWizardPage extends WizardPage {
 		if (desc != null) {
 			String name = desc.getName();
 			String description = desc.getDescription();
-			combo.add(description + " - " + name);
+			combo.add(description + " - " + name); //$NON-NLS-1$
 			containerDescriptions.add(desc);
 			combo.select(0);
 		}
@@ -100,7 +101,7 @@ public class JoinGroupWizardPage extends WizardPage {
 		setControl(container);
 
 		final Label label_4 = new Label(container, SWT.NONE);
-		label_4.setText("Protocol:");
+		label_4.setText(Messages.JoinGroupWizardPage_PROTOCOL);
 
 		combo = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
 		GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
@@ -150,7 +151,7 @@ public class JoinGroupWizardPage extends WizardPage {
 			IDialogSettings pageSettings = dialogSettings
 					.getSection(DIALOG_SETTINGS);
 			if (pageSettings != null) {
-				String strVal = pageSettings.get("provider");
+				String strVal = pageSettings.get("provider"); //$NON-NLS-1$
 				if (strVal != null) {
 					String[] items = combo.getItems();
 					for (int i = 0; i < items.length; ++i)
@@ -159,11 +160,11 @@ public class JoinGroupWizardPage extends WizardPage {
 						}
 				}
 
-				strVal = pageSettings.get("url");
+				strVal = pageSettings.get("url"); //$NON-NLS-1$
 				if (strVal != null)
 					joinGroupText.setText(strVal);
 
-				strVal = pageSettings.get("nickname");
+				strVal = pageSettings.get("nickname"); //$NON-NLS-1$
 				if (strVal != null)
 					nicknameText.setText(strVal);
 			}
@@ -178,17 +179,17 @@ public class JoinGroupWizardPage extends WizardPage {
 			if (pageSettings == null)
 				pageSettings = dialogSettings.addNewSection(DIALOG_SETTINGS);
 
-			pageSettings.put("url", joinGroupText.getText());
-			pageSettings.put("nickname", nicknameText.getText());
+			pageSettings.put("url", joinGroupText.getText()); //$NON-NLS-1$
+			pageSettings.put("nickname", nicknameText.getText()); //$NON-NLS-1$
 			int i = combo.getSelectionIndex();
 			if (i >= 0)
-				pageSettings.put("provider", combo.getItem(i));
+				pageSettings.put("provider", combo.getItem(i)); //$NON-NLS-1$
 		}
 	}
 
 	public String getJoinGroupText() {
 		String textValue = joinGroupText.getText().trim();
-		if (!urlPrefix.equals("") && !textValue.startsWith(urlPrefix)) {
+		if (!urlPrefix.equals("") && !textValue.startsWith(urlPrefix)) { //$NON-NLS-1$
 			textValue = urlPrefix + textValue;
 		}
 		return textValue;

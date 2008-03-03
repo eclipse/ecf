@@ -15,6 +15,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
@@ -33,7 +34,7 @@ public class LineChatView extends ViewPart {
 
 	public static final String VIEW_ID = "org.eclipse.ecf.internal.example.collab.ui.LineChatView"; //$NON-NLS-1$
 	// The single view
-	private static final String COLLABORATION_PROJECTS_ARE_NOT_AVAILABLE_ = "No collaboration sessions joined.\n\nTo join a project-specific collaboration session, select a project in either the Navigator or Package Explorer view,\nright-click to open context menu for project, and choose Communications->Connect Project to Collaboration Group...";
+	private static final String COLLABORATION_PROJECTS_ARE_NOT_AVAILABLE_ = Messages.LineChatView_NO_CONNECT_MESSAGE;
 	static protected LineChatView singleton = null;
 
 	static protected Hashtable clientViews = new Hashtable();
@@ -108,7 +109,7 @@ public class LineChatView extends ViewPart {
 		LineChatClientView newView = null;
 		synchronized (clientViews) {
 			if (singleton == null)
-				throw new InstantiationException("View not initialized");
+				throw new InstantiationException(Messages.LineChatView_EXCEPTION_VIEW_NOT_INITIALIZED);
 
 			if (singleton.inactiveLabel != null) {
 				singleton.inactiveLabel.dispose();

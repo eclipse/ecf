@@ -79,7 +79,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	private static final String HANDLE_STARTED_TYPING_MSG = "handleStartedTyping"; //$NON-NLS-1$
 
 	public static final String SHARED_MARKER_TYPE = ClientPlugin.SHARED_MARKER_TYPE;
-	public static final String SHARED_MARKER_KEY = ClientPlugin.SHARED_MARKER_KEY;
 	public static final String ID = "chat"; //$NON-NLS-1$
 
 	private static final String DEFAULT_WINDOW_TITLE = Messages.EclipseCollabSharedObject_WINDOW_TITLE;

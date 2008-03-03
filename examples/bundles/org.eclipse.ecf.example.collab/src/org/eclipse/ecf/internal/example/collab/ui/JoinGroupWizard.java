@@ -18,31 +18,30 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.internal.example.collab.actions.URIClientConnectAction;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.IWorkbench;
 
 public class JoinGroupWizard extends Wizard {
 
-	protected static final String PAGE_TITLE = "Collaboration Connect";
+	protected static final String PAGE_TITLE = Messages.JoinGroupWizard_CONNECT;
 
-	private static final String DIALOG_SETTINGS = JoinGroupWizard.class
-			.getName();
+	private static final String DIALOG_SETTINGS = JoinGroupWizard.class.getName();
 
 	JoinGroupWizardPage mainPage;
-	private IResource resource;
-	
+	private final IResource resource;
+
 	private String connectID;
 
 	public JoinGroupWizard(IResource resource, IWorkbench workbench) {
 		super();
 		this.resource = resource;
 		setWindowTitle(PAGE_TITLE);
-		IDialogSettings dialogSettings = ClientPlugin.getDefault()
-				.getDialogSettings();
-		IDialogSettings wizardSettings = dialogSettings
-				.getSection(DIALOG_SETTINGS);
+		final IDialogSettings dialogSettings = ClientPlugin.getDefault().getDialogSettings();
+		IDialogSettings wizardSettings = dialogSettings.getSection(DIALOG_SETTINGS);
 		if (wizardSettings == null)
 			wizardSettings = dialogSettings.addNewSection(DIALOG_SETTINGS);
 
@@ -50,10 +49,10 @@ public class JoinGroupWizard extends Wizard {
 	}
 
 	public JoinGroupWizard(IResource resource, IWorkbench workbench, String connectID) {
-		this(resource,workbench);
+		this(resource, workbench);
 		this.connectID = connectID;
 	}
-	
+
 	protected ISchedulingRule getSchedulingRule() {
 		return resource;
 	}
@@ -67,30 +66,27 @@ public class JoinGroupWizard extends Wizard {
 	public boolean performFinish() {
 		try {
 			finishPage(new NullProgressMonitor());
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
 
-	protected void finishPage(final IProgressMonitor monitor)
-			throws InterruptedException, CoreException {
+	protected void finishPage(final IProgressMonitor monitor) throws InterruptedException, CoreException {
 
 		mainPage.saveDialogSettings();
 		URIClientConnectAction client = null;
-		String groupName = mainPage.getJoinGroupText();
-		String nickName = mainPage.getNicknameText();
-		String containerType = mainPage.getContainerType();
-		boolean autoLogin = mainPage.getAutoLoginFlag();
+		final String groupName = mainPage.getJoinGroupText();
+		final String nickName = mainPage.getNicknameText();
+		final String containerType = mainPage.getContainerType();
+		final boolean autoLogin = mainPage.getAutoLoginFlag();
 		try {
-			client = new URIClientConnectAction(containerType, groupName,
-					nickName, "", resource, autoLogin);
+			client = new URIClientConnectAction(containerType, groupName, nickName, "", resource, autoLogin); //$NON-NLS-1$
 			client.run(null);
-		} catch (Exception e) {
-			String id = ClientPlugin.getDefault().getBundle().getSymbolicName();
-			throw new CoreException(new Status(Status.ERROR, id, IStatus.ERROR,
-					"Could not connect to " + groupName, e));
+		} catch (final Exception e) {
+			final String id = ClientPlugin.getDefault().getBundle().getSymbolicName();
+			throw new CoreException(new Status(Status.ERROR, id, IStatus.ERROR, NLS.bind(Messages.JoinGroupWizard_COULD_NOT_CONNECT, groupName), e));
 		}
 	}
 }

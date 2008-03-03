@@ -103,7 +103,7 @@ public class EditorCompoundContributionItem extends CompoundContributionItem {
 				}
 				final EclipseCollabSharedObject collabsharedobject = entry.getSharedObject();
 				if (collabsharedobject != null) {
-					collabsharedobject.sendOpenAndSelectForFile(null, project.getName() + "/" + file.getProjectRelativePath().toString(), textSelection.getOffset(), textSelection.getLength());
+					collabsharedobject.sendOpenAndSelectForFile(null, project.getName() + "/" + file.getProjectRelativePath().toString(), textSelection.getOffset(), textSelection.getLength()); //$NON-NLS-1$
 				}
 			}
 		};

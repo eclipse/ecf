@@ -39,8 +39,8 @@ public class EditorHelper {
 	}
 
 	public IEditorPart openEditorForFile(IFile file) throws PartInitException {
-		IWorkbenchPage page = getWorkbenchWindow().getActivePage();
-		IEditorInput input = new FileEditorInput(file);
+		final IWorkbenchPage page = getWorkbenchWindow().getActivePage();
+		final IEditorInput input = new FileEditorInput(file);
 		// try to find an open editor with this input
 		IEditorPart part = page.findEditor(input);
 		if (part != null) {
@@ -48,52 +48,42 @@ public class EditorHelper {
 			page.activate(part);
 		} else {
 			// no editor found, open a new one
-			String editorId = getEditorIdForFile(file);
+			final String editorId = getEditorIdForFile(file);
 			part = page.openEditor(input, editorId);
 		}
 		return part;
 	}
 
-	protected ITextEditor openTextEditorForFile(IFile file)
-			throws PartInitException {
-		IEditorPart editor = openEditorForFile(file);
+	protected ITextEditor openTextEditorForFile(IFile file) throws PartInitException {
+		final IEditorPart editor = openEditorForFile(file);
 		if (editor != null && (editor instanceof ITextEditor)) {
 			return (ITextEditor) editor;
 		} else
 			return null;
 	}
 
-	public void openAndSelectForFile(IFile file, int offset, int length)
-			throws PartInitException {
-		ITextEditor textEditor = openTextEditorForFile(file);
+	public void openAndSelectForFile(IFile file, int offset, int length) throws PartInitException {
+		final ITextEditor textEditor = openTextEditorForFile(file);
 		if (textEditor == null)
 			return;
 		setTextEditorSelection(textEditor, offset, length);
 	}
 
-	protected IMarker createMarkerForFile(IFile file,
-			EclipseCollabSharedObject.SharedMarker marker) throws CoreException {
-		IMarker m = file
-				.createMarker(EclipseCollabSharedObject.SHARED_MARKER_TYPE);
-		m.setAttribute(EclipseCollabSharedObject.SHARED_MARKER_KEY, "slewis");
-		// m.setAttribute(IMarker.MESSAGE, marker.getMessage());
-		m.setAttribute(IMarker.MESSAGE, "hello");
+	protected IMarker createMarkerForFile(IFile file, EclipseCollabSharedObject.SharedMarker marker) throws CoreException {
+		final IMarker m = file.createMarker(EclipseCollabSharedObject.SHARED_MARKER_TYPE);
 		m.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_INFO);
-		Integer offset = marker.getOffset();
-		Integer length = marker.getLength();
-		int start = ((offset == null) ? 0 : marker.getOffset().intValue());
+		final Integer offset = marker.getOffset();
+		final Integer length = marker.getLength();
+		final int start = ((offset == null) ? 0 : marker.getOffset().intValue());
 		m.setAttribute(IMarker.CHAR_START, start);
-		int end = start
-				+ ((length == null) ? 0 : marker.getOffset().intValue());
+		final int end = start + ((length == null) ? 0 : marker.getOffset().intValue());
 		m.setAttribute(IMarker.CHAR_END, end);
 		return m;
 	}
 
-	public void openAndAddMarkerForFile(IFile file,
-			EclipseCollabSharedObject.SharedMarker marker)
-			throws PartInitException, CoreException {
-		IWorkbenchPage page = getWorkbenchWindow().getActivePage();
-		IEditorInput input = new FileEditorInput(file);
+	public void openAndAddMarkerForFile(IFile file, EclipseCollabSharedObject.SharedMarker marker) throws PartInitException, CoreException {
+		final IWorkbenchPage page = getWorkbenchWindow().getActivePage();
+		final IEditorInput input = new FileEditorInput(file);
 		// try to find an open editor with this input
 		IEditorPart part = page.findEditor(input);
 		if (part != null) {
@@ -101,21 +91,20 @@ public class EditorHelper {
 			page.activate(part);
 		} else {
 			// no editor found, open a new one
-			String editorId = getEditorIdForFile(file);
+			final String editorId = getEditorIdForFile(file);
 			part = page.openEditor(input, editorId);
 		}
 		createMarkerForFile(file, marker);
 	}
 
-	protected void setTextEditorSelection(ITextEditor textEditor, int offset,
-			int length) {
+	protected void setTextEditorSelection(ITextEditor textEditor, int offset, int length) {
 		textEditor.selectAndReveal(offset, length);
 	}
 
 	protected String getEditorIdForFile(IFile file) {
-		IWorkbench wb = getWorkbenchWindow().getWorkbench();
-		IEditorRegistry er = wb.getEditorRegistry();
-		IEditorDescriptor desc = er.getDefaultEditor(file.getName());
+		final IWorkbench wb = getWorkbenchWindow().getWorkbench();
+		final IEditorRegistry er = wb.getEditorRegistry();
+		final IEditorDescriptor desc = er.getDefaultEditor(file.getName());
 		if (desc != null)
 			return desc.getId();
 		else

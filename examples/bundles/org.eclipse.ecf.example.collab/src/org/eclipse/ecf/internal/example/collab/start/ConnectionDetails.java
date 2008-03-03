@@ -12,10 +12,10 @@ package org.eclipse.ecf.internal.example.collab.start;
 
 public class ConnectionDetails {
 
-	public static final String CONTAINER_TYPE = "containerType";
-	public static final String TARGET_URI = "targetURI";
-	public static final String NICKNAME = "nickname";
-	public static final String PASSWORD = "password";
+	public static final String CONTAINER_TYPE = "containerType"; //$NON-NLS-1$
+	public static final String TARGET_URI = "targetURI"; //$NON-NLS-1$
+	public static final String NICKNAME = "nickname"; //$NON-NLS-1$
+	public static final String PASSWORD = "password"; //$NON-NLS-1$
 
 	String containerType;
 	String targetURI;
@@ -59,11 +59,11 @@ public class ConnectionDetails {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("ConnectionDetails[");
-		sb.append(CONTAINER_TYPE).append("=").append(containerType).append(";");
-		sb.append(TARGET_URI).append("=").append(targetURI).append(";");
-		sb.append(NICKNAME).append("=").append(nickname).append(";");
-		sb.append(PASSWORD).append("=").append(password).append("]");
+		StringBuffer sb = new StringBuffer("ConnectionDetails["); //$NON-NLS-1$
+		sb.append(CONTAINER_TYPE).append("=").append(containerType).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(TARGET_URI).append("=").append(targetURI).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(NICKNAME).append("=").append(nickname).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(PASSWORD).append("=").append(password).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 }

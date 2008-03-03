@@ -27,7 +27,7 @@ import org.eclipse.ecf.server.generic.app.ServerConfigParser;
 
 public class ServerStartup {
 	static TCPServerSOContainerGroup serverGroups[] = null;
-	static final String SERVER_FILE_NAME = "ServerStartup.xml";
+	static final String SERVER_FILE_NAME = "ServerStartup.xml"; //$NON-NLS-1$
 	static List servers = new ArrayList();
 
 	public ServerStartup() throws Exception {
@@ -52,7 +52,7 @@ public class ServerStartup {
 				try {
 					s.dispose();
 				} catch (final Exception e) {
-					ClientPlugin.log("Exception destroying server " + s.getConfig().getID());
+					ClientPlugin.log("Exception destroying server " + s.getConfig().getID()); //$NON-NLS-1$
 				}
 			}
 		}
@@ -79,7 +79,7 @@ public class ServerStartup {
 					final NamedGroup group = (NamedGroup) g.next();
 					final TCPServerSOContainer cont = createServerContainer(group.getIDForGroup(), serverGroups[j], group.getName(), connect.getTimeout());
 					servers.add(cont);
-					ClientPlugin.log("ECF group server created: " + cont.getConfig().getID().getName());
+					ClientPlugin.log("ECF group server created: " + cont.getConfig().getID().getName()); //$NON-NLS-1$
 				}
 				serverGroups[j].putOnTheAir();
 				j++;

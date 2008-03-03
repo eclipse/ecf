@@ -11,9 +11,11 @@
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ApplicationWindow;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ShellAdapter;
@@ -28,18 +30,15 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-/**
- * @author pnehrer
- */
 public class ChatWindow extends ApplicationWindow {
 
 	private static final long FLASH_INTERVAL = 600;
 
-	private LineChatClientView view;
+	private final LineChatClientView view;
 
-	private TableViewer table;
+	private final TableViewer table;
 
-	private String initText;
+	private final String initText;
 
 	private ChatComposite chat;
 
@@ -51,7 +50,7 @@ public class ChatWindow extends ApplicationWindow {
 
 	private final Runnable flipImage = new Runnable() {
 		public void run() {
-			Shell shell = getShell();
+			final Shell shell = getShell();
 			if (shell != null && !shell.isDisposed())
 				if (blank == shell.getImage()) {
 					if (image != null && !image.isDisposed())
@@ -65,8 +64,7 @@ public class ChatWindow extends ApplicationWindow {
 
 	private Flash flash;
 
-	public ChatWindow(LineChatClientView view, TableViewer table,
-			String initText) {
+	public ChatWindow(LineChatClientView view, TableViewer table, String initText) {
 		super(null);
 		this.view = view;
 		this.table = table;
@@ -81,13 +79,13 @@ public class ChatWindow extends ApplicationWindow {
 	 */
 	protected void configureShell(final Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Team Chat: " + view.name);
+		newShell.setText(NLS.bind(Messages.ChatWindow_SHELL_TEXT, view.name));
 		image = SharedImages.getImage(SharedImages.IMG_USER_AVAILABLE);
 		newShell.setImage(image);
-		RGB[] colors = new RGB[2];
+		final RGB[] colors = new RGB[2];
 		colors[0] = new RGB(0, 0, 0);
 		colors[1] = new RGB(255, 255, 255);
-		ImageData data = new ImageData(16, 16, 1, new PaletteData(colors));
+		final ImageData data = new ImageData(16, 16, 1, new PaletteData(colors));
 		data.transparentPixel = 0;
 		blank = new Image(newShell.getDisplay(), data);
 
@@ -139,10 +137,9 @@ public class ChatWindow extends ApplicationWindow {
 		if (composite.isFocusControl())
 			return true;
 		else {
-			Control[] children = composite.getChildren();
+			final Control[] children = composite.getChildren();
 			for (int i = 0; i < children.length; ++i)
-				if (children[i] instanceof Composite
-						&& hasFocus((Composite) children[i]))
+				if (children[i] instanceof Composite && hasFocus((Composite) children[i]))
 					return true;
 				else if (children[i].isFocusControl())
 					return true;
@@ -164,8 +161,7 @@ public class ChatWindow extends ApplicationWindow {
 		synchronized (flash) {
 			if (flashing) {
 				flashing = false;
-				if (!getShell().isDisposed() && image != null
-						&& !image.isDisposed())
+				if (!getShell().isDisposed() && image != null && !image.isDisposed())
 					getShell().setImage(image);
 			}
 		}
@@ -204,7 +200,7 @@ public class ChatWindow extends ApplicationWindow {
 					try {
 						while (!flashing && !disposed)
 							wait();
-					} catch (InterruptedException e) {
+					} catch (final InterruptedException e) {
 						break;
 					}
 				}
@@ -216,7 +212,7 @@ public class ChatWindow extends ApplicationWindow {
 				synchronized (this) {
 					try {
 						wait(FLASH_INTERVAL);
-					} catch (InterruptedException e) {
+					} catch (final InterruptedException e) {
 						break;
 					}
 				}

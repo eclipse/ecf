@@ -44,6 +44,6 @@ public class FileData implements Serializable {
 	}
 
 	public String toString() {
-		return "FileData[" + read + ";" + isDone() + "]";
+		return "FileData[" + read + ";" + isDone() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 }

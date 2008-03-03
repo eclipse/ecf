@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.internal.example.collab.CollabClient;
+import org.eclipse.ecf.internal.example.collab.Messages;
 
 public class CollabStart implements IECFStart {
 	Discovery discovery = null;
@@ -33,9 +34,9 @@ public class CollabStart implements IECFStart {
 			}
 		} catch (Exception e) {
 			return new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID, 200,
-					"Exception in starting connection", e);
+					Messages.CollabStart_EXCEPTION_STARTING_CONNECTION, e);
 		}
-		return new Status(IStatus.OK, ClientPlugin.PLUGIN_ID, 100, "OK", null);
+		return new Status(IStatus.OK, ClientPlugin.PLUGIN_ID, 100, Messages.CollabStart_STATUS_OK_MESSAGE, null);
 	}
 
 	private void startConnection(ConnectionDetails details) throws Exception {

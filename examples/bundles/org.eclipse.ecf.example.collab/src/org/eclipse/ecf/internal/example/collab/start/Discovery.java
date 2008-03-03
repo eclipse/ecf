@@ -28,7 +28,7 @@ public class Discovery {
 	}
 
 	private void startDiscovery() throws Exception {
-		container = ContainerFactory.getDefault().createContainer("ecf.discovery.jmdns");
+		container = ContainerFactory.getDefault().createContainer("ecf.discovery.jmdns"); //$NON-NLS-1$
 		container.connect(null, null);
 		discoveryContainer = (IDiscoveryContainerAdapter) container.getAdapter(IDiscoveryContainerAdapter.class);
 		discoveryContainer.addServiceTypeListener(new CollabServiceTypeListener());

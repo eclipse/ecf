@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientEntry;
 import org.eclipse.ecf.internal.example.collab.CollabClient;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.internal.example.collab.ui.JoinGroupWizard;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -32,8 +33,8 @@ import org.eclipse.ui.PlatformUI;
 public class JoinGroupWizardAction implements IObjectActionDelegate,
 		IWorkbenchWindowActionDelegate {
 
-	private static final String CONNECT_PROJECT_MENU_TEXT = "Connect Project to Collaboration Group...";
-	private static final String DISCONNECT_PROJECT_MENU_TEXT = "Disconnect Project";
+	private static final String CONNECT_PROJECT_MENU_TEXT = Messages.JoinGroupWizardAction_PROJECT_MENU_CONNECT_TEXT;
+	private static final String DISCONNECT_PROJECT_MENU_TEXT = Messages.JoinGroupWizardAction_PROJECT_MENU_DISCONNECT_TEXT;
 
 	private IResource resource;
 	private boolean connected = false;

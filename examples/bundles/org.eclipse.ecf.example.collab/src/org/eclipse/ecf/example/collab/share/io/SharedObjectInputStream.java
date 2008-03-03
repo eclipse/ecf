@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
+import org.eclipse.ecf.internal.example.collab.Messages;
 
 public class SharedObjectInputStream extends InputStream {
 	protected SimpleFIFOQueue queue = new SimpleFIFOQueue();
@@ -48,7 +49,7 @@ public class SharedObjectInputStream extends InputStream {
 		if (currentRead >= currentLength) {
 			Data d = (Data) queue.dequeue();
 			if (d == null)
-				throw new IOException("No data");
+				throw new IOException(Messages.SharedObjectInputStream_EXCEPTION_NO_DATA);
 			resetStreams(d);
 		}
 		currentRead++;

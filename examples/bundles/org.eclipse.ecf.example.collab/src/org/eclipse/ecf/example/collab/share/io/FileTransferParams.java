@@ -33,25 +33,19 @@ public class FileTransferParams implements Serializable {
 
 	static {
 		try {
-			String str = System.getProperty(FileTransferParams.class.getName()
-					+ ".FILECHUNKSIZE", "" + DEFAULT_CHUNK_SIZE);
+			String str = System.getProperty(FileTransferParams.class.getName() + ".FILECHUNKSIZE", "" + DEFAULT_CHUNK_SIZE); //$NON-NLS-1$ //$NON-NLS-2$
 			DEFAULT_CHUNK_SIZE = Integer.parseInt(str);
-			str = System.getProperty(FileTransferParams.class.getName()
-					+ ".FILEWAITTIME", DEFAULT_WAIT_TIME + "");
+			str = System.getProperty(FileTransferParams.class.getName() + ".FILEWAITTIME", DEFAULT_WAIT_TIME + ""); //$NON-NLS-1$ //$NON-NLS-2$
 			DEFAULT_WAIT_TIME = Integer.parseInt(str);
-			str = System.getProperty(FileTransferParams.class.getName()
-					+ ".FILELENGTH", DEFAULT_FILE_LENGTH + "");
+			str = System.getProperty(FileTransferParams.class.getName() + ".FILELENGTH", DEFAULT_FILE_LENGTH + ""); //$NON-NLS-1$ //$NON-NLS-2$
 			DEFAULT_FILE_LENGTH = Integer.parseInt(str);
-			str = System.getProperty(FileTransferParams.class.getName()
-					+ ".FILEINCLUDESERVER", "false");
+			str = System.getProperty(FileTransferParams.class.getName() + ".FILEINCLUDESERVER", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 			DEFAULT_INCLUDE_SERVER = Boolean.getBoolean(str);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 		}
 	}
 
-	public FileTransferParams(File aFile, int chunkSize, int waitTime,
-			Date startDate, boolean includeServer, long length,
-			FileTransferListener listener) {
+	public FileTransferParams(File aFile, int chunkSize, int waitTime, Date startDate, boolean includeServer, long length, FileTransferListener listener) {
 		remoteFile = aFile;
 		if (chunkSize == -1)
 			this.chunkSize = DEFAULT_CHUNK_SIZE;
@@ -70,8 +64,7 @@ public class FileTransferParams implements Serializable {
 	}
 
 	public FileTransferParams() {
-		this(null, DEFAULT_CHUNK_SIZE, DEFAULT_WAIT_TIME, null,
-				DEFAULT_INCLUDE_SERVER, DEFAULT_FILE_LENGTH, null);
+		this(null, DEFAULT_CHUNK_SIZE, DEFAULT_WAIT_TIME, null, DEFAULT_INCLUDE_SERVER, DEFAULT_FILE_LENGTH, null);
 	}
 
 	public File getRemoteFile() {
@@ -135,12 +128,12 @@ public class FileTransferParams implements Serializable {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("FileTransferParams[");
-		sb.append(remoteFile).append(";").append(chunkSize).append(";");
-		sb.append(waitTime).append(";");
-		sb.append(startDate).append(";").append(includeServer).append(";");
-		sb.append(length).append(";").append(rate).append(";");
-		sb.append(progressListener).append("]");
+		final StringBuffer sb = new StringBuffer("FileTransferParams["); //$NON-NLS-1$
+		sb.append(remoteFile).append(";").append(chunkSize).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(waitTime).append(";"); //$NON-NLS-1$
+		sb.append(startDate).append(";").append(includeServer).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(length).append(";").append(rate).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(progressListener).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

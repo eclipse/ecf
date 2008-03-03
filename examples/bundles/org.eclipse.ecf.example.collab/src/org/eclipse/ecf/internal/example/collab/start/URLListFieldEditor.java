@@ -13,6 +13,8 @@ package org.eclipse.ecf.internal.example.collab.start;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -103,7 +105,7 @@ public class URLListFieldEditor extends FieldEditor {
 	}
 
 	private void createButtons(Composite box) {
-		removeButton = createPushButton(box, "Remove");
+		removeButton = createPushButton(box, Messages.URLListFieldEditor_BUTTON_REMOVE_TEXT);
 	}
 
 	private Button createPushButton(Composite parent, String key) {
@@ -186,7 +188,7 @@ public class URLListFieldEditor extends FieldEditor {
 			Collection contents = as.getConnectionDetails();
 			for (Iterator i = contents.iterator(); i.hasNext();) {
 				ConnectionDetails cd = (ConnectionDetails) i.next();
-				String uri = cd.getContainerType() + ":" + cd.getTargetURI();
+				String uri = cd.getContainerType() + ":" + cd.getTargetURI(); //$NON-NLS-1$
 				list.add(uri);
 				list.setData(uri, cd);
 			}

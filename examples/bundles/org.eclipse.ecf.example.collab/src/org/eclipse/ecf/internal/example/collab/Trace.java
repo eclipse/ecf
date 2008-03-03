@@ -19,26 +19,26 @@ import java.util.Date;
 import org.eclipse.core.runtime.Platform;
 
 public class Trace {
-	private static final String TRACENAME = "org.eclipse.ecf.example.collab.Trace";
+	private static final String TRACENAME = "org.eclipse.ecf.example.collab.Trace"; //$NON-NLS-1$
 
-	public static final String tracePrefix = "(trace)";
+	public static final String tracePrefix = "(trace)"; //$NON-NLS-1$
 
 	public static boolean ON = false;
 	protected static boolean isEclipse = false;
-	protected static String pluginName = "";
-	protected static String debugPrefix = "/debug/";
+	protected static String pluginName = ""; //$NON-NLS-1$
+	protected static String debugPrefix = "/debug/"; //$NON-NLS-1$
 
 	protected static PrintStream getPrintStream(String outputFileName) {
 		if (outputFileName != null)
 			try {
 				File f = new File(outputFileName);
 				PrintStream ps = new PrintStream(new FileOutputStream(f, true));
-				System.out.println(TRACENAME + " directed to "
+				System.out.println(TRACENAME + " directed to " //$NON-NLS-1$
 						+ f.getCanonicalPath());
 				return ps;
 			} catch (Exception e) {
-				System.err.println("Exception opening output file '"
-						+ outputFileName + "' for tracing...using System.out");
+				System.err.println("Exception opening output file '" //$NON-NLS-1$
+						+ outputFileName + "' for tracing...using System.out"); //$NON-NLS-1$
 			}
 		return System.out;
 	}
@@ -57,7 +57,7 @@ public class Trace {
 				pluginName = ClientPlugin.getDefault().getBundle()
 						.getSymbolicName();
 			} catch (Exception e) {
-				System.out.println("WARNING: Platform not available for trace");
+				System.out.println("WARNING: Platform not available for trace"); //$NON-NLS-1$
 			}
 			isEclipse = true;
 		}
@@ -69,7 +69,7 @@ public class Trace {
 					.getDebugOption(pluginName + debugPrefix + key);
 			if (res != null) {
 				if (Boolean.valueOf(res).booleanValue())
-					return new Trace(pluginName + "(" + key + ")");
+					return new Trace(pluginName + "(" + key + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 				else
 					return null;
 			} else {
@@ -94,7 +94,7 @@ public class Trace {
 
 	protected static String getTimeString() {
 		Date d = new Date();
-		SimpleDateFormat df = new SimpleDateFormat("[MM/dd/yy;HH:mm:ss:SSS]");
+		SimpleDateFormat df = new SimpleDateFormat("[MM/dd/yy;HH:mm:ss:SSS]"); //$NON-NLS-1$
 		return df.format(d);
 	}
 
@@ -104,30 +104,30 @@ public class Trace {
 
 	public static String convertStringAToString(String[] strings) {
 		if (strings == null)
-			return "";
+			return ""; //$NON-NLS-1$
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < strings.length; i++) {
 			if (strings[i] == null)
-				sb.append("(null)");
+				sb.append("(null)"); //$NON-NLS-1$
 			else
 				sb.append(strings[i]);
 			if (i != (strings.length - 1))
-				sb.append(";");
+				sb.append(";"); //$NON-NLS-1$
 		}
 		return sb.toString();
 	}
 
 	public static String convertObjectAToString(Object[] objs) {
 		if (objs == null)
-			return "";
+			return ""; //$NON-NLS-1$
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < objs.length; i++) {
 			if (objs[i] == null)
-				sb.append("(null)");
+				sb.append("(null)"); //$NON-NLS-1$
 			else
 				sb.append(objs[i].toString());
 			if (i != (objs.length - 1))
-				sb.append(";");
+				sb.append(";"); //$NON-NLS-1$
 		}
 		return sb.toString();
 	}

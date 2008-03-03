@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.example.collab.share.GenericSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
@@ -90,7 +91,7 @@ public class ShowURLSharedObject extends GenericSharedObject {
 				if (createInfo != null)
 					getContext().sendCreate(receiver, createInfo);
 			} catch (IOException e) {
-				log("Exception in replicateSelf", e);
+				log("Exception in replicateSelf", e); //$NON-NLS-1$
 			}
 		}
 	}
@@ -106,12 +107,12 @@ public class ShowURLSharedObject extends GenericSharedObject {
 						browser = support.createBrowser(null);
 						browser.openURL(new URL(url));
 					} catch (Exception e) {
-						MessageDialog.openError(null, "Error in Open URL", NLS
-								.bind("Error: {0}", e.getLocalizedMessage()));
+						MessageDialog.openError(null, Messages.ShowURLSharedObject_MSGBOX_OPENURL_ERROR_TITLE, NLS
+								.bind(Messages.ShowURLSharedObject_MSGBOX_OPENURL_ERROR_TEXT, e.getLocalizedMessage()));
 						ClientPlugin.getDefault().getLog().log(
 								new Status(IStatus.ERROR,
 										ClientPlugin.PLUGIN_ID, IStatus.ERROR,
-										"Error in openURL", e));
+										Messages.ShowURLSharedObject_STATUS_OPENURL_MESSAGE, e));
 					}
 				}
 			});

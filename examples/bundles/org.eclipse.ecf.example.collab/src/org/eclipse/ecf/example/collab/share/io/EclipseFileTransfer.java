@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.sharedobject.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.internal.example.collab.ui.FileReceiverUI;
 import org.eclipse.ecf.internal.example.collab.ui.FileSenderUI;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -181,7 +182,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements Fil
 		 */
 		public void run() {
 			if (ClientPlugin.getDefault().getPluginPreferences().getBoolean(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE)) {
-				final MessageDialog dialog = new MessageDialog(ClientPlugin.getDefault().getActiveShell(), "File Receive Confirmation", null, "Accept file?", MessageDialog.QUESTION, null, 0);
+				final MessageDialog dialog = new MessageDialog(ClientPlugin.getDefault().getActiveShell(), Messages.EclipseFileTransfer_DIALOG_RECEIVE_CONF_TITLE, null, Messages.EclipseFileTransfer_DIALOG_RECEIVE_CONF_TEXT, MessageDialog.QUESTION, null, 0);
 				dialog.setBlockOnOpen(true);
 				final int response = dialog.open();
 

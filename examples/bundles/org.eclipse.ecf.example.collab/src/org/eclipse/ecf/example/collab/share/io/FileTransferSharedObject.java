@@ -28,17 +28,18 @@ import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.example.collab.share.SharedObjectMsg;
 import org.eclipse.ecf.example.collab.share.TransactionSharedObject;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.osgi.util.NLS;
 
 public class FileTransferSharedObject extends TransactionSharedObject {
 
 	public static final int DEFAULT_START_WAIT_INTERVAL = 5000;
 
-	private static final String HANDLEDATA_MSG = "handleData";
-	private static final String HANDLEDONE_MSG = "handleDone";
-	private static final String STARTSENDTOALL_MSG = "startSendToAll";
+	private static final String HANDLEDATA_MSG = "handleData"; //$NON-NLS-1$
+	private static final String HANDLEDONE_MSG = "handleDone"; //$NON-NLS-1$
+	private static final String STARTSENDTOALL_MSG = "startSendToAll"; //$NON-NLS-1$
 
-	private static final String START_MSG = "start";
+	private static final String START_MSG = "start"; //$NON-NLS-1$
 	// Both host and container
 	protected FileTransferParams transferParams;
 	protected FileTransferListener progressListener;
@@ -65,12 +66,11 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 		progressListener = transferParams.getProgressListener();
 	}
 
-	public FileTransferSharedObject(ID receiver, InputStream ins,
-			FileTransferParams params) {
+	public FileTransferSharedObject(ID receiver, InputStream ins, FileTransferParams params) {
 		targetReceiver = receiver;
 		Assert.isNotNull(ins);
 		if (ins == null)
-			throw new NullPointerException("Input stream cannot be null");
+			throw new NullPointerException(Messages.FileTransferSharedObject_EXCEPTION_INPUTSTREAM_NOT_NULL);
 		setInputStream(ins);
 		transferParams = (params == null) ? new FileTransferParams() : params;
 		progressListener = transferParams.getProgressListener();
@@ -113,9 +113,7 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 			if (!isHost() && !getContext().isGroupManager()) {
 				// Then notify listener about starting the receive
 				if (progressListener != null)
-					progressListener.receiveStart(this, transferParams
-							.getRemoteFile(), transferParams.getLength(),
-							transferParams.getRate());
+					progressListener.receiveStart(this, transferParams.getRemoteFile(), transferParams.getLength(), transferParams.getRate());
 				// Open output file
 				openOutputFile();
 				if (transferParams.getLength() != -1)
@@ -123,17 +121,14 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 			} else {
 				// Just notify listener (if any) about the sending
 				if (progressListener != null)
-					progressListener.sendStart(this,
-							transferParams.getLength(), transferParams
-									.getRate());
+					progressListener.sendStart(this, transferParams.getLength(), transferParams.getRate());
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			try {
 				// Respond with create failure message back to host
-				getContext().sendCreateResponse(getHomeContainerID(), e,
-						getNextReplicateID());
-			} catch (Exception e1) {
-				log("Exception sending failure back to host", e1);
+				getContext().sendCreateResponse(getHomeContainerID(), e, getNextReplicateID());
+			} catch (final Exception e1) {
+				log("Exception sending failure back to host", e1); //$NON-NLS-1$
 			}
 			return;
 		}
@@ -142,9 +137,9 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 	}
 
 	protected void openOutputFile() throws IOException {
-		File aFile = transferParams.getRemoteFile();
+		final File aFile = transferParams.getRemoteFile();
 		if (aFile == null)
-			throw new IOException("Remote file is null");
+			throw new IOException(Messages.FileTransferSharedObject_EXCEPTION_REMOTE_FILE_NOT_NULL);
 		// If this is a server, and we shouldn't create a copy of ourselves on a
 		// server
 		// then we skip the file creation totally
@@ -153,17 +148,16 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 			setOutputStream(null);
 		} else {
 			try {
-				String parent = aFile.getParent();
+				final String parent = aFile.getParent();
 
 				if (parent != null && new File(parent).mkdirs())
 					/**/;
-			} catch (Exception ex) {
+			} catch (final Exception ex) {
 				// Log this exception.
-				log(NLS.bind("Exception creating local directory for ", aFile),
+				log(NLS.bind("Exception creating local directory for ", aFile), //$NON-NLS-1$
 						ex);
 			}
-			setOutputStream(new BufferedOutputStream(
-					new FileOutputStream(aFile)));
+			setOutputStream(new BufferedOutputStream(new FileOutputStream(aFile)));
 		}
 	}
 
@@ -179,34 +173,31 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 		// if we're replicating on activation
 		else if (remoteMember == null) {
 			try {
-				ReplicaSharedObjectDescription createInfo = getReplicaDescription(targetReceiver);
+				final ReplicaSharedObjectDescription createInfo = getReplicaDescription(targetReceiver);
 				if (createInfo != null) {
 					getContext().sendCreate(targetReceiver, createInfo);
 					return;
 				}
-			} catch (IOException e) {
-				log("Could not send createFail message", e);
+			} catch (final IOException e) {
+				log("Could not send createFail message", e); //$NON-NLS-1$
 			}
 		}
 	}
 
-	public void init(ISharedObjectConfig config)
-			throws SharedObjectInitException {
+	public void init(ISharedObjectConfig config) throws SharedObjectInitException {
 		super.init(config);
-		Map map = config.getProperties();
-		Object[] args = (Object[]) map.get(ARGS_PROPERTY_NAME);
+		final Map map = config.getProperties();
+		final Object[] args = (Object[]) map.get(ARGS_PROPERTY_NAME);
 		if (args != null && args.length == 1) {
 			transferParams = (FileTransferParams) args[0];
 			progressListener = transferParams.getProgressListener();
 		}
 	}
 
-	protected ReplicaSharedObjectDescription getReplicaDescription(
-			ID remoteMember) {
-		HashMap map = new HashMap();
-		map.put(ARGS_PROPERTY_NAME, new Object[] { transferParams });
-		return new ReplicaSharedObjectDescription(getClass(), getID(),
-				getConfig().getHomeContainerID(), map, getNextReplicateID());
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID remoteMember) {
+		final HashMap map = new HashMap();
+		map.put(ARGS_PROPERTY_NAME, new Object[] {transferParams});
+		return new ReplicaSharedObjectDescription(getClass(), getID(), getConfig().getHomeContainerID(), map, getNextReplicateID());
 	}
 
 	protected boolean sendData(ID rcvr, FileData data) throws IOException {
@@ -216,8 +207,8 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 	}
 
 	protected boolean sendChunk(ID rcvr) throws IOException {
-		FileData data = new FileData(inputStream, transferParams.getChunkSize());
-		int size = data.getDataSize();
+		final FileData data = new FileData(inputStream, transferParams.getChunkSize());
+		final int size = data.getDataSize();
 		if (progressListener != null && size != -1)
 			progressListener.sendData(this, size);
 		return sendData(rcvr, data);
@@ -226,7 +217,7 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 	protected void handleData(FileData data) {
 		preSaveData(data);
 		// Then save the file data.
-		int size = data.getDataSize();
+		final int size = data.getDataSize();
 		if (progressListener != null && size != -1)
 			progressListener.receiveData(this, size);
 		saveData(data);
@@ -246,15 +237,15 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 		// Save data locally...if we have an output stream
 		try {
 			if (outputStream != null) {
-				long len = transferParams.getLength();
+				final long len = transferParams.getLength();
 				dataWritten += data.getDataSize();
 				if (len != -1 && dataWritten > len)
-					throw new IOException("File larger than " + len);
+					throw new IOException(NLS.bind(Messages.FileTransferSharedObject_EXCEPTION_FILE_LARGER_THAN_LEN, String.valueOf(len)));
 				data.saveData(outputStream);
 				// Flush to verify that data was saved.
 				outputStream.flush();
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// Give subclasses opportunity to deal with this
 			notifyExceptionOnSave(e);
 			// Report failure back to host if we're not disconnected
@@ -263,9 +254,9 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 				forwardMsgHome(SharedObjectMsg.createMsg(HANDLEDONE_MSG, e));
 				// Make sure everything is cleaned up
 				hardClose();
-			} catch (Exception e1) {
+			} catch (final Exception e1) {
 				// If this fails...then we should be outta here
-				log("Exception sending done msg back to host", e1);
+				log("Exception sending done msg back to host", e1); //$NON-NLS-1$
 			}
 			if (progressListener != null)
 				progressListener.receiveDone(this, e);
@@ -278,7 +269,7 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 			try {
 				// Make sure everything is cleaned up
 				hardClose();
-			} catch (Exception e1) {
+			} catch (final Exception e1) {
 				// If this fails...then we should be outta here
 				except = e1;
 				notifyExceptionOnClose(except);
@@ -289,10 +280,9 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 			if (progressListener != null)
 				progressListener.receiveDone(this, except);
 			try {
-				forwardMsgHome(SharedObjectMsg
-						.createMsg(HANDLEDONE_MSG, except));
-			} catch (Exception e) {
-				log("Exception sending done message home", e);
+				forwardMsgHome(SharedObjectMsg.createMsg(HANDLEDONE_MSG, except));
+			} catch (final Exception e) {
+				log("Exception sending done message home", e); //$NON-NLS-1$
 			}
 			// Now call doneReceiving...which may destroy us
 			doneReceiving();
@@ -347,7 +337,7 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 
 	protected void start() {
 		if (isHost()) {
-			Date start = transferParams.getStartDate();
+			final Date start = transferParams.getStartDate();
 			if (start != null && start.after(new Date())) {
 				try {
 					preWait();
@@ -356,7 +346,7 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 					}
 					// Asynchronous tail recursion.
 					sendSelf(SharedObjectMsg.createMsg(START_MSG));
-				} catch (Exception e) {
+				} catch (final Exception e) {
 				}
 			} else {
 				preStartSending();
@@ -376,7 +366,7 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 			// Call subclass overrideable method before sending chunk
 			preChunkSent();
 			// Send chunk
-			boolean res = sendChunk(targetReceiver);
+			final boolean res = sendChunk(targetReceiver);
 			// Call subclass overrideable method after sending chunk
 			chunkSent();
 			if (!res) {
@@ -394,7 +384,7 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 				hardClose();
 				doneSending(null);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			doneSending(e);
 		}
 	}
@@ -403,14 +393,14 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 		if (inputStream != null) {
 			try {
 				inputStream.close();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 			}
 			inputStream = null;
 		}
 		if (outputStream != null) {
 			try {
 				outputStream.close();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 			}
 			outputStream = null;
 		}
@@ -421,7 +411,7 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 		// Make sure things are cleaned up properly in case of wrong trousers
 		try {
 			hardClose();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 		}
 	}
 

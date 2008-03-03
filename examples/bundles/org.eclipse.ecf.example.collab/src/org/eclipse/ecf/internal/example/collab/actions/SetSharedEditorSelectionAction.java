@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientEntry;
 import org.eclipse.ecf.internal.example.collab.CollabClient;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.ITextSelection;
@@ -77,12 +78,12 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 		final IProject project = file.getProject();
 		final ClientEntry entry = isConnected(project.getWorkspace().getRoot());
 		if (entry == null) {
-			MessageDialog.openInformation(getWorkbench().getDisplay().getActiveShell(), "Not Connected to Collaboration Session", "Not connected to any collaboration group.  To connect, open Collaboration View");
+			MessageDialog.openInformation(getWorkbench().getDisplay().getActiveShell(), Messages.SetSharedEditorSelectionAction_DIALOG_NOT_CONNECTED_TITLE, Messages.SetSharedEditorSelectionAction_DIALOG_NOT_CONNECTED_TEXT);
 			return;
 		}
 		final EclipseCollabSharedObject collabsharedobject = entry.getSharedObject();
 		if (collabsharedobject != null) {
-			collabsharedobject.sendOpenAndSelectForFile(null, project.getName() + "/" + file.getProjectRelativePath().toString(), textSelection.getOffset(), textSelection.getLength());
+			collabsharedobject.sendOpenAndSelectForFile(null, project.getName() + "/" + file.getProjectRelativePath().toString(), textSelection.getOffset(), textSelection.getLength()); //$NON-NLS-1$
 		}
 	}
 

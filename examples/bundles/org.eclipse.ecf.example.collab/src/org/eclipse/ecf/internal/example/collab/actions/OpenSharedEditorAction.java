@@ -17,10 +17,12 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientEntry;
 import org.eclipse.ecf.internal.example.collab.CollabClient;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
@@ -37,9 +39,8 @@ public class OpenSharedEditorAction implements IObjectActionDelegate {
 	protected ClientEntry isConnected(IResource res) {
 		if (res == null)
 			return null;
-		CollabClient client = CollabClient.getDefault();
-		ClientEntry entry = client.isConnected(res,
-				CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
+		final CollabClient client = CollabClient.getDefault();
+		final ClientEntry entry = client.isConnected(res, CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
 		return entry;
 	}
 
@@ -47,23 +48,15 @@ public class OpenSharedEditorAction implements IObjectActionDelegate {
 		if (file == null) {
 			return;
 		}
-		IProject project = file.getProject();
-		ClientEntry entry = isConnected(project);
+		final IProject project = file.getProject();
+		final ClientEntry entry = isConnected(project);
 		if (entry == null) {
-			MessageDialog
-					.openInformation(
-							targetPart.getSite().getWorkbenchWindow()
-									.getShell(),
-							"Project Not Connected to Collaboration Group",
-							"Project '"
-									+ project.getName()
-									+ "' not connected to any collaboration session.  To connect project, open context menu for project and choose Communications->Connect Project to Collaboration Group...");
+			MessageDialog.openInformation(targetPart.getSite().getWorkbenchWindow().getShell(), Messages.OpenSharedEditorAction_DIALOG_NOT_CONNECTED_TITLE, NLS.bind(Messages.OpenSharedEditorAction_DIALOG_NOT_CONNECTED_TEXT, project.getName()));
 			return;
 		}
-		EclipseCollabSharedObject collabsharedobject = entry.getSharedObject();
+		final EclipseCollabSharedObject collabsharedobject = entry.getSharedObject();
 		if (collabsharedobject != null) {
-			collabsharedobject.sendLaunchEditorForFile(null, file
-					.getProjectRelativePath().toString());
+			collabsharedobject.sendLaunchEditorForFile(null, file.getProjectRelativePath().toString());
 		}
 	}
 
@@ -71,8 +64,8 @@ public class OpenSharedEditorAction implements IObjectActionDelegate {
 		action.setEnabled(false);
 		file = null;
 		if (selection instanceof IStructuredSelection) {
-			IStructuredSelection ss = (IStructuredSelection) selection;
-			Object obj = ss.getFirstElement();
+			final IStructuredSelection ss = (IStructuredSelection) selection;
+			final Object obj = ss.getFirstElement();
 			// now try to set relevant file
 			if (obj instanceof IFile) {
 				file = (IFile) obj;

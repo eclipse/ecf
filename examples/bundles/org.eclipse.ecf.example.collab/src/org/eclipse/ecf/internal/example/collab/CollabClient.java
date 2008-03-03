@@ -30,9 +30,9 @@ import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.ui.SharedObjectContainerUI;
 
 public class CollabClient {
-	public static final String WORKSPACE_NAME = "<workspace>";
+	public static final String WORKSPACE_NAME = Messages.CollabClient_WORKSPACE_NAME;
 
-	public static final String GENERIC_CONTAINER_CLIENT_NAME = "ecf.generic.client";
+	public static final String GENERIC_CONTAINER_CLIENT_NAME = "ecf.generic.client"; //$NON-NLS-1$
 
 	static Hashtable clients = new Hashtable();
 
@@ -139,7 +139,7 @@ public class CollabClient {
 
 	public static String getNameForResource(IResource res) {
 		String preName = res.getName().trim();
-		if (preName == null || preName.equals("")) {
+		if (preName == null || preName.equals("")) { //$NON-NLS-1$
 			preName = WORKSPACE_NAME;
 		}
 		return preName;
@@ -248,8 +248,8 @@ public class CollabClient {
 			username = nickname;
 		} else {
 			username = new URI(targetID.getName()).getUserInfo();
-			if (username == null || username.equals(""))
-				username = System.getProperty("user.name");
+			if (username == null || username.equals("")) //$NON-NLS-1$
+				username = System.getProperty("user.name"); //$NON-NLS-1$
 		}
 		return username;
 	}

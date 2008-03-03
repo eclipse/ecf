@@ -20,6 +20,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.internal.example.collab.ClientPluginConstants;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -55,43 +56,43 @@ public class ConnectionDialog extends TitleAreaDialog {
 	protected static final String CLASSNAME = JoinGroupWizardPage.class
 			.getName();
 
-	protected static final String USER_NAME_SYSTEM_PROPERTY = "user.name";
+	protected static final String USER_NAME_SYSTEM_PROPERTY = "user.name"; //$NON-NLS-1$
 
-	protected static final String ISSERVER_PROP_NAME = CLASSNAME + ".isServer";
+	protected static final String ISSERVER_PROP_NAME = CLASSNAME + ".isServer"; //$NON-NLS-1$
 
 	protected static final String DEFAULTGROUPID_PROP_NAME = CLASSNAME
-			+ ".defaultgroupid";
+			+ ".defaultgroupid"; //$NON-NLS-1$
 
 	protected static final String EXAMPLEGROUPID_PROP_NAME = CLASSNAME
-			+ ".examplegroupid";
+			+ ".examplegroupid"; //$NON-NLS-1$
 
 	protected static final String USEPASSWORD_PROP_NAME = CLASSNAME
-			+ ".usepassword";
+			+ ".usepassword"; //$NON-NLS-1$
 
 	protected static final String USENICKNAME_PROP_NAME = CLASSNAME
-			+ ".usenickname";
+			+ ".usenickname"; //$NON-NLS-1$
 
-	protected static final String URLPREFIX_NAME = CLASSNAME + ".urlprefix";
+	protected static final String URLPREFIX_NAME = CLASSNAME + ".urlprefix"; //$NON-NLS-1$
 
 	protected static final String GROUPIDLABEL_PROP_NAME = CLASSNAME
-			+ ".groupIDLabel";
+			+ ".groupIDLabel"; //$NON-NLS-1$
 
 	protected static final String NAMESPACE_PROP_NAME = CLASSNAME
-			+ ".namespace";
+			+ ".namespace"; //$NON-NLS-1$
 
-	protected static final String PAGE_DESCRIPTION = "Select protocol provider, complete account info and login";
+	protected static final String PAGE_DESCRIPTION = Messages.ConnectionDialog_SELECT_PROVIDER_DESCRIPTION;
 
-	protected static final String JOINGROUP_FIELDNAME = "Group ID:";
+	protected static final String JOINGROUP_FIELDNAME = Messages.ConnectionDialog_JOIN_GROUP_FIELD_TEXT;
 
-	protected static final String NICKNAME_FIELDNAME = "Nickname:";
+	protected static final String NICKNAME_FIELDNAME = Messages.ConnectionDialog_NICKNAME_TEXT;
 
-	protected static final String ECF_DEFAULT_URL = "ecftcp://localhost:3282/server";
+	protected static final String ECF_DEFAULT_URL = "ecftcp://localhost:3282/server"; //$NON-NLS-1$
 
-	protected static final String ECF_TEMPLATE_URL = "<protocol>://<machinename>:<port>/<servicename>";
+	protected static final String ECF_TEMPLATE_URL = Messages.ConnectionDialog_TEMPLATE_URL;
 
-	protected static final String PAGE_TITLE = "Connect with ECF";
+	protected static final String PAGE_TITLE = Messages.ConnectionDialog_CONNECT_PAGE_TITLE;
 
-	protected static final String DEFAULT_CLIENT = "ecf.generic.client";
+	protected static final String DEFAULT_CLIENT = "ecf.generic.client"; //$NON-NLS-1$
 
 	private static final String DIALOG_SETTINGS = CLASSNAME;
 
@@ -99,21 +100,21 @@ public class ConnectionDialog extends TitleAreaDialog {
 
 	private Text joingroup_text;
 
-	private String joinGroup = "";
+	private String joinGroup = ""; //$NON-NLS-1$
 
 	private Text nickname_text;
 
-	private String nickname = "";
+	private String nickname = ""; //$NON-NLS-1$
 
 	private Text password_text;
 
-	private String password = "";
+	private String password = ""; //$NON-NLS-1$
 
 	private String urlPrefix;
 
 	private String namespace = null;
 
-	private String containerType = "";
+	private String containerType = ""; //$NON-NLS-1$
 
 	private TableViewer viewer;
 
@@ -137,7 +138,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Label providerLabel = new Label(main, SWT.NONE);
-		providerLabel.setText("Connection Protocol");
+		providerLabel.setText(Messages.ConnectionDialog_PROTOCOL_TEXT);
 
 		Composite providerComp = new Composite(main, SWT.NONE);
 		GridLayout layout = new GridLayout(2, false);
@@ -173,7 +174,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 		paramComp.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		autoLogin = new Button(main, SWT.CHECK);
-		autoLogin.setText("Login &automatically at startup");
+		autoLogin.setText(Messages.ConnectionDialog_AUTOLOGIN_TEXT);
 		autoLogin.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		autoLogin.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -185,11 +186,11 @@ public class ConnectionDialog extends TitleAreaDialog {
 		Label sep = new Label(main, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		this.setTitle("ECF Connection");
+		this.setTitle(Messages.ConnectionDialog_CONNECTION_TITLE);
 		this
-				.setMessage("Please choose a provider and supply connection parameters.");
+				.setMessage(Messages.ConnectionDialog_CHOOSE_PROVIDER_MESSAGE);
 
-		this.getShell().setText("Connect");
+		this.getShell().setText(Messages.ConnectionDialog_CONNECT_TEXT);
 		return parent;
 	}
 
@@ -239,7 +240,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 		if (namespace != null) {
 			return textValue;
 		} else {
-			if (!urlPrefix.equals("") && !textValue.startsWith(urlPrefix)) {
+			if (!urlPrefix.equals("") && !textValue.startsWith(urlPrefix)) { //$NON-NLS-1$
 				textValue = urlPrefix + textValue;
 			}
 			return textValue;
@@ -273,21 +274,21 @@ public class ConnectionDialog extends TitleAreaDialog {
 					.getSection(DIALOG_SETTINGS);
 			if (pageSettings != null) {
 
-				int intVal = pageSettings.getInt("provider");
+				int intVal = pageSettings.getInt("provider"); //$NON-NLS-1$
 				viewer.getTable().setSelection(intVal);
 				viewer.setSelection(viewer.getSelection());
-				String strVal = pageSettings.get("url");
+				String strVal = pageSettings.get("url"); //$NON-NLS-1$
 				if (strVal != null && joingroup_text != null) {
 					joingroup_text.setText(strVal);
 				}
 
-				strVal = pageSettings.get("nickname");
+				strVal = pageSettings.get("nickname"); //$NON-NLS-1$
 				if (strVal != null && nickname_text != null) {
 					nickname_text.setText(strVal);
 				}
 
 				if (savePassword()) {
-					strVal = pageSettings.get("password");
+					strVal = pageSettings.get("password"); //$NON-NLS-1$
 					if (strVal != null && password_text != null) {
 						password_text.setText(strVal);
 					}
@@ -307,13 +308,13 @@ public class ConnectionDialog extends TitleAreaDialog {
 			if (pageSettings == null)
 				pageSettings = dialogSettings.addNewSection(DIALOG_SETTINGS);
 
-			pageSettings.put("url", this.getJoinGroupText());
-			pageSettings.put("nickname", this.getNicknameText());
-			pageSettings.put("password", this.getPasswordText());
+			pageSettings.put("url", this.getJoinGroupText()); //$NON-NLS-1$
+			pageSettings.put("nickname", this.getNicknameText()); //$NON-NLS-1$
+			pageSettings.put("password", this.getPasswordText()); //$NON-NLS-1$
 
 			int i = viewer.getTable().getSelectionIndex();
 			if (i >= 0)
-				pageSettings.put("provider", i);
+				pageSettings.put("provider", i); //$NON-NLS-1$
 
 /*
  * try { dialogSettings.save(this.getClass().toString()); } catch (IOException
@@ -361,7 +362,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 				return desc.getName();
 			}
 
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 
 		public void addListener(ILabelProviderListener listener) {
@@ -406,7 +407,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 				namespace = (String) properties.get(NAMESPACE_PROP_NAME);
 
 				if (urlPrefix == null) {
-					urlPrefix = "";
+					urlPrefix = ""; //$NON-NLS-1$
 				}
 
 				removeChildren(parent);
@@ -432,7 +433,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 					// set examplegroupid text
 					example_label
 							.setText((examplegroupid != null) ? examplegroupid
-									: "");
+									: ""); //$NON-NLS-1$
 					example_label.setLayoutData(new GridData(
 							GridData.HORIZONTAL_ALIGN_END));
 					// joingroup_text.setText((defaultgroupid != null) ?
@@ -442,7 +443,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 				// turn off password unless used
 				if (usePassword != null) {
 					Label password_label = new Label(parent, SWT.NONE);
-					password_label.setText("Password:");
+					password_label.setText(Messages.ConnectionDialog_PASSWORD_TEXT);
 					password_text = new Text(parent, SWT.BORDER);
 					password_text.setLayoutData(new GridData(
 							GridData.FILL_HORIZONTAL));

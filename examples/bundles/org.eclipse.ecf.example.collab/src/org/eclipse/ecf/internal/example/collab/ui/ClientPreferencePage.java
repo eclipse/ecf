@@ -12,6 +12,7 @@
 package org.eclipse.ecf.internal.example.collab.ui;
 
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -68,33 +69,33 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 
 	public void createFieldEditors() {
 		addField(new BooleanFieldEditor(ClientPlugin.PREF_USE_CHAT_WINDOW,
-				"Display ECF Collaboration outside of the workbench",
+				Messages.ClientPreferencePage_USE_CHAT_WINDOW_FIELD_TEXT,
 				getFieldEditorParent()));
 		addField(new BooleanFieldEditor(ClientPlugin.PREF_DISPLAY_TIMESTAMP,
-				"Show time for each chat entry", getFieldEditorParent()));
+				Messages.ClientPreferencePage_SHOW_TIME_FOR_CHAT_FIELD, getFieldEditorParent()));
 		addField(new FontFieldEditor(ClientPlugin.PREF_CHAT_FONT,
-				"Chat window font:", getFieldEditorParent()));
+				Messages.ClientPreferencePage_CHAT_WINDOW_FONT_FIELD, getFieldEditorParent()));
 		// addField(new
 		// BooleanFieldEditor(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, "Confirm
 		// before receiving file.", getFieldEditorParent()));
 		// addField(new SpacerFieldEditor(
 		// getFieldEditorParent()));
 		addField(new ColorFieldEditor(ClientPlugin.PREF_ME_TEXT_COLOR,
-				"Chat Text Color For Me:", getFieldEditorParent()));
+				Messages.ClientPreferencePage_CHAT_COLOR_FOR_ME_FIELD, getFieldEditorParent()));
 		addField(new ColorFieldEditor(ClientPlugin.PREF_OTHER_TEXT_COLOR,
-				"Chat Text Color For Other:", getFieldEditorParent()));
+				Messages.ClientPreferencePage_CHAT_TEXT_COLOR_FOR_OTHER_FIELD, getFieldEditorParent()));
 		addField(new ColorFieldEditor(ClientPlugin.PREF_SYSTEM_TEXT_COLOR,
-				"Chat Text Color For System:", getFieldEditorParent()));
+				Messages.ClientPreferencePage_CHAT_COLOR_FOR_SYSTEM_FIELD, getFieldEditorParent()));
 		addField(new SpacerFieldEditor(getFieldEditorParent()));
 
 		playImmediate = new BooleanFieldEditor(
 				ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY,
-				"Play shared editor events immediately", getFieldEditorParent());
+				Messages.ClientPreferencePage_PLAY_EDITOR_EVENTS_IMMEDIATELY, getFieldEditorParent());
 		addField(playImmediate);
 		askParent = getFieldEditorParent();
 		ask = new BooleanFieldEditor(
 				ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER,
-				"Ask receiver for permission to display shared editor events",
+				Messages.ClientPreferencePage_ASK_RECEIVER_FOR_PERMISSION,
 				askParent);
 		addField(ask);
 

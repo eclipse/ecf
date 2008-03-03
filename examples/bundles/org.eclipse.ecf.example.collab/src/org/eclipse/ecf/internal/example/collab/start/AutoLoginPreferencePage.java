@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.example.collab.start;
 import java.util.Collection;
 
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.widgets.Button;
@@ -35,8 +36,8 @@ public class AutoLoginPreferencePage extends FieldEditorPreferencePage
 	}
 
 	protected void createFieldEditors() {
-		addField(new URLListFieldEditor("urilisteditor",
-				"The following will be connected upon ECF start",
+		addField(new URLListFieldEditor("urilisteditor", //$NON-NLS-1$
+				Messages.AutoLoginPreferencePage_URILISTEDITOR_TEXT,
 				getFieldEditorParent()));
 	}
 }

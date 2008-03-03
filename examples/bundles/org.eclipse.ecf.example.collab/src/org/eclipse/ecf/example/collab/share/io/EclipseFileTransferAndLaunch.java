@@ -44,18 +44,18 @@ public class EclipseFileTransferAndLaunch extends EclipseFileTransfer {
 		try {
 			Program.launch(fileName);
 		} catch (final IllegalArgumentException e1) {
-			ClientPlugin.log("Exception launching " + localFile, e1);
+			ClientPlugin.log(MessageLoader.getString("EclipseFileTransferAndLaunch.EXCEPTION_LAUNCHING") + localFile, e1); //$NON-NLS-1$
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					MessageDialog
 							.openInformation(
 									null,
 									MessageLoader
-											.getString("Program Launch Failed"),
+											.getString(MessageLoader.getString("EclipseFileTransferAndLaunch.PROGRAM_LAUNCH_MSGBOX_TITLE")), //$NON-NLS-1$
 									MessageLoader
 											.getString(NLS
 													.bind(
-															"Program launch failed for {0}\nException: {1}",
+															MessageLoader.getString("EclipseFileTransferAndLaunch.PROGRAM_LAUNCH_MSGBOX_TEXT"), //$NON-NLS-1$
 															localFile
 																	.getAbsolutePath(),
 															e1.getMessage())));

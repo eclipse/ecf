@@ -25,7 +25,7 @@ class LabelFieldEditor extends FieldEditor {
 	// All labels can use the same preference name since they don't
 	// store any preference.
 	public LabelFieldEditor(String value, Composite parent) {
-		super("label", value, parent);
+		super("label", value, parent); //$NON-NLS-1$
 	}
 
 	// Adjusts the field editor to be displayed correctly

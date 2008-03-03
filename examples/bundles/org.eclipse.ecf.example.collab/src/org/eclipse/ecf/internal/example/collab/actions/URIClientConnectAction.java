@@ -19,11 +19,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.internal.example.collab.CollabClient;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.internal.example.collab.start.AccountStart;
 import org.eclipse.ecf.internal.example.collab.start.ConnectionDetails;
 import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -44,9 +46,7 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
 		client = CollabClient.getDefault();
 	}
 
-	public URIClientConnectAction(String containerType, String uri,
-			String nickname, String password, IResource project,
-			boolean autoLoginFlag) {
+	public URIClientConnectAction(String containerType, String uri, String nickname, String password, IResource project, boolean autoLoginFlag) {
 		this();
 		this.containerType = containerType;
 		this.uri = uri;
@@ -70,16 +70,14 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
 
 		public IStatus run(IProgressMonitor pm) {
 			try {
-				client.createAndConnectClient(containerType, uri, nickname,
-						password, project);
+				client.createAndConnectClient(containerType, uri, nickname, password, project);
 				if (autoLogin)
 					saveAutoLoginInfo();
 			} catch (final ContainerConnectException e) {
 				removeAutoLoginInfo();
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						new ContainerConnectErrorDialog(null, uri, e
-								.getStatus()).open();
+						new ContainerConnectErrorDialog(null, uri, e.getStatus()).open();
 					}
 				});
 			} catch (final Exception e) {
@@ -93,21 +91,19 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
 		}
 
 		private void saveAutoLoginInfo() {
-			AccountStart as = new AccountStart();
-			as.addConnectionDetails(new ConnectionDetails(containerType, uri,
-					nickname, password));
+			final AccountStart as = new AccountStart();
+			as.addConnectionDetails(new ConnectionDetails(containerType, uri, nickname, password));
 			as.saveConnectionDetailsToPreferenceStore();
 		}
 
 		private void removeAutoLoginInfo() {
-			AccountStart as = new AccountStart();
-			as.removeConnectionDetails(new ConnectionDetails(containerType,
-					uri, nickname, password));
+			final AccountStart as = new AccountStart();
+			as.removeConnectionDetails(new ConnectionDetails(containerType, uri, nickname, password));
 		}
 	}
 
 	public void run(IAction action) {
-		new ClientConnectJob("Connect for " + projectName).schedule();
+		new ClientConnectJob(NLS.bind(Messages.URIClientConnectAction_CONNECT_JOB_NAME, projectName)).schedule();
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {

@@ -126,7 +126,7 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 	 */
 	protected ImageRegistry createImageRegistry() {
 		final ImageRegistry registry = super.createImageRegistry();
-		registry.put(ClientPluginConstants.DECORATION_DEFAULT_PROVIDER, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/default_provider_image.gif").createImage());
+		registry.put(ClientPluginConstants.DECORATION_DEFAULT_PROVIDER, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/default_provider_image.gif").createImage()); //$NON-NLS-1$
 		return registry;
 	}
 

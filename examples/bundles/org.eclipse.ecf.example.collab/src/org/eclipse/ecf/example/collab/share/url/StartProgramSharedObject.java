@@ -22,7 +22,7 @@ import org.eclipse.ecf.example.collab.share.GenericSharedObject;
 import org.eclipse.ecf.internal.example.collab.Trace;
 
 public class StartProgramSharedObject extends GenericSharedObject {
-	public static Trace myDebug = Trace.create("progsharedobject");
+	public static Trace myDebug = Trace.create("progsharedobject"); //$NON-NLS-1$
 	public static final Boolean DEFAULT_INCLUDE_SERVER = Boolean.FALSE;
 	// Host values
 	protected String[] cmds;
@@ -78,7 +78,7 @@ public class StartProgramSharedObject extends GenericSharedObject {
 	}
 
 	protected void replicate(ID remoteMember) {
-		debug("replicateSelf(" + remoteMember + ")");
+		debug("replicateSelf(" + remoteMember + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		// If we don't have a specific receiver, simply allow superclass to
 		// handle replication.
 		if (receiver == null) {
@@ -95,7 +95,7 @@ public class StartProgramSharedObject extends GenericSharedObject {
 					getContext().sendCreate(receiver, createInfo);
 				}
 			} catch (IOException e) {
-				log("Exception in replicateSelf", e);
+				log("Exception in replicateSelf", e); //$NON-NLS-1$
 				return;
 			}
 		}
@@ -105,9 +105,9 @@ public class StartProgramSharedObject extends GenericSharedObject {
 			throws SharedObjectInitException {
 		super.init(config);
 		Map props = config.getProperties();
-		debug("props is " + props);
-		Object[] args = (Object[]) props.get("args");
-		debug("args is " + args);
+		debug("props is " + props); //$NON-NLS-1$
+		Object[] args = (Object[]) props.get("args"); //$NON-NLS-1$
+		debug("args is " + args); //$NON-NLS-1$
 		if (args != null && args.length > 4) {
 			receiver = (ID) args[0];
 			cmds = (String[]) args[1];
@@ -124,22 +124,22 @@ public class StartProgramSharedObject extends GenericSharedObject {
 				(replicaEnv == null) ? env : replicaEnv, includeHost,
 				includeServer };
 		HashMap map = new HashMap();
-		map.put("args", args);
+		map.put("args", args); //$NON-NLS-1$
 		return new ReplicaSharedObjectDescription(getClass(), getID(),
 				getHomeContainerID(), map, getNextReplicateID());
 	}
 
 	public void activated(ID[] others) {
-		debug("activated()");
+		debug("activated()"); //$NON-NLS-1$
 		try {
 			if (!getContext().isGroupManager()
 					|| includeServer.equals(Boolean.TRUE)) {
 				startup();
 			} else {
-				debug("Not executing commands because is server");
+				debug("Not executing commands because is server"); //$NON-NLS-1$
 			}
 		} catch (Exception e) {
-			debug(e, "Exception on startup()");
+			debug(e, "Exception on startup()"); //$NON-NLS-1$
 			/*
 			 * For now, just ignore failure.
 			 */
@@ -153,24 +153,24 @@ public class StartProgramSharedObject extends GenericSharedObject {
 	 * called after the activated method completes its operations.
 	 */
 	protected void postActivated() {
-		debug("postActivated()");
+		debug("postActivated()"); //$NON-NLS-1$
 	}
 
 	protected void startup() throws Exception {
-		debug("startup()");
+		debug("startup()"); //$NON-NLS-1$
 		if (cmds != null) {
 			// This is all trace output
 			if (Trace.ON && myDebug != null) {
-				myDebug.msg("Executing command line:");
+				myDebug.msg("Executing command line:"); //$NON-NLS-1$
 				if (cmds != null) {
 					for (int i = 0; i < cmds.length; i++) {
-						myDebug.msg("  " + cmds[i] + " ");
+						myDebug.msg("  " + cmds[i] + " "); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
-				myDebug.msg("With enviromnent:");
+				myDebug.msg("With enviromnent:"); //$NON-NLS-1$
 				if (env != null) {
 					for (int i = 0; i < env.length; i++) {
-						myDebug.msg("  " + env[i] + " ");
+						myDebug.msg("  " + env[i] + " "); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			}

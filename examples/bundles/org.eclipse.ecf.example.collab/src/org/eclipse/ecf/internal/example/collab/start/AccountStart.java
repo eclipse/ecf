@@ -18,11 +18,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 public class AccountStart {
-	private static final String SAVED = "saved-connections";
+	private static final String SAVED = "saved-connections"; //$NON-NLS-1$
 	private static final int BACKING_STORE_SAVE_ERROR = 1001;
 	private static final int BACKING_STORE_LOAD_ERROR = 1002;
 	private Map connectionDetails = new HashMap();
@@ -55,7 +56,7 @@ public class AccountStart {
 			ClientPlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID,
 							BACKING_STORE_LOAD_ERROR,
-							"Exception loading connection details", e));
+							Messages.AccountStart_EXCEPTION_LOADING_CONNECTION_DETAILS, e));
 		}
 	}
 
@@ -83,7 +84,7 @@ public class AccountStart {
 			ClientPlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID,
 							BACKING_STORE_SAVE_ERROR,
-							"Exception saving connection details", e));
+							Messages.AccountStart_EXCEPTION_SAVING_CONNECTION_DETAILS, e));
 		}
 	}
 
@@ -98,17 +99,17 @@ public class AccountStart {
 				Preferences node = connections.node(target);
 				if (node != null) {
 					addConnectionDetails(new ConnectionDetails(node.get(
-							ConnectionDetails.CONTAINER_TYPE, ""), node.get(
-							ConnectionDetails.TARGET_URI, ""), node.get(
-							ConnectionDetails.NICKNAME, ""), node.get(
-							ConnectionDetails.PASSWORD, "")));
+							ConnectionDetails.CONTAINER_TYPE, ""), node.get( //$NON-NLS-1$
+							ConnectionDetails.TARGET_URI, ""), node.get( //$NON-NLS-1$
+							ConnectionDetails.NICKNAME, ""), node.get( //$NON-NLS-1$
+							ConnectionDetails.PASSWORD, ""))); //$NON-NLS-1$
 				}
 			}
 		} catch (BackingStoreException e) {
 			ClientPlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID,
 							BACKING_STORE_LOAD_ERROR,
-							"Exception loading connection details", e));
+							Messages.AccountStart_EXCEPTION_LOADING_CONNECTION_DETAILS, e));
 		}
 	}
 }

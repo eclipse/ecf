@@ -28,12 +28,14 @@ import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.example.collab.share.url.ShowURLSharedObject;
 import org.eclipse.ecf.example.collab.share.url.StartProgramSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -49,14 +51,14 @@ import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.ViewPart;
 
 public class LineChatClientView implements FileSenderUI {
-	public static final String DEFAULT_UNIX_BROWSER = "mozilla";
-	public static final String ENTER_STRING = "ARRIVED";
-	public static final String EXECPROGARGTYPES[] = {ID.class.getName(), "[Ljava.lang.String;", "[Ljava.lang.String;", Boolean.class.getName(), Boolean.class.getName()};
+	public static final String DEFAULT_UNIX_BROWSER = "mozilla"; //$NON-NLS-1$
+	public static final String ENTER_STRING = "ARRIVED"; //$NON-NLS-1$
+	public static final String EXECPROGARGTYPES[] = {ID.class.getName(), "[Ljava.lang.String;", "[Ljava.lang.String;", Boolean.class.getName(), Boolean.class.getName()}; //$NON-NLS-1$ //$NON-NLS-2$
 	public static final String EXECPROGCLASSNAME = StartProgramSharedObject.class.getName();
-	public static final String LEFT_STRING = "LEFT";
+	public static final String LEFT_STRING = "LEFT"; //$NON-NLS-1$
 	public static final String MESSAGECLASSNAME = HelloMessageSharedObject.class.getName();
 	public static final String REMOTEFILEPATH = null;
-	public static final String SHOWURLARGTYPES[] = {ID.class.getName(), "java.lang.String"};
+	public static final String SHOWURLARGTYPES[] = {ID.class.getName(), "java.lang.String"}; //$NON-NLS-1$
 	public static final String SHOWURLCLASSNAME = ShowURLSharedObject.class.getName();
 
 	private boolean showTimestamp = ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_DISPLAY_TIMESTAMP);
@@ -123,14 +125,13 @@ public class LineChatClientView implements FileSenderUI {
 			final String existingName = (String) myNames.get(userID);
 			if (!existingName.equals(username)) {
 				myNames.put(userID, username);
-				final String str = existingName + " changed name to " + username;
-				showLine(new ChatLine(str));
+				showLine(new ChatLine(NLS.bind(Messages.LineChatClientView_CHANGED_NAME_TO, existingName, username)));
 			}
 			return false;
 		} else {
 			myNames.put(userID, username);
 			addUserToTree(ud);
-			showLine(new ChatLine(username + " " + ENTER_STRING));
+			showLine(new ChatLine(username + " " + ENTER_STRING)); //$NON-NLS-1$
 			return true;
 		}
 	}
@@ -246,18 +247,18 @@ public class LineChatClientView implements FileSenderUI {
 	protected void createObject(ID target, final String className, String[] argTypes, Object[] args) {
 		if (lch != null) {
 			final HashMap map = new HashMap();
-			map.put("args", args);
-			map.put("types", argTypes);
+			map.put("args", args); //$NON-NLS-1$
+			map.put("types", argTypes); //$NON-NLS-1$
 			try {
 				lch.createObject(target, className, map);
 			} catch (final Exception e) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						MessageDialog.openInformation(null, "Make Object Exception", "Exception creating instance of '" + className + "'. \nException: " + e);
+						MessageDialog.openInformation(null, Messages.LineChatClientView_EXCEPTION_MSGBOX_TITLE, NLS.bind(Messages.LineChatClientView_EXCEPTION_MSGBOX_TEXT, className, e.getLocalizedMessage()));
 					}
 				});
 				e.printStackTrace();
-				lch.chatException(e, "createObject(" + className + ")");
+				lch.chatException(e, "createObject(" + className + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 	}
@@ -274,7 +275,7 @@ public class LineChatClientView implements FileSenderUI {
 	public void removeUser(ID id) {
 		final String name = getUserData(id);
 		if (name != null) {
-			showLine(new ChatLine(name + " " + LEFT_STRING));
+			showLine(new ChatLine(name + " " + LEFT_STRING)); //$NON-NLS-1$
 		}
 		myNames.remove(id);
 		removeUserFromTree(id);
@@ -312,9 +313,9 @@ public class LineChatClientView implements FileSenderUI {
 
 	public void sendDone(File aFile, Exception e) {
 		if (e != null) {
-			showLine(new ChatLine("Exception '" + e.getMessage() + "' sending file '" + aFile.getName()));
+			showLine(new ChatLine(NLS.bind(Messages.LineChatClientView_EXCEPTION_SENDING_FILE, e.getLocalizedMessage(), aFile.getName())));
 		} else {
-			showLine(new ChatLine("\tSend of '" + aFile.getName() + "' completed"));
+			showLine(new ChatLine(NLS.bind(Messages.LineChatClientView_SEND_COMPLETED, aFile.getName())));
 			if (lch != null)
 				lch.refreshProject();
 		}
@@ -322,7 +323,7 @@ public class LineChatClientView implements FileSenderUI {
 
 	public void sendStart(File aFile, long length, float rate) {
 		// present user with notification that file is being transferred
-		showLine(new ChatLine("\tSending '" + aFile.getName() + "'"));
+		showLine(new ChatLine(NLS.bind(Messages.LineChatClientView_SENDING_FILE, aFile.getName())));
 	}
 
 	public void setTitle(String title) {
@@ -340,7 +341,7 @@ public class LineChatClientView implements FileSenderUI {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (!teamChat.isDisposed())
-					teamChat.setStatus(user.getNickname() + " is typing...");
+					teamChat.setStatus(NLS.bind(Messages.LineChatClientView_TYPING, user.getNickname()));
 			}
 		});
 	}
