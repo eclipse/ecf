@@ -48,22 +48,22 @@ public class ShareReceiversECFStart implements IECFStart {
 					try {
 						URLShare.addURLShare(containerID, cca);
 					} catch (ECFException e) {
-						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ShareReceiversECFStart_STATUS_URLSHARE_NOT_CREATED, container.getID()), null));
+						Activator.getDefault().getLog().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO, NLS.bind(Messages.ShareReceiversECFStart_STATUS_URLSHARE_NOT_CREATED, container.getID()), null));
 					}
 					try {
 						ViewShare.addViewShare(containerID, cca);
 					} catch (ECFException e) {
-						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ShareReceiversECFStart_STATUS_VIEWSHARE_NOT_CREATED, container.getID()), null));
+						Activator.getDefault().getLog().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO, NLS.bind(Messages.ShareReceiversECFStart_STATUS_VIEWSHARE_NOT_CREATED, container.getID()), null));
 					}
 					try {
 						ConsoleShare.addStackShare(containerID, cca);
 					} catch (ECFException e) {
-						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ShareReceiversECFStart_STATUS_CAPTURESHARE_NOT_CREATED, container.getID()), null));
+						Activator.getDefault().getLog().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO, NLS.bind(Messages.ShareReceiversECFStart_STATUS_CAPTURESHARE_NOT_CREATED, container.getID()), null));
 					}
 					try {
 						ScreenCaptureShare.addScreenCaptureShare(containerID, cca);
 					} catch (ECFException e) {
-						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ShareReceiversECFStart_STATUS_SCREENCAPTURESHARE_NOT_CREATED, container.getID()), null));
+						Activator.getDefault().getLog().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO, NLS.bind(Messages.ShareReceiversECFStart_STATUS_SCREENCAPTURESHARE_NOT_CREATED, container.getID()), null));
 					}
 				} else if (event instanceof IContainerDisconnectedEvent) {
 					// disconnected
