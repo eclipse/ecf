@@ -47,7 +47,7 @@ public class ECFStart implements IECFStart {
 					try {
 						activator.addDocShare(containerID, cca);
 					} catch (ECFException e) {
-						activator.getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ECFStart_ERROR_DOCUMENT_SHARE_NOT_CREATED, container.getID()), null));
+						activator.getLog().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO, NLS.bind(Messages.ECFStart_ERROR_DOCUMENT_SHARE_NOT_CREATED, container.getID()), null));
 					}
 				} else if (event instanceof IContainerDisconnectedEvent) {
 					// disconnected
