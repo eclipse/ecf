@@ -148,6 +148,14 @@ public class StartFileDownloadDialog extends InputDialog {
 			userid = useridText.getText();
 			passwd = passwordText.getText();
 			filename = fileLocation.getText();
+			File f = new File(filename);
+			if (f.exists()) {
+				if (MessageDialog.openQuestion(getShell(), Messages.getString("StartFileDownloadDialog.FILE_EXISTS_TITLE"), NLS.bind(Messages.getString("StartFileDownloadDialog.FILE_EXISTS_MESSAGE"), filename))) { //$NON-NLS-1$ //$NON-NLS-2$
+					super.buttonPressed(buttonId);
+				}
+				fileLocation.setFocus();
+				return;
+			}
 		}
 		super.buttonPressed(buttonId);
 	}
