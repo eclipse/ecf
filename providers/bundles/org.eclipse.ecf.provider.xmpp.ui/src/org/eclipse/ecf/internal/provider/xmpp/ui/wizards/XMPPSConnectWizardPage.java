@@ -39,7 +39,6 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 	
 	private void verify() {
 		String text = connectText.getText();
-		passwordText.setText("");
 		if (text.equals("")) { //$NON-NLS-1$
 			updateStatus(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_STATUS);
 		} else if (text.indexOf('@') == -1) {
