@@ -53,7 +53,6 @@ final class MSNConnectWizardPage extends WizardPage {
 
 	private void verifyEmail() {
 		String email = emailText.getText().trim();
-		passwordText.setText("");
 		if (email.equals("")) { //$NON-NLS-1$
 			setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressRequired);
 		} else if (email.indexOf('@') == -1) {
