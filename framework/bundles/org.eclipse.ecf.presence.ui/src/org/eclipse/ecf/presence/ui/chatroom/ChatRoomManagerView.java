@@ -116,7 +116,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 
 		private SashForm rightSash;
 
-		private Text subjectText;
+		private StyledText subjectText;
 
 		private StyledText outputText;
 
@@ -176,7 +176,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				Composite rightComp = new Composite(fullChat, SWT.NONE);
 				rightComp.setLayout(layout);
 
-				subjectText = new Text(rightComp, SWT.SINGLE | SWT.BORDER);
+				subjectText = createStyledTextWidget(rightComp, SWT.SINGLE | SWT.BORDER);
 				subjectText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 				subjectText.addKeyListener(new KeyAdapter() {
 					public void keyPressed(KeyEvent evt) {
@@ -201,7 +201,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			} else
 				rightSash = new SashForm(parent, SWT.VERTICAL);
 
-			outputText = createStyledTextWidget(rightSash);
+			outputText = createStyledTextWidget(rightSash, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
 			outputText.setEditable(false);
 			outputText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
@@ -272,18 +272,18 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0].getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
 		}
 
-		private StyledText createStyledTextWidget(Composite parent) {
+		private StyledText createStyledTextWidget(Composite parent, int styles) {
 			try {
-				SourceViewer result = new SourceViewer(parent, null, null, true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+				SourceViewer result = new SourceViewer(parent, null, null, true, styles);
 				result.configure(new TextSourceViewerConfiguration(EditorsUI.getPreferenceStore()));
 				result.setDocument(new Document());
 				return result.getTextWidget();
 			} catch (Exception e) {
 				Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.ChatRoomManagerView_WARNING_HYPERLINKING_NOT_AVAILABLE, e));
-				return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+				return new StyledText(parent, styles);
 			} catch (NoClassDefFoundError e) {
 				Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.ChatRoomManagerView_WARNING_HYPERLINKING_NOT_AVAILABLE, e));
-				return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+				return new StyledText(parent, styles);
 			}
 		}
 
