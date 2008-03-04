@@ -689,4 +689,17 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			setupProxy(proxy);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getRemoteFileName()
+	 */
+	public String getRemoteFileName() {
+		String pathStr = getRemoteFileURL().getPath();
+		if (pathStr.length() > 0) {
+			IPath path = Path.fromPortableString(pathStr);
+			if (path.segmentCount() > 0)
+				return path.lastSegment();
+		}
+		return null;
+	}
+
 }

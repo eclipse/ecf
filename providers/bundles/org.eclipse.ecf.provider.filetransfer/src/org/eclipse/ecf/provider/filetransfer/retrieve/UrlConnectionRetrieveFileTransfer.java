@@ -41,6 +41,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	protected int responseCode = -1;
 
+	private String remoteFileName;
+
 	protected String responseMessage = null;
 
 	private JREProxyHelper proxyHelper = null;
@@ -52,6 +54,13 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	public UrlConnectionRetrieveFileTransfer() {
 		super();
 		proxyHelper = new JREProxyHelper();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getRemoteFileName()
+	 */
+	public String getRemoteFileName() {
+		return remoteFileName;
 	}
 
 	protected void connect() throws IOException {
@@ -137,6 +146,15 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE);
 		lastModifiedTime = urlConnection.getLastModified();
 		setFileLength(urlConnection.getContentLength());
+
+		String contentDispositionValue = urlConnection.getHeaderField(HttpHelper.CONTENT_DISPOSITION_HEADER);
+		if (contentDispositionValue != null) {
+			remoteFileName = HttpHelper.getRemoteFileNameFromContentDispositionHeader(contentDispositionValue);
+		}
+
+		if (remoteFileName == null) {
+			remoteFileName = super.getRemoteFileName();
+		}
 	}
 
 	protected void getResumeResponseHeaderValues() throws IOException {
