@@ -41,7 +41,7 @@ public class FileSendTest extends AbstractSendTestCase {
 
 	public void testSend() throws Exception {
 		testSendForFile(outputFile.toURL(), inputFile);
-		waitForDone(5000);
+		waitForDone(10000);
 		assertEquals(outputFile.length(), inputFile.length());
 	}
 }
