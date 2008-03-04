@@ -17,7 +17,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.util.DateUtil;
-import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.Proxy;
@@ -27,6 +27,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
+import org.eclipse.ecf.provider.filetransfer.retrieve.HttpHelper;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
@@ -62,6 +63,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	private int responseCode = -1;
 
+	private String remoteFileName;
+
 	protected int httpVersion = 1;
 
 	protected IFileID fileid = null;
@@ -74,6 +77,13 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		this.httpClient = httpClient;
 		Assert.isNotNull(this.httpClient);
 		proxyHelper = new JREProxyHelper();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getRemoteFileName()
+	 */
+	public String getRemoteFileName() {
+		return remoteFileName;
 	}
 
 	/*
@@ -199,6 +209,27 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		}
 		setFileLength(getMethod.getResponseContentLength());
 		fileid = new FileTransferID(getRetrieveNamespace(), getRemoteFileURL());
+
+		// Get content disposition header and get remote file name from it if possible.
+		Header contentDispositionHeader = getMethod.getResponseHeader(HttpHelper.CONTENT_DISPOSITION_HEADER);
+		if (contentDispositionHeader != null) {
+			remoteFileName = HttpHelper.getRemoteFileNameFromContentDispositionHeader(contentDispositionHeader.getValue());
+		}
+		// If still null, get the path from httpclient.getMethod()
+		if (remoteFileName == null) {
+			// No name could be extracted using Content-Disposition. Let's try the
+			// path from the getMethod.
+			String pathStr = getMethod.getPath();
+			if (pathStr != null && pathStr.length() > 0) {
+				IPath path = Path.fromPortableString(pathStr);
+				if (path.segmentCount() > 0)
+					remoteFileName = path.lastSegment();
+			}
+			// If still null, use the input file name
+			if (remoteFileName == null)
+				// Last resort. Use the path of the initial URL request
+				remoteFileName = super.getRemoteFileName();
+		}
 	}
 
 	/* (non-Javadoc)
