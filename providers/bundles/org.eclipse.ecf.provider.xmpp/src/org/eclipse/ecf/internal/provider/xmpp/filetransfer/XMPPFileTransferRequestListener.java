@@ -93,7 +93,7 @@ public class XMPPFileTransferRequestListener implements FileTransferListener {
 				}
 
 				public String toString() {
-					StringBuffer buf = new StringBuffer("FileTransferInfo[");
+					final StringBuffer buf = new StringBuffer("FileTransferInfo[");
 					buf.append("file=").append(f);
 					buf.append(";size=").append(getFileSize());
 					buf.append(";description=" + getDescription());
@@ -153,7 +153,7 @@ public class XMPPFileTransferRequestListener implements FileTransferListener {
 					throw new IncomingFileTransferException("outputStream cannot be null");
 				incoming = request.accept();
 				try {
-					return new XMPPIncomingFileTransfer(IDFactory.getDefault().createStringID(request.getStreamID()), incoming.recieveFile(), outputStream, request.getFileSize(), listener);
+					return new XMPPIncomingFileTransfer(IDFactory.getDefault().createStringID(request.getStreamID()), request.getFileName(), incoming.recieveFile(), outputStream, request.getFileSize(), listener);
 				} catch (final Exception e) {
 					throw new IncomingFileTransferException("Exception receiving file", e);
 				}

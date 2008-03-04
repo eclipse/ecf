@@ -49,6 +49,8 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 
 	boolean done = false;
 
+	String fileName;
+
 	class FileTransferJob extends Job {
 
 		public FileTransferJob(String name) {
@@ -149,13 +151,15 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 
 	/**
 	 * @param threadID 
+	 * @param fileName 
 	 * @param inputStream
 	 * @param outputStream
 	 * @param fileSize 
 	 * @param listener
 	 */
-	public XMPPIncomingFileTransfer(ID threadID, InputStream inputStream, OutputStream outputStream, long fileSize, IFileTransferListener listener) {
+	public XMPPIncomingFileTransfer(ID threadID, String fileName, InputStream inputStream, OutputStream outputStream, long fileSize, IFileTransferListener listener) {
 		this.threadID = threadID;
+		this.fileName = fileName;
 		this.remoteFileContents = inputStream;
 		this.localFileContents = outputStream;
 		this.fileLength = fileSize;
@@ -246,5 +250,12 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 
 	public long getFileLength() {
 		return fileLength;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getRemoteFileName()
+	 */
+	public String getRemoteFileName() {
+		return fileName;
 	}
 }
