@@ -196,7 +196,19 @@ final class TorrentFileTransfer implements IFileTransferPausable, IFileTransferR
 	}
 
 	public long getFileLength() {
-		return -1;
+		return torrent.getTorrentFile().getTotalLength();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getRemoteFileName()
+	 */
+	public String getRemoteFileName() {
+		if (torrent == null)
+			return null;
+		if (!torrent.getTorrentFile().isMultiFile()) {
+			return torrent.getTorrentFile().getFilenames()[0];
+		}
+		return null;
 	}
 
 }
