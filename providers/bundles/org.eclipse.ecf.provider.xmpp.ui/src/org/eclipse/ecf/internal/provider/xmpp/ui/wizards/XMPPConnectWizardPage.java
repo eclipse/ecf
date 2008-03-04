@@ -13,6 +13,8 @@ package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.ecf.internal.provider.xmpp.ui.Activator;
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
@@ -39,6 +41,8 @@ public class XMPPConnectWizardPage extends WizardPage {
 	Text passwordText;
 
 	String usernameAtHost;
+	
+	static Pattern emailPattern = Pattern.compile(".+@.+.[a-z]+(:[0-9]+)?");
 
 	XMPPConnectWizardPage() {
 		super(""); //$NON-NLS-1$
@@ -56,12 +60,16 @@ public class XMPPConnectWizardPage extends WizardPage {
 	private void verify() {
 		String text = connectText.getText();
 		if (text.equals("")) { //$NON-NLS-1$
-			updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS);
-		} else if (text.indexOf('@') == -1) {
-			updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+			setErrorMessage(Messages.XMPPConnectWizardPage_WIZARD_STATUS);
 		} else {
-			updateStatus(null);
-			restorePassword(text);
+			Matcher matcher = emailPattern.matcher(text);
+			if (!matcher.matches()) {
+				setErrorMessage(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+			} else {
+
+				setErrorMessage(null);
+				restorePassword(text);
+			}
 		}
 	}
 	

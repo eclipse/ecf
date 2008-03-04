@@ -10,6 +10,9 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -40,12 +43,15 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 	private void verify() {
 		String text = connectText.getText();
 		if (text.equals("")) { //$NON-NLS-1$
-			updateStatus(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_STATUS);
-		} else if (text.indexOf('@') == -1) {
-			updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+			setErrorMessage(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_STATUS);
 		} else {
-			updateStatus(null);
-			restorePassword(text);
+			Matcher matcher = emailPattern.matcher(text);
+			if (!matcher.matches()) {
+				setErrorMessage(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+			} else {
+				setErrorMessage(null);
+				restorePassword(text);
+			}
 		}
 	}
 	
