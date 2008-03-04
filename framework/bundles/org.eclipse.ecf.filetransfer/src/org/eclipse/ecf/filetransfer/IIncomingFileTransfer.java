@@ -48,6 +48,8 @@ public interface IIncomingFileTransfer extends IFileTransfer {
 	 * necessarily be the same as the leaf part of the path to the remote file.
 	 *
 	 * @return The name of the remote file or <code>null</code> if no such name can be determined.
+	 * 
+	 * @since 2.0.0 milestone 6
 	 */
 	public String getRemoteFileName();
 

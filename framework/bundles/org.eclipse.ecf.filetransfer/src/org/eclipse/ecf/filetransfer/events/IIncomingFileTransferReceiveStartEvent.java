@@ -69,6 +69,8 @@ public interface IIncomingFileTransferReceiveStartEvent extends IFileTransferEve
 	 *         given OutputStream.
 	 * @throws IOException
 	 *             if streamToStore cannot be opened for writing
+	 *             
+	 * @since 2.0.0 milestone 6
 	 */
 	public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob) throws IOException;
 
@@ -118,6 +120,8 @@ public interface IIncomingFileTransferReceiveStartEvent extends IFileTransferEve
 	 *         given OutputStream.
 	 * @throws IOException
 	 *             if streamToStore cannot be opened for writing
+	 *             
+	 * @since 2.0.0 milestone 6
 	 */
 	public IIncomingFileTransfer receive(OutputStream streamToStore, FileTransferJob fileTransferJob) throws IOException;
 

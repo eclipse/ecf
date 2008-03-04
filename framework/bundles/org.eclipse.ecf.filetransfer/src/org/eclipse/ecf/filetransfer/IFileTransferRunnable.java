@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.IStatus;
 
 /**
  * Runnable for doing file transfer.  Used by {@link FileTransferJob}s.
+ * 
+ * @since 2.0.0 milestone 6
  */
 public interface IFileTransferRunnable {
 
