@@ -43,4 +43,12 @@ public interface IIncomingFileTransfer extends IFileTransfer {
 	 */
 	public IFileRangeSpecification getFileRangeSpecification();
 
+	/**
+	 * Obtains the name of the remote file if possible. The name will typically but not
+	 * necessarily be the same as the leaf part of the path to the remote file.
+	 *
+	 * @return The name of the remote file or <code>null</code> if no such name can be determined.
+	 */
+	public String getRemoteFileName();
+
 }
