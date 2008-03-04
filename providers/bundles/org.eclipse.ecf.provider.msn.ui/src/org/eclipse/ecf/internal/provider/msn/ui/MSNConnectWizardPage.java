@@ -13,6 +13,8 @@ package org.eclipse.ecf.internal.provider.msn.ui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.util.PasswordCacheHelper;
@@ -37,6 +39,8 @@ final class MSNConnectWizardPage extends WizardPage {
 	private Text passwordText;
 
 	private String username;
+	
+	static Pattern emailPattern = Pattern.compile(".+@.+.[a-z]+");
 
 	MSNConnectWizardPage() {
 		super(MSNConnectWizardPage.class.getName());
@@ -55,11 +59,14 @@ final class MSNConnectWizardPage extends WizardPage {
 		String email = emailText.getText().trim();
 		if (email.equals("")) { //$NON-NLS-1$
 			setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressRequired);
-		} else if (email.indexOf('@') == -1) {
-			setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressInvalid);
 		} else {
-			setErrorMessage(null);
-			restorePassword(email);
+			Matcher matcher = emailPattern.matcher(email);
+			if (!matcher.matches()) {
+				setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressInvalid);
+			} else {
+				setErrorMessage(null);
+				restorePassword(email);
+			}
 		}
 	}
 	
