@@ -11,7 +11,6 @@
 package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
 import org.eclipse.swt.SWT;
@@ -39,26 +38,26 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		this();
 		this.usernameAtHost = usernameAtHost;
 	}
-	
+
 	private void verify() {
-		String text = connectText.getText();
+		final String text = connectText.getText();
 		if (text.equals("")) { //$NON-NLS-1$
-			setErrorMessage(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_STATUS);
+			updateStatus(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_STATUS);
 		} else {
-			Matcher matcher = emailPattern.matcher(text);
+			final Matcher matcher = emailPattern.matcher(text);
 			if (!matcher.matches()) {
-				setErrorMessage(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+				updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
 			} else {
-				setErrorMessage(null);
+				updateStatus(null);
 				restorePassword(text);
 			}
 		}
 	}
-	
+
 	public void createControl(Composite parent) {
 		parent.setLayout(new GridLayout());
-		GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText(Messages.XMPPConnectWizardPage_LABEL_USERID);
@@ -74,9 +73,11 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				verify();
 			}
+
 			public void widgetSelected(SelectionEvent e) {
 				verify();
-			}});
+			}
+		});
 
 		label = new Label(parent, SWT.RIGHT);
 		label.setText(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_TEMPLATE);
@@ -88,7 +89,7 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		passwordText.setLayoutData(fillData);
 
 		restoreCombo();
-		
+
 		if (usernameAtHost != null) {
 			connectText.setText(usernameAtHost);
 			restorePassword(usernameAtHost);

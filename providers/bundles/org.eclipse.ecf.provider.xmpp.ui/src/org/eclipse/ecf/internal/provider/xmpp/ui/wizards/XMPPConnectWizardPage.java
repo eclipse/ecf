@@ -41,7 +41,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 	Text passwordText;
 
 	String usernameAtHost;
-	
+
 	static Pattern emailPattern = Pattern.compile(".+@.+.[a-z]+(:[0-9]+)?");
 
 	XMPPConnectWizardPage() {
@@ -58,25 +58,25 @@ public class XMPPConnectWizardPage extends WizardPage {
 	}
 
 	private void verify() {
-		String text = connectText.getText();
+		final String text = connectText.getText();
 		if (text.equals("")) { //$NON-NLS-1$
-			setErrorMessage(Messages.XMPPConnectWizardPage_WIZARD_STATUS);
+			updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS);
 		} else {
-			Matcher matcher = emailPattern.matcher(text);
+			final Matcher matcher = emailPattern.matcher(text);
 			if (!matcher.matches()) {
-				setErrorMessage(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+				updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
 			} else {
 
-				setErrorMessage(null);
+				updateStatus(null);
 				restorePassword(text);
 			}
 		}
 	}
-	
+
 	public void createControl(Composite parent) {
 		parent.setLayout(new GridLayout());
-		GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText(Messages.XMPPConnectWizardPage_LABEL_USERID);
@@ -92,10 +92,12 @@ public class XMPPConnectWizardPage extends WizardPage {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				verify();
 			}
+
 			public void widgetSelected(SelectionEvent e) {
 				verify();
-			}});
-		
+			}
+		});
+
 		label = new Label(parent, SWT.RIGHT);
 		label.setText(Messages.XMPPConnectWizardPage_USERID_TEMPLATE);
 		label.setLayoutData(endData);
@@ -106,7 +108,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 		passwordText.setLayoutData(fillData);
 
 		restoreCombo();
-		
+
 		if (usernameAtHost != null) {
 			connectText.setText(usernameAtHost);
 			restorePassword(usernameAtHost);
@@ -116,13 +118,13 @@ public class XMPPConnectWizardPage extends WizardPage {
 	}
 
 	protected void restorePassword(String username) {
-		PasswordCacheHelper pwStorage = new PasswordCacheHelper(username);
-		String pw = pwStorage.retrievePassword();
+		final PasswordCacheHelper pwStorage = new PasswordCacheHelper(username);
+		final String pw = pwStorage.retrievePassword();
 		if (pw != null) {
 			passwordText.setText(pw);
 		}
 	}
-	
+
 	String getConnectID() {
 		return connectText.getText();
 	}
@@ -136,44 +138,43 @@ public class XMPPConnectWizardPage extends WizardPage {
 		setPageComplete(message == null);
 	}
 
-	private static final String PAGE_SETTINGS = XMPPConnectWizardPage.class
-			.getName();
+	private static final String PAGE_SETTINGS = XMPPConnectWizardPage.class.getName();
 	private static final int MAX_COMBO_VALUES = 40;
 	private static final String COMBO_TEXT_KEY = "connectTextValue";
 	private static final String COMBO_BOX_ITEMS_KEY = "comboValues";
 
 	protected void saveComboText() {
-		IDialogSettings pageSettings = getPageSettings();
+		final IDialogSettings pageSettings = getPageSettings();
 		if (pageSettings != null)
 			pageSettings.put(COMBO_TEXT_KEY, connectText.getText());
 	}
 
 	protected void saveComboItems() {
-		IDialogSettings pageSettings = getPageSettings();
+		final IDialogSettings pageSettings = getPageSettings();
 		if (pageSettings != null) {
-			String connectTextValue = connectText.getText();
-			List rawItems = Arrays.asList(connectText.getItems());
+			final String connectTextValue = connectText.getText();
+			final List rawItems = Arrays.asList(connectText.getItems());
 			// If existing text item is not in combo box then add it
-			List items = new ArrayList();
-			if (!rawItems.contains(connectTextValue)) items.add(connectTextValue);
+			final List items = new ArrayList();
+			if (!rawItems.contains(connectTextValue))
+				items.add(connectTextValue);
 			items.addAll(rawItems);
 			int itemsToSaveLength = items.size();
 			if (itemsToSaveLength > MAX_COMBO_VALUES)
 				itemsToSaveLength = MAX_COMBO_VALUES;
-			String[] itemsToSave = new String[itemsToSaveLength];
-			System.arraycopy(items.toArray(new String[] {}), 0, itemsToSave, 0,
-					itemsToSaveLength);
+			final String[] itemsToSave = new String[itemsToSaveLength];
+			System.arraycopy(items.toArray(new String[] {}), 0, itemsToSave, 0, itemsToSaveLength);
 			pageSettings.put(COMBO_BOX_ITEMS_KEY, itemsToSave);
 		}
 	}
 
-    public IDialogSettings getDialogSettings() {
-        return Activator.getDefault().getDialogSettings();
-    }
+	public IDialogSettings getDialogSettings() {
+		return Activator.getDefault().getDialogSettings();
+	}
 
 	private IDialogSettings getPageSettings() {
 		IDialogSettings pageSettings = null;
-		IDialogSettings dialogSettings = this.getDialogSettings();
+		final IDialogSettings dialogSettings = this.getDialogSettings();
 		if (dialogSettings != null) {
 			pageSettings = dialogSettings.getSection(PAGE_SETTINGS);
 			if (pageSettings == null)
@@ -184,12 +185,14 @@ public class XMPPConnectWizardPage extends WizardPage {
 	}
 
 	protected void restoreCombo() {
-		IDialogSettings pageSettings = getPageSettings();
+		final IDialogSettings pageSettings = getPageSettings();
 		if (pageSettings != null) {
-			String [] items = pageSettings.getArray(COMBO_BOX_ITEMS_KEY);
-			if (items != null) connectText.setItems(items);
-			String text = pageSettings.get(COMBO_TEXT_KEY);
-			if (text != null) connectText.setText(text);
+			final String[] items = pageSettings.getArray(COMBO_BOX_ITEMS_KEY);
+			if (items != null)
+				connectText.setItems(items);
+			final String text = pageSettings.get(COMBO_TEXT_KEY);
+			if (text != null)
+				connectText.setText(text);
 		}
 	}
 
