@@ -11,41 +11,28 @@
 
 package org.eclipse.ecf.docshare;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.OutputStream;
-
+import java.io.*;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.events.IChannelDisconnectEvent;
-import org.eclipse.ecf.docshare.messages.Message;
-import org.eclipse.ecf.docshare.messages.StartMessage;
-import org.eclipse.ecf.docshare.messages.StopMessage;
-import org.eclipse.ecf.docshare.messages.UpdateMessage;
+import org.eclipse.ecf.docshare.messages.*;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.Messages;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.text.DocumentEvent;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.jface.text.*;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorRegistry;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -205,6 +192,33 @@ public class DocShare extends AbstractShare {
 		localStopShare();
 	}
 
+	public void sendSelection() {
+		ITextEditor textEditor = getTextEditor();
+		if (textEditor != null) {
+			ISelectionProvider selectionProvider = textEditor.getSelectionProvider();
+			ISelection selection = selectionProvider.getSelection();
+			if (selection instanceof ITextSelection) {
+				ITextSelection textSelection = (ITextSelection) selection;
+				try {
+					send(getOtherID(), new SelectionMessage(textSelection.getOffset(), textSelection.getLength(), textSelection.getStartLine(), textSelection.getEndLine()));
+				} catch (Exception e) {
+					logError(Messages.DocShare_SELECTION_SEND_ERROR_TITLE, e);
+					showErrorToUser(Messages.DocShare_SELECTION_SEND_ERROR_TITLE, Messages.DocShare_SELECTION_SEND_ERROR_MESSAGE);
+				}
+			}
+		}
+	}
+
+	protected void handleSelectionMessage(final SelectionMessage selectionMessage) {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				ITextEditor textEditor = getTextEditor();
+				if (textEditor != null)
+					textEditor.selectAndReveal(selectionMessage.getOffset(), selectionMessage.getLength());
+			}
+		});
+	}
+
 	void send(ID toID, Message message) throws Exception {
 		super.sendMessage(toID, message.serialize());
 	}
@@ -222,6 +236,8 @@ public class DocShare extends AbstractShare {
 				handleUpdateMessage((UpdateMessage) message);
 			} else if (message instanceof StopMessage) {
 				handleStopMessage((StopMessage) message);
+			} else if (message instanceof SelectionMessage) {
+				handleSelectionMessage((SelectionMessage) message);
 			} else {
 				throw new InvalidObjectException(NLS.bind(Messages.DocShare_EXCEPTION_INVALID_MESSAGE, message.getClass().getName()));
 			}

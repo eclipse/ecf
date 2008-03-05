@@ -1,8 +1,6 @@
 package org.eclipse.ecf.docshare.menu;
 
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.*;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.docshare.DocShare;
@@ -13,18 +11,9 @@ import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuContributionItem;
 import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.*;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContributionItem {
@@ -75,7 +64,7 @@ public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContri
 			final IPresenceContainerAdapter pca = (IPresenceContainerAdapter) i.next();
 			final DocShare docShare = getDocShareForPresenceContainerAdapter(pca);
 			if (docShare != null && docShare.isSharing() && docShare.getTextEditor().equals(editorPart)) {
-				return getMenuContributionForStopShare(pca.getRosterManager().getRoster(), docShare, docShare.getOtherID());
+				return getMenuContributionsDuringShare(docShare);
 			}
 		}
 		return super.getContributionItems();
@@ -102,15 +91,28 @@ public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContri
 		return new IContributionItem[] {menuManager};
 	}
 
-	protected IContributionItem[] getMenuContributionForStopShare(IRoster roster, final DocShare docShare, final ID otherID) {
+	protected IContributionItem[] getMenuContributionsDuringShare(final DocShare docShare) {
+		List items = new ArrayList();
+		if (docShare.isInitiator()) {
+			final IAction sendSelection = new Action() {
+				public void run() {
+					docShare.sendSelection();
+				}
+			};
+			sendSelection.setText(NLS.bind(Messages.DocShareRosterMenuContributionItem_SELECTION_SEND_EDITOR_MENU_TEXT, trimIDNameForMenu(docShare.getOtherID())));
+			sendSelection.setImageDescriptor(getTopMenuImageDescriptor());
+			items.add(new Separator());
+			items.add(new ActionContributionItem(sendSelection));
+			items.add(new Separator());
+		}
 		final IAction stopEditorShare = new Action() {
 			public void run() {
 				docShare.stopShare();
 			}
 		};
-		stopEditorShare.setText(NLS.bind(Messages.DocShareRosterMenuContributionItem_STOP_SHARE_EDITOR_MENU_TEXT, trimIDNameForMenu(otherID)));
-		stopEditorShare.setImageDescriptor(getTopMenuImageDescriptor());
-		return new IContributionItem[] {new Separator(), new ActionContributionItem(stopEditorShare)};
+		stopEditorShare.setText(NLS.bind(Messages.DocShareRosterMenuContributionItem_STOP_SHARE_EDITOR_MENU_TEXT, trimIDNameForMenu(docShare.getOtherID())));
+		items.add(new ActionContributionItem(stopEditorShare));
+		return (IContributionItem[]) items.toArray(new IContributionItem[] {});
 	}
 
 	protected AbstractRosterMenuHandler createRosterEntryHandler(IRosterEntry rosterEntry) {

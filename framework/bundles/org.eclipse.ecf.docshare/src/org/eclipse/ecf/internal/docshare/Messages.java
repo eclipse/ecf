@@ -27,6 +27,9 @@ public class Messages extends NLS {
 	public static String DocShare_EXCEPTION_RECEIVING_MESSAGE_MESSAGE;
 	public static String DocShare_EXCEPTION_RECEIVING_MESSAGE_TITLE;
 	public static String DocShare_EXCEPTION_SEND_MESSAGE;
+	public static String DocShare_SELECTION_SEND_ERROR_MESSAGE;
+	public static String DocShare_SELECTION_SEND_ERROR_TITLE;
+	public static String DocShareRosterMenuContributionItem_SELECTION_SEND_EDITOR_MENU_TEXT;
 	public static String DocShareRosterMenuContributionItem_SHARE_EDITOR_MENU_TEXT;
 	public static String DocShareRosterMenuContributionItem_STOP_SHARE_EDITOR_MENU_TEXT;
 	public static String DocShareRosterMenuHandler_ERROR_ALREADY_PARTICIPATING;
