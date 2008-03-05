@@ -94,17 +94,17 @@ public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContri
 	protected IContributionItem[] getMenuContributionsDuringShare(final DocShare docShare) {
 		List items = new ArrayList();
 		if (docShare.isInitiator()) {
-			final IAction sendSelection = new Action() {
-				public void run() {
-					docShare.sendSelection();
-				}
-			};
-			sendSelection.setText(NLS.bind(Messages.DocShareRosterMenuContributionItem_SELECTION_SEND_EDITOR_MENU_TEXT, trimIDNameForMenu(docShare.getOtherID())));
-			sendSelection.setImageDescriptor(getTopMenuImageDescriptor());
-			items.add(new Separator());
-			items.add(new ActionContributionItem(sendSelection));
 			items.add(new Separator());
 		}
+		final IAction sendSelection = new Action() {
+			public void run() {
+				docShare.sendSelection();
+			}
+		};
+		sendSelection.setText(NLS.bind(Messages.DocShareRosterMenuContributionItem_SELECTION_SEND_EDITOR_MENU_TEXT, trimIDNameForMenu(docShare.getOtherID())));
+		sendSelection.setImageDescriptor(getTopMenuImageDescriptor());
+		items.add(new ActionContributionItem(sendSelection));
+		items.add(new Separator());
 		final IAction stopEditorShare = new Action() {
 			public void run() {
 				docShare.stopShare();
