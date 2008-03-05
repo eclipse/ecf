@@ -152,8 +152,8 @@ public class StartFileDownloadDialog extends InputDialog {
 			if (f.exists()) {
 				if (MessageDialog.openQuestion(getShell(), Messages.getString("StartFileDownloadDialog.FILE_EXISTS_TITLE"), NLS.bind(Messages.getString("StartFileDownloadDialog.FILE_EXISTS_MESSAGE"), filename))) { //$NON-NLS-1$ //$NON-NLS-2$
 					super.buttonPressed(buttonId);
-				}
-				fileLocation.setFocus();
+				} else
+					fileLocation.setFocus();
 				return;
 			}
 		}
