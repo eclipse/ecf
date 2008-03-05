@@ -42,6 +42,10 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 		return Activator.getDefault().getContainerManager();
 	}
 
+	protected IServiceInfo getServiceInfo() {
+		return serviceInfo;
+	}
+
 	protected boolean isConnected(IContainer container) {
 		if (container == null)
 			return false;
@@ -103,6 +107,10 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 
 	protected ID createID(String namespace, String value) throws IDCreateException {
 		return IDFactory.getDefault().createID(namespace, value);
+	}
+
+	protected ID createConnectID() throws IDCreateException {
+		return createID(getConnectNamespace(), getConnectID());
 	}
 
 	protected IContributionItem[] getContributionsForMatchingService() {
