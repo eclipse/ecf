@@ -32,7 +32,10 @@ public class ShareReceiversECFStart implements IECFStart {
 		 * @see org.eclipse.ecf.core.IContainerListener#handleEvent(org.eclipse.ecf.core.events.IContainerEvent)
 		 */
 		public void handleEvent(IContainerEvent event) {
-			final IContainerManager containerManager = Activator.getDefault().getContainerManager();
+			Activator activator = Activator.getDefault();
+			if (activator == null)
+				return;
+			final IContainerManager containerManager = activator.getContainerManager();
 			if (containerManager == null)
 				return;
 			IContainer container = containerManager.getContainer(event.getLocalContainerID());
