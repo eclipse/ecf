@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.internal.examples.remoteservices.client;
 
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -25,8 +24,6 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-
-	private IContainer serviceHostContainer;
 
 	private BundleContext context;
 
@@ -53,23 +50,11 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
-		if (serviceHostContainer != null) {
-			serviceHostContainer.disconnect();
-			serviceHostContainer = null;
-		}
 		this.context = null;
 	}
 
 	public BundleContext getContext() {
 		return context;
-	}
-
-	public IContainer getContainer() {
-		return serviceHostContainer;
-	}
-
-	public void setContainer(IContainer container) {
-		this.serviceHostContainer = container;
 	}
 
 	/**

@@ -12,6 +12,8 @@
 package org.eclipse.ecf.internal.examples.remoteservices.client;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.naming.ServiceUnavailableException;
 
@@ -21,6 +23,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
@@ -42,68 +45,59 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteServiceAccessHandler {
 
+	static Map remoteEnvironmentContainers = new HashMap();
+
 	public RemoteEnvironmentInfoServiceAccessHandler() {
+	}
+
+	private IContainer findContainerForService(IServiceID serviceID) throws ContainerCreateException {
+		IContainer result = null;
+		synchronized (remoteEnvironmentContainers) {
+			result = (IContainer) remoteEnvironmentContainers.get(serviceID);
+			if (result == null) {
+				result = createContainer();
+				final IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) result.getAdapter(IRemoteServiceContainerAdapter.class);
+				if (adapter == null)
+					throw new ContainerCreateException("Container does not implement remote service container adapter.");
+				remoteEnvironmentContainers.put(serviceID, result);
+			}
+		}
+		return result;
+	}
+
+	private IContributionItem[] getConnectContribution(final IContainer container, final ID targetID) {
+		final IAction action = new Action() {
+			public void run() {
+				try {
+					// connect to target ID
+					connectContainer(container, targetID, null);
+				} catch (final ContainerConnectException e) {
+					showException(e);
+				}
+			}
+		};
+		action.setText(NLS.bind("Connect to {0}", targetID.getName()));
+		return new IContributionItem[] {new ActionContributionItem(action)};
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler#getContributionsForMatchingService()
 	 */
 	protected IContributionItem[] getContributionsForMatchingService() {
-		// If singleton not already set, create a new container (of type specified in serviceInfo
-		// and set the singleton to it.  If we can't create it for whatever reason, we have no
-		// contribution
-		if (Activator.getDefault().getContainer() == null) {
-			try {
-				final IContainer c = createContainer();
-				final IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) c.getAdapter(IRemoteServiceContainerAdapter.class);
-				if (adapter == null)
-					return EMPTY_CONTRIBUTION;
-				Activator.getDefault().setContainer(c);
-			} catch (final ContainerCreateException e) {
-				return EMPTY_CONTRIBUTION;
-			}
-		}
-		// The container is now not null
-		final IContainer container = Activator.getDefault().getContainer();
-		// not connected already...so setup contribution that allows connect
-		final String ns = getConnectNamespace();
-		final String id = getConnectID();
-		// If there is no connect namespace or connect id specified, then we have no contribution
-		if (container == null || ns == null || id == null)
-			return EMPTY_CONTRIBUTION;
-		// Create a new connect id from namespace and id
-		ID connectTargetID = null;
+		IContainer container = null;
 		try {
-			connectTargetID = createID(ns, id);
-		} catch (final Exception e) {
+			container = findContainerForService(getServiceInfo().getServiceID());
+			if (container == null)
+				return EMPTY_CONTRIBUTION;
+			if (container.getConnectedID() == null) {
+				// The container is not connected so we create/return action for connecting
+				return getConnectContribution(container, createConnectID());
+			} else {
+				return getConnectedContributions(container);
+			}
+		} catch (final ECFException e) {
 			return EMPTY_CONTRIBUTION;
 		}
-		final ID connectedID = container.getConnectedID();
-		// If the container is not already connected
-		if (connectedID != null) {
-			// If we're already connected, and connected to the *wrong* remote, then disconnect
-			if (!connectedID.equals(connectTargetID)) {
-				container.disconnect();
-				// Otherwise we're already connected to the correct container, and we get the normal contributions
-			} else
-				return getConnectedContributions(container);
-		}
-		// Otherwise we need to connect so we create a contribution to allow the user to connect
-		// Now we get the contribution to make connection to correct connectTargetID
-		final ID cTargetID = connectTargetID;
-		final IAction action = new Action() {
-			public void run() {
-				try {
-					// Then we connect
-					connectContainer(container, cTargetID, null);
-					showInformation("Connected", NLS.bind("Connected to {0}", cTargetID.getName()));
-				} catch (final ContainerConnectException e) {
-					showException(e);
-				}
-			}
-		};
-		action.setText(NLS.bind("Connect to {0}", connectTargetID.getName()));
-		return new IContributionItem[] {new ActionContributionItem(action)};
 	}
 
 	/* (non-Javadoc)
