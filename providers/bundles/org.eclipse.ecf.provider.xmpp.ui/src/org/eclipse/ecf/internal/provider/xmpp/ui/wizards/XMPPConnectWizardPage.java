@@ -48,7 +48,6 @@ public class XMPPConnectWizardPage extends WizardPage {
 		super(""); //$NON-NLS-1$
 		setTitle(Messages.XMPPConnectWizardPage_WIZARD_TITLE);
 		setDescription(Messages.XMPPConnectWizardPage_WIZARD_DESCRIPTION);
-		setPageComplete(false);
 		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_CHAT_WIZARD));
 	}
 
@@ -66,9 +65,8 @@ public class XMPPConnectWizardPage extends WizardPage {
 			if (!matcher.matches()) {
 				updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
 			} else {
-
-				updateStatus(null);
 				restorePassword(text);
+				updateStatus(null);
 			}
 		}
 	}
@@ -114,6 +112,13 @@ public class XMPPConnectWizardPage extends WizardPage {
 			restorePassword(usernameAtHost);
 			passwordText.setFocus();
 		}
+
+		if (connectText.getText().equals("")) {
+			updateStatus(null);
+			setPageComplete(false);
+		} else if (isPageComplete())
+			passwordText.setFocus();
+
 		setControl(parent);
 	}
 
@@ -122,6 +127,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 		final String pw = pwStorage.retrievePassword();
 		if (pw != null) {
 			passwordText.setText(pw);
+			passwordText.setSelection(0, pw.length());
 		}
 	}
 

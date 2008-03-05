@@ -48,8 +48,8 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 			if (!matcher.matches()) {
 				updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
 			} else {
-				updateStatus(null);
 				restorePassword(text);
+				updateStatus(null);
 			}
 		}
 	}
@@ -95,6 +95,14 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 			restorePassword(usernameAtHost);
 			passwordText.setFocus();
 		}
+
+		verify();
+
+		if (connectText.getText().equals("")) {
+			updateStatus(null);
+			setPageComplete(false);
+		} else if (isPageComplete())
+			passwordText.setFocus();
 
 		setControl(parent);
 	}
