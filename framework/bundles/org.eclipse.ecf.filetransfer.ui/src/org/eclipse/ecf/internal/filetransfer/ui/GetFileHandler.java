@@ -52,7 +52,6 @@ public class GetFileHandler extends AbstractHandler {
 
 	void completeTransferInView(Shell shell, final IIncomingFileTransfer incoming) {
 		updateTransferInView(shell, incoming);
-		fileTransfersView = null;
 	}
 
 	/* (non-Javadoc)

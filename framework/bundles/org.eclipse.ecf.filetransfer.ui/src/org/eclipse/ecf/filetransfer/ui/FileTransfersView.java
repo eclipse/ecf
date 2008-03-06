@@ -10,11 +10,13 @@
  *****************************************************************************/
 package org.eclipse.ecf.filetransfer.ui;
 
-import java.util.Iterator;
-import java.util.Vector;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -25,14 +27,18 @@ import org.eclipse.ui.part.ViewPart;
 
 public class FileTransfersView extends ViewPart {
 
-	public static final Vector transfers = new Vector();
+	public static final Map transfers = new HashMap();
 
 	public static final String ID = "org.eclipse.ecf.filetransfer.ui.FileTransfersView"; //$NON-NLS-1$
 
 	private static final String[] COLUMNS = {"Name", "Download", "Upload", "Local File", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			"Done"}; //$NON-NLS-1$
+			"Done", "Start", "End", "Rate"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
-	private static final int[] WIDTHS = {250, 100, 100, 350, 40};
+	private static final int[] WIDTHS = {225, 70, 70, 325, 50, 90, 90, 75};
+
+	private static final String DATEFORMAT = "HH:mm:ss"; //$NON-NLS-1$
+
+	static final SimpleDateFormat SDF = new SimpleDateFormat(DATEFORMAT);
 
 	static final Object[] EMPTY_ARRAY = new Object[0];
 
@@ -52,13 +58,21 @@ public class FileTransfersView extends ViewPart {
 
 	private static final int DONE = FILENAME + 1;
 
+	private static final int STARTTIME = DONE + 1;
+
+	private static final int ENDTIME = STARTTIME + 1;
+
+	private static final int RATE = ENDTIME + 1;
+
 	static class FileTransferEntry {
 		IFileTransfer fileTransfer;
 		String localFileName;
+		long startTime;
 
 		public FileTransferEntry(IFileTransfer fileTransfer, String localFileName) {
 			this.fileTransfer = fileTransfer;
 			this.localFileName = localFileName;
+			this.startTime = System.currentTimeMillis();
 		}
 
 		public FileTransferEntry(IFileTransfer fileTransfer) {
@@ -73,31 +87,15 @@ public class FileTransfersView extends ViewPart {
 			return localFileName;
 		}
 
-		public boolean equals(Object o) {
-			if (!(o instanceof FileTransferEntry))
-				return false;
-			FileTransferEntry fte = (FileTransferEntry) o;
-			// If the other is the same fileTransfer as us
-			// make sure the localFileName is set
-			if (fte.fileTransfer.equals(this.fileTransfer)) {
-				if (localFileName == null) {
-					localFileName = fte.localFileName;
-				} else if (fte.localFileName == null) {
-					fte.localFileName = null;
-				}
-				return true;
-			}
-			return false;
+		public long getStartTime() {
+			return startTime;
 		}
 
-		public int hashCode() {
-			return this.fileTransfer.hashCode();
-		}
 	}
 
 	public static FileTransfersView addTransfer(IFileTransfer transfer) {
 		FileTransferEntry entry = new FileTransferEntry(transfer, null);
-		transfers.add(entry);
+		transfers.put(transfer, entry);
 		if (instance != null) {
 			instance.add(entry);
 		}
@@ -106,7 +104,7 @@ public class FileTransfersView extends ViewPart {
 
 	public static FileTransfersView addTransfer(IFileTransfer transfer, String localFileName) {
 		FileTransferEntry entry = new FileTransferEntry(transfer, localFileName);
-		transfers.add(entry);
+		transfers.put(transfer, entry);
 		if (instance != null) {
 			instance.add(entry);
 		}
@@ -154,19 +152,21 @@ public class FileTransfersView extends ViewPart {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.VIRTUAL | SWT.FULL_SELECTION);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setSorter(new ViewerSorter());
+		//viewer.setSorter(new ViewerSorter());
 		viewer.setInput(getViewSite());
 		table = viewer.getTable();
 
 		for (int i = 0; i < WIDTHS.length; i++) {
 			TableColumn col = new TableColumn(table, SWT.LEFT);
 			col.setText(COLUMNS[i]);
+			col.setAlignment(SWT.CENTER);
 			col.setWidth(WIDTHS[i]);
 		}
 
-		Iterator iterator = transfers.iterator();
+		Iterator iterator = transfers.keySet().iterator();
 		while (iterator.hasNext()) {
-			add((FileTransferEntry) iterator.next());
+			IFileTransfer fileTransfer = (IFileTransfer) iterator.next();
+			add((FileTransferEntry) transfers.get(fileTransfer));
 		}
 
 		makeActions();
@@ -186,7 +186,8 @@ public class FileTransfersView extends ViewPart {
 
 	public void update(IFileTransfer transfer) {
 		if (table != null && !table.isDisposed()) {
-			viewer.update(new FileTransferEntry(transfer), COLUMNS);
+			FileTransferEntry entry = (FileTransferEntry) transfers.get(transfer);
+			viewer.update(entry, COLUMNS);
 		}
 	}
 
@@ -221,9 +222,9 @@ public class FileTransfersView extends ViewPart {
 					return;
 				}
 				IStructuredSelection ssel = (IStructuredSelection) sel;
-				Iterator iterator = ssel.iterator();
-				while (iterator.hasNext()) {
-					FileTransferEntry entry = (FileTransferEntry) iterator.next();
+				Object o = ssel.getFirstElement();
+				if (o instanceof FileTransferEntry) {
+					FileTransferEntry entry = (FileTransferEntry) o;
 					IFileTransfer transfer = entry.getFileTransfer();
 					IFileTransferPausable pausable = (IFileTransferPausable) transfer.getAdapter(IFileTransferPausable.class);
 					if (pausable != null) {
@@ -242,9 +243,9 @@ public class FileTransfersView extends ViewPart {
 					return;
 				}
 				IStructuredSelection ssel = (IStructuredSelection) sel;
-				Iterator iterator = ssel.iterator();
-				while (iterator.hasNext()) {
-					FileTransferEntry entry = (FileTransferEntry) iterator.next();
+				Object o = ssel.getFirstElement();
+				if (o instanceof FileTransferEntry) {
+					FileTransferEntry entry = (FileTransferEntry) o;
 					IFileTransfer transfer = entry.getFileTransfer();
 					IFileTransferPausable pausable = (IFileTransferPausable) transfer.getAdapter(IFileTransferPausable.class);
 					if (pausable != null) {
@@ -268,6 +269,7 @@ public class FileTransfersView extends ViewPart {
 					IFileTransfer transfer = entry.getFileTransfer();
 					transfer.cancel();
 					viewer.remove(entry);
+					transfers.remove(entry);
 				}
 			}
 		};
@@ -352,6 +354,17 @@ public class FileTransfersView extends ViewPart {
 					}
 					double percentComplete = transfer.getPercentComplete();
 					return Double.toString(percentComplete + '%');
+				case STARTTIME :
+					return SDF.format(new Date(entry.getStartTime()));
+				case ENDTIME :
+					if (transfer.isDone())
+						return SDF.format(new Date());
+					return ""; //$NON-NLS-1$
+				case RATE :
+					long fileLength = transfer.getFileLength();
+					if (fileLength == -1)
+						return "N/A"; //$NON-NLS-1$
+					return showTransferRate(entry.getStartTime(), fileLength * transfer.getPercentComplete());
 			}
 			return getText(obj);
 		}
@@ -375,4 +388,29 @@ public class FileTransfersView extends ViewPart {
 			return EMPTY_ARRAY;
 		}
 	}
+
+	String showTransferRate(long startTime, double bytesReceived) {
+		double convertedSize;
+		String unit;
+
+		double size = (bytesReceived / ((System.currentTimeMillis() + 1 - startTime) / 1000.0));
+
+		if (size / (1024 * 1024 * 1024) >= 1) {
+			convertedSize = size / (1024 * 1024 * 1024);
+			unit = "GB"; //$NON-NLS-1$
+		} else if (size / (1024 * 1024) >= 1) {
+			convertedSize = size / (1024 * 1024);
+			unit = "MB"; //$NON-NLS-1$
+		} else if (size / 1024 >= 1) {
+			convertedSize = size / 1024;
+			unit = "KB"; //$NON-NLS-1$
+		} else {
+			convertedSize = size;
+			unit = "bytes"; //$NON-NLS-1$
+		}
+
+		DecimalFormat df = new DecimalFormat(NLS.bind("0.00 {0}/s", unit)); //$NON-NLS-1$
+		return df.format(convertedSize);
+	}
+
 }
