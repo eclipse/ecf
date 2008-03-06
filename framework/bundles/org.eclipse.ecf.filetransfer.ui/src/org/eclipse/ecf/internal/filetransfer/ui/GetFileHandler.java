@@ -32,10 +32,10 @@ public class GetFileHandler extends AbstractHandler {
 
 	FileTransfersView fileTransfersView;
 
-	void addTransferToView(Shell shell, final IIncomingFileTransfer incoming) {
+	void addTransferToView(Shell shell, final IIncomingFileTransfer incoming, final String localFileName) {
 		shell.getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				fileTransfersView = FileTransfersView.addTransfer(incoming);
+				fileTransfersView = FileTransfersView.addTransfer(incoming, localFileName);
 			}
 		});
 	}
@@ -81,7 +81,7 @@ public class GetFileHandler extends AbstractHandler {
 									IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
 									try {
 										incoming = rse.receive(out);
-										addTransferToView(shell, incoming);
+										addTransferToView(shell, incoming, fileName);
 									} catch (IOException e) {
 										Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "failed to set output file", e)); //$NON-NLS-1$
 									}

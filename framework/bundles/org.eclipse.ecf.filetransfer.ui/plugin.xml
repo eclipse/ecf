@@ -36,10 +36,5 @@
               style="push"
               icon="icons/transf_download.gif"/>
      </menuContribution>
-     <menuContribution locationURI="popup:org.eclipse.ecf.filetransfer.ui.FileTransfersView">
-        <command
-              commandId="org.eclipse.ecf.filetransfer.ui.getFile"
-              icon="icons/transf_download.gif"/>
-     </menuContribution>
    </extension>
 </plugin>
