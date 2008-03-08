@@ -43,9 +43,16 @@ public class Messages extends NLS {
 	public static String AbstractOutgoingFileTransfer_TransferListener_Not_Null;
 	public static String Activator_EXCEPTION_LOADING_EXTENSION_POINT;
 	public static String Activator_EXCEPTION_URLConnection_CANNOT_BE_CREATED;
+	public static String Activator_WARNING_RETRIEVE_CONTRIBUTION_PREFIX;
 	public static String Activator_WARNING_RETRIEVE_PROTOCOL_CONTRIBUTION_WILL_BE_IGNORED;
+	public static String Activator_WARNING_SAME_PRIORITY;
+	public static String Activator_WARNING_SEND_CONTRIBUTION_PREFIX;
 	public static String Activator_WARNING_SEND_PROTOCOL_CONTRIBUTION_IGNORED;
+	public static String Activator_WARNING_BROWSE_CONTRIBUTION_PREFIX;
 	public static String Activator_WARNING_BROWSE_PROTOCOL_CONTRIBUTION_IGNORED;
+	public static String Activator_WARNING_EXISTING_HIGHER_PRIORITY;
+	public static String Activator_WARNING_NEW_HIGHER_PRIORITY;
+	public static String Activator_WARNING_PRIORITY_ERROR;
 	public static String UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR;
 	public static String UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST;
 	public static String UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START;

@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.ecf.provider.filetransfer">
+<schema targetNamespace="org.eclipse.ecf.provider.filetransfer" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
+      <appinfo>
          <meta.schema plugin="org.eclipse.ecf.provider.filetransfer" id="browseFileTransferProtocolFactory" name="browseFileTransferProtocolFactory"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          This extension point allows IRemoteFileSystemBrowserFactorys to be defined for given file transfer protocols.
       </documentation>
@@ -34,9 +34,9 @@
                <documentation>
                   
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute translatable="true"/>
-               </appInfo>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -61,34 +61,42 @@
                <documentation>
                   The factory class to use for given protocol.  Must implement &lt;b&gt;org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory&lt;/b&gt;
                </documentation>
-               <appInfo>
+               <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory"/>
-               </appInfo>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="priority" type="string">
+            <annotation>
+               <documentation>
+                  Priority relative to other browseFileTransferProtocolFactory extensions.  Valid priorities are 0 (highest priority) to 100 (lowest priority).  If this optional attribute is not specified, it will automatically be assigned a default priority of 100.
+               </documentation>
             </annotation>
          </attribute>
       </complexType>
    </element>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="since"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          1.0.0
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="examples"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          &lt;pre&gt;
    &lt;extension
          point=&quot;org.eclipse.ecf.provider.filetransfer.browseFileTransferProtocolFactory&quot;&gt;
       &lt;browseFileTransferProtocolFactory
             class=&quot;org.eclipse.ecf.provider.filetransfer.ssh.ScpBrowseFileTransferFactory&quot;
-            protocol=&quot;scp&quot;&gt;
+            protocol=&quot;scp&quot;
+            priority=&quot;90&quot;&gt;
       &lt;/browseFileTransferProtocolFactory&gt;
    &lt;/extension&gt;
 
@@ -97,9 +105,9 @@
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="apiInfo"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Here is the &lt;b&gt;org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory&lt;/b&gt;
 
@@ -110,31 +118,32 @@
  */
 public interface IRemoteFileSystemBrowserFactory {
 
-	/**
-	 * Get new instance of IRemoteFileSystemBrowser.
-	 * 
-	 * @return IRemoteFileSystemBrowser for initiating a retrieval of a remote file.
-	 */
-	public IRemoteFileSystemBrowser newInstance();
+ /**
+  * Get new instance of IRemoteFileSystemBrowser.
+  * 
+  * @return IRemoteFileSystemBrowser for initiating a retrieval of a remote file.
+  */
+ public IRemoteFileSystemBrowser newInstance();
 
 }
 &lt;/pre&gt;
       </documentation>
    </annotation>
 
+
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="implementation"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          None
       </documentation>
    </annotation>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="copyright"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          Copyright (c) 2004 Composent, Inc., IBM and others.
 All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation, IBM, Inc. - Initial API and implementation
