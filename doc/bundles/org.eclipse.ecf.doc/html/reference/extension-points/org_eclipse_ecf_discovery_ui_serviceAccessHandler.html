@@ -105,26 +105,6 @@ public class HttpServiceAccessHandler implements IServiceAccessHandler {
 </span></pre>
 <p></p>
 
-<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>The IServiceAccessHandler interface must be implemented by the class defined in the extension:
-
-<pre class="Example"><span class="code SchemaTag">
-public interface IServiceAccessHandler {
-
- /**
-  * Get the menu items to contribute for the given IServiceInfo.  Implementers should return
-  * a non-null array of IContributionItem instances (menus or menu items).  These will 
-  * be added to the context menu of the service entry identified by the given service info.
-  * 
-  * @param serviceInfo the IServiceInfo for the contributions.  Will not be &lt;code&gt;null&lt;/code&gt;.
-  * @return IContributionItem [] any contribution to the context menu for the given service info.  If &lt;code&gt;null&lt;/code&gt;,
-  * then no items will be added to the context menu.
-  */
- public IContributionItem[] getContributionsForService(IServiceInfo serviceInfo);
-
-}
-</span></pre>
-<p></p>
-
 <h6 class="CaptionFigColumn SchemaHeader">Supplied Implementation: </h6>None.
 <p></p>
 

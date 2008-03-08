@@ -23,7 +23,7 @@
 </ul>
 <br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.browseFileTransferProtocolFactory">browseFileTransferProtocolFactory</a> EMPTY&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST browseFileTransferProtocolFactory</p>
-<p class="code SchemaDtdAttlist">protocol&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED&gt;</p>
+<p class="code SchemaDtdAttlist">protocol&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">priority&nbsp;CDATA #IMPLIED&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
 Browse remote file system protocol factory extention point</p>
@@ -31,36 +31,18 @@ Browse remote file system protocol factory extention point</p>
 <ul class="ConfigMarkupAttlistDesc">
 <li><b>protocol</b> - Protocol to define factory for.  For example, http, https, ftp, bittorrent, my.favorite.protocol.</li>
 <li><b>class</b> - The factory class to use for given protocol.  Must implement <b>org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory</b></li>
+<li><b>priority</b> - Priority relative to other browseFileTransferProtocolFactory extensions.  Valid priorities are 0 (highest priority) to 100 (lowest priority).  If this optional attribute is not specified, it will automatically be assigned a default priority of 100.</li>
 </ul>
 <br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6><pre class="Example"><span class="code SchemaTag">
    &lt;extension
          point=</span><span class="code SchemaCstring">&quot;org.eclipse.ecf.provider.filetransfer.browseFileTransferProtocolFactory&quot;</span><span class="code SchemaTag">&gt;
       &lt;browseFileTransferProtocolFactory
             class=</span><span class="code SchemaCstring">&quot;org.eclipse.ecf.provider.filetransfer.ssh.ScpBrowseFileTransferFactory&quot;</span><span class="code SchemaTag">
-            protocol=</span><span class="code SchemaCstring">&quot;scp&quot;</span><span class="code SchemaTag">&gt;
+            protocol=</span><span class="code SchemaCstring">&quot;scp&quot;</span><span class="code SchemaTag">
+            priority=</span><span class="code SchemaCstring">&quot;90&quot;</span><span class="code SchemaTag">&gt;
       &lt;/browseFileTransferProtocolFactory&gt;
    &lt;/extension&gt;
 
-</span></pre>
-<p></p>
-
-<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>Here is the <b>org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory</b>
-
-<pre class="Example"><span class="code SchemaTag">
-/**
- * Remote file browser factory. This service interface is used by clients to
- * create a new IRemoteFileSystemBrowser instance.
- */
-public interface IRemoteFileSystemBrowserFactory {
-
- /**
-  * Get new instance of IRemoteFileSystemBrowser.
-  * 
-  * @return IRemoteFileSystemBrowser for initiating a retrieval of a remote file.
-  */
- public IRemoteFileSystemBrowser newInstance();
-
-}
 </span></pre>
 <p></p>
 

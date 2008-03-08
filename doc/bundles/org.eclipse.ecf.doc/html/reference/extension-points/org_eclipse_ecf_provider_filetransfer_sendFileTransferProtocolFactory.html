@@ -23,7 +23,7 @@
 </ul>
 <br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.sendFileTransferProtocolFactory">sendFileTransferProtocolFactory</a> EMPTY&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST sendFileTransferProtocolFactory</p>
-<p class="code SchemaDtdAttlist">protocol&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED&gt;</p>
+<p class="code SchemaDtdAttlist">protocol&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">priority&nbsp;CDATA #IMPLIED&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
 Send  file transfer protocol factory extention point</p>
@@ -31,36 +31,18 @@ Send  file transfer protocol factory extention point</p>
 <ul class="ConfigMarkupAttlistDesc">
 <li><b>protocol</b> - Protocol to define factory for.  For example, http, https, ftp, bittorrent, my.favorite.protocol.</li>
 <li><b>class</b> - The factory class to use for given protocol.  Must implement <b>org.eclipse.ecf.filetransfer.service.ISendFileTransferFactory</b></li>
+<li><b>priority</b> - Priority relative to other sendFileTransferProtocolFactory extensions.  Valid priorities are 0 (highest priority) to 100 (lowest priority).  If this optional attribute is not specified, it will automatically be assigned a default priority of 100.</li>
 </ul>
 <br><h6 class="CaptionFigColumn SchemaHeader">Examples: </h6><pre class="Example"><span class="code SchemaTag">
    &lt;extension
          point=</span><span class="code SchemaCstring">&quot;org.eclipse.ecf.provider.filetransfer.sendFileTransferProtocolFactory&quot;</span><span class="code SchemaTag">&gt;
       &lt;sendFileTransferProtocolFactory
             class=</span><span class="code SchemaCstring">&quot;org.eclipse.ecf.provider.filetransfer.ssh.ScpOutgoingFileTransferFactory&quot;</span><span class="code SchemaTag">
-            protocol=</span><span class="code SchemaCstring">&quot;scp&quot;</span><span class="code SchemaTag">&gt;
+            protocol=</span><span class="code SchemaCstring">&quot;scp&quot;</span><span class="code SchemaTag">
+            priority=</span><span class="code SchemaCstring">&quot;50&quot;</span><span class="code SchemaTag">&gt;
       &lt;/sendFileTransferProtocolFactory&gt;
    &lt;/extension&gt;
 
-</span></pre>
-<p></p>
-
-<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>Here is the <b>org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory</b>
-
-<pre class="Example"><span class="code SchemaTag">
-/**
- * Retrieve file transfer factory. This service interface is used by clients to
- * create a new IRetrieveFileTransfer instance.
- */
-public interface IRetrieveFileTransferFactory {
-
- /**
-  * Get new instance of IRetrieveFileTransfer.
-  * 
-  * @return IRetrieveFileTransfer for a given file transfer
-  */
- public IRetrieveFileTransfer newInstance();
-
-}
 </span></pre>
 <p></p>
 

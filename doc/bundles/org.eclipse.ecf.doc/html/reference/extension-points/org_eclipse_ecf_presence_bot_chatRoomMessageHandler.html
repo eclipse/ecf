@@ -59,26 +59,6 @@ Note that the given chatroomrobotid=<b>org.eclipse.ecf.presence.bot.defaultbot</
 </span></pre>
 <p></p>
 
-<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>The class implementation provided in extension point must implement the following interface:
-
-<pre class="Example"><span class="code SchemaTag">
-public interface IChatRoomMessageHandler extends IChatRoomContainerAdvisor {
-
- /**
-  * This method is called when a {@link IChatRoomMessage} is received.
-  * 
-  * @param message
-  *            the {@link IChatRoomMessage} received. Will not be
-  *            &lt;code&gt;null&lt;/code&gt;. Implementers should not block the
-  *            calling thread. Any methods on the given &lt;code&gt;message&lt;/code&gt;
-  *            parameter may be called.
-  */
- public void handleRoomMessage(IChatRoomMessage message);
-
-}
-</span></pre>
-<p></p>
-
 <h6 class="CaptionFigColumn SchemaHeader">Supplied Implementation: </h6>No supplied implementation.
 <p></p>
 

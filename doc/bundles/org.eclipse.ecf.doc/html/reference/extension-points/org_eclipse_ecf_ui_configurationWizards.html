@@ -76,42 +76,6 @@ of the export engine functionality.</p>
 </span></pre>
 <p></p>
 
-<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>The "class" attribute (required) must have a class that implements the <b>org.eclipse.ecf.ui.IConfigurationWizard</b> interface:
-
-<pre class="Example"><span class="code SchemaTag">
-/**
- * Required interface for implementing
- * &lt;b&gt;org.eclipse.ecf.ui.configurationWizards&lt;/b&gt; extension point. Extensions
- * for extension point &lt;b&gt;org.eclipse.ecf.ui.configurationWizards&lt;/b&gt; must
- * provide a class implementing this interface.
- */
-public interface IConfigurationWizard extends IWizard {
-
- /**
-  * Initialize the wizard with the workbench and the desired container type
-  * description
-  * 
-  * @param workbench
-  *            the workbench for the wizard. Will not be null.
-  * @param description
-  *            the {@link ContainerTypeDescription} to use to
-  *            create/configure the new IContainer instance
-  */
- public void init(IWorkbench workbench,
-   ContainerTypeDescription description);
-
- /**
-  * Get result of configuration.
-  * 
-  * @return ContainerHolder the result of the configuration.  If null, the container could not be
-  * created.
-  */
- public ContainerHolder getConfigurationResult();
-}
-
-</span></pre>
-<p></p>
-
 <br>
 <p class="note SchemaCopyright">
 /****************************************************************************

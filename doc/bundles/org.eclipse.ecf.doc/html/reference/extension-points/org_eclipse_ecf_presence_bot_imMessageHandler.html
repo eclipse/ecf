@@ -58,26 +58,6 @@ Note that the given imrobotid=<b>org.eclipse.ecf.presence.imbot.defaultbot</b> m
 </span></pre>
 <p></p>
 
-<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>The class implementation provided in extension point must implement the following interface:
-
-<pre class="Example"><span class="code SchemaTag">
-public interface IIMMessageHandler extends IContainerAdvisor {
-
- /**
-  * This method is called when a {@link IChatMessage} is received.
-  * 
-  * @param message
-  *            the {@link IChatMessage} received. Will not be
-  *            &lt;code&gt;null&lt;/code&gt;. Implementers should not block the
-  *            calling thread. Any methods on the given &lt;code&gt;message&lt;/code&gt;
-  *            parameter may be called.
-  */
- public void handleIMMessage(IChatMessage message);
-
-}
-</span></pre>
-<p></p>
-
 <h6 class="CaptionFigColumn SchemaHeader">Supplied Implementation: </h6>No supplied implementation.
 <p></p>
 
