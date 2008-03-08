@@ -28,6 +28,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String[] getCommandLineArgs() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("getCommandLineArgs()");
 		return (ei == null) ? null : ei.getCommandLineArgs();
 	}
 
@@ -36,6 +37,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String[] getFrameworkArgs() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("getFrameworkArgs()");
 		return (ei == null) ? null : ei.getFrameworkArgs();
 	}
 
@@ -44,6 +46,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String getNL() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("getNL()");
 		return (ei == null) ? null : ei.getNL();
 	}
 
@@ -52,6 +55,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String[] getNonFrameworkArgs() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("getNonFrameworkArgs()");
 		return (ei == null) ? null : ei.getNonFrameworkArgs();
 	}
 
@@ -60,6 +64,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String getOS() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("getOS()");
 		return (ei == null) ? null : ei.getOS();
 	}
 
@@ -68,6 +73,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String getOSArch() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("getOSArch()");
 		return (ei == null) ? null : ei.getOSArch();
 	}
 
@@ -76,6 +82,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String getProperty(String key) {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("getProperty(" + key + ")");
 		return (ei == null) ? null : ei.getProperty(key);
 	}
 
@@ -84,6 +91,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String getWS() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("getWS()");
 		return (ei == null) ? null : ei.getWS();
 	}
 
@@ -92,6 +100,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public Boolean inDebugMode() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("inDebugMode()");
 		return (ei == null) ? null : new Boolean(ei.inDebugMode());
 	}
 
@@ -100,6 +109,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public Boolean inDevelopmentMode() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
+		System.out.println("inDevelopmentMode()");
 		return (ei == null) ? null : new Boolean(ei.inDevelopmentMode());
 	}
 
