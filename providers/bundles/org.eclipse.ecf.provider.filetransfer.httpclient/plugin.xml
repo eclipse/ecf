@@ -5,11 +5,13 @@
          point="org.eclipse.ecf.provider.filetransfer.retrieveFileTransferProtocolFactory">
       <retrieveFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransferFactory"
-            protocol="http">
+            protocol="http"
+            priority="50">
       </retrieveFileTransferProtocolFactory>
       <retrieveFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransferFactory"
-            protocol="https">
+            protocol="https"
+            priority="50">
       </retrieveFileTransferProtocolFactory>
    </extension>
 
