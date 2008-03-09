@@ -14,6 +14,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.eclipse.ecf.filetransfer.*;
+import org.eclipse.ecf.internal.filetransfer.ui.Messages;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.osgi.util.NLS;
@@ -31,8 +32,8 @@ public class FileTransfersView extends ViewPart {
 
 	public static final String ID = "org.eclipse.ecf.filetransfer.ui.FileTransfersView"; //$NON-NLS-1$
 
-	private static final String[] COLUMNS = {"Name", "Download", "Upload", "Local File", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			"Done", "Start", "End", "Rate"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	private static final String[] COLUMNS = {Messages.getString("FileTransfersView_COLUMN_NAME"), Messages.getString("FileTransfersView_COLUMN_DOWNLOAD"), Messages.getString("FileTransfersView_COLUMN_UPLOAD"), Messages.getString("FileTransfersView_COLUMN_LOCAL_FILE"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			Messages.getString("FileTransfersView_COLUMN_DONE"), Messages.getString("FileTransfersView_COLUMN_START_TIME"), Messages.getString("FileTransfersView_COLUMN_END_TIME"), Messages.getString("FileTransfersView_COLUMN_RATE")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 	private static final int[] WIDTHS = {225, 70, 70, 325, 50, 90, 90, 75};
 
@@ -126,15 +127,15 @@ public class FileTransfersView extends ViewPart {
 	static String getTwoDigitNumber(long value) {
 		if (value > GIGABYTE) {
 			double num = value / GIGABYTE;
-			return Double.toString(Math.floor(num * 100) / 100) + " GB"; //$NON-NLS-1$
+			return Double.toString(Math.floor(num * 100) / 100) + " " + Messages.getString("FileTransfersView_GB"); //$NON-NLS-1$ //$NON-NLS-2$
 		} else if (value > MEGABYTE) {
 			double num = value / MEGABYTE;
-			return Double.toString(Math.floor(num * 100) / 100) + " MB"; //$NON-NLS-1$
+			return Double.toString(Math.floor(num * 100) / 100) + " " + Messages.getString("FileTransfersView_MB"); //$NON-NLS-1$ //$NON-NLS-2$
 		} else if (value > KILOBYTE) {
 			double num = value / KILOBYTE;
-			return Double.toString(Math.floor(num * 100) / 100) + " KB"; //$NON-NLS-1$
+			return Double.toString(Math.floor(num * 100) / 100) + " " + Messages.getString("FileTransfersView_KB"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		return value + " bytes"; //$NON-NLS-1$
+		return value + " " + Messages.getString("FileTransfersView_BYTES"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	private static FileTransfersView instance;
@@ -234,7 +235,7 @@ public class FileTransfersView extends ViewPart {
 			}
 		};
 		resumeAction.setId("resume"); //$NON-NLS-1$
-		resumeAction.setText("&Resume"); //$NON-NLS-1$
+		resumeAction.setText(Messages.getString("FileTransfersView_MENU_RESUME_TEXT")); //$NON-NLS-1$
 
 		pauseAction = new Action() {
 			public void run() {
@@ -254,7 +255,7 @@ public class FileTransfersView extends ViewPart {
 				}
 			}
 		};
-		pauseAction.setText("&Pause"); //$NON-NLS-1$
+		pauseAction.setText(Messages.getString("FileTransfersView_MENU_PAUSE_TEXT")); //$NON-NLS-1$
 
 		removeAction = new Action() {
 			public void run() {
@@ -273,7 +274,7 @@ public class FileTransfersView extends ViewPart {
 				}
 			}
 		};
-		removeAction.setText("&Remove"); //$NON-NLS-1$
+		removeAction.setText(Messages.getString("FileTransfersView_MENU_REMOVE_TEXT")); //$NON-NLS-1$
 		removeAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 
 		launchAction = new Action() {
@@ -291,7 +292,7 @@ public class FileTransfersView extends ViewPart {
 				}
 			}
 		};
-		launchAction.setText("&Launch file"); //$NON-NLS-1$
+		launchAction.setText(Messages.getString("FileTransfersView_MENU_LAUNCH_TEXT")); //$NON-NLS-1$
 	}
 
 	void enableActions() {
@@ -327,6 +328,8 @@ public class FileTransfersView extends ViewPart {
 
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 
+		String endTime = null;
+
 		public String getColumnText(Object obj, int index) {
 			if (!(obj instanceof FileTransferEntry)) {
 				return getText(obj);
@@ -339,31 +342,34 @@ public class FileTransfersView extends ViewPart {
 				case DOWNLOADED :
 					if (transfer instanceof IIncomingFileTransfer)
 						return getTwoDigitNumber(((IIncomingFileTransfer) transfer).getBytesReceived());
-					return "N/A"; //$NON-NLS-1$
+					return Messages.getString("FileTransfersView_NA"); //$NON-NLS-1$
 				case UPLOADED :
 					if (transfer instanceof IOutgoingFileTransfer)
 						return getTwoDigitNumber(((IOutgoingFileTransfer) transfer).getBytesSent());
-					return "N/A"; //$NON-NLS-1$
+					return Messages.getString("FileTransfersView_NA"); //$NON-NLS-1$
 				case FILENAME :
 					String fileName = entry.getLocalFileName();
 					return (fileName == null) ? "" : fileName; //$NON-NLS-1$
 				case DONE :
 					if (transfer.isDone()) {
 						Exception e = transfer.getException();
-						return (e == null) ? "yes" : "error"; //$NON-NLS-1$ //$NON-NLS-2$
+						return (e == null) ? Messages.getString("FileTransfersView_YES") : Messages.getString("FileTransfersView_ERROR"); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					double percentComplete = transfer.getPercentComplete();
 					return Double.toString(percentComplete + '%');
 				case STARTTIME :
 					return SDF.format(new Date(entry.getStartTime()));
 				case ENDTIME :
-					if (transfer.isDone())
-						return SDF.format(new Date());
-					return ""; //$NON-NLS-1$
+					if (transfer.isDone()) {
+						if (endTime == null)
+							endTime = SDF.format(new Date());
+						return endTime;
+					}
+					return Messages.getString("FileTransfersView_IN_PROGRESS"); //$NON-NLS-1$
 				case RATE :
 					long fileLength = transfer.getFileLength();
 					if (fileLength == -1)
-						return "N/A"; //$NON-NLS-1$
+						return Messages.getString("FileTransfersView_NA"); //$NON-NLS-1$
 					return showTransferRate(entry.getStartTime(), fileLength * transfer.getPercentComplete());
 			}
 			return getText(obj);
@@ -397,16 +403,16 @@ public class FileTransfersView extends ViewPart {
 
 		if (size / (1024 * 1024 * 1024) >= 1) {
 			convertedSize = size / (1024 * 1024 * 1024);
-			unit = "GB"; //$NON-NLS-1$
+			unit = Messages.getString("FileTransfersView_GB"); //$NON-NLS-1$
 		} else if (size / (1024 * 1024) >= 1) {
 			convertedSize = size / (1024 * 1024);
-			unit = "MB"; //$NON-NLS-1$
+			unit = Messages.getString("FileTransfersView_MB"); //$NON-NLS-1$
 		} else if (size / 1024 >= 1) {
 			convertedSize = size / 1024;
-			unit = "KB"; //$NON-NLS-1$
+			unit = Messages.getString("FileTransfersView_KB"); //$NON-NLS-1$
 		} else {
 			convertedSize = size;
-			unit = "bytes"; //$NON-NLS-1$
+			unit = Messages.getString("FileTransfersView_BYTES"); //$NON-NLS-1$
 		}
 
 		DecimalFormat df = new DecimalFormat(NLS.bind("0.00 {0}/s", unit)); //$NON-NLS-1$
