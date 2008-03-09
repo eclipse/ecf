@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 Remy Suen
+ * Copyright (c) 2005, 2008 Remy Suen and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
  *    Cagatay Calli <ccalli@gmail.com> - https://bugs.eclipse.org/bugs/show_bug.cgi?id=196812
+ *    David Pochet <pochet.david@wanadoo.fr> - https://bugs.eclipse.org/bugs/show_bug.cgi?id=195275
  ******************************************************************************/
 package org.eclipse.ecf.protocol.msn;
 
@@ -149,16 +150,20 @@ final class NotificationSession extends DispatchSession {
 				count++;
 				String[] contact = StringUtils.splitOnSpace(input);
 				String email = contact[1].substring(2);
-				switch (contact.length) {
-					case 3 :
-						list.internalAddContact(email, email);
-						break;
-					case 5 :
-						list.addContact(email, email, contact[3].substring(2));
-						break;
-					default :
-						list.addContact(contact[2].substring(2), email, contact[3].substring(2), contact[5]);
-						break;
+
+				// Check that email address is valid
+				if (email.indexOf('@') != -1) {
+					switch (contact.length) {
+						case 3 :
+							list.internalAddContact(email, email);
+							break;
+						case 5 :
+							list.addContact(email, email, contact[3].substring(2));
+							break;
+						default :
+							list.addContact(contact[2].substring(2), email, contact[3].substring(2), contact[5]);
+							break;
+					}
 				}
 
 				if (count == contacts) {
