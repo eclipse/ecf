@@ -216,7 +216,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			public void sendPresenceUpdate(ID toID, org.eclipse.ecf.presence.IPresence presence) throws ECFException {
 				try {
 					getConnectionOrThrowIfNull().sendPresenceUpdate(toID, createPresence(presence));
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					traceAndThrowECFException("sendPresenceUpdate", e);
 				}
 			}
@@ -242,7 +242,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			public void sendRosterAdd(String user, String name, String[] groups) throws ECFException {
 				try {
 					getConnectionOrThrowIfNull().sendRosterAdd(user, name, groups);
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					traceAndThrowECFException("sendRosterAdd", e);
 				}
 			}
@@ -256,9 +256,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				try {
 					if (!(userID instanceof XMPPID))
 						throw new ECFException("invalid userID");
-					XMPPID xmppID = (XMPPID) userID;
+					final XMPPID xmppID = (XMPPID) userID;
 					getConnectionOrThrowIfNull().sendRosterRemove(xmppID.getUsernameAtHost());
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					traceAndThrowECFException("sendRosterRemove", e);
 				}
 			}
@@ -539,6 +539,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	protected XMPPID createIDFromName(String uname) {
 		try {
+			if (uname.indexOf('@') == -1) {
+				return new XMPPID(container.getConnectNamespace(), "admin" + "@" + uname);
+			}
 			return new XMPPID(container.getConnectNamespace(), uname);
 		} catch (final Exception e) {
 			traceStack("Exception in createIDFromName", e);
