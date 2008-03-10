@@ -23,6 +23,9 @@ import org.osgi.framework.BundleContext;
  */
 public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConstants {
 	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab"; //$NON-NLS-1$
+
+	public static final String COLLABORATION_IMAGE = "collaboration";
+
 	// The shared instance.
 	private static ClientPlugin plugin;
 
@@ -119,15 +122,8 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 		return this.getWorkbench().getDisplay().getActiveShell();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#createImageRegistry()
-	 */
-	protected ImageRegistry createImageRegistry() {
-		final ImageRegistry registry = super.createImageRegistry();
-		registry.put(ClientPluginConstants.DECORATION_DEFAULT_PROVIDER, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/default_provider_image.gif").createImage()); //$NON-NLS-1$
-		return registry;
+	protected void initializeImageRegistry(ImageRegistry registry) {
+		registry.put(COLLABORATION_IMAGE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/collaboration.gif")); //$NON-NLS-1$
 	}
 
 	/**

@@ -19,7 +19,6 @@ import java.util.Map;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
-import org.eclipse.ecf.internal.example.collab.ClientPluginConstants;
 import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -53,32 +52,25 @@ public class ConnectionDialog extends TitleAreaDialog {
 
 	private static final int PROVIDER_TABLE_WIDTH = 150;
 
-	protected static final String CLASSNAME = JoinGroupWizardPage.class
-			.getName();
+	protected static final String CLASSNAME = JoinGroupWizardPage.class.getName();
 
 	protected static final String USER_NAME_SYSTEM_PROPERTY = "user.name"; //$NON-NLS-1$
 
 	protected static final String ISSERVER_PROP_NAME = CLASSNAME + ".isServer"; //$NON-NLS-1$
 
-	protected static final String DEFAULTGROUPID_PROP_NAME = CLASSNAME
-			+ ".defaultgroupid"; //$NON-NLS-1$
+	protected static final String DEFAULTGROUPID_PROP_NAME = CLASSNAME + ".defaultgroupid"; //$NON-NLS-1$
 
-	protected static final String EXAMPLEGROUPID_PROP_NAME = CLASSNAME
-			+ ".examplegroupid"; //$NON-NLS-1$
+	protected static final String EXAMPLEGROUPID_PROP_NAME = CLASSNAME + ".examplegroupid"; //$NON-NLS-1$
 
-	protected static final String USEPASSWORD_PROP_NAME = CLASSNAME
-			+ ".usepassword"; //$NON-NLS-1$
+	protected static final String USEPASSWORD_PROP_NAME = CLASSNAME + ".usepassword"; //$NON-NLS-1$
 
-	protected static final String USENICKNAME_PROP_NAME = CLASSNAME
-			+ ".usenickname"; //$NON-NLS-1$
+	protected static final String USENICKNAME_PROP_NAME = CLASSNAME + ".usenickname"; //$NON-NLS-1$
 
 	protected static final String URLPREFIX_NAME = CLASSNAME + ".urlprefix"; //$NON-NLS-1$
 
-	protected static final String GROUPIDLABEL_PROP_NAME = CLASSNAME
-			+ ".groupIDLabel"; //$NON-NLS-1$
+	protected static final String GROUPIDLABEL_PROP_NAME = CLASSNAME + ".groupIDLabel"; //$NON-NLS-1$
 
-	protected static final String NAMESPACE_PROP_NAME = CLASSNAME
-			+ ".namespace"; //$NON-NLS-1$
+	protected static final String NAMESPACE_PROP_NAME = CLASSNAME + ".namespace"; //$NON-NLS-1$
 
 	protected static final String PAGE_DESCRIPTION = Messages.ConnectionDialog_SELECT_PROVIDER_DESCRIPTION;
 
@@ -120,7 +112,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 
 	private IDialogSettings dialogSettings;
 
-	private GlobalModifyListener listener = new GlobalModifyListener();
+	private final GlobalModifyListener listener = new GlobalModifyListener();
 
 	private Button autoLogin = null;
 
@@ -132,16 +124,15 @@ public class ConnectionDialog extends TitleAreaDialog {
 	}
 
 	protected Control createDialogArea(Composite parent) {
-		Composite main = new Composite((Composite) super
-				.createDialogArea(parent), SWT.NONE);
+		final Composite main = new Composite((Composite) super.createDialogArea(parent), SWT.NONE);
 		main.setLayout(new GridLayout());
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		Label providerLabel = new Label(main, SWT.NONE);
+		final Label providerLabel = new Label(main, SWT.NONE);
 		providerLabel.setText(Messages.ConnectionDialog_PROTOCOL_TEXT);
 
-		Composite providerComp = new Composite(main, SWT.NONE);
-		GridLayout layout = new GridLayout(2, false);
+		final Composite providerComp = new Composite(main, SWT.NONE);
+		final GridLayout layout = new GridLayout(2, false);
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		providerComp.setLayout(layout);
@@ -152,22 +143,22 @@ public class ConnectionDialog extends TitleAreaDialog {
 		viewer.setLabelProvider(new ECFProviderLabelProvider());
 		viewer.addSelectionChangedListener(new ProviderSelector());
 
-		Table table = viewer.getTable();
-		GridData gData = new GridData(GridData.FILL_VERTICAL);
+		final Table table = viewer.getTable();
+		final GridData gData = new GridData(GridData.FILL_VERTICAL);
 		gData.widthHint = PROVIDER_TABLE_WIDTH;
 		gData.heightHint = PROVIDER_TABLE_HEIGHT;
 		table.setLayoutData(gData);
 
-/*
- * table.setHeaderVisible(true); TableColumn tc = new TableColumn(table,
- * SWT.NONE); tc.setText("Name"); tc = new TableColumn(table, SWT.NONE);
- * tc.setText("Classname");
- * 
- */
+		/*
+		 * table.setHeaderVisible(true); TableColumn tc = new TableColumn(table,
+		 * SWT.NONE); tc.setText("Name"); tc = new TableColumn(table, SWT.NONE);
+		 * tc.setText("Classname");
+		 * 
+		 */
 		viewer.setInput(ContainerFactory.getDefault().getDescriptions());
 
 		paramComp = new Composite(providerComp, SWT.NONE);
-		GridLayout glayout = new GridLayout();
+		final GridLayout glayout = new GridLayout();
 		glayout.marginTop = 0;
 		glayout.marginBottom = 0;
 		paramComp.setLayout(glayout);
@@ -183,23 +174,22 @@ public class ConnectionDialog extends TitleAreaDialog {
 		});
 
 		new Label(main, SWT.NONE);
-		Label sep = new Label(main, SWT.SEPARATOR | SWT.HORIZONTAL);
+		final Label sep = new Label(main, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		this.setTitle(Messages.ConnectionDialog_CONNECTION_TITLE);
-		this
-				.setMessage(Messages.ConnectionDialog_CHOOSE_PROVIDER_MESSAGE);
+		this.setMessage(Messages.ConnectionDialog_CHOOSE_PROVIDER_MESSAGE);
 
 		this.getShell().setText(Messages.ConnectionDialog_CONNECT_TEXT);
 		return parent;
 	}
 
 	protected Control createContents(Composite parent) {
-		Control control = super.createContents(parent);
+		final Control control = super.createContents(parent);
 
 		try {
 			restoreDialogSettings();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
@@ -210,16 +200,14 @@ public class ConnectionDialog extends TitleAreaDialog {
 		return new Point(500, 400);
 	}
 
-	private class ECFProviderContentProvider implements
-			IStructuredContentProvider {
+	private class ECFProviderContentProvider implements IStructuredContentProvider {
 
 		public Object[] getElements(Object inputElement) {
-			List rawDescriptions = (List) inputElement;
-			List elements = new ArrayList();
+			final List rawDescriptions = (List) inputElement;
+			final List elements = new ArrayList();
 
-			for (Iterator i = rawDescriptions.iterator(); i.hasNext();) {
-				final ContainerTypeDescription desc = (ContainerTypeDescription) i
-						.next();
+			for (final Iterator i = rawDescriptions.iterator(); i.hasNext();) {
+				final ContainerTypeDescription desc = (ContainerTypeDescription) i.next();
 				if (!desc.isServer() && !desc.isHidden())
 					elements.add(desc);
 			}
@@ -236,7 +224,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 
 	public String getJoinGroupText() {
 		String textValue = joinGroup.trim();
-		String namespace = getNamespace();
+		final String namespace = getNamespace();
 		if (namespace != null) {
 			return textValue;
 		} else {
@@ -268,13 +256,12 @@ public class ConnectionDialog extends TitleAreaDialog {
 	}
 
 	private void restoreDialogSettings() throws IOException {
-		IDialogSettings dialogSettings = getDialogSettings();
+		final IDialogSettings dialogSettings = getDialogSettings();
 		if (dialogSettings != null) {
-			IDialogSettings pageSettings = dialogSettings
-					.getSection(DIALOG_SETTINGS);
+			final IDialogSettings pageSettings = dialogSettings.getSection(DIALOG_SETTINGS);
 			if (pageSettings != null) {
 
-				int intVal = pageSettings.getInt("provider"); //$NON-NLS-1$
+				final int intVal = pageSettings.getInt("provider"); //$NON-NLS-1$
 				viewer.getTable().setSelection(intVal);
 				viewer.setSelection(viewer.getSelection());
 				String strVal = pageSettings.get("url"); //$NON-NLS-1$
@@ -301,10 +288,9 @@ public class ConnectionDialog extends TitleAreaDialog {
 	}
 
 	private void saveDialogSettings() {
-		IDialogSettings dialogSettings = this.getDialogSettings();
+		final IDialogSettings dialogSettings = this.getDialogSettings();
 		if (dialogSettings != null) {
-			IDialogSettings pageSettings = dialogSettings
-					.getSection(DIALOG_SETTINGS);
+			IDialogSettings pageSettings = dialogSettings.getSection(DIALOG_SETTINGS);
 			if (pageSettings == null)
 				pageSettings = dialogSettings.addNewSection(DIALOG_SETTINGS);
 
@@ -312,19 +298,18 @@ public class ConnectionDialog extends TitleAreaDialog {
 			pageSettings.put("nickname", this.getNicknameText()); //$NON-NLS-1$
 			pageSettings.put("password", this.getPasswordText()); //$NON-NLS-1$
 
-			int i = viewer.getTable().getSelectionIndex();
+			final int i = viewer.getTable().getSelectionIndex();
 			if (i >= 0)
 				pageSettings.put("provider", i); //$NON-NLS-1$
 
-/*
- * try { dialogSettings.save(this.getClass().toString()); } catch (IOException
- * e) { // TODO Auto-generated catch block e.printStackTrace(); }
- */		}
+			/*
+			 * try { dialogSettings.save(this.getClass().toString()); } catch (IOException
+			 * e) { // TODO Auto-generated catch block e.printStackTrace(); }
+			 */}
 	}
 
 	private boolean savePassword() {
-		return ClientPlugin.getDefault().getPluginPreferences().getBoolean(
-				ClientPlugin.PREF_STORE_PASSWORD);
+		return ClientPlugin.getDefault().getPluginPreferences().getBoolean(ClientPlugin.PREF_STORE_PASSWORD);
 	}
 
 	protected void okPressed() {
@@ -343,23 +328,16 @@ public class ConnectionDialog extends TitleAreaDialog {
 	private class ECFProviderLabelProvider implements ITableLabelProvider {
 
 		public Image getColumnImage(Object element, int columnIndex) {
-			if (columnIndex == 0) {
-				// TODO: If the container description contains an image for the
-				// provider, display it here.
-				return ClientPlugin.getDefault().getImageRegistry().get(
-						ClientPluginConstants.DECORATION_DEFAULT_PROVIDER);
-			}
-
 			return null;
 		}
 
 		public String getColumnText(Object element, int columnIndex) {
-			ContainerTypeDescription desc = (ContainerTypeDescription) element;
+			final ContainerTypeDescription desc = (ContainerTypeDescription) element;
 			switch (columnIndex) {
-			case 0:
-				return desc.getDescription();
-			case 1:
-				return desc.getName();
+				case 0 :
+					return desc.getDescription();
+				case 1 :
+					return desc.getName();
 			}
 
 			return ""; //$NON-NLS-1$
@@ -383,10 +361,8 @@ public class ConnectionDialog extends TitleAreaDialog {
 	private class ProviderSelector implements ISelectionChangedListener {
 
 		public void selectionChanged(SelectionChangedEvent event) {
-			StructuredSelection selection = (StructuredSelection) event
-					.getSelection();
-			ContainerTypeDescription desc = (ContainerTypeDescription) selection
-					.getFirstElement();
+			final StructuredSelection selection = (StructuredSelection) event.getSelection();
+			final ContainerTypeDescription desc = (ContainerTypeDescription) selection.getFirstElement();
 			if (desc != null) {
 				containerType = desc.getName();
 				// XXX replace with access to desc.getParameters()
@@ -397,12 +373,9 @@ public class ConnectionDialog extends TitleAreaDialog {
 
 		protected void createPropertyComposite(Composite parent, Map properties) {
 			if (properties != null) {
-				String usePassword = (String) properties
-						.get(USEPASSWORD_PROP_NAME);
-				String examplegroupid = (String) properties
-						.get(EXAMPLEGROUPID_PROP_NAME);
-				String useNickname = (String) properties
-						.get(USENICKNAME_PROP_NAME);
+				final String usePassword = (String) properties.get(USEPASSWORD_PROP_NAME);
+				final String examplegroupid = (String) properties.get(EXAMPLEGROUPID_PROP_NAME);
+				final String useNickname = (String) properties.get(USENICKNAME_PROP_NAME);
 				urlPrefix = (String) properties.get(URLPREFIX_NAME);
 				namespace = (String) properties.get(NAMESPACE_PROP_NAME);
 
@@ -412,10 +385,9 @@ public class ConnectionDialog extends TitleAreaDialog {
 
 				removeChildren(parent);
 
-				String groupLabel = (String) properties
-						.get(GROUPIDLABEL_PROP_NAME);
+				final String groupLabel = (String) properties.get(GROUPIDLABEL_PROP_NAME);
 
-				Label groupIDLabel = new Label(parent, SWT.NONE);
+				final Label groupIDLabel = new Label(parent, SWT.NONE);
 
 				if (groupLabel != null) {
 					groupIDLabel.setText(groupLabel);
@@ -424,41 +396,35 @@ public class ConnectionDialog extends TitleAreaDialog {
 				}
 
 				joingroup_text = new Text(parent, SWT.BORDER);
-				joingroup_text.setLayoutData(new GridData(
-						GridData.FILL_HORIZONTAL));
+				joingroup_text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 				joingroup_text.addModifyListener(listener);
 
 				if (examplegroupid != null) {
-					Label example_label = new Label(parent, SWT.NONE);
+					final Label example_label = new Label(parent, SWT.NONE);
 					// set examplegroupid text
-					example_label
-							.setText((examplegroupid != null) ? examplegroupid
-									: ""); //$NON-NLS-1$
-					example_label.setLayoutData(new GridData(
-							GridData.HORIZONTAL_ALIGN_END));
+					example_label.setText((examplegroupid != null) ? examplegroupid : ""); //$NON-NLS-1$
+					example_label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 					// joingroup_text.setText((defaultgroupid != null) ?
 					// defaultgroupid : "");
 				}
 
 				// turn off password unless used
 				if (usePassword != null) {
-					Label password_label = new Label(parent, SWT.NONE);
+					final Label password_label = new Label(parent, SWT.NONE);
 					password_label.setText(Messages.ConnectionDialog_PASSWORD_TEXT);
 					password_text = new Text(parent, SWT.BORDER);
-					password_text.setLayoutData(new GridData(
-							GridData.FILL_HORIZONTAL));
+					password_text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 					password_text.setEchoChar('*');
 					password_text.addModifyListener(listener);
 				}
 
 				// turn off nickname unless used
 				if (useNickname != null) {
-					Label nickname_label = new Label(parent, SWT.NONE);
+					final Label nickname_label = new Label(parent, SWT.NONE);
 					nickname_label.setText(NICKNAME_FIELDNAME);
 
 					nickname_text = new Text(parent, SWT.BORDER);
-					nickname_text.setLayoutData(new GridData(
-							GridData.FILL_HORIZONTAL));
+					nickname_text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 					nickname_text.addModifyListener(listener);
 				}
 				autoLogin.setSelection(false);
@@ -469,7 +435,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 		private void removeChildren(Composite composite) {
 			if (composite != null && composite.getChildren() != null) {
 				while (composite.getChildren().length > 0) {
-					Control child = composite.getChildren()[0];
+					final Control child = composite.getChildren()[0];
 					if (child instanceof Composite) {
 						removeChildren((Composite) child);
 					}

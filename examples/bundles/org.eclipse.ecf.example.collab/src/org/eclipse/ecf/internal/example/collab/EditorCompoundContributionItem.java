@@ -10,9 +10,11 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -27,11 +29,15 @@ public class EditorCompoundContributionItem extends CompoundContributionItem {
 
 	private static final IContributionItem[] EMPTY = new IContributionItem[] {};
 
+	private final ImageDescriptor menuImageDescriptor;
+
 	public EditorCompoundContributionItem() {
+		menuImageDescriptor = ClientPlugin.getDefault().getImageRegistry().getDescriptor(ClientPlugin.COLLABORATION_IMAGE);
 	}
 
 	public EditorCompoundContributionItem(String id) {
 		super(id);
+		menuImageDescriptor = ClientPlugin.getDefault().getImageRegistry().getDescriptor(ClientPlugin.COLLABORATION_IMAGE);
 	}
 
 	protected IFile getFileForPart(IEditorPart editorPart) {
@@ -108,7 +114,15 @@ public class EditorCompoundContributionItem extends CompoundContributionItem {
 			}
 		};
 
-		action.setText(Messages.EditorCompoundContributionItem_SHARE_SELECTION_MENU_ITEM_NAME);
+		final ClientEntry entry = isConnected(project.getWorkspace().getRoot());
+		if (entry == null)
+			return EMPTY;
+		final EclipseCollabSharedObject collabsharedobject = entry.getSharedObject();
+		if (collabsharedobject == null)
+			return EMPTY;
+		action.setText(NLS.bind(Messages.EditorCompoundContributionItem_SHARE_SELECTION_MENU_ITEM_NAME, collabsharedobject.getWindowTitle()));
+		if (menuImageDescriptor != null)
+			action.setImageDescriptor(menuImageDescriptor);
 		//action.setAccelerator(SWT.CTRL | SWT.SHIFT | '1');
 		return new IContributionItem[] {new Separator(), new ActionContributionItem(action)};
 	}

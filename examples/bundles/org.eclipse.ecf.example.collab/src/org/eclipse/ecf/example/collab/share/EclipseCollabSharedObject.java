@@ -192,7 +192,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 					final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 					final IWorkbenchPage wp = ww.getActivePage();
 					wp.showView(LineChatView.VIEW_ID);
-					LineChatView.setViewName(NLS.bind(Messages.EclipseCollabSharedObject_TITLE_BAR, localUser.getNickname()));
+					windowTitle = NLS.bind(Messages.EclipseCollabSharedObject_TITLE_BAR, localUser.getNickname());
+					LineChatView.setViewName(windowTitle);
 					localGUI = LineChatView.createClientView(EclipseCollabSharedObject.this, projectName, NLS.bind(Messages.EclipseCollabSharedObject_PROJECT_NAME, projectName), getLocalFullDownloadPath());
 				} catch (final Exception e) {
 					log("Exception creating LineChatView", e); //$NON-NLS-1$

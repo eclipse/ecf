@@ -42,6 +42,4 @@ public interface ClientPluginConstants {
 	public static final String SHARED_MARKER_TYPE = "org.eclipse.ecf.example.collab.sharedmarker"; //$NON-NLS-1$
 	public static final String SHARED_MARKER_KEY = "owner"; //$NON-NLS-1$
 
-	public static final String DECORATION_DEFAULT_PROVIDER = "DECORATION_DEFAULT_PROVIDER"; //$NON-NLS-1$
-
 }
