@@ -102,9 +102,7 @@ public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContri
 			}
 		};
 		sendSelection.setText(NLS.bind(Messages.DocShareRosterMenuContributionItem_SELECTION_SEND_EDITOR_MENU_TEXT, trimIDNameForMenu(docShare.getOtherID())));
-		sendSelection.setImageDescriptor(getTopMenuImageDescriptor());
 		items.add(new ActionContributionItem(sendSelection));
-		items.add(new Separator());
 		final IAction stopEditorShare = new Action() {
 			public void run() {
 				docShare.stopShare();
