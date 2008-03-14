@@ -68,7 +68,7 @@ public class ShareReceiversECFStart implements IECFStart {
 					} catch (ECFException e) {
 						Activator.getDefault().getLog().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO, NLS.bind(Messages.ShareReceiversECFStart_STATUS_SCREENCAPTURESHARE_NOT_CREATED, container.getID()), null));
 					}
-				} else if (event instanceof IContainerDisconnectedEvent) {
+				} else if (event instanceof IContainerDisconnectedEvent || event instanceof IContainerEjectedEvent) {
 					// disconnected
 					URLShare.removeURLShare(containerID);
 					ViewShare.removeViewShare(containerID);

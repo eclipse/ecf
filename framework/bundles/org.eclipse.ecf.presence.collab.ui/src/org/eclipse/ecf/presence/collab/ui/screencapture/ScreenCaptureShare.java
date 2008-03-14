@@ -12,17 +12,13 @@
 package org.eclipse.ecf.presence.collab.ui.screencapture;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Hashtable;
-import java.util.Map;
-
+import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.internal.presence.collab.ui.Messages;
 import org.eclipse.ecf.presence.collab.ui.AbstractCollabShare;
-import org.eclipse.ecf.ui.screencapture.ImageWrapper;
-import org.eclipse.ecf.ui.screencapture.ScreenCaptureUtil;
-import org.eclipse.ecf.ui.screencapture.ShowImageShell;
+import org.eclipse.ecf.ui.screencapture.*;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -54,34 +50,49 @@ public class ScreenCaptureShare extends AbstractCollabShare {
 		super(adapter);
 	}
 
-	ShowImageShell showImageShell = null;
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.datashare.AbstractShare#dispose()
+	 */
+	public synchronized void dispose() {
+		super.dispose();
+		shells.clear();
+	}
+
+	Map shells = new HashMap();
 
 	protected void handleScreenCaptureStart(final ID id, final String fromUser, final ImageWrapper imageWrapper) {
-		Display.getDefault().asyncExec(new Runnable() {
+		final Display defaultDisplay = Display.getDefault();
+		defaultDisplay.asyncExec(new Runnable() {
 			public void run() {
+				ShowImageShell showImageShell = (ShowImageShell) shells.get(id);
 				if (showImageShell == null) {
-					showImageShell = new ShowImageShell(Display.getDefault(), id, imageWrapper, new DisposeListener() {
+					showImageShell = new ShowImageShell(defaultDisplay, id, new DisposeListener() {
 						public void widgetDisposed(DisposeEvent e) {
-							showImageShell = null;
+							shells.remove(id);
 						}
 					});
-					showImageShell.setText(NLS.bind(Messages.ScreenCaptureShare_SCREEN_CAPTURE_RECEIVE_TITLE, fromUser));
-					showImageShell.open();
+					shells.put(id, showImageShell);
 				}
+				showImageShell.initialize(NLS.bind(Messages.ScreenCaptureShare_SCREEN_CAPTURE_RECEIVE_TITLE, fromUser), imageWrapper);
+				showImageShell.open();
 			}
 		});
 	}
 
 	protected void handleScreenCaptureData(final ID id, final byte[] data, final Boolean done) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				if (showImageShell != null && showImageShell.getSenderID().equals(id)) {
-					showImageShell.addData(data);
-					if (done.booleanValue())
-						showImageShell.showImage();
-				}
+		final ShowImageShell showImageShell = (ShowImageShell) shells.get(id);
+		if (showImageShell != null) {
+			final Display display = showImageShell.getDisplay();
+			if (display != null) {
+				display.asyncExec(new Runnable() {
+					public void run() {
+						showImageShell.addData(data);
+						if (done.booleanValue())
+							showImageShell.showImage();
+					}
+				});
 			}
-		});
+		}
 	}
 
 	public void sendImage(final ID senderID, final String senderuser, final ID toID, ImageData imageData) {
