@@ -36,9 +36,17 @@ public abstract class AbstractShare {
 		}
 	};
 
+	private void getOrCreateChannel(IChannelContainerAdapter containerAdapter, ID channelID, Map options) throws ECFException {
+		if (channelID == null)
+			channelID = IDFactory.getDefault().createStringID(this.getClass().getName());
+		channel = containerAdapter.getChannel(channelID);
+		if (channel == null)
+			channel = containerAdapter.createChannel(channelID, listener, options);
+	}
+
 	public AbstractShare(IChannelContainerAdapter adapter) throws ECFException {
 		Assert.isNotNull(adapter);
-		channel = adapter.createChannel(IDFactory.getDefault().createStringID(this.getClass().getName()), listener, null);
+		getOrCreateChannel(adapter, null, null);
 	}
 
 	public AbstractShare(IChannelContainerAdapter adapter, ID channelID) throws ECFException {
@@ -48,7 +56,7 @@ public abstract class AbstractShare {
 	public AbstractShare(IChannelContainerAdapter adapter, ID channelID, Map options) throws ECFException {
 		Assert.isNotNull(adapter);
 		Assert.isNotNull(channelID);
-		channel = adapter.createChannel(channelID, listener, options);
+		getOrCreateChannel(adapter, channelID, options);
 	}
 
 	/**
