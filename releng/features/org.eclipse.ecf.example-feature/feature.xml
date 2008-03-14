@@ -47,18 +47,18 @@
       <import plugin="org.eclipse.ecf.server.generic"/>
       <import plugin="org.eclipse.ecf.datashare"/>
       <import plugin="org.eclipse.ecf.provider.datashare"/>
-      <import plugin="org.eclipse.ecf" version="1.3.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.discovery" version="2.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.discovery.ui" version="2.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.remoteservice" version="1.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.examples.remoteservices.common" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.ui" version="1.3.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ecf"/>
+      <import plugin="org.eclipse.ecf.discovery"/>
+      <import plugin="org.eclipse.ecf.discovery.ui"/>
+      <import plugin="org.eclipse.ecf.remoteservice"/>
+      <import plugin="org.eclipse.ecf.examples.remoteservices.common"/>
+      <import plugin="org.eclipse.ecf.ui"/>
       <import plugin="org.eclipse.update.ui"/>
-      <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.equinox.common"/>
-      <import plugin="org.eclipse.equinox.app"/>
       <import plugin="javax.servlet"/>
       <import plugin="org.eclipse.osgi.services"/>
+      <import plugin="org.eclipse.ecf.remoteservice.ui"/>
+      <import plugin="org.eclipse.equinox.app"/>
    </requires>
 
    <plugin
