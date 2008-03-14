@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -133,9 +134,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 				localGUI = null;
 			}
 		}
-		if (showImageShell != null) {
-			showImageShell.close();
-		}
+		shells.clear();
 		if (sharedObjectEventListener != null) {
 			sharedObjectEventListener = null;
 		}
@@ -534,36 +533,41 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	ShowImageShell showImageShell = null;
+	Map shells = new HashMap();
 
 	protected void handleShowImageStart(final ID id, final String fromUser, final ImageWrapper imageWrapper) {
 		final Display display = localGUI.getTextControl().getDisplay();
 		display.asyncExec(new Runnable() {
 			public void run() {
+				ShowImageShell showImageShell = (ShowImageShell) shells.get(id);
 				if (showImageShell == null) {
-					showImageShell = new ShowImageShell(display, id, imageWrapper, new DisposeListener() {
+					showImageShell = new ShowImageShell(display, id, new DisposeListener() {
 						public void widgetDisposed(DisposeEvent e) {
-							showImageShell = null;
+							shells.remove(id);
 						}
 					});
-					showImageShell.setText(Messages.EclipseCollabSharedObject_SCREEN_CAPTURE_FROM + fromUser);
-					showImageShell.open();
+					shells.put(id, showImageShell);
 				}
+				showImageShell.initialize(Messages.EclipseCollabSharedObject_SCREEN_CAPTURE_FROM + fromUser, imageWrapper);
+				showImageShell.open();
 			}
 		});
 	}
 
 	protected void handleShowImageData(final ID id, final byte[] data, final Boolean done) {
-		final Display display = localGUI.getTextControl().getDisplay();
-		display.asyncExec(new Runnable() {
-			public void run() {
-				if (showImageShell != null && showImageShell.getSenderID().equals(id)) {
-					showImageShell.addData(data);
-					if (done.booleanValue())
-						showImageShell.showImage();
-				}
+		final ShowImageShell showImageShell = (ShowImageShell) shells.get(id);
+		if (showImageShell != null) {
+			final Display display = showImageShell.getDisplay();
+			if (display != null) {
+				display.asyncExec(new Runnable() {
+					public void run() {
+						showImageShell.addData(data);
+						if (done.booleanValue())
+							showImageShell.showImage();
+					}
+				});
 			}
-		});
+		}
 	}
 
 	public void sendShowTextMsg(String msg) {
