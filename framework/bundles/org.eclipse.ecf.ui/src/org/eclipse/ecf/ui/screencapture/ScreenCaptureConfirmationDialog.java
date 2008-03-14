@@ -20,9 +20,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
 public class ScreenCaptureConfirmationDialog extends Dialog {
@@ -62,30 +61,15 @@ public class ScreenCaptureConfirmationDialog extends Dialog {
 	}
 
 	protected Control createDialogArea(Composite parent) {
-		parent = (Composite) super.createDialogArea(parent);
 		final Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		composite.setLayout(new FillLayout());
+		composite.setLayout(new GridLayout());
+		composite.setLayoutData(new GridData(width, height));
 		composite.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				e.gc.drawImage(image, 0, 0);
 			}
 		});
-		return parent;
-	}
-
-	protected Point getInitialSize() {
-		final Point point = super.getInitialSize();
-		if (point.x < width) {
-			if (point.y < height) {
-				return new Point(width, height);
-			}
-			return new Point(width, point.y);
-		}
-		if (point.y < height) {
-			return new Point(point.x, height);
-		}
-		return new Point(point.x, point.y);
+		return composite;
 	}
 
 	public boolean close() {

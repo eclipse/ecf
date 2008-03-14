@@ -52,20 +52,20 @@ public class ScreenCaptureJob extends UIJob {
 	public IStatus runInUIThread(IProgressMonitor monitor) {
 		final Display display = getDisplay();
 		final GC context = new GC(display);
-		final Image image = new Image(display, display.getBounds());
-		context.copyArea(image, 0, 0);
+		final Rectangle displayBounds = display.getBounds();
+		final Image image = new Image(display, displayBounds);
+		context.copyArea(image, displayBounds.x, displayBounds.y);
 		context.dispose();
 
 		final Shell shell = new Shell(display, SWT.NO_TRIM);
 		shell.setLayout(new FillLayout());
-		shell.setBounds(display.getBounds());
+		shell.setBounds(displayBounds);
 		final GC gc = new GC(shell);
 		shell.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				gc.drawImage(image, 0, 0);
 			}
 		});
-
 		shell.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.ESC)

@@ -17,6 +17,7 @@ import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -30,12 +31,9 @@ public class ShowImageShell {
 	ImageWrapper imageWrapper;
 	List imageData;
 
-	public ShowImageShell(Display display, ID senderID, ImageWrapper imageWrapper, final DisposeListener disposeListener) {
+	public ShowImageShell(Display display, ID senderID, final DisposeListener disposeListener) {
 		this.shell = new Shell(display);
 		this.senderID = senderID;
-		this.imageWrapper = imageWrapper;
-		this.shell.setBounds(0, 0, imageWrapper.width, imageWrapper.height);
-		this.imageData = new ArrayList();
 		this.shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				disposeListener.widgetDisposed(e);
@@ -46,12 +44,25 @@ public class ShowImageShell {
 		});
 	}
 
-	public void setText(String text) {
-		shell.setText(text);
+	public void initialize(String text, ImageWrapper iw) {
+		if (shell != null) {
+			shell.setText(text);
+			this.imageWrapper = iw;
+			Rectangle shellBounds = shell.getBounds();
+			this.shell.setBounds(shell.computeTrim(shellBounds.x, shellBounds.y, imageWrapper.width, imageWrapper.height));
+			this.imageData = new ArrayList();
+		}
 	}
 
 	public void open() {
-		shell.open();
+		if (shell != null)
+			shell.open();
+	}
+
+	public Display getDisplay() {
+		if (shell == null)
+			return null;
+		return shell.getDisplay();
 	}
 
 	public void close() {
