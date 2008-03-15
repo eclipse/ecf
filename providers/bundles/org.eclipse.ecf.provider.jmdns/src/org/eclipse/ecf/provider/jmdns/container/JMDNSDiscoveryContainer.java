@@ -409,7 +409,9 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		// Add URI scheme to props
 		URI location = serviceInfo.getLocation();
 		props.put(SCHEME_PROPERTY, location.getScheme());
-		final ServiceInfo si = new ServiceInfo(sID.getServiceTypeID().getInternal(), sID.getServiceName(), location.getPort(), serviceInfo.getPriority(), serviceInfo.getWeight(), props);
+		int priority = (serviceInfo.getPriority() == -1) ? 0 : serviceInfo.getPriority();
+		int weight = (serviceInfo.getWeight() == -1) ? 0 : serviceInfo.getWeight();
+		final ServiceInfo si = new ServiceInfo(sID.getServiceTypeID().getInternal(), sID.getServiceName(), location.getPort(), priority, weight, props);
 		return si;
 	}
 
