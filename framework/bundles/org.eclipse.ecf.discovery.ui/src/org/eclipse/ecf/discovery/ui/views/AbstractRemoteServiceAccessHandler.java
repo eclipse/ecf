@@ -113,28 +113,7 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 		return createID(getConnectNamespace(), getConnectID());
 	}
 
-	protected IContributionItem[] getContributionsForMatchingService() {
-		return getPrimaryContributionsForMatchingService();
-	}
-
-	private IContributionItem[] getPrimaryContributionsForMatchingService() {
-		// First get container manager...if we don't have one, then we're outta here
-		final List remoteServicesContainerAdapters = getRemoteServiceContainerAdapters();
-		// If we've got none, then we return 
-		if (remoteServicesContainerAdapters.size() == 0)
-			return NOT_AVAILABLE_CONTRIBUTION;
-		// If we've got one, then we do our thing
-		final List contributions = new ArrayList();
-		for (final Iterator i = remoteServicesContainerAdapters.iterator(); i.hasNext();) {
-			IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) i.next();
-			IContributionItem[] menuContributions = getContributionItemsForService(adapter);
-			if (menuContributions == null)
-				continue;
-			for (int j = 0; j < menuContributions.length; j++)
-				contributions.add(menuContributions[j]);
-		}
-		return (IContributionItem[]) contributions.toArray(new IContributionItem[] {});
-	}
+	protected abstract IContributionItem[] getContributionsForMatchingService();
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.ui.views.IServiceAccessHandler#getContributionsForService(org.eclipse.ecf.discovery.IServiceInfo)
@@ -148,7 +127,7 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 		return EMPTY_CONTRIBUTION;
 	}
 
-	protected IRemoteServiceReference[] getRemoteServiceReferences(IRemoteServiceContainerAdapter adapter) throws InvalidSyntaxException, IDCreateException {
+	protected IRemoteServiceReference[] getRemoteServiceReferencesForRemoteServiceAdapter(IRemoteServiceContainerAdapter adapter) throws InvalidSyntaxException, IDCreateException {
 		ID serviceID = null;
 		String serviceNamespace = getServiceNamespace();
 		String serviceid = getServiceID();
@@ -168,17 +147,12 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 		container.connect(connectTargetID, connectContext);
 	}
 
-	/**
-	 * @param adapter the IRemoteServiceContainerAdapter to use to lookup the {@link IRemoteServiceReference}.  Will not be <code>null</code>.
-	 * @return IContributionItem the menu contribution items to be added to the menu.  May be <code>null</code>.  If <code>null</code> then no item is added to the
-	 * menu.
-	 */
-	protected abstract IContributionItem[] getContributionItemsForService(final IRemoteServiceContainerAdapter adapter);
+	protected abstract IContributionItem[] getContributionItemsForRemoteServiceAdapter(final IRemoteServiceContainerAdapter adapter);
 
-	protected IContributionItem[] getConnectedContributions(final IContainer container) {
+	protected IContributionItem[] getContributionItemsForConnectedContainer(final IContainer container, final IRemoteServiceContainerAdapter adapter) {
 		// Add disconnect and separator
 		final List results = new ArrayList();
-		final IContributionItem[] serviceItem = getPrimaryContributionsForMatchingService();
+		final IContributionItem[] serviceItem = getContributionItemsForRemoteServiceAdapter(adapter);
 		if (serviceItem != null) {
 			for (int i = 0; i < serviceItem.length; i++)
 				results.add(serviceItem[i]);
