@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
 import java.util.StringTokenizer;
 import org.eclipse.jface.text.*;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
-import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 
 /**
  * Abstract class for representing ECF URL hyperlink detectors.  This class should be subclassed to 
@@ -33,8 +32,6 @@ public abstract class AbstractURLHyperlinkDetector extends org.eclipse.jface.tex
 	public static final String DEFAULT_ENDDELIMITERS = " \t\n\r\f<>"; //$NON-NLS-1$
 
 	String[] protocols = null;
-
-	URLHyperlinkDetector urlDetector = new URLHyperlinkDetector();
 
 	protected void setProtocols(String[] protocols) {
 		this.protocols = protocols;
