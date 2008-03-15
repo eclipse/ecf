@@ -16,8 +16,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.*;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
 
@@ -30,19 +29,18 @@ public class StartFileDownloadDialog extends InputDialog {
 	public String filename;
 	protected Text fileLocation;
 
-	static private IInputValidator inputValidator = new IInputValidator() {
-		public String isValid(String newText) {
-			try {
-				new URL(newText);
-				return null;
-			} catch (Exception e) {
-				return ("".equals(newText)) ? null : NLS.bind(Messages.getString("StartFileDownloadDialog.MalformedURLException"), newText); //$NON-NLS-1$ //$NON-NLS-2$
-			}
+	String filePath;
+
+	public StartFileDownloadDialog(Shell parentShell, String startURL) {
+		super(parentShell, Messages.getString("StartFileDownloadDialog.FileTransfer"), Messages.getString("StartFileDownloadDialog.Source"), startURL, null); //$NON-NLS-1$ //$NON-NLS-2$
+		filePath = System.getProperty("user.home"); //$NON-NLS-1$
+		if (Platform.getOS().startsWith("win")) { //$NON-NLS-1$
+			filePath = filePath + File.separator + "Desktop"; //$NON-NLS-1$
 		}
-	};
+	}
 
 	public StartFileDownloadDialog(Shell parentShell) {
-		super(parentShell, Messages.getString("StartFileDownloadDialog.FileTransfer"), Messages.getString("StartFileDownloadDialog.Source"), null, inputValidator); //$NON-NLS-1$ //$NON-NLS-2$
+		this(parentShell, null);
 	}
 
 	Text getInputText() {
@@ -57,7 +55,45 @@ public class StartFileDownloadDialog extends InputDialog {
 		Button okButton = getButton(IDialogConstants.OK_ID);
 		okButton.setText(Messages.getString("StartFileDownloadDialog.DOWNLOAD_BUTTON")); //$NON-NLS-1$
 		okButton.setToolTipText(Messages.getString("StartFileDownloadDialog.DOWNLOAD_BUTTON_TOOLTIP")); //$NON-NLS-1$
-		okButton.setEnabled(false);
+		URL url = validateURL();
+		if (url != null) {
+			String fileName = getFileNameFromURL();
+			if (!"".equals(fileName)) { //$NON-NLS-1$
+				fileLocation.setText(filePath + File.separator + fileName);
+				useridText.setFocus();
+			}
+			String user = url.getUserInfo();
+			if (user != null) {
+				useridText.setText(user);
+				passwordText.setFocus();
+			}
+			okButton.setEnabled(true);
+		} else
+			okButton.setEnabled(false);
+	}
+
+	URL validateURL() {
+		String text = getInputText().getText();
+		URL result = null;
+		try {
+			if (!"".equals(text)) { //$NON-NLS-1$
+				result = new URL(text);
+			}
+		} catch (Exception e) {
+			setErrorMessage((NLS.bind(Messages.getString("StartFileDownloadDialog.MalformedURLException"), text))); //$NON-NLS-1$
+			return null;
+		}
+		setErrorMessage(null);
+		return result;
+	}
+
+	String getFileNameFromURL() {
+		String scp = getInputText().getText();
+		String fileName = ""; //$NON-NLS-1$
+		if (scp != null && scp.length() > 0) {
+			fileName = scp.substring(scp.lastIndexOf('/') + 1);
+		}
+		return fileName;
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -69,30 +105,26 @@ public class StartFileDownloadDialog extends InputDialog {
 		label.setLayoutData(data);
 		label.setFont(parent.getFont());
 
-		String userhome = System.getProperty("user.home"); //$NON-NLS-1$
-		if (Platform.getOS().startsWith("win")) { //$NON-NLS-1$
-			userhome = userhome + File.separator + "Desktop"; //$NON-NLS-1$
-		}
-		final String path = userhome;
-
 		fileLocation = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		fileLocation.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		fileLocation.setText(path);
+		fileLocation.setText(filePath);
 		fileLocation.setSelection(fileLocation.getText().length());
 
 		Text text = getInputText();
+		text.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				validateURL();
+			}
+		});
+
 		text.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
 				// nothing
 			}
 
 			public void focusLost(FocusEvent e) {
-				String scp = ((Text) e.getSource()).getText();
-				String fileName = ""; //$NON-NLS-1$
-				if (scp != null && scp.length() > 0) {
-					fileName = scp.substring(scp.lastIndexOf('/') + 1);
-				}
-				fileLocation.setText(path + File.separator + fileName);
+				String fileName = getFileNameFromURL();
+				fileLocation.setText(filePath + File.separator + fileName);
 				fileLocation.setSelection(fileLocation.getText().length());
 			}
 		});
@@ -102,15 +134,11 @@ public class StartFileDownloadDialog extends InputDialog {
 		fileBrowse.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				if (event.type == SWT.Selection) {
-					String scp = getInputText().getText();
-					String fileName = ""; //$NON-NLS-1$
-					if (scp != null && scp.length() > 0) {
-						fileName = scp.substring(scp.lastIndexOf('/') + 1);
-					}
+					String fileName = getFileNameFromURL();
 					FileDialog fd = new FileDialog(fileBrowse.getShell(), SWT.SAVE);
 					fd.setText(Messages.getString("StartFileDownloadDialog.OutputFile")); //$NON-NLS-1$
 					fd.setFileName(fileName);
-					fd.setFilterPath(path);
+					fd.setFilterPath(filePath);
 					String fname = fd.open();
 					if (fname != null) {
 						fileLocation.setText(fname);
@@ -140,6 +168,7 @@ public class StartFileDownloadDialog extends InputDialog {
 		passwordText = new Text(composite, SWT.SINGLE | SWT.BORDER | SWT.PASSWORD);
 		passwordText.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 		applyDialogFont(composite);
+
 		return composite;
 	}
 

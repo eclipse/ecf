@@ -37,4 +37,15 @@
               icon="icons/transf_download.gif"/>
      </menuContribution>
    </extension>
+      <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.eclipse.ecf.internal.filetransfer.ui.hyperlink.SCPHyperlinkDetector"
+            id="org.eclipse.ecf.internal.filetransfer.ui.hyperlink.SCPHyperlinkDetector"
+            name="%SCPHyperlinkDetector"
+            targetId="org.eclipse.ui.DefaultTextEditor">
+      </hyperlinkDetector>
+   </extension>
+   
 </plugin>

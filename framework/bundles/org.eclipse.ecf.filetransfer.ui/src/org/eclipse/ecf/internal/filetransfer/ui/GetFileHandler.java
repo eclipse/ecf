@@ -54,12 +54,8 @@ public class GetFileHandler extends AbstractHandler {
 		updateTransferInView(shell, incoming);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-	 */
-	public Object execute(ExecutionEvent o) throws ExecutionException {
-		final Shell shell = HandlerUtil.getActiveShellChecked(o);
-		StartFileDownloadDialog dialog = new StartFileDownloadDialog(shell);
+	public void openStartFileDownloadDialog(final Shell shell, String url) {
+		StartFileDownloadDialog dialog = new StartFileDownloadDialog(shell, url);
 		if (dialog.open() == Window.OK) {
 			final String scp = dialog.getValue();
 			final String userid = dialog.userid;
@@ -109,6 +105,14 @@ public class GetFileHandler extends AbstractHandler {
 				}
 			}.schedule();
 		}
+
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+	 */
+	public Object execute(ExecutionEvent o) throws ExecutionException {
+		openStartFileDownloadDialog(HandlerUtil.getActiveShellChecked(o), null);
 		return null;
 	}
 
