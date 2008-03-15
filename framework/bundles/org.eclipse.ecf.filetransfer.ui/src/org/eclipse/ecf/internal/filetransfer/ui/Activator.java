@@ -10,6 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.filetransfer.ui;
 
+import java.io.File;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -21,9 +23,11 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.filetransfer.ui"; //$NON-NLS-1$
 
+	public static final String DOWNLOAD_PATH_PREFERENCE = "downloadpath"; //$NON-NLS-1$
+
 	// The shared instance
 	private static Activator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -37,6 +41,22 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		setPreferenceDefaults();
+	}
+
+	public String getDefaultDownloadPath() {
+		String defaultFilePath = System.getProperty("user.home"); //$NON-NLS-1$
+		if (Platform.getOS().startsWith("win")) { //$NON-NLS-1$
+			defaultFilePath = defaultFilePath + File.separator + "Desktop"; //$NON-NLS-1$
+		}
+		return defaultFilePath;
+	}
+
+	/**
+	 * 
+	 */
+	private void setPreferenceDefaults() {
+		getPreferenceStore().setDefault(DOWNLOAD_PATH_PREFERENCE, getDefaultDownloadPath());
 	}
 
 	/*

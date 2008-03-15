@@ -12,7 +12,6 @@ package org.eclipse.ecf.internal.filetransfer.ui;
 
 import java.io.File;
 import java.net.URL;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.*;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -33,10 +32,18 @@ public class StartFileDownloadDialog extends InputDialog {
 
 	public StartFileDownloadDialog(Shell parentShell, String startURL) {
 		super(parentShell, Messages.getString("StartFileDownloadDialog.FileTransfer"), Messages.getString("StartFileDownloadDialog.Source"), startURL, null); //$NON-NLS-1$ //$NON-NLS-2$
-		filePath = System.getProperty("user.home"); //$NON-NLS-1$
-		if (Platform.getOS().startsWith("win")) { //$NON-NLS-1$
-			filePath = filePath + File.separator + "Desktop"; //$NON-NLS-1$
+		filePath = Activator.getDefault().getPreferenceStore().getString(Activator.DOWNLOAD_PATH_PREFERENCE);
+		filePath = (filePath == null) ? "" : filePath; //$NON-NLS-1$
+	}
+
+	String getFullDownloadPath(String path, String fileName) {
+		if (fileName == null)
+			return filePath;
+		String result = filePath;
+		if (!result.endsWith(File.separator)) {
+			result = result + File.separator;
 		}
+		return result + fileName;
 	}
 
 	public StartFileDownloadDialog(Shell parentShell) {
@@ -59,7 +66,7 @@ public class StartFileDownloadDialog extends InputDialog {
 		if (url != null) {
 			String fileName = getFileNameFromURL();
 			if (!"".equals(fileName)) { //$NON-NLS-1$
-				fileLocation.setText(filePath + File.separator + fileName);
+				fileLocation.setText(getFullDownloadPath(filePath, fileName));
 				useridText.setFocus();
 			}
 			String user = url.getUserInfo();
@@ -96,6 +103,11 @@ public class StartFileDownloadDialog extends InputDialog {
 		return fileName;
 	}
 
+	String getCurrentDirectory() {
+		String currentDirectory = fileLocation.getText();
+		return currentDirectory.substring(0, currentDirectory.lastIndexOf(File.separator));
+	}
+
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite) super.createDialogArea(parent);
 		Label label = new Label(composite, SWT.WRAP);
@@ -123,8 +135,7 @@ public class StartFileDownloadDialog extends InputDialog {
 			}
 
 			public void focusLost(FocusEvent e) {
-				String fileName = getFileNameFromURL();
-				fileLocation.setText(filePath + File.separator + fileName);
+				fileLocation.setText(getFullDownloadPath(getCurrentDirectory(), getFileNameFromURL()));
 				fileLocation.setSelection(fileLocation.getText().length());
 			}
 		});
@@ -138,7 +149,7 @@ public class StartFileDownloadDialog extends InputDialog {
 					FileDialog fd = new FileDialog(fileBrowse.getShell(), SWT.SAVE);
 					fd.setText(Messages.getString("StartFileDownloadDialog.OutputFile")); //$NON-NLS-1$
 					fd.setFileName(fileName);
-					fd.setFilterPath(filePath);
+					fd.setFilterPath(getCurrentDirectory());
 					String fname = fd.open();
 					if (fname != null) {
 						fileLocation.setText(fname);
