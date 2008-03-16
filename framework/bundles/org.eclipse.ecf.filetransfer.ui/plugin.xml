@@ -54,9 +54,6 @@
             class="org.eclipse.ecf.internal.filetransfer.ui.preferences.TransferPreferencePage"
             id="org.eclipse.ecf.filetransfer.ui.preferences"
             name="File Transfer">
-         <keywordReference
-               id="org.eclipse.ecf.example.collab.ui.keywords">
-         </keywordReference>
       </page>
    </extension>
    
