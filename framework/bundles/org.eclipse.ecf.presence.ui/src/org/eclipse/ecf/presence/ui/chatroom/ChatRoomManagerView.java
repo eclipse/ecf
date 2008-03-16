@@ -772,7 +772,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 					itemSelected = (CTabItem) e.item;
 					if (itemSelected == chatRoomTab.tabItem)
 						makeTabItemNormal();
-					if (itemSelected == rootChannelTab.tabItem)
+					if (rootChannelTab != null && itemSelected == rootChannelTab.tabItem)
 						rootChannelTab.makeTabItemNormal();
 				}
 			});
@@ -1112,7 +1112,8 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			handleTextInput(inputText.getText());
 		clearInput();
 		scrollToEnd(getRootTextOutput());
-		rootChannelTab.makeTabItemNormal();
+		if (rootChannelTab != null)
+			rootChannelTab.makeTabItemNormal();
 	}
 
 	protected void handleKeyPressed(KeyEvent evt) {
@@ -1200,9 +1201,10 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			public void run() {
 				if (rootDisposed)
 					return;
-				appendText(rootChannelTab, getRootTextOutput(), new ChatLine(messageBody, new ChatRoomParticipant(fromID)));
-				if (rootChannelTab != null)
+				if (rootChannelTab != null) {
+					appendText(rootChannelTab, getRootTextOutput(), new ChatLine(messageBody, new ChatRoomParticipant(fromID)));
 					rootChannelTab.makeTabItemBold();
+				}
 			}
 		});
 	}
