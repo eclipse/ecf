@@ -22,6 +22,8 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -31,8 +33,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class JoinGroupWizardPage extends WizardPage {
 
-	protected static final String CLASSNAME = JoinGroupWizardPage.class
-			.getName();
+	protected static final String CLASSNAME = JoinGroupWizardPage.class.getName();
 
 	protected static final String USER_NAME_SYSTEM_PROPERTY = "user.name"; //$NON-NLS-1$
 
@@ -48,21 +49,19 @@ public class JoinGroupWizardPage extends WizardPage {
 	private static final String DIALOG_SETTINGS = CLASSNAME;
 
 	private String connectID = null;
-	
+
 	public JoinGroupWizardPage() {
 		super("wizardPage"); //$NON-NLS-1$
 		setTitle(PAGE_TITLE);
 		setDescription(PAGE_DESCRIPTION);
-		setImageDescriptor(SharedImages
-				.getImageDescriptor(SharedImages.IMG_COLLABORATION_WIZARD));
+		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_COLLABORATION_WIZARD));
 	}
 
 	public JoinGroupWizardPage(String connectID) {
 		super("wizardPage"); //$NON-NLS-1$
 		setTitle(PAGE_TITLE);
 		setDescription(PAGE_DESCRIPTION);
-		setImageDescriptor(SharedImages
-				.getImageDescriptor(SharedImages.IMG_COLLABORATION_WIZARD));
+		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_COLLABORATION_WIZARD));
 		this.connectID = connectID;
 	}
 
@@ -75,19 +74,18 @@ public class JoinGroupWizardPage extends WizardPage {
 	protected List containerDescriptions = new ArrayList();
 	protected String urlPrefix = ""; //$NON-NLS-1$
 
-// private Button autoLogin = null;
-	private boolean autoLoginFlag = false;
+	// private Button autoLogin = null;
+	private final boolean autoLoginFlag = false;
 
 	public boolean getAutoLoginFlag() {
 		return autoLoginFlag;
 	}
 
 	protected void fillCombo() {
-		ContainerTypeDescription desc = ContainerFactory.getDefault()
-				.getDescriptionByName(DEFAULT_CLIENT);
+		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(DEFAULT_CLIENT);
 		if (desc != null) {
-			String name = desc.getName();
-			String description = desc.getDescription();
+			final String name = desc.getName();
+			final String description = desc.getDescription();
 			combo.add(description + " - " + name); //$NON-NLS-1$
 			containerDescriptions.add(desc);
 			combo.select(0);
@@ -95,7 +93,7 @@ public class JoinGroupWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NONE);
+		final Composite container = new Composite(parent, SWT.NONE);
 		final GridLayout gridLayout = new GridLayout(2, false);
 		container.setLayout(gridLayout);
 		setControl(container);
@@ -104,20 +102,19 @@ public class JoinGroupWizardPage extends WizardPage {
 		label_4.setText(Messages.JoinGroupWizardPage_PROTOCOL);
 
 		combo = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
-		GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+		final GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
 		combo.setLayoutData(data);
 
-		Label groupIDLabel = new Label(container, SWT.NONE);
+		final Label groupIDLabel = new Label(container, SWT.NONE);
 		groupIDLabel.setText(JOINGROUP_FIELDNAME);
 
 		joinGroupText = new Text(container, SWT.BORDER);
 		joinGroupText.setText(default_url);
 		joinGroupText.setLayoutData(data);
 
-		Label exampleLabel = new Label(container, SWT.NONE);
+		final Label exampleLabel = new Label(container, SWT.NONE);
 		exampleLabel.setText(template_url);
-		exampleLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, false,
-				false, 2, 1));
+		exampleLabel.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, false, false, 2, 1));
 
 		joinGroupText.setLayoutData(data);
 		joinGroupText.addFocusListener(new FocusAdapter() {
@@ -126,7 +123,7 @@ public class JoinGroupWizardPage extends WizardPage {
 			}
 		});
 
-		Label nicknameLabel = new Label(container, SWT.NONE);
+		final Label nicknameLabel = new Label(container, SWT.NONE);
 		nicknameLabel.setLayoutData(new GridData());
 		nicknameLabel.setText(NICKNAME_FIELDNAME);
 
@@ -138,6 +135,12 @@ public class JoinGroupWizardPage extends WizardPage {
 				nicknameText.selectAll();
 			}
 		});
+		nicknameText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				validateNicknameText();
+			}
+		});
+
 		fillCombo();
 		restoreDialogSettings();
 		if (connectID != null) {
@@ -145,15 +148,25 @@ public class JoinGroupWizardPage extends WizardPage {
 		}
 	}
 
+	private void validateNicknameText() {
+		final String nickname = nicknameText.getText();
+		if ("".equals(nickname)) { //$NON-NLS-1$
+			setErrorMessage(Messages.JoinGroupWizardPage_NICKNAME_CANNOT_BE_EMPTY);
+			setPageComplete(false);
+		} else {
+			setErrorMessage(null);
+			setPageComplete(true);
+		}
+	}
+
 	private void restoreDialogSettings() {
-		IDialogSettings dialogSettings = getDialogSettings();
+		final IDialogSettings dialogSettings = getDialogSettings();
 		if (dialogSettings != null) {
-			IDialogSettings pageSettings = dialogSettings
-					.getSection(DIALOG_SETTINGS);
+			final IDialogSettings pageSettings = dialogSettings.getSection(DIALOG_SETTINGS);
 			if (pageSettings != null) {
 				String strVal = pageSettings.get("provider"); //$NON-NLS-1$
 				if (strVal != null) {
-					String[] items = combo.getItems();
+					final String[] items = combo.getItems();
 					for (int i = 0; i < items.length; ++i)
 						if (strVal.equals(items[i])) {
 							break;
@@ -172,16 +185,15 @@ public class JoinGroupWizardPage extends WizardPage {
 	}
 
 	public void saveDialogSettings() {
-		IDialogSettings dialogSettings = getDialogSettings();
+		final IDialogSettings dialogSettings = getDialogSettings();
 		if (dialogSettings != null) {
-			IDialogSettings pageSettings = dialogSettings
-					.getSection(DIALOG_SETTINGS);
+			IDialogSettings pageSettings = dialogSettings.getSection(DIALOG_SETTINGS);
 			if (pageSettings == null)
 				pageSettings = dialogSettings.addNewSection(DIALOG_SETTINGS);
 
 			pageSettings.put("url", joinGroupText.getText()); //$NON-NLS-1$
 			pageSettings.put("nickname", nicknameText.getText()); //$NON-NLS-1$
-			int i = combo.getSelectionIndex();
+			final int i = combo.getSelectionIndex();
 			if (i >= 0)
 				pageSettings.put("provider", combo.getItem(i)); //$NON-NLS-1$
 		}
@@ -202,12 +214,11 @@ public class JoinGroupWizardPage extends WizardPage {
 	}
 
 	public String getContainerType() {
-		int index = combo.getSelectionIndex();
+		final int index = combo.getSelectionIndex();
 		if (index == -1)
 			return null;
 		else {
-			ContainerTypeDescription desc = (ContainerTypeDescription) containerDescriptions
-					.get(index);
+			final ContainerTypeDescription desc = (ContainerTypeDescription) containerDescriptions.get(index);
 			return desc.getName();
 		}
 	}

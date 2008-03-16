@@ -79,6 +79,7 @@ public class Messages extends NLS {
 	public static String JoinGroupWizardPage_DEFAULT_SERVER;
 	public static String JoinGroupWizardPage_GROUPID;
 	public static String JoinGroupWizardPage_NICKNAME;
+	public static String JoinGroupWizardPage_NICKNAME_CANNOT_BE_EMPTY;
 	public static String JoinGroupWizardPage_PROTOCOL;
 	public static String JoinGroupWizardPage_TEMPLATE;
 	public static String LineChatClientView_CHANGED_NAME_TO;
