@@ -78,7 +78,7 @@ discovery view&apos;s context menu for accessing/invoking a remote service.
    &lt;extension
          point=&quot;org.eclipse.ecf.discovery.ui.serviceAccessHandler&quot;&gt;
       &lt;serviceAccessHandler
-            class=&quot;org.eclipse.ecf.discovery.ui.HttpServiceAccessHandler&quot;&gt;
+            class=&quot;org.eclipse.ecf.discovery.ui.UrlServiceAccessHandler&quot;&gt;
       &lt;/serviceAccessHandler&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;

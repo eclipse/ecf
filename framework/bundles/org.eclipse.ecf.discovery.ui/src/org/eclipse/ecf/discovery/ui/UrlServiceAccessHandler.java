@@ -31,14 +31,14 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
  * This is a service access handler for handling the http/http service.  The associated properties
  * for this service are documented at <a href="http://www.dns-sd.org/ServiceTypes.html">http://www.dns-sd.org/ServiceTypes.html</a>.
  */
-public class HttpServiceAccessHandler implements IServiceAccessHandler {
+public class UrlServiceAccessHandler implements IServiceAccessHandler {
 
 	private static final String RFC2782_PATH = "path"; //$NON-NLS-1$
 	//private static final String RFC2782_USERNAME = "u"; //$NON-NLS-1$
 	//private static final String RFC2782_PASSWORD = "p"; //$NON-NLS-1$
 	static final IContributionItem[] EMPTY_CONTRIBUTION = {};
 
-	public HttpServiceAccessHandler() {
+	public UrlServiceAccessHandler() {
 		// nothing to do
 	}
 
@@ -50,6 +50,8 @@ public class HttpServiceAccessHandler implements IServiceAccessHandler {
 			protocol = "http"; //$NON-NLS-1$
 		else if (serviceTypes.size() == 1 && serviceTypes.contains("https")) //$NON-NLS-1$
 			protocol = "https"; //$NON-NLS-1$
+		else if (serviceTypes.size() == 1 && serviceTypes.contains("ftp")) //$NON-NLS-1$
+			protocol = "ftp"; //$NON-NLS-1$
 		if (protocol == null)
 			return EMPTY_CONTRIBUTION;
 		URI location = serviceInfo.getLocation();

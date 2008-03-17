@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.ecf.discovery.ui.serviceAccessHandler">
       <serviceAccessHandler
-            class="org.eclipse.ecf.discovery.ui.HttpServiceAccessHandler">
+            class="org.eclipse.ecf.discovery.ui.UrlServiceAccessHandler">
       </serviceAccessHandler>
    </extension>
    <extension
