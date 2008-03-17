@@ -59,8 +59,10 @@ public class HttpServiceAccessHandler implements IServiceAccessHandler {
 			buf.append(":").append(location.getPort()); //$NON-NLS-1$ 
 		IServiceProperties svcProps = serviceInfo.getServiceProperties();
 		final String path = svcProps.getPropertyString(RFC2782_PATH);
-		if (path != null)
+		if (path != null) {
+			buf.append("/"); //$NON-NLS-1$
 			buf.append(path);
+		}
 		final String urlString = buf.toString();
 		//final String username = svcProps.getPropertyString(RFC2782_USERNAME);
 		//final String password = svcProps.getPropertyString(RFC2782_PASSWORD);
