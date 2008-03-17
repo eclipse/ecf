@@ -55,10 +55,13 @@ public class UpdateSiteServiceAccessHandler implements IServiceAccessHandler {
 		buf.append("://").append(location.getHost()); //$NON-NLS-1$
 		if (location.getPort() != -1)
 			buf.append(":").append(location.getPort()); //$NON-NLS-1$ 
+		buf.append("/"); //$NON-NLS-1$
 		final String path = serviceInfo.getServiceProperties().getPropertyString(PATH);
-		final String name = serviceInfo.getServiceProperties().getPropertyString(NAME);
-		if (path != null)
+		if (path != null) {
+			buf.append("/"); //$NON-NLS-1$
 			buf.append(path);
+		}
+		final String name = serviceInfo.getServiceProperties().getPropertyString(NAME);
 		final String urlString = buf.toString();
 		final IAction openUpdateSiteAction = new Action() {
 			public void run() {
