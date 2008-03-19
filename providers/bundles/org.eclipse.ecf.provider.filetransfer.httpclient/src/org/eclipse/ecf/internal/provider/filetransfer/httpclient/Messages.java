@@ -36,6 +36,7 @@ public class Messages extends NLS {
 	public static String SslProtocolSocketFactory_SSLContext_Instance;
 	public static String SslProtocolSocketFactory_Status_Create_Error;
 	public static String HttpClientRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO;
+	public static String HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE;
 	public static String HttpClientRetrieveFileTransfer_EXCEPITION_INVALID_LAST_MODIFIED_FROM_SERVER;
 	public static String HttpClientRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS;
 	public static String HttpClientRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START;

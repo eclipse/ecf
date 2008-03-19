@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -257,6 +258,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				getResponseHeaderValues();
 				setInputStream(getMethod.getResponseBodyAsStream());
 				fireReceiveStartEvent();
+     } else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+       getMethod.releaseConnection();
+       throw new FileNotFoundException(urlString);
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.getResponseBody();
 				getMethod.releaseConnection();
@@ -266,7 +270,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
 			} else {
 				getMethod.releaseConnection();
-				throw new IOException(NLS.bind("HttpClient connection error response code {0}.", new Integer(code))); //$NON-NLS-1$
+				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code))); 
 			}
 		} catch (final Exception e) {
 			throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e);
@@ -402,6 +406,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				setInputStream(getMethod.getResponseBodyAsStream());
 				this.paused = false;
 				fireReceiveResumedEvent();
+     } else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+       getMethod.releaseConnection();
+       throw new FileNotFoundException(urlString);
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.getResponseBody();
 				// login or reauthenticate due to an expired session
@@ -412,7 +419,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
 			} else {
 				getMethod.releaseConnection();
-				throw new IOException(NLS.bind("Httpclient connection error response code {0}.", new Integer(code))); //$NON-NLS-1$
+				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code))); 
 			}
 			return true;
 		} catch (final Exception e) {
