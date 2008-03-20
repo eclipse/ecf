@@ -62,7 +62,7 @@ public class UrlServiceAccessHandler implements IServiceAccessHandler {
 		IServiceProperties svcProps = serviceInfo.getServiceProperties();
 		final String path = svcProps.getPropertyString(RFC2782_PATH);
 		if (path != null) {
-			if (path.startsWith("/"))buf.append("/"); //$NON-NLS-1$ //$NON-NLS-2$
+			if (!path.startsWith("/"))buf.append("/"); //$NON-NLS-1$ //$NON-NLS-2$
 			buf.append(path);
 		}
 		final String urlString = buf.toString();
