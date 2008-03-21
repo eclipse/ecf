@@ -70,8 +70,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected IFileID fileid = null;
 
-	protected long lastModifiedTime = 0L;
-
 	protected JREProxyHelper proxyHelper = null;
 
 	public HttpClientRetrieveFileTransfer(HttpClient httpClient) {
@@ -206,7 +204,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			throw new IOException(Messages.HttpClientRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST);
 		Header lastModifiedHeader = getMethod.getResponseHeader(LAST_MODIFIED_HEADER);
 		if (lastModifiedHeader != null) {
-			lastModifiedTime = getLastModifiedTimeFromHeader();
+			setLastModifiedTime(getLastModifiedTimeFromHeader());
 		}
 		setFileLength(getMethod.getResponseContentLength());
 		fileid = new FileTransferID(getRetrieveNamespace(), getRemoteFileURL());
