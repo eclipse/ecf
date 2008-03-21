@@ -18,7 +18,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
  * {@link IIncomingFileTransfer} instances
  * 
  */
-public interface IIncomingFileTransferReceiveStartEvent extends IFileTransferEvent {
+public interface IIncomingFileTransferReceiveStartEvent extends IIncomingFileTransferEvent {
 
 	/**
 	 * Get IFileID for incoming file

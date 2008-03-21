@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer;
 
+import java.util.Date;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 
 /**
@@ -53,4 +54,11 @@ public interface IIncomingFileTransfer extends IFileTransfer {
 	 */
 	public String getRemoteFileName();
 
+	/**
+	 * Obtains the timestamp that reflects the time when the remote file was last
+	 * modified if possible. 
+	 * @return The time the remote file was last modified or <code>null</code> if that
+	 * information was not available.
+	 */
+	public Date getRemoteLastModified();
 }
