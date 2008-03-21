@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.provider.bittorrent;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.eclipse.bittorrent.IPieceProgressListener;
 import org.eclipse.bittorrent.ITorrentStateListener;
@@ -208,6 +209,14 @@ final class TorrentFileTransfer implements IFileTransferPausable, IFileTransferR
 		if (!torrent.getTorrentFile().isMultiFile()) {
 			return torrent.getTorrentFile().getFilenames()[0];
 		}
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getRemoteLastModified()
+	 */
+	public Date getRemoteLastModified() {
+		// Not supported
 		return null;
 	}
 

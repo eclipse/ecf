@@ -176,6 +176,10 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 				throw new UnsupportedOperationException(BitTorrentMessages.BitTorrentContainer_CannotWriteToStream);
 			}
 
+			public IIncomingFileTransfer getSource() {
+				return transfer;
+			}
+
 		});
 	}
 
