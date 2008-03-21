@@ -35,8 +35,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	protected URLConnection urlConnection;
 
-	protected long lastModifiedTime = 0L;
-
 	protected int httpVersion = 1;
 
 	protected int responseCode = -1;
@@ -144,7 +142,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			throw new ConnectException(Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
 		if (getResponseCode() == -1)
 			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE);
-		lastModifiedTime = urlConnection.getLastModified();
+		setLastModifiedTime(urlConnection.getLastModified());
 		setFileLength(urlConnection.getContentLength());
 
 		String contentDispositionValue = urlConnection.getHeaderField(HttpHelper.CONTENT_DISPOSITION_HEADER);

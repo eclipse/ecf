@@ -15,6 +15,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.Map;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
@@ -62,6 +63,8 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	protected Exception exception;
 
 	protected long fileLength = -1;
+
+	protected long lastModifiedTime = 0L;
 
 	protected Map options = null;
 
@@ -135,6 +138,10 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected void setFileLength(long length) {
 		fileLength = length;
+	}
+
+	protected void setLastModifiedTime(long timestamp) {
+		lastModifiedTime = timestamp;
 	}
 
 	protected Map getOptions() {
@@ -327,6 +334,13 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	}
 
 	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getRemoteLastModified()
+	 */
+	public Date getRemoteLastModified() {
+		return lastModifiedTime == 0L ? null : new Date(lastModifiedTime);
+	}
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#isDone()
 	 */
 	public boolean isDone() {
@@ -449,7 +463,14 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected void fireReceiveStartEvent() {
 		listener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
-			private static final long serialVersionUID = -59096575294481755L;
+			private static final long serialVersionUID = -513800598918052184L;
+
+			/* (non-Javadoc)
+			 * @see org.eclipse.ecf.filetransfer.events.IIncomingFileTransferEvent#getFileID()
+			 */
+			public IIncomingFileTransfer getSource() {
+				return AbstractRetrieveFileTransfer.this;
+			}
 
 			/* (non-Javadoc)
 			 * @see org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent#getFileID()
