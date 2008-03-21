@@ -36,10 +36,19 @@ import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 	JREProxyHelper proxyHelper = null;
+	String fileName;
 
 	public RetrieveFileTransfer() {
 		super();
 		proxyHelper = new JREProxyHelper();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
+	 */
+	public String getRemoteFileName()
+	{
+		return fileName;
 	}
 
 	/* (non-Javadoc)
@@ -64,9 +73,14 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 			final IFileInfo info = fileStore.fetchInfo();
 			setFileLength(info.getLength());
 			setInputStream(fileStore.openInputStream(0, null));
-
+			setLastModifiedTime(info.getLastModified());
+			fileName = info.getName();
 			listener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
-				private static final long serialVersionUID = 5693211912862160540L;
+				private static final long serialVersionUID = 590077256618427122L;
+
+				public IIncomingFileTransfer getSource() {
+					return RetrieveFileTransfer.this;
+				}
 
 				public IFileID getFileID() {
 					return remoteFileID;
