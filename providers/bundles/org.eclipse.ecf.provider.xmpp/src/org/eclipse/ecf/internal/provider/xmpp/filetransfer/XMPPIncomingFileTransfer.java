@@ -14,6 +14,7 @@ package org.eclipse.ecf.internal.provider.xmpp.filetransfer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -257,5 +258,13 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 	 */
 	public String getRemoteFileName() {
 		return fileName;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getRemoteLastModified()
+	 */
+	public Date getRemoteLastModified() {
+		// Not supported
+		return null;
 	}
 }
