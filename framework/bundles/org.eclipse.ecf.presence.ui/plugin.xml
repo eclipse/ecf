@@ -83,12 +83,27 @@
             class="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
             icon="icons/chats.gif"
             id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
-            name="Chats"/>
+            name="%Chats"/>
    </extension>
+
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="org.eclipse.ecf.ui.perspective.communications">
+         <viewShortcut id="org.eclipse.ecf.presence.ui.MultiRosterView"/>
+         <viewShortcut id="org.eclipse.ecf.presence.ui.MessagesView"/>
+         <viewShortcut id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"/>
+         <showInPart id="org.eclipse.ecf.presence.ui.MultiRosterView"/>
+         <showInPart id="org.eclipse.ecf.presence.ui.MessagesView"/>
+         <showInPart id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"/>
+      </perspectiveExtension>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ecf.ui.perspective.communications">
+         <!--
          <view
                id="org.eclipse.ecf.presence.ui.MultiRosterView"
                relationship="stack"
@@ -107,6 +122,7 @@
                relative="org.eclipse.ui.views.ProblemView"
                visible="true">
          </view>
+         -->
       </perspectiveExtension>
    </extension>
     <extension
