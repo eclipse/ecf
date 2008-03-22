@@ -550,15 +550,15 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			/* (non-Javadoc)
 			 * @see org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent#receive(java.io.File)
 			 */
-			public IIncomingFileTransfer receive(File localFileToSave) throws IOException {
-				return receive(localFileToSave, null);
+			public IIncomingFileTransfer receive(File localFileToSave, boolean append) throws IOException {
+				return receive(localFileToSave, null, append);
 			}
 
 			/* (non-Javadoc)
 			 * @see org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent#receive(java.io.File, org.eclipse.ecf.filetransfer.FileTransferJob)
 			 */
-			public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob) throws IOException {
-				setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
+			public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob, boolean append) throws IOException {
+				setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave.getName(), append)));
 				setupAndScheduleJob(fileTransferJob);
 				return AbstractRetrieveFileTransfer.this;
 			}
