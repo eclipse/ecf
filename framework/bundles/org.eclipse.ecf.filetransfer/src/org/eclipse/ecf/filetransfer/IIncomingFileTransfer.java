@@ -50,7 +50,7 @@ public interface IIncomingFileTransfer extends IFileTransfer {
 	 *
 	 * @return The name of the remote file or <code>null</code> if no such name can be determined.
 	 * 
-	 * @since 2.0.0 milestone 6
+	 * @since 2.0
 	 */
 	public String getRemoteFileName();
 
@@ -59,6 +59,7 @@ public interface IIncomingFileTransfer extends IFileTransfer {
 	 * modified if possible. 
 	 * @return The time the remote file was last modified or <code>null</code> if that
 	 * information was not available.
+	 * @since 2.0
 	 */
 	public Date getRemoteLastModified();
 }

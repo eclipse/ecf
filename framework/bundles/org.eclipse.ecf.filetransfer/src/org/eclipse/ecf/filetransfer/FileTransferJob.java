@@ -37,7 +37,7 @@ import org.eclipse.ecf.internal.filetransfer.Messages;
  * MyFileTransferJob myJob = new MyFileTransferJob("myname");
  * incomingfiletransfer = event.receive(outputstream,myJob);
  * </pre>
- * @since 2.0.0 milestone 6
+ * @since 2.0
  */
 public class FileTransferJob extends Job {
 

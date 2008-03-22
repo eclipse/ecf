@@ -86,7 +86,7 @@ public interface IFileTransfer extends IAdaptable, IIdentifiable {
 	 * -1 will be returned.  Note that if a {@link IFileRangeSpecification} is provided that the returned
 	 * file length is the expected file length of just the range retrieved (and not the entire file).
 	 *
-	 * @since 2.0.0 milestone 6
+	 * @since 2.0
 	 */
 	public long getFileLength();
 
