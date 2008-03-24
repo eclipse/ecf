@@ -9,7 +9,26 @@
             id="org.eclipse.ecf.provider.ui.bittorrent.connectWizard"
             name="BitTorrent"/>
    </extension>
-   
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            class="org.eclipse.ecf.internal.provider.bittorrent.ui.BitTorrentConnectWizard"
+            id="org.eclipse.ecf.provider.ui.bittorrent.connectWizard"
+            name="BitTorrent"
+            icon="icons/transf_download.gif"
+            category="org.eclipse.ecf.ui.newConnection.category"
+            finalPerspective="org.eclipse.ecf.ui.perspective.communications">
+          <description>%BitTorrentConnectWizardPage.description</description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.ecf.ui.perspective.communications">
+         <newWizardShortcut id="org.eclipse.ecf.provider.ui.bittorrent.connectWizard"/>
+      </perspectiveExtension>
+   </extension>
+
    <extension
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
       <hyperlinkDetector

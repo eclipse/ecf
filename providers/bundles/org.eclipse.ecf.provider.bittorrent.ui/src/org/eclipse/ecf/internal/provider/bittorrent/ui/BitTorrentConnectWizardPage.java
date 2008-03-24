@@ -40,7 +40,8 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 
 	BitTorrentConnectWizardPage() {
 		super("");
-		setTitle("BitTorrent File Sharing");
+		setTitle(Messages.getString("BitTorrentConnectWizardPage.File_Sharing"));
+		setDescription(Messages.getString("BitTorrentConnectWizardPage.File_Sharing.Description"));
 		setPageComplete(false);
 	}
 
@@ -52,15 +53,15 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 	private void addListeners() {
 		torrentText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				String file = torrentText.getText().trim();
+				final String file = torrentText.getText().trim();
 				if (file.equals("")) { //$NON-NLS-1$
-					setErrorMessage("A torrent file must be entered.");
+					setErrorMessage(Messages.getString("BitTorrentConnectWizardPage.file_must_be_entered")); //$NON-NLS-1$
 				} else {
-					File torrent = new File(file);
+					final File torrent = new File(file);
 					if (torrent.isDirectory()) {
-						setErrorMessage("The path is mapped to a directory.");
+						setErrorMessage(Messages.getString("BitTorrentConnectWizardPage.path_is_mapped")); //$NON-NLS-1$
 					} else if (!torrent.canRead()) {
-						setErrorMessage("The file cannot be read.");
+						setErrorMessage(Messages.getString("BitTorrentConnectWizardPage.file_cannot_read")); //$NON-NLS-1$
 					} else {
 						setErrorMessage(null);
 					}
@@ -70,9 +71,10 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 
 		targetText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				String target = torrentText.getText().trim();
+				final String target = torrentText.getText().trim();
 				if (target.equals("")) { //$NON-NLS-1$
-					setErrorMessage("A destination must be set.");
+					//setErrorMessage("A destination must be set.");
+					setErrorMessage(Messages.getString("BitTorrentConnectWizardPage.destination_must_set")); //$NON-NLS-1$
 				} else {
 					setErrorMessage(null);
 				}
@@ -81,16 +83,16 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 
 		browseTorrentBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog dialog = new FileDialog(browseTorrentBtn.getShell(),
-						SWT.OPEN);
-				dialog.setFilterExtensions(new String[] { "*.torrent" }); //$NON-NLS-1$
+				final FileDialog dialog = new FileDialog(browseTorrentBtn.getShell(), SWT.OPEN);
+				dialog.setFilterExtensions(new String[] {"*.torrent"}); //$NON-NLS-1$
 				if (torrentFile != null) {
 					int lastIndex = torrentFile.lastIndexOf('/');
-					if (lastIndex == -1) lastIndex = torrentFile.lastIndexOf('\\');
-					if (lastIndex != -1) 
-					dialog.setFilterPath(torrentFile.substring(0, lastIndex));
+					if (lastIndex == -1)
+						lastIndex = torrentFile.lastIndexOf('\\');
+					if (lastIndex != -1)
+						dialog.setFilterPath(torrentFile.substring(0, lastIndex));
 				}
-				String torrent = dialog.open();
+				final String torrent = dialog.open();
 				if (torrent != null) {
 					torrentText.setText(torrent);
 				}
@@ -99,9 +101,8 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 
 		browseTargetBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog dialog = new FileDialog(browseTorrentBtn.getShell(),
-						SWT.OPEN);
-				String target = dialog.open();
+				final FileDialog dialog = new FileDialog(browseTorrentBtn.getShell(), SWT.OPEN);
+				final String target = dialog.open();
 				if (target != null) {
 					targetText.setText(target);
 				}
@@ -110,33 +111,42 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
+
+		parent = new Composite(parent, SWT.NONE);
+
 		parent.setLayout(new GridLayout(3, false));
 
-		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		final GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
 
 		Label label = new Label(parent, SWT.LEFT);
-		label.setText("Torrent:");
+		//label.setText("Torrent:");
+		label.setText(Messages.getString("BitTorrentConnectWizardPage.Torrent")); //$NON-NLS-1$
 
 		torrentText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		torrentText.setLayoutData(data);
 
 		browseTorrentBtn = new Button(parent, SWT.PUSH);
-		browseTorrentBtn.setText("&Browse");
+		//browseTorrentBtn.setText("&Browse");
+		browseTorrentBtn.setText(Messages.getString("BitTorrentConnectWizardPage.Browse1")); //$NON-NLS-1$
 
 		label = new Label(parent, SWT.LEFT);
-		label.setText("Target Path:");
+		//label.setText("Target Path:");
+		label.setText(Messages.getString("BitTorrentConnectWizardPage.Target_Path")); //$NON-NLS-1$
 
 		targetText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		targetText.setLayoutData(data);
 
 		browseTargetBtn = new Button(parent, SWT.PUSH);
-		browseTargetBtn.setText("B&rowse");
+		//browseTargetBtn.setText("B&rowse");
+		browseTargetBtn.setText(Messages.getString("BitTorrentConnectWizardPage.Browse2")); //$NON-NLS-1$
 
 		if (torrentFile != null) {
 			torrentText.setText(torrentFile);
 			targetText.setFocus();
 		}
 		addListeners();
+
+		org.eclipse.jface.dialogs.Dialog.applyDialogFont(parent);
 		setControl(parent);
 	}
 
