@@ -14,7 +14,7 @@ package org.eclipse.ecf.internal.ui;
 public interface IImageFiles {
 
 	public static final String IDENTITY = "/icons/enabled/identity.gif"; //$NON-NLS-1$
-	
+
 	public static final String USER_AVAILABLE = "icons/enabled/contact_enabled.gif"; //$NON-NLS-1$
 
 	public static final String USER_AWAY = "icons/enabled/contact_away.gif"; //$NON-NLS-1$
@@ -39,12 +39,13 @@ public interface IImageFiles {
 
 	public static final String ADD = "icons/enabled/add.gif"; //$NON-NLS-1$
 
-	public static final String MESSAGES = "icons/enabled/messages.gif";
-	
-	public static final String CHAT_WIZARD = "icons/wizards/chat_wizard.png"; //$NON_NLS-$1
-	
-	public static final String COLLABORATION_WIZARD = "icons/wizards/collaboration_wizard.png"; //$NON_NLS-$1
-	
-	public static final String COMMUNICATIONS = "icons/enabled/communications.gif"; //$NON_NLS-$1
+	public static final String MESSAGES = "icons/enabled/messages.gif"; //$NON-NLS-1$
 
+	public static final String CHAT_WIZARD = "icons/wizards/chat_wizard.png"; //$NON-NLS-1$
+
+	public static final String COLLABORATION_WIZARD = "icons/wizards/collaboration_wizard.png"; //$NON-NLS-1$
+
+	public static final String COMMUNICATIONS = "icons/enabled/communications.gif"; //$NON-NLS-1$
+
+	public static final String ADD_CONNECTION = "icons/enabled/new_connection.gif"; //$NON-NLS-1$
 }

@@ -50,4 +50,11 @@
             name="Communications">
       </category>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.eclipse.ecf.ui.newConnection.category"
+            name="Connection">
+      </category>
+   </extension>
 </plugin>

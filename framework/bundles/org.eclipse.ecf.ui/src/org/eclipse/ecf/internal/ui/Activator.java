@@ -11,9 +11,7 @@
 
 package org.eclipse.ecf.internal.ui;
 
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.ISharedImages;
@@ -41,14 +39,11 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static void log(String message) {
-		getDefault().getLog().log(
-				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
+		getDefault().getLog().log(new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
 	}
 
 	public static void log(String message, Throwable e) {
-		getDefault().getLog().log(
-				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
-						"Caught exception", e));
+		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "Caught exception", e));
 	}
 
 	/**
@@ -64,8 +59,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		this.extensionRegistryTracker = new ServiceTracker(context,
-				IExtensionRegistry.class.getName(), null);
+		this.extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
 		this.extensionRegistryTracker.open();
 	}
 
@@ -99,70 +93,37 @@ public class Activator extends AbstractUIPlugin {
 	protected ImageRegistry createImageRegistry() {
 		ImageRegistry registry = super.createImageRegistry();
 
-		registry.put(SharedImages.IMG_USER_AVAILABLE, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID,
-						IImageFiles.USER_AVAILABLE).createImage());
-		registry.put(SharedImages.IMG_USER_AWAY, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.USER_AWAY)
-				.createImage());
-		registry.put(SharedImages.IMG_USER_DND, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.USER_DND)
-				.createImage());
-		registry.put(SharedImages.IMG_GROUP, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.GROUP)
-				.createImage());
-		registry.put(SharedImages.IMG_USER_UNAVAILABLE, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID,
-						IImageFiles.USER_UNAVAILABLE).createImage());
+		registry.put(SharedImages.IMG_USER_AVAILABLE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.USER_AVAILABLE).createImage());
+		registry.put(SharedImages.IMG_USER_AWAY, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.USER_AWAY).createImage());
+		registry.put(SharedImages.IMG_USER_DND, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.USER_DND).createImage());
+		registry.put(SharedImages.IMG_GROUP, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.GROUP).createImage());
+		registry.put(SharedImages.IMG_USER_UNAVAILABLE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.USER_UNAVAILABLE).createImage());
 
-		registry.put(SharedImages.IMG_SEND, PlatformUI.getWorkbench()
-				.getSharedImages().getImage(ISharedImages.IMG_TOOL_UNDO));
+		registry.put(SharedImages.IMG_SEND, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_UNDO));
 
-		registry.put(SharedImages.IMG_DISCONNECT_DISABLED, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID,
-						IImageFiles.DISCONNECT_DISABLED).createImage());
-		registry.put(SharedImages.IMG_DISCONNECT, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID,
-						IImageFiles.DISCONNECT_ENABLED).createImage());
+		registry.put(SharedImages.IMG_DISCONNECT_DISABLED, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.DISCONNECT_DISABLED).createImage());
+		registry.put(SharedImages.IMG_DISCONNECT, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.DISCONNECT_ENABLED).createImage());
 
-		registry.put(SharedImages.IMG_ADD_GROUP, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_GROUP)
-				.createImage());
-		registry.put(SharedImages.IMG_ADD_BUDDY, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_BUDDY)
-				.createImage());
+		registry.put(SharedImages.IMG_ADD_GROUP, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_GROUP).createImage());
+		registry.put(SharedImages.IMG_ADD_BUDDY, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_BUDDY).createImage());
 
-		registry.put(SharedImages.IMG_ADD_CHAT, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_CHAT)
-				.createImage());
+		registry.put(SharedImages.IMG_ADD_CHAT, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_CHAT).createImage());
 
-		registry.put(SharedImages.IMG_MESSAGE, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.SEND_MESSAGE)
-				.createImage());
+		registry.put(SharedImages.IMG_MESSAGE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.SEND_MESSAGE).createImage());
 
-		registry.put(SharedImages.IMG_ADD, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD)
-				.createImage());
+		registry.put(SharedImages.IMG_ADD, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD).createImage());
 
-		registry.put(SharedImages.IMG_MESSAGES, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.MESSAGES)
-				.createImage());
+		registry.put(SharedImages.IMG_MESSAGES, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.MESSAGES).createImage());
 
-		registry.put(SharedImages.IMG_CHAT_WIZARD, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.CHAT_WIZARD)
-				.createImage());
+		registry.put(SharedImages.IMG_CHAT_WIZARD, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.CHAT_WIZARD).createImage());
 
-		registry.put(SharedImages.IMG_COLLABORATION_WIZARD, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.COLLABORATION_WIZARD)
-				.createImage());
+		registry.put(SharedImages.IMG_COLLABORATION_WIZARD, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.COLLABORATION_WIZARD).createImage());
 
-		registry.put(SharedImages.IMG_IDENTITY, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.IDENTITY)
-				.createImage());
-		
-		registry.put(SharedImages.IMG_COMMUNICATIONS, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.COMMUNICATIONS)
-				.createImage());
+		registry.put(SharedImages.IMG_IDENTITY, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.IDENTITY).createImage());
+
+		registry.put(SharedImages.IMG_COMMUNICATIONS, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.COMMUNICATIONS).createImage());
+
+		registry.put(SharedImages.IMG_ADD_CONNECTION, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_CONNECTION).createImage());
 
 		return registry;
 	}

@@ -19,8 +19,8 @@ import org.eclipse.swt.graphics.Image;
  */
 public final class SharedImages {
 
-	public static final String IMG_IDENTITY = "IMG_IDENTITY";
-	
+	public static final String IMG_IDENTITY = "IMG_IDENTITY"; //$NON-NLS-1$
+
 	public static final String IMG_USER_AVAILABLE = "IMG_USER_AVAILABLE"; //$NON-NLS-1$
 
 	public static final String IMG_USER_UNAVAILABLE = "IMG_USER_UNAVAILABLE"; //$NON-NLS-1$
@@ -48,13 +48,15 @@ public final class SharedImages {
 	public static final String IMG_ADD = "IMG_ADD"; //$NON-NLS-1$
 
 	public static final String IMG_MESSAGES = "IMG_MESSAGES"; //$NON-NLS-1$
-	
+
 	public static final String IMG_CHAT_WIZARD = "IMG_CHAT_WIZARD"; //$NON-NLS-1$
-	
+
 	public static final String IMG_COLLABORATION_WIZARD = "IMG_COLLABORATION_WIZARD"; //$NON-NLS-1$
-	
+
 	public static final String IMG_COMMUNICATIONS = "IMG_COMMUNICATIONS"; //$NON-NLS-1$
-	
+
+	public static final String IMG_ADD_CONNECTION = "IMG_ADD_CONNECTION"; //$NON-NLS-1$
+
 	public static ImageDescriptor getImageDescriptor(String key) {
 		return Activator.getDefault().getImageRegistry().getDescriptor(key);
 	}
