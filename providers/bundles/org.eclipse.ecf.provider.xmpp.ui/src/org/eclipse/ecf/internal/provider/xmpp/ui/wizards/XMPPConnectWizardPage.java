@@ -49,6 +49,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 		setTitle(Messages.XMPPConnectWizardPage_WIZARD_TITLE);
 		setDescription(Messages.XMPPConnectWizardPage_WIZARD_DESCRIPTION);
 		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_CHAT_WIZARD));
+		setPageComplete(false);
 	}
 
 	XMPPConnectWizardPage(String usernameAtHost) {
@@ -72,6 +73,9 @@ public class XMPPConnectWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
+		
+		parent = new Composite(parent, SWT.NONE);
+		
 		parent.setLayout(new GridLayout());
 		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
@@ -119,6 +123,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 		} else if (isPageComplete())
 			passwordText.setFocus();
 
+		org.eclipse.jface.dialogs.Dialog.applyDialogFont(parent);
 		setControl(parent);
 	}
 

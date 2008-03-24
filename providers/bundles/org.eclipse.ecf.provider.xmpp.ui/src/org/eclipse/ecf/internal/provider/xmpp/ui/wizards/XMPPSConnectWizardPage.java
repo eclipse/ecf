@@ -55,6 +55,9 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 	}
 
 	public void createControl(Composite parent) {
+		
+		parent = new Composite(parent, SWT.NONE);
+		
 		parent.setLayout(new GridLayout());
 		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
@@ -104,6 +107,7 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		} else if (isPageComplete())
 			passwordText.setFocus();
 
+		org.eclipse.jface.dialogs.Dialog.applyDialogFont(parent);
 		setControl(parent);
 	}
 

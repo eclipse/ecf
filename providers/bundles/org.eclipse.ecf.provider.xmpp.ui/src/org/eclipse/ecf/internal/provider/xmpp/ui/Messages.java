@@ -71,6 +71,9 @@ public class Messages extends NLS {
 	public static String XMPPCompoundContributionItem_FILE_SEND_REFUSED_TITLE;
 	public static String XMPPCompoundContributionItem_FILE_SEND_REFUSED_MESSAGE;
 
+	public static String XMPPConnectWizard_WIZARD_TITLE;
+	public static String XMPPSConnectWizard_WIZARD_TITLE;
+	
 	private Messages() {
 	}
 

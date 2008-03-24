@@ -10,6 +10,13 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
+import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IWorkbench;
+
 
 public final class XMPPSConnectWizard extends XMPPConnectWizard {
 
@@ -26,4 +33,20 @@ public final class XMPPSConnectWizard extends XMPPConnectWizard {
 		addPage(page);
 	}
 
+	public void init(IWorkbench workbench, IContainer container) {
+		super.init(workbench, container);
+
+		setWindowTitle(Messages.XMPPSConnectWizard_WIZARD_TITLE);
+	}
+
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+		super.init(workbench, selection);
+		try {
+			this.container = ContainerFactory.getDefault().createContainer("ecf.xmpps.smack");
+		} catch (ContainerCreateException e) {
+			// None
+		}
+
+		setWindowTitle(Messages.XMPPSConnectWizard_WIZARD_TITLE);
+	}
 }

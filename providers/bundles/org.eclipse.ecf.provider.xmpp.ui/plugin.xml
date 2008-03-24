@@ -14,6 +14,36 @@
             id="org.eclipse.ecf.provider.ui.xmpp.xmppsConnect"
             name="XMPPS"/>
    </extension>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            class="org.eclipse.ecf.internal.provider.xmpp.ui.wizards.XMPPConnectWizard"
+            id="org.eclipse.ecf.provider.ui.xmpp.xmppConnect"
+            name="XMPP"
+            icon="icons/new_connection.gif"
+            category="org.eclipse.ecf.ui.newConnection.category"
+            finalPerspective="org.eclipse.ecf.ui.perspective.communications">
+          <description>%XMPPConnectWizardPage.description</description>
+      </wizard>
+      <wizard
+            class="org.eclipse.ecf.internal.provider.xmpp.ui.wizards.XMPPSConnectWizard"
+            id="org.eclipse.ecf.provider.ui.xmpp.xmppsConnect"
+            name="XMPPS"
+            icon="icons/new_connection.gif"
+            category="org.eclipse.ecf.ui.newConnection.category"
+            finalPerspective="org.eclipse.ecf.ui.perspective.communications">
+          <description>%XMPPSConnectWizardPage.description</description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.ecf.ui.perspective.communications">
+         <newWizardShortcut id="org.eclipse.ecf.provider.ui.xmpp.xmppConnect"/>
+         <newWizardShortcut id="org.eclipse.ecf.provider.ui.xmpp.xmppsConnect"/>
+      </perspectiveExtension>
+   </extension>
+
       <extension
          point="org.eclipse.ui.menus">
       <menuContribution

@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
@@ -47,24 +49,27 @@ import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
 import org.eclipse.ecf.ui.dialogs.IDCreateErrorDialog;
 import org.eclipse.ecf.ui.util.PasswordCacheHelper;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-public class XMPPConnectWizard extends Wizard implements IConnectWizard {
+public class XMPPConnectWizard extends Wizard implements IConnectWizard, INewWizard {
 
 	XMPPConnectWizardPage page;
 
 	private Shell shell;
 
-	private IContainer container;
+	//private IContainer container;
+	protected IContainer container;
 
 	private ID targetID;
 
@@ -82,72 +87,49 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 	}
 
 	protected IIncomingFileTransferRequestListener requestListener = new IIncomingFileTransferRequestListener() {
-		public void handleFileTransferRequest(
-				final IFileTransferRequestEvent event) {
+		public void handleFileTransferRequest(final IFileTransferRequestEvent event) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					String username = event.getRequesterID().getName();
-					IFileTransferInfo transferInfo = event
-							.getFileTransferInfo();
-					String fileName = transferInfo.getFile().getName();
-					Object[] bindings = new Object[] { username, fileName,
-							((transferInfo.getFileSize() == -1) ? "unknown" //$NON-NLS-1$
-									: (transferInfo.getFileSize() + " bytes")), //$NON-NLS-1$
+					final String username = event.getRequesterID().getName();
+					final IFileTransferInfo transferInfo = event.getFileTransferInfo();
+					final String fileName = transferInfo.getFile().getName();
+					final Object[] bindings = new Object[] {username, fileName, ((transferInfo.getFileSize() == -1) ? "unknown" //$NON-NLS-1$
+							: (transferInfo.getFileSize() + " bytes")), //$NON-NLS-1$
 							(transferInfo.getDescription() == null) ? "none" //$NON-NLS-1$
-									: transferInfo.getDescription() };
-					if (MessageDialog.openQuestion(shell, NLS.bind(
-							Messages.XMPPConnectWizard_FILE_RECEIVE_TITLE,
-							username), NLS.bind(
-							Messages.XMPPConnectWizard_FILE_RECEIVE_MESSAGE,
-							bindings))) {
-						FileDialog fd = new FileDialog(shell, SWT.OPEN);
+									: transferInfo.getDescription()};
+					if (MessageDialog.openQuestion(shell, NLS.bind(Messages.XMPPConnectWizard_FILE_RECEIVE_TITLE, username), NLS.bind(Messages.XMPPConnectWizard_FILE_RECEIVE_MESSAGE, bindings))) {
+						final FileDialog fd = new FileDialog(shell, SWT.OPEN);
 						// XXX this should be some default path gotten from
 						// preference. For now we'll have it be the user.home
 						// system property
 						fd.setFilterPath(System.getProperty("user.home")); //$NON-NLS-1$
 						fd.setFileName(fileName);
-						int suffixLoc = fileName.lastIndexOf('.');
+						final int suffixLoc = fileName.lastIndexOf('.');
 						if (suffixLoc != -1) {
-							String ext = fileName.substring(fileName
-									.lastIndexOf('.'));
-							fd.setFilterExtensions(new String[] { ext });
+							final String ext = fileName.substring(fileName.lastIndexOf('.'));
+							fd.setFilterExtensions(new String[] {ext});
 						}
-						fd.setText(NLS.bind(
-								Messages.XMPPConnectWizard_FILE_SAVE_TITLE,
-								username));
+						fd.setText(NLS.bind(Messages.XMPPConnectWizard_FILE_SAVE_TITLE, username));
 						final String res = fd.open();
 						if (res == null)
 							event.reject();
 						else {
 							try {
-								final FileOutputStream fos = new FileOutputStream(
-										new File(res));
+								final FileOutputStream fos = new FileOutputStream(new File(res));
 								event.accept(fos, new IFileTransferListener() {
-									public void handleTransferEvent(
-											IFileTransferEvent event) {
+									public void handleTransferEvent(IFileTransferEvent event) {
 										// XXX Should have some some UI
 										// for transfer events
 										if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 											try {
 												fos.close();
-											} catch (IOException e) {
+											} catch (final IOException e) {
 											}
 										}
 									}
 								});
-							} catch (Exception e) {
-								MessageDialog
-										.openError(
-												shell,
-												Messages.XMPPConnectWizard_RECEIVE_ERROR_TITLE,
-												NLS
-														.bind(
-																Messages.XMPPConnectWizard_RECEIVE_ERROR_MESSAGE,
-																new Object[] {
-																		fileName,
-																		username,
-																		e
-																				.getLocalizedMessage() }));
+							} catch (final Exception e) {
+								MessageDialog.openError(shell, Messages.XMPPConnectWizard_RECEIVE_ERROR_TITLE, NLS.bind(Messages.XMPPConnectWizard_RECEIVE_ERROR_MESSAGE, new Object[] {fileName, username, e.getLocalizedMessage()}));
 							}
 						}
 					} else
@@ -167,6 +149,21 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 		shell = workbench.getActiveWorkbenchWindow().getShell();
 		this.container = container;
 		this.workbench = workbench;
+
+		setWindowTitle(Messages.XMPPConnectWizard_WIZARD_TITLE);
+	}
+
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+		shell = workbench.getActiveWorkbenchWindow().getShell();
+		this.workbench = workbench;
+		this.container = null;
+		try {
+			this.container = ContainerFactory.getDefault().createContainer("ecf.xmpp.smack");
+		} catch (final ContainerCreateException e) {
+			// None
+		}
+
+		setWindowTitle(Messages.XMPPConnectWizard_WIZARD_TITLE);
 	}
 
 	private IWorkbench workbench;
@@ -175,11 +172,9 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 
 	private void openView() {
 		try {
-			MultiRosterView view = (MultiRosterView) workbench
-					.getActiveWorkbenchWindow().getActivePage().showView(
-							MultiRosterView.VIEW_ID);
+			final MultiRosterView view = (MultiRosterView) workbench.getActiveWorkbenchWindow().getActivePage().showView(MultiRosterView.VIEW_ID);
 			view.addContainer(container);
-		} catch (PartInitException e) {
+		} catch (final PartInitException e) {
 			e.printStackTrace();
 		}
 	}
@@ -188,34 +183,24 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 		final IChatMessage message = e.getChatMessage();
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MessagesView view = (MessagesView) workbench
-						.getActiveWorkbenchWindow().getActivePage().findView(
-								MessagesView.VIEW_ID);
+				MessagesView view = (MessagesView) workbench.getActiveWorkbenchWindow().getActivePage().findView(MessagesView.VIEW_ID);
 				if (view != null) {
-					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
-							.getSite().getAdapter(
-									IWorkbenchSiteProgressService.class);
+					final IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view.getSite().getAdapter(IWorkbenchSiteProgressService.class);
 					view.openTab(icms, itms, targetID, message.getFromID());
 					view.showMessage(message);
 					service.warnOfContentChange();
 				} else {
 					try {
 
-						IWorkbenchPage page = workbench
-								.getActiveWorkbenchWindow().getActivePage();
-						view = (MessagesView) page.showView(
-								MessagesView.VIEW_ID, null,
-								IWorkbenchPage.VIEW_CREATE);
+						final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+						view = (MessagesView) page.showView(MessagesView.VIEW_ID, null, IWorkbenchPage.VIEW_CREATE);
 						if (!page.isPartVisible(view)) {
-							IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
-									.getSite()
-									.getAdapter(
-											IWorkbenchSiteProgressService.class);
+							final IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view.getSite().getAdapter(IWorkbenchSiteProgressService.class);
 							service.warnOfContentChange();
 						}
 						view.openTab(icms, itms, targetID, message.getFromID());
 						view.showMessage(message);
-					} catch (PartInitException e) {
+					} catch (final PartInitException e) {
 						e.printStackTrace();
 					}
 				}
@@ -226,9 +211,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 	private void displayTypingNotification(final ITypingMessageEvent e) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MessagesView view = (MessagesView) workbench
-						.getActiveWorkbenchWindow().getActivePage().findView(
-								MessagesView.VIEW_ID);
+				final MessagesView view = (MessagesView) workbench.getActiveWorkbenchWindow().getActivePage().findView(MessagesView.VIEW_ID);
 				if (view != null)
 					view.displayTypingNotification(e);
 			}
@@ -236,29 +219,26 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 	}
 
 	public boolean performFinish() {
-		
+
 		final String connectID = page.getConnectID();
 		final String password = page.getPassword();
-		
+
 		// Save combo text even if we don't successfully login
 		page.saveComboText();
-		
-		connectContext = ConnectContextFactory
-				.createPasswordConnectContext(password);
+
+		connectContext = ConnectContextFactory.createPasswordConnectContext(password);
 
 		try {
-			targetID = IDFactory.getDefault().createID(
-					container.getConnectNamespace(), connectID);
-		} catch (IDCreateException e) {
-			new IDCreateErrorDialog(null,connectID,e).open();
+			targetID = IDFactory.getDefault().createID(container.getConnectNamespace(), connectID);
+		} catch (final IDCreateException e) {
+			new IDCreateErrorDialog(null, connectID, e).open();
 			return false;
 		}
 
 		// Save combo items if targetID created successfully
 		page.saveComboItems();
 
-		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container
-				.getAdapter(IPresenceContainerAdapter.class);
+		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
 
 		container.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent event) {
@@ -272,7 +252,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 			}
 		});
 
-		IChatManager icm = adapter.getChatManager();
+		final IChatManager icm = adapter.getChatManager();
 		icms = icm.getChatMessageSender();
 		itms = icm.getTypingMessageSender();
 
@@ -286,23 +266,23 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 			}
 		});
 
-		ISendFileTransferContainerAdapter ioftca = (ISendFileTransferContainerAdapter) container
-				.getAdapter(ISendFileTransferContainerAdapter.class);
+		final ISendFileTransferContainerAdapter ioftca = (ISendFileTransferContainerAdapter) container.getAdapter(ISendFileTransferContainerAdapter.class);
 		ioftca.addListener(requestListener);
 		// Connect
 		new AsynchContainerConnectAction(container, targetID, connectContext, null, new Runnable() {
 			public void run() {
-				cachePassword(connectID,password);
-			}}).run();
+				cachePassword(connectID, password);
+			}
+		}).run();
 
 		return true;
 	}
 
 	protected void cachePassword(final String connectID, String password) {
 		if (password != null && !password.equals("")) {
-			PasswordCacheHelper pwStorage = new PasswordCacheHelper(connectID);
+			final PasswordCacheHelper pwStorage = new PasswordCacheHelper(connectID);
 			pwStorage.savePassword(password);
 		}
 	}
-	
+
 }
