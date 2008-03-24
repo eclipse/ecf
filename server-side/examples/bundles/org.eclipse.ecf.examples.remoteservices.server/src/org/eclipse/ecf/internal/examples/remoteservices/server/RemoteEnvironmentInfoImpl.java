@@ -28,7 +28,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String[] getCommandLineArgs() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("getCommandLineArgs()");
+		System.out.println("getCommandLineArgs()"); //$NON-NLS-1$
 		return (ei == null) ? null : ei.getCommandLineArgs();
 	}
 
@@ -37,7 +37,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String[] getFrameworkArgs() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("getFrameworkArgs()");
+		System.out.println("getFrameworkArgs()"); //$NON-NLS-1$
 		return (ei == null) ? null : ei.getFrameworkArgs();
 	}
 
@@ -46,7 +46,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String getNL() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("getNL()");
+		System.out.println("getNL()"); //$NON-NLS-1$
 		return (ei == null) ? null : ei.getNL();
 	}
 
@@ -55,7 +55,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String[] getNonFrameworkArgs() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("getNonFrameworkArgs()");
+		System.out.println("getNonFrameworkArgs()"); //$NON-NLS-1$
 		return (ei == null) ? null : ei.getNonFrameworkArgs();
 	}
 
@@ -64,7 +64,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String getOS() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("getOS()");
+		System.out.println("getOS()"); //$NON-NLS-1$
 		return (ei == null) ? null : ei.getOS();
 	}
 
@@ -73,17 +73,8 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String getOSArch() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("getOSArch()");
+		System.out.println("getOSArch()"); //$NON-NLS-1$
 		return (ei == null) ? null : ei.getOSArch();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo#getProperty(java.lang.String)
-	 */
-	public String getProperty(String key) {
-		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("getProperty(" + key + ")");
-		return (ei == null) ? null : ei.getProperty(key);
 	}
 
 	/* (non-Javadoc)
@@ -91,7 +82,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public String getWS() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("getWS()");
+		System.out.println("getWS()"); //$NON-NLS-1$
 		return (ei == null) ? null : ei.getWS();
 	}
 
@@ -100,7 +91,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public Boolean inDebugMode() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("inDebugMode()");
+		System.out.println("inDebugMode()"); //$NON-NLS-1$
 		return (ei == null) ? null : new Boolean(ei.inDebugMode());
 	}
 
@@ -109,7 +100,7 @@ public class RemoteEnvironmentInfoImpl implements IRemoteEnvironmentInfo {
 	 */
 	public Boolean inDevelopmentMode() {
 		final EnvironmentInfo ei = getEnvironmentInfo();
-		System.out.println("inDevelopmentMode()");
+		System.out.println("inDevelopmentMode()"); //$NON-NLS-1$
 		return (ei == null) ? null : new Boolean(ei.inDevelopmentMode());
 	}
 
