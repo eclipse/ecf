@@ -9,8 +9,8 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.tests,
  org.eclipse.ecf.remoteservice,
- org.junit;bundle-version="3.8.2",
- org.eclipse.equinox.common;bundle-version="3.3.0"
+ org.junit,
+ org.eclipse.equinox.common
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.tests.remoteservice
 Import-Package: org.osgi.framework;version="1.4.0",
