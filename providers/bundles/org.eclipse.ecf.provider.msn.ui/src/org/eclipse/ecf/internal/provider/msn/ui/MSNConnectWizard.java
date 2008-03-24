@@ -10,6 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.msn.ui;
 
+import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
@@ -33,14 +35,16 @@ import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
 import org.eclipse.ecf.ui.dialogs.IDCreateErrorDialog;
 import org.eclipse.ecf.ui.util.PasswordCacheHelper;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-public class MSNConnectWizard extends Wizard implements IConnectWizard {
+public class MSNConnectWizard extends Wizard implements IConnectWizard, INewWizard {
 
 	private IWorkbench workbench;
 
@@ -57,16 +61,16 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 	private IConnectContext connectContext;
 
 	private String username;
-	
+
 	public MSNConnectWizard() {
 		super();
 	}
-	
+
 	public MSNConnectWizard(String username) {
 		this();
 		this.username = username;
 	}
-	
+
 	public void addPages() {
 		page = new MSNConnectWizardPage(username);
 		addPage(page);
@@ -75,28 +79,35 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 	public void init(IWorkbench workbench, IContainer container) {
 		this.workbench = workbench;
 		this.container = container;
+
+		setWindowTitle(Messages.MSNConnectWizard_Title);
+	}
+
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+		this.workbench = workbench;
+		this.container = null;
+		try {
+			this.container = ContainerFactory.getDefault().createContainer("ecf.msn.msnp");
+		} catch (final ContainerCreateException e) {
+			// None
+		}
+
+		setWindowTitle(Messages.MSNConnectWizard_Title);
 	}
 
 	private void openView() {
 		try {
-			MultiRosterView view = (MultiRosterView) workbench
-					.getActiveWorkbenchWindow().getActivePage().findView(
-							MultiRosterView.VIEW_ID);
+			MultiRosterView view = (MultiRosterView) workbench.getActiveWorkbenchWindow().getActivePage().findView(MultiRosterView.VIEW_ID);
 			if (view == null) {
-				view = (MultiRosterView) workbench.getActiveWorkbenchWindow()
-						.getActivePage().showView(MultiRosterView.VIEW_ID,
-								null, IWorkbenchPage.VIEW_CREATE);
+				view = (MultiRosterView) workbench.getActiveWorkbenchWindow().getActivePage().showView(MultiRosterView.VIEW_ID, null, IWorkbenchPage.VIEW_CREATE);
 			}
 			view.addContainer(container);
-			IWorkbenchPage page = workbench.getActiveWorkbenchWindow()
-					.getActivePage();
+			final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
 			if (!page.isPartVisible(view)) {
-				IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
-						.getSite().getAdapter(
-								IWorkbenchSiteProgressService.class);
+				final IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view.getSite().getAdapter(IWorkbenchSiteProgressService.class);
 				service.warnOfContentChange();
 			}
-		} catch (PartInitException e) {
+		} catch (final PartInitException e) {
 			e.printStackTrace();
 		}
 	}
@@ -105,33 +116,23 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 		final IChatMessage message = e.getChatMessage();
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MessagesView view = (MessagesView) workbench
-						.getActiveWorkbenchWindow().getActivePage().findView(
-								MessagesView.VIEW_ID);
+				MessagesView view = (MessagesView) workbench.getActiveWorkbenchWindow().getActivePage().findView(MessagesView.VIEW_ID);
 				if (view != null) {
-					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
-							.getSite().getAdapter(
-									IWorkbenchSiteProgressService.class);
+					final IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view.getSite().getAdapter(IWorkbenchSiteProgressService.class);
 					view.openTab(icms, itms, targetID, message.getFromID());
 					view.showMessage(message);
 					service.warnOfContentChange();
 				} else {
 					try {
-						IWorkbenchPage page = workbench
-								.getActiveWorkbenchWindow().getActivePage();
-						view = (MessagesView) page.showView(
-								MessagesView.VIEW_ID, null,
-								IWorkbenchPage.VIEW_CREATE);
+						final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+						view = (MessagesView) page.showView(MessagesView.VIEW_ID, null, IWorkbenchPage.VIEW_CREATE);
 						if (!page.isPartVisible(view)) {
-							IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
-									.getSite()
-									.getAdapter(
-											IWorkbenchSiteProgressService.class);
+							final IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view.getSite().getAdapter(IWorkbenchSiteProgressService.class);
 							service.warnOfContentChange();
 						}
 						view.openTab(icms, itms, targetID, message.getFromID());
 						view.showMessage(message);
-					} catch (PartInitException e) {
+					} catch (final PartInitException e) {
 						e.printStackTrace();
 					}
 				}
@@ -142,9 +143,7 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 	private void displayTypingNotification(final ITypingMessageEvent e) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MessagesView view = (MessagesView) workbench
-						.getActiveWorkbenchWindow().getActivePage().findView(
-								MessagesView.VIEW_ID);
+				final MessagesView view = (MessagesView) workbench.getActiveWorkbenchWindow().getActivePage().findView(MessagesView.VIEW_ID);
 				if (view != null) {
 					view.displayTypingNotification(e);
 				}
@@ -153,28 +152,25 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 	}
 
 	public boolean performFinish() {
-		
+
 		final String connectID = page.getEmail();
 		final String password = page.getPassword();
-		
+
 		// Save combo text even if we don't successfully login
 		page.saveComboText();
-		
-		connectContext = ConnectContextFactory
-				.createPasswordConnectContext(password);
+
+		connectContext = ConnectContextFactory.createPasswordConnectContext(password);
 
 		try {
-			targetID = container.getConnectNamespace().createInstance(
-					new Object[] { connectID });
-		} catch (IDCreateException e) {
-			new IDCreateErrorDialog(null,connectID,e).open();
+			targetID = container.getConnectNamespace().createInstance(new Object[] {connectID});
+		} catch (final IDCreateException e) {
+			new IDCreateErrorDialog(null, connectID, e).open();
 			return false;
 		}
-		
+
 		page.saveComboItems();
-		
-		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container
-				.getAdapter(IPresenceContainerAdapter.class);
+
+		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
 		container.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent event) {
 				if (event instanceof IContainerConnectedEvent) {
@@ -187,7 +183,7 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 			}
 		});
 
-		IChatManager icm = adapter.getChatManager();
+		final IChatManager icm = adapter.getChatManager();
 		icms = icm.getChatMessageSender();
 		itms = icm.getTypingMessageSender();
 
@@ -203,17 +199,18 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 
 		new AsynchContainerConnectAction(container, targetID, connectContext, null, new Runnable() {
 			public void run() {
-				cachePassword(connectID,password);
-			}}).run();
+				cachePassword(connectID, password);
+			}
+		}).run();
 
 		return true;
 	}
-	
+
 	private void cachePassword(final String connectID, String password) {
 		if (password != null && !password.equals("")) {
-			PasswordCacheHelper pwStorage = new PasswordCacheHelper(connectID);
+			final PasswordCacheHelper pwStorage = new PasswordCacheHelper(connectID);
 			pwStorage.savePassword(password);
 		}
 	}
-	
+
 }

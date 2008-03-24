@@ -27,6 +27,8 @@ public class Messages extends NLS {
 
 	public static String MSNConnectWizardPage_WIZARD_PAGE_DESCRIPTION;
 
+	public static String MSNConnectWizard_Title;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

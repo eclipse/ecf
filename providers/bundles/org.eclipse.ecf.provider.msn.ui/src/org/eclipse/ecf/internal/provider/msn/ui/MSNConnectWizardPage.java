@@ -107,6 +107,9 @@ final class MSNConnectWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
+		
+		parent = new Composite(parent, SWT.NONE);
+		
 		parent.setLayout(new GridLayout(2, false));
 
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -130,6 +133,8 @@ final class MSNConnectWizardPage extends WizardPage {
 			restorePassword(username);
 			passwordText.setFocus();
 		}
+
+		org.eclipse.jface.dialogs.Dialog.applyDialogFont(parent);
 		setControl(parent);
 	}
 
