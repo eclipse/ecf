@@ -11,6 +11,25 @@
    </extension>
 
    <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            class="org.eclipse.ecf.internal.irc.ui.wizards.IRCConnectWizard"
+            id="org.eclipse.ecf.provider.ui.irc.connectWizard"
+            name="IRC"
+            icon="icons/new_connection.gif"
+            category="org.eclipse.ecf.ui.newConnection.category"
+            finalPerspective="org.eclipse.ecf.ui.perspective.communications">
+          <description>%IRCConnectWizardPage.description</description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.ecf.ui.perspective.communications">
+         <newWizardShortcut id="org.eclipse.ecf.provider.ui.irc.connectWizard"/>
+      </perspectiveExtension>
+   </extension>
+
+   <extension
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
       <hyperlinkDetector
             activate="true"

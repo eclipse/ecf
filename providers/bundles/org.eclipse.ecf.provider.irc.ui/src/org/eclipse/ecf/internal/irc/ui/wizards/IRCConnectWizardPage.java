@@ -85,6 +85,9 @@ final class IRCConnectWizardPage extends WizardPage {
 	}
 	
 	public void createControl(Composite parent) {
+		
+		parent = new Composite(parent, SWT.NONE);
+		
 		parent.setLayout(new GridLayout());
 		GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
@@ -130,6 +133,7 @@ final class IRCConnectWizardPage extends WizardPage {
 			passwordText.setFocus();
 		}
 
+		org.eclipse.jface.dialogs.Dialog.applyDialogFont(parent);
 		setControl(parent);
 	}
 

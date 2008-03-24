@@ -35,6 +35,9 @@ public class Messages extends NLS {
 	public static String IRCUI_JOIN_COMMAND;
 	public static String IRCUI_PART_COMMAND;
 	public static String IRCUI_QUIT_COMMAND;
+
+	public static String IRCConnectWizard_WIZARD_TITLE;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
