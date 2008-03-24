@@ -190,9 +190,7 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 
 	private void invokeRemoteEnvironmentInfo(final IRemoteCall remoteCall, IRemoteEnvironmentInfo proxy) throws Exception {
 		Object result = null;
-		if (remoteCall.getMethod().equals("getProperty")) {
-			result = proxy.getProperty((String) remoteCall.getParameters()[0]);
-		} else if (remoteCall.getMethod().equals("getCommandLineArgs")) {
+		if (remoteCall.getMethod().equals("getCommandLineArgs")) {
 			result = proxy.getCommandLineArgs();
 		} else if (remoteCall.getMethod().equals("getFrameworkArgs")) {
 			result = proxy.getFrameworkArgs();
