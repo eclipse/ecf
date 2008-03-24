@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.examples.remoteservices.common;
 
-
 /**
  *
  */
@@ -96,19 +95,5 @@ public interface IRemoteEnvironmentInfo {
 	 * @return whether or not the framework is in development mode
 	 */
 	public Boolean inDevelopmentMode();
-
-	/**
-	 * Returns the value for the specified property.  Environment Properties are 
-	 * backed by the Java system properties.  When the option
-	 * <code>osgi.framework.useSystemProperties</code> is used then 
-	 * the environment properties are specific for each instance of the framework.
-	 * <p>
-	 * This method should be used instead of the <code>System.getProperty(String)</code>
-	 * method to avoid the global nature of system properties.
-	 * </p>
-	 * @param key the property key
-	 * @return the value of the property, or null
-	 */
-	public String getProperty(String key);
 
 }
