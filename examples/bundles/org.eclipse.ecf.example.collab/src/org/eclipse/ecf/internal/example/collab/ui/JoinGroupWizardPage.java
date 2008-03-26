@@ -146,6 +146,7 @@ public class JoinGroupWizardPage extends WizardPage {
 		if (connectID != null) {
 			joinGroupText.setText(connectID);
 		}
+		org.eclipse.jface.dialogs.Dialog.applyDialogFont(parent);
 	}
 
 	private void validateNicknameText() {
