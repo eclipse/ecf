@@ -116,6 +116,7 @@ public class AddContactDialog extends Dialog {
 
 		addListeners();
 
+		applyDialogFont(parent);
 		return parent;
 	}
 

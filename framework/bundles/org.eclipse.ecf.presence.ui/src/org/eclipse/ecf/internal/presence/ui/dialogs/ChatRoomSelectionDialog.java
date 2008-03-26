@@ -152,6 +152,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 		});
 
+		applyDialogFont(parent);
 		return parent;
 	}
 

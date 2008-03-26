@@ -101,6 +101,7 @@ public class ReceiveAuthorizeRequestDialog extends Dialog {
 		gridData_3.widthHint = 469;
 		label_3.setLayoutData(gridData_3);
 		//
+		applyDialogFont(container);
 		return container;
 	}
 

@@ -78,6 +78,7 @@ public class ChangePasswordDialog extends Dialog {
 		password2.setLayoutData(gridData_1);
 		password2.setEchoChar('*');
 		//
+		applyDialogFont(container);
 		return container;
 	}
 
