@@ -29,6 +29,7 @@ import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 public abstract class AbstractShare {
 
 	protected IChannel channel = null;
+	protected IChannelContainerAdapter adapter = null;
 
 	private final IChannelListener listener = new IChannelListener() {
 		public void handleChannelEvent(IChannelEvent event) {
@@ -42,6 +43,7 @@ public abstract class AbstractShare {
 		channel = containerAdapter.getChannel(channelID);
 		if (channel == null)
 			channel = containerAdapter.createChannel(channelID, listener, options);
+		adapter = containerAdapter;
 	}
 
 	public AbstractShare(IChannelContainerAdapter adapter) throws ECFException {
@@ -116,8 +118,9 @@ public abstract class AbstractShare {
 
 	public synchronized void dispose() {
 		if (channel != null) {
-			channel.dispose();
+			adapter.removeChannel(channel.getID());
 			channel = null;
+			adapter = null;
 		}
 	}
 
