@@ -813,8 +813,9 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		if (containerAdapter == null)
 			return false;
 		MultiRosterAccount account = new MultiRosterAccount(this, container, containerAdapter);
-		if (!addRosterAccount(account))
+		if (!addRosterAccount(account)) {
 			return false;
+		}
 
 		IRosterManager manager = containerAdapter.getRosterManager();
 		try {
