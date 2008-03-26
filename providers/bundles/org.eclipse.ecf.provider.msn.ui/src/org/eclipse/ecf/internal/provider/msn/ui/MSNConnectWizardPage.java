@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Remy Suen and others.
+ * Copyright (c) 2007, 2008 Remy Suen and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.util.PasswordCacheHelper;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -40,7 +41,7 @@ final class MSNConnectWizardPage extends WizardPage {
 
 	private String username;
 	
-	static Pattern emailPattern = Pattern.compile(".+@.+.[a-z]+");
+	private static Pattern emailPattern = Pattern.compile(".+@.+.[a-z]+"); //$NON-NLS-1$
 
 	MSNConnectWizardPage() {
 		super(MSNConnectWizardPage.class.getName());
@@ -55,7 +56,7 @@ final class MSNConnectWizardPage extends WizardPage {
 		this.username = username;
 	}
 
-	private void verifyEmail() {
+	private void verify() {
 		String email = emailText.getText().trim();
 		if (email.equals("")) { //$NON-NLS-1$
 			setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressRequired);
@@ -64,17 +65,13 @@ final class MSNConnectWizardPage extends WizardPage {
 			if (!matcher.matches()) {
 				setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressInvalid);
 			} else {
-				setErrorMessage(null);
 				restorePassword(email);
+				if (passwordText.getText().equals("")) { //$NON-NLS-1$
+					setErrorMessage(Messages.MSNConnectWizardPage_PasswordRequired);
+				} else {
+					setErrorMessage(null);
+				}
 			}
-		}
-	}
-	
-	private void verifyPassword() {
-		if (passwordText.getText().trim().equals("")) { //$NON-NLS-1$
-			setErrorMessage(Messages.MSNConnectWizardPage_PasswordRequired);
-		} else {
-			setErrorMessage(null);
 		}
 	}
 	
@@ -89,19 +86,19 @@ final class MSNConnectWizardPage extends WizardPage {
 	private void addListeners() {
 		emailText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				verifyEmail();
+				verify();
 			}
 		});
 		emailText.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
-				verifyEmail();
+				verify();
 			}
 			public void widgetSelected(SelectionEvent e) {
-				verifyEmail();
+				verify();
 			}});
 		passwordText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				verifyPassword();
+				verify();
 			}
 		});
 	}
@@ -124,9 +121,8 @@ final class MSNConnectWizardPage extends WizardPage {
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(data);
 
-		addListeners();
-
 		restoreCombo();
+		addListeners();
 
 		if (username != null) {
 			emailText.setText(username);
@@ -134,7 +130,7 @@ final class MSNConnectWizardPage extends WizardPage {
 			passwordText.setFocus();
 		}
 
-		org.eclipse.jface.dialogs.Dialog.applyDialogFont(parent);
+		Dialog.applyDialogFont(parent);
 		setControl(parent);
 	}
 
