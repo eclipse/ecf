@@ -18,7 +18,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
-import org.eclipse.ecf.presence.collab.ui.console.ConsoleShare;
 import org.eclipse.ecf.presence.collab.ui.screencapture.ScreenCaptureShare;
 import org.eclipse.ecf.presence.collab.ui.url.URLShare;
 import org.eclipse.ecf.presence.collab.ui.view.ViewShare;
@@ -58,11 +57,13 @@ public class ShareReceiversECFStart implements IECFStart {
 					} catch (ECFException e) {
 						Activator.getDefault().getLog().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO, NLS.bind(Messages.ShareReceiversECFStart_STATUS_VIEWSHARE_NOT_CREATED, container.getID()), null));
 					}
+					/*
 					try {
 						ConsoleShare.addStackShare(containerID, cca);
 					} catch (ECFException e) {
 						Activator.getDefault().getLog().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO, NLS.bind(Messages.ShareReceiversECFStart_STATUS_CAPTURESHARE_NOT_CREATED, container.getID()), null));
 					}
+					*/
 					try {
 						ScreenCaptureShare.addScreenCaptureShare(containerID, cca);
 					} catch (ECFException e) {
@@ -70,10 +71,24 @@ public class ShareReceiversECFStart implements IECFStart {
 					}
 				} else if (event instanceof IContainerDisconnectedEvent || event instanceof IContainerEjectedEvent) {
 					// disconnected
-					URLShare.removeURLShare(containerID);
-					ViewShare.removeViewShare(containerID);
-					ConsoleShare.removeStackShare(containerID);
-					ScreenCaptureShare.removeScreenCaptureShare(containerID);
+					URLShare urlShare = URLShare.removeURLShare(containerID);
+					if (urlShare != null) {
+						urlShare.dispose();
+					}
+					ViewShare viewShare = ViewShare.removeViewShare(containerID);
+					if (viewShare != null) {
+						viewShare.dispose();
+					}
+					/*
+					ConsoleShare consoleShare = ConsoleShare.removeStackShare(containerID);
+					if (consoleShare != null) {
+						consoleShare.dispose();
+					}
+					*/
+					ScreenCaptureShare scShare = ScreenCaptureShare.removeScreenCaptureShare(containerID);
+					if (scShare != null) {
+						scShare.dispose();
+					}
 				}
 			} else if (event instanceof IContainerDisposeEvent) {
 				containerManager.removeListener(containerManagerListener);
