@@ -58,6 +58,9 @@ public class RosterItem implements IRosterItem {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
+		if (adapter.isInstance(this)) {
+			return this;
+		}
 		IAdapterManager adapterManager = PresencePlugin.getDefault().getAdapterManager();
 		if (adapterManager == null)
 			return null;

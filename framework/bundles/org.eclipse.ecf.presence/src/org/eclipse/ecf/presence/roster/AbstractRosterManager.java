@@ -12,7 +12,9 @@
 package org.eclipse.ecf.presence.roster;
 
 import java.util.*;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.internal.presence.PresencePlugin;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceSender;
 
@@ -118,6 +120,13 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	}
 
 	public Object getAdapter(Class adapter) {
+		if (adapter.isInstance(this)) {
+			return this;
+		}
+		IAdapterManager adapterManager = PresencePlugin.getDefault().getAdapterManager();
+		if (adapterManager != null) {
+			return adapterManager.loadAdapter(this, adapter.getName());
+		}
 		return null;
 	}
 
