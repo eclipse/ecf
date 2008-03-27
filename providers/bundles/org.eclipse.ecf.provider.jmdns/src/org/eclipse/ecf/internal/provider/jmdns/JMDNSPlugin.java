@@ -12,8 +12,10 @@ package org.eclipse.ecf.internal.provider.jmdns;
 
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.util.PlatformHelper;
+import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.osgi.framework.*;
+import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -40,6 +42,10 @@ public class JMDNSPlugin implements BundleActivator {
 	private ServiceTracker discoveryTracker;
 
 	private ServiceRegistration serviceRegistration;
+
+	private ServiceTracker logServiceTracker = null;
+
+	private LogService logService = null;
 
 	public IAdapterManager getAdapterManager() {
 		// First, try to get the adapter manager via
@@ -96,6 +102,11 @@ public class JMDNSPlugin implements BundleActivator {
 			discoveryTracker.close();
 			discoveryTracker = null;
 		}
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+			logService = null;
+		}
 		this.context = ctxt;
 		plugin = null;
 	}
@@ -105,6 +116,36 @@ public class JMDNSPlugin implements BundleActivator {
 	 */
 	public synchronized static JMDNSPlugin getDefault() {
 		return plugin;
+	}
+
+	/**
+	 * @param string
+	 * @param t
+	 */
+	public void logException(String string, Throwable t) {
+		getLogService();
+		if (logService != null)
+			logService.log(LogService.LOG_ERROR, string, t);
+	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		logService = (LogService) logServiceTracker.getService();
+		if (logService == null)
+			logService = new SystemLogService(PLUGIN_ID);
+		return logService;
+	}
+
+	/**
+	 * @param errorString
+	 */
+	public void logError(String errorString) {
+		getLogService();
+		if (logService != null)
+			logService.log(LogService.LOG_ERROR, errorString);
 	}
 
 }
