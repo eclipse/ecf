@@ -196,7 +196,11 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				ServiceInfo[] infos = jmdns.list(type.getInternal());
 				for (int i = 0; i < infos.length; i++) {
 					try {
-						serviceInfos.add(createIServiceInfoFromServiceInfo(infos[i]));
+						if (infos[i] != null) {
+							IServiceInfo si = createIServiceInfoFromServiceInfo(infos[i]);
+							if (si != null)
+								serviceInfos.add(si);
+						}
 					} catch (Exception e) {
 						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices", e); //$NON-NLS-1$
 					}
@@ -293,6 +297,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 						added = true;
 					}
 				}
+				// Fire notification outside synchronized block
 				if (added) {
 					try {
 						fireTypeDiscovered(serviceType);
