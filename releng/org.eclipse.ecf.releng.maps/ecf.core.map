@@ -46,7 +46,7 @@ plugin@org.eclipse.ecf.docshare=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvs
 plugin@org.eclipse.ecf.provider.filetransfer.scp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.filetransfer.scp
 plugin@org.eclipse.ecf.provider.jslp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.jslp
 
-plugin@org.apache.commons.httpclient.source,3.1.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080326131619/bundles/org.apache.commons.httpclient.source_3.1.0.v200803061910.jar
+plugin@org.apache.commons.httpclient,3.1.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080326131619/bundles/org.apache.commons.httpclient_3.1.0.v200803061910.jar
 plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080326131619/bundles/org.apache.commons.codec_1.2.0.v200803061811.jar
 plugin@org.apache.commons.logging,1.0.4=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080326131619/bundles/org.apache.commons.logging_1.0.4.v200803061811.jar
 plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080326131619/bundles/com.jcraft.jsch_0.1.31.jar
