@@ -49,7 +49,6 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.editors.text.EditorsUI;
-import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
@@ -275,7 +274,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		private StyledText createStyledTextWidget(Composite parent, int styles) {
 			try {
 				SourceViewer result = new SourceViewer(parent, null, null, true, styles);
-				result.configure(new TextSourceViewerConfiguration(EditorsUI.getPreferenceStore()));
+				result.configure(new ChatRoomViewerConfiguration(EditorsUI.getPreferenceStore(), container, ChatRoomManagerView.this));
 				result.setDocument(new Document());
 				return result.getTextWidget();
 			} catch (Exception e) {
@@ -461,6 +460,10 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			return true;
 		}
 		return false;
+	}
+
+	public IChatRoomContainer getRootChatRoomContainer() {
+		return container;
 	}
 
 	/**
