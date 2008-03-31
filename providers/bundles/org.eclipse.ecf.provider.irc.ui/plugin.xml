@@ -38,6 +38,13 @@
             name="%IRCHyperlinkDetector"
             targetId="org.eclipse.ui.DefaultTextEditor">
       </hyperlinkDetector>
+      <hyperlinkDetector
+            activate="true"
+            class="org.eclipse.ecf.internal.irc.ui.hyperlink.IRCChannelHyperlinkDetector"
+            id="org.eclipse.ecf.internal.irc.hyperlink.IRCChannelHyperlinkDetector"
+            name="IRC Channel"
+            targetId="org.eclipse.ecf.internal.provider.irc.container">
+      </hyperlinkDetector>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -116,6 +123,13 @@
             %fontDefinition.ircMeFont.description
          </description>
       </fontDefinition>
+   </extension>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
+      <target
+            id="org.eclipse.ecf.internal.provider.irc.container"
+            name="IRC Chatroom container">
+      </target>
    </extension>
 
 </plugin>
