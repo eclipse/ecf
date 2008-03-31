@@ -211,19 +211,9 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#dispose()
 	 */
 	public void dispose() {
-		if (presenceHelper != null) {
-			presenceHelperID = null;
-			presenceHelper = null;
-		}
-		if (chatRoomManager != null)
-			chatRoomManager.dispose();
-		chatRoomManager = null;
-		if (accountManager != null)
-			accountManager.dispose();
-		accountManager = null;
-		if (outgoingFileTransferContainerAdapter != null)
-			outgoingFileTransferContainerAdapter.dispose();
-		outgoingFileTransferContainerAdapter = null;
+		chatRoomManager.dispose();
+		accountManager.dispose();
+		outgoingFileTransferContainerAdapter.dispose();
 		super.dispose();
 	}
 
