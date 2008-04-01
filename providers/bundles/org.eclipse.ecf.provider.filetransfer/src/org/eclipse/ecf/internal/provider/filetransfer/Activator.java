@@ -318,7 +318,7 @@ public class Activator implements BundleActivator {
 				priority = (priority < 0) ? 0 : priority;
 			} catch (NumberFormatException e) {
 				// Give warning
-				Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_PRIORITY_ERROR, new Object[] {warning, protocol, configElement.getDeclaringExtension().getContributor().getName(), priorityString, String.valueOf(DEFAULT_PRIORITY)}), null));
+				Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for {1} from {2} has invalid priority {3}. Priority will be set to {4}", new Object[] {warning, protocol, configElement.getDeclaringExtension().getContributor().getName(), priorityString, String.valueOf(DEFAULT_PRIORITY)}), null)); //$NON-NLS-1$
 			}
 		}
 		return priority;
@@ -330,7 +330,7 @@ public class Activator implements BundleActivator {
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
-			String CONTRIBUTION_WARNING = Messages.Activator_WARNING_RETRIEVE_CONTRIBUTION_PREFIX;
+			String CONTRIBUTION_WARNING = "File retrieve contribution"; //$NON-NLS-1$
 			try {
 				// First create factory clazz 
 				final IRetrieveFileTransferFactory clazz = (IRetrieveFileTransferFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
@@ -348,14 +348,14 @@ public class Activator implements BundleActivator {
 						int result = oldProtocolFactory.compareTo(newProtocolFactory);
 						if (result < 0) {
 							// Existing one has higher priority, so we provide warning and return (leaving existing one as the handler)
-							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_EXISTING_HIGHER_PRIORITY, new Object[] {CONTRIBUTION_WARNING, protocol, contributorName}), null));
+							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be ignored.  Existing protocol factory has higher priority.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName}), null)); //$NON-NLS-1$
 							continue;
 						} else if (result == 0) {
 							// Warn that we are using new one because they have the same priority.
-							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_SAME_PRIORITY, new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority)}), null));
+							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority)}), null)); //$NON-NLS-1$
 						} else if (result > 0) {
 							// Warn that we are using new one because it has higher priority.
-							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_NEW_HIGHER_PRIORITY, new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null));
+							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
 						}
 					}
 					if (!isSchemeRegistered(protocol, existingSchemes))
@@ -364,7 +364,7 @@ public class Activator implements BundleActivator {
 					retrieveFileTransferProtocolMap.put(protocol, newProtocolFactory);
 				}
 			} catch (final CoreException e) {
-				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.Activator_EXCEPTION_LOADING_EXTENSION_POINT, RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e));
+				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind("Error loading from {0} extension point", RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e)); //$NON-NLS-1$
 			}
 		}
 	}
@@ -392,7 +392,7 @@ public class Activator implements BundleActivator {
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
-			String CONTRIBUTION_WARNING = Messages.Activator_WARNING_SEND_CONTRIBUTION_PREFIX;
+			String CONTRIBUTION_WARNING = "File send contribution"; //$NON-NLS-1$
 			try {
 				// First create factory clazz 
 				final ISendFileTransferFactory clazz = (ISendFileTransferFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
@@ -410,14 +410,14 @@ public class Activator implements BundleActivator {
 						int result = oldProtocolFactory.compareTo(newProtocolFactory);
 						if (result < 0) {
 							// Existing one has higher priority, so we provide warning and return (leaving existing one as the handler)
-							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_EXISTING_HIGHER_PRIORITY, new Object[] {CONTRIBUTION_WARNING, protocol, contributorName}), null));
+							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be ignored.  Existing protocol factory has higher priority.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName}), null)); //$NON-NLS-1$
 							continue;
 						} else if (result == 0) {
 							// Warn that we are using new one because they have the same priority.
-							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_SAME_PRIORITY, new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority)}), null));
+							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority)}), null)); //$NON-NLS-1$
 						} else if (result > 0) {
 							// Warn that we are using new one because it has higher priority.
-							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_NEW_HIGHER_PRIORITY, new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null));
+							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
 						}
 					}
 					if (!isSchemeRegistered(protocol, existingSchemes))
@@ -426,7 +426,7 @@ public class Activator implements BundleActivator {
 					sendFileTransferProtocolMap.put(protocol, newProtocolFactory);
 				}
 			} catch (final CoreException e) {
-				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.Activator_EXCEPTION_LOADING_EXTENSION_POINT, SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e));
+				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind("Error loading from {0} extension point", SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e)); //$NON-NLS-1$
 			}
 		}
 	}
@@ -454,7 +454,7 @@ public class Activator implements BundleActivator {
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
-			String CONTRIBUTION_WARNING = Messages.Activator_WARNING_BROWSE_CONTRIBUTION_PREFIX;
+			String CONTRIBUTION_WARNING = "File browse contribution"; //$NON-NLS-1$
 			try {
 				// First create factory clazz 
 				final IRemoteFileSystemBrowserFactory clazz = (IRemoteFileSystemBrowserFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
@@ -472,14 +472,14 @@ public class Activator implements BundleActivator {
 						int result = oldProtocolFactory.compareTo(newProtocolFactory);
 						if (result < 0) {
 							// Existing one has higher priority, so we provide warning and return (leaving existing one as the handler)
-							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_EXISTING_HIGHER_PRIORITY, new Object[] {CONTRIBUTION_WARNING, protocol, contributorName}), null));
+							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be ignored.  Existing protocol factory has higher priority.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName}), null)); //$NON-NLS-1$
 							continue;
 						} else if (result == 0) {
 							// Warn that we are using new one because they have the same priority.
-							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_SAME_PRIORITY, new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority)}), null));
+							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority)}), null)); //$NON-NLS-1$
 						} else if (result > 0) {
 							// Warn that we are using new one because it has higher priority.
-							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.Activator_WARNING_NEW_HIGHER_PRIORITY, new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null));
+							Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
 						}
 					}
 					if (!isSchemeRegistered(protocol, existingSchemes))
@@ -488,7 +488,7 @@ public class Activator implements BundleActivator {
 					browseFileTransferProtocolMap.put(protocol, newProtocolFactory);
 				}
 			} catch (final CoreException e) {
-				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.Activator_EXCEPTION_LOADING_EXTENSION_POINT, BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e));
+				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind("Error loading from {0} extension point", BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e)); //$NON-NLS-1$
 			}
 		}
 	}
@@ -546,7 +546,7 @@ public class Activator implements BundleActivator {
 		 * @see org.osgi.service.url.AbstractURLStreamHandlerService#openConnection(java.net.URL)
 		 */
 		public URLConnection openConnection(URL u) throws IOException {
-			throw new IOException(NLS.bind(Messages.Activator_EXCEPTION_URLConnection_CANNOT_BE_CREATED, u.toExternalForm()));
+			throw new IOException(NLS.bind("URLConnection cannot be created for {0}", u.toExternalForm())); //$NON-NLS-1$
 		}
 
 	}

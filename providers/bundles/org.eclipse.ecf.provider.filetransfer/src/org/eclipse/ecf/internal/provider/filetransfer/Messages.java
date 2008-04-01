@@ -41,18 +41,6 @@ public class Messages extends NLS {
 	public static String AbstractOutgoingFileTransfer_Status_Transfer_Completed_OK;
 	public static String AbstractOutgoingFileTransfer_Status_Transfer_Exception;
 	public static String AbstractOutgoingFileTransfer_TransferListener_Not_Null;
-	public static String Activator_EXCEPTION_LOADING_EXTENSION_POINT;
-	public static String Activator_EXCEPTION_URLConnection_CANNOT_BE_CREATED;
-	public static String Activator_WARNING_RETRIEVE_CONTRIBUTION_PREFIX;
-	public static String Activator_WARNING_RETRIEVE_PROTOCOL_CONTRIBUTION_WILL_BE_IGNORED;
-	public static String Activator_WARNING_SAME_PRIORITY;
-	public static String Activator_WARNING_SEND_CONTRIBUTION_PREFIX;
-	public static String Activator_WARNING_SEND_PROTOCOL_CONTRIBUTION_IGNORED;
-	public static String Activator_WARNING_BROWSE_CONTRIBUTION_PREFIX;
-	public static String Activator_WARNING_BROWSE_PROTOCOL_CONTRIBUTION_IGNORED;
-	public static String Activator_WARNING_EXISTING_HIGHER_PRIORITY;
-	public static String Activator_WARNING_NEW_HIGHER_PRIORITY;
-	public static String Activator_WARNING_PRIORITY_ERROR;
 	public static String UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR;
 	public static String UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST;
 	public static String UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START;
@@ -65,7 +53,6 @@ public class Messages extends NLS {
 	public static String UrlConnectionRetrieveFileTransfer_USERNAME_PROMPT;
 	public static String UrlConnectionOutgoingFileTransfer_EXCEPTION_COULD_NOT_CONNECT;
 	public static String FileSystemBrowser_EXCEPTION_DIRECTORY_DOES_NOT_EXIST;
-	public static String FileSystemBrowser_EXCEPTION_NOT_DIRECTORY;
 	public static String FileTransferNamespace_Exception_Args_Null;
 	public static String FileTransferNamespace_Exception_Create_Instance;
 	public static String FileTransferNamespace_Exception_Create_Instance_Failed;
@@ -77,17 +64,10 @@ public class Messages extends NLS {
 	public static String FileTransferNamespace_Mailto_Protocol;
 	public static String FileTransferNamespace_Gopher_Protocol;
 	public static String FileTransferNamespace_Namespace_Protocol;
-	public static String HttpClientRetrieveFileTransfer_Http_ProxyHost_Prop;
-	public static String HttpClientRetrieveFileTransfer_Http_ProxyPort_Prop;
-	public static String HttpClientRetrieveFileTransfer_Proxy_Auth_Required;
-	public static String HttpClientRetrieveFileTransfer_Unauthorized;
-	public static String HttpClientRetrieveFileTransfer_Username_Prefix;
 	public static String FileTransferID_Exception_Url_Not_Null;
 	public static String LocalFileOutgoingFileTransfer_EXCEPTION_OPENING_FOR_INPUT;
 	public static String LocalFileOutgoingFileTransfer_EXCEPTION_OPENING_FOR_OUTPUT;
 	public static String MultiProtocolOutgoingAdapter_EXCEPTION_NO_PROTOCOL_HANDER;
-	public static String SslProtocolSocketFactory_SSLContext_Instance;
-	public static String SslProtocolSocketFactory_Status_Create_Error;
 
 	static {
 		// initialize resource bundle
