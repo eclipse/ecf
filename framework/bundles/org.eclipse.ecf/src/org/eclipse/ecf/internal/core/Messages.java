@@ -25,11 +25,6 @@ public class Messages extends NLS {
 	public static String ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL;
 	public static String ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL;
 	public static String ContainerFactory_Exception_Create_Container;
-	public static String ContainerFactory_Exception_Platform_Running;
-	public static String ContainerFactory_Warning_Running_Standalone;
-	public static String ContainerTypeDescription_Instantiator_Class_Not_Null;
-	public static String ContainerTypeDescription_Instantiator_Instance_Not_Null;
-	public static String ContainerTypeDescription_Name_Not_Null;
 	public static String ECFPlugin_Container_Name_Collision_Prefix;
 	static {
 		// initialize resource bundle

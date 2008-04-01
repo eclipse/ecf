@@ -8,14 +8,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.ECFDebugOptions;
 import org.eclipse.ecf.internal.core.ECFPlugin;
-import org.eclipse.ecf.internal.core.Messages;
 
 /**
  * Description of an {@link IContainer} type.  Instances of this class are used to represent {@link IContainerInstantiator}s
@@ -44,10 +41,10 @@ public class ContainerTypeDescription {
 	}
 
 	public ContainerTypeDescription(String name, String instantiatorClass, String description, boolean server, boolean hidden) {
-		Assert.isNotNull(name, Messages.ContainerTypeDescription_Name_Not_Null);
+		Assert.isNotNull(name, "ContainerTypeDescription<init> name cannot be null"); //$NON-NLS-1$
 		this.name = name;
 		this.hashCode = name.hashCode();
-		Assert.isNotNull(instantiatorClass, Messages.ContainerTypeDescription_Instantiator_Class_Not_Null);
+		Assert.isNotNull(instantiatorClass, "ContainerTypeDescription<init> instantiatorClass cannot be null"); //$NON-NLS-1$
 		this.instantiatorClass = instantiatorClass;
 		this.description = description;
 		this.server = server;
@@ -59,10 +56,10 @@ public class ContainerTypeDescription {
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst, String desc, boolean server, boolean hidden) {
-		Assert.isNotNull(name, Messages.ContainerTypeDescription_Name_Not_Null);
+		Assert.isNotNull(name, "ContainerTypeDescription<init> name cannot be null"); //$NON-NLS-1$
 		this.name = name;
 		this.hashCode = name.hashCode();
-		Assert.isNotNull(inst, Messages.ContainerTypeDescription_Instantiator_Instance_Not_Null);
+		Assert.isNotNull(inst, "ContainerTypeDescription<init> instantiator instance cannot be null"); //$NON-NLS-1$
 		this.instantiator = inst;
 		this.description = desc;
 		this.server = server;
