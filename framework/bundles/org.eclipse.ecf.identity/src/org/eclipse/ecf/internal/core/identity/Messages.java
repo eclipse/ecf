@@ -24,13 +24,6 @@ public class Messages extends NLS {
 	public static String GUID_GUID_Namespace_Description_Default;
 	public static String GUID_IBM_SECURE_RANDOM;
 	public static String GUID_SHA1;
-	public static String IDFactory_Namespace_Not_Found;
-	public static String IDFactory_Namespace_Not_Null;
-	public static String IDFactory_StringID_Not_Null;
-	public static String LongID_LongID_Namespace_Description;
-	public static String Namespace_Namespace_Name_Not_Null;
-	public static String StringID_StringID_Name_Not_Null;
-	public static String StringID_StringID_Namespace_Description;
 	public static String Trace_Date_Time_Format;
 	static {
 		// initialize resource bundle

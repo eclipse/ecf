@@ -11,7 +11,6 @@ package org.eclipse.ecf.core.identity;
 import java.io.Serializable;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.core.identity.Activator;
-import org.eclipse.ecf.internal.core.identity.Messages;
 
 /**
  * Namespace base class
@@ -59,7 +58,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	public final boolean initialize(String n, String desc) {
-		Assert.isNotNull(n, Messages.Namespace_Namespace_Name_Not_Null);
+		Assert.isNotNull(n, "Namespace<init> name cannot be null"); //$NON-NLS-1$
 		if (!isInitialized) {
 			this.name = n;
 			this.description = desc;

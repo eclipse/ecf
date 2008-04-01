@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import org.eclipse.ecf.internal.core.identity.Messages;
-
 /**
  * A unique ID class based upon Long/long
  * 
@@ -23,7 +21,7 @@ public class LongID extends BaseID {
 		private static final long serialVersionUID = -1580533392719331665L;
 
 		public LongNamespace() {
-			super(LongID.class.getName(), Messages.LongID_LongID_Namespace_Description);
+			super(LongID.class.getName(), "LongID Namespace"); //$NON-NLS-1$
 		}
 
 		/**

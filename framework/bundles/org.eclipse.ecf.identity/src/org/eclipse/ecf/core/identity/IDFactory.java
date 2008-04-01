@@ -13,7 +13,8 @@ import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.core.identity.*;
+import org.eclipse.ecf.internal.core.identity.Activator;
+import org.eclipse.ecf.internal.core.identity.IdentityDebugOptions;
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -188,12 +189,12 @@ public class IDFactory implements IIDFactory {
 		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, IDFactory.class, "createID", new Object[] {n, Trace.getArgumentsString(args)}); //$NON-NLS-1$
 		// Verify namespace is non-null
 		if (n == null)
-			logAndThrow(Messages.IDFactory_Namespace_Not_Null, null);
+			logAndThrow("Namespace cannot be null", null); //$NON-NLS-1$
 		// Make sure that namespace is in table of known namespace. If not,
 		// throw...we don't create any instances that we don't know about!
 		Namespace ns = getNamespace0(n);
 		if (ns == null)
-			logAndThrow(NLS.bind(Messages.IDFactory_Namespace_Not_Found, n.getName()), null);
+			logAndThrow(NLS.bind("Namespace {0} not found", n.getName()), null); //$NON-NLS-1$
 		// We're OK, go ahead and setup array of classes for call to
 		// instantiator
 		// Ask instantiator to actually create instance
@@ -211,7 +212,7 @@ public class IDFactory implements IIDFactory {
 	public ID createID(String namespaceName, Object[] args) throws IDCreateException {
 		Namespace n = getNamespaceByName(namespaceName);
 		if (n == null)
-			throw new IDCreateException(NLS.bind(Messages.IDFactory_Namespace_Not_Found, namespaceName));
+			throw new IDCreateException(NLS.bind("Namespace {0} not found", namespaceName)); //$NON-NLS-1$
 		return createID(n, args);
 	}
 
@@ -230,7 +231,7 @@ public class IDFactory implements IIDFactory {
 	 */
 	public ID createStringID(String idstring) throws IDCreateException {
 		if (idstring == null)
-			throw new IDCreateException(Messages.IDFactory_StringID_Not_Null);
+			throw new IDCreateException("StringID cannot be null"); //$NON-NLS-1$
 		Namespace n = new StringID.StringIDNamespace();
 		return createID(n, new String[] {idstring});
 	}
