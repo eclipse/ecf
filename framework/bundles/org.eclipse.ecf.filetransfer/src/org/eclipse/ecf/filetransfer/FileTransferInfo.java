@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
-import org.eclipse.ecf.internal.filetransfer.Messages;
 
 /**
  * File transfer information delivered to
@@ -48,7 +47,7 @@ public class FileTransferInfo implements IFileTransferInfo, Serializable {
 	}
 
 	public FileTransferInfo(File file, Map properties, String description, String mimeType) {
-		Assert.isNotNull(file, Messages.BaseFileTransferInfo_File_Not_Null);
+		Assert.isNotNull(file, "file must not be null"); //$NON-NLS-1$
 		this.file = file;
 		this.properties = (properties == null) ? new HashMap() : properties;
 		this.description = description;

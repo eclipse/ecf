@@ -9,14 +9,12 @@
 package org.eclipse.ecf.filetransfer.identity;
 
 import java.net.URL;
-
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.internal.filetransfer.Activator;
 import org.eclipse.ecf.internal.filetransfer.FileTransferDebugOptions;
-import org.eclipse.ecf.internal.filetransfer.Messages;
-import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 
 /**
  * Factory class entry point for creating IFileID instances.
@@ -100,7 +98,7 @@ public class FileIDFactory {
 			return result;
 		} catch (Exception e) {
 			Trace.throwing(Activator.PLUGIN_ID, FileTransferDebugOptions.EXCEPTIONS_THROWING, FileIDFactory.class, "createFileID", e); //$NON-NLS-1$
-			throw new FileCreateException(Messages.FileIDFactory_Exception_File_Create, e);
+			throw new FileCreateException("Exception in createFileID", e); //$NON-NLS-1$
 		}
 	}
 
