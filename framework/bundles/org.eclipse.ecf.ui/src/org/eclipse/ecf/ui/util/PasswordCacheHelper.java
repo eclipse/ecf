@@ -15,15 +15,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.ui.Activator;
 
 /**
  * Helper for caching password via
- * {@link Platform#addAuthorizationInfo(URL, String, String, Map)}
+ * Platform#addAuthorizationInfo(URL, String, String, Map)
  */
 public class PasswordCacheHelper {
 
@@ -48,8 +45,7 @@ public class PasswordCacheHelper {
 	}
 
 	public boolean savePassword(String password) {
-		Map map = Platform.getAuthorizationInfo(FAKE_URL, targetAuthority,
-				AUTH_SCHEME);
+		Map map = Platform.getAuthorizationInfo(FAKE_URL, targetAuthority, AUTH_SCHEME);
 		if (map == null) {
 			map = new HashMap(10);
 		}
@@ -57,8 +53,7 @@ public class PasswordCacheHelper {
 			map.put(INFO_PASSWORD, password);
 
 		try {
-			Platform.addAuthorizationInfo(FAKE_URL, targetAuthority,
-					AUTH_SCHEME, map);
+			Platform.addAuthorizationInfo(FAKE_URL, targetAuthority, AUTH_SCHEME, map);
 		} catch (CoreException e) {
 			Activator.log("savePassword", e); //$NON-NLS-1$
 			return false;
@@ -67,8 +62,7 @@ public class PasswordCacheHelper {
 	}
 
 	public String retrievePassword() {
-		Map map = Platform.getAuthorizationInfo(FAKE_URL, targetAuthority,
-				AUTH_SCHEME);
+		Map map = Platform.getAuthorizationInfo(FAKE_URL, targetAuthority, AUTH_SCHEME);
 		if (map != null) {
 			return (String) map.get(INFO_PASSWORD);
 		}
