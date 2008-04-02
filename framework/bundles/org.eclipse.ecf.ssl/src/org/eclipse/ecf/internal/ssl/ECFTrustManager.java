@@ -69,6 +69,9 @@ public class ECFTrustManager implements X509TrustManager, BundleActivator {
 		}
 	}
 
+	/**
+	 * @throws CertificateException not actually thrown by method, since checkClientTrusted is unsupported. 
+	 */
 	public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
 		// only for client authentication
 		throw new UnsupportedOperationException("Not implemented yet"); //$NON-NLS-1$
@@ -79,12 +82,12 @@ public class ECFTrustManager implements X509TrustManager, BundleActivator {
 		return null;
 	}
 
-	public void start(BundleContext context) throws Exception {
-		ECFTrustManager.context = context;
-		context.registerService(SSLSocketFactory.class.getName(), new ECFSSLSocketFactory(), null);
+	public void start(BundleContext context1) throws Exception {
+		ECFTrustManager.context = context1;
+		context1.registerService(SSLSocketFactory.class.getName(), new ECFSSLSocketFactory(), null);
 	}
 
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context1) throws Exception {
 		if (trustEngineTracker != null) {
 			trustEngineTracker.close();
 			trustEngineTracker = null;
