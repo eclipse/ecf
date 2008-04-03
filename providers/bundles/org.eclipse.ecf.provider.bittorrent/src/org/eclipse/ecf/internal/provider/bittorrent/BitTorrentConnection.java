@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 Remy Suen, Composent Inc., and others.
+ * Copyright (c) 2007, 2008 Remy Suen, Composent Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,9 +15,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.eclipse.bittorrent.Torrent;
-import org.eclipse.bittorrent.TorrentFactory;
-import org.eclipse.bittorrent.TorrentFile;
+import org.eclipse.ecf.protocol.bittorrent.Torrent;
+import org.eclipse.ecf.protocol.bittorrent.TorrentFactory;
+import org.eclipse.ecf.protocol.bittorrent.TorrentFile;
 
 final class BitTorrentConnection extends URLConnection {
 

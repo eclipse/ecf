@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2007 Remy Suen, Composent Inc., and others.
+ * Copyright (c) 2006, 2008 Remy Suen, Composent Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,10 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.bittorrent.Torrent;
-import org.eclipse.bittorrent.TorrentConfiguration;
-import org.eclipse.bittorrent.TorrentFactory;
-import org.eclipse.bittorrent.TorrentFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
@@ -43,6 +39,10 @@ import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
+import org.eclipse.ecf.protocol.bittorrent.Torrent;
+import org.eclipse.ecf.protocol.bittorrent.TorrentConfiguration;
+import org.eclipse.ecf.protocol.bittorrent.TorrentFactory;
+import org.eclipse.ecf.protocol.bittorrent.TorrentFile;
 import org.eclipse.osgi.util.NLS;
 
 public final class BitTorrentContainer implements IContainer, IRetrieveFileTransfer {

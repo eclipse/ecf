@@ -11,7 +11,7 @@ Export-Package: org.eclipse.ecf.internal.provider.bittorrent;x-internal:=true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.filetransfer,
- org.eclipse.bittorrent,
+ org.eclipse.ecf.protocol.bittorrent,
  org.eclipse.ecf.provider.filetransfer
 Import-Package: org.eclipse.core.runtime;common=split,
  org.eclipse.osgi.service.datalocation;version="1.0.0",

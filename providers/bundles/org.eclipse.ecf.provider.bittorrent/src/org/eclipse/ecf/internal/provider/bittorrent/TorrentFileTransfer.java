@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2007 Remy Suen, Composent Inc., and others.
+ * Copyright (c) 2006, 2008 Remy Suen, Composent Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,9 +13,6 @@ package org.eclipse.ecf.internal.provider.bittorrent;
 import java.io.IOException;
 import java.util.Date;
 
-import org.eclipse.bittorrent.IPieceProgressListener;
-import org.eclipse.bittorrent.ITorrentStateListener;
-import org.eclipse.bittorrent.Torrent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
@@ -26,6 +23,9 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.protocol.bittorrent.IPieceProgressListener;
+import org.eclipse.ecf.protocol.bittorrent.ITorrentStateListener;
+import org.eclipse.ecf.protocol.bittorrent.Torrent;
 
 final class TorrentFileTransfer implements IFileTransferPausable, IFileTransferRateControl, IIncomingFileTransfer, IOutgoingFileTransfer {
 
