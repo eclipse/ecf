@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.ecf.protocol.bittorrent
+Bundle-Version: 0.3.0
+Bundle-Localization: plugin
+Export-Package: org.eclipse.ecf.protocol.bittorrent,
+ org.eclipse.ecf.protocol.bittorrent.internal.encode;x-internal:=true,
+ org.eclipse.ecf.protocol.bittorrent.internal.net;x-internal:=true,
+ org.eclipse.ecf.protocol.bittorrent.internal.torrent;x-internal:=true
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-Vendor: %providerName
