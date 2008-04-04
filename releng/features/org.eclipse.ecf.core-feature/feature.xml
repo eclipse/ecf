@@ -228,13 +228,6 @@ Contributors: Composent, Inc. - initial API and implementation
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.bittorrent"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.provider.bittorrent"
          download-size="0"
          install-size="0"
@@ -382,6 +375,13 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.remoteservice.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.protocol.bittorrent"
          download-size="0"
          install-size="0"
          version="0.0.0"
