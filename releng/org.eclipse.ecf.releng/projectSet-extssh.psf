@@ -45,7 +45,7 @@
 		<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/providers/org.eclipse.ecf.provider.msn.ui,org.eclipse.ecf.provider.msn.ui"/>
 		<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.remoteservice,org.eclipse.ecf.provider.remoteservice"/>
 		<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/providers/org.eclipse.ecf.protocol.msn,org.eclipse.ecf.protocol.msn"/>
-		<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/providers/org.eclipse.bittorrent,org.eclipse.bittorrent"/>
+		<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/providers/org.eclipse.ecf.protocol.bittorrent,org.eclipse.ecf.protocol.bittorrent"/>
 		<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/providers/org.eclipse.ecf.provider.bittorrent,org.eclipse.ecf.provider.bittorrent"/>
 		<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/providers/org.eclipse.ecf.provider.bittorrent.ui,org.eclipse.ecf.provider.bittorrent.ui"/>
 		<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.jmdns,org.eclipse.ecf.provider.jmdns"/>
