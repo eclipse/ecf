@@ -6,6 +6,4 @@ plugin@org.eclipse.ecf.provider.skype=@CVSTag@,:pserver:anonymous@ecf1.osuosl.or
 plugin@org.eclipse.ecf.provider.skype.ui=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.skype.ui
 
 plugin@com.skype=@CVSTag@,:pserver:anonymous@cvs.sourceforge.jp:/cvsroot/skype,,eclipse/plugins/com.skype
-fragment@com.skype.linux.x86=@CVSTag@,:pserver:anonymous@cvs.sourceforge.jp:/cvsroot/skype,,eclipse/plugins/com.skype.linux.x86
-fragment@com.skype.linux.x86_64=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/com.skype.linux.x86_64
 fragment@com.skype.win32.win32.x86=@CVSTag@,:pserver:anonymous@cvs.sourceforge.jp:/cvsroot/skype,,eclipse/plugins/com.skype.win32.win32.x86
