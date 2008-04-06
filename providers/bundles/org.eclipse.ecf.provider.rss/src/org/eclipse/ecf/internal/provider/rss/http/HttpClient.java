@@ -11,7 +11,6 @@
 package org.eclipse.ecf.internal.provider.rss.http;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
@@ -19,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.rss.RssDebugOptions;
 import org.eclipse.ecf.internal.provider.rss.RssPlugin;
@@ -69,30 +69,38 @@ public class HttpClient implements ISynchAsynchConnection {
 	}
 
 	public Object connect(ID remote, Object data, int timeout)
-			throws IOException {
-		trace("connect(" + remote + "," + data + "," + timeout + ")");
-		if (socket != null) {
-			throw new ConnectException("Already connected to " + getURL(null));
+			throws ECFException {
+		try {
+			trace("connect(" + remote + "," + data + "," + timeout + ")");
+			if (socket != null) {
+				throw new ECFException("Already connected to " + getURL(null));
+			}
+			
+			URL url = new URL(remote.getName());
+			/*
+			 * // Get socket factory and create/connect socket SocketFactory fact =
+			 * SocketFactory.getSocketFactory(); if(fact == null) { fact =
+			 * SocketFactory.getDefaultSocketFactory(); }
+			 */
+
+			int port = url.getPort() != -1 ? url.getPort() : DEFAULT_PORT;
+			// socket = fact.createSocket(url.getHost(), port, timeout);
+			socket = new Socket(url.getHost(), port);
+		} catch (IOException e) {
+			throw new ECFException(e);
 		}
-
-		URL url = new URL(remote.getName());
-		/*
-		 * // Get socket factory and create/connect socket SocketFactory fact =
-		 * SocketFactory.getSocketFactory(); if(fact == null) { fact =
-		 * SocketFactory.getDefaultSocketFactory(); }
-		 */
-
-		int port = url.getPort() != -1 ? url.getPort() : DEFAULT_PORT;
-		// socket = fact.createSocket(url.getHost(), port, timeout);
-		socket = new Socket(url.getHost(), port);
 
 		return null;
 	}
 
-	public void disconnect() throws IOException {
+	public void disconnect() {
 		trace("disconnect()");
 		if (socket != null) {
-			socket.close();
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// ignored as we are releasing it anyway
+			}
 			socket = null;
 		}
 	}
