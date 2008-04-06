@@ -14,3 +14,4 @@ Export-Package: org.eclipse.ecf.tests.provider.jmdns,
  org.eclipse.ecf.tests.provider.jmdns.identity,
  org.eclipse.ecf.tests.provider.jmdns.remoteservice
 Import-Package: org.osgi.framework
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
