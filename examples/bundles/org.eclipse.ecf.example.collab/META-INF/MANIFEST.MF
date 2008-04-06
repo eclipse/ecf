@@ -15,8 +15,7 @@ Export-Package: org.eclipse.ecf.example.collab.share,
  org.eclipse.ecf.internal.example.collab.ui.hyperlink;x-internal:=true
 Eclipse-LazyStart: true
 Bundle-ManifestVersion: 2
-Bundle-RequiredExecutionEnvironment: J2SE-1.4,
- CDC-1.1/Foundation-1.1
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.core.resources,
