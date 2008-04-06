@@ -1,10 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF SSL Fragment
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.ssl
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.0.qualifier
 Fragment-Host: org.eclipse.ecf;bundle-version="2.0.0.qualifier"
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Import-Package: org.eclipse.osgi.service.security;version="1.0.0",
  javax.net.ssl
+Bundle-Localization: plugin
 Export-Package: org.eclipse.ecf.internal.ssl;x-internal:=true
+Bundle-Vendor: %plugin.provider
