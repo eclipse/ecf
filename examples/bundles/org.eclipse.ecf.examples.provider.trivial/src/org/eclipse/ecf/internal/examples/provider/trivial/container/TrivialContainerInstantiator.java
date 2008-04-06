@@ -27,7 +27,6 @@ public class TrivialContainerInstantiator extends BaseContainerInstantiator {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.BaseContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */
-	@Override
 	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
 		try {
 			if (parameters != null && parameters.length > 0) {
@@ -45,7 +44,6 @@ public class TrivialContainerInstantiator extends BaseContainerInstantiator {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.BaseContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	@Override
 	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
 		// TODO Return String [] with adapter types supported for the given description
 		return super.getSupportedAdapterTypes(description);
