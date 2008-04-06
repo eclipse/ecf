@@ -8,8 +8,8 @@ Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: global
-Bundle-RequiredExecutionEnvironment: J2SE-1.4,
- CDC-1.1/Foundation-1.1
+Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
+ J2SE-1.4
 Export-Package: org.eclipse.ecf.internal.provider.remoteservice;x-internal:=true,
  org.eclipse.ecf.provider.remoteservice,
  org.eclipse.ecf.provider.remoteservice.generic
