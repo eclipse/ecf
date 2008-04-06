@@ -1,5 +1,6 @@
 package org.eclipse.ecf.internal.provider.filetransfer.efs;
 
+import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.core.filesystem.EFS;
@@ -36,7 +37,7 @@ public class EFSRemoteFileSystemBrowser implements IRemoteFileSystemBrowser {
 		try {
 			efsDirectory = directoryOrFileID.getURL();
 			final String path = StringUtils.replaceAll(efsDirectory.getPath(), " ", "%20"); //$NON-NLS-1$ //$NON-NLS-2$
-			fsb = new FileStoreBrowser(EFS.getStore(new URL(path).toURI()), efsDirectory, directoryOrFileID, listener);
+			fsb = new FileStoreBrowser(EFS.getStore(new URI(path)), efsDirectory, directoryOrFileID, listener);
 		} catch (final Exception e) {
 			throw new RemoteFileSystemException(e);
 		}
