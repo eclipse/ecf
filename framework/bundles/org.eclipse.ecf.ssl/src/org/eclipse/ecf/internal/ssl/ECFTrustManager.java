@@ -11,13 +11,9 @@
 package org.eclipse.ecf.internal.ssl;
 
 import java.io.IOException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
+import java.security.cert.*;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
-
 import org.eclipse.osgi.service.security.TrustEngine;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -28,9 +24,9 @@ public class ECFTrustManager implements X509TrustManager, BundleActivator {
 	private static volatile BundleContext context;
 	private volatile ServiceTracker trustEngineTracker = null;
 
-	public void checkServerTrusted(X509Certificate[] certs, String arg1) throws CertificateException {
+	public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
 		// verify the cert chain
-		verify(certs);
+		verify(certs, authType);
 
 		final TrustEngine[] engines = getTrustEngines();
 		Certificate foundCert = null;
@@ -40,16 +36,16 @@ public class ECFTrustManager implements X509TrustManager, BundleActivator {
 				if (null != foundCert)
 					return; // cert chain is trust
 			} catch (final IOException e) {
-				final CertificateException ce = new CertificateException();
+				final CertificateException ce = new ECFCertificateException("Error occurs when finding trust anchor in the cert chain", certs, authType); //$NON-NLS-1$
 				ce.initCause(ce);
 				throw ce;
 			}
 		}
 		if (null == foundCert)
-			throw new CertificateException("Not a trust certificate found!"); //$NON-NLS-1$
+			throw new ECFCertificateException("Valid cert chain, but no trust certificate found!", certs, authType); //$NON-NLS-1$
 	}
 
-	private void verify(X509Certificate[] certs) throws CertificateException {
+	private void verify(X509Certificate[] certs, String authType) throws CertificateException {
 		final int len = certs.length;
 		for (int i = 0; i < len; i++) {
 			final X509Certificate currentX509Cert = certs[i];
@@ -62,7 +58,7 @@ public class ECFTrustManager implements X509TrustManager, BundleActivator {
 					currentX509Cert.verify(nextX509Cert.getPublicKey());
 				}
 			} catch (final Exception e) {
-				final CertificateException ce = new CertificateException();
+				final CertificateException ce = new ECFCertificateException("Certificate chain is not valid", certs, authType); //$NON-NLS-1$
 				ce.initCause(e);
 				throw ce;
 			}
