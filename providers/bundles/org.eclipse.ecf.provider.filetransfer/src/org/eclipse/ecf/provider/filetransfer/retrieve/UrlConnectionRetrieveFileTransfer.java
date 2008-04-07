@@ -13,7 +13,7 @@ import java.net.*;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
-import org.eclipse.ecf.internal.provider.filetransfer.Messages;
+import org.eclipse.ecf.internal.provider.filetransfer.*;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
@@ -64,6 +64,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	protected void connect() throws IOException {
 		setupTimeouts();
 		urlConnection = getRemoteFileURL().openConnection();
+		IURLConnectionModifier connectionModifier = Activator.getDefault().getURLConnectionModifier();
+		if (connectionModifier != null) {
+			connectionModifier.setSocketFactoryForConnection(urlConnection);
+		}
 	}
 
 	protected boolean isConnected() {

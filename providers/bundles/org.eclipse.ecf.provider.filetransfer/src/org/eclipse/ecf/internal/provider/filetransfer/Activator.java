@@ -79,6 +79,8 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker proxyServiceTracker = null;
 
+	private IURLConnectionModifier urlConnectionModifier = null;
+
 	private IRegistryChangeListener registryChangeListener = new IRegistryChangeListener() {
 
 		public void registryChanged(IRegistryChangeEvent event) {
@@ -174,6 +176,18 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
+
+		// initialize the default url connection modifier for ssl
+		try {
+			Class urlConnectionModifierClass = Class.forName("org.eclipse.ecf.internal.provider.filetransfer.ssl.ECFURLConnectionModifier"); //$NON-NLS-1$
+			urlConnectionModifier = (IURLConnectionModifier) urlConnectionModifierClass.newInstance();
+			urlConnectionModifier.init(ctxt);
+		} catch (ClassNotFoundException e) {
+			// will occur if fragment is not installed or not on proper execution environment
+		} catch (Throwable t) {
+			log(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), "Unexpected Error in Activator.start", t)); //$NON-NLS-1$
+		}
+
 		fileTransferServiceRegistration = ctxt.registerService(IRetrieveFileTransferFactory.class.getName(), new IRetrieveFileTransferFactory() {
 			public IRetrieveFileTransfer newInstance() {
 				return new MultiProtocolRetrieveAdapter();
@@ -201,6 +215,11 @@ public class Activator implements BundleActivator {
 		final IExtensionRegistry registry = getExtensionRegistry();
 		if (registry != null) {
 			registry.removeRegistryChangeListener(registryChangeListener);
+		}
+
+		if (urlConnectionModifier != null) {
+			urlConnectionModifier.dispose();
+			urlConnectionModifier = null;
 		}
 		if (extensionRegistryTracker != null) {
 			extensionRegistryTracker.close();
@@ -610,6 +629,10 @@ public class Activator implements BundleActivator {
 		if (adapterManager == null)
 			adapterManager = PlatformHelper.getPlatformAdapterManager();
 		return adapterManager;
+	}
+
+	public IURLConnectionModifier getURLConnectionModifier() {
+		return urlConnectionModifier;
 	}
 
 }

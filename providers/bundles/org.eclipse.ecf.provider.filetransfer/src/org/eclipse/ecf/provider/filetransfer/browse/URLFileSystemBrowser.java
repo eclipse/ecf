@@ -22,8 +22,7 @@ import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.internal.provider.filetransfer.Activator;
-import org.eclipse.ecf.internal.provider.filetransfer.Messages;
+import org.eclipse.ecf.internal.provider.filetransfer.*;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 
 /**
@@ -63,6 +62,10 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 		setupProxies();
 		setupAuthentication();
 		URLConnection urlConnection = directoryOrFile.openConnection();
+		IURLConnectionModifier connectionModifier = Activator.getDefault().getURLConnectionModifier();
+		if (connectionModifier != null) {
+			connectionModifier.setSocketFactoryForConnection(urlConnection);
+		}
 		InputStream ins = urlConnection.getInputStream();
 		ins.close();
 		remoteFiles = new IRemoteFile[1];
