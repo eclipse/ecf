@@ -71,6 +71,8 @@ public class ECFPlugin implements BundleActivator {
 
 	private ServiceTracker adapterManagerTracker = null;
 
+	private BundleActivator ecfTrustManager;
+
 	public IAdapterManager getAdapterManager() {
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
@@ -306,6 +308,18 @@ public class ECFPlugin implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
+
+		// initialize the default ssl socket factory 
+		try {
+			Class ecfSocketFactoryClass = Class.forName("org.eclipse.ecf.internal.ssl.ECFTrustManager"); //$NON-NLS-1$
+			ecfTrustManager = (BundleActivator) ecfSocketFactoryClass.newInstance();
+			ecfTrustManager.start(ctxt);
+		} catch (ClassNotFoundException e) {
+			// will occur if fragment is not installed or not on proper execution environment
+		} catch (Throwable t) {
+			log(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), "Unexpected Error in ECFPlugin.start", t)); //$NON-NLS-1$
+		}
+
 		this.extensionRegistryTracker = new ServiceTracker(ctxt, IExtensionRegistry.class.getName(), null);
 		this.extensionRegistryTracker.open();
 		final IExtensionRegistry registry = getExtensionRegistry();
@@ -345,6 +359,10 @@ public class ECFPlugin implements BundleActivator {
 		if (reg != null)
 			reg.removeRegistryChangeListener(registryManager);
 		this.registryManager = null;
+		if (ecfTrustManager != null) {
+			ecfTrustManager.stop(ctxt);
+			ecfTrustManager = null;
+		}
 		if (logServiceTracker != null) {
 			logServiceTracker.close();
 			logServiceTracker = null;
