@@ -17,6 +17,8 @@ import java.io.OutputStream;
 /**
  * A container adapter that allows access to InputStream and OutputStream for 
  * the container.
+ * 
+ * @since 2.0.0
  */
 public interface IStreamContainerAdapter {
 
