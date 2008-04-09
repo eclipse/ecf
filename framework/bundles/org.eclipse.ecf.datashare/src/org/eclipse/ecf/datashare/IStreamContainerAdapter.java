@@ -29,8 +29,8 @@ public interface IStreamContainerAdapter {
 	public InputStream getInputStream();
 
 	/**
-	 * Get InputStream for communicating via container adapter.
-	 * @return InputStream <code>null</code> if no InputStream available.
+	 * Get OutputStream for communicating via container adapter.
+	 * @return OutputStream <code>null</code> if no OutputStream available.
 	 */
 	public OutputStream getOutputStream();
 
