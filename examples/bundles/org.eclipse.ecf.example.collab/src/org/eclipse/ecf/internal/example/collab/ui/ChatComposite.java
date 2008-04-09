@@ -834,7 +834,8 @@ public class ChatComposite extends Composite {
 	}
 
 	protected void closeProjectGroup(User user) {
-		if (MessageDialog.openConfirm(null, MessageLoader.getString("LineChatClientView.contextmenu.closeMessageTitle"), MessageLoader.getString("LineChatClientView.contextmenu.closeMessageMessage") + this.view.name + "'?")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		if (MessageDialog.openConfirm(null, MessageLoader.getString("LineChatClientView.contextmenu.closeMessageTitle"), //$NON-NLS-1$
+				MessageLoader.getFormattedString("LineChatClientView.contextmenu.closeMessageMessage", this.view.name))) { //$NON-NLS-1$
 			this.view.lch.chatGUIDestroy();
 
 		}
