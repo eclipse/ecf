@@ -19,6 +19,8 @@ import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
+import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
+import org.eclipse.ecf.filetransfer.InvalidFileRangeSpecificationException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
@@ -92,20 +94,20 @@ public class URLPartialRetrieveTest extends ContainerAbstractTestCase {
 			public void handleTransferEvent(IFileTransferEvent event) {
 				if (event instanceof IIncomingFileTransferReceiveResumedEvent) {
 					try {
-						IIncomingFileTransferReceiveResumedEvent rse = (IIncomingFileTransferReceiveResumedEvent) event;
+						final IIncomingFileTransferReceiveResumedEvent rse = (IIncomingFileTransferReceiveResumedEvent) event;
 						session = rse.receive(outs);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						fail(e.getLocalizedMessage());
 					}
 				} else if (event instanceof IIncomingFileTransferReceiveStartEvent) {
-					IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
+					final IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
 					try {
 						outs = new FileOutputStream(FILENAME);
 						session = rse.receive(outs);
 						pausable = (IFileTransferPausable) session.getAdapter(IFileTransferPausable.class);
 						if (pausable == null)
 							fail("pausable is null");
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						fail(e.getLocalizedMessage());
 					}
 				} else if (event instanceof IIncomingFileTransferReceiveDataEvent) {
@@ -182,7 +184,11 @@ public class URLPartialRetrieveTest extends ContainerAbstractTestCase {
 			// should fail with invalid range spec
 			testReceiveHttp(10, 5, HTTP_RETRIEVE);
 			fail();
-		} catch (final Exception e) {
+		} catch (final IncomingFileTransferException e) {
+			final Throwable t = e.getCause();
+			if (t != null && t instanceof InvalidFileRangeSpecificationException)
+				return;
+			fail();
 		}
 	}
 
