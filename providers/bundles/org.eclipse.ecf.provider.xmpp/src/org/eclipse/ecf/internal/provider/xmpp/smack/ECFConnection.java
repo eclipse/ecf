@@ -77,7 +77,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	private final ConnectionListener connectionListener = new ConnectionListener() {
 		public void connectionClosed() {
-			handleConnectionClosed(null);
+			handleConnectionClosed(new IOException("Connection reset by peer"));
 		}
 
 		public void connectionClosedOnError(Exception e) {
