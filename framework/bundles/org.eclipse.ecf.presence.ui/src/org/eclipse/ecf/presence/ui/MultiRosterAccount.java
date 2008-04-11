@@ -13,8 +13,7 @@ package org.eclipse.ecf.presence.ui;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.*;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Activator;
@@ -65,7 +64,7 @@ public class MultiRosterAccount {
 
 	IContainerListener containerListener = new IContainerListener() {
 		public void handleEvent(IContainerEvent event) {
-			if (event instanceof IContainerDisconnectedEvent) {
+			if (event instanceof IContainerDisconnectedEvent || event instanceof IContainerEjectedEvent) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						MultiRosterAccount.this.multiRosterView.rosterAccountDisconnected(MultiRosterAccount.this);

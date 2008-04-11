@@ -20,8 +20,7 @@ import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.user.IUser;
@@ -631,7 +630,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			});
 			chatRoomContainer.addListener(new IContainerListener() {
 				public void handleEvent(IContainerEvent evt) {
-					if (evt instanceof IContainerDisconnectedEvent) {
+					if (evt instanceof IContainerDisconnectedEvent || evt instanceof IContainerEjectedEvent) {
 						chatroom.disconnected();
 					}
 				}

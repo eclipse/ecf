@@ -100,9 +100,8 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 			public void handleEvent(final IContainerEvent evt) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						if (evt instanceof IContainerDisconnectedEvent) {
-							IContainerDisconnectedEvent cd = (IContainerDisconnectedEvent) evt;
-							final ID departedContainerID = cd.getTargetID();
+						if (evt instanceof IContainerDisconnectedEvent || evt instanceof IContainerEjectedEvent) {
+							final ID departedContainerID = ((evt instanceof IContainerDisconnectedEvent) ? ((IContainerDisconnectedEvent) evt).getTargetID() : ((IContainerEjectedEvent) evt).getTargetID());
 							ID connectedID = targetID;
 							if (connectedID == null || connectedID.equals(departedContainerID)) {
 								chatroomview.disconnected();
