@@ -92,19 +92,8 @@ public class SharedObjectContainerUI {
 		addObjectToClient(soContainer, newClientEntry, username, resource);
 		soc.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent evt) {
-				if (evt instanceof IContainerDisconnectedEvent) {
-					final IContainerDisconnectedEvent cd = (IContainerDisconnectedEvent) evt;
-					final ID departedContainerID = cd.getTargetID();
-					final ID connectedID = newClientEntry.getContainer().getConnectedID();
-					if (connectedID == null || connectedID.equals(departedContainerID)) {
-						// This container is done
-						if (!newClientEntry.isDisposed()) {
-							collabclient.disposeClient(resource, newClientEntry);
-						}
-					}
-				} else if (evt instanceof IContainerEjectedEvent) {
-					final IContainerEjectedEvent ce = (IContainerEjectedEvent) evt;
-					final ID departedContainerID = ce.getTargetID();
+				if (evt instanceof IContainerDisconnectedEvent || evt instanceof IContainerEjectedEvent) {
+					final ID departedContainerID = ((evt instanceof IContainerDisconnectedEvent) ? ((IContainerDisconnectedEvent) evt).getTargetID() : ((IContainerEjectedEvent) evt).getTargetID());
 					final ID connectedID = newClientEntry.getContainer().getConnectedID();
 					if (connectedID == null || connectedID.equals(departedContainerID)) {
 						if (!newClientEntry.isDisposed()) {
