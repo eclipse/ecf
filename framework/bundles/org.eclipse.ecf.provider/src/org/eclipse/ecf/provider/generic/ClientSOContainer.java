@@ -288,26 +288,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	 * @see org.eclipse.ecf.provider.generic.SOContainer#disconnect()
 	 */
 	public void disconnect() {
-		synchronized (getConnectLock()) {
-			// If we are currently connected then get connection lock and send
-			// disconnect message
-			if (isConnected()) {
-				final ID groupID = getConnectedID();
-				fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), groupID));
-				synchronized (connection) {
-					try {
-						connection.sendSynch(groupID, serialize(ContainerMessage.createLeaveGroupMessage(getID(), groupID, getNextSequenceNumber(), getLeaveData(groupID))));
-					} catch (final Exception e) {
-						ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, IStatus.ERROR, "disconnect.sendSynch", e)); //$NON-NLS-1$
-					}
-					synchronized (getGroupMembershipLock()) {
-						handleLeave(groupID, connection);
-					}
-				}
-				// notify listeners
-				fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
-			}
-		}
+		disconnect((Throwable) null);
 	}
 
 	/**
@@ -391,13 +372,40 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		}
 	}
 
+	protected void disconnect(Throwable exception) {
+		synchronized (getConnectLock()) {
+			// If we are currently connected then get connection lock and send
+			// disconnect message
+			if (isConnected()) {
+				final ID groupID = getConnectedID();
+				if (exception == null)
+					fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), groupID));
+				synchronized (connection) {
+					try {
+						connection.sendSynch(groupID, serialize(ContainerMessage.createLeaveGroupMessage(getID(), groupID, getNextSequenceNumber(), getLeaveData(groupID))));
+					} catch (final Exception e) {
+						ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, IStatus.ERROR, "disconnect.sendSynch", e)); //$NON-NLS-1$
+					}
+					synchronized (getGroupMembershipLock()) {
+						handleLeave(groupID, connection);
+					}
+				}
+				// notify listeners
+				if (exception == null)
+					fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
+				else
+					fireContainerEvent(new ContainerEjectedEvent(this.getID(), groupID, exception));
+			}
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.generic.SOContainer#processDisconnect(org.eclipse.ecf.provider.comm.DisconnectEvent)
 	 */
 	protected void processDisconnect(DisconnectEvent evt) {
 		// Get connect lock, and just return if this connection has been
 		// terminated
-		disconnect();
+		disconnect(evt.getException());
 	}
 
 	/* (non-Javadoc)
