@@ -313,7 +313,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 			handleLeave(fromID, conn);
 		}
 		if (fromID != null)
-			fireContainerEvent(new ContainerDisconnectedEvent(getID(), fromID));
+			fireContainerEvent(new ContainerEjectedEvent(getID(), fromID, e.getException()));
 	}
 
 }
