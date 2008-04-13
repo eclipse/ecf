@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.*;
 import ch.ethz.iks.r_osgi.channels.ChannelEndpointManager;
+import java.io.IOException;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.*;
@@ -359,6 +360,8 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 
 			startRegTracker();
 
+		} catch (IOException ioe) {
+			throw new ContainerConnectException(ioe);
 		} catch (IDCreateException e) {
 			throw new ContainerConnectException(e);
 		}
