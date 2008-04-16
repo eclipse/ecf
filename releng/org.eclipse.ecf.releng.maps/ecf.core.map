@@ -3,6 +3,7 @@
 feature@org.eclipse.ecf.core=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/features/org.eclipse.ecf.core-feature
 
 plugin@org.eclipse.ecf=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf
+fragment@org.eclipse.ecf.ssl=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.ssl
 plugin@org.eclipse.ecf.identity=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.core.identity 
 plugin@org.eclipse.ecf.sharedobject=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.core.sharedobject
 plugin@org.eclipse.ecf.telephony.call=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.telephony.call
@@ -20,6 +21,7 @@ plugin@org.eclipse.ecf.provider=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvs
 plugin@org.eclipse.ecf.provider.datashare=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.datashare
 plugin@org.eclipse.ecf.provider.discovery=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.discovery
 plugin@org.eclipse.ecf.provider.filetransfer=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.filetransfer
+fragment@org.eclipse.ecf.provider.filetransfer.ssl=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.filetransfer.ssl
 plugin@org.eclipse.ecf.provider.filetransfer.httpclient=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.filetransfer.httpclient
 plugin@org.eclipse.ecf.provider.filetransfer.efs=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.filetransfer.efs
 plugin@org.eclipse.ecf.provider.irc=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.irc
