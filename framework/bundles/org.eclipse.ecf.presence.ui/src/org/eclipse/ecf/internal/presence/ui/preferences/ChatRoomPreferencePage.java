@@ -30,6 +30,7 @@ public class ChatRoomPreferencePage extends FieldEditorPreferencePage implements
 	 */
 	public void createFieldEditors() {
 		addField(new BooleanFieldEditor(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE, Messages.ChatRoomPreferencePage_CHATROOM_SHOW_USER_PRESENCE_TEXT, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.PREFERENCES_SCROLLONINPUT, Messages.ChatRoomPreferencePage_SCROLL_OUTPUT_ON_INPUT, getFieldEditorParent()));
 	}
 
 	/*

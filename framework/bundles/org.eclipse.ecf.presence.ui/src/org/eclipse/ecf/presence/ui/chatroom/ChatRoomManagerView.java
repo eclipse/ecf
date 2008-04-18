@@ -856,7 +856,8 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 					handleTextInput(inputText.getText());
 				clearInput();
 				makeTabItemNormal();
-				scrollToEnd(getOutputText());
+				if (Activator.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.PREFERENCES_SCROLLONINPUT))
+					scrollToEnd(getOutputText());
 				evt.doit = false;
 				isCycling = false;
 			} else if (evt.character == SWT.TAB) {

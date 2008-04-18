@@ -16,4 +16,6 @@ package org.eclipse.ecf.internal.presence.ui.preferences;
  */
 public class PreferenceConstants {
 	public static final String CHATROOM_SHOW_USER_PRESENCE = "chatroom.user.presence.visible"; //$NON-NLS-1$
+	public static final String PREFERENCES_SCROLLONINPUT = "chatroom.scrollonuserinput"; //$NON-NLS-1$
+
 }
