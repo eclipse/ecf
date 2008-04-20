@@ -17,7 +17,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.presence.ui.messages"; //$NON-NLS-1$
-	
+
 	public static String ChangePasswordDialog_1;
 
 	public static String ChangePasswordDialog_CHANGE_PASSWORD;
@@ -38,13 +38,13 @@ public class Messages extends NLS {
 	public static String ChatRoomManagerView_CLEAR_TEXT;
 
 	public static String ChatRoomManagerView_CLEAR_TOOLTIP;
-	
+
 	public static String ChatRoomManagerView_PASTE_TEXT;
-	
+
 	public static String ChatRoomManagerView_PASTE_TOOLTIP;
-	
+
 	public static String ChatRoomManagerView_CLEAR_CONFIRM_TITLE;
-	
+
 	public static String ChatRoomManagerView_CLEAR_CONFIRM_MESSAGE;
 
 	public static String ChatRoomManagerView_CLOSE_CHAT_ROOM_MESSAGE;
@@ -68,11 +68,11 @@ public class Messages extends NLS {
 	public static String ChatRoomManagerView_DEFAULT_USER;
 
 	public static String ChatRoomManagerView_ENTERED_MESSAGE;
-	
+
 	public static String ChatRoomManagerView_LEFT_MESSAGE;
 
 	public static String ChatRoomManagerView_JOIN_COMMAND;
-	
+
 	public static String ChatRoomManagerView_MESSAGE;
 
 	public static String ChatRoomManagerView_NOT_CONNECTED_MESSAGE;
@@ -80,7 +80,7 @@ public class Messages extends NLS {
 	public static String ChatRoomManagerView_NOT_CONNECTED_TITLE;
 
 	public static String ChatRoomManagerView_QUIT_COMMAND;
-	
+
 	public static String ChatRoomManagerView_PART_COMMAND;
 
 	public static String ChatRoomManagerView_SELECT_ALL_TEXT;
@@ -179,6 +179,8 @@ public class Messages extends NLS {
 
 	public static String MultiRosterView_ROSTER_VIEW_EXT_POINT_ERROR_MESSAGE;
 
+	public static String MultiRosterView_HELP_MESSAGE;
+
 	public static String MultiRosterView_SendIM;
 	public static String MultiRosterView_Remove;
 	public static String MultiRosterView_SetStatusAs;
@@ -201,7 +203,7 @@ public class Messages extends NLS {
 	public static String MessagesView_TypingNotification;
 	public static String MessagesView_Copy;
 	public static String MessagesView_SelectAll;
-	
+
 	public static String AddContactDialog_DialogTitle;
 	public static String AddContactDialog_UserID;
 	public static String AddContactDialog_Alias;
@@ -220,27 +222,27 @@ public class Messages extends NLS {
 	public static String ReceiveAuthorizeRequestDialog_TO_BUDDY_LIST;
 
 	public static String ReceiveAuthorizeRequestDialog_WOULD_LIKE_TO_ADD;
-	
+
 	public static String RosterWorkbenchAdapterFactory_Mode;
 	public static String RosterWorkbenchAdapterFactory_Type;
 	public static String RosterWorkbenchAdapterFactory_Account;
 	public static String RosterWorkbenchAdapterFactory_Disconnected;
 	public static String RosterWorkbenchAdapterFactory_GroupLabel;
-	
+
 	public static String BrowseDialog_title;
 	public static String BrowseDialog_scanning;
 	public static String BrowseDialog_message;
-	
+
 	public static String ToggleOnlineOnlyAction_title;
 
 	public static String MessageRenderer_DEFAULT_DATE_FORMAT;
 	public static String MessageRenderer_DEFAULT_DATETIME_FORMAT;
 	public static String MessageRenderer_DEFAULT_TIME_FORMAT;
-	
+
 	public static String ChatRoomPreferencePage_CHATROOM_SHOW_USER_PRESENCE_TEXT;
 
 	public static String ChatRoomPreferencePage_SCROLL_OUTPUT_ON_INPUT;
-	
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

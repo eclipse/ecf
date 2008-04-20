@@ -113,6 +113,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	private RosterViewerDropAdapter dropAdapter;
 
+	private PageBook pageBook;
+
+	private Label helpMessageLabel;
+
 	private ViewerFilter hideOfflineFilter = new ViewerFilter() {
 		public boolean select(Viewer viewer, Object parentElement, Object element) {
 			if (element instanceof IRosterEntry) {
@@ -141,7 +145,19 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createPartControl(Composite parent) {
-		setupTreeViewer(parent);
+		pageBook = new PageBook(parent, SWT.NONE);
+
+		createHelpMessage(pageBook);
+		setupTreeViewer(pageBook);
+
+		pageBook.showPage(helpMessageLabel);
+	}
+
+	private void createHelpMessage(Composite parent) {
+		if (!parent.isDisposed()) {
+			helpMessageLabel = new Label(parent, SWT.TOP + SWT.LEFT + SWT.WRAP);
+			helpMessageLabel.setText(Messages.MultiRosterView_HELP_MESSAGE);
+		}
 	}
 
 	protected void setupTreeViewer(Composite parent) {
@@ -747,8 +763,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			treeViewer.remove(account.getRoster());
 		// Remove account
 		rosterAccounts.remove(account);
-		// Disable local pull down window if no more accounts
-		setLocalPullDownEnabled(rosterAccounts.size() > 0);
+		if (rosterAccounts.size() == 0) {
+			setLocalPullDownEnabled(false);
+			pageBook.showPage(helpMessageLabel);
+		}
 		account.dispose();
 		refreshTreeViewer(null, true);
 	}
@@ -837,6 +855,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		setStatusMenu.setVisible(true);
 		getViewSite().getActionBars().getMenuManager().update(true);
 		treeViewer.add(treeViewer.getInput(), account.getRoster());
+		pageBook.showPage(treeViewer.getControl());
 		return true;
 	}
 
