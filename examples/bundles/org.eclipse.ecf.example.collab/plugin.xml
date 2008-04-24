@@ -148,7 +148,7 @@
             locationURI="popup:#CompilationUnitEditorContext">
          <dynamic
                class="org.eclipse.ecf.internal.example.collab.EditorCompoundContributionItem"
-               id="org.eclipse.ecf.example.collab.dynamic1">
+               id="org.eclipse.ecf.example.collab.compilationuniteditorcontribution">
          </dynamic>
       </menuContribution>
    </extension>
@@ -159,11 +159,23 @@
             locationURI="popup:#TextEditorContext">
          <dynamic
                class="org.eclipse.ecf.internal.example.collab.EditorCompoundContributionItem"
-               id="org.eclipse.ecf.example.collab.dynamic2">
+               id="org.eclipse.ecf.example.collab.texteditorcontribution">
          </dynamic>
       </menuContribution>
    </extension>
 
+   <!-- php editor -->
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.wst.sse.ui.StructuredTextEditor.EditorContext?after=additions">
+         <dynamic
+               class="org.eclipse.ecf.internal.example.collab.EditorCompoundContributionItem"
+               id="org.eclipse.ecf.example.collab.structuredtexteditorcontribution">
+         </dynamic>
+      </menuContribution>
+   </extension>
+   
    <extension
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
       <hyperlinkDetector
