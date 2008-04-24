@@ -13,7 +13,7 @@
             locationURI="popup:#CompilationUnitEditorContext">
          <dynamic
                class="org.eclipse.ecf.docshare.menu.DocShareRosterMenuContributionItem"
-               id="org.eclipse.ecf.editorshare.dynamic1">
+               id="org.eclipse.ecf.docshare.compilationuniteditorcontribution">
          </dynamic>
       </menuContribution>
    </extension>
@@ -24,10 +24,20 @@
             locationURI="popup:#TextEditorContext">
          <dynamic
                class="org.eclipse.ecf.docshare.menu.DocShareRosterMenuContributionItem"
-               id="org.eclipse.ecf.editorshare.dynamic2">
+               id="org.eclipse.ecf.docshare.texteditorcontribution">
          </dynamic>
       </menuContribution>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.wst.sse.ui.StructuredTextEditor.EditorContext?after=additions">
+         <dynamic
+               class="org.eclipse.ecf.docshare.menu.DocShareRosterMenuContributionItem"
+               id="org.eclipse.ecf.editorshare.structuredtexteditorcontribution">
+         </dynamic>
+      </menuContribution>
+   </extension>
    
 </plugin>
