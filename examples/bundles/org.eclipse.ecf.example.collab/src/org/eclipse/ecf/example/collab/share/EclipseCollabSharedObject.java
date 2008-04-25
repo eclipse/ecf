@@ -725,7 +725,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 				sendSelf(m);
 			}
 		} catch (final Exception e) {
-			log("Exception on sendAddMarkerForFile to " + touser, e); //$NON-NLS-1$
+			log("sendOpenAndSelectForFile", e); //$NON-NLS-1$
 		}
 	}
 

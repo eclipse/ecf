@@ -164,7 +164,7 @@
       </menuContribution>
    </extension>
 
-   <!-- php editor -->
+   <!-- wtp structured editors -->
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
