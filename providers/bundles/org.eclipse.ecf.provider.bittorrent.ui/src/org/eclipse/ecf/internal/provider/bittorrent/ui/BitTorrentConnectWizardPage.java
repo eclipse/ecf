@@ -42,6 +42,7 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 		super("");
 		setTitle(Messages.getString("BitTorrentConnectWizardPage.File_Sharing"));
 		setDescription(Messages.getString("BitTorrentConnectWizardPage.File_Sharing.Description"));
+		setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/filewiz_download.png"));
 		setPageComplete(false);
 	}
 
