@@ -558,7 +558,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			}
 			final ID remoteContainerID = registration.getContainerID();
 			properties.put(org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE_CONTAINER_ID, remoteContainerID.getName());
-			properties.put(org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE, remoteServiceImpl);
 			final ServiceRegistration serviceRegistration = context.registerService(registration.getClasses(), service, properties);
 			addLocalServiceRegistration(remoteContainerID, serviceRegistration);
 		}
