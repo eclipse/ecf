@@ -16,7 +16,6 @@ import java.util.Hashtable;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.remoteservice.Constants;
-import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest;
 import org.eclipse.ecf.tests.remoteservice.Activator;
@@ -131,6 +130,7 @@ public class TransparentProxyTest extends AbstractRemoteServiceTest {
 	 * in here).
 	 * @throws Exception 
 	 */
+	/*
 	public void testIRemoteService() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// client [0]/adapter[0] is the service 'server'
@@ -153,5 +153,5 @@ public class TransparentProxyTest extends AbstractRemoteServiceTest {
 		remoteService.callAsynch(createRemoteConcat("OSGi ", "Sucks (sic)"), createRemoteCallListener());
 		sleep(3000);
 	}
-
+	*/
 }

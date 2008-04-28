@@ -15,12 +15,10 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.eclipse.ecf.remoteservice.Constants;
-import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.tests.remoteservice.AbstractServiceTrackerTest;
 import org.eclipse.ecf.tests.remoteservice.Activator;
 import org.eclipse.ecf.tests.remoteservice.IConcatService;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -84,6 +82,7 @@ public class ServiceTrackerTest extends AbstractServiceTrackerTest {
 		sleep(3000);
 	}
 
+	/*
 	public void testRemoteServiceWithServiceTracker() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// client [0]/adapter[0] is the service 'server'
@@ -109,5 +108,5 @@ public class ServiceTrackerTest extends AbstractServiceTrackerTest {
 		sleep(3000);
 		st.close();
 	}
-
+	*/
 }
