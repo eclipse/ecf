@@ -176,21 +176,6 @@ public interface Constants {
 	 */
 	public static final String AUTOREGISTER_REMOTE_PROXY = "org.eclipse.ecf.serviceRegistrationRemote"; //$NON-NLS-1$
 
-	/**
-	 * Remote Service property.  If a ServiceReference has the REMOTE_SERVICE property,
-	 * then the value will be a <code>non-null</code> instance of {@link IRemoteService}.
-	 * <p></p>
-	 * This property may be used by clients to access the {@link IRemoteService} for 
-	 * a given service.
-	 * <pre>
-	 * ServiceReference ref = bc.getServiceReference(IConcatService.class.getName());
-	 * IRemoteService remoteService = (IRemoteService) ref.getProperty(Constants.REMOTE_SERVICE);
-	 * // Call it asynchronously with listener
-	 * remoteService.callAsynch(remoteCall, remoteCallListener);
-	 * </pre>
-	 */
-	public static final String REMOTE_SERVICE = "org.eclipse.ecf.remoteService"; //$NON-NLS-1$
-
 	// Constants for use with the ECF remote services API
 
 	/**
