@@ -628,7 +628,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	 * @return
 	 */
 	private static String getChannelURI(URI serviceURI) {
-		return URI.create(serviceURI.getScheme() + "://" + serviceURI.getHostName() + ":" + serviceURI.getPort()).toString();
+		return URI.create(serviceURI.getScheme() + "://" + serviceURI.getHost() + ":" + serviceURI.getPort()).toString();
 	}
 
 	/**

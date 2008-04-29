@@ -151,7 +151,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 			}
 			this.endpoint = endpoint;
 			this.remoteEndpointAddress = endpointAddress;
-			open(new Socket(endpointAddress.getHostName(), port));
+			open(new Socket(endpointAddress.getHost(), port));
 			new ReceiverThread().start();
 		}
 

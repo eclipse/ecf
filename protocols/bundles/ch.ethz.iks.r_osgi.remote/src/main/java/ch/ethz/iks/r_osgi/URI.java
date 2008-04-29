@@ -61,7 +61,7 @@ public final class URI implements Serializable {
 	/**
 	 * the host name.
 	 */
-	private String hostName;
+	private String hostString;
 
 	/**
 	 * the port.
@@ -95,30 +95,10 @@ public final class URI implements Serializable {
 	public static URI create(final String uriString) {
 		try {
 			return new URI(uriString);
-		} catch (final Throwable t) {
+		} catch (Throwable t) {
 			return null;
 		}
 	}
-
-	/*
-	 * public static void main(String[] args) throws Exception { URI uri1 = new
-	 * URI("http://localhost:8080"); URI uri2 = new
-	 * URI("r-osgi://flowsgi.inf.ethz.ch:9278#32"); System.out.println();
-	 * System.out.println(uri1); System.out.println(uri1.getScheme());
-	 * System.out.println(uri1.getHostName());
-	 * System.out.println(uri1.getPort());
-	 * System.out.println(uri1.getFragment()); System.out.println();
-	 * System.out.println(uri2); System.out.println(uri2.getScheme());
-	 * System.out.println(uri2.getHostName());
-	 * System.out.println(uri2.getPort());
-	 * System.out.println(uri2.getFragment()); System.out.println();
-	 * System.out.println(uri1.resolve("#55")); System.out.println();
-	 * System.out.println(uri1.equals("http://127.0.0.1:8080")); URI uri3 = new
-	 * URI("http://127.0.0.1:8080"); System.out.println(uri3.equals(uri1));
-	 * System.out.println(uri3.hashCode()); System.out.println(uri1.hashCode());
-	 * 
-	 * URI btUri = new URI("btspp://0010DCE96CB8:1"); System.out.println(btUri); }
-	 */
 
 	/**
 	 * parse an URI.
@@ -131,6 +111,8 @@ public final class URI implements Serializable {
 			if (p1 > -1) {
 				scheme = uriString.substring(0, p1);
 				cs = p1 + 3;
+			} else {
+				scheme = "r-osgi";
 			}
 			final int p2 = uriString.lastIndexOf("#");
 			if (p2 > -1) {
@@ -141,17 +123,26 @@ public final class URI implements Serializable {
 			if (p3 > -1) {
 				port = Integer.parseInt(uriString.substring(p3 + 1, ce));
 				ce = p3;
+			} else {
+				if ("r-osgi".equals(scheme)) {
+					port = 9278;
+				} else if ("http".equals(scheme)) {
+					port = 80;
+				} else if ("https".equals(scheme)) {
+					port = 443;
+				}
 			}
-			hostName = uriString.substring(cs, ce);
+			hostString = uriString.substring(cs, ce);
 			if (scheme.startsWith("r-osgi") || scheme.startsWith("http")) {
 				try {
-					host = InetAddress.getByName(hostName);
-				} catch (final UnknownHostException uhe) {
+					host = InetAddress.getByName(hostString);
+				} catch (UnknownHostException uhe) {
 					host = null;
 				}
 			}
-		} catch (final IndexOutOfBoundsException i) {
-			throw new IllegalArgumentException(uriString + " caused " + i.getMessage());
+		} catch (IndexOutOfBoundsException i) {
+			throw new IllegalArgumentException(uriString + " caused "
+					+ i.getMessage());
 		}
 	}
 
@@ -169,8 +160,8 @@ public final class URI implements Serializable {
 	 * 
 	 * @return the host name.
 	 */
-	public String getHostName() {
-		return host == null ? hostName : host.getHostName();
+	public String getHost() {
+		return host == null ? hostString : host.getHostAddress();
 	}
 
 	/**
@@ -196,7 +187,7 @@ public final class URI implements Serializable {
 	 * 
 	 * @param add
 	 *            the fragment.
-	 * @return URI created for this URI.
+	 * @return the resolved URI.
 	 */
 	public URI resolve(String add) {
 		return URI.create(toString() + add);
@@ -207,7 +198,9 @@ public final class URI implements Serializable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return scheme.hashCode() + hostName.hashCode() + port + (fragment != null ? fragment.hashCode() : 0);
+		return scheme.hashCode()
+				+ (host == null ? hostString.hashCode() : host.hashCode())
+				+ port + (fragment != null ? fragment.hashCode() : 0);
 	}
 
 	/**
@@ -215,7 +208,8 @@ public final class URI implements Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return scheme + "://" + getHostName() + ":" + port + (fragment == null ? "" : "#" + fragment);
+		return scheme + "://" + getHost() + ":" + port
+				+ (fragment == null ? "" : "#" + fragment);
 	}
 
 	/**
@@ -227,7 +221,12 @@ public final class URI implements Serializable {
 			return equals(URI.create((String) other));
 		} else if (other instanceof URI) {
 			final URI otherURI = (URI) other;
-			return scheme.equals(otherURI.scheme) && (host == null ? hostName.equals(otherURI.hostName) : host.equals(otherURI.host)) && port == otherURI.port && ((fragment == null && otherURI.fragment == null) || fragment != null && fragment.equals(otherURI.fragment));
+			return scheme.equals(otherURI.scheme)
+					&& (host == null ? hostString.equals(otherURI.hostString)
+							: host.equals(otherURI.host))
+					&& port == otherURI.port
+					&& ((fragment == null && otherURI.fragment == null) || fragment != null
+							&& fragment.equals(otherURI.fragment));
 		} else {
 			return false;
 		}
