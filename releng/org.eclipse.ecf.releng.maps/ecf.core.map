@@ -47,6 +47,9 @@ plugin@org.eclipse.ecf.provider.msn.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.o
 plugin@org.eclipse.ecf.docshare=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.docshare
 plugin@org.eclipse.ecf.provider.filetransfer.scp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.filetransfer.scp
 plugin@org.eclipse.ecf.provider.jslp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.jslp
+plugin@ch.ethz.iks.r_osgi.remote=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/ch.ethz.iks.r_osgi.remote
+plugin@org.eclipse.ecf.provider.r_osgi=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.r_osgi
+
 
 plugin@org.apache.commons.httpclient,3.0.1=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080427194908/bundles/org.apache.commons.httpclient_3.0.1.v200803061811.jar
 plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080427194908/bundles/org.apache.commons.codec_1.2.0.v200803061811.jar
