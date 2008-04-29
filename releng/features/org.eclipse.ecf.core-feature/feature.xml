@@ -396,4 +396,18 @@ Contributors: Composent, Inc. - initial API and implementation
          fragment="true"
          unpack="false"/>
 
+   <plugin
+         id="ch.ethz.iks.r_osgi.remote"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.provider.r_osgi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
