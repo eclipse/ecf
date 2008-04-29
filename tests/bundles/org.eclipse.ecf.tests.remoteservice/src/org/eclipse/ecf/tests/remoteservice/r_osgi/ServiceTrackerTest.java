@@ -11,8 +11,15 @@
 
 package org.eclipse.ecf.tests.remoteservice.r_osgi;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.tests.remoteservice.AbstractServiceTrackerTest;
+import org.eclipse.ecf.tests.remoteservice.Activator;
+import org.eclipse.ecf.tests.remoteservice.IConcatService;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * ServiceTrackerTest, adapted for the R-OSGi provider.
@@ -82,6 +89,31 @@ public class ServiceTrackerTest extends AbstractServiceTrackerTest {
 	 */
 	protected String getClientContainerName() {
 		return R_OSGi.CLIENT_CONTAINER_NAME;
+	}
+	
+	public void testServiceTracker() throws Exception {
+		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
+		// client [0]/adapter[0] is the service 'server'
+		// client [1]/adapter[1] is the service target (client)
+		final Dictionary props = new Hashtable();
+		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClients()[0].getConnectedID());
+		props.put(Constants.AUTOREGISTER_REMOTE_PROXY, "true");
+		// Register
+		adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
+		// Give some time for propagation
+		sleep(3000);
+
+		final ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(), IConcatService.class.getName(), null);
+		assertNotNull(st);
+		st.open();
+		final IConcatService concatService = (IConcatService) st.getService();
+		assertNotNull(concatService);
+		System.out.println("proxy call start");
+		final String result = concatService.concat("OSGi ", "is cool");
+		System.out.println("proxy call end. result=" + result);
+		sleep(3000);
+		st.close();
+		sleep(3000);
 	}
 
 }
