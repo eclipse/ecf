@@ -741,8 +741,22 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		super.dispose();
 	}
 
+	protected boolean containerPresent(IContainer container) {
+		// Then check if this new account is already in rosterAccounts (container ID the same).
+		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+			MultiRosterAccount existingAccount = (MultiRosterAccount) i.next();
+			if (existingAccount.getContainer().getID().equals(container.getID()))
+				return true;
+		}
+		return false;
+	}
+
 	protected boolean addRosterAccount(MultiRosterAccount account) {
-		boolean result = account != null && rosterAccounts.add(account);
+		// If account is null, we don't add it.  This is just a sanity check.
+		if (account == null)
+			return false;
+		// Not found, so we continue with add
+		boolean result = rosterAccounts.add(account);
 		if (result)
 			setLocalPullDownEnabled(true);
 		return result;
@@ -830,10 +844,11 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		IPresenceContainerAdapter containerAdapter = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
 		if (containerAdapter == null)
 			return false;
-		MultiRosterAccount account = new MultiRosterAccount(this, container, containerAdapter);
-		if (!addRosterAccount(account)) {
+		if (containerPresent(container))
 			return false;
-		}
+		MultiRosterAccount account = new MultiRosterAccount(this, container, containerAdapter);
+		if (!addRosterAccount(account))
+			return false;
 
 		IRosterManager manager = containerAdapter.getRosterManager();
 		try {

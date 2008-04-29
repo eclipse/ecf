@@ -27,15 +27,18 @@ public interface IMultiRosterViewPart extends IViewPart {
 	/**
 	 * Add container to the roster view. The container provided should adapter
 	 * to the IPresenceContainerAdapter. If it does not, then false will be
-	 * returned.
+	 * returned.  Note that this method should only be called by the user interface
+	 * thread, and not by some other thread.
 	 * 
 	 * @param container
 	 *            The container provided should adapter to the
-	 *            IPresenceContainerAdapter. If it does not, then false will be
+	 *            IPresenceContainerAdapter. If it does not (because container is already
+	 *            present in this view part), then false will be
 	 *            returned.
 	 * 
-	 * @return true if the given container can be added to this roster view.
-	 *         False if not.
+	 * @return <code>true</code> if the given container can be added to this roster view.
+	 *         <code>false</code> if not.  If the container has already been added to
+	 *         this view part, then will return <code>false</code>.
 	 */
 	public boolean addContainer(IContainer container);
 }
