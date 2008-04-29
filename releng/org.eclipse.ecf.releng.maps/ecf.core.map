@@ -56,3 +56,4 @@ plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbi
 plugin@org.apache.commons.logging,1.0.4=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080427194908/bundles/org.apache.commons.logging_1.0.4.v200803061811.jar
 plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080427194908/bundles/com.jcraft.jsch_0.1.31.jar
 plugin@ch.ethz.iks.slp,1.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080427194908/bundles/ch.ethz.iks.slp_1.0.0.RC2_v200803061811.jar
+plugin@org.objectweb.asm,3.1.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080427194908/bundles/org.objectweb.asm_3.1.0.v200803061910.jar
