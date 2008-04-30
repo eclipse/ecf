@@ -19,6 +19,8 @@ import org.eclipse.ecf.tests.discovery.identity.ServiceIDTest;
 
 public class JSLPServiceIDTest extends ServiceIDTest {
 
+	private static final String IANA = "iana";
+
 	public JSLPServiceIDTest() {
 		super(JSLPNamespace.NAME);
 	}
@@ -38,5 +40,20 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		assertTrue(Arrays.equals(new String[] {"service", "foo", "bar"}, stid.getServices()));
 		assertTrue(Arrays.equals(new String[] {"default"}, stid.getScopes()));
 		assertTrue(Arrays.equals(new String[] {"unknown"}, stid.getProtocols()));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.identity.ServiceIDTest#testCreateServiceTypeIDFromInternalString()
+	 */
+	public void testCreateServiceTypeIDFromInternalStringWithDefaultNamingAuthority() {
+		final String internalRep = "service:foo." + IANA + ":bar";
+		final IServiceID sid = (IServiceID) createIDFromString(internalRep);
+		final IServiceTypeID stid = sid.getServiceTypeID();
+
+		// the internalRep contains "iana" but getInternal may not!
+		final int indexOf = stid.getInternal().toLowerCase().indexOf(IANA.toLowerCase());
+		assertTrue(indexOf == -1);
+		assertEquals(IANA, stid.getNamingAuthority().toLowerCase());
+		assertNotSame(internalRep, stid.getName());
 	}
 }
