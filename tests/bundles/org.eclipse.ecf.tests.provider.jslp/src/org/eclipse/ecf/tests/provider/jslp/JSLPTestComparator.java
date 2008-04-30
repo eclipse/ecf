@@ -14,7 +14,6 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Properties;
 
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -60,10 +59,8 @@ public class JSLPTestComparator implements Comparator {
 			URI firstLocation = first.getLocation();
 			URI secondLocation = second.getLocation();
 			boolean locationSame = firstLocation.equals(secondLocation);
-			Properties firstProperties = first.getServiceProperties().asProperties();
-			Properties secondProperties = second.getServiceProperties().asProperties();
 			boolean scopesSame = Arrays.equals(firstTypeID.getScopes(), secondTypeID.getScopes());
-			boolean propertySame = firstProperties.equals(secondProperties);
+			boolean propertySame = first.getServiceProperties().equals(second.getServiceProperties());
 			boolean result = addressSame && namespaceSame && serviceSame && naSame && locationSame && scopesSame && propertySame;
 			if(result == true) {
 				return 0;
