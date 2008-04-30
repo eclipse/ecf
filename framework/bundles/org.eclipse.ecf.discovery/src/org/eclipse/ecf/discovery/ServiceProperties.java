@@ -8,8 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.discovery;
 
-import java.util.Enumeration;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Service properties implementation class for {@link IServiceProperties}.  Subclasses
@@ -58,8 +57,9 @@ public class ServiceProperties implements IServiceProperties {
 	 */
 	public byte[] getPropertyBytes(String name) {
 		final Object val = props.get(name);
-		if (val instanceof byte[]) {
-			return (byte[]) val;
+		if (val instanceof ByteArrayWrapper) {
+			ByteArrayWrapper baw = (ByteArrayWrapper) val;
+			return baw.getByte();
 		}
 		return null;
 	}
@@ -84,7 +84,7 @@ public class ServiceProperties implements IServiceProperties {
 	 * @see org.eclipse.ecf.discovery.IServiceProperties#setPropertyBytes(java.lang.String, byte[])
 	 */
 	public Object setPropertyBytes(String name, byte[] value) {
-		return props.put(name, value);
+		return props.put(name, new ByteArrayWrapper(value));
 	}
 
 	/* (non-Javadoc)
@@ -95,9 +95,60 @@ public class ServiceProperties implements IServiceProperties {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceProperties#asProperties()
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public Properties asProperties() {
-		return new Properties(props);
+	public boolean equals(Object obj) {
+		if (obj instanceof ServiceProperties) {
+			ServiceProperties sp = (ServiceProperties) obj;
+			return props.equals(sp.props);
+		}
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return props.hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceProperties#size()
+	 */
+	public int size() {
+		return props.size();
+	}
+
+	// proper equals/hashcode for byte[]
+	private class ByteArrayWrapper {
+
+		private final byte[] value;
+
+		public ByteArrayWrapper(byte[] value) {
+			this.value = value;
+		}
+
+		public byte[] getByte() {
+			return value;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		public boolean equals(Object obj) {
+			if (obj instanceof ByteArrayWrapper) {
+				ByteArrayWrapper baw = (ByteArrayWrapper) obj;
+				return Arrays.equals(value, baw.value);
+			}
+			return false;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		public int hashCode() {
+			return value.hashCode();
+		}
+
 	}
 }

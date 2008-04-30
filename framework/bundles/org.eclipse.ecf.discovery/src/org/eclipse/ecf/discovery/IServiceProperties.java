@@ -9,8 +9,8 @@
 
 package org.eclipse.ecf.discovery;
 
+import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Properties;
 
 public interface IServiceProperties {
 	/**
@@ -97,7 +97,17 @@ public interface IServiceProperties {
 	public Object setProperty(String name, Object value);
 
 	/**
-	 * @return A copy of this {@link IServiceProperties} as a {@link Properties}
+	 * @see Object#equals(Object)
 	 */
-	public Properties asProperties();
+	public boolean equals(Object obj);
+
+	/**
+	 * @see Object#hashCode()
+	 */
+	public int hashCode();
+
+	/**
+	 * @see Dictionary#size()
+	 */
+	public int size();
 }
