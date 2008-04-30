@@ -56,7 +56,6 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 
 	List receiveDoneEvents = new ArrayList();
 
-	@SuppressWarnings("unchecked")
 	public void testReceive() throws Exception {
 		assertNotNull(adapter);
 		final IFileTransferListener listener = new IFileTransferListener() {

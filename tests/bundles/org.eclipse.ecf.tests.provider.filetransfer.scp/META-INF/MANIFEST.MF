@@ -15,4 +15,4 @@ Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.tests.provider.filetransfer.scp;x-internal:=true,
  org.eclipse.ecf.tests.provider.filetransfer.scp
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
