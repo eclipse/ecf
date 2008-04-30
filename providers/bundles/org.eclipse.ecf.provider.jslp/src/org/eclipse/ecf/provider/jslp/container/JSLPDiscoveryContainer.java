@@ -14,6 +14,7 @@ import ch.ethz.iks.slp.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.Map.Entry;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
@@ -175,7 +176,8 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		Assert.isNotNull(type);
 		try {
 			JSLPServiceID sid = (JSLPServiceID) IDFactory.getDefault().createID(getConnectNamespace(), new Object[] {type, null});
-			return convertToIServiceInfo(Activator.getDefault().getServiceURLs((JSLPServiceTypeID) sid.getServiceTypeID()), type.getScopes());
+			JSLPServiceTypeID stid = (JSLPServiceTypeID) sid.getServiceTypeID();
+			return convertToIServiceInfo(Activator.getDefault().getServiceURLs(stid.getServiceType(), Arrays.asList(stid.getScopes())), type.getScopes());
 		} catch (IDCreateException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(IServiceTypeID)", e); //$NON-NLS-1$
 		} catch (ServiceLocationException e) {
@@ -192,7 +194,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		try {
 			JSLPServiceInfo si = new JSLPServiceInfo(aServiceInfo);
 			IServiceTypeID stid = si.getServiceID().getServiceTypeID();
-			Activator.getDefault().register(si.getServiceURL(), Arrays.asList(stid.getScopes()), si.getServiceProperties().asProperties());
+			Activator.getDefault().register(si.getServiceURL(), Arrays.asList(stid.getScopes()), new ServicePropertiesAdapter(si.getServiceProperties()).toProperties());
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "registerService(IServiceInfo)", e); //$NON-NLS-1$
 			throw new ECFException(e.getMessage(), e);
@@ -212,15 +214,16 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		}
 	}
 
-	private IServiceInfo[] convertToIServiceInfo(Collection serviceURLs) {
+	private IServiceInfo[] convertToIServiceInfo(Map serviceURLs) {
 		return convertToIServiceInfo(serviceURLs, new String[0]);
 	}
 
-	private IServiceInfo[] convertToIServiceInfo(Collection serviceURLs, String[] scopes) {
+	private IServiceInfo[] convertToIServiceInfo(Map serviceURLs, String[] scopes) {
 		List tmp = new ArrayList();
-		for (Iterator itr = serviceURLs.iterator(); itr.hasNext();) {
-			ServiceURL url = (ServiceURL) itr.next();
-			IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, scopes), -1, -1, new ServiceProperties());
+		for (Iterator itr = serviceURLs.entrySet().iterator(); itr.hasNext();) {
+			Map.Entry entry = (Entry) itr.next();
+			ServiceURL url = (ServiceURL) entry.getKey();
+			IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, scopes), -1, -1, new ServicePropertiesAdapter((List) entry.getValue()));
 			tmp.add(serviceInfo);
 		}
 		return (IServiceInfo[]) tmp.toArray(new IServiceInfo[tmp.size()]);

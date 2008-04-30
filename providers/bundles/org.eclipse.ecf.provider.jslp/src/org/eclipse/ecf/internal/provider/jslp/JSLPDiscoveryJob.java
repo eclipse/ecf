@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
 import org.eclipse.ecf.provider.jslp.container.JSLPServiceInfo;
 import org.osgi.framework.Bundle;
@@ -41,17 +40,18 @@ public final class JSLPDiscoveryJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		Assert.isNotNull(monitor);
 		try {
-			Collection availableServices = Activator.getDefault().getServiceURLs();
+			Map availableServices = Activator.getDefault().getServiceURLs();
 			Map removedServices = new HashMap(services);
-			for (Iterator itr = availableServices.iterator(); itr.hasNext() && !monitor.isCanceled();) {
-				ServiceURL url = (ServiceURL) itr.next();
+			for (Iterator itr = availableServices.entrySet().iterator(); itr.hasNext() && !monitor.isCanceled();) {
+				Map.Entry entry = (Map.Entry) itr.next();
+				ServiceURL url = (ServiceURL) entry.getKey();
 				// do we know the service already?
 				if (removedServices.containsKey(url)) {
 					removedServices.remove(url);
 				} else { // we don't know the service, so we need to create the
 					// service discovery object
 					//TODO-mkuppe do we get meaningful values for ServiceProperties (SLP attributes?), priority and weight from SLP?
-					IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url), -1, -1, new ServiceProperties());
+					IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url), -1, -1, new ServicePropertiesAdapter((List) entry.getValue()));
 					services.put(url, serviceInfo);
 					discoveryContainer.fireServiceDiscovered(serviceInfo);
 				}

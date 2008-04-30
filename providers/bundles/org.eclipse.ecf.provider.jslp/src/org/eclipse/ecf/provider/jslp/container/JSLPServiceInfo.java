@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
+import org.eclipse.ecf.internal.provider.jslp.ServicePropertiesAdapter;
 import org.eclipse.ecf.internal.provider.jslp.ServiceURLAdapter;
 import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
 
@@ -36,8 +37,8 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 		this(aSI.getLocation(), ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME), aSI.getServiceID().getServiceTypeID(), aSI.getServiceID().getServiceName()), aSI.getPriority(), aSI.getWeight(), aSI.getServiceProperties());
 	}
 
-	public JSLPServiceInfo(ServiceURLAdapter anAdapter, int priority, int weight, ServiceProperties serviceProperties) {
-		this(anAdapter.getURI(), anAdapter.getIServiceID(), priority, weight, serviceProperties);
+	public JSLPServiceInfo(ServiceURLAdapter anAdapter, int priority, int weight, ServicePropertiesAdapter aServicePropertiesAdapter) {
+		this(anAdapter.getURI(), anAdapter.getIServiceID(), priority, weight, aServicePropertiesAdapter.toServiceProperties());
 	}
 
 	public ServiceURL getServiceURL() throws ServiceLocationException {

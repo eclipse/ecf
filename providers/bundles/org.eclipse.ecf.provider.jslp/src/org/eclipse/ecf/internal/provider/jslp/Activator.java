@@ -13,7 +13,6 @@ package org.eclipse.ecf.internal.provider.jslp;
 import ch.ethz.iks.slp.*;
 import java.util.*;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.provider.jslp.identity.JSLPServiceTypeID;
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -130,13 +129,26 @@ public class Activator implements BundleActivator {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findServices(ch.ethz.iks.slp.ServiceType, java.util.List, java.lang.String)
 	 */
-	public ServiceLocationEnumeration findServices(ServiceType type, List scopes, String searchFilter) throws ServiceLocationException {
+	private ServiceLocationEnumeration findServices(ServiceType type, List scopes, String searchFilter) throws ServiceLocationException {
 		Locator locator = getLocator();
 		if (locator != null) {
 			return locator.findServices(type, scopes, searchFilter);
 		}
 		//TODO add logging
 		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "findServies(ServiceType, List, String)", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
+		return emptyServiceLocationEnumeration;
+	}
+
+	/* (non-Javadoc)
+	 * @see ch.ethz.iks.slp.Locator#findAttributes(ch.ethz.iks.slp.ServiceURL, java.util.List, java.util.List)
+	 */
+	private ServiceLocationEnumeration findAttributes(ServiceURL anURL, List scopes, List attributes) throws ServiceLocationException {
+		Locator locator = getLocator();
+		if (locator != null) {
+			return locator.findAttributes(anURL, scopes, attributes);
+		}
+		//TODO add logging
+		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "findAttributes(ch.ethz.iks.slp.ServiceType, java.util.List, java.util.List)", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		return emptyServiceLocationEnumeration;
 	}
 
@@ -188,20 +200,37 @@ public class Activator implements BundleActivator {
 		//TODO add logging
 	}
 
-	public Collection getServiceURLs() throws ServiceLocationException {
+	/**
+	 * @return A Map whos keys are {@link ServiceURL} and Entries are {@link List} describing service attributes
+	 * @throws ServiceLocationException
+	 */
+	public Map getServiceURLs() throws ServiceLocationException {
 		Enumeration stEnum = findServiceTypes(null, null);
 		Set aSet = new HashSet(Collections.list(stEnum));
-		Set result = new HashSet();
+		Map result = new HashMap();
 		for (Iterator itr = aSet.iterator(); itr.hasNext();) {
 			String type = (String) itr.next();
-			result.addAll(Collections.list(findServices(new ServiceType(type), null, null)));
+			ServiceLocationEnumeration services = findServices(new ServiceType(type), null, null);
+			while (services.hasMoreElements()) {
+				ServiceURL url = (ServiceURL) services.next();
+				result.put(url, Collections.list(findAttributes(url, null, null)));
+			}
 		}
 		return result;
 	}
 
-	public Collection getServiceURLs(JSLPServiceTypeID stid) throws ServiceLocationException {
-		Set result = new HashSet();
-		result.addAll(Collections.list(findServices(stid.getServiceType(), Arrays.asList(stid.getScopes()), null)));
+	/**
+	 * @param stid
+	 * @return A Map whos keys are {@link ServiceURL} and Entries are {@link List} describing service attributes
+	 * @throws ServiceLocationException
+	 */
+	public Map getServiceURLs(ServiceType aServiceType, List scopes) throws ServiceLocationException {
+		Map result = new HashMap();
+		ServiceLocationEnumeration services = findServices(aServiceType, scopes, null);
+		while (services.hasMoreElements()) {
+			ServiceURL url = (ServiceURL) services.next();
+			result.put(url, Collections.list(findAttributes(url, scopes, null)));
+		}
 		return result;
 	}
 }

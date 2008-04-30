@@ -19,7 +19,7 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
 
 /**
- * 
+ * Adapts jSLP's ServiceURL to an ECF's IServiceID and vice versa
  */
 public class ServiceURLAdapter {
 
