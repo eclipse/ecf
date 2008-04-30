@@ -23,7 +23,7 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 public class ServiceInfoComparator implements Comparator {
 
 	private boolean compareServiceProperties(IServiceProperties p1, IServiceProperties p2) {
-		if (p1.asProperties().size() != p2.asProperties().size())
+		if (p1.size() != p2.size())
 			return false;
 		for (final Enumeration e = p1.getPropertyNames(); e.hasMoreElements();) {
 			final String key = (String) e.nextElement();
