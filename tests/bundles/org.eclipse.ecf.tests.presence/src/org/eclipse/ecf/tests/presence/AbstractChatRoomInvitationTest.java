@@ -30,7 +30,7 @@ public abstract class AbstractChatRoomInvitationTest extends AbstractPresenceTes
 	public static final int WAITTIME = 20000;
 	public static final String CHAT_ROOM_NAME = System.getProperty("chat.room.name");
 
-	List<ID> invitationsReceived = new ArrayList<ID>();
+	List invitationsReceived = new ArrayList();
 
 	Object synchObject = new Object();
 

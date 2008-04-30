@@ -32,12 +32,12 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 	IChatManager chat0, chat1 = null;
 	public static final int WAITTIME = 3000;
 
-	List<IChatMessage> receivedChatMessages = new ArrayList<IChatMessage>();
+	List receivedChatMessages = new ArrayList();
 
 	IIMMessageListener listener = new IIMMessageListener() {
 		public void handleMessageEvent(IIMMessageEvent messageEvent) {
 			if (messageEvent instanceof IChatMessageEvent) {
-				IChatMessage chatmessage = ((IChatMessageEvent) messageEvent).getChatMessage();
+				final IChatMessage chatmessage = ((IChatMessageEvent) messageEvent).getChatMessage();
 				System.out.println("received chat message=" + chatmessage);
 				receivedChatMessages.add(chatmessage);
 			}
@@ -74,7 +74,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1), "abcdef");
 		sleep(WAITTIME);
 		assertHasEvent(receivedChatMessages, IChatMessage.class);
-		final IChatMessage message = receivedChatMessages.get(0);
+		final IChatMessage message = (IChatMessage) receivedChatMessages.get(0);
 		assertTrue(message.getBody().equals("abcdef"));
 		assertTrue(message.getType().equals(IChatMessage.Type.CHAT));
 		final ID fromID = message.getFromID();
@@ -94,7 +94,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 		sleep(WAITTIME);
 
 		assertHasEvent(receivedChatMessages, IChatMessage.class);
-		final IChatMessage message = receivedChatMessages.get(0);
+		final IChatMessage message = (IChatMessage) receivedChatMessages.get(0);
 		// For some reason, the smack library doesn't seem to get this right.
 		// assertTrue(message.getThreadID().equals(sendthreadid));
 		assertTrue(message.getSubject().equals("subject1"));
@@ -118,7 +118,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 		sleep(WAITTIME);
 
 		assertHasEvent(receivedChatMessages, IChatMessage.class);
-		final IChatMessage message = receivedChatMessages.get(0);
+		final IChatMessage message = (IChatMessage) receivedChatMessages.get(0);
 		assertNull(message.getSubject());
 		assertTrue(message.getBody().equals(""));
 		assertTrue(message.getType().equals(IChatMessage.Type.CHAT));
