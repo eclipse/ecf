@@ -30,7 +30,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 
 	private ServiceType st;
 
-	protected JSLPServiceTypeID(Namespace namespace, String type) throws IDCreateException {
+	protected JSLPServiceTypeID(final Namespace namespace, final String type) throws IDCreateException {
 		super(namespace);
 		try {
 			st = new ServiceType(type);
@@ -38,20 +38,14 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 			Assert.isNotNull(st.toString());
 			Assert.isTrue(!st.toString().equals("")); //$NON-NLS-1$
 
-			namingAuthority = st.getNamingAuthority();
+			final String na = st.getNamingAuthority();
 			String str = st.toString();
-
-			// remove the naming authority from the string
-			int namingStart = str.indexOf("."); //$NON-NLS-1$
-			if (namingStart != -1) {
-				String head = str.substring(0, namingStart);
-				// Concrete type too which would be after the NA?
-				String tail = ""; //$NON-NLS-1$
-				int namingEnd = type.indexOf(JSLP_DELIM, namingStart);
-				if (namingEnd != -1) {
-					tail = str.substring(namingEnd, str.length());
-				}
-				str = head + tail;
+			if (na.equals("")) { //$NON-NLS-1$
+				namingAuthority = DEFAULT_NA;
+			} else {
+				namingAuthority = na;
+				// remove the naming authority from the string
+				str = StringUtils.replaceAllIgnoreCase(str, "." + na, ""); //$NON-NLS-1$//$NON-NLS-2$
 			}
 
 			services = StringUtils.split(str, JSLP_DELIM);
@@ -63,7 +57,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		}
 	}
 
-	JSLPServiceTypeID(Namespace namespace, ServiceURL anURL, String[] scopes) throws IDCreateException {
+	JSLPServiceTypeID(final Namespace namespace, final ServiceURL anURL, final String[] scopes) throws IDCreateException {
 		this(namespace, anURL.getServiceType().toString());
 
 		if (scopes != null && scopes.length > 0) {
@@ -78,13 +72,14 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		}
 	}
 
-	JSLPServiceTypeID(JSLPNamespace namespace, IServiceTypeID type) {
+	JSLPServiceTypeID(final JSLPNamespace namespace, final IServiceTypeID type) {
 		super(namespace, type);
 
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < services.length; i++) {
 			buf.append(services[i]);
-			if (i == 1) {
+			// #228876
+			if (!namingAuthority.equalsIgnoreCase(DEFAULT_NA) && i == 1) {
 				buf.append("."); //$NON-NLS-1$
 				buf.append(namingAuthority);
 			}
@@ -106,13 +101,16 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 	 * @see org.eclipse.ecf.discovery.identity.ServiceTypeID#getInternal()
 	 */
 	public String getInternal() {
-		// remove the dangling colon if present
-		String str = st.toString();
+		final String str = st.toString();
 		Assert.isNotNull(str);
+
+		// remove the dangling colon if present
 		if (str.endsWith(":")) { //$NON-NLS-1$
 			Assert.isTrue(str.length() > 1);
 			return str.substring(0, str.length() - 1);
 		}
-		return str;
+
+		// remove the default naming authority #228876
+		return StringUtils.replaceAllIgnoreCase(str, "." + DEFAULT_NA, ""); //$NON-NLS-1$//$NON-NLS-2$
 	}
 }
