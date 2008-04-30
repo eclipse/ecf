@@ -221,6 +221,7 @@ public class Activator implements BundleActivator {
 
 	/**
 	 * @param aServiceType
+	 * @param scopes
 	 * @return A Map whos keys are {@link ServiceURL} and Entries are {@link List} describing service attributes
 	 * @throws ServiceLocationException
 	 */
