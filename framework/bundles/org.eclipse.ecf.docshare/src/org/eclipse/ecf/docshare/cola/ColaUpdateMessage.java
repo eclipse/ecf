@@ -67,7 +67,10 @@ public class ColaUpdateMessage extends UpdateMessage {
 	}
 
 	public String toString() {
-		return super.toString() + "\n originationCount: local: " + this.localOperationsCount + " remote: " + this.remoteOperationsCount;
+		StringBuffer sb = new StringBuffer(super.toString());
+		sb.append(";").append("originationCount.local=").append(this.localOperationsCount).append(";"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+		sb.append("originationCount.remote=").append(this.remoteOperationsCount); //$NON-NLS-1$
+		return sb.toString();
 	}
 
 }

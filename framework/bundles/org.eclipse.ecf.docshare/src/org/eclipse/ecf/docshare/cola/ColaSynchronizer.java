@@ -48,7 +48,7 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 	 */
 	public UpdateMessage transformIncomingMessage(final UpdateMessage remoteMsg) {
 		if (!(remoteMsg instanceof ColaUpdateMessage)) {
-			throw new IllegalArgumentException("UpdateMessage is incompatible with Cola SynchronizationStrategy");
+			throw new IllegalArgumentException("UpdateMessage is incompatible with Cola SynchronizationStrategy"); //$NON-NLS-1$
 		}
 		ColaUpdateMessage transformedRemote = (ColaUpdateMessage) remoteMsg;
 		// TODO this is where the concurrency algorithm is executed
