@@ -16,4 +16,5 @@ Export-Package: org.eclipse.ecf.tests.discovery,
  org.eclipse.ecf.tests.discovery.listener
 Import-Package: org.osgi.framework
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
+ J2SE-1.4
