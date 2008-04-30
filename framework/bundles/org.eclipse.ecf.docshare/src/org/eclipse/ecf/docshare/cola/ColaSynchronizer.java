@@ -8,16 +8,16 @@ import org.eclipse.ecf.internal.docshare.Activator;
 
 public class ColaSynchronizer implements SynchronizationStrategy {
 
-	private Queue<ColaUpdateMessage> unacknowledgedLocalOperations;
+	private List unacknowledgedLocalOperations;
 	private final boolean isInitiator;
 	private double localOperationsCount;
 	private double remoteOperationsCount;
 
-	private static Map<ID, ColaSynchronizer> sessionStrategies = new HashMap<ID, ColaSynchronizer>();
+	private static Map sessionStrategies = new HashMap();
 
 	private ColaSynchronizer(ID docshareID) {
 		this.isInitiator = Activator.getDefault().getDocShare(docshareID).isInitiator();
-		unacknowledgedLocalOperations = new LinkedList<ColaUpdateMessage>();
+		unacknowledgedLocalOperations = new LinkedList();
 		localOperationsCount = 0;
 		remoteOperationsCount = 0;
 	}
@@ -26,7 +26,7 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 		if (sessionStrategies.get(docshareID) == null) {
 			sessionStrategies.put(docshareID, new ColaSynchronizer(docshareID));
 		}
-		return sessionStrategies.get(docshareID);
+		return (ColaSynchronizer) sessionStrategies.get(docshareID);
 	}
 
 	public static void cleanUpFor(ID docshareID) {
@@ -34,8 +34,7 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 	}
 
 	public UpdateMessage registerOutgoingMessage(UpdateMessage localMsg) {
-		ColaUpdateMessage colaMsg = new ColaUpdateMessage(localMsg, localOperationsCount,
-				remoteOperationsCount);
+		ColaUpdateMessage colaMsg = new ColaUpdateMessage(localMsg, localOperationsCount, remoteOperationsCount);
 		unacknowledgedLocalOperations.add(colaMsg);
 		localOperationsCount++;
 		return colaMsg;
@@ -49,8 +48,7 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 	 */
 	public UpdateMessage transformIncomingMessage(final UpdateMessage remoteMsg) {
 		if (!(remoteMsg instanceof ColaUpdateMessage)) {
-			throw new IllegalArgumentException(
-					"UpdateMessage is incompatible with Cola SynchronizationStrategy");
+			throw new IllegalArgumentException("UpdateMessage is incompatible with Cola SynchronizationStrategy");
 		}
 		ColaUpdateMessage transformedRemote = (ColaUpdateMessage) remoteMsg;
 		// TODO this is where the concurrency algorithm is executed
@@ -58,18 +56,17 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 			// remove operations from queue that have been implicitly
 			// acknowledged as received on the remote site by the reception of
 			// this message
-			Iterator<ColaUpdateMessage> queueIterator = unacknowledgedLocalOperations.iterator();
-			ColaUpdateMessage localOperation = queueIterator.next();
-			while (!unacknowledgedLocalOperations.isEmpty()
-					&& transformedRemote.getRemoteOperationsCount() > localOperation.getLocalOperationsCount()) {
+			Iterator queueIterator = unacknowledgedLocalOperations.iterator();
+			ColaUpdateMessage localOperation = (ColaUpdateMessage) queueIterator.next();
+			while (!unacknowledgedLocalOperations.isEmpty() && transformedRemote.getRemoteOperationsCount() > localOperation.getLocalOperationsCount()) {
 				queueIterator.remove();
 				if (queueIterator.hasNext()) {
-					localOperation = queueIterator.next();
+					localOperation = (ColaUpdateMessage) queueIterator.next();
 				}
 			}// at this point the queue has been freed of operations that
 			// don't require to be transformed against
 			if (!unacknowledgedLocalOperations.isEmpty()) {
-				Iterator<ColaUpdateMessage> queueModIterator = unacknowledgedLocalOperations.iterator();
+				Iterator queueModIterator = unacknowledgedLocalOperations.iterator();
 				while (queueModIterator.hasNext()) {
 					// returns new instance
 					// clarify operation preference, owner/docshare initiator
@@ -79,7 +76,7 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 					} else {
 						transformedRemote = transformedRemote.transformForApplicationAtParticipantAgainst(localOperation);
 					}
-					localOperation = queueModIterator.next();
+					localOperation = (ColaUpdateMessage) queueModIterator.next();
 				}
 				// TODO unsure whether this is needed or not, need to test
 				// transform against last element in the queue

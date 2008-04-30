@@ -1,6 +1,6 @@
 package org.eclipse.ecf.docshare.cola;
 
-import org.eclipse.ecf.docshare.messages.*;
+import org.eclipse.ecf.docshare.messages.UpdateMessage;
 
 public class ColaUpdateMessage extends UpdateMessage {
 
@@ -12,8 +12,7 @@ public class ColaUpdateMessage extends UpdateMessage {
 	final double remoteOperationsCount;
 	final TransformationStrategy trafoStrat;
 
-	public ColaUpdateMessage(UpdateMessage msg, double localOperationsCount,
-			double remoteOperationsCount) {
+	public ColaUpdateMessage(UpdateMessage msg, double localOperationsCount, double remoteOperationsCount) {
 		super(msg.getOffset(), msg.getLength(), msg.getText());
 		this.localOperationsCount = localOperationsCount;
 		this.remoteOperationsCount = remoteOperationsCount;
@@ -67,10 +66,8 @@ public class ColaUpdateMessage extends UpdateMessage {
 		return transformedMsg;
 	}
 
-	@Override
 	public String toString() {
-		return super.toString() + "\n originationCount: local: " + this.localOperationsCount
-				+ " remote: " + this.remoteOperationsCount;
+		return super.toString() + "\n originationCount: local: " + this.localOperationsCount + " remote: " + this.remoteOperationsCount;
 	}
 
 }
