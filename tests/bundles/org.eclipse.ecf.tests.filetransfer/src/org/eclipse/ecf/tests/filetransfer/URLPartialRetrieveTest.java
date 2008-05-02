@@ -20,7 +20,6 @@ import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
-import org.eclipse.ecf.filetransfer.InvalidFileRangeSpecificationException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
@@ -185,10 +184,7 @@ public class URLPartialRetrieveTest extends ContainerAbstractTestCase {
 			testReceiveHttp(10, 5, HTTP_RETRIEVE);
 			fail();
 		} catch (final IncomingFileTransferException e) {
-			final Throwable t = e.getCause();
-			if (t != null && t instanceof InvalidFileRangeSpecificationException)
-				return;
-			fail();
+			return;
 		}
 	}
 
