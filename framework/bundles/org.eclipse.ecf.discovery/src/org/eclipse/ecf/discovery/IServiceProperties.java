@@ -107,6 +107,7 @@ public interface IServiceProperties {
 	public int hashCode();
 
 	/**
+	 * @return Answers the number of key/value pairs in this ServiceProperties
 	 * @see Dictionary#size()
 	 */
 	public int size();
