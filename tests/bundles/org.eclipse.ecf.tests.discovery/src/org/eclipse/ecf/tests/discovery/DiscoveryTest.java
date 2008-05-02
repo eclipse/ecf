@@ -401,7 +401,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	}
 
 	/**
-	 * @return
+	 * @return A newly IServiceTypeListener which prints to System.out when a service is discovered
 	 */
 	protected IServiceTypeListener createServiceTypeListener() {
 		return new IServiceTypeListener() {
