@@ -150,7 +150,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		createHelpMessage(pageBook);
 		setupTreeViewer(pageBook);
 
-		pageBook.showPage(helpMessageLabel);
+		if (rosterAccounts.size() == 0)
+			pageBook.showPage(helpMessageLabel);
 	}
 
 	private void createHelpMessage(Composite parent) {
@@ -183,8 +184,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
-		retrieveServices();
 		hookDropSupport();
+		retrieveServices();
 		treeViewer.expandToLevel(DEFAULT_EXPAND_LEVEL);
 
 	}
