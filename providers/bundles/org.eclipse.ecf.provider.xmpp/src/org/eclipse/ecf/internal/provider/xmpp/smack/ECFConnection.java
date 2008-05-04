@@ -146,9 +146,15 @@ public class ECFConnection implements ISynchAsynchConnection {
 		try {
 			if (google) {
 				if (secure) {
-					connection = new SSLXMPPConnection(GOOGLE_TALK_HOST, XMPPS_DEFAULT_PORT, jabberURI.getHostname());
+					if(serverPort == -1){
+						serverPort = XMPPS_DEFAULT_PORT;	
+					}					
+					connection = new SSLXMPPConnection(GOOGLE_TALK_HOST, serverPort, jabberURI.getHostname());
 				} else {
-					connection = new XMPPConnection(GOOGLE_TALK_HOST, XMPP_DEFAULT_PORT, jabberURI.getHostname());
+					if(serverPort == -1){
+						serverPort = XMPP_DEFAULT_PORT;	
+					}	
+					connection = new XMPPConnection(GOOGLE_TALK_HOST, serverPort, jabberURI.getHostname());
 				}
 			} else if (serverPort == -1) {
 				if (secure) {
