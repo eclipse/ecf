@@ -233,14 +233,4 @@ public final class StringUtils {
 			return string;
 		return string.substring(0, index) + replace + replaceAll(string.substring(index + target.length()), target, replace);
 	}
-
-	/**
-	 * @see StringUtils#replaceAll(String, String, String) but case insensitive
-	 */
-	public static String replaceAllIgnoreCase(String string, String target, String replace) {
-		final int index = string.toLowerCase().indexOf(target.toLowerCase());
-		if (index == -1)
-			return string;
-		return string.substring(0, index) + replace + replaceAllIgnoreCase(string.substring(index + target.length()), target, replace);
-	}
 }
