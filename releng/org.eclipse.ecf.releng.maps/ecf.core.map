@@ -50,6 +50,6 @@ plugin@org.eclipse.ecf.provider.jslp=@CVSTag@,:pserver:anonymous@dev.eclipse.org
 plugin@ch.ethz.iks.r_osgi.remote=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/ch.ethz.iks.r_osgi.remote
 plugin@org.eclipse.ecf.provider.r_osgi=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.r_osgi
 
-plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080427194908/bundles/com.jcraft.jsch_0.1.31.jar
-plugin@ch.ethz.iks.slp,1.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080427194908/bundles/ch.ethz.iks.slp_1.0.0.RC2_v200803061811.jar
-plugin@org.objectweb.asm,3.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20080427194908/bundles/org.objectweb.asm_3.0.0.v200803061811.jar
+plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/I20080505235349/bundles/com.jcraft.jsch_0.1.31.jar
+plugin@ch.ethz.iks.slp,1.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/I20080505235349/bundles/ch.ethz.iks.slp_1.0.0.RC2_v20080505-0900.jar
+plugin@org.objectweb.asm,3.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/I20080505235349/bundles/org.objectweb.asm_3.0.0.v200803061811.jar
