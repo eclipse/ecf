@@ -22,6 +22,14 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
 public interface IIDStore {
 
 	/**
+	 * Get {@link ISecurePreferences} for all IDs in ID store.
+	 * 
+	 * @return array of ISecurePreferences instances.  If number of instances current stored is 0, returns
+	 * empty array.  Will not return <code>null</code>.
+	 */
+	public ISecurePreferences[] getNodes();
+
+	/**
 	 * Get {@link ISecurePreferences} node for a given ID.  Clients may use this to either create an {@link ISecurePreferences} 
 	 * instance for a new {@link ID}, or get an existing one from storage.
 	 * @param id the ID to get the storage node for.

@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.internal.storage;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.storage.*;
 import org.eclipse.equinox.security.storage.*;
@@ -22,6 +24,7 @@ public class IDStore implements IIDStore {
 
 	private static final String idStoreNameSegment = "/ECF/ID Store/"; //$NON-NLS-1$
 	private static final String NSSEPARATOR = ":"; //$NON-NLS-1$
+	private static final ISecurePreferences[] EMPTY_SECUREPREFERENCES = {};
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.storage.IIDStore#getNode(org.eclipse.ecf.core.identity.ID)
@@ -37,6 +40,26 @@ public class IDStore implements IIDStore {
 			return null;
 		final String path = idStoreNameSegment + EncodingUtils.encodeSlashes(idAsString);
 		return root.node(path);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.storage.IIDStore#getNodes()
+	 */
+	public ISecurePreferences[] getNodes() {
+		final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+		if (root == null)
+			return null;
+		ISecurePreferences parentNode = root.node(idStoreNameSegment);
+		if (parentNode == null)
+			return EMPTY_SECUREPREFERENCES;
+		String[] childNames = parentNode.childrenNames();
+		List result = new ArrayList();
+		for (int i = 0; i < childNames.length; i++) {
+			ISecurePreferences p = parentNode.node(childNames[i]);
+			if (p != null)
+				result.add(p);
+		}
+		return (ISecurePreferences[]) result.toArray(new ISecurePreferences[] {});
 	}
 
 	private String getIDAsString(ID id) {
