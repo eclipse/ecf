@@ -30,9 +30,10 @@ public class IDStore implements IIDStore {
 	 * @see org.eclipse.ecf.storage.IIDStore#getNode(org.eclipse.ecf.core.identity.ID)
 	 */
 	public ISecurePreferences getNode(ID id) {
-		ISecurePreferences namespaceNode = getNamespaceRoot();
-		if (namespaceNode == null)
+		ISecurePreferences namespaceRoot = getNamespaceRoot();
+		if (namespaceRoot == null)
 			return null;
+		ISecurePreferences namespaceNode = getNamespaceNode(id.getNamespace());
 		final String idAsString = getIDAsString(id);
 		if (idAsString == null)
 			return null;
