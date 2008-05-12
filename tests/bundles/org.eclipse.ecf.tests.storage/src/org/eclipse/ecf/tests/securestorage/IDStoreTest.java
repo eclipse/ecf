@@ -14,6 +14,7 @@ package org.eclipse.ecf.tests.securestorage;
 import junit.framework.TestCase;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.internal.tests.securestorage.Activator;
 import org.eclipse.ecf.storage.IIDStore;
@@ -34,11 +35,19 @@ public class IDStoreTest extends TestCase {
 		idStore = Activator.getDefault().getIDStore();
 	}
 
+	protected void clearStore() {
+		final ISecurePreferences[] namespaces = idStore.getNamespaceNodes();
+		for (int i = 0; i < namespaces.length; i++) {
+			namespaces[i].removeNode();
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		clearStore();
 		idStore = null;
 	}
 
@@ -46,9 +55,24 @@ public class IDStoreTest extends TestCase {
 		assertNotNull(idStore);
 	}
 
-	public void testStoreGUID() throws Exception {
+	protected ISecurePreferences addGUID() throws IDCreateException {
 		final ID newGUID = IDFactory.getDefault().createGUID();
-		final ISecurePreferences prefs = idStore.getNode(newGUID);
+		return idStore.getNode(newGUID);
+	}
+
+	public void testStoreGUID() throws Exception {
+		final ISecurePreferences prefs = addGUID();
 		assertNotNull(prefs);
+	}
+
+	public void testStoreGUIDs() throws Exception {
+		testStoreGUID();
+		testStoreGUID();
+		testStoreGUID();
+	}
+
+	public void testListNamespaces() throws Exception {
+		final ISecurePreferences[] namespaces = idStore.getNamespaceNodes();
+		assertNotNull(namespaces);
 	}
 }
