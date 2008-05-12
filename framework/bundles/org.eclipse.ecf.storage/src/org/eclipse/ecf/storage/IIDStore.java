@@ -50,7 +50,8 @@ public interface IIDStore {
 
 	/**
 	 * Create ID for an ISecurePreferences node.
-	 * @param node the node to use to create the new ID instance.
+	 * @param node the node to use to create the new ID instance.  This node must not be <code>null</code>, and should
+	 * be an instance previously created via {@link #getNode(ID)}.  It also must have a Namespace node as parent.
 	 * @return new ID created.  Will not be <code>null</code>.
 	 * @throws IDCreateException thrown if ID cannot be created...e.g. the given node does not define
 	 * a valid ID instance.
