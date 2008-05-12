@@ -11,8 +11,7 @@
 
 package org.eclipse.ecf.storage;
 
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 
 /**
@@ -22,19 +21,30 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
 public interface IIDStore {
 
 	/**
-	 * Get {@link ISecurePreferences} for all IDs in ID store.
+	 * Get the namespace nodes exposed by this ID store.
 	 * 
-	 * @return array of ISecurePreferences instances.  If number of instances current stored is 0, returns
-	 * empty array.  Will not return <code>null</code>.
+	 * @return array of namespace nodes for this ID store.  Will return <code>null</code> if
+	 * secure preferences store not available.  Will return empty array if preferences available
+	 * but no Namespaces have been added.  Each ISecurePreferences node represents a given {@link Namespace}, and
+	 * the {@link ISecurePreferences#name()} entry will correspond to the {@link Namespace#getName()}.
 	 */
-	public ISecurePreferences[] getNodes();
+	public ISecurePreferences[] getNamespaceNodes();
+
+	/**
+	 * Get the given namespace node for this ID store.
+	 * 
+	 * @param namespace the {@link Namespace} to get the node for.  Must not be <code>null</code>.
+	 * @return the node for the given {@link Namespace}.  Will not return <code>null</code>.  If node
+	 * previously was not present, it will be created.
+	 */
+	public ISecurePreferences getNamespaceNode(Namespace namespace);
 
 	/**
 	 * Get {@link ISecurePreferences} node for a given ID.  Clients may use this to either create an {@link ISecurePreferences} 
 	 * instance for a new {@link ID}, or get an existing one from storage.
 	 * @param id the ID to get the storage node for.
-	 * @return ISecurePreferences for the given ID.  Will return an existing node if ID is already present, and a new
-	 * node if not.
+	 * @return ISecurePreferences for the given ID.  Will not return <code>null</code>.  
+	 * Will return an existing node if ID is already present, and a new node if not.
 	 */
 	public ISecurePreferences getNode(ID id);
 
