@@ -50,7 +50,8 @@ public class IDEntry implements IIDEntry {
 		return prefs.parent().name() + ":" + prefs.name(); //$NON-NLS-1$
 	}
 
-	private ISecurePreferences getRoot() {
+	private ISecurePreferences getNamespaceRoot() {
+		// The namespace root is the parent of our parent (which is the namespace)
 		return prefs.parent().parent();
 	}
 
@@ -67,7 +68,7 @@ public class IDEntry implements IIDEntry {
 			throw new IDStoreException("Associate ID not well-formed"); //$NON-NLS-1$
 		try {
 			String namespaceName = name.substring(0, index);
-			ISecurePreferences namespacePrefs = getPreferences(getRoot(), namespaceName);
+			ISecurePreferences namespacePrefs = getPreferences(getNamespaceRoot(), namespaceName);
 			if (namespacePrefs == null)
 				throw new IDStoreException(NLS.bind("Cannot find Namespace {0}", namespaceName)); //$NON-NLS-1$
 			String idName = name.substring(index + 1);
