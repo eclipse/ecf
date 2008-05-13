@@ -17,7 +17,9 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.internal.tests.securestorage.Activator;
+import org.eclipse.ecf.storage.IIDEntry;
 import org.eclipse.ecf.storage.IIDStore;
+import org.eclipse.ecf.storage.INamespaceEntry;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 
 /**
@@ -36,9 +38,9 @@ public class IDStoreTest extends TestCase {
 	}
 
 	protected void clearStore() {
-		final ISecurePreferences[] namespaces = idStore.getNamespaceNodes();
+		final INamespaceEntry[] namespaces = idStore.getNamespaceEntries();
 		for (int i = 0; i < namespaces.length; i++) {
-			namespaces[i].removeNode();
+			namespaces[i].delete();
 		}
 	}
 
@@ -55,18 +57,18 @@ public class IDStoreTest extends TestCase {
 		assertNotNull(idStore);
 	}
 
-	protected ISecurePreferences addGUID() throws IDCreateException {
+	protected IIDEntry addGUID() throws IDCreateException {
 		final ID newGUID = IDFactory.getDefault().createGUID();
-		return idStore.getNode(newGUID);
+		return idStore.getEntry(newGUID);
 	}
 
-	protected ISecurePreferences addStringID(String value) throws IDCreateException {
+	protected IIDEntry addStringID(String value) throws IDCreateException {
 		final ID newID = IDFactory.getDefault().createStringID(value);
-		return idStore.getNode(newID);
+		return idStore.getEntry(newID);
 	}
 
 	public void testStoreGUID() throws Exception {
-		final ISecurePreferences prefs = addGUID();
+		final ISecurePreferences prefs = addGUID().getPreferences();
 		assertNotNull(prefs);
 	}
 
@@ -77,29 +79,29 @@ public class IDStoreTest extends TestCase {
 	}
 
 	public void testListEmptyNamespaces() throws Exception {
-		final ISecurePreferences[] namespaces = idStore.getNamespaceNodes();
+		final INamespaceEntry[] namespaces = idStore.getNamespaceEntries();
 		assertNotNull(namespaces);
 	}
 
 	public void testOneNamespace() throws Exception {
 		testStoreGUID();
 		testStoreGUID();
-		final ISecurePreferences[] namespaces = idStore.getNamespaceNodes();
+		final INamespaceEntry[] namespaces = idStore.getNamespaceEntries();
 		assertTrue(namespaces.length == 1);
 	}
 
 	public void testTwoNamespace() throws Exception {
 		testStoreGUID();
 		addStringID("1");
-		final ISecurePreferences[] namespaces = idStore.getNamespaceNodes();
+		final INamespaceEntry[] namespaces = idStore.getNamespaceEntries();
 		assertTrue(namespaces.length == 2);
 	}
 
 	public void testGetNamespaceNode() throws Exception {
 		final ID newGUID = IDFactory.getDefault().createGUID();
-		idStore.getNode(newGUID);
-		final ISecurePreferences prefs = idStore.getNamespaceNode(newGUID.getNamespace());
-		assertNotNull(prefs);
-		assertTrue(prefs.name().equals(newGUID.getNamespace().getName()));
+		idStore.getEntry(newGUID);
+		final ISecurePreferences namespacePrefs = idStore.getNamespaceEntry(newGUID.getNamespace()).getPreferences();
+		assertNotNull(namespacePrefs);
+		assertTrue(namespacePrefs.name().equals(newGUID.getNamespace().getName()));
 	}
 }
