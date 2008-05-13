@@ -60,6 +60,11 @@ public class IDStoreTest extends TestCase {
 		return idStore.getNode(newGUID);
 	}
 
+	protected ISecurePreferences addStringID(String value) throws IDCreateException {
+		final ID newID = IDFactory.getDefault().createStringID(value);
+		return idStore.getNode(newID);
+	}
+
 	public void testStoreGUID() throws Exception {
 		final ISecurePreferences prefs = addGUID();
 		assertNotNull(prefs);
@@ -71,8 +76,30 @@ public class IDStoreTest extends TestCase {
 		testStoreGUID();
 	}
 
-	public void testListNamespaces() throws Exception {
+	public void testListEmptyNamespaces() throws Exception {
 		final ISecurePreferences[] namespaces = idStore.getNamespaceNodes();
 		assertNotNull(namespaces);
+	}
+
+	public void testOneNamespace() throws Exception {
+		testStoreGUID();
+		testStoreGUID();
+		final ISecurePreferences[] namespaces = idStore.getNamespaceNodes();
+		assertTrue(namespaces.length == 1);
+	}
+
+	public void testTwoNamespace() throws Exception {
+		testStoreGUID();
+		addStringID("1");
+		final ISecurePreferences[] namespaces = idStore.getNamespaceNodes();
+		assertTrue(namespaces.length == 2);
+	}
+
+	public void testGetNamespaceNode() throws Exception {
+		final ID newGUID = IDFactory.getDefault().createGUID();
+		idStore.getNode(newGUID);
+		final ISecurePreferences prefs = idStore.getNamespaceNode(newGUID.getNamespace());
+		assertNotNull(prefs);
+		assertTrue(prefs.name().equals(newGUID.getNamespace().getName()));
 	}
 }
