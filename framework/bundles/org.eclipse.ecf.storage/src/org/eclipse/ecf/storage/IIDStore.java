@@ -11,51 +11,46 @@
 
 package org.eclipse.ecf.storage;
 
-import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 
 /**
- * ID storage service.  This interface defines access to storing a given ID instance as a node in
- * secure preferences.  It also provides a way to create an ID from a secure preferences node.
+ * ID storage service interface.  This interface defines access for storing and retrieving ID instances.  
+ * It also allows creating ID instances from previously stored {@link IIDEntry}s.
  */
 public interface IIDStore {
 
 	/**
-	 * Get the namespace nodes exposed by this ID store.
+	 * Get the {@link INamespaceEntry}s previously stored in this IIDStore.
 	 * 
-	 * @return array of namespace nodes for this ID store.  Will return <code>null</code> if
-	 * secure preferences store not available.  Will return empty array if preferences available
-	 * but no Namespaces have been added.  Each ISecurePreferences node represents a given {@link Namespace}, and
-	 * the {@link ISecurePreferences#name()} entry will correspond to the {@link Namespace#getName()}.
+	 * @return array of {@link INamespaceEntry}s that have been previously stored in this store.  
+	 * Will return <b>empty array</b> if no INamespaceEntries have been previously stored, and will return <code>null</code>
+	 * if the underlying {@link ISecurePreferences} store cannot be accessed.  
+	 * <p>
+	 * </p>
+	 * Each INamespaceEntry represents a distinct {@link Namespace} that has previously been stored in this store.
 	 */
-	public ISecurePreferences[] getNamespaceNodes();
+	public INamespaceEntry[] getNamespaceEntries();
 
 	/**
-	 * Get the given namespace node for this ID store.
+	 * Get the given {@link INamespaceEntry} in this store.
 	 * 
-	 * @param namespace the {@link Namespace} to get the node for.  Must not be <code>null</code>.
-	 * @return the node for the given {@link Namespace}.  Will not return <code>null</code>.  If node
-	 * previously was not present, it will be created.
+	 * @param namespace the {@link Namespace} to get.  Must not be <code>null</code>.
+	 * @return the {@link INamespaceEntry} for the given {@link Namespace}.  Will not return <code>null</code>.  If entry
+	 * was not present previously, it will be created.
 	 */
-	public ISecurePreferences getNamespaceNode(Namespace namespace);
+	public INamespaceEntry getNamespaceEntry(Namespace namespace);
 
 	/**
-	 * Get {@link ISecurePreferences} node for a given ID.  Clients may use this to either create an {@link ISecurePreferences} 
-	 * instance for a new {@link ID}, or get an existing one from storage.
-	 * @param id the ID to get the storage node for.
+	 * Get {@link IIDEntry} in this IDStore for a given ID.  If an IIDEntry did not exist in this store previously, 
+	 * one is created.  If it did exist in this store previously the existing one is
+	 * returned.
+	 * @param id the ID to get the IIDEntry for.
 	 * @return ISecurePreferences for the given ID.  Will not return <code>null</code>.  
-	 * Will return an existing node if ID is already present, and a new node if not.
+	 * Will return an existing {@link IIDEntry} if ID is already present, and a new {@link IIDEntry} if not previously
+	 * stored.
 	 */
-	public ISecurePreferences getNode(ID id);
-
-	/**
-	 * Create ID from an ISecurePreferences node.
-	 * @param node the node to use to create the new ID instance.  This node must not be <code>null</code>, and should
-	 * be an instance previously created via {@link #getNode(ID)}.  It also must have a Namespace node as parent.
-	 * @return new ID created.  Will not be <code>null</code>.
-	 * @throws IDCreateException thrown if ID cannot be created...e.g. the given node does not define
-	 * a valid ID instance.
-	 */
-	public ID createID(ISecurePreferences node) throws IDCreateException;
+	public IIDEntry getEntry(ID id);
 
 }

@@ -13,10 +13,10 @@ package org.eclipse.ecf.internal.storage;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.storage.*;
 import org.eclipse.equinox.security.storage.*;
-import org.eclipse.osgi.util.NLS;
 
 /**
  *
@@ -24,21 +24,7 @@ import org.eclipse.osgi.util.NLS;
 public class IDStore implements IIDStore {
 
 	private static final String idStoreNameSegment = "/ECF/Namespace"; //$NON-NLS-1$
-	private static final ISecurePreferences[] EMPTY_SECUREPREFERENCES = {};
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.storage.IIDStore#getNode(org.eclipse.ecf.core.identity.ID)
-	 */
-	public ISecurePreferences getNode(ID id) {
-		ISecurePreferences namespaceRoot = getNamespaceRoot();
-		if (namespaceRoot == null)
-			return null;
-		ISecurePreferences namespaceNode = getNamespaceNode(id.getNamespace());
-		final String idAsString = getIDAsString(id);
-		if (idAsString == null)
-			return null;
-		return namespaceNode.node(idAsString);
-	}
+	private static final INamespaceEntry[] EMPTY_ARRAY = {};
 
 	private String getIDAsString(ID id) {
 		final IIDStoreAdapter idadapter = (IIDStoreAdapter) id.getAdapter(IIDStoreAdapter.class);
@@ -46,19 +32,6 @@ public class IDStore implements IIDStore {
 		if (idName == null || idName.equals("")) //$NON-NLS-1$
 			return null;
 		return EncodingUtils.encodeSlashes(idName);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.storage.IIDStore#createID(org.eclipse.equinox.security.storage.ISecurePreferences)
-	 */
-	public ID createID(ISecurePreferences node) throws IDCreateException {
-		if (node == null)
-			throw new IDCreateException("Node cannot be null"); //$NON-NLS-1$
-		String nsName = node.parent().name();
-		final Namespace ns = IDFactory.getDefault().getNamespaceByName(nsName);
-		if (ns == null)
-			throw new IDCreateException(NLS.bind("Namespace {0} cannot be found", nsName)); //$NON-NLS-1$
-		return IDFactory.getDefault().createID(ns, node.name());
 	}
 
 	protected ISecurePreferences getRoot() {
@@ -73,9 +46,37 @@ public class IDStore implements IIDStore {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.storage.IIDStore#getNamespaceNode(org.eclipse.ecf.core.identity.Namespace)
+	 * @see org.eclipse.ecf.storage.IIDStore#getEntry(org.eclipse.ecf.core.identity.ID)
 	 */
-	public ISecurePreferences getNamespaceNode(Namespace namespace) {
+	public IIDEntry getEntry(ID id) {
+		ISecurePreferences namespaceRoot = getNamespaceRoot();
+		if (namespaceRoot == null)
+			return null;
+		INamespaceEntry namespaceEntry = getNamespaceEntry(id.getNamespace());
+		final String idAsString = getIDAsString(id);
+		if (idAsString == null)
+			return null;
+		return new IDEntry(namespaceEntry.getPreferences().node(idAsString));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.storage.IIDStore#getNamespaceEntries()
+	 */
+	public INamespaceEntry[] getNamespaceEntries() {
+		ISecurePreferences namespaceRoot = getNamespaceRoot();
+		if (namespaceRoot == null)
+			return EMPTY_ARRAY;
+		List results = new ArrayList();
+		String names[] = namespaceRoot.childrenNames();
+		for (int i = 0; i < names.length; i++)
+			results.add(new NamespaceEntry(namespaceRoot.node(names[i])));
+		return (INamespaceEntry[]) results.toArray(new INamespaceEntry[] {});
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.storage.IIDStore#getNamespaceEntry(org.eclipse.ecf.core.identity.Namespace)
+	 */
+	public INamespaceEntry getNamespaceEntry(Namespace namespace) {
 		if (namespace == null)
 			return null;
 		final INamespaceStoreAdapter nsadapter = (INamespaceStoreAdapter) namespace.getAdapter(INamespaceStoreAdapter.class);
@@ -85,20 +86,6 @@ public class IDStore implements IIDStore {
 		ISecurePreferences namespaceRoot = getNamespaceRoot();
 		if (namespaceRoot == null)
 			return null;
-		return namespaceRoot.node(nsName);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.storage.IIDStore#getNamespaceNodes()
-	 */
-	public ISecurePreferences[] getNamespaceNodes() {
-		ISecurePreferences namespaceRoot = getNamespaceRoot();
-		if (namespaceRoot == null)
-			return EMPTY_SECUREPREFERENCES;
-		List results = new ArrayList();
-		String names[] = namespaceRoot.childrenNames();
-		for (int i = 0; i < names.length; i++)
-			results.add(namespaceRoot.node(names[i]));
-		return (ISecurePreferences[]) results.toArray(new ISecurePreferences[] {});
+		return new NamespaceEntry(namespaceRoot.node(nsName));
 	}
 }
