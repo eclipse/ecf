@@ -11,8 +11,8 @@
 
 package org.eclipse.ecf.provider.r_osgi.identity;
 
-import org.eclipse.ecf.core.identity.BaseID;
 import ch.ethz.iks.r_osgi.URI;
+import org.eclipse.ecf.core.identity.BaseID;
 
 /**
  * The ID implementation of R-OSGi URIs. Currently only works with the R-OSGi

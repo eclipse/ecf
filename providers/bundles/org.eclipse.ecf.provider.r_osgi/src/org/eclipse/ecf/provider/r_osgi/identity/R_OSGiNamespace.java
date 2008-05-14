@@ -11,8 +11,8 @@
 
 package org.eclipse.ecf.provider.r_osgi.identity;
 
-import java.util.Arrays;
 import org.eclipse.ecf.core.identity.*;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * The R-OSGi default transport namespace (r-osgi://).
@@ -56,6 +56,21 @@ public class R_OSGiNamespace extends Namespace {
 		instance = this;
 	}
 
+	private String getInitFromExternalForm(Object[] args) {
+		if (args == null || args.length < 1 || args[0] == null)
+			return null;
+		if (args[0] instanceof String) {
+			String arg = (String) args[0];
+			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+				int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+				if (index >= arg.length())
+					return null;
+				return arg.substring(index + 1);
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * create a new ID within this namespace.
 	 * 
@@ -67,10 +82,14 @@ public class R_OSGiNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
 	public ID createInstance(final Object[] parameters) throws IDCreateException {
-		if (parameters == null || parameters.length != 1 || !(parameters[0] instanceof String)) {
-			throw new IDCreateException("Cannot create ID from " + (parameters == null ? "null" : Arrays.asList(parameters).toString())); //$NON-NLS-1$ //$NON-NLS-2$
+		try {
+			String init = getInitFromExternalForm(parameters);
+			if (init != null)
+				return new R_OSGiID(init);
+			return new R_OSGiID((String) parameters[0]);
+		} catch (Exception e) {
+			throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
 		}
-		return new R_OSGiID((String) parameters[0]);
 	}
 
 	/**
