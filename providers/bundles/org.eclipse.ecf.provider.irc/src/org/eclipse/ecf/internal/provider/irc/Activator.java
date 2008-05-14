@@ -23,8 +23,6 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class Activator implements BundleActivator {
 
-	public static final String NAMESPACE_IDENTIFIER = "ecfircid"; //$NON-NLS-1$
-
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.irc"; //$NON-NLS-1$
 
 	//The shared instance.

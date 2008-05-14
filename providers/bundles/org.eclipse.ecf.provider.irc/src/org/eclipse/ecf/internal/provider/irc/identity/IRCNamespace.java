@@ -12,8 +12,7 @@ package org.eclipse.ecf.internal.provider.irc.identity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.internal.provider.irc.Messages;
 import org.eclipse.osgi.util.NLS;
 
@@ -23,30 +22,44 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 
 	public static final String IRC_PROTOCOL = "irc"; //$NON-NLS-1$
 
+	public static final String IRC_SCHEME = "ecf.irc.irclib"; //$NON-NLS-1$
+
+	public static final String IRCNAMESPACE_NAME = IRC_SCHEME;
+
 	private String getProtocolPrefix() {
-		return getScheme() + "://"; //$NON-NLS-1$
+		return IRC_PROTOCOL + "://"; //$NON-NLS-1$
+	}
+
+	private String getInitFromExternalForm(Object[] args) {
+		if (args == null || args.length < 1 || args[0] == null)
+			return null;
+		if (args[0] instanceof String) {
+			String arg = (String) args[0];
+			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+				int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+				if (index >= arg.length())
+					return null;
+				return arg.substring(index + 1);
+			}
+		}
+		return null;
 	}
 
 	public ID createInstance(Object[] args) throws IDCreateException {
-		URI newURI = null;
-		String s = null;
 		try {
-			s = (String) args[0];
-		} catch (ClassCastException e) {
-			throw new IDCreateException(NLS.bind(Messages.IRCNamespace_EXCEPTION_CREATE_CANNOT_CAST_TO_STRING, args[0]));
+			String init = getInitFromExternalForm(args);
+			String s = (init == null) ? (String) args[0] : init;
+			if (!s.startsWith(getProtocolPrefix()))
+				s = getProtocolPrefix() + s;
+			URI newURI = createURI(s);
+			String uriScheme = newURI.getScheme();
+			if (uriScheme == null || !uriScheme.equalsIgnoreCase(IRC_PROTOCOL)) {
+				throw new IDCreateException(NLS.bind(Messages.IRCNamespace_EXCEPTION_INVALID_PROTOCOL, newURI, IRC_PROTOCOL));
+			}
+			return new IRCID(this, newURI);
+		} catch (Exception e) {
+			throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
 		}
-		if (!s.startsWith(getProtocolPrefix()))
-			s = getProtocolPrefix() + s;
-		try {
-			newURI = createURI(s);
-		} catch (URISyntaxException e) {
-			throw new IDCreateException(NLS.bind(Messages.IRCNamespace_EXCEPTION_CREATING_URI, s));
-		}
-		String uriScheme = newURI.getScheme();
-		if (uriScheme == null || !uriScheme.equalsIgnoreCase(getScheme())) {
-			throw new IDCreateException(NLS.bind(Messages.IRCNamespace_EXCEPTION_INVALID_PROTOCOL, newURI, IRC_PROTOCOL));
-		}
-		return new IRCID(this, newURI);
 	}
 
 	private URI createURI(String s) throws IDCreateException, URISyntaxException {
@@ -66,13 +79,13 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 		}
 		String path = s.substring(hostend, s.length());
 
-		ret = new URI(getScheme(), uname, host, port, path, null, null);
+		ret = new URI(IRC_PROTOCOL, uname, host, port, path, null, null);
 
 		return ret;
 	}
 
 	public String getScheme() {
-		return IRC_PROTOCOL;
+		return IRC_SCHEME;
 	}
 
 	/*

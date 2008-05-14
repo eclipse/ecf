@@ -21,6 +21,7 @@ import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.internal.provider.irc.Messages;
 import org.eclipse.ecf.internal.provider.irc.identity.IRCID;
+import org.eclipse.ecf.internal.provider.irc.identity.IRCNamespace;
 import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.history.IHistory;
 import org.eclipse.ecf.presence.history.IHistoryManager;
@@ -322,7 +323,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 	 * @see org.eclipse.ecf.core.IContainer#getConnectNamespace()
 	 */
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(Activator.NAMESPACE_IDENTIFIER);
+		return IDFactory.getDefault().getNamespaceByName(IRCNamespace.IRC_SCHEME);
 	}
 
 	public IChatRoomInfo getChatRoomInfo(final String roomName) {

@@ -14,7 +14,7 @@
          point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.internal.provider.irc.identity.IRCNamespace"
-            name="ecfircid"/>
+            name="ecf.irc.irclib"/>
    </extension>
 
 </plugin>
