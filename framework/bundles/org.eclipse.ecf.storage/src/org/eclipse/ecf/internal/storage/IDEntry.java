@@ -12,6 +12,8 @@
 package org.eclipse.ecf.internal.storage;
 
 import java.util.*;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.storage.IDStoreException;
 import org.eclipse.ecf.storage.IIDEntry;
@@ -22,6 +24,11 @@ import org.eclipse.osgi.util.NLS;
  *
  */
 public class IDEntry implements IIDEntry {
+
+	/**
+	 * 
+	 */
+	private static final String DELIMITER = ":"; //$NON-NLS-1$
 
 	private final ISecurePreferences prefs;
 
@@ -49,7 +56,7 @@ public class IDEntry implements IIDEntry {
 
 	private String createAssociateName(IIDEntry entry) throws IDStoreException {
 		ISecurePreferences prefs = entry.getPreferences();
-		return prefs.parent().name() + ":" + prefs.name(); //$NON-NLS-1$
+		return prefs.parent().name() + DELIMITER + prefs.name();
 	}
 
 	private ISecurePreferences getNamespaceRoot() {
@@ -65,7 +72,7 @@ public class IDEntry implements IIDEntry {
 	}
 
 	private IIDEntry createAssociateFromName(String name) throws IDStoreException {
-		int index = name.indexOf(":"); //$NON-NLS-1$
+		int index = name.indexOf(DELIMITER);
 		if (index == -1)
 			throw new IDStoreException("Associate ID not well-formed"); //$NON-NLS-1$
 		try {
@@ -109,8 +116,7 @@ public class IDEntry implements IIDEntry {
 				IIDEntry associateEntry = createAssociateFromName(childrenNames[i]);
 				results.add(associateEntry);
 			} catch (IDStoreException e) {
-				// LOG
-				//Activator.getDefault().log();
+				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Unable to create associate ID", e)); //$NON-NLS-1$
 			}
 		}
 		return (IIDEntry[]) results.toArray(new IIDEntry[] {});
