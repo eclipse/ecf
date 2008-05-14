@@ -104,4 +104,41 @@ public class IDStoreTest extends TestCase {
 		assertNotNull(namespacePrefs);
 		assertTrue(namespacePrefs.name().equals(newGUID.getNamespace().getName()));
 	}
+
+	public void testGetIDEntries() throws Exception {
+		final ID newGUID = IDFactory.getDefault().createGUID();
+		idStore.getEntry(newGUID);
+		// Get namespace entry
+		final INamespaceEntry namespaceEntry = idStore.getNamespaceEntry(newGUID.getNamespace());
+		assertNotNull(namespaceEntry);
+
+		final IIDEntry[] idEntries = namespaceEntry.getIDEntries();
+		assertTrue(idEntries.length == 1);
+		// Create GUID from idEntry
+		final ID persistedGUID = idEntries[0].createID();
+		assertNotNull(persistedGUID);
+		assertTrue(persistedGUID.equals(newGUID));
+	}
+
+	public void testCreateAssociation() throws Exception {
+		final ID guid1 = IDFactory.getDefault().createGUID();
+		final IIDEntry entry1 = idStore.getEntry(guid1);
+		final ID guid2 = IDFactory.getDefault().createGUID();
+		final IIDEntry entry2 = idStore.getEntry(guid2);
+
+		// Create association
+		entry1.addAssociateIDEntry(entry2, true);
+
+		// Get entry1a
+		final IIDEntry entry1a = idStore.getEntry(guid1);
+		// Get associates (should include entry2)
+		final IIDEntry[] entries = entry1a.getAssociateIDEntries();
+		assertTrue(entries.length == 1);
+		// entry2a should be same as entry2
+		final IIDEntry entry2a = entries[0];
+		final ID guid2a = entry2a.createID();
+		// and guid2a should equal guid2
+		assertTrue(guid2.equals(guid2a));
+
+	}
 }
