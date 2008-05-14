@@ -11,6 +11,7 @@ package org.eclipse.ecf.core.identity;
 import java.security.SecureRandom;
 import org.eclipse.ecf.core.util.Base64;
 import org.eclipse.ecf.internal.core.identity.Messages;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * Globally unique ID implementation class. Uses
@@ -28,15 +29,37 @@ public class GUID extends StringID {
 			super(GUID.class.getName(), Messages.GUID_GUID_Namespace_Description_Default);
 		}
 
+		private String getInitFromExternalForm(Object[] args) {
+			if (args == null || args.length < 1 || args[0] == null)
+				return null;
+			if (args[0] instanceof String) {
+				String arg = (String) args[0];
+				if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+					int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+					if (index >= arg.length())
+						return null;
+					return arg.substring(index + 1);
+				}
+			}
+			return null;
+		}
+
 		public ID createInstance(Object[] args) throws IDCreateException {
-			if (args == null || args.length <= 0)
-				return new GUID(this);
-			else if (args.length == 1 && args[0] instanceof Integer)
-				return new GUID(this, ((Integer) args[0]).intValue());
-			else if (args.length == 1 && args[0] instanceof String)
-				return new GUID(this, ((String) args[0]));
-			else
-				return new GUID(this);
+			try {
+				String init = getInitFromExternalForm(args);
+				if (init != null)
+					return new GUID(this, init);
+				if (args == null || args.length <= 0)
+					return new GUID(this);
+				else if (args.length == 1 && args[0] instanceof Integer)
+					return new GUID(this, ((Integer) args[0]).intValue());
+				else if (args.length == 1 && args[0] instanceof String)
+					return new GUID(this, ((String) args[0]));
+				else
+					return new GUID(this);
+			} catch (Exception e) {
+				throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
+			}
 		}
 
 		public String getScheme() {

@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
+import org.eclipse.osgi.util.NLS;
+
 /**
  * A unique ID class based upon Long/long
  * 
@@ -24,13 +26,35 @@ public class LongID extends BaseID {
 			super(LongID.class.getName(), "LongID Namespace"); //$NON-NLS-1$
 		}
 
+		private String getInitFromExternalForm(Object[] args) {
+			if (args == null || args.length < 1 || args[0] == null)
+				return null;
+			if (args[0] instanceof String) {
+				String arg = (String) args[0];
+				if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+					int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+					if (index >= arg.length())
+						return null;
+					return arg.substring(index + 1);
+				}
+			}
+			return null;
+		}
+
 		/**
 		 * @param args must not be <code>null></code>
 		 * @return ID created.  Will not be <code>null</code>.
 		 * @throws IDCreateException never thrown
 		 */
 		public ID createInstance(Object[] args) throws IDCreateException {
-			return new LongID(this, (Long) args[0]);
+			try {
+				String init = getInitFromExternalForm(args);
+				if (init != null)
+					return new LongID(this, Long.decode(init));
+				return new LongID(this, (Long) args[0]);
+			} catch (Exception e) {
+				throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
+			}
 		}
 
 		public String getScheme() {

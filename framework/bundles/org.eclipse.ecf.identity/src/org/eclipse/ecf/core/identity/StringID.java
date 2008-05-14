@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
+import org.eclipse.osgi.util.NLS;
+
 /**
  * A string-based identity
  * 
@@ -26,11 +28,30 @@ public class StringID extends BaseID {
 			super(StringID.class.getName(), "StringID Namespace"); //$NON-NLS-1$
 		}
 
-		public ID createInstance(Object[] parameters) throws IDCreateException {
-			if (parameters == null || parameters.length == 0) {
-				throw new IDCreateException("StringID name cannot be null"); //$NON-NLS-1$
+		private String getInitFromExternalForm(Object[] args) {
+			if (args == null || args.length < 1 || args[0] == null)
+				return null;
+			if (args[0] instanceof String) {
+				String arg = (String) args[0];
+				if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+					int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+					if (index >= arg.length())
+						return null;
+					return arg.substring(index + 1);
+				}
 			}
-			return new StringID(this, (String) parameters[0]);
+			return null;
+		}
+
+		public ID createInstance(Object[] parameters) throws IDCreateException {
+			try {
+				String init = getInitFromExternalForm(parameters);
+				if (init != null)
+					return new StringID(this, init);
+				return new StringID(this, (String) parameters[0]);
+			} catch (Exception e) {
+				throw new IDCreateException(NLS.bind("{0} createInstance()", StringIDNamespace.this.getName()), e); //$NON-NLS-1$
+			}
 		}
 
 		public String getScheme() {
