@@ -23,6 +23,21 @@ public class JSLPNamespace extends Namespace {
 
 	public static final String NAME = "ecf.namespace.slp"; //$NON-NLS-1$
 
+	private String getInitFromExternalForm(Object[] args) {
+		if (args == null || args.length < 1 || args[0] == null)
+			return null;
+		if (args[0] instanceof String) {
+			String arg = (String) args[0];
+			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+				int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+				if (index >= arg.length())
+					return null;
+				return arg.substring(index + 1);
+			}
+		}
+		return null;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
@@ -44,7 +59,8 @@ public class JSLPNamespace extends Namespace {
 			IServiceTypeID stid = (IServiceTypeID) parameters[0];
 			return createInstance(new Object[] {stid.getName(), parameters[1]});
 		} else if (parameters[0] instanceof String) { // creates from either external or internal string
-			String type = (String) parameters[0];
+			String init = getInitFromExternalForm(parameters);
+			String type = (init != null) ? init : (String) parameters[0];
 			IServiceTypeID stid = null;
 			if (StringUtils.contains(type, "._")) { //$NON-NLS-1$ // converts external to internal
 				ServiceTypeID aStid = new ServiceTypeID(this, type);
