@@ -271,18 +271,16 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		}
 
 		private StyledText createStyledTextWidget(Composite parent, int styles) {
+			SourceViewer result = null;
 			try {
-				SourceViewer result = new SourceViewer(parent, null, null, true, styles);
-				result.configure(new ChatRoomViewerConfiguration(EditorsUI.getPreferenceStore(), container, ChatRoomManagerView.this));
-				result.setDocument(new Document());
-				return result.getTextWidget();
-			} catch (Exception e) {
-				Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.ChatRoomManagerView_WARNING_HYPERLINKING_NOT_AVAILABLE, e));
-				return new StyledText(parent, styles);
+				result = new SourceViewer(parent, null, null, true, styles);
 			} catch (NoClassDefFoundError e) {
 				Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.ChatRoomManagerView_WARNING_HYPERLINKING_NOT_AVAILABLE, e));
 				return new StyledText(parent, styles);
 			}
+			result.configure(new ChatRoomViewerConfiguration(EditorsUI.getPreferenceStore(), container, ChatRoomManagerView.this));
+			result.setDocument(new Document());
+			return result.getTextWidget();
 		}
 
 		protected void outputClear() {

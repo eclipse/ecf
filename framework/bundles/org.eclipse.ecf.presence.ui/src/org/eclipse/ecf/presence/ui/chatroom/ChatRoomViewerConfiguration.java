@@ -20,7 +20,8 @@ public class ChatRoomViewerConfiguration extends TextSourceViewerConfiguration {
 
 	protected Map getHyperlinkDetectorTargets(ISourceViewer sourceViewer) {
 		Map hyperlinkDetectorTargets = super.getHyperlinkDetectorTargets(sourceViewer);
-		hyperlinkDetectorTargets.put(container.getClass().getPackage().getName(), view);
+		if (container != null)
+			hyperlinkDetectorTargets.put(container.getClass().getPackage().getName(), view);
 
 		return hyperlinkDetectorTargets;
 	}
