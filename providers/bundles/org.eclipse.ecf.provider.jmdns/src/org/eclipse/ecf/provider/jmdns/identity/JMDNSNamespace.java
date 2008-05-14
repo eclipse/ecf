@@ -12,6 +12,7 @@ package org.eclipse.ecf.provider.jmdns.identity;
 
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.internal.provider.jmdns.Messages;
+import org.eclipse.osgi.util.NLS;
 
 public class JMDNSNamespace extends Namespace {
 
@@ -28,20 +29,44 @@ public class JMDNSNamespace extends Namespace {
 		super();
 	}
 
+	private String getInitFromExternalForm(Object[] args) {
+		if (args == null || args.length < 1 || args[0] == null)
+			return null;
+		if (args[0] instanceof String) {
+			String arg = (String) args[0];
+			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+				int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+				if (index >= arg.length())
+					return null;
+				return arg.substring(index + 1);
+			}
+		}
+		return null;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	*/
 	public ID createInstance(Object[] parameters) throws IDCreateException {
-		if (parameters == null || parameters.length < 1 || parameters.length > 2) {
-			throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_WRONG_PARAM_COUNT);
-		}
 		String type = null;
-		if (parameters[0] instanceof JMDNSServiceTypeID) {
-			type = ((JMDNSServiceTypeID) parameters[0]).getInternal();
-		} else if (parameters[0] instanceof String) {
-			type = (String) parameters[0];
-		} else
-			throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_TYPE_PARAM_NOT_STRING);
+		try {
+			String init = getInitFromExternalForm(parameters);
+			if (init != null)
+				type = init;
+			else {
+				if (parameters == null || parameters.length < 1 || parameters.length > 2) {
+					throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_WRONG_PARAM_COUNT);
+				}
+				if (parameters[0] instanceof JMDNSServiceTypeID) {
+					type = ((JMDNSServiceTypeID) parameters[0]).getInternal();
+				} else if (parameters[0] instanceof String) {
+					type = (String) parameters[0];
+				} else
+					throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_TYPE_PARAM_NOT_STRING);
+			}
+		} catch (Exception e) {
+			throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
+		}
 		final JMDNSServiceTypeID stid = new JMDNSServiceTypeID(this, type);
 
 		String name = null;
