@@ -27,98 +27,104 @@ public class LongIDTest extends IDAbstractTestCase {
 	protected ID createID() throws IDCreateException {
 		return createLongID(Long.MAX_VALUE);
 	}
-	
+
 	protected ID createLongID(long val) throws IDCreateException {
 		return IDFactory.getDefault().createLongID(val);
 	}
-	
+
 	public void testCreate() throws Exception {
-		ID newID = createID();
+		final ID newID = createID();
 		assertNotNull(newID);
 	}
 
 	public void testMinCreate() throws Exception {
-		ID newID = createLongID(Long.MIN_VALUE);
+		final ID newID = createLongID(Long.MIN_VALUE);
 		assertNotNull(newID);
 	}
 
 	public void testMAXCreate() throws Exception {
-		ID newID = createLongID(Long.MAX_VALUE);
+		final ID newID = createLongID(Long.MAX_VALUE);
 		assertNotNull(newID);
 	}
 
 	public void testZeroCreate() throws Exception {
-		ID id = createLongID(0);
+		final ID id = createLongID(0);
 		assertTrue(id.getName().equals(String.valueOf(0)));
 	}
-	
+
 	public void testGetName() throws Exception {
-		ID id1 = createID();
-		ID id2 = createID();
+		final ID id1 = createID();
+		final ID id2 = createID();
 		assertTrue(id1.getName().equals(id2.getName()));
 	}
-	
+
 	public void testToExternalForm() throws Exception {
-		ID id = createID();
+		final ID id = createID();
 		assertNotNull(id.toExternalForm());
 	}
-	
+
 	public void testToString() throws Exception {
-		ID id = createID();
+		final ID id = createID();
 		assertNotNull(id.toString());
 	}
-	
+
 	public void testIsEqual() throws Exception {
-		ID id1 = createID();
-		ID id2 = createID();
+		final ID id1 = createID();
+		final ID id2 = createID();
 		assertTrue(id1.equals(id2));
 	}
-	
+
 	public void testHashCode() throws Exception {
-		ID id1 = createID();
-		ID id2 = createID();
+		final ID id1 = createID();
+		final ID id2 = createID();
 		assertTrue(id1.hashCode() == id2.hashCode());
 	}
-	
+
 	public void testCompareToEqual() throws Exception {
-		ID id1 = createID();
-		ID id2 = createID();
-		assertTrue(id1.compareTo(id2) == 0);		
-		assertTrue(id2.compareTo(id1) == 0);		
+		final ID id1 = createID();
+		final ID id2 = createID();
+		assertTrue(id1.compareTo(id2) == 0);
+		assertTrue(id2.compareTo(id1) == 0);
 	}
 
 	public void testCompareToNotEqual() throws Exception {
-		ID id1 = createLongID(0);
-		ID id2 = createLongID(1);
+		final ID id1 = createLongID(0);
+		final ID id2 = createLongID(1);
 		assertTrue(id1.compareTo(id2) < 0);
 		assertTrue(id2.compareTo(id1) > 0);
 	}
-	
+
 	public void testGetNamespace() throws Exception {
-		ID id = createID();
-		Namespace ns = id.getNamespace();
+		final ID id = createID();
+		final Namespace ns = id.getNamespace();
 		assertNotNull(ns);
 	}
-	
+
 	public void testEqualNamespaces() throws Exception {
-		ID id1 = createID();
-		ID id2 = createID();
-		Namespace ns1 = id1.getNamespace();
-		Namespace ns2 = id2.getNamespace();
+		final ID id1 = createID();
+		final ID id2 = createID();
+		final Namespace ns1 = id1.getNamespace();
+		final Namespace ns2 = id2.getNamespace();
 		assertTrue(ns1.equals(ns2));
 		assertTrue(ns2.equals(ns2));
 	}
-	
+
 	public void testSerializable() throws Exception {
-		ByteArrayOutputStream buf = new ByteArrayOutputStream();
-		ObjectOutputStream out = new ObjectOutputStream(buf);
+		final ByteArrayOutputStream buf = new ByteArrayOutputStream();
+		final ObjectOutputStream out = new ObjectOutputStream(buf);
 		try {
 			out.writeObject(createID());
-		} catch (NotSerializableException ex) {
+		} catch (final NotSerializableException ex) {
 			fail(ex.getLocalizedMessage());
 		} finally {
 			out.close();
 		}
 	}
 
+	public void testCreateFromExternalForm() throws Exception {
+		final ID id1 = createID();
+		final String externalForm = id1.toExternalForm();
+		final ID id2 = IDFactory.getDefault().createID(id1.getNamespace(), externalForm);
+		assertTrue(id1.equals(id2));
+	}
 }

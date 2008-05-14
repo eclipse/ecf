@@ -18,9 +18,9 @@ import org.eclipse.ecf.tests.ECFAbstractTestCase;
 public abstract class IDAbstractTestCase extends ECFAbstractTestCase {
 
 	private ID fixture;
-	
+
 	protected abstract ID createID() throws IDCreateException;
-	
+
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
@@ -29,7 +29,7 @@ public abstract class IDAbstractTestCase extends ECFAbstractTestCase {
 		fixture = createID();
 		assertNotNull(fixture);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#tearDown()
 	 */
@@ -37,8 +37,9 @@ public abstract class IDAbstractTestCase extends ECFAbstractTestCase {
 		super.tearDown();
 		fixture = null;
 	}
-	
+
 	protected ID getFixture() {
 		return fixture;
 	}
+
 }
