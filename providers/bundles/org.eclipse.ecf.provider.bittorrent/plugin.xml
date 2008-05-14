@@ -12,7 +12,7 @@
          point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.internal.provider.bittorrent.TorrentNamespace"
-            name="ecf.bittorrent"/>
+            name="ecf.namespace.bittorrent"/>
    </extension>
    <extension
          point="org.eclipse.ecf.provider.filetransfer.retrieveFileTransferProtocolFactory">

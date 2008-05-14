@@ -28,7 +28,7 @@ public final class BitTorrentProviderPlugin implements BundleActivator {
 
 	static final String CONTAINER_ID = "ecf.filetransfer.bittorrent"; //$NON-NLS-1$
 
-	static final String NAMESPACE_ID = "ecf.bittorrent"; //$NON-NLS-1$
+	static final String NAMESPACE_ID = "ecf.namespace.bittorrent"; //$NON-NLS-1$
 
 	private BundleContext context = null;
 
@@ -36,21 +36,19 @@ public final class BitTorrentProviderPlugin implements BundleActivator {
 		Filter filter = null;
 		try {
 			filter = context.createFilter(Location.INSTANCE_FILTER);
-		} catch (InvalidSyntaxException e) {
+		} catch (final InvalidSyntaxException e) {
 			// ignore this. It should never happen as we have tested the above
 			// format.
 		}
-		ServiceTracker instanceLocationTracker = new ServiceTracker(context,
-				filter, null);
+		final ServiceTracker instanceLocationTracker = new ServiceTracker(context, filter, null);
 		instanceLocationTracker.open();
-		Location l = (Location) instanceLocationTracker.getService();
+		final Location l = (Location) instanceLocationTracker.getService();
 		instanceLocationTracker.close();
 		if (l == null)
 			return null;
 
-		Path path = new Path(l.getURL().getPath());
-		return path.append(F_META_AREA).append(F_PLUGIN_DATA)
-				.append(context.getBundle().getSymbolicName()).toFile();
+		final Path path = new Path(l.getURL().getPath());
+		return path.append(F_META_AREA).append(F_PLUGIN_DATA).append(context.getBundle().getSymbolicName()).toFile();
 	}
 
 	public void start(BundleContext context) throws Exception {
