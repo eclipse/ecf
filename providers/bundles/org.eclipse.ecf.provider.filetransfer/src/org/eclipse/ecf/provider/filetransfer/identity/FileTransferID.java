@@ -11,7 +11,6 @@
 package org.eclipse.ecf.provider.filetransfer.identity;
 
 import java.net.URL;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -31,8 +30,7 @@ public class FileTransferID extends BaseID implements IFileID {
 	}
 
 	protected int namespaceCompareTo(BaseID o) {
-		return this.fileURL.toExternalForm().compareTo(
-				((FileTransferID) o).toExternalForm());
+		return this.fileURL.toExternalForm().compareTo(((FileTransferID) o).toExternalForm());
 	}
 
 	protected boolean namespaceEquals(BaseID o) {

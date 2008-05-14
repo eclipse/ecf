@@ -11,10 +11,7 @@ package org.eclipse.ecf.provider.filetransfer.identity;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 
@@ -28,26 +25,39 @@ public class FileTransferNamespace extends Namespace {
 
 	public static final String PROTOCOL = Messages.FileTransferNamespace_Namespace_Protocol;
 
+	private String getInitFromExternalForm(Object[] args) {
+		if (args == null || args.length < 1 || args[0] == null)
+			return null;
+		if (args[0] instanceof String) {
+			String arg = (String) args[0];
+			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+				int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+				if (index >= arg.length())
+					return null;
+				return arg.substring(index + 1);
+			}
+		}
+		return null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
 	public ID createInstance(Object[] args) throws IDCreateException {
-		if (args == null || args.length == 0)
-			throw new IDCreateException(
-					Messages.FileTransferNamespace_Exception_Args_Null);
 		try {
+			String init = getInitFromExternalForm(args);
+			if (init != null)
+				return new FileTransferID(this, new URL(init));
 			if (args[0] instanceof URL)
 				return new FileTransferID(this, (URL) args[0]);
 			if (args[0] instanceof String)
 				return new FileTransferID(this, new URL((String) args[0]));
 		} catch (Exception e) {
-			throw new IDCreateException(
-					Messages.FileTransferNamespace_Exception_Create_Instance, e);
+			throw new IDCreateException(Messages.FileTransferNamespace_Exception_Create_Instance, e);
 		}
-		throw new IDCreateException(
-				Messages.FileTransferNamespace_Exception_Create_Instance_Failed);
+		throw new IDCreateException(Messages.FileTransferNamespace_Exception_Create_Instance_Failed);
 	}
 
 	/*
@@ -57,8 +67,7 @@ public class FileTransferNamespace extends Namespace {
 	 */
 	public String[] getSupportedSchemes() {
 		Set result = new HashSet();
-		String[] platformSchemes = Activator.getDefault()
-				.getPlatformSupportedSchemes();
+		String[] platformSchemes = Activator.getDefault().getPlatformSupportedSchemes();
 		for (int i = 0; i < platformSchemes.length; i++)
 			result.add(platformSchemes[i]);
 		return (String[]) result.toArray(new String[] {});
@@ -79,7 +88,7 @@ public class FileTransferNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { URL.class }, { String.class } };
+		return new Class[][] { {URL.class}, {String.class}};
 	}
 
 }
