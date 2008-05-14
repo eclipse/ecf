@@ -24,12 +24,10 @@ public class XMPPRoomNamespace extends Namespace {
 	public ID createInstance(Object[] args) throws IDCreateException {
 		try {
 			if (args.length == 5) {
-				return new XMPPRoomID(this, (String) args[0], (String) args[1],
-						(String) args[2], (String) args[3], (String) args[4]);
+				return new XMPPRoomID(this, (String) args[0], (String) args[1], (String) args[2], (String) args[3], (String) args[4]);
 			}
-			throw new IllegalArgumentException(
-					Messages.XMPPRoomNamespace_EXCEPTION_INVALID_ARGUMENTS);
-		} catch (Exception e) {
+			throw new IllegalArgumentException(Messages.XMPPRoomNamespace_EXCEPTION_INVALID_ARGUMENTS);
+		} catch (final Exception e) {
 			throw new IDCreateException(Messages.XMPPRoomNamespace_EXCEPTION_ID_CREAT, e);
 		}
 	}
@@ -44,7 +42,6 @@ public class XMPPRoomNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { String.class, String.class, String.class,
-				String.class, String.class } };
+		return new Class[][] {{String.class, String.class, String.class, String.class, String.class}};
 	}
 }

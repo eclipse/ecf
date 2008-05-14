@@ -96,6 +96,18 @@ public class XMPPID extends BaseID implements IChatID {
 		return getUsernameAtHost().hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.BaseID#toExternalForm()
+	 */
+	public String toExternalForm() {
+		final StringBuffer buf = new StringBuffer(namespace.getScheme());
+		buf.append(Namespace.SCHEME_SEPARATOR);
+		buf.append(USER_HOST_DELIMITER).append(hostname);
+		buf.append((port == -1) ? "" : PORT_DELIMITER + "" + port);
+		buf.append(resourcename);
+		return buf.toString();
+	}
+
 	public String getUsername() {
 		return username;
 	}

@@ -94,19 +94,19 @@ public class XMPPRoomID extends BaseID implements IChatID {
 		return fieldEquals(other);
 	}
 
-	protected String fixPath(String path) {
-		while (path.startsWith(SLASH)) {
-			path = path.substring(1);
-		}
-		return path;
-	}
-
 	protected String namespaceGetName() {
 		return this.roomname;
 	}
 
 	protected int namespaceHashCode() {
 		return this.domain.hashCode() ^ this.host.hashCode() ^ this.nickname.hashCode() ^ this.roomname.hashCode() ^ this.username.hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceToExternalForm()
+	 */
+	protected String namespaceToExternalForm() {
+		return namespace.getScheme() + Namespace.SCHEME_SEPARATOR + this.longName;
 	}
 
 	public String getMucString() {

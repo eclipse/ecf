@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.internal.provider.xmpp.Messages;
+import org.eclipse.osgi.util.NLS;
 
 /**
  *
@@ -33,13 +34,13 @@ public class XMPPFileNamespace extends Namespace {
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		if (parameters == null || parameters.length < 2 || !(parameters[0] instanceof XMPPID || !(parameters[1] instanceof String)))
 			throw new IDCreateException(Messages.XMPPFileNamespace_EXCEPTION_INVALID_FILEID_PARAMETERS);
-		final XMPPID target = (XMPPID) parameters[0];
-		final String filename = (String) parameters[1];
-		if (target == null)
-			throw new IDCreateException(Messages.XMPPFileNamespace_EXCEPTION_FILEID_TARGETID_NOT_NULL);
-		if (filename == null)
-			throw new IDCreateException(Messages.XMPPFileNamespace_EXCEPTION_FILEID_FILENAME_NOT_NULL);
-		return new XMPPFileID(target, filename);
+		try {
+			final XMPPID target = (XMPPID) parameters[0];
+			final String filename = (String) parameters[1];
+			return new XMPPFileID(target, filename);
+		} catch (final Exception e) {
+			throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
+		}
 	}
 
 	/* (non-Javadoc)

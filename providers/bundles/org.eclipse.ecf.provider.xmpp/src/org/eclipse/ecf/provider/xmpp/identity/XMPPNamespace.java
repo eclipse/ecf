@@ -20,12 +20,29 @@ public class XMPPNamespace extends Namespace {
 	private static final long serialVersionUID = 3257569499003041590L;
 
 	private static final String XMPP_PROTOCOL = "xmpp"; //$NON-NLS-1$
-	
-	public ID createInstance(Object[] args)
-			throws IDCreateException {
+
+	private String getInitFromExternalForm(Object[] args) {
+		if (args == null || args.length < 1 || args[0] == null)
+			return null;
+		if (args[0] instanceof String) {
+			final String arg = (String) args[0];
+			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+				final int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+				if (index >= arg.length())
+					return null;
+				return arg.substring(index + 1);
+			}
+		}
+		return null;
+	}
+
+	public ID createInstance(Object[] args) throws IDCreateException {
 		try {
+			final String init = getInitFromExternalForm(args);
+			if (init != null)
+				return new XMPPID(this, init);
 			return new XMPPID(this, (String) args[0]);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IDCreateException(Messages.XMPPNamespace_EXCEPTION_ID_CREATE, e);
 		}
 	}
@@ -38,6 +55,6 @@ public class XMPPNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { String.class } };
+		return new Class[][] {{String.class}};
 	}
 }

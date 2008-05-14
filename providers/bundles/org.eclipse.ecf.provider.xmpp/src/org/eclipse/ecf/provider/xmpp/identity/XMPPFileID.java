@@ -16,6 +16,7 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.BaseID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.xmpp.Messages;
 
@@ -38,6 +39,13 @@ public class XMPPFileID extends BaseID implements IFileID {
 
 	public XMPPID getXMPPID() {
 		return xmppid;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceToExternalForm()
+	 */
+	protected String namespaceToExternalForm() {
+		return namespace.getScheme() + Namespace.SCHEME_SEPARATOR + xmppid.toExternalForm() + "*" + filename;
 	}
 
 	/* (non-Javadoc)
