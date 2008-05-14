@@ -121,6 +121,7 @@ public class IDStoreTest extends TestCase {
 	}
 
 	public void testCreateAssociation() throws Exception {
+		// Create two GUIDs and store them in idStore
 		final ID guid1 = IDFactory.getDefault().createGUID();
 		final IIDEntry entry1 = idStore.getEntry(guid1);
 		final ID guid2 = IDFactory.getDefault().createGUID();
@@ -131,11 +132,14 @@ public class IDStoreTest extends TestCase {
 
 		// Get entry1a
 		final IIDEntry entry1a = idStore.getEntry(guid1);
+		assertNotNull(entry1a);
 		// Get associates (should include entry2)
 		final IIDEntry[] entries = entry1a.getAssociateIDEntries();
+		assertNotNull(entries);
 		assertTrue(entries.length == 1);
 		// entry2a should be same as entry2
 		final IIDEntry entry2a = entries[0];
+		assertNotNull(entry2a);
 		final ID guid2a = entry2a.createID();
 		// and guid2a should equal guid2
 		assertTrue(guid2.equals(guid2a));
