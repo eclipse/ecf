@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.storage;
 
+import org.eclipse.ecf.core.identity.IDCreateException;
+
 /**
  * Adapter for retrieving ID name for storage.
  */
@@ -21,5 +23,12 @@ public interface IIDStoreAdapter {
 	 * @return String name for storage.  Must not return <code>null</code>.
 	 */
 	public String getNameForStorage();
+
+	/**
+	 * Set the name of the ID instace from storage.
+	 * @param valueFromStorage the value from {@link #getNameForStorage()}.
+	 * @throws IDCreateException throws in valueFromStorage cannot be used to initialize
+	 */
+	public void initializeFromStorage(String valueFromStorage) throws IDCreateException;
 
 }
