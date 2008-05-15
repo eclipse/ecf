@@ -34,7 +34,7 @@ public class ECFSSLSocketFactory extends SSLSocketFactory {
 	}
 
 	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
-		return new ECFSSLSocket(getSSLSocketFactory().createSocket(socket, host, port, autoClose));
+		return getSSLSocketFactory().createSocket(socket, host, port, autoClose);
 	}
 
 	public String[] getDefaultCipherSuites() {
