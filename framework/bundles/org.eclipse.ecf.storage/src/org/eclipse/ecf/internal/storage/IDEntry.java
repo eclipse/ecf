@@ -9,13 +9,14 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.storage;
+package org.eclipse.ecf.internal.storage;
 
 import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.internal.storage.Activator;
+import org.eclipse.ecf.storage.IDStoreException;
+import org.eclipse.ecf.storage.IIDEntry;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.osgi.util.NLS;
 

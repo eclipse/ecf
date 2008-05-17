@@ -2,7 +2,6 @@ package org.eclipse.ecf.internal.storage;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.storage.IDStore;
 import org.eclipse.ecf.storage.IIDStore;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
