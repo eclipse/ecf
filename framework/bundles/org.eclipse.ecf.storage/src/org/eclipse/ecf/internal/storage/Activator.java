@@ -1,8 +1,8 @@
 package org.eclipse.ecf.internal.storage;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.SystemLogService;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.storage.IDStore;
 import org.eclipse.ecf.storage.IIDStore;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -25,6 +25,8 @@ public class Activator implements BundleActivator {
 	private LogService logService = null;
 
 	private BundleContext context = null;
+
+	private ServiceTracker adapterManagerTracker = null;
 
 	/**
 	 * The constructor
@@ -52,6 +54,10 @@ public class Activator implements BundleActivator {
 			logServiceTracker = null;
 			logService = null;
 		}
+		if (adapterManagerTracker != null) {
+			adapterManagerTracker.close();
+			adapterManagerTracker = null;
+		}
 		context = null;
 		plugin = null;
 	}
@@ -65,7 +71,7 @@ public class Activator implements BundleActivator {
 		return plugin;
 	}
 
-	protected LogService getLogService() {
+	public LogService getLogService() {
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
@@ -74,6 +80,22 @@ public class Activator implements BundleActivator {
 		if (logService == null)
 			logService = new SystemLogService(PLUGIN_ID);
 		return logService;
+	}
+
+	public IAdapterManager getAdapterManager() {
+		// First, try to get the adapter manager via
+		if (adapterManagerTracker == null) {
+			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker.open();
+		}
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
+		// Then, if the service isn't there, try to get from Platform class via
+		// PlatformHelper class
+		if (adapterManager == null)
+			adapterManager = PlatformHelper.getPlatformAdapterManager();
+		if (adapterManager == null)
+			getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Cannot get adapter manager", null)); //$NON-NLS-1$
+		return adapterManager;
 	}
 
 	public void log(IStatus status) {

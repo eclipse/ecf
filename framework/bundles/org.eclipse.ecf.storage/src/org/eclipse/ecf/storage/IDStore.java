@@ -9,13 +9,14 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.storage;
+package org.eclipse.ecf.storage;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.storage.*;
+import org.eclipse.ecf.internal.storage.Activator;
 import org.eclipse.equinox.security.storage.*;
 
 /**
@@ -87,5 +88,18 @@ public class IDStore implements IIDStore {
 		if (namespaceRoot == null)
 			return null;
 		return new NamespaceEntry(namespaceRoot.node(nsName));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this)) {
+			return this;
+		}
+		IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 	}
 }

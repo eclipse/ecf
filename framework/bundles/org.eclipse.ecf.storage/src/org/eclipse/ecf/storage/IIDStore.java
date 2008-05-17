@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.storage;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
@@ -19,7 +20,7 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
  * ID storage service interface.  This interface defines access for storing and retrieving ID instances.  
  * It also allows creating ID instances from previously stored {@link IIDEntry}s.
  */
-public interface IIDStore {
+public interface IIDStore extends IAdaptable {
 
 	/**
 	 * Get the {@link INamespaceEntry}s previously stored in this IIDStore.
