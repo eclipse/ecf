@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 Remy Suen
+ * Copyright (c) 2005, 2008 Remy Suen
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Stoyan Boshev <s.boshev@prosyst.com> - [MSN] Session and subclasses needs to handle whitespace and exceptions better
  ******************************************************************************/
 package org.eclipse.ecf.protocol.msn;
 
@@ -289,7 +290,7 @@ public final class ChatSession extends Session {
 					final Contact contact = findContact(split[1]);
 
 					final int count = Integer.parseInt(split[3]);
-					split = StringUtils.split(contents[index - 1], "\r\n\r\n"); //$NON-NLS-1$
+					split = StringUtils.split(contents[index - 1], "\r\n\r\n", 2); //$NON-NLS-1$
 
 					final int text = count - (split[0].getBytes("UTF-8").length + 4); //$NON-NLS-1$
 					fireMessageReceivedEvent(contact, new String(split[1].getBytes("UTF-8"), 0, text, "UTF-8")); //$NON-NLS-1$ //$NON-NLS-2$

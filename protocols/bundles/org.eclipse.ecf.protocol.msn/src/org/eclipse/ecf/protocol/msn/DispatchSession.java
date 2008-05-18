@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 Remy Suen
+ * Copyright (c) 2005, 2008 Remy Suen
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Stoyan Boshev <s.boshev@prosyst.com> - [MSN] Session and subclasses needs to handle whitespace and exceptions better
  ******************************************************************************/
 package org.eclipse.ecf.protocol.msn;
 
@@ -66,7 +67,7 @@ class DispatchSession extends Session {
 	 */
 	ResponseCommand connect(String username) throws ConnectException, IOException {
 		write("VER", "MSNP11 CVR0"); //$NON-NLS-1$ //$NON-NLS-2$
-		String input = super.read();
+		String input = super.read().trim();
 		if (!input.startsWith("VER")) { //$NON-NLS-1$
 			// TODO: throw a more descriptive exception
 			throw new ConnectException("The server did not respond properly.");
@@ -74,14 +75,14 @@ class DispatchSession extends Session {
 
 		write("CVR", "0x040c winnt 5.1 i386 MSNMSGR 7.0.0813 msmsgs " //$NON-NLS-1$ //$NON-NLS-2$
 				+ username);
-		input = super.read();
+		input = super.read().trim();
 		if (!input.startsWith("CVR")) { //$NON-NLS-1$
 			// TODO: throw a more descriptive exception
 			throw new ConnectException("The server did not respond properly.");
 		}
 
 		write("USR", "TWN I " + username); //$NON-NLS-1$ //$NON-NLS-2$
-		return new ResponseCommand(super.read());
+		return new ResponseCommand(super.read().trim());
 	}
 
 	/**

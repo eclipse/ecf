@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 Remy Suen
+ * Copyright (c) 2005, 2008 Remy Suen
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Stoyan Boshev <s.boshev@prosyst.com> - [MSN] Session and subclasses needs to handle whitespace and exceptions better
  ******************************************************************************/
 package org.eclipse.ecf.protocol.msn;
 
@@ -142,7 +143,7 @@ abstract class Session {
 		if (read < 1) {
 			return null;
 		}
-		return new String(buffer, 0, read, "UTF-8").trim(); //$NON-NLS-1$
+		return new String(buffer, 0, read, "UTF-8"); //$NON-NLS-1$
 	}
 
 	/**
@@ -287,6 +288,9 @@ abstract class Session {
 					read();
 				} catch (IOException e) {
 					return;
+				} catch (RuntimeException e) {
+					System.out.println("Exception occurred: ");
+					e.printStackTrace();
 				}
 			}
 		}
