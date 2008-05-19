@@ -127,14 +127,15 @@ public class IDStoreTest extends TestCase {
 		final ID guid2 = IDFactory.getDefault().createGUID();
 		final IIDEntry entry2 = idStore.getEntry(guid2);
 
+		final String key = "foo";
 		// Create association
-		entry1.addAssociateIDEntry(entry2, true);
+		entry1.putAssociate(key, entry2, true);
 
 		// Get entry1a
 		final IIDEntry entry1a = idStore.getEntry(guid1);
 		assertNotNull(entry1a);
 		// Get associates (should include entry2)
-		final IIDEntry[] entries = entry1a.getAssociateIDEntries();
+		final IIDEntry[] entries = entry1a.getAssociates(key);
 		assertNotNull(entries);
 		assertTrue(entries.length == 1);
 		// entry2a should be same as entry2
@@ -145,4 +146,60 @@ public class IDStoreTest extends TestCase {
 		assertTrue(guid2.equals(guid2a));
 
 	}
+
+	public void testCreateAssociations() throws Exception {
+		// Create two GUIDs and store them in idStore
+		final ID guid1 = IDFactory.getDefault().createGUID();
+		final IIDEntry entry1 = idStore.getEntry(guid1);
+		final ID guid2 = IDFactory.getDefault().createGUID();
+		final IIDEntry entry2 = idStore.getEntry(guid2);
+		final ID guid3 = IDFactory.getDefault().createGUID();
+		final IIDEntry entry3 = idStore.getEntry(guid3);
+		final ID guid4 = IDFactory.getDefault().createGUID();
+		final IIDEntry entry4 = idStore.getEntry(guid4);
+
+		final String key1 = "foo";
+		final String key2 = "foo2";
+
+		// Create association
+		entry1.putAssociate(key1, entry2, true);
+		// Create another association with same key (key1)
+		entry1.putAssociate(key1, entry3, false);
+		// Create another association with different key (key2)
+		entry1.putAssociate(key2, entry4, true);
+
+		// Get entry1a
+		final IIDEntry entry1a = idStore.getEntry(guid1);
+		assertNotNull(entry1a);
+
+		// Get associates (should include entry2)
+		final IIDEntry[] entries1 = entry1a.getAssociates(key1);
+		assertNotNull(entries1);
+		assertTrue(entries1.length == 2);
+		// entry2a should be same as entry2
+		final IIDEntry entry2a = entries1[0];
+		assertNotNull(entry2a);
+		final ID guid2a = entry2a.createID();
+		// and guid2a should equal guid2
+		assertTrue(guid2.equals(guid2a));
+
+		// entry3a should be same as entry2
+		final IIDEntry entry3a = entries1[1];
+		assertNotNull(entry3a);
+		final ID guid3a = entry3a.createID();
+		// and guid3a should equal guid3
+		assertTrue(guid3.equals(guid3a));
+
+		final IIDEntry[] entries2 = entry1a.getAssociates(key2);
+		assertNotNull(entries2);
+		assertTrue(entries2.length == 1);
+		// entry4a should be same as entry4
+		final IIDEntry entry4a = entries2[0];
+		assertNotNull(entry4a);
+		final ID guid4a = entry4a.createID();
+		// and guid4a should equal guid4
+		assertTrue(guid4.equals(guid4a));
+
+	}
+
 }
