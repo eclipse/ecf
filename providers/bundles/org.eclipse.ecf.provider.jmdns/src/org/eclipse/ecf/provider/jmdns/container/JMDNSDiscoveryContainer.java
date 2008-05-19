@@ -322,10 +322,19 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		runInThread(new Runnable() {
 			public void run() {
 				if (jmdns != null) {
-					jmdns.requestServiceInfo(arg0.getType(), arg0.getName(), DEFAULT_REQUEST_TIMEOUT);
+					String serviceType = arg0.getType();
+					String serviceName = arg0.getName();
+					Collection l = getAllListeners(createServiceID(serviceType, serviceName).getServiceTypeID());
+					if (l.size() > 0) {
+						jmdns.requestServiceInfo(serviceType, serviceName, DEFAULT_REQUEST_TIMEOUT);
+					}
 				}
 			}
 		});
+	}
+
+	Collection getAllListeners(IServiceTypeID serviceTypeID) {
+		return super.getListeners(serviceTypeID);
 	}
 
 	/* (non-Javadoc)
@@ -337,7 +346,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			public void run() {
 				if (jmdns != null) {
 					try {
-						fireUndiscovered(createIServiceInfoFromServiceInfo(arg0.getInfo()));
+						fireUndiscovered(createIServiceInfoFromServiceEvent(arg0));
 					} catch (final Exception e) {
 						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceRemoved", e); //$NON-NLS-1$
 					}
@@ -359,7 +368,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			public void run() {
 				if (jmdns != null) {
 					try {
-						fireDiscovered(createIServiceInfoFromServiceInfo(arg0.getInfo()));
+						fireDiscovered(createIServiceInfoFromServiceEvent(arg0));
 					} catch (final Exception e) {
 						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceResolved", e); //$NON-NLS-1$
 					}
@@ -386,9 +395,19 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		return serviceID.getServiceTypeID();
 	}
 
-	IServiceInfo createIServiceInfoFromServiceInfo(final ServiceInfo serviceInfo) throws Exception {
-		if (serviceInfo == null)
-			return null;
+	IServiceInfo createIServiceInfoFromServiceEvent(final ServiceEvent event) throws Exception {
+		ServiceInfo si = event.getInfo();
+		if (si != null)
+			return createIServiceInfoFromServiceInfo(si);
+		// else service info from JMDNS is null...and we need to create IServiceInfo ourselves
+		final ServiceID sID = createServiceID(event.getType(), event.getName());
+		if (sID == null)
+			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);
+		return new org.eclipse.ecf.discovery.ServiceInfo(null, null, -1, sID);
+	}
+
+	private IServiceInfo createIServiceInfoFromServiceInfo(final ServiceInfo serviceInfo) throws Exception {
+		Assert.isNotNull(serviceInfo);
 		String st = serviceInfo.getType();
 		String n = serviceInfo.getName();
 		if (st == null || n == null)
@@ -417,7 +436,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		return new org.eclipse.ecf.discovery.ServiceInfo(uriProtocol, addr.getHostAddress(), port, sID, priority, weight, new ServiceProperties(props));
 	}
 
-	private ServiceID createServiceID(String type, String name) {
+	ServiceID createServiceID(String type, String name) {
 		ServiceID id = null;
 		try {
 			id = (ServiceID) ServiceIDFactory.getDefault().createServiceID(getServicesNamespace(), type, name);
