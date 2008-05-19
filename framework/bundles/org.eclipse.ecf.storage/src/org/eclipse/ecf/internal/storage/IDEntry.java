@@ -32,8 +32,6 @@ public class IDEntry implements IIDEntry {
 
 	private final ISecurePreferences prefs;
 
-	private final String ASSOCIATE_IDENTRIES_NODE = "associates"; //$NON-NLS-1$
-
 	public IDEntry(ISecurePreferences prefs) {
 		this.prefs = prefs;
 	}
@@ -45,11 +43,12 @@ public class IDEntry implements IIDEntry {
 		return prefs;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.storage.IIDEntry#addAssociateIDEntry(org.eclipse.ecf.storage.IIDEntry,boolean encrypt)
-	 */
-	public void addAssociateIDEntry(IIDEntry entry, boolean encrypt) throws IDStoreException {
-		ISecurePreferences associateNode = prefs.node(ASSOCIATE_IDENTRIES_NODE);
+	public void putAssociate(String key, IIDEntry entry, boolean encrypt) throws IDStoreException {
+		if (key == null)
+			throw new IDStoreException("key cannot be null"); //$NON-NLS-1$
+		if (entry == null)
+			throw new IDStoreException("entry cannot be null"); //$NON-NLS-1$
+		ISecurePreferences associateNode = prefs.node(key);
 		String entryAssociate = createAssociateName(entry);
 		associateNode.node(entryAssociate);
 	}
@@ -104,11 +103,10 @@ public class IDEntry implements IIDEntry {
 		prefs.removeNode();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.storage.IIDEntry#getAssociateIDEntries()
-	 */
-	public IIDEntry[] getAssociateIDEntries() {
-		ISecurePreferences associateNode = prefs.node(ASSOCIATE_IDENTRIES_NODE);
+	public IIDEntry[] getAssociates(String key) {
+		if (key == null)
+			return new IIDEntry[0];
+		ISecurePreferences associateNode = prefs.node(key);
 		String[] childrenNames = associateNode.childrenNames();
 		List results = new ArrayList();
 		for (int i = 0; i < childrenNames.length; i++) {

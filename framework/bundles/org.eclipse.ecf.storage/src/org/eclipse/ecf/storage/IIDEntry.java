@@ -40,24 +40,25 @@ public interface IIDEntry {
 	public ID createID() throws IDCreateException;
 
 	/**
-	 * Get any {@link IIDEntry}s that have previously been associated with this IIDEntry via {@link #addAssociateIDEntry(IIDEntry,boolean)}.
+	 * Get any {@link IIDEntry}s that have previously been associated with this IIDEntry via {@link #putAssociate(java.lang.String,IIDEntry,boolean)}.
+	 * @param key the String key for retrieving associates.  Must not be <code>null</code>. 
 	 * 
-	 * @return IIDEntry[] of associated IIDEntry instances that have previously been successfully stored via {@link #addAssociateIDEntry(IIDEntry,boolean)}.
-	 * If no IIDEntries have been previously stored, an empty array will be returned.  Will not return <code>null</code>.
+	 * @return IIDEntry[] of associated IIDEntry instances that have previously been successfully stored via {@link #putAssociate(java.lang.String,IIDEntry,boolean)}.
+	 * If no IIDEntries have been previously stored with the given key, an empty array will be returned.  Will not return <code>null</code>.
 	 */
-	public IIDEntry[] getAssociateIDEntries();
+	public IIDEntry[] getAssociates(String key);
 
 	/**
-	 * Associate an IIDEntry instance with this IIDEntry in the store.  The association is one-way (i.e. if successful, future calls to
-	 * this{@link #getAssociateIDEntries()} will include the given entry, but calls to entry.getAssociatedIDEntries() will
-	 * not include this IIDEntry).
+	 * Associate an IIDEntry instance with a String key in this IIDEntry.  The association is one-way (i.e. if successful, future calls to
+	 * this {@link #getAssociates(java.lang.String)} with the same key will include the new entry.
 	 * 
-	 * @param entry the {@link IIDEntry} to associated with this {@link IIDEntry}.  
+	 * @param key the String key for storing associates.  Must not be <code>null</code>..
+	 * @param entry the {@link IIDEntry} to associated with this {@link IIDEntry}.  Must not be <code>null</code>.
 	 * @param encrypt if <code>true</code> associate IIDEntry will be encrypted, <code>false</code> and it will 
 	 * not be encrypted.
 	 * @throws IDStoreException thrown if the given {@link IIDEntry} cannot be stored.
 	 */
-	public void addAssociateIDEntry(IIDEntry entry, boolean encrypt) throws IDStoreException;
+	public void putAssociate(String key, IIDEntry entry, boolean encrypt) throws IDStoreException;
 
 	/**
 	 * Delete this IIDEntry from the {@link IIDStore}.  This will <b>not</be> delete any associated {@link IIDEntry}s.  It is
