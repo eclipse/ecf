@@ -14,8 +14,7 @@ package org.eclipse.ecf.internal.storage;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.storage.IContainerEntry;
-import org.eclipse.ecf.storage.IIDEntry;
+import org.eclipse.ecf.storage.*;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.StorageException;
 
@@ -32,12 +31,12 @@ public class ContainerEntry implements IContainerEntry {
 	ID containerID;
 
 	/**
-	 * @param node
 	 * @param idEntry 
 	 */
-	public ContainerEntry(ISecurePreferences node, IIDEntry idEntry) {
-		this.prefs = node;
+	public ContainerEntry(IIDEntry idEntry) {
 		this.idEntry = idEntry;
+		ISecurePreferences prefs = idEntry.getPreferences();
+		this.prefs = prefs.node(ContainerStore.CONTAINER_NODE_NAME);
 	}
 
 	/* (non-Javadoc)
@@ -45,7 +44,12 @@ public class ContainerEntry implements IContainerEntry {
 	 */
 	public IContainer createContainer() throws ContainerCreateException {
 		try {
-			return ContainerFactory.getDefault().createContainer(getFactoryName(), getContainerID());
+			IContainer container = ContainerFactory.getDefault().createContainer(getFactoryName(), getContainerID());
+			IStorableContainerAdapter containerAdapter = (IStorableContainerAdapter) container.getAdapter(IStorableContainerAdapter.class);
+			if (containerAdapter != null) {
+				containerAdapter.handleRestore(prefs);
+			}
+			return container;
 		} catch (IDCreateException e) {
 			throw new ContainerCreateException("Could not create ID for container", e); //$NON-NLS-1$
 		} catch (StorageException e) {

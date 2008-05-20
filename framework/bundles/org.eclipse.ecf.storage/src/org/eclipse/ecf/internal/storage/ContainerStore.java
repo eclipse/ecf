@@ -24,7 +24,7 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
  */
 public class ContainerStore implements IContainerStore {
 
-	private static final String CONTAINER_NODE_NAME = "container"; //$NON-NLS-1$
+	static final String CONTAINER_NODE_NAME = "container"; //$NON-NLS-1$
 
 	final IDStore idStore;
 
@@ -45,7 +45,7 @@ public class ContainerStore implements IContainerStore {
 				String[] names = pref.childrenNames();
 				for (int k = 0; k < names.length; k++) {
 					if (names[k].equals(CONTAINER_NODE_NAME))
-						results.add(new ContainerEntry(pref.node(CONTAINER_NODE_NAME), idEntries[j]));
+						results.add(idEntries[j]);
 				}
 			}
 		}
@@ -61,9 +61,9 @@ public class ContainerStore implements IContainerStore {
 		ID containerID = containerAdapter.getID();
 		Assert.isNotNull(containerID);
 		IIDEntry idEntry = idStore.store(containerID);
-		ISecurePreferences prefs = idEntry.getPreferences();
-		ISecurePreferences containerPrefs = prefs.node(CONTAINER_NODE_NAME);
-		return new ContainerEntry(containerPrefs, idEntry);
+		ContainerEntry containerEntry = new ContainerEntry(idEntry);
+		containerAdapter.handleStore(containerEntry.getPreferences());
+		return containerEntry;
 	}
 
 	/* (non-Javadoc)
