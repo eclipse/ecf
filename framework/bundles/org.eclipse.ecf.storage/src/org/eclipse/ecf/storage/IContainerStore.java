@@ -12,6 +12,7 @@
 package org.eclipse.ecf.storage;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Storage interface for IContainer instances.
@@ -35,4 +36,7 @@ public interface IContainerStore extends IAdaptable {
 	 */
 	public IContainerEntry store(IStorableContainerAdapter containerAdapter);
 
+	public IContainerEntry retrieve(ID containerID);
+
+	public IContainerEntry retrieve(IIDEntry idEntry);
 }

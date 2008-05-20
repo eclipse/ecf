@@ -13,16 +13,19 @@ package org.eclipse.ecf.storage;
 
 import org.eclipse.ecf.core.identity.IIdentifiable;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.StorageException;
 
 /**
  *
  */
 public interface IStorableContainerAdapter extends IIdentifiable {
 
+	public boolean encrypt();
+
 	public String getFactoryName();
 
-	public void handleStore(ISecurePreferences prefs);
+	public void handleStore(ISecurePreferences prefs) throws StorageException;
 
-	public void handleRestore(ISecurePreferences prefs);
+	public void handleRestore(ISecurePreferences prefs) throws StorageException;
 
 }

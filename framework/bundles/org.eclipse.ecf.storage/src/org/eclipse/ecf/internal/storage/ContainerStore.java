@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.storage.*;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.StorageException;
 
 /**
  *
@@ -62,8 +63,38 @@ public class ContainerStore implements IContainerStore {
 		Assert.isNotNull(containerID);
 		IIDEntry idEntry = idStore.store(containerID);
 		ContainerEntry containerEntry = new ContainerEntry(idEntry);
-		containerAdapter.handleStore(containerEntry.getPreferences());
-		return containerEntry;
+		try {
+			containerEntry.setFactoryName(containerAdapter.getFactoryName(), containerAdapter.encrypt());
+			containerAdapter.handleStore(containerEntry.getPreferences());
+			return containerEntry;
+		} catch (StorageException e) {
+			// Undo and return null
+			containerEntry.delete();
+			return null;
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.storage.IContainerStore#retrieve(org.eclipse.ecf.core.identity.ID)
+	 */
+	public IContainerEntry retrieve(ID containerID) {
+		IIDEntry entry = idStore.store(containerID);
+		return retrieve(entry);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.storage.IContainerStore#retrieve(org.eclipse.ecf.storage.IIDEntry)
+	 */
+	public IContainerEntry retrieve(IIDEntry idEntry) {
+		Assert.isNotNull(idEntry);
+		ISecurePreferences pref = idEntry.getPreferences();
+		String[] names = pref.childrenNames();
+		IContainerEntry result = null;
+		for (int k = 0; k < names.length; k++) {
+			if (names[k].equals(CONTAINER_NODE_NAME))
+				result = new ContainerEntry(idEntry);
+		}
+		return result;
 	}
 
 	/* (non-Javadoc)

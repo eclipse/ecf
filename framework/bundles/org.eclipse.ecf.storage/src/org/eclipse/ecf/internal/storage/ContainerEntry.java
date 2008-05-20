@@ -53,7 +53,7 @@ public class ContainerEntry implements IContainerEntry {
 		} catch (IDCreateException e) {
 			throw new ContainerCreateException("Could not create ID for container", e); //$NON-NLS-1$
 		} catch (StorageException e) {
-			throw new ContainerCreateException("Could not get factory name", e); //$NON-NLS-1$
+			throw new ContainerCreateException("Exception on restore", e); //$NON-NLS-1$
 		}
 	}
 
@@ -79,6 +79,10 @@ public class ContainerEntry implements IContainerEntry {
 	 */
 	public String getFactoryName() throws StorageException {
 		return prefs.get(FACTORY_NAME_KEY, ""); //$NON-NLS-1$
+	}
+
+	protected void setFactoryName(String factoryName, boolean encrypt) throws StorageException {
+		prefs.put(FACTORY_NAME_KEY, factoryName, encrypt);
 	}
 
 	/* (non-Javadoc)
