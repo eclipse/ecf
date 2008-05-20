@@ -32,7 +32,7 @@ public class JMDNSDiscoveryServiceTest extends DiscoveryTest {
 	static final int TEST_PORT = 3282;
 
 	public JMDNSDiscoveryServiceTest() {
-		super("ecf.discovery.jmdns", 1000);
+		super("ecf.discovery.jmdns");
 	}
 
 	/*

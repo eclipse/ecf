@@ -23,7 +23,6 @@ import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
-import org.eclipse.ecf.tests.discovery.DiscoveryTestHelper;
 
 /**
  *
@@ -42,21 +41,14 @@ public class JMDNSRemoteServiceDiscoveryTest extends DiscoveryTest {
 	IServiceInfo serviceInfo;
 
 	public JMDNSRemoteServiceDiscoveryTest() {
-		super(JMDNS_CONTAINER_NAME, 1000);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest#getPort()
-	 */
-	protected int getPort() {
-		return SERVER_PORT;
+		super(JMDNS_CONTAINER_NAME);
 	}
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		container = ContainerFactory.getDefault().createContainer(containerUnderTest);
 		discoveryContainer = (IDiscoveryContainerAdapter) container.getAdapter(IDiscoveryContainerAdapter.class);
-		final ServiceInfo svcInfo = new ServiceInfo(DiscoveryTestHelper.createDefaultURI(), createServiceID(SERVICE_TYPE, "JMDNSRemoteServiceDiscoveryTest" + System.currentTimeMillis()));
+		final ServiceInfo svcInfo = new ServiceInfo(createDefaultURI(), createServiceID(SERVICE_TYPE, "JMDNSRemoteServiceDiscoveryTest" + System.currentTimeMillis()));
 		svcInfo.setContainerProperties("ecf.generic.client", "ecftcp", "server", null);
 		serviceInfo = svcInfo;
 	}
