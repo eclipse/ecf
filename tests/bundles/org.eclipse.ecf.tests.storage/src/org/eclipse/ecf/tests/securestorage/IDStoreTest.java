@@ -59,12 +59,12 @@ public class IDStoreTest extends TestCase {
 
 	protected IIDEntry addGUID() throws IDCreateException {
 		final ID newGUID = IDFactory.getDefault().createGUID();
-		return idStore.getEntry(newGUID);
+		return idStore.store(newGUID);
 	}
 
 	protected IIDEntry addStringID(String value) throws IDCreateException {
 		final ID newID = IDFactory.getDefault().createStringID(value);
-		return idStore.getEntry(newID);
+		return idStore.store(newID);
 	}
 
 	public void testStoreGUID() throws Exception {
@@ -99,7 +99,7 @@ public class IDStoreTest extends TestCase {
 
 	public void testGetNamespaceNode() throws Exception {
 		final ID newGUID = IDFactory.getDefault().createGUID();
-		idStore.getEntry(newGUID);
+		idStore.store(newGUID);
 		final ISecurePreferences namespacePrefs = idStore.getNamespaceEntry(newGUID.getNamespace()).getPreferences();
 		assertNotNull(namespacePrefs);
 		assertTrue(namespacePrefs.name().equals(newGUID.getNamespace().getName()));
@@ -107,7 +107,7 @@ public class IDStoreTest extends TestCase {
 
 	public void testGetIDEntries() throws Exception {
 		final ID newGUID = IDFactory.getDefault().createGUID();
-		idStore.getEntry(newGUID);
+		idStore.store(newGUID);
 		// Get namespace entry
 		final INamespaceEntry namespaceEntry = idStore.getNamespaceEntry(newGUID.getNamespace());
 		assertNotNull(namespaceEntry);
@@ -123,16 +123,16 @@ public class IDStoreTest extends TestCase {
 	public void testCreateAssociation() throws Exception {
 		// Create two GUIDs and store them in idStore
 		final ID guid1 = IDFactory.getDefault().createGUID();
-		final IIDEntry entry1 = idStore.getEntry(guid1);
+		final IIDEntry entry1 = idStore.store(guid1);
 		final ID guid2 = IDFactory.getDefault().createGUID();
-		final IIDEntry entry2 = idStore.getEntry(guid2);
+		final IIDEntry entry2 = idStore.store(guid2);
 
 		final String key = "foo";
 		// Create association
 		entry1.putAssociate(key, entry2, true);
 
 		// Get entry1a
-		final IIDEntry entry1a = idStore.getEntry(guid1);
+		final IIDEntry entry1a = idStore.store(guid1);
 		assertNotNull(entry1a);
 		// Get associates (should include entry2)
 		final IIDEntry[] entries = entry1a.getAssociates(key);
@@ -150,13 +150,13 @@ public class IDStoreTest extends TestCase {
 	public void testCreateAssociations() throws Exception {
 		// Create two GUIDs and store them in idStore
 		final ID guid1 = IDFactory.getDefault().createGUID();
-		final IIDEntry entry1 = idStore.getEntry(guid1);
+		final IIDEntry entry1 = idStore.store(guid1);
 		final ID guid2 = IDFactory.getDefault().createGUID();
-		final IIDEntry entry2 = idStore.getEntry(guid2);
+		final IIDEntry entry2 = idStore.store(guid2);
 		final ID guid3 = IDFactory.getDefault().createGUID();
-		final IIDEntry entry3 = idStore.getEntry(guid3);
+		final IIDEntry entry3 = idStore.store(guid3);
 		final ID guid4 = IDFactory.getDefault().createGUID();
-		final IIDEntry entry4 = idStore.getEntry(guid4);
+		final IIDEntry entry4 = idStore.store(guid4);
 
 		final String key1 = "foo";
 		final String key2 = "foo2";
@@ -169,7 +169,7 @@ public class IDStoreTest extends TestCase {
 		entry1.putAssociate(key2, entry4, true);
 
 		// Get entry1a
-		final IIDEntry entry1a = idStore.getEntry(guid1);
+		final IIDEntry entry1a = idStore.store(guid1);
 		assertNotNull(entry1a);
 
 		// Get associates (should include entry2)
