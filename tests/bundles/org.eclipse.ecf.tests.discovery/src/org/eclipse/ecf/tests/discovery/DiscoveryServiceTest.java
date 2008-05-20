@@ -17,6 +17,8 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class DiscoveryServiceTest extends DiscoveryTest {
 
+	private static final String NO_PROVIDER_REGISTERED = "No discovery provider by that name seems to be registered";
+
 	/**
 	 * @param name
 	 */
@@ -29,16 +31,17 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 	 */
 	protected IDiscoveryContainerAdapter getAdapter(Class notNeeded) {
 		final ServiceTracker serviceTracker = Activator.getDefault().getDiscoveryServiceTracker();
-		assertNotNull(serviceTracker);
+		assertNotNull(NO_PROVIDER_REGISTERED, serviceTracker);
 		final ServiceReference[] serviceReferences = serviceTracker.getServiceReferences();
-		assertNotNull(serviceReferences);
+		assertNotNull(NO_PROVIDER_REGISTERED, serviceReferences);
 		for(int i = 0; i < serviceReferences.length; i++) {
 			ServiceReference sr = serviceReferences[i];
+			//TODO-mkuppe https://bugs.eclipse.org/232813
 			if(containerUnderTest.equals(sr.getProperty(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET))) {
 				return (IDiscoveryContainerAdapter) serviceTracker.getService(sr);
 			}
 		}
-		fail("No discovery provider by that name seems to be registered");
+		fail(NO_PROVIDER_REGISTERED);
 		return null;
 	}
 
