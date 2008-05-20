@@ -18,6 +18,7 @@ import java.util.Properties;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -43,25 +44,70 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	protected IServiceInfo serviceInfo3;
 	protected IServiceID serviceID3;
 
-	/**
-	 * @param name
-	 * @param aDiscoveryContainerInterval 
-	 * @param aComparator 
-	 */
-	public DiscoveryTest(String name, long aDiscoveryContainerInterval, Comparator aComparator) {
-		containerUnderTest = name;
-		comparator = aComparator;
-		// interval how often the provider discovers for services + 1/10 * discoveryInterval
-		waitTimeForProvider = aDiscoveryContainerInterval + (aDiscoveryContainerInterval * 1 / 2);
+	protected String containerUnderTest;
+	protected long waitTimeForProvider = 1000;
+	protected Comparator comparator = new ServiceInfoComparator();
+	private String protocol = PROTOCOL;
+	private String scope = SCOPE;
+	private String namingAuthority = NAMINGAUTHORITY;
+	
+	protected IContainer container = null;
+	protected IDiscoveryContainerAdapter discoveryContainer = null;
+
+	
+	public DiscoveryTest(String name) {
+		super();
+		this.containerUnderTest = name;
+	}
+	
+	protected IDiscoveryContainerAdapter getAdapter(Class clazz) {
+		final IDiscoveryContainerAdapter adapter = (IDiscoveryContainerAdapter) container.getAdapter(clazz);
+		assertNotNull("Adapter must not be null", adapter);
+		return adapter;
 	}
 
-	public DiscoveryTest(String name, long aDiscoveryContainerInterval) {
-		this(name, aDiscoveryContainerInterval, new ServiceInfoComparator());
+	protected IServiceID createServiceID(String serviceType, String serviceName) throws Exception {
+		return ServiceIDFactory.getDefault().createServiceID(discoveryContainer.getServicesNamespace(), serviceType, serviceName);
+	}
+
+	protected void registerService(IServiceInfo serviceInfo) throws Exception {
+		assertNotNull(serviceInfo);
+		assertNotNull(discoveryContainer);
+		discoveryContainer.registerService(serviceInfo);
+	}
+
+	protected void unregisterService(IServiceInfo serviceInfo) throws Exception {
+		assertNotNull(serviceInfo);
+		assertNotNull(discoveryContainer);
+		discoveryContainer.unregisterService(serviceInfo);
+	}
+
+	public void setWaitTimeForProvider(long aWaitTimeForProvider) {
+		this.waitTimeForProvider = aWaitTimeForProvider + (aWaitTimeForProvider * 1 / 2);
+	}
+
+	public void setComparator(Comparator comparator) {
+		this.comparator = comparator;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+
+	public void setNamingAuthority(String namingAuthority) {
+		this.namingAuthority = namingAuthority;
+	}
+
+	public String getServiceType() {
+		return "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + protocol + "." + scope + "._" + namingAuthority;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
@@ -76,9 +122,9 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		assertNotNull(discoveryContainer);
 
 		final Properties props = new Properties();
-		final URI uri = DiscoveryTestHelper.createDefaultURI();
+		final URI uri = createDefaultURI();
 
-		serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {DiscoveryTestHelper.SERVICE_TYPE, DiscoveryTestHelper.getHost()});
+		serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {getServiceType(), getHost()});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
 		serviceProperties.setPropertyString(DiscoveryTest.class.getName() + "servicePropertiesString", "serviceProperties");
@@ -89,14 +135,14 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		serviceInfo = new ServiceInfo(uri, serviceID, 0, 0, serviceProperties);
 		assertNotNull(serviceInfo);
 
-		serviceID2 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {DiscoveryTestHelper.SERVICE_TYPE2, DiscoveryTestHelper.getHost()});
+		serviceID2 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {"_service._ecf._tests2._fooProtocol.fooScope._fooNA", getHost()});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties2 = new ServiceProperties(props);
 		serviceProperties2.setPropertyString("serviceProperties2", "serviceProperties2");
 		serviceInfo2 = new ServiceInfo(uri, serviceID2, 2, 2, serviceProperties2);
 		assertNotNull(serviceInfo2);
 
-		serviceID3 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {DiscoveryTestHelper.SERVICE_TYPE3, DiscoveryTestHelper.getHost()});
+		serviceID3 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {"_service._ecf._tests3._barProtocol.barScope._barNA", getHost()});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties3 = new ServiceProperties(props);
 		serviceProperties3.setPropertyString("serviceProperties3", "serviceProperties3");
@@ -370,8 +416,6 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 					fail("Some discovery unrelated threading issues?");
 				}
 			}
-			if (i < 9)
-				return;
 		}
 		assertNotNull("Test listener didn't receive discovery", testServiceListener.getEvent());
 		assertTrue("Container mismatch", testServiceListener.getEvent().getLocalContainerID().equals(container.getConnectedID()));

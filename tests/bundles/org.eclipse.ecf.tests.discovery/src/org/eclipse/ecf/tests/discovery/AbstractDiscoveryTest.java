@@ -11,61 +11,35 @@
 
 package org.eclipse.ecf.tests.discovery;
 
-import java.util.Comparator;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
-
-/**
- *
- */
 public abstract class AbstractDiscoveryTest extends TestCase {
+	protected final static String NAMINGAUTHORITY = "IANA";
+	protected final static String SCOPE = "local";
+	protected final static String PROTOCOL = "tcp";
+	protected final static int PORT = 3282;
 
-	protected IContainer container = null;
-	protected IDiscoveryContainerAdapter discoveryContainer = null;
-	protected String containerUnderTest;
-	protected long waitTimeForProvider;
-	protected Comparator comparator;
-
-	/**
-	 * 
-	 */
-	public AbstractDiscoveryTest() {
-		super();
+	protected final static String[] SERVICES = new String[] {"service", "ecf", "tests"};
+	protected final static String SERVICE_TYPE = "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
+	
+	public URI createDefaultURI() {
+		return URI.create("foo://" + getAuthority() + "/");
 	}
-
-	/**
-	 * @param name
-	 */
-	public AbstractDiscoveryTest(String name) {
-		super(name);
+	
+	private String getAuthority() {
+		return System.getProperty("user.name") + "@" + getHost() + ":" + PORT;
 	}
-
-	protected IDiscoveryContainerAdapter getAdapter(Class clazz) {
-		final IDiscoveryContainerAdapter adapter = (IDiscoveryContainerAdapter) container.getAdapter(clazz);
-		assertNotNull("Adapter must not be null", adapter);
-		return adapter;
+	
+	protected static String getHost() {
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return "localhost";
+		}
 	}
-
-	protected IServiceID createServiceID(String serviceType, String serviceName) throws Exception {
-		return ServiceIDFactory.getDefault().createServiceID(discoveryContainer.getServicesNamespace(), serviceType, serviceName);
-	}
-
-	protected void registerService(IServiceInfo serviceInfo) throws Exception {
-		assertNotNull(serviceInfo);
-		assertNotNull(discoveryContainer);
-		discoveryContainer.registerService(serviceInfo);
-	}
-
-	protected void unregisterService(IServiceInfo serviceInfo) throws Exception {
-		assertNotNull(serviceInfo);
-		assertNotNull(discoveryContainer);
-		discoveryContainer.unregisterService(serviceInfo);
-	}
-
 }

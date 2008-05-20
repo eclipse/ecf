@@ -12,25 +12,34 @@
 package org.eclipse.ecf.tests.discovery;
 
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class DiscoveryServiceTest extends DiscoveryTest {
 
 	/**
 	 * @param name
-	 * @param aDiscoveryContainerInterval 
 	 */
-	public DiscoveryServiceTest(String name, long aDiscoveryContainerInterval) {
-		super(name, aDiscoveryContainerInterval);
+	public DiscoveryServiceTest(String name) {
+		super(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#getAdapter(java.lang.Class)
 	 */
-	protected IDiscoveryContainerAdapter getAdapter(Class clazz) {
-		final IDiscoveryService discoveryService = Activator.getDefault().getDiscoveryService();
-		assertNotNull(discoveryService);
-		return discoveryService;
+	protected IDiscoveryContainerAdapter getAdapter(Class notNeeded) {
+		final ServiceTracker serviceTracker = Activator.getDefault().getDiscoveryServiceTracker();
+		assertNotNull(serviceTracker);
+		final ServiceReference[] serviceReferences = serviceTracker.getServiceReferences();
+		assertNotNull(serviceReferences);
+		for(int i = 0; i < serviceReferences.length; i++) {
+			ServiceReference sr = serviceReferences[i];
+			if(containerUnderTest.equals(sr.getProperty(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET))) {
+				return (IDiscoveryContainerAdapter) serviceTracker.getService(sr);
+			}
+		}
+		fail("No discovery provider by that name seems to be registered");
+		return null;
 	}
 
 }

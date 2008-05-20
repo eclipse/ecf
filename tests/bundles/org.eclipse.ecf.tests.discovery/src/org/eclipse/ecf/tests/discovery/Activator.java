@@ -13,6 +13,7 @@ package org.eclipse.ecf.tests.discovery;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -25,15 +26,7 @@ public class Activator implements BundleActivator {
 	// The shared instance
 	private static Activator plugin;
 
-	//	private ServiceTracker tracker;
-	//
-	//	private ServiceRegistration discoveryRegistration;
-
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
+	private ServiceTracker tracker;
 
 	/*
 	 * (non-Javadoc)
@@ -41,11 +34,8 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		plugin = this;
-		//		final IContainer container = ContainerFactory.getDefault().createContainer("ecf.discovery.jmdns");
-		//		container.connect(null, null);
-		//		discoveryRegistration = context.registerService(IDiscoveryService.class.getName(), container, null);
-		//		tracker = new ServiceTracker(context, IDiscoveryService.class.getName(), null);
-		//		tracker.open();
+		tracker = new ServiceTracker(context, IDiscoveryService.class.getName(), null);
+		tracker.open();
 	}
 
 	/*
@@ -53,14 +43,10 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		//		if (tracker != null) {
-		//			tracker.close();
-		//			tracker = null;
-		//		}
-		//		if (discoveryRegistration != null) {
-		//			discoveryRegistration.unregister();
-		//			discoveryRegistration = null;
-		//		}
+		if (tracker != null) {
+			tracker.close();
+			tracker = null;
+		}
 		plugin = null;
 	}
 
@@ -72,9 +58,11 @@ public class Activator implements BundleActivator {
 	public static Activator getDefault() {
 		return plugin;
 	}
-
-	public IDiscoveryService getDiscoveryService() {
-		throw new UnsupportedOperationException("not yet implemented");
-		//		return (IDiscoveryService) tracker.getService();
+	
+	/**
+	 * @return Tracker for all IDiscoveryServices
+	 */
+	public ServiceTracker getDiscoveryServiceTracker() {
+		return tracker;
 	}
 }
