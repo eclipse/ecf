@@ -46,7 +46,7 @@ public class ContainerStore implements IContainerStore {
 				String[] names = pref.childrenNames();
 				for (int k = 0; k < names.length; k++) {
 					if (names[k].equals(CONTAINER_NODE_NAME))
-						results.add(idEntries[j]);
+						results.add(new ContainerEntry(idEntries[j]));
 				}
 			}
 		}
