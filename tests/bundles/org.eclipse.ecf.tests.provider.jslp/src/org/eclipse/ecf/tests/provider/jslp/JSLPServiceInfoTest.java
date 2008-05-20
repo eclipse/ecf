@@ -18,14 +18,13 @@ import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.provider.jslp.container.JSLPServiceInfo;
 import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
-import org.eclipse.ecf.tests.discovery.DiscoveryTestHelper;
 import org.eclipse.ecf.tests.discovery.ServiceInfoTest;
 
 public class JSLPServiceInfoTest extends ServiceInfoTest {
 
 	public JSLPServiceInfoTest() {
 		super();
-		uri = DiscoveryTestHelper.createDefaultURI();
+		uri = createDefaultURI();
 		priority = 456;
 		weight = 789;
 		serviceProperties = new ServiceProperties();
@@ -34,7 +33,7 @@ public class JSLPServiceInfoTest extends ServiceInfoTest {
 				JSLPNamespace.NAME);
 		try {
 			serviceID = (IServiceID) IDFactory.getDefault().createID(namespace,
-					new Object[] {DiscoveryTestHelper.SERVICE_TYPE, DiscoveryTestHelper.getHost()});
+					new Object[] {SERVICE_TYPE, getHost()});
 		} catch (IDCreateException e) {
 			fail(e.getMessage());
 		}

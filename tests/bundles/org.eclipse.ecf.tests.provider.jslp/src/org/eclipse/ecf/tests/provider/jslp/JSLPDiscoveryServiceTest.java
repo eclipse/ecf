@@ -16,6 +16,12 @@ import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 public class JSLPDiscoveryServiceTest extends DiscoveryServiceTest {
 
 	public JSLPDiscoveryServiceTest() {
-		super(JSLPDiscoveryContainer.NAME, JSLPDiscoveryContainer.REDISCOVER);
+		super(JSLPDiscoveryContainer.NAME);
+		setWaitTimeForProvider(JSLPDiscoveryContainer.REDISCOVER);
+		
+		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=230182
+		setComparator(new JSLPTestComparator());
+		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=218308
+		setScope("default");
 	}
 }

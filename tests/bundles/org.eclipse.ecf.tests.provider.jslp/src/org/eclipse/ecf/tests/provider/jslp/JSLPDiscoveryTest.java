@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.jslp;
 
-import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
 
@@ -32,39 +31,13 @@ public class JSLPDiscoveryTest extends DiscoveryTest {
 	}
 
 	public JSLPDiscoveryTest() {
-		super(JSLPDiscoveryContainer.NAME, JSLPDiscoveryContainer.REDISCOVER, new JSLPTestComparator());
+		super(JSLPDiscoveryContainer.NAME);
+		setWaitTimeForProvider(JSLPDiscoveryContainer.REDISCOVER);
+		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=230182
+		setComparator(new JSLPTestComparator());
+		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=218308
+		setScope("default");
 	}
-	
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testRegisterService()
-	 */
-	public void testRegisterService() {
-		testConnect();
-		registerService();
-		// SLP discovery doesn't search in all scopes and it is not possible to query for all reachable scopes, thus we need to pass the "local" scope 
-		final IServiceInfo[] services = discoveryContainer.getServices(serviceInfo.getServiceID().getServiceTypeID());
-		assertTrue(services.length >= 1);
-		for (int i = 0; i < services.length; i++) {
-			final IServiceInfo service = services[i];
-			if (comparator.compare(service, serviceInfo) == 0) {
-				return;
-			}
-		}
-		fail("Self registered service not found");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testGetServices()
-	 */
-	public void testGetServices() {
-		testConnect();
-		registerService();
-		// SLP discovery doesn't search in all scopes and it is not possible to query for all reachable scopes, thus we need to pass the "local" scope 
-		final IServiceInfo[] services = discoveryContainer.getServices(serviceInfo.getServiceID().getServiceTypeID());
-		assertTrue(services.length >= 1);
-	}
-
 
 	public void testJSLPLocatorNull() {
 		//Activator.getDefault().getLocator() == null always
