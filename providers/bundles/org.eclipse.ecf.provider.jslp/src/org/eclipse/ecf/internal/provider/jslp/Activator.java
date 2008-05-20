@@ -75,12 +75,12 @@ public class Activator implements BundleActivator {
 	private Advertiser getAdvertiser() {
 		try {
 			advertiserST.open();
-			advertiserST.waitForService(10000);
+			Advertiser service = (Advertiser) advertiserST.waitForService(10000);
+			return service;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
+			return null;
 		}
-
-		return (Advertiser) advertiserST.getService();
 	}
 
 	/*
@@ -90,8 +90,18 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		bundleContext = context;
+
 		locatorST = new ServiceTracker(bundleContext, Locator.class.getName(), null);
 		advertiserST = new ServiceTracker(bundleContext, Advertiser.class.getName(), null);
+
+		//TODO-mkuppe https://bugs.eclipse.org/232813
+		// register the jSLP discovery service (will be automatically unregistered when this bundle gets uninstalled)
+		//		JSLPDiscoveryContainer ids = new JSLPDiscoveryContainer();
+		//		ids.connect(null, null);
+		//		Properties props = new Properties();
+		//		props.put(IDiscoveryService.CONTAINER_ID, ids.getID());
+		//		props.put(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET, JSLPDiscoveryContainer.NAME);
+		//		context.registerService(IDiscoveryService.class.getName(), ids, props);
 	}
 
 	/*
@@ -159,6 +169,7 @@ public class Activator implements BundleActivator {
 		Advertiser advertiser = getAdvertiser();
 		if (advertiser != null) {
 			advertiser.deregister(url);
+			return;
 		}
 		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "deregister(ServiceURL)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		//TODO add logging
@@ -171,6 +182,7 @@ public class Activator implements BundleActivator {
 		Advertiser advertiser = getAdvertiser();
 		if (advertiser != null) {
 			advertiser.deregister(url, scopes);
+			return;
 		}
 		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "deregister(ServiceURL, List)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		//TODO add logging
@@ -183,6 +195,7 @@ public class Activator implements BundleActivator {
 		Advertiser advertiser = getAdvertiser();
 		if (advertiser != null) {
 			advertiser.register(url, attributes);
+			return;
 		}
 		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "register(ServiceURL, Dictionary)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		//TODO add logging
@@ -195,6 +208,7 @@ public class Activator implements BundleActivator {
 		Advertiser advertiser = getAdvertiser();
 		if (advertiser != null) {
 			advertiser.register(url, scopes, attributes);
+			return;
 		}
 		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "register(ServiceURL, List, Dictionary)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		//TODO add logging

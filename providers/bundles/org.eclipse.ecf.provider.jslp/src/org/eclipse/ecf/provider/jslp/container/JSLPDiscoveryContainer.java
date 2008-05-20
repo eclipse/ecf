@@ -25,10 +25,11 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.provider.jslp.*;
 import org.eclipse.ecf.provider.jslp.identity.*;
 
-public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
+public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IDiscoveryService {
 	public static final String NAME = "ecf.discovery.jslp"; //$NON-NLS-1$
 
 	// TODO-mkuppe make this configurable via cm
