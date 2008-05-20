@@ -36,7 +36,19 @@ public interface IContainerStore extends IAdaptable {
 	 */
 	public IContainerEntry store(IStorableContainerAdapter containerAdapter);
 
+	/**
+	 * Retrieve an IContainerEntry for a given container ID.
+	 * 
+	 * @param containerID the containerID to retrieve.  Must not be <code>null</code>.
+	 * @return IContainerEntry found, or <code>null</code> if container with given ID not found.
+	 */
 	public IContainerEntry retrieve(ID containerID);
 
+	/**
+	 * Retrieve an IContainerEntry for a given {@link IIDEntry}.
+	 * 
+	 * @param idEntry the idEntry to retrieve.  Must not be <code>null</code>.
+	 * @return IContainerEntry found, or <code>null</code> if container with given ID not found.
+	 */
 	public IContainerEntry retrieve(IIDEntry idEntry);
 }
