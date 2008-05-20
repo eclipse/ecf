@@ -2,6 +2,7 @@ package org.eclipse.ecf.internal.storage;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.storage.IContainerStore;
 import org.eclipse.ecf.storage.IIDStore;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -40,7 +41,10 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		plugin = this;
 		this.context = context;
-		context.registerService(IIDStore.class.getName(), new IDStore(), null);
+		IDStore idStore = new IDStore();
+		ContainerStore containerStore = new ContainerStore(idStore);
+		context.registerService(IIDStore.class.getName(), idStore, null);
+		context.registerService(IContainerStore.class.getName(), containerStore, null);
 	}
 
 	/*

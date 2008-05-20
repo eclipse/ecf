@@ -49,7 +49,7 @@ public class IDStore implements IIDStore {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.storage.IIDStore#getEntry(org.eclipse.ecf.core.identity.ID)
 	 */
-	public IIDEntry getEntry(ID id) {
+	public IIDEntry store(ID id) {
 		ISecurePreferences namespaceRoot = getNamespaceRoot();
 		if (namespaceRoot == null)
 			return null;

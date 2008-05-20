@@ -31,7 +31,7 @@ public interface IIDEntry {
 	/**
 	 * Create an ID from this IDEntry.  This method may be used to create new ID instance from this
 	 * {@link IIDEntry}.  The created ID will be equivalent (via ID.equals(other)) to the ID previously
-	 * stored via {@link IIDStore#getEntry(ID)}.
+	 * stored via {@link IIDStore#store(ID)}.
 	 * 
 	 * @return {@link ID} that corresponds to this previously stored {@link IIDEntry}.
 	 * @throws IDCreateException if the ID cannot be created in this environment...e.g. due to missing

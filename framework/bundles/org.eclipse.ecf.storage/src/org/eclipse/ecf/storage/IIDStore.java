@@ -52,6 +52,6 @@ public interface IIDStore extends IAdaptable {
 	 * Will return an existing {@link IIDEntry} if ID is already present, and a new {@link IIDEntry} if not previously
 	 * stored.
 	 */
-	public IIDEntry getEntry(ID id);
+	public IIDEntry store(ID id);
 
 }
