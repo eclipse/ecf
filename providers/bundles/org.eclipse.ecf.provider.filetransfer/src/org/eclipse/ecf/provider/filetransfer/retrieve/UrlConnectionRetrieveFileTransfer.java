@@ -29,7 +29,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	private static final String DEFAULT_CONNECT_TIMEOUT = "30000"; //$NON-NLS-1$
 
-	private static final String JRE_READ_TIMEOUT_PROPERTY = "sun.net.client.defaultConnectTimeout"; //$NON-NLS-1$
+	private static final String JRE_READ_TIMEOUT_PROPERTY = "sun.net.client.defaultReadTimeout"; //$NON-NLS-1$
 
 	private static final String DEFAULT_READ_TIMEOUT = "30000"; //$NON-NLS-1$
 
