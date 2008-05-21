@@ -16,9 +16,11 @@ import junit.framework.TestCase;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.internal.tests.securestorage.Activator;
 import org.eclipse.ecf.storage.IContainerEntry;
 import org.eclipse.ecf.storage.IContainerStore;
+import org.eclipse.ecf.storage.IIDStore;
 import org.eclipse.ecf.storage.IStorableContainerAdapter;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 
@@ -28,6 +30,7 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
 public class ContainerStoreTest extends TestCase {
 
 	IContainerStore containerStore;
+	IIDStore idStore;
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -35,6 +38,7 @@ public class ContainerStoreTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		containerStore = Activator.getDefault().getContainerStore();
+		idStore = Activator.getDefault().getIDStore();
 	}
 
 	protected void clearStore() {
@@ -69,11 +73,48 @@ public class ContainerStoreTest extends TestCase {
 		return containerStore.store(containerAdapter);
 	}
 
-	public void testStoreContainer() throws Exception {
+	public ID testStoreContainer() throws Exception {
 		final IContainer container = createContainer();
 		final IContainerEntry containerEntry = storeContainer(getStorableContainerAdapter(container));
 		final ISecurePreferences prefs = containerEntry.getPreferences();
 		assertNotNull(prefs);
+		return container.getID();
+	}
+
+	public void testAndGetContainerEntries() throws Exception {
+		testStoreContainer();
+
+		// Now retrieve from container store with given ID
+		final IContainerEntry[] containerEntries = containerStore.getContainerEntries();
+		assertNotNull(containerEntries);
+		assertTrue(containerEntries.length == 1);
+	}
+
+	public void testAndRetrieveStoreContainerByID() throws Exception {
+		final ID containerID = testStoreContainer();
+
+		// Now retrieve from container store with given ID
+		final IContainerEntry containerEntry = containerStore.retrieve(containerID);
+		assertNotNull(containerEntry);
+		final ID containerIDa = containerEntry.getContainerID();
+		assertNotNull(containerIDa);
+		assertTrue(containerIDa.equals(containerID));
+
+	}
+
+	public void testAndRetrieveStoreContainerByIDAndCreateContainer() throws Exception {
+		final ID containerID = testStoreContainer();
+
+		// Now retrieve from container store with given ID
+		final IContainerEntry containerEntry = containerStore.retrieve(containerID);
+		assertNotNull(containerEntry);
+
+		final IContainer containera = containerEntry.createContainer();
+
+		final ID containerIDa = containera.getID();
+		assertNotNull(containerIDa);
+		assertTrue(containerIDa.equals(containerID));
+
 	}
 
 }
