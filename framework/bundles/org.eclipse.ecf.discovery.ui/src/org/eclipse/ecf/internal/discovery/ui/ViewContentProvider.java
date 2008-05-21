@@ -158,5 +158,7 @@ public class ViewContentProvider implements IStructuredContentProvider, ITreeCon
 				}
 			}
 		}
+		if (typenode.getChildren().length == 0)
+			root.removeChild(typenode);
 	}
 }
