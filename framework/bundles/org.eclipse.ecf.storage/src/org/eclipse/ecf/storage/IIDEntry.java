@@ -44,7 +44,8 @@ public interface IIDEntry {
 	 * @param key the String key for retrieving associates.  Must not be <code>null</code>. 
 	 * 
 	 * @return IIDEntry[] of associated IIDEntry instances that have previously been successfully stored via {@link #putAssociate(java.lang.String,IIDEntry,boolean)}.
-	 * If no IIDEntries have been previously stored with the given key, an empty array will be returned.  Will not return <code>null</code>.
+	 * If no IIDEntries have been previously stored with the given key, an empty array will be returned.  Will not return <code>null</code>.  Note
+	 * that the order of the returned IIDEntrys will not necessarily correspond to the order added via {@link #putAssociate(String, IIDEntry, boolean)}.
 	 */
 	public IIDEntry[] getAssociates(String key);
 
