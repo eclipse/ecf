@@ -50,6 +50,14 @@ public class BaseContainer extends AbstractContainer {
 		public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
 			return getInterfacesAndAdaptersForClass(BaseContainer.class);
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.core.provider.BaseContainerInstantiator#getSupportedParameterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
+		 */
+		public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
+			return new Class[][] { {}, {ID.class}, {String.class}};
+		}
+
 	}
 
 	private ID id = null;
