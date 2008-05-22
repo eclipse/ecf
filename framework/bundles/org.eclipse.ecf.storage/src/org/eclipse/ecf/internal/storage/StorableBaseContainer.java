@@ -41,28 +41,28 @@ public class StorableBaseContainer extends BaseContainer implements IStorableCon
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.storage.IStorableContainerAdapter#encrypt()
 	 */
-	public boolean encrypt() {
+	public boolean storeEncrypted() {
 		return false;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.storage.IStorableContainerAdapter#getFactoryName()
 	 */
-	public String getFactoryName() {
+	public String getContainerFactoryName() {
 		return "ecf.storage.basecontainer"; //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.storage.IStorableContainerAdapter#handleRestore(org.eclipse.equinox.security.storage.ISecurePreferences)
 	 */
-	public void handleRestore(ISecurePreferences prefs) throws StorageException {
+	public void restore(ISecurePreferences prefs) throws StorageException {
 		System.out.println("handleRestore(" + prefs + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.storage.IStorableContainerAdapter#handleStore(org.eclipse.equinox.security.storage.ISecurePreferences)
 	 */
-	public void handleStore(ISecurePreferences prefs) throws StorageException {
+	public void store(ISecurePreferences prefs) throws StorageException {
 		System.out.println("handleStore(" + prefs + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 

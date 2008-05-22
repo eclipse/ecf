@@ -56,21 +56,21 @@ public class ContainerStore implements IContainerStore {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.storage.IContainerStore#store(org.eclipse.ecf.storage.IStorableContainerAdapter)
 	 */
-	public IContainerEntry store(IStorableContainerAdapter containerAdapter) {
-		String factoryName = containerAdapter.getFactoryName();
+	public IContainerEntry store(IStorableContainerAdapter containerAdapter) throws StorageException {
+		String factoryName = containerAdapter.getContainerFactoryName();
 		Assert.isNotNull(factoryName);
 		ID containerID = containerAdapter.getID();
 		Assert.isNotNull(containerID);
 		IIDEntry idEntry = idStore.store(containerID);
 		ContainerEntry containerEntry = new ContainerEntry(idEntry);
 		try {
-			containerEntry.setFactoryName(containerAdapter.getFactoryName(), containerAdapter.encrypt());
-			containerAdapter.handleStore(containerEntry.getPreferences());
+			containerEntry.setFactoryName(containerAdapter.getContainerFactoryName(), containerAdapter.storeEncrypted());
+			containerAdapter.store(containerEntry.getPreferences());
 			return containerEntry;
 		} catch (StorageException e) {
 			// Undo and return null
 			containerEntry.delete();
-			return null;
+			throw e;
 		}
 	}
 

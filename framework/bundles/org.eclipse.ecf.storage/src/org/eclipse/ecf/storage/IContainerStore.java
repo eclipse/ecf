@@ -13,6 +13,7 @@ package org.eclipse.ecf.storage;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.equinox.security.storage.StorageException;
 
 /**
  * Storage interface for IContainer instances.
@@ -33,8 +34,9 @@ public interface IContainerStore extends IAdaptable {
 	 * 
 	 * @param containerAdapter the {@link IStorableContainerAdapter} to store.  Must not be <code>null</code>.
 	 * @return {@link IContainerEntry} result of storage.  Will not return <code>null</code>.
+	 * @throws StorageException if containerAdapter cannot be properly stored for whatever reason.
 	 */
-	public IContainerEntry store(IStorableContainerAdapter containerAdapter);
+	public IContainerEntry store(IStorableContainerAdapter containerAdapter) throws StorageException;
 
 	/**
 	 * Retrieve an IContainerEntry for a given container ID.

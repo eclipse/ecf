@@ -47,7 +47,7 @@ public class ContainerEntry implements IContainerEntry {
 			IContainer container = ContainerFactory.getDefault().createContainer(getFactoryName(), getContainerID());
 			IStorableContainerAdapter containerAdapter = (IStorableContainerAdapter) container.getAdapter(IStorableContainerAdapter.class);
 			if (containerAdapter != null) {
-				containerAdapter.handleRestore(prefs);
+				containerAdapter.restore(prefs);
 			}
 			return container;
 		} catch (IDCreateException e) {
