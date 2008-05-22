@@ -23,6 +23,7 @@ import org.eclipse.ecf.storage.IContainerStore;
 import org.eclipse.ecf.storage.IIDStore;
 import org.eclipse.ecf.storage.IStorableContainerAdapter;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.StorageException;
 
 /**
  *
@@ -69,7 +70,7 @@ public class ContainerStoreTest extends TestCase {
 		return (IStorableContainerAdapter) container.getAdapter(IStorableContainerAdapter.class);
 	}
 
-	IContainerEntry storeContainer(IStorableContainerAdapter containerAdapter) {
+	IContainerEntry storeContainer(IStorableContainerAdapter containerAdapter) throws StorageException {
 		return containerStore.store(containerAdapter);
 	}
 
