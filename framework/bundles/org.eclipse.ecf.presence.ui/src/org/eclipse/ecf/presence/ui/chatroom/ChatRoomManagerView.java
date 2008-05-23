@@ -176,6 +176,9 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 
 				subjectText = createStyledTextWidget(rightComp, SWT.SINGLE | SWT.BORDER);
 				subjectText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+				/*
+				 * The sendSubjectChange method in Smack 2.2.1 does not seem to be working correctly, so this whole block
+				 * can be temporily removed.  See https://bugs.eclipse.org/bugs/show_bug.cgi?id=223560
 				subjectText.addKeyListener(new KeyAdapter() {
 					public void keyPressed(KeyEvent evt) {
 						if (evt.character == SWT.CR || evt.character == SWT.KEYPAD_CR) {
@@ -187,12 +190,15 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 										chatRoomAdminSender.sendSubjectChange(subjectText.getText());
 									}
 								} catch (ECFException e) {
-									disconnected();
+									Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "sendSubjectChange", e));disconnected(); //$NON-NLS-1$
 								}
 							}
 						}
 					}
 				});
+				*/
+				subjectText.setEditable(false);
+				subjectText.setEnabled(false);
 
 				rightSash = new SashForm(rightComp, SWT.VERTICAL);
 				rightSash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -752,11 +758,13 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 
 			chatRoomContainer.addChatRoomAdminListener(new IChatRoomAdminListener() {
 				public void handleSubjectChange(ID from, final String newSubject) {
-					chatRoomTab.getInputText().getDisplay().asyncExec(new Runnable() {
-						public void run() {
-							chatRoomTab.setSubject(newSubject);
-						}
-					});
+					if (!chatRoomTab.getInputText().isDisposed()) {
+						chatRoomTab.getInputText().getDisplay().asyncExec(new Runnable() {
+							public void run() {
+								chatRoomTab.setSubject(newSubject);
+							}
+						});
+					}
 				}
 			});
 
