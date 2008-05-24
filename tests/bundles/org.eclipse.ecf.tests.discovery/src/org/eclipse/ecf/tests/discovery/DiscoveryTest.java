@@ -38,11 +38,8 @@ import org.eclipse.ecf.tests.discovery.listener.TestListener;
 public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 
 	protected IServiceInfo serviceInfo;
-	protected IServiceID serviceID;
 	protected IServiceInfo serviceInfo2;
-	protected IServiceID serviceID2;
 	protected IServiceInfo serviceInfo3;
-	protected IServiceID serviceID3;
 
 	protected String containerUnderTest;
 	protected long waitTimeForProvider = 1000;
@@ -124,7 +121,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		final Properties props = new Properties();
 		final URI uri = createDefaultURI();
 
-		serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {getServiceType(), getHost()});
+		IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {getServiceType(), getHost()});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
 		serviceProperties.setPropertyString(DiscoveryTest.class.getName() + "servicePropertiesString", "serviceProperties");
@@ -135,14 +132,14 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		serviceInfo = new ServiceInfo(uri, serviceID, 0, 0, serviceProperties);
 		assertNotNull(serviceInfo);
 
-		serviceID2 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {"_service._ecf._tests2._fooProtocol.fooScope._fooNA", getHost()});
+		IServiceID serviceID2 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {"_service._ecf._tests2._fooProtocol.fooScope._fooNA", getHost()});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties2 = new ServiceProperties(props);
 		serviceProperties2.setPropertyString("serviceProperties2", "serviceProperties2");
 		serviceInfo2 = new ServiceInfo(uri, serviceID2, 2, 2, serviceProperties2);
 		assertNotNull(serviceInfo2);
 
-		serviceID3 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {"_service._ecf._tests3._barProtocol.barScope._barNA", getHost()});
+		IServiceID serviceID3 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {"_service._ecf._tests3._barProtocol.barScope._barNA", getHost()});
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties3 = new ServiceProperties(props);
 		serviceProperties3.setPropertyString("serviceProperties3", "serviceProperties3");
@@ -264,8 +261,8 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	public void testGetServicesIServiceTypeID() {
 		testConnect();
 		registerService();
-		final IServiceInfo serviceInfo[] = discoveryContainer.getServices(serviceID.getServiceTypeID());
-		assertTrue(serviceInfo.length > 0);
+		final IServiceInfo serviceInfos[] = discoveryContainer.getServices(serviceInfo.getServiceID().getServiceTypeID());
+		assertTrue(serviceInfos.length > 0);
 	}
 
 	/**
@@ -398,7 +395,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
 
 		final TestListener tsl = new TestListener();
-		discoveryContainer.addServiceListener(serviceID.getServiceTypeID(), tsl);
+		discoveryContainer.addServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		addListenerRegisterAndWait(tsl, serviceInfo);
 		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) tsl.getEvent()).getServiceInfo(), serviceInfo) == 0);
 	}
@@ -407,14 +404,11 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		synchronized (testServiceListener) {
 			// register a service which we expect the test listener to get notified of
 			registerService();
-			int i = 0;
-			while (!testServiceListener.isDone() && i++ < 10) {
-				try {
-					testServiceListener.wait(waitTimeForProvider / 10);
-				} catch (final InterruptedException e) {
-					Thread.currentThread().interrupt();
-					fail("Some discovery unrelated threading issues?");
-				}
+			try {
+				testServiceListener.wait(waitTimeForProvider);
+			} catch (final InterruptedException e) {
+				Thread.currentThread().interrupt();
+				fail("Some discovery unrelated threading issues?");
 			}
 		}
 		assertNotNull("Test listener didn't receive discovery", testServiceListener.getEvent());
@@ -535,7 +529,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		testConnect();
 		final TestListener serviceListener = new TestListener();
 		addServiceListener(serviceListener);
-		discoveryContainer.removeServiceListener(serviceID.getServiceTypeID(), serviceListener);
+		discoveryContainer.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), serviceListener);
 	}
 
 	/**
