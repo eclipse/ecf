@@ -22,6 +22,7 @@ import org.eclipse.ecf.discovery.IServiceTypeEvent;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
@@ -51,7 +52,7 @@ public class JMDNSDiscoveryServiceTest extends DiscoveryTest {
 
 		final URI uri = new URI(JMDNSNamespace.JMDNS_SCHEME, null, InetAddress.getLocalHost().getHostAddress(), TEST_PORT, null, null, null);
 
-		serviceID = ServiceIDFactory.getDefault().createServiceID(discoveryContainer.getServicesNamespace(), TEST_SERVICE_TYPE, new Date().getTime() + "");
+		IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discoveryContainer.getServicesNamespace(), TEST_SERVICE_TYPE, new Date().getTime() + "");
 		assertNotNull(serviceID);
 		final ServiceProperties serviceProperties = new ServiceProperties();
 		serviceProperties.setPropertyString("serviceProperties", "serviceProperties");
