@@ -30,6 +30,7 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 	}
 
 	public JSLPServiceInfo(IServiceID serviceID) {
+		//TODO-mkuppe https://bugs.eclipse.org/230182
 		super(null, serviceID, -1, -1, new ServiceProperties());
 	}
 

@@ -224,6 +224,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 		for (Iterator itr = serviceURLs.entrySet().iterator(); itr.hasNext();) {
 			Map.Entry entry = (Entry) itr.next();
 			ServiceURL url = (ServiceURL) entry.getKey();
+			//TODO-mkuppe https://bugs.eclipse.org/230182
 			IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, scopes), -1, -1, new ServicePropertiesAdapter((List) entry.getValue()));
 			tmp.add(serviceInfo);
 		}

@@ -49,8 +49,9 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 			}
 
 			services = StringUtils.split(str, JSLP_DELIM);
-			scopes = DEFAULT_SCOPE; //TODO-mkuppe set the scope somehow
-			protocols = DEFAULT_PROTO; //TODO-mkuppe set the scope somehow
+			scopes = DEFAULT_SCOPE; //TODO-mkuppe https://bugs.eclipse.org/218308
+			protocols = DEFAULT_PROTO; //TODO-mkuppe https://bugs.eclipse.org/230182
+
 			createType();
 		} catch (Exception e) {
 			throw new IDCreateException(NLS.bind(Messages.JSLPServiceTypeID_4, type));
@@ -126,6 +127,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 	 * 
 	 * @see StringUtils#replaceAll(String, String, String) but case insensitive
 	 */
+	//TODO-mkuppe https://bugs.eclipse.org/233807
 	public static String replaceAllIgnoreCase(String string, String target, String replace) {
 		final int index = string.toLowerCase().indexOf(target.toLowerCase());
 		if (index == -1)
