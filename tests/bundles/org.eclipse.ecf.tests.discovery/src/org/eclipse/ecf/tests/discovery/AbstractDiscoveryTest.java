@@ -27,7 +27,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected final static String SERVICE_TYPE = "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
 	
 	public URI createDefaultURI() {
-		return URI.create("foo://" + getAuthority() + "/");
+		return URI.create(PROTOCOL + "://" + getAuthority() + "/");
 	}
 	
 	private String getAuthority() {
