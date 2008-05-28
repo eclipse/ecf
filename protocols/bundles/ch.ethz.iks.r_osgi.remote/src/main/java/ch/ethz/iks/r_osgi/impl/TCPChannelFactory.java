@@ -88,7 +88,8 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 	 * @see ch.ethz.iks.r_osgi.channels.NetworkChannelFactory#deactivate(ch.ethz.iks.r_osgi.Remoting)
 	 */
 	public void deactivate(final Remoting remoting) throws IOException {
-		thread.interrupt();
+		if (thread != null)
+			thread.interrupt();
 		this.remoting = null;
 	}
 
