@@ -10,6 +10,8 @@ package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.io.IOException;
 import java.net.*;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
@@ -155,7 +157,14 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		}
 
 		if (remoteFileName == null) {
-			remoteFileName = super.getRemoteFileName();
+			String pathStr = urlConnection.getURL().getPath();
+			if (pathStr != null) {
+				IPath path = Path.fromPortableString(pathStr);
+				if (path.segmentCount() > 0)
+					remoteFileName = path.lastSegment();
+			}
+			if (remoteFileName == null)
+				remoteFileName = super.getRemoteFileName();
 		}
 	}
 
