@@ -61,7 +61,7 @@ public class R_OSGiNamespace extends Namespace {
 			return null;
 		if (args[0] instanceof String) {
 			String arg = (String) args[0];
-			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+			if (arg.startsWith(this.getClass().getName() + Namespace.SCHEME_SEPARATOR)) {
 				int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
 				if (index >= arg.length())
 					return null;
@@ -112,4 +112,10 @@ public class R_OSGiNamespace extends Namespace {
 		return new String[] {NAMESPACE_SCHEME};
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.Namespace#toExternalForm(org.eclipse.ecf.core.identity.BaseID)
+	 */
+	protected String toExternalForm(BaseID id) {
+		return this.getClass().getName() + Namespace.SCHEME_SEPARATOR + id.toExternalForm();
+	}
 }

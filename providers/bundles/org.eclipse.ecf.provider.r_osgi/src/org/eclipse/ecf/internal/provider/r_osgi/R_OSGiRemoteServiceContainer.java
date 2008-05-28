@@ -328,7 +328,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 */
 	public void connect(final ID targetID, final IConnectContext connectContext) throws ContainerConnectException {
 		Assert.isNotNull(targetID);
-		Assert.isNotNull(connectContext);
+		//Assert.isNotNull(connectContext);
 
 		if (containerID != null) {
 			throw new ContainerConnectException("Container is already connected to " + containerID); //$NON-NLS-1$
