@@ -6,11 +6,11 @@
 <stringAttribute key="bootstrap" value=""/>
 <stringAttribute key="checked" value="[NONE]"/>
 <booleanAttribute key="clearConfig" value="false"/>
-<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/Remote EnvironmentInfo Server"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/r-OSGi Remote EnvironmentInfo Server"/>
 <booleanAttribute key="default_auto_start" value="false"/>
 <intAttribute key="default_start_level" value="4"/>
 <booleanAttribute key="includeOptional" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-console -consolelog -application org.eclipse.ecf.examples.remoteservices.server.remoteServicesServer"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-console -consolelog -application org.eclipse.ecf.examples.remoteservices.server.remoteServicesServer&#13;&#10;-serviceHostContainerType ecf.r_osgi.peer&#13;&#10;-serviceHostNamespace ecf.namespace.r_osgi&#13;&#10;-serviceHostID r-osgi://localhost:9278&#13;&#10;-clientContainerType ecf.r_osgi.peer&#13;&#10;-clientConnectTarget r-osgi://localhost:9278"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <booleanAttribute key="show_selected_only" value="false"/>
