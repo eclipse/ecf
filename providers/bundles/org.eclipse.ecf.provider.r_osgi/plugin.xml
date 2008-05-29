@@ -6,7 +6,7 @@
       <namespace
             class="org.eclipse.ecf.provider.r_osgi.identity.R_OSGiNamespace"
             description="R-OSGi Namespace"
-            name="org.eclipse.ecf.internal.provider.r_osgi.identity.R_OSGiNamespace">
+            name="ecf.namespace.r_osgi">
       </namespace>
    </extension>
    <extension

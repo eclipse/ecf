@@ -356,7 +356,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 
 			endpointMgr = remoteService.getEndpointManager(target.getURI());
 
-			containerID = (R_OSGiID) IDFactory.getDefault().createID("r-osgi", endpointMgr.getLocalAddress().toString()); //$NON-NLS-1$
+			containerID = (R_OSGiID) IDFactory.getDefault().createID(R_OSGiNamespace.NAME, endpointMgr.getLocalAddress().toString());
 
 			startRegTracker();
 

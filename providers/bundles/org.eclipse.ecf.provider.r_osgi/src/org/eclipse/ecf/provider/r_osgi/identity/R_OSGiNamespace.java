@@ -21,6 +21,8 @@ import org.eclipse.osgi.util.NLS;
  */
 public class R_OSGiNamespace extends Namespace {
 
+	public static final String NAME = "ecf.namespace.r_osgi"; //$NON-NLS-1$
+
 	/**
 	 * the serial UID.
 	 */
@@ -52,7 +54,7 @@ public class R_OSGiNamespace extends Namespace {
 	 * constructor.
 	 */
 	public R_OSGiNamespace() {
-		initialize("r-osgi", "R-OSGi Namespace"); //$NON-NLS-1$ //$NON-NLS-2$
+		initialize(NAME, "R-OSGi Namespace"); //$NON-NLS-1$
 		instance = this;
 	}
 
