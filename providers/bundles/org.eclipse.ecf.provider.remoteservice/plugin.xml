@@ -9,5 +9,13 @@
          <adapter type="org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter"/>
       </factory>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.ecf.provider.generic.TCPServerSOContainer"
+            class="org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceContainerAdapterFactory">
+         <adapter type="org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter"/>
+      </factory>
+   </extension>
 
 </plugin>
