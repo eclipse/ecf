@@ -134,7 +134,8 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 		if (serviceNamespace != null && serviceid != null) {
 			serviceID = createID(serviceNamespace, serviceid);
 		}
-		return adapter.getRemoteServiceReferences(new ID[] {serviceID}, getRemoteServiceClass(), getFilter());
+		ID[] targets = (serviceID == null) ? null : new ID[] {serviceID};
+		return adapter.getRemoteServiceReferences(targets, getRemoteServiceClass(), getFilter());
 	}
 
 	protected IContainer createContainer() throws ContainerCreateException {
