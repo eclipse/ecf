@@ -11,10 +11,9 @@
 
 package org.eclipse.ecf.internal.examples.remoteservices.server;
 
-import java.util.Map;
 import java.util.Properties;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.IContainer;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.*;
@@ -59,35 +58,46 @@ public class DiscoverableServer implements IApplication {
 		return "_" + serviceType + "._tcp.local."; //$NON-NLS-1$ //$NON-NLS-2$ 
 	}
 
+	protected IContainer createServiceHostContainer() throws IDCreateException, ContainerCreateException {
+		return ContainerFactory.getDefault().createContainer(serviceHostContainerType, IDFactory.getDefault().createID(serviceHostNamespace, serviceHostID));
+	}
+
+	protected Properties createServiceDiscoveryProperties() {
+		Properties props = new RemoteServiceProperties(serviceHostContainerType, serviceHostContainer);
+		// Add auto registration of remote proxy
+		props.put(Constants.AUTOREGISTER_REMOTE_PROXY, "true"); //$NON-NLS-1$
+		return props;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
 	 */
 	public Object start(IApplicationContext ctxt) throws Exception {
-		final Map args = ctxt.getArguments();
-		initializeFromArguments((String[]) args.get("application.args")); //$NON-NLS-1$
-
-		ID hostID = IDFactory.getDefault().createID(serviceHostNamespace, serviceHostID);
-		serviceHostContainer = ContainerFactory.getDefault().createContainer(serviceHostContainerType, hostID);
+		initializeFromArguments((String[]) ctxt.getArguments().get("application.args")); //$NON-NLS-1$
+		// Create service host container
+		serviceHostContainer = createServiceHostContainer();
+		// Get adapter from serviceHostContainer
 		final IRemoteServiceContainerAdapter containerAdapter = (IRemoteServiceContainerAdapter) serviceHostContainer.getAdapter(IRemoteServiceContainerAdapter.class);
+		Assert.isNotNull(containerAdapter);
 
-		discoveryService = Activator.getDefault().getDiscoveryService(5000);
+		final String serviceClassName = IRemoteEnvironmentInfo.class.getName();
 
-		// register remote service
-		final String className = IRemoteEnvironmentInfo.class.getName();
-		Properties props = new RemoteServiceProperties(serviceHostContainerType, serviceHostContainer);
-		// Add auto registration of remote proxy
-		props.put(Constants.AUTOREGISTER_REMOTE_PROXY, "true"); //$NON-NLS-1$
-
-		containerAdapter.registerRemoteService(new String[] {className}, new RemoteEnvironmentInfoImpl(), props);
-		System.out.println("Registered remote service " + className); //$NON-NLS-1$
+		// register IRemoteEnvironmentInfo service
+		// Then actually register the remote service implementation, with created props
+		containerAdapter.registerRemoteService(new String[] {serviceClassName}, new RemoteEnvironmentInfoImpl(), createServiceDiscoveryProperties());
+		System.out.println("Registered remote service " + serviceClassName + " with " + serviceHostContainer + ",ID=" + serviceHostContainer.getID()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 		// then register for discovery
+		discoveryService = Activator.getDefault().getDiscoveryService(5000);
+
 		final String serviceName = System.getProperty("user.name") + System.currentTimeMillis(); //$NON-NLS-1$
 		final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discoveryService.getServicesNamespace(), getCompleteServiceType(), serviceName);
-		serviceInfo = new ServiceInfo(serviceType, null, 80, serviceID, createServiceProperties(className));
+		final Properties serviceProperties = createServicePropertiesForDiscovery(serviceClassName);
+		serviceInfo = new ServiceInfo(serviceType, null, 80, serviceID, new ServiceProperties(serviceProperties));
 		// register discovery here
 		discoveryService.registerService(serviceInfo);
-		System.out.println("discovery publish\n\tserviceName=" + serviceID.getServiceName() + "\n\tserviceTypeID=" + serviceID.getServiceTypeID()); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("service published for discovery\n\tserviceName=" + serviceID.getServiceName() + "\n\tserviceTypeID=" + serviceID.getServiceTypeID()); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("\tserviceProperties=" + serviceProperties); //$NON-NLS-1$
 
 		// wait until done
 		synchronized (this) {
@@ -98,8 +108,8 @@ public class DiscoverableServer implements IApplication {
 		return new Integer(0);
 	}
 
-	protected IServiceProperties createServiceProperties(String className) {
-		return new ServiceProperties(new DiscoveryProperties(className, clientContainerType, serviceHostNamespace, clientConnectTarget, null, null));
+	protected Properties createServicePropertiesForDiscovery(String className) {
+		return new DiscoveryProperties(className, clientContainerType, serviceHostNamespace, clientConnectTarget, null, null);
 	}
 
 	/* (non-Javadoc)
