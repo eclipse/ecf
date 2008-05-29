@@ -95,14 +95,43 @@ public abstract class BaseID implements ID {
 		return namespace.toExternalForm(this);
 	}
 
+	/**
+	 * Called by {@link Namespace#getCompareToForObject(BaseID, BaseID)}.
+	 * 
+	 * @param o the other ID to compare to.  Will not be <code>null</code>.
+	 * @return the appropriate value as per {@link Comparable} contract.
+	 */
 	protected abstract int namespaceCompareTo(BaseID o);
 
+	/**
+	 * Called by {@link Namespace#testIDEquals(BaseID, BaseID)}.
+	 * @param o the other ID to test against.  May be <code>null</code>.
+	 * @return <code>true</code> if this ID is equal to the given ID.  <code>false</code> otherwise.
+	 */
 	protected abstract boolean namespaceEquals(BaseID o);
 
+	/**
+	 * Called by {@link Namespace#getNameForID(BaseID)}.
+	 * 
+	 * @return String name for this ID.  Must not be <code>null</code>.  Value returned should be unique within this Namespace.
+	 */
 	protected abstract String namespaceGetName();
 
+	/**
+	 * Called by {@link Namespace#getHashCodeForID(BaseID)}.
+	 * 
+	 * @return int hashCode for this ID.  Returned value must be unique within this process.
+	 */
 	protected abstract int namespaceHashCode();
 
+	/**
+	 * Called by {@link Namespace#toExternalForm(BaseID)}. 
+	 * 
+	 * @return String that represents this ID.  Default implementation is to return
+	 * <pre>
+	 * namespace.getScheme() + Namespace.SCHEME_SEPARATOR + namespaceGetName();
+	 * </pre>
+	 */
 	protected String namespaceToExternalForm() {
 		return namespace.getScheme() + Namespace.SCHEME_SEPARATOR + namespaceGetName();
 	}
