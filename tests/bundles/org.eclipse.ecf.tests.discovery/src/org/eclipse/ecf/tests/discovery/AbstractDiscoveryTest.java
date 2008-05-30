@@ -32,7 +32,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected final static String SERVICE_TYPE = "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
 	
 	public URI createDefaultURI() {
-//TODO-mkuppe eventually we want to support a complete URI. Then uncomment!
+//TODO-mkuppe https://bugs.eclipse.org/216944
 //		return URI.create(PROTOCOL + "://" + USERNAME + ":" + PASSWORD + "@" + getHost() + ":" + PORT + "/" + PATH + "?" + QUERY + "#" + FRAGMENT);
 		return URI.create(PROTOCOL + "://" + USERNAME + "@" + getHost() + ":" + PORT + PATH);
 	}
