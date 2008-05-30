@@ -38,16 +38,6 @@ public class JSLPDiscoveryTest extends DiscoveryTest {
 		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=218308
 		setScope("default");
 	}
-
-	public void testJSLPLocatorNull() {
-		//Activator.getDefault().getLocator() == null always
-		fail("not yet implemented");
-	}
-	
-	public void testJSLPAdvertiserNull() {
-		//Activator.getDefault().getAdvertiser() == null always
-		fail("not yet implemtend");
-	}
 	
 	public void testJSLPBundleBecomesUnavailable() {
 		// dynamic OSGi!
