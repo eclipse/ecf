@@ -48,7 +48,7 @@ public class ServiceURLAdapter {
 		buf.append(aServiceURL.getHost());
 		buf.append(":"); //$NON-NLS-1$
 		buf.append(aServiceURL.getPort());
-		buf.append("/"); //$NON-NLS-1$
+		buf.append(aServiceURL.getURLPath());
 		uri = URI.create(buf.toString());
 	}
 
