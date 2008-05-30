@@ -22,16 +22,19 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected final static String SCOPE = "local";
 	protected final static String PROTOCOL = "tcp";
 	protected final static int PORT = 3282;
+	protected final static String USERNAME = System.getProperty("user.name", "testuser");
+	protected final static String PASSWORD = "testpassword";
+	protected final static String PATH = "/a/Path/to/Something";
+	protected final static String QUERY = "someQuery";
+	protected final static String FRAGMENT = "aFragment";
 
 	protected final static String[] SERVICES = new String[] {"service", "ecf", "tests"};
 	protected final static String SERVICE_TYPE = "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
 	
 	public URI createDefaultURI() {
-		return URI.create(PROTOCOL + "://" + getAuthority() + "/");
-	}
-	
-	private String getAuthority() {
-		return System.getProperty("user.name") + "@" + getHost() + ":" + PORT;
+//TODO-mkuppe eventually we want to support a complete URI. Then uncomment!
+//		return URI.create(PROTOCOL + "://" + USERNAME + ":" + PASSWORD + "@" + getHost() + ":" + PORT + "/" + PATH + "?" + QUERY + "#" + FRAGMENT);
+		return URI.create(PROTOCOL + "://" + USERNAME + "@" + getHost() + ":" + PORT + PATH);
 	}
 	
 	protected static String getHost() {
