@@ -12,7 +12,10 @@ package org.eclipse.ecf.internal.provider.jslp;
 
 import ch.ethz.iks.slp.Advertiser;
 import ch.ethz.iks.slp.Locator;
+import java.util.Properties;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
 import org.osgi.framework.*;
 
 public class Activator implements BundleActivator {
@@ -102,14 +105,13 @@ public class Activator implements BundleActivator {
 			}
 		}, "(" + Constants.OBJECTCLASS + "=" + Advertiser.class.getName() + ")"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
-		//TODO-mkuppe https://bugs.eclipse.org/232813
 		// register the jSLP discovery service (will be automatically unregistered when this bundle gets uninstalled)
-		//		JSLPDiscoveryContainer ids = new JSLPDiscoveryContainer();
-		//		ids.connect(null, null);
-		//		Properties props = new Properties();
-		//		props.put(IDiscoveryService.CONTAINER_ID, ids.getID());
-		//		props.put(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET, JSLPDiscoveryContainer.NAME);
-		//		context.registerService(IDiscoveryService.class.getName(), ids, props);
+		JSLPDiscoveryContainer ids = new JSLPDiscoveryContainer();
+		ids.connect(null, null);
+		Properties props = new Properties();
+		props.put(IDiscoveryService.CONTAINER_ID, ids.getID());
+		props.put(IDiscoveryService.CONTAINER_NAME, JSLPDiscoveryContainer.NAME);
+		context.registerService(IDiscoveryService.class.getName(), ids, props);
 	}
 
 	/*
