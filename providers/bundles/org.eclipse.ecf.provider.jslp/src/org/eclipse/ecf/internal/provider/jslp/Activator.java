@@ -10,11 +10,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.jslp;
 
-import ch.ethz.iks.slp.*;
-import java.util.*;
-import org.eclipse.ecf.core.util.Trace;
+import ch.ethz.iks.slp.Advertiser;
+import ch.ethz.iks.slp.Locator;
+import org.eclipse.core.runtime.Assert;
 import org.osgi.framework.*;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 	// The shared instance
@@ -34,21 +33,8 @@ public class Activator implements BundleActivator {
 	// @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=108214
 	private BundleContext bundleContext;
 
-	private ServiceTracker locatorST;
-	private ServiceTracker advertiserST;
-	private final ServiceLocationEnumeration emptyServiceLocationEnumeration = new ServiceLocationEnumeration() {
-		public Object next() throws ServiceLocationException {
-			throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR, "no elements"); //$NON-NLS-1$
-		}
-
-		public boolean hasMoreElements() {
-			return false;
-		}
-
-		public Object nextElement() {
-			throw new NoSuchElementException();
-		}
-	};
+	private LocatorDecorator locator = new NullPatternLocator();
+	private Advertiser advertiser = new NullPatternAdvertiser();
 
 	/**
 	 * The constructor
@@ -61,26 +47,14 @@ public class Activator implements BundleActivator {
 		return bundleContext.getBundle();
 	}
 
-	private Locator getLocator() {
-		try {
-			locatorST.open();
-			Locator service = (Locator) locatorST.waitForService(10000);
-			return service;
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			return null;
-		}
+	public LocatorDecorator getLocator() {
+		Assert.isNotNull(locator);
+		return locator;
 	}
 
-	private Advertiser getAdvertiser() {
-		try {
-			advertiserST.open();
-			Advertiser service = (Advertiser) advertiserST.waitForService(10000);
-			return service;
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			return null;
-		}
+	public Advertiser getAdvertiser() {
+		Assert.isNotNull(advertiser);
+		return advertiser;
 	}
 
 	/*
@@ -91,8 +65,42 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		bundleContext = context;
 
-		locatorST = new ServiceTracker(bundleContext, Locator.class.getName(), null);
-		advertiserST = new ServiceTracker(bundleContext, Advertiser.class.getName(), null);
+		// initially get the locator and add a life cycle listener
+		final ServiceReference lRef = context.getServiceReference(Locator.class.getName());
+		if (lRef != null) {
+			locator = new LocatorDecoratorImpl((Locator) context.getService(lRef));
+		}
+		context.addServiceListener(new ServiceListener() {
+			public void serviceChanged(ServiceEvent event) {
+				switch (event.getType()) {
+					case ServiceEvent.REGISTERED :
+						Object service = bundleContext.getService(event.getServiceReference());
+						locator = new LocatorDecoratorImpl((Locator) service);
+						break;
+					case ServiceEvent.UNREGISTERING :
+						locator = new NullPatternLocator();
+						break;
+				}
+			}
+		}, "(" + Constants.OBJECTCLASS + "=" + Locator.class.getName() + ")"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+		// initially get the advertiser and add a life cycle listener
+		final ServiceReference aRef = context.getServiceReference(Advertiser.class.getName());
+		if (aRef != null) {
+			advertiser = (Advertiser) context.getService(aRef);
+		}
+		context.addServiceListener(new ServiceListener() {
+			public void serviceChanged(ServiceEvent event) {
+				switch (event.getType()) {
+					case ServiceEvent.REGISTERED :
+						advertiser = (Advertiser) bundleContext.getService(event.getServiceReference());
+						break;
+					case ServiceEvent.UNREGISTERING :
+						advertiser = new NullPatternAdvertiser();
+						break;
+				}
+			}
+		}, "(" + Constants.OBJECTCLASS + "=" + Advertiser.class.getName() + ")"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
 		//TODO-mkuppe https://bugs.eclipse.org/232813
 		// register the jSLP discovery service (will be automatically unregistered when this bundle gets uninstalled)
@@ -110,142 +118,8 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		if (locatorST != null) {
-			locatorST.close();
-			locatorST = null;
-		}
 		//TODO-mkuppe here we should do something like a deregisterAll();
-		if (advertiserST != null) {
-			advertiserST.close();
-			advertiserST = null;
-		}
 		plugin = null;
 		bundleContext = null;
-	}
-
-	/* (non-Javadoc)
-	 * @see ch.ethz.iks.slp.Locator#findServiceTypes(java.lang.String, java.util.List)
-	 */
-	public ServiceLocationEnumeration findServiceTypes(String namingAuthority, List scopes) throws ServiceLocationException {
-		Locator locator = getLocator();
-		if (locator != null) {
-			return locator.findServiceTypes(namingAuthority, scopes);
-		}
-		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "findServiceTypes(String, List)", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
-		//TODO add logging
-		return emptyServiceLocationEnumeration;
-	}
-
-	/* (non-Javadoc)
-	 * @see ch.ethz.iks.slp.Locator#findServices(ch.ethz.iks.slp.ServiceType, java.util.List, java.lang.String)
-	 */
-	private ServiceLocationEnumeration findServices(ServiceType type, List scopes, String searchFilter) throws ServiceLocationException {
-		Locator locator = getLocator();
-		if (locator != null) {
-			return locator.findServices(type, scopes, searchFilter);
-		}
-		//TODO add logging
-		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "findServies(ServiceType, List, String)", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
-		return emptyServiceLocationEnumeration;
-	}
-
-	/* (non-Javadoc)
-	 * @see ch.ethz.iks.slp.Locator#findAttributes(ch.ethz.iks.slp.ServiceURL, java.util.List, java.util.List)
-	 */
-	private ServiceLocationEnumeration findAttributes(ServiceURL anURL, List scopes, List attributes) throws ServiceLocationException {
-		Locator locator = getLocator();
-		if (locator != null) {
-			return locator.findAttributes(anURL, scopes, attributes);
-		}
-		//TODO add logging
-		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "findAttributes(ch.ethz.iks.slp.ServiceType, java.util.List, java.util.List)", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
-		return emptyServiceLocationEnumeration;
-	}
-
-	/* (non-Javadoc)
-	 * @see ch.ethz.iks.slp.Advertiser#deregister(ch.ethz.iks.slp.ServiceURL)
-	 */
-	public void deregister(ServiceURL url) throws ServiceLocationException {
-		Advertiser advertiser = getAdvertiser();
-		if (advertiser != null) {
-			advertiser.deregister(url);
-			return;
-		}
-		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "deregister(ServiceURL)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
-		//TODO add logging
-	}
-
-	/* (non-Javadoc)
-	 * @see ch.ethz.iks.slp.Advertiser#deregister(ch.ethz.iks.slp.ServiceURL, java.util.List)
-	 */
-	public void deregister(ServiceURL url, List scopes) throws ServiceLocationException {
-		Advertiser advertiser = getAdvertiser();
-		if (advertiser != null) {
-			advertiser.deregister(url, scopes);
-			return;
-		}
-		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "deregister(ServiceURL, List)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
-		//TODO add logging
-	}
-
-	/* (non-Javadoc)
-	 * @see ch.ethz.iks.slp.Advertiser#register(ch.ethz.iks.slp.ServiceURL, java.util.Dictionary)
-	 */
-	public void register(ServiceURL url, Dictionary attributes) throws ServiceLocationException {
-		Advertiser advertiser = getAdvertiser();
-		if (advertiser != null) {
-			advertiser.register(url, attributes);
-			return;
-		}
-		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "register(ServiceURL, Dictionary)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
-		//TODO add logging
-	}
-
-	/* (non-Javadoc)
-	 * @see ch.ethz.iks.slp.Advertiser#register(ch.ethz.iks.slp.ServiceURL, java.util.List, java.util.Dictionary)
-	 */
-	public void register(ServiceURL url, List scopes, Dictionary attributes) throws ServiceLocationException {
-		Advertiser advertiser = getAdvertiser();
-		if (advertiser != null) {
-			advertiser.register(url, scopes, attributes);
-			return;
-		}
-		Trace.trace(PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "register(ServiceURL, List, Dictionary)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
-		//TODO add logging
-	}
-
-	/**
-	 * @return A Map whos keys are {@link ServiceURL} and Entries are {@link List} describing service attributes
-	 * @throws ServiceLocationException
-	 */
-	public Map getServiceURLs() throws ServiceLocationException {
-		Enumeration stEnum = findServiceTypes(null, null);
-		Set aSet = new HashSet(Collections.list(stEnum));
-		Map result = new HashMap();
-		for (Iterator itr = aSet.iterator(); itr.hasNext();) {
-			String type = (String) itr.next();
-			ServiceLocationEnumeration services = findServices(new ServiceType(type), null, null);
-			while (services.hasMoreElements()) {
-				ServiceURL url = (ServiceURL) services.next();
-				result.put(url, Collections.list(findAttributes(url, null, null)));
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * @param aServiceType
-	 * @param scopes
-	 * @return A Map whos keys are {@link ServiceURL} and Entries are {@link List} describing service attributes
-	 * @throws ServiceLocationException
-	 */
-	public Map getServiceURLs(ServiceType aServiceType, List scopes) throws ServiceLocationException {
-		Map result = new HashMap();
-		ServiceLocationEnumeration services = findServices(aServiceType, scopes, null);
-		while (services.hasMoreElements()) {
-			ServiceURL url = (ServiceURL) services.next();
-			result.put(url, Collections.list(findAttributes(url, scopes, null)));
-		}
-		return result;
 	}
 }

@@ -144,7 +144,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	public IServiceTypeID[] getServiceTypes() {
 		List result = new ArrayList();
 		try {
-			ServiceLocationEnumeration slenum = Activator.getDefault().findServiceTypes(null, null);
+			ServiceLocationEnumeration slenum = Activator.getDefault().getLocator().findServiceTypes(null, null);
 			for (; slenum.hasMoreElements();) {
 				ServiceType st = new ServiceType((String) slenum.nextElement());
 				IServiceID sid = (IServiceID) getConnectNamespace().createInstance(new Object[] {st.toString()});
@@ -163,7 +163,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	 */
 	public IServiceInfo[] getServices() {
 		try {
-			return convertToIServiceInfo(Activator.getDefault().getServiceURLs());
+			return convertToIServiceInfo(Activator.getDefault().getLocator().getServiceURLs());
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(int)", e); //$NON-NLS-1$
 		}
@@ -178,7 +178,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 		try {
 			JSLPServiceID sid = (JSLPServiceID) IDFactory.getDefault().createID(getConnectNamespace(), new Object[] {type, null});
 			JSLPServiceTypeID stid = (JSLPServiceTypeID) sid.getServiceTypeID();
-			return convertToIServiceInfo(Activator.getDefault().getServiceURLs(stid.getServiceType(), Arrays.asList(stid.getScopes())), type.getScopes());
+			return convertToIServiceInfo(Activator.getDefault().getLocator().getServiceURLs(stid.getServiceType(), Arrays.asList(stid.getScopes())), type.getScopes());
 		} catch (IDCreateException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(IServiceTypeID)", e); //$NON-NLS-1$
 		} catch (ServiceLocationException e) {
@@ -195,7 +195,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 		try {
 			JSLPServiceInfo si = new JSLPServiceInfo(aServiceInfo);
 			IServiceTypeID stid = si.getServiceID().getServiceTypeID();
-			Activator.getDefault().register(si.getServiceURL(), Arrays.asList(stid.getScopes()), new ServicePropertiesAdapter(si.getServiceProperties()).toProperties());
+			Activator.getDefault().getAdvertiser().register(si.getServiceURL(), Arrays.asList(stid.getScopes()), new ServicePropertiesAdapter(si.getServiceProperties()).toProperties());
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "registerService(IServiceInfo)", e); //$NON-NLS-1$
 			throw new ECFException(e.getMessage(), e);
@@ -209,7 +209,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 		Assert.isNotNull(aServiceInfo);
 		JSLPServiceInfo si = new JSLPServiceInfo(aServiceInfo);
 		try {
-			Activator.getDefault().deregister(si.getServiceURL());
+			Activator.getDefault().getAdvertiser().deregister(si.getServiceURL());
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "unregisterService(IServiceInfo)", e); //$NON-NLS-1$
 		}

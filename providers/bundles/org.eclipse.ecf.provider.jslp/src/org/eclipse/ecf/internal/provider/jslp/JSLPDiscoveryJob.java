@@ -40,7 +40,7 @@ public final class JSLPDiscoveryJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		Assert.isNotNull(monitor);
 		try {
-			Map availableServices = Activator.getDefault().getServiceURLs();
+			Map availableServices = Activator.getDefault().getLocator().getServiceURLs();
 			Map removedServices = new HashMap(services);
 			for (Iterator itr = availableServices.entrySet().iterator(); itr.hasNext() && !monitor.isCanceled();) {
 				Map.Entry entry = (Map.Entry) itr.next();
