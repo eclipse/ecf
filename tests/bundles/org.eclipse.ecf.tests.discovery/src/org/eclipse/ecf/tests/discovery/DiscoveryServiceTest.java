@@ -12,6 +12,7 @@
 package org.eclipse.ecf.tests.discovery;
 
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -36,8 +37,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		assertNotNull(NO_PROVIDER_REGISTERED, serviceReferences);
 		for(int i = 0; i < serviceReferences.length; i++) {
 			ServiceReference sr = serviceReferences[i];
-			//TODO-mkuppe https://bugs.eclipse.org/232813
-			if(containerUnderTest.equals(sr.getProperty(IDiscoveryContainerAdapter.CONTAINER_CONNECT_TARGET))) {
+			if(containerUnderTest.equals(sr.getProperty(IDiscoveryService.CONTAINER_NAME))) {
 				return (IDiscoveryContainerAdapter) serviceTracker.getService(sr);
 			}
 		}
