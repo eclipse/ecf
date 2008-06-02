@@ -1,0 +1,19 @@
+# Debugging options for the org.eclipse.ecf.provider.jslp plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.provider.jslp plug-in
+org.eclipse.ecf.provider.jslp/debug=false
+org.eclipse.ecf.provider.jslp/debug/filter = *
+org.eclipse.ecf.provider.jslp/debug/flag = false
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider.jslp/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider.jslp/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.provider.jslp/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.provider.jslp/debug/methods/exiting=false
+
+org.eclipse.ecf.provider.jslp/debug/methods/tracing=false
+org.eclipse.ecf.provider.jslp/debug/methods/changing=false
