@@ -28,7 +28,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected final static String QUERY = "someQuery";
 	protected final static String FRAGMENT = "aFragment";
 
-	protected final static String[] SERVICES = new String[] {"service", "ecf", "tests"};
+	protected final static String[] SERVICES = new String[] {"ecf", "junit", "tests"};
 	protected final static String SERVICE_TYPE = "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
 	
 	public URI createDefaultURI() {

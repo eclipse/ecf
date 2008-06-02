@@ -12,7 +12,6 @@ package org.eclipse.ecf.tests.discovery.identity;
 
 import java.util.Arrays;
 
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -80,7 +79,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	/*
 	 * use case: consumer instantiates a IServiceTypeID with the generic (ECF) String
 	 */
-	public void testServiceTypeIDWithString() {
+	public void testServiceTypeIDWithECFGenericString() {
 		final IServiceID sid = createIDFromString(SERVICE_TYPE);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 		assertEquals(stid.getName(), SERVICE_TYPE);
@@ -93,7 +92,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	/*
 	 * use case: consumer instantiates a IServiceTypeID with the generic (ECF) String
 	 */
-	public void testServiceTypeIDWithString2() {
+	public void testServiceTypeIDWithECFGenericString2() {
 		final String serviceType = "_service._dns-srv._udp.ecf.eclipse.org._IANA";
 		final IServiceID sid = createIDFromString(serviceType);
 		final IServiceTypeID stid = sid.getServiceTypeID();
@@ -107,7 +106,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	/*
 	 * use case: consumer instantiates a IServiceTypeID with the generic (ECF) String
 	 */
-	public void testServiceTypeIDWithString3() {
+	public void testServiceTypeIDWithECFGenericString3() {
 		final String serviceType = "_service._dns-srv._udp.ecf.eclipse.org._ECLIPSE";
 		final IServiceID sid = createIDFromString(serviceType);
 		final IServiceTypeID stid = sid.getServiceTypeID();
@@ -127,8 +126,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 		final IServiceID sid = createIDFromServiceTypeID(aServiceTypeID);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 
-		// these are the only differences
-		assertNotSame(aServiceTypeID.getNamespace(), stid.getNamespace());
+		// this is the only differences
 		assertNotSame(aServiceTypeID.getInternal(), stid.getInternal());
 
 		// members should be the same
@@ -155,12 +153,13 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	private void createFromAnother(IServiceTypeID aServiceTypeID, IServiceTypeID stid) {
 		final String name = aServiceTypeID.getName();
 		final Namespace namespace2 = stid.getNamespace();
-		ID instance = null;
+		IServiceID sid = null;
 		try {
-			instance = namespace2.createInstance(new Object[] {name, null});
+			sid = (IServiceID) namespace2.createInstance(new Object[] {name, null});
 		} catch (final IDCreateException e) {
 			fail("it should have been possible to create a new instance of " + stid.getClass().getName() + " from the string rep of " + aServiceTypeID.getClass().getName());
 		}
+		IServiceTypeID instance = sid.getServiceTypeID();
 		assertTrue(instance.hashCode() == stid.hashCode());
 		//TODO-mkuppe decide if equality should be handled by the namespace for IServiceTypeIDs?
 		assertEquals(instance, stid);
@@ -174,5 +173,5 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	 * use case: creates the IServiceTypeID from the internal representation of the discovery provider
 	 * to be implemented by subclasses
 	 */
-	public abstract void testCreateServiceTypeIDFromInternalString();
+	public abstract void testCreateServiceTypeIDWithProviderSpecificString();
 }
