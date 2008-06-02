@@ -30,7 +30,7 @@ public class JMDNSServiceIDTest extends ServiceIDTest {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.discovery.identity.ServiceIDTest#testCreateServiceTypeIDFromInternalString()
 	 */
-	public void testCreateServiceTypeIDFromInternalString() {
+	public void testCreateServiceTypeIDWithProviderSpecificString() {
 		final String internalRep = "_service._tcp.local";
 		createIDFromString(internalRep);
 	}
