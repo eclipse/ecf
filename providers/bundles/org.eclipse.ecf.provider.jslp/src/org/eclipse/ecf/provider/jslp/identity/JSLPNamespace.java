@@ -10,9 +10,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.jslp.identity;
 
+import ch.ethz.iks.slp.ServiceType;
 import ch.ethz.iks.slp.ServiceURL;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.internal.provider.jslp.Messages;
 
@@ -23,60 +23,68 @@ public class JSLPNamespace extends Namespace {
 
 	public static final String NAME = "ecf.namespace.slp"; //$NON-NLS-1$
 
-	private String getInitFromExternalForm(Object[] args) {
-		if (args == null || args.length < 1 || args[0] == null)
-			return null;
-		if (args[0] instanceof String) {
-			String arg = (String) args[0];
-			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
-				int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
-				if (index >= arg.length())
-					return null;
-				return arg.substring(index + 1);
-			}
-		}
-		return null;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
 	public ID createInstance(Object[] parameters) throws IDCreateException {
+		// error case
 		if (parameters == null || parameters.length < 1 || parameters.length > 2) {
 			throw new IDCreateException(Messages.JSLPNamespace_2);
+
+			// error case
 		} else if (parameters[0] == null || parameters[0].equals("")) { //$NON-NLS-1$
 			throw new IDCreateException(Messages.JSLPNamespace_3);
-		} else if (parameters[0] instanceof ServiceURL) { // handles internal creation
+
+			// create by jSLP ServiceURL
+		} else if (parameters[0] instanceof ServiceURL) {
 			ServiceURL anURL = (ServiceURL) parameters[0];
-			JSLPServiceTypeID stid = new JSLPServiceTypeID(this, anURL, (String[]) parameters[1]);
+			IServiceTypeID stid = new JSLPServiceTypeID(this, anURL, (String[]) parameters[1]);
 			return new JSLPServiceID(this, stid, anURL.getHost());
-		} else if (parameters[0] instanceof JSLPServiceID) { // handles conversion call where conversion isn't necessary
+
+			// conversion call where conversion isn't necessary
+		} else if (parameters[0] instanceof JSLPServiceID) {
 			return (ID) parameters[0];
+
 		} else if (parameters[0] instanceof IServiceID) {
 			IServiceID anId = (IServiceID) parameters[0];
-			return createInstance(new Object[] {anId.getServiceTypeID(), parameters[1]});
+			parameters[0] = anId.getServiceTypeID();
+			return createInstance(parameters);
+
+			// create by ECF discovery generic IServiceTypeID (but not JSLPServiceID!!!)
 		} else if (parameters[0] instanceof IServiceTypeID) {
 			IServiceTypeID stid = (IServiceTypeID) parameters[0];
-			return createInstance(new Object[] {stid.getName(), parameters[1]});
-		} else if (parameters[0] instanceof String) { // creates from either external or internal string
-			String init = getInitFromExternalForm(parameters);
-			String type = (init != null) ? init : (String) parameters[0];
-			IServiceTypeID stid = null;
-			if (StringUtils.contains(type, "._")) { //$NON-NLS-1$ // converts external to internal
-				ServiceTypeID aStid = new ServiceTypeID(this, type);
-				stid = new JSLPServiceTypeID(this, aStid);
-			} else {
-				stid = new JSLPServiceTypeID(this, type);
-			}
-			String name = null;
-			if (parameters.length > 1) {
-				try {
-					name = (String) parameters[1];
-				} catch (final ClassCastException e) {
-					throw new IDCreateException(Messages.JSLPNamespace_4);
-				}
-			}
+			parameters[0] = stid.getName();
+			return createInstance(parameters);
+
+			// create by jSLP ServiceType
+		} else if (parameters[0] instanceof ServiceType) {
+			IServiceTypeID stid = new JSLPServiceTypeID(this, (ServiceType) parameters[0]);
+			return new JSLPServiceID(this, stid, (String) parameters[1]);
+
+			// create by jSLP ServiceType String representation (from external)
+		} else if (parameters[0] instanceof String && ((String) parameters[0]).startsWith("service:")) { //$NON-NLS-1$
+			parameters[0] = new ServiceType((String) parameters[0]);
+			return createInstance(parameters);
+
+			// create by ECF discovery generic String representation
+		} else if (parameters[0] instanceof String && ((String) parameters[0]).startsWith("_")) { //$NON-NLS-1$
+			String type = (String) parameters[0];
+			String name = (String) parameters[1];
+			IServiceTypeID stid = new JSLPServiceTypeID(this, new ServiceTypeID(this, type));
 			return new JSLPServiceID(this, stid, name);
+
+			// create by "jslp:..."
+		} else if (parameters[0] instanceof String && ((String) parameters[0]).startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+			String str = (String) parameters[0];
+			int index = str.indexOf(Namespace.SCHEME_SEPARATOR);
+			parameters[0] = str.substring(index + 1);
+			return createInstance(parameters);
+
+			// error case second parameter not a String
+		} else if (parameters.length == 2 && parameters[1] != null && !(parameters[1] instanceof String)) {
+			throw new IDCreateException(Messages.JSLPNamespace_4);
+
+			// error case
 		} else {
 			throw new IDCreateException(Messages.JSLPNamespace_3);
 		}
@@ -95,6 +103,6 @@ public class JSLPNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { {String.class}, {String.class, String.class}, {ServiceURL.class}, {IServiceTypeID.class}, {IServiceID.class}};
+		return new Class[][] { {String.class}, {String.class, String.class}, {ServiceURL.class}, {IServiceTypeID.class}, {IServiceID.class}, {ServiceType.class, String.class}};
 	}
 }

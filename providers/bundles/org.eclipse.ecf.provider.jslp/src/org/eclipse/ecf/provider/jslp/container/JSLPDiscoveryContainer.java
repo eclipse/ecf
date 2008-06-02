@@ -147,7 +147,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 			ServiceLocationEnumeration slenum = Activator.getDefault().getLocator().findServiceTypes(null, null);
 			for (; slenum.hasMoreElements();) {
 				ServiceType st = new ServiceType((String) slenum.nextElement());
-				IServiceID sid = (IServiceID) getConnectNamespace().createInstance(new Object[] {st.toString()});
+				IServiceID sid = (IServiceID) getConnectNamespace().createInstance(new Object[] {st, ""}); //$NON-NLS-1$
 				result.add(sid.getServiceTypeID());
 			}
 		} catch (ServiceLocationException e) {

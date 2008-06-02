@@ -28,7 +28,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 
 	private static final long serialVersionUID = -4558132760112793805L;
 
-	private ServiceType st;
+	private final ServiceType st;
 
 	protected JSLPServiceTypeID(final Namespace namespace, final String type) throws IDCreateException {
 		super(namespace);
@@ -59,7 +59,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 	}
 
 	JSLPServiceTypeID(final Namespace namespace, final ServiceURL anURL, final String[] scopes) throws IDCreateException {
-		this(namespace, anURL.getServiceType().toString());
+		this(namespace, anURL.getServiceType());
 
 		if (scopes != null && scopes.length > 0) {
 			this.scopes = scopes;
@@ -73,10 +73,10 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		}
 	}
 
-	JSLPServiceTypeID(final JSLPNamespace namespace, final IServiceTypeID type) {
+	JSLPServiceTypeID(final Namespace namespace, final IServiceTypeID type) {
 		super(namespace, type);
 
-		StringBuffer buf = new StringBuffer();
+		StringBuffer buf = new StringBuffer("service:"); //$NON-NLS-1$
 		for (int i = 0; i < services.length; i++) {
 			buf.append(services[i]);
 			// #228876
@@ -89,6 +89,16 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		// remove dangling colon
 		String string = buf.toString();
 		st = new ServiceType(string.substring(0, string.length() - 1));
+	}
+
+	JSLPServiceTypeID(final Namespace namespace, final ServiceType aServiceType) throws IDCreateException {
+		this(namespace, aServiceType.toString());
+		final String[] newServices = new String[services.length - 1];
+		for (int i = 0; i < services.length - 1; i++) {
+			newServices[i] = services[i + 1];
+		}
+		services = newServices;
+		createType();
 	}
 
 	/**
