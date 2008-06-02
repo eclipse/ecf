@@ -1,0 +1,19 @@
+# Debugging options for the org.eclipse.ecf.provider.discovery plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.provider.discovery plug-in
+org.eclipse.ecf.provider.discovery/debug=false
+org.eclipse.ecf.provider.discovery/debug/filter = *
+org.eclipse.ecf.provider.discovery/debug/flag = false
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider.discovery/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider.discovery/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.provider.discovery/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.provider.discovery/debug/methods/exiting=false
+
+org.eclipse.ecf.provider.discovery/debug/methods/tracing=false
+org.eclipse.ecf.provider.discovery/debug/methods/changing=false
