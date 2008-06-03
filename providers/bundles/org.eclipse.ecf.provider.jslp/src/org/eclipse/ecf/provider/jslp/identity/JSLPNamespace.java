@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.jslp.identity;
 import ch.ethz.iks.slp.ServiceType;
 import ch.ethz.iks.slp.ServiceURL;
 import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.internal.provider.jslp.Messages;
 
@@ -38,8 +39,10 @@ public class JSLPNamespace extends Namespace {
 			// create by jSLP ServiceURL
 		} else if (parameters[0] instanceof ServiceURL) {
 			ServiceURL anURL = (ServiceURL) parameters[0];
+			// https://bugs.eclipse.org/235115
+			String[] name = StringUtils.split(anURL.getHost(), "@"); //$NON-NLS-1$
 			IServiceTypeID stid = new JSLPServiceTypeID(this, anURL, (String[]) parameters[1]);
-			return new JSLPServiceID(this, stid, anURL.getHost());
+			return new JSLPServiceID(this, stid, name.length == 2 ? name[1] : name[0]);
 
 			// conversion call where conversion isn't necessary
 		} else if (parameters[0] instanceof JSLPServiceID) {

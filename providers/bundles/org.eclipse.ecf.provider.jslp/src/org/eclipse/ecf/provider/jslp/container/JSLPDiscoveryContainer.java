@@ -11,8 +11,6 @@
 package org.eclipse.ecf.provider.jslp.container;
 
 import ch.ethz.iks.slp.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.Map.Entry;
 import org.eclipse.core.runtime.Assert;
@@ -125,14 +123,8 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 				Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServiceInfo(IServiceID)", e1); //$NON-NLS-1$
 				continue;
 			}
-			String host = serviceInfo.getLocation().getHost();
-			try {
-				if (InetAddress.getByName(host).equals(sid.getAddress())) {
-					return serviceInfo;
-				}
-			} catch (UnknownHostException e) {
-				Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServiceInfo(IServiceID)", e); //$NON-NLS-1$
-				continue;
+			if (service.getName().equals(sid.getName())) {
+				return serviceInfo;
 			}
 		}
 		return null;
