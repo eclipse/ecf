@@ -79,27 +79,27 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		discoveryContainer.unregisterService(serviceInfo);
 	}
 
-	public void setWaitTimeForProvider(long aWaitTimeForProvider) {
+	protected void setWaitTimeForProvider(long aWaitTimeForProvider) {
 		this.waitTimeForProvider = aWaitTimeForProvider + (aWaitTimeForProvider * 1 / 2);
 	}
 
-	public void setComparator(Comparator comparator) {
+	protected void setComparator(Comparator comparator) {
 		this.comparator = comparator;
 	}
 
-	public void setProtocol(String protocol) {
+	protected void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
 
-	public void setScope(String scope) {
+	protected void setScope(String scope) {
 		this.scope = scope;
 	}
 
-	public void setNamingAuthority(String namingAuthority) {
+	protected void setNamingAuthority(String namingAuthority) {
 		this.namingAuthority = namingAuthority;
 	}
 
-	public String getServiceType() {
+	protected String getServiceType() {
 		return "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + protocol + "." + scope + "._" + namingAuthority;
 	}
 
