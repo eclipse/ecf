@@ -10,13 +10,13 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.jslp;
 
-import java.net.InetAddress;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Comparator;
 
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.provider.jslp.identity.JSLPServiceID;
 
@@ -34,19 +34,19 @@ public class JSLPTestComparator implements Comparator {
 			IServiceInfo first = (IServiceInfo) arg0;
 			IServiceInfo second = (IServiceInfo) arg1;
 			
-			//TODO-mkuppe No prio, weight and protocol atm in the JSLP testcase
-			JSLPServiceID firstID = (JSLPServiceID) first.getServiceID();
-			JSLPServiceID secondID = (JSLPServiceID) second.getServiceID();
+			IServiceID firstID = (JSLPServiceID) first.getServiceID();
+			IServiceID secondID = (JSLPServiceID) second.getServiceID();
 			IServiceTypeID firstTypeID = firstID.getServiceTypeID();
 			IServiceTypeID secondTypeID = secondID.getServiceTypeID();
 			
+			//TODO-mkuppe No prio, weight and protocol atm in the JSLP testcase
 			boolean protocolsSame = Arrays.equals(firstTypeID.getProtocols(), secondTypeID.getProtocols());
 			boolean weightSame = first.getWeight() == second.getWeight();
 			boolean prioSame = first.getPriority() == second.getPriority();
-			
-			InetAddress firstAddress = firstID.getAddress();
-			InetAddress secondAddress = secondID.getAddress();
-			boolean addressSame = firstAddress.equals(secondAddress);
+
+			String firstName = firstID.getName();
+			String secondName = secondID.getName();
+			boolean nameSame = firstName.equals(secondName);
 			String[] firstServices = firstTypeID.getServices();
 			String[] secondServices = secondTypeID.getServices();
 			boolean serviceSame = Arrays.equals(firstServices, secondServices);
@@ -61,7 +61,7 @@ public class JSLPTestComparator implements Comparator {
 			boolean locationSame = firstLocation.equals(secondLocation);
 			boolean scopesSame = Arrays.equals(firstTypeID.getScopes(), secondTypeID.getScopes());
 			boolean propertySame = first.getServiceProperties().equals(second.getServiceProperties());
-			boolean result = addressSame && namespaceSame && serviceSame && naSame && locationSame && scopesSame && propertySame;
+			boolean result = nameSame && namespaceSame && serviceSame && naSame && locationSame && scopesSame && propertySame;
 			if(result == true) {
 				return 0;
 			}
