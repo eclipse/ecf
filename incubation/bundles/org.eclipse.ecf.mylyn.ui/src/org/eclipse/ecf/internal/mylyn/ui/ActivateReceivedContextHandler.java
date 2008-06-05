@@ -14,7 +14,7 @@ import org.eclipse.core.commands.*;
 import org.eclipse.ecf.internal.mylyn.ui.CompoundContextActivationContributionItem.ActivateTaskAction;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
-import org.eclipse.mylyn.tasks.core.AbstractTask;
+import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -32,14 +32,14 @@ public class ActivateReceivedContextHandler extends AbstractHandler {
 	static void open(Shell shell) {
 		ElementListSelectionDialog elsd = new ElementListSelectionDialog(shell, new LabelProvider() {
 			public String getText(Object element) {
-				String summary = ((AbstractTask) element).getSummary();
+				String summary = ((ITask) element).getSummary();
 				return summary;
 			}
 		});
 		elsd.setElements(CompoundContextActivationContributionItem.tasks.toArray());
 		if (Window.OK == elsd.open()) {
 			ActivateTaskAction action = new CompoundContextActivationContributionItem.ActivateTaskAction();
-			action.setTask((AbstractTask) elsd.getFirstResult());
+			action.setTask((ITask) elsd.getFirstResult());
 			action.run();
 		}
 	}

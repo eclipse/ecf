@@ -15,11 +15,11 @@ package org.eclipse.ecf.internal.mylyn.ui;
 import org.eclipse.ecf.internal.mylyn.ui.CompoundContextActivationContributionItem.ActivateTaskAction;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
+import org.eclipse.mylyn.internal.provisional.commons.ui.AbstractNotificationPopup;
 import org.eclipse.mylyn.internal.tasks.ui.TaskListHyperlink;
-import org.eclipse.mylyn.internal.tasks.ui.TasksUiImages;
-import org.eclipse.mylyn.internal.tasks.ui.notifications.AbstractNotificationPopup;
-import org.eclipse.mylyn.internal.tasks.ui.views.TaskElementLabelProvider;
-import org.eclipse.mylyn.tasks.core.AbstractTask;
+import org.eclipse.mylyn.tasks.core.ITask;
+import org.eclipse.mylyn.tasks.ui.TaskElementLabelProvider;
+import org.eclipse.mylyn.tasks.ui.TasksUiImages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
@@ -31,7 +31,7 @@ class IncomingSharedTaskNotificationPopup extends AbstractNotificationPopup {
 
 	private static final DecoratingLabelProvider labelProvider = new DecoratingLabelProvider(new TaskElementLabelProvider(true), PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator());
 
-	private AbstractTask task;
+	private ITask task;
 
 	IncomingSharedTaskNotificationPopup(Widget widget) {
 		super(widget.getDisplay());
@@ -41,7 +41,7 @@ class IncomingSharedTaskNotificationPopup extends AbstractNotificationPopup {
 		return "Incoming Task Context";
 	}
 
-	void setTask(AbstractTask task) {
+	void setTask(ITask task) {
 		this.task = task;
 	}
 

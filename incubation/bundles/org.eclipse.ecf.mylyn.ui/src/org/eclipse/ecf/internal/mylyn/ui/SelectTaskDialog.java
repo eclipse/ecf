@@ -13,7 +13,7 @@ package org.eclipse.ecf.internal.mylyn.ui;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.*;
-import org.eclipse.mylyn.tasks.core.AbstractTask;
+import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -24,7 +24,7 @@ class SelectTaskDialog extends Dialog {
 
 	private ListViewer viewer;
 
-	private AbstractTask task;
+	private ITask task;
 
 	private Object input;
 
@@ -52,7 +52,7 @@ class SelectTaskDialog extends Dialog {
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
-				String summary = ((AbstractTask) element).getSummary();
+				String summary = ((ITask) element).getSummary();
 				if (summary.length() > 30) {
 					return summary.substring(0, 30) + "..."; //$NON-NLS-1$
 				} else {
@@ -81,7 +81,7 @@ class SelectTaskDialog extends Dialog {
 	}
 
 	protected void okPressed() {
-		task = (AbstractTask) ((IStructuredSelection) viewer.getSelection()).getFirstElement();
+		task = (ITask) ((IStructuredSelection) viewer.getSelection()).getFirstElement();
 		super.okPressed();
 	}
 
@@ -89,7 +89,7 @@ class SelectTaskDialog extends Dialog {
 		this.input = input;
 	}
 
-	AbstractTask getTask() {
+	ITask getTask() {
 		return task;
 	}
 

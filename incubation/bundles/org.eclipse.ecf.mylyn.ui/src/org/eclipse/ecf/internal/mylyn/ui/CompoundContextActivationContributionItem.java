@@ -15,12 +15,14 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.mylyn.context.core.ContextCorePlugin;
+import org.eclipse.mylyn.context.core.IInteractionContext;
+import org.eclipse.mylyn.internal.context.core.ContextCorePlugin;
 import org.eclipse.mylyn.internal.context.core.InteractionContext;
-import org.eclipse.mylyn.internal.tasks.ui.ITasksUiConstants;
-import org.eclipse.mylyn.tasks.core.AbstractTask;
-import org.eclipse.mylyn.tasks.core.TaskList;
-import org.eclipse.mylyn.tasks.ui.TasksUiPlugin;
+import org.eclipse.mylyn.internal.tasks.core.AbstractTask;
+import org.eclipse.mylyn.internal.tasks.core.TaskList;
+import org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin;
+import org.eclipse.mylyn.tasks.core.ITask;
+import org.eclipse.mylyn.tasks.ui.ITasksUiConstants;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.actions.CompoundContributionItem;
@@ -76,15 +78,15 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 		return array;
 	}
 
-	static void enqueue(AbstractTask task, InteractionContext context) {
+	static void enqueue(ITask task, IInteractionContext context) {
 		tasks.add(task);
 		contexts.put(task, context);
 	}
 
 	static class ActivateTaskAction extends Action {
-		private AbstractTask task;
+		private ITask task;
 
-		void setTask(AbstractTask task) {
+		void setTask(ITask task) {
 			this.task = task;
 			setText(task.getSummary());
 		}
@@ -92,7 +94,7 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 		public void run() {
 			final InteractionContext context = (InteractionContext) contexts.get(task);
 
-			final TaskList taskList = TasksUiPlugin.getTaskListManager().getTaskList();
+			final TaskList taskList = TasksUiPlugin.getTaskList();
 			if (taskList.getTask(task.getHandleIdentifier()) != null) {
 				boolean confirmed = MessageDialog.openConfirm(shell, ITasksUiConstants.TITLE_DIALOG, "The task '" + task.getSummary() + "' already exists. Do you want to override its context with the source?");
 				if (confirmed) {
@@ -125,7 +127,7 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 		private void scheduleTaskActivationJob() {
 			UIJob job = new UIJob(shell.getDisplay(), "Activate imported task") {
 				public IStatus runInUIThread(IProgressMonitor monitor) {
-					TasksUiPlugin.getTaskListManager().activateTask(task);
+					TasksUiPlugin.getTaskListManager().activateTask((AbstractTask) task);
 					return Status.OK_STATUS;
 				}
 			};
