@@ -245,6 +245,7 @@ public final class StringUtils {
 	 * then the result will be the entire input string.  
 	 * 
 	 * @see StringUtils#replaceAll(String, String, String) but case insensitive
+	 * @since 2.1
 	 */
 	public static String replaceAllIgnoreCase(String string, String target, String replace) {
 		final int index = string.toLowerCase().indexOf(target.toLowerCase());
