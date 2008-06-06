@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.discovery.service;
 
+import java.util.Properties;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 
 /**
@@ -21,5 +22,9 @@ import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 public interface IDiscoveryService extends IDiscoveryContainerAdapter {
 	// All methods provided by superclass
 	public static final String CONTAINER_ID = "org.eclipse.ecf.discovery.containerID"; //$NON-NLS-1$
+	/**
+	 * The name of the discovery container under which it is registered with the OSGi runtime as a {@link Properties} 
+	 * @since 2.1
+	 */
 	public static final String CONTAINER_NAME = "org.eclipse.ecf.discovery.containerName"; //$NON-NLS-1$
 }
