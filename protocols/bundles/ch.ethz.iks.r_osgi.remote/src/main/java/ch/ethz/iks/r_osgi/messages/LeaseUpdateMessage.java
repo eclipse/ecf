@@ -206,7 +206,8 @@ public final class LeaseUpdateMessage extends RemoteOSGiMessage {
 			buffer.append(payload[1] == null ? "" : Arrays.asList((String[]) payload[1]).toString());
 		} else {
 			buffer.append(", service interfaces: "); //$NON-NLS-1$
-			buffer.append(Arrays.asList((String[]) payload[0]));
+			buffer.append(payload[0] == null ? "" : Arrays.asList(
+					(String[]) payload[0]).toString());
 			buffer.append(", properties: "); //$NON-NLS-1$
 			buffer.append(payload[1]);
 		}

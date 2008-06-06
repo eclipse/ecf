@@ -35,6 +35,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.BindException;
 
 import org.osgi.service.log.LogService;
 
@@ -65,9 +66,11 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 	 * @param endpointURI
 	 *            the URI of the remote host.
 	 * @return the transport channel.
-	 * @see ch.ethz.iks.r_osgi.channels.NetworkChannelFactory#getConnection(ch.ethz.iks.r_osgi.channels.ChannelEndpoint, URI)
+	 * @see ch.ethz.iks.r_osgi.channels.NetworkChannelFactory#getConnection(ch.ethz.iks.r_osgi.channels.ChannelEndpoint,
+	 *      URI)
 	 */
-	public NetworkChannel getConnection(final ChannelEndpoint endpoint, final URI endpointURI) throws IOException {
+	public NetworkChannel getConnection(final ChannelEndpoint endpoint,
+			final URI endpointURI) throws IOException {
 		return new TCPChannel(endpoint, endpointURI);
 	}
 
@@ -145,7 +148,8 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 * @throws IOException
 		 *             in case of IO errors.
 		 */
-		TCPChannel(final ChannelEndpoint endpoint, final URI endpointAddress) throws IOException {
+		TCPChannel(final ChannelEndpoint endpoint, final URI endpointAddress)
+				throws IOException {
 			int port = endpointAddress.getPort();
 			if (port == -1) {
 				port = 9278;
@@ -165,7 +169,9 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 *             in case of IO errors.
 		 */
 		public TCPChannel(final Socket socket) throws IOException {
-			this.remoteEndpointAddress = URI.create(getProtocol() + "://" + socket.getInetAddress().getHostName() + ":" + socket.getPort());
+			this.remoteEndpointAddress = URI.create(getProtocol() + "://"
+					+ socket.getInetAddress().getHostName() + ":"
+					+ socket.getPort());
 			open(socket);
 		}
 
@@ -192,16 +198,20 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 */
 		private void open(final Socket socket) throws IOException {
 			this.socket = socket;
-			this.localEndpointAddress = URI.create(getProtocol() + "://" + socket.getLocalAddress().getHostName() + ":" + socket.getLocalPort());
+			this.localEndpointAddress = URI.create(getProtocol() + "://"
+					+ socket.getLocalAddress().getHostName() + ":"
+					+ socket.getLocalPort());
 			try {
 				this.socket.setKeepAlive(true);
 			} catch (final Throwable t) {
 				// for 1.2 VMs that do not support the setKeepAlive
 			}
 			this.socket.setTcpNoDelay(true);
-			this.output = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			this.output = new ObjectOutputStream(new BufferedOutputStream(
+					socket.getOutputStream()));
 			output.flush();
-			input = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+			input = new ObjectInputStream(new BufferedInputStream(socket
+					.getInputStream()));
 		}
 
 		/**
@@ -216,7 +226,9 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 
 		/**
 		 * close the channel.
-		 * @throws IOException if problem on close.
+		 * 
+		 * @throws IOException
+		 *             if problem on close.
 		 */
 		public void close() throws IOException {
 			socket.close();
@@ -261,9 +273,11 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 *             in case of IO errors.
 		 * @see ch.ethz.iks.r_osgi.channels.NetworkChannel#sendMessage(RemoteOSGiMessage)
 		 */
-		public void sendMessage(final RemoteOSGiMessage message) throws IOException {
+		public void sendMessage(final RemoteOSGiMessage message)
+				throws IOException {
 			if (RemoteOSGiServiceImpl.MSG_DEBUG) {
-				RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG, "{TCP Channel} sending " + message);
+				RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
+						"{TCP Channel} sending " + message);
 			}
 
 			message.send(output);
@@ -285,9 +299,11 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 			public void run() {
 				while (connected) {
 					try {
-						final RemoteOSGiMessage msg = RemoteOSGiMessage.parse(input);
+						final RemoteOSGiMessage msg = RemoteOSGiMessage
+								.parse(input);
 						if (RemoteOSGiServiceImpl.MSG_DEBUG) {
-							RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG, "{TCP Channel} received " + msg);
+							RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
+									"{TCP Channel} received " + msg);
 						}
 						endpoint.receivedMessage(msg);
 					} catch (final IOException ioe) {
@@ -300,11 +316,6 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 						return;
 					} catch (final Throwable t) {
 						t.printStackTrace();
-						try {
-							input.reset();
-						} catch (final IOException e) {
-							e.printStackTrace();
-						}
 					}
 				}
 			}
@@ -318,7 +329,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		/**
 		 * the socket.
 		 */
-		private final ServerSocket socket;
+		private ServerSocket socket;
 
 		/**
 		 * creates and starts a new TCPThread.
@@ -326,8 +337,25 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 * @throws IOException
 		 *             if the server socket cannot be opened.
 		 */
-		private TCPThread() throws IOException {
-			socket = new ServerSocket(RemoteOSGiServiceImpl.R_OSGI_PORT);
+		TCPThread() throws IOException {
+			int e = 0;
+			while (true) {
+				try {
+					socket = new ServerSocket(RemoteOSGiServiceImpl.R_OSGI_PORT
+							+ e);
+					if (e != 0) {
+						System.err
+								.println("Port "
+										+ RemoteOSGiServiceImpl.R_OSGI_PORT
+										+ " already in use. This instance of R-OSGi is running on port "
+										+ (RemoteOSGiServiceImpl.R_OSGI_PORT + e));
+					}
+					return;
+				} catch (BindException b) {
+					e++;
+				}
+			}
+
 		}
 
 		/**

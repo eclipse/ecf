@@ -80,6 +80,17 @@ import ch.ethz.iks.util.CollectionUtils;
  */
 final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 
+	static boolean IS_5 = false;
+	
+	static {
+		String verString = System.getProperty("java.class.version");
+		if (verString != null) {
+			if (Float.parseFloat(verString) >= 49) {
+				IS_5 = true;
+			}
+		}
+	}
+	
 	/**
 	 * the R-OSGi standard port.
 	 */
@@ -336,7 +347,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 						final RemoteServiceRegistration reg = new RemoteServiceRegistration(reference, service);
 
 						if (log != null) {
-							log.log(LogService.LOG_INFO, "REGISTERING " + reg + " AS PROXIED SERVICES");
+							log.log(LogService.LOG_INFO, "REGISTERING " + reference + " AS PROXIED SERVICES");
 						}
 
 						serviceRegistrations.put(service, reg);
@@ -424,9 +435,11 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	 * @return the array of service urls of services offered by the remote peer.
 	 * @throws RemoteOSGiException
 	 *             in case of errors.
+	 * @throws IOException 
+	 * 				if the connection fails.
 	 * @since 0.6
 	 */
-	public RemoteServiceReference[] connect(final URI uri) throws RemoteOSGiException {
+	public RemoteServiceReference[] connect(final URI uri) throws RemoteOSGiException, IOException {
 
 		final URI endpoint = URI.create(getChannelURI(uri));
 		final ChannelEndpointImpl test = (ChannelEndpointImpl) channels.get(endpoint.toString());
@@ -451,9 +464,6 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 				}
 			}
 			throw new RemoteOSGiException("No NetworkChannelFactory for " + protocol + " found.");
-		} catch (final IOException ioe) {
-			ioe.printStackTrace();
-			throw new RemoteOSGiException("Connection to " + endpoint + " failed", ioe);
 		} catch (final InvalidSyntaxException e) {
 			// does not happen
 			e.printStackTrace();
@@ -487,9 +497,13 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 		final String uri = getChannelURI(serviceURI);
 		ChannelEndpointImpl channel = (ChannelEndpointImpl) channels.get(getChannelURI(serviceURI));
 		if (channel == null) {
-			connect(serviceURI);
-			channel = (ChannelEndpointImpl) channels.get(uri);
-		}
+			try {
+				connect(serviceURI);
+				channel = (ChannelEndpointImpl) channels.get(uri);
+			} catch (IOException ioe) {
+				throw new RemoteOSGiException("Cannot connect to " + uri);
+			}
+		} 
 		return channel.getRemoteReference(serviceURI.toString());
 	}
 
@@ -502,8 +516,12 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 		final String uri = getChannelURI(service);
 		ChannelEndpointImpl channel = (ChannelEndpointImpl) channels.get(uri);
 		if (channel == null) {
-			connect(service);
-			channel = (ChannelEndpointImpl) channels.get(uri);
+			try {
+				connect(service);
+				channel = (ChannelEndpointImpl) channels.get(uri);
+			} catch (IOException ioe) {
+				throw new RemoteOSGiException("Cannot connect to " + uri);
+			}
 		}
 		if (clazz == null) {
 			return channel.getAllRemoteReferences(null);

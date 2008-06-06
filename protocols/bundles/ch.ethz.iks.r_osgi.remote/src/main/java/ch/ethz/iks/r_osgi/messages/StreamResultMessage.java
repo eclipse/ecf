@@ -94,7 +94,7 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 	 *      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	 *      |            result             | result == -2: len, -3: excep. \
 	 *      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	 *      | result == -2: b                                               |
+	 *      | result == -2 &amp;&amp; len &gt; 0: b                                    |
 	 *      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	 * </pre>.
 	 * 
@@ -108,21 +108,32 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 		super(STREAM_RESULT);
 		result = input.readShort();
 		switch (result) {
-			case RESULT_ARRAY :
-				this.len = input.readInt();
+		case RESULT_ARRAY:
+			this.len = input.readInt();
+			if (len > 0) {
 				this.b = new byte[len];
-				input.read(b, 0, len);
-				break;
-			case RESULT_EXCEPTION :
-				exception = (IOException) SmartSerializer.deserialize(input);
-				break;
-			case RESULT_WRITE_OK :
-				break;
-			default :
-				if ((result < -1) || (result > 255)) { // -1 indicates EOF -> valid
-					throw new IllegalArgumentException("result not within valid range: " + result); //$NON-NLS-1$
+				int rem = len;
+				int read;
+				while ((rem > 0)
+						&& ((read = input.read(b, len - rem, rem)) > 0)) {
+					rem = rem - read;
 				}
-				break;
+				if (rem > 0) {
+					throw new IOException("Premature end of input stream.");
+				}
+			}
+			break;
+		case RESULT_EXCEPTION:
+			exception = (IOException) SmartSerializer.deserialize(input);
+			break;
+		case RESULT_WRITE_OK:
+			break;
+		default:
+			if ((result < -1) || (result > 255)) { // -1 indicates EOF -> valid
+				throw new IllegalArgumentException(
+						"result not within valid range: " + result); //$NON-NLS-1$
+			}
+			break;
 		}
 	}
 
@@ -133,12 +144,15 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 	 *            the ObjectOutputStream.
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @see ch.ethz.iks.r_osgi.impl.RemoteOSGiMessageImpl#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		out.writeShort(result);
 		if (result == RESULT_ARRAY) {
 			out.writeInt(len);
-			out.write(b, 0, len);
+			if (len > 0) {
+				out.write(b, 0, len);
+			}
 		} else if (result == RESULT_EXCEPTION) {
 			SmartSerializer.serialize(exception, out);
 		}
@@ -238,7 +252,7 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		final StringBuffer buffer = new StringBuffer();
+		StringBuffer buffer = new StringBuffer();
 		buffer.append("[STREAM_RESULT] - XID: "); //$NON-NLS-1$
 		buffer.append(xid);
 		buffer.append(", result: "); //$NON-NLS-1$
@@ -251,3 +265,4 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 	}
 
 }
+

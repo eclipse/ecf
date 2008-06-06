@@ -67,16 +67,10 @@ public final class RemoteOSGiActivator implements BundleActivator {
 		RemoteOSGiActivator.context = context;
 
 		// get the log service, if present
-		final ServiceReference logRef = context.getServiceReference("org.osgi.service.log.LogService");
+		final ServiceReference logRef = context
+				.getServiceReference("org.osgi.service.log.LogService");
 		if (logRef != null) {
 			RemoteOSGiServiceImpl.log = (LogService) context.getService(logRef);
-		}
-
-		// register the default tcp channel
-		if (!"false".equals(context.getProperty(RemoteOSGiServiceImpl.REGISTER_DEFAULT_TCP_CHANNEL))) {
-			final Dictionary properties = new Hashtable();
-			properties.put(NetworkChannelFactory.PROTOCOL_PROPERTY, TCPChannelFactory.PROTOCOL);
-			context.registerService(NetworkChannelFactory.class.getName(), new TCPChannelFactory(), properties);
 		}
 
 		if (remoting == null) {
@@ -85,7 +79,20 @@ public final class RemoteOSGiActivator implements BundleActivator {
 		}
 
 		// and register the service
-		context.registerService(new String[] {RemoteOSGiService.class.getName(), Remoting.class.getName()}, remoting, null);
+		context.registerService(new String[] {
+				RemoteOSGiService.class.getName(), Remoting.class.getName() },
+				remoting, null);
+		
+		// register the default tcp channel
+		if (!"false"
+				.equals(context
+						.getProperty(RemoteOSGiServiceImpl.REGISTER_DEFAULT_TCP_CHANNEL))) {
+			final Dictionary properties = new Hashtable();
+			properties.put(NetworkChannelFactory.PROTOCOL_PROPERTY,
+					TCPChannelFactory.PROTOCOL);
+			context.registerService(NetworkChannelFactory.class.getName(),
+					new TCPChannelFactory(), properties);
+		}
 	}
 
 	/**

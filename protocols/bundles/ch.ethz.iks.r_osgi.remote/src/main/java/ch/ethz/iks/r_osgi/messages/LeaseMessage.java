@@ -34,6 +34,8 @@ import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Dictionary;
 
+import ch.ethz.iks.util.SmartSerializer;
+
 /**
  * Lease message. Is exchanged when a channel is established. Leases are the
  * implementations of the statements of supply and demand.
@@ -98,14 +100,11 @@ public final class LeaseMessage extends RemoteOSGiMessage {
 		serviceIDs = new String[serviceCount];
 		serviceInterfaces = new String[serviceCount][];
 		serviceProperties = new Dictionary[serviceCount];
-		try {
-			for (short i = 0; i < serviceCount; i++) {
-				serviceIDs[i] = input.readUTF();
-				serviceInterfaces[i] = readStringArray(input);
-				serviceProperties[i] = (Dictionary) input.readObject();
-			}
-		} catch (final ClassNotFoundException e) {
-			e.printStackTrace();
+		for (short i = 0; i < serviceCount; i++) {
+			serviceIDs[i] = input.readUTF();
+			serviceInterfaces[i] = readStringArray(input);
+			serviceProperties[i] = (Dictionary) SmartSerializer
+			.deserialize(input);
 		}
 		this.topics = readStringArray(input);
 	}
@@ -200,7 +199,7 @@ public final class LeaseMessage extends RemoteOSGiMessage {
 		for (short i = 0; i < slen; i++) {
 			out.writeUTF(serviceIDs[i]);
 			writeStringArray(out, serviceInterfaces[i]);
-			out.writeObject(serviceProperties[i]);
+			SmartSerializer.serialize(serviceProperties[i], out);
 		}
 		writeStringArray(out, topics);
 	}

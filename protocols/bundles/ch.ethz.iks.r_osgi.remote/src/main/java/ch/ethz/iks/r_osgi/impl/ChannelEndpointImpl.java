@@ -30,7 +30,9 @@ package ch.ethz.iks.r_osgi.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectStreamException;
 import java.io.OutputStream;
+import java.io.NotSerializableException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -179,7 +181,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * filter for events to prevent loops in the remote delivery if the peers
 	 * connected by this channel have non-disjoint topic spaces.
 	 */
-	private static final String NO_LOOPS = "(!(" + RemoteEventMessage.EVENT_SENDER_URI + "=*))";
+	private static final String NO_LOOPS = "(!("
+			+ RemoteEventMessage.EVENT_SENDER_URI + "=*))";
 
 	boolean hasRedundantLinks = false;
 
@@ -195,10 +198,12 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @throws IOException
 	 *             if something goes wrong on the network layer.
 	 */
-	ChannelEndpointImpl(final NetworkChannelFactory factory, final URI endpointAddress) throws RemoteOSGiException, IOException {
+	ChannelEndpointImpl(final NetworkChannelFactory factory,
+			final URI endpointAddress) throws RemoteOSGiException, IOException {
 		this.networkChannel = factory.getConnection(this, endpointAddress);
 		if (RemoteOSGiServiceImpl.DEBUG) {
-			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG, "opening new channel " + getRemoteAddress());
+			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
+					"opening new channel " + getRemoteAddress());
 		}
 		RemoteOSGiServiceImpl.registerChannelEndpoint(this);
 	}
@@ -236,14 +241,21 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				receiveQueue.notifyAll();
 				return;
 			} else {
-				final RemoteOSGiMessage reply = handleMessage(msg);
-				if (reply != null) {
-					try {
-						networkChannel.sendMessage(reply);
-					} catch (final IOException e) {
-						dispose();
+				new Thread() {
+					public void run() {
+						final RemoteOSGiMessage reply = handleMessage(msg);
+						if (reply != null) {
+							try {
+								networkChannel.sendMessage(reply);
+							} catch (NotSerializableException nse) {
+								throw new RemoteOSGiException("Error sending "
+										+ reply, nse);
+							} catch (IOException e) {
+								dispose();
+							}
+						}
 					}
-				}
+				}.start();
 			}
 		}
 	}
@@ -264,7 +276,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @return the result of the remote method invokation.
 	 * @category ChannelEndpoint
 	 */
-	public Object invokeMethod(final String service, final String methodSignature, final Object[] args) throws Throwable {
+	public Object invokeMethod(final String service,
+			final String methodSignature, final Object[] args) throws Throwable {
 		if (networkChannel == null) {
 			throw new RemoteOSGiException("Network channel went down");
 		}
@@ -298,7 +311,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			}
 			return resultObj;
 		} catch (final RemoteOSGiException e) {
-			throw new RemoteOSGiException("Method invocation of " + methodSignature + " failed.", e);
+			throw new RemoteOSGiException("Method invocation of "
+					+ methodSignature + " failed.", e);
 		}
 	}
 
@@ -327,7 +341,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	public Dictionary getPresentationProperties(final String serviceID) {
 		final Dictionary attribs = new Hashtable();
 		attribs.put(RemoteOSGiServiceImpl.SERVICE_URI, serviceID);
-		attribs.put(RemoteOSGiService.PRESENTATION, getRemoteReference(serviceID).getProperty(RemoteOSGiService.PRESENTATION));
+		attribs.put(RemoteOSGiService.PRESENTATION, getRemoteReference(
+				serviceID).getProperty(RemoteOSGiService.PRESENTATION));
 		return attribs;
 	}
 
@@ -340,7 +355,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 *            the service registration.
 	 * @category ChannelEndpoint
 	 */
-	public void trackRegistration(final String serviceID, final ServiceRegistration reg) {
+	public void trackRegistration(final String serviceID,
+			final ServiceRegistration reg) {
 		proxiedServices.put(serviceID, reg);
 	}
 
@@ -395,10 +411,12 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		}
 
 		if (RemoteOSGiServiceImpl.DEBUG) {
-			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG, "DISPOSING ENDPOINT " + getRemoteAddress());
+			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
+					"DISPOSING ENDPOINT " + getRemoteAddress());
 		}
 
-		RemoteOSGiServiceImpl.unregisterChannelEndpoint(getRemoteAddress().toString());
+		RemoteOSGiServiceImpl.unregisterChannelEndpoint(getRemoteAddress()
+				.toString());
 		if (handlerReg != null) {
 			handlerReg.unregister();
 		}
@@ -414,13 +432,18 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 
 		if (!hasRedundantLinks) {
 			// inform all listeners about all services
-			final RemoteServiceReference[] refs = (RemoteServiceReference[]) remoteServices.values().toArray(new RemoteServiceReference[remoteServices.size()]);
+			final RemoteServiceReference[] refs = (RemoteServiceReference[]) remoteServices
+					.values().toArray(
+							new RemoteServiceReference[remoteServices.size()]);
 			for (int i = 0; i < refs.length; i++) {
-				RemoteOSGiServiceImpl.notifyRemoteServiceListeners(new RemoteServiceEvent(RemoteServiceEvent.UNREGISTERING, refs[i]));
+				RemoteOSGiServiceImpl
+						.notifyRemoteServiceListeners(new RemoteServiceEvent(
+								RemoteServiceEvent.UNREGISTERING, refs[i]));
 			}
 
 			// uninstall the proxy bundle
-			final Bundle[] proxies = (Bundle[]) proxyBundles.values().toArray(new Bundle[proxyBundles.size()]);
+			final Bundle[] proxies = (Bundle[]) proxyBundles.values().toArray(
+					new Bundle[proxyBundles.size()]);
 
 			for (int i = 0; i < proxies.length; i++) {
 				try {
@@ -487,7 +510,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @throws IOException
 	 *             when an IOException occurs.
 	 */
-	public int readStream(final short streamID, final byte[] b, final int off, final int len) throws IOException {
+	public int readStream(final short streamID, final byte[] b, final int off,
+			final int len) throws IOException {
 		// handle special cases as defined in InputStream
 		if (b == null) {
 			throw new NullPointerException();
@@ -523,7 +547,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @throws IOException
 	 *             when an IOException occurs.
 	 */
-	public void writeStream(final short streamID, final int b) throws IOException {
+	public void writeStream(final short streamID, final int b)
+			throws IOException {
 		final StreamRequestMessage requestMsg = new StreamRequestMessage();
 		requestMsg.setOp(StreamRequestMessage.WRITE);
 		requestMsg.setStreamID(streamID);
@@ -546,7 +571,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @throws IOException
 	 *             when an IOException occurs.
 	 */
-	public void writeStream(final short streamID, final byte[] b, final int off, final int len) throws IOException {
+	public void writeStream(final short streamID, final byte[] b,
+			final int off, final int len) throws IOException {
 		// handle special cases as defined in OutputStream
 		if (b == null) {
 			throw new NullPointerException();
@@ -600,7 +626,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 *            the topics of this peer.
 	 * @return the remote service references of the other peer.
 	 */
-	RemoteServiceReference[] sendLease(final RemoteServiceRegistration[] myServices, final String[] myTopics) {
+	RemoteServiceReference[] sendLease(
+			final RemoteServiceRegistration[] myServices,
+			final String[] myTopics) {
 		final LeaseMessage l = new LeaseMessage();
 		populateLease(l, myServices, myTopics);
 		final LeaseMessage lease = (LeaseMessage) sendMessage(l);
@@ -636,7 +664,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @throws IOException
 	 *             in case of network errors.
 	 */
-	void fetchService(final RemoteServiceReference ref) throws IOException, RemoteOSGiException {
+	void fetchService(final RemoteServiceReference ref) throws IOException,
+			RemoteOSGiException {
 		if (networkChannel == null) {
 			throw new RuntimeException("CHANNEL IS NULL");
 		}
@@ -652,13 +681,15 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 
 		try {
 			final DeliverServiceMessage deliv = (DeliverServiceMessage) msg;
-			final URI service = networkChannel.getRemoteAddress().resolve("#" + deliv.getServiceID());
+			final URI service = networkChannel.getRemoteAddress().resolve(
+					"#" + deliv.getServiceID());
 
 			// generate a proxy bundle for the service
-			bundleLocation = new ProxyGenerator().generateProxyBundle(service, deliv);
+			final InputStream in = new ProxyGenerator().generateProxyBundle(service,
+					deliv);
 
-			// install the proxy bundle
-			final Bundle bundle = RemoteOSGiActivator.context.installBundle("file:" + bundleLocation);
+			final Bundle bundle = RemoteOSGiActivator.context.installBundle(
+					service.toString(), in);
 
 			// store the bundle for state updates and cleanup
 			proxyBundles.put(service.getFragment(), bundle);
@@ -667,8 +698,11 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			bundle.start();
 
 		} catch (final BundleException e) {
-			final Throwable nested = e.getNestedException() == null ? e : e.getNestedException();
-			throw new RemoteOSGiException("Could not install the generated bundle " + bundleLocation, nested);
+			final Throwable nested = e.getNestedException() == null ? e : e
+					.getNestedException();
+			throw new RemoteOSGiException(
+					"Could not install the generated bundle " + bundleLocation,
+					nested);
 		}
 	}
 
@@ -692,7 +726,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 */
 	RemoteServiceReference[] getAllRemoteReferences(final Filter filter) {
 		final List result = new ArrayList();
-		final RemoteServiceReferenceImpl[] refs = (RemoteServiceReferenceImpl[]) remoteServices.values().toArray(new RemoteServiceReferenceImpl[remoteServices.size()]);
+		final RemoteServiceReferenceImpl[] refs = (RemoteServiceReferenceImpl[]) remoteServices
+				.values().toArray(
+						new RemoteServiceReferenceImpl[remoteServices.size()]);
 		if (filter == null) {
 			return refs.length > 0 ? refs : null;
 		} else {
@@ -701,7 +737,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 					result.add(refs[i]);
 				}
 			}
-			final RemoteServiceReference[] refs2 = (RemoteServiceReference[]) result.toArray(new RemoteServiceReferenceImpl[result.size()]);
+			final RemoteServiceReference[] refs2 = (RemoteServiceReference[]) result
+					.toArray(new RemoteServiceReferenceImpl[result.size()]);
 			return refs2.length > 0 ? refs2 : null;
 		}
 	}
@@ -746,12 +783,18 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				// instead
 				// of sending the same message again
 				if (msg instanceof TimeOffsetMessage) {
-					((TimeOffsetMessage) msg).restamp(RemoteOSGiServiceImpl.nextXid());
+					((TimeOffsetMessage) msg).restamp(RemoteOSGiServiceImpl
+							.nextXid());
 					networkChannel.sendMessage(msg);
 				} else {
 					networkChannel.sendMessage(msg);
 				}
 			}
+		} catch (NotSerializableException nse) {
+			throw new RemoteOSGiException("Error sending " + msg, nse);
+		} catch (ObjectStreamException ose) {
+			throw new RemoteOSGiException(
+					"Error during serializing arguments of " + msg, ose);
 		} catch (final IOException ioe) {
 			// failed to reconnect...
 			dispose();
@@ -783,7 +826,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			reply = receiveQueue.get(xid);
 			final long timeout = System.currentTimeMillis() + TIMEOUT;
 			try {
-				while (networkChannel != null && reply == WAITING && System.currentTimeMillis() < timeout) {
+				while (networkChannel != null && reply == WAITING
+						&& System.currentTimeMillis() < timeout) {
 					receiveQueue.wait(TIMEOUT);
 					reply = receiveQueue.get(xid);
 				}
@@ -792,7 +836,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				if (networkChannel == null) {
 					throw new RemoteOSGiException("Lost connection");
 				} else if (reply == WAITING) {
-					throw new RemoteOSGiException("Method Invocation failed, timeout exceeded.");
+					throw new RemoteOSGiException(
+							"Method Invocation failed, timeout exceeded.");
 				} else {
 					return (RemoteOSGiMessage) reply;
 				}
@@ -810,8 +855,10 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 *            the serviceID.
 	 * @return the remote service registration, or <code>null</code>.
 	 */
-	private RemoteServiceRegistration getServiceRegistration(final String serviceID) {
-		final RemoteServiceRegistration reg = RemoteOSGiServiceImpl.getServiceRegistration(serviceID);
+	private RemoteServiceRegistration getServiceRegistration(
+			final String serviceID) {
+		final RemoteServiceRegistration reg = RemoteOSGiServiceImpl
+				.getServiceRegistration(serviceID);
 
 		localServices.put(serviceID, reg);
 		return reg;
@@ -827,7 +874,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @param topics
 	 *            the topics.
 	 */
-	private void populateLease(final LeaseMessage lease, final RemoteServiceRegistration[] regs, final String[] topics) {
+	private void populateLease(final LeaseMessage lease,
+			final RemoteServiceRegistration[] regs, final String[] topics) {
 		final String[] serviceIDs = new String[regs.length];
 		final String[][] serviceInterfaces = new String[regs.length][];
 		final Dictionary[] serviceProperties = new Dictionary[regs.length];
@@ -857,10 +905,13 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 
 		final RemoteServiceReferenceImpl[] refs = new RemoteServiceReferenceImpl[serviceIDs.length];
 		for (short i = 0; i < serviceIDs.length; i++) {
-			refs[i] = new RemoteServiceReferenceImpl(serviceInterfaces[i], serviceIDs[i], serviceProperties[i], this);
+			refs[i] = new RemoteServiceReferenceImpl(serviceInterfaces[i],
+					serviceIDs[i], serviceProperties[i], this);
 
 			remoteServices.put(refs[i].getURI().toString(), refs[i]);
-			RemoteOSGiServiceImpl.notifyRemoteServiceListeners(new RemoteServiceEvent(RemoteServiceEvent.REGISTERED, refs[i]));
+			RemoteOSGiServiceImpl
+					.notifyRemoteServiceListeners(new RemoteServiceEvent(
+							RemoteServiceEvent.REGISTERED, refs[i]));
 		}
 		updateTopics(lease.getTopics(), new String[0]);
 		return refs;
@@ -874,7 +925,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @return the result message.
 	 * @throws IOException
 	 */
-	private StreamResultMessage doStreamOp(final StreamRequestMessage requestMsg) throws IOException {
+	private StreamResultMessage doStreamOp(final StreamRequestMessage requestMsg)
+			throws IOException {
 		try {
 			// send the message and get a StreamResultMessage in return
 			final StreamResultMessage result = (StreamResultMessage) sendMessage(requestMsg);
@@ -883,7 +935,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			}
 			return result;
 		} catch (final RemoteOSGiException e) {
-			throw new RemoteOSGiException("Invocation of operation " + requestMsg.getOp() + " on stream " + requestMsg.getStreamID() + " failed.", e);
+			throw new RemoteOSGiException("Invocation of operation "
+					+ requestMsg.getOp() + " on stream "
+					+ requestMsg.getStreamID() + " failed.", e);
 		}
 	}
 
@@ -895,7 +949,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @param topicsRemoved
 	 *            the topics removed.
 	 */
-	private void updateTopics(final String[] topicsAdded, final String[] topicsRemoved) {
+	private void updateTopics(final String[] topicsAdded,
+			final String[] topicsRemoved) {
 
 		if (handlerReg == null) {
 			if (topicsAdded.length > 0) {
@@ -903,14 +958,20 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				final Dictionary properties = new Hashtable();
 				properties.put(EventConstants.EVENT_TOPIC, topicsAdded);
 				properties.put(EventConstants.EVENT_FILTER, NO_LOOPS);
-				properties.put(RemoteOSGiServiceImpl.R_OSGi_INTERNAL, Boolean.TRUE);
-				handlerReg = RemoteOSGiActivator.context.registerService(EventHandler.class.getName(), new EventForwarder(), properties);
+				properties.put(RemoteOSGiServiceImpl.R_OSGi_INTERNAL,
+						Boolean.TRUE);
+				handlerReg = RemoteOSGiActivator.context.registerService(
+						EventHandler.class.getName(), new EventForwarder(),
+						properties);
 				remoteTopics.addAll(Arrays.asList(topicsAdded));
 			}
 		} else {
-			remoteTopics.removeAll(Arrays.asList(topicsRemoved));
-			remoteTopics.addAll(Arrays.asList(topicsAdded));
-
+			if (topicsRemoved != null) {
+				remoteTopics.removeAll(Arrays.asList(topicsRemoved));
+			}
+			if (topicsAdded != null) {
+				remoteTopics.addAll(Arrays.asList(topicsAdded));
+			}
 			if (remoteTopics.size() == 0) {
 				// unregister handler
 				handlerReg.unregister();
@@ -918,15 +979,19 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			} else {
 				// update topics
 				final Dictionary properties = new Hashtable();
-				properties.put(EventConstants.EVENT_TOPIC, remoteTopics.toArray(new String[remoteTopics.size()]));
+				properties.put(EventConstants.EVENT_TOPIC, remoteTopics
+						.toArray(new String[remoteTopics.size()]));
 				properties.put(EventConstants.EVENT_FILTER, NO_LOOPS);
-				properties.put(RemoteOSGiServiceImpl.R_OSGi_INTERNAL, Boolean.TRUE);
+				properties.put(RemoteOSGiServiceImpl.R_OSGi_INTERNAL,
+						Boolean.TRUE);
 				handlerReg.setProperties(properties);
 			}
 		}
 
 		if (RemoteOSGiServiceImpl.MSG_DEBUG) {
-			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG, "NEW REMOTE TOPIC SPACE for " + getRemoteAddress() + " is " + remoteTopics);
+			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
+					"NEW REMOTE TOPIC SPACE for " + getRemoteAddress() + " is "
+							+ remoteTopics);
 		}
 	}
 
@@ -939,211 +1004,250 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @throws RemoteOSGiException
 	 *             if something goes wrong.
 	 */
-	private RemoteOSGiMessage handleMessage(final RemoteOSGiMessage msg) throws RemoteOSGiException {
+	private RemoteOSGiMessage handleMessage(final RemoteOSGiMessage msg)
+			throws RemoteOSGiException {
 
 		switch (msg.getFuncID()) {
-			// requests
-			case RemoteOSGiMessage.LEASE : {
-				final LeaseMessage lease = (LeaseMessage) msg;
-				processLease(lease);
+		// requests
+		case RemoteOSGiMessage.LEASE: {
+			final LeaseMessage lease = (LeaseMessage) msg;
+			processLease(lease);
 
-				populateLease(lease, RemoteOSGiServiceImpl.getServices(), RemoteOSGiServiceImpl.getTopics());
-				return lease;
+			populateLease(lease, RemoteOSGiServiceImpl.getServices(),
+					RemoteOSGiServiceImpl.getTopics());
+			return lease;
+		}
+		case RemoteOSGiMessage.FETCH_SERVICE: {
+			final FetchServiceMessage fetchReq = (FetchServiceMessage) msg;
+			final String serviceID = fetchReq.getServiceID();
+
+			final RemoteServiceRegistration reg = getServiceRegistration(serviceID);
+
+			final DeliverServiceMessage m = reg.getDeliverServiceMessage();
+			m.setXID(fetchReq.getXID());
+			m.setServiceID(fetchReq.getServiceID());
+			return m;
+		}
+		case RemoteOSGiMessage.LEASE_UPDATE: {
+			final LeaseUpdateMessage suMsg = (LeaseUpdateMessage) msg;
+
+			final String serviceID = suMsg.getServiceID();
+			final short stateUpdate = suMsg.getType();
+
+			switch (stateUpdate) {
+			case LeaseUpdateMessage.TOPIC_UPDATE: {
+				updateTopics((String[]) suMsg.getPayload()[0], (String[]) suMsg
+						.getPayload()[1]);
+				return null;
 			}
-			case RemoteOSGiMessage.FETCH_SERVICE : {
-				final FetchServiceMessage fetchReq = (FetchServiceMessage) msg;
-				final String serviceID = fetchReq.getServiceID();
+			case LeaseUpdateMessage.SERVICE_ADDED: {
+				final RemoteServiceReferenceImpl ref = new RemoteServiceReferenceImpl(
+						(String[]) suMsg.getPayload()[0], serviceID,
+						(Dictionary) suMsg.getPayload()[1], this);
 
-				final RemoteServiceRegistration reg = getServiceRegistration(serviceID);
+				remoteServices.put(getRemoteAddress().resolve("#" + serviceID)
+						.toString(), ref);
 
-				final DeliverServiceMessage m = reg.getDeliverServiceMessage();
-				m.setXID(fetchReq.getXID());
-				m.setServiceID(fetchReq.getServiceID());
-				return m;
+				RemoteOSGiServiceImpl
+						.notifyRemoteServiceListeners(new RemoteServiceEvent(
+								RemoteServiceEvent.REGISTERED, ref));
+
+				return null;
 			}
-			case RemoteOSGiMessage.LEASE_UPDATE : {
-				final LeaseUpdateMessage suMsg = (LeaseUpdateMessage) msg;
-
-				final String serviceID = suMsg.getServiceID();
-				final short stateUpdate = suMsg.getType();
-
-				switch (stateUpdate) {
-					case LeaseUpdateMessage.TOPIC_UPDATE : {
-						updateTopics((String[]) suMsg.getPayload()[0], (String[]) suMsg.getPayload()[1]);
-						return null;
-					}
-					case LeaseUpdateMessage.SERVICE_ADDED : {
-						final RemoteServiceReferenceImpl ref = new RemoteServiceReferenceImpl((String[]) suMsg.getPayload()[0], serviceID, (Dictionary) suMsg.getPayload()[1], this);
-
-						remoteServices.put(getRemoteAddress().resolve("#" + serviceID).toString(), ref);
-
-						RemoteOSGiServiceImpl.notifyRemoteServiceListeners(new RemoteServiceEvent(RemoteServiceEvent.REGISTERED, ref));
-
-						return null;
-					}
-					case LeaseUpdateMessage.SERVICE_MODIFIED : {
-						final Dictionary newProps = (Dictionary) suMsg.getPayload()[1];
-						final ServiceRegistration reg = (ServiceRegistration) proxiedServices.get(serviceID);
-						if (reg != null) {
-							reg.setProperties(newProps);
-						}
-
-						final RemoteServiceReferenceImpl ref = getRemoteReference(getRemoteAddress().resolve("#" + serviceID).toString());
-						ref.setProperties(newProps);
-						RemoteOSGiServiceImpl.notifyRemoteServiceListeners(new RemoteServiceEvent(RemoteServiceEvent.MODIFIED, ref));
-						return null;
-					}
-					case LeaseUpdateMessage.SERVICE_REMOVED : {
-						final RemoteServiceReference ref = (RemoteServiceReference) remoteServices.remove(getRemoteAddress().resolve("#" + serviceID).toString());
-						if (ref != null) {
-							RemoteOSGiServiceImpl.notifyRemoteServiceListeners(new RemoteServiceEvent(RemoteServiceEvent.UNREGISTERING, ref));
-						}
-
-						final Bundle bundle = (Bundle) proxyBundles.remove(serviceID);
-						if (bundle != null) {
-							try {
-								bundle.uninstall();
-							} catch (final BundleException be) {
-								be.printStackTrace();
-							}
-							proxiedServices.remove(serviceID);
-							remoteServices.remove(getRemoteAddress().resolve("#" + serviceID).toString());
-						}
-						return null;
-					}
+			case LeaseUpdateMessage.SERVICE_MODIFIED: {
+				final Dictionary newProps = (Dictionary) suMsg.getPayload()[1];
+				final ServiceRegistration reg = (ServiceRegistration) proxiedServices
+						.get(serviceID);
+				if (reg != null) {
+					reg.setProperties(newProps);
 				}
+
+				final RemoteServiceReferenceImpl ref = getRemoteReference(getRemoteAddress()
+						.resolve("#" + serviceID).toString());
+				ref.setProperties(newProps);
+				RemoteOSGiServiceImpl
+						.notifyRemoteServiceListeners(new RemoteServiceEvent(
+								RemoteServiceEvent.MODIFIED, ref));
+				return null;
 			}
-			case RemoteOSGiMessage.INVOKE_METHOD : {
-				final InvokeMethodMessage invMsg = (InvokeMethodMessage) msg;
-				try {
-					RemoteServiceRegistration serv = (RemoteServiceRegistration) localServices.get(invMsg.getServiceID());
-					if (serv == null) {
-						final RemoteServiceRegistration reg = getServiceRegistration(invMsg.getServiceID());
-						if (reg == null) {
-							throw new IllegalStateException(toString() + "Could not get " + invMsg.getServiceID() + ", known services " + localServices);
-						} else {
-							serv = reg;
-						}
-					}
+			case LeaseUpdateMessage.SERVICE_REMOVED: {
+				if (networkChannel == null) {
+					return null;
+				}
+				
+				final RemoteServiceReference ref = (RemoteServiceReference) remoteServices
+						.remove(getRemoteAddress().resolve("#" + serviceID)
+								.toString());
+				if (ref != null) {
+					RemoteOSGiServiceImpl
+							.notifyRemoteServiceListeners(new RemoteServiceEvent(
+									RemoteServiceEvent.UNREGISTERING, ref));
+				}
 
-					// get the invocation arguments and the local method
-					final Object[] arguments = invMsg.getArgs();
-					// check args for stream placeholders and replace with proxies
-					for (int i = 0; i < arguments.length; i++) {
-						if (arguments[i] instanceof InputStreamHandle) {
-							arguments[i] = getInputStreamProxy((InputStreamHandle) arguments[i]);
-						} else if (arguments[i] instanceof OutputStreamHandle) {
-							arguments[i] = getOutputStreamProxy((OutputStreamHandle) arguments[i]);
-						}
-					}
-
-					final Method method = serv.getMethod(invMsg.getMethodSignature());
-
-					// invoke method
+				final Bundle bundle = (Bundle) proxyBundles.remove(serviceID);
+				if (bundle != null) {
 					try {
-						Object result = method.invoke(serv.getServiceObject(), arguments);
-						// check if result is an instance of a stream
-						if (result instanceof InputStream) {
-							result = getInputStreamPlaceholder((InputStream) result);
-						} else if (result instanceof OutputStream) {
-							result = getOutputStreamPlaceholder((OutputStream) result);
-						}
-						final MethodResultMessage m = new MethodResultMessage();
-						m.setXID(invMsg.getXID());
-						m.setResult(result);
-						return m;
-					} catch (final InvocationTargetException t) {
-						t.printStackTrace();
-						throw t.getTargetException();
+						bundle.uninstall();
+					} catch (final BundleException be) {
+						be.printStackTrace();
 					}
-				} catch (final Throwable t) {
-					final MethodResultMessage m = new MethodResultMessage();
-					m.setXID(invMsg.getXID());
-					m.setException(t);
-					return m;
-				}
-			}
-			case RemoteOSGiMessage.REMOTE_EVENT : {
-				final RemoteEventMessage eventMsg = (RemoteEventMessage) msg;
-				final Dictionary properties = eventMsg.getProperties();
-
-				// transform the event timestamps
-				final Long remoteTs;
-				if ((remoteTs = (Long) properties.get(EventConstants.TIMESTAMP)) != null) {
-					properties.put(EventConstants.TIMESTAMP, getOffset().transform(remoteTs));
-				}
-
-				final Event event = new Event(eventMsg.getTopic(), properties);
-
-				// and deliver the event to the local framework
-				if (RemoteOSGiServiceImpl.eventAdminTracker.getTrackingCount() > 0) {
-					((EventAdmin) RemoteOSGiServiceImpl.eventAdminTracker.getService()).postEvent(event);
-				} else {
-					// TODO: to log
-					System.err.println("Could not deliver received event: " + event + ". No EventAdmin available.");
+					proxiedServices.remove(serviceID);
+					remoteServices.remove(getRemoteAddress().resolve(
+							"#" + serviceID).toString());
 				}
 				return null;
 			}
-			case RemoteOSGiMessage.TIME_OFFSET : {
-				// add timestamp to the message and return the message to sender
-				((TimeOffsetMessage) msg).timestamp();
-				return msg;
 			}
-				// TODO constants are def. in RemoteOSGiMessage -> move all to Impl?
-			case RemoteOSGiMessage.STREAM_REQUEST : {
-				final StreamRequestMessage reqMsg = (StreamRequestMessage) msg;
+		}
+		case RemoteOSGiMessage.INVOKE_METHOD: {
+			final InvokeMethodMessage invMsg = (InvokeMethodMessage) msg;
+			try {
+				RemoteServiceRegistration serv = (RemoteServiceRegistration) localServices
+						.get(invMsg.getServiceID());
+				if (serv == null) {
+					final RemoteServiceRegistration reg = getServiceRegistration(invMsg
+							.getServiceID());
+					if (reg == null) {
+						throw new IllegalStateException(toString()
+								+ "Could not get " + invMsg.getServiceID()
+								+ ", known services " + localServices);
+					} else {
+						serv = reg;
+					}
+				}
+
+				// get the invocation arguments and the local method
+				final Object[] arguments = invMsg.getArgs();
+				// check args for stream placeholders and replace with proxies
+				for (int i = 0; i < arguments.length; i++) {
+					if (arguments[i] instanceof InputStreamHandle) {
+						arguments[i] = getInputStreamProxy((InputStreamHandle) arguments[i]);
+					} else if (arguments[i] instanceof OutputStreamHandle) {
+						arguments[i] = getOutputStreamProxy((OutputStreamHandle) arguments[i]);
+					}
+				}
+
+				final Method method = serv.getMethod(invMsg
+						.getMethodSignature());
+
+				// invoke method
 				try {
-					// fetch stream object
-					final Object stream = streams.get(new Integer(reqMsg.getStreamID()));
-					if (stream == null) {
-						throw new IllegalStateException("Could not get stream with ID " + reqMsg.getStreamID());
+					Object result = method.invoke(serv.getServiceObject(),
+							arguments);
+					// check if result is an instance of a stream
+					if (result instanceof InputStream) {
+						result = getInputStreamPlaceholder((InputStream) result);
+					} else if (result instanceof OutputStream) {
+						result = getOutputStreamPlaceholder((OutputStream) result);
 					}
-					// invoke operation on stream
-					switch (reqMsg.getOp()) {
-						case StreamRequestMessage.READ : {
-							final int result = ((InputStream) stream).read();
-							final StreamResultMessage m = new StreamResultMessage();
-							m.setXID(reqMsg.getXID());
-							m.setResult((short) result);
-							return m;
-						}
-						case StreamRequestMessage.READ_ARRAY : {
-							final byte[] b = new byte[reqMsg.getLenOrVal()];
-							final int len = ((InputStream) stream).read(b, 0, reqMsg.getLenOrVal());
-							final StreamResultMessage m = new StreamResultMessage();
-							m.setXID(reqMsg.getXID());
-							m.setResult(StreamResultMessage.RESULT_ARRAY);
-							m.setData(b);
-							m.setLen(len);
-							return m;
-						}
-						case StreamRequestMessage.WRITE : {
-							((OutputStream) stream).write(reqMsg.getLenOrVal());
-							final StreamResultMessage m = new StreamResultMessage();
-							m.setXID(reqMsg.getXID());
-							m.setResult(StreamResultMessage.RESULT_WRITE_OK);
-							return m;
-						}
-						case StreamRequestMessage.WRITE_ARRAY : {
-							((OutputStream) stream).write(reqMsg.getData());
-							final StreamResultMessage m = new StreamResultMessage();
-							m.setXID(reqMsg.getXID());
-							m.setResult(StreamResultMessage.RESULT_WRITE_OK);
-							return m;
-						}
-						default :
-							throw new RemoteOSGiException("Unimplemented op code for stream request " + msg);
-					}
-				} catch (final IOException e) {
+					final MethodResultMessage m = new MethodResultMessage();
+					m.setXID(invMsg.getXID());
+					m.setResult(result);
+					return m;
+				} catch (final InvocationTargetException t) {
+					t.printStackTrace();
+					throw t.getTargetException();
+				}
+			} catch (final Throwable t) {
+				// TODO: to log
+				t.printStackTrace();
+				final MethodResultMessage m = new MethodResultMessage();
+				m.setXID(invMsg.getXID());
+				m.setException(t);
+				return m;
+			}
+		}
+		case RemoteOSGiMessage.REMOTE_EVENT: {
+			final RemoteEventMessage eventMsg = (RemoteEventMessage) msg;
+			final Dictionary properties = eventMsg.getProperties();
+
+			// transform the event timestamps
+			final Long remoteTs;
+			if ((remoteTs = (Long) properties.get(EventConstants.TIMESTAMP)) != null) {
+				properties.put(EventConstants.TIMESTAMP, getOffset().transform(
+						remoteTs));
+			}
+
+			final Event event = new Event(eventMsg.getTopic(), properties);
+
+			// and deliver the event to the local framework
+			if (RemoteOSGiServiceImpl.eventAdminTracker.getTrackingCount() > 0) {
+				((EventAdmin) RemoteOSGiServiceImpl.eventAdminTracker
+						.getService()).postEvent(event);
+			} else {
+				// TODO: to log
+				System.err.println("Could not deliver received event: " + event
+						+ ". No EventAdmin available.");
+			}
+			return null;
+		}
+		case RemoteOSGiMessage.TIME_OFFSET: {
+			// add timestamp to the message and return the message to sender
+			((TimeOffsetMessage) msg).timestamp();
+			return msg;
+		}
+			// TODO constants are def. in RemoteOSGiMessage -> move all to Impl?
+		case RemoteOSGiMessage.STREAM_REQUEST: {
+			final StreamRequestMessage reqMsg = (StreamRequestMessage) msg;
+			try {
+				// fetch stream object
+				final Object stream = streams.get(new Integer(reqMsg
+						.getStreamID()));
+				if (stream == null) {
+					throw new IllegalStateException(
+							"Could not get stream with ID "
+									+ reqMsg.getStreamID());
+				}
+				// invoke operation on stream
+				switch (reqMsg.getOp()) {
+				case StreamRequestMessage.READ: {
+					final int result = ((InputStream) stream).read();
 					final StreamResultMessage m = new StreamResultMessage();
 					m.setXID(reqMsg.getXID());
-					m.setResult(StreamResultMessage.RESULT_EXCEPTION);
-					m.setException(e);
+					m.setResult((short) result);
 					return m;
 				}
+				case StreamRequestMessage.READ_ARRAY: {
+					final byte[] b = new byte[reqMsg.getLenOrVal()];
+					final int len = ((InputStream) stream).read(b, 0, reqMsg
+							.getLenOrVal());
+					final StreamResultMessage m = new StreamResultMessage();
+					m.setXID(reqMsg.getXID());
+					m.setResult(StreamResultMessage.RESULT_ARRAY);
+					m.setLen(len);
+					if (len > 0) {
+						m.setData(b);
+					}
+					return m;
+				}
+				case StreamRequestMessage.WRITE: {
+					((OutputStream) stream).write(reqMsg.getLenOrVal());
+					final StreamResultMessage m = new StreamResultMessage();
+					m.setXID(reqMsg.getXID());
+					m.setResult(StreamResultMessage.RESULT_WRITE_OK);
+					return m;
+				}
+				case StreamRequestMessage.WRITE_ARRAY: {
+					((OutputStream) stream).write(reqMsg.getData());
+					final StreamResultMessage m = new StreamResultMessage();
+					m.setXID(reqMsg.getXID());
+					m.setResult(StreamResultMessage.RESULT_WRITE_OK);
+					return m;
+				}
+				default:
+					throw new RemoteOSGiException(
+							"Unimplemented op code for stream request " + msg);
+				}
+			} catch (final IOException e) {
+				final StreamResultMessage m = new StreamResultMessage();
+				m.setXID(reqMsg.getXID());
+				m.setResult(StreamResultMessage.RESULT_EXCEPTION);
+				m.setException(e);
+				return m;
 			}
-			default :
-				throw new RemoteOSGiException("Unimplemented message " + msg);
+		}
+		default:
+			throw new RemoteOSGiException("Unimplemented message " + msg);
 		}
 	}
 
@@ -1180,7 +1284,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 *            the instance of OutputStream that needs to be remoted
 	 * @return the placeholder object that is sent to the actual client
 	 */
-	private OutputStreamHandle getOutputStreamPlaceholder(final OutputStream origOS) {
+	private OutputStreamHandle getOutputStreamPlaceholder(
+			final OutputStream origOS) {
 		final OutputStreamHandle sp = new OutputStreamHandle(nextStreamID());
 		streams.put(new Integer(sp.getStreamID()), origOS);
 		return sp;
@@ -1222,7 +1327,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				} else if (s[i] instanceof OutputStream) {
 					((OutputStream) s[i]).close();
 				} else {
-					RemoteOSGiServiceImpl.log.log(LogService.LOG_WARNING, "Object in input streams map was not an instance of a stream.");
+					RemoteOSGiServiceImpl.log
+							.log(LogService.LOG_WARNING,
+									"Object in input streams map was not an instance of a stream.");
 				}
 			}
 		} catch (final IOException e) {
@@ -1250,14 +1357,17 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				final String[] propertyNames = event.getPropertyNames();
 				final Dictionary props = new Hashtable();
 				for (int i = 0; i < propertyNames.length; i++) {
-					props.put(propertyNames[i], event.getProperty(propertyNames[i]));
+					props.put(propertyNames[i], event
+							.getProperty(propertyNames[i]));
 				}
-				props.put(RemoteEventMessage.EVENT_SENDER_URI, networkChannel.getLocalAddress());
+				props.put(RemoteEventMessage.EVENT_SENDER_URI, networkChannel
+						.getLocalAddress());
 				msg.setProperties(props);
 				send(msg);
 
 				if (RemoteOSGiServiceImpl.MSG_DEBUG) {
-					RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG, "Forwarding Event " + event);
+					RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
+							"Forwarding Event " + event);
 				}
 			} catch (final Exception e) {
 				e.printStackTrace();

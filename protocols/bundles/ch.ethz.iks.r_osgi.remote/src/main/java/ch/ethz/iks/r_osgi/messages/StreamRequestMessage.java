@@ -115,22 +115,31 @@ public final class StreamRequestMessage extends RemoteOSGiMessage {
 		this.streamID = input.readShort();
 		this.op = input.readByte();
 		switch (op) {
-			case READ :
-				this.lenOrVal = 1;
-				this.b = null;
-				break;
-			case READ_ARRAY :
-			case WRITE :
-				this.lenOrVal = input.readInt();
-				this.b = null;
-				break;
-			case WRITE_ARRAY :
-				this.lenOrVal = input.readInt();
-				this.b = new byte[lenOrVal];
-				input.read(b, 0, lenOrVal);
-				break;
-			default :
-				throw new IllegalArgumentException("op code not within valid range: " + op); //$NON-NLS-1$
+		case READ:
+			this.lenOrVal = 1;
+			this.b = null;
+			break;
+		case READ_ARRAY:
+		case WRITE:
+			this.lenOrVal = input.readInt();
+			this.b = null;
+			break;
+		case WRITE_ARRAY:
+			this.lenOrVal = input.readInt();
+			this.b = new byte[lenOrVal];
+			int rem = lenOrVal;
+			int read;
+			while ((rem > 0)
+					&& ((read = input.read(b, lenOrVal - rem, rem)) > 0)) {
+				rem = rem - read;
+			}
+			if (rem > 0) {
+				throw new IOException("Premature end of input stream.");
+			}
+			break;
+		default:
+			throw new IllegalArgumentException(
+					"op code not within valid range: " + op); //$NON-NLS-1$
 		}
 	}
 
@@ -141,6 +150,7 @@ public final class StreamRequestMessage extends RemoteOSGiMessage {
 	 *            the ObjectOutputStream.
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @see ch.ethz.iks.r_osgi.impl.RemoteOSGiMessageImpl#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		out.writeShort(streamID);
@@ -236,7 +246,7 @@ public final class StreamRequestMessage extends RemoteOSGiMessage {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		final StringBuffer buffer = new StringBuffer();
+		StringBuffer buffer = new StringBuffer();
 		buffer.append("[STREAM_REQUEST] - XID: "); //$NON-NLS-1$
 		buffer.append(xid);
 		buffer.append(", streamID: "); //$NON-NLS-1$

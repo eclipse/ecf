@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2007 Jan S. Rellermeyer
+/* Copyright (c) 2006-2008 Jan S. Rellermeyer
  * Information and Communication Systems Research Group (IKS),
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
@@ -64,8 +64,18 @@ public interface NetworkChannelFactory {
 	 */
 	NetworkChannel getConnection(final ChannelEndpoint endpoint, final URI endpointURI) throws IOException;
 
+	/**
+	* activate the network channel factory. Called by R-OSGi.
+	* @param remoting
+	* @throws IOException
+	*/
 	void activate(final Remoting remoting) throws IOException;
 
+	/**
+	* deactivate the network channel factory. Called by R-OSGi.
+	* @param remoting
+	* @throws IOException
+	*/
 	void deactivate(final Remoting remoting) throws IOException;
 
 }

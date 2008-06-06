@@ -40,7 +40,7 @@ import java.net.UnknownHostException;
  * URI is, well, an URI, as described in RFC 2396. Since
  * <code>java.net.URI</code> exists only since version 1.4, R-OSGi uses its
  * own URI class. This is a lightweight implementation, it does only as much as
- * is needed for R-OSGi. Furthermore, certain protocol schemes support host name
+ * is needed for R-OSGi. Furthermore, certain protocol schemes do address
  * resolution to avoid URI schizophrenia.
  * 
  * @author Jan S. Rellermeyer, ETH Zurich
@@ -100,6 +100,9 @@ public final class URI implements Serializable {
 		}
 	}
 
+	/**
+	 * parse an URI.
+	 */
 	/**
 	 * parse an URI.
 	 */
@@ -187,7 +190,7 @@ public final class URI implements Serializable {
 	 * 
 	 * @param add
 	 *            the fragment.
-	 * @return the resolved URI.
+	 * @return
 	 */
 	public URI resolve(String add) {
 		return URI.create(toString() + add);

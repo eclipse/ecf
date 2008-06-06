@@ -221,4 +221,13 @@ final class RemoteServiceRegistration {
 	DeliverServiceMessage getDeliverServiceMessage() {
 		return deliverServiceMessage;
 	}
+	
+	/**
+	 * get a string representation.
+	 * @return a string representation.
+	 */
+	public String toString() {
+		return "RemoteServiceRegistration{" + reference.toString() + "}";
+	}
+
 }
