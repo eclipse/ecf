@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,7 +36,7 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 
 	private static ActivateTaskAction[] actions = new ActivateTaskAction[5];
 
-	private static Shell shell;
+	private Shell shell;
 
 	static {
 		for (int i = 0; i < 5; i++) {
@@ -45,14 +45,15 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 	}
 
 	public void fill(Menu menu, int index) {
-		super.fill(menu, index);
 		shell = menu.getShell();
+		super.fill(menu, index);
 	}
 
 	protected IContributionItem[] getContributionItems() {
 		int count = 0;
 		for (Iterator it = tasks.iterator(); it.hasNext() && count != 5;) {
 			ITask task = (ITask) it.next();
+			actions[count].setShell(shell);
 			actions[count].setTask(task);
 			count++;
 		}
@@ -84,8 +85,15 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 	}
 
 	static class ActivateTaskAction extends Action {
+
 		private static final String TITLE_DIALOG = "Mylyn Information";
+
+		private Shell shell;
 		private ITask task;
+
+		void setShell(Shell shell) {
+			this.shell = shell;
+		}
 
 		void setTask(ITask task) {
 			this.task = task;

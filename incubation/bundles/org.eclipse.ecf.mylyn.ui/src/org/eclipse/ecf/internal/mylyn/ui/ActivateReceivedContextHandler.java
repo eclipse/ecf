@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,6 +39,7 @@ public class ActivateReceivedContextHandler extends AbstractHandler {
 		elsd.setElements(CompoundContextActivationContributionItem.tasks.toArray());
 		if (Window.OK == elsd.open()) {
 			ActivateTaskAction action = new CompoundContextActivationContributionItem.ActivateTaskAction();
+			action.setShell(shell);
 			action.setTask((ITask) elsd.getFirstResult());
 			action.run();
 		}

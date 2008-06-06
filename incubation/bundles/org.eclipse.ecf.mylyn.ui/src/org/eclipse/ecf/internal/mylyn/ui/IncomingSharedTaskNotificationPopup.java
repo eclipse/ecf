@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 University Of British Columbia and others.
+ * Copyright (c) 2004, 2008 University Of British Columbia and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     University Of British Columbia - initial API and implementation
  *     Rob Elves - creator of the original TaskListNotificationPopup class
+ *     Remy Chi Jian Suen <remy.suen@gmail.com> - Adapted for ECF/Mylyn bridge use
  *     Red Hat - update to Mylyn 3.0 API
  *******************************************************************************/
 
@@ -62,6 +63,7 @@ class IncomingSharedTaskNotificationPopup extends AbstractNotificationPopup {
 		itemLink.addHyperlinkListener(new HyperlinkAdapter() {
 			public void linkActivated(HyperlinkEvent e) {
 				ActivateTaskAction action = new CompoundContextActivationContributionItem.ActivateTaskAction();
+				action.setShell(getParentShell());
 				action.setTask(task);
 				action.run();
 				close();
