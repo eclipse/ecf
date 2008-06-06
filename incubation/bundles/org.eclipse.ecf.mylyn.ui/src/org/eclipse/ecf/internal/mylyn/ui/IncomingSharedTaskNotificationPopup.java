@@ -8,6 +8,7 @@
  * Contributors:
  *     University Of British Columbia - initial API and implementation
  *     Rob Elves - creator of the original TaskListNotificationPopup class
+ *     Red Hat - update to Mylyn 3.0 API
  *******************************************************************************/
 
 package org.eclipse.ecf.internal.mylyn.ui;
@@ -16,10 +17,10 @@ import org.eclipse.ecf.internal.mylyn.ui.CompoundContextActivationContributionIt
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.mylyn.internal.provisional.commons.ui.AbstractNotificationPopup;
+import org.eclipse.mylyn.internal.provisional.commons.ui.CommonImages;
 import org.eclipse.mylyn.internal.tasks.ui.TaskListHyperlink;
 import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.mylyn.tasks.ui.TaskElementLabelProvider;
-import org.eclipse.mylyn.tasks.ui.TasksUiImages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
@@ -52,7 +53,7 @@ class IncomingSharedTaskNotificationPopup extends AbstractNotificationPopup {
 
 		final Label notificationLabelIcon = new Label(notificationComposite, SWT.LEAD);
 		notificationLabelIcon.setBackground(parent.getBackground());
-		notificationLabelIcon.setImage(TasksUiImages.getImage(TasksUiImages.OVERLAY_INCOMMING));
+		notificationLabelIcon.setImage(CommonImages.getImage(CommonImages.OVERLAY_SYNC_INCOMMING_NEW));
 
 		final TaskListHyperlink itemLink = new TaskListHyperlink(notificationComposite, SWT.BEGINNING | SWT.WRAP | SWT.NO_FOCUS);
 		itemLink.setText(task.getTaskId());

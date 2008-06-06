@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat - update to Mylyn 3.0 API
  *******************************************************************************/
 package org.eclipse.ecf.internal.mylyn.ui;
 
@@ -21,10 +22,10 @@ import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.mylyn.internal.context.core.ContextCorePlugin;
-import org.eclipse.mylyn.internal.context.core.InteractionContext;
-import org.eclipse.mylyn.internal.tasks.core.AbstractTask;
+import org.eclipse.mylyn.context.core.ContextCore;
+import org.eclipse.mylyn.context.core.IInteractionContext;
 import org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin;
+import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -87,10 +88,10 @@ public class Activator extends AbstractUIPlugin implements IChannelListener, Ser
 				FileOutputStream fos = new FileOutputStream(file);
 				fos.write(data);
 				List tasks = TasksUiPlugin.getTaskListManager().getTaskListWriter().readTasks(file);
-				final AbstractTask task = (AbstractTask) tasks.get(0);
+				final ITask task = (ITask) tasks.get(0);
 				Set repositories = TasksUiPlugin.getTaskListManager().getTaskListWriter().readRepositories(file);
 				TasksUiPlugin.getRepositoryManager().insertRepositories(repositories, TasksUiPlugin.getDefault().getRepositoriesFilePath());
-				InteractionContext context = ContextCorePlugin.getContextManager().loadContext(task.getHandleIdentifier(), file);
+				IInteractionContext context = ContextCore.getContextStore().importContext(task.getHandleIdentifier(), file);
 				CompoundContextActivationContributionItem.enqueue(task, context);
 
 				IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();

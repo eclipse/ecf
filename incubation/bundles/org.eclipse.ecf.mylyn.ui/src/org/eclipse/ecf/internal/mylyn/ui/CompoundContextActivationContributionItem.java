@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat - update to Mylyn 3.0 API
  *******************************************************************************/
 package org.eclipse.ecf.internal.mylyn.ui;
 
@@ -15,14 +16,13 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.mylyn.context.core.ContextCore;
 import org.eclipse.mylyn.context.core.IInteractionContext;
-import org.eclipse.mylyn.internal.context.core.ContextCorePlugin;
-import org.eclipse.mylyn.internal.context.core.InteractionContext;
-import org.eclipse.mylyn.internal.tasks.core.AbstractTask;
-import org.eclipse.mylyn.internal.tasks.core.TaskList;
+import org.eclipse.mylyn.internal.context.core.LocalContextStore;
+import org.eclipse.mylyn.internal.tasks.core.ITaskList;
 import org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin;
 import org.eclipse.mylyn.tasks.core.ITask;
-import org.eclipse.mylyn.tasks.ui.ITasksUiConstants;
+import org.eclipse.mylyn.tasks.ui.TasksUi;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.actions.CompoundContributionItem;
@@ -52,7 +52,7 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 	protected IContributionItem[] getContributionItems() {
 		int count = 0;
 		for (Iterator it = tasks.iterator(); it.hasNext() && count != 5;) {
-			AbstractTask task = (AbstractTask) it.next();
+			ITask task = (ITask) it.next();
 			actions[count].setTask(task);
 			count++;
 		}
@@ -84,6 +84,7 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 	}
 
 	static class ActivateTaskAction extends Action {
+		private static final String TITLE_DIALOG = "Mylyn Information";
 		private ITask task;
 
 		void setTask(ITask task) {
@@ -92,15 +93,15 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 		}
 
 		public void run() {
-			final InteractionContext context = (InteractionContext) contexts.get(task);
+			final IInteractionContext context = (IInteractionContext) contexts.get(task);
 
-			final TaskList taskList = TasksUiPlugin.getTaskList();
-			if (taskList.getTask(task.getHandleIdentifier()) != null) {
-				boolean confirmed = MessageDialog.openConfirm(shell, ITasksUiConstants.TITLE_DIALOG, "The task '" + task.getSummary() + "' already exists. Do you want to override its context with the source?");
+			final ITaskList taskList = TasksUiPlugin.getTaskList();
+			if (taskList.getTask(task.getRepositoryUrl(), task.getTaskId()) != null) {
+				boolean confirmed = MessageDialog.openConfirm(shell, TITLE_DIALOG, "The task '" + task.getSummary() + "' already exists. Do you want to override its context with the source?");
 				if (confirmed) {
 					Job job = new Job("Import context") {
 						protected IStatus run(IProgressMonitor monitor) {
-							ContextCorePlugin.getContextManager().importContext(context);
+							((LocalContextStore) ContextCore.getContextStore()).importContext(context);
 							scheduleTaskActivationJob();
 							return Status.OK_STATUS;
 						}
@@ -112,8 +113,8 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 			} else {
 				Job job = new Job("Import task") {
 					protected IStatus run(IProgressMonitor monitor) {
-						ContextCorePlugin.getContextManager().importContext(context);
-						taskList.insertTask(task, null, null);
+						((LocalContextStore) ContextCore.getContextStore()).importContext(context);
+						taskList.addTask(task);
 						scheduleTaskActivationJob();
 						return Status.OK_STATUS;
 					}
@@ -127,7 +128,7 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 		private void scheduleTaskActivationJob() {
 			UIJob job = new UIJob(shell.getDisplay(), "Activate imported task") {
 				public IStatus runInUIThread(IProgressMonitor monitor) {
-					TasksUiPlugin.getTaskListManager().activateTask((AbstractTask) task);
+					TasksUi.getTaskActivityManager().activateTask(task);
 					return Status.OK_STATUS;
 				}
 			};
