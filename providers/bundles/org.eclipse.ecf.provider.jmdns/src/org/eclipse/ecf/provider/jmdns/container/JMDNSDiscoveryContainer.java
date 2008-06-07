@@ -90,7 +90,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			fireContainerEvent(new ContainerConnectingEvent(this.getID(), this.targetID, joinContext));
 			initializeQueue();
 			try {
-				this.jmdns = new JmDNS(intf);
+				this.jmdns = JmDNS.create(intf);
 				jmdns.addServiceTypeListener(this);
 			} catch (final IOException e) {
 				if (this.jmdns != null) {
@@ -321,12 +321,16 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceAdded(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		runInThread(new Runnable() {
 			public void run() {
-				if (jmdns != null) {
+				JmDNS localJmdns = null;
+				synchronized (lock) {
+					localJmdns = jmdns;
+				}
+				if (localJmdns != null) {
 					String serviceType = arg0.getType();
 					String serviceName = arg0.getName();
 					Collection l = getAllListeners(createServiceID(serviceType, serviceName).getServiceTypeID());
 					if (l.size() > 0) {
-						jmdns.requestServiceInfo(serviceType, serviceName, DEFAULT_REQUEST_TIMEOUT);
+						localJmdns.requestServiceInfo(serviceType, serviceName, DEFAULT_REQUEST_TIMEOUT);
 					}
 				}
 			}
@@ -344,7 +348,11 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceRemoved(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		runInThread(new Runnable() {
 			public void run() {
-				if (jmdns != null) {
+				JmDNS localJmdns = null;
+				synchronized (lock) {
+					localJmdns = jmdns;
+				}
+				if (localJmdns != null) {
 					try {
 						fireUndiscovered(createIServiceInfoFromServiceEvent(arg0));
 					} catch (final Exception e) {
@@ -366,7 +374,11 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceResolved(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		runInThread(new Runnable() {
 			public void run() {
-				if (jmdns != null) {
+				JmDNS localJmdns = null;
+				synchronized (lock) {
+					localJmdns = jmdns;
+				}
+				if (localJmdns != null) {
 					try {
 						fireDiscovered(createIServiceInfoFromServiceEvent(arg0));
 					} catch (final Exception e) {
@@ -467,7 +479,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		props.put(SCHEME_PROPERTY, location.getScheme());
 		int priority = (serviceInfo.getPriority() == -1) ? 0 : serviceInfo.getPriority();
 		int weight = (serviceInfo.getWeight() == -1) ? 0 : serviceInfo.getWeight();
-		final ServiceInfo si = new ServiceInfo(sID.getServiceTypeID().getInternal(), sID.getServiceName(), location.getPort(), priority, weight, props);
+		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), sID.getServiceName(), location.getPort(), priority, weight, props);
 		return si;
 	}
 

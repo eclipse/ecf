@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf,
  org.eclipse.ecf.discovery
 Eclipse-LazyStart: true
-Bundle-ClassPath: ., lib/jmdns-1.0.3.jar
+Bundle-ClassPath: .,
+ lib/jmdns.jar
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
 Export-Package: org.eclipse.ecf.internal.provider.jmdns;x-internal:=true,

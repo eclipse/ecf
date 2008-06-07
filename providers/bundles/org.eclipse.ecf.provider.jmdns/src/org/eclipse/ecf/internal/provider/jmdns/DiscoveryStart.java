@@ -22,7 +22,7 @@ public class DiscoveryStart implements IECFStart {
 				discoveryContainer.connect(null, null);
 				Properties props = new Properties();
 				props.put(IDiscoveryService.CONTAINER_ID, discoveryContainer.getID());
-				props.put(IDiscoveryService.CONTAINER_NAME, "ecf.discovery.jmdns"); //$NON-NLS-1$
+				//props.put(IDiscoveryService.CONTAINER_NAME, "ecf.discovery.jmdns"); //$NON-NLS-1$
 				JMDNSPlugin.getDefault().getContext().registerService(IDiscoveryService.class.getName(), discoveryContainer, props);
 			} catch (Exception e) {
 				e.printStackTrace();
