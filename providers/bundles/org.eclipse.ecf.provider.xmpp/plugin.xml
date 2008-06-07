@@ -86,5 +86,11 @@
    <extension-point id="iqProviders" name="IQ Providers" schema="schema/iqProvider.exsd"/>
    <extension-point id="extensionProviders" name="Extension Providers" schema="schema/extensionProvider.exsd"/>
    <extension-point id="providerDirectories" name="Provider Directories" schema="schema/providerDirectories.exsd"/>
-
+   <extension
+         point="org.eclipse.ecf.filetransfer.urlStreamHandlerService">
+      <urlStreamHandlerService
+            protocol="xmppfile"
+            serviceClass="org.eclipse.ecf.internal.provider.xmpp.XMPPFiletURLStreamHandlerService">
+      </urlStreamHandlerService>
+   </extension>
 </plugin>
