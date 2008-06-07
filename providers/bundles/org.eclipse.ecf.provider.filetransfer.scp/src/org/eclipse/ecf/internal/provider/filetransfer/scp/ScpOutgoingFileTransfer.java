@@ -12,12 +12,14 @@
 
 package org.eclipse.ecf.internal.provider.filetransfer.scp;
 
-import com.jcraft.jsch.*;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.Session;
 import java.io.*;
 import java.net.URL;
 import java.util.Map;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.filetransfer.SendFileTransferException;
 import org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer;
 import org.eclipse.osgi.util.NLS;
@@ -32,7 +34,7 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 
 	String username;
 
-	private Channel channel;
+	private ChannelExec channel;
 
 	private InputStream responseStream;
 	private ScpUtil scpUtil;
@@ -52,8 +54,8 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 			s.connect();
 			final String targetFileName = scpUtil.trimTargetFile(url.getPath());
 			final String command = SCP_COMMAND + targetFileName;
-			channel = s.openChannel(SCP_EXEC);
-			((ChannelExec) channel).setCommand(command);
+			channel = (ChannelExec) s.openChannel(SCP_EXEC);
+			channel.setCommand(command);
 			final OutputStream outs = channel.getOutputStream();
 			responseStream = channel.getInputStream();
 			channel.connect();
@@ -81,8 +83,9 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 	private void sendFileNameAndSize(File localFile, String fileName, OutputStream outs, InputStream ins) throws IOException {
 		// send "C0644 filesize filename", where filename should not include '/'
 		final long filesize = localFile.length();
+		String[] targetFile = StringUtils.split(fileName, '/');
 		final StringBuffer command = new StringBuffer("C0644 "); //$NON-NLS-1$
-		command.append(filesize).append(" ").append(fileName).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		command.append(filesize).append(" ").append(targetFile[targetFile.length - 1]).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
 		outs.write(command.toString().getBytes());
 		outs.flush();
 		scpUtil.checkAck(ins);
