@@ -45,12 +45,15 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
  *                   }
  *     		     }
  *     	     };
- *           // Specify the target user to receive file being sent
- *           ID userID = target user id to receive file;
+ *           // Specify the target file ID
+ *           // This following specifies the path:  ~/path/filename.ext
+ *           ID targetID = FileIDFactory.getDefault().createFileID(ftc.getOutgoingNamespace(),new URL(&quot;scp://user@host/path/filename.ext&quot;));
+ *           // This following specifies the path:  /path/filename.ext
+ *           // ID targetID = FileIDFactory.getDefault().createFileID(ftc.getOutgoingNamespace(),new URL(&quot;scp://user@host//path/filename.ext&quot;));
  *           // Specify the local file to send
  *           File localFileToSend = new File(&quot;filename&quot;);
  *           // Actually send outgoing file request to remote user.  
- *           ftc.sendOutgoingRequest(userID, localFileToSend, listener, null);
+ *           ftc.sendOutgoingRequest(targetID, localFileToSend, listener, null);
  *       }
  * </pre>
  * 
