@@ -33,24 +33,26 @@ import org.eclipse.equinox.app.IApplicationContext;
  */
 public class DiscoverableServer implements IApplication {
 
-	private static final String ECF_GENERIC_CLIENT = "ecf.generic.client"; //$NON-NLS-1$
-	private static final String ECF_GENERIC_SERVER = "ecf.generic.server"; //$NON-NLS-1$
-	private static final String ECF_GENERIC_SERVER_ID_NAMESPACE = StringID.class.getName();
-	private static final String ECF_GENERIC_SERVER_ID = "ecftcp://localhost:3285/server"; //$NON-NLS-1$
+	public static final String serviceHostContainerTypeArg = "-serviceHostContainerType"; //$NON-NLS-1$
+	public static final String serviceHostNamespaceArg = "-serviceHostNamespace"; //$NON-NLS-1$
+	public static final String serviceHostIDArg = "-serviceHostID"; //$NON-NLS-1$
+	public static final String clientContainerTypeArg = "-clientContainerType"; //$NON-NLS-1$
+	public static final String clientConnectTargetArg = "-clientConnectTarget"; //$NON-NLS-1$
+	public static final String serviceTypeArg = "-serviceType"; //$NON-NLS-1$
+
+	// Argument variables
+	private String serviceHostContainerType = "ecf.generic.server"; //$NON-NLS-1$
+	private String serviceHostNamespace = StringID.class.getName();
+	private String serviceHostID = "ecftcp://localhost:3285/server"; //$NON-NLS-1$
+	private String clientContainerType = "ecf.generic.client"; //$NON-NLS-1$
+	private String clientConnectTarget = "ecftcp://localhost:3285/server"; //$NON-NLS-1$
+	private String serviceType = Constants.DISCOVERY_SERVICE_TYPE;
 
 	private IContainer serviceHostContainer;
 
 	private IServiceInfo serviceInfo;
 
 	private IDiscoveryService discoveryService;
-
-	// Parameters
-	private String serviceHostContainerType = ECF_GENERIC_SERVER;
-	private String serviceHostNamespace = ECF_GENERIC_SERVER_ID_NAMESPACE;
-	private String serviceHostID = ECF_GENERIC_SERVER_ID;
-	private String clientContainerType = ECF_GENERIC_CLIENT;
-	private String clientConnectTarget = ECF_GENERIC_SERVER_ID;
-	private String serviceType = Constants.DISCOVERY_SERVICE_TYPE;
 
 	private boolean done = false;
 
@@ -69,11 +71,8 @@ public class DiscoverableServer implements IApplication {
 		return props;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
-	 */
-	public Object start(IApplicationContext ctxt) throws Exception {
-		initializeFromArguments((String[]) ctxt.getArguments().get("application.args")); //$NON-NLS-1$
+	public void start(String[] args) throws Exception {
+		initializeFromArguments(args);
 		// Create service host container
 		serviceHostContainer = createServiceHostContainer();
 		// Get adapter from serviceHostContainer
@@ -99,7 +98,15 @@ public class DiscoverableServer implements IApplication {
 		System.out.println("service published for discovery\n\tserviceName=" + serviceID.getServiceName() + "\n\tserviceTypeID=" + serviceID.getServiceTypeID()); //$NON-NLS-1$ //$NON-NLS-2$
 		System.out.println("\tserviceProperties=" + serviceProperties); //$NON-NLS-1$
 
-		// wait until done
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
+	 */
+	public Object start(IApplicationContext ctxt) throws Exception {
+		// Actually start with application args
+		start((String[]) ctxt.getArguments().get("application.args")); //$NON-NLS-1$
+		// wait on this thread until done
 		synchronized (this) {
 			while (!done) {
 				wait();
@@ -121,7 +128,6 @@ public class DiscoverableServer implements IApplication {
 				try {
 					discoveryService.unregisterService(serviceInfo);
 				} catch (final ECFException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				serviceInfo = null;
@@ -147,17 +153,17 @@ public class DiscoverableServer implements IApplication {
 		if (args == null)
 			return;
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equalsIgnoreCase("-serviceHostContainerType")) //$NON-NLS-1$
+			if (args[i].equalsIgnoreCase(serviceHostContainerTypeArg))
 				serviceHostContainerType = args[++i];
-			else if (args[i].equalsIgnoreCase("-serviceHostNamespace")) //$NON-NLS-1$
+			else if (args[i].equalsIgnoreCase(serviceHostNamespaceArg))
 				serviceHostNamespace = args[++i];
-			else if (args[i].equalsIgnoreCase("-serviceHostID")) //$NON-NLS-1$
+			else if (args[i].equalsIgnoreCase(serviceHostIDArg))
 				serviceHostID = args[++i];
-			else if (args[i].equalsIgnoreCase("-clientContainerType")) //$NON-NLS-1$
+			else if (args[i].equalsIgnoreCase(clientContainerTypeArg))
 				clientContainerType = args[++i];
-			else if (args[i].equalsIgnoreCase("-clientConnectTarget")) //$NON-NLS-1$
+			else if (args[i].equalsIgnoreCase(clientConnectTargetArg))
 				clientConnectTarget = args[++i];
-			else if (args[i].equalsIgnoreCase("-serviceType")) //$NON-NLS-1$
+			else if (args[i].equalsIgnoreCase(serviceTypeArg))
 				serviceType = args[++i];
 			else {
 				usage();
@@ -171,11 +177,12 @@ public class DiscoverableServer implements IApplication {
 	 */
 	private void usage() {
 		System.out.println("usage: eclipse -console [options] -application org.eclipse.ecf.examples.remoteservices.server.remoteServicesServer"); //$NON-NLS-1$
-		System.out.println("   options: [-serviceHostContainerType <typename>] default=ecf.generic.server"); //$NON-NLS-1$
-		System.out.println("            [-serviceHostID <hostID>] default=ecftcp://localhost:3285/server"); //$NON-NLS-1$
-		System.out.println("            [-clientContainerType <typename>] default=ecf.generic.client"); //$NON-NLS-1$
-		System.out.println("            [-clientConnectTarget <target>] default=<serviceHostID>"); //$NON-NLS-1$
-		System.out.println("            [-serviceType <serviceType>] default=remotesvcs"); //$NON-NLS-1$
+		System.out.println("   options: [" + serviceHostContainerTypeArg + " <typename>] default=ecf.generic.server"); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("            [" + serviceHostNamespaceArg + " <namespacename>] default=org.eclipse.ecf.identity.StringID"); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("            [" + serviceHostIDArg + " <hostID>] default=ecftcp://localhost:3285/server"); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("            [" + clientContainerTypeArg + " <typename>] default=ecf.generic.client"); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("            [" + clientConnectTargetArg + " <target>] default=ecftcp://localhost:3285/server"); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("            [" + serviceTypeArg + " <serviceType>] default=remotesvcs"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 }

@@ -31,6 +31,8 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker discoveryTracker;
 
+	//private DiscoverableServer discoverableServer;
+
 	/**
 	 * The constructor
 	 */
@@ -61,6 +63,10 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
+		// create and start discoverable server
+		//discoverableServer = new DiscoverableServer();
+		//String[] args = {};
+		//discoverableServer.start(args);
 	}
 
 	/*
@@ -78,6 +84,8 @@ public class Activator implements BundleActivator {
 			discoveryTracker = null;
 		}
 		this.context = null;
+		//if (discoverableServer != null)
+		//	discoverableServer.stop();
 	}
 
 	/**
