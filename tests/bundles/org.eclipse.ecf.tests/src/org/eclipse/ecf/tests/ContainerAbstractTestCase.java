@@ -76,14 +76,14 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected String getUsername(int client) {
-		if (usernames == null || usernames.length <= client)
-			return null;
+		if (usernames == null || usernames.length <= client || usernames[client] == null)
+			throw new NullPointerException("System property -username" + client + " is not set and must be set to run this test");
 		return usernames[client];
 	}
 
 	protected String getPassword(int client) {
-		if (passwords == null || passwords.length <= client)
-			return null;
+		if (passwords == null || passwords.length <= client || passwords[client] == null)
+			throw new NullPointerException("System property -password" + client + " is not set and must be set to run this test");
 		return passwords[client];
 	}
 
