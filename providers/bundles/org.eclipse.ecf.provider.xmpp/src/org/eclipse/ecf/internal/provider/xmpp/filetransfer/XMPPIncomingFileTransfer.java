@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -230,7 +231,12 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		return null;
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this))
+			return this;
+		final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	/*

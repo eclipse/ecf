@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerAuthenticationException;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
@@ -93,8 +94,16 @@ public class ECFConnection implements ISynchAsynchConnection {
 		return properties;
 	}
 
-	public Object getAdapter(Class clazz) {
-		return null;
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this))
+			return this;
+		final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	public XMPPConnection getXMPPConnection() {
@@ -146,14 +155,14 @@ public class ECFConnection implements ISynchAsynchConnection {
 		try {
 			if (google) {
 				if (secure) {
-					if(serverPort == -1){
-						serverPort = XMPPS_DEFAULT_PORT;	
-					}					
+					if (serverPort == -1) {
+						serverPort = XMPPS_DEFAULT_PORT;
+					}
 					connection = new SSLXMPPConnection(GOOGLE_TALK_HOST, serverPort, jabberURI.getHostname());
 				} else {
-					if(serverPort == -1){
-						serverPort = XMPP_DEFAULT_PORT;	
-					}	
+					if (serverPort == -1) {
+						serverPort = XMPP_DEFAULT_PORT;
+					}
 					connection = new XMPPConnection(GOOGLE_TALK_HOST, serverPort, jabberURI.getHostname());
 				}
 			} else if (serverPort == -1) {

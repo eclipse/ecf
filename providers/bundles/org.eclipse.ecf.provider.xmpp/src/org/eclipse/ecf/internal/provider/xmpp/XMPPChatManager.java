@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IIMMessageEvent;
@@ -41,11 +42,11 @@ import org.jivesoftware.smack.packet.Message.Type;
  */
 public class XMPPChatManager implements IChatManager {
 
-	private List messageListeners = new ArrayList();
+	private final List messageListeners = new ArrayList();
 
-	private XMPPContainerPresenceHelper presenceHelper;
+	private final XMPPContainerPresenceHelper presenceHelper;
 
-	private IChatMessageSender chatMessageSender = new IChatMessageSender() {
+	private final IChatMessageSender chatMessageSender = new IChatMessageSender() {
 
 		/*
 		 * (non-Javadoc)
@@ -55,17 +56,12 @@ public class XMPPChatManager implements IChatManager {
 		 *      org.eclipse.ecf.presence.im.IChatMessage.Type, java.lang.String,
 		 *      java.lang.String)
 		 */
-		public void sendChatMessage(ID toID, ID threadID,
-				org.eclipse.ecf.presence.im.IChatMessage.Type type,
-				String subject, String body, Map properties)
-				throws ECFException {
+		public void sendChatMessage(ID toID, ID threadID, org.eclipse.ecf.presence.im.IChatMessage.Type type, String subject, String body, Map properties) throws ECFException {
 			if (toID == null)
 				throw new ECFException("receiver cannot be null");
 			try {
-				presenceHelper.getConnectionOrThrowIfNull().sendMessage(toID,
-						threadID, XMPPChatManager.this.createMessageType(type),
-						subject, body, properties);
-			} catch (Exception e) {
+				presenceHelper.getConnectionOrThrowIfNull().sendMessage(toID, threadID, XMPPChatManager.this.createMessageType(type), subject, body, properties);
+			} catch (final Exception e) {
 				throw new ECFException("sendChatMessage exception", e);
 			}
 
@@ -78,21 +74,19 @@ public class XMPPChatManager implements IChatManager {
 		 *      java.lang.String)
 		 */
 		public void sendChatMessage(ID toID, String body) throws ECFException {
-			sendChatMessage(toID, null, IChatMessage.Type.CHAT, null, body,
-					null);
+			sendChatMessage(toID, null, IChatMessage.Type.CHAT, null, body, null);
 		}
 
 	};
 
 	protected ITypingMessageSender typingMessageSender = new ITypingMessageSender() {
 
-		public void sendTypingMessage(ID toID, boolean isTyping, String body)
-				throws ECFException {
+		public void sendTypingMessage(ID toID, boolean isTyping, String body) throws ECFException {
 			if (toID == null)
 				throw new ECFException("receiver cannot be null");
 			try {
 				presenceHelper.sendTypingMessage(toID, isTyping, body);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				throw new ECFException("sendChatMessage exception", e);
 			}
 		}
@@ -113,7 +107,12 @@ public class XMPPChatManager implements IChatManager {
 		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 		 */
 		public Object getAdapter(Class adapter) {
-			return null;
+			if (adapter == null)
+				return null;
+			if (adapter.isInstance(this))
+				return this;
+			final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
+			return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 		}
 
 		public boolean isActive() {
@@ -122,10 +121,9 @@ public class XMPPChatManager implements IChatManager {
 
 		public void setActive(boolean active) {
 			// TODO Auto-generated method stub
-			
+
 		}
 	};
-	
 
 	public XMPPChatManager(XMPPContainerPresenceHelper presenceHelper) {
 		this.presenceHelper = presenceHelper;
@@ -180,7 +178,7 @@ public class XMPPChatManager implements IChatManager {
 	 */
 	public void removeMessageListener(IIMMessageListener listener) {
 		synchronized (messageListeners) {
-			messageListeners.remove(listener);			
+			messageListeners.remove(listener);
 		}
 	}
 
@@ -189,16 +187,14 @@ public class XMPPChatManager implements IChatManager {
 		synchronized (messageListeners) {
 			toNotify = new ArrayList(messageListeners);
 		}
-		for (Iterator i = toNotify.iterator(); i.hasNext();) {
-			IIMMessageListener l = (IIMMessageListener) i.next();
+		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
+			final IIMMessageListener l = (IIMMessageListener) i.next();
 			l.handleMessageEvent(event);
 		}
 	}
 
-	protected void fireChatMessage(ID fromID, ID threadID, Type type,
-			String subject, String body, Map properties) {
-		fireMessageEvent(new ChatMessageEvent(fromID, new ChatMessage(fromID,
-				threadID, createMessageType(type), subject, body, properties)));
+	protected void fireChatMessage(ID fromID, ID threadID, Type type, String subject, String body, Map properties) {
+		fireMessageEvent(new ChatMessageEvent(fromID, new ChatMessage(fromID, threadID, createMessageType(type), subject, body, properties)));
 	}
 
 	protected void fireTypingMessage(ID fromID, ITypingMessage typingMessage) {
@@ -214,18 +210,15 @@ public class XMPPChatManager implements IChatManager {
 		return typingMessageSender;
 	}
 
-	protected void fireXHTMLChatMessage(ID fromID, ID threadID, Type type,
-			String subject, String body, Map properties, List xhtmlbodylist) {
-		fireMessageEvent(new XHTMLChatMessageEvent(fromID,
-				new XHTMLChatMessage(fromID, threadID, createMessageType(type),
-						subject, body, properties, xhtmlbodylist)));
+	protected void fireXHTMLChatMessage(ID fromID, ID threadID, Type type, String subject, String body, Map properties, List xhtmlbodylist) {
+		fireMessageEvent(new XHTMLChatMessageEvent(fromID, new XHTMLChatMessage(fromID, threadID, createMessageType(type), subject, body, properties, xhtmlbodylist)));
 
 	}
 
 	public IHistoryManager getHistoryManager() {
 		return historyManager;
 	}
-	
+
 	public void disconnect() {
 		synchronized (messageListeners) {
 			messageListeners.clear();

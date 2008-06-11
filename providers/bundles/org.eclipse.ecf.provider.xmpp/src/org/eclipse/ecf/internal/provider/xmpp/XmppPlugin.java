@@ -11,9 +11,11 @@ package org.eclipse.ecf.internal.provider.xmpp;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.PlatformHelper;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -38,12 +40,30 @@ public class XmppPlugin implements BundleActivator {
 
 	private Map services;
 
+	private ServiceTracker adapterManagerTracker = null;
+
 	public static void log(String message) {
 		getDefault().log(new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
 	}
 
 	public static void log(String message, Throwable e) {
 		getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, message, e));
+	}
+
+	public IAdapterManager getAdapterManager() {
+		// First, try to get the adapter manager via
+		if (adapterManagerTracker == null) {
+			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker.open();
+		}
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
+		// Then, if the service isn't there, try to get from Platform class via
+		// PlatformHelper class
+		if (adapterManager == null)
+			adapterManager = PlatformHelper.getPlatformAdapterManager();
+		if (adapterManager == null)
+			getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Cannot get adapter manager", null)); //$NON-NLS-1$
+		return adapterManager;
 	}
 
 	/**
@@ -89,20 +109,22 @@ public class XmppPlugin implements BundleActivator {
 			logServiceTracker.close();
 			logServiceTracker = null;
 		}
+		if (adapterManagerTracker != null) {
+			adapterManagerTracker.close();
+			adapterManagerTracker = null;
+		}
 		this.context = null;
 		plugin = null;
 	}
 
 	public void registerService(IPresenceService service) {
 		if (context != null) {
-			services.put(service, context.registerService(IPresenceService.class
-					.getName(), service, null));	
+			services.put(service, context.registerService(IPresenceService.class.getName(), service, null));
 		}
 	}
 
 	public void unregisterService(IPresenceService service) {
-		ServiceRegistration registration = (ServiceRegistration) services
-				.remove(service);
+		final ServiceRegistration registration = (ServiceRegistration) services.remove(service);
 		if (registration != null) {
 			registration.unregister();
 		}

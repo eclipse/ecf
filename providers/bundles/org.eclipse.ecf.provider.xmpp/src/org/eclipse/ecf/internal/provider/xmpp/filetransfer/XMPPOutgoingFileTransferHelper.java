@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -29,6 +30,7 @@ import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.SendFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPFileID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPFileNamespace;
@@ -37,6 +39,11 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 
 public class XMPPOutgoingFileTransferHelper implements ISendFileTransferContainerAdapter {
+
+	/**
+	 * 
+	 */
+	private static final String OUTGOING_REQUEST_TIMEOUT = "outgoingRequestTimeout";
 
 	List transferListeners = new ArrayList();
 
@@ -88,7 +95,23 @@ public class XMPPOutgoingFileTransferHelper implements ISendFileTransferContaine
 
 		final XMPPFileID fileID = (XMPPFileID) targetReceiver;
 
-		final XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(manager, fileID.getXMPPID(), localFileToSend, progressListener);
+		int requestTimeout = -1;
+		if (options != null) {
+			final Object option = options.get(OUTGOING_REQUEST_TIMEOUT);
+			if (option != null) {
+				if (option instanceof String) {
+					try {
+						requestTimeout = Integer.valueOf((String) option).intValue();
+					} catch (final NumberFormatException e) {
+						// Ignore
+					}
+				} else if (option instanceof Integer) {
+					requestTimeout = ((Integer) option).intValue();
+				}
+			}
+		}
+
+		final XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(manager, fileID.getXMPPID(), localFileToSend, progressListener, requestTimeout);
 
 		try {
 			fileTransfer.startSend(localFileToSend.getFile(), localFileToSend.getDescription());
@@ -177,7 +200,12 @@ public class XMPPOutgoingFileTransferHelper implements ISendFileTransferContaine
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		return null;
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this))
+			return this;
+		final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 }

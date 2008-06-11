@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
@@ -58,20 +59,18 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 
 	private Namespace connectNamespace = null;
 
-	private List invitationListeners = new ArrayList();
+	private final List invitationListeners = new ArrayList();
 
 	private ECFConnection ecfConnection = null;
 
-	private List chatrooms = new ArrayList();
+	private final List chatrooms = new ArrayList();
 
 	private ID connectedID = null;
 
-	private IChatRoomInvitationSender invitationSender = new IChatRoomInvitationSender() {
+	private final IChatRoomInvitationSender invitationSender = new IChatRoomInvitationSender() {
 
-		public void sendInvitation(ID room, ID targetUser, String subject,
-				String body) throws ECFException {
-			XMPPChatRoomManager.this.sendInvitation(room, targetUser, subject,
-					body);
+		public void sendInvitation(ID room, ID targetUser, String subject, String body) throws ECFException {
+			XMPPChatRoomManager.this.sendInvitation(room, targetUser, subject, body);
 		}
 
 	};
@@ -86,12 +85,10 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	 * @param subject
 	 * @param body
 	 */
-	protected void sendInvitation(ID room, ID targetUser, String subject,
-			String body) throws ECFException {
-		XMPPChatRoomContainer chatRoomContainer = getChatRoomContainer(room);
+	protected void sendInvitation(ID room, ID targetUser, String subject, String body) throws ECFException {
+		final XMPPChatRoomContainer chatRoomContainer = getChatRoomContainer(room);
 		if (chatRoomContainer == null)
-			throw new ECFException(NLS
-					.bind(Messages.XMPPChatRoomManager_ROOM_NOT_FOUND, room.getName()));
+			throw new ECFException(NLS.bind(Messages.XMPPChatRoomManager_ROOM_NOT_FOUND, room.getName()));
 		chatRoomContainer.sendInvitation(targetUser, subject, body);
 	}
 
@@ -115,9 +112,9 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 			toNotify = new ArrayList(chatrooms);
 		}
 
-		for (Iterator i = toNotify.iterator(); i.hasNext();) {
-			XMPPChatRoomContainer container = (XMPPChatRoomContainer) i.next();
-			ID containerRoomID = container.getConnectedID();
+		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
+			final XMPPChatRoomContainer container = (XMPPChatRoomContainer) i.next();
+			final ID containerRoomID = container.getConnectedID();
 			if (containerRoomID == null)
 				continue;
 			if (containerRoomID.equals(roomID))
@@ -128,9 +125,8 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 
 	protected ID createRoomIDFromName(String from) {
 		try {
-			return new XMPPRoomID(connectNamespace, ecfConnection
-					.getXMPPConnection(), from);
-		} catch (URISyntaxException e) {
+			return new XMPPRoomID(connectNamespace, ecfConnection.getXMPPConnection(), from);
+		} catch (final URISyntaxException e) {
 			return null;
 		}
 	}
@@ -140,27 +136,20 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 		try {
 			result = new XMPPID(connectNamespace, name);
 			return result;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
 
-	public void setConnection(Namespace connectNamespace, ID connectedID,
-			ECFConnection connection) {
+	public void setConnection(Namespace connectNamespace, ID connectedID, ECFConnection connection) {
 		this.connectNamespace = connectNamespace;
 		this.connectedID = connectedID;
 		this.ecfConnection = connection;
 		if (connection != null) {
 			// Setup invitation requestListener
-			MultiUserChat.addInvitationListener(ecfConnection
-					.getXMPPConnection(), new InvitationListener() {
-				public void invitationReceived(XMPPConnection arg0,
-						String arg1, String arg2, String arg3, String arg4,
-						Message arg5) {
-					fireInvitationReceived(createRoomIDFromName(arg1),
-							createUserIDFromName(arg2),
-							createUserIDFromName(arg5.getTo()), arg5
-									.getSubject(), arg3);
+			MultiUserChat.addInvitationListener(ecfConnection.getXMPPConnection(), new InvitationListener() {
+				public void invitationReceived(XMPPConnection arg0, String arg1, String arg2, String arg3, String arg4, Message arg5) {
+					fireInvitationReceived(createRoomIDFromName(arg1), createUserIDFromName(arg2), createUserIDFromName(arg5.getTo()), arg5.getSubject(), arg3);
 				}
 			});
 		} else {
@@ -174,15 +163,15 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 			toNotify = new ArrayList(chatrooms);
 			chatrooms.clear();
 		}
-		for (Iterator i = toNotify.iterator(); i.hasNext();) {
-			IChatRoomContainer cc = (IChatRoomContainer) i.next();
+		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
+			final IChatRoomContainer cc = (IChatRoomContainer) i.next();
 			cc.dispose();
 		}
 	}
 
 	public void dispose() {
 		synchronized (invitationListeners) {
-			invitationListeners.clear();		
+			invitationListeners.clear();
 		}
 		containerID = null;
 		connectNamespace = null;
@@ -240,28 +229,33 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 			return roomID;
 		}
 
-		public Object getAdapter(Class clazz) {
-			return null;
+		/* (non-Javadoc)
+		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+		 */
+		public Object getAdapter(Class adapter) {
+			if (adapter == null)
+				return null;
+			if (adapter.isInstance(this))
+				return this;
+			final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
+			return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 		}
 
-		public IChatRoomContainer createChatRoomContainer()
-				throws ContainerCreateException {
+		public IChatRoomContainer createChatRoomContainer() throws ContainerCreateException {
 			XMPPChatRoomContainer chatContainer = null;
 			if (ecfConnection == null)
 				throw new ContainerCreateException(Messages.XMPPChatRoomManager_EXCEPTION_CONTAINER_DISCONNECTED);
 			try {
-				chatContainer = new XMPPChatRoomContainer(ecfConnection,
-						connectNamespace);
+				chatContainer = new XMPPChatRoomContainer(ecfConnection, connectNamespace);
 				addChat(chatContainer);
 				return chatContainer;
-			} catch (IDCreateException e) {
-				throw new ContainerCreateException(
-						Messages.XMPPChatRoomManager_EXCEPTION_CREATING_CHAT_CONTAINER, e);
+			} catch (final IDCreateException e) {
+				throw new ContainerCreateException(Messages.XMPPChatRoomManager_EXCEPTION_CREATING_CHAT_CONTAINER, e);
 			}
 		}
 
 		public String toString() {
-			StringBuffer buf = new StringBuffer("ECFRoomInfo["); //$NON-NLS-1$
+			final StringBuffer buf = new StringBuffer("ECFRoomInfo["); //$NON-NLS-1$
 			buf.append("id=").append(containerID).append(";name=" + getName()); //$NON-NLS-1$ //$NON-NLS-2$
 			buf.append(";service=" + getConnectedID()); //$NON-NLS-1$
 			buf.append(";count=" + getParticipantsCount()); //$NON-NLS-1$
@@ -280,9 +274,8 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 
 	protected ID createIDFromHostedRoom(HostedRoom room) {
 		try {
-			return new XMPPRoomID(connectNamespace, ecfConnection
-					.getXMPPConnection(), room.getJid(), room.getName());
-		} catch (URISyntaxException e) {
+			return new XMPPRoomID(connectNamespace, ecfConnection.getXMPPConnection(), room.getJid(), room.getName());
+		} catch (final URISyntaxException e) {
 			// debug output
 			return null;
 		}
@@ -294,19 +287,19 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 		XMPPRoomID roomID = null;
 		if (toID instanceof XMPPRoomID) {
 			roomID = (XMPPRoomID) toID;
-			String mucname = roomID.getMucString();
+			final String mucname = roomID.getMucString();
 			List toNotify = null;
 			synchronized (chatrooms) {
 				toNotify = new ArrayList(chatrooms);
 			}
-			for (Iterator i = toNotify.iterator(); i.hasNext();) {
-				IChatRoomContainer cont = (IChatRoomContainer) i.next();
+			for (final Iterator i = toNotify.iterator(); i.hasNext();) {
+				final IChatRoomContainer cont = (IChatRoomContainer) i.next();
 				if (cont == null)
 					continue;
-				ID tid = cont.getConnectedID();
+				final ID tid = cont.getConnectedID();
 				if (tid != null && tid instanceof XMPPRoomID) {
-					XMPPRoomID targetID = (XMPPRoomID) tid;
-					String tmuc = targetID.getMucString();
+					final XMPPRoomID targetID = (XMPPRoomID) tid;
+					final String tmuc = targetID.getMucString();
 					if (tmuc.equals(mucname)) {
 						return cont;
 					}
@@ -319,23 +312,23 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	protected ID[] getChatRooms() {
 		if (ecfConnection == null)
 			return null;
-		XMPPConnection conn = ecfConnection.getXMPPConnection();
+		final XMPPConnection conn = ecfConnection.getXMPPConnection();
 		if (conn == null)
 			return null;
-		Collection result = new ArrayList();
+		final Collection result = new ArrayList();
 		try {
-			Collection svcs = MultiUserChat.getServiceNames(conn);
-			for (Iterator svcsi = svcs.iterator(); svcsi.hasNext();) {
-				String svc = (String) svcsi.next();
-				Collection rooms = MultiUserChat.getHostedRooms(conn, svc);
-				for (Iterator roomsi = rooms.iterator(); roomsi.hasNext();) {
-					HostedRoom room = (HostedRoom) roomsi.next();
-					ID roomID = createIDFromHostedRoom(room);
+			final Collection svcs = MultiUserChat.getServiceNames(conn);
+			for (final Iterator svcsi = svcs.iterator(); svcsi.hasNext();) {
+				final String svc = (String) svcsi.next();
+				final Collection rooms = MultiUserChat.getHostedRooms(conn, svc);
+				for (final Iterator roomsi = rooms.iterator(); roomsi.hasNext();) {
+					final HostedRoom room = (HostedRoom) roomsi.next();
+					final ID roomID = createIDFromHostedRoom(room);
 					if (roomID != null)
 						result.add(roomID);
 				}
 			}
-		} catch (XMPPException e) {
+		} catch (final XMPPException e) {
 			return null;
 		}
 		return (ID[]) result.toArray(new ID[] {});
@@ -344,14 +337,13 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	protected IChatRoomInfo getChatRoomInfo(ID roomID) {
 		if (!(roomID instanceof XMPPRoomID))
 			return null;
-		XMPPRoomID cRoomID = (XMPPRoomID) roomID;
+		final XMPPRoomID cRoomID = (XMPPRoomID) roomID;
 		try {
-			RoomInfo info = MultiUserChat.getRoomInfo(ecfConnection
-					.getXMPPConnection(), cRoomID.getMucString());
+			final RoomInfo info = MultiUserChat.getRoomInfo(ecfConnection.getXMPPConnection(), cRoomID.getMucString());
 			if (info != null) {
 				return new ECFRoomInfo(cRoomID, info, connectedID);
 			}
-		} catch (XMPPException e) {
+		} catch (final XMPPException e) {
 			return null;
 		}
 		return null;
@@ -362,40 +354,48 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 			if (ecfConnection == null)
 				return null;
 			// Create roomid
-			XMPPConnection conn = ecfConnection.getXMPPConnection();
-			XMPPRoomID roomID = new XMPPRoomID(connectNamespace, conn, roomname);
-			String mucName = roomID.getMucString();
-			RoomInfo info = MultiUserChat.getRoomInfo(conn, mucName);
+			final XMPPConnection conn = ecfConnection.getXMPPConnection();
+			final XMPPRoomID roomID = new XMPPRoomID(connectNamespace, conn, roomname);
+			final String mucName = roomID.getMucString();
+			final RoomInfo info = MultiUserChat.getRoomInfo(conn, mucName);
 			if (info != null) {
 				return new ECFRoomInfo(roomID, info, connectedID);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 		return null;
 	}
 
 	public IChatRoomInfo[] getChatRoomInfos() {
-		ID[] chatRooms = getChatRooms();
+		final ID[] chatRooms = getChatRooms();
 		if (chatRooms == null)
 			return new IChatRoomInfo[0];
-		IChatRoomInfo[] res = new IChatRoomInfo[chatRooms.length];
+		final IChatRoomInfo[] res = new IChatRoomInfo[chatRooms.length];
 		int count = 0;
 		for (int i = 0; i < chatRooms.length; i++) {
-			IChatRoomInfo infoResult = getChatRoomInfo(chatRooms[i]);
+			final IChatRoomInfo infoResult = getChatRoomInfo(chatRooms[i]);
 			if (infoResult != null) {
 				res[count++] = infoResult;
 			}
 		}
-		IChatRoomInfo[] results = new IChatRoomInfo[count];
+		final IChatRoomInfo[] results = new IChatRoomInfo[count];
 		for (int i = 0; i < count; i++) {
 			results[i] = res[i];
 		}
 		return results;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
 	public Object getAdapter(Class adapter) {
-		return null;
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this))
+			return this;
+		final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	public void addInvitationListener(IChatRoomInvitationListener listener) {
@@ -406,19 +406,17 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 
 	public void removeInvitationListener(IChatRoomInvitationListener listener) {
 		synchronized (invitationListeners) {
-			invitationListeners.remove(listener);			
+			invitationListeners.remove(listener);
 		}
 	}
 
-	protected void fireInvitationReceived(ID roomID, ID fromID, ID toID,
-			String subject, String body) {
+	protected void fireInvitationReceived(ID roomID, ID fromID, ID toID, String subject, String body) {
 		List toNotify = null;
 		synchronized (invitationListeners) {
 			toNotify = new ArrayList(invitationListeners);
 		}
-		for (Iterator i = toNotify.iterator(); i.hasNext();) {
-			IChatRoomInvitationListener l = (IChatRoomInvitationListener) i
-					.next();
+		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
+			final IChatRoomInvitationListener l = (IChatRoomInvitationListener) i.next();
 			l.handleInvitationReceived(roomID, fromID, subject, body);
 		}
 	}
@@ -433,28 +431,23 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String,
 	 *      java.util.Map)
 	 */
-	public IChatRoomInfo createChatRoom(String roomname, Map properties)
-			throws ChatRoomCreateException {
+	public IChatRoomInfo createChatRoom(String roomname, Map properties) throws ChatRoomCreateException {
 		if (roomname == null)
-			throw new ChatRoomCreateException(roomname,
-					Messages.XMPPChatRoomManager_EXCEPTION_ROOM_CANNOT_BE_NULL);
+			throw new ChatRoomCreateException(roomname, Messages.XMPPChatRoomManager_EXCEPTION_ROOM_CANNOT_BE_NULL);
 		try {
-			String nickname = ecfConnection.getXMPPConnection().getUser();
-			String server = ecfConnection.getXMPPConnection().getHost();
-			String domain = (properties == null) ? XMPPRoomID.DOMAIN_DEFAULT
-					: (String) properties.get(PROP_XMPP_CONFERENCE);
-			String conference = XMPPRoomID.fixConferenceDomain(domain, server);
-			String roomID = roomname + XMPPRoomID.AT_SIGN + conference;
+			final String nickname = ecfConnection.getXMPPConnection().getUser();
+			final String server = ecfConnection.getXMPPConnection().getHost();
+			final String domain = (properties == null) ? XMPPRoomID.DOMAIN_DEFAULT : (String) properties.get(PROP_XMPP_CONFERENCE);
+			final String conference = XMPPRoomID.fixConferenceDomain(domain, server);
+			final String roomID = roomname + XMPPRoomID.AT_SIGN + conference;
 			// create proxy to the room
-			MultiUserChat muc = new MultiUserChat(ecfConnection
-					.getXMPPConnection(), roomID);
+			final MultiUserChat muc = new MultiUserChat(ecfConnection.getXMPPConnection(), roomID);
 
 			if (!checkRoom(conference, roomID)) {
 				// otherwise create a new one
 				muc.create(nickname);
 				muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
-				String subject = (properties == null) ? null
-						: (String) properties.get(PROP_XMPP_SUBJECT);
+				final String subject = (properties == null) ? null : (String) properties.get(PROP_XMPP_SUBJECT);
 				if (subject != null)
 					muc.changeSubject(subject);
 			}
@@ -464,18 +457,16 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 				longname = roomID;
 			}
 
-			RoomInfo info = MultiUserChat.getRoomInfo(ecfConnection
-					.getXMPPConnection(), roomID);
+			final RoomInfo info = MultiUserChat.getRoomInfo(ecfConnection.getXMPPConnection(), roomID);
 
 			if (info != null) {
-				XMPPRoomID xid = new XMPPRoomID(connectedID.getNamespace(),
-						ecfConnection.getXMPPConnection(), roomID, longname);
+				final XMPPRoomID xid = new XMPPRoomID(connectedID.getNamespace(), ecfConnection.getXMPPConnection(), roomID, longname);
 				return new ECFRoomInfo(xid, info, connectedID);
 			} else
-				throw new XMPPException(NLS.bind(Messages.XMPPChatRoomManager_EXCEPTION_NO_ROOM_INFO,roomID)); 
-		} catch (XMPPException e) {
+				throw new XMPPException(NLS.bind(Messages.XMPPChatRoomManager_EXCEPTION_NO_ROOM_INFO, roomID));
+		} catch (final XMPPException e) {
 			throw new ChatRoomCreateException(roomname, e.getMessage(), e);
-		} catch (URISyntaxException e) {
+		} catch (final URISyntaxException e) {
 			throw new ChatRoomCreateException(roomname, e.getMessage(), e);
 		}
 	}
@@ -489,16 +480,13 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	 * @return true, if the room exists, false otherwise
 	 * @throws XMPPException
 	 */
-	protected boolean checkRoom(String conference, String room)
-			throws XMPPException {
-		XMPPConnection conn = ecfConnection.getXMPPConnection();
-		ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(
-				conn);
-		DiscoverItems result = serviceDiscoveryManager
-				.discoverItems(conference);
+	protected boolean checkRoom(String conference, String room) throws XMPPException {
+		final XMPPConnection conn = ecfConnection.getXMPPConnection();
+		final ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(conn);
+		final DiscoverItems result = serviceDiscoveryManager.discoverItems(conference);
 
-		for (Iterator items = result.getItems(); items.hasNext();) {
-			DiscoverItems.Item item = ((DiscoverItems.Item) items.next());
+		for (final Iterator items = result.getItems(); items.hasNext();) {
+			final DiscoverItems.Item item = ((DiscoverItems.Item) items.next());
 			if (room.equals(item.getEntityID())) {
 				return true;
 			}
@@ -523,9 +511,16 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+		 */
 		public Object getAdapter(Class adapter) {
-			// TODO Auto-generated method stub
-			return null;
+			if (adapter == null)
+				return null;
+			if (adapter.isInstance(this))
+				return this;
+			final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
+			return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 		}
 
 	};

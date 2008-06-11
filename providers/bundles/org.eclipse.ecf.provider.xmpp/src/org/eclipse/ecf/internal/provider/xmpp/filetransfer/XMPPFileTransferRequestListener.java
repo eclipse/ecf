@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -30,6 +31,7 @@ import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
@@ -81,7 +83,12 @@ public class XMPPFileTransferRequestListener implements FileTransferListener {
 				}
 
 				public Object getAdapter(Class adapter) {
-					return null;
+					if (adapter == null)
+						return null;
+					if (adapter.isInstance(this))
+						return this;
+					final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
+					return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 				}
 
 				public long getFileSize() {

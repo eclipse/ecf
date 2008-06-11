@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
@@ -309,8 +310,13 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
 	 */
-	public Object getAdapter(Class clazz) {
-		return null;
+	public Object getAdapter(Class adapter) {
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this))
+			return this;
+		final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	/**
