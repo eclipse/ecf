@@ -21,6 +21,7 @@ import org.eclipse.ecf.core.events.IContainerConnectingEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectingEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 public class ClientContainerConnectTest extends ContainerAbstractTestCase {
@@ -36,7 +37,6 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 	List clientDisconnectingEvents = new ArrayList();
 
 	List clientDisconnectedEvents = new ArrayList();
-
 
 	/*
 	 * (non-Javadoc)
@@ -72,7 +72,7 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 		clientDisconnectingEvents.clear();
 		clientDisconnectedEvents.clear();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -91,6 +91,13 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 		assertTrue(serverConnectEvents.size() == getClientCount());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.ContainerAbstractTestCase#getConnectContext(int)
+	 */
+	protected IConnectContext getConnectContext(int client) {
+		return null;
+	}
+
 	public void testClientsDisconnect() throws Exception {
 		connectClients();
 		assertTrue(serverConnectEvents.size() == getClientCount());
@@ -99,7 +106,7 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 	}
 
 	public void testGetConnectedID() throws Exception {
-		IContainer client = getClients()[0];
+		final IContainer client = getClients()[0];
 		assertNull(client.getConnectedID());
 		client.connect(createServerID(), null);
 		assertNotNull(client.getConnectedID());
@@ -125,7 +132,7 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 	}
 
 	public void testClientListener() throws Exception {
-		IContainer client = getClients()[0];
+		final IContainer client = getClients()[0];
 		client.addListener(createListener());
 		assertTrue(clientConnectingEvents.size() == 0);
 		assertTrue(clientConnectedEvents.size() == 0);
@@ -141,43 +148,43 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 	}
 
 	public void testListenerConnecting() throws Exception {
-		IContainer client = getClients()[0];
+		final IContainer client = getClients()[0];
 		client.addListener(createListener());
 		client.connect(createServerID(), null);
-		Object o = clientConnectingEvents.get(0);
+		final Object o = clientConnectingEvents.get(0);
 		assertTrue(o instanceof IContainerConnectingEvent);
-		IContainerConnectingEvent cco = (IContainerConnectingEvent) o;
+		final IContainerConnectingEvent cco = (IContainerConnectingEvent) o;
 		assertTrue(cco.getLocalContainerID().equals(client.getID()));
 		assertTrue(cco.getTargetID().equals(createServerID()));
 		assertTrue(cco.getData() == null);
 	}
 
 	public void testListenerConnected() throws Exception {
-		IContainer client = getClients()[0];
+		final IContainer client = getClients()[0];
 		client.addListener(createListener());
 		client.connect(createServerID(), null);
-		Object o = clientConnectedEvents.get(0);
+		final Object o = clientConnectedEvents.get(0);
 		assertTrue(o instanceof IContainerConnectedEvent);
-		IContainerConnectedEvent cco = (IContainerConnectedEvent) o;
+		final IContainerConnectedEvent cco = (IContainerConnectedEvent) o;
 		assertTrue(cco.getLocalContainerID().equals(client.getID()));
 		assertTrue(cco.getTargetID().equals(createServerID()));
 	}
 
 	public void testListenerDisconnected() throws Exception {
-		IContainer client = getClients()[0];
+		final IContainer client = getClients()[0];
 		client.addListener(createListener());
 		client.connect(createServerID(), null);
 		client.disconnect();
-		Object o = clientDisconnectedEvents.get(0);
+		final Object o = clientDisconnectedEvents.get(0);
 		assertTrue(o instanceof IContainerDisconnectedEvent);
-		IContainerDisconnectedEvent cco = (IContainerDisconnectedEvent) o;
+		final IContainerDisconnectedEvent cco = (IContainerDisconnectedEvent) o;
 		assertTrue(cco.getLocalContainerID().equals(client.getID()));
 		assertTrue(cco.getTargetID().equals(createServerID()));
 	}
-	
+
 	public void testRemoveListener() throws Exception {
-		IContainer client = getClients()[0];
-		IContainerListener l = createListener();
+		final IContainer client = getClients()[0];
+		final IContainerListener l = createListener();
 		client.addListener(l);
 		client.removeListener(l);
 		client.connect(createServerID(), null);
