@@ -21,9 +21,12 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
+import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
 import org.eclipse.ecf.filetransfer.identity.FileCreateException;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -43,6 +46,12 @@ public class XMPPSOutgoingTest extends ContainerAbstractTestCase {
 
 	protected ISendFileTransferContainerAdapter adapter0, adapter1 = null;
 
+	protected IOutgoingFileTransfer outgoing;
+
+	protected IFileID targetID;
+
+	protected Object lock = new Object();
+
 	protected String getClientContainerName() {
 		return XMPP_CONTAINER;
 	}
@@ -55,7 +64,22 @@ public class XMPPSOutgoingTest extends ContainerAbstractTestCase {
 			return null;
 	}
 
-	protected IFileTransferListener getFileTransferListener(final String prefix) {
+	protected IFileTransferListener getSenderFileTransferListener(final String prefix) {
+		return new IFileTransferListener() {
+			public void handleTransferEvent(IFileTransferEvent event) {
+				System.out.println(prefix + ".handleTransferEvent(" + event + ")");
+				if (event instanceof IOutgoingFileTransferResponseEvent) {
+					final IOutgoingFileTransferResponseEvent revent = (IOutgoingFileTransferResponseEvent) event;
+					outgoing = revent.getSource();
+					synchronized (lock) {
+						lock.notify();
+					}
+				}
+			}
+		};
+	}
+
+	protected IFileTransferListener getReceiverFileTransferListener(final String prefix) {
 		return new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
 				System.out.println(prefix + ".handleTransferEvent(" + event + ")");
@@ -67,16 +91,35 @@ public class XMPPSOutgoingTest extends ContainerAbstractTestCase {
 	File incomingFile = null;
 
 	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.ContainerAbstractTestCase#setUp()
+	 */
+	protected void setUp() throws Exception {
+		super.setUp();
+		setClientCount(2);
+		clients = createClients();
+		adapter0 = getOutgoingFileTransfer(0);
+		adapter0.addListener(requestListener);
+		adapter1 = getOutgoingFileTransfer(1);
+		for (int i = 0; i < 2; i++) {
+			connectClient(i);
+		}
+		targetID = createFileID(adapter1, getServerConnectID(0), TESTSRCFILE);
+	}
+
+	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		disconnectClients();
 		if (incomingFile != null)
 			incomingFile.delete();
 		incomingFile = null;
 		if (incomingDirectory != null)
 			incomingDirectory.delete();
 		incomingDirectory = null;
+		outgoing = null;
+		targetID = null;
 	}
 
 	protected IIncomingFileTransferRequestListener requestListener = new IIncomingFileTransferRequestListener() {
@@ -98,8 +141,8 @@ public class XMPPSOutgoingTest extends ContainerAbstractTestCase {
 
 	};
 
-	protected IFileTransferListener senderTransferListener = getFileTransferListener("sender");
-	protected IFileTransferListener receiverTransferListener = getFileTransferListener("receiver");
+	protected IFileTransferListener senderTransferListener = getSenderFileTransferListener("sender");
+	protected IFileTransferListener receiverTransferListener = getReceiverFileTransferListener("receiver");
 
 	protected ID getServerConnectID(int client) {
 		final IContainer container = getClient(client);
@@ -140,21 +183,27 @@ public class XMPPSOutgoingTest extends ContainerAbstractTestCase {
 
 	public void testTwoClientsToSendAndReceive() throws Exception {
 		// Setup two clients.  Client 0 is the receiver, client 1 is the sender
-		setClientCount(2);
-		clients = createClients();
-		adapter0 = getOutgoingFileTransfer(0);
-		adapter0.addListener(requestListener);
-		adapter1 = getOutgoingFileTransfer(1);
-		for (int i = 0; i < 2; i++) {
-			connectClient(i);
-		}
-
-		final IFileID targetID = createFileID(adapter1, getServerConnectID(0), TESTSRCFILE);
 		adapter1.sendOutgoingRequest(targetID, new File(TESTSRCFILE), senderTransferListener, null);
 
-		sleep(10000);
+		sleep(5000);
+	}
 
-		disconnectClients();
+	public void testSenderCancel() throws Exception {
+		// Setup two clients.  Client 0 is the receiver, client 1 is the sender
+		adapter1.sendOutgoingRequest(targetID, new File(TESTSRCFILE), senderTransferListener, null);
+
+		synchronized (lock) {
+			lock.wait();
+		}
+		assertTrue(outgoing != null);
+
+		// Now cancel
+		outgoing.cancel();
+		// wait a short while
+		sleep(500);
+
+		final Exception e = outgoing.getException();
+		assertTrue(e != null && e instanceof UserCancelledException);
 
 	}
 
