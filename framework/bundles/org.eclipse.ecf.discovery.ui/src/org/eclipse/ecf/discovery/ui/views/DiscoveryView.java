@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.discovery.ui.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -112,7 +111,7 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 
 	protected IDiscoveryContainerAdapter getDiscovery() {
 		if (discoveryServiceTracker == null) {
-			discoveryServiceTracker = new ServiceTracker(Activator.getContext(), IDiscoveryService.class.getName(), new ServiceTrackerCustomizer() {
+			discoveryServiceTracker = new ServiceTracker(Activator.getContext(), Activator.getFilter(), new ServiceTrackerCustomizer() {
 
 				public Object addingService(ServiceReference reference) {
 					final Object result = Activator.getContext().getService(reference);
