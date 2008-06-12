@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
+import org.eclipse.ecf.discovery.identity.ServiceTypeID;
 import org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest;
 
 public abstract class ServiceIDTest extends AbstractDiscoveryTest {
@@ -40,7 +41,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	}
 
 	protected IServiceID createIDFromStringWithEx(String serviceType) throws IDCreateException {
-		return ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(namespace), serviceType, null);
+		return ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(namespace), serviceType);
 	}
 
 	protected IServiceID createIDFromServiceTypeID(IServiceTypeID serviceType) {
@@ -55,7 +56,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	}
 
 	protected IServiceID createIDFromServiceTypeIDWithEx(IServiceTypeID serviceType) throws IDCreateException {
-		return ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(namespace), serviceType, null);
+		return ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(namespace), serviceType);
 	}
 
 	public void testServiceTypeIDWithNullString() {
@@ -143,6 +144,35 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 		// should be possible to create a new instance from the string representation of the other
 		createFromAnother(aServiceTypeID, stid);
 		createFromAnother(stid, aServiceTypeID);
+	}
+	
+	/*
+	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String, String)
+	 */
+	public void testServiceIDFactory1() throws IDCreateException, SecurityException {
+		String expected = "some Name";
+		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+		IServiceID createServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, "_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA", expected);
+		assertNotNull(createServiceID);
+	}
+
+	/*
+	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String, String)
+	 */
+	public void testServiceIDFactory2() throws IDCreateException, SecurityException {
+		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+		ServiceTypeID serviceTypeID = new ServiceTypeID(new TestNamespace(), "_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA");
+		IServiceID createServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, serviceTypeID, "some Name");
+		assertNotNull(createServiceID);
+		
+		// members should be the same
+		IServiceTypeID aServiceTypeID = createServiceID.getServiceTypeID();
+		assertEquals(aServiceTypeID.getNamingAuthority(), serviceTypeID.getNamingAuthority());
+		assertTrue(Arrays.equals(aServiceTypeID.getServices(), serviceTypeID.getServices()));
+		assertTrue(Arrays.equals(aServiceTypeID.getScopes(), serviceTypeID.getScopes()));
+		assertTrue(Arrays.equals(aServiceTypeID.getProtocols(), serviceTypeID.getProtocols()));
+		
+		assertSame(namespaceByName, createServiceID.getNamespace());
 	}
 
 	/**
