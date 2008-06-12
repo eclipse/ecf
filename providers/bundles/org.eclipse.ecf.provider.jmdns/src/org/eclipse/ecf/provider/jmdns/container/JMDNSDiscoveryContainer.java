@@ -97,7 +97,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 					jmdns.close();
 					jmdns = null;
 				}
-				throw new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_CREATE_JMDNS_INSTANCE);
+				throw new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_CREATE_JMDNS_INSTANCE, e);
 			}
 			fireContainerEvent(new ContainerConnectedEvent(this.getID(), this.targetID));
 		}
