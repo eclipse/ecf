@@ -16,5 +16,13 @@
             server="true">
       </containerFactory>
    </extension>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.internal.provider.discovery.CompositeNamespace"
+            description="CompositeNamespace"
+            name="ecf.namespace.composite">
+      </namespace>
+   </extension>
 
 </plugin>
