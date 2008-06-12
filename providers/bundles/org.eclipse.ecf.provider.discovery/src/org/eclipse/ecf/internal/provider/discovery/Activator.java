@@ -10,8 +10,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.discovery;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import java.util.*;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
+import org.osgi.framework.*;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * 
@@ -30,6 +33,8 @@ public class Activator implements BundleActivator {
 		return plugin;
 	}
 
+	private ServiceTracker tracker;
+
 	/**
 	 * The constructor
 	 */
@@ -41,8 +46,41 @@ public class Activator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
-		// do nothing
+	public void start(final BundleContext context) throws Exception {
+		// get all previously registered IDS from OSGi
+		tracker = new ServiceTracker(context, IDiscoveryService.class.getName(), null);
+		tracker.open();
+		Object[] services = tracker.getServices();
+		List discoveries = services == null ? new ArrayList() : new ArrayList(Arrays.asList(services));
+
+		// register the composite discovery service)
+		final CompositeDiscoveryContainer cdc = new CompositeDiscoveryContainer(discoveries);
+		cdc.connect(null, null);
+		Properties props = new Properties();
+		props.put(IDiscoveryService.CONTAINER_ID, cdc.getID());
+		props.put(IDiscoveryService.CONTAINER_NAME, CompositeDiscoveryContainer.NAME);
+		context.registerService(IDiscoveryService.class.getName(), cdc, props);
+
+		// add a service listener to add/remove IDS dynamically 
+		context.addServiceListener(new ServiceListener() {
+			/* (non-Javadoc)
+			 * @see org.osgi.framework.ServiceListener#serviceChanged(org.osgi.framework.ServiceEvent)
+			 */
+			public void serviceChanged(ServiceEvent arg0) {
+				IDiscoveryService anIDS = (IDiscoveryService) context.getService(arg0.getServiceReference());
+				switch (arg0.getType()) {
+					case ServiceEvent.REGISTERED :
+						cdc.addContainer(anIDS);
+						break;
+					case ServiceEvent.UNREGISTERING :
+						cdc.removeContainer(anIDS);
+						break;
+					default :
+						break;
+				}
+			}
+
+		}, "(" + Constants.OBJECTCLASS + "=" + IDiscoveryService.class.getName() + ")"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/*
@@ -50,6 +88,10 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		if (tracker != null) {
+			tracker.close();
+			tracker = null;
+		}
 		plugin = null;
 	}
 }

@@ -20,12 +20,16 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
-import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.*;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.provider.discovery.Activator;
+import org.eclipse.ecf.internal.provider.discovery.CompositeNamespace;
 
-public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
-	private class CompositeContainerServiceListener implements IServiceListener {
+public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IDiscoveryService {
+
+	public static final String NAME = "ecf.discovery.composite"; //$NON-NLS-1$
+
+	protected class CompositeContainerServiceListener implements IServiceListener {
 
 		/* (non-Javadoc)
 		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
@@ -66,7 +70,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		}
 	}
 
-	private class CompositeContainerServiceTypeListener implements IServiceTypeListener {
+	protected class CompositeContainerServiceTypeListener implements IServiceTypeListener {
 
 		/* (non-Javadoc)
 		 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
@@ -112,8 +116,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @throws IDCreateException
 	 */
 	public CompositeDiscoveryContainer(List containers) throws IDCreateException {
-		super("CompositeDiscoveryNonExistingNS", new DiscoveryContainerConfig(IDFactory.getDefault().createStringID( //$NON-NLS-1$
-				CompositeDiscoveryContainer.class.getName())));
+		super(CompositeNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(CompositeDiscoveryContainer.class.getName())));
 		this.containers = containers;
 	}
 
@@ -124,7 +127,9 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		synchronized (containers) {
 			for (Iterator itr = containers.iterator(); itr.hasNext();) {
 				IContainer container = (IContainer) itr.next();
-				container.connect(targetID, connectContext);
+				if (container.getConnectedID() == null) {
+					container.connect(targetID, connectContext);
+				}
 				IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) container;
 				idca.addServiceListener(ccsl);
 				idca.addServiceTypeListener(ccstl);
@@ -176,11 +181,10 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	}
 
 	private IServiceID getServiceIDForDiscoveryContainer(IServiceID service, IDiscoveryContainerAdapter dca) {
-		IContainer container = (IContainer) dca;
-		Namespace connectNamespace = container.getConnectNamespace();
+		Namespace connectNamespace = dca.getConnectNamespace();
 		if (!connectNamespace.equals(service.getNamespace())) {
 			try {
-				return (IServiceID) connectNamespace.createInstance(new Object[] {service});
+				return ServiceIDFactory.getDefault().createServiceID(connectNamespace, service.getServiceTypeID().getName(), service.getName());
 			} catch (IDCreateException e) {
 				Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "getServiceTypeIDForDiscoveryContainer", e); //$NON-NLS-1$
 			}
@@ -241,17 +245,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		return (IServiceInfo[]) set.toArray(new IServiceInfo[set.size()]);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getServicesNamespace()
-	 */
-	public Namespace getServicesNamespace() {
-		//TODO-mkuppe implement CompositeDiscoveryContainer#getServicesNamespace
-		throw new java.lang.UnsupportedOperationException("CompositeDiscoveryContainer#getServicesNamespace not yet implemented"); //$NON-NLS-1$
-	}
-
 	private IServiceTypeID getServiceTypeIDForDiscoveryContainer(IServiceTypeID type, IDiscoveryContainerAdapter dca) {
-		IContainer container = (IContainer) dca;
-		Namespace connectNamespace = container.getConnectNamespace();
+		Namespace connectNamespace = dca.getConnectNamespace();
 		if (!connectNamespace.equals(type.getNamespace())) {
 			try {
 				return (IServiceTypeID) connectNamespace.createInstance(new Object[] {type});
@@ -302,6 +297,32 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 				IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, idca);
 				idca.unregisterService(isi);
 			}
+		}
+	}
+
+	/**
+	 * @param object
+	 * @return true on success
+	 * @see java.util.List#add(java.lang.Object)
+	 */
+	public boolean addContainer(Object object) {
+		synchronized (containers) {
+			Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "addContainer(Object)", "addContainer " //$NON-NLS-1$ //$NON-NLS-2$
+					+ object.toString());
+			return containers.add(object);
+		}
+	}
+
+	/**
+	 * @param object
+	 * @return true on success
+	 * @see java.util.List#remove(java.lang.Object)
+	 */
+	public boolean removeContainer(Object object) {
+		synchronized (containers) {
+			Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "removeContainer(Object)", "removeContainer " //$NON-NLS-1$ //$NON-NLS-2$
+					+ object.toString());
+			return containers.remove(object);
 		}
 	}
 }
