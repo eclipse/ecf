@@ -48,10 +48,13 @@ public class JSLPNamespace extends Namespace {
 		} else if (parameters[0] instanceof JSLPServiceID) {
 			return (ID) parameters[0];
 
-		} else if (parameters[0] instanceof IServiceID) {
+			// convert from IServiceID to IServiceTypeID, String
+		} else if (parameters[0] instanceof IServiceID && parameters.length == 1) {
 			IServiceID anId = (IServiceID) parameters[0];
-			parameters[0] = anId.getServiceTypeID();
-			return createInstance(parameters);
+			Object[] newParams = new Object[2];
+			newParams[0] = anId.getServiceTypeID();
+			newParams[1] = anId.getName();
+			return createInstance(newParams);
 
 			// create by ECF discovery generic IServiceTypeID (but not JSLPServiceID!!!)
 		} else if (parameters[0] instanceof IServiceTypeID) {
