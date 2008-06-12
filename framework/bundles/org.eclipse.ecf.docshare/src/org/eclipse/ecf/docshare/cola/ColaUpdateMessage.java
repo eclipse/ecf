@@ -6,12 +6,15 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Mustafa K. Isik - conflict resolution via operational transformations
+ *    Mustafa K. Isik - initial API and implementation
  *****************************************************************************/
 
 package org.eclipse.ecf.docshare.cola;
 
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.docshare.messages.UpdateMessage;
+import org.eclipse.ecf.internal.docshare.Activator;
+import org.eclipse.ecf.internal.docshare.DocshareDebugOptions;
 
 public class ColaUpdateMessage extends UpdateMessage {
 
@@ -19,28 +22,36 @@ public class ColaUpdateMessage extends UpdateMessage {
 
 	// TODO encapsulate in a new ColaOpOriginationState and re-implement equals,
 	// hashCode, i.e. make comparable
-	final double localOperationsCount;
-	final double remoteOperationsCount;
+	final long localOperationsCount;
+	long remoteOperationsCount;
 	final TransformationStrategy trafoStrat;
 
-	public ColaUpdateMessage(UpdateMessage msg, double localOperationsCount, double remoteOperationsCount) {
+	public ColaUpdateMessage(UpdateMessage msg, long localOperationsCount, long remoteOperationsCount) {
 		super(msg.getOffset(), msg.getLength(), msg.getText());
 		this.localOperationsCount = localOperationsCount;
 		this.remoteOperationsCount = remoteOperationsCount;
 		if (super.getLength() == 0) {
 			// this is neither a replacement, nor a deletion
-			trafoStrat = new ColaInsertion();
+			trafoStrat = ColaInsertion.getInstance();
 		} else {
 			if (super.getText().length() == 0) {
 				// something has been replaced, nothing inserted, must be a
 				// deletion
-				trafoStrat = new ColaDeletion();
+				trafoStrat = ColaDeletion.getInstance();
 			} else {
 				// something has been replaced with some new input, has to be a
 				// replacement op
-				trafoStrat = new ColaReplacement();
+				trafoStrat = ColaReplacement.getInstance();
 			}
 		}
+	}
+
+	public boolean isInsertion() {
+		return (this.trafoStrat instanceof ColaInsertion);
+	}
+
+	public boolean isDeletion() {
+		return (this.trafoStrat instanceof ColaDeletion);
 	}
 
 	public double getLocalOperationsCount() {
@@ -51,37 +62,19 @@ public class ColaUpdateMessage extends UpdateMessage {
 		return this.remoteOperationsCount;
 	}
 
-	/**
-	 * The receiver of this message transforms it for local application.
-	 * 
-	 * The transformation assumes that this operation is to be transformed
-	 * against queued document owner operations which have a higher modification
-	 * priority. that is when in direct index conflict are applied to lower
-	 * index positions. This <code>ColaUpdateMessage</code> is transformed to
-	 * be applied to the next appropriate higher document index position.
-	 * 
-	 * @param msg
-	 *            queued up operation of local editing site
-	 * @return message suitable to be transformed against next queued up
-	 *         operation
-	 */
-	public ColaUpdateMessage transformForApplicationAtOwnerAgainst(ColaUpdateMessage msg) {
-		// case this is the operation of lesser insertion priority
-		ColaUpdateMessage transformedMsg = trafoStrat.getForOwner(this, msg);
-		return transformedMsg;
-	}
-
-	public ColaUpdateMessage transformForApplicationAtParticipantAgainst(ColaUpdateMessage msg) {
-		// case this is the operation of higher insertion priority
-		ColaUpdateMessage transformedMsg = trafoStrat.getForParticipant(this, msg);
+	public ColaUpdateMessage transformAgainst(ColaUpdateMessage localMsg, boolean localMsgHighPrio) {
+		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, this.getClass(), "transformAgainst", localMsg); //$NON-NLS-1$
+		ColaUpdateMessage transformedMsg = trafoStrat.getOperationalTransform(this, localMsg, localMsgHighPrio);
+		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_EXITING, this.getClass(), "transformAgainst", transformedMsg); //$NON-NLS-1$
 		return transformedMsg;
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer(super.toString());
-		sb.append(";").append("originationCount.local=").append(this.localOperationsCount).append(";"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-		sb.append("originationCount.remote=").append(this.remoteOperationsCount); //$NON-NLS-1$
-		return sb.toString();
+		StringBuffer buf = new StringBuffer("ColaUpdateMessage["); //$NON-NLS-1$
+		buf.append("text=").append(getText()).append(";offset=").append(getOffset()); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append(";length=").append(getLength()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append(";operationsCount[local=").append(getLocalOperationsCount()); //$NON-NLS-1$
+		buf.append(";remote=").append(getRemoteOperationsCount()).append("]]"); //$NON-NLS-1$//$NON-NLS-2$
+		return buf.toString();
 	}
-
 }

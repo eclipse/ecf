@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Mustafa K. Isik - conflict resolution via operational transformations
+ *    Mustafa K. Isik - initial API and implementation
  *****************************************************************************/
 
 package org.eclipse.ecf.docshare;
@@ -30,6 +30,11 @@ public class IdentityMapping implements SynchronizationStrategy {
 
 	public UpdateMessage transformIncomingMessage(UpdateMessage remoteMsg) {
 		return remoteMsg;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("IdentityMapping[]"); //$NON-NLS-1$
+		return buf.toString();
 	}
 
 }

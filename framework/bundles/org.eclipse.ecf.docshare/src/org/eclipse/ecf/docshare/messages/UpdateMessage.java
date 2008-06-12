@@ -13,13 +13,13 @@
 package org.eclipse.ecf.docshare.messages;
 
 /**
- *
+ * 
  */
 public class UpdateMessage extends Message {
 
 	private static final long serialVersionUID = -3195542805471664496L;
 
-	String text;
+	final String text;
 	int offset;
 	int length;
 
@@ -29,15 +29,42 @@ public class UpdateMessage extends Message {
 		this.text = text;
 	}
 
+	/**
+	 * Returns the modification index of the operation resembled by this
+	 * message.
+	 * 
+	 * @return modification index
+	 */
 	public int getOffset() {
 		return offset;
 	}
 
+	public void setOffset(int updatedOffset) {
+		this.offset = updatedOffset;
+	}
+
+	/**
+	 * Returns the length of replaced text.
+	 * 
+	 * @return length of replaced text
+	 */
 	public int getLength() {
 		return length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
 	}
 
 	public String getText() {
 		return text;
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("UpdateMessage["); //$NON-NLS-1$
+		buf.append("text=").append(text).append(";offset=").append(offset); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append(";length=").append(length).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		return buf.toString();
+	}
+
 }

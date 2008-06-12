@@ -19,16 +19,15 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.events.IChannelDisconnectEvent;
+import org.eclipse.ecf.docshare.cola.ColaSynchronizer;
 import org.eclipse.ecf.docshare.messages.*;
-import org.eclipse.ecf.internal.docshare.Activator;
-import org.eclipse.ecf.internal.docshare.Messages;
+import org.eclipse.ecf.internal.docshare.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.*;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Control;
@@ -42,7 +41,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * Represents a document sharing session between two participants.
  */
 /**
- *
+ * 
  */
 public class DocShare extends AbstractShare {
 
@@ -51,7 +50,7 @@ public class DocShare extends AbstractShare {
 	 */
 	ID initiatorID;
 	/**
-	 * The ID of the receiver.  
+	 * The ID of the receiver.
 	 */
 	ID receiverID;
 	/**
@@ -63,26 +62,36 @@ public class DocShare extends AbstractShare {
 	 */
 	ITextEditor editor;
 	/**
-	 * Content that we have received via start message, before user has responded
-	 * to question about whether or not to display in editor.  Should be null
-	 * at all other times.
+	 * Content that we have received via start message, before user has
+	 * responded to question about whether or not to display in editor. Should
+	 * be null at all other times.
 	 */
 	String startContent = null;
 	/**
-	 * Object to use as lock for changing connected state of this docshare instance
+	 * Object to use as lock for changing connected state of this docshare
+	 * instance
 	 */
 	Object stateLock = new Object();
 
 	/**
-	 * The document listener is the listener for changes to the *local* copy of the 
-	 * IDocument.  This listener is responsible for sending document update messages when 
-	 * notified.
+	 * Strategy for maintaining consistency among session participants'
+	 * documents.
+	 */
+	// TODO provide for a user-interactive selection mechanism
+	SynchronizationStrategy sync;
+
+	/**
+	 * The document listener is the listener for changes to the *local* copy of
+	 * the IDocument. This listener is responsible for sending document update
+	 * messages when notified.
 	 */
 	IDocumentListener documentListener = new IDocumentListener() {
+
 		public void documentAboutToBeChanged(DocumentEvent event) {
 			// nothing to do
 		}
 
+		// handling of LOCAL OPERATION application
 		public void documentChanged(DocumentEvent event) {
 			// If the channel is gone, then no reason to handle this.
 			if (getChannel() == null || !Activator.getDefault().isListenerActive()) {
@@ -90,20 +99,26 @@ public class DocShare extends AbstractShare {
 			}
 			// If the listener is not active, ignore input
 			if (!Activator.getDefault().isListenerActive()) {
-				//The local editor is being updated by an remote peer, so we do not
-				//wish to echo this change.
+				// The local editor is being updated by a remote peer, so we do
+				// not
+				// wish to echo this change.
 				return;
 			}
-			// Otherwise end update message
-			sendUpdateMessage(event);
+			Trace.trace(Activator.PLUGIN_ID, NLS.bind("{0}.documentChanged[{1}]", DocShare.this, event)); //$NON-NLS-1$
+			UpdateMessage msg = new UpdateMessage(event.getOffset(), event.getLength(), event.getText());
+			UpdateMessage colaMsg = sync.registerOutgoingMessage(msg);
+			sendUpdateMsg(colaMsg);
 		}
 	};
 
 	/**
 	 * Create a document sharing session instance.
 	 * 
-	 * @param adapter the {@link IChannelContainerAdapter} to use to create this document sharing session.
-	 * @throws ECFException if the channel cannot be created.
+	 * @param adapter
+	 *            the {@link IChannelContainerAdapter} to use to create this
+	 *            document sharing session.
+	 * @throws ECFException
+	 *             if the channel cannot be created.
 	 */
 	public DocShare(IChannelContainerAdapter adapter) throws ECFException {
 		super(adapter);
@@ -148,17 +163,23 @@ public class DocShare extends AbstractShare {
 	}
 
 	/**
-	 * Start sharing an editor's contents between two participants.  This will send a request to start sharing 
-	 * with the target identified by the <code>toID</code> parameter.  The remote receiver will be displayed a
-	 * message dialog, and given the option to start editor sharing, or not.  
+	 * Start sharing an editor's contents between two participants. This will
+	 * send a request to start sharing with the target identified by the
+	 * <code>toID</code> parameter. The remote receiver will be displayed a
+	 * message dialog, and given the option to start editor sharing, or not.
 	 * 
-	 * @param our the ID associated with the initiator.  Must not be <code>null</code>.
-	 * @param fromName a name to present to the receiver.  If <code>null, our.getName() will be used.
+	 * @param our
+	 *            the ID associated with the initiator. Must not be
+	 *            <code>null</code>.
+	 * @param fromName
+	 *            a name to present to the receiver. If
+	 *            <code>null, our.getName() will be used.
 	 * @param toID the ID of the intended receiver.  Must not be <code>null</code>.
 	 * @param fileName the file name of the file to be shared (with suffix type extension).  Must not be <code>null</code>.
 	 * @param editorPart the text editor currently showing the contents of this editor.  Must not be <code>null</code>.
 	 */
 	public void startShare(final ID our, final String fromName, final ID toID, final String fileName, final ITextEditor editorPart) {
+		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, DocShare.class, "startShare", new Object[] {our, fromName, toID, fileName, editorPart}); //$NON-NLS-1$
 		Assert.isNotNull(our);
 		final String fName = (fromName == null) ? our.getName() : fromName;
 		Assert.isNotNull(toID);
@@ -179,53 +200,32 @@ public class DocShare extends AbstractShare {
 				}
 			}
 		});
+		Trace.exiting(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, DocShare.class, "startShare"); //$NON-NLS-1$
 	}
 
 	/**
-	 * Stop editor sharing.  Message only sent if we are currently engaged in an editor sharing session
-	 * ({@link #isSharing()} returns <code>true</code>.
+	 * Stop editor sharing. Message only sent if we are currently engaged in an
+	 * editor sharing session ({@link #isSharing()} returns <code>true</code>.
 	 */
 	public void stopShare() {
+		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, this.getClass(), "stopShare"); //$NON-NLS-1$
 		if (isSharing()) {
 			// send stop message to other
 			sendStopMessage();
 		}
 		localStopShare();
-	}
-
-	public void sendSelection() {
-		ITextEditor textEditor = getTextEditor();
-		if (textEditor != null) {
-			ISelectionProvider selectionProvider = textEditor.getSelectionProvider();
-			ISelection selection = selectionProvider.getSelection();
-			if (selection instanceof ITextSelection) {
-				ITextSelection textSelection = (ITextSelection) selection;
-				try {
-					send(getOtherID(), new SelectionMessage(textSelection.getOffset(), textSelection.getLength(), textSelection.getStartLine(), textSelection.getEndLine()));
-				} catch (Exception e) {
-					logError(Messages.DocShare_SELECTION_SEND_ERROR_TITLE, e);
-					showErrorToUser(Messages.DocShare_SELECTION_SEND_ERROR_TITLE, Messages.DocShare_SELECTION_SEND_ERROR_MESSAGE);
-				}
-			}
-		}
-	}
-
-	protected void handleSelectionMessage(final SelectionMessage selectionMessage) {
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				ITextEditor textEditor = getTextEditor();
-				if (textEditor != null)
-					textEditor.selectAndReveal(selectionMessage.getOffset(), selectionMessage.getLength());
-			}
-		});
+		Trace.exiting(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_EXITING, this.getClass(), "stopShare"); //$NON-NLS-1$
 	}
 
 	void send(ID toID, Message message) throws Exception {
 		super.sendMessage(toID, message.serialize());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.datashare.AbstractShare#handleMessage(org.eclipse.ecf.core.identity.ID, byte[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.datashare.AbstractShare#handleMessage(org.eclipse.ecf.core.identity.ID,
+	 *      byte[])
 	 */
 	protected void handleMessage(ID fromContainerID, byte[] data) {
 		try {
@@ -237,8 +237,6 @@ public class DocShare extends AbstractShare {
 				handleUpdateMessage((UpdateMessage) message);
 			} else if (message instanceof StopMessage) {
 				handleStopMessage((StopMessage) message);
-			} else if (message instanceof SelectionMessage) {
-				handleSelectionMessage((SelectionMessage) message);
 			} else {
 				throw new InvalidObjectException(NLS.bind(Messages.DocShare_EXCEPTION_INVALID_MESSAGE, message.getClass().getName()));
 			}
@@ -248,9 +246,12 @@ public class DocShare extends AbstractShare {
 	}
 
 	/**
-	 * This method called by the {@link #handleMessage(ID, byte[])} method if the type of the message received is a start message (sent
-	 * by remote party via {@link #startShare(ID, String, ID, String, ITextEditor)}.
-	 * @param message the UpdateMessage received.
+	 * This method called by the {@link #handleMessage(ID, byte[])} method if
+	 * the type of the message received is a start message (sent by remote party
+	 * via {@link #startShare(ID, String, ID, String, ITextEditor)}.
+	 * 
+	 * @param message
+	 *            the UpdateMessage received.
 	 */
 	protected void handleStartMessage(final StartMessage message) {
 		final ID senderID = message.getSenderID();
@@ -271,7 +272,8 @@ public class DocShare extends AbstractShare {
 				// And we're done
 				return;
 			}
-			// Otherwise set start content to the message-provided documentContent
+			// Otherwise set start content to the message-provided
+			// documentContent
 			startContent = documentContent;
 		}
 		// Then open UI and show text editor if appropriate
@@ -308,20 +310,19 @@ public class DocShare extends AbstractShare {
 	}
 
 	/**
-	 * This method called by the {@link #handleMessage(ID, byte[])} method if the type of the message received is an update message.
-	 * @param message the UpdateMessage received.
+	 * This method called by the {@link #handleMessage(ID, byte[])} method if
+	 * the type of the message received is an update message.
+	 * 
+	 * @param remoteMsg
+	 *            the UpdateMessage received.
 	 */
-	protected void handleUpdateMessage(final UpdateMessage message) {
-		final int offset = message.getOffset();
-		Assert.isTrue(offset > -1);
-		final int length = message.getLength();
-		Assert.isTrue(length > -1);
-		final String text = message.getText();
-		Assert.isTrue(text != null);
+	protected void handleUpdateMessage(final UpdateMessage remoteMsg) {
 		synchronized (stateLock) {
-			// If we're waiting on user to start then change the startContent directly
+			// If we're waiting on user to start then change the
+			// startContent
+			// directly
 			if (startContent != null) {
-				modifyStartContent(offset, length, text);
+				modifyStartContent(remoteMsg.getOffset(), remoteMsg.getLength(), remoteMsg.getText());
 				// And we're done
 				return;
 			}
@@ -330,11 +331,22 @@ public class DocShare extends AbstractShare {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
+					Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, this.getClass(), "handleUpdateMessage", remoteMsg); //$NON-NLS-1$
 					final IDocument document = getDocumentFromEditor();
+
 					if (document != null) {
-						// We setup editor to not take input while we are changing document
+						// transparent concurrency/sync'ing algorithm delegation
+						// The idea here is to be transparent with the sync'ing
+						// strategy.
+						Trace.trace(Activator.PLUGIN_ID, NLS.bind("{0}.handleUpdateMessage calling transformIncomingMessage", DocShare.this)); //$NON-NLS-1$
+						UpdateMessage msgForLocalApplication = sync.transformIncomingMessage(remoteMsg);
+
+						// if (localState.equalsIgnoreCase(remoteState)) {
+						// We setup editor to not take input while we are
+						// changing document
 						setEditorToRefuseInput();
-						document.replace(offset, length, text);
+
+						document.replace(msgForLocalApplication.getOffset(), msgForLocalApplication.getLength(), msgForLocalApplication.getText());
 					}
 				} catch (final Exception e) {
 					logError(Messages.DocShare_EXCEPTION_RECEIVING_MESSAGE_TITLE, e);
@@ -342,6 +354,7 @@ public class DocShare extends AbstractShare {
 				} finally {
 					// Have editor accept input
 					setEditorToAcceptInput();
+					Trace.exiting(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_EXITING, this.getClass(), "handleUpdateMessage"); //$NON-NLS-1$
 				}
 			}
 		});
@@ -391,7 +404,9 @@ public class DocShare extends AbstractShare {
 		return fileStore;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.datashare.AbstractShare#dispose()
 	 */
 	public synchronized void dispose() {
@@ -408,6 +423,7 @@ public class DocShare extends AbstractShare {
 	}
 
 	void logError(String exceptionString, Throwable e) {
+		Trace.catching(Activator.PLUGIN_ID, DocshareDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), exceptionString, e);
 		Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, exceptionString, e));
 	}
 
@@ -461,6 +477,11 @@ public class DocShare extends AbstractShare {
 			if (doc != null)
 				doc.addDocumentListener(documentListener);
 		}
+		// used to have the ColaSynchronizer.getInstanceFor(...) call here ...
+		// TODO needs to be moved to a more appropriate spot, where ColaSynch'er
+		// does not blow up
+		// sync = IdentityMapping.getInstance();
+		sync = ColaSynchronizer.getInstanceFor(this);
 	}
 
 	void localStopShare() {
@@ -474,12 +495,16 @@ public class DocShare extends AbstractShare {
 				doc.removeDocumentListener(documentListener);
 			this.editor = null;
 		}
+		// clean up if necessary
+		// TODO abstract this to work for SynchronizationStrategy
+		ColaSynchronizer.cleanUpFor(this);
+		sync = null;
 	}
 
-	void sendUpdateMessage(DocumentEvent event) {
+	void sendUpdateMsg(UpdateMessage msg) {
 		if (isSharing()) {
 			try {
-				send(getOtherID(), new UpdateMessage(event.getOffset(), event.getLength(), event.getText()));
+				send(getOtherID(), msg);
 			} catch (final Exception e) {
 				logError(Messages.DocShare_EXCEPTION_SEND_MESSAGE, e);
 			}
@@ -498,6 +523,13 @@ public class DocShare extends AbstractShare {
 				logError(Messages.DocShare_EXCEPTION_SEND_MESSAGE, e);
 			}
 		}
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("DocShare["); //$NON-NLS-1$
+		buf.append("ourID=").append(ourID).append(";initiatorID=").append(initiatorID).append(";receiverID=").append(receiverID); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		buf.append(";strategy=").append(sync).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		return buf.toString();
 	}
 
 }

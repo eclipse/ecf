@@ -6,14 +6,15 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Mustafa K. Isik - conflict resolution via operational transformations
+ *    Mustafa K. Isik - initial API and implementation
  *****************************************************************************/
 
 package org.eclipse.ecf.docshare.cola;
 
-public interface TransformationStrategy {
+import java.io.Serializable;
 
-	ColaUpdateMessage getForOwner(ColaUpdateMessage toBeTransformed, ColaUpdateMessage alreadyApplied);
+public interface TransformationStrategy extends Serializable {
 
-	ColaUpdateMessage getForParticipant(ColaUpdateMessage toBeTransformed, ColaUpdateMessage alreadyApplied);
+	ColaUpdateMessage getOperationalTransform(ColaUpdateMessage remoteIncomingMsg,
+			ColaUpdateMessage localAppliedMsg, boolean localMsgHighPrio);
 }
