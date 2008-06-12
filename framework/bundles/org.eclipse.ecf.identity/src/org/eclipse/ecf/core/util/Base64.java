@@ -1,123 +1,217 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Composent, Inc. - initial API and implementation
- ******************************************************************************/
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *     Composent, Inc. - enhanced API
+ *******************************************************************************/
 package org.eclipse.ecf.core.util;
 
-import org.eclipse.ecf.internal.core.identity.Messages;
-import org.eclipse.osgi.util.NLS;
+import java.io.UnsupportedEncodingException;
 
-/**
- * 
- * Encode/decode byte arrays into base64 strings. Code originally acquired from
- * ftp://ftp.ora.com/pub/examples/java/crypto/files/oreilly/jonathan/util/
- * 
- * Several small modifications were made: the '_' character was substituted for
- * the '/' character, the '-' char substituted for the '=' char, and the '.'
- * substituted for the '+' char so that the resulting string does not use any of
- * the reserved characters in the reserved character set as described in
- * RFC2396. See ftp://ftp.isi.edu/in-notes/rfc2396.txt for details.
- * 
- */
-public final class Base64 {
-	/**
-	 * Encode a byte array into a String
-	 * 
-	 * @param raw
-	 *            the raw data to encode
-	 * @return String that is base64 encoded
-	 */
-	public static String encode(byte[] raw) {
-		if (raw == null)
-			throw new NumberFormatException(Messages.Base64_Input_Data_Not_Null);
-		StringBuffer encoded = new StringBuffer();
-		for (int i = 0; i < raw.length; i += 3) {
-			encoded.append(encodeBlock(raw, i));
-		}
-		return encoded.toString();
-	}
+public class Base64 {
 
-	protected static char[] encodeBlock(byte[] raw, int offset) {
-		int block = 0;
-		int slack = raw.length - offset - 1;
-		int end = (slack >= 2) ? 2 : slack;
-		for (int i = 0; i <= end; i++) {
-			byte b = raw[offset + i];
-			int neuter = (b < 0) ? b + 256 : b;
-			block += neuter << (8 * (2 - i));
-		}
-		char[] base64 = new char[4];
-		for (int i = 0; i < 4; i++) {
-			int sixbit = (block >>> (6 * (3 - i))) & 0x3f;
-			base64[i] = getChar(sixbit);
-		}
-		// modify to use '-' instead of '='
-		if (slack < 1)
-			base64[2] = '-';
-		if (slack < 2)
-			base64[3] = '-';
-		return base64;
-	}
+	private static final byte equalSign = (byte) '=';
 
-	protected static char getChar(int sixBit) {
-		if (sixBit >= 0 && sixBit <= 25)
-			return (char) ('A' + sixBit);
-		if (sixBit >= 26 && sixBit <= 51)
-			return (char) ('a' + (sixBit - 26));
-		if (sixBit >= 52 && sixBit <= 61)
-			return (char) ('0' + (sixBit - 52));
-		if (sixBit == 62)
-			return '.';
-		// modify to use '_' instead of '/'
-		if (sixBit == 63)
-			return '_';
-		return '?';
-	}
+	static char digits[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', //
+			'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', //
+			'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', //
+			'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
 
 	/**
-	 * Decode base64 string into a byte array.
+	 * This method decodes the byte array in base 64 encoding into a char array
+	 * Base 64 encoding has to be according to the specification given by the
+	 * RFC 1521 (5.2).
 	 * 
-	 * @param base64
-	 *            the base64 encoded string
-	 * @return byte[] the resulting decoded data array
-	 * @exception NumberFormatException
-	 *                thrown if String not in base64 format.
+	 * @param data the encoded byte array
+	 * @return the decoded byte array
 	 */
-	public static byte[] decode(String base64) throws NumberFormatException {
-		int pad = 0;
-		for (int i = base64.length() - 1; base64.charAt(i) == '-'; i--)
-			pad++;
-		int length = base64.length() * 6 / 8 - pad;
-		byte[] raw = new byte[length];
-		int rawIndex = 0;
-		for (int i = 0; i < base64.length(); i += 4) {
-			int block = (getValue(base64.charAt(i)) << 18) + (getValue(base64.charAt(i + 1)) << 12) + (getValue(base64.charAt(i + 2)) << 6) + (getValue(base64.charAt(i + 3)));
-			for (int j = 0; j < 3 && rawIndex + j < raw.length; j++)
-				raw[rawIndex + j] = (byte) ((block >> (8 * (2 - j))) & 0xff);
-			rawIndex += 3;
+	public static byte[] decodeFromCharArray(byte[] data) {
+		if (data.length == 0)
+			return data;
+		int lastRealDataIndex = data.length - 1;
+		while (data[lastRealDataIndex] == equalSign)
+			lastRealDataIndex--;
+		// original data digit is 8 bits long, but base64 digit is 6 bits long
+		int padBytes = data.length - 1 - lastRealDataIndex;
+		int byteLength = data.length * 6 / 8 - padBytes;
+		byte[] result = new byte[byteLength];
+		// Each 4 bytes of input (encoded) we end up with 3 bytes of output
+		int dataIndex = 0;
+		int resultIndex = 0;
+		int allBits = 0;
+		// how many result chunks we can process before getting to pad bytes
+		int resultChunks = (lastRealDataIndex + 1) / 4;
+		for (int i = 0; i < resultChunks; i++) {
+			allBits = 0;
+			// Loop 4 times gathering input bits (4 * 6 = 24)
+			for (int j = 0; j < 4; j++)
+				allBits = (allBits << 6) | decodeDigit(data[dataIndex++]);
+			// Loop 3 times generating output bits (3 * 8 = 24)
+			for (int j = resultIndex + 2; j >= resultIndex; j--) {
+				result[j] = (byte) (allBits & 0xff); // Bottom 8 bits
+				allBits = allBits >>> 8;
+			}
+			resultIndex += 3; // processed 3 result bytes
 		}
-		return raw;
+		// Now we do the extra bytes in case the original (non-encoded) data
+		// was not multiple of 3 bytes
+		switch (padBytes) {
+			case 1 :
+				// 1 pad byte means 3 (4-1) extra Base64 bytes of input, 18
+				// bits, of which only 16 are meaningful
+				// Or: 2 bytes of result data
+				allBits = 0;
+				// Loop 3 times gathering input bits
+				for (int j = 0; j < 3; j++)
+					allBits = (allBits << 6) | decodeDigit(data[dataIndex++]);
+				// NOTE - The code below ends up being equivalent to allBits =
+				// allBits>>>2
+				// But we code it in a non-optimized way for clarity
+				// The 4th, missing 6 bits are all 0
+				allBits = allBits << 6;
+				// The 3rd, missing 8 bits are all 0
+				allBits = allBits >>> 8;
+				// Loop 2 times generating output bits
+				for (int j = resultIndex + 1; j >= resultIndex; j--) {
+					result[j] = (byte) (allBits & 0xff); // Bottom 8
+					// bits
+					allBits = allBits >>> 8;
+				}
+				break;
+			case 2 :
+				// 2 pad bytes mean 2 (4-2) extra Base64 bytes of input, 12 bits
+				// of data, of which only 8 are meaningful
+				// Or: 1 byte of result data
+				allBits = 0;
+				// Loop 2 times gathering input bits
+				for (int j = 0; j < 2; j++)
+					allBits = (allBits << 6) | decodeDigit(data[dataIndex++]);
+				// NOTE - The code below ends up being equivalent to allBits =
+				// allBits>>>4
+				// But we code it in a non-optimized way for clarity
+				// The 3rd and 4th, missing 6 bits are all 0
+				allBits = allBits << 6;
+				allBits = allBits << 6;
+				// The 3rd and 4th, missing 8 bits are all 0
+				allBits = allBits >>> 8;
+				allBits = allBits >>> 8;
+				result[resultIndex] = (byte) (allBits & 0xff); // Bottom
+				// 8
+				// bits
+				break;
+		}
+		return result;
 	}
 
-	protected static int getValue(char c) throws NumberFormatException {
-		if (c >= 'A' && c <= 'Z')
-			return c - 'A';
-		if (c >= 'a' && c <= 'z')
-			return c - 'a' + 26;
-		if (c >= '0' && c <= '9')
-			return c - '0' + 52;
-		if (c == '.')
-			return 62;
-		// modify to use '_' instead of '/'
-		if (c == '_')
-			return 63;
-		// modify to use '-' instead of '='
-		if (c == '-')
-			return 0;
-		throw new NumberFormatException(NLS.bind(Messages.Base64_Invalid_Value, String.valueOf(c)));
+	/**
+	 * This method converts a Base 64 digit to its numeric value.
+	 * 
+	 * @param data digit (character) to convert
+	 * @return value for the digit
+	 */
+	static int decodeDigit(byte data) {
+		char charData = (char) data;
+		if (charData <= 'Z' && charData >= 'A')
+			return charData - 'A';
+		if (charData <= 'z' && charData >= 'a')
+			return charData - 'a' + 26;
+		if (charData <= '9' && charData >= '0')
+			return charData - '0' + 52;
+		switch (charData) {
+			case '+' :
+				return 62;
+			case '/' :
+				return 63;
+			default :
+				throw new IllegalArgumentException("Invalid char to decode: " + data); //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * This method encodes the byte array into a char array in base 64 according
+	 * to the specification given by the RFC 1521 (5.2).
+	 * 
+	 * @param data the encoded char array
+	 * @return the byte array that needs to be encoded
+	 */
+	public static byte[] encodeToCharArray(byte[] data) {
+		int sourceChunks = data.length / 3;
+		int len = ((data.length + 2) / 3) * 4;
+		byte[] result = new byte[len];
+		int extraBytes = data.length - (sourceChunks * 3);
+		// Each 4 bytes of input (encoded) we end up with 3 bytes of output
+		int dataIndex = 0;
+		int resultIndex = 0;
+		int allBits = 0;
+		for (int i = 0; i < sourceChunks; i++) {
+			allBits = 0;
+			// Loop 3 times gathering input bits (3 * 8 = 24)
+			for (int j = 0; j < 3; j++)
+				allBits = (allBits << 8) | (data[dataIndex++] & 0xff);
+			// Loop 4 times generating output bits (4 * 6 = 24)
+			for (int j = resultIndex + 3; j >= resultIndex; j--) {
+				result[j] = (byte) digits[(allBits & 0x3f)]; // Bottom
+				// 6
+				// bits
+				allBits = allBits >>> 6;
+			}
+			resultIndex += 4; // processed 4 result bytes
+		}
+		// Now we do the extra bytes in case the original (non-encoded) data
+		// is not multiple of 4 bytes
+		switch (extraBytes) {
+			case 1 :
+				allBits = data[dataIndex++]; // actual byte
+				allBits = allBits << 8; // 8 bits of zeroes
+				allBits = allBits << 8; // 8 bits of zeroes
+				// Loop 4 times generating output bits (4 * 6 = 24)
+				for (int j = resultIndex + 3; j >= resultIndex; j--) {
+					result[j] = (byte) digits[(allBits & 0x3f)]; // Bottom
+					// 6
+					// bits
+					allBits = allBits >>> 6;
+				}
+				// 2 pad tags
+				result[result.length - 1] = (byte) '=';
+				result[result.length - 2] = (byte) '=';
+				break;
+			case 2 :
+				allBits = data[dataIndex++]; // actual byte
+				allBits = (allBits << 8) | (data[dataIndex++] & 0xff); // actual
+				// byte
+				allBits = allBits << 8; // 8 bits of zeroes
+				// Loop 4 times generating output bits (4 * 6 = 24)
+				for (int j = resultIndex + 3; j >= resultIndex; j--) {
+					result[j] = (byte) digits[(allBits & 0x3f)]; // Bottom
+					// 6
+					// bits
+					allBits = allBits >>> 6;
+				}
+				// 1 pad tag
+				result[result.length - 1] = (byte) '=';
+				break;
+		}
+		return result;
+	}
+
+	public static String encode(byte[] bytes) {
+		try {
+			return new String(encodeToCharArray(bytes), "ISO8859_1"); //$NON-NLS-1$
+		} catch (UnsupportedEncodingException e) {
+			throw new NullPointerException("Do not have ISO8859_1 encoder"); //$NON-NLS-1$
+		}
+	}
+
+	public static byte[] decode(String encoded) {
+		try {
+			return decodeFromCharArray(encoded.getBytes("ISO8859_1")); //$NON-NLS-1$
+		} catch (UnsupportedEncodingException e) {
+			throw new NullPointerException("Do not have ISO8859_1 encoder"); //$NON-NLS-1$
+		}
 	}
 }
