@@ -22,7 +22,7 @@ import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 /**
  * 
  */
-public class SingletonDiscoveryContainer implements IDiscoveryContainerAdapter, IContainer {
+public class SingletonDiscoveryContainer implements IDiscoveryContainerAdapter {
 
 	private IDiscoveryContainerAdapter discovery;
 	private IContainer container;
