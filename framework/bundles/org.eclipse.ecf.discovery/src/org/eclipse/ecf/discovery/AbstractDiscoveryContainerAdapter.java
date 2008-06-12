@@ -13,14 +13,13 @@ package org.eclipse.ecf.discovery;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.AbstractContainer;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.discovery.DiscoveryDebugOption;
 import org.eclipse.ecf.internal.discovery.DiscoveryPlugin;
 
-public abstract class AbstractDiscoveryContainerAdapter extends AbstractContainer implements IDiscoveryContainerAdapter, IContainer {
+public abstract class AbstractDiscoveryContainerAdapter extends AbstractContainer implements IDiscoveryContainerAdapter {
 
 	/**
 	 * Collection of service listeners i.e. Collection<IServiceListener>.
