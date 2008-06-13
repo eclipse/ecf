@@ -181,7 +181,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	}
 
 	private IServiceID getServiceIDForDiscoveryContainer(IServiceID service, IDiscoveryContainerAdapter dca) {
-		Namespace connectNamespace = dca.getConnectNamespace();
+		Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(service.getNamespace())) {
 			try {
 				return ServiceIDFactory.getDefault().createServiceID(connectNamespace, service.getServiceTypeID().getName(), service.getName());
@@ -246,7 +246,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	}
 
 	private IServiceTypeID getServiceTypeIDForDiscoveryContainer(IServiceTypeID type, IDiscoveryContainerAdapter dca) {
-		Namespace connectNamespace = dca.getConnectNamespace();
+		Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(type.getNamespace())) {
 			try {
 				return (IServiceTypeID) connectNamespace.createInstance(new Object[] {type});
