@@ -10,7 +10,6 @@
 package org.eclipse.ecf.discovery;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.identity.*;
@@ -29,7 +28,7 @@ import org.eclipse.ecf.discovery.identity.*;
  * implementation.
  * 
  */
-public interface IDiscoveryContainerAdapter extends IContainer, IAdaptable {
+public interface IDiscoveryContainerAdapter extends IAdaptable {
 
 	/** ECF Service Property Names **/
 	public static final String CONTAINER_FACTORY_NAME_PROPERTY = "org.eclipse.ecf.containerFactoryName"; //$NON-NLS-1$
