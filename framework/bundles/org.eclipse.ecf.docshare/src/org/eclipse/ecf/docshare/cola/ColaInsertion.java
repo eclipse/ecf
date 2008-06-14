@@ -40,6 +40,7 @@ public class ColaInsertion implements TransformationStrategy {
 	 * 
 	 * @param remoteIncomingMsg message originating from remote site, generated on same document state as <code>localAppliedMsg</code>
 	 * @param localAppliedMsg message already applied to local document, generation state corresponds to that of <code>remoteIncomingMsg</code>
+	 * @param localMsgHighPrio determines insertion preference for same offsets, if true localAppliedMsg comes first
 	 * @return operational transform of remote message, not conflicting with applied local message
 	 */
 	public ColaUpdateMessage getOperationalTransform(ColaUpdateMessage remoteIncomingMsg, ColaUpdateMessage localAppliedMsg, boolean localMsgHighPrio) {
