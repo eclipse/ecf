@@ -32,6 +32,16 @@ public class ColaInsertion implements TransformationStrategy {
 		return INSTANCE;
 	}
 
+	/**
+	 * Resolves two conflicting <code>ColaUpdateMessage</code>s by applying an appropriate operational transform.
+	 * 
+	 * If necessary, modifies <code>localAppliedMsg</code> as well to reflect knowledge of <code>remoteIncomingMsg</code> 
+	 * in case more conflicting/further diverging remote messages arrive.  
+	 * 
+	 * @param remoteIncomingMsg message originating from remote site, generated on same document state as <code>localAppliedMsg</code>
+	 * @param localAppliedMsg message already applied to local document, generation state corresponds to that of <code>remoteIncomingMsg</code>
+	 * @return operational transform of remote message, not conflicting with applied local message
+	 */
 	public ColaUpdateMessage getOperationalTransform(ColaUpdateMessage remoteIncomingMsg, ColaUpdateMessage localAppliedMsg, boolean localMsgHighPrio) {
 
 		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, this.getClass(), "getOperationalTransform", new Object[] {remoteIncomingMsg, localAppliedMsg, new Boolean(localMsgHighPrio)}); //$NON-NLS-1$
@@ -44,12 +54,16 @@ public class ColaInsertion implements TransformationStrategy {
 				//coopt(remote(low),local(high)) --> (remote(low),local(low + high))
 				localAppliedMsg.setOffset(localAppliedMsg.getOffset() + remoteTransformedMsg.getOffset());
 			} else if (remoteTransformedMsg.getOffset() == localAppliedMsg.getOffset()) {
+				//coopt(remote(same),local(same))
 				if (localMsgHighPrio) {
+					//at owner --> (remote(high),local(same))
 					remoteTransformedMsg.setOffset(remoteTransformedMsg.getOffset() + localAppliedMsg.getText().length());
 				} else {
+					//at participant --> (remote(same),local(high))
 					localAppliedMsg.setOffset(localAppliedMsg.getOffset() + remoteTransformedMsg.getText().length());
 				}
 			} else if (remoteTransformedMsg.getOffset() > localAppliedMsg.getOffset()) {
+				//coopt(remote(high),local(low)) --> (remote(low + high),local(low))
 				remoteTransformedMsg.setOffset(remoteTransformedMsg.getOffset() + localAppliedMsg.getText().length());
 			}
 		}
