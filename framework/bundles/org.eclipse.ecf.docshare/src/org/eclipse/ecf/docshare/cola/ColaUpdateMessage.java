@@ -27,10 +27,10 @@ public class ColaUpdateMessage extends UpdateMessage {
 	final TransformationStrategy trafoStrat;
 
 	public ColaUpdateMessage(UpdateMessage msg, long localOperationsCount, long remoteOperationsCount) {
-		super(msg.getOffset(), msg.getLength(), msg.getText());
+		super(msg.getOffset(), msg.getLengthOfReplacedText(), msg.getText());
 		this.localOperationsCount = localOperationsCount;
 		this.remoteOperationsCount = remoteOperationsCount;
-		if (super.getLength() == 0) {
+		if (super.getLengthOfReplacedText() == 0) {
 			// this is neither a replacement, nor a deletion
 			trafoStrat = ColaInsertion.getInstance();
 		} else {
@@ -72,7 +72,7 @@ public class ColaUpdateMessage extends UpdateMessage {
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ColaUpdateMessage["); //$NON-NLS-1$
 		buf.append("text=").append(getText()).append(";offset=").append(getOffset()); //$NON-NLS-1$ //$NON-NLS-2$
-		buf.append(";length=").append(getLength()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append(";length=").append(getLengthOfReplacedText()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append(";operationsCount[local=").append(getLocalOperationsCount()); //$NON-NLS-1$
 		buf.append(";remote=").append(getRemoteOperationsCount()).append("]]"); //$NON-NLS-1$//$NON-NLS-2$
 		return buf.toString();

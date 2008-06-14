@@ -48,7 +48,7 @@ public class UpdateMessage extends Message {
 	 * 
 	 * @return length of replaced text
 	 */
-	public int getLength() {
+	public int getLengthOfReplacedText() {
 		return length;
 	}
 

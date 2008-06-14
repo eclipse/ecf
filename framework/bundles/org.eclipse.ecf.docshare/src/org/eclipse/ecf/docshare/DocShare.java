@@ -322,7 +322,7 @@ public class DocShare extends AbstractShare {
 			// startContent
 			// directly
 			if (startContent != null) {
-				modifyStartContent(remoteMsg.getOffset(), remoteMsg.getLength(), remoteMsg.getText());
+				modifyStartContent(remoteMsg.getOffset(), remoteMsg.getLengthOfReplacedText(), remoteMsg.getText());
 				// And we're done
 				return;
 			}
@@ -346,7 +346,7 @@ public class DocShare extends AbstractShare {
 						// changing document
 						setEditorToRefuseInput();
 
-						document.replace(msgForLocalApplication.getOffset(), msgForLocalApplication.getLength(), msgForLocalApplication.getText());
+						document.replace(msgForLocalApplication.getOffset(), msgForLocalApplication.getLengthOfReplacedText(), msgForLocalApplication.getText());
 					}
 				} catch (final Exception e) {
 					logError(Messages.DocShare_EXCEPTION_RECEIVING_MESSAGE_TITLE, e);
