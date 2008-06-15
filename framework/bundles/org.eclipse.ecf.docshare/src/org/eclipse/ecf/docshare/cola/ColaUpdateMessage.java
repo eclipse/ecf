@@ -25,11 +25,13 @@ public class ColaUpdateMessage extends UpdateMessage {
 	private final long localOperationsCount;
 	private long remoteOperationsCount;
 	private final TransformationStrategy trafoStrat;
+	private boolean splitUp;
 
 	public ColaUpdateMessage(UpdateMessage msg, long localOperationsCount, long remoteOperationsCount) {
 		super(msg.getOffset(), msg.getLengthOfReplacedText(), msg.getText());
 		this.localOperationsCount = localOperationsCount;
 		this.remoteOperationsCount = remoteOperationsCount;
+		this.splitUp = false;
 		if (super.getLengthOfReplacedText() == 0) {
 			// this is neither a replacement, nor a deletion
 			trafoStrat = ColaInsertion.getInstance();
@@ -54,11 +56,11 @@ public class ColaUpdateMessage extends UpdateMessage {
 		return (this.trafoStrat instanceof ColaDeletion);
 	}
 
-	public double getLocalOperationsCount() {
+	public long getLocalOperationsCount() {
 		return this.localOperationsCount;
 	}
 
-	public double getRemoteOperationsCount() {
+	public long getRemoteOperationsCount() {
 		return this.remoteOperationsCount;
 	}
 
@@ -76,5 +78,13 @@ public class ColaUpdateMessage extends UpdateMessage {
 		buf.append(";operationsCount[local=").append(getLocalOperationsCount()); //$NON-NLS-1$
 		buf.append(";remote=").append(getRemoteOperationsCount()).append("]]"); //$NON-NLS-1$//$NON-NLS-2$
 		return buf.toString();
+	}
+
+	public void setSplitUp(boolean toBeSplitUp) {
+		this.splitUp = toBeSplitUp;
+	}
+
+	public boolean isSplitUp() {
+		return splitUp;
 	}
 }
