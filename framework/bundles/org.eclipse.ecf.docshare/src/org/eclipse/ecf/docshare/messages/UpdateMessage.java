@@ -60,6 +60,10 @@ public class UpdateMessage extends Message {
 		return text;
 	}
 
+	public int getLengthOfInsertedText() {
+		return this.text.length();
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer("UpdateMessage["); //$NON-NLS-1$
 		buf.append("text=").append(text).append(";offset=").append(offset); //$NON-NLS-1$ //$NON-NLS-2$
