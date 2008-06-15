@@ -105,13 +105,22 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 			if (!unacknowledgedLocalOperations.isEmpty()) {
 				ColaUpdateMessage localOp = (ColaUpdateMessage) unacknowledgedLocalOperations.getFirst();
 				Assert.isTrue(transformedRemote.getRemoteOperationsCount() == localOp.getLocalOperationsCount());
-				for (final Iterator it = unacknowledgedLocalOperations.iterator(); it.hasNext();) {
+				for (final ListIterator listIt = unacknowledgedLocalOperations.listIterator(); listIt.hasNext();) {
 					// returns new instance
 					// clarify operation preference, owner/docshare initiator
 					// consistently comes first
+					localOp = (ColaUpdateMessage) listIt.next();
+					transformedRemote = transformedRemote.transformAgainst(localOp, isInitiator);
 
-					transformedRemote = transformedRemote.transformAgainst((ColaUpdateMessage) it.next(), isInitiator);
-
+					//TODO check whether or not this collection shuffling does what it is supposed to, i.e. remove current localop in unack list and add split up representation instead
+					if (localOp.isSplitUp()) {
+						//local operation has been split up during operational transform --> remove current version and add new versions plus jump over those
+						listIt.remove();
+						for (final Iterator splitUpOpIterator = localOp.getSplitUpRepresentation().iterator(); splitUpOpIterator.hasNext();) {
+							listIt.add(splitUpOpIterator.next());
+						}
+						listIt.next();//jump over both inserted operations that replaced the current unack op
+					}//end split up localop handling
 				}
 			}
 

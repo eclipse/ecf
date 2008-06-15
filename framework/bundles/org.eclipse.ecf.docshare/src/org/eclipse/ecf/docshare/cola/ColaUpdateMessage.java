@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.docshare.cola;
 
+import java.util.LinkedList;
+import java.util.List;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.docshare.messages.UpdateMessage;
 import org.eclipse.ecf.internal.docshare.Activator;
@@ -26,12 +28,14 @@ public class ColaUpdateMessage extends UpdateMessage {
 	private long remoteOperationsCount;
 	private final TransformationStrategy trafoStrat;
 	private boolean splitUp;
+	private List splitUpRepresentation;
 
 	public ColaUpdateMessage(UpdateMessage msg, long localOperationsCount, long remoteOperationsCount) {
 		super(msg.getOffset(), msg.getLengthOfReplacedText(), msg.getText());
 		this.localOperationsCount = localOperationsCount;
 		this.remoteOperationsCount = remoteOperationsCount;
 		this.splitUp = false;
+		this.splitUpRepresentation = new LinkedList();
 		if (super.getLengthOfReplacedText() == 0) {
 			// this is neither a replacement, nor a deletion
 			trafoStrat = ColaInsertion.getInstance();
@@ -86,5 +90,17 @@ public class ColaUpdateMessage extends UpdateMessage {
 
 	public boolean isSplitUp() {
 		return splitUp;
+	}
+
+	public void setSplitUpRepresentation(List splitUpRepresentation) {
+		this.splitUpRepresentation = splitUpRepresentation;
+	}
+
+	public List getSplitUpRepresentation() {
+		return splitUpRepresentation;
+	}
+
+	public void addToSplitUpRepresentation(ColaUpdateMessage splitUpRepresentationPart) {
+		this.splitUpRepresentation.add(splitUpRepresentationPart);
 	}
 }

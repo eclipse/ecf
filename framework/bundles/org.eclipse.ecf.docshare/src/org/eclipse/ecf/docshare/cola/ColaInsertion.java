@@ -12,6 +12,7 @@
 package org.eclipse.ecf.docshare.cola;
 
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.docshare.messages.UpdateMessage;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.DocshareDebugOptions;
 
@@ -66,6 +67,35 @@ public class ColaInsertion implements TransformationStrategy {
 			} else if (remoteTransformedMsg.getOffset() > localAppliedMsg.getOffset()) {
 				//coopt(remote(high),local(low)) --> (remote(low + high),local(low))
 				remoteTransformedMsg.setOffset(remoteTransformedMsg.getOffset() + localAppliedMsg.getText().length());
+			}
+
+		} else if (localAppliedMsg.isDeletion()) {
+
+			if (remoteTransformedMsg.getOffset() <= localAppliedMsg.getOffset()) {
+
+				localAppliedMsg.setOffset(localAppliedMsg.getOffset() + remoteTransformedMsg.getLengthOfInsertedText());
+
+			} else if (remoteTransformedMsg.getOffset() > localAppliedMsg.getOffset()) {
+
+				if (remoteTransformedMsg.getOffset() > (localAppliedMsg.getOffset() + localAppliedMsg.getLengthOfReplacedText())) {
+
+					remoteTransformedMsg.setOffset(remoteTransformedMsg.getOffset() - localAppliedMsg.getLengthOfReplacedText());
+				} else if (remoteTransformedMsg.getOffset() <= (localAppliedMsg.getOffset() + localAppliedMsg.getLengthOfReplacedText())) {
+
+					//TODO test this ^#$%^#$ case
+					UpdateMessage deletionFirstMessage = new UpdateMessage(localAppliedMsg.getOffset(), remoteTransformedMsg.getOffset() - localAppliedMsg.getOffset(), localAppliedMsg.getText());
+					ColaUpdateMessage deletionFirstPart = new ColaUpdateMessage(deletionFirstMessage, localAppliedMsg.getLocalOperationsCount(), localAppliedMsg.getRemoteOperationsCount());
+					localAppliedMsg.addToSplitUpRepresentation(deletionFirstPart);
+
+					UpdateMessage deletionSecondMessage = new UpdateMessage(localAppliedMsg.getOffset() + remoteTransformedMsg.getLengthOfInsertedText(), localAppliedMsg.getLengthOfReplacedText() - deletionFirstPart.getLengthOfReplacedText(), localAppliedMsg.getText());
+					ColaUpdateMessage deletionSecondPart = new ColaUpdateMessage(deletionSecondMessage, localAppliedMsg.getLocalOperationsCount(), localAppliedMsg.getRemoteOperationsCount());
+					localAppliedMsg.addToSplitUpRepresentation(deletionSecondPart);
+
+					localAppliedMsg.setSplitUp(true);
+
+					remoteTransformedMsg.setOffset(localAppliedMsg.getOffset());
+
+				}
 			}
 		}
 

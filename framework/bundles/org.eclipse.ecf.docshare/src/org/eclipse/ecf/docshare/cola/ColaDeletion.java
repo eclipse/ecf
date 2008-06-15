@@ -38,7 +38,7 @@ public class ColaDeletion implements TransformationStrategy {
 
 		ColaUpdateMessage remoteTransformedMsg = remoteIncomingMsg;
 
-		if (remoteTransformedMsg.isDeletion()) {
+		if (localAppliedMsg.isDeletion()) {
 			final int noOpLength = 0;
 
 			if (remoteTransformedMsg.getOffset() < localAppliedMsg.getOffset()) {
@@ -110,77 +110,28 @@ public class ColaDeletion implements TransformationStrategy {
 					localAppliedMsg.setLengthOfReplacedText(localAppliedMsg.getLengthOfReplacedText() - (localAppliedMsg.getOffset() + localAppliedMsg.getLengthOfReplacedText()) - remoteTransformedMsg.getOffset());
 				}
 			}
-		}
-		//--------------------------
-
-		/*if (localAppliedMsg.isInsertion()) {
-			// something has been inserted at a lower or same index --> move
-			// deletion right
-			if (localAppliedMsg.getOffset() <= remoteTransformedMsg.getOffset()) {
-				remoteTransformedMsg.setOffset(remoteTransformedMsg.getOffset() + localAppliedMsg.getText().length());
-			}
-		} else if (localAppliedMsg.isDeletion()) {
-			if (remoteTransformedMsg.getOffset() > localAppliedMsg.getOffset()) {
-				// move to remote deletion to the left
-				// check for overlap
-				if (remoteTransformedMsg.getOffset() < (localAppliedMsg.getOffset() + localAppliedMsg.getLength())) {
-					// partial overlap on the right side of local op
-					if ((remoteTransformedMsg.getOffset() + remoteTransformedMsg.getLength()) > (localAppliedMsg.getOffset() + localAppliedMsg.getLength())) {
-						// the case that some part of the beginning of the
-						// incoming
-						// remote del lies within the already executed deletion
-						// and extends beyond the already applied del
-						// shorten the remote deletion, cut off the redundant
-						// part
-						// at the beginning of rem del
-						remoteTransformedMsg.setLength(remoteTransformedMsg.getLength() - ((localAppliedMsg.getOffset() + localAppliedMsg.getLength()) - remoteTransformedMsg.getOffset()));
-						// move shortened remote del offset to correct pos.
-						remoteTransformedMsg.setOffset(localAppliedMsg.getOffset());
-					} else { // full overlap, remote op fully contained
-						// within local op
-						// case remote deletion is fully within already applied
-						// deletion, i.e. don't do anything
-						remoteTransformedMsg.setLength(0); // TODO check
-						remoteTransformedMsg.setOffset(0);// TODO check -
-						// should resolve
-						// nullpointerexc
-						// whether this is
-						// enough to make
-						// this a no-op
-					}
-				} else { // no overlap
-					// deletion is fully after the already applied deletion
-					remoteTransformedMsg.setOffset(remoteTransformedMsg.getOffset() - localAppliedMsg.getLength());
+		} else if (localAppliedMsg.isInsertion()) {
+			if (remoteTransformedMsg.getOffset() < localAppliedMsg.getOffset()) {
+				if ((remoteTransformedMsg.getOffset() + remoteTransformedMsg.getLengthOfReplacedText()) < localAppliedMsg.getOffset()) {
+					//remote remains unchanged, deletion happens fully before local insertion
+					//local insertion needs to be moved left by full length of deletion
+					localAppliedMsg.setOffset(localAppliedMsg.getOffset() - remoteTransformedMsg.getLengthOfReplacedText());
+				} else if ((remoteTransformedMsg.getOffset() + remoteTransformedMsg.getLengthOfReplacedText()) >= localAppliedMsg.getOffset()) {
+					//remote deletion reaches into local insertion and potentially over it
+					//local insertion needs to be moved left by overlap
+					//remote deletion needs to be split apart
+					//TODO needs to be implemented and requires appropriate modification in ColaSynchronizer
+					throw new IllegalArgumentException("NOT IMPLEMENTED OPERATIONAL TRANSFORM");
 				}
-				// if incoming deletion is at a lower or equal index
-			} else if (remoteTransformedMsg.getOffset() <= localAppliedMsg.getOffset()) {
-				// check for overlap
-				if ((remoteTransformedMsg.getOffset() + remoteIncomingMsg.getLength()) > localAppliedMsg.getOffset()) {
-					// case remote op reaches into or even over the local op
-					if ((remoteTransformedMsg.getOffset() + remoteIncomingMsg.getLength()) <= (localAppliedMsg.getOffset() + localAppliedMsg.getLength())) {
-						// case remote op does not reach over local op, i.e.
-						// shorten remote op by overlap
-						remoteTransformedMsg.setLength(remoteTransformedMsg.getLength() - ((remoteIncomingMsg.getOffset() + remoteTransformedMsg.getLength()) - localAppliedMsg.getOffset()));// same
-						// as
-						// remoteOffset
-						// - localOffset
-					} else {
-						// case remote op reaches over, i.e. cut out length of
-						// local del-op
-						remoteTransformedMsg.setLength(remoteTransformedMsg.getLength() - localAppliedMsg.getLength());
-					}
-
-				}
-				// no need to do anything if there is no overlap for del-op at
-				// lower index vs. local del-op
+			} else if (remoteTransformedMsg.getOffset() >= localAppliedMsg.getOffset()) {
+				//remote del needs to be moved right by full length of insertion
+				remoteTransformedMsg.setOffset(remoteTransformedMsg.getOffset() + localAppliedMsg.getLengthOfInsertedText());
 			}
 		}
-
-		remoteTransformedMsg.remoteOperationsCount += 1;
-		localAppliedMsg.remoteOperationsCount += 1;*/
 
 		Trace.exiting(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_EXITING, this.getClass(), "getOperationalTransform", null); //$NON-NLS-1$
 
 		return remoteTransformedMsg;
 	}
+
 }
