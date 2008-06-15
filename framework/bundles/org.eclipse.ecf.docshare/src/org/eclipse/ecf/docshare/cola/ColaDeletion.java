@@ -12,6 +12,7 @@
 package org.eclipse.ecf.docshare.cola;
 
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.docshare.messages.UpdateMessage;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.DocshareDebugOptions;
 
@@ -116,12 +117,22 @@ public class ColaDeletion implements TransformationStrategy {
 					//remote remains unchanged, deletion happens fully before local insertion
 					//local insertion needs to be moved left by full length of deletion
 					localAppliedMsg.setOffset(localAppliedMsg.getOffset() - remoteTransformedMsg.getLengthOfReplacedText());
-				} else if ((remoteTransformedMsg.getOffset() + remoteTransformedMsg.getLengthOfReplacedText()) >= localAppliedMsg.getOffset()) {
+				} else if ((remoteTransformedMsg.getOffset() + remoteTransformedMsg.getLengthOfReplacedText()) >= localAppliedMsg.getOffset()) { //TODO optimize away, "if" just here for clarity, "else" would be enough
 					//remote deletion reaches into local insertion and potentially over it
-					//local insertion needs to be moved left by overlap
 					//remote deletion needs to be split apart
-					//TODO needs to be implemented and requires appropriate modification in ColaSynchronizer
-					throw new IllegalArgumentException("NOT IMPLEMENTED OPERATIONAL TRANSFORM");
+					UpdateMessage deletionFirstMsg = new UpdateMessage(remoteTransformedMsg.getOffset(), localAppliedMsg.getOffset() - remoteTransformedMsg.getOffset(), remoteTransformedMsg.getText());
+					ColaUpdateMessage deletionFirstPart = new ColaUpdateMessage(deletionFirstMsg, remoteTransformedMsg.getLocalOperationsCount(), remoteTransformedMsg.getRemoteOperationsCount());
+					remoteTransformedMsg.addToSplitUpRepresentation(deletionFirstPart);
+
+					UpdateMessage deletionSecondMsg = new UpdateMessage(localAppliedMsg.getOffset() + localAppliedMsg.getLengthOfInsertedText(), remoteTransformedMsg.getLengthOfReplacedText() - deletionFirstPart.getLengthOfReplacedText(), remoteTransformedMsg.getText());
+					ColaUpdateMessage deletionSecondPart = new ColaUpdateMessage(deletionSecondMsg, remoteTransformedMsg.getLocalOperationsCount(), remoteTransformedMsg.getRemoteOperationsCount());
+					remoteTransformedMsg.addToSplitUpRepresentation(deletionSecondPart);
+
+					remoteTransformedMsg.setSplitUp(true);
+
+					//local insertion needs to be moved left by overlap
+					localAppliedMsg.setOffset(remoteTransformedMsg.getOffset());
+
 				}
 			} else if (remoteTransformedMsg.getOffset() >= localAppliedMsg.getOffset()) {
 				//remote del needs to be moved right by full length of insertion
