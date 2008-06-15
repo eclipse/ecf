@@ -36,11 +36,26 @@ public class ColaDeletion implements TransformationStrategy {
 
 		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, this.getClass(), "getOperationalTransform", new Object[] {remoteIncomingMsg, localAppliedMsg, new Boolean(localMsgHighPrio)}); //$NON-NLS-1$
 
-		// this transformation handles an incoming remote deletion that has to
-		// be transformed against a locally operation
 		ColaUpdateMessage remoteTransformedMsg = remoteIncomingMsg;
 
-		if (localAppliedMsg.isInsertion()) {
+		if (remoteTransformedMsg.isDeletion()) {
+
+			if (remoteTransformedMsg.getOffset() < localAppliedMsg.getOffset()) {
+				if ((remoteTransformedMsg.getOffset() + remoteTransformedMsg.getLengthOfReplacedText()) < localAppliedMsg.getOffset()) {
+					//no overlap - remote OK as is, local needs modification
+					localAppliedMsg.setOffset(localAppliedMsg.getOffset() - remoteTransformedMsg.getLengthOfReplacedText());
+				} else if ((remoteTransformedMsg.getOffset() + remoteTransformedMsg.getLengthOfReplacedText()) < (localAppliedMsg.getOffset() + localAppliedMsg.getLengthOfReplacedText())) {
+					//remote del at lower index reaches into locally applied del, local del reaches further out
+					//shorten remote del appropriately, move and shorten local del left
+					remoteTransformedMsg.setLengthOfReplacedText((remoteTransformedMsg.getOffset() + remoteTransformedMsg.getLengthOfReplacedText()) - localAppliedMsg.getOffset());
+					localAppliedMsg.setLengthOfReplacedText((remoteTransformedMsg.getOffset() + remoteTransformedMsg.getLengthOfReplacedText()) - localAppliedMsg.getOffset());
+					localAppliedMsg.setOffset(remoteTransformedMsg.getOffset());
+				}//TODO remove this comment : too tired to continue 2008-06-15 00:42h
+			}
+		}
+		//--------------------------
+
+		/*if (localAppliedMsg.isInsertion()) {
 			// something has been inserted at a lower or same index --> move
 			// deletion right
 			if (localAppliedMsg.getOffset() <= remoteTransformedMsg.getOffset()) {
@@ -104,10 +119,10 @@ public class ColaDeletion implements TransformationStrategy {
 		}
 
 		remoteTransformedMsg.remoteOperationsCount += 1;
-		localAppliedMsg.remoteOperationsCount += 1;
+		localAppliedMsg.remoteOperationsCount += 1;*/
 
 		Trace.exiting(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_EXITING, this.getClass(), "getOperationalTransform", null); //$NON-NLS-1$
 
-		return null;
+		return remoteTransformedMsg;
 	}
 }
