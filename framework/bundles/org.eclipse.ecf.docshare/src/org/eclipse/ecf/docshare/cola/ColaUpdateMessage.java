@@ -22,9 +22,9 @@ public class ColaUpdateMessage extends UpdateMessage {
 
 	// TODO encapsulate in a new ColaOpOriginationState and re-implement equals,
 	// hashCode, i.e. make comparable
-	final long localOperationsCount;
-	long remoteOperationsCount;
-	final TransformationStrategy trafoStrat;
+	private final long localOperationsCount;
+	private long remoteOperationsCount;
+	private final TransformationStrategy trafoStrat;
 
 	public ColaUpdateMessage(UpdateMessage msg, long localOperationsCount, long remoteOperationsCount) {
 		super(msg.getOffset(), msg.getLengthOfReplacedText(), msg.getText());

@@ -104,7 +104,7 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 			// queued up operations!!! 2008-06-08
 			if (!unacknowledgedLocalOperations.isEmpty()) {
 				ColaUpdateMessage localOp = (ColaUpdateMessage) unacknowledgedLocalOperations.getFirst();
-				Assert.isTrue(transformedRemote.getRemoteOperationsCount() == localOp.localOperationsCount);
+				Assert.isTrue(transformedRemote.getRemoteOperationsCount() == localOp.getLocalOperationsCount());
 				for (final Iterator it = unacknowledgedLocalOperations.iterator(); it.hasNext();) {
 					// returns new instance
 					// clarify operation preference, owner/docshare initiator
