@@ -52,7 +52,7 @@ public class UpdateMessage extends Message {
 		return length;
 	}
 
-	public void setLength(int length) {
+	public void setLengthOfReplacedText(int length) {
 		this.length = length;
 	}
 
