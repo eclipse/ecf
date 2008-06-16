@@ -12,7 +12,7 @@
       <menuContribution
             locationURI="popup:#CompilationUnitEditorContext">
          <dynamic
-               class="org.eclipse.ecf.docshare.menu.DocShareRosterMenuContributionItem"
+               class="org.eclipse.ecf.internal.provisional.docshare.menu.DocShareRosterMenuContributionItem"
                id="org.eclipse.ecf.editorshare.dynamic1">
          </dynamic>
       </menuContribution>
@@ -23,7 +23,7 @@
       <menuContribution
             locationURI="popup:#TextEditorContext">
          <dynamic
-               class="org.eclipse.ecf.docshare.menu.DocShareRosterMenuContributionItem"
+               class="org.eclipse.ecf.internal.provisional.docshare.menu.DocShareRosterMenuContributionItem"
                id="org.eclipse.ecf.editorshare.dynamic2">
          </dynamic>
       </menuContribution>

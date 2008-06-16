@@ -1,22 +1,25 @@
 /****************************************************************************
- * Copyright (c) 2008 Mustafa K. Isik and others.
+ * Copyright (c) 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Mustafa K. Isik - initial API and implementation
+ *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.docshare;
+package org.eclipse.ecf.internal.provisional.docshare.messages;
 
-import org.eclipse.ecf.docshare.messages.UpdateMessage;
+/**
+ *
+ */
+public class StopMessage extends Message {
 
-public interface SynchronizationStrategy {
+	private static final long serialVersionUID = -4869977924231013740L;
 
-	public UpdateMessage registerOutgoingMessage(UpdateMessage localMsg);
-
-	public UpdateMessage transformIncomingMessage(UpdateMessage remoteMsg);
+	public StopMessage() {
+		// Nothing
+	}
 
 }

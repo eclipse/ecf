@@ -15,13 +15,13 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ecf.presence.ui,
  org.eclipse.ecf.presence,
  org.eclipse.ui.ide,
- org.eclipse.ecf.ui,
  org.eclipse.core.filesystem
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Eclipse-LazyStart: true
-Export-Package: org.eclipse.ecf.docshare,
- org.eclipse.ecf.docshare.menu,
- org.eclipse.ecf.docshare.messages,
- org.eclipse.ecf.internal.docshare;x-internal:=true
+Export-Package: org.eclipse.ecf.internal.docshare;x-internal:=true,
+ org.eclipse.ecf.internal.provisional.docshare;x-internal:=true,
+ org.eclipse.ecf.internal.provisional.docshare.cola;x-internal:=true,
+ org.eclipse.ecf.internal.provisional.docshare.menu;x-internal:=true,
+ org.eclipse.ecf.internal.provisional.docshare.messages;x-internal:=true
 Eclipse-BuddyPolicy: global
 Bundle-ActivationPolicy: lazy

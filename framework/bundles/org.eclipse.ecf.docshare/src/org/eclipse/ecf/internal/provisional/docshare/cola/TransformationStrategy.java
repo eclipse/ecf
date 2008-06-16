@@ -9,7 +9,7 @@
  *    Mustafa K. Isik - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.docshare.cola;
+package org.eclipse.ecf.internal.provisional.docshare.cola;
 
 import java.io.Serializable;
 

@@ -9,7 +9,7 @@
  *    Mustafa K. Isik - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.docshare.cola;
+package org.eclipse.ecf.internal.provisional.docshare.cola;
 
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.docshare.Activator;

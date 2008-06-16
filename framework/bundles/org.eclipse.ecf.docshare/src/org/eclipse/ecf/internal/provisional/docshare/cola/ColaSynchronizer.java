@@ -9,14 +9,15 @@
  *    Mustafa K. Isik - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.docshare.cola;
+package org.eclipse.ecf.internal.provisional.docshare.cola;
+
+import org.eclipse.ecf.internal.provisional.docshare.DocShare;
+import org.eclipse.ecf.internal.provisional.docshare.SynchronizationStrategy;
+import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
 
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.docshare.DocShare;
-import org.eclipse.ecf.docshare.SynchronizationStrategy;
-import org.eclipse.ecf.docshare.messages.UpdateMessage;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.DocshareDebugOptions;
 import org.eclipse.osgi.util.NLS;

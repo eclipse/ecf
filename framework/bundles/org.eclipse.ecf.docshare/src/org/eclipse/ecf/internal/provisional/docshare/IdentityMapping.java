@@ -9,9 +9,9 @@
  *    Mustafa K. Isik - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.docshare;
+package org.eclipse.ecf.internal.provisional.docshare;
 
-import org.eclipse.ecf.docshare.messages.UpdateMessage;
+import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
 
 public class IdentityMapping implements SynchronizationStrategy {
 
