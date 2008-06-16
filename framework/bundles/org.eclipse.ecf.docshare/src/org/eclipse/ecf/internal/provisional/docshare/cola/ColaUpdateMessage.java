@@ -49,7 +49,7 @@ public class ColaUpdateMessage extends UpdateMessage {
 				// replacement op
 				trafoStrat = ColaReplacement.getInstance();
 				//TODO this has not been implemented yet
-				throw new IllegalArgumentException("Replacement Handling not implemented yet! Known Bug.");
+				//throw new IllegalArgumentException("Replacement Handling not implemented yet! Known Bug.");
 			}
 		}
 	}
@@ -60,6 +60,10 @@ public class ColaUpdateMessage extends UpdateMessage {
 
 	public boolean isDeletion() {
 		return (this.trafoStrat instanceof ColaDeletion);
+	}
+
+	public boolean isReplacement() {
+		return (this.trafoStrat instanceof ColaReplacement);
 	}
 
 	public long getLocalOperationsCount() {

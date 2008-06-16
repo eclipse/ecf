@@ -53,8 +53,10 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 	public UpdateMessage registerOutgoingMessage(UpdateMessage localMsg) {
 		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, this.getClass(), "registerOutgoingMessage", localMsg); //$NON-NLS-1$
 		final ColaUpdateMessage colaMsg = new ColaUpdateMessage(localMsg, localOperationsCount, remoteOperationsCount);
-		unacknowledgedLocalOperations.add(colaMsg);
-		localOperationsCount++;
+		if (!colaMsg.isReplacement()) {
+			unacknowledgedLocalOperations.add(colaMsg);
+			localOperationsCount++;
+		}
 		Trace.exiting(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_EXITING, this.getClass(), "registerOutgoingMessage", colaMsg); //$NON-NLS-1$
 		return colaMsg;
 	}

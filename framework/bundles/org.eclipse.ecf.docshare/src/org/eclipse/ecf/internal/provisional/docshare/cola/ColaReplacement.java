@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.DocshareDebugOptions;
 
+//TODO make this to be something like a marker interface, does not need to be a class
 public class ColaReplacement implements TransformationStrategy {
 
 	private static final long serialVersionUID = -7295023855308474804L;
@@ -34,8 +35,6 @@ public class ColaReplacement implements TransformationStrategy {
 
 	public ColaUpdateMessage getOperationalTransform(ColaUpdateMessage remoteMsg, ColaUpdateMessage appliedLocalMsg, boolean localMsgHighPrio) {
 		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, this.getClass(), "getOperationalTransform", new Object[] {remoteMsg, appliedLocalMsg, new Boolean(localMsgHighPrio)}); //$NON-NLS-1$
-
-		// TODO Auto-generated method stub
 
 		Trace.exiting(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_EXITING, this.getClass(), "getOperationalTransform", null); //$NON-NLS-1$
 
