@@ -11,12 +11,13 @@
 
 package org.eclipse.ecf.internal.provisional.docshare;
 
+import java.util.List;
 import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
 
 public interface SynchronizationStrategy {
 
 	public UpdateMessage registerOutgoingMessage(UpdateMessage localMsg);
 
-	public UpdateMessage transformIncomingMessage(UpdateMessage remoteMsg);
+	public List transformIncomingMessage(UpdateMessage remoteMsg);
 
 }

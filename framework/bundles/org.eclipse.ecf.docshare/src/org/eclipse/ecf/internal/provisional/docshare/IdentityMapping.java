@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.internal.provisional.docshare;
 
+import java.util.LinkedList;
+import java.util.List;
 import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
 
 public class IdentityMapping implements SynchronizationStrategy {
@@ -28,8 +30,10 @@ public class IdentityMapping implements SynchronizationStrategy {
 		return localMsg;
 	}
 
-	public UpdateMessage transformIncomingMessage(UpdateMessage remoteMsg) {
-		return remoteMsg;
+	public List transformIncomingMessage(UpdateMessage remoteMsg) {
+		List returnList = new LinkedList();
+		returnList.add(remoteMsg);
+		return returnList;
 	}
 
 	public String toString() {

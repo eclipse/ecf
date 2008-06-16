@@ -11,11 +11,10 @@
 
 package org.eclipse.ecf.internal.provisional.docshare.cola;
 
-import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
-
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.DocshareDebugOptions;
+import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
 
 public class ColaDeletion implements TransformationStrategy {
 

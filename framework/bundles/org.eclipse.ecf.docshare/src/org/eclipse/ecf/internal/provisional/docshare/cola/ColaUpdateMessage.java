@@ -11,13 +11,12 @@
 
 package org.eclipse.ecf.internal.provisional.docshare.cola;
 
-import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
-
 import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.DocshareDebugOptions;
+import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
 
 public class ColaUpdateMessage extends UpdateMessage {
 
@@ -49,6 +48,8 @@ public class ColaUpdateMessage extends UpdateMessage {
 				// something has been replaced with some new input, has to be a
 				// replacement op
 				trafoStrat = ColaReplacement.getInstance();
+				//TODO this has not been implemented yet
+				throw new IllegalArgumentException("Replacement Handling not implemented yet! Known Bug.");
 			}
 		}
 	}

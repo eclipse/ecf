@@ -11,15 +11,14 @@
 
 package org.eclipse.ecf.internal.provisional.docshare.cola;
 
-import org.eclipse.ecf.internal.provisional.docshare.DocShare;
-import org.eclipse.ecf.internal.provisional.docshare.SynchronizationStrategy;
-import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
-
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.DocshareDebugOptions;
+import org.eclipse.ecf.internal.provisional.docshare.DocShare;
+import org.eclipse.ecf.internal.provisional.docshare.SynchronizationStrategy;
+import org.eclipse.ecf.internal.provisional.docshare.messages.UpdateMessage;
 import org.eclipse.osgi.util.NLS;
 
 public class ColaSynchronizer implements SynchronizationStrategy {
@@ -66,17 +65,21 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 	 * shared document. The method implements the concurrency algorithm described
 	 * in <code>http://wiki.eclipse.org/RT_Shared_Editing</code>
 	 * @param remoteMsg 
-	 * @return UpdateMessage
+	 * @return List contains <code>UpdateMessage</code>s ready for sequential application to document
 	 */
-	public UpdateMessage transformIncomingMessage(final UpdateMessage remoteMsg) {
+	public List transformIncomingMessage(final UpdateMessage remoteMsg) {
 		if (!(remoteMsg instanceof ColaUpdateMessage)) {
 			throw new IllegalArgumentException("UpdateMessage is incompatible with Cola SynchronizationStrategy"); //$NON-NLS-1$
 		}
 		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, this.getClass(), "transformIncomingMessage", remoteMsg); //$NON-NLS-1$
 		ColaUpdateMessage transformedRemote = (ColaUpdateMessage) remoteMsg;
+
+		List transformedRemotes = new LinkedList();
+		transformedRemotes.add(transformedRemote);
+
 		remoteOperationsCount++;
-		// TODO this is where the concurrency algorithm is executed
-		if (!unacknowledgedLocalOperations.isEmpty()) {
+		//this is where the concurrency algorithm is executed
+		if (!unacknowledgedLocalOperations.isEmpty()) {//Do not remove this. It is necessary. The following iterator does not suffice.
 			// remove operations from queue that have been implicitly
 			// acknowledged as received on the remote site by the reception of
 			// this message
@@ -98,36 +101,73 @@ public class ColaSynchronizer implements SynchronizationStrategy {
 					break;// exits for-loop
 				}
 			}
+
 			// at this point the queue has been freed of operations that
 			// don't require to be transformed against
 
-			// TODO this is where the BUG is - I am not adapting/modifying the
-			// queued up operations!!! 2008-06-08
 			if (!unacknowledgedLocalOperations.isEmpty()) {
 				ColaUpdateMessage localOp = (ColaUpdateMessage) unacknowledgedLocalOperations.getFirst();
 				Assert.isTrue(transformedRemote.getRemoteOperationsCount() == localOp.getLocalOperationsCount());
-				for (final ListIterator listIt = unacknowledgedLocalOperations.listIterator(); listIt.hasNext();) {
-					// returns new instance
-					// clarify operation preference, owner/docshare initiator
-					// consistently comes first
-					localOp = (ColaUpdateMessage) listIt.next();
-					transformedRemote = transformedRemote.transformAgainst(localOp, isInitiator);
 
-					//TODO check whether or not this collection shuffling does what it is supposed to, i.e. remove current localop in unack list and add split up representation instead
-					if (localOp.isSplitUp()) {
-						//local operation has been split up during operational transform --> remove current version and add new versions plus jump over those
-						listIt.remove();
-						for (final Iterator splitUpOpIterator = localOp.getSplitUpRepresentation().iterator(); splitUpOpIterator.hasNext();) {
-							listIt.add(splitUpOpIterator.next());
+				for (final ListIterator unackOpsListIt = unacknowledgedLocalOperations.listIterator(); unackOpsListIt.hasNext();) {
+					for (final ListIterator trafoRemotesIt = transformedRemotes.listIterator(); trafoRemotesIt.hasNext();) {
+						// returns new instance
+						// clarify operation preference, owner/docshare initiator
+						// consistently comes first
+						localOp = (ColaUpdateMessage) unackOpsListIt.next();
+						transformedRemote = (ColaUpdateMessage) trafoRemotesIt.next();
+						transformedRemote = transformedRemote.transformAgainst(localOp, isInitiator);
+
+						if (transformedRemote.isSplitUp()) {
+							//currently this only happens for a remote deletion that needs to be transformed against a locally applied insertion
+							//attention: before applying a list of deletions to docshare, the indices need to be updated/finalized one last time
+							//since deletions can only be applied sequentially and every deletion is going to change the underlying document and the
+							//respective indices!
+							trafoRemotesIt.remove();
+							for (final Iterator splitUpIterator = transformedRemote.getSplitUpRepresentation().iterator(); splitUpIterator.hasNext();) {
+								trafoRemotesIt.add(splitUpIterator.next());
+							}
+							//according to the ListIterator documentation it seems so as if the following line is unnecessary, 
+							//as a call to next() after the last removal and additions will return what it would have returned anyway 
+							//trafoRemotesIt.next();//TODO not sure about the need for this - I want to jump over the two inserted ops and reach the end of this iterator
 						}
-						listIt.next();//jump over both inserted operations that replaced the current unack op
-					}//end split up localop handling
+
+						//TODO check whether or not this collection shuffling does what it is supposed to, i.e. remove current localop in unack list and add split up representation instead
+						if (localOp.isSplitUp()) {
+							//local operation has been split up during operational transform --> remove current version and add new versions plus jump over those
+							unackOpsListIt.remove();
+							for (final Iterator splitUpOpIterator = localOp.getSplitUpRepresentation().iterator(); splitUpOpIterator.hasNext();) {
+								unackOpsListIt.add(splitUpOpIterator.next());
+							}
+							//according to the ListIterator documentation it seems so as if the following line is unnecessary, 
+							//as a call to next() after the last removal and additions will return what it would have returned anyway
+							//unackOpsListIt.next();//TODO check whether or not this does jump over both inserted operations that replaced the current unack op
+						}//end split up localop handling
+					}//transformedRemotes List iteration	
 				}
 			}
 
 		}
 		Trace.exiting(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_EXITING, this.getClass(), "transformIncomingMessage", transformedRemote); //$NON-NLS-1$
-		return transformedRemote;
+
+		//TODO find a cleaner and more OO way of cleaning up the list if it contains multiple deletions:
+		if (transformedRemotes.size() > 1) {
+			ColaUpdateMessage firstOp = (ColaUpdateMessage) transformedRemotes.get(0);
+			if (firstOp.isDeletion()) {
+				//this means all operations in the return list must also be deletions, i.e. modify virtual/optimistic offset for sequential application to document
+				ListIterator deletionFinalizerIt = transformedRemotes.listIterator();
+				ColaUpdateMessage previousDel = (ColaUpdateMessage) deletionFinalizerIt.next();//jump over first del-op does not need modification, we know this is OK because of previous size check;
+				ColaUpdateMessage currentDel;
+
+				for (; deletionFinalizerIt.hasNext();) {
+					currentDel = (ColaUpdateMessage) deletionFinalizerIt.next();
+					currentDel.setOffset(currentDel.getOffset() - previousDel.getLengthOfReplacedText());
+					previousDel = currentDel;
+				}
+			}
+		}
+
+		return transformedRemotes;
 	}
 
 	public String toString() {
