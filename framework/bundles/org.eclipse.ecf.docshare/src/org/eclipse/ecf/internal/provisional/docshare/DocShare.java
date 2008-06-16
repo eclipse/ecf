@@ -114,7 +114,7 @@ public class DocShare extends AbstractShare {
 			//TODO breaking DocShare & strategy independence, bad design, fix when refactoring for API 
 			if (((ColaUpdateMessage) colaMsg).isReplacement()) {
 				//this necessitates splitting up the replacement op into two distinct ops, del and ins
-				UpdateMessage delMsg = new UpdateMessage(event.getOffset(), event.getLength(), "");
+				UpdateMessage delMsg = new UpdateMessage(event.getOffset(), event.getLength(), ""); //$NON-NLS-1$
 				UpdateMessage colaDelMsg = sync.registerOutgoingMessage(delMsg);
 				sendUpdateMsg(colaDelMsg);
 
@@ -123,7 +123,7 @@ public class DocShare extends AbstractShare {
 				UpdateMessage colaInsMsg = sync.registerOutgoingMessage(insMsg);
 				sendUpdateMsg(colaInsMsg);
 
-				Assert.isTrue(((ColaUpdateMessage) colaDelMsg).getRemoteOperationsCount() == ((ColaUpdateMessage) colaInsMsg).getRemoteOperationsCount(), "remote counters diverge - i.e. document has been modified during separation of replacement");
+				Assert.isTrue(((ColaUpdateMessage) colaDelMsg).getRemoteOperationsCount() == ((ColaUpdateMessage) colaInsMsg).getRemoteOperationsCount(), "remote counters diverge - i.e. document has been modified during separation of replacement"); //$NON-NLS-1$
 			} else {
 				//standard case
 				sendUpdateMsg(colaMsg);
