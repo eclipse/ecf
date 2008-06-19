@@ -32,6 +32,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -81,7 +82,14 @@ public class VCardProvider implements IQProvider {
       try {
           DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
           DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-          Document document = documentBuilder.parse(new ByteArrayInputStream(xmlText.getBytes()));
+
+          byte[] bytes;
+          try {
+        	  bytes = xmlText.getBytes("UTF-8"); //$NON-NLS-1$
+          } catch (UnsupportedEncodingException e) {
+        	  bytes = xmlText.getBytes();
+          }
+          Document document = documentBuilder.parse(new ByteArrayInputStream(bytes));
 
           new VCardReader(vCard, document).initializeFields();
 
