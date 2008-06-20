@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.example.collab.ui;
 
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,15 +69,15 @@ public class SharedObjectContainerUI {
 		} catch (final Exception e) {
 		}
 		try {
-			topElements.add(Messages.SharedObjectContainerUI_OSGI_VERSION_LABEL + System.getProperty("org.osgi.framework.version")); //$NON-NLS-1$
-		} catch (final Exception e) {
-		}
-		try {
-			topElements.add(Messages.SharedObjectContainerUI_JAVA_VERSION_LABEL + System.getProperty("java.version")); //$NON-NLS-1$ 
-		} catch (final Exception e) {
-		}
-		try {
 			topElements.add(Messages.SharedObjectContainerUI_OS_LABEL + Platform.getOS());
+		} catch (final Exception e) {
+		}
+		try {
+			topElements.add("Username: " + System.getProperty("user.name"));
+		} catch (final Exception e) {
+		}
+		try {
+			topElements.add("Hostname/IP: " + InetAddress.getLocalHost().toString());
 		} catch (final Exception e) {
 		}
 		return new User(clientID, usernick, topElements);
