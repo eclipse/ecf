@@ -20,6 +20,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
+// ZZZ Comment to verify HEAD
+
 /**
  * The main plugin class to be used in the desktop.
  */
