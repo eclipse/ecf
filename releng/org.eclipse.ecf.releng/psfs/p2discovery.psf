@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<psf version="2.0">
+<provider id="org.eclipse.team.cvs.core.cvsnature">
+<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/incubation/plugins/org.eclipse.ecf.p2.discovery.common,org.eclipse.ecf.p2.discovery.common"/>
+<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/incubation/plugins/org.eclipse.ecf.p2.discovery.eclipseclient,org.eclipse.ecf.p2.discovery.eclipseclient"/>
+<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/technology,org.eclipse.ecf/incubation/plugins/org.eclipse.ecf.p2.discovery.simpleserver,org.eclipse.ecf.p2.discovery.simpleserver"/>
+</provider>
+</psf>
