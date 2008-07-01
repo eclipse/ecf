@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.storage.IDStoreException;
 import org.eclipse.ecf.storage.IIDEntry;
+import org.eclipse.equinox.security.storage.EncodingUtils;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.osgi.util.NLS;
 
@@ -93,7 +94,7 @@ public class IDEntry implements IIDEntry {
 	 * @see org.eclipse.ecf.storage.IIDEntry#createID()
 	 */
 	public ID createID() throws IDCreateException {
-		return IDFactory.getDefault().createID(prefs.parent().name(), prefs.name());
+		return IDFactory.getDefault().createID(prefs.parent().name(), EncodingUtils.decodeSlashes(prefs.name()));
 	}
 
 	/* (non-Javadoc)
