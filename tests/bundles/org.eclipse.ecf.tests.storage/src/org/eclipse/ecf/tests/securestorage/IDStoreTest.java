@@ -198,7 +198,6 @@ public class IDStoreTest extends TestCase {
 		final IIDEntry entry1a = idStore.store(guid1);
 		assertNotNull(entry1a);
 		final ID guid1a = entry1a.createID();
-		System.out.println("guid1a=" + guid1a);
 		assertTrue(guid1.equals(guid1a));
 
 		// Get associates (should include entry2)
