@@ -285,7 +285,10 @@ abstract class Session {
 		public void run() {
 			while (!isInterrupted()) {
 				try {
+					sleep(50);
 					read();
+				} catch (InterruptedException e) {
+					return;
 				} catch (IOException e) {
 					return;
 				} catch (RuntimeException e) {
