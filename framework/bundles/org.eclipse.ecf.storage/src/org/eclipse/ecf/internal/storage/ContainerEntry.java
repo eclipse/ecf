@@ -92,4 +92,13 @@ public class ContainerEntry implements IContainerEntry {
 		return prefs;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer sb = new StringBuffer("ContainerEntry["); //$NON-NLS-1$
+		sb.append("idEntry=").append(idEntry); //$NON-NLS-1$
+		sb.append(";prefs=").append(getPreferences()).append("]"); //$NON-NLS-1$//$NON-NLS-2$
+		return sb.toString();
+	}
 }

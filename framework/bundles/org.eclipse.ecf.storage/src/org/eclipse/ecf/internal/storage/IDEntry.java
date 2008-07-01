@@ -120,4 +120,13 @@ public class IDEntry implements IIDEntry {
 		}
 		return (IIDEntry[]) results.toArray(new IIDEntry[] {});
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer sb = new StringBuffer("IDEntry["); //$NON-NLS-1$
+		sb.append(prefs.name()).append("]"); //$NON-NLS-1$
+		return sb.toString();
+	}
 }
