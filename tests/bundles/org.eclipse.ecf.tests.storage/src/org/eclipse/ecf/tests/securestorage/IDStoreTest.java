@@ -67,6 +67,11 @@ public class IDStoreTest extends TestCase {
 		return idStore.store(newID);
 	}
 
+	protected IIDEntry addLongID(long value) throws IDCreateException {
+		final ID newID = IDFactory.getDefault().createLongID(value);
+		return idStore.store(newID);
+	}
+
 	public void testStoreGUID() throws Exception {
 		final ISecurePreferences prefs = addGUID().getPreferences();
 		assertNotNull(prefs);
@@ -76,6 +81,12 @@ public class IDStoreTest extends TestCase {
 		testStoreGUID();
 		testStoreGUID();
 		testStoreGUID();
+	}
+
+	public void testStoreLongIDs() throws Exception {
+		addLongID(1);
+		addLongID(2);
+		addLongID(3);
 	}
 
 	public void testListEmptyNamespaces() throws Exception {
@@ -118,6 +129,21 @@ public class IDStoreTest extends TestCase {
 		final ID persistedGUID = idEntries[0].createID();
 		assertNotNull(persistedGUID);
 		assertTrue(persistedGUID.equals(newGUID));
+	}
+
+	public void testGetLongIDEntries() throws Exception {
+		final ID newLongID = IDFactory.getDefault().createLongID(1);
+		idStore.store(newLongID);
+		// Get namespace entry
+		final INamespaceEntry namespaceEntry = idStore.getNamespaceEntry(newLongID.getNamespace());
+		assertNotNull(namespaceEntry);
+
+		final IIDEntry[] idEntries = namespaceEntry.getIDEntries();
+		assertTrue(idEntries.length == 1);
+		// Create LongID from idEntry
+		final ID persistedLongID = idEntries[0].createID();
+		assertNotNull(persistedLongID);
+		assertTrue(persistedLongID.equals(newLongID));
 	}
 
 	public void testCreateAssociation() throws Exception {
@@ -171,6 +197,9 @@ public class IDStoreTest extends TestCase {
 		// Get entry1a
 		final IIDEntry entry1a = idStore.store(guid1);
 		assertNotNull(entry1a);
+		final ID guid1a = entry1a.createID();
+		System.out.println("guid1a=" + guid1a);
+		assertTrue(guid1.equals(guid1a));
 
 		// Get associates (should include entry2)
 		final IIDEntry[] entries1 = entry1a.getAssociates(key1);
