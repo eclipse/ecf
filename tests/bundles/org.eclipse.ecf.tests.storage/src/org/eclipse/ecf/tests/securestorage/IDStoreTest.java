@@ -215,7 +215,7 @@ public class IDStoreTest extends TestCase {
 		final ID guid3a = entry3a.createID();
 
 		// Since the order can be turned around, 2a can equal 2 or 3
-		assertTrue((guid2.equals(guid2a) && guid3.equals(guid3a)) || (guid2.equals(guid3a) && guid3.equals(guid2a)));
+		assertTrue(guid2.equals(guid2a) && guid3.equals(guid3a));
 
 		final IIDEntry[] entries2 = entry1a.getAssociates(key2);
 		assertNotNull(entries2);
