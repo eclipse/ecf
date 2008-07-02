@@ -50,13 +50,11 @@ public class IDEntry implements IIDEntry {
 		if (entry == null)
 			throw new IDStoreException("entry cannot be null"); //$NON-NLS-1$
 		ISecurePreferences associateNode = prefs.node(key);
-		String entryAssociate = createAssociateName(entry);
-		associateNode.node(entryAssociate);
-	}
-
-	private String createAssociateName(IIDEntry entry) throws IDStoreException {
 		ISecurePreferences prefs = entry.getPreferences();
-		return prefs.parent().name() + DELIMITER + prefs.name();
+		// This is where associates are created with form:
+		// <index>:<namespace>:<idname>
+		String entryAssociate = String.valueOf(associateNode.childrenNames().length) + DELIMITER + prefs.parent().name() + DELIMITER + prefs.name();
+		associateNode.node(entryAssociate);
 	}
 
 	private ISecurePreferences getNamespaceRoot() {
@@ -71,22 +69,42 @@ public class IDEntry implements IIDEntry {
 		return null;
 	}
 
-	private IIDEntry createAssociateFromName(String name) throws IDStoreException {
-		int index = name.indexOf(DELIMITER);
-		if (index == -1)
-			throw new IDStoreException("Associate ID not well-formed"); //$NON-NLS-1$
+	private void addAssociateFromName(String name, SortedMap results) {
 		try {
+			// Get index of first :
+			int index = name.indexOf(DELIMITER);
+			// If not found then the name is not well-formed
+			if (index == -1)
+				throw new IDStoreException("Associate ID not well-formed"); //$NON-NLS-1$
+			// Get the index string
+			String indexStr = name.substring(0, index);
+			Integer resultIndex = null;
+			// Create resultIndex from indexStr
+			try {
+				resultIndex = Integer.valueOf(indexStr);
+			} catch (NumberFormatException e) {
+				throw new IDStoreException("Associate ID not well-formed", e); //$NON-NLS-1$
+			}
+			// get remainder string
+			name = name.substring(index + 1);
+			// Get index of second :
+			index = name.indexOf(DELIMITER);
+			if (index == -1)
+				throw new IDStoreException("Associate ID not well-formed"); //$NON-NLS-1$
+			// Get namespace name before index
 			String namespaceName = name.substring(0, index);
 			ISecurePreferences namespacePrefs = getPreferences(getNamespaceRoot(), namespaceName);
 			if (namespacePrefs == null)
 				throw new IDStoreException(NLS.bind("Cannot find Namespace {0}", namespaceName)); //$NON-NLS-1$
+			// Get ID name after index
 			String idName = name.substring(index + 1);
 			ISecurePreferences idPrefs = getPreferences(namespacePrefs, idName);
 			if (idPrefs == null)
 				throw new IDStoreException(NLS.bind("ID {0} not found in Namespace {1}", idName, namespaceName)); //$NON-NLS-1$
-			return new IDEntry(idPrefs);
-		} catch (IndexOutOfBoundsException e) {
-			throw new IDStoreException("Associate ID not well-formed"); //$NON-NLS-1$
+			// Put new IDEntry in sorted collection ordered by resultIndex
+			results.put(resultIndex, new IDEntry(idPrefs));
+		} catch (IDStoreException e) {
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Unable to create associate ID", e)); //$NON-NLS-1$
 		}
 	}
 
@@ -109,16 +127,11 @@ public class IDEntry implements IIDEntry {
 			return new IIDEntry[0];
 		ISecurePreferences associateNode = prefs.node(key);
 		String[] childrenNames = associateNode.childrenNames();
-		List results = new ArrayList();
+		SortedMap results = new TreeMap();
 		for (int i = 0; i < childrenNames.length; i++) {
-			try {
-				IIDEntry associateEntry = createAssociateFromName(childrenNames[i]);
-				results.add(associateEntry);
-			} catch (IDStoreException e) {
-				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Unable to create associate ID", e)); //$NON-NLS-1$
-			}
+			addAssociateFromName(childrenNames[i], results);
 		}
-		return (IIDEntry[]) results.toArray(new IIDEntry[] {});
+		return (IIDEntry[]) results.values().toArray(new IIDEntry[] {});
 	}
 
 	/* (non-Javadoc)
