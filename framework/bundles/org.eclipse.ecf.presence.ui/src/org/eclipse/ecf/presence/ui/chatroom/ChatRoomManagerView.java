@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * Copyright (c) 2004, 2008 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762, 197329, 190851
  *    Abner Ballardo <modlost@modlost.net> - bug 192756, 199336, 200630
  *    Jakub Jurkiewicz <jakub.jurkiewicz@pl.ibm.com> - bug 197332
+ *    Hiroyuki Inaba <Hiroyuki <hiroyuki.inaba@gmail.com> - bug 222253
  ******************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
@@ -58,10 +59,6 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"; //$NON-NLS-1$
 
 	public static final String PARTICIPANTS_MENU_ID = "org.eclipse.ecf.presence.ui.chatroom.participantsView"; //$NON-NLS-1$ 
-
-	private static final int RATIO_WRITE_PANE = 1;
-
-	private static final int RATIO_READ_PANE = 9;
 
 	private static final int RATIO_READ_WRITE_PANE = 85;
 
@@ -112,7 +109,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 
 		private CTabItem tabItem;
 
-		private SashForm rightSash;
+		private Composite rightComposite;
 
 		private StyledText subjectText;
 
@@ -171,10 +168,13 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 					}
 				});
 
-				Composite rightComp = new Composite(fullChat, SWT.NONE);
-				rightComp.setLayout(layout);
+				rightComposite = new Composite(fullChat, SWT.NONE);
+				layout = new GridLayout(1, true);
+				layout.marginHeight = 0;
+				layout.marginWidth = 0;
+				rightComposite.setLayout(layout);
 
-				subjectText = createStyledTextWidget(rightComp, SWT.SINGLE | SWT.BORDER);
+				subjectText = createStyledTextWidget(rightComposite, SWT.SINGLE | SWT.BORDER);
 				subjectText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 				/*
 				 * The sendSubjectChange method in Smack 2.2.1 does not seem to be working correctly, so this whole block
@@ -199,25 +199,34 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				*/
 				subjectText.setEditable(false);
 				subjectText.setEnabled(false);
+			} else {
+				rightComposite = new Composite(parent, SWT.NONE);
+				GridLayout layout = new GridLayout(1, true);
+				layout.marginHeight = 0;
+				layout.marginWidth = 0;
+				rightComposite.setLayout(layout);
+			}
 
-				rightSash = new SashForm(rightComp, SWT.VERTICAL);
-				rightSash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			} else
-				rightSash = new SashForm(parent, SWT.VERTICAL);
-
-			outputText = createStyledTextWidget(rightSash, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			outputText = createStyledTextWidget(rightComposite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
 			outputText.setEditable(false);
-			outputText.setLayoutData(new GridData(GridData.FILL_BOTH));
+			outputText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-			inputText = new Text(rightSash, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+			inputText = new Text(rightComposite, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+			GC gc = new GC(inputText);
+			gc.setFont(inputText.getFont());
+			FontMetrics fontMetrics = gc.getFontMetrics();
+			gc.dispose();
+			gd.heightHint = fontMetrics.getHeight() * 2;
+			inputText.setLayoutData(gd);
+
 			if (keyListener != null)
 				inputText.addKeyListener(keyListener);
-			rightSash.setWeights(new int[] {RATIO_READ_PANE, RATIO_WRITE_PANE});
 			if (withParticipants) {
 				fullChat.setWeights(new int[] {RATIO_PRESENCE_PANE, RATIO_READ_WRITE_PANE});
 				tabItem.setControl(fullChat);
 			} else
-				tabItem.setControl(rightSash);
+				tabItem.setControl(rightComposite);
 
 			parent.setSelection(tabItem);
 
