@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * Copyright (c) 2004, 2008 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Hiroyuki Inaba <Hiroyuki <hiroyuki.inaba@gmail.com> - bug 222253
  *****************************************************************************/
 
 package org.eclipse.ecf.internal.example.collab.ui;
@@ -59,7 +60,6 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
@@ -74,10 +74,13 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -165,14 +168,16 @@ public class ChatComposite extends Composite {
 			}
 
 		});
-		final SashForm sf = new SashForm(this, SWT.NORMAL);
-		sf.setLayout(new FillLayout());
-		sf.setOrientation(SWT.VERTICAL);
+		final Composite chattingComposite = new Composite(this, SWT.NONE);
+		GridLayout layout = new GridLayout(1, true);
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
+		chattingComposite.setLayout(layout);
 
 		tableView = table;
 
-		textoutput = createStyledTextWidget(sf);
-		textoutput.setLayoutData(new GridData(SWT.FILL));
+		textoutput = createStyledTextWidget(chattingComposite);
+		textoutput.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		final String fontName = ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_CHAT_FONT);
 		if (!(fontName == null) && !(fontName.equals(""))) { //$NON-NLS-1$
 			final FontRegistry fr = ClientPlugin.getDefault().getFontRegistry();
@@ -186,9 +191,15 @@ public class ChatComposite extends Composite {
 
 		textoutput.append(initText);
 
-		textinput = new Text(sf, SWT.SINGLE | SWT.BORDER);
+		textinput = new Text(chattingComposite, SWT.SINGLE | SWT.BORDER);
 		textinput.setText(TEXT_INPUT_INIT);
-		textinput.setLayoutData(new GridData(SWT.FILL));
+		GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		GC gc = new GC(textinput);
+		gc.setFont(textinput.getFont());
+		FontMetrics fontMetrics = gc.getFontMetrics();
+		gc.dispose();
+		gd.heightHint = fontMetrics.getHeight() * 2;
+		textinput.setLayoutData(gd);
 
 		textinput.selectAll();
 		textinput.addKeyListener(new KeyListener() {
@@ -236,7 +247,6 @@ public class ChatComposite extends Composite {
 			}
 		});
 
-		sf.setWeights(new int[] {90, 10});
 		// make actions
 		makeActions();
 		hookContextMenu();
