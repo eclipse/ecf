@@ -87,7 +87,9 @@ public class DiscoverableServer implements IApplication {
 		System.out.println("Registered remote service " + serviceClassName + " with " + serviceHostContainer + ",ID=" + serviceHostContainer.getID()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 		// then register for discovery
-		discoveryService = Activator.getDefault().getDiscoveryService(5000);
+		discoveryService = Activator.getDefault().getDiscoveryService(15000);
+
+		Assert.isNotNull(discoveryService);
 
 		final String serviceName = System.getProperty("user.name") + System.currentTimeMillis(); //$NON-NLS-1$
 		final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discoveryService.getServicesNamespace(), getCompleteServiceType(), serviceName);
