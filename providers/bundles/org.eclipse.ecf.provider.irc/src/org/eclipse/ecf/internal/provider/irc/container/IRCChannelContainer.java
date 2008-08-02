@@ -244,7 +244,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 	 */
 	public void disconnect() {
 		fireContainerEvent(new ContainerDisconnectingEvent(getID(), targetID));
-		rootContainer.doPartChannel(targetID.getName());
+		if (targetID != null)
+			rootContainer.doPartChannel(targetID.getName());
 		fireContainerEvent(new ContainerDisconnectedEvent(getID(), targetID));
 	}
 
