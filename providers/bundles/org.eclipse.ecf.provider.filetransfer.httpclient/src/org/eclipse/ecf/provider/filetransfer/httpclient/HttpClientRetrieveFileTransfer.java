@@ -256,9 +256,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				getResponseHeaderValues();
 				setInputStream(getMethod.getResponseBodyAsStream());
 				fireReceiveStartEvent();
-     } else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
-       getMethod.releaseConnection();
-       throw new FileNotFoundException(urlString);
+			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+				getMethod.releaseConnection();
+				throw new FileNotFoundException(urlString);
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.getResponseBody();
 				getMethod.releaseConnection();
@@ -268,10 +268,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
 			} else {
 				getMethod.releaseConnection();
-				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code))); 
+				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
 			}
 		} catch (final Exception e) {
-			throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e);
+			throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, getResponseCode());
 		}
 
 	}
@@ -404,20 +404,20 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				setInputStream(getMethod.getResponseBodyAsStream());
 				this.paused = false;
 				fireReceiveResumedEvent();
-     } else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
-       getMethod.releaseConnection();
-       throw new FileNotFoundException(urlString);
+			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+				getMethod.releaseConnection();
+				throw new FileNotFoundException(urlString);
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.getResponseBody();
 				// login or reauthenticate due to an expired session
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				getMethod.releaseConnection();
 				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
 			} else {
 				getMethod.releaseConnection();
-				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code))); 
+				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
 			}
 			return true;
 		} catch (final Exception e) {
