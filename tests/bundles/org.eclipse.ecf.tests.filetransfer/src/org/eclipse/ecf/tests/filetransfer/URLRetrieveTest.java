@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
+import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -25,6 +26,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
 	protected static final String HTTPS_RETRIEVE = "https://www.verisign.com/";
+	private static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
 
 	File tmpFile = null;
 
@@ -86,5 +88,16 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	public void testHttpsReceiveFile() throws Exception {
 		testReceive(HTTPS_RETRIEVE);
+	}
+
+	public void testFailedReceive() throws Exception {
+		try {
+			testReceive(HTTP_404_FAIL_RETRIEVE);
+			fail();
+		} catch (final Exception e) {
+			assertTrue(e instanceof IncomingFileTransferException);
+			final IncomingFileTransferException except = (IncomingFileTransferException) e;
+			assertTrue(except.getErrorCode() == 404);
+		}
 	}
 }
