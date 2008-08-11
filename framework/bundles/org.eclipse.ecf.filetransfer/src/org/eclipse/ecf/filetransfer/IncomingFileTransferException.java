@@ -19,6 +19,8 @@ public class IncomingFileTransferException extends ECFException {
 
 	private static final long serialVersionUID = 2438441801862623371L;
 
+	private int errorCode = -1;
+
 	public IncomingFileTransferException(IStatus status) {
 		super(status);
 	}
@@ -27,16 +29,39 @@ public class IncomingFileTransferException extends ECFException {
 		// null constructor
 	}
 
+	public IncomingFileTransferException(int errorCode) {
+		this();
+		this.errorCode = errorCode;
+	}
+
 	public IncomingFileTransferException(String message) {
 		super(message);
+	}
+
+	public IncomingFileTransferException(String message, int errorCode) {
+		super(message);
+		this.errorCode = errorCode;
 	}
 
 	public IncomingFileTransferException(Throwable cause) {
 		super(cause);
 	}
 
+	public IncomingFileTransferException(Throwable cause, int errorCode) {
+		super(cause);
+		this.errorCode = errorCode;
+	}
+
 	public IncomingFileTransferException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
+	public IncomingFileTransferException(String message, Throwable cause, int errorCode) {
+		super(message, cause);
+		this.errorCode = errorCode;
+	}
+
+	public int getErrorCode() {
+		return errorCode;
+	}
 }
