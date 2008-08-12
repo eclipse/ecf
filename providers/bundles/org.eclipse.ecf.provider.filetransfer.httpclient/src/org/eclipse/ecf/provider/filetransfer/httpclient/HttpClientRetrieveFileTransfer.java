@@ -8,8 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.security.auth.login.LoginException;
@@ -25,6 +24,7 @@ import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
@@ -33,6 +33,67 @@ import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
 public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
+
+	public class GzipGetMethod extends GetMethod {
+
+		private static final String APPLICATION_X_GZIP = "application/x-gzip"; //$NON-NLS-1$
+		private static final String CONTENT_TYPE = "Content-Type"; //$NON-NLS-1$
+		private static final String CONTENT_ENCODING = "Content-Encoding"; //$NON-NLS-1$
+		private static final String ACCEPT_ENCODING = "Accept-encoding"; //$NON-NLS-1$
+		private static final String CONTENT_ENCODING_GZIP = "gzip"; //$NON-NLS-1$
+		private static final String CONTENT_ENCODING_DEFLATE = "deflate"; //$NON-NLS-1$
+
+		private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP + "," + CONTENT_ENCODING_DEFLATE; //$NON-NLS-1$
+
+		private boolean gzipReceived = false;
+		private boolean deflateReceived = false;
+
+		public GzipGetMethod(String urlString) {
+			super(urlString);
+		}
+
+		private boolean isZippedReply() {
+			boolean zipped = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_GZIP))
+			// apache can also insert something after a 302 redirect
+					|| (null != this.getResponseHeader(CONTENT_TYPE) && this.getResponseHeader(CONTENT_TYPE).getValue().equals(APPLICATION_X_GZIP));
+			return zipped;
+		}
+
+		private boolean isDeflatedReply() {
+			boolean deflated = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_DEFLATE));
+			return deflated;
+		}
+
+		public int execute(HttpState state, HttpConnection conn) throws HttpException, IOException {
+			// Insert accept-encoding header
+			this.setRequestHeader(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
+			int result = super.execute(state, conn);
+			// test what is sent back
+			if (isZippedReply()) {
+				gzipReceived = true;
+			} else if (isDeflatedReply()) {
+				deflateReceived = true;
+			}
+			return result;
+		}
+
+		public InputStream getResponseBodyAsUnzippedStream() throws IOException {
+			InputStream input = super.getResponseBodyAsStream();
+			try {
+				if (gzipReceived) {
+					// extract on the fly
+					return new java.util.zip.GZIPInputStream(input);
+				} else if (deflateReceived) {
+					// extract on the fly
+					return new java.util.zip.DeflaterInputStream(input);
+				}
+			} catch (IOException e) {
+				Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind("Exception creating {0} input stream", (gzipReceived ? "gzip" : (deflateReceived ? "deflate" : "unknown"))), e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			}
+			return input;
+		}
+
+	}
 
 	private static final String USERNAME_PREFIX = Messages.HttpClientRetrieveFileTransfer_Username_Prefix;
 
@@ -52,7 +113,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	private static final String LAST_MODIFIED_HEADER = "Last-Modified"; //$NON-NLS-1$
 
-	private GetMethod getMethod = null;
+	private GzipGetMethod getMethod = null;
 
 	private HttpClient httpClient = null;
 
@@ -245,7 +306,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			setupHostAndPort(urlString);
 
-			getMethod = new GetMethod(urlString);
+			getMethod = new GzipGetMethod(urlString);
 			getMethod.setFollowRedirects(true);
 
 			setRequestHeaderValues();
@@ -392,7 +453,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			setupHostAndPort(urlString);
 
-			getMethod = new GetMethod(urlString);
+			getMethod = new GzipGetMethod(urlString);
 			getMethod.setFollowRedirects(true);
 
 			setResumeRequestHeaderValues();
