@@ -28,6 +28,9 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	protected static final String HTTPS_RETRIEVE = "https://www.verisign.com/";
 	private static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
 
+	// See bug 237936
+	private static final String BUG_237936_URL = "http://www.eclipse.org/downloads/download.php?file=/webtools/updates/site.xml&format=xml&countryCode=us&timeZone=-5&responseType=xml";
+
 	File tmpFile = null;
 
 	/*
@@ -100,4 +103,9 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 			assertTrue(except.getErrorCode() == 404);
 		}
 	}
+
+	public void testReceiveGzipFile() throws Exception {
+		testReceive(BUG_237936_URL);
+	}
+
 }
