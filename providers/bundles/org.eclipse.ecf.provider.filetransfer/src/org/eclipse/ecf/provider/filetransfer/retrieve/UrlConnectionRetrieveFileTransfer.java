@@ -66,6 +66,11 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	protected void connect() throws IOException {
 		setupTimeouts();
 		urlConnection = getRemoteFileURL().openConnection();
+		// set cache to off if using jar protocol
+		// this is for addressing bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=235933
+		if (getRemoteFileURL().getProtocol().equalsIgnoreCase("jar")) { //$NON-NLS-1$
+			urlConnection.setUseCaches(false);
+		}
 		IURLConnectionModifier connectionModifier = Activator.getDefault().getURLConnectionModifier();
 		if (connectionModifier != null) {
 			connectionModifier.setSocketFactoryForConnection(urlConnection);
@@ -238,7 +243,9 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			getResponseHeaderValues();
 			fireReceiveStartEvent();
 		} catch (final Exception e) {
-			throw new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, getResponseCode());
+			IncomingFileTransferException except = new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, getResponseCode());
+			hardClose();
+			throw except;
 		}
 	}
 
