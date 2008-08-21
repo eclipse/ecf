@@ -243,7 +243,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			getResponseHeaderValues();
 			fireReceiveStartEvent();
 		} catch (final Exception e) {
-			IncomingFileTransferException except = new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, getResponseCode());
+			IncomingFileTransferException except = new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e);
 			hardClose();
 			throw except;
 		}
