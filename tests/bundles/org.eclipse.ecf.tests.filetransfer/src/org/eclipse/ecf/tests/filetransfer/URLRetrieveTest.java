@@ -99,8 +99,6 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 			fail();
 		} catch (final Exception e) {
 			assertTrue(e instanceof IncomingFileTransferException);
-			final IncomingFileTransferException except = (IncomingFileTransferException) e;
-			assertTrue(except.getErrorCode() == 404);
 		}
 	}
 
