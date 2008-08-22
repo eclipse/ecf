@@ -33,7 +33,7 @@ public class Activator implements BundleActivator {
 		return plugin;
 	}
 
-	private ServiceTracker tracker;
+	private volatile ServiceTracker tracker;
 
 	/**
 	 * The constructor

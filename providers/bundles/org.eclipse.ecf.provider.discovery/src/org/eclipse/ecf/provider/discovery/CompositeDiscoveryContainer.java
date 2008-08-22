@@ -106,10 +106,10 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 
 	private static final String METHODS_TRACING = Activator.PLUGIN_ID + "/debug/methods/tracing"; //$NON-NLS-1$
 
-	protected CompositeContainerServiceListener ccsl = new CompositeContainerServiceListener();
-	protected CompositeContainerServiceTypeListener ccstl = new CompositeContainerServiceTypeListener();
+	protected final CompositeContainerServiceListener ccsl = new CompositeContainerServiceListener();
+	protected final CompositeContainerServiceTypeListener ccstl = new CompositeContainerServiceTypeListener();
 
-	protected List containers = new ArrayList();
+	protected final List containers;
 
 	/**
 	 * @param containers
