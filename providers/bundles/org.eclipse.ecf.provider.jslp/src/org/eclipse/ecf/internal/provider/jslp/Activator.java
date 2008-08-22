@@ -34,10 +34,10 @@ public class Activator implements BundleActivator {
 
 	// we need to keep a ref on our context
 	// @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=108214
-	private BundleContext bundleContext;
+	volatile BundleContext bundleContext;
 
-	private LocatorDecorator locator = new NullPatternLocator();
-	private Advertiser advertiser = new NullPatternAdvertiser();
+	volatile LocatorDecorator locator = new NullPatternLocator();
+	volatile Advertiser advertiser = new NullPatternAdvertiser();
 
 	/**
 	 * The constructor

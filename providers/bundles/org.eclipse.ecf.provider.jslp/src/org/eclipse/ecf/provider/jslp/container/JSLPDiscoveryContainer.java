@@ -33,7 +33,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	// TODO-mkuppe make this configurable via cm
 	public static long REDISCOVER = Long.parseLong(System.getProperty("net.slp.rediscover", new Long(60L * 1000L).toString())); //$NON-NLS-1$
 
-	private JSLPDiscoveryJob discoveryJob;
+	private volatile JSLPDiscoveryJob discoveryJob;
 
 	private ID targetID;
 
