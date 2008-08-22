@@ -45,7 +45,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 			} else {
 				namingAuthority = na;
 				// remove the naming authority from the string
-				str = StringUtils.replaceAllIgnoreCase(str, "." + na, ""); //$NON-NLS-1$//$NON-NLS-2$
+				str = replaceAllIgnoreCase(str, "." + na, ""); //$NON-NLS-1$//$NON-NLS-2$
 			}
 
 			services = StringUtils.split(str, JSLP_DELIM);
