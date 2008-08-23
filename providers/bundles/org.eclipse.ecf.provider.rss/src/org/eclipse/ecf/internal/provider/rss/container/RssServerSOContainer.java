@@ -48,27 +48,24 @@ public class RssServerSOContainer extends ServerSOContainer {
 
 	/**
 	 * The constructors
+	 * @param config 
 	 * 
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	public RssServerSOContainer(ISharedObjectContainerConfig config)
-			throws URISyntaxException, IOException {
+	public RssServerSOContainer(ISharedObjectContainerConfig config) throws URISyntaxException, IOException {
 		this(config, null, DEFAULT_KEEPALIVE);
 	}
 
-	public RssServerSOContainer(ISharedObjectContainerConfig config,
-			int keepAlive) throws URISyntaxException, IOException {
+	public RssServerSOContainer(ISharedObjectContainerConfig config, int keepAlive) throws URISyntaxException, IOException {
 		this(config, null, keepAlive);
 	}
 
-	public RssServerSOContainer(ISharedObjectContainerConfig config,
-			RssServerSOContainerGroup group, int keepAlive)
-			throws URISyntaxException, IOException {
+	public RssServerSOContainer(ISharedObjectContainerConfig config, RssServerSOContainerGroup group, int keepAlive) throws URISyntaxException, IOException {
 		super(config);
 		this.keepAlive = keepAlive;
-		URI actualURI = new URI(getID().getName());
-		int urlPort = actualURI.getPort();
+		final URI actualURI = new URI(getID().getName());
+		final int urlPort = actualURI.getPort();
 		if (group == null) {
 			isSingle = true;
 			this.group = new RssServerSOContainerGroup(urlPort);
@@ -84,8 +81,7 @@ public class RssServerSOContainer extends ServerSOContainer {
 	}
 
 	protected void dumpStack(String msg, Throwable e) {
-		Trace.catching(RssPlugin.PLUGIN_ID,
-				RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
+		Trace.catching(RssPlugin.PLUGIN_ID, RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
 	}
 
 	public void dispose() {
@@ -93,7 +89,7 @@ public class RssServerSOContainer extends ServerSOContainer {
 		try {
 			aURI = new URI(getID().getName());
 			group.remove(String.valueOf(aURI.getPort()));
-		} catch (URISyntaxException e) {
+		} catch (final URISyntaxException e) {
 			// Should never happen
 		}
 		if (isSingle) {
@@ -105,7 +101,7 @@ public class RssServerSOContainer extends ServerSOContainer {
 
 	public static void main(String args[]) throws Exception {
 		RssServerSOContainerGroup serverGroups[] = null;
-		List servers = new ArrayList();
+		final List servers = new ArrayList();
 		int port = DEFAULT_PORT;
 		if (args.length > 0) {
 			if (args[0].equals("-p")) {
@@ -113,44 +109,33 @@ public class RssServerSOContainer extends ServerSOContainer {
 			}
 		}
 		// Get server identity
-		String serverName = "//" + InetAddress.getLocalHost().getHostName()
-				+ ":" + port;
+		final String serverName = "//" + InetAddress.getLocalHost().getHostName() + ":" + port;
 		serverGroups = new RssServerSOContainerGroup[1];
 		// Setup server group
 		serverGroups[0] = new RssServerSOContainerGroup(port);
 		// Create identity for server
-		ID id = IDFactory.getDefault().createStringID(serverName);
+		final ID id = IDFactory.getDefault().createStringID(serverName);
 		// Create server config object with identity and default timeout
-		SOContainerConfig config = new SOContainerConfig(id);
+		final SOContainerConfig config = new SOContainerConfig(id);
 		// Make server instance
 		System.out.println("Creating ECF server container...");
-		RssServerSOContainer server = new RssServerSOContainer(config,
-				serverGroups[0], DEFAULT_KEEPALIVE);
+		final RssServerSOContainer server = new RssServerSOContainer(config, serverGroups[0], DEFAULT_KEEPALIVE);
 		// Setup join policy
-		((ISharedObjectContainerGroupManager) server)
-				.setConnectPolicy(new IConnectHandlerPolicy() {
-					public PermissionCollection checkConnect(Object address,
-							ID fromID, ID targetID, String targetGroup,
-							Object connectData) throws Exception {
-						System.out.println("JOIN Addr=" + address + ";From="
-								+ fromID + ";Group=" + targetGroup + ";Data="
-								+ connectData);
-						return null;
-					}
+		((ISharedObjectContainerGroupManager) server).setConnectPolicy(new IConnectHandlerPolicy() {
+			public PermissionCollection checkConnect(Object address, ID fromID, ID targetID, String targetGroup, Object connectData) throws Exception {
+				System.out.println("JOIN Addr=" + address + ";From=" + fromID + ";Group=" + targetGroup + ";Data=" + connectData);
+				return null;
+			}
 
-					public void refresh() {
-						System.out.println("joinPolicy.refresh()");
-					}
-				});
+			public void refresh() {
+				System.out.println("joinPolicy.refresh()");
+			}
+		});
 		// Setup add shared object policy
-		ISharedObjectManager manager = server.getSharedObjectManager();
+		final ISharedObjectManager manager = server.getSharedObjectManager();
 		manager.setRemoteAddPolicy(new ISharedObjectPolicy() {
-			public PermissionCollection checkAddSharedObject(ID fromID,
-					ID toID, ID localID,
-					ReplicaSharedObjectDescription newObjectDescription)
-					throws SecurityException {
-				System.out.println("ADDSHAREDOBJECT From=" + fromID + ";To="
-						+ toID + ";SharedObjectDesc=" + newObjectDescription);
+			public PermissionCollection checkAddSharedObject(ID fromID, ID toID, ID localID, ReplicaSharedObjectDescription newObjectDescription) throws SecurityException {
+				System.out.println("ADDSHAREDOBJECT From=" + fromID + ";To=" + toID + ";SharedObjectDesc=" + newObjectDescription);
 				return null;
 			}
 
@@ -162,8 +147,7 @@ public class RssServerSOContainer extends ServerSOContainer {
 		serverGroups[0].putOnTheAir();
 		servers.add(server);
 		System.out.println("success!");
-		System.out.println("Waiting for JOIN requests at '" + id.getName()
-				+ "'...");
+		System.out.println("Waiting for JOIN requests at '" + id.getName() + "'...");
 		System.out.println("<Ctrl>+C to stop server");
 	}
 }

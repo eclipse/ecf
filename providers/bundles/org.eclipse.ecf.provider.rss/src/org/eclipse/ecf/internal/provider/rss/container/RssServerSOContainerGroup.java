@@ -29,12 +29,10 @@ import org.eclipse.ecf.provider.generic.SOContainerGroup;
 /**
  * 
  */
-public class RssServerSOContainerGroup extends SOContainerGroup implements
-		ISocketAcceptHandler {
+public class RssServerSOContainerGroup extends SOContainerGroup implements ISocketAcceptHandler {
 
 	private static final String PRODUCT_NAME = "ECF RSS Server/0.0.1";
-	private static final String DEFAULT_GROUP_NAME = RssServerSOContainerGroup.class
-			.getName();
+	private static final String DEFAULT_GROUP_NAME = RssServerSOContainerGroup.class.getName();
 
 	protected int port;
 	protected Server listener;
@@ -43,6 +41,7 @@ public class RssServerSOContainerGroup extends SOContainerGroup implements
 
 	/**
 	 * The constructors
+	 * @param port 
 	 */
 	public RssServerSOContainerGroup(int port) {
 		this(DEFAULT_GROUP_NAME, null, port);
@@ -63,8 +62,7 @@ public class RssServerSOContainerGroup extends SOContainerGroup implements
 	}
 
 	protected void dumpStack(String msg, Throwable e) {
-		Trace.catching(RssPlugin.PLUGIN_ID,
-				RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
+		Trace.catching(RssPlugin.PLUGIN_ID, RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
 	}
 
 	public synchronized void putOnTheAir() throws IOException {
@@ -79,20 +77,18 @@ public class RssServerSOContainerGroup extends SOContainerGroup implements
 	}
 
 	public void handleAccept(Socket socket) throws Exception {
-		HttpRequest request = new HttpRequest(socket.getInputStream());
-		RssServerSOContainer con = (RssServerSOContainer) get(String
-				.valueOf(port));
+		final HttpRequest request = new HttpRequest(socket.getInputStream());
+		final RssServerSOContainer con = (RssServerSOContainer) get(String.valueOf(port));
 		if (con == null) {
 			throw new IOException("Container for port " + port + " not found!");
 		}
-		trace("Found container: " + con.getID().getName() + " for target "
-				+ request.getURLString());
+		trace("Found container: " + con.getID().getName() + " for target " + request.getURLString());
 		String body = "";
 		int code = HttpResponse.SERVER_ERROR;
 		String path = request.getPath();
 		// Tests whether this abstract pathname is absolute.
 		path = path.startsWith("/") ? path.substring(1) : path;
-		File feedFile = new File(path);
+		final File feedFile = new File(path);
 		Date lastModified = new Date();
 		if (feedFile.exists() && feedFile.isFile()) {
 			trace("Found feed file: " + feedFile.getAbsolutePath());
@@ -103,7 +99,7 @@ public class RssServerSOContainerGroup extends SOContainerGroup implements
 			code = HttpResponse.NOT_FOUND;
 		}
 		// Create connect response and send it back
-		HttpResponse response = new HttpResponse(code, body);
+		final HttpResponse response = new HttpResponse(code, body);
 		if (body != null && body.length() > 0) {
 			response.setHeader("Connection", "close");
 			response.setHeader("Content-Type", "text/xml");
@@ -114,10 +110,10 @@ public class RssServerSOContainerGroup extends SOContainerGroup implements
 	}
 
 	private String readFileToString(File file) throws IOException {
-		FileInputStream in = new FileInputStream(file);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		final FileInputStream in = new FileInputStream(file);
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		int n;
-		byte buffer[] = new byte[8192];
+		final byte buffer[] = new byte[8192];
 		while ((n = in.read(buffer, 0, buffer.length)) > -1) {
 			out.write(buffer, 0, n);
 			out.flush();
@@ -130,7 +126,7 @@ public class RssServerSOContainerGroup extends SOContainerGroup implements
 			trace("Taking " + getName() + " on the air.");
 			try {
 				listener.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				dumpStack("Exception in closeListener", e);
 			}
 			listener = null;

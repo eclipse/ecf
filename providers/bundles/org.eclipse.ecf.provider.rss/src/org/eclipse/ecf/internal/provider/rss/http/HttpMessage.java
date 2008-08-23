@@ -11,10 +11,18 @@
 
 package org.eclipse.ecf.internal.provider.rss.http;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PushbackInputStream;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.rss.RssDebugOptions;
@@ -43,8 +51,7 @@ public class HttpMessage {
 		super();
 	}
 
-	public HttpMessage(InputStream in) throws MalformedURLException,
-			IOException {
+	public HttpMessage(InputStream in) throws MalformedURLException, IOException {
 		this.in = in;
 		readHead();
 	}
@@ -54,13 +61,13 @@ public class HttpMessage {
 	}
 
 	protected void dumpStack(String msg, Throwable e) {
-		Trace.catching(RssPlugin.PLUGIN_ID,
-				RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
+		Trace.catching(RssPlugin.PLUGIN_ID, RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
 	}
 
 	/**
 	 * Reads the head of the message (startline and headers) from the
 	 * InputStream
+	 * @throws IOException 
 	 */
 	public void readHead() throws IOException {
 		trace("readHead start");
@@ -84,23 +91,19 @@ public class HttpMessage {
 			if (line.startsWith(" ") || line.startsWith("\t")) {
 				// multiline header
 				if (actHeader != null) {
-					headers.put(actHeader, ((String) headers.get(actHeader))
-							+ "\n" + line.trim());
+					headers.put(actHeader, ((String) headers.get(actHeader)) + "\n" + line.trim());
 				}
 			} else {
 				// header
-				actHeader = (line.substring(0, line.indexOf(":")))
-						.toLowerCase();
+				actHeader = (line.substring(0, line.indexOf(":"))).toLowerCase();
 				if (!headers.containsKey(actHeader)) {
 					// normal case
-					headers.put(actHeader, ((line
-							.substring(line.indexOf(":") + 1)).trim()));
+					headers.put(actHeader, ((line.substring(line.indexOf(":") + 1)).trim()));
 				} else {
 					// header is already defined -> make comma seperated list
 					// RFC2086 page 31
 					String list = (String) headers.get(actHeader);
-					list += ","
-							+ (line.substring(line.indexOf(":") + 1)).trim();
+					list += "," + (line.substring(line.indexOf(":") + 1)).trim();
 					headers.put(actHeader, list);
 				}
 			}
@@ -116,35 +119,32 @@ public class HttpMessage {
 	public Date getDateHeader(String name) {
 		Date date;
 		SimpleDateFormat dateFormatter;
-		String header = this.getHeader(name);
+		final String header = this.getHeader(name);
 
 		// try rfc 1123 date first
-		dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz",
-				Locale.ENGLISH);
+		dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 		dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 		try {
 			date = dateFormatter.parse(header);
 			return date;
-		} catch (java.text.ParseException e1) {
+		} catch (final java.text.ParseException e1) {
 			// ok, now try rfc 850 date
-			dateFormatter = new SimpleDateFormat(
-					"EEEE, dd-MMM-yy HH:mm:ss zzz", Locale.ENGLISH);
+			dateFormatter = new SimpleDateFormat("EEEE, dd-MMM-yy HH:mm:ss zzz", Locale.ENGLISH);
 			dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 			try {
 				date = dateFormatter.parse(header);
 				return date;
-			} catch (java.text.ParseException e2) {
+			} catch (final java.text.ParseException e2) {
 				// last, try asctime date format
-				dateFormatter = new SimpleDateFormat(
-						"EEE MMM dd HH:mm:ss yyyy", Locale.ENGLISH);
+				dateFormatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.ENGLISH);
 				dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 				try {
 					date = dateFormatter.parse(header);
 					return date;
-				} catch (java.text.ParseException e3) {
+				} catch (final java.text.ParseException e3) {
 					trace("Could not parse date: " + e3.getMessage());
 				}
 			}
@@ -162,11 +162,10 @@ public class HttpMessage {
 
 	public String setDateHeader(String name, Date value) {
 		// make rfc 1123 (and rfc 2068) compliant date
-		SimpleDateFormat dateFormatter = new SimpleDateFormat(
-				"EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+		final SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 		dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-		String strDate = dateFormatter.format(value).toString();
+		final String strDate = dateFormatter.format(value).toString();
 		setHeader(name, strDate);
 		return strDate;
 	}
@@ -186,9 +185,11 @@ public class HttpMessage {
 	/**
 	 * retrieves the body of the message as a byte[]. If the body is not read in
 	 * yet, it is read from the InputStream and cached in an internal array
+	 * @return byte []
+	 * @throws IOException 
 	 */
 	public byte[] getBody() throws IOException {
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		final ByteArrayOutputStream b = new ByteArrayOutputStream();
 		readBody(b);
 		body = b.toByteArray();
 		return body;
@@ -196,6 +197,7 @@ public class HttpMessage {
 
 	/**
 	 * sets the body of the message and therefore overrides a received body
+	 * @param body 
 	 */
 	public void setBody(byte[] body) {
 		this.body = body;
@@ -214,20 +216,18 @@ public class HttpMessage {
 	 * writes the message (startline, headers, body) out to the specified
 	 * OutputStream
 	 */
-	protected void writeToStream(String startLine, OutputStream out)
-			throws IOException {
+	protected void writeToStream(String startLine, OutputStream out) throws IOException {
 		out.write((startLine + "\n").getBytes());
 
-		Enumeration e = headers.keys();
+		final Enumeration e = headers.keys();
 		if (body != null) {
 			setHeader("content-length", String.valueOf(body.length));
 		}
 		// write headers out:
 		// * we should not change the order, although it should not matter...
 		while (e.hasMoreElements()) {
-			String hName = (String) e.nextElement();
-			out.write((hName + ": " + (String) headers.get(hName) + "\n")
-					.getBytes());
+			final String hName = (String) e.nextElement();
+			out.write((hName + ": " + (String) headers.get(hName) + "\n").getBytes());
 		}
 
 		out.write(("\n").getBytes());
@@ -240,6 +240,7 @@ public class HttpMessage {
 
 	/**
 	 * change default version
+	 * @param version 
 	 */
 	public void setDefaultVersion(String version) {
 		DEFAULT_VERSION = version;
@@ -258,7 +259,7 @@ public class HttpMessage {
 			if (ch == '\n') {
 				break;
 			} else if (ch == '\r') {
-				int tmpch = in.read();
+				final int tmpch = in.read();
 				if (tmpch != '\n') {
 					if (!(in instanceof PushbackInputStream)) {
 						trace("creating PushbackInputStream");
@@ -269,7 +270,7 @@ public class HttpMessage {
 				break;
 			} else {
 				if (offset == buf.length) {
-					char tmpbuf[] = buf;
+					final char tmpbuf[] = buf;
 					buf = new char[tmpbuf.length * 2];
 					System.arraycopy(tmpbuf, 0, buf, 0, offset);
 				}
@@ -289,27 +290,23 @@ public class HttpMessage {
 	 */
 	private void readBody(OutputStream out) throws IOException {
 		if (hasBody && body == null) {
-			if ((containsHeader("Transfer-Encoding"))
-					&& (getHeader("Transfer-Encoding").equals("chunked"))) {
+			if ((containsHeader("Transfer-Encoding")) && (getHeader("Transfer-Encoding").equals("chunked"))) {
 				// decoding-routine for chunked transfer-encoding
 				// (according to rfc 2616 section 19.4.6.)
 				int n;
 				int chunk_size;
 				String line;
-				byte[] buffer = new byte[8192];
-				ByteArrayOutputStream byte_out = new ByteArrayOutputStream(8192);
+				final byte[] buffer = new byte[8192];
+				final ByteArrayOutputStream byte_out = new ByteArrayOutputStream(8192);
 
 				length = 0;
 
 				line = readLine(in);
-				chunk_size = Integer.parseInt(
-						line.substring(0, line.indexOf(" ") > -1 ? line
-								.indexOf(" ") : line.length()), 16);
+				chunk_size = Integer.parseInt(line.substring(0, line.indexOf(" ") > -1 ? line.indexOf(" ") : line.length()), 16);
 
 				while (chunk_size > 0) {
 					for (int len = 0; len < chunk_size;) {
-						n = in.read(buffer, 0, Math.min(chunk_size - len,
-								buffer.length));
+						n = in.read(buffer, 0, Math.min(chunk_size - len, buffer.length));
 						if (n == -1) {
 							break;
 						}
@@ -321,9 +318,7 @@ public class HttpMessage {
 
 					length += chunk_size;
 					line = readLine(in);
-					chunk_size = Integer.parseInt(line.substring(0, line
-							.indexOf(" ") > -1 ? line.indexOf(" ") : line
-							.length()), 16);
+					chunk_size = Integer.parseInt(line.substring(0, line.indexOf(" ") > -1 ? line.indexOf(" ") : line.length()), 16);
 				}
 
 				// headers come last...
@@ -332,15 +327,10 @@ public class HttpMessage {
 				while (!(line = readLine(in)).equals("")) {
 					if (line.startsWith(" ") || line.startsWith("\t")) {
 						// multiline header
-						headers
-								.put(actHeader, ((String) headers
-										.get(actHeader))
-										+ "\n" + line);
+						headers.put(actHeader, ((String) headers.get(actHeader)) + "\n" + line);
 					} else {
-						actHeader = (line.substring(0, line.indexOf(":")))
-								.toLowerCase();
-						headers.put(actHeader, ((line.substring(line
-								.indexOf(":") + 1)).trim()));
+						actHeader = (line.substring(0, line.indexOf(":"))).toLowerCase();
+						headers.put(actHeader, ((line.substring(line.indexOf(":") + 1)).trim()));
 					}
 				}
 				setHeader("content-length", "" + length);
@@ -351,15 +341,14 @@ public class HttpMessage {
 				out.write(byte_out.toByteArray());
 			} else if (headers.containsKey("content-length")) {
 				// header defines length of content
-				length = Integer.parseInt((String) getHeader("Content-Length"));
+				length = Integer.parseInt(getHeader("Content-Length"));
 
 				int n;
 				int len = 0;
-				byte buffer[] = new byte[8192];
+				final byte buffer[] = new byte[8192];
 
 				while (len < length) {
-					n = in.read(buffer, 0, Math
-							.min(length - len, buffer.length));
+					n = in.read(buffer, 0, Math.min(length - len, buffer.length));
 					if (n == -1) {
 						break;
 					}
@@ -370,7 +359,7 @@ public class HttpMessage {
 			} else {
 				// just read until server closes connection
 				int n;
-				byte buffer[] = new byte[8192];
+				final byte buffer[] = new byte[8192];
 
 				while (true) {
 					n = in.read(buffer, 0, buffer.length);

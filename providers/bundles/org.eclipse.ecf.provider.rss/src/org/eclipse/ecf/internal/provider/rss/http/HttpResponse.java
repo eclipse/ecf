@@ -72,7 +72,10 @@ public class HttpResponse extends HttpMessage {
 	private int code;
 	private String reason;
 
-	/** Creates a new instance of HttpResponse */
+	/** Creates a new instance of HttpResponse 
+	 * @param version 
+	 * @param code 
+	 * @param reason */
 	public HttpResponse(String version, int code, String reason) {
 		this.version = version;
 		this.code = code;
@@ -82,6 +85,8 @@ public class HttpResponse extends HttpMessage {
 
 	/**
 	 * use default version HTTP/1.1
+	 * @param code 
+	 * @param body 
 	 */
 	public HttpResponse(int code, String body) {
 		this(DEFAULT_VERSION, code, type2String(code));
@@ -90,6 +95,7 @@ public class HttpResponse extends HttpMessage {
 
 	/**
 	 * response ok (200) with string as body default version
+	 * @param body 
 	 */
 	public HttpResponse(String body) {
 		this(DEFAULT_VERSION, OK, type2String(OK));
@@ -98,6 +104,7 @@ public class HttpResponse extends HttpMessage {
 
 	/**
 	 * default version and code.
+	 * @param code 
 	 */
 	public HttpResponse(int code) {
 		this(DEFAULT_VERSION, code, type2String(code));
@@ -105,9 +112,11 @@ public class HttpResponse extends HttpMessage {
 
 	/**
 	 * create the response from the inputstream
+	 * @param in 
+	 * @throws MalformedURLException 
+	 * @throws IOException 
 	 */
-	public HttpResponse(InputStream in) throws MalformedURLException,
-			IOException {
+	public HttpResponse(InputStream in) throws MalformedURLException, IOException {
 		super(in);
 	}
 
@@ -115,14 +124,16 @@ public class HttpResponse extends HttpMessage {
 	 * Reads the head of the message (startline and headers) from the
 	 * InputStream, and parses the startline for version, return code and
 	 * reason.
+	 * @throws IOException 
+	 * @throws MalformedURLException 
 	 */
 	public void readHead() throws IOException, MalformedURLException {
 
 		super.readHead();
 
 		// parse requestline
-		int i = startLine.indexOf(' ');
-		int j = startLine.indexOf(' ', i + 1);
+		final int i = startLine.indexOf(' ');
+		final int j = startLine.indexOf(' ', i + 1);
 
 		version = startLine.substring(0, i);
 
@@ -142,8 +153,7 @@ public class HttpResponse extends HttpMessage {
 		}
 
 		// read body in immediately if cunked transfer-encoding...
-		if ((containsHeader("Transfer-Encoding"))
-				&& (getHeader("Transfer-Encoding").equals("chunked"))) {
+		if ((containsHeader("Transfer-Encoding")) && (getHeader("Transfer-Encoding").equals("chunked"))) {
 			getBody();
 		}
 	}
@@ -226,13 +236,12 @@ public class HttpResponse extends HttpMessage {
 	}
 
 	public void appendToBody(String s) throws java.io.IOException {
-		String bs = new String(getBody()) + s;
+		final String bs = new String(getBody()) + s;
 		setBody(bs.getBytes());
 	}
 
-	public void wrapBody(String header, String trailer)
-			throws java.io.IOException {
-		String bs = header + new String(getBody()) + trailer;
+	public void wrapBody(String header, String trailer) throws java.io.IOException {
+		final String bs = header + new String(getBody()) + trailer;
 		setBody(bs.getBytes());
 	}
 
@@ -242,82 +251,82 @@ public class HttpResponse extends HttpMessage {
 
 	private static String type2String(int type) {
 		switch (type) {
-		case CONTINUE:
-			return "Continue";
-		case SWITCH_PROTOCOLS:
-			return "Switching Protocols";
-		case OK:
-			return "OK";
-		case CREATED:
-			return "Created";
-		case ACCEPTED:
-			return "Accepted";
-		case NON_AUTHORATIVE:
-			return "Non-Authorative Information";
-		case NO_CONTENT:
-			return "No Content";
-		case RESET_CONTENT:
-			return "Reset Content";
-		case PARTIAL_CONTENT:
-			return "Partial Content";
-		case MULTIPLE_CHOICES:
-			return "Multiple Choices";
-		case MOVED_PERMANENTLY:
-			return "Moved Permanently";
-		case MOVED_TEMPORARILY:
-			return "Moved Temporarily";
-		case SEE_OTHER:
-			return "See Other";
-		case NOT_MODIFIED:
-			return "Not Modified";
-		case USE_PROXY:
-			return "Use Proxy";
-		case BAD_REQUEST:
-			return "Bad Request";
-		case UNAUTHORIZED:
-			return "Unauthorized";
-		case PAYMENT_REQUIRED:
-			return "Payment Required";
-		case FORBIDDEN:
-			return "Forbidden";
-		case NOT_FOUND:
-			return "Not Found";
-		case METHOD_NOT_ALLOWD:
-			return "Method Not Allowed";
-		case NOT_ACCEPTABLE:
-			return "Not Acceptable";
-		case PROXY_AUTHENTICATION_REQUIRED:
-			return "Proxy Authentication required";
-		case REQUEST_TIMEOUT:
-			return "Request Time-out";
-		case CONFLICT:
-			return "Conflict";
-		case GONE:
-			return "Gone";
-		case LENGTH_REQUIRED:
-			return "Lenght Required";
-		case PRECONDITION_FAILED:
-			return "Precondition Failed";
-		case REQUEST_TOO_LARGE:
-			return "Request Entity Too Large";
-		case URI_TOO_LARGE:
-			return "Request-URI Too Large";
-		case UNSUPPORTED_MEDIA:
-			return "Unsupported Media Type";
-		case SERVER_ERROR:
-			return "Internal Server Error";
-		case NOT_IMPLEMENTED:
-			return "Not Implemented";
-		case BAD_GATEWAY:
-			return "Bad Gateway";
-		case UNAVAILABLE:
-			return "Service Unavailable";
-		case GATEWAY_TIMEOUT:
-			return "Gateway Time-out";
-		case VERSION_NOT_SUPPORTED:
-			return "HTTP Version not supported";
-		default:
-			return "No Reason Phrase";
+			case CONTINUE :
+				return "Continue";
+			case SWITCH_PROTOCOLS :
+				return "Switching Protocols";
+			case OK :
+				return "OK";
+			case CREATED :
+				return "Created";
+			case ACCEPTED :
+				return "Accepted";
+			case NON_AUTHORATIVE :
+				return "Non-Authorative Information";
+			case NO_CONTENT :
+				return "No Content";
+			case RESET_CONTENT :
+				return "Reset Content";
+			case PARTIAL_CONTENT :
+				return "Partial Content";
+			case MULTIPLE_CHOICES :
+				return "Multiple Choices";
+			case MOVED_PERMANENTLY :
+				return "Moved Permanently";
+			case MOVED_TEMPORARILY :
+				return "Moved Temporarily";
+			case SEE_OTHER :
+				return "See Other";
+			case NOT_MODIFIED :
+				return "Not Modified";
+			case USE_PROXY :
+				return "Use Proxy";
+			case BAD_REQUEST :
+				return "Bad Request";
+			case UNAUTHORIZED :
+				return "Unauthorized";
+			case PAYMENT_REQUIRED :
+				return "Payment Required";
+			case FORBIDDEN :
+				return "Forbidden";
+			case NOT_FOUND :
+				return "Not Found";
+			case METHOD_NOT_ALLOWD :
+				return "Method Not Allowed";
+			case NOT_ACCEPTABLE :
+				return "Not Acceptable";
+			case PROXY_AUTHENTICATION_REQUIRED :
+				return "Proxy Authentication required";
+			case REQUEST_TIMEOUT :
+				return "Request Time-out";
+			case CONFLICT :
+				return "Conflict";
+			case GONE :
+				return "Gone";
+			case LENGTH_REQUIRED :
+				return "Lenght Required";
+			case PRECONDITION_FAILED :
+				return "Precondition Failed";
+			case REQUEST_TOO_LARGE :
+				return "Request Entity Too Large";
+			case URI_TOO_LARGE :
+				return "Request-URI Too Large";
+			case UNSUPPORTED_MEDIA :
+				return "Unsupported Media Type";
+			case SERVER_ERROR :
+				return "Internal Server Error";
+			case NOT_IMPLEMENTED :
+				return "Not Implemented";
+			case BAD_GATEWAY :
+				return "Bad Gateway";
+			case UNAVAILABLE :
+				return "Service Unavailable";
+			case GATEWAY_TIMEOUT :
+				return "Gateway Time-out";
+			case VERSION_NOT_SUPPORTED :
+				return "HTTP Version not supported";
+			default :
+				return "No Reason Phrase";
 		}
 	}
 }

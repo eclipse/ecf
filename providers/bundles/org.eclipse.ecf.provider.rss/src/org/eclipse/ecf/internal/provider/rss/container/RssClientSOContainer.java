@@ -66,23 +66,19 @@ import org.eclipse.higgins.rsse.util.RssVersion;
  * The RssClientSOContainer implements the basic RSS client functionality.
  * 
  */
-public class RssClientSOContainer extends ClientSOContainer implements
-		IMergeableChannelContainerAdapter {
+public class RssClientSOContainer extends ClientSOContainer implements IMergeableChannelContainerAdapter {
 
-	public static final String DEFAULT_COMM_NAME = org.eclipse.ecf.internal.provider.rss.http.HttpClient.class
-			.getName();
+	public static final String DEFAULT_COMM_NAME = org.eclipse.ecf.internal.provider.rss.http.HttpClient.class.getName();
 	public static final int DEFAULT_KEEPALIVE = 30000;
 
 	int keepAlive = 0;
 
-	protected List channelContainerListener = Collections
-			.synchronizedList(new ArrayList());
+	protected List channelContainerListener = Collections.synchronizedList(new ArrayList());
 
 	protected void fireChannelContainerListeners(IChannelContainerEvent event) {
 		synchronized (channelContainerListener) {
-			for (Iterator i = channelContainerListener.iterator(); i.hasNext();) {
-				IChannelContainerListener l = (IChannelContainerListener) i
-						.next();
+			for (final Iterator i = channelContainerListener.iterator(); i.hasNext();) {
+				final IChannelContainerListener l = (IChannelContainerListener) i.next();
 				if (l != null)
 					l.handleChannelContainerEvent(event);
 			}
@@ -92,7 +88,7 @@ public class RssClientSOContainer extends ClientSOContainer implements
 	/**
 	 * The constructors
 	 * 
-	 * @throws IDInstantiationException
+	 * @throws IDCreateException
 	 */
 	public RssClientSOContainer() throws IDCreateException {
 		this(DEFAULT_KEEPALIVE);
@@ -106,13 +102,11 @@ public class RssClientSOContainer extends ClientSOContainer implements
 		this(userhost, DEFAULT_KEEPALIVE);
 	}
 
-	public RssClientSOContainer(String userhost, int keepAlive)
-			throws IDCreateException {
+	public RssClientSOContainer(String userhost, int keepAlive) throws IDCreateException {
 		this(IDFactory.getDefault().createStringID(userhost), keepAlive);
 	}
 
-	public RssClientSOContainer(ID containerId, int keepAlive)
-			throws IDCreateException {
+	public RssClientSOContainer(ID containerId, int keepAlive) throws IDCreateException {
 		super(new SOContainerConfig(containerId));
 		this.keepAlive = keepAlive;
 		this.addListener(new ContainerListener());
@@ -132,12 +126,9 @@ public class RssClientSOContainer extends ClientSOContainer implements
 					}
 
 					public String toString() {
-						StringBuffer buf = new StringBuffer(
-								"ChannelActivatedEvent[");
-						buf.append("channelid=").append(soae.getActivatedID())
-								.append(";");
-						buf.append("containerid=").append(
-								soae.getLocalContainerID()).append("]");
+						final StringBuffer buf = new StringBuffer("ChannelActivatedEvent[");
+						buf.append("channelid=").append(soae.getActivatedID()).append(";");
+						buf.append("containerid=").append(soae.getLocalContainerID()).append("]");
 						return buf.toString();
 					}
 				});
@@ -153,12 +144,9 @@ public class RssClientSOContainer extends ClientSOContainer implements
 					}
 
 					public String toString() {
-						StringBuffer buf = new StringBuffer(
-								"ChannelDeactivatedEvent[");
-						buf.append("channelid=")
-								.append(sode.getDeactivatedID()).append(";");
-						buf.append("containerid=").append(
-								sode.getLocalContainerID()).append("]");
+						final StringBuffer buf = new StringBuffer("ChannelDeactivatedEvent[");
+						buf.append("channelid=").append(sode.getDeactivatedID()).append(";");
+						buf.append("containerid=").append(sode.getLocalContainerID()).append("]");
 						return buf.toString();
 					}
 				});
@@ -171,39 +159,34 @@ public class RssClientSOContainer extends ClientSOContainer implements
 	}
 
 	protected void dumpStack(String msg, Throwable e) {
-		Trace.catching(RssPlugin.PLUGIN_ID,
-				RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
+		Trace.catching(RssPlugin.PLUGIN_ID, RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
 	}
 
-	protected ISynchAsynchConnection createConnection(ID remoteSpace,
-			Object data) throws ConnectionCreateException {
+	protected ISynchAsynchConnection createConnection(ID remoteSpace, Object data) throws ConnectionCreateException {
 		trace("createConnection:" + remoteSpace + ":" + data);
 		// Object[] args = { new Integer(keepAlive) };
-		ISynchAsynchConnection conn = new HttpClient(receiver);
+		final ISynchAsynchConnection conn = new HttpClient(receiver);
 		return conn;
 	}
 
-	protected ID handleConnectResponse(ID originalTarget, Object serverData)
-			throws Exception {
+	protected ID handleConnectResponse(ID originalTarget, Object serverData) throws Exception {
 		trace("handleConnectResponse:" + originalTarget + ":" + serverData);
 		if (originalTarget != null && !originalTarget.equals(getID())) {
 			addNewRemoteMember(originalTarget, null);
 			// notify listeners
-			fireContainerEvent(new ContainerConnectedEvent(this.getID(),
-					originalTarget));
+			fireContainerEvent(new ContainerConnectedEvent(this.getID(), originalTarget));
 		}
 		return originalTarget;
 	}
 
 	public RssFeed receiveFeed(String feedPath) throws IOException {
 		RssFeed feed = null;
-		ISynchAsynchConnection connection = getConnection();
+		final ISynchAsynchConnection connection = getConnection();
 		synchronized (connection) {
 			if (connection.isConnected()) {
 				try {
-					feed = FeedParser.parse((byte[]) connection.sendSynch(null,
-							feedPath.getBytes()));
-				} catch (ParseException e) {
+					feed = FeedParser.parse((byte[]) connection.sendSynch(null, feedPath.getBytes()));
+				} catch (final ParseException e) {
 					throw new IOException(e.getMessage());
 				}
 			}
@@ -220,18 +203,14 @@ public class RssClientSOContainer extends ClientSOContainer implements
 	}
 
 	public Namespace getChannelNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(
-				StringID.class.getName());
+		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
 	}
 
-	public IMergeableChannel createMergeableChannel(ID channelID,
-			IChannelListener listener, Map properties) throws ECFException {
+	public IMergeableChannel createMergeableChannel(ID channelID, IChannelListener listener, Map properties) throws ECFException {
 		return createChannel(channelID, listener, properties);
 	}
 
-	public IMergeableChannel createChannel(final ID channelID,
-			final IChannelListener listener, final Map properties)
-			throws ECFException {
+	public IMergeableChannel createChannel(final ID channelID, final IChannelListener listener, final Map properties) throws ECFException {
 		return createChannel(new IChannelConfig() {
 
 			public ID getID() {
@@ -252,25 +231,19 @@ public class RssClientSOContainer extends ClientSOContainer implements
 		});
 	}
 
-	public IMergeableChannel createChannel(IChannelConfig newChannelConfig)
-			throws ECFException {
-		IChannelListener listener = newChannelConfig.getListener();
-		SharedObjectDescription sodesc = new SharedObjectDescription(
-				FeedSharedObject.class, IDFactory.getDefault().createGUID(),
-				new HashMap());
-		SharedObjectTypeDescription sotypedesc = sodesc.getTypeDescription();
+	public IMergeableChannel createChannel(IChannelConfig newChannelConfig) throws ECFException {
+		final IChannelListener listener = newChannelConfig.getListener();
+		final SharedObjectDescription sodesc = new SharedObjectDescription(FeedSharedObject.class, IDFactory.getDefault().createGUID(), new HashMap());
+		final SharedObjectTypeDescription sotypedesc = sodesc.getTypeDescription();
 		ISharedObject sharedObject = null;
 		if (sotypedesc.getName() != null) {
-			sharedObject = SharedObjectFactory.getDefault().createSharedObject(
-					sotypedesc, new Object[] { listener });
+			sharedObject = SharedObjectFactory.getDefault().createSharedObject(sotypedesc, new Object[] {listener});
 		} else {
 			sharedObject = createSharedObject(sotypedesc, listener);
 		}
-		IMergeableChannel channel = (IMergeableChannel) sharedObject
-				.getAdapter(IMergeableChannel.class);
+		final IMergeableChannel channel = (IMergeableChannel) sharedObject.getAdapter(IMergeableChannel.class);
 		if (channel == null) {
-			throw new SharedObjectCreateException("Cannot coerce object "
-					+ channel + " to be of type IChannel");
+			throw new SharedObjectCreateException("Cannot coerce object " + channel + " to be of type IChannel");
 		}
 		ID newID = sodesc.getID();
 		if (newID == null) {
@@ -281,38 +254,28 @@ public class RssClientSOContainer extends ClientSOContainer implements
 			properties = new HashMap();
 		}
 		// Now add channel to container...this will block
-		getSharedObjectManager().addSharedObject(newID, sharedObject,
-				properties);
+		getSharedObjectManager().addSharedObject(newID, sharedObject, properties);
 		return channel;
 	}
 
-	private ISharedObject createSharedObject(
-			SharedObjectTypeDescription sotypedesc, IChannelListener listener)
-			throws SharedObjectCreateException {
+	private ISharedObject createSharedObject(SharedObjectTypeDescription sotypedesc, IChannelListener listener) throws SharedObjectCreateException {
 		Class clazz;
 		try {
 			clazz = Class.forName(sotypedesc.getClassName());
-		} catch (ClassNotFoundException e) {
-			throw new SharedObjectCreateException(
-					"No constructor for shared object of class "
-							+ sotypedesc.getClassName(), e);
+		} catch (final ClassNotFoundException e) {
+			throw new SharedObjectCreateException("No constructor for shared object of class " + sotypedesc.getClassName(), e);
 		}
 		Constructor cons = null;
 		try {
-			cons = clazz
-					.getDeclaredConstructor(new Class[] { IChannelListener.class });
-		} catch (NoSuchMethodException e) {
-			throw new SharedObjectCreateException(
-					"No constructor for shared object of class "
-							+ sotypedesc.getClassName(), e);
+			cons = clazz.getDeclaredConstructor(new Class[] {IChannelListener.class});
+		} catch (final NoSuchMethodException e) {
+			throw new SharedObjectCreateException("No constructor for shared object of class " + sotypedesc.getClassName(), e);
 		}
 		ISharedObject so = null;
 		try {
-			so = (ISharedObject) cons.newInstance(new Object[] { listener });
-		} catch (Exception e) {
-			throw new SharedObjectCreateException(
-					"Cannot create instance of class "
-							+ sotypedesc.getClassName(), e);
+			so = (ISharedObject) cons.newInstance(new Object[] {listener});
+		} catch (final Exception e) {
+			throw new SharedObjectCreateException("Cannot create instance of class " + sotypedesc.getClassName(), e);
 		}
 		return so;
 	}
@@ -333,54 +296,45 @@ public class RssClientSOContainer extends ClientSOContainer implements
 		if (args.length > 0) {
 			targetURL = args[0];
 		}
-		ContainerTypeDescription contd = new ContainerTypeDescription(
-				RssContainerInstantiator.class.getName(),
-				RssContainerInstantiator.class.getName(), null);
+		final ContainerTypeDescription contd = new ContainerTypeDescription(RssContainerInstantiator.class.getName(), RssContainerInstantiator.class.getName(), null);
 		ContainerFactory.getDefault().addDescription(contd);
 
-		RssClientSOContainer container = new RssClientSOContainer();
+		final RssClientSOContainer container = new RssClientSOContainer();
 		// now connect to rss service
-		ID serverID = IDFactory.getDefault().createStringID(targetURL);
+		final ID serverID = IDFactory.getDefault().createStringID(targetURL);
 		container.connect(serverID, null);
 		// get IMergeableChannelContainer adapter
-		IMergeableChannelContainerAdapter channelContainer = (IMergeableChannelContainerAdapter) container
-				.getAdapter(IMergeableChannelContainerAdapter.class);
+		final IMergeableChannelContainerAdapter channelContainer = (IMergeableChannelContainerAdapter) container.getAdapter(IMergeableChannelContainerAdapter.class);
 		// create channel listener
 		final IChannelListener listener = new IChannelListener() {
 			public void handleChannelEvent(IChannelEvent event) {
-				System.out
-						.println("listener.handleChannelEvent(" + event + ")");
+				System.out.println("listener.handleChannelEvent(" + event + ")");
 			}
 		};
 		// create a new channel
-		ID channelID = IDFactory.getDefault().createStringID(
-				"/reuters/worldNews/");
+		final ID channelID = IDFactory.getDefault().createStringID("/reuters/worldNews/");
 		// ID channelID = IDFactory.getDefault().createStringID("/feed.xml");
-		IMergeableChannel channel = channelContainer.createMergeableChannel(
-				channelID, listener, new HashMap());
+		final IMergeableChannel channel = channelContainer.createMergeableChannel(channelID, listener, new HashMap());
 		if (channel instanceof FeedSharedObject) {
 			// get remote feed (subscribed)
-			RssFeed remoteFeed = ((FeedSharedObject) channel).getFeed();
+			final RssFeed remoteFeed = ((FeedSharedObject) channel).getFeed();
 			// get local feed (published)
-			File feedFile = new File("feed.xml");
+			final File feedFile = new File("feed.xml");
 			RssFeed localFeed = RssFeed.load(feedFile);
 			if (localFeed == null) {
-				localFeed = new RssFeed(remoteFeed.getTitle(), remoteFeed
-						.getLink(), remoteFeed.getDescription());
+				localFeed = new RssFeed(remoteFeed.getTitle(), remoteFeed.getLink(), remoteFeed.getDescription());
 				localFeed.setVersion(RssVersion.RSS_2_0);
 			}
 			// merge remote feed with local one
 			localFeed.merge(remoteFeed);
 			// add a new item to feed
-			localFeed.addItem(new RssItem("New Google Item",
-					"This is a new item", "http://www.google.com"));
+			localFeed.addItem(new RssItem("New Google Item", "This is a new item", "http://www.google.com"));
 			// publish updated feed
 			localFeed.save(feedFile);
 			// print item titles
-			java.util.List items = localFeed.getItems();
+			final java.util.List items = localFeed.getItems();
 			for (int i = 0; i < items.size(); i++) {
-				System.out.println(" " + i + " "
-						+ ((RssItem) items.get(i)).getTitle());
+				System.out.println(" " + i + " " + ((RssItem) items.get(i)).getTitle());
 			}
 		}
 		// remove the channel

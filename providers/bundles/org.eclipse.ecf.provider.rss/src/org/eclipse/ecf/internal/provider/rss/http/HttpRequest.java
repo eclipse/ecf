@@ -30,7 +30,10 @@ public class HttpRequest extends HttpMessage {
 
 	private static final int DEFAULT_PORT = 80;
 
-	/** Creates a new instance of HttpRequest */
+	/** Creates a new instance of HttpRequest 
+	 * @param method 
+	 * @param url 
+	 * @param version */
 	public HttpRequest(String method, URL url, String version) {
 		this.method = method;
 		this.version = version;
@@ -38,13 +41,11 @@ public class HttpRequest extends HttpMessage {
 		hasBody = false;
 	}
 
-	public HttpRequest(String method, String urlstring, String version)
-			throws MalformedURLException {
+	public HttpRequest(String method, String urlstring, String version) throws MalformedURLException {
 		this(method, new URL(urlstring), version);
 	}
 
-	public HttpRequest(String method, String urlstring)
-			throws MalformedURLException {
+	public HttpRequest(String method, String urlstring) throws MalformedURLException {
 		this(method, new URL(urlstring), DEFAULT_VERSION);
 	}
 
@@ -55,15 +56,19 @@ public class HttpRequest extends HttpMessage {
 	/**
 	 * generate a Request Message which will be read from the specified
 	 * InputStream
+	 * @param in 
+	 * @throws MalformedURLException 
+	 * @throws IOException 
 	 */
-	public HttpRequest(InputStream in) throws MalformedURLException,
-			IOException {
+	public HttpRequest(InputStream in) throws MalformedURLException, IOException {
 		super(in);
 	}
 
 	/**
 	 * Reads the head of the message (startline and headers) from the
 	 * InputStream, and parses the startline for command, url and protocol.
+	 * @throws IOException 
+	 * @throws MalformedURLException 
 	 */
 	public void readHead() throws IOException, MalformedURLException {
 		super.readHead();
@@ -71,8 +76,8 @@ public class HttpRequest extends HttpMessage {
 		String strURI;
 
 		// parse requestline
-		int i = startLine.indexOf(' ');
-		int j = startLine.indexOf(' ', i + 1);
+		final int i = startLine.indexOf(' ');
+		final int j = startLine.indexOf(' ', i + 1);
 
 		method = startLine.substring(0, i);
 		strURI = startLine.substring(i + 1, j);
@@ -150,6 +155,8 @@ public class HttpRequest extends HttpMessage {
 
 	/**
 	 * write to stream using the default startline (absulute URI)
+	 * @param stream 
+	 * @throws IOException 
 	 */
 	public void writeToStream(OutputStream stream) throws IOException {
 		super.writeToStream(getAbsoluteStartLine(), stream);

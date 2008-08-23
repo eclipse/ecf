@@ -43,6 +43,7 @@ public class HttpClient implements ISynchAsynchConnection {
 
 	/**
 	 * The constructors
+	 * @param handler 
 	 */
 	public HttpClient(ISynchAsynchEventHandler handler) {
 		if (handler == null) {
@@ -56,37 +57,34 @@ public class HttpClient implements ISynchAsynchConnection {
 	}
 
 	protected void dumpStack(String msg, Throwable e) {
-		Trace.catching(RssPlugin.PLUGIN_ID,
-				RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
+		Trace.catching(RssPlugin.PLUGIN_ID, RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
 	}
 
 	private URL getURL(String path) throws MalformedURLException {
 		if (socket != null) {
-			return new URL("http", socket.getInetAddress().getHostName(),
-					socket.getPort(), path);
+			return new URL("http", socket.getInetAddress().getHostName(), socket.getPort(), path);
 		}
 		return null;
 	}
 
-	public Object connect(ID remote, Object data, int timeout)
-			throws ECFException {
+	public Object connect(ID remote, Object data, int timeout) throws ECFException {
 		try {
 			trace("connect(" + remote + "," + data + "," + timeout + ")");
 			if (socket != null) {
 				throw new ECFException("Already connected to " + getURL(null));
 			}
-			
-			URL url = new URL(remote.getName());
+
+			final URL url = new URL(remote.getName());
 			/*
 			 * // Get socket factory and create/connect socket SocketFactory fact =
 			 * SocketFactory.getSocketFactory(); if(fact == null) { fact =
 			 * SocketFactory.getDefaultSocketFactory(); }
 			 */
 
-			int port = url.getPort() != -1 ? url.getPort() : DEFAULT_PORT;
+			final int port = url.getPort() != -1 ? url.getPort() : DEFAULT_PORT;
 			// socket = fact.createSocket(url.getHost(), port, timeout);
 			socket = new Socket(url.getHost(), port);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new ECFException(e);
 		}
 
@@ -98,7 +96,7 @@ public class HttpClient implements ISynchAsynchConnection {
 		if (socket != null) {
 			try {
 				socket.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				// ignored as we are releasing it anyway
 			}
 			socket = null;
@@ -123,9 +121,8 @@ public class HttpClient implements ISynchAsynchConnection {
 
 		ID retID = null;
 		try {
-			retID = IDFactory.getDefault().createStringID(
-					getURL(null).toString());
-		} catch (Exception e) {
+			retID = IDFactory.getDefault().createStringID(getURL(null).toString());
+		} catch (final Exception e) {
 			dumpStack("Exception in getLocalID()", e);
 			return null;
 		}
@@ -172,13 +169,12 @@ public class HttpClient implements ISynchAsynchConnection {
 	public Object sendSynch(ID receiver, byte[] data) throws IOException {
 		trace("sendSynch(" + receiver + ", " + data + ")");
 		// data should be a string
-		HttpRequest request = new HttpRequest("GET", getURL(new String(data)));
+		final HttpRequest request = new HttpRequest("GET", getURL(new String(data)));
 		request.setHeader("User-Agent", PRODUCT_NAME);
-		request.setHeader("Accept",
-				"text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
+		request.setHeader("Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
 		request.setHeader("Connection", "keep-alive");
 		request.writeToStream(request.getStartLine(), socket.getOutputStream());
-		HttpResponse response = new HttpResponse(socket.getInputStream());
+		final HttpResponse response = new HttpResponse(socket.getInputStream());
 		return response.getBody();
 	}
 }
