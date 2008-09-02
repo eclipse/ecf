@@ -3,8 +3,9 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: Composent, Inc. - initial API and implementation
+ * 				 Maarten Meijer - bug 237936, added gzip encoded transfer default
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
@@ -34,6 +35,12 @@ import org.eclipse.osgi.util.NLS;
 
 public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
+	/**
+	 * gzip encoding wrapper for httpclient class. Copied from Mylyn project, bug 205708
+	 *
+	 * @author Maarten Meijer
+	 *
+	 */
 	public class GzipGetMethod extends GetMethod {
 
 		private static final String APPLICATION_X_GZIP = "application/x-gzip"; //$NON-NLS-1$
@@ -41,11 +48,12 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		private static final String CONTENT_ENCODING = "Content-Encoding"; //$NON-NLS-1$
 		private static final String ACCEPT_ENCODING = "Accept-encoding"; //$NON-NLS-1$
 		private static final String CONTENT_ENCODING_GZIP = "gzip"; //$NON-NLS-1$
-		private static final String CONTENT_ENCODING_DEFLATE = "deflate"; //$NON-NLS-1$
+		//		private static final String CONTENT_ENCODING_DEFLATE = "deflate"; //$NON-NLS-1$
 
-		private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP + "," + CONTENT_ENCODING_DEFLATE; //$NON-NLS-1$
+		private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP; //  + "," + CONTENT_ENCODING_DEFLATE; //; //$NON-NLS-1$
 
 		private boolean gzipReceived = false;
+
 		private boolean deflateReceived = false;
 
 		public GzipGetMethod(String urlString) {
@@ -59,10 +67,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			return zipped;
 		}
 
-		private boolean isDeflatedReply() {
-			boolean deflated = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_DEFLATE));
-			return deflated;
-		}
+		//		private boolean isDeflatedReply() {
+		//			boolean deflated = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_DEFLATE));
+		//			return deflated;
+		//		}
 
 		public int execute(HttpState state, HttpConnection conn) throws HttpException, IOException {
 			// Insert accept-encoding header
@@ -71,8 +79,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			// test what is sent back
 			if (isZippedReply()) {
 				gzipReceived = true;
-			} else if (isDeflatedReply()) {
-				deflateReceived = true;
+				//			} else if (isDeflatedReply()) {
+				//				deflateReceived = true;
 			}
 			return result;
 		}
@@ -83,9 +91,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				if (gzipReceived) {
 					// extract on the fly
 					return new java.util.zip.GZIPInputStream(input);
-				} else if (deflateReceived) {
-					// extract on the fly
-					return new java.util.zip.DeflaterInputStream(input);
+					//				} else if (deflateReceived) {
+					//					// extract on the fly
+					//					return new java.util.zip.InflaterInputStream(input);
 				}
 			} catch (IOException e) {
 				Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind("Exception creating {0} input stream", (gzipReceived ? "gzip" : (deflateReceived ? "deflate" : "unknown"))), e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -148,7 +156,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
 	 */
 	protected void hardClose() {
@@ -236,7 +244,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
 	 */
 	public ID getID() {
@@ -340,7 +348,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
@@ -398,7 +406,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.internal.provider.filetransfer.AbstractRetrieveFileTransfer#supportsProtocol(java.lang.String)
 	 */
 	public static boolean supportsProtocol(String protocolString) {
@@ -414,7 +422,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doPause()
 	 */
 	protected boolean doPause() {
@@ -426,7 +434,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doResume()
 	 */
 	protected boolean doResume() {
@@ -502,7 +510,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
