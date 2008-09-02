@@ -3,12 +3,14 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: Composent, Inc. - initial API and implementation
+ * 				 Maarten Meijer - bug 237936, added gzip encoded transfer default
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.*;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -219,7 +221,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
@@ -230,7 +232,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
@@ -239,7 +241,9 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			connect();
 			setRequestHeaderValues();
 			// Make actual GET request
-			setInputStream(urlConnection.getInputStream());
+			// need to get response header about encoding before setting stream
+			setCompressionRequestHeader();
+			setInputStream(getDecompressedStream());
 			getResponseHeaderValues();
 			fireReceiveStartEvent();
 		} catch (final Exception e) {
@@ -251,7 +255,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
 	 */
 	protected void hardClose() {
@@ -266,7 +270,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doPause()
 	 */
 	protected boolean doPause() {
@@ -278,7 +282,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doResume()
 	 */
 	protected boolean doResume() {
@@ -289,7 +293,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
@@ -336,4 +340,60 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		}
 	}
 
+	//	private static final String APPLICATION_X_GZIP = "application/x-gzip"; //$NON-NLS-1$
+	//	private static final String CONTENT_TYPE = "Content-Type"; //$NON-NLS-1$
+	//	private static final String CONTENT_ENCODING = "Content-Encoding"; //$NON-NLS-1$
+	private static final String ACCEPT_ENCODING = "Accept-encoding"; //$NON-NLS-1$
+	private static final String CONTENT_ENCODING_GZIP = "gzip"; //$NON-NLS-1$
+	//	private static final String CONTENT_ENCODING_DEFLATE = "deflate"; //$NON-NLS-1$
+
+	private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP; //  + "," + CONTENT_ENCODING_DEFLATE;
+
+	private static class Compression {
+
+		private String type;
+
+		private Compression(String i) {
+			this.type = i;
+		}
+
+		static Compression NONE = new Compression("none"); //$NON-NLS-1$
+
+		static Compression GZIP = new Compression("gzip"); //$NON-NLS-1$
+
+		//		static Compression DEFLATE = new Compression("deflate"); //$NON-NLS-1$
+
+		public String toString() {
+			return type;
+		}
+	}
+
+	private void setCompressionRequestHeader() {
+		urlConnection.setRequestProperty(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
+	}
+
+	private Compression getCompressionResponseHeader() {
+		String encoding = urlConnection.getContentEncoding();
+
+		if (null == encoding) {
+			return Compression.NONE;
+		} else if (encoding.equalsIgnoreCase(CONTENT_ENCODING_GZIP)) {
+			return Compression.GZIP;
+			//		} else if (encoding.equalsIgnoreCase(CONTENT_ENCODING_DEFLATE)) {
+			//			return Compression.DEFLATE;
+		}
+		return Compression.NONE;
+	}
+
+	private InputStream getDecompressedStream() throws IOException {
+		InputStream input = urlConnection.getInputStream();
+		Compression type = getCompressionResponseHeader();
+
+		if (Compression.GZIP == type) {
+			return new java.util.zip.GZIPInputStream(input);
+			//		} else if (Compression.DEFLATE == type) {
+			//			return new java.util.zip.InflaterInputStream(input);
+		}
+		return input;
+	}
 }
