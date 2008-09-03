@@ -19,6 +19,7 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
@@ -29,12 +30,13 @@ import org.eclipse.ecf.internal.docshare.*;
 import org.eclipse.ecf.internal.provisional.docshare.cola.ColaSynchronizer;
 import org.eclipse.ecf.internal.provisional.docshare.cola.ColaUpdateMessage;
 import org.eclipse.ecf.internal.provisional.docshare.messages.*;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.*;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.texteditor.IDocumentProvider;
@@ -64,6 +66,41 @@ public class DocShare extends AbstractShare {
 	 * Text editor
 	 */
 	ITextEditor editor;
+
+	IRosterManager rosterManager;
+
+	IRosterListener rosterListener = new IRosterListener() {
+		public void handleRosterEntryAdd(IRosterEntry entry) {
+			// XXX nothing to do
+		}
+
+		public void handleRosterEntryRemove(IRosterEntry entry) {
+			// XXX nothing to do
+		}
+
+		public void handleRosterUpdate(IRoster roster, IRosterItem changedValue) {
+			if (changedValue instanceof IRosterEntry) {
+				ID changedID = ((IRosterEntry) changedValue).getUser().getID();
+				ID oID = null;
+				ID otherID = null;
+				Shell shell = null;
+				synchronized (stateLock) {
+					oID = getOurID();
+					otherID = getOtherID();
+					shell = editor.getSite().getShell();
+				}
+				if (oID != null && changedID.equals(oID)) {
+					localStopShare();
+					showStopShareMessage(shell, Messages.DocShare_STOP_SHARED_EDITOR_US);
+				} else if (otherID != null && changedID.equals(otherID)) {
+					localStopShare();
+					showStopShareMessage(shell, Messages.DocShare_STOP_SHARED_EDITOR_REMOTE);
+				}
+			}
+		}
+
+	};
+
 	/**
 	 * Content that we have received via start message, before user has
 	 * responded to question about whether or not to display in editor. Should
@@ -198,7 +235,7 @@ public class DocShare extends AbstractShare {
 	 * @param fileName the file name of the file to be shared (with suffix type extension).  Must not be <code>null</code>.
 	 * @param editorPart the text editor currently showing the contents of this editor.  Must not be <code>null</code>.
 	 */
-	public void startShare(final ID our, final String fromName, final ID toID, final String fileName, final ITextEditor editorPart) {
+	public void startShare(final IRosterManager rm, final ID our, final String fromName, final ID toID, final String fileName, final ITextEditor editorPart) {
 		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, DocShare.class, "startShare", new Object[] {our, fromName, toID, fileName, editorPart}); //$NON-NLS-1$
 		Assert.isNotNull(our);
 		final String fName = (fromName == null) ? our.getName() : fromName;
@@ -213,7 +250,7 @@ public class DocShare extends AbstractShare {
 					// send start message
 					send(toID, new StartMessage(our, fName, toID, content, fileName));
 					// Set local sharing start (to setup doc listener)
-					localStartShare(our, our, toID, editorPart);
+					localStartShare(rm, our, our, toID, editorPart);
 				} catch (final Exception e) {
 					logError(Messages.DocShare_ERROR_STARTING_EDITOR_TITLE, e);
 					showErrorToUser(Messages.DocShare_ERROR_STARTING_EDITOR_TITLE, NLS.bind(Messages.DocShare_ERROR_STARTING_EDITOR_MESSAGE, e.getLocalizedMessage()));
@@ -268,7 +305,7 @@ public class DocShare extends AbstractShare {
 	/**
 	 * This method called by the {@link #handleMessage(ID, byte[])} method if
 	 * the type of the message received is a start message (sent by remote party
-	 * via {@link #startShare(ID, String, ID, String, ITextEditor)}.
+	 * via {@link #startShare(IRosterManager, ID, String, ID, String, ITextEditor)}.
 	 * 
 	 * @param message
 	 *            the UpdateMessage received.
@@ -307,7 +344,7 @@ public class DocShare extends AbstractShare {
 						// Then open up text editor
 						final ITextEditor ep = (ITextEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(dsei, getEditorIdForFileName(filename));
 						// Then change our local state
-						localStartShare(our, senderID, our, ep);
+						localStartShare(getLocalRosterManager(), our, senderID, our, ep);
 					} else {
 						// Send stop message to initiator
 						sendStopMessage();
@@ -320,6 +357,17 @@ public class DocShare extends AbstractShare {
 				}
 			}
 		});
+	}
+
+	IRosterManager getLocalRosterManager() {
+		IContainer container = (IContainer) this.adapter.getAdapter(IContainer.class);
+		if (container != null) {
+			IPresenceContainerAdapter presenceContainerAdapter = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
+			if (presenceContainerAdapter != null) {
+				return presenceContainerAdapter.getRosterManager();
+			}
+		}
+		return null;
 	}
 
 	void modifyStartContent(int offset, int length, String text) {
@@ -415,8 +463,32 @@ public class DocShare extends AbstractShare {
 	}
 
 	protected void handleDisconnectEvent(IChannelDisconnectEvent cde) {
-		super.handleDisconnectEvent(cde);
+		boolean weDisconnected = (ourID != null && ourID.equals(cde.getTargetID()));
+		Shell shell = null;
+		if (isSharing()) {
+			shell = editor.getSite().getShell();
+		}
+		// Stop things and *then* notify user
 		localStopShare();
+		if (shell != null) {
+			if (weDisconnected)
+				showStopShareMessage(shell, Messages.DocShare_STOP_SHARED_EDITOR_US);
+			else
+				showStopShareMessage(shell, Messages.DocShare_STOP_SHARED_EDITOR_REMOTE);
+		}
+	}
+
+	/**
+	 * @param shell must not be <code>null</code>
+	 * @param message message content for message dialog
+	 */
+	void showStopShareMessage(final Shell shell, final String message) {
+		Display display = shell.getDisplay();
+		display.asyncExec(new Runnable() {
+			public void run() {
+				MessageDialog.openInformation(shell, Messages.DocShare_STOP_SHARED_EDITOR_TITLE, message);
+			}
+		});
 	}
 
 	IFileStore getTempFileStore(String fromUsername, String fileName, String content) throws IOException, CoreException {
@@ -489,9 +561,13 @@ public class DocShare extends AbstractShare {
 		}
 	}
 
-	void localStartShare(ID our, ID initiator, ID receiver, ITextEditor edt) {
+	void localStartShare(final IRosterManager rm, ID our, ID initiator, ID receiver, ITextEditor edt) {
 		synchronized (stateLock) {
 			localStopShare();
+			this.rosterManager = rm;
+			if (this.rosterManager != null) {
+				this.rosterManager.addRosterListener(rosterListener);
+			}
 			this.ourID = our;
 			this.initiatorID = initiator;
 			this.receiverID = receiver;
@@ -509,6 +585,9 @@ public class DocShare extends AbstractShare {
 
 	void localStopShare() {
 		synchronized (stateLock) {
+			if (rosterManager != null)
+				rosterManager.removeRosterListener(rosterListener);
+			this.rosterManager = null;
 			this.ourID = null;
 			this.initiatorID = null;
 			this.receiverID = null;

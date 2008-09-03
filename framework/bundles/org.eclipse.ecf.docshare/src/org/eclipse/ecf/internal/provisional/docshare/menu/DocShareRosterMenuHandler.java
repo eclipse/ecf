@@ -11,23 +11,19 @@
 
 package org.eclipse.ecf.internal.provisional.docshare.menu;
 
-import org.eclipse.ecf.internal.provisional.docshare.DocShare;
-
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.Messages;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.internal.provisional.docshare.DocShare;
+import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.ui.*;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
@@ -67,26 +63,35 @@ public class DocShareRosterMenuHandler extends AbstractRosterMenuHandler {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+	private void showErrorMessage(String errorMessage) {
+		ErrorDialog.openError(null, Messages.DocShareRosterMenuHandler_DOCSHARE_START_ERROR_TITLE, errorMessage, new Status(IStatus.ERROR, Activator.PLUGIN_ID, errorMessage, null));
+	}
+
+	/**
+	 * @throws ExecutionException  
 	 */
 	public Object execute(ExecutionEvent arg0) throws ExecutionException {
-		final IContainer container = (IContainer) getRosterEntry().getRoster().getPresenceContainerAdapter().getAdapter(IContainer.class);
-		if (container.getConnectedID() == null)
-			throw new ExecutionException(Messages.DocShareRosterMenuHandler_ERROR_NOT_CONNECTED);
-		final DocShare sender = Activator.getDefault().getDocShare(container.getID());
-		if (sender == null)
-			throw new ExecutionException(Messages.DocShareRosterMenuHandler_ERROR_NO_SENDER);
-		if (sender.isSharing())
-			throw new ExecutionException(Messages.DocShareRosterMenuHandler_ERROR_EDITOR_ALREADY_SHARING);
-		final ITextEditor textEditor = getTextEditor();
-		if (textEditor == null)
-			throw new ExecutionException(Messages.DocShareRosterMenuHandler_EXCEPTION_EDITOR_NOT_TEXT);
-		final String fileName = getFileName(textEditor);
-		if (fileName == null)
-			throw new ExecutionException(Messages.DocShareRosterMenuHandler_NO_FILENAME_WITH_CONTENT);
-		final IUser user = getRosterEntry().getRoster().getUser();
-		sender.startShare(user.getID(), user.getName(), getRosterEntry().getUser().getID(), fileName, textEditor);
+		IRosterEntry rosterEntry = getRosterEntry();
+		if (rosterEntry != null) {
+			IRoster roster = rosterEntry.getRoster();
+			IRosterManager rosterManager = roster.getPresenceContainerAdapter().getRosterManager();
+			final IContainer container = (IContainer) roster.getPresenceContainerAdapter().getAdapter(IContainer.class);
+			if (container.getConnectedID() == null)
+				showErrorMessage(Messages.DocShareRosterMenuHandler_ERROR_NOT_CONNECTED);
+			final DocShare sender = Activator.getDefault().getDocShare(container.getID());
+			if (sender == null)
+				showErrorMessage(Messages.DocShareRosterMenuHandler_ERROR_NO_SENDER);
+			if (sender.isSharing())
+				showErrorMessage(Messages.DocShareRosterMenuHandler_ERROR_EDITOR_ALREADY_SHARING);
+			final ITextEditor textEditor = getTextEditor();
+			if (textEditor == null)
+				showErrorMessage(Messages.DocShareRosterMenuHandler_EXCEPTION_EDITOR_NOT_TEXT);
+			final String fileName = getFileName(textEditor);
+			if (fileName == null)
+				showErrorMessage(Messages.DocShareRosterMenuHandler_NO_FILENAME_WITH_CONTENT);
+			final IUser user = roster.getUser();
+			sender.startShare(rosterManager, user.getID(), user.getName(), rosterEntry.getUser().getID(), fileName, textEditor);
+		}
 		return null;
 	}
 }
