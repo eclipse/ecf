@@ -12,6 +12,8 @@
 
 package org.eclipse.ecf.internal.provisional.docshare;
 
+import org.eclipse.ecf.internal.docshare.Messages;
+
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
@@ -67,6 +69,32 @@ public class DocShare extends AbstractShare {
 	 */
 	ITextEditor editor;
 
+	IPartListener partListener = new IPartListener() {
+
+		public void partActivated(IWorkbenchPart part) {
+			// nothing to do
+		}
+
+		public void partBroughtToTop(IWorkbenchPart part) {
+			// nothing to do
+		}
+
+		public void partClosed(IWorkbenchPart part) {
+			if (editor != null && part.equals(editor.getSite().getPart())) {
+				stopShare();
+			}
+		}
+
+		public void partDeactivated(IWorkbenchPart part) {
+			// nothing to do
+		}
+
+		public void partOpened(IWorkbenchPart part) {
+			// nothing to do
+		}
+
+	};
+
 	IRosterManager rosterManager;
 
 	IRosterListener rosterListener = new IRosterListener() {
@@ -87,7 +115,8 @@ public class DocShare extends AbstractShare {
 				synchronized (stateLock) {
 					oID = getOurID();
 					otherID = getOtherID();
-					shell = editor.getSite().getShell();
+					IWorkbenchPartSite wps = editor.getSite();
+					shell = wps.getShell();
 				}
 				if (oID != null && changedID.equals(oID)) {
 					localStopShare();
@@ -436,7 +465,9 @@ public class DocShare extends AbstractShare {
 	 */
 	protected void handleStopMessage(StopMessage message) {
 		if (isSharing()) {
+			Shell s = editor.getSite().getShell();
 			localStopShare();
+			showStopShareMessage(s, Messages.DocShare_REMOTE_USER_STOPPED);
 		}
 	}
 
@@ -572,6 +603,7 @@ public class DocShare extends AbstractShare {
 			this.initiatorID = initiator;
 			this.receiverID = receiver;
 			this.editor = edt;
+			this.editor.getSite().getPage().addPartListener(partListener);
 			final IDocument doc = getDocumentFromEditor();
 			if (doc != null)
 				doc.addDocumentListener(documentListener);
@@ -595,6 +627,9 @@ public class DocShare extends AbstractShare {
 			final IDocument doc = getDocumentFromEditor();
 			if (doc != null)
 				doc.removeDocumentListener(documentListener);
+			if (editor != null) {
+				editor.getSite().getPage().removePartListener(partListener);
+			}
 			this.editor = null;
 		}
 		// clean up if necessary
