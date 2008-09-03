@@ -235,7 +235,7 @@ public class DocShare extends AbstractShare {
 	 * @param fileName the file name of the file to be shared (with suffix type extension).  Must not be <code>null</code>.
 	 * @param editorPart the text editor currently showing the contents of this editor.  Must not be <code>null</code>.
 	 */
-	public void startShare(final IRosterManager rm, final ID our, final String fromName, final ID toID, final String fileName, final ITextEditor editorPart) {
+	public void startShare(final ID our, final String fromName, final ID toID, final String fileName, final ITextEditor editorPart) {
 		Trace.entering(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, DocShare.class, "startShare", new Object[] {our, fromName, toID, fileName, editorPart}); //$NON-NLS-1$
 		Assert.isNotNull(our);
 		final String fName = (fromName == null) ? our.getName() : fromName;
@@ -250,7 +250,7 @@ public class DocShare extends AbstractShare {
 					// send start message
 					send(toID, new StartMessage(our, fName, toID, content, fileName));
 					// Set local sharing start (to setup doc listener)
-					localStartShare(rm, our, our, toID, editorPart);
+					localStartShare(getLocalRosterManager(), our, our, toID, editorPart);
 				} catch (final Exception e) {
 					logError(Messages.DocShare_ERROR_STARTING_EDITOR_TITLE, e);
 					showErrorToUser(Messages.DocShare_ERROR_STARTING_EDITOR_TITLE, NLS.bind(Messages.DocShare_ERROR_STARTING_EDITOR_MESSAGE, e.getLocalizedMessage()));
@@ -305,7 +305,7 @@ public class DocShare extends AbstractShare {
 	/**
 	 * This method called by the {@link #handleMessage(ID, byte[])} method if
 	 * the type of the message received is a start message (sent by remote party
-	 * via {@link #startShare(IRosterManager, ID, String, ID, String, ITextEditor)}.
+	 * via {@link #startShare(ID, String, ID, String, ITextEditor)}.
 	 * 
 	 * @param message
 	 *            the UpdateMessage received.

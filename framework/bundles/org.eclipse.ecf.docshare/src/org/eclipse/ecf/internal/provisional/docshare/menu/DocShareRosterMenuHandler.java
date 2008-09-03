@@ -20,7 +20,8 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.Messages;
 import org.eclipse.ecf.internal.provisional.docshare.DocShare;
-import org.eclipse.ecf.presence.roster.*;
+import org.eclipse.ecf.presence.roster.IRoster;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.ui.*;
@@ -74,7 +75,6 @@ public class DocShareRosterMenuHandler extends AbstractRosterMenuHandler {
 		IRosterEntry rosterEntry = getRosterEntry();
 		if (rosterEntry != null) {
 			IRoster roster = rosterEntry.getRoster();
-			IRosterManager rosterManager = roster.getPresenceContainerAdapter().getRosterManager();
 			final IContainer container = (IContainer) roster.getPresenceContainerAdapter().getAdapter(IContainer.class);
 			if (container.getConnectedID() == null)
 				showErrorMessage(Messages.DocShareRosterMenuHandler_ERROR_NOT_CONNECTED);
@@ -90,7 +90,7 @@ public class DocShareRosterMenuHandler extends AbstractRosterMenuHandler {
 			if (fileName == null)
 				showErrorMessage(Messages.DocShareRosterMenuHandler_NO_FILENAME_WITH_CONTENT);
 			final IUser user = roster.getUser();
-			sender.startShare(rosterManager, user.getID(), user.getName(), rosterEntry.getUser().getID(), fileName, textEditor);
+			sender.startShare(user.getID(), user.getName(), rosterEntry.getUser().getID(), fileName, textEditor);
 		}
 		return null;
 	}
