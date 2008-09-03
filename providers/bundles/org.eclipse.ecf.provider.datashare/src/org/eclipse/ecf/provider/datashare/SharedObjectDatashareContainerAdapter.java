@@ -13,6 +13,8 @@ package org.eclipse.ecf.provider.datashare;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
@@ -20,6 +22,7 @@ import org.eclipse.ecf.core.sharedobject.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.datashare.*;
 import org.eclipse.ecf.datashare.events.*;
+import org.eclipse.ecf.internal.provider.datashare.Activator;
 import org.eclipse.ecf.internal.provider.datashare.Messages;
 import org.eclipse.osgi.util.NLS;
 
@@ -197,4 +200,14 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject impl
 		channelContainerListeners.add(listener);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.BaseSharedObject#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter != null && adapter.isAssignableFrom(IContainer.class)) {
+			IContainerManager containerManager = Activator.getDefault().getContainerManager();
+			return containerManager.getContainer(getContext().getLocalContainerID());
+		}
+		return super.getAdapter(adapter);
+	}
 }

@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.provider.datashare;
 
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.PlatformHelper;
 import org.osgi.framework.BundleActivator;
@@ -35,6 +36,8 @@ public class Activator implements BundleActivator {
 	private ServiceTracker logServiceTracker = null;
 
 	private ServiceTracker adapterManagerTracker = null;
+
+	private ServiceTracker containerManagerTracker = null;
 
 	/**
 	 * The constructor.
@@ -77,6 +80,10 @@ public class Activator implements BundleActivator {
 			adapterManagerTracker.close();
 			adapterManagerTracker = null;
 		}
+		if (containerManagerTracker != null) {
+			containerManagerTracker.close();
+			containerManagerTracker = null;
+		}
 		this.context = null;
 		plugin = null;
 	}
@@ -105,6 +112,17 @@ public class Activator implements BundleActivator {
 		if (adapterManager == null)
 			adapterManager = PlatformHelper.getPlatformAdapterManager();
 		return adapterManager;
+	}
+
+	/**
+	 * @return IContainerManager instance
+	 */
+	public IContainerManager getContainerManager() {
+		if (containerManagerTracker == null) {
+			containerManagerTracker = new ServiceTracker(this.context, IContainerManager.class.getName(), null);
+			containerManagerTracker.open();
+		}
+		return (IContainerManager) containerManagerTracker.getService();
 	}
 
 }
