@@ -16,20 +16,20 @@ import java.net.URISyntaxException;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.internal.provider.xmpp.Messages;
-import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
+import org.eclipse.ecf.presence.IFQID;
 import org.eclipse.ecf.presence.im.IChatID;
 
-public class XMPPID extends BaseID implements IChatID {
+public class XMPPID extends BaseID implements IChatID, IFQID {
 
 	private static final long serialVersionUID = 3257289140701049140L;
 	public static final char USER_HOST_DELIMITER = '@';
 	public static final char PORT_DELIMITER = ':';
-	public static final char PATH_DELIMITER = '/';
+	public static final String PATH_DELIMITER = "/";
 
 	URI uri;
 	String username;
 	String hostname;
-	String resourcename = ECFConnection.CLIENT_TYPE;
+	String resourcename;
 	int port = -1;
 
 	protected static String fixEscape(String src) {
@@ -69,7 +69,7 @@ public class XMPPID extends BaseID implements IChatID {
 				hostname = remainder.substring(0, atIndex);
 			resourcename = PATH_DELIMITER + remainder.substring(atIndex + 1);
 		} else {
-			resourcename = PATH_DELIMITER + ECFConnection.CLIENT_TYPE;
+			resourcename = PATH_DELIMITER + "";
 		}
 		if (hostname == null)
 			hostname = remainder;
@@ -115,16 +115,20 @@ public class XMPPID extends BaseID implements IChatID {
 		return resourcename;
 	}
 
+	public void setResourceName(String resourceName) {
+		this.resourcename = resourceName;
+	}
+
 	public int getPort() {
 		return port;
 	}
 
 	public String getUsernameAtHost() {
-		return getUsername() + USER_HOST_DELIMITER + getHostname();
+		return getUsername() + USER_HOST_DELIMITER + getHostname() + ((getPort() == -1) ? "" : ":" + getPort());
 	}
 
 	public String getFQName() {
-		return getUsernameAtHost() + ((getPort() == -1) ? "" : ":" + getPort()) + getResourceName();
+		return getUsernameAtHost() + getResourceName();
 	}
 
 	public String toString() {

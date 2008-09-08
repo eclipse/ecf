@@ -47,8 +47,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 	 * 
 	 */
 	private static final String GOOGLE_TALK_HOST = "talk.google.com";
-	public static final String CLIENT_TYPE = "ECF_XMPP";
-	public static final boolean DEBUG = Boolean.getBoolean(System.getProperty("smack.debug", "false"));
+	public static final String CLIENT_TYPE = "ecf.";
+	public static final boolean DEBUG = Boolean.getBoolean("smack.debug");
 
 	protected static final String STRING_ENCODING = "UTF-8";
 	public static final String OBJECT_PROPERTY_NAME = ECFConnection.class.getName() + ".object";
@@ -60,6 +60,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 	private boolean isStarted = false;
 	private String serverName;
 	private int serverPort = -1;
+	private String serverResource;
 	private final Map properties = null;
 	private boolean isConnected = false;
 	private Namespace namespace = null;
@@ -115,6 +116,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 		this.namespace = ns;
 		this.google = google;
 		this.secure = secure;
+		if (DEBUG)
+			XMPPConnection.DEBUG_ENABLED = true;
 	}
 
 	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h) {
@@ -152,6 +155,11 @@ public class ECFConnection implements ISynchAsynchConnection {
 		final String username = jabberURI.getUsername();
 		serverName = jabberURI.getHostname();
 		serverPort = jabberURI.getPort();
+		serverResource = jabberURI.getResourceName();
+		if (serverResource == null || serverResource.equals(XMPPID.PATH_DELIMITER)) {
+			serverResource = getClientIdentifier();
+			jabberURI.setResourceName(serverResource);
+		}
 		try {
 			if (google) {
 				if (secure) {
@@ -181,7 +189,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 			connection.addPacketListener(packetListener, null);
 			connection.addConnectionListener(connectionListener);
 			// Login
-			connection.login(username, (String) data, CLIENT_TYPE);
+			connection.login(username, (String) data, serverResource);
 			isConnected = true;
 		} catch (final XMPPException e) {
 			if (e.getMessage().equals("(401)"))
@@ -189,6 +197,10 @@ public class ECFConnection implements ISynchAsynchConnection {
 			throw new ContainerConnectException(e.getLocalizedMessage(), e);
 		}
 		return null;
+	}
+
+	private String getClientIdentifier() {
+		return CLIENT_TYPE + handler.getEventHandlerID().getName();
 	}
 
 	public void sendPacket(Packet packet) throws XMPPException {
