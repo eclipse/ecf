@@ -25,7 +25,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
-	protected static final String HTTPS_RETRIEVE = "https://www.verisign.com/";
+	protected static final String HTTPS_RETRIEVE = "https://www.verisign.com";
 	private static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
 
 	// See bug 237936
