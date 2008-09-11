@@ -369,11 +369,15 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected IRosterEntry createRosterEntry(RosterEntry entry) {
-		return createRosterEntry(createIDFromName(entry.getUser()), entry.getName(), entry.getGroups());
+		final XMPPID xmppid = createIDFromName(entry.getUser());
+		final String name = (entry.getName() == null) ? xmppid.getUsername() : entry.getName();
+		return createRosterEntry(xmppid, name, entry.getGroups());
 	}
 
 	protected IRosterEntry createRosterEntry(RosterPacket.Item entry) {
-		return createRosterEntry(createIDFromName(entry.getUser()), entry.getName(), entry.getGroupNames());
+		final XMPPID xmppid = createIDFromName(entry.getUser());
+		final String name = (entry.getName() == null) ? xmppid.getUsername() : entry.getName();
+		return createRosterEntry(xmppid, name, entry.getGroupNames());
 	}
 
 	protected void handleIQEvent(IQEvent evt) {
@@ -545,7 +549,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	protected XMPPID createIDFromName(String uname) {
 		try {
-			if (uname.indexOf('@') == -1) {
+			if (uname.lastIndexOf('@') == -1) {
 				return new XMPPID(container.getConnectNamespace(), "admin" + "@" + uname);
 			}
 			return new XMPPID(container.getConnectNamespace(), uname);
@@ -785,7 +789,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected IRosterItem[] createRosterEntries(RosterEntry entry) {
-		return createRosterEntries(entry.getGroups(), roster, new User(createIDFromName(entry.getUser()), entry.getName()));
+		final XMPPID xmppid = createIDFromName(entry.getUser());
+		final String name = entry.getName();
+		final User newUser = (name == null) ? new User(xmppid, xmppid.getUsername()) : new User(xmppid, name);
+		return createRosterEntries(entry.getGroups(), roster, newUser);
 	}
 
 	private IRosterItem[] createRosterEntries(Iterator grps, IRosterItem parent, IUser user) {

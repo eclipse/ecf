@@ -152,7 +152,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		Roster.setDefaultSubscriptionMode(Roster.SUBSCRIPTION_MANUAL);
 
 		final XMPPID jabberURI = getXMPPID(remote);
-		final String username = jabberURI.getUsername();
+		final String username = jabberURI.getNodename();
 		serverName = jabberURI.getHostname();
 		serverPort = jabberURI.getPort();
 		serverResource = jabberURI.getResourceName();

@@ -12,6 +12,8 @@ package org.eclipse.ecf.provider.xmpp.identity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -26,28 +28,83 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	public static final char PORT_DELIMITER = ':';
 	public static final String PATH_DELIMITER = "/";
 
+	static class XMPPEscape {
+		StringBuffer buf = new StringBuffer();
+
+		public XMPPEscape(char[] chars) {
+			if (chars != null) {
+				for (int i = 0; i < chars.length; i++) {
+					buf.append(chars[i]);
+				}
+			}
+		}
+
+		public CharSequence getAsCharSequence() {
+			return buf;
+		}
+
+	}
+
+	protected static Hashtable escapeTable;
+
+	static {
+		escapeTable = new Hashtable(10);
+		escapeTable.put("@", new XMPPEscape(new char[] {'\\', '4', '0'}));
+		escapeTable.put("\"", new XMPPEscape(new char[] {'\\', '2', '2'}));
+		escapeTable.put("&", new XMPPEscape(new char[] {'\\', '2', '6'}));
+		escapeTable.put("'", new XMPPEscape(new char[] {'\\', '2', '7'}));
+		escapeTable.put("/", new XMPPEscape(new char[] {'\\', '2', 'f'}));
+		escapeTable.put(":", new XMPPEscape(new char[] {'\\', '3', 'a'}));
+		escapeTable.put("<", new XMPPEscape(new char[] {'\\', '3', 'c'}));
+		escapeTable.put(">", new XMPPEscape(new char[] {'\\', '3', 'e'}));
+		escapeTable.put("\\", new XMPPEscape(new char[] {'\\', '5', 'c'}));
+	}
+
+	// implements JEP-0106 JID escaping: http://www.xmpp.org/extensions/xep-0106.html
+	static String fixEscapeInNode(String node) {
+		if (node == null)
+			return null;
+		for (final Iterator i = escapeTable.keySet().iterator(); i.hasNext();) {
+			final String key = (String) i.next();
+			final XMPPEscape escape = (XMPPEscape) escapeTable.get(key);
+			node = node.replace(new StringBuffer(key), escape.getAsCharSequence());
+		}
+		return node;
+	}
+
+	static String fixPercentEscape(String src) {
+		if (src == null)
+			return null;
+		return src.replaceAll("%", "%25");
+	}
+
+	static String unfixEscapeInNode(String node) {
+		if (node == null)
+			return null;
+		for (final Iterator i = escapeTable.keySet().iterator(); i.hasNext();) {
+			final String key = (String) i.next();
+			final XMPPEscape escape = (XMPPEscape) escapeTable.get(key);
+			node = node.replace(escape.getAsCharSequence(), new StringBuffer(key));
+		}
+		return node;
+	}
+
 	URI uri;
 	String username;
 	String hostname;
 	String resourcename;
 	int port = -1;
 
-	protected static String fixEscape(String src) {
-		if (src == null)
-			return null;
-		return src.replaceAll("%", "%25"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
 	public XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
 		super(namespace);
-		unamehost = fixEscape(unamehost);
+		unamehost = fixPercentEscape(unamehost);
 		if (unamehost == null)
 			throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_XMPPID_USERNAME_NOT_NULL);
 		// Handle parsing of user@host/resource string
 		int atIndex = unamehost.lastIndexOf(USER_HOST_DELIMITER);
 		if (atIndex == -1)
 			throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_HOST_PORT_NOT_VALID);
-		username = unamehost.substring(0, atIndex);
+		username = fixEscapeInNode(unamehost.substring(0, atIndex));
 		final String remainder = unamehost.substring(atIndex + 1);
 		// Handle parsing of host:port
 		atIndex = remainder.lastIndexOf(PORT_DELIMITER);
@@ -96,6 +153,10 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		return getUsernameAtHost().hashCode();
 	}
 
+	public String getNodename() {
+		return username;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceToExternalForm()
 	 */
@@ -104,7 +165,7 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	}
 
 	public String getUsername() {
-		return username;
+		return unfixEscapeInNode(username);
 	}
 
 	public String getHostname() {
@@ -133,7 +194,7 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 
 	public String toString() {
 		final StringBuffer sb = new StringBuffer("XMPPID["); //$NON-NLS-1$
-		sb.append(uri.toString()).append("]"); //$NON-NLS-1$
+		sb.append(uri.toString()).append("]");
 		return sb.toString();
 	}
 
