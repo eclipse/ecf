@@ -13,6 +13,11 @@
             containerFactoryName="ecf.xmpps.smack"
             id="org.eclipse.ecf.provider.ui.xmpp.xmppsConnect"
             name="XMPPS"/>
+      <wizard
+            class="org.eclipse.ecf.internal.provider.xmpp.ui.wizards.EclipseXMPPSConnectWizard"
+            containerFactoryName="ecf.xmpps.smack"
+            id="org.eclipse.ecf.provider.ui.xmpp.eclipseXmppsConnect"
+            name="Eclipse IM"/>
    </extension>
 
    <extension
@@ -30,6 +35,15 @@
             class="org.eclipse.ecf.internal.provider.xmpp.ui.wizards.XMPPSConnectWizard"
             id="org.eclipse.ecf.provider.ui.xmpp.xmppsConnect"
             name="XMPPS"
+            icon="icons/new_connection.gif"
+            category="org.eclipse.ecf.ui.newConnection.category"
+            finalPerspective="org.eclipse.ecf.ui.perspective.communications">
+          <description>%XMPPSConnectWizardPage.description</description>
+      </wizard>
+      <wizard
+            class="org.eclipse.ecf.internal.provider.xmpp.ui.wizards.EclipseXMPPSConnectWizard"
+            id="org.eclipse.ecf.provider.ui.xmpp.eclipseXmppsConnect"
+            name="Eclipse IM"
             icon="icons/new_connection.gif"
             category="org.eclipse.ecf.ui.newConnection.category"
             finalPerspective="org.eclipse.ecf.ui.perspective.communications">
