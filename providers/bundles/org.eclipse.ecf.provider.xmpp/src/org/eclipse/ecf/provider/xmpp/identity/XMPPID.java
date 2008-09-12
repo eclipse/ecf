@@ -78,7 +78,7 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		return src.replaceAll("%", "%25");
 	}
 
-	static String unfixEscapeInNode(String node) {
+	public static String unfixEscapeInNode(String node) {
 		if (node == null)
 			return null;
 		for (final Iterator i = escapeTable.keySet().iterator(); i.hasNext();) {

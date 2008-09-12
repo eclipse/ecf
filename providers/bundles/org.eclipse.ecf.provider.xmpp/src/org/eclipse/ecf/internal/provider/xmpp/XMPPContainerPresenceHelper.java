@@ -370,13 +370,13 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	protected IRosterEntry createRosterEntry(RosterEntry entry) {
 		final XMPPID xmppid = createIDFromName(entry.getUser());
-		final String name = (entry.getName() == null) ? xmppid.getUsername() : entry.getName();
+		final String name = (entry.getName() == null) ? xmppid.getUsername() : XMPPID.unfixEscapeInNode(entry.getName());
 		return createRosterEntry(xmppid, name, entry.getGroups());
 	}
 
 	protected IRosterEntry createRosterEntry(RosterPacket.Item entry) {
 		final XMPPID xmppid = createIDFromName(entry.getUser());
-		final String name = (entry.getName() == null) ? xmppid.getUsername() : entry.getName();
+		final String name = (entry.getName() == null) ? xmppid.getUsername() : XMPPID.unfixEscapeInNode(entry.getName());
 		return createRosterEntry(xmppid, name, entry.getGroupNames());
 	}
 
@@ -791,7 +791,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	protected IRosterItem[] createRosterEntries(RosterEntry entry) {
 		final XMPPID xmppid = createIDFromName(entry.getUser());
 		final String name = entry.getName();
-		final User newUser = (name == null) ? new User(xmppid, xmppid.getUsername()) : new User(xmppid, name);
+		final User newUser = (name == null) ? new User(xmppid, xmppid.getUsername()) : new User(xmppid, XMPPID.unfixEscapeInNode(name));
 		return createRosterEntries(entry.getGroups(), roster, newUser);
 	}
 
@@ -884,6 +884,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		String name = entry.getName();
 		if (name == null)
 			name = id.getUsername();
+		name = XMPPID.unfixEscapeInNode(name);
 		return createRosterEntries(entry.getGroupNames(), roster, new User(id, name));
 	}
 
