@@ -13,7 +13,6 @@ package org.eclipse.ecf.internal.provider.filetransfer.httpclient.ssl;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -25,52 +24,32 @@ import org.apache.commons.httpclient.ProxyClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
+import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.ISSLSocketFactoryModifier;
-import org.osgi.framework.BundleContext;
-import org.osgi.util.tracker.ServiceTracker;
 
 /**
  *
  */
 public class SSLSocketFactoryModifier implements ISSLSocketFactoryModifier, ProtocolSocketFactory {
 
-	private BundleContext context;
-	private ServiceTracker sslSocketFactoryTracker;
 	private Proxy proxy;
 
-	public void init(BundleContext context) {
-		this.context = context;
-	}
-
-	private SSLSocketFactory getSSLSocketFactory() {
-		if (context == null)
-			return null;
-		if (sslSocketFactoryTracker == null) {
-			sslSocketFactoryTracker = new ServiceTracker(this.context, SSLSocketFactory.class.getName(), null);
-			sslSocketFactoryTracker.open();
-		}
-		return (SSLSocketFactory) sslSocketFactoryTracker.getService();
-	}
-
 	public void dispose() {
-		if (sslSocketFactoryTracker != null) {
-			sslSocketFactoryTracker.close();
-			sslSocketFactoryTracker = null;
-		}
-		this.context = null;
 		this.proxy = null;
+		Protocol.unregisterProtocol("https"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
 	 * @see org.apache.commons.httpclient.protocol.ProtocolSocketFactory#createSocket(java.lang.String, int)
 	 */
 	public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-		final SSLSocketFactory factory = getSSLSocketFactory();
+		final SSLSocketFactory factory = Activator.getDefault().getSSLSocketFactory();
 		if (factory == null)
-			throw new IOException("Cannot get socket factory");
+			throw new IOException("Cannot get socket factory"); //$NON-NLS-1$
 		return factory.createSocket(host, port);
 	}
 
@@ -78,16 +57,16 @@ public class SSLSocketFactoryModifier implements ISSLSocketFactoryModifier, Prot
 	 * @see org.apache.commons.httpclient.protocol.ProtocolSocketFactory#createSocket(java.lang.String, int, java.net.InetAddress, int)
 	 */
 	public Socket createSocket(String host, int port, InetAddress localAddress, int localPort) throws IOException, UnknownHostException {
-		final SSLSocketFactory factory = getSSLSocketFactory();
+		final SSLSocketFactory factory = Activator.getDefault().getSSLSocketFactory();
 		if (factory == null)
-			throw new IOException("Cannot get socket factory");
+			throw new IOException("Cannot get socket factory"); //$NON-NLS-1$
 		return factory.createSocket(host, port, localAddress, localPort);
 	}
 
 	public Socket createSocket(String remoteHost, int remotePort, InetAddress clientHost, int clientPort, HttpConnectionParams params) throws IOException, UnknownHostException, ConnectTimeoutException {
-		final SSLSocketFactory factory = getSSLSocketFactory();
+		final SSLSocketFactory factory = Activator.getDefault().getSSLSocketFactory();
 		if (factory == null)
-			throw new IOException("Cannot get socket factory");
+			throw new IOException("Cannot get socket factory"); //$NON-NLS-1$
 		if (params == null || params.getConnectionTimeout() == 0)
 			return factory.createSocket(remoteHost, remotePort, clientHost, clientPort);
 
@@ -113,9 +92,10 @@ public class SSLSocketFactoryModifier implements ISSLSocketFactoryModifier, Prot
 			}
 		}
 		// Direct connection
-		final Socket socket = factory.createSocket();
-		socket.bind(new InetSocketAddress(clientHost, clientPort));
-		socket.connect(new InetSocketAddress(remoteHost, remotePort), params.getConnectionTimeout());
+		//		final Socket socket = factory.createSocket();
+		final Socket socket = factory.createSocket(remoteHost, remotePort, clientHost, clientPort);
+		// in httpclient, it seems like they will set the time out for you
+		//		socket.connect(new InetSocketAddress(remoteHost, remotePort), params.getConnectionTimeout());
 		return socket;
 	}
 
