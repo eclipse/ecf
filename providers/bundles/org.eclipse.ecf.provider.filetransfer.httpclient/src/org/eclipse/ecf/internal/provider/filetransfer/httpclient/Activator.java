@@ -10,7 +10,9 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient;
 
+import javax.net.ssl.SSLSocketFactory;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -31,6 +33,10 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker logServiceTracker = null;
 
+	private ServiceTracker sslSocketFactoryTracker;
+
+	private ISSLSocketFactoryModifier sslSocketFactoryModifier;
+
 	/**
 	 * The constructor
 	 */
@@ -38,12 +44,43 @@ public class Activator implements BundleActivator {
 		//
 	}
 
+	public BundleContext getContext() {
+		return context;
+	}
+
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
+		// initialize the default sslSocketFactoryModifier.  This instance is then used within HttpClientRetrieveFileTransfer.setupHostAndPort
+		// to set the socket factory for the specific proxy and httpclient instance
+		try {
+			Class socketFactoryModifierClass = Class.forName("org.eclipse.ecf.internal.provider.filetransfer.httpclient.ssl.SSLSocketFactoryModifier"); //$NON-NLS-1$
+			sslSocketFactoryModifier = (ISSLSocketFactoryModifier) socketFactoryModifierClass.newInstance();
+		} catch (ClassNotFoundException e) {
+			// will occur if fragment is not installed or not on proper execution environment
+		} catch (Throwable t) {
+			log(new Status(IStatus.ERROR, PLUGIN_ID, "Unexpected Error in Activator.start", t)); //$NON-NLS-1$
+		}
+
+	}
+
+	public ISSLSocketFactoryModifier getSSLSocketFactoryModifier() {
+		return sslSocketFactoryModifier;
 	}
 
 	public void stop(BundleContext ctxt) throws Exception {
+		if (sslSocketFactoryModifier != null) {
+			sslSocketFactoryModifier.dispose();
+			sslSocketFactoryModifier = null;
+		}
+
+		if (sslSocketFactoryTracker != null) {
+			sslSocketFactoryTracker.close();
+		}
+
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+		}
 		this.context = null;
 		plugin = null;
 	}
@@ -75,4 +112,11 @@ public class Activator implements BundleActivator {
 		}
 	}
 
+	public SSLSocketFactory getSSLSocketFactory() {
+		if (sslSocketFactoryTracker == null) {
+			sslSocketFactoryTracker = new ServiceTracker(this.context, SSLSocketFactory.class.getName(), null);
+			sslSocketFactoryTracker.open();
+		}
+		return (SSLSocketFactory) sslSocketFactoryTracker.getService();
+	}
 }

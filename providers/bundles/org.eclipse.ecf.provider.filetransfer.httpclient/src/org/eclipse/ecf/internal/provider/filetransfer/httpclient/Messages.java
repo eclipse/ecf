@@ -33,7 +33,6 @@ public class Messages extends NLS {
 	public static String HttpClientRetrieveFileTransfer_Unauthorized;
 	public static String HttpClientRetrieveFileTransfer_Username_Prefix;
 	public static String FileTransferID_Exception_Url_Not_Null;
-	public static String SslProtocolSocketFactory_SSLContext_Instance;
 	public static String SslProtocolSocketFactory_Status_Create_Error;
 	public static String HttpClientRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO;
 	public static String HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE;

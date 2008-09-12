@@ -17,6 +17,7 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
@@ -25,8 +26,7 @@ import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Activator;
-import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient.*;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
 import org.eclipse.ecf.provider.filetransfer.retrieve.HttpHelper;
@@ -50,7 +50,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		private static final String CONTENT_ENCODING_GZIP = "gzip"; //$NON-NLS-1$
 		//		private static final String CONTENT_ENCODING_DEFLATE = "deflate"; //$NON-NLS-1$
 
-		private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP; //  + "," + CONTENT_ENCODING_DEFLATE; //; //$NON-NLS-1$
+		private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP; //  + "," + CONTENT_ENCODING_DEFLATE; //;
 
 		private boolean gzipReceived = false;
 
@@ -200,8 +200,17 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected void setupHostAndPort(String urlString) {
 		if (urlUsesHttps(urlString)) {
-			final Protocol acceptAllSsl = new Protocol(HTTPS, new SslProtocolSocketFactory(proxy), getPortFromURL(urlString));
-			httpClient.getHostConfiguration().setHost(getHostFromURL(urlString), getPortFromURL(urlString), acceptAllSsl);
+			ISSLSocketFactoryModifier sslSocketFactoryModifier = Activator.getDefault().getSSLSocketFactoryModifier();
+			Protocol sslProtocol = null;
+			ProtocolSocketFactory psf = null;
+			if (sslSocketFactoryModifier != null) {
+				psf = sslSocketFactoryModifier.getProtocolSocketFactoryForProxy(proxy);
+			} else {
+				psf = new HttpClientSslProtocolSocketFactory(proxy);
+			}
+			sslProtocol = new Protocol(HTTPS, psf, getPortFromURL(urlString));
+			Protocol.registerProtocol(HTTPS, sslProtocol);
+			httpClient.getHostConfiguration().setHost(getHostFromURL(urlString), getPortFromURL(urlString), sslProtocol);
 		} else {
 			httpClient.getHostConfiguration().setHost(getHostFromURL(urlString), getPortFromURL(urlString));
 		}
