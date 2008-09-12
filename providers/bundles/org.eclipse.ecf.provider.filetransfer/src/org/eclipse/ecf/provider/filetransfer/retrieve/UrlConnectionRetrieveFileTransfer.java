@@ -100,6 +100,11 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 				throw new InvalidFileRangeSpecificationException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START, rangeSpec);
 			setRangeHeader("bytes=" + startPosition + "-" + ((endPosition == -1L) ? "" : ("" + endPosition))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
+		// Add http 1.1 'Connection: close' header in order to potentially avoid
+		// server issue described here https://bugs.eclipse.org/bugs/show_bug.cgi?id=234916#c13
+		// See bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=247197
+		// also see http 1.1 rfc section 14-10 in http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+		urlConnection.setRequestProperty("Connection", "close"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	private void setRangeHeader(String value) {

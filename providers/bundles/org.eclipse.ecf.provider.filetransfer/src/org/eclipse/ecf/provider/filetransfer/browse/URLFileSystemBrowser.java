@@ -32,6 +32,14 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	private static final String USERNAME_PREFIX = Messages.UrlConnectionRetrieveFileTransfer_USERNAME_PROMPT;
 
+	private static final String JRE_CONNECT_TIMEOUT_PROPERTY = "sun.net.client.defaultConnectTimeout"; //$NON-NLS-1$
+
+	private static final String DEFAULT_CONNECT_TIMEOUT = "30000"; //$NON-NLS-1$
+
+	private static final String JRE_READ_TIMEOUT_PROPERTY = "sun.net.client.defaultReadTimeout"; //$NON-NLS-1$
+
+	private static final String DEFAULT_READ_TIMEOUT = "30000"; //$NON-NLS-1$
+
 	URL directoryOrFile;
 
 	IConnectContext connectContext;
@@ -55,18 +63,36 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 		proxyHelper = new JREProxyHelper();
 	}
 
+	private void setupTimeouts() {
+		String existingTimeout = System.getProperty(JRE_CONNECT_TIMEOUT_PROPERTY);
+		if (existingTimeout == null) {
+			System.setProperty(JRE_CONNECT_TIMEOUT_PROPERTY, DEFAULT_CONNECT_TIMEOUT);
+		}
+		existingTimeout = System.getProperty(JRE_READ_TIMEOUT_PROPERTY);
+		if (existingTimeout == null) {
+			System.setProperty(JRE_READ_TIMEOUT_PROPERTY, DEFAULT_READ_TIMEOUT);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser#runRequest()
 	 */
 	protected void runRequest() throws Exception {
 		setupProxies();
 		setupAuthentication();
+		setupTimeouts();
 		URLConnection urlConnection = directoryOrFile.openConnection();
 		// set cache to off if using jar protocol
 		// this is for addressing bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=235933
 		if (directoryOrFile.getProtocol().equalsIgnoreCase("jar")) { //$NON-NLS-1$
 			urlConnection.setUseCaches(false);
 		}
+		// Add http 1.1 'Connection: close' header in order to potentially avoid
+		// server issue described here https://bugs.eclipse.org/bugs/show_bug.cgi?id=234916#c13
+		// See bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=247197
+		// also see http 1.1 rfc section 14-10 in http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+		urlConnection.setRequestProperty("Connection", "close"); //$NON-NLS-1$ //$NON-NLS-2$
+
 		IURLConnectionModifier connectionModifier = Activator.getDefault().getURLConnectionModifier();
 		if (connectionModifier != null) {
 			connectionModifier.setSocketFactoryForConnection(urlConnection);
