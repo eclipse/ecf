@@ -17,20 +17,41 @@ import javax.net.ssl.*;
 
 public class ECFSSLSocketFactory extends SSLSocketFactory {
 
+	public static final String DEFAULT_SSL_PROTOCOL = "https.protocols"; //$NON-NLS-1$
+
 	private SSLContext sslContext = null;
+
+	private String defaultProtocolNames = System.getProperty(DEFAULT_SSL_PROTOCOL);
 
 	private SSLSocketFactory getSSLSocketFactory() throws IOException {
 		if (null == sslContext) {
 			try {
-				sslContext = SSLContext.getInstance("SSL"); //$NON-NLS-1$
-				sslContext.init(null, new TrustManager[] {new ECFTrustManager()}, new SecureRandom());
+				sslContext = getSSLContext(defaultProtocolNames);
 			} catch (Exception e) {
 				IOException ioe = new IOException();
 				ioe.initCause(e);
 				throw ioe;
 			}
 		}
-		return sslContext.getSocketFactory();
+		return (sslContext == null) ? (SSLSocketFactory) SSLSocketFactory.getDefault() : sslContext.getSocketFactory();
+	}
+
+	public SSLContext getSSLContext(String protocols) {
+		SSLContext rtvContext = null;
+
+		if (protocols != null) {
+			String protocolNames[] = protocols.split(","); //$NON-NLS-1$
+			for (int i = 0; i < protocolNames.length; i++) {
+				try {
+					rtvContext = SSLContext.getInstance(protocolNames[i]);
+					rtvContext.init(null, new TrustManager[] {new ECFTrustManager()}, new SecureRandom());
+					break;
+				} catch (Exception e) {
+					// just continue to look for SSLContexts with the next protocolName
+				}
+			}
+		}
+		return rtvContext;
 	}
 
 	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
