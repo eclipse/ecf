@@ -176,14 +176,26 @@ public interface IRetrieveFileTransferContainerAdapter extends IAdaptable {
 	/**
 	 * Set proxy for use upon subsequent
 	 * {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}. This
-	 * method should be called with a non-null proxy to allow the given proxy to
+	 * method should be called with proxy to allow the given proxy to
 	 * be used in subsequent calls to
 	 * {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
+	 * <p>
+	 * When proxy is <code>null</code> or has not been called providers must use
+	 * the <code>org.eclipse.core.net</code> proxy API to obtain proxy information 
+	 * and proxy credentials if they support proxies of the type(s) supported by
+	 * that API. The API is provided by an OSGi service of type
+	 * <code>org.eclipse.core.net.proxy.IProxyService</code>.
+	 * </p><p>
+	 * If no information is available via <code>IProxyService</code> 
+	 * providers may use other defaults. 
+	 * </p>
 	 * 
 	 * @param proxy
 	 *            the proxy to use for subsequent calls to
 	 *            {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
-	 *            If <code>null</code>, then no proxy will be used.
+	 *            If <code>null</code>, then proxy information is obtained from
+	 *            <code>IProxyService</code> if available. Otherwise provider
+	 *            defined defaults may be used. 
 	 */
 	public void setProxy(Proxy proxy);
 }
