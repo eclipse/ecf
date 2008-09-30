@@ -9,9 +9,10 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.io.Serializable;
+import java.security.*;
 import java.util.*;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -33,6 +34,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected final Map localServiceRegistrations = new HashMap();
 
+	protected Map addRegistrationRequests = new Hashtable();
+
 	public RegistrySharedObject() {
 		//
 	}
@@ -46,6 +49,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		remoteRegistrys.clear();
 		serviceListeners.clear();
 		localServiceRegistrations.clear();
+		addRegistrationRequests.clear();
 	}
 
 	/* Begin implementation of IRemoteServiceContainerAdapter public interface */
@@ -85,6 +89,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {idFilter, clazz, filter}); //$NON-NLS-1$
+		if (clazz == null)
+			return null;
 		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
 		final List references = new ArrayList();
 		synchronized (remoteRegistrys) {
@@ -107,11 +113,51 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		synchronized (localRegistry) {
 			addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
 		}
-		if (references.size() == 0)
-			return null;
+		if (references.size() == 0) {
+			// It's not already here...so send out AddRegistrationRequests
+			if (idFilter == null)
+				return null;
+			AddRegistrationRequest first = null;
+			List ourAddRegistrationRequests = new ArrayList();
+			for (int i = 0; i < idFilter.length; i++) {
+				ID target = idFilter[i];
+				if (target != null) {
+					AddRegistrationRequest request = new AddRegistrationRequest(clazz, filter, first);
+					if (i == 0)
+						first = request;
+					// Add to list of all know
+					ourAddRegistrationRequests.add(request);
+					addRegistrationRequests.put(request.getId(), request);
+					sendAddRegistrationRequest(target, request, getAddRegistrationRequestCredentials(request));
+				}
+			}
+			if (first != null) {
+				// Wait here for timeout or response
+				first.waitForResponse(ADD_REGISTRATION_REQUEST_TIMEOUT);
+				// Now...if we got a response, and there was no exception then we look again
+				if (first.isDone()) {
+					for (int i = 0; i < idFilter.length; i++) {
+						final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(idFilter[i]);
+						if (registry != null) {
+							addReferencesFromRegistry(clazz, remoteFilter, registry, references);
+						}
+					}
+				}
+				// In either case, remove all the addRegistrationRequests
+				for (Iterator i = ourAddRegistrationRequests.iterator(); i.hasNext();) {
+					AddRegistrationRequest request = (AddRegistrationRequest) i.next();
+					addRegistrationRequests.remove(request.getId());
+				}
+			}
+
+		}
 		final IRemoteServiceReference[] result = (IRemoteServiceReference[]) references.toArray(new IRemoteServiceReference[references.size()]);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
-		return result;
+		return (result.length == 0) ? null : result;
+	}
+
+	protected Serializable getAddRegistrationRequestCredentials(AddRegistrationRequest request) {
+		return null;
 	}
 
 	protected ID[] getTargetsFromProperties(Dictionary properties) {
@@ -480,7 +526,21 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static final int ADD_REGISTRATION_ERROR_CODE = 212;
 
+	private static final String ADD_REGISTRATION_REFUSED = "handleAddRegistrationRefused"; //$NON-NLS-1$
+
+	private static final String ADD_REGISTRATION_REFUSED_ERROR_MESSAGE = "Error sending addRegistration refused"; //$NON-NLS-1$
+
+	private static final int ADD_REGISTRATION_REFUSED_ERROR_CODE = 214;
+
+	private static final String REQUEST_SERVICE = "handleRequestService"; //$NON-NLS-1$
+
+	private static final int REQUEST_SERVICE_ERROR_CODE = 213;
+
+	private static final String REQUEST_SERVICE_ERROR_MESSAGE = "Error sending requestServiceReference"; //$NON-NLS-1$
+
 	private static final String REGISTRY_UPDATE_REQUEST = "handleRegistryUpdateRequest"; //$NON-NLS-1$
+
+	private static final int ADD_REGISTRATION_REQUEST_TIMEOUT = 10000;
 
 	protected void sendRegistryUpdateRequest() {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendRegistryUpdateRequest"); //$NON-NLS-1$
@@ -501,17 +561,97 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), REGISTRY_UPDATE_REQUEST);
 	}
 
-	protected void sendAddRegistration(ID receiver, RemoteServiceRegistrationImpl reg) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendAddRegistration", new Object[] {receiver, reg}); //$NON-NLS-1$
+	protected AddRegistrationRequest sendAddRegistrationRequest(ID receiver, AddRegistrationRequest request, Serializable credentials) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendRequestService", new Object[] {receiver, request, credentials}); //$NON-NLS-1$
+		Assert.isNotNull(receiver);
+		Assert.isNotNull(request);
 		try {
-			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null, ADD_REGISTRATION, getLocalContainerID(), reg));
+			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null, REQUEST_SERVICE, new Object[] {getLocalContainerID(), request, request.getId(), credentials}));
+		} catch (final IOException e) {
+			log(REQUEST_SERVICE_ERROR_CODE, REQUEST_SERVICE_ERROR_MESSAGE, e);
+		}
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendRequestService"); //$NON-NLS-1$
+		return request;
+	}
+
+	protected void checkRequestServiceAuthorization(ID remoteContainerID, AddRegistrationRequest request, Serializable credentials) throws AccessControlException {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "checkRequestServiceAuthorization", new Object[] {remoteContainerID, request, credentials}); //$NON-NLS-1$
+		return;
+	}
+
+	protected void handleRequestService(ID remoteContainerID, AddRegistrationRequest request, Integer requestId, Serializable credentials) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleRequestServiceReference", new Object[] {remoteContainerID, request, requestId, credentials}); //$NON-NLS-1$
+		if (remoteContainerID == null || requestId == null)
+			return;
+		if (request == null || request.getService() == null)
+			return;
+		IRemoteFilter rf = null;
+		try {
+			rf = (request.getFilter() == null) ? null : new RemoteFilterImpl(request.getFilter());
+		} catch (InvalidSyntaxException e) {
+			// log and set rf to null and ignore
+			log("handleRequestService invalid syntax exception for filter", e); //$NON-NLS-1$
+			rf = null;
+		}
+		try {
+			checkRequestServiceAuthorization(remoteContainerID, request, credentials);
+		} catch (AccessControlException e) {
+			// Log and return...i.e. do nothing
+			log("handleRequestService. checkRequestServiceAuthorization exception", e); //$NON-NLS-1$
+			sendAddRegistrationRequestRefused(remoteContainerID, requestId, e);
+			return;
+		}
+		synchronized (localRegistry) {
+			RemoteServiceReferenceImpl[] srs = (RemoteServiceReferenceImpl[]) localRegistry.lookupServiceReferences(request.getService(), rf);
+			if (srs != null && srs.length > 0) {
+				for (int i = 0; i < srs.length; i++) {
+					RemoteServiceRegistrationImpl impl = getRemoteServiceRegistrationImpl(srs[i]);
+					if (impl != null) {
+						sendAddRegistration(remoteContainerID, requestId, impl);
+					}
+				}
+			} else
+				sendAddRegistrationRequestRefused(remoteContainerID, requestId, null);
+		}
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleRequestService"); //$NON-NLS-1$
+	}
+
+	protected void sendAddRegistration(ID receiver, RemoteServiceRegistrationImpl reg) {
+		sendAddRegistration(receiver, null, reg);
+	}
+
+	protected void sendAddRegistration(ID receiver, Integer requestId, RemoteServiceRegistrationImpl reg) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendAddRegistration", new Object[] {receiver, requestId, reg}); //$NON-NLS-1$
+		try {
+			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null, ADD_REGISTRATION, getLocalContainerID(), requestId, reg));
 		} catch (final IOException e) {
 			log(ADD_REGISTRATION_ERROR_CODE, ADD_REGISTRATION_ERROR_MESSAGE, e);
 		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendAddRegistration"); //$NON-NLS-1$
 	}
 
+	protected void sendAddRegistrationRequestRefused(ID receiver, Integer requestId, Exception except) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendAddRegistrationRequestRefused", new Object[] {receiver, except}); //$NON-NLS-1$
+		try {
+			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null, ADD_REGISTRATION_REFUSED, getLocalContainerID(), requestId, except));
+		} catch (final IOException e) {
+			log(ADD_REGISTRATION_REFUSED_ERROR_CODE, ADD_REGISTRATION_REFUSED_ERROR_MESSAGE, e);
+		}
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendAddRegistrationRequestRefused"); //$NON-NLS-1$
+	}
+
+	protected void handleAddRegistrationRequestRefused(ID remoteContainerID, Integer requestId, AccessControlException e) {
+		if (remoteContainerID == null || requestId == null)
+			return;
+		// else lookup AddRegistrationRequest and notify
+		notifyAddRegistrationResponse(requestId, e);
+	}
+
 	protected void handleAddRegistration(ID remoteContainerID, final RemoteServiceRegistrationImpl registration) {
+		handleAddRegistration(remoteContainerID, null, registration);
+	}
+
+	protected void handleAddRegistration(ID remoteContainerID, Integer requestId, final RemoteServiceRegistrationImpl registration) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), ADD_REGISTRATION, new Object[] {remoteContainerID, registration});
 		if (remoteContainerID == null || getLocalContainerID().equals(remoteContainerID)) {
 			return;
@@ -529,8 +669,21 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			localRegisterService(registration);
 			// notify IRemoteServiceListeners synchronously
 			fireRemoteServiceListeners(createRegisteredEvent(registration));
+			notifyAddRegistrationResponse(requestId, null);
 		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), ADD_REGISTRATION);
+	}
+
+	/**
+	 * @param requestId
+	 */
+	private void notifyAddRegistrationResponse(Integer requestId, AccessControlException exception) {
+		if (requestId == null)
+			return;
+		AddRegistrationRequest request = (AddRegistrationRequest) addRegistrationRequests.remove(requestId);
+		if (request != null) {
+			request.notifyResponse(exception);
+		}
 	}
 
 	private void localRegisterService(RemoteServiceRegistrationImpl registration) {
@@ -838,5 +991,4 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 		return false;
 	}
-
 }
