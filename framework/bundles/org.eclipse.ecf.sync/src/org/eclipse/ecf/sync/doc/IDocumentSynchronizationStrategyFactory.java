@@ -29,11 +29,11 @@ public interface IDocumentSynchronizationStrategyFactory {
 	 * shared editing, or the receiver.
 	 * @return IDocumentSynchronizationStrategy for the given uniqueID.
 	 */
-	public IDocumentSynchronizationStrategy getSyncronizationStrategy(ID uniqueID, boolean isInitiator);
+	public IDocumentSynchronizationStrategy createDocumentSynchronizationStrategy(ID uniqueID, boolean isInitiator);
 
 	/**
 	 * Clean up the synchronization strategy caching for a given uniqueID. Should not be <code>null</code>.
 	 * @param uniqueID the ID of the 
 	 */
-	public void disposeSynchronizationStragety(ID uniqueID);
+	public void disposeSynchronizationStrategy(ID uniqueID);
 }

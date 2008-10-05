@@ -25,13 +25,13 @@ public class IdentitySynchronizationStrategyFactory implements IDocumentSynchron
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategyFactory#disposeSynchronizationStragety(org.eclipse.ecf.core.identity.ID)
 	 */
-	public void disposeSynchronizationStragety(ID uniqueID) {
+	public void disposeSynchronizationStrategy(ID uniqueID) {
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategyFactory#getSyncronizationStrategy(org.eclipse.ecf.core.identity.ID, boolean)
 	 */
-	public IDocumentSynchronizationStrategy getSyncronizationStrategy(ID uniqueID, boolean isInitiator) {
+	public IDocumentSynchronizationStrategy createDocumentSynchronizationStrategy(ID uniqueID, boolean isInitiator) {
 		return new IdentitySynchronizationStrategy();
 	}
 
