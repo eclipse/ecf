@@ -20,7 +20,7 @@ package org.eclipse.ecf.sync.doc;
  * should call {@link #registerLocalChange(IDocumentChange)} when local
  * changes occur, and then serialize returned {@link IDocumentChangeMessage}s and
  * deliver the change message to remotes.  When remote change messages are received,
- * they should first be deserized via {@link #deserializeToDocumentChange(byte[])}, and then
+ * they should first be deserized via {@link #deserializeRemoteChange(byte[])}, and then
  * passed to {@link #transformRemoteChange(IDocumentChange)} to transform
  * the change so that when the returned IDocumentChanges are applied to the local
  * document its state will be consistent with other client(s).
@@ -54,5 +54,5 @@ public interface IDocumentSynchronizationStrategy {
 	 * @return IDocumentChange instance from bytes.  Will not be <code>null</code>.
 	 * @throws SerializationException thrown if some problem deserializing given bytes.
 	 */
-	public IDocumentChange deserializeToDocumentChange(byte[] bytes) throws SerializationException;
+	public IDocumentChange deserializeRemoteChange(byte[] bytes) throws SerializationException;
 }

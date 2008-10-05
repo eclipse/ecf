@@ -203,7 +203,7 @@ public class ColaSynchronizationStrategy implements IDocumentSynchronizationStra
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#toDocumentChangeMessage(byte[])
 	 */
-	public IDocumentChange deserializeToDocumentChange(byte[] bytes) throws SerializationException {
+	public IDocumentChange deserializeRemoteChange(byte[] bytes) throws SerializationException {
 		return DocumentChangeMessage.deserialize(bytes);
 	}
 

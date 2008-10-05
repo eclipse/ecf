@@ -25,7 +25,7 @@ public class IdentitySynchronizationStrategy implements IDocumentSynchronization
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#deserializeToDocumentChange(byte[])
 	 */
-	public IDocumentChange deserializeToDocumentChange(byte[] bytes) throws SerializationException {
+	public IDocumentChange deserializeRemoteChange(byte[] bytes) throws SerializationException {
 		return DocumentChangeMessage.deserialize(bytes);
 	}
 
