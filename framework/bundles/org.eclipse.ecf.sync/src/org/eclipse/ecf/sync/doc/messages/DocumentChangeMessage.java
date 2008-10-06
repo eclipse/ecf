@@ -91,16 +91,16 @@ public class DocumentChangeMessage implements IDocumentChange, IDocumentChangeMe
 		return buf.toString();
 	}
 
-	private byte[] serialize() throws IOException {
+	private byte[] serializeLocal() throws IOException {
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		final ObjectOutputStream oos = new ObjectOutputStream(bos);
 		oos.writeObject(this);
 		return bos.toByteArray();
 	}
 
-	public byte[] toByteArray() throws SerializationException {
+	public byte[] serialize() throws SerializationException {
 		try {
-			return serialize();
+			return serializeLocal();
 		} catch (final IOException e) {
 			throw new SerializationException("Exception serializing DocumentChangeMessage", e);
 		}

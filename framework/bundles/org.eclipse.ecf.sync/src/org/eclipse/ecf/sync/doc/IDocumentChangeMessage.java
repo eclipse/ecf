@@ -18,6 +18,6 @@ package org.eclipse.ecf.sync.doc;
  */
 public interface IDocumentChangeMessage {
 
-	public byte[] toByteArray() throws SerializationException;
+	public byte[] serialize() throws SerializationException;
 
 }
