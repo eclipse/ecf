@@ -63,7 +63,7 @@ public class Activator implements BundleActivator {
 		if (refs == null) return null;
 		IDocumentSynchronizationStrategyFactory result = null;
 		for(int i =0; i < refs.length; i++) {
-			String prop = (String) refs[i].getProperty(IServiceConstants.SYNCSTRATEGY_TYPE_PROPERTY);
+			String prop = (String) refs[i].getProperty(IServiceConstants.SYNCSTRATEGY_PROVIDER_PROPETY);
 			if (prop != null && prop.equals(serviceProvider)) {
 				result = (IDocumentSynchronizationStrategyFactory) serviceTracker.getService(refs[i]);
 			}
