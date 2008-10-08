@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  	<properties>
+    	<title>jSLP - Java SLP (Service Location Protocol) Implementation. Modularity in jSLP > 0.6</title>
+	    <author email="rellermeyer_AT_inf.ethz.ch">Jan S. Rellermeyer</author>
+  	</properties>
+
+	<meta name="keyword" content="Java, SLP, slp, Service Location Protocol, jSLP, jslp, Userguide, User Guide, OpenSLP, Modularity, SA, UA"/>
+	<meta name="description" content="jSLP is a pure Java implementation of RFC 2608 (SLP, Service Location Protocol, Version 2) with a RFC 2614 style API. It can be both SLP UserAgent (UA) and ServiceAgent (SA). jSLP-OSGi integrates SLP with OSGi (Open Service Gateway Initiative). Modularity in jSLP 0.6:"/>
+	<meta http-equiv="cache-control" content="no-cache"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	<meta http-equiv="robots" content="index, follow"/>
+	
+<body>
+
+	<section name="jSLP Modularity">
+		<p>
+		jSLP can be used to build custom configurations for SLP peers. It is possible to use UA or SA functionalities only and leave out some classes to reduce the file footprint. 
+		</p>
+	</section>
+
+	<section name="SA only configurations">
+		<p>
+		If the configuration has to support SA functionalities only, the <code>ch.ethz.iks.slp.impl.LocatorImpl</code> class is not required. Since the core has only dynamic dependencies to this class, 
+		it can be omitted without any further modifications. Calls of <code>ch.ethz.iks.slp.ServiceLocationManager.getLocator</code> will throw a ServiceLocationException of type
+		<code>ServiceLocationException.NOT_IMPLEMENTED</code>. Depending on the setup, the <code>ch.ethz.iks.slp.impl.SLPDaemonImpl</code> class is also not required, see section below.
+		</p>
+	</section>
+
+	<section name="UA only configurations">
+		<p>
+		Configurations that only serve as a SLP client can omit the <code>ch.ethz.iks.slp.impl.AdvertiserImpl</code> class and the <code>ch.ethz.iks.slp.impl.SLPDaemon</code> class without further 
+		implications. Calls of <code>ch.ethz.iks.slp.ServiceLocationManager.getAdvertiser</code> will throw a ServiceLocationException of type
+		<code>ServiceLocationException.NOT_IMPLEMENTED</code>.
+		</p>
+	</section>
+
+	<section name="Configurations without the SLPDaemon">
+		<p>
+		jSLP is able to run on different VMs on the same machine. Every separated instance of jSLP checks, if a SLP daemon is running on port 427 on the machine. If this is 
+		the case, no new instance of SLPDaemon is created. Therefore, if it can be assured that another process has already started a deamon, the class <code>ch.ethz.iks.slp.impl.SLPDaemonImpl</code>
+		does not have to be provided by subsequent instances on different VMs. The same applies for the situation where a OpenSLP slpd is running on the machine. <br/>
+		The daemon is required for SA functionalities only. It contains a service registry for the case where no DA of the designated scope is available within the network and 
+		answers requests that arrive by multicast. It should thus be assured that the instance running the daemon does not terminate prior to other existing SA-enabled instances running on different VMs. 
+		</p>
+	</section>
+
+</body>
+</document>

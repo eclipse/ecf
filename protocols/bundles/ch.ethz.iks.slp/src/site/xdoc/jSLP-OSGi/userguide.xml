@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  	<properties>
+    	<title>jSLP-OSGi - Java SLP (Service Location Protocol) Implementation for OSGi. Getting started with jSLP-OSGi</title>
+    	<author email="rellermeyer_AT_inf.ethz.ch">Jan S. Rellermeyer</author>
+  	</properties>
+  
+	<meta name="keyword" content="Java, SLP, jSLP, Service Location Protocol, OSGi, Userguide"/>
+	<meta name="description" content="jSLP is a pure Java implementation of RFC 2608 (SLP, Service Location Protocol, Version 2) with a RFC 2614 style API. It can be both SLP UserAgent (UA) and ServiceAgent (SA). jSLP-OSGi integrates SLP with OSGi (Open Service Gateway Initiative)."/>
+	<meta http-equiv="cache-control" content="no-cache"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	<meta http-equiv="robots" content="index, follow"/>
+	
+<body>
+
+	<section name="Getting started with jSLP-OSGi">
+	<p>
+		jSLP OSGi registers <code>ch.ethz.iks.slp.ServiceLocationManager</code> as <code>ServiceFactory</code>. 
+		The registered services are <code>ch.ethz.iks.slp.Advertiser</code> and <code>ch.ethz.iks.slp.Locator</code> 
+		and every bundle requesting one of the services will get their own instance. Since requests for 
+		<code>ServiceReferences</code> cannot pass parameters to the <code>ServiceFactory</code>, 
+		the <code>Advertiser</code> and <code>Locator</code> instances will be created with the empty default 
+		<code>Locale</code> and both classes have a setter method <code>.setLocale(Locale locale)</code> to change 
+		the locale at runtime (this differs from the jSLP standalone version).  
+	</p>
+	<p>
+	The following example shows how to get <code>Advertiser</code> and <code>Locator</code> instances and use them:
+<source>
+public class SLPTestBundle implements BundleActivator {
+	
+    public void start(BundleContext context) throws Exception {
+
+        ServiceReference advRef = context.getServiceReference("ch.ethz.iks.slp.Advertiser");
+        ServiceReference locRef = context.getServiceReference("ch.ethz.iks.slp.Locator");
+
+        if (advRef != null) {
+            System.out.println("Got reference for Advertiser");
+            Advertiser advertiser = (Advertiser) context.getService(advRef);
+
+            advertiser.register(new ServiceURL("service:osgi:test://192.168.24.118", 20), null);
+        }
+
+        if (locRef != null) {
+            System.out.println("Got reference for Locator");
+            Locator locator = (Locator) context.getService(locRef);
+
+            ServiceLocationEnumeration slenum = locator.findServices(new ServiceType("service:osgi"), null, null);
+            System.out.println("RESULT:");
+            while (slenum.hasMoreElements()) {
+                System.out.println(slenum.nextElement());
+            }
+        }
+    }
+
+
+    public void stop(BundleContext context) throws Exception {
+
+    }
+
+}
+</source>
+	</p>
+	<p>
+		jSLP OSGi does not require <code>org.osgi.service.log</code> to run but if a bundle is present that provides this service, 
+		jSLP OSGi makes use of it. If the service is not present, trace options passed by properties have no effect. jSLP-OSGi has 
+		been successfully tested with <a href="http://flowsgi.inf.ethz.ch/concierge.html">Concierge OSGi</a>, 
+		<a href="http://www.knopflerfish.org">Knopflerfish</a>, <a href="http://oscar.objectweb.org">Oscar</a> and 
+		<a href="http://www.eclipse.org/equinox/">Eclipse Equinox</a>.
+	</p>
+	<p>
+		For developing Eclipse Plugins, it is recommended to checkout the jSLP-OSGi project from the 
+		<a href="source-repository.html">subversion repository</a>. This project is already an Eclipse Plugin and 
+		can be used as dependency for your own project. Unfortunately, Eclipse does not show the exception that is thrown 
+		when jSLP runs on a linux box as non-root user and it tries to open port 427. Instead, it will print a plain 
+		<code>ExceptionInInitializer</code>. The result is a general unavailability of the requested Locator or Advertiser instance.
+	</p>
+	<p>
+		Furthermore, Eclipse uses a resolving and starting strategy which is different from traditional OSGi. jSLP has 
+		<code>Eclipse-LazyStart</code> set so it is started whenever a class from the bundle is accessed. This somewhat collides
+		with the OSGi service model where bundles are completely decoupled. So in the above example, jSLP as a Plugin is never 
+		started and no Advertiser or Locator instance can be retrieved. To prevent this, simple use 
+<source>
+        ServiceReference advRef = context.getServiceReference(Advertiser.class.getName());
+</source>
+		The call to the static field <code>class</code> will force the resolving of <code>ch.ethz.slp.Advertiser</code>, 
+		the Plugin will be started and thus the ServiceFactory registered with the OSGi registry. (The same indeed works 
+		for the Locator)
+	</p>
+	<p>
+		For debugging, jSLP-OSGi features the <code>ch.ethz.iks.slp.debug</code> property. If set to <code>true</code> 
+		and a LogService is present, jSLP-OSGi prints additional information about internal state changes which makes it 
+		easier to debug applications.  
+	</p>
+	</section>
+
+</body>
+</document>

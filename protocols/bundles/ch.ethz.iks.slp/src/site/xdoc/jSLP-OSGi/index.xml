@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <properties>
+    <title>jSLP-OSGi - Java SLP (Service Location Protocol) Implementation for OSGi. jSLP-OSGi Overview</title>
+    <author email="rellermeyer_AT_inf.ethz.ch">Jan S. Rellermeyer</author>
+  </properties>
+  
+	<meta name="keyword" content="Java, SLP, jSLP, Service Location Protocol, OSGi"/>
+	<meta name="description" content="jSLP is a pure Java implementation of RFC 2608 (SLP, Service Location Protocol, Version 2) with a RFC 2614 style API. It can be both SLP UserAgent (UA) and ServiceAgent (SA). jSLP-OSGi integrates SLP with OSGi (Open Service Gateway Initiative)."/>
+	<meta http-equiv="cache-control" content="no-cache"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	<meta http-equiv="robots" content="index, follow"/>
+
+<body>
+	<section name="jSLP-OSGi">
+	<p>
+		jSLP OSGi is designed to enable SLP service discovery on OSGi platforms. Bundles can get <code>Locator</code> and 
+		<code>Advertiser</code> instances to find other services in the Network. The OSGi version has a smaller footprint 
+		than the jSLP standalone version because it uses the framework <code>Filter</code> and instead of using commons-logging, 
+		it makes use of the OSGi <code>org.osgi.service.log</code> logger. The OSGi version of jSLP registers the 
+		<code>ServiceLocationManager</code> as a ServiceFactory for <code>ch.ethz.iks.slp.Advertiser</code> and 
+		<code>ch.ethz.iks.slp.Locator</code> services. <br/>
+		Since OSGi does not provide any general way to parametrize ServiceFactories, both <code>Locator</code> and 
+		<code>Advertiser</code> have an additional <code>void setLocale(Locale locale)</code> method to set the locale 
+		after having retrieved the service object. <br/>
+		For details, see the <a href="userguide.html">Getting Started</a>. 
+	</p>
+	</section>
+</body>
+</document>

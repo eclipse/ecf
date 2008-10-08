@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  	<properties>
+    	<title>jSLP - Java SLP (Service Location Protocol) Implementation. jSLP Properties</title>
+    	<author email="rellermeyer_AT_inf.ethz.ch">Jan S. Rellermeyer</author>
+  	</properties>
+	<meta name="keyword" content="Java, SLP, slp, Service Location Protocol, jSLP, jslp, Properties, OpenSLP, security, PEM, DER, private key, public key"/>
+	<meta name="description" content="jSLP is a pure Java implementation of RFC 2608 (SLP, Service Location Protocol, Version 2) with a RFC 2614 style API. It can be both SLP UserAgent (UA) and ServiceAgent (SA). jSLP-OSGi integrates SLP with OSGi (Open Service Gateway Initiative)."/>
+	<meta http-equiv="cache-control" content="no-cache"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	<meta http-equiv="robots" content="index, follow"/>
+	
+<body>
+	<section name="jSLP properties">
+	<p>
+	Currently, jSLP supports the following properties:
+	<table>
+	<tr>
+		<th>Attribute</th>
+		<th>Default</th>
+		<th>Comment</th>
+	</tr>
+	<tr>
+		<td><code>net.slp.interfaces</code></td>
+		<td><i>none</i></td>
+		<td>Comma separated list of IP addresses of the interfaces on which jSLP should listen for SLP messages. Currently, jSLP only listens to the first address. You might have to set this property on multi-homed machines and on linux if your JVM thinks your machine's IP is 127.0.0.1</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.port</code></td>
+		<td><i>none</i></td>
+		<td>number that denotes the (non-standard) port where jSLP is going to operate on. Note that this prevents interoperability with other SLP entities running on the standard port, if multicast convergence is used.</td>
+	</tr>	
+	<tr>
+		<td><code>net.slp.useScopes</code></td>
+		<td>default</td>
+		<td>predefined scopes for the SA</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.DAAddresses</code></td>
+		<td><i>none</i></td>
+		<td>predefined DA addresses</td>
+	</tr>
+		<tr>
+		<td><code>net.slp.noDADiscovery</code></td>
+		<td><i>false</i></td>
+		<td>perform no active or passive DA discovery. Only valid if <i>net.slp.DAAddresses</i> are defined.</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.waitTime</code></td>
+		<td>1000</td>
+		<td>wait time for initial DA discovery etc.</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.traceDATraffic</code></td>
+		<td>false</td>
+		<td>trace traffic to DA</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.traceMsg</code></td>
+		<td>false</td>
+		<td>trace messages</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.traceDrop</code></td>
+		<td>false</td>
+		<td>trace dropped messages</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.traceReg</code></td>
+		<td>false</td>
+		<td>trace registrations / deregistrations</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.multicastTTL</code></td>
+		<td>255</td>
+		<td>TTL for multicast messages. <i>Note: decreasing this value will lead to localized query results and peers at different locations in the network might get different results</i></td>
+	</tr>
+	<tr>
+		<td><code>net.slp.multicastMaximumWait</code></td>
+		<td>15000</td>
+		<td>total timeout for multicast convergence in mSec.</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.multicastTimeouts</code></td>
+		<td>500,750,1000,1500,2000,3000</td>
+		<td>timeouts for the rounds during multicast convergence. <i>Note that the number of timeouts affects the maximum total number of rounds for multicast convergence.</i></td>
+	</tr>
+	<tr>
+		<td><code>net.slp.datagramMaximumWait</code></td>
+		<td>5000</td>
+		<td>Number of mSecs until jSLP stops waiting for a reply to a UDP request message and timeframe for retransmissions of failed UDP messages.</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.datagramTimeouts</code></td>
+		<td>3000,3000,3000,3000,3000</td>
+		<td>timeouts for the retransmissions of failed UDP messages. <i>Note that the number of timeouts does NOT affect the maximum number of retransmissions. This number is limited by <code>net.slp.datagramMaximumWait</code></i>.</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.MTU</code></td>
+		<td>1400</td>
+		<td>maximum size of a UDP datagram in Bytes</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.securityEnabled</code></td>
+		<td>false</td>
+		<td>enable security</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.spi</code></td>
+		<td><i>none</i></td>
+		<td>a comma separated list of SPIs to use if security is enabled.</td>
+	</tr>
+	<tr>
+		<td><code>net.slp.privateKey.<i>SPI</i></code></td>
+		<td><i>none</i></td>
+		<td>the location of the private key in DER format for SPI <i>SPI</i></td>
+	</tr>
+	<tr>
+		<td><code>net.slp.publicKey.<i>SPI</i></code></td>
+		<td><i>none</i></td>
+		<td>the location of the public key in DER format for SPI <i>SPI</i></td>
+	</tr>
+	</table>
+	</p>
+	<p>
+	jSLP expects the properties to be either passed by system environment (that means as -D<i>property</i>=<i>value</i> parameter for the VM) or in a file called jslp.properties. Please note that for tracing messages etc., you also have to configure your logger to output trace messages. 
+	</p>
+	</section>
+</body>
+</document>

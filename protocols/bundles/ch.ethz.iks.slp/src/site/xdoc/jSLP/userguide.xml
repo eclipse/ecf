@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  	<properties>
+    	<title>jSLP - Java SLP (Service Location Protocol) Implementation. Getting started with jSLP</title>
+	    <author email="rellermeyer_AT_inf.ethz.ch">Jan S. Rellermeyer</author>
+  	</properties>
+
+	<meta name="keyword" content="Java, SLP, slp, Service Location Protocol, jSLP, jslp, Userguide, User Guide, OpenSLP, security, PEM, DER, private key, public key"/>
+	<meta name="description" content="jSLP is a pure Java implementation of RFC 2608 (SLP, Service Location Protocol, Version 2) with a RFC 2614 style API. It can be both SLP UserAgent (UA) and ServiceAgent (SA). jSLP-OSGi integrates SLP with OSGi (Open Service Gateway Initiative). Getting started with jSLP:"/>
+	<meta http-equiv="cache-control" content="no-cache"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	<meta http-equiv="robots" content="index, follow"/>
+	
+<body>
+
+	<section name="Getting started with jSLP">
+		<p>
+		First, download the current 1.0_RC1 release of jSLP and a current release of commons-logging. 
+		Similar to RFC 2614, jSLP separates the UA and SA functionalities into two different classes, 
+		location of services is provided by <code>ch.ethz.iks.slp.Locator</code>, registration of services 
+		by <code>ch.ethz.iks.slp.Advertiser</code>. The starting point of interacting with jSLP is to get 
+		an instance of one of the classes (or both) via the static methods of 
+		<code>ch.ethz.iks.slp.ServiceLocationManager</code>. 
+		</p>
+	</section>
+
+
+	<section name="Understanding, what's going on">
+		<p>
+			jSLP can either operate stand-alone (in peer-to-peer mode), or with a dedicated SLP Directory 
+			Agent in the network. In the first case, jSLP uses multicast convergence to query the local 
+			subnet for peers that offer requested services. In the latter case, the central Directory Agent 
+			maintains all registered services and answers requests.		
+		</p>
+		<p>
+			The SLP protocol is self-adaptive in the sense that whenever a Directory Agent is present 
+			(and matches the scope), it is exclusively used. Otherwise, multicast convergence is used. 
+			jSLP fully complies to this behavior.		
+		</p>
+		<p>
+			By default, the SLP protocol uses the standardized port 427 for communication. This, however, 
+			requires to run jSLP as <i>root</i> on Linux/Unix platforms. In some situations, where a closed 
+			world can be assumed and interoperability with other SLP peers is not relevant, it might be more 
+			convenient to run jSLP on a port > 1024 to allow it to run from an ordinary user account. This is 
+			possible from jSLP release 0.7.x by setting <i>net.slp.port</i> to a target port.
+		</p>
+		<p>
+			jSLP is designed to be accessible from multiple instances of Java running on the same machine. 
+			Be aware, that always the first instance started holds the Java part that corresponds to the Deaemon. 
+			If this instance is shut down, also the registrations are lost. To prevent this, use a DA in the 
+			network of make sure that this first instance runs continously. (In general, this is the behavior of slpd). 
+		</p>
+	</section>
+	<section name="Register a service">
+		<p>
+		The following example shows how to register a service with jSLP:
+
+<source>
+// get Advertiser instance
+Advertiser advertiser = ServiceLocationManager.getAdvertiser(new Locale("en"));
+
+// the service has lifetime 60, that means it will only persist for one minute
+ServiceURL myService = new ServiceURL("service:test:myService://my.host.ch", 60);
+
+// some attributes for the service
+Hashtable attributes = new Hashtable();
+attributes.put("persistent", Boolean.TRUE);
+attributes.put("cool", "yes");
+attributes.put("max-connections", new Integer(5));
+
+advertiser.register(myService, attributes);
+</source>
+
+		Please note that a service is always registered with a lifetime, that means the service registration will 
+		expire after [lifetime] seconds unless set to ServiceURL.LIFETIME_PERMANENT. In this case, the service 
+		will never expire but the registering applications should take care about unregistering the service 
+		when it terminates to avoid stale service registrations.
+		</p>
+	</section>
+
+	<section name="Locate a service">
+		<p>
+		The next example shows how to locate a service in the network:
+
+<source>
+// get Locator instance
+Locator locator = ServiceLocationManager.getLocator(new Locale("en"));
+
+// find all services of type "test" that have attribute "cool=yes"
+ServiceLocationEnumeration sle = locator.findServices(new ServiceType("service:test")
+	, null, "(cool=yes)");
+
+// iterate over the results
+while (sle.hasMoreElements()) {
+	ServiceURL foundService = (ServiceURL) sle.nextElement();
+	System.out.println(foundService);
+}
+</source>
+
+	 		Services can also be found by ServiceURL. The attribute filter may be everything compliant to 
+	 		<a href="http://www.faqs.org/rfcs/rfc1960.html">RFC 1960</a> (String Representation of LDAP Filters), 
+	 		so a valid filter could also be: 
+	 		<code>(&amp;(resolution>=600)(|(format=a4)(format=usLetter)))</code>. 
+	 		jSLP supports service, attribute requests and service type requests (with revision 0.6).
+		</p>
+	</section>
+	
+	<section name="See, what's going on">
+	<p>
+		The following lines added to your VM's command line can help to see and understand what is going on on the 
+		level of messages and registrations:
+<code>		
+	-Dorg.apache.commons.logging.log=org.apache.commons.logging.impl.SimpleLog  
+	-Dorg.apache.commons.logging.simplelog.defaultlog=trace
+	-Dnet.slp.traceMsg=true
+	-Dnet.slp.traceReg=true	
+</code>
+	</p>	
+	</section>
+
+	<section name="Troubleshooting">
+		<p>
+			There are two common problems that might prevent jSLP from working correctly: 
+			<ul>
+				<li><b>jSLP cannot open the port 427</b>: Either run jSLP as root, or change the port, if 
+				this is acceptable for your setup.</li>
+				<li><b>jSLP cannot find your OpenSLP DA</b>: First, ensure that your OpenSLP DA is in the 
+				same subnet as your jSLP client is and that it is actually running in DA mode. Check 
+				<code>/var/log/slpd.log</code> for the agent URL, it should read something like 
+				<code>service:directory-agent://URL</code>. If your OpenSLP DA is running as an SA although 
+				you configured it to be a DA, it is a hostname lookup problem. OpenSLP will refuse to run 
+				as a DA if it cannot find out your host name. Make sure that your /etc/hosts contains an 
+				entry that maps your hostname to the actual IP address and that your machine has a hostname 
+				set. As long as the result of OpenSLP's effort to find out the machines canonical host name 
+				is 127.X, it will silently switch to SA mode (one could argue that this is not a nice behavior 
+				but it is implemented this way).</li>
+				<li><b>jSLP cannot detect the local host address on Linux</b>: First, try to set your 
+				<code>/etc/hosts</code>, etc. If you cannot do this, you can manually influence the interfaces 
+				by setting <i>net.slp.interfaces</i>. The first entry will determine on which network interface 
+				jSLP sends outgoing messages. See the properties for details.</li> 
+			</ul>
+		</p>
+	</section>
+</body>
+</document>

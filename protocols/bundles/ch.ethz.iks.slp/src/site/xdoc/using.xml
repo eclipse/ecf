@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  	<properties>
+    	<title>jSLP - Java SLP (Service Location Protocol) Implementation. Projects Using jSLP</title>
+    	<author email="rellermeyer_AT_inf.ethz.ch">Jan S. Rellermeyer</author>
+  	</properties>
+
+	<meta name="keyword" content="Java, SLP, slp, Service Location Protocol, jSLP, jslp, OSGi, projects using, flowSGi, collaborative, middleware"/>
+	<meta name="description" content="jSLP is a pure Java implementation of RFC 2608 (SLP, Service Location Protocol, Version 2) with a RFC 2614 style API. It can be both SLP UserAgent (UA) and ServiceAgent (SA). jSLP-OSGi integrates SLP with OSGi (Open Service Gateway Initiative). The following projects are using jSLP:"/>
+	<meta http-equiv="cache-control" content="no-cache"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	<meta http-equiv="robots" content="index, follow"/>
+	
+<body>
+	<section name="Projects using jSLP">
+	<p>
+		<table>
+			<tr>
+				<th>Project</th>
+				<th>Description</th>
+				<th>Link</th>
+			</tr>
+			<tr>
+				<td>Adaptec iSCSI Management</td>
+				<td>Adaptec is in the storage management business. We have a storage management configuration utility based on a client/server model which is implemented in Java. As such it is portable to all of the OS platforms we support. We are developing an auto discovery feature to clients to automatically discover servers. Since iSCSI already uses SLP and we support a great many iSCSI devices, it seemed like a good idea to at least explore the idea of basing the auto discovery feature on SLP using jslp. Presently the auto discovery feature (using jslp) is being exercised by a network of several dozen servers.</td>
+				<td><a href="http://www.adaptec.com">Adaptec</a></td>
+			</tr>			
+			<tr>
+				<td>R-OSGi</td>
+				<td>Remote service extension for OSGi</td>
+				<td><a href="http://sourceforge.net/projects/r-osgi">R-OSGi website</a></td>
+			</tr>			
+			<tr>
+				<td>flowSGi</td>
+				<td>Collaborative middleware for mobile devices based on OSGi</td>
+				<td><a href="http://flowsgi.inf.ethz.ch">flowSGi website</a></td>
+			</tr>
+			<tr>
+				<td>VoiceHoc</td>
+				<td>VoiceHoc is a platform for running out-of-the-box SIP-based VoIP applications transparently in Mobile Ad Hoc Networks (MANETs) and heterogneous Internet-connected MANETs. VoiceHoc adopts a fully decentralized SIP infrastructure which makes use of D-SLP, an efficient service discovery mechanism in MANETs. D-SLP provides a regular SLP interface over TCP and UDP for service discovery, but exploits the underlying MANET routing protocol to piggyback the service information during the route setup. Mostly, the problem with these systems is that they are routing dependent. The very benefit of D-SLP however, is that it allows handlers for specific MANET routing protocols to be loaded like plugins. <br/> (Current research project of Patrick Stuedi, ETH Zurich)</td>				
+				<td></td>
+			</tr>
+			<tr>
+				<td>Eclipse ECF</td>
+				<td>The Eclipse Communication Framework (ECF) uses jSLP as a provider for the Discovery API.</td>				
+				<td>http://www.eclipse.org/ecf</td>
+			</tr>
+		</table>		
+	</p>
+
+	<p>
+		If you use jSLP in your project, please let us know and send an <a href="mailto:rjan@users.sourceforge.net">email</a>.
+	</p>
+	</section>
+</body>
+</document>

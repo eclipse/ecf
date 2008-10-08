@@ -1,0 +1,198 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <name>jSLP-OSGi</name>
+  <groupId>ch.ethz.iks.slp</groupId>
+  <artifactId>jslp-osgi</artifactId>
+  <version>1.0.0.RC5</version>
+  <packaging>bundle</packaging>
+
+	<url>http://jslp.sourceforge.net</url>
+
+	<organization>
+		<name>IKS, ETH Zurich</name>
+		<url>http://www.iks.inf.ethz.ch</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>rjan</id>
+			<name>Jan S. Rellermeyer</name>
+			<email>rellermeyer_at_inf.ethz.ch</email>
+			<url>http://people.inf.ethz.ch/rjan</url>
+			<organization>IKS, ETH Zurich</organization>
+			<organizationUrl>http://www.iks.inf.ethz.ch</organizationUrl>
+			<roles>
+				<role>Project creator</role>
+				<role>Researcher</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>lemmster</id>
+			<name>Markus Alexander Kuppe</name>
+			<email>jslp.sf.net_at_lemmster.de</email>
+			<url>http://www.lemmster.de</url>
+			<organization>Versant GmbH</organization>
+			<organizationUrl>http://www.versant.com</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>BSD license</name>
+			<distribution>repo</distribution>
+			<url>src/main/resources/LICENSE.txt</url>
+		</license>
+	</licenses>    
+	
+	<scm>
+		<connection>scm:svn:https://jslp.svn.sourceforge.net/svnroot/jslp</connection>
+		<developerConnection>scm:svn:rjan@https://jslp.svn.sourceforge.net/svnroot/jslp</developerConnection>
+		<url>http://jslp.svn.sourceforge.net/jslp</url>
+	</scm>
+    
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>integration-test</phase>
+            <configuration>
+              <tasks>
+				<echo message="Compiling the unit test environment..."/>
+				<mkdir dir="runtimeTests/target"/>
+				<condition property="maven.executable" value="mvn.bat">
+      				<os family="windows" />
+    			</condition>
+    			<property name="maven.executable" value="mvn" />
+				<exec dir="runtimeTests" executable="${maven.executable}">
+					<arg line="package"/>
+				</exec>
+				<delete dir="test/storage" quiet="true"/>
+				<java fork="true" classname="ch.ethz.iks.concierge.framework.Framework" failonerror="true" resultproperty="testresult">
+					<classpath>
+						<pathelement location="test/concierge-1.0.0.RC2.jar"/>
+						<pathelement location="test/junit.jar"/> 
+					</classpath>
+					<jvmarg value="-Dxargs=test/init.xargs"/>
+					<jvmarg value="-Dnet.slp.port=10427"/>
+				</java>
+				<delete dir="test/storage" quiet="true"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+        	<artifactId>maven-compiler-plugin</artifactId>
+          	<configuration>
+	    		<source>1.2</source>
+	    		<target>1.1</target>
+	    		<optimize>true</optimize>
+	    		<debug>false</debug>
+	    	</configuration>
+	  </plugin>
+	  <!-- http://felix.apache.org/site/maven-bundle-plugin-bnd.html -->
+      <plugin>
+  	    <groupId>org.apache.felix</groupId>
+    	<artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+	      	<instructions>
+				<Include-Resource>{maven-resources}, {maven-dependencies}, target/classes</Include-Resource>
+				<Bundle-Version>${pom.version}</Bundle-Version>
+				<Bundle-Name>jslp-osgi</Bundle-Name>
+				<Bundle-SymbolicName>ch.ethz.iks.slp</Bundle-SymbolicName>
+				<_include>~META-INF/MANIFEST.MF</_include>
+				<!-- BND just produces Bundle-ManifestVersion: 2 headers which we don't want -->
+				<_removeheaders>Bundle-ManifestVersion</_removeheaders> 
+    	  	</instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+	<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+	    </resources>
+    </build>
+    
+	<reporting>
+    	<plugins>
+  	       <plugin>
+    	      <artifactId>maven-site-plugin</artifactId>
+        	  <configuration>
+          	     <templateFile>maven-site-jslp.vm</templateFile>
+        	   </configuration>
+   	    	</plugin>
+      		<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<excludePackageNames>ch.ethz.iks.slp.impl,org.osgi.service.log</excludePackageNames>
+				</configuration>
+			</plugin>
+    	</plugins>
+  	</reporting>
+  
+  <dependencies>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi</artifactId>
+			<version>3.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+        	<groupId>junit</groupId>
+         	<artifactId>junit</artifactId>
+         	<version>3.8.1</version>
+         	<scope>test</scope>
+      	</dependency>
+      	<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.0.4</version>
+			<scope>provided</scope>
+		</dependency>		
+   </dependencies>
+   
+  <repositories>
+    <repository>
+      <id>iks-repository</id>
+      <name>ETH Zurich IKS Repository</name>
+      <url>http://www.flowsgi.inf.ethz.ch/repository/maven2/</url>
+    </repository>
+  </repositories> 
+  <pluginRepositories>
+    <pluginRepository>
+    	<id>apache snapshot</id>
+    	<url>http://people.apache.org/repo/m2-snapshot-repository</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>iks-repository</id>
+      <name>ETH Zurich IKS Repository</name>
+      <url>http://www.flowsgi.inf.ethz.ch/repository/maven2/</url>
+    </pluginRepository>  
+  </pluginRepositories> 
+  
+  <distributionManagement>
+    <site>
+      <id>sourceforge-site</id>
+      <url>scp://shell.sourceforge.net/home/groups/j/js/jslp/htdocs/</url>
+    </site>
+    <repository>
+      <id>iks-snapshots</id>
+      <name>ETH Zurich IKS Snapshots</name>
+      <url>scp://flowsgi.inf.ethz.ch/repository/maven2</url>
+    </repository>
+  </distributionManagement>
+</project>

@@ -1,0 +1,52 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <name>jSLP-Test</name>
+  <groupId>ch.ethz.iks.slp</groupId>
+  <artifactId>jslp-test</artifactId>
+  <version>1.0.0.RC5</version>
+  <packaging>osgi-bundle</packaging>
+    
+  <build>
+
+    <plugins>
+       <plugin>
+        <groupId>org.apache.felix.plugins</groupId>
+        <artifactId>maven-osgi-plugin</artifactId>
+        <extensions>true</extensions>
+		<version>0.9.0-incubator-SNAPSHOT</version>
+        <configuration>
+          <osgiManifest>
+            <bundleActivator>ch.ethz.iks.slp.impl.TestActivator</bundleActivator>
+            <bundleName>jslp-test</bundleName>
+			<bundleSymbolicName>ch.ethz.iks.slp.test</bundleSymbolicName>
+            <bundleVendor>Jan S. Rellermeyer, IKS, ETH Zurich</bundleVendor>
+            <importPackage>org.osgi.framework, ch.ethz.iks.slp, junit.framework, junit.textui</importPackage>
+          </osgiManifest>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi</artifactId>
+			<version>3.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+        	<groupId>junit</groupId>
+         	<artifactId>junit</artifactId>
+         	<version>3.8.1</version>
+         	<scope>provided</scope>
+      	</dependency>
+      	<dependency>
+      		<groupId>ch.ethz.iks.slp</groupId>
+      		<artifactId>jslp-osgi</artifactId>
+      		<version>${pom.version}</version>
+      		<scope>system</scope>
+      		<systemPath>${user.dir}/target/jslp-osgi-${pom.version}.jar</systemPath>
+      	</dependency>
+   </dependencies>
+
+</project>

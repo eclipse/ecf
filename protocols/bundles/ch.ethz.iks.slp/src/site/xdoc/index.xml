@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <properties>
+    <title>jSLP - Java SLP (Service Location Protocol) Implementation. Java SLP</title>
+    <author email="rellermeyer_AT_inf.ethz.ch">Jan S. Rellermeyer</author>
+  </properties>
+	<meta name="keyword" content="Java, SLP, slp, Service Location Protocol, jSLP, jslp, OpenSLP, OSGi, Goals, Overview"/>
+	<meta name="description" content="jSLP is a pure Java implementation of RFC 2608 (SLP, Service Location Protocol, Version 2) with a RFC 2614 style API. It can be both SLP UserAgent (UA) and ServiceAgent (SA). jSLP-OSGi integrates SLP with OSGi (Open Service Gateway Initiative)."/>
+	<meta http-equiv="cache-control" content="no-cache"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	<meta http-equiv="robots" content="index, follow"/>
+<body>
+
+
+	<section name="Overview">
+	<p>
+	<b>Current Release: 1.0.0.RC5</b><br/>
+	<b>Current OSGi Release: 1.0.0.RC5</b><br/>
+	</p>
+	<p>
+		<i>jSLP</i> is a pure Java implementation of SLP, the Service Location Protocol, as specified in <a href="http://www.faqs.org/rfcs/rfc2608.html">RFC 2608</a>. The API is derived from <a href="http://www.faqs.org/rfcs/rfc2614.html">RFC 2614</a> with some <a href="jSLP/index.html">modifications</a>. The implementation runs on every Java2 VM, for instance, also on a J2ME CDC Profile. The footprint of less than 80 kBytes for the full version with SA, UA, and Daemon makes it very feasible for small and embedded devices.   
+	</p>
+	<p>
+		So far, the only two existing possibilities to use SLP with Java were either to use the <a href="http://openslp.sourceforge.net">OpenSLP</a> Java API or make use of the SLP implementation that ships with Solaris. The former requires an slpd daemon to run on the machine, this is not always possible (e.g. on mobile or embedded devices). The latter has the same limitations and runs only on Solaris hosts. <a href="http://jcp.org/en/jsr/detail?id=140">JSP 140</a> was launched to develop a more usable API for Java but this request has been withdrawn.    
+	</p>
+	<p>
+		<i>jSLP</i> fills this gap and provides both SLP User Agent (UA) and SLP Service Agent (SA) functionality. It supports peer to peer service discovery via multicast convergence and unicast client server discovery with a Directory Agent (DA) like <a href="http://www.openslp.org">OpenSLP</a> in the network. Since it is pure Java without any native code parts or system daemons, <i>jSLP</i> can run on mobile devices and might help to build service oriented middleware systems that do not rely on heavyweight XML-based discovery protocols. 
+	</p>
+	<p> 
+		There are two versions of <i>jSLP</i> available. The standalone distribution is designed to run with arbitrary Java programs. The OSGi version enables the <a href="http://www.osgi.org">OSGi framework</a> to locate services via SLP. The recent <a href="http://r-osgi.sourceforge.net">R-OSGi</a> project integrates <i>jSLP</i> to remotely access OSGi services from distributed OSGi platforms.  
+	</p>
+	<p>
+		Java Management Extensions (JMX, <a href="http://www.jcp.org/en/jsr/detail?id=160">JSP 160</a>) defines the integration of JMX and SLP, the examples run with jSLP if the divergences between RFC 2614 and jSLP are regarded.
+	</p>
+	<br/>
+	<p>
+		<i>jSLP</i> was developed by Jan S. Rellermeyer for <a href="http://r-osgi.sourceforge.net">R-OSGi</a> (Remote OSGi), part of the <a href="http://flowsgi.inf.ethz.ch">flowSGi</a> project, which is an ongoing research project at <a href="http://pc.inf.ethz.ch">Institute for Pervasive Computing</a>, <a href="http://www.ethz.ch">ETH Zurich</a>. 
+	</p> 
+	</section>
+
+</body>
+</document>

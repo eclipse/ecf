@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  	<properties>
+    	<title>jSLP - Java SLP (Service Location Protocol) Implementation. Enabling SLP Security</title>
+    	<author email="rellermeyer_AT_inf.ethz.ch">Jan S. Rellermeyer</author>
+  	</properties>
+
+	<meta name="keyword" content="Java, SLP, slp, Service Location Protocol, jSLP, jslp, OpenSLP, security, PEM, DER, private key, public key"/>
+	<meta name="description" content="jSLP is a pure Java implementation of RFC 2608 (SLP, Service Location Protocol, Version 2) with a RFC 2614 style API. It can be both SLP UserAgent (UA) and ServiceAgent (SA). jSLP-OSGi integrates SLP with OSGi (Open Service Gateway Initiative). The following example shows how to enable security and generate public and private key that can also be used for OpenSLP and for interaction with a Directory Agent (DA)."/>
+	<meta http-equiv="cache-control" content="no-cache"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	<meta http-equiv="robots" content="index, follow"/>
+	
+<body>
+	<section name="Enabling security">
+	<p>
+		jSLP uses the standard SLP security mechanism with SPIs and Authentication Blocks. To enable security, one has to create a public / private key pair to use with the jSLP peers. This can be done by using <a href="http://www.openssl.org">OpenSSL</a>. Generally, jSLP supports BSD 0x0002, DSA keys. Java requires the keys to be in <i>DER</i> format. In the Unix world, the <i>PEM</i> format is more common but every <i>PEM</i> encoded key can be transformed into a <i>DER</i> key by performing the last step of the example below. This is particularly required if there are already security enabled OpenSLP DAs in the network and jSLP peers need to access their services. 
+<br/><br/>
+The following example creates a public / private key pair that can be used with jSLP and OpenSLP Directory Agents:
+<br/><br/>
+First, create a new private key in PEM format and remove the passphrase:
+<source>
+openssl dsaparam -out dsap.pem 1024 
+openssl gendsa -des -out private_key_with_pw.pem dsap.pem
+openssl dsa -in private_key:with_pw.pem -out private_key.pem
+</source>
+<br/>
+Then, create a public key from the private key:
+<source>
+openssl dsa -in private_key.pem -pubout -out public_key.pem 
+</source>
+<br/>
+These keys can be used with OpenSLP, for Java, we need to convert them to DER format:
+<source>
+openssl dsa -in public_key.pem -inform PEM -pubin -outform DER -out public_key.der
+openssl pkcs8 -nocrypt -in private_key.pem -inform PEM -topk8 -outform DER -out private_key.der
+</source>
+	<br/>
+	The DER format keys can be used with jSLP. One has to define an SPI which is in an identifier for a public/private key pair. <br/>
+	We set <code>net.slp.spi</code> to e.g., <i>mySlp</i> and register the keys by setting <code>net.slp.privateKey.mySlp</code> and <code>net.slp.publicKey.mySlp</code> to the files where your DER keys are stored. Don't forget to set <code>net.slp.securityEnabled</code> to true and the jSLP peer will use security. If OpenSLP DAs are used, register the PEM format keys with the DA or the jSLP peer will not be able to communicate with the DA. 
+	</p>
+	</section>
+</body>
+</document>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  	<properties>
+    	<title>jSLP - Java SLP (Service Location Protocol) Implementation. jSLP Overview</title>
+    	<author email="rellermeyer_AT_inf.ethz.ch">Jan S. Rellermeyer</author>
+  	</properties>
+
+	<meta name="keyword" content="Java, SLP, slp, Service Location Protocol, jSLP, jslp, RFC 2608, RFC 2614"/>
+	<meta name="description" content="jSLP is a pure Java implementation of RFC 2608 (SLP, Service Location Protocol, Version 2) with a RFC 2614 style API. It can be both SLP UserAgent (UA) and ServiceAgent (SA). jSLP-OSGi integrates SLP with OSGi (Open Service Gateway Initiative). It runs on small and embedded devices and can run under J2SE as well as J2ME CDC and Personal Profile."/>
+	<meta http-equiv="cache-control" content="no-cache"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	<meta http-equiv="robots" content="index, follow"/>
+	
+<body>
+
+	<section name="jSLP">
+	<p>
+		jSLP is the standalone version. It requires <a href="http://jakarta.apache.org/commons/logging/">commons-logging</a> to be in classpath. For example code and setup instructions, see <a href="userguide.html">Getting Started</a>.
+	</p>
+	</section>
+	<section name="jSLP Features">
+	<p>
+		jSLP implements all required features of RFC 2608 for SA and UA, that includes accepting incoming message both via TCP and UDP. Implemented optional features are Attribute Requests, Authentication Blocks and User Defined Scopes. 
+	</p>
+	</section>
+	
+	<section name="Divergence from RFC 2608">
+	<p>
+		The only divergence from RFC 2608 is the use of LDAP filters. RFC 2608 proposes RFC 2254 LDAP v3 filters whereas jSLP uses RFC 1960 LDAP filters. The difference between the two standards is the support for Extensible Matches that RFC 1960 does not provide. However, Extensible Matching is closely related to LDAP trees and does not really apply to systems like jSLP.
+	</p>
+	<p>
+		With version 0.7.x, jSLP allows an additional feature that is not directly intended by RFC 2608: The definition of a protocol for service access. RFC 2608 only allows to specify the transport. However, in some cases, it is required to also specify a protocol to allow for services that can be accessed by different protocols. jSLP allows service urls like: 
+		<code>
+		service:test:myservice://http://myhost:8080
+		</code>
+		where http is the protocol to access the service. Since the OpenSLP DA does not check the URL part any further, this does not preserve full interoperability with existing SLP solutions.
+	</p>
+	</section>
+
+	<section name="Divergence from RFC 2614">
+	<p>
+		The major divergence from RFC 2614 is the use of Java Collection Framework by jSLP while RFC 2614 uses <code>Vector</code> elements for passing scope or tag lists. 
+		<br/> Second, RFC 2614 proposes a class named <code>ServiceLocationAttribute</code> to store attributes and passes attributes as String lists of key/value pairs. jSLP has been designed to be close to OSGi in order to provide best integration, so it uses <code>Dictionary</code> instances for storing and passing attributes. There is a little inconsistency in using <code>Dictionary</code> instead of <code>Map</code> but OSGi uses this format. 
+	<br/>jSLP adds support for User Defined Scopes to the API, additionally to the standard method for registering a service, it provides a method where a List of scopes can be passed to select the service scopes at runtime. 
+	<br/>Currently, incremental service registration is not yet implemented.
+	</p>
+
+	</section>   
+	
+	<section name="Java VM requirements">
+		jSLP has been designed to run on servers or desktop machines as well as on small and embedded devices. It has a very small memory and storage 
+		footprint and runs on Java 1.2 compatible virtual machine or above. <br/>
+		Successful tests have been performed on Sun J2SE 1.4.2 and J2SE 1.5, J2SE 1.6, Sun J2ME Personal Profile cvm on Sharp Zaurus, SableVM on iPAQ Linux Familiar, JamVM on iPAQ Linux Familiar, IBM J9 on iPAQ Windows PocketPC, IBM J9 on a Nokia 9300i smartphone, JamVM on a LinkSys NSLU2 (Slug) and an Intel iMote2 sensor network node with a blackdown VM.	
+	</section>
+
+</body>
+</document>
