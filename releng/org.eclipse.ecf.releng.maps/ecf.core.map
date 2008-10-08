@@ -23,6 +23,7 @@ plugin@org.eclipse.ecf.provider.discovery=@CVSTag@,:pserver:anonymous@dev.eclips
 plugin@org.eclipse.ecf.provider.filetransfer=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer
 fragment@org.eclipse.ecf.provider.filetransfer.ssl=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer.ssl
 plugin@org.eclipse.ecf.provider.filetransfer.httpclient=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient
+fragment@org.eclipse.ecf.provider.filetransfer.httpclient.ssl=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient.ssl
 plugin@org.eclipse.ecf.provider.filetransfer.efs=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer.efs
 plugin@org.eclipse.ecf.provider.irc=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.irc
 plugin@org.eclipse.ecf.provider.irc.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.irc.ui
@@ -53,3 +54,6 @@ plugin@org.eclipse.ecf.provider.r_osgi=@CVSTag@,:pserver:anonymous@dev.eclipse.o
 plugin@ch.ethz.iks.slp,1.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/ch.ethz.iks.slp_1.0.0.RC4_v200806091030.jar
 plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/com.jcraft.jsch_0.1.31.jar
 plugin@org.objectweb.asm,3.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/org.objectweb.asm_3.0.0.v200803061811.jar
+plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/org.apache.commons.codec_1.2.0.v20080530-1550.jar
+plugin@org.apache.commons.httpclient,3.0.1=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/org.apache.commons.httpclient_3.0.1.v20080605-1930.jar
+
