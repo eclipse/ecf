@@ -462,7 +462,12 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		addContactAction = new Action(Messages.MultiRosterView_AddContact, SharedImages.getImageDescriptor(SharedImages.IMG_ADD_BUDDY)) {
 			public void run() {
 				AddContactDialog dialog = new AddContactDialog(treeViewer.getControl().getShell());
+				IStructuredSelection iss = (IStructuredSelection) treeViewer.getSelection();
+				IRoster roster = (IRoster) iss.getFirstElement();
+				MultiRosterAccount account = findAccountForUser(roster.getUser().getID());
+
 				dialog.setInput(rosterAccounts);
+				dialog.setDefaultRosterAccount(account);
 				if (Window.OK == dialog.open()) {
 					IPresenceContainerAdapter ipca = dialog.getSelection();
 					IRosterSubscriptionSender sender = ipca.getRosterManager().getRosterSubscriptionSender();
