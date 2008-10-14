@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.internal.tests.sync.Activator;
-import org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy;
+import org.eclipse.ecf.sync.IModelSynchronizationStrategy;
 import org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategyFactory;
 
 public class SyncServiceTests extends TestCase {
@@ -22,7 +22,7 @@ public class SyncServiceTests extends TestCase {
 	public void testGetColaSyncFactory() throws Exception {
 		IDocumentSynchronizationStrategyFactory  factory = getColaSyncStrategyFactory();
 		assertNotNull(factory);
-		IDocumentSynchronizationStrategy strategy = factory.createDocumentSynchronizationStrategy(IDFactory.getDefault().createStringID("cola"), true);
+		IModelSynchronizationStrategy strategy = factory.createDocumentSynchronizationStrategy(IDFactory.getDefault().createStringID("cola"), true);
 		assertNotNull(strategy);
 	}
 }
