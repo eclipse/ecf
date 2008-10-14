@@ -11,36 +11,40 @@
 
 package org.eclipse.ecf.internal.sync.doc.identity;
 
+import org.eclipse.ecf.sync.IModelChange;
+import org.eclipse.ecf.sync.IModelChangeMessage;
+import org.eclipse.ecf.sync.IModelSynchronizationStrategy;
+import org.eclipse.ecf.sync.SerializationException;
+import org.eclipse.ecf.sync.doc.DocumentChangeMessage;
 import org.eclipse.ecf.sync.doc.IDocumentChange;
-import org.eclipse.ecf.sync.doc.IDocumentChangeMessage;
-import org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy;
-import org.eclipse.ecf.sync.doc.SerializationException;
-import org.eclipse.ecf.sync.doc.messages.DocumentChangeMessage;
 
 /**
  *
  */
-public class IdentitySynchronizationStrategy implements IDocumentSynchronizationStrategy {
+public class IdentitySynchronizationStrategy implements IModelSynchronizationStrategy {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#deserializeToDocumentChange(byte[])
 	 */
-	public IDocumentChange deserializeRemoteChange(byte[] bytes) throws SerializationException {
+	public IModelChange deserializeRemoteChange(byte[] bytes) throws SerializationException {
 		return DocumentChangeMessage.deserialize(bytes);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#registerLocalChange(org.eclipse.ecf.sync.doc.IDocumentChange)
 	 */
-	public IDocumentChangeMessage[] registerLocalChange(IDocumentChange localChange) {
-		return new IDocumentChangeMessage[] {new DocumentChangeMessage(localChange.getOffset(), localChange.getLengthOfReplacedText(), localChange.getText())};
+	public IModelChangeMessage[] registerLocalChange(IModelChange localChange) {
+		if (localChange instanceof IDocumentChange) {
+			IDocumentChange docChange = (IDocumentChange) localChange;
+			return new IModelChangeMessage[] {new DocumentChangeMessage(docChange.getOffset(), docChange.getLengthOfReplacedText(), docChange.getText())};
+		} else return new IModelChangeMessage[0];
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#transformRemoteChange(org.eclipse.ecf.sync.doc.IDocumentChange)
+	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#transformRemoteChange(org.eclipse.ecf.sync.IModelChange)
 	 */
-	public IDocumentChange[] transformRemoteChange(IDocumentChange remoteChange) {
-		return new IDocumentChange[] {remoteChange};
+	public IModelChange[] transformRemoteChange(IModelChange remoteChange) {
+		return new IModelChange[] {remoteChange};
 	}
 
 }

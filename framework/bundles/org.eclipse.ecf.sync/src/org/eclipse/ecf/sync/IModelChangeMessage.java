@@ -9,14 +9,15 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.sync.doc;
+package org.eclipse.ecf.sync;
+
 
 /**
- * Document change message.  Instances of this interface
+ * Change message.  Instances of this interface
  * may be serialized to a byte [] so that they can be
  * communicated to remote processes.
  */
-public interface IDocumentChangeMessage {
+public interface IModelChangeMessage {
 
 	public byte[] serialize() throws SerializationException;
 

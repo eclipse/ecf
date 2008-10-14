@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.sync.doc;
+package org.eclipse.ecf.sync;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

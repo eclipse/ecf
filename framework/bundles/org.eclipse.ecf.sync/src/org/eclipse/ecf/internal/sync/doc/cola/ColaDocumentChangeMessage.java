@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.sync.Activator;
 import org.eclipse.ecf.internal.sync.SyncDebugOptions;
-import org.eclipse.ecf.sync.doc.messages.DocumentChangeMessage;
+import org.eclipse.ecf.sync.doc.DocumentChangeMessage;
 
 public class ColaDocumentChangeMessage extends DocumentChangeMessage {
 

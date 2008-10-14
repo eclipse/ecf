@@ -12,7 +12,7 @@
 package org.eclipse.ecf.internal.sync.doc.identity;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy;
+import org.eclipse.ecf.sync.IModelSynchronizationStrategy;
 import org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategyFactory;
 
 /**
@@ -31,7 +31,7 @@ public class IdentitySynchronizationStrategyFactory implements IDocumentSynchron
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategyFactory#getSyncronizationStrategy(org.eclipse.ecf.core.identity.ID, boolean)
 	 */
-	public IDocumentSynchronizationStrategy createDocumentSynchronizationStrategy(ID uniqueID, boolean isInitiator) {
+	public IModelSynchronizationStrategy createDocumentSynchronizationStrategy(ID uniqueID, boolean isInitiator) {
 		return new IdentitySynchronizationStrategy();
 	}
 

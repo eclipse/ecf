@@ -23,14 +23,15 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.sync.Activator;
 import org.eclipse.ecf.internal.sync.SyncDebugOptions;
+import org.eclipse.ecf.sync.IModelChange;
+import org.eclipse.ecf.sync.IModelChangeMessage;
+import org.eclipse.ecf.sync.IModelSynchronizationStrategy;
+import org.eclipse.ecf.sync.SerializationException;
+import org.eclipse.ecf.sync.doc.DocumentChangeMessage;
 import org.eclipse.ecf.sync.doc.IDocumentChange;
-import org.eclipse.ecf.sync.doc.IDocumentChangeMessage;
-import org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy;
-import org.eclipse.ecf.sync.doc.SerializationException;
-import org.eclipse.ecf.sync.doc.messages.DocumentChangeMessage;
 import org.eclipse.osgi.util.NLS;
 
-public class ColaSynchronizationStrategy implements IDocumentSynchronizationStrategy {
+public class ColaSynchronizationStrategy implements IModelSynchronizationStrategy {
 
 	// <ColaDocumentChangeMessage>
 	private final LinkedList unacknowledgedLocalOperations;
@@ -187,32 +188,35 @@ public class ColaSynchronizationStrategy implements IDocumentSynchronizationStra
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#registerLocalChange(org.eclipse.ecf.sync.doc.IDocumentChange)
+	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#registerLocalChange(org.eclipse.ecf.sync.doc.IModelChange)
 	 */
-	public IDocumentChangeMessage[] registerLocalChange(IDocumentChange localChange) {
+	public IModelChangeMessage[] registerLocalChange(IModelChange localChange) {
 		Trace.entering(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_ENTERING, this.getClass(), "registerLocalChange", localChange); //$NON-NLS-1$
-		final ColaDocumentChangeMessage colaMsg = new ColaDocumentChangeMessage(new DocumentChangeMessage(localChange.getOffset(), localChange.getLengthOfReplacedText(), localChange.getText()), localOperationsCount, remoteOperationsCount);
-		if (!colaMsg.isReplacement()) {
-			unacknowledgedLocalOperations.add(colaMsg);
-			localOperationsCount++;
-		}
-		Trace.exiting(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_EXITING, this.getClass(), "registerLocalChange", colaMsg); //$NON-NLS-1$
-		return new IDocumentChangeMessage[] {colaMsg};
+		if (localChange instanceof IDocumentChange) {
+			final IDocumentChange docChange = (IDocumentChange) localChange;
+			final ColaDocumentChangeMessage colaMsg = new ColaDocumentChangeMessage(new DocumentChangeMessage(docChange.getOffset(), docChange.getLengthOfReplacedText(), docChange.getText()), localOperationsCount, remoteOperationsCount);
+			if (!colaMsg.isReplacement()) {
+				unacknowledgedLocalOperations.add(colaMsg);
+				localOperationsCount++;
+			}
+			Trace.exiting(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_EXITING, this.getClass(), "registerLocalChange", colaMsg); //$NON-NLS-1$
+			return new IModelChangeMessage[] {colaMsg};
+		} else return new IModelChangeMessage[0];
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#toDocumentChangeMessage(byte[])
 	 */
-	public IDocumentChange deserializeRemoteChange(byte[] bytes) throws SerializationException {
+	public IModelChange deserializeRemoteChange(byte[] bytes) throws SerializationException {
 		return DocumentChangeMessage.deserialize(bytes);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#transformRemoteChange(org.eclipse.ecf.sync.doc.IDocumentChangeMessage)
+	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#transformRemoteChange(org.eclipse.ecf.sync.doc.IModelChangeMessage)
 	 */
-	public IDocumentChange[] transformRemoteChange(IDocumentChange remoteChange) {
+	public IModelChange[] transformRemoteChange(IModelChange remoteChange) {
 		if (!(remoteChange instanceof DocumentChangeMessage))
-			return new IDocumentChange[] {};
+			return new IDocumentChange[0];
 		final DocumentChangeMessage m = (DocumentChangeMessage) remoteChange;
 		final List l = this.transformIncomingMessage(m);
 		return (IDocumentChange[]) l.toArray(new IDocumentChange[] {});

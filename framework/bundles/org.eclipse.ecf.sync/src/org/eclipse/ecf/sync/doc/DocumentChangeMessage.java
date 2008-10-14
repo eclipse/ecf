@@ -10,7 +10,7 @@
  *    Mustafa K. Isik
  *****************************************************************************/
 
-package org.eclipse.ecf.sync.doc.messages;
+package org.eclipse.ecf.sync.doc;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,14 +18,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.eclipse.ecf.sync.doc.IDocumentChange;
-import org.eclipse.ecf.sync.doc.IDocumentChangeMessage;
-import org.eclipse.ecf.sync.doc.SerializationException;
+import org.eclipse.ecf.sync.IModelChangeMessage;
+import org.eclipse.ecf.sync.SerializationException;
 
 /**
  * 
  */
-public class DocumentChangeMessage implements IDocumentChange, IDocumentChangeMessage {
+public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessage {
 
 	private static final long serialVersionUID = -3195542805471664496L;
 

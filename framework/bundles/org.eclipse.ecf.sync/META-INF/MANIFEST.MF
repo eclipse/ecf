@@ -18,5 +18,4 @@ Export-Package: org.eclipse.ecf.internal.sync;x-internal:=true,
  org.eclipse.ecf.internal.sync.doc.cola;x-internal:=true,
  org.eclipse.ecf.internal.sync.doc.identity;x-internal:=true,
  org.eclipse.ecf.sync,
- org.eclipse.ecf.sync.doc,
- org.eclipse.ecf.sync.doc.messages
+ org.eclipse.ecf.sync.doc

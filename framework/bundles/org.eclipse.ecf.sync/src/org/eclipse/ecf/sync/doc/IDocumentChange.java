@@ -11,11 +11,13 @@
 
 package org.eclipse.ecf.sync.doc;
 
+import org.eclipse.ecf.sync.IModelChange;
+
 /**
  * Local document change.  Instances of this class represent
  * local changes to a replicated document. 
  */
-public interface IDocumentChange {
+public interface IDocumentChange extends IModelChange {
 	/**
 	 * Get offset in document where change has or will occur.
 	 * @return int the offset
