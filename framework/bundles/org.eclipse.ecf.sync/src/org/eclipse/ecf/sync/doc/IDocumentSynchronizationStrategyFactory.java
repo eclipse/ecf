@@ -37,4 +37,6 @@ public interface IDocumentSynchronizationStrategyFactory {
 	 * @param uniqueID the ID of the 
 	 */
 	public void disposeSynchronizationStrategy(ID uniqueID);
+	
+	public void dispose();
 }

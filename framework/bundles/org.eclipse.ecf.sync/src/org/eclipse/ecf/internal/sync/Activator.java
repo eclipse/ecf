@@ -20,6 +20,9 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration identityServiceRegistration;
 	private BundleContext context;
 
+	IDocumentSynchronizationStrategyFactory identity;
+	IDocumentSynchronizationStrategyFactory cola;
+	
 	public static Activator getDefault() {
 		return bundle;
 	}
@@ -31,16 +34,18 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		bundle = this;
 		this.context = ctxt;
+		this.identity = new IdentitySynchronizationStrategyFactory();
+		this.cola = new ColaSynchronizationStrategyFactory();
 		// Register identity synchronizer service
 		final Dictionary identityServiceProps = new Properties();
 		identityServiceProps.put(IServiceConstants.SYNCSTRATEGY_TYPE_PROPERTY, IdentitySynchronizationStrategyFactory.SYNCHSTRATEGY_TYPE);
 		identityServiceProps.put(IServiceConstants.SYNCSTRATEGY_PROVIDER_PROPETY, IdentitySynchronizationStrategyFactory.SYNCHSTRATEGY_PROVIDER);
-		identityServiceRegistration = this.context.registerService(IDocumentSynchronizationStrategyFactory.class.getName(), new IdentitySynchronizationStrategyFactory(), identityServiceProps);
+		identityServiceRegistration = this.context.registerService(IDocumentSynchronizationStrategyFactory.class.getName(), this.identity, identityServiceProps);
 		// Register cola synchronizer service
 		final Dictionary colaServiceProps = new Properties();
 		colaServiceProps.put(IServiceConstants.SYNCSTRATEGY_TYPE_PROPERTY, ColaSynchronizationStrategyFactory.SYNCHSTRATEGY_TYPE);
 		colaServiceProps.put(IServiceConstants.SYNCSTRATEGY_PROVIDER_PROPETY, ColaSynchronizationStrategyFactory.SYNCHSTRATEGY_PROVIDER);
-		colaServiceRegistration = this.context.registerService(IDocumentSynchronizationStrategyFactory.class.getName(), new ColaSynchronizationStrategyFactory(), colaServiceProps);
+		colaServiceRegistration = this.context.registerService(IDocumentSynchronizationStrategyFactory.class.getName(), this.cola, colaServiceProps);
 	}
 
 	/*
@@ -55,6 +60,14 @@ public class Activator implements BundleActivator {
 		if (identityServiceRegistration != null) {
 			identityServiceRegistration.unregister();
 			identityServiceRegistration = null;
+		}
+		if (this.identity != null) {
+			this.identity.dispose();
+			this.identity = null;
+		}
+		if (this.cola != null) {
+			this.cola.dispose();
+			this.cola = null;
 		}
 		this.context = null;
 		bundle = null;

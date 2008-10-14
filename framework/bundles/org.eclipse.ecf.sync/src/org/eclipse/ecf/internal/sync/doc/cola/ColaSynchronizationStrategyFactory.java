@@ -36,4 +36,8 @@ public class ColaSynchronizationStrategyFactory implements IDocumentSynchronizat
 		return ColaSynchronizationStrategy.getInstanceFor(uniqueID, isInitiator);
 	}
 
+	public void dispose() {
+		ColaSynchronizationStrategy.dispose();
+	}
+
 }

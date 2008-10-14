@@ -35,4 +35,7 @@ public class IdentitySynchronizationStrategyFactory implements IDocumentSynchron
 		return new IdentitySynchronizationStrategy();
 	}
 
+	public void dispose() {
+		
+	}
 }

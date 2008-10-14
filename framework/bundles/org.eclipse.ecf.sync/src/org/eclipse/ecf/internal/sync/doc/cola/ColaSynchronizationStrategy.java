@@ -39,7 +39,7 @@ public class ColaSynchronizationStrategy implements IModelSynchronizationStrateg
 	private long localOperationsCount;
 	private long remoteOperationsCount;
 
-	// <DocShare, ColaSynchronizationStrategy>
+	// <ID, ColaSynchronizationStrategy>
 	private static Map sessionStrategies = new HashMap();
 
 	private ColaSynchronizationStrategy(boolean isInitiator) {
@@ -60,6 +60,10 @@ public class ColaSynchronizationStrategy implements IModelSynchronizationStrateg
 		sessionStrategies.remove(client);
 	}
 
+	public static void dispose() {
+		sessionStrategies.clear();
+	}
+	
 	public DocumentChangeMessage registerOutgoingMessage(DocumentChangeMessage localMsg) {
 		Trace.entering(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_ENTERING, this.getClass(), "registerOutgoingMessage", localMsg); //$NON-NLS-1$
 		final ColaDocumentChangeMessage colaMsg = new ColaDocumentChangeMessage(localMsg, localOperationsCount, remoteOperationsCount);
