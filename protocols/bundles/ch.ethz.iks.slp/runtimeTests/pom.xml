@@ -44,8 +44,7 @@
       		<groupId>ch.ethz.iks.slp</groupId>
       		<artifactId>jslp-osgi</artifactId>
       		<version>${pom.version}</version>
-      		<scope>system</scope>
-      		<systemPath>${user.dir}/target/jslp-osgi-${pom.version}.jar</systemPath>
+      		<scope>provided</scope>
       	</dependency>
    </dependencies>
 

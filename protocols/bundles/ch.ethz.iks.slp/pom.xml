@@ -76,8 +76,8 @@
 				<delete dir="test/storage" quiet="true"/>
 				<java fork="true" classname="ch.ethz.iks.concierge.framework.Framework" failonerror="true" resultproperty="testresult">
 					<classpath>
-						<pathelement location="test/concierge-1.0.0.RC2.jar"/>
-						<pathelement location="test/junit.jar"/> 
+						<pathelement location="${maven.dependency.ch.ethz.iks.concierge.concierge.jar.path}"/>
+						<pathelement location="${maven.dependency.junit.junit.jar.path}"/> 
 					</classpath>
 					<jvmarg value="-Dxargs=test/init.xargs"/>
 					<jvmarg value="-Dnet.slp.port=10427"/>
@@ -162,6 +162,12 @@
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.4</version>
 			<scope>provided</scope>
+		</dependency>		
+      	<dependency>
+			<groupId>ch.ethz.iks.concierge</groupId>
+			<artifactId>concierge</artifactId>
+			<version>1.0_RC2</version>
+			<scope>runtime</scope>
 		</dependency>		
    </dependencies>
    
