@@ -4,24 +4,28 @@
   <groupId>ch.ethz.iks.slp</groupId>
   <artifactId>jslp-test</artifactId>
   <version>1.0.0.RC5</version>
-  <packaging>osgi-bundle</packaging>
+  <packaging>bundle</packaging>
     
   <build>
 
     <plugins>
-       <plugin>
-        <groupId>org.apache.felix.plugins</groupId>
-        <artifactId>maven-osgi-plugin</artifactId>
+	  <!-- http://felix.apache.org/site/maven-bundle-plugin-bnd.html -->
+      <plugin>
+  	    <groupId>org.apache.felix</groupId>
+    	<artifactId>maven-bundle-plugin</artifactId>
         <extensions>true</extensions>
-		<version>0.9.0-incubator-SNAPSHOT</version>
         <configuration>
-          <osgiManifest>
-            <bundleActivator>ch.ethz.iks.slp.impl.TestActivator</bundleActivator>
-            <bundleName>jslp-test</bundleName>
-			<bundleSymbolicName>ch.ethz.iks.slp.test</bundleSymbolicName>
-            <bundleVendor>Jan S. Rellermeyer, IKS, ETH Zurich</bundleVendor>
-            <importPackage>org.osgi.framework, ch.ethz.iks.slp, junit.framework, junit.textui</importPackage>
-          </osgiManifest>
+	      	<instructions>
+				<Bundle-Version>${pom.version}</Bundle-Version>
+				<Bundle-Name>jslp-test</Bundle-Name>
+				<Bundle-SymbolicName>ch.ethz.iks.slp.test</Bundle-SymbolicName>
+				<Bundle-Vendor>Jan S. Rellermeyer, IKS, ETH Zurich</Bundle-Vendor>
+            	<Import-Package>org.osgi.framework, ch.ethz.iks.slp, junit.framework, junit.textui</Import-Package>
+            	<Private-Package>*</Private-Package>
+            	<Bundle-Activator>ch.ethz.iks.slp.impl.TestActivator</Bundle-Activator>
+            	<!-- BND just produces Bundle-ManifestVersion: 2 headers which we don't want -->
+				<_removeheaders>Bundle-ManifestVersion</_removeheaders> 
+    	  	</instructions>
         </configuration>
       </plugin>
     </plugins>
@@ -44,7 +48,8 @@
       		<groupId>ch.ethz.iks.slp</groupId>
       		<artifactId>jslp-osgi</artifactId>
       		<version>${pom.version}</version>
-      		<scope>provided</scope>
+      		<scope>system</scope>
+      		<systemPath>${user.dir}/../target/jslp-osgi-${pom.version}.jar</systemPath>
       	</dependency>
    </dependencies>
 

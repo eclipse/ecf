@@ -180,10 +180,6 @@
   </repositories> 
   <pluginRepositories>
     <pluginRepository>
-    	<id>apache snapshot</id>
-    	<url>http://people.apache.org/repo/m2-snapshot-repository</url>
-    </pluginRepository>
-    <pluginRepository>
       <id>iks-repository</id>
       <name>ETH Zurich IKS Repository</name>
       <url>http://www.flowsgi.inf.ethz.ch/repository/maven2/</url>
