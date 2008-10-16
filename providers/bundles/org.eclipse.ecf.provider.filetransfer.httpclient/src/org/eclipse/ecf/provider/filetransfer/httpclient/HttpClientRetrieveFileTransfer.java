@@ -332,7 +332,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResponseHeaderValues();
-				setInputStream(((GzipGetMethod) getMethod).getResponseBodyAsUnzippedStream());
+				setInputStream(getMethod.getResponseBodyAsUnzippedStream());
 				fireReceiveStartEvent();
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 				getMethod.releaseConnection();
@@ -480,7 +480,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResumeResponseHeaderValues();
-				setInputStream(((GzipGetMethod) getMethod).getResponseBodyAsUnzippedStream());
+				setInputStream(getMethod.getResponseBodyAsUnzippedStream());
 				this.paused = false;
 				fireReceiveResumedEvent();
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
