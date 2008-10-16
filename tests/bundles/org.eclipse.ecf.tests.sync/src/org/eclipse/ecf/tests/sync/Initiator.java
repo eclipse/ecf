@@ -28,7 +28,7 @@ public class Initiator extends Thread {
 			text = text.concat(newText);
 
 			fDocument.set(text);
-			IModelChange change = new DocumentChangeMessage(i + 150, 1,	newText);
+			IModelChange change = new DocumentChangeMessage(i + 150, newText.length(),	newText);
 
 			IModelChangeMessage[] changes = initiator.registerLocalChange(change);
 
