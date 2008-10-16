@@ -168,7 +168,7 @@
 			<groupId>ch.ethz.iks.concierge</groupId>
 			<artifactId>concierge</artifactId>
 			<version>1.0_RC2</version>
-			<scope>runtime</scope>
+			<scope>test</scope>
 		</dependency>		
    </dependencies>
    
