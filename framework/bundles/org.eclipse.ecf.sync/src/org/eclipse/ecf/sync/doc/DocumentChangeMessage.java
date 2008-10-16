@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import org.eclipse.ecf.sync.IModelChangeMessage;
 import org.eclipse.ecf.sync.SerializationException;
@@ -24,7 +25,7 @@ import org.eclipse.ecf.sync.SerializationException;
 /**
  * 
  */
-public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessage {
+public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessage, Serializable {
 
 	private static final long serialVersionUID = -3195542805471664496L;
 
@@ -38,9 +39,9 @@ public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessa
 		}
 	}
 
-	final String text;
-	int offset;
-	int length;
+	private String text;
+	private int offset;
+	private int length;
 
 	public DocumentChangeMessage(int offset, int length, String text) {
 		this.offset = offset;

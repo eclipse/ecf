@@ -27,7 +27,8 @@ public class ColaDocumentChangeMessage extends DocumentChangeMessage {
 	// hashCode, i.e. make comparable
 	private final long localOperationsCount;
 	private final long remoteOperationsCount;
-	private final ColaTransformationStrategy trafoStrat;
+	private final int transformType;
+	
 	private boolean splitUp;
 	private List splitUpRepresentation;
 
@@ -39,16 +40,16 @@ public class ColaDocumentChangeMessage extends DocumentChangeMessage {
 		this.splitUpRepresentation = new LinkedList();
 		if (super.getLengthOfReplacedText() == 0) {
 			// this is neither a replacement, nor a deletion
-			trafoStrat = ColaInsertionTransformationStategy.getInstance();
+			transformType = 0;
 		} else {
 			if (super.getText().length() == 0) {
 				// something has been replaced, nothing inserted, must be a
 				// deletion
-				trafoStrat = ColaDeletionTransformationStrategy.getInstance();
+				transformType = 1;
 			} else {
 				// something has been replaced with some new input, has to be a
 				// replacement op
-				trafoStrat = ColaReplacementTransformationStategy.getInstance();
+				transformType = 2;
 				//TODO this has not been implemented yet
 				//throw new IllegalArgumentException("Replacement Handling not implemented yet! Known Bug.");
 			}
@@ -56,15 +57,15 @@ public class ColaDocumentChangeMessage extends DocumentChangeMessage {
 	}
 
 	public boolean isInsertion() {
-		return (this.trafoStrat instanceof ColaInsertionTransformationStategy);
+		return (transformType == 0);
 	}
 
 	public boolean isDeletion() {
-		return (this.trafoStrat instanceof ColaDeletionTransformationStrategy);
+		return (transformType == 1);
 	}
 
 	public boolean isReplacement() {
-		return (this.trafoStrat instanceof ColaReplacementTransformationStategy);
+		return (transformType == 2);
 	}
 
 	public long getLocalOperationsCount() {
@@ -75,9 +76,15 @@ public class ColaDocumentChangeMessage extends DocumentChangeMessage {
 		return this.remoteOperationsCount;
 	}
 
+	private ColaTransformationStrategy getTransformationStrategy() {
+		if (isInsertion()) return ColaInsertionTransformationStategy.getInstance();
+		if (isDeletion()) return ColaDeletionTransformationStrategy.getInstance();
+		return ColaReplacementTransformationStategy.getInstance();
+	}
+	
 	public ColaDocumentChangeMessage transformAgainst(ColaDocumentChangeMessage localMsg, boolean localMsgHighPrio) {
 		Trace.entering(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_ENTERING, this.getClass(), "transformAgainst", localMsg); //$NON-NLS-1$
-		final ColaDocumentChangeMessage transformedMsg = trafoStrat.getOperationalTransform(this, localMsg, localMsgHighPrio);
+		final ColaDocumentChangeMessage transformedMsg = getTransformationStrategy().getOperationalTransform(this, localMsg, localMsgHighPrio);
 		Trace.entering(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_EXITING, this.getClass(), "transformAgainst", transformedMsg); //$NON-NLS-1$
 		return transformedMsg;
 	}
