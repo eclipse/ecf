@@ -14,8 +14,8 @@
 
 	<section name="Overview">
 	<p>
-	<b>Current Release: 1.0.0.RC5</b><br/>
-	<b>Current OSGi Release: 1.0.0.RC5</b><br/>
+	<b>Current Release: 1.1.0.RC1</b><br/>
+	<b>Current OSGi Release: 1.1.0.RC1</b><br/>
 	</p>
 	<p>
 		<i>jSLP</i> is a pure Java implementation of SLP, the Service Location Protocol, as specified in <a href="http://www.faqs.org/rfcs/rfc2608.html">RFC 2608</a>. The API is derived from <a href="http://www.faqs.org/rfcs/rfc2614.html">RFC 2614</a> with some <a href="jSLP/index.html">modifications</a>. The implementation runs on every Java2 VM, for instance, also on a J2ME CDC Profile. The footprint of less than 80 kBytes for the full version with SA, UA, and Daemon makes it very feasible for small and embedded devices.   

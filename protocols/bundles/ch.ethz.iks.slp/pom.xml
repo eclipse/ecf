@@ -3,7 +3,7 @@
   <name>jSLP-OSGi</name>
   <groupId>ch.ethz.iks.slp</groupId>
   <artifactId>jslp-osgi</artifactId>
-  <version>1.0.0.RC5</version>
+  <version>1.1.0.RC1</version>
   <packaging>bundle</packaging>
 
 	<url>http://jslp.sourceforge.net</url>

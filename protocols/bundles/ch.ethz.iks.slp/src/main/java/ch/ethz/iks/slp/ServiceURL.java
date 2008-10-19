@@ -91,6 +91,11 @@ public final class ServiceURL extends ch.ethz.iks.slp.impl.AuthenticatedURL
 	 * 
 	 */
 	private String host = null;
+	
+	/**
+	 * user specific uri part
+	 */
+	private String userInfo = null;
 
 	/**
 	 * 
@@ -179,6 +184,14 @@ public final class ServiceURL extends ch.ethz.iks.slp.impl.AuthenticatedURL
 				port = Integer.parseInt(url.substring(hostEnd + 1, pathStart));
 			}
 		}
+		
+		int pos3 = url.indexOf("@");
+		if (pos3 > -1) {
+			userInfo = url.substring(pos1 + 2, pos3);
+			pos1 = pos3 - 1;
+		} else {
+			userInfo = ""; // no option user info
+		}
 
 		if (hostEnd == -1) {
 			host = url.substring(pos1 + 2);
@@ -240,7 +253,8 @@ public final class ServiceURL extends ch.ethz.iks.slp.impl.AuthenticatedURL
 	 */
 	public String toString() {
 		return type.toString() + "://"
-				+ (protocol != null ? protocol + "://" : "") + host
+				+ (protocol != null ? protocol + "://" : "") 
+				+ ("".equals(userInfo) ? "": (userInfo + "@")) + host
 				+ (port != NO_PORT ? (":" + port) : "") + path;
 	}
 
@@ -288,6 +302,16 @@ public final class ServiceURL extends ch.ethz.iks.slp.impl.AuthenticatedURL
 	 */
 	public String getHost() {
 		return host;
+	}
+	
+	/**
+	 * get the user info
+	 * 
+	 * @return the user info or the empty string
+	 * @since 1.1
+	 */
+	public String getUserInfo() {
+		return userInfo;
 	}
 
 	/**

@@ -17,6 +17,7 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.getHost(), "localhost");
 		assertEquals(url.getPort(), 0);
 		assertEquals(url.getURLPath(), "");
+		assertEquals(url.getUserInfo(), "");
 		assertEquals(url.getProtocol(), null);
 		assertEquals(url.toString(), urlString);
 	}
@@ -28,6 +29,7 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.getHost(), "localhost");
 		assertEquals(url.getPort(), 80);
 		assertEquals(url.getURLPath(), "");
+		assertEquals(url.getUserInfo(), "");
 		assertEquals(url.getProtocol(), null);
 		assertEquals(url.toString(), urlString);
 	}
@@ -39,6 +41,7 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.getHost(), "localhost");
 		assertEquals(url.getPort(), 80);
 		assertEquals(url.getURLPath(), "/path");
+		assertEquals(url.getUserInfo(), "");
 		assertEquals(url.getProtocol(), null);
 		assertEquals(url.toString(), urlString);
 	}
@@ -50,6 +53,7 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.getHost(), "localhost");
 		assertEquals(url.getPort(), 0);
 		assertEquals(url.getURLPath(), "/my/path");
+		assertEquals(url.getUserInfo(), "");
 		assertEquals(url.getProtocol(), null);
 		assertEquals(url.toString(), urlString);
 	}
@@ -61,6 +65,7 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.getHost(), "localhost");
 		assertEquals(url.getPort(), 8080);
 		assertEquals(url.getURLPath(), "/my/path");
+		assertEquals(url.getUserInfo(), "");
 		assertEquals(url.getProtocol(), "http");
 		assertEquals(url.toString(), urlString);
 	}
@@ -72,6 +77,7 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.getHost(), "localhost");
 		assertEquals(url.getPort(), 0);
 		assertEquals(url.getURLPath(), "");
+		assertEquals(url.getUserInfo(), "");
 		assertEquals(url.getProtocol(), "http");
 		assertEquals(url.toString(), urlString);
 	}
@@ -83,6 +89,7 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.getHost(), "localhost");
 		assertEquals(url.getPort(), 0);
 		assertEquals(url.getURLPath(), "");
+		assertEquals(url.getUserInfo(), "");
 		assertEquals(url.getProtocol(), "http");
 		assertEquals(url.toString(), urlString);
 		assertTrue("foo".equals(url.getServiceType().getNamingAuthority()));
@@ -95,6 +102,7 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.getHost(), "localhost");
 		assertEquals(url.getPort(), 0);
 		assertEquals(url.getURLPath(), "");
+		assertEquals(url.getUserInfo(), "");
 		assertEquals(url.getProtocol(), "http");
 		assertEquals(url.toString(), urlString);
 		assertTrue("".equals(url.getServiceType().getNamingAuthority()));
@@ -107,8 +115,22 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.getHost(), "localhost");
 		assertEquals(url.getPort(), 0);
 		assertEquals(url.getURLPath(), "");
+		assertEquals(url.getUserInfo(), "");
 		assertEquals(url.getProtocol(), "http");
 		assertEquals(url.toString(), "service:test://http://localhost");
+		assertTrue("".equals(url.getServiceType().getNamingAuthority()));
+	}
+	
+	public void testServiceURLUserInfo() throws Exception {
+		String urlString = "service:test.iana://http://foobar@localhost";
+		ServiceURL url = new ServiceURL(urlString, 0);
+		assertEquals(url.getServiceType().toString(), "service:test");
+		assertEquals(url.getHost(), "localhost");
+		assertEquals(url.getPort(), 0);
+		assertEquals(url.getURLPath(), "");
+		assertEquals(url.getProtocol(), "http");
+		assertEquals(url.toString(), "service:test://http://foobar@localhost");
+		assertEquals(url.getUserInfo(), "foobar");
 		assertTrue("".equals(url.getServiceType().getNamingAuthority()));
 	}
 }
