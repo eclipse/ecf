@@ -12,11 +12,10 @@ package org.eclipse.ecf.internal.discovery.ui;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.*;
+import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -29,8 +28,6 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-
-	private static Filter filter;
 
 	private BundleContext context;
 
@@ -61,7 +58,6 @@ public class Activator extends AbstractUIPlugin {
 		super.start(context1);
 		plugin = this;
 		this.context = context1;
-		filter = context.createFilter("(&(" + Constants.OBJECTCLASS + "=" + IDiscoveryService.class.getName() + ")(" + IDiscoveryService.CONTAINER_NAME + "=ecf.discovery.composite))"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		ImageRegistry imageRegistry = getImageRegistry();
 		imageRegistry.put("serviceIcon", imageDescriptorFromPlugin(PLUGIN_ID, "icons/default_provider_image.gif").createImage()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
@@ -98,10 +94,6 @@ public class Activator extends AbstractUIPlugin {
 
 	public static BundleContext getContext() {
 		return getDefault().context;
-	}
-
-	public static Filter getFilter() {
-		return getDefault().filter;
 	}
 
 	/**
