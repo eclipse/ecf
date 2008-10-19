@@ -152,6 +152,7 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 				IServiceListener l = new DiscoveryViewServiceListener();
 				discovery.addServiceListener(l);
 				discoveryContainers.put(discovery, l);
+
 				existingServices = discovery.getServices();
 				// Now show any previously discovered services
 				if (existingServices != null) {
@@ -159,6 +160,7 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 						addServiceInfo(existingServices[i]);
 					}
 				}
+
 			}
 		}
 	}
