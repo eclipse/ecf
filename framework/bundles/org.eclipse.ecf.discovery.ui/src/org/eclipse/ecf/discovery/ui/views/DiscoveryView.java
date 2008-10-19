@@ -10,12 +10,13 @@
  *****************************************************************************/
 package org.eclipse.ecf.discovery.ui.views;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.discovery.ui.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -44,7 +45,7 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 
 	private ServiceTracker discoveryServiceTracker;
 
-	private IServiceListener serviceListener;
+	private Map discoveryContainers = new HashMap();
 
 	class DiscoveryViewServiceListener implements IServiceListener {
 		public void serviceDiscovered(IServiceEvent anEvent) {
@@ -109,13 +110,14 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 		bars.getToolBarManager().add(refreshAction);
 	}
 
-	protected IDiscoveryContainerAdapter getDiscovery() {
+	protected void initializeDiscoveryTracker() {
 		if (discoveryServiceTracker == null) {
-			discoveryServiceTracker = new ServiceTracker(Activator.getContext(), Activator.getFilter(), new ServiceTrackerCustomizer() {
+			//			discoveryServiceTracker = new ServiceTracker(Activator.getContext(), Activator.getFilter(), new ServiceTrackerCustomizer() {
+			discoveryServiceTracker = new ServiceTracker(Activator.getContext(), IDiscoveryService.class.getName(), new ServiceTrackerCustomizer() {
 
 				public Object addingService(ServiceReference reference) {
 					final Object result = Activator.getContext().getService(reference);
-					initializeDiscoveryContainer((IDiscoveryContainerAdapter) result);
+					addDiscoveryContainer((IDiscoveryContainerAdapter) result);
 					return result;
 				}
 
@@ -124,49 +126,62 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 				}
 
 				public void removedService(ServiceReference reference, Object service) {
-					// do nothing
+					removeDiscoveryContainer((IDiscoveryContainerAdapter) service);
 				}
 			});
 			discoveryServiceTracker.open();
+		} else {
+			discoveryServiceTracker.close();
+			discoveryServiceTracker = null;
+			initializeDiscoveryTracker();
 		}
-		return (IDiscoveryContainerAdapter) discoveryServiceTracker.getService();
 	}
 
 	protected void initializeDiscoveryContainer() {
 		// Call this to make sure that ECF core plugin is loaded (which will frequently result
 		// in discovery creation/starting
 		ContainerFactory.getDefault().getDescriptions();
-		// Assure ECF core is loaded, and that discovery is started
-		initializeDiscoveryContainer(getDiscovery());
+		// initializeDiscoveryTracker
+		initializeDiscoveryTracker();
 	}
 
-	protected synchronized void initializeDiscoveryContainer(IDiscoveryContainerAdapter discovery) {
+	protected void addDiscoveryContainer(IDiscoveryContainerAdapter discovery) {
 		IServiceInfo[] existingServices = null;
-		if (discovery != null) {
-			if (serviceListener == null) {
-				serviceListener = new DiscoveryViewServiceListener();
-				discovery.addServiceListener(serviceListener);
+		synchronized (discoveryContainers) {
+			if (!discoveryContainers.containsKey(discovery)) {
+				IServiceListener l = new DiscoveryViewServiceListener();
+				discovery.addServiceListener(l);
+				discoveryContainers.put(discovery, l);
+				existingServices = discovery.getServices();
+				// Now show any previously discovered services
+				if (existingServices != null) {
+					for (int i = 0; i < existingServices.length; i++) {
+						addServiceInfo(existingServices[i]);
+					}
+				}
 			}
-			existingServices = discovery.getServices();
 		}
-		// Now show any previously discovered services
-		if (existingServices != null) {
-			for (int i = 0; i < existingServices.length; i++) {
-				addServiceInfo(existingServices[i]);
+	}
+
+	protected void removeDiscoveryContainer(IDiscoveryContainerAdapter discovery) {
+		synchronized (discoveryContainers) {
+			discoveryContainers.remove(discovery);
+		}
+	}
+
+	protected void clearDiscoveryContainers() {
+		synchronized (discoveryContainers) {
+			for (Iterator i = discoveryContainers.keySet().iterator(); i.hasNext();) {
+				IDiscoveryContainerAdapter d = (IDiscoveryContainerAdapter) i.next();
+				IServiceListener l = (IServiceListener) discoveryContainers.get(d);
+				if (l != null)
+					d.removeServiceListener(l);
 			}
 		}
 	}
 
 	public void clearAllServices() {
-		final IDiscoveryContainerAdapter discovery = getDiscovery();
-		if (discovery != null) {
-			synchronized (this) {
-				if (serviceListener != null) {
-					discovery.removeServiceListener(serviceListener);
-					serviceListener = null;
-				}
-			}
-		}
+		clearDiscoveryContainers();
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
@@ -329,9 +344,7 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 
 	public void dispose() {
 		super.dispose();
-		final IDiscoveryContainerAdapter discovery = getDiscovery();
-		if (discovery != null)
-			discovery.removeServiceListener(serviceListener);
+		clearDiscoveryContainers();
 		if (discoveryServiceTracker != null) {
 			discoveryServiceTracker.close();
 			discoveryServiceTracker = null;
