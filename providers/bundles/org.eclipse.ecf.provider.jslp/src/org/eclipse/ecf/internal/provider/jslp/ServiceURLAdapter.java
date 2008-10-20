@@ -45,6 +45,11 @@ public class ServiceURLAdapter {
 		}
 		buf.append(protocol);
 		buf.append("://"); //$NON-NLS-1$
+		String userInfo = aServiceURL.getUserInfo();
+		if (!"".equals(userInfo)) { //$NON-NLS-1$
+			buf.append(userInfo);
+			buf.append("@"); //$NON-NLS-1$
+		}
 		buf.append(aServiceURL.getHost());
 		buf.append(":"); //$NON-NLS-1$
 		buf.append(aServiceURL.getPort());
