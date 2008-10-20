@@ -28,13 +28,16 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker tracker;
 
+	private BundleContext context;
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(BundleContext aContext) throws Exception {
 		plugin = this;
-		tracker = new ServiceTracker(context, IDiscoveryService.class.getName(), null);
+		context = aContext;
+		tracker = new ServiceTracker(aContext, IDiscoveryService.class.getName(), null);
 		tracker.open();
 	}
 
@@ -64,5 +67,9 @@ public class Activator implements BundleActivator {
 	 */
 	public ServiceTracker getDiscoveryServiceTracker() {
 		return tracker;
+	}
+
+	public BundleContext getContext() {
+		return context;
 	}
 }
