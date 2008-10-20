@@ -10,8 +10,14 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.jslp;
 
+import org.eclipse.ecf.internal.provider.jslp.NullPatternAdvertiser;
+import org.eclipse.ecf.internal.provider.jslp.NullPatternLocator;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
+import org.eclipse.ecf.tests.discovery.Activator;
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 public class JSLPDiscoveryTest extends DiscoveryTest {
 
@@ -39,8 +45,33 @@ public class JSLPDiscoveryTest extends DiscoveryTest {
 		setScope("default");
 	}
 	
-	public void testJSLPBundleBecomesUnavailable() {
-		// dynamic OSGi!
-		fail("not yet implemtend");
+	/**
+	 * Test that the {@link NullPatternLocator} and {@link NullPatternAdvertiser} take
+	 * over when the jSLP bundle gets stopped and that the SLP provider handles this gracefully
+	 * @throws BundleException
+	 */
+	public void testJSLPBundleBecomesUnavailable() throws BundleException {
+		Bundle bundle = null;
+		try {
+			// stop the bundle assuming there is only one installed
+			BundleContext context = Activator.getDefault().getContext();
+			Bundle[] bundles = context.getBundles();
+			for(int i = 0; i < bundles.length; i++) {
+				Bundle aBundle = bundles[i];
+				if(aBundle.getSymbolicName().equals("ch.ethz.iks.slp")) {
+					bundle = aBundle;
+					break;
+				}
+			}
+			assertNotNull("ch.ethz.iks.slp bundle not found", bundle);
+			assertTrue(bundle.getState() == Bundle.ACTIVE);
+			bundle.stop();
+			assertTrue(bundle.getState() == Bundle.RESOLVED);
+			assertEquals("No service should have been found since NullPatternLocator is active", discoveryContainer.getServices().length, 0);
+		} finally {
+			if(bundle != null) {
+				bundle.start();
+			}
+		}
 	}
 }
