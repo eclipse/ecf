@@ -142,6 +142,9 @@ public class SharedDocClient extends Thread {
 			public String getText() {
 				return text;
 			}
+			public Object getAdapter(Class adapter) {
+				return null;
+			}
 		};
 	}
 	
