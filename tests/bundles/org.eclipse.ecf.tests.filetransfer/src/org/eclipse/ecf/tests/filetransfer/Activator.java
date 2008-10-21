@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.tests.filetransfer;
 
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -31,6 +32,8 @@ public class Activator implements BundleActivator {
 	
 	private ServiceTracker tracker = null;
 	
+	private ServiceTracker proxyServiceTracker = null;
+	
 	/**
 	 * The constructor
 	 */
@@ -50,6 +53,8 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		tracker = new ServiceTracker(context,IRetrieveFileTransferFactory.class.getName(),null);
 		tracker.open();
+		proxyServiceTracker = new ServiceTracker(context,IProxyService.class.getName(),null);
+		proxyServiceTracker.open();
 	}
 
 	/*
@@ -60,6 +65,10 @@ public class Activator implements BundleActivator {
 		if (tracker != null) {
 			tracker.close();
 			tracker = null;
+		}
+		if (proxyServiceTracker != null) {
+			proxyServiceTracker.close();
+			proxyServiceTracker = null;
 		}
 		this.context = null;
 		plugin = null;
@@ -79,6 +88,10 @@ public class Activator implements BundleActivator {
 	 */
 	public IRetrieveFileTransferFactory getRetrieveFileTransferFactory() {
 		return (IRetrieveFileTransferFactory) tracker.getService();
+	}
+
+	public IProxyService getProxyService() {
+		return (IProxyService) proxyServiceTracker.getService();
 	}
 
 }

@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
@@ -69,6 +71,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		}
 	}
 
+	
 	protected void testReceive(String url) throws Exception {
 		assertNotNull(retrieveAdapter);
 		final IFileTransferListener listener = createFileTransferListener();
@@ -86,6 +89,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	}
 
 	public void testReceiveFile() throws Exception {
+		//addProxy("composent.com",3129);
 		testReceive(HTTP_RETRIEVE);
 	}
 
@@ -101,6 +105,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 			assertTrue(e instanceof IncomingFileTransferException);
 		}
 	}
+	
 
 	public void testReceiveGzipFile() throws Exception {
 		testReceive(BUG_237936_URL);

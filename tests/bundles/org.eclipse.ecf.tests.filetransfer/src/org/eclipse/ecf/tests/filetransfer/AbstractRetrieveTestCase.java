@@ -19,6 +19,8 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.util.TimeoutException;
@@ -163,6 +165,55 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 				count++;
 		}
 		assertTrue(count > eventCount);
+	}
+
+	protected void addProxy(final String proxyHost, final int port) throws Exception {
+		IProxyService proxyService = Activator.getDefault().getProxyService();
+		proxyService.setProxiesEnabled(true);
+		proxyService.setSystemProxiesEnabled(false);
+		IProxyData proxyData = new IProxyData() {
+	
+			public void disable() {
+			}
+	
+			public String getHost() {
+				return proxyHost;
+			}
+	
+			public String getPassword() {
+				return null;
+			}
+	
+			public int getPort() {
+				return port;
+			}
+	
+			public String getType() {
+				return "HTTP";
+			}
+	
+			public String getUserId() {
+				return null;
+			}
+	
+			public boolean isRequiresAuthentication() {
+				return false;
+			}
+	
+			public void setHost(String host) {
+			}
+	
+			public void setPassword(String password) {
+			}
+	
+			public void setPort(int port) {
+			}
+	
+			public void setUserid(String userid) {
+			}
+			
+		};
+		proxyService.setProxyData(new IProxyData[] { proxyData });
 	}
 
 }
