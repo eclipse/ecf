@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.internal.sync.doc.identity;
 
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.internal.sync.Activator;
 import org.eclipse.ecf.sync.IModelChange;
 import org.eclipse.ecf.sync.IModelChangeMessage;
 import org.eclipse.ecf.sync.IModelSynchronizationStrategy;
@@ -45,6 +47,16 @@ public class IdentitySynchronizationStrategy implements IModelSynchronizationStr
 	 */
 	public IModelChange[] transformRemoteChange(IModelChange remoteChange) {
 		return new IModelChange[] {remoteChange};
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter == null) return null;
+		IAdapterManager manager = Activator.getDefault().getAdapterManager();
+		if (manager == null) return null;
+		return manager.loadAdapter(this, adapter.getName());
 	}
 
 }

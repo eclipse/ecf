@@ -10,7 +10,9 @@ Import-Package: org.eclipse.core.runtime,
  org.eclipse.ecf.core.identity,
  org.eclipse.ecf.core.util,
  org.eclipse.osgi.util,
- org.osgi.framework
+ org.osgi.framework,
+ org.osgi.service.log,
+ org.osgi.util.tracker
 Eclipse-LazyStart: true
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin

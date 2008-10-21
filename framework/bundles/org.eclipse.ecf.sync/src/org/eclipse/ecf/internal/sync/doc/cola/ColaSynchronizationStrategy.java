@@ -19,6 +19,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.sync.Activator;
@@ -224,5 +225,15 @@ public class ColaSynchronizationStrategy implements IModelSynchronizationStrateg
 		final DocumentChangeMessage m = (DocumentChangeMessage) remoteChange;
 		final List l = this.transformIncomingMessage(m);
 		return (IDocumentChange[]) l.toArray(new IDocumentChange[] {});
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter == null) return null;
+		IAdapterManager manager = Activator.getDefault().getAdapterManager();
+		if (manager == null) return null;
+		return manager.loadAdapter(this, adapter.getName());
 	}
 }

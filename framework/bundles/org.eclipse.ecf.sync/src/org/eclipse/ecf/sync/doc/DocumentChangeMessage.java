@@ -19,6 +19,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.internal.sync.Activator;
 import org.eclipse.ecf.sync.IModelChangeMessage;
 import org.eclipse.ecf.sync.SerializationException;
 
@@ -104,6 +106,16 @@ public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessa
 		} catch (final IOException e) {
 			throw new SerializationException("Exception serializing DocumentChangeMessage", e);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter == null) return null;
+		IAdapterManager manager = Activator.getDefault().getAdapterManager();
+		if (manager == null) return null;
+		return manager.loadAdapter(this, adapter.getName());
 	}
 
 }

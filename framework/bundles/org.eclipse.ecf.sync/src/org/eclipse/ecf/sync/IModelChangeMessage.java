@@ -11,13 +11,15 @@
 
 package org.eclipse.ecf.sync;
 
+import org.eclipse.core.runtime.IAdaptable;
+
 
 /**
  * Change message.  Instances of this interface
  * may be serialized to a byte [] so that they can be
  * communicated to remote processes.
  */
-public interface IModelChangeMessage {
+public interface IModelChangeMessage extends IAdaptable {
 
 	public byte[] serialize() throws SerializationException;
 
