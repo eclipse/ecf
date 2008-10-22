@@ -36,6 +36,7 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.remoteservice,org.eclipse.ecf.remoteservice"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.remoteservice.ui,org.eclipse.ecf.remoteservice.ui"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.ui,org.eclipse.ecf.ui"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.sync,org.eclipse.ecf.sync"/>
 
 	<!-- Orbit bundles -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/ch.ethz.iks.slp,ch.ethz.iks.slp,v1_0_0"/>
@@ -108,5 +109,6 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.remoteservice,org.eclipse.ecf.tests.remoteservice"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.sharedobject,org.eclipse.ecf.tests.sharedobject"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.storage,org.eclipse.ecf.tests.storage"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.sync,org.eclipse.ecf.tests.sync"/>
 </provider>
 </psf>
