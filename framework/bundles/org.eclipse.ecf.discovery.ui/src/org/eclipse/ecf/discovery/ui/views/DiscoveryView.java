@@ -321,7 +321,10 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 			for (int i = 0; i < serviceAccessConfigurationElements.length; i++) {
 				try {
 					final IServiceAccessHandler sah = (IServiceAccessHandler) serviceAccessConfigurationElements[i].createExecutableExtension("class"); //$NON-NLS-1$
-					results.add(sah.getContributionsForService(serviceInfo));
+					IContributionItem[] contributions = sah.getContributionsForService(serviceInfo);
+					if (contributions != null) {
+						results.add(contributions);
+					}
 				} catch (final Exception e) {
 					Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.DiscoveryView_EXCEPTION_CREATING_SERVICEACCESSHANDLER, e));
 				}
