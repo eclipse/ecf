@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007, 2008 Composent, Inc. and others.
+ * Copyright (c) 2008 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,10 @@ import org.eclipse.ecf.sync.IModelChangeMessage;
 import org.eclipse.ecf.sync.SerializationException;
 
 /**
+ * Document change message of communicating document change 
+ * events to remote models.
  * 
+ * @since 2.1
  */
 public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessage, Serializable {
 
@@ -45,6 +48,13 @@ public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessa
 	private int offset;
 	private int length;
 
+	/**
+	 * Create document change message for given offset, length of replacement, and text to replace.
+	 * 
+	 * @param offset the offset (number of characters) in the document where change is to occur.
+	 * @param length the length (number of characters) that are to be replace in existing document.
+	 * @param text the text to actually replace.
+	 */
 	public DocumentChangeMessage(int offset, int length, String text) {
 		this.offset = offset;
 		this.length = length;

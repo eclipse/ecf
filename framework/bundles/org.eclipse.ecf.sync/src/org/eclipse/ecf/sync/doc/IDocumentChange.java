@@ -16,6 +16,8 @@ import org.eclipse.ecf.sync.IModelChange;
 /**
  * Local document change.  Instances of this class represent
  * local changes to a replicated document. 
+ * 
+ * @since 2.1
  */
 public interface IDocumentChange extends IModelChange {
 	/**

@@ -17,7 +17,9 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.sync.Activator;
 
 /**
- *
+ * Exception for serialization problems.
+ * 
+ * @since 2.1
  */
 public class SerializationException extends ECFException {
 

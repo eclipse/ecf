@@ -12,7 +12,9 @@
 package org.eclipse.ecf.sync;
 
 /**
- *
+ * Constants for ISynchronizationStrategy services.
+ * 
+ * @since 2.1
  */
 public interface IServiceConstants {
 	public static final String SYNCSTRATEGY_TYPE_PROPERTY = "org.eclipse.ecf.type";

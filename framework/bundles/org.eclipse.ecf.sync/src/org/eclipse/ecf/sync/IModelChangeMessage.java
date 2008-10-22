@@ -18,9 +18,17 @@ import org.eclipse.core.runtime.IAdaptable;
  * Change message.  Instances of this interface
  * may be serialized to a byte [] so that they can be
  * communicated to remote processes.
+ * 
+ * @since 2.1
  */
 public interface IModelChangeMessage extends IAdaptable {
 
+	/**
+	 * Serialize this message to byte [].
+	 * @return byte [] that is serialized representation of this model change message.
+	 * @throws SerializationException if this model change message
+	 * cannot be serialized.
+	 */
 	public byte[] serialize() throws SerializationException;
 
 }
