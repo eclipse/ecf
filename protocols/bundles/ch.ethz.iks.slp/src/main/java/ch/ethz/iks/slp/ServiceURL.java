@@ -1,5 +1,5 @@
-/* Copyright (c) 2005-2007 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2005-2008 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -36,7 +36,7 @@ import java.io.Serializable;
 /**
  * Implementation of the SLP ServiceURL class defined in RFC 2614.
  * 
- * @author Jan S. Rellermeyer, IKS, ETH Zürich
+ * @author Jan S. Rellermeyer, Systems Group, ETH Zürich
  * @since 0.1
  */
 public final class ServiceURL extends ch.ethz.iks.slp.impl.AuthenticatedURL

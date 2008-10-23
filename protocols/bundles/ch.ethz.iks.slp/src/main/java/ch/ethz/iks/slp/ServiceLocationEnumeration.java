@@ -1,5 +1,5 @@
-/* Copyright (c) 2005-2007 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2005-2008 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -33,7 +33,7 @@ import java.util.Enumeration;
 /**
  * An enumeration over results of request messages as defined in RFC 2614.
  * 
- * @author Jan S. Rellermeyer, IKS, ETH Zurich
+ * @author Jan S. Rellermeyer, Systems Group, ETH Zurich
  * @since 0.1
  */
 public interface ServiceLocationEnumeration extends Enumeration {

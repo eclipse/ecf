@@ -1,5 +1,5 @@
-/* Copyright (c) 2005-2007 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2005-2008 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -42,7 +42,7 @@ import ch.ethz.iks.slp.impl.filter.Filter;
 /**
  * ServiceRequest message is used to find services in the network.
  * 
- * @author Jan S. Rellermeyer, IKS, ETH Z�rich
+ * @author Jan S. Rellermeyer, ETH Zurich
  * @since 0.1
  */
 class ServiceRequest extends RequestMessage {

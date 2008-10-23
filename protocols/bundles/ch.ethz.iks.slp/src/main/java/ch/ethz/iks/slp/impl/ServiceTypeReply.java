@@ -1,5 +1,5 @@
-/* Copyright (c) 2005-2007 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2005-2008 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -37,7 +37,7 @@ import ch.ethz.iks.slp.ServiceLocationException;
 /**
  * a ServiceReply Message is sent as reaction of a ServiceRequest.
  * 
- * @author Jan S. Rellermeyer, IKS, ETH Zürich
+ * @author Jan S. Rellermeyer, ETH Zürich
  * @since 0.6
  */
 class ServiceTypeReply extends ReplyMessage {

@@ -1,5 +1,5 @@
-/* Copyright (c) 2005-2007 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2005-2008 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -55,7 +55,7 @@ import ch.ethz.iks.slp.ServiceURL;
  * configurations or distributions that are intended to run on a machine with
  * OpenSLP <i>slpd</i> can be packaged without this class.
  * 
- * @author Jan S. Rellermeyer, IKS, ETH Zurich
+ * @author Jan S. Rellermeyer, ETH Zurich
  * @since 0.6
  */
 public final class SLPDaemonImpl implements SLPDaemon {

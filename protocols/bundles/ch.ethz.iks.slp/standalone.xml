@@ -1,0 +1,179 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<name>jSLP</name>
+	<groupId>ch.ethz.iks.slp</groupId>
+	<artifactId>jslp</artifactId>
+	<version>1.1.0.RC1</version>
+	<packaging>jar</packaging>
+	<description>jSLP is a pure Java implementation of RFC 2608, Service Location Protocol</description>
+	<url>http://jslp.sourceforge.net</url>
+
+	<organization>
+		<name>Systems Group, ETH Zurich</name>
+		<url>http://www.systems.ethz.ch</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>rjan</id>
+			<name>Jan S. Rellermeyer</name>
+			<email>rellermeyer_at_inf.ethz.ch</email>
+			<url>http://people.inf.ethz.ch/rjan</url>
+			<organization>Systems Group, ETH Zurich</organization>
+			<organizationUrl>http://www.systems.ethz.ch</organizationUrl>
+			<roles>
+				<role>Project creator</role>
+				<role>Researcher</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>BSD license</name>
+			<distribution>repo</distribution>
+			<url>LICENSE.txt</url>
+		</license>
+	</licenses>
+  
+	<issueManagement>
+		<system>Sourceforge bug tracker</system>
+		<url>http://sourceforge.net/tracker/?group_id=151721&amp;atid=781930</url>
+	</issueManagement>
+  
+	<scm>
+		<connection>scm:svn:https://jslp.svn.sourceforge.net/svnroot/jslp</connection>
+		<developerConnection>scm:svn:rjan@https://jslp.svn.sourceforge.net/svnroot/jslp</developerConnection>
+		<url>http://jslp.svn.sourceforge.net/jslp</url>
+	</scm>
+
+	<distributionManagement>
+		<site>
+			<id>sourceforge-site</id>
+			<url>scp://shell.sourceforge.net/home/groups/j/js/jslp/htdocs/</url>
+		</site>
+	    <repository>
+    		<id>iks-snapshots</id>
+			<name>ETH Zurich IKS Snapshots</name>
+			<url>scp://flowsgi.inf.ethz.ch/repository/maven2</url>
+	    </repository>		
+	</distributionManagement>	
+
+  	<repositories>
+  		<repository>
+      		<id>iks-repository</id>
+      		<name>ETH Zurich IKS Repository</name>
+      		<url>http://www.flowsgi.inf.ethz.ch/repository/maven2/</url>
+    		</repository>
+  	</repositories> 
+  	<pluginRepositories>
+    	<pluginRepository>
+      		<id>iks-repository</id>
+      		<name>ETH Zurich IKS Repository</name>
+      		<url>http://www.flowsgi.inf.ethz.ch/repository/maven2/</url>
+    	</pluginRepository>  
+  	</pluginRepositories> 
+
+	<build>
+	  <sourceDirectory>standalone/src</sourceDirectory>
+	  <outputDirectory>standalone/target</outputDirectory>	
+	  <plugins>
+	    <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <executions>
+			<execution>
+			  <id>createSourceDir</id>
+			  <phase>validate</phase>
+			  <configuration>
+			    <tasks>
+			      <delete dir="standalone/src" quiet="true"/>
+			      <mkdir dir="standalone/src"/>
+			    </tasks>
+			  </configuration>
+              <goals>
+                <goal>run</goal>
+              </goals>
+			</execution>
+            <execution>
+              <id>copySources</id>
+              <phase>generate-sources</phase>
+              <configuration>
+                <tasks>
+				  <copy todir="standalone/src">
+				    <fileset dir="src/main/java">
+				      <exclude name="**/Activator.java"/>
+				      <exclude name="**/OSGiPlatformAbstraction.java"/>
+				    </fileset>
+				  </copy>
+				  <copy todir="standalone/src">
+				    <fileset dir="standalone/inclusions"/>
+				  </copy>
+                </tasks>
+              </configuration>
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>copyJar</id>
+              <phase>install</phase>
+              <configuration>
+                <tasks>
+				  <copy todir="target">
+				    <fileset dir="standalone/target">
+				      <include name="**/*.jar"/>
+				    </fileset>
+				  </copy>
+                </tasks>
+              </configuration>              
+            </execution>
+          </executions>
+        </plugin>
+	  
+	  	<plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+        	<artifactId>maven-compiler-plugin</artifactId>
+          	<configuration>
+	    		<source>1.2</source>
+	    		<target>1.1</target>
+	    		<optimize>true</optimize>
+	    		<debug>false</debug>
+	    	</configuration>
+	  	</plugin>
+	  </plugins>
+	</build>
+
+	<reporting>
+    	<plugins>
+	       <plugin>
+    	      <artifactId>maven-site-plugin</artifactId>
+        	  <configuration>
+          	     <templateFile>maven-site-jslp.vm</templateFile>
+        	   </configuration>
+   	    	</plugin>
+      		<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<excludePackageNames>ch.ethz.iks.slp.impl</excludePackageNames>
+				</configuration>
+			</plugin>
+    	</plugins>
+  	</reporting>  	
+  
+	<dependencies>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.0.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+        	<groupId>junit</groupId>
+         	<artifactId>junit</artifactId>
+         	<version>3.8.1</version>
+         	<scope>test</scope>
+      	</dependency>
+	</dependencies>
+</project>

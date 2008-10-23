@@ -1,5 +1,5 @@
 /* modified version by Jan S. Rellermeyer, ETH Zurich 
- * Copyright 2005-2007 IKS, ETH Zurich. All rights reserved.
+ * Copyright 2005-2007 Systems Group, ETH Zurich. All rights reserved.
  *
  * based on the Java SLP implementation by Solers Corporation 
  * Copyright 2003 Solers Corporation. All rights reserved.
@@ -17,7 +17,7 @@ import java.io.Serializable;
 /**
  * Implementation of the SLP ServiceType class defined in RFC 2614.
  * 
- * @author Jan S. Rellermeyer, IKS, ETH Zurich
+ * @author Jan S. Rellermeyer, Systems Group, ETH Zurich
  * @author Patrick Callis, Solers Corp.
  * @since 0.1
  */

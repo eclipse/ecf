@@ -1,5 +1,5 @@
-/* Copyright (c) 2005,2006 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2005-2008 Jan S. Rellermeyer
+ * Systems Group,
  * Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
  *
@@ -26,7 +26,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  * 
- * $Id: Filter.java,v 1.1 2008/10/08 07:19:10 mkuppe Exp $
+ * $Id: Filter.java,v 1.2 2008/10/23 17:36:03 mkuppe Exp $
  */
 
 package ch.ethz.iks.slp.impl.filter;
@@ -35,7 +35,7 @@ import java.util.Dictionary;
 
 /**
  * a generic LDAP filter.
- * @author Jan S. Rellermeyer
+ * @author Jan S. Rellermeyer, ETH Zurich
  *
  */
 public interface Filter {
