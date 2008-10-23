@@ -138,12 +138,6 @@ public class ServiceLocationException extends Exception
     private short errorCode;
 
     /**
-     * hidden constructor.
-     */
-    private ServiceLocationException() {
-    }
-
-    /**
      * Create a new ServiceLocation instance.
      *
      * @param errcode
