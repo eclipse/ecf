@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.provider.discovery;
 
 import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceTypeID;
 
 public class CompositeNamespace extends Namespace {
@@ -22,7 +23,15 @@ public class CompositeNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
 	public ID createInstance(Object[] parameters) throws IDCreateException {
-		return new CompositeServiceID(this, new ServiceTypeID(this, (String) parameters[0]), (String) parameters[1]);
+		if (parameters == null || parameters.length < 1 || parameters.length > 2) {
+			throw new IDCreateException(Messages.CompositeNamespace_WrongParameterCount);
+		} else if (parameters[0] instanceof String) {
+			return new CompositeServiceID(this, new ServiceTypeID(this, (String) parameters[0]), (String) parameters[1]);
+		} else if (parameters[0] instanceof IServiceTypeID) {
+			return new CompositeServiceID(this, (IServiceTypeID) parameters[0], (String) parameters[1]);
+		} else {
+			throw new IDCreateException(Messages.CompositeNamespace_WrongParameters);
+		}
 	}
 
 	/* (non-Javadoc)
