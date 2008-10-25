@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %plugin.name
+Bundle-SymbolicName: org.eclipse.ecf.tests.provider.discovery
+Bundle-Version: 2.1.0.qualifier
+Import-Package: org.osgi.framework;version="1.4.0",
+ org.osgi.util.tracker;version="1.3.3"
+Require-Bundle: org.junit,
+ org.eclipse.ecf,
+ org.eclipse.ecf.discovery,
+ org.eclipse.equinox.common,
+ org.eclipse.ecf.tests.discovery,
+ org.eclipse.ecf.provider.discovery
+Bundle-Vendor: %plugin.provider
+Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
+ J2SE-1.4
