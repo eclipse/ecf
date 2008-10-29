@@ -37,6 +37,7 @@ import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
+import org.eclipse.ecf.presence.IFQID;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
@@ -520,9 +521,23 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 	}
 
+	private void updateXMPPID(XMPPID newID, XMPPID oldID) {
+		String newResource = newID.getResourceName();
+		String oldResource = oldID.getResourceName();
+		if (oldResource == null) {
+			oldID.setResourceName(newResource);
+		} else {
+			if (newResource != null && (oldResource.compareTo(newResource) < 0)) {
+				oldID.setResourceName(newResource);
+			}
+		}
+	}
+	
 	private void updatePresenceForMatchingEntry(org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID, IPresence newPresence) {
 		final IUser user = entry.getUser();
-		if (fromID.equals(user.getID())) {
+		ID oldID = user.getID();
+		if (fromID.equals(oldID)) {
+			if (oldID instanceof XMPPID) updateXMPPID(fromID,(XMPPID) oldID);
 			entry.setPresence(newPresence);
 			rosterManager.notifyRosterUpdate(entry);
 		}

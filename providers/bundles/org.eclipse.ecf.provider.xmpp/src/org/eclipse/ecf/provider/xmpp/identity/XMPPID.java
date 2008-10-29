@@ -125,13 +125,13 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		if (atIndex != -1) {
 			if (hostname == null)
 				hostname = remainder.substring(0, atIndex);
-			resourcename = PATH_DELIMITER + remainder.substring(atIndex + 1);
+			setResourceName(remainder.substring(atIndex + 1));
 		} else {
-			resourcename = PATH_DELIMITER + "";
+			setResourceName(null);
 		}
 		if (hostname == null)
 			hostname = remainder;
-		uri = new URI(namespace.getScheme(), username, hostname, port, resourcename, null, null);
+		uri = new URI(namespace.getScheme(), username, hostname, port, PATH_DELIMITER + ((resourcename==null)?"":resourcename), null, null);
 	}
 
 	protected int namespaceCompareTo(BaseID o) {
@@ -190,7 +190,8 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	}
 
 	public String getFQName() {
-		return getUsernameAtHost() + getResourceName();
+		String rn = getResourceName();
+		return getUsernameAtHost() + PATH_DELIMITER + ((rn==null)?"":rn);
 	}
 
 	public String toString() {
