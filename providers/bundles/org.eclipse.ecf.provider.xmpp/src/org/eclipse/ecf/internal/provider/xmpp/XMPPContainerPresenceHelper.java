@@ -524,13 +524,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	private void updateXMPPID(XMPPID newID, XMPPID oldID) {
 		String newResource = newID.getResourceName();
 		String oldResource = oldID.getResourceName();
-		if (oldResource == null) {
-			oldID.setResourceName(newResource);
-		} else {
-			if (newResource != null && (oldResource.compareTo(newResource) < 0)) {
-				oldID.setResourceName(newResource);
-			}
-		}
+		if (oldResource == null) oldID.setResourceName(newResource);
+		else if (newResource != null) oldID.setResourceName(newResource);
 	}
 	
 	private void updatePresenceForMatchingEntry(org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID, IPresence newPresence) {
