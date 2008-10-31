@@ -72,7 +72,11 @@ public class Activator implements BundleActivator {
 	}
 
 	public IDocumentSynchronizationStrategyFactory getColaSynchronizationStrategyFactory() {
-		return getSynchStrategyFactory("org.eclipse.ecf.internal.sync.doc.cola");
+		if (serviceTracker == null) {
+			serviceTracker = new ServiceTracker(context,IDocumentSynchronizationStrategyFactory.class.getName(),null);
+			serviceTracker.open();
+		}
+		return (IDocumentSynchronizationStrategyFactory) serviceTracker.getService();
 	}
 	
 	public IDocumentSynchronizationStrategyFactory getIdentitySynchronizationStrategy() {
