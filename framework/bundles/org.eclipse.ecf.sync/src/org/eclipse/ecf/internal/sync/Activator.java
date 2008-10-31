@@ -24,6 +24,7 @@ import org.eclipse.ecf.sync.IServiceConstants;
 import org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategyFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -94,6 +95,8 @@ public class Activator implements BundleActivator {
 		identityServiceRegistration = this.context.registerService(IDocumentSynchronizationStrategyFactory.class.getName(), this.identity, identityServiceProps);
 		// Register cola synchronizer service
 		final Dictionary colaServiceProps = new Properties();
+		//OSGi container will return the service with the highest ranking, so by default the Cola SynchStrategie is returned
+		colaServiceProps.put(Constants.SERVICE_RANKING, new Integer(1)); 
 		colaServiceProps.put(IServiceConstants.SYNCSTRATEGY_TYPE_PROPERTY, ColaSynchronizationStrategyFactory.SYNCHSTRATEGY_TYPE);
 		colaServiceProps.put(IServiceConstants.SYNCSTRATEGY_PROVIDER_PROPETY, ColaSynchronizationStrategyFactory.SYNCHSTRATEGY_PROVIDER);
 		colaServiceRegistration = this.context.registerService(IDocumentSynchronizationStrategyFactory.class.getName(), this.cola, colaServiceProps);

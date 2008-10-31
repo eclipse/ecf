@@ -88,10 +88,17 @@ public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessa
 		this.length = length;
 	}
 
+	/**
+	 * @return text
+	 */
 	public String getText() {
 		return text;
 	}
 
+	/**
+	 * 
+	 * @return the length of the inserted text
+	 */
 	public int getLengthOfInsertedText() {
 		return this.text.length();
 	}
@@ -110,6 +117,9 @@ public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessa
 		return bos.toByteArray();
 	}
 
+	/**
+	 * Serialize the current message
+	 */
 	public byte[] serialize() throws SerializationException {
 		try {
 			return serializeLocal();
