@@ -11,15 +11,15 @@ package org.eclipse.ecf.datashare.events;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Event delivered to IChannelListener when the container for channel
- * joins/connects to a group
+ * Event delivered to IChannelListener when the container that holds this channel
+ * connects to a targetID via IContainer.connect(targetID, ...).
  * 
  */
 public interface IChannelConnectEvent extends IChannelEvent {
 	/**
-	 * Get ID of target group joined
+	 * Get ID of target IContainer that connected.
 	 * 
-	 * @return ID of target group joined. Will not be <code>null</code>.
+	 * @return ID of IContainer that has connected. Will not be <code>null</code>.
 	 */
 	public ID getTargetID();
 }

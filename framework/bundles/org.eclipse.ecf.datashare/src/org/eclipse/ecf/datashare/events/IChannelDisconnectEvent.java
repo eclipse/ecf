@@ -11,15 +11,14 @@ package org.eclipse.ecf.datashare.events;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Event delivered to IChannelListener when the container for channel departs
- * from group
+ * Event delivered to IChannelListener when a container for disconnects.
  * 
  */
 public interface IChannelDisconnectEvent extends IChannelEvent {
 	/**
-	 * Get ID of target group that departed
+	 * Get ID of IContainer that has disconnected from channel.
 	 * 
-	 * @return ID of target group that departed. Will not be <code>null</code>.
+	 * @return ID of IContainer that has disconnected. Will not be <code>null</code>.
 	 */
 	public ID getTargetID();
 }
