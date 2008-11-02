@@ -228,6 +228,7 @@ public class Messages extends NLS {
 	public static String RosterWorkbenchAdapterFactory_Account;
 	public static String RosterWorkbenchAdapterFactory_Disconnected;
 	public static String RosterWorkbenchAdapterFactory_GroupLabel;
+	public static String RosterWorkbenchAdapterFactory_Resource;
 
 	public static String BrowseDialog_title;
 	public static String BrowseDialog_scanning;
