@@ -78,11 +78,15 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	public static final String VCARD_NAME_NICK = VCARD_NAME + ".nick";
 	public static final String VCARD_PHONE = VCARD + ".phone";
 	public static final String VCARD_PHONE_HOME = VCARD_PHONE + ".home";
-	public static final String VCARD_PHONE_HOME_VOICE = VCARD_PHONE_HOME + ".voice";
-	public static final String VCARD_PHONE_HOME_CELL = VCARD_PHONE_HOME + ".cell";
+	public static final String VCARD_PHONE_HOME_VOICE = VCARD_PHONE_HOME
+			+ ".voice";
+	public static final String VCARD_PHONE_HOME_CELL = VCARD_PHONE_HOME
+			+ ".cell";
 	public static final String VCARD_PHONE_WORK = VCARD_PHONE + ".work";
-	public static final String VCARD_PHONE_WORK_VOICE = VCARD_PHONE_WORK + ".voice";
-	public static final String VCARD_PHONE_WORK_CELL = VCARD_PHONE_WORK + ".cell";
+	public static final String VCARD_PHONE_WORK_VOICE = VCARD_PHONE_WORK
+			+ ".voice";
+	public static final String VCARD_PHONE_WORK_CELL = VCARD_PHONE_WORK
+			+ ".cell";
 
 	private ISharedObjectConfig config = null;
 
@@ -106,16 +110,20 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
+	 * @seeorg.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.
+	 * ISharedObjectConfig)
 	 */
-	public void init(ISharedObjectConfig initData) throws SharedObjectInitException {
+	public void init(ISharedObjectConfig initData)
+			throws SharedObjectInitException {
 		this.config = initData;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
+	 * @see
+	 * org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util
+	 * .Event)
 	 */
 	public void handleEvent(Event event) {
 		trace("handleEvent(" + event + ")");
@@ -136,7 +144,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
+	 * @see
+	 * org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.
+	 * util.Event[])
 	 */
 	public void handleEvents(Event[] events) {
 		for (int i = 0; i < events.length; i++) {
@@ -159,7 +169,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
+	 * @see
+	 * org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity
+	 * .ID)
 	 */
 	public void dispose(ID containerID) {
 		vcardCache.clear();
@@ -175,8 +187,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			return null;
 		if (adapter.isInstance(this))
 			return this;
-		final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
-		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
+		final IAdapterManager adapterManager = XmppPlugin.getDefault()
+				.getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(
+				this, adapter.getName());
 	}
 
 	// end ISharedObject implementation
@@ -187,7 +201,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	class PresenceRosterManager extends AbstractRosterManager {
 
-		public PresenceRosterManager(org.eclipse.ecf.presence.roster.Roster roster) {
+		public PresenceRosterManager(
+				org.eclipse.ecf.presence.roster.Roster roster) {
 			super(roster);
 		}
 
@@ -220,9 +235,12 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 
 		org.eclipse.ecf.presence.IPresenceSender rosterPresenceSender = new org.eclipse.ecf.presence.IPresenceSender() {
-			public void sendPresenceUpdate(ID toID, org.eclipse.ecf.presence.IPresence presence) throws ECFException {
+			public void sendPresenceUpdate(ID toID,
+					org.eclipse.ecf.presence.IPresence presence)
+					throws ECFException {
 				try {
-					getConnectionOrThrowIfNull().sendPresenceUpdate(toID, createPresence(presence));
+					getConnectionOrThrowIfNull().sendPresenceUpdate(toID,
+							createPresence(presence));
 				} catch (final IOException e) {
 					traceAndThrowECFException("sendPresenceUpdate", e);
 				}
@@ -233,7 +251,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see org.eclipse.ecf.presence.roster.AbstractRosterManager#getPresenceSender()
+		 * @see
+		 * org.eclipse.ecf.presence.roster.AbstractRosterManager#getPresenceSender
+		 * ()
 		 */
 		public IPresenceSender getPresenceSender() {
 			return rosterPresenceSender;
@@ -243,12 +263,15 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see org.eclipse.ecf.presence.roster.IRosterSubscriptionSender#sendRosterAdd(java.lang.String,
-			 *      java.lang.String, java.lang.String[])
+			 * @seeorg.eclipse.ecf.presence.roster.IRosterSubscriptionSender#
+			 * sendRosterAdd(java.lang.String, java.lang.String,
+			 * java.lang.String[])
 			 */
-			public void sendRosterAdd(String user, String name, String[] groups) throws ECFException {
+			public void sendRosterAdd(String user, String name, String[] groups)
+					throws ECFException {
 				try {
-					getConnectionOrThrowIfNull().sendRosterAdd(user, name, groups);
+					getConnectionOrThrowIfNull().sendRosterAdd(user, name,
+							groups);
 				} catch (final Exception e) {
 					traceAndThrowECFException("sendRosterAdd", e);
 				}
@@ -257,14 +280,16 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see org.eclipse.ecf.presence.roster.IRosterSubscriptionSender#sendRosterRemove(org.eclipse.ecf.core.identity.ID)
+			 * @seeorg.eclipse.ecf.presence.roster.IRosterSubscriptionSender#
+			 * sendRosterRemove(org.eclipse.ecf.core.identity.ID)
 			 */
 			public void sendRosterRemove(ID userID) throws ECFException {
 				try {
 					if (!(userID instanceof XMPPID))
 						throw new ECFException("invalid userID");
 					final XMPPID xmppID = (XMPPID) userID;
-					getConnectionOrThrowIfNull().sendRosterRemove(xmppID.getUsernameAtHost());
+					getConnectionOrThrowIfNull().sendRosterRemove(
+							xmppID.getUsernameAtHost());
 				} catch (final Exception e) {
 					traceAndThrowECFException("sendRosterRemove", e);
 				}
@@ -275,7 +300,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see org.eclipse.ecf.presence.roster.AbstractRosterManager#getRosterSubscriptionSender()
+		 * @seeorg.eclipse.ecf.presence.roster.AbstractRosterManager#
+		 * getRosterSubscriptionSender()
 		 */
 		public IRosterSubscriptionSender getRosterSubscriptionSender() {
 			return rosterSubscriptionSender;
@@ -284,7 +310,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see org.eclipse.ecf.presence.roster.IRosterManager#addPresenceListener(org.eclipse.ecf.presence.roster.IPresenceListener)
+		 * @see
+		 * org.eclipse.ecf.presence.roster.IRosterManager#addPresenceListener
+		 * (org.eclipse.ecf.presence.roster.IPresenceListener)
 		 */
 		public void addPresenceListener(IPresenceListener listener) {
 			synchronized (presenceListeners) {
@@ -295,7 +323,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see org.eclipse.ecf.presence.roster.IRosterManager#removePresenceListener(org.eclipse.ecf.presence.roster.IPresenceListener)
+		 * @see
+		 * org.eclipse.ecf.presence.roster.IRosterManager#removePresenceListener
+		 * (org.eclipse.ecf.presence.roster.IPresenceListener)
 		 */
 		public void removePresenceListener(IPresenceListener listener) {
 			synchronized (presenceListeners) {
@@ -320,23 +350,30 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		rosterManager.setUser(user);
 	}
 
-	protected void addSharedObjectMessageListener(ISharedObjectMessageListener listener) {
+	protected void addSharedObjectMessageListener(
+			ISharedObjectMessageListener listener) {
 		synchronized (sharedObjectMessageListeners) {
 			sharedObjectMessageListeners.add(listener);
 		}
 	}
 
-	protected void sendTypingMessage(ID toID, boolean isTyping, String body) throws IOException {
-		getContext().sendMessage(toID, new TypingMessage(rosterManager.getRoster().getUser().getID(), isTyping, body));
+	protected void sendTypingMessage(ID toID, boolean isTyping, String body)
+			throws IOException {
+		getContext().sendMessage(
+				toID,
+				new TypingMessage(rosterManager.getRoster().getUser().getID(),
+						isTyping, body));
 	}
 
-	protected void handleSharedObjectMessageEvent(ISharedObjectMessageEvent event) {
+	protected void handleSharedObjectMessageEvent(
+			ISharedObjectMessageEvent event) {
 		List toNotify = null;
 		synchronized (sharedObjectMessageListeners) {
 			toNotify = new ArrayList(sharedObjectMessageListeners);
 		}
 		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
-			final ISharedObjectMessageListener l = (ISharedObjectMessageListener) i.next();
+			final ISharedObjectMessageListener l = (ISharedObjectMessageListener) i
+					.next();
 			l.handleSharedObjectMessage(event);
 		}
 
@@ -348,7 +385,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	}
 
-	protected void removeSharedObjectMessageListener(ISharedObjectMessageListener listener) {
+	protected void removeSharedObjectMessageListener(
+			ISharedObjectMessageListener listener) {
 		synchronized (sharedObjectMessageListeners) {
 			sharedObjectMessageListeners.remove(listener);
 		}
@@ -371,13 +409,15 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	protected IRosterEntry createRosterEntry(RosterEntry entry) {
 		final XMPPID xmppid = createIDFromName(entry.getUser());
-		final String name = (entry.getName() == null) ? xmppid.getUsername() : XMPPID.unfixEscapeInNode(entry.getName());
+		final String name = (entry.getName() == null) ? xmppid.getUsername()
+				: XMPPID.unfixEscapeInNode(entry.getName());
 		return createRosterEntry(xmppid, name, entry.getGroups());
 	}
 
-	protected IRosterEntry createRosterEntry(RosterPacket.Item entry) {
-		final XMPPID xmppid = createIDFromName(entry.getUser());
-		final String name = (entry.getName() == null) ? xmppid.getUsername() : XMPPID.unfixEscapeInNode(entry.getName());
+	protected IRosterEntry createRosterEntry(XMPPID xmppid,
+			RosterPacket.Item entry) {
+		final String name = (entry.getName() == null) ? xmppid.getUsername()
+				: XMPPID.unfixEscapeInNode(entry.getName());
 		return createRosterEntry(xmppid, name, entry.getGroupNames());
 	}
 
@@ -386,15 +426,20 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		if (iq instanceof RosterPacket) {
 			// Roster packet...report to UI
 			final RosterPacket rosterPacket = (RosterPacket) iq;
-			if (rosterPacket.getType() == IQ.Type.SET || rosterPacket.getType() == IQ.Type.RESULT) {
-				for (final Iterator i = rosterPacket.getRosterItems(); i.hasNext();) {
+			if (rosterPacket.getType() == IQ.Type.SET
+					|| rosterPacket.getType() == IQ.Type.RESULT) {
+				for (final Iterator i = rosterPacket.getRosterItems(); i
+						.hasNext();) {
 					final RosterPacket.Item item = (RosterPacket.Item) i.next();
 					final RosterPacket.ItemType itemType = item.getItemType();
 					boolean remove = false;
-					final IRosterItem items[] = createRosterEntries(item);
-					final IRosterEntry entry = createRosterEntry(item);
-					if (itemType == RosterPacket.ItemType.NONE || itemType == RosterPacket.ItemType.REMOVE) {
-						removeItemFromRoster(roster.getItems(), createIDFromName(item.getUser()));
+					XMPPID newID = createIDFromName(item.getUser());
+					final IRosterItem items[] = createRosterEntries(newID, item);
+					final IRosterEntry entry = createRosterEntry(newID, item);
+					if (itemType == RosterPacket.ItemType.NONE
+							|| itemType == RosterPacket.ItemType.REMOVE) {
+						removeItemFromRoster(roster.getItems(),
+								createIDFromName(item.getUser()));
 						remove = true;
 					} else {
 						remove = false;
@@ -416,7 +461,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			rosterManager.notifyRosterAdd(entry);
 	}
 
-	private void removeItemFromRoster(Collection rosterItems, XMPPID itemIDToRemove) {
+	private void removeItemFromRoster(Collection rosterItems,
+			XMPPID itemIDToRemove) {
 		boolean removed = false;
 		synchronized (rosterItems) {
 			for (final Iterator i = rosterItems.iterator(); i.hasNext();) {
@@ -428,7 +474,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 					if (group.getEntries().size() == 0)
 						i.remove();
 				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
-					if (((org.eclipse.ecf.presence.roster.RosterEntry) item).getUser().getID().equals(itemIDToRemove)) {
+					if (((org.eclipse.ecf.presence.roster.RosterEntry) item)
+							.getUser().getID().equals(itemIDToRemove)) {
 						i.remove();
 						removed = true;
 					}
@@ -440,11 +487,14 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	}
 
-	private boolean removeItemFromRosterGroup(org.eclipse.ecf.presence.roster.RosterGroup group, XMPPID itemIDToRemove) {
+	private boolean removeItemFromRosterGroup(
+			org.eclipse.ecf.presence.roster.RosterGroup group,
+			XMPPID itemIDToRemove) {
 		final Collection groupEntries = group.getEntries();
 		synchronized (groupEntries) {
 			for (final Iterator i = group.getEntries().iterator(); i.hasNext();) {
-				final org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) i.next();
+				final org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) i
+						.next();
 				if (entry.getUser().getID().equals(itemIDToRemove)) {
 					i.remove();
 					return true;
@@ -465,19 +515,25 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		if (msg != null) {
 			if (msg.getExtension("composing", //$NON-NLS-1$
 					"http://jabber.org/protocol/chatstates") != null) { //$NON-NLS-1$
-				chatManager.fireTypingMessage(fromID, new TypingMessage(fromID, true, body));
+				chatManager.fireTypingMessage(fromID, new TypingMessage(fromID,
+						true, body));
 			} else if (msg.getExtension("paused", //$NON-NLS-1$
 					"http://jabber.org/protocol/chatstates") != null) { //$NON-NLS-1$
-				chatManager.fireTypingMessage(fromID, new TypingMessage(fromID, false, body));
+				chatManager.fireTypingMessage(fromID, new TypingMessage(fromID,
+						false, body));
 			} else {
 				final Iterator xhtmlbodies = evt.getXHTMLBodies();
 				if (xhtmlbodies != null) {
 					final List xhtmlbodylist = new ArrayList();
 					for (; xhtmlbodies.hasNext();)
 						xhtmlbodylist.add(xhtmlbodies.next());
-					chatManager.fireXHTMLChatMessage(fromID, threadID, msg.getType(), subject, body, ECFConnection.getPropertiesFromPacket(msg), xhtmlbodylist);
+					chatManager.fireXHTMLChatMessage(fromID, threadID, msg
+							.getType(), subject, body, ECFConnection
+							.getPropertiesFromPacket(msg), xhtmlbodylist);
 				} else if (body != null) {
-					chatManager.fireChatMessage(fromID, threadID, msg.getType(), subject, body, ECFConnection.getPropertiesFromPacket(msg));
+					chatManager.fireChatMessage(fromID, threadID,
+							msg.getType(), subject, body, ECFConnection
+									.getPropertiesFromPacket(msg));
 				}
 			}
 		}
@@ -488,7 +544,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		final String from = xmppPresence.getFrom();
 		final IPresence newPresence = createIPresence(xmppPresence);
 		final XMPPID fromID = createIDFromName(from);
-		if (newPresence.getType().equals(IPresence.Type.SUBSCRIBE) || newPresence.getType().equals(IPresence.Type.UNSUBSCRIBE) || newPresence.getType().equals(IPresence.Type.SUBSCRIBED) || newPresence.getType().equals(IPresence.Type.UNSUBSCRIBED)) {
+		if (newPresence.getType().equals(IPresence.Type.SUBSCRIBE)
+				|| newPresence.getType().equals(IPresence.Type.UNSUBSCRIBE)
+				|| newPresence.getType().equals(IPresence.Type.SUBSCRIBED)
+				|| newPresence.getType().equals(IPresence.Type.UNSUBSCRIBED)) {
 			rosterManager.notifySubscriptionListener(fromID, newPresence);
 		} else {
 			updatePresence(fromID, newPresence);
@@ -509,47 +568,99 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	private void updatePresence(XMPPID fromID, IPresence newPresence) {
 		final Collection rosterItems = roster.getItems();
+		List newEntrys = new ArrayList();
 		synchronized (rosterItems) {
 			for (final Iterator i = roster.getItems().iterator(); i.hasNext();) {
 				final IRosterItem item = (IRosterItem) i.next();
 				if (item instanceof IRosterGroup) {
-					updatePresenceInGroup((IRosterGroup) item, fromID, newPresence);
+					AdditionalClientRosterEntry[] es = updatePresenceInGroup(
+							(IRosterGroup) item, fromID, newPresence);
+					for (int j = 0; j < es.length; j++) {
+						newEntrys.add(es[j]);
+					}
 				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
-					updatePresenceForMatchingEntry((org.eclipse.ecf.presence.roster.RosterEntry) item, fromID, newPresence);
+					AdditionalClientRosterEntry entry = updatePresenceForMatchingEntry(
+							(org.eclipse.ecf.presence.roster.RosterEntry) item,
+							fromID, newPresence);
+					if (entry != null)
+						newEntrys.add(entry);
 				}
 			}
 		}
-	}
 
-	private void updateXMPPID(XMPPID newID, XMPPID oldID) {
-		String newResource = newID.getResourceName();
-		String oldResource = oldID.getResourceName();
-		if (oldResource == null) oldID.setResourceName(newResource);
-		else if (newResource != null) oldID.setResourceName(newResource);
-	}
-	
-	private void updatePresenceForMatchingEntry(org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID, IPresence newPresence) {
-		final IUser user = entry.getUser();
-		ID oldID = user.getID();
-		if (fromID.equals(oldID)) {
-			if (oldID instanceof XMPPID) updateXMPPID(fromID,(XMPPID) oldID);
-			entry.setPresence(newPresence);
-			rosterManager.notifyRosterUpdate(entry);
+		AdditionalClientRosterEntry[] entrys = (AdditionalClientRosterEntry[]) newEntrys
+				.toArray(new AdditionalClientRosterEntry[] {});
+		IRosterEntry entry = null;
+		if (entrys.length > 0) {
+			for (int i = 0; i < entrys.length; i++) {
+				entry = new org.eclipse.ecf.presence.roster.RosterEntry(entrys[i].parent,entrys[i].user,entrys[i].presence);
+				//roster.addItem(entry);
+			}
+			rosterManager.notifyRosterUpdate(roster);
+			fireSetRosterEntry(false, entry);
 		}
 	}
 
-	private void updatePresenceInGroup(IRosterGroup group, XMPPID fromID, IPresence newPresence) {
+	class AdditionalClientRosterEntry {
+		
+		IRosterItem parent;
+		IUser user;
+		IPresence presence;
+		
+		public AdditionalClientRosterEntry(IRosterItem parent, IUser user, IPresence presence) {
+			this.parent = parent;
+			this.user = user;
+			this.presence = presence;
+		}
+	}
+	
+	
+	private AdditionalClientRosterEntry updatePresenceForMatchingEntry(
+			org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID,
+			IPresence newPresence) {
+		final IUser user = entry.getUser();
+		XMPPID oldID = (XMPPID) user.getID();
+		// If the username/host part matches that means we either have to update
+		// the resource, or create a new client
+		if (oldID.equals(fromID)) {
+			// set the new presence state
+			entry.setPresence(newPresence);
+			// and notify with roster update
+			rosterManager.notifyRosterUpdate(entry);
+		} else if (oldID.getUsernameAtHost().equals(fromID.getUsernameAtHost())) {
+			if (oldID.getResourceName() == null) {
+				oldID.setResourceName(fromID.getResourceName());
+				// set the new presence state
+				entry.setPresence(newPresence);
+				// and notify with roster update
+				rosterManager.notifyRosterUpdate(entry);
+			} else if (fromID.getResourceName() != null && !newPresence.getType().equals(IPresence.Type.UNAVAILABLE)) {
+				return new AdditionalClientRosterEntry(entry.getParent(), new User(fromID, user.getName()), newPresence);
+			}
+		}
+		return null;
+	}
+
+	private AdditionalClientRosterEntry[] updatePresenceInGroup(IRosterGroup group,
+			XMPPID fromID, IPresence newPresence) {
+		List results = new ArrayList();
 		final Collection groupEntries = group.getEntries();
 		synchronized (groupEntries) {
 			for (final Iterator i = group.getEntries().iterator(); i.hasNext();) {
-				updatePresenceForMatchingEntry((org.eclipse.ecf.presence.roster.RosterEntry) i.next(), fromID, newPresence);
+				AdditionalClientRosterEntry newEntry = updatePresenceForMatchingEntry(
+						(org.eclipse.ecf.presence.roster.RosterEntry) i.next(),
+						fromID, newPresence);
+				if (newEntry != null)
+					results.add(newEntry);
 			}
 		}
+		return (AdditionalClientRosterEntry[]) results.toArray(new AdditionalClientRosterEntry[] {});
 	}
 
 	protected void handleRoster(Roster roster) {
 		for (final Iterator i = roster.getEntries(); i.hasNext();) {
-			final IRosterItem[] items = createRosterEntries((RosterEntry) i.next());
+			final IRosterItem[] items = createRosterEntries((RosterEntry) i
+					.next());
 			for (int j = 0; j < items.length; j++) {
 				this.roster.addItem(items[j]);
 			}
@@ -560,7 +671,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	protected XMPPID createIDFromName(String uname) {
 		try {
 			if (uname.lastIndexOf('@') == -1) {
-				return new XMPPID(container.getConnectNamespace(), "admin" + "@" + uname);
+				return new XMPPID(container.getConnectNamespace(), "admin"
+						+ "@" + uname);
 			}
 			return new XMPPID(container.getConnectNamespace(), uname);
 		} catch (final Exception e) {
@@ -655,7 +767,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		String fromID = null;
 
 		XMPPPresence(String fromID, Presence xmppPresence, IAsyncResult future) {
-			super(createIPresenceType(xmppPresence), xmppPresence.getStatus(), createIPresenceMode(xmppPresence), ECFConnection.getPropertiesFromPacket(xmppPresence), null);
+			super(createIPresenceType(xmppPresence), xmppPresence.getStatus(),
+					createIPresenceMode(xmppPresence), ECFConnection
+							.getPropertiesFromPacket(xmppPresence), null);
 			this.fromID = fromID;
 		}
 
@@ -705,12 +819,16 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			}
 		}));
 		t.start();
-		return new XMPPPresence(xmppPresence.getFrom(), xmppPresence, asyncResult);
+		return new XMPPPresence(xmppPresence.getFrom(), xmppPresence,
+				asyncResult);
 	}
 
 	protected Presence createPresence(IPresence ipresence) {
-		final Presence newPresence = new Presence(createPresenceType(ipresence), ipresence.getStatus(), 0, createPresenceMode(ipresence));
-		ECFConnection.setPropertiesInPacket(newPresence, ipresence.getProperties());
+		final Presence newPresence = new Presence(
+				createPresenceType(ipresence), ipresence.getStatus(), 0,
+				createPresenceMode(ipresence));
+		ECFConnection.setPropertiesInPacket(newPresence, ipresence
+				.getProperties());
 		return newPresence;
 	}
 
@@ -801,32 +919,43 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	protected IRosterItem[] createRosterEntries(RosterEntry entry) {
 		final XMPPID xmppid = createIDFromName(entry.getUser());
 		final String name = entry.getName();
-		final User newUser = (name == null) ? new User(xmppid, xmppid.getUsername()) : new User(xmppid, XMPPID.unfixEscapeInNode(name));
+		final User newUser = (name == null) ? new User(xmppid, xmppid
+				.getUsername()) : new User(xmppid, XMPPID
+				.unfixEscapeInNode(name));
 		return createRosterEntries(entry.getGroups(), roster, newUser);
 	}
 
-	private IRosterItem[] createRosterEntries(Iterator grps, IRosterItem parent, IUser user) {
+	private IRosterItem[] createRosterEntries(Iterator grps,
+			IRosterItem parent, IUser user) {
 		final List result = new ArrayList();
 		if (grps.hasNext()) {
 			for (; grps.hasNext();) {
 				final Object o = grps.next();
 				// Get group name
-				final String groupName = (o instanceof String) ? (String) o : ((RosterGroup) o).getName();
+				final String groupName = (o instanceof String) ? (String) o
+						: ((RosterGroup) o).getName();
 
 				if (groupName == null || groupName.equals("")) {
 					createRosterEntries(parent, user, result);
 					continue;
 				}
 				// See if group is already in roster
-				org.eclipse.ecf.presence.roster.RosterGroup rosterGroup = findRosterGroup(parent, groupName);
+				org.eclipse.ecf.presence.roster.RosterGroup rosterGroup = findRosterGroup(
+						parent, groupName);
 				// Set flag if not
 				final boolean groupFound = rosterGroup != null;
 				if (!groupFound)
-					rosterGroup = new org.eclipse.ecf.presence.roster.RosterGroup(parent, groupName);
+					rosterGroup = new org.eclipse.ecf.presence.roster.RosterGroup(
+							parent, groupName);
 
 				if (findRosterEntry(rosterGroup, user) == null) {
 					// Now create new roster entry
-					new org.eclipse.ecf.presence.roster.RosterEntry(rosterGroup, user, new org.eclipse.ecf.presence.Presence(IPresence.Type.UNAVAILABLE, IPresence.Type.UNAVAILABLE.toString(), IPresence.Mode.AWAY));
+					new org.eclipse.ecf.presence.roster.RosterEntry(
+							rosterGroup, user,
+							new org.eclipse.ecf.presence.Presence(
+									IPresence.Type.UNAVAILABLE,
+									IPresence.Type.UNAVAILABLE.toString(),
+									IPresence.Mode.AWAY));
 				}
 				// Only add localGrp if not already in list
 				if (!groupFound)
@@ -837,23 +966,28 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		return (IRosterItem[]) result.toArray(new IRosterItem[] {});
 	}
 
-	protected IRosterEntry createRosterEntry(ID userID, String name, Iterator grps) {
+	protected IRosterEntry createRosterEntry(ID userID, String name,
+			Iterator grps) {
 		final List groups = new ArrayList();
 		for (; grps.hasNext();) {
 			final Object o = grps.next();
-			final String groupName = (o instanceof String) ? (String) o : ((RosterGroup) o).getName();
-			final IRosterGroup localGrp = new org.eclipse.ecf.presence.roster.RosterGroup(roster, groupName);
+			final String groupName = (o instanceof String) ? (String) o
+					: ((RosterGroup) o).getName();
+			final IRosterGroup localGrp = new org.eclipse.ecf.presence.roster.RosterGroup(
+					roster, groupName);
 			groups.add(localGrp);
 		}
 		final IUser user = new User(userID, name);
 		IRosterEntry newEntry = null;
 		if (groups.size() == 0)
-			return new org.eclipse.ecf.presence.roster.RosterEntry(roster, user, null);
+			return new org.eclipse.ecf.presence.roster.RosterEntry(roster,
+					user, null);
 		else
 			for (int i = 0; i < groups.size(); i++) {
 				final IRosterGroup grp = (IRosterGroup) groups.get(i);
 				if (i == 0)
-					newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(grp, user, null);
+					newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(
+							grp, user, null);
 				else {
 					grp.getEntries().add(newEntry);
 					newEntry.getGroups().add(grp);
@@ -863,21 +997,28 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	private void createRosterEntries(IRosterItem parent, IUser user, List result) {
-		final org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry((org.eclipse.ecf.presence.roster.RosterGroup) null, user);
+		final org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry(
+				(org.eclipse.ecf.presence.roster.RosterGroup) null, user);
 		if (oldEntry == null) {
-			final org.eclipse.ecf.presence.roster.RosterEntry newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(parent, user, new org.eclipse.ecf.presence.Presence(IPresence.Type.UNAVAILABLE, IPresence.Type.UNAVAILABLE.toString(), IPresence.Mode.AWAY));
+			final org.eclipse.ecf.presence.roster.RosterEntry newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(
+					parent, user, new org.eclipse.ecf.presence.Presence(
+							IPresence.Type.UNAVAILABLE,
+							IPresence.Type.UNAVAILABLE.toString(),
+							IPresence.Mode.AWAY));
 			result.add(newEntry);
 		}
 	}
 
-	private org.eclipse.ecf.presence.roster.RosterEntry findRosterEntry(org.eclipse.ecf.presence.roster.RosterGroup rosterGroup, IUser user) {
+	private org.eclipse.ecf.presence.roster.RosterEntry findRosterEntry(
+			org.eclipse.ecf.presence.roster.RosterGroup rosterGroup, IUser user) {
 		if (rosterGroup != null)
 			return findRosterEntry(rosterGroup.getEntries(), user);
 		else
 			return findRosterEntry(roster.getItems(), user);
 	}
 
-	private org.eclipse.ecf.presence.roster.RosterEntry findRosterEntry(Collection entries, IUser user) {
+	private org.eclipse.ecf.presence.roster.RosterEntry findRosterEntry(
+			Collection entries, IUser user) {
 		for (final Iterator i = entries.iterator(); i.hasNext();) {
 			final Object o = i.next();
 			if (o instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
@@ -889,16 +1030,18 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		return null;
 	}
 
-	protected IRosterItem[] createRosterEntries(RosterPacket.Item entry) {
-		final XMPPID id = createIDFromName(entry.getUser());
+	protected IRosterItem[] createRosterEntries(XMPPID id,
+			RosterPacket.Item entry) {
 		String name = entry.getName();
 		if (name == null)
 			name = id.getUsername();
 		name = XMPPID.unfixEscapeInNode(name);
-		return createRosterEntries(entry.getGroupNames(), roster, new User(id, name));
+		return createRosterEntries(entry.getGroupNames(), roster, new User(id,
+				name));
 	}
 
-	protected org.eclipse.ecf.presence.roster.RosterGroup findRosterGroup(Object parent, String grp) {
+	protected org.eclipse.ecf.presence.roster.RosterGroup findRosterGroup(
+			Object parent, String grp) {
 		final Collection items = roster.getItems();
 		for (final Iterator i = items.iterator(); i.hasNext();) {
 			final IRosterItem item = (IRosterItem) i.next();
@@ -917,7 +1060,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		return conn;
 	}
 
-	protected void traceAndThrowECFException(String msg, Throwable t) throws ECFException {
+	protected void traceAndThrowECFException(String msg, Throwable t)
+			throws ECFException {
 		throw new ECFException(msg, t);
 	}
 
@@ -932,7 +1076,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	protected ID createRoomIDFromName(String from) {
 		try {
 			final ECFConnection ecfConnection = getConnectionOrThrowIfNull();
-			return new XMPPRoomID(container.getConnectNamespace(), ecfConnection.getXMPPConnection(), from);
+			return new XMPPRoomID(container.getConnectNamespace(),
+					ecfConnection.getXMPPConnection(), from);
 		} catch (final Exception e) {
 			traceStack("Exception in createRoomIDFromName", e);
 			return null;
@@ -950,7 +1095,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 	}
 
-	protected Message.Type[] ALLOWED_MESSAGES = {Message.Type.CHAT, Message.Type.ERROR, Message.Type.HEADLINE, Message.Type.NORMAL};
+	protected Message.Type[] ALLOWED_MESSAGES = { Message.Type.CHAT,
+			Message.Type.ERROR, Message.Type.HEADLINE, Message.Type.NORMAL };
 
 	protected Message filterMessageType(Message msg) {
 		for (int i = 0; i < ALLOWED_MESSAGES.length; i++) {

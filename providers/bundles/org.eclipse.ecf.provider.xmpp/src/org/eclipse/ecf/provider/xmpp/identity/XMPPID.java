@@ -50,18 +50,19 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 
 	static {
 		escapeTable = new Hashtable(10);
-		escapeTable.put("@", new XMPPEscape(new char[] {'\\', '4', '0'}));
-		escapeTable.put("\"", new XMPPEscape(new char[] {'\\', '2', '2'}));
-		escapeTable.put("&", new XMPPEscape(new char[] {'\\', '2', '6'}));
-		escapeTable.put("'", new XMPPEscape(new char[] {'\\', '2', '7'}));
-		escapeTable.put("/", new XMPPEscape(new char[] {'\\', '2', 'f'}));
-		escapeTable.put(":", new XMPPEscape(new char[] {'\\', '3', 'a'}));
-		escapeTable.put("<", new XMPPEscape(new char[] {'\\', '3', 'c'}));
-		escapeTable.put(">", new XMPPEscape(new char[] {'\\', '3', 'e'}));
-		escapeTable.put("\\", new XMPPEscape(new char[] {'\\', '5', 'c'}));
+		escapeTable.put("@", new XMPPEscape(new char[] { '\\', '4', '0' }));
+		escapeTable.put("\"", new XMPPEscape(new char[] { '\\', '2', '2' }));
+		escapeTable.put("&", new XMPPEscape(new char[] { '\\', '2', '6' }));
+		escapeTable.put("'", new XMPPEscape(new char[] { '\\', '2', '7' }));
+		escapeTable.put("/", new XMPPEscape(new char[] { '\\', '2', 'f' }));
+		escapeTable.put(":", new XMPPEscape(new char[] { '\\', '3', 'a' }));
+		escapeTable.put("<", new XMPPEscape(new char[] { '\\', '3', 'c' }));
+		escapeTable.put(">", new XMPPEscape(new char[] { '\\', '3', 'e' }));
+		escapeTable.put("\\", new XMPPEscape(new char[] { '\\', '5', 'c' }));
 	}
 
-	// implements JEP-0106 JID escaping: http://www.xmpp.org/extensions/xep-0106.html
+	// implements JEP-0106 JID escaping:
+	// http://www.xmpp.org/extensions/xep-0106.html
 	static String fixEscapeInNode(String node) {
 		if (node == null)
 			return null;
@@ -96,15 +97,18 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	String resourcename;
 	int port = -1;
 
-	public XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
+	public XMPPID(Namespace namespace, String unamehost)
+			throws URISyntaxException {
 		super(namespace);
 		unamehost = fixPercentEscape(unamehost);
 		if (unamehost == null)
-			throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_XMPPID_USERNAME_NOT_NULL);
+			throw new URISyntaxException(unamehost,
+					Messages.XMPPID_EXCEPTION_XMPPID_USERNAME_NOT_NULL);
 		// Handle parsing of user@host/resource string
 		int atIndex = unamehost.lastIndexOf(USER_HOST_DELIMITER);
 		if (atIndex == -1)
-			throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_HOST_PORT_NOT_VALID);
+			throw new URISyntaxException(unamehost,
+					Messages.XMPPID_EXCEPTION_HOST_PORT_NOT_VALID);
 		username = fixEscapeInNode(unamehost.substring(0, atIndex));
 		final String remainder = unamehost.substring(atIndex + 1);
 		// Handle parsing of host:port
@@ -113,11 +117,13 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 			try {
 				final int slashLoc = remainder.indexOf(PATH_DELIMITER);
 				if (slashLoc != -1)
-					port = Integer.parseInt(remainder.substring(atIndex + 1, slashLoc));
+					port = Integer.parseInt(remainder.substring(atIndex + 1,
+							slashLoc));
 				else
 					port = Integer.parseInt(remainder.substring(atIndex + 1));
 			} catch (final NumberFormatException e) {
-				throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_INVALID_PORT);
+				throw new URISyntaxException(unamehost,
+						Messages.XMPPID_EXCEPTION_INVALID_PORT);
 			}
 			hostname = remainder.substring(0, atIndex);
 		}
@@ -131,7 +137,9 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		}
 		if (hostname == null)
 			hostname = remainder;
-		uri = new URI(namespace.getScheme(), username, hostname, port, PATH_DELIMITER + ((resourcename==null)?"":resourcename), null, null);
+		uri = new URI(namespace.getScheme(), username, hostname, port,
+				PATH_DELIMITER + ((resourcename == null) ? "" : resourcename),
+				null, null);
 	}
 
 	protected int namespaceCompareTo(BaseID o) {
@@ -143,7 +151,17 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 			return false;
 		}
 		final XMPPID other = (XMPPID) o;
-		return getUsernameAtHost().equals(other.getUsernameAtHost());
+		// Get resources from this and other
+		String thisResourceName = getResourceName();
+		String otherResourceName = other.getResourceName();
+		// The resources are considered equal if either one is null (not known
+		// yet), or they are equal by
+		// string comparison
+		boolean resourceEquals = (thisResourceName == null && otherResourceName == null)
+				|| (thisResourceName != null && otherResourceName != null && thisResourceName
+						.equals(otherResourceName));
+		return resourceEquals
+				&& getUsernameAtHost().equals(other.getUsernameAtHost());
 	}
 
 	protected String namespaceGetName() {
@@ -158,7 +176,9 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		return username;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceToExternalForm()
 	 */
 	protected String namespaceToExternalForm() {
@@ -186,12 +206,13 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	}
 
 	public String getUsernameAtHost() {
-		return getUsername() + USER_HOST_DELIMITER + getHostname() + ((getPort() == -1) ? "" : ":" + getPort());
+		return getUsername() + USER_HOST_DELIMITER + getHostname()
+				+ ((getPort() == -1) ? "" : ":" + getPort());
 	}
 
 	public String getFQName() {
 		String rn = getResourceName();
-		return getUsernameAtHost() + PATH_DELIMITER + ((rn==null)?"":rn);
+		return getUsernameAtHost() + PATH_DELIMITER + ((rn == null) ? "" : rn);
 	}
 
 	public String toString() {
