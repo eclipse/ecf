@@ -10,9 +10,9 @@ import org.eclipse.ecf.provider.generic.*;
 
 public abstract class AbstractGenericServer {
 
-	protected class Server extends TCPServerSOContainer {
+	protected class GenericServerContainer extends TCPServerSOContainer {
 
-		public Server(ISharedObjectContainerConfig config, TCPServerSOContainerGroup listener, String path, int keepAlive) {
+		public GenericServerContainer(ISharedObjectContainerConfig config, TCPServerSOContainerGroup listener, String path, int keepAlive) {
 			super(config, listener, path, keepAlive);
 		}
 
@@ -20,7 +20,7 @@ public abstract class AbstractGenericServer {
 
 	protected TCPServerSOContainerGroup serverGroup;
 
-	public List getServers() {
+	public List getServerContainers() {
 		List result = new ArrayList();
 		for (Iterator i = serverGroup.elements(); i.hasNext();) {
 			result.add(i.next());
@@ -28,8 +28,8 @@ public abstract class AbstractGenericServer {
 		return result;
 	}
 
-	public Server getServer() {
-		return (Server) getServers().get(0);
+	public GenericServerContainer getFirstServerContainer() {
+		return (GenericServerContainer) getServerContainers().get(0);
 	}
 
 	public AbstractGenericServer(String host, int port) {
@@ -55,9 +55,9 @@ public abstract class AbstractGenericServer {
 		if (serverGroup != null) {
 			serverGroup.takeOffTheAir();
 		}
-		List servers = getServers();
+		List servers = getServerContainers();
 		for (Iterator i = servers.iterator(); i.hasNext();) {
-			Server s = (Server) i.next();
+			GenericServerContainer s = (GenericServerContainer) i.next();
 			s.ejectAllGroupMembers("Shutting down immediately"); //$NON-NLS-1$
 			s.dispose();
 		}
@@ -70,20 +70,18 @@ public abstract class AbstractGenericServer {
 	protected void createAndInitializeServer(String path, int keepAlive) throws IDCreateException {
 		if (path == null || path.equals("")) //$NON-NLS-1$
 			throw new NullPointerException("Cannot create ID with null or empty path"); //$NON-NLS-1$
-		Server s = new Server(createServerConfig(path), serverGroup, path, keepAlive);
+		GenericServerContainer s = new GenericServerContainer(createServerConfig(path), serverGroup, path, keepAlive);
 		IConnectHandlerPolicy policy = createConnectHandlerPolicy(s, path);
 		if (policy != null)
 			s.setConnectPolicy(policy);
-		System.out.println("starting generic server " + s.getID().getName()); //$NON-NLS-1$
+		System.out.println("Starting server.  serverID=" + s.getID().getName()); //$NON-NLS-1$
 	}
 
 	protected PermissionCollection checkConnect(Object address, ID fromID, ID targetID, String targetGroup, Object connectData) throws Exception {
-		// Report connect
-		System.out.println("connect addr=" + address + ",from=" + fromID + ",to=" + targetID + ",group=" + targetGroup); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		return null;
 	}
 
-	protected IConnectHandlerPolicy createConnectHandlerPolicy(Server s, String path) {
+	protected IConnectHandlerPolicy createConnectHandlerPolicy(GenericServerContainer s, String path) {
 		return new IConnectHandlerPolicy() {
 			public PermissionCollection checkConnect(Object address, ID fromID, ID targetID, String targetGroup, Object connectData) throws Exception {
 				return AbstractGenericServer.this.checkConnect(address, fromID, targetID, targetGroup, connectData);

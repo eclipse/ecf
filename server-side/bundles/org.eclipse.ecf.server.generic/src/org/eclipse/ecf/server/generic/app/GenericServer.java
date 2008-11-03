@@ -119,9 +119,9 @@ public class GenericServer implements IApplication {
 					throw e;
 				}
 				serverGroups.put(hostnamePort, serverGroup);
-				System.out.println("GenericServer " + hostnamePort + " on the air."); //$NON-NLS-1$ //$NON-NLS-2$
+				System.out.println("GenericServerContainer " + hostnamePort + " on the air."); //$NON-NLS-1$ //$NON-NLS-2$
 			} else {
-				System.out.println("GenericServer " + hostnamePort //$NON-NLS-1$
+				System.out.println("GenericServerContainer " + hostnamePort //$NON-NLS-1$
 						+ " already on the air.  No changes made."); //$NON-NLS-1$
 			}
 		}
@@ -163,10 +163,10 @@ public class GenericServer implements IApplication {
 					}
 					serverGroup.putOnTheAir();
 					serverGroups.put(hostnamePort, serverGroup);
-					System.out.println("GenericServer " + hostnamePort //$NON-NLS-1$
+					System.out.println("GenericServerContainer " + hostnamePort //$NON-NLS-1$
 							+ " on the air."); //$NON-NLS-1$
 				} else {
-					System.out.println("GenericServer " + hostnamePort //$NON-NLS-1$
+					System.out.println("GenericServerContainer " + hostnamePort //$NON-NLS-1$
 							+ " already on the air.  No changes made."); //$NON-NLS-1$
 				}
 			}
