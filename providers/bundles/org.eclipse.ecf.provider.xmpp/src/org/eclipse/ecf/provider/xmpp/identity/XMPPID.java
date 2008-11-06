@@ -10,7 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.xmpp.identity;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -91,11 +90,10 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		return node;
 	}
 
-	URI uri;
-	String username;
-	String hostname;
-	String resourcename;
-	int port = -1;
+	protected String username;
+	protected String hostname;
+	protected String resourcename;
+	protected int port = -1;
 
 	public XMPPID(Namespace namespace, String unamehost)
 			throws URISyntaxException {
@@ -137,9 +135,6 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		}
 		if (hostname == null)
 			hostname = remainder;
-		uri = new URI(namespace.getScheme(), username, hostname, port,
-				PATH_DELIMITER + ((resourcename == null) ? "" : resourcename),
-				null, null);
 	}
 
 	protected int namespaceCompareTo(BaseID o) {
@@ -182,7 +177,7 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceToExternalForm()
 	 */
 	protected String namespaceToExternalForm() {
-		return uri.toASCIIString();
+		return getNamespace().getScheme()+"://"+getFQName();
 	}
 
 	public String getUsername() {
@@ -217,7 +212,7 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 
 	public String toString() {
 		final StringBuffer sb = new StringBuffer("XMPPID["); //$NON-NLS-1$
-		sb.append(uri.toString()).append("]");
+		sb.append(toExternalForm()).append("]");
 		return sb.toString();
 	}
 
