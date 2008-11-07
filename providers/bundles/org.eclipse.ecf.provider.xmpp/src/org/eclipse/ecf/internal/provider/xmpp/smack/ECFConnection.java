@@ -178,7 +178,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 						serverPort, jabberURI.getHostname());
 			} else {
 				serverPort = (serverPort < 0)?XMPP_DEFAULT_PORT:serverPort;
-				connection = new XMPPConnection(GOOGLE_TALK_HOST, serverPort,
+				connection = new XMPPConnection(serverName, serverPort,
 						jabberURI.getHostname());
 			}
 			connection.addPacketListener(packetListener, null);
