@@ -39,7 +39,6 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.sync,org.eclipse.ecf.sync"/>
 
 	<!-- Orbit bundles -->
-	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/ch.ethz.iks.slp,ch.ethz.iks.slp,v1_0_0"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.apache.commons.codec,org.apache.commons.codec,v1_2_0"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.apache.commons.httpclient,org.apache.commons.httpclient,v3_0_1"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.apache.commons.logging,org.apache.commons.logging,v1_0_4"/>
