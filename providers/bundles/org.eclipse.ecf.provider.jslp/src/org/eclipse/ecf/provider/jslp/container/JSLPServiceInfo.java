@@ -38,6 +38,7 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 		this(aSI.getLocation(), ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME), aSI.getServiceID().getServiceTypeID(), aSI.getServiceID().getServiceName()), aSI.getPriority(), aSI.getWeight(), aSI.getServiceProperties());
 	}
 
+	//If decided to transport prio, proto and weight as ServiceProperties, here would be a good place (remove prio and weight)
 	public JSLPServiceInfo(ServiceURLAdapter anAdapter, int priority, int weight, ServicePropertiesAdapter aServicePropertiesAdapter) {
 		this(anAdapter.getURI(), anAdapter.getIServiceID(), priority, weight, aServicePropertiesAdapter.toServiceProperties());
 	}
