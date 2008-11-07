@@ -101,12 +101,19 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		}
 	}
 
-	private static final String METHODS_CATCHING = Activator.PLUGIN_ID + "/debug/methods/catching"; //$NON-NLS-1$
+	protected static final String METHODS_CATCHING = Activator.PLUGIN_ID + "/debug/methods/catching"; //$NON-NLS-1$
 
-	private static final String METHODS_TRACING = Activator.PLUGIN_ID + "/debug/methods/tracing"; //$NON-NLS-1$
+	protected static final String METHODS_TRACING = Activator.PLUGIN_ID + "/debug/methods/tracing"; //$NON-NLS-1$
 
 	protected final CompositeContainerServiceListener ccsl = new CompositeContainerServiceListener();
 	protected final CompositeContainerServiceTypeListener ccstl = new CompositeContainerServiceTypeListener();
+
+	/**
+	 * History of services registered with this IDCA
+	 * 
+	 * Used on newly added IDCAs 
+	 */
+	protected Set registeredServices;
 
 	protected final List containers;
 
@@ -119,6 +126,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	public CompositeDiscoveryContainer(List containers) throws IDCreateException {
 		super(CompositeNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(CompositeDiscoveryContainer.class.getName())));
 		this.containers = containers;
+		this.registeredServices = new HashSet();
 	}
 
 	/* (non-Javadoc)
@@ -155,6 +163,9 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 				IContainer container = (IContainer) itr.next();
 				container.disconnect();
 			}
+		}
+		synchronized (registeredServices) {
+			registeredServices.clear();
 		}
 		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), getConnectedID()));
 	}
@@ -280,6 +291,9 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 */
 	public void registerService(IServiceInfo serviceInfo) throws ECFException {
 		Assert.isNotNull(serviceInfo);
+		synchronized (registeredServices) {
+			Assert.isTrue(registeredServices.add(serviceInfo));
+		}
 		synchronized (containers) {
 			for (Iterator itr = containers.iterator(); itr.hasNext();) {
 				IDiscoveryContainerAdapter dca = (IDiscoveryContainerAdapter) itr.next();
@@ -296,6 +310,10 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 */
 	public void unregisterService(IServiceInfo serviceInfo) throws ECFException {
 		Assert.isNotNull(serviceInfo);
+		synchronized (registeredServices) {
+			// no assert as unregisterService might be called with an non-existing ISI
+			registeredServices.remove(serviceInfo);
+		}
 		synchronized (containers) {
 			for (Iterator itr = containers.iterator(); itr.hasNext();) {
 				IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
@@ -311,6 +329,19 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @see java.util.List#add(java.lang.Object)
 	 */
 	public boolean addContainer(Object object) {
+		// register previously registered with the new IDS
+		synchronized (registeredServices) {
+			IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) object;
+			for (Iterator itr = registeredServices.iterator(); itr.hasNext();) {
+				IServiceInfo serviceInfo = (IServiceInfo) itr.next();
+				try {
+					idca.registerService(serviceInfo);
+				} catch (ECFException e) {
+					// we eat the exception here since the original registerService call is long done
+					Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "addContainer(Object)", e); //$NON-NLS-1$
+				}
+			}
+		}
 		synchronized (containers) {
 			Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "addContainer(Object)", "addContainer " //$NON-NLS-1$ //$NON-NLS-2$
 					+ object.toString());
