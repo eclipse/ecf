@@ -74,7 +74,6 @@ public abstract class AbstractGenericServer {
 		IConnectHandlerPolicy policy = createConnectHandlerPolicy(s, path);
 		if (policy != null)
 			s.setConnectPolicy(policy);
-		System.out.println("Starting server.  serverID=" + s.getID().getName()); //$NON-NLS-1$
 	}
 
 	protected PermissionCollection checkConnect(Object address, ID fromID, ID targetID, String targetGroup, Object connectData) throws Exception {
