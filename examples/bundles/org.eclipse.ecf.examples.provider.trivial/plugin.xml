@@ -19,5 +19,17 @@
             server="false">
       </containerFactory>
    </extension>
+   <extension
+         id="Trivial"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.eclipse.ecf.examples.provider.trivial.TrivialApplication">
+         </run>
+      </application>
+   </extension>
 
 </plugin>
