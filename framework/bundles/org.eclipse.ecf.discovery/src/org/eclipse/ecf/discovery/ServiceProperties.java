@@ -112,6 +112,12 @@ public class ServiceProperties implements IServiceProperties {
 		return props.hashCode();
 	}
 
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ServiceProperties["); //$NON-NLS-1$
+		buf.append(props).append("]"); //$NON-NLS-1$
+		return buf.toString();
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IServiceProperties#size()
 	 */
