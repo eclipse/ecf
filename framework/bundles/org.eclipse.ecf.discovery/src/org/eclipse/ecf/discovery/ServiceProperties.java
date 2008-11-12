@@ -112,6 +112,9 @@ public class ServiceProperties implements IServiceProperties {
 		return props.hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceProperties["); //$NON-NLS-1$
 		buf.append(props).append("]"); //$NON-NLS-1$
