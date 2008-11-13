@@ -167,7 +167,7 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 		assertTrue(count > eventCount);
 	}
 
-	protected void addProxy(final String proxyHost, final int port) throws Exception {
+	protected void addProxy(final String proxyHost, final int port, final String username, final String password) throws Exception {
 		IProxyService proxyService = Activator.getDefault().getProxyService();
 		proxyService.setProxiesEnabled(true);
 		proxyService.setSystemProxiesEnabled(false);
@@ -181,7 +181,7 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 			}
 	
 			public String getPassword() {
-				return null;
+				return password;
 			}
 	
 			public int getPort() {
@@ -193,11 +193,11 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 			}
 	
 			public String getUserId() {
-				return null;
+				return username;
 			}
 	
 			public boolean isRequiresAuthentication() {
-				return false;
+				return (username != null);
 			}
 	
 			public void setHost(String host) {
