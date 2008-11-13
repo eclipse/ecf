@@ -3,6 +3,8 @@ package org.eclipse.ecf.server.generic;
 import java.io.IOException;
 import java.security.PermissionCollection;
 import java.util.*;
+import org.eclipse.ecf.core.IContainerListener;
+import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectHandlerPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
@@ -12,10 +14,35 @@ public abstract class AbstractGenericServer {
 
 	protected class GenericServerContainer extends TCPServerSOContainer {
 
+		private IContainerListener departedListener = new IContainerListener() {
+			public void handleEvent(IContainerEvent event) {
+				if (event instanceof IContainerDisconnectedEvent) {
+					IContainerDisconnectedEvent de = (IContainerDisconnectedEvent) event;
+					handleDisconnect(de.getTargetID());
+				} else if (event instanceof IContainerEjectedEvent) {
+					IContainerEjectedEvent de = (IContainerEjectedEvent) event;
+					handleEject(de.getTargetID());
+				}
+			}
+		};
+
 		public GenericServerContainer(ISharedObjectContainerConfig config, TCPServerSOContainerGroup listener, String path, int keepAlive) {
 			super(config, listener, path, keepAlive);
+			addListener(departedListener);
 		}
 
+		public void dispose() {
+			removeListener(departedListener);
+			super.dispose();
+		}
+	}
+
+	protected void handleDisconnect(ID targetID) {
+		// nothing to do
+	}
+
+	protected void handleEject(ID targetID) {
+		// nothing to do
 	}
 
 	protected TCPServerSOContainerGroup serverGroup;
