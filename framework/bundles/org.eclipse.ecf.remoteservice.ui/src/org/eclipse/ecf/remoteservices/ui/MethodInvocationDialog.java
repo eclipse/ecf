@@ -222,7 +222,7 @@ public final class MethodInvocationDialog extends Dialog {
 			}
 		});
 
-		parametersViewer = new TableViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		parametersViewer = new TableViewer(composite, SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.BORDER);
 		parametersViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		parametersViewer.setContentProvider(new ArrayContentProvider());
 		parametersViewer.setLabelProvider(new ITableLabelProvider() {
