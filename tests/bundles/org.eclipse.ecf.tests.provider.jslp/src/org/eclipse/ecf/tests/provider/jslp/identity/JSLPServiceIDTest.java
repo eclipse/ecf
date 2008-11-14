@@ -28,6 +28,9 @@ import ch.ethz.iks.slp.ServiceURL;
 
 public class JSLPServiceIDTest extends ServiceIDTest {
 
+	private static final int WEIGHT = 43;
+	private static final int PRIORITY = 42;
+	private static final String ASERVICENAME = "aServicename";
 	private static final String IANA = "iana";
 
 	public JSLPServiceIDTest() {
@@ -79,8 +82,11 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		final String internalRep = "service:foo.eclipse:bar";
 		final ServiceURL sUrl = new ServiceURL(internalRep + "://localhost:1234/a/path/to/something", ServiceURL.LIFETIME_PERMANENT);
 
-		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl), -1, -1, new ServicePropertiesAdapter(new ArrayList()));
+		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, "aServiceNameString"), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
+		assertEquals(serviceInfo.getPriority(), PRIORITY);
+		assertEquals(serviceInfo.getWeight(), WEIGHT);
 		final IServiceID sid = serviceInfo.getServiceID();
+		assertEquals(sid.getServiceName(), ASERVICENAME);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 		
 		String internal = stid.getInternal();
@@ -102,8 +108,11 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		final String internalRep = "service:service:foo.eclipse:bar";
 		final ServiceURL sUrl = new ServiceURL(internalRep + "://localhost:1234/a/path/to/something", ServiceURL.LIFETIME_PERMANENT);
 
-		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl), -1, -1, new ServicePropertiesAdapter(new ArrayList()));
+		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, ASERVICENAME), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
+		assertEquals(serviceInfo.getPriority(), PRIORITY);
+		assertEquals(serviceInfo.getWeight(), WEIGHT);
 		final IServiceID sid = serviceInfo.getServiceID();
+		assertEquals(sid.getServiceName(), ASERVICENAME);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 		
 		assertEquals(internalRep, stid.getInternal());

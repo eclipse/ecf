@@ -39,11 +39,9 @@ public class JSLPTestComparator implements Comparator {
 			IServiceTypeID firstTypeID = firstID.getServiceTypeID();
 			IServiceTypeID secondTypeID = secondID.getServiceTypeID();
 			
-			//TODO-mkuppe No prio, weight and protocol atm in the JSLP testcase
 			boolean protocolsSame = Arrays.equals(firstTypeID.getProtocols(), secondTypeID.getProtocols());
 			boolean weightSame = first.getWeight() == second.getWeight();
 			boolean prioSame = first.getPriority() == second.getPriority();
-
 			String firstName = firstID.getName();
 			String secondName = secondID.getName();
 			boolean nameSame = firstName.equals(secondName);
@@ -61,7 +59,7 @@ public class JSLPTestComparator implements Comparator {
 			boolean locationSame = firstLocation.equals(secondLocation);
 			boolean scopesSame = Arrays.equals(firstTypeID.getScopes(), secondTypeID.getScopes());
 			boolean propertySame = first.getServiceProperties().equals(second.getServiceProperties());
-			boolean result = nameSame && namespaceSame && serviceSame && naSame && locationSame && scopesSame && propertySame;
+			boolean result = protocolsSame && weightSame && prioSame && nameSame && namespaceSame && serviceSame && naSame && locationSame && scopesSame && propertySame;
 			if(result == true) {
 				return 0;
 			}
