@@ -26,14 +26,14 @@ public class ServiceURLAdapter {
 	private URI uri;
 	private IServiceID serviceID;
 
-	public ServiceURLAdapter(ServiceURL aServiceURL) {
-		this(aServiceURL, new String[0]);
+	public ServiceURLAdapter(ServiceURL aServiceURL, String aServiceName) {
+		this(aServiceURL, aServiceName, new String[0]);
 	}
 
-	public ServiceURLAdapter(ServiceURL aServiceURL, String[] scopes) {
+	public ServiceURLAdapter(ServiceURL aServiceURL, String aServiceName, String[] scopes) {
 		Assert.isNotNull(aServiceURL);
 		Assert.isNotNull(scopes);
-		setIServiceID(aServiceURL, scopes);
+		setIServiceID(aServiceURL, aServiceName, scopes);
 		setURI(aServiceURL);
 	}
 
@@ -57,10 +57,10 @@ public class ServiceURLAdapter {
 		uri = URI.create(buf.toString());
 	}
 
-	private void setIServiceID(ServiceURL aServiceURL, String[] scopes) {
+	private void setIServiceID(ServiceURL aServiceURL, String aServiceName, String[] scopes) {
 		Namespace namespace = IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME);
 		try {
-			serviceID = (IServiceID) namespace.createInstance(new Object[] {aServiceURL, scopes});
+			serviceID = (IServiceID) namespace.createInstance(new Object[] {aServiceURL, aServiceName, scopes});
 		} catch (IDCreateException e) {
 			// may never happen
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "setIServiceID", e); //$NON-NLS-1$

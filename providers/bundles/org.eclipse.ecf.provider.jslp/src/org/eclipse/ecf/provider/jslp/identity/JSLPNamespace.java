@@ -28,7 +28,7 @@ public class JSLPNamespace extends Namespace {
 	 */
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		// error case
-		if (parameters == null || parameters.length < 1 || parameters.length > 2) {
+		if (parameters == null || parameters.length < 1 || parameters.length > 3) {
 			throw new IDCreateException(Messages.JSLPNamespace_2);
 
 			// error case
@@ -38,8 +38,9 @@ public class JSLPNamespace extends Namespace {
 			// create by jSLP ServiceURL
 		} else if (parameters[0] instanceof ServiceURL) {
 			ServiceURL anURL = (ServiceURL) parameters[0];
-			IServiceTypeID stid = new JSLPServiceTypeID(this, anURL, (String[]) parameters[1]);
-			return new JSLPServiceID(this, stid, anURL.getHost());
+			IServiceTypeID stid = new JSLPServiceTypeID(this, anURL, (String[]) parameters[2]);
+			String serviceName = (String) (parameters[2] != null ? parameters[1] : anURL.getHost());
+			return new JSLPServiceID(this, stid, serviceName);
 
 			// conversion call where conversion isn't necessary
 		} else if (parameters[0] instanceof JSLPServiceID) {
@@ -106,6 +107,6 @@ public class JSLPNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { {String.class}, {String.class, String.class}, {ServiceURL.class}, {IServiceTypeID.class}, {IServiceID.class}, {ServiceType.class, String.class}};
+		return new Class[][] { {String.class}, {String.class, String.class}, {ServiceURL.class, String[].class, String.class}, {IServiceTypeID.class}, {IServiceID.class}, {ServiceType.class, String.class}};
 	}
 }

@@ -14,17 +14,35 @@ import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.*;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 
 /**
  * Adapts SLP's service properties to ECF's ServiceProperties and vice versa
  * @see "http://www.ietf.org/rfc/rfc2608.txt page. 10ff"
  */
 public class ServicePropertiesAdapter {
+	/**
+	 * SLP attribute key for org.eclipse.ecf.discovery.identity.IServiceID.getServiceName()
+	 */
+	private static final String SERVICE_ID_NAME = "X-ECF-SERVICE_ID_NAME"; //$NON-NLS-1$
+	/**
+	 * SLP attribute key for org.eclipse.ecf.discovery.IServiceInfo.getPriority()
+	 */
+	private static final String PRIORITY = "X-ECF-PRIORITY"; //$NON-NLS-1$
+	public static final int PRIORITY_UNSET = -1;
+	/**
+	 * SLP attribute key for org.eclipse.ecf.discovery.IServiceInfo.getWeight()
+	 */
+	private static final String WEIGHT = "X-ECF-WEIGHT"; //$NON-NLS-1$
+	public static final int WEIGHT_UNSET = -1;
 
 	private static final String SLP_BYTE_PREFIX = "\\FF"; //$NON-NLS-1$
 	private IServiceProperties serviceProperties;
+
+	private String serviceName;
+	private int priority = PRIORITY_UNSET;
+	private int weight = WEIGHT_UNSET;
 
 	public ServicePropertiesAdapter(List aList) {
 		Assert.isNotNull(aList);
@@ -38,7 +56,13 @@ public class ServicePropertiesAdapter {
 			// remove the brackets "( )" from the string value which are added by jSLP for the LDAP style string representation
 			String key = str[0].substring(1);
 			String value = str[1].substring(0, str[1].length() - 1);
-			if (value.startsWith(SLP_BYTE_PREFIX)) {
+			if (key.equals(SERVICE_ID_NAME)) {
+				serviceName = value;
+			} else if (key.equals(PRIORITY)) {
+				priority = Integer.parseInt(value);
+			} else if (key.equals(WEIGHT)) {
+				weight = Integer.parseInt(value);
+			} else if (value.startsWith(SLP_BYTE_PREFIX)) {
 				String[] strs = StringUtils.split(value.substring(4), "\\"); //$NON-NLS-1$
 				byte[] b = new byte[strs.length];
 				for (int i = 0; i < strs.length; i++) {
@@ -55,9 +79,17 @@ public class ServicePropertiesAdapter {
 		}
 	}
 
-	public ServicePropertiesAdapter(IServiceProperties aServiceProperties) {
-		Assert.isNotNull(aServiceProperties);
-		serviceProperties = aServiceProperties;
+	public ServicePropertiesAdapter(IServiceInfo sInfo) {
+		Assert.isNotNull(sInfo);
+		IServiceID sID = sInfo.getServiceID();
+		Assert.isNotNull(sID);
+		IServiceProperties sp = sInfo.getServiceProperties();
+		Assert.isNotNull(sp);
+
+		serviceProperties = new ServiceProperties(sp);
+		serviceProperties.setPropertyString(PRIORITY, new Integer(sInfo.getPriority()).toString());
+		serviceProperties.setPropertyString(WEIGHT, new Integer(sInfo.getWeight()).toString());
+		serviceProperties.setPropertyString(SERVICE_ID_NAME, sID.getServiceName());
 	}
 
 	private boolean isInteger(String value) {
@@ -92,5 +124,26 @@ public class ServicePropertiesAdapter {
 			}
 		}
 		return dict;
+	}
+
+	/**
+	 * @return weight or -1 for unset
+	 */
+	public int getWeight() {
+		return weight;
+	}
+
+	/**
+	 * @return priority or -1 for unset
+	 */
+	public int getPriority() {
+		return priority;
+	}
+
+	/**
+	 * @return Service name or null
+	 */
+	public String getServiceName() {
+		return serviceName;
 	}
 }

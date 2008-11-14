@@ -183,7 +183,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 		try {
 			JSLPServiceInfo si = new JSLPServiceInfo(aServiceInfo);
 			IServiceTypeID stid = si.getServiceID().getServiceTypeID();
-			Activator.getDefault().getAdvertiser().register(si.getServiceURL(), Arrays.asList(stid.getScopes()), new ServicePropertiesAdapter(si.getServiceProperties()).toProperties());
+			Activator.getDefault().getAdvertiser().register(si.getServiceURL(), Arrays.asList(stid.getScopes()), new ServicePropertiesAdapter(si).toProperties());
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "registerService(IServiceInfo)", e); //$NON-NLS-1$
 			throw new ECFException(e.getMessage(), e);
@@ -212,8 +212,8 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 		for (Iterator itr = serviceURLs.entrySet().iterator(); itr.hasNext();) {
 			Map.Entry entry = (Entry) itr.next();
 			ServiceURL url = (ServiceURL) entry.getKey();
-			//TODO-mkuppe https://bugs.eclipse.org/230182
-			IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, scopes), -1, -1, new ServicePropertiesAdapter((List) entry.getValue()));
+			ServicePropertiesAdapter spa = new ServicePropertiesAdapter((List) entry.getValue());
+			IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, spa.getServiceName(), scopes), spa.getPriority(), spa.getWeight(), spa);
 			tmp.add(serviceInfo);
 		}
 		return (IServiceInfo[]) tmp.toArray(new IServiceInfo[tmp.size()]);

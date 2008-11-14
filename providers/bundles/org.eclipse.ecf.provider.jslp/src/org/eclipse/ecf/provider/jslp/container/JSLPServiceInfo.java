@@ -29,16 +29,18 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 		super(anURI, serviceID, priority, weight, props);
 	}
 
+	/**
+	 * @param serviceID
+	 * @deprecated
+	 */
 	public JSLPServiceInfo(IServiceID serviceID) {
-		//TODO-mkuppe https://bugs.eclipse.org/230182
-		super(null, serviceID, -1, -1, new ServiceProperties());
+		super(null, serviceID, ServicePropertiesAdapter.PRIORITY_UNSET, ServicePropertiesAdapter.WEIGHT_UNSET, new ServiceProperties());
 	}
 
 	public JSLPServiceInfo(IServiceInfo aSI) throws IDCreateException, SecurityException {
 		this(aSI.getLocation(), ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME), aSI.getServiceID().getServiceTypeID(), aSI.getServiceID().getServiceName()), aSI.getPriority(), aSI.getWeight(), aSI.getServiceProperties());
 	}
 
-	//If decided to transport prio, proto and weight as ServiceProperties, here would be a good place (remove prio and weight)
 	public JSLPServiceInfo(ServiceURLAdapter anAdapter, int priority, int weight, ServicePropertiesAdapter aServicePropertiesAdapter) {
 		this(anAdapter.getURI(), anAdapter.getIServiceID(), priority, weight, aServicePropertiesAdapter.toServiceProperties());
 	}

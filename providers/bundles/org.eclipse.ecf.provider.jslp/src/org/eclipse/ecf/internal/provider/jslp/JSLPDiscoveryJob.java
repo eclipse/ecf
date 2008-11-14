@@ -49,9 +49,8 @@ public final class JSLPDiscoveryJob extends Job {
 				if (removedServices.containsKey(url)) {
 					removedServices.remove(url);
 				} else { // we don't know the service, so we need to create the
-					// service discovery object
-					//TODO-mkuppe do we get meaningful values for ServiceProperties (SLP attributes?), priority and weight from SLP?
-					IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url), -1, -1, new ServicePropertiesAdapter((List) entry.getValue()));
+					ServicePropertiesAdapter spa = new ServicePropertiesAdapter((List) entry.getValue());
+					IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, spa.getServiceName()), spa.getPriority(), spa.getWeight(), spa);
 					services.put(url, serviceInfo);
 					discoveryContainer.fireServiceDiscovered(serviceInfo);
 				}
