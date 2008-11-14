@@ -183,7 +183,11 @@ public abstract class AbstractRemoteServiceAccessHandler implements IServiceAcce
 	protected void showException(final Throwable t) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MessageDialog.openInformation(null, Messages.AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TITLE, NLS.bind(Messages.AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TEXT, t.getLocalizedMessage()));
+				String msg = t.toString();
+				if (t.getCause() != null) {
+					msg += t.getCause().toString();
+				}
+				MessageDialog.openInformation(null, Messages.AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TITLE, NLS.bind(Messages.AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TEXT, msg));
 			}
 		});
 	}
