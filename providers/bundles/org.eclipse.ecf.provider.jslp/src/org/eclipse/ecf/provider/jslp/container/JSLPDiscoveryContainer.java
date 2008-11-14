@@ -48,15 +48,11 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void connect(ID aTargetID, IConnectContext connectContext) throws ContainerConnectException {
-		if (this.discoveryJob != null || getConfig() == null) {
+		if (getConfig() == null) {
 			throw new ContainerConnectException(Messages.JSLPDiscoveryContainer_0);
 		}
 		targetID = (aTargetID == null) ? getConfig().getID() : aTargetID;
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), aTargetID, connectContext));
-
-		discoveryJob = new JSLPDiscoveryJob(this);
-		discoveryJob.schedule();
-
 		fireContainerEvent(new ContainerConnectedEvent(this.getID(), aTargetID));
 	}
 
@@ -221,5 +217,37 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 			tmp.add(serviceInfo);
 		}
 		return (IServiceInfo[]) tmp.toArray(new IServiceInfo[tmp.size()]);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.IServiceListener)
+	 */
+	public void addServiceListener(IServiceListener listener) {
+		instantiateDiscoveryJob();
+		super.addServiceListener(listener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)
+	 */
+	public void addServiceListener(IServiceTypeID type, IServiceListener listener) {
+		instantiateDiscoveryJob();
+		super.addServiceListener(type, listener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#addServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)
+	 */
+	public void addServiceTypeListener(IServiceTypeListener listener) {
+		instantiateDiscoveryJob();
+		super.addServiceTypeListener(listener);
+	}
+
+	// done here for lazyness
+	private synchronized void instantiateDiscoveryJob() {
+		if (discoveryJob == null) {
+			discoveryJob = new JSLPDiscoveryJob(this);
+			discoveryJob.schedule();
+		}
 	}
 }
