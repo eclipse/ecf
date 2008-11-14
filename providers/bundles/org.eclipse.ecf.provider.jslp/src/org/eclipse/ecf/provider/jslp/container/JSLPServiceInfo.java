@@ -34,7 +34,7 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 	 * @deprecated
 	 */
 	public JSLPServiceInfo(IServiceID serviceID) {
-		super(null, serviceID, ServicePropertiesAdapter.PRIORITY_UNSET, ServicePropertiesAdapter.WEIGHT_UNSET, new ServiceProperties());
+		super(null, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
 	}
 
 	public JSLPServiceInfo(IServiceInfo aSI) throws IDCreateException, SecurityException {

@@ -33,19 +33,17 @@ public class ServicePropertiesAdapter {
 	 * SLP attribute key for org.eclipse.ecf.discovery.IServiceInfo.getPriority()
 	 */
 	private static final String PRIORITY = "x-" + ECLIPSE_ENTERPRISE_NUMBER + "-PRIORITY"; //$NON-NLS-1$ //$NON-NLS-2$
-	public static final int PRIORITY_UNSET = -1;
 	/**
 	 * SLP attribute key for org.eclipse.ecf.discovery.IServiceInfo.getWeight()
 	 */
 	private static final String WEIGHT = "x-" + ECLIPSE_ENTERPRISE_NUMBER + "-WEIGHT"; //$NON-NLS-1$ //$NON-NLS-2$
-	public static final int WEIGHT_UNSET = -1;
 
 	private static final String SLP_BYTE_PREFIX = "\\FF"; //$NON-NLS-1$
 	private IServiceProperties serviceProperties;
 
 	private String serviceName;
-	private int priority = PRIORITY_UNSET;
-	private int weight = WEIGHT_UNSET;
+	private int priority = ServiceInfo.DEFAULT_PRIORITY;
+	private int weight = ServiceInfo.DEFAULT_WEIGHT;
 
 	public ServicePropertiesAdapter(List aList) {
 		Assert.isNotNull(aList);
@@ -90,9 +88,15 @@ public class ServicePropertiesAdapter {
 		Assert.isNotNull(sp);
 
 		serviceProperties = new ServiceProperties(sp);
-		serviceProperties.setPropertyString(PRIORITY, new Integer(sInfo.getPriority()).toString());
-		serviceProperties.setPropertyString(WEIGHT, new Integer(sInfo.getWeight()).toString());
-		serviceProperties.setPropertyString(SERVICE_ID_NAME, sID.getServiceName());
+		if (sInfo.getPriority() >= 0) {
+			serviceProperties.setPropertyString(PRIORITY, new Integer(sInfo.getPriority()).toString());
+		}
+		if (sInfo.getWeight() >= 0) {
+			serviceProperties.setPropertyString(WEIGHT, new Integer(sInfo.getWeight()).toString());
+		}
+		if (sID.getServiceName() != null) {
+			serviceProperties.setPropertyString(SERVICE_ID_NAME, sID.getServiceName());
+		}
 	}
 
 	private boolean isInteger(String value) {
