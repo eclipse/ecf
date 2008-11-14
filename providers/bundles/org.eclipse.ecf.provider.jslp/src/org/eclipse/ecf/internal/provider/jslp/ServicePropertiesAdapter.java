@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.provider.jslp;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.util.StringUtils;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceProperties;
 
@@ -30,6 +31,10 @@ public class ServicePropertiesAdapter {
 		serviceProperties = new ServiceProperties();
 		for (Iterator itr = aList.iterator(); itr.hasNext();) {
 			String[] str = StringUtils.split((String) itr.next(), "="); //$NON-NLS-1$
+			if (str.length != 2) {
+				Trace.trace(Activator.PLUGIN_ID, "/debug/methods/tracing", this.getClass(), "ServicePropertiesAdapter(List)", "Skipped broken service attribute " + str); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+				continue;
+			}
 			// remove the brackets "( )" from the string value which are added by jSLP for the LDAP style string representation
 			String key = str[0].substring(1);
 			String value = str[1].substring(0, str[1].length() - 1);
