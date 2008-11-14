@@ -13,7 +13,6 @@ package org.eclipse.ecf.internal.provider.jslp;
 import ch.ethz.iks.slp.Advertiser;
 import ch.ethz.iks.slp.Locator;
 import java.util.Properties;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -21,6 +20,7 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
 import org.osgi.framework.*;
+import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 	// The shared instance
@@ -38,10 +38,10 @@ public class Activator implements BundleActivator {
 
 	// we need to keep a ref on our context
 	// @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=108214
-	volatile BundleContext bundleContext;
+	private volatile BundleContext bundleContext;
 
-	volatile LocatorDecorator locator = new NullPatternLocator();
-	volatile Advertiser advertiser = new NullPatternAdvertiser();
+	private volatile ServiceTracker locatorSt;
+	private volatile ServiceTracker advertiserSt;
 
 	/**
 	 * The constructor
@@ -55,12 +55,20 @@ public class Activator implements BundleActivator {
 	}
 
 	public LocatorDecorator getLocator() {
-		Assert.isNotNull(locator);
-		return locator;
+		locatorSt.open();
+		Locator aLocator = (Locator) locatorSt.getService();
+		if (aLocator == null) {
+			return new NullPatternLocator();
+		}
+		return new LocatorDecoratorImpl(aLocator);
 	}
 
 	public Advertiser getAdvertiser() {
-		Assert.isNotNull(advertiser);
+		advertiserSt.open();
+		Advertiser advertiser = (Advertiser) advertiserSt.getService();
+		if (advertiser == null) {
+			return new NullPatternAdvertiser();
+		}
 		return advertiser;
 	}
 
@@ -73,45 +81,16 @@ public class Activator implements BundleActivator {
 		bundleContext = context;
 
 		// initially get the locator and add a life cycle listener
-		final ServiceReference lRef = context.getServiceReference(Locator.class.getName());
-		if (lRef != null) {
-			locator = new LocatorDecoratorImpl((Locator) context.getService(lRef));
-		}
-		context.addServiceListener(new ServiceListener() {
-			public void serviceChanged(ServiceEvent event) {
-				switch (event.getType()) {
-					case ServiceEvent.REGISTERED :
-						Object service = bundleContext.getService(event.getServiceReference());
-						locator = new LocatorDecoratorImpl((Locator) service);
-						break;
-					case ServiceEvent.UNREGISTERING :
-						locator = new NullPatternLocator();
-						break;
-				}
-			}
-		}, "(" + Constants.OBJECTCLASS + "=" + Locator.class.getName() + ")"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+		locatorSt = new ServiceTracker(context, Locator.class.getName(), null);
 
 		// initially get the advertiser and add a life cycle listener
-		final ServiceReference aRef = context.getServiceReference(Advertiser.class.getName());
-		if (aRef != null) {
-			advertiser = (Advertiser) context.getService(aRef);
-		}
-		context.addServiceListener(new ServiceListener() {
-			public void serviceChanged(ServiceEvent event) {
-				switch (event.getType()) {
-					case ServiceEvent.REGISTERED :
-						advertiser = (Advertiser) bundleContext.getService(event.getServiceReference());
-						break;
-					case ServiceEvent.UNREGISTERING :
-						advertiser = new NullPatternAdvertiser();
-						break;
-				}
-			}
-		}, "(" + Constants.OBJECTCLASS + "=" + Advertiser.class.getName() + ")"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+		advertiserSt = new ServiceTracker(context, Advertiser.class.getName(), null);
 
+		// register ourself as an OSGi service
 		Properties props = new Properties();
 		props.put(IDiscoveryService.CONTAINER_ID, IDFactory.getDefault().createStringID("org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer")); //$NON-NLS-1$
 		props.put(IDiscoveryService.CONTAINER_NAME, JSLPDiscoveryContainer.NAME);
+		props.put(Constants.SERVICE_RANKING, new Integer(500));
 
 		context.registerService(IDiscoveryService.class.getName(), new ServiceFactory() {
 			private volatile JSLPDiscoveryContainer jdc;
@@ -139,6 +118,7 @@ public class Activator implements BundleActivator {
 			 */
 			public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
 				//TODO-mkuppe we later might want to dispose jSLP when the last!!! consumer ungets the service 
+				//Though don't forget about the (ECF) Container which might still be in use
 			}
 		}, props);
 	}
@@ -152,5 +132,13 @@ public class Activator implements BundleActivator {
 		//TODO-mkuppe here we should do something like a deregisterAll(), but see ungetService(...);
 		plugin = null;
 		bundleContext = null;
+		if (advertiserSt != null) {
+			advertiserSt.close();
+			advertiserSt = null;
+		}
+		if (locatorSt != null) {
+			locatorSt.close();
+			locatorSt = null;
+		}
 	}
 }
