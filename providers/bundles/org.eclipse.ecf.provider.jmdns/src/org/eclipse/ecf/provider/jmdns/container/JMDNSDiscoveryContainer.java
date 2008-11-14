@@ -479,7 +479,8 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		props.put(SCHEME_PROPERTY, location.getScheme());
 		int priority = (serviceInfo.getPriority() == -1) ? 0 : serviceInfo.getPriority();
 		int weight = (serviceInfo.getWeight() == -1) ? 0 : serviceInfo.getWeight();
-		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), sID.getServiceName(), location.getPort(), priority, weight, props);
+		final String serviceName = sID.getServiceName() == null ? location.getHost() : sID.getServiceName();
+		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), serviceName, location.getPort(), priority, weight, props);
 		return si;
 	}
 
