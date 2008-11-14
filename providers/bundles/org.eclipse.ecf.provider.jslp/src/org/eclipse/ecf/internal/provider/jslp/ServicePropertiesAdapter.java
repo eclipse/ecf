@@ -22,19 +22,22 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
  * @see "http://www.ietf.org/rfc/rfc2608.txt page. 10ff"
  */
 public class ServicePropertiesAdapter {
+	// http://www.iana.org/assignments/enterprise-numbers
+	private static final String ECLIPSE_ENTERPRISE_NUMBER = "28392"; //$NON-NLS-1$
+
 	/**
 	 * SLP attribute key for org.eclipse.ecf.discovery.identity.IServiceID.getServiceName()
 	 */
-	private static final String SERVICE_ID_NAME = "X-ECF-SERVICE_ID_NAME"; //$NON-NLS-1$
+	private static final String SERVICE_ID_NAME = "x-" + ECLIPSE_ENTERPRISE_NUMBER + "-SERVICE_ID_NAME"; //$NON-NLS-1$ //$NON-NLS-2$
 	/**
 	 * SLP attribute key for org.eclipse.ecf.discovery.IServiceInfo.getPriority()
 	 */
-	private static final String PRIORITY = "X-ECF-PRIORITY"; //$NON-NLS-1$
+	private static final String PRIORITY = "x-" + ECLIPSE_ENTERPRISE_NUMBER + "-PRIORITY"; //$NON-NLS-1$ //$NON-NLS-2$
 	public static final int PRIORITY_UNSET = -1;
 	/**
 	 * SLP attribute key for org.eclipse.ecf.discovery.IServiceInfo.getWeight()
 	 */
-	private static final String WEIGHT = "X-ECF-WEIGHT"; //$NON-NLS-1$
+	private static final String WEIGHT = "x-" + ECLIPSE_ENTERPRISE_NUMBER + "-WEIGHT"; //$NON-NLS-1$ //$NON-NLS-2$
 	public static final int WEIGHT_UNSET = -1;
 
 	private static final String SLP_BYTE_PREFIX = "\\FF"; //$NON-NLS-1$
@@ -56,11 +59,11 @@ public class ServicePropertiesAdapter {
 			// remove the brackets "( )" from the string value which are added by jSLP for the LDAP style string representation
 			String key = str[0].substring(1);
 			String value = str[1].substring(0, str[1].length() - 1);
-			if (key.equals(SERVICE_ID_NAME)) {
+			if (key.equalsIgnoreCase(SERVICE_ID_NAME)) {
 				serviceName = value;
-			} else if (key.equals(PRIORITY)) {
+			} else if (key.equalsIgnoreCase(PRIORITY)) {
 				priority = Integer.parseInt(value);
-			} else if (key.equals(WEIGHT)) {
+			} else if (key.equalsIgnoreCase(WEIGHT)) {
 				weight = Integer.parseInt(value);
 			} else if (value.startsWith(SLP_BYTE_PREFIX)) {
 				String[] strs = StringUtils.split(value.substring(4), "\\"); //$NON-NLS-1$
