@@ -17,12 +17,5 @@
             description="JMDNS Namespace"
             name="ecf.namespace.jmdns"/>
    </extension>
-   <extension
-         point="org.eclipse.ecf.start">
-      <run
-            asynchronous="true"
-            class="org.eclipse.ecf.internal.provider.jmdns.DiscoveryStart">
-      </run>
-   </extension>
 
 </plugin>
