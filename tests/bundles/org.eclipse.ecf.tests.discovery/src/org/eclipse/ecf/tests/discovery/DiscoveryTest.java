@@ -129,7 +129,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		serviceProperties.setProperty(DiscoveryTest.class.getName() + "servicePropertiesIntegerMin", new Integer(Integer.MAX_VALUE));
 		serviceProperties.setProperty(DiscoveryTest.class.getName() + "servicePropertiesBoolean", new Boolean(false));
 		serviceProperties.setPropertyBytes(DiscoveryTest.class.getName() + "servicePropertiesByte", new byte[]{'a', 'b', 'c', 'd'});
-		serviceInfo = new ServiceInfo(uri, serviceID, 0, 0, serviceProperties);
+		serviceInfo = new ServiceInfo(uri, serviceID, 1, 1, serviceProperties);
 		assertNotNull(serviceInfo);
 
 		IServiceID serviceID2 = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {"_service._ecf._tests2._fooProtocol.fooScope._fooNA", getHost()});
