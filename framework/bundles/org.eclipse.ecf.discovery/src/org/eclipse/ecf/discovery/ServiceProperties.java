@@ -28,6 +28,21 @@ public class ServiceProperties implements IServiceProperties {
 		this.props = (props == null) ? new Properties() : props;
 	}
 
+	/**
+	 * Creates a copy of the given {@link IServiceProperties}
+	 * @param sp
+	 * @since 2.1
+	 */
+	public ServiceProperties(IServiceProperties sp) {
+		props = new Properties();
+		Enumeration names = sp.getPropertyNames();
+		while (names.hasMoreElements()) {
+			String key = (String) names.nextElement();
+			Object value = sp.getProperty(key);
+			props.put(key, value);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
