@@ -13,6 +13,7 @@ package org.eclipse.ecf.discovery.ui.views;
 import java.util.*;
 import java.util.List;
 import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -145,21 +146,26 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 		initializeDiscoveryTracker();
 	}
 
-	protected void addDiscoveryContainer(IDiscoveryContainerAdapter discovery) {
-		IServiceInfo[] existingServices = null;
+	protected void addDiscoveryContainer(final IDiscoveryContainerAdapter discovery) {
 		synchronized (discoveryContainers) {
 			if (!discoveryContainers.containsKey(discovery)) {
 				IServiceListener l = new DiscoveryViewServiceListener();
 				discovery.addServiceListener(l);
 				discoveryContainers.put(discovery, l);
 
-				existingServices = discovery.getServices();
-				// Now show any previously discovered services
-				if (existingServices != null) {
-					for (int i = 0; i < existingServices.length; i++) {
-						addServiceInfo(existingServices[i]);
+				Job job = new Job("Getting services...") { //$NON-NLS-1$
+					protected IStatus run(IProgressMonitor monitor) {
+						IServiceInfo[] existingServices = discovery.getServices();
+						// Now show any previously discovered services
+						if (existingServices != null) {
+							for (int i = 0; i < existingServices.length; i++) {
+								addServiceInfo(existingServices[i]);
+							}
+						}
+						return Status.OK_STATUS;
 					}
-				}
+				};
+				job.schedule();
 
 			}
 		}
