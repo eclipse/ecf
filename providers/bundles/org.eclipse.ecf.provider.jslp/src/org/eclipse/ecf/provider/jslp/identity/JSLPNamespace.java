@@ -39,7 +39,7 @@ public class JSLPNamespace extends Namespace {
 		} else if (parameters[0] instanceof ServiceURL) {
 			ServiceURL anURL = (ServiceURL) parameters[0];
 			IServiceTypeID stid = new JSLPServiceTypeID(this, anURL, (String[]) parameters[2]);
-			String serviceName = (String) (parameters[2] != null ? parameters[1] : anURL.getHost());
+			String serviceName = (String) (parameters[1] != null ? parameters[1] : anURL.getHost());
 			return new JSLPServiceID(this, stid, serviceName);
 
 			// conversion call where conversion isn't necessary
