@@ -1,5 +1,5 @@
-org.eclipse.ecf.provider.jmdns/debug = true
+org.eclipse.ecf.provider.jmdns/debug = false
 org.eclipse.ecf.provider.jmdns/debug/filter = *
-org.eclipse.ecf.provider.jmdns/debug/flag = true
-org.eclipse.ecf.provider.jmdns/debug/jmdns = true
-org.eclipse.ecf.provider.jmdns/debug/container = true
+org.eclipse.ecf.provider.jmdns/debug/flag = false
+org.eclipse.ecf.provider.jmdns/debug/jmdns = false
+org.eclipse.ecf.provider.jmdns/debug/container = false
