@@ -12,6 +12,7 @@
 package org.eclipse.ecf.internal.discovery.ui;
 
 import java.util.ArrayList;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 
 /**
  *
@@ -20,12 +21,37 @@ public class ViewTreeType extends ViewTreeObject {
 
 	private final ArrayList children;
 
+	private final IServiceTypeID typeID;
+
+	public ViewTreeType(String name) {
+		super(name);
+		this.typeID = null;
+		children = new ArrayList();
+	}
+
 	/**
 	 * @param name
 	 */
-	public ViewTreeType(String name) {
-		super(name);
+	public ViewTreeType(IServiceTypeID typeID) {
+		super(null);
+		this.typeID = typeID;
 		children = new ArrayList();
+	}
+
+	// overridden to workaround bug 255481
+	public String getName() {
+		String superName = super.getName();
+		if (superName != null) {
+			return superName;
+		}
+
+		String[] services = typeID.getServices();
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < services.length; i++) {
+			buffer.append(services[i]).append(':');
+		}
+		buffer.deleteCharAt(buffer.length() - 1);
+		return buffer.toString();
 	}
 
 	public void addChild(ViewTreeObject child) {

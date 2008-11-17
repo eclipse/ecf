@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.discovery.ui;
 
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.ui.views.DiscoveryView;
 import org.eclipse.jface.viewers.*;
 
@@ -120,10 +121,21 @@ public class ViewContentProvider implements IStructuredContentProvider, ITreeCon
 		return null;
 	}
 
+	private ViewTreeType findServiceTypeNode(IServiceTypeID typeID) {
+		String[] services = typeID.getServices();
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < services.length; i++) {
+			buffer.append(services[i]).append(':');
+		}
+		buffer.deleteCharAt(buffer.length() - 1);
+
+		return findServiceTypeNode(buffer.toString());
+	}
+
 	public void addServiceInfo(IServiceID id) {
-		ViewTreeType typenode = findServiceTypeNode(id.getServiceTypeID().getName());
+		ViewTreeType typenode = findServiceTypeNode(id.getServiceTypeID());
 		if (typenode == null) {
-			typenode = new ViewTreeType(id.getServiceTypeID().getName());
+			typenode = new ViewTreeType(id.getServiceTypeID());
 			root.addChild(typenode);
 		}
 		final ViewTreeService newEntry = new ViewTreeService(id, id.getServiceName(), null);
@@ -134,9 +146,9 @@ public class ViewContentProvider implements IStructuredContentProvider, ITreeCon
 		if (serviceInfo == null)
 			return;
 		final IServiceID svcID = serviceInfo.getServiceID();
-		ViewTreeType typenode = findServiceTypeNode(svcID.getServiceTypeID().getName());
+		ViewTreeType typenode = findServiceTypeNode(svcID.getServiceTypeID());
 		if (typenode == null) {
-			typenode = new ViewTreeType(svcID.getServiceTypeID().getName());
+			typenode = new ViewTreeType(svcID.getServiceTypeID());
 			root.addChild(typenode);
 		}
 		replaceOrAdd(typenode, new ViewTreeService(svcID, svcID.getServiceName(), serviceInfo));
