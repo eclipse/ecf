@@ -76,4 +76,33 @@ public class ViewTreeType extends ViewTreeObject {
 		children.clear();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((typeID == null) ? 0 : typeID.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ViewTreeType other = (ViewTreeType) obj;
+		if (typeID == null) {
+			if (other.typeID != null)
+				return false;
+		} else if (!typeID.equals(other.typeID))
+			return false;
+		return true;
+	}
+
 }

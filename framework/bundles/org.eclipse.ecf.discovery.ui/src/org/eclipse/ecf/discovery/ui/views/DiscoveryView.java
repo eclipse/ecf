@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.discovery.*;
-import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.discovery.ui.*;
 import org.eclipse.jface.action.*;
@@ -201,36 +200,12 @@ public class DiscoveryView extends ViewPart implements ITabbedPropertySheetPageC
 		});
 	}
 
-	public void addServiceTypeInfo(final String type) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
-				if (vcp != null) {
-					vcp.addServiceTypeInfo(type);
-					refreshView();
-				}
-			}
-		});
-	}
-
 	public void addServiceInfo(final IServiceInfo serviceInfo) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 				if (vcp != null) {
 					vcp.addServiceInfo(serviceInfo);
-					refreshView();
-				}
-			}
-		});
-	}
-
-	public void addServiceInfo(final IServiceID id) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				final ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
-				if (vcp != null) {
-					vcp.addServiceInfo(id);
 					refreshView();
 				}
 			}

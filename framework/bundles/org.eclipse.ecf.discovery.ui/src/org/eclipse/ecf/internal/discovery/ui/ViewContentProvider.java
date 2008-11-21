@@ -102,44 +102,18 @@ public class ViewContentProvider implements IStructuredContentProvider, ITreeCon
 		top.addChild(newEntry);
 	}
 
-	public void addServiceTypeInfo(String type) {
-		final ViewTreeType typenode = findServiceTypeNode(type);
-		if (typenode == null) {
-			root.addChild(new ViewTreeType(type));
-		}
-	}
-
-	ViewTreeType findServiceTypeNode(String typename) {
+	private ViewTreeType findServiceTypeNode(IServiceTypeID typeID) {
+		ViewTreeType vtt = new ViewTreeType(typeID);
 		final ViewTreeObject[] types = root.getChildren();
 		for (int i = 0; i < types.length; i++) {
 			if (types[i] instanceof ViewTreeType) {
-				final String type = types[i].getName();
-				if (type.equals(typename))
-					return (ViewTreeType) types[i];
+				ViewTreeType existing = (ViewTreeType) types[i];
+				if (vtt.equals(existing)) {
+					return existing;
+				}
 			}
 		}
 		return null;
-	}
-
-	private ViewTreeType findServiceTypeNode(IServiceTypeID typeID) {
-		String[] services = typeID.getServices();
-		StringBuffer buffer = new StringBuffer();
-		for (int i = 0; i < services.length; i++) {
-			buffer.append(services[i]).append(':');
-		}
-		buffer.deleteCharAt(buffer.length() - 1);
-
-		return findServiceTypeNode(buffer.toString());
-	}
-
-	public void addServiceInfo(IServiceID id) {
-		ViewTreeType typenode = findServiceTypeNode(id.getServiceTypeID());
-		if (typenode == null) {
-			typenode = new ViewTreeType(id.getServiceTypeID());
-			root.addChild(typenode);
-		}
-		final ViewTreeService newEntry = new ViewTreeService(id, id.getServiceName(), null);
-		replaceOrAdd(typenode, newEntry);
 	}
 
 	public void addServiceInfo(IServiceInfo serviceInfo) {
@@ -158,7 +132,7 @@ public class ViewContentProvider implements IStructuredContentProvider, ITreeCon
 		if (serviceInfo == null)
 			return;
 		final IServiceID svcID = serviceInfo.getServiceID();
-		final ViewTreeType typenode = findServiceTypeNode(svcID.getServiceTypeID().getName());
+		final ViewTreeType typenode = findServiceTypeNode(svcID.getServiceTypeID());
 		if (typenode == null)
 			return;
 		final ViewTreeObject[] childs = typenode.getChildren();
