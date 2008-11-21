@@ -56,7 +56,7 @@
 	    <repository>
     		<id>iks-snapshots</id>
 			<name>ETH Zurich IKS Snapshots</name>
-			<url>scp://flowsgi.inf.ethz.ch/repository/maven2</url>
+			<url>scp://192.168.24.21/repository/maven2</url>
 	    </repository>		
 	</distributionManagement>	
 
