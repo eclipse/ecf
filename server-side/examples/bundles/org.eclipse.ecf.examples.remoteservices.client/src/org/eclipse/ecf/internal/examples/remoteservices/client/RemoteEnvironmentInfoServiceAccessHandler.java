@@ -23,9 +23,11 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -45,6 +47,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteServiceAccessHandler {
 
+	private static final String[] serviceType = new String[]{Constants.DISCOVERY_SERVICE_TYPE, "IRemoteEnvironmentInfo"};
 	static Map remoteEnvironmentContainers = new HashMap();
 
 	/* (non-Javadoc)
@@ -252,6 +255,24 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 		};
 		action.setText(NLS.bind("Connect to {0}", targetID.getName()));
 		return new IContributionItem[] {new ActionContributionItem(action)};
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler#getContributionsForService(org.eclipse.ecf.discovery.IServiceInfo)
+	 */
+	public IContributionItem[] getContributionsForService(IServiceInfo svcInfo) {
+		if (svcInfo == null)
+			return EMPTY_CONTRIBUTION;
+		this.serviceInfo = svcInfo;
+		String[] services = svcInfo.getServiceID().getServiceTypeID().getServices();
+		if(services.length < 2) {
+			return EMPTY_CONTRIBUTION;
+		}
+		for (int i = 0; i < services.length; i++) {
+			if(!services[i].equals(serviceType[i]))
+				return EMPTY_CONTRIBUTION;
+		}
+		return getContributionsForMatchingService();
 	}
 
 }
