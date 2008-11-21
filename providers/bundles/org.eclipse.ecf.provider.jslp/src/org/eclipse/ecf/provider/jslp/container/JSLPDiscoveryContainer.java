@@ -48,7 +48,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void connect(ID aTargetID, IConnectContext connectContext) throws ContainerConnectException {
-		if (getConfig() == null) {
+		if (targetID != null || getConfig() == null) {
 			throw new ContainerConnectException(Messages.JSLPDiscoveryContainer_0);
 		}
 		targetID = (aTargetID == null) ? getConfig().getID() : aTargetID;
