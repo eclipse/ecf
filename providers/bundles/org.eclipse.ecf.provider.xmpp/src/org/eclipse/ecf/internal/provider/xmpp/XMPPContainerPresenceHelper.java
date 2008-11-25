@@ -37,7 +37,6 @@ import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
-import org.eclipse.ecf.presence.IFQID;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
@@ -438,8 +437,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 					final IRosterEntry entry = createRosterEntry(newID, item);
 					if (itemType == RosterPacket.ItemType.NONE
 							|| itemType == RosterPacket.ItemType.REMOVE) {
-						removeItemFromRoster(roster.getItems(),
-								createIDFromName(item.getUser()));
+						removeFromRoster(createIDFromName(item.getUser()));
 						remove = true;
 					} else {
 						remove = false;
@@ -461,21 +459,24 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			rosterManager.notifyRosterAdd(entry);
 	}
 
-	private void removeItemFromRoster(Collection rosterItems,
-			XMPPID itemIDToRemove) {
+	private void removeFromRoster(XMPPID itemIDToRemove) {
 		boolean removed = false;
+		Collection rosterItems = roster.getItems();
 		synchronized (rosterItems) {
 			for (final Iterator i = rosterItems.iterator(); i.hasNext();) {
 				final IRosterItem item = (IRosterItem) i.next();
 				if (item instanceof org.eclipse.ecf.presence.roster.RosterGroup) {
 					final org.eclipse.ecf.presence.roster.RosterGroup group = (org.eclipse.ecf.presence.roster.RosterGroup) item;
-					removed = removeItemFromRosterGroup(group, itemIDToRemove);
+					boolean r = removeItemFromRosterGroup(group, itemIDToRemove);
+					if (r)
+						removed = true;
 					// If group is empty, remove it too
 					if (group.getEntries().size() == 0)
 						i.remove();
 				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
-					if (((org.eclipse.ecf.presence.roster.RosterEntry) item)
-							.getUser().getID().equals(itemIDToRemove)) {
+					org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) item;
+					XMPPID entryID = (XMPPID) entry.getUser().getID();
+					if (entryID.equals(itemIDToRemove)) {
 						i.remove();
 						removed = true;
 					}
@@ -495,7 +496,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			for (final Iterator i = group.getEntries().iterator(); i.hasNext();) {
 				final org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) i
 						.next();
-				if (entry.getUser().getID().equals(itemIDToRemove)) {
+				XMPPID entryID = (XMPPID) entry.getUser().getID();
+				if (entryID.equals(itemIDToRemove)) {
 					i.remove();
 					return true;
 				}
@@ -568,93 +570,200 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	private void updatePresence(XMPPID fromID, IPresence newPresence) {
 		final Collection rosterItems = roster.getItems();
-		List newEntrys = new ArrayList();
+		AdditionalClient newEntry = null;
 		synchronized (rosterItems) {
 			for (final Iterator i = roster.getItems().iterator(); i.hasNext();) {
 				final IRosterItem item = (IRosterItem) i.next();
 				if (item instanceof IRosterGroup) {
-					AdditionalClientRosterEntry[] es = updatePresenceInGroup(
+					AdditionalClient newClient = updatePresenceInGroup(
 							(IRosterGroup) item, fromID, newPresence);
-					for (int j = 0; j < es.length; j++) {
-						newEntrys.add(es[j]);
-					}
+					if (newClient != null)
+						newEntry = newClient;
 				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
-					AdditionalClientRosterEntry entry = updatePresenceForMatchingEntry(
+					AdditionalClient newClient = updatePresenceForMatchingEntry(
 							(org.eclipse.ecf.presence.roster.RosterEntry) item,
 							fromID, newPresence);
-					if (entry != null)
-						newEntrys.add(entry);
+					if (newClient != null)
+						newEntry = newClient;
 				}
 			}
 		}
 
-		AdditionalClientRosterEntry[] entrys = (AdditionalClientRosterEntry[]) newEntrys
-				.toArray(new AdditionalClientRosterEntry[] {});
-		IRosterEntry entry = null;
-		if (entrys.length > 0) {
-			for (int i = 0; i < entrys.length; i++) {
-				entry = new org.eclipse.ecf.presence.roster.RosterEntry(entrys[i].parent,entrys[i].user,entrys[i].presence);
-				//roster.addItem(entry);
+		if (newEntry != null) {
+			if (newEntry.add) {
+				if (!rosterContainsEntry(fromID)) {
+					IRosterEntry entry = new org.eclipse.ecf.presence.roster.RosterEntry(
+							newEntry.parent, newEntry.user, newEntry.presence);
+					rosterManager.notifyRosterUpdate(roster);
+					fireSetRosterEntry(false, entry);
+				}
+			} else {
+				// remove from roster as it's another client
+				removeFromRoster(fromID);
 			}
-			rosterManager.notifyRosterUpdate(roster);
-			fireSetRosterEntry(false, entry);
 		}
 	}
 
-	class AdditionalClientRosterEntry {
-		
+	class AdditionalClient {
+
 		IRosterItem parent;
 		IUser user;
 		IPresence presence;
-		
-		public AdditionalClientRosterEntry(IRosterItem parent, IUser user, IPresence presence) {
+		boolean add;
+
+		public AdditionalClient(IRosterItem parent, IUser user,
+				IPresence presence, boolean add) {
 			this.parent = parent;
 			this.user = user;
 			this.presence = presence;
+			this.add = add;
+		}
+
+		public AdditionalClient(IUser user) {
+			this.user = user;
+			this.add = false;
 		}
 	}
-	
-	
-	private AdditionalClientRosterEntry updatePresenceForMatchingEntry(
+
+	private int countClientsInRosterGroup(
+			org.eclipse.ecf.presence.roster.RosterGroup group, XMPPID oldID) {
+		Collection groupItems = group.getEntries();
+		int count = 0;
+		for (final Iterator i = groupItems.iterator(); i.hasNext();) {
+			final IRosterItem item = (IRosterItem) i.next();
+			if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
+				org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) item;
+				XMPPID entryID = (XMPPID) entry.getUser().getID();
+				if (entryID.getUsernameAtHost().equals(
+						oldID.getUsernameAtHost()))
+					count++;
+			}
+		}
+		return count;
+	}
+
+	private int countClientsInRoster(XMPPID oldID) {
+		Collection rosterItems = roster.getItems();
+		int count = 0;
+		synchronized (rosterItems) {
+			for (final Iterator i = rosterItems.iterator(); i.hasNext();) {
+				final IRosterItem item = (IRosterItem) i.next();
+				if (item instanceof org.eclipse.ecf.presence.roster.RosterGroup) {
+					final org.eclipse.ecf.presence.roster.RosterGroup group = (org.eclipse.ecf.presence.roster.RosterGroup) item;
+					count += countClientsInRosterGroup(group, oldID);
+				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
+					org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) item;
+					XMPPID entryID = (XMPPID) entry.getUser().getID();
+					if (entryID.getUsernameAtHost().equals(
+							oldID.getUsernameAtHost())) {
+						count++;
+					}
+				}
+			}
+		}
+		return count;
+	}
+
+	private boolean rosterGroupContainsEntry(
+			org.eclipse.ecf.presence.roster.RosterGroup group, XMPPID oldID) {
+		Collection groupItems = group.getEntries();
+		for (final Iterator i = groupItems.iterator(); i.hasNext();) {
+			final IRosterItem item = (IRosterItem) i.next();
+			if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
+				org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) item;
+				XMPPID entryID = (XMPPID) entry.getUser().getID();
+				if (entryID.equals(oldID))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean rosterContainsEntry(XMPPID oldID) {
+		Collection rosterItems = roster.getItems();
+		synchronized (rosterItems) {
+			for (final Iterator i = rosterItems.iterator(); i.hasNext();) {
+				final IRosterItem item = (IRosterItem) i.next();
+				if (item instanceof org.eclipse.ecf.presence.roster.RosterGroup) {
+					final org.eclipse.ecf.presence.roster.RosterGroup group = (org.eclipse.ecf.presence.roster.RosterGroup) item;
+					if (rosterGroupContainsEntry(group, oldID))
+						return true;
+				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
+					org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) item;
+					XMPPID entryID = (XMPPID) entry.getUser().getID();
+					if (entryID.equals(oldID))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private AdditionalClient removeEntryFromRoster(XMPPID oldID,
+			org.eclipse.ecf.presence.roster.RosterEntry entry,
+			IPresence newPresence, IUser user) {
+		if (countClientsInRoster(oldID) > 1) {
+			// remove this client from roster
+			return new AdditionalClient(user);
+		} else {
+			// Last one, so we set resource to null and set presence to
+			// unavailable
+			oldID.setResourceName(null);
+			entry.setPresence(newPresence);
+			rosterManager.notifyRosterUpdate(entry);
+			return null;
+		}
+	}
+
+	private AdditionalClient updatePresenceForMatchingEntry(
 			org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID,
 			IPresence newPresence) {
 		final IUser user = entry.getUser();
 		XMPPID oldID = (XMPPID) user.getID();
-		// If the username/host part matches that means we either have to update
-		// the resource, or create a new client
-		if (oldID.equals(fromID)) {
-			// set the new presence state
-			entry.setPresence(newPresence);
-			// and notify with roster update
-			rosterManager.notifyRosterUpdate(entry);
-		} else if (oldID.getUsernameAtHost().equals(fromID.getUsernameAtHost())) {
-			if (oldID.getResourceName() == null) {
-				oldID.setResourceName(fromID.getResourceName());
+		if (newPresence.getType().equals(IPresence.Type.UNAVAILABLE)) {
+			// This is an unavailable presence change
+			if (oldID.equals(fromID))
+				return removeEntryFromRoster(oldID, entry, newPresence, user);
+		} else {
+			// This is some other presence change
+			// If the username/host part matches that means we either have to
+			// update
+			// the resource, or create a new client
+			if (oldID.equals(fromID)) {
 				// set the new presence state
 				entry.setPresence(newPresence);
 				// and notify with roster update
 				rosterManager.notifyRosterUpdate(entry);
-			} else if (fromID.getResourceName() != null && !newPresence.getType().equals(IPresence.Type.UNAVAILABLE)) {
-				return new AdditionalClientRosterEntry(entry.getParent(), new User(fromID, user.getName()), newPresence);
+			} else if (oldID.getUsernameAtHost().equals(
+					fromID.getUsernameAtHost())) {
+				if (oldID.getResourceName() == null) {
+					oldID.setResourceName(fromID.getResourceName());
+					// set the new presence state
+					entry.setPresence(newPresence);
+					// and notify with roster update
+					rosterManager.notifyRosterUpdate(entry);
+				} else
+					return new AdditionalClient(entry.getParent(), new User(
+							fromID, user.getName()), newPresence, true);
 			}
 		}
 		return null;
 	}
 
-	private AdditionalClientRosterEntry[] updatePresenceInGroup(IRosterGroup group,
+	private AdditionalClient updatePresenceInGroup(IRosterGroup group,
 			XMPPID fromID, IPresence newPresence) {
-		List results = new ArrayList();
 		final Collection groupEntries = group.getEntries();
+		AdditionalClient newEntry = null;
 		synchronized (groupEntries) {
 			for (final Iterator i = group.getEntries().iterator(); i.hasNext();) {
-				AdditionalClientRosterEntry newEntry = updatePresenceForMatchingEntry(
+				AdditionalClient newClient = updatePresenceForMatchingEntry(
 						(org.eclipse.ecf.presence.roster.RosterEntry) i.next(),
 						fromID, newPresence);
-				if (newEntry != null)
-					results.add(newEntry);
+				if (newClient != null)
+					newEntry = newClient;
 			}
 		}
-		return (AdditionalClientRosterEntry[]) results.toArray(new AdditionalClientRosterEntry[] {});
+		return newEntry;
 	}
 
 	protected void handleRoster(Roster roster) {
