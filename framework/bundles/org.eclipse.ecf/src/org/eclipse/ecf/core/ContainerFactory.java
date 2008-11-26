@@ -338,13 +338,8 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		if (containerID == null)
 			return null;
 		synchronized (containers) {
-			for (Iterator i = containers.keySet().iterator(); i.hasNext();) {
-				IContainer container = (IContainer) containers.get(containerID);
-				if (container != null)
-					return container;
-			}
+			return (IContainer) containers.get(containerID);
 		}
-		return null;
 	}
 
 	/*
