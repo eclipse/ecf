@@ -22,6 +22,7 @@ public class Messages extends NLS {
 	public static String DocShare_EDITOR_SHARE_POPUP_TITLE;
 	public static String DocShare_ERROR_STARTING_EDITOR_MESSAGE;
 	public static String DocShare_ERROR_STARTING_EDITOR_TITLE;
+	public static String DocShare_EXCEPTION_DESERIALIZING_MESSAGE0;
 	public static String DocShare_EXCEPTION_HANDLE_MESSAGE;
 	public static String DocShare_EXCEPTION_INVALID_MESSAGE;
 	public static String DocShare_EXCEPTION_RECEIVING_MESSAGE_MESSAGE;

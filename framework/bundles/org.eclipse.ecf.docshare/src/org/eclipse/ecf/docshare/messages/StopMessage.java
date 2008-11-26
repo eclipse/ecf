@@ -9,17 +9,17 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provisional.docshare.messages;
+package org.eclipse.ecf.docshare.messages;
 
 /**
  *
  */
 public class StopMessage extends Message {
 
-	private static final long serialVersionUID = -4869977924231013740L;
-
 	public StopMessage() {
-		// Nothing
+		//empty
 	}
+
+	private static final long serialVersionUID = -4869977924231013740L;
 
 }

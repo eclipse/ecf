@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provisional.docshare.messages;
+package org.eclipse.ecf.docshare.messages;
 
 import org.eclipse.ecf.core.identity.ID;
 
@@ -53,4 +53,5 @@ public class StartMessage extends Message {
 	public String getDocumentContent() {
 		return documentContent;
 	}
+
 }

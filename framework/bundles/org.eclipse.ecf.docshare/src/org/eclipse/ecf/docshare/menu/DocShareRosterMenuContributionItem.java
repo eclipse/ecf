@@ -8,7 +8,9 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.internal.provisional.docshare.menu;
+package org.eclipse.ecf.docshare.menu;
+
+import org.eclipse.ecf.docshare.DocShare;
 
 import java.util.Iterator;
 import java.util.List;
@@ -16,7 +18,6 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.Messages;
-import org.eclipse.ecf.internal.provisional.docshare.DocShare;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;

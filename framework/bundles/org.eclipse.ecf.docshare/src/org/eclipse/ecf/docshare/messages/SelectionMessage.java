@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provisional.docshare.messages;
+package org.eclipse.ecf.docshare.messages;
 
 /**
  *

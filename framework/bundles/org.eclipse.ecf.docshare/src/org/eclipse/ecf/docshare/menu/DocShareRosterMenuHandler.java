@@ -9,7 +9,9 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provisional.docshare.menu;
+package org.eclipse.ecf.docshare.menu;
+
+import org.eclipse.ecf.docshare.DocShare;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -19,7 +21,6 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.Messages;
-import org.eclipse.ecf.internal.provisional.docshare.DocShare;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler;

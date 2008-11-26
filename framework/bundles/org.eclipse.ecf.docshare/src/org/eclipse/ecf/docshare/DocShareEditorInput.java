@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provisional.docshare;
+package org.eclipse.ecf.docshare;
 
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.ui.ide.FileStoreEditorInput;
