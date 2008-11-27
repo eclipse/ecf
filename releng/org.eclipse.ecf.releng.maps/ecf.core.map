@@ -1,6 +1,6 @@
 !****************  ECF CORE CONTRIBUTION  ******************************************************** 
 
-feature@org.eclipse.ecf.core=CVS,tag=Release_2_1_p2_workaround_1,cvsRoot=:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.core-feature
+feature@org.eclipse.ecf.core=@CVSTag@,cvsRoot=:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.core-feature
 
 plugin@org.eclipse.ecf=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf
 fragment@org.eclipse.ecf.ssl=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.ssl
