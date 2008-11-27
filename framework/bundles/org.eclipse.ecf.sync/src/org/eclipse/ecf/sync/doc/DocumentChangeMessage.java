@@ -22,7 +22,10 @@ import java.io.Serializable;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.internal.sync.Activator;
 import org.eclipse.ecf.sync.IModelChangeMessage;
+import org.eclipse.ecf.sync.ModelUpdateException;
 import org.eclipse.ecf.sync.SerializationException;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 
 /**
  * Document change message of communicating document change 
@@ -136,6 +139,20 @@ public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessa
 		IAdapterManager manager = Activator.getDefault().getAdapterManager();
 		if (manager == null) return null;
 		return manager.loadAdapter(this, adapter.getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.sync.IModelChange#applyToModel(java.lang.Object)
+	 */
+	public void applyToModel(Object model) throws ModelUpdateException {
+		if (model == null) throw new ModelUpdateException("Model cannot be null",this,null);
+		if (model instanceof IDocument) {
+			try {
+				((IDocument) model).replace(getOffset(), getLengthOfReplacedText(), getText());
+			} catch (BadLocationException e) {
+				throw new ModelUpdateException("Exception applying change to document",this,model);
+			}
+		} else throw new ModelUpdateException("Incorrect type of model to apply change",this,model);
 	}
 
 }

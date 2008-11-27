@@ -21,4 +21,17 @@ import org.eclipse.core.runtime.IAdaptable;
  */
 public interface IModelChange extends IAdaptable {
 
+	/**
+	 * Apply the change to a model.  Clients may use this method
+	 * to apply the change to a model of appropriate type (e.g. IDocument 
+	 * for IDocumentChange).
+	 * 
+	 * @param model the model to apply this change to.  Must not be <code>null</code>.
+	 * Should be of type appropriate to the model.
+	 * 
+	 * @throws ModelUpdateException thrown if model is <code>null</code>, of incorrect
+	 * type, or cannot be changed.
+	 */
+	public void applyToModel(Object model) throws ModelUpdateException;
+	
 }
