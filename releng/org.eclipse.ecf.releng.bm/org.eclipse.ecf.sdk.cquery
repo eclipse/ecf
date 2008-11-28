@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cq:componentQuery xmlns:cq="http://www.eclipse.org/buckminster/CQuery-1.0" resourceMap="ecf.rmap">
+    <cq:rootRequest name="org.eclipse.ecf.sdk" componentType="eclipse.feature"/>
+    <cq:property key="target.arch" value="*"/>
+    <cq:property key="target.os" value="*"/>
+    <cq:property key="target.ws" value="*"/>
+
+    <cq:advisorNode namePattern="org.eclipse.ecf.core.source" skipComponent="true" useTargetPlatform="false"/>
+    <cq:advisorNode namePattern="org.eclipse.ecf.examples.source" skipComponent="true" useTargetPlatform="false"/>
+   
+    <cq:advisorNode namePattern="org.eclipse.ecf.*" useTargetPlatform="false"/>
+    <cq:advisorNode namePattern="ch.ethz.iks.*" useTargetPlatform="false"/>
+    <cq:advisorNode namePattern="org.jivesoftware.smack" useTargetPlatform="false"/>
+
+    <cq:advisorNode namePattern=".*" useTargetPlatform="false" mutableLevel="REJECT" sourceLevel="REJECT"/>
+</cq:componentQuery>

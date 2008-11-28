@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rmap
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.eclipse.org/buckminster/RMap-1.0"
+	xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0"
+	xmlns:mp="http://www.eclipse.org/buckminster/MavenProvider-1.0"
+	xmlns:pmp="http://www.eclipse.org/buckminster/PDEMapProvider-1.0">
+
+	
+	<!-- org.eclipse -->
+	<searchPath name="org.eclipse">
+		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+			<uri format="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.4?importType=binary"/>
+		</provider>
+		<!-- dev.eclipse.org PDEMapProvider -->
+		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
+			<uri format=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse,org.eclipse.releng/maps">
+				<bc:propertyRef key="buckminster.component" />
+			</uri>
+		</provider>
+	</searchPath>
+	
+	<!-- emf -->
+	<searchPath name="org.eclipse.emf">
+		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+			<uri format="http://rsync.osuosl.org/pub/eclipse/modeling/emf/updates/releases?importType=binary"/>
+		</provider>
+		<!-- dev.eclipse.org PDEMapProvider -->
+		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
+			<uri format=":pserver:anonymous@dev.eclipse.org:/cvsroot/modeling,org.eclipse.emf/org.eclipse.emf.releng/maps">
+				<bc:propertyRef key="buckminster.component" />
+			</uri>
+		</provider>
+	</searchPath>
+
+	<!-- ecf -->
+	<searchPath name="org.eclipse.ecf">
+		<!-- dev.eclipse.org PDEMapProvider -->
+		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="true" source="true">
+			<uri format=":pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/org.eclipse.ecf.releng.maps">
+				<bc:propertyRef key="buckminster.component" />
+			</uri>
+		</provider>
+	</searchPath>
+
+	<!-- default -->
+	<searchPath name="default">
+		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
+			<matcher base="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20080807152315/bundles/">
+			    <group name="MATCH">
+				<name prefix="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20080807152315/bundles/" pattern="([a-zA-Z0-9]+\.)*[a-zA-Z0-9]+" suffix="_"/>
+				<version pattern="([0-9]+\.){2}[0-9]+(\.[a-zA-Z0-9-_]+)*" suffix=".jar"/>
+			    </group>
+			</matcher>
+			<uri format="${MATCH}"/>
+		</provider>
+		<!-- dev.eclipse.org PDEMapProvider -->
+		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
+			<uri format=":pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.eclipse.orbit.releng/maps">
+				<bc:propertyRef key="buckminster.component" />
+			</uri>
+		</provider>
+	</searchPath>
+	
+	<!-- below order does matter!!! -->
+
+	<!-- ECF -->
+	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.ecf(\..+)?" />
+	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.jivesoftware\.smack$" />
+	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.bittorrent$" />
+	<locator searchPathRef="org.eclipse.ecf" pattern="^ch\.ethz\.iks(\..+)?" />
+
+	<!-- EMF -->
+	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.emf(\..+)?" />
+	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.net4j(\..+)?" />
+	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.xsd(\..+)?" />
+	
+	<!-- Eclipse --> 
+	<locator searchPathRef="org.eclipse" pattern="^org\.eclipse(\..+)?" />
+
+	<!-- Eclipse other (Orbit atm) -->	
+	<locator searchPathRef="default" pattern=".*" />
+</rmap>
