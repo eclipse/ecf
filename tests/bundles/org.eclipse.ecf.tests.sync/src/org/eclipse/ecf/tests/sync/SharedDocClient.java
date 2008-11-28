@@ -5,6 +5,7 @@ import java.util.Random;
 import org.eclipse.ecf.sync.IModelChange;
 import org.eclipse.ecf.sync.IModelChangeMessage;
 import org.eclipse.ecf.sync.IModelSynchronizationStrategy;
+import org.eclipse.ecf.sync.ModelUpdateException;
 import org.eclipse.ecf.sync.SerializationException;
 import org.eclipse.ecf.sync.doc.IDocumentChange;
 import org.eclipse.jface.text.BadLocationException;
@@ -106,7 +107,12 @@ public class SharedDocClient extends Thread {
 				IModelChange change = syncStrategy.deserializeRemoteChange(msg);
 				IDocumentChange[] documentChanges = (IDocumentChange[]) syncStrategy.transformRemoteChange(change);
 				for(int i=0; i < documentChanges.length; i++) {
-					applyChangeToLocalDocument(false, documentChanges[i]);
+					try {
+						documentChanges[i].applyToModel(document);
+					} catch (ModelUpdateException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			} catch (SerializationException e) {
 				// TODO Auto-generated catch block
@@ -144,6 +150,18 @@ public class SharedDocClient extends Thread {
 			}
 			public Object getAdapter(Class adapter) {
 				return null;
+			}
+			public void applyToModel(Object model) throws ModelUpdateException {
+				IDocument doc = (IDocument) model;
+				System.out.println();
+				System.out.println(name+";doc="+doc.get());
+				System.out.println(name+";remoteChange"+";t="+System.currentTimeMillis()+";offset="+getOffset()+";length="+getLengthOfReplacedText()+";text="+getText());
+				try {
+					document.replace(getOffset(), getLengthOfReplacedText(), getText());
+				} catch (BadLocationException e) {
+					throw new ModelUpdateException("Exception in model update",this,model);
+				}
+				System.out.println(name+";doc="+doc.get());
 			}
 		};
 	}
