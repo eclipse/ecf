@@ -36,6 +36,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected Map addRegistrationRequests = new Hashtable();
 
+	protected List requests = Collections.synchronizedList(new ArrayList());
+
 	public RegistrySharedObject() {
 		//
 	}
@@ -50,6 +52,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		serviceListeners.clear();
 		localServiceRegistrations.clear();
 		addRegistrationRequests.clear();
+		requests.clear();
 	}
 
 	/* Begin implementation of IRemoteServiceContainerAdapter public interface */
@@ -331,34 +334,27 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		Response response = null;
 		try {
 			// First send request
-			final long requestId = sendCallRequest(registration, call);
+			final Request request = sendCallRequest(registration, call);
 			// Then get the specified timeout and calculate when we should
 			// timeout in real time
 			final long timeout = call.getTimeout() + System.currentTimeMillis();
 			// Now loop until timeout time has elapsed
 			while ((timeout - System.currentTimeMillis()) > 0 && !doneWaiting) {
-				final Request request = findRequestForId(requestId);
-				if (request == null) {
-					throw new NullPointerException(Messages.RegistrySharedObject_14 + requestId);
-				}
 				synchronized (request) {
 					if (request.isDone()) {
-						removeRequest(request);
 						Trace.trace(Activator.PLUGIN_ID, Messages.RegistrySharedObject_15 + request);
 						doneWaiting = true;
 						response = request.getResponse();
-						if (response == null) {
-							throw new NullPointerException(Messages.RegistrySharedObject_EXCEPTION_INVALID_RESPONSE);
-						}
+						if (response == null)
+							throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_INVALID_RESPONSE);
 					} else {
 						Trace.trace(Activator.PLUGIN_ID, "Waiting " + RESPONSE_WAIT_INTERVAL + " for response to request: " + request); //$NON-NLS-1$ //$NON-NLS-2$
 						request.wait(RESPONSE_WAIT_INTERVAL);
 					}
 				}
 			}
-			if (!doneWaiting) {
+			if (!doneWaiting)
 				throw new ECFException(Messages.RegistrySharedObject_19 + call.getTimeout() + Messages.RegistrySharedObject_20);
-			}
 		} catch (final IOException e) {
 			log(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
 			throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_SENDING_REQUEST, e);
@@ -368,9 +364,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 		// Success...now get values and return
 		Object result = null;
-		if (response.hadException()) {
+		if (response.hadException())
 			throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_IN_REMOTE_CALL, response.getException());
-		}
 		result = response.getResponse();
 
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "callSynch", result); //$NON-NLS-1$
@@ -725,7 +720,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		containerRegistrations.add(registration);
 	}
 
-	protected long sendCallRequest(RemoteServiceRegistrationImpl remoteRegistration, final IRemoteCall call) throws IOException {
+	protected Request sendCallRequest(RemoteServiceRegistrationImpl remoteRegistration, final IRemoteCall call) throws IOException {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendCallRequest", new Object[] {remoteRegistration, call}); //$NON-NLS-1$
 		final Request request = createRequest(remoteRegistration, call, null);
 		addRequest(request);
@@ -735,9 +730,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			removeRequest(request);
 			throw e;
 		}
-		final long requestId = request.getRequestId();
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallRequest", new Long(requestId)); //$NON-NLS-1$
-		return requestId;
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallRequest", request); //$NON-NLS-1$
+		return request;
 	}
 
 	protected void handleCallRequest(Request request) {
@@ -787,11 +781,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected void handleCallResponse(Response response) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), CALL_RESPONSE, new Object[] {response});
-		final Request request = findRequestForId(response.getRequestId());
+		final Request request = getRequest(response.getRequestId());
 		if (request == null) {
 			log(REQUEST_NOT_FOUND_ERROR_CODE, REQUEST_NOT_FOUND_ERROR_MESSAGE, new NullPointerException());
 			return;
 		}
+		removeRequest(request);
 		final IRemoteCallListener listener = request.getListener();
 		if (listener != null) {
 			fireCallCompleteEvent(listener, request.getRequestId(), response.getResponse(), response.hadException(), response.getException());
@@ -960,13 +955,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 	}
 
-	protected List requests = Collections.synchronizedList(new ArrayList());
-
-	protected boolean addRequest(Request request) {
+	private boolean addRequest(Request request) {
 		return requests.add(request);
 	}
 
-	protected Request findRequestForId(long requestId) {
+	private Request getRequest(long requestId) {
 		synchronized (requests) {
 			for (final Iterator i = requests.iterator(); i.hasNext();) {
 				final Request req = (Request) i.next();
@@ -979,7 +972,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return null;
 	}
 
-	protected boolean removeRequest(Request request) {
+	private boolean removeRequest(Request request) {
 		return requests.remove(request);
 	}
 
