@@ -161,7 +161,14 @@
                               id="org.eclipse.ecf.presence.ui.commands.browse.toolbar"
                               label="%browse.command.label"
                               style="push"
-                              tooltip="%browse.command.tooltip"/>
+                              tooltip="%browse.command.tooltip">
+                              <visibleWhen
+                                    checkEnabled="true">
+					            <with variable="activeWorkbenchWindow.activePerspective">
+				                   <equals value="org.eclipse.ecf.ui.perspective.communications"/>
+					            </with>
+                              </visibleWhen>
+                          </command>
          </toolbar>
       </menuContribution>
       <menuContribution
