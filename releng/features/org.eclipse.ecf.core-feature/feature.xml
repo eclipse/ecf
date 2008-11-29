@@ -46,7 +46,6 @@ Contributors: Composent, Inc. - initial API and implementation
       <import plugin="org.eclipse.ui.console"/>
       <import plugin="org.eclipse.core.filesystem"/>
       <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="com.jcraft.jsch"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
    </requires>
 
@@ -439,6 +438,13 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.storage"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.jcraft.jsch"
          download-size="0"
          install-size="0"
          version="0.0.0"
