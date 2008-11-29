@@ -17,14 +17,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.HelloMessageSharedObject;
 import org.eclipse.ecf.example.collab.share.TreeItem;
-import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.example.collab.share.url.ShowURLSharedObject;
 import org.eclipse.ecf.example.collab.share.url.StartProgramSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
@@ -68,7 +70,7 @@ public class LineChatClientView implements FileSenderUI {
 	Hashtable myNames = new Hashtable();
 	String name;
 	private final TeamChat teamChat;
-	User userdata;
+	IUser userdata;
 	LineChatView view;
 
 	private final List users;
@@ -116,10 +118,10 @@ public class LineChatClientView implements FileSenderUI {
 		return teamChat.getTreeControl();
 	}
 
-	public boolean addUser(User ud) {
+	public boolean addUser(IUser ud) {
 		if (ud == null)
 			return false;
-		final ID userID = ud.getUserID();
+		final ID userID = ud.getID();
 		final String username = ud.getNickname();
 		if (myNames.containsKey(userID)) {
 			final String existingName = (String) myNames.get(userID);
@@ -136,7 +138,7 @@ public class LineChatClientView implements FileSenderUI {
 		}
 	}
 
-	protected void addUserToTree(final User user) {
+	protected void addUserToTree(final IUser user) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				users.add(user);
@@ -155,14 +157,14 @@ public class LineChatClientView implements FileSenderUI {
 		});
 	}
 
-	public boolean changeUser(User user) {
+	public boolean changeUser(IUser user) {
 		return changeUserInTree(user);
 	}
 
-	protected boolean changeUserInTree(final User userdata) {
+	protected boolean changeUserInTree(final IUser userdata) {
 		for (int i = 0; i < users.size(); i++) {
-			final User user = (User) users.get(i);
-			if (user.getUserID().equals(userdata.getUserID())) {
+			final IUser user = (IUser) users.get(i);
+			if (user.getID().equals(userdata.getID())) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						if (!teamChat.isDisposed()) {
@@ -213,13 +215,13 @@ public class LineChatClientView implements FileSenderUI {
 		return (String) myNames.get(id);
 	}
 
-	public User getUser(ID id) {
+	public IUser getUser(ID id) {
 		if (id == null) {
 			return null;
 		} else {
 			for (int i = 0; i < users.size(); i++) {
-				final User user = (User) users.get(i);
-				if (id.equals(user.getUserID())) {
+				final IUser user = (IUser) users.get(i);
+				if (id.equals(user.getID())) {
 					return user;
 				}
 			}
@@ -286,8 +288,8 @@ public class LineChatClientView implements FileSenderUI {
 			return;
 		} else {
 			for (int i = 0; i < users.size(); i++) {
-				final User user = (User) users.get(i);
-				if (user.getUserID().equals(id)) {
+				final IUser user = (IUser) users.get(i);
+				if (user.getID().equals(id)) {
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							if (!teamChat.isDisposed())
@@ -337,7 +339,7 @@ public class LineChatClientView implements FileSenderUI {
 		appendAndScrollToBottom(line);
 	}
 
-	public void startedTyping(final User user) {
+	public void startedTyping(final IUser user) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (!teamChat.isDisposed())
@@ -355,8 +357,8 @@ public class LineChatClientView implements FileSenderUI {
 			return false;
 		} else {
 			for (int i = 0; i < users.size(); i++) {
-				final User user = (User) users.get(i);
-				if (user.getUserID().equals(id)) {
+				final IUser user = (IUser) users.get(i);
+				if (user.getID().equals(id)) {
 					teamChat.getTableViewer().refresh(user);
 					return true;
 				}
@@ -377,7 +379,7 @@ public class LineChatClientView implements FileSenderUI {
 
 		protected Composite createToolTipContentArea(Event event, Composite parent) {
 			final Widget item = teamChat.getTableViewer().getTable().getItem(new Point(event.x, event.y));
-			final User user = (User) item.getData();
+			final IUser user = (IUser) item.getData();
 
 			GridLayout gl = new GridLayout();
 			gl.marginBottom = 0;
@@ -411,18 +413,19 @@ public class LineChatClientView implements FileSenderUI {
 			l.setFont(JFaceResources.getFontRegistry().get(HEADER_FONT));
 			l.setLayoutData(data);
 
-			createContentArea(parent, user.getUserFields()).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			createContentArea(parent, user.getProperties()).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 			return parent;
 		}
 
-		protected Control createContentArea(Composite parent, Vector fields) {
+		protected Control createContentArea(Composite parent, Map properties) {
 			final Text label = new Text(parent, SWT.READ_ONLY | SWT.MULTI);
 			label.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 			final StringBuffer buffer = new StringBuffer();
 			synchronized (buffer) {
-				for (int i = 0; i < fields.size(); i++) {
-					buffer.append(fields.get(i));
+				for (Iterator it = properties.entrySet().iterator(); it.hasNext();) {
+					Entry entry = (Entry) it.next();
+					buffer.append(entry.getKey()).append(": ").append(entry.getValue()); //$NON-NLS-1$
 					buffer.append(Text.DELIMITER);
 				}
 			}
@@ -435,9 +438,9 @@ public class LineChatClientView implements FileSenderUI {
 			if (super.shouldCreateToolTip(e)) {
 				final Widget item = teamChat.getTableViewer().getTable().getItem(new Point(e.x, e.y));
 				if (item != null) {
-					final User user = (User) item.getData();
-					final Vector fields = user.getUserFields();
-					return fields != null && !fields.isEmpty();
+					final IUser user = (IUser) item.getData();
+					final Map properties = user.getProperties();
+					return properties != null && !properties.isEmpty();
 				} else {
 					return false;
 				}

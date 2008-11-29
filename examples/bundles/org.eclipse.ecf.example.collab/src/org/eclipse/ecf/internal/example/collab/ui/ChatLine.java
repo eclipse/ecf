@@ -10,13 +10,13 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.example.collab.ui;
 
-import org.eclipse.ecf.example.collab.share.User;
+import org.eclipse.ecf.core.user.IUser;
 
 /**
  * @author kgilmer
  */
 public class ChatLine {
-	private User originator;
+	private IUser originator;
 	private String text;
 	private String date;
 	private boolean isPrivate = false;
@@ -36,15 +36,15 @@ public class ChatLine {
 		this(text, date, null);
 	}
 
-	public ChatLine(String text, User user) {
+	public ChatLine(String text, IUser user) {
 		this(text, null, user);
 	}
 
-	public ChatLine(String text, String date, User user) {
+	public ChatLine(String text, String date, IUser user) {
 		this(text, date, user, null);
 	}
 
-	public ChatLine(String text, User user, Runnable onClick) {
+	public ChatLine(String text, IUser user, Runnable onClick) {
 		this(text, null, user, onClick);
 	}
 
@@ -58,7 +58,7 @@ public class ChatLine {
 	 * @param user
 	 * @param onClick
 	 */
-	public ChatLine(String text, String date, User user, Runnable onClick) {
+	public ChatLine(String text, String date, IUser user, Runnable onClick) {
 		this.text = text;
 		this.date = date;
 		this.originator = user;
@@ -68,7 +68,7 @@ public class ChatLine {
 	/**
 	 * @return Returns the originator.
 	 */
-	public User getOriginator() {
+	public IUser getOriginator() {
 		return originator;
 	}
 
@@ -76,7 +76,7 @@ public class ChatLine {
 	 * @param originator
 	 *            The originator to set.
 	 */
-	public void setOriginator(User originator) {
+	public void setOriginator(IUser originator) {
 		this.originator = originator;
 	}
 

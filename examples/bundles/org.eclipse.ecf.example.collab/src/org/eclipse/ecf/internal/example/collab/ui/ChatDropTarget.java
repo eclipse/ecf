@@ -14,7 +14,7 @@ package org.eclipse.ecf.internal.example.collab.ui;
 import java.io.File;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.example.collab.share.User;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -30,7 +30,7 @@ class ChatDropTarget implements DropTargetListener {
 	TextTransfer textTransfer = null;
 	FileTransfer fileTransfer = null;
 	ChatComposite composite = null;
-	User selectedUser = null;
+	IUser selectedUser = null;
 
 	public ChatDropTarget(LineChatClientView view, Control control,
 			ChatComposite comp) {
@@ -97,7 +97,7 @@ class ChatDropTarget implements DropTargetListener {
 			String[] files = (String[]) event.data;
 			for (int i = 0; i < files.length; i++) {
 				ID target = (selectedUser == null) ? null : selectedUser
-						.getUserID();
+						.getID();
 				// Send file to user
 				File file = new File(files[i]);
 				if (file.exists() && !file.isDirectory() && composite != null) {

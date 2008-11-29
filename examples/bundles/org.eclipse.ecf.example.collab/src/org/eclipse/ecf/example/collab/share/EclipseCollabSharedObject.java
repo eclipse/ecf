@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
@@ -90,7 +91,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	private String downloadDirectory = ""; //$NON-NLS-1$
 	private LineChatClientView localGUI = null;
 	private IResource localResource = null;
-	private User localUser = null;
+	private IUser localUser = null;
 	private String localVersion = ""; //$NON-NLS-1$
 	private ID serverID = null;
 	private SharedObjectEventListener sharedObjectEventListener = null;
@@ -99,7 +100,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	public EclipseCollabSharedObject() {
 	}
 
-	public EclipseCollabSharedObject(IResource proj, IWorkbenchWindow window, User user, String downloaddir) {
+	public EclipseCollabSharedObject(IResource proj, IWorkbenchWindow window, IUser user, String downloaddir) {
 		this.localResource = proj;
 		this.workbenchWindow = window;
 		this.localUser = user;
@@ -217,11 +218,11 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		return Messages.EclipseCollabSharedObject_TREE_TOP_LABEL;
 	}
 
-	public User getUser() {
+	public IUser getUser() {
 		return localUser;
 	}
 
-	public User getUserForID(final ID user) {
+	public IUser getUserForID(final ID user) {
 		return (localGUI != null) ? localGUI.getUser(user) : null;
 	}
 
@@ -250,12 +251,12 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void handleNotifyUserAdded(User user) {
+	public void handleNotifyUserAdded(IUser user) {
 		boolean add = false;
 		try {
 			final ID[] members = getContext().getGroupMemberIDs();
 			for (int i = 0; i < members.length; i++) {
-				if (members[i].equals(user.getUserID())) {
+				if (members[i].equals(user.getID())) {
 					add = true;
 					break;
 				}
@@ -279,7 +280,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		sendUserUpdate(requestor);
 	}
 
-	protected void handleShowPrivateTextMsg(final User remote, final String aString) {
+	protected void handleShowPrivateTextMsg(final IUser remote, final String aString) {
 		// Show line on local interface
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -316,7 +317,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
-	protected void handleUserUpdate(final User ud) {
+	protected void handleUserUpdate(final IUser ud) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
@@ -329,7 +330,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
-	protected void handleUserMessage(final User sender, String msg) {
+	protected void handleUserMessage(final IUser sender, String msg) {
 		// Show line on local interface
 		final String message = msg;
 		if (sender == null)
@@ -348,7 +349,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	protected synchronized void handleStartedTyping(User user) {
+	protected synchronized void handleStartedTyping(IUser user) {
 		if (localGUI != null)
 			localGUI.startedTyping(user);
 	}
@@ -448,9 +449,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void sendPrivateMessageToUser(User touser, String msg) {
+	public void sendPrivateMessageToUser(IUser touser, String msg) {
 		try {
-			forwardMsgTo(touser.getUserID(), SharedObjectMsg.createMsg(null, HANDLE_SHOW_PRIVATE_TEXT_MSG, localUser, msg));
+			forwardMsgTo(touser.getID(), SharedObjectMsg.createMsg(null, HANDLE_SHOW_PRIVATE_TEXT_MSG, localUser, msg));
 		} catch (final Exception e) {
 			log("Exception on sendShowPrivateTextMsg to remote clients", e); //$NON-NLS-1$
 		}
@@ -472,10 +473,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void sendCVSProjectUpdateRequest(User touser, String msg) {
+	public void sendCVSProjectUpdateRequest(IUser touser, String msg) {
 		ID receiver = null;
 		if (touser != null) {
-			receiver = touser.getUserID();
+			receiver = touser.getID();
 		}
 		try {
 			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_CVS_PROJECT_UPDATE_REQUEST_MSG, getUser(), msg);
@@ -498,10 +499,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void sendRingMessageToUser(User user, String msg) {
+	public void sendRingMessageToUser(IUser user, String msg) {
 		ID receiver = null;
 		if (user != null) {
-			receiver = user.getUserID();
+			receiver = user.getID();
 		}
 		try {
 			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_USER_MSG, this.localUser, msg);
@@ -697,10 +698,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void sendAddMarkerForFile(User touser, String resourceName, int offset, int length) {
+	public void sendAddMarkerForFile(IUser touser, String resourceName, int offset, int length) {
 		ID receiver = null;
 		if (touser != null) {
-			receiver = touser.getUserID();
+			receiver = touser.getID();
 		}
 		try {
 			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_ADD_MARKER_FOR_FILE_MSG, getUser(), resourceName, new SharedMarker(Messages.EclipseCollabSharedObject_MARKER_NAME, new Integer(offset), new Integer(length)));
@@ -713,10 +714,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void sendOpenAndSelectForFile(User touser, String resourceName, int offset, int length) {
+	public void sendOpenAndSelectForFile(IUser touser, String resourceName, int offset, int length) {
 		ID receiver = null;
 		if (touser != null) {
-			receiver = touser.getUserID();
+			receiver = touser.getID();
 		}
 		try {
 			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_OPEN_AND_SELECT_FOR_FILE_MSG, getUser(), resourceName, new SharedMarker(Messages.EclipseCollabSharedObject_MARKER_NAME, new Integer(offset), new Integer(length)));
@@ -729,10 +730,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void sendLaunchEditorForFile(User touser, String resourceName) {
+	public void sendLaunchEditorForFile(IUser touser, String resourceName) {
 		ID receiver = null;
 		if (touser != null) {
-			receiver = touser.getUserID();
+			receiver = touser.getID();
 		}
 		try {
 			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_LAUNCH_EDITOR_FOR_FILE_MSG, getUser(), resourceName);
@@ -810,12 +811,12 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
-	protected void handleAddMarkerForFile(final User fromuser, final String resourceName, SharedMarker marker) {
+	protected void handleAddMarkerForFile(final IUser fromuser, final String resourceName, SharedMarker marker) {
 		addMarkerForFile(getLocalFileForRemote(resourceName), marker);
 	}
 
-	protected void handleOpenAndSelectForFile(final User fromuser, final String resourceName, SharedMarker marker) {
-		final User local = getUserForID(fromuser.getUserID());
+	protected void handleOpenAndSelectForFile(final IUser fromuser, final String resourceName, SharedMarker marker) {
+		final IUser local = getUserForID(fromuser.getID());
 		if (local != null) {
 			final Runnable runnable = createOpenEditorAndSelectForFileRunnable(resourceName, marker);
 			showEventInChatOutput(fromuser, resourceName, marker, runnable);
@@ -823,13 +824,13 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	protected boolean isLocalUser(User fromuser) {
-		if (fromuser != null && fromuser.getUserID().equals(getUser().getUserID()))
+	protected boolean isLocalUser(IUser fromuser) {
+		if (fromuser != null && fromuser.getID().equals(getUser().getID()))
 			return true;
 		return false;
 	}
 
-	protected void verifyAndOpenEditorLocally(final User fromuser, final String resourceName, final Runnable runnable) {
+	protected void verifyAndOpenEditorLocally(final IUser fromuser, final String resourceName, final Runnable runnable) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (isLocalUser(fromuser)) {
@@ -845,8 +846,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
-	protected void handleLaunchEditorForFile(final User fromuser, final String resourceName) {
-		final User local = getUserForID(fromuser.getUserID());
+	protected void handleLaunchEditorForFile(final IUser fromuser, final String resourceName) {
+		final IUser local = getUserForID(fromuser.getID());
 		if (local != null) {
 			final Runnable runnable = createOpenEditorForFileRunnable(resourceName);
 			showEventInChatOutput(fromuser, resourceName, null, runnable);
@@ -862,9 +863,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		return ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER);
 	}
 
-	protected void showEventInChatOutput(User fromuser, String resourceName, SharedMarker marker, Runnable runnable) {
+	protected void showEventInChatOutput(IUser fromuser, String resourceName, SharedMarker marker, Runnable runnable) {
 		if (localGUI != null) {
-			showRawLine(fromuser.getUserID(), createDisplayStringForEditorOpen(resourceName, marker), runnable);
+			showRawLine(fromuser.getID(), createDisplayStringForEditorOpen(resourceName, marker), runnable);
 		}
 	}
 
@@ -889,10 +890,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		return aFile;
 	}
 
-	public void sendShowViewWithID(User touser, String id, String secID, Integer mode) {
+	public void sendShowViewWithID(IUser touser, String id, String secID, Integer mode) {
 		ID receiver = null;
 		if (touser != null) {
-			receiver = touser.getUserID();
+			receiver = touser.getID();
 		}
 		try {
 			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_SHOW_VIEW_WITH_ID_MSG, getUser(), id, secID, mode);
@@ -905,10 +906,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void sendShowView(User touser, String id) {
+	public void sendShowView(IUser touser, String id) {
 		ID receiver = null;
 		if (touser != null) {
-			receiver = touser.getUserID();
+			receiver = touser.getID();
 		}
 		try {
 			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_SHOW_VIEW_MSG, getUser(), id);
@@ -921,7 +922,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	protected void handleShowViewWithID(User fromUser, final String id, final String secID, final Integer mode) {
+	protected void handleShowViewWithID(IUser fromUser, final String id, final String secID, final Integer mode) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				try {
@@ -933,7 +934,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
-	protected void handleShowView(User fromUser, final String id) {
+	protected void handleShowView(IUser fromUser, final String id) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				try {
@@ -964,7 +965,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	public FileReceiverUI getFileReceiverUI(EclipseFileTransfer transfer, FileTransferParams params) {
 		return new FileReceiverUI() {
 			public void receiveStart(ID from, File aFile, long length, float rate) {
-				final User user = getUserForID(from);
+				final IUser user = getUserForID(from);
 				String nick = Messages.EclipseCollabSharedObject_UNKNOWN_USERNAME;
 				if (user != null) {
 					nick = user.getNickname();
@@ -976,7 +977,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			}
 
 			public void receiveDone(ID from, File aFile, Exception e) {
-				final User user = getUserForID(from);
+				final IUser user = getUserForID(from);
 				String nick = Messages.EclipseCollabSharedObject_UNKNOWN_USERNAME;
 				if (user != null) {
 					nick = user.getNickname();

@@ -14,7 +14,7 @@ import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Platform;
@@ -25,9 +25,10 @@ import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
+import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.SharedObjectEventListener;
-import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.internal.example.collab.ClientEntry;
 import org.eclipse.ecf.internal.example.collab.CollabClient;
 import org.eclipse.ecf.internal.example.collab.Messages;
@@ -55,37 +56,37 @@ public class SharedObjectContainerUI {
 			return FILE_DIRECTORY;
 	}
 
-	protected User getUserData(String containerType, ID clientID, String usernick, IResource project) {
-		final Vector topElements = new Vector();
-		topElements.add(Messages.SharedObjectContainerUI_PROJECT_LABEL + CollabClient.getNameForResource(project));
+	protected IUser getUserData(String containerType, ID clientID, String usernick, IResource project) {
+		final Map topElements = new HashMap();
+		topElements.put(Messages.SharedObjectContainerUI_PROJECT_LABEL, CollabClient.getNameForResource(project));
 		final SimpleDateFormat sdf = new SimpleDateFormat(JOIN_TIME_FORMAT);
-		topElements.add(Messages.SharedObjectContainerUI_TIME_LABEL + sdf.format(new Date()));
+		topElements.put(Messages.SharedObjectContainerUI_TIME_LABEL, sdf.format(new Date()));
 		try {
-			topElements.add(Messages.SharedObjectContainerUI_LANGUAGE_LABEL + System.getProperty("user.language")); //$NON-NLS-1$
+			topElements.put(Messages.SharedObjectContainerUI_LANGUAGE_LABEL, System.getProperty("user.language")); //$NON-NLS-1$
 		} catch (final Exception e) {
 		}
 		try {
-			topElements.add(Messages.SharedObjectContainerUI_TIME_ZONE_LABEL + System.getProperty("user.timezone")); //$NON-NLS-1$
+			topElements.put(Messages.SharedObjectContainerUI_TIME_ZONE_LABEL, System.getProperty("user.timezone")); //$NON-NLS-1$
 		} catch (final Exception e) {
 		}
 		try {
-			topElements.add(Messages.SharedObjectContainerUI_OS_LABEL + Platform.getOS());
+			topElements.put(Messages.SharedObjectContainerUI_OS_LABEL, Platform.getOS());
 		} catch (final Exception e) {
 		}
 		try {
-			topElements.add("Username: " + System.getProperty("user.name"));
+			topElements.put("Username", System.getProperty("user.name"));
 		} catch (final Exception e) {
 		}
 		try {
-			topElements.add("Hostname/IP: " + InetAddress.getLocalHost().toString());
+			topElements.put("Hostname/IP", InetAddress.getLocalHost().toString());
 		} catch (final Exception e) {
 		}
-		return new User(clientID, usernick, topElements);
+		return new User(clientID, clientID.getName(), usernick, topElements);
 	}
 
 	void addObjectToClient(ISharedObjectContainer soContainer, ClientEntry client, String username, IResource proj) throws Exception {
 		final IResource project = (proj == null) ? CollabClient.getWorkspace() : proj;
-		final User user = getUserData(client.getClass().getName(), client.getContainer().getID(), username, proj);
+		final IUser user = getUserData(client.getClass().getName(), client.getContainer().getID(), username, proj);
 		createAndAddSharedObject(soContainer, client, project, user, getSharedFileDirectoryForProject(project));
 	}
 
@@ -106,7 +107,7 @@ public class SharedObjectContainerUI {
 		});
 	}
 
-	protected void createAndAddSharedObject(final ISharedObjectContainer soContainer, final ClientEntry client, final IResource proj, User user, String fileDir) throws Exception {
+	protected void createAndAddSharedObject(final ISharedObjectContainer soContainer, final ClientEntry client, final IResource proj, IUser user, String fileDir) throws Exception {
 		final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		final EclipseCollabSharedObject sharedObject = new EclipseCollabSharedObject(proj, ww, user, fileDir);
 		sharedObject.setListener(new SharedObjectEventListener() {

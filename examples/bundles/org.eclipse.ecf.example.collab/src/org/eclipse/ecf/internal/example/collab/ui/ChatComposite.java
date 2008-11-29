@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.example.collab.share.User;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.ui.screencapture.IImageSender;
@@ -274,7 +274,7 @@ public class ChatComposite extends Composite {
 			return;
 		}
 
-		final User user = text.getOriginator();
+		final IUser user = text.getOriginator();
 		final StyleRange range = new StyleRange();
 		range.start = textoutput.getText().length();
 		if (user != null) {
@@ -387,28 +387,28 @@ public class ChatComposite extends Composite {
 	private void fillTreeContextMenu(IMenuManager manager) {
 		final IStructuredSelection iss = (IStructuredSelection) tableView.getSelection();
 		final Object element = iss.getFirstElement();
-		if (element == null || !(element instanceof User)) {
+		if (element == null || !(element instanceof IUser)) {
 			fillContextMenu(manager);
 		} else {
-			fillTreeContextMenuUser(manager, (User) element);
+			fillTreeContextMenuUser(manager, (IUser) element);
 		}
 	}
 
-	private void sendImage(final User toUser) {
+	private void sendImage(final IUser toUser) {
 		if (MessageDialog.openQuestion(null, MessageLoader.getString("ChatComposite.DIALOG_SCREEN_CAPTURE_TITLE"), MessageLoader.getString("ChatComposite.DIALOG_SCREEN_CAPTURE_TEXT"))) { //$NON-NLS-1$ //$NON-NLS-2$
-			final Job job = new ScreenCaptureJob(getDisplay(), toUser.getUserID(), toUser.getNickname(), new IImageSender() {
+			final Job job = new ScreenCaptureJob(getDisplay(), toUser.getID(), toUser.getNickname(), new IImageSender() {
 				public void sendImage(ID targetID, ImageData imageData) {
-					view.lch.sendImage(toUser.getUserID(), imageData);
+					view.lch.sendImage(toUser.getID(), imageData);
 				}
 			});
 			job.schedule(5000);
 		}
 	}
 
-	private void fillTreeContextMenuUser(IMenuManager man, final User user) {
+	private void fillTreeContextMenuUser(IMenuManager man, final IUser user) {
 		boolean toUs = false;
 		if (this.view.userdata != null) {
-			if (this.view.userdata.getUserID().equals(user.getUserID())) {
+			if (this.view.userdata.getID().equals(user.getID())) {
 				// this is us...so we have a special menu
 				toUs = true;
 			}
@@ -481,7 +481,7 @@ public class ChatComposite extends Composite {
 			// This is a menu to us
 			final Action sendMessageToUser = new Action() {
 				public void run() {
-					MessageDialog.openError(null, MessageLoader.getString("ChatComposite.MESSAGE_TO_TITLE") + user.getNickname(), MessageLoader.getString("ChatComposite.MESSAGE_TO_TEXT") + user.getNickname() + "\n\tID:  " + user.getUserID().getName()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					MessageDialog.openError(null, MessageLoader.getString("ChatComposite.MESSAGE_TO_TITLE") + user.getNickname(), MessageLoader.getString("ChatComposite.MESSAGE_TO_TEXT") + user.getNickname() + "\n\tID:  " + user.getID().getName()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			};
 			sendMessageToUser.setText(MessageLoader.getString("ChatComposite.MENU_SEND_MESSAGE_TO_YOURSELF_TEXT")); //$NON-NLS-1$
@@ -689,7 +689,7 @@ public class ChatComposite extends Composite {
 		}
 	}
 
-	protected void sendShowViewRequest(User touser) {
+	protected void sendShowViewRequest(IUser touser) {
 		final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		final IWorkbenchPage page = ww.getActivePage();
 		if (page == null)
@@ -843,7 +843,7 @@ public class ChatComposite extends Composite {
 		section.put(SELECTION_SETTING, selectedIDs);
 	}
 
-	protected void closeProjectGroup(User user) {
+	protected void closeProjectGroup(IUser user) {
 		if (MessageDialog.openConfirm(null, MessageLoader.getString("LineChatClientView.contextmenu.closeMessageTitle"), //$NON-NLS-1$
 				MessageLoader.getFormattedString("LineChatClientView.contextmenu.closeMessageMessage", this.view.name))) { //$NON-NLS-1$
 			this.view.lch.chatGUIDestroy();
@@ -916,12 +916,12 @@ public class ChatComposite extends Composite {
 
 	}
 
-	protected void sendCoBrowseToUser(User user) {
+	protected void sendCoBrowseToUser(IUser user) {
 		String res = null;
 		ID userID = null;
 		if (user != null) {
 			res = getID(NLS.bind(MessageLoader.getString("ChatComposite.COBROWSE_TITLE"), user.getNickname()), MessageLoader.getString("ChatComposite.COBROWSE_URL_TEXT"), "http://"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			userID = user.getUserID();
+			userID = user.getID();
 		} else {
 			res = getID(MessageLoader.getString("ChatComposite.DIALOG_COBROWSE_TITLE"), MessageLoader.getString("ChatComposite.DIALOG_COBROWSE_TEXT"), MessageLoader.getString("ChatComposite.DIALOG_COBROWSE_HTTPPREFIX")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
@@ -974,7 +974,7 @@ public class ChatComposite extends Composite {
 		}
 	}
 
-	protected void sendFileToUser(User user, boolean launch) {
+	protected void sendFileToUser(IUser user, boolean launch) {
 		final FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
 		fd.setFilterPath(System.getProperty("user.dir")); //$NON-NLS-1$
 		fd.setText(NLS.bind(MessageLoader.getString("ChatComposite.SELECt_FILE_TITLE"), user.getNickname())); //$NON-NLS-1$
@@ -982,7 +982,7 @@ public class ChatComposite extends Composite {
 		if (res != null) {
 			final java.io.File selected = new java.io.File(res);
 			final File localTarget = new File(this.view.downloaddir, selected.getName());
-			sendFile(selected.getPath(), localTarget.getAbsolutePath(), null, user.getUserID(), launch);
+			sendFile(selected.getPath(), localTarget.getAbsolutePath(), null, user.getID(), launch);
 		}
 	}
 
@@ -994,7 +994,7 @@ public class ChatComposite extends Composite {
 		}
 	}
 
-	protected void sendPrivateTextMsg(User data) {
+	protected void sendPrivateTextMsg(IUser data) {
 		if (this.view.lch != null) {
 			final String res = getID(MessageLoader.getString("ChatComposite.PRIVATE_MESSAGE_TITLE") + data.getNickname(), MessageLoader.getString("ChatComposite.PRIVATE_MESSAGE_TEXT"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			if (res != null)
@@ -1002,7 +1002,7 @@ public class ChatComposite extends Composite {
 		}
 	}
 
-	protected void sendRepObjectToGroup(User user) {
+	protected void sendRepObjectToGroup(IUser user) {
 		final String result = getID(MessageLoader.getString("ChatComposite.SEND_REPLICATED_OBJECT_TITLE"), MessageLoader.getString("ChatComposite.SEND_REPLICATED_OBJECT_TEXT"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		if (result != null && !result.equals("")) { //$NON-NLS-1$
 			this.view.createObject(null, getCommand(result), getArgs(result));
@@ -1013,7 +1013,7 @@ public class ChatComposite extends Composite {
 		// XXX TODO
 	}
 
-	protected void sendRingMessageToUser(User data) {
+	protected void sendRingMessageToUser(IUser data) {
 		String res = null;
 		if (this.view.lch != null) {
 			if (data != null) {
@@ -1026,14 +1026,14 @@ public class ChatComposite extends Composite {
 		}
 	}
 
-	protected void startProgram(User ud) {
+	protected void startProgram(IUser ud) {
 		String res = null;
 		ID receiver = null;
 		if (ud == null) {
 			res = getID(MessageLoader.getString("ChatComposite.START_PROGRAM_GROUP_TITLE"), MessageLoader.getString("ChatComposite.START_PROGRAM_GROUP_TEXT"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		} else {
 			res = getID(MessageLoader.getString("ChatComposite.START_PROGRAM_TITLE") + ud.getNickname(), MessageLoader.getString("ChatComposite.START_PROGRAM_TEXT") + ud.getNickname() + ":", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			receiver = ud.getUserID();
+			receiver = ud.getID();
 		}
 		if (res != null)
 			this.view.runProgram(receiver, res, null);

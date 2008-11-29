@@ -13,7 +13,7 @@ package org.eclipse.ecf.internal.example.collab.ui;
 
 import java.util.List;
 
-import org.eclipse.ecf.example.collab.share.User;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -137,8 +137,12 @@ class TeamChat extends Composite {
 	}
 
 	private class ViewLabelProvider extends LabelProvider {
+		public String getText(Object obj) {
+			return obj instanceof IUser ? ((IUser) obj).getNickname() : super.getText(obj);
+		}
+		
 		public Image getImage(Object obj) {
-			return obj instanceof User ? SharedImages
+			return obj instanceof IUser ? SharedImages
 					.getImage(SharedImages.IMG_USER_AVAILABLE) : null;
 		}
 	}

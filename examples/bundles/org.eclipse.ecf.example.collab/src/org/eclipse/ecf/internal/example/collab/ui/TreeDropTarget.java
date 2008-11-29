@@ -11,7 +11,7 @@
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
-import org.eclipse.ecf.example.collab.share.User;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.widgets.Control;
@@ -45,8 +45,8 @@ class TreeDropTarget extends ChatDropTarget {
 			event.detail = DND.DROP_NONE;
 			return;
 		} else {
-			if (item instanceof User) {
-				selectedUser = (User) item;
+			if (item instanceof IUser) {
+				selectedUser = (IUser) item;
 			} else {
 				event.detail = DND.DROP_NONE;
 				return;
@@ -76,8 +76,8 @@ class TreeDropTarget extends ChatDropTarget {
 		if (item == null) {
 			event.detail = DND.DROP_NONE;
 		} else {
-			if (item instanceof User) {
-				selectedUser = (User) item;
+			if (item instanceof IUser) {
+				selectedUser = (IUser) item;
 			} else {
 				event.detail = DND.DROP_NONE;
 			}
