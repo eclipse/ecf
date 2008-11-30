@@ -31,7 +31,8 @@ import org.eclipse.ecf.internal.docshare.*;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.ecf.sync.*;
-import org.eclipse.ecf.sync.doc.*;
+import org.eclipse.ecf.sync.doc.DocumentChangeMessage;
+import org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategyFactory;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.*;
 import org.eclipse.osgi.util.NLS;
@@ -411,7 +412,9 @@ public class DocShare extends AbstractShare {
 						setEditorToRefuseInput();
 
 						for (int i = 0; i < modelChanges.length; i++) {
-							applyChangeToLocalDocument((IDocumentChange) modelChanges[i], document);
+							// Apply each change to a model.  Clients may use this method
+							// to apply the change to a model of appropriate type
+							modelChanges[i].applyToModel(document);
 						}
 					}
 				} catch (final Exception e) {
@@ -424,15 +427,6 @@ public class DocShare extends AbstractShare {
 				}
 			}
 		});
-	}
-
-	void applyChangeToLocalDocument(IDocumentChange change, IDocument document) {
-		Trace.exiting(Activator.PLUGIN_ID, DocshareDebugOptions.METHODS_ENTERING, this.getClass(), "applyChangeToLocalDocument " + ";time=" + System.currentTimeMillis() + ";offset=" + change.getOffset() + ";length=" + change.getLengthOfReplacedText() + ";text=" + change.getText()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
-		try {
-			document.replace(change.getOffset(), change.getLengthOfReplacedText(), change.getText());
-		} catch (BadLocationException e) {
-			logError(Messages.DocShare_EXCEPTION_HANDLE_MESSAGE, e);
-		}
 	}
 
 	/**
