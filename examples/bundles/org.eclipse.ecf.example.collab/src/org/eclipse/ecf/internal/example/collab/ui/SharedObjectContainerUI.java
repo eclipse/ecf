@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * Copyright (c) 2004, 2008 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -81,7 +81,7 @@ public class SharedObjectContainerUI {
 			topElements.put("Hostname/IP", InetAddress.getLocalHost().toString());
 		} catch (final Exception e) {
 		}
-		return new User(clientID, clientID.getName(), usernick, topElements);
+		return new User(clientID, usernick, usernick, topElements);
 	}
 
 	void addObjectToClient(ISharedObjectContainer soContainer, ClientEntry client, String username, IResource proj) throws Exception {
@@ -109,7 +109,7 @@ public class SharedObjectContainerUI {
 
 	protected void createAndAddSharedObject(final ISharedObjectContainer soContainer, final ClientEntry client, final IResource proj, IUser user, String fileDir) throws Exception {
 		final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		final EclipseCollabSharedObject sharedObject = new EclipseCollabSharedObject(proj, ww, user, fileDir);
+		final EclipseCollabSharedObject sharedObject = new EclipseCollabSharedObject(soContainer, proj, ww, user, fileDir);
 		sharedObject.setListener(new SharedObjectEventListener() {
 			public void memberRemoved(ID member) {
 				final ID groupID = client.getContainer().getConnectedID();

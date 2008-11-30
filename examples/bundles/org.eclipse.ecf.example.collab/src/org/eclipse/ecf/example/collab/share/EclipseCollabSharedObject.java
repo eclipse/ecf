@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * Copyright (c) 2004, 2008 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -26,6 +27,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
@@ -34,12 +36,19 @@ import org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.internal.example.collab.Messages;
+import org.eclipse.ecf.internal.example.collab.presence.PresenceContainer;
 import org.eclipse.ecf.internal.example.collab.ui.ChatLine;
 import org.eclipse.ecf.internal.example.collab.ui.EditorHelper;
 import org.eclipse.ecf.internal.example.collab.ui.FileReceiverUI;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatClientView;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatView;
 import org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.Presence;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterItem;
+import org.eclipse.ecf.presence.roster.Roster;
+import org.eclipse.ecf.presence.roster.RosterEntry;
 import org.eclipse.ecf.ui.screencapture.ImageWrapper;
 import org.eclipse.ecf.ui.screencapture.ScreenCaptureUtil;
 import org.eclipse.ecf.ui.screencapture.ShowImageShell;
@@ -96,17 +105,25 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	private ID serverID = null;
 	private SharedObjectEventListener sharedObjectEventListener = null;
 	private IWorkbenchWindow workbenchWindow = null;
-
+	
+	private PresenceContainer presenceContainer;
+	
 	public EclipseCollabSharedObject() {
 	}
-
-	public EclipseCollabSharedObject(IResource proj, IWorkbenchWindow window, IUser user, String downloaddir) {
+	
+	public EclipseCollabSharedObject(IContainer container, IResource proj, IWorkbenchWindow window, IUser user, String downloaddir) {
 		this.localResource = proj;
 		this.workbenchWindow = window;
 		this.localUser = user;
 		this.downloadDirectory = downloaddir;
+		presenceContainer = new PresenceContainer(container, localUser);
+		
 		createOutputView();
 		Assert.isNotNull(localGUI, "Local GUI cannot be created...exiting"); //$NON-NLS-1$
+	}
+	
+	public IPresenceContainerAdapter getPresenceContainer() {
+		return presenceContainer;
 	}
 
 	public void activated(ID[] others) {
@@ -195,6 +212,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 					windowTitle = NLS.bind(Messages.EclipseCollabSharedObject_TITLE_BAR, localUser.getNickname());
 					LineChatView.setViewName(windowTitle);
 					localGUI = LineChatView.createClientView(EclipseCollabSharedObject.this, projectName, NLS.bind(Messages.EclipseCollabSharedObject_PROJECT_NAME, projectName), getLocalFullDownloadPath());
+					
+					presenceContainer.getRosterManager().addRosterListener(new RosterListener(EclipseCollabSharedObject.this, localGUI));
 				} catch (final Exception e) {
 					log("Exception creating LineChatView", e); //$NON-NLS-1$
 				}
@@ -265,14 +284,19 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			log("Exception checking for membership", e); //$NON-NLS-1$
 		}
 		if (add) {
-			boolean addUserResult = false;
-			if (localGUI != null) {
-				addUserResult = localGUI.addUser(user);
+			Roster roster = (Roster) presenceContainer.getRosterManager().getRoster();
+			boolean contains = false;
+			for (Iterator it = roster.getItems().iterator(); it.hasNext();) {
+				IRosterEntry entry = (IRosterEntry) it.next();
+				if (entry.getUser().getID().equals(user.getID())) {
+					contains = true;
+					break;
+				}
 			}
-			// If addUserResult is false, it means that this is a new user
-			// And we need to report our own existence to them
-			if (addUserResult)
-				sendNotifyUserAdded();
+			
+			if (!contains) {
+				roster.addItem(new RosterEntry(roster, user, new Presence()));
+			}
 		}
 	}
 
@@ -391,17 +415,20 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			sharedObjectEventListener.memberRemoved(member);
 		}
 		super.memberRemoved(member);
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				try {
-					if (localGUI != null) {
-						localGUI.removeUser(member);
-					}
-				} catch (final Exception e) {
-					log("Exception in showLineOnGUI", e); //$NON-NLS-1$
-				}
+		
+		Roster roster = (Roster) presenceContainer.getRosterManager().getRoster();
+		IRosterItem itemToRemove = null;
+		for (Iterator it = roster.getItems().iterator(); it.hasNext();) {
+			IRosterEntry entry = (IRosterEntry) it.next();
+			if (entry.getUser().getID().equals(member)) {
+				itemToRemove = entry;
+				break;
 			}
-		});
+		}
+		
+		if (itemToRemove != null) {
+			roster.removeItem(itemToRemove);
+		}
 	}
 
 	public void messageProxyObject(ID target, String classname, String meth, Object[] args) {
