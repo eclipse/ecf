@@ -1,6 +1,6 @@
 !****************  ECF CORE CONTRIBUTION  ******************************************************** 
 
-feature@org.eclipse.ecf.core=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.core-feature
+feature@org.eclipse.ecf.core=@CVSTag@,tag=R30p2workaround_1:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.core-feature
 
 plugin@org.eclipse.ecf=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf
 fragment@org.eclipse.ecf.ssl=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.ssl

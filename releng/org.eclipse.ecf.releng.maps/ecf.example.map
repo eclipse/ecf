@@ -1,6 +1,6 @@
 !****************  ECF CORE EXAMPLES CONTRIBUTION  ************************************************* 
 
-feature@org.eclipse.ecf.examples=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.example-feature
+feature@org.eclipse.ecf.examples=@CVSTag@,tag=R30p2workaround_1:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.example-feature
 
 plugin@org.eclipse.ecf.example.clients=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.clients
 plugin@org.eclipse.ecf.example.collab=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.collab 
