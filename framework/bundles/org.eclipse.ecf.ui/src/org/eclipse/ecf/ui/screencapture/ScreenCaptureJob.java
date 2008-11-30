@@ -40,6 +40,10 @@ public class ScreenCaptureJob extends UIJob {
 
 	final String nickName;
 
+	Cursor crossCursor;
+
+	GC gc;
+
 	public ScreenCaptureJob(Display display, ID targetID, String nickName, IImageSender imageSender) {
 		super(display, "Capturing screen..."); //$NON-NLS-1$
 		blackColor = new Color(display, 0, 0, 0);
@@ -60,10 +64,15 @@ public class ScreenCaptureJob extends UIJob {
 		final Shell shell = new Shell(display, SWT.NO_TRIM);
 		shell.setLayout(new FillLayout());
 		shell.setBounds(displayBounds);
-		final GC gc = new GC(shell);
+
+		crossCursor = new Cursor(display, SWT.CURSOR_CROSS);
+		shell.setCursor(crossCursor);
+
+		gc = new GC(shell);
+
 		shell.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				gc.drawImage(image, 0, 0);
+				e.gc.drawImage(image, 0, 0);
 			}
 		});
 		shell.addKeyListener(new KeyListener() {
@@ -95,8 +104,9 @@ public class ScreenCaptureJob extends UIJob {
 					whiteColor.dispose();
 					final Dialog dialog = new ScreenCaptureConfirmationDialog(shell, targetID, nickName, copy, width, height, imageSender);
 					dialog.open();
+
 					shell.close();
-					image.dispose();
+					copy.dispose();
 				}
 			}
 		});
@@ -112,7 +122,15 @@ public class ScreenCaptureJob extends UIJob {
 				}
 			}
 		});
-		shell.setCursor(new Cursor(getDisplay(), SWT.CURSOR_CROSS));
+
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				image.dispose();
+				crossCursor.dispose();
+				gc.dispose();
+			}
+		});
+
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
