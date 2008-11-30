@@ -72,9 +72,4 @@ public class ScreenCaptureConfirmationDialog extends Dialog {
 		return composite;
 	}
 
-	public boolean close() {
-		image.dispose();
-		return super.close();
-	}
-
 }
