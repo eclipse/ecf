@@ -8,9 +8,12 @@
     <cq:advisorNode namePattern="org.eclipse.ecf.core.source" skipComponent="true" useTargetPlatform="false"/>
     <cq:advisorNode namePattern="org.eclipse.ecf.examples.source" skipComponent="true" useTargetPlatform="false"/>
    
-    <cq:advisorNode namePattern="org.eclipse.ecf.*" useTargetPlatform="false"/>
     <cq:advisorNode namePattern="ch.ethz.iks.*" useTargetPlatform="false"/>
+    <cq:advisorNode namePattern="com.jcraft.jsch" useTargetPlatform="false"/>
+    <cq:advisorNode namePattern="org.apache.commons.*" useTargetPlatform="false"/>
+    <cq:advisorNode namePattern="org.eclipse.ecf.*" useTargetPlatform="false"/>
     <cq:advisorNode namePattern="org.jivesoftware.smack" useTargetPlatform="false"/>
+    <cq:advisorNode namePattern="org.objectweb.asm" useTargetPlatform="false"/>
 
     <cq:advisorNode namePattern=".*" useTargetPlatform="false" mutableLevel="REJECT" sourceLevel="REJECT"/>
 </cq:componentQuery>
