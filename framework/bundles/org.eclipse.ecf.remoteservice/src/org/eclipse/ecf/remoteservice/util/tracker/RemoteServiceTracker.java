@@ -112,8 +112,8 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 *        <code>RemoteServiceTracker</code> object will call the
 	 *        <code>ServiceTrackerCustomizer</code> methods on itself.
 	 */
-	public RemoteServiceTracker(IRemoteServiceContainerAdapter context, ID[] containerIDs, IRemoteServiceReference reference, IRemoteServiceTrackerCustomizer customizer) {
-		this.containerAdapter = context;
+	public RemoteServiceTracker(IRemoteServiceContainerAdapter containerAdapter, ID[] containerIDs, IRemoteServiceReference reference, IRemoteServiceTrackerCustomizer customizer) {
+		this.containerAdapter = containerAdapter;
 		this.trackReference = reference;
 		this.containerIDs = containerIDs;
 		this.trackClass = null;
@@ -149,8 +149,8 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 *        <code>RemoteServiceTracker</code> object will call the
 	 *        <code>ServiceTrackerCustomizer</code> methods on itself.
 	 */
-	public RemoteServiceTracker(IRemoteServiceContainerAdapter context, ID[] containerIDs, String clazz, IRemoteServiceTrackerCustomizer customizer) {
-		this.containerAdapter = context;
+	public RemoteServiceTracker(IRemoteServiceContainerAdapter containerAdapter, ID[] containerIDs, String clazz, IRemoteServiceTrackerCustomizer customizer) {
+		this.containerAdapter = containerAdapter;
 		this.trackReference = null;
 		this.trackClass = clazz;
 		this.containerIDs = containerIDs;
@@ -301,7 +301,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * The default implementation does nothing.
 	 * 
 	 * @param reference Reference to modified service.
-	 * @param service The service object for the modified service.
+	 * @param remoteService The service object for the modified service.
 	 * @see IRemoteServiceTrackerCustomizer
 	 */
 	public void modifiedService(IRemoteServiceReference reference, IRemoteService remoteService) {
@@ -327,7 +327,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * method must unget the service.
 	 * 
 	 * @param reference Reference to removed service.
-	 * @param service The service object for the removed service.
+	 * @param remoteService The service object for the removed service.
 	 * @see IRemoteServiceTrackerCustomizer
 	 */
 	public void removedService(IRemoteServiceReference reference, IRemoteService remoteService) {
