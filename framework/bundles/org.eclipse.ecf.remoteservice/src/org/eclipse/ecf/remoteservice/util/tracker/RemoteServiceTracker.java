@@ -32,7 +32,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/**
 	 * IRemoteServiceContainerAdapter containerAdapter against which 
-	 * this <code>RemoteServiceTracker</code> is tracking.
+	 * this <code>RemoteServiceTracker</code></code> is tracking.
 	 */
 	protected final IRemoteServiceContainerAdapter containerAdapter;
 	/**
@@ -93,23 +93,23 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	private volatile IRemoteService cachedService;
 
 	/**
-	 * Create a <code>RemoteServiceTracker</code> on the specified
+	 * Create a <code>RemoteServiceTracker</code></code> on the specified
 	 * <code>IRemoteServiceReference</code>.
 	 * 
 	 * <p>
 	 * The remote service referenced by the specified <code>IRemoteServiceReference</code>
-	 * object will be tracked by this <code>RemoteServiceTracker</code> object.
+	 * object will be tracked by this <code>RemoteServiceTracker</code></code> object.
 	 * 
 	 * @param containerAdapter <code>IRemoteServiceContainerAdapter</code> against which the
 	 *        tracking is done.
 	 * @param reference <code>IRemoteServiceReference</code> for the remote service
 	 *        to be tracked.
 	 * @param customizer The customizer object to call when services are added,
-	 *        modified, or removed in this <code>ServiceTracker</code> object.
+	 *        modified, or removed in this <code>RemoteServiceTracker</code> object.
 	 *        If customizer is <code>null</code>, then this
-	 *        <code>ServiceTracker</code> object will be used as the
+	 *        <code>RemoteServiceTracker</code> object will be used as the
 	 *        <code>ServiceTrackerCustomizer</code> object and the
-	 *        <code>ServiceTracker</code> object will call the
+	 *        <code>RemoteServiceTracker</code> object will call the
 	 *        <code>ServiceTrackerCustomizer</code> methods on itself.
 	 */
 	public RemoteServiceTracker(IRemoteServiceContainerAdapter context, ID[] containerIDs, IRemoteServiceReference reference, IRemoteServiceTrackerCustomizer customizer) {
@@ -131,22 +131,22 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	}
 
 	/**
-	 * Create a <code>ServiceTracker</code> object on the specified class
+	 * Create a <code>RemoteServiceTracker</code> object on the specified class
 	 * name.
 	 * 
 	 * <p>
 	 * Services registered under the specified class name will be tracked by
-	 * this <code>ServiceTracker</code> object.
+	 * this <code>RemoteServiceTracker</code> object.
 	 * 
 	 * @param containerAdapter <code>BundleContext</code> object against which the
 	 *        tracking is done.
 	 * @param clazz Class name of the services to be tracked.
 	 * @param customizer The customizer object to call when services are added,
-	 *        modified, or removed in this <code>ServiceTracker</code> object.
+	 *        modified, or removed in this <code>RemoteServiceTracker</code> object.
 	 *        If customizer is <code>null</code>, then this
-	 *        <code>ServiceTracker</code> object will be used as the
+	 *        <code>RemoteServiceTracker</code> object will be used as the
 	 *        <code>ServiceTrackerCustomizer</code> object and the
-	 *        <code>ServiceTracker</code> object will call the
+	 *        <code>RemoteServiceTracker</code> object will call the
 	 *        <code>ServiceTrackerCustomizer</code> methods on itself.
 	 */
 	public RemoteServiceTracker(IRemoteServiceContainerAdapter context, ID[] containerIDs, String clazz, IRemoteServiceTrackerCustomizer customizer) {
@@ -167,16 +167,16 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	}
 
 	/**
-	 * Open this <code>ServiceTracker</code> object and begin tracking
+	 * Open this <code>RemoteServiceTracker</code> object and begin tracking
 	 * services.
 	 * 
 	 * <p>
 	 * Services which match the search criteria specified when this
-	 * <code>ServiceTracker</code> object was created are now tracked by this
-	 * <code>ServiceTracker</code> object.
+	 * <code>RemoteServiceTracker</code> object was created are now tracked by this
+	 * <code>RemoteServiceTracker</code> object.
 	 * 
 	 * @throws java.lang.IllegalStateException if the <code>BundleContext</code>
-	 *         object with which this <code>ServiceTracker</code> object was
+	 *         object with which this <code>RemoteServiceTracker</code> object was
 	 *         created is no longer valid.
 	 * @since 1.3
 	 */
@@ -185,7 +185,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			return;
 		}
 		if (DEBUG) {
-			System.out.println("ServiceTracker.open: " + filter); //$NON-NLS-1$
+			System.out.println("RemoteServiceTracker.open: " + filter); //$NON-NLS-1$
 		}
 		tracked = new Tracked();
 		trackingCount = 0;
@@ -212,7 +212,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/**
 	 * Returns the list of initial <code>ServiceReference</code> objects that
-	 * will be tracked by this <code>ServiceTracker</code> object.
+	 * will be tracked by this <code>RemoteServiceTracker</code> object.
 	 * 
 	 * @param trackClass the class name with which the service was registered,
 	 *        or null for all services.
@@ -225,10 +225,10 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	}
 
 	/**
-	 * Close this <code>ServiceTracker</code>.
+	 * Close this <code>RemoteServiceTracker</code>.
 	 * 
 	 * <p>
-	 * This method should be called when this <code>ServiceTracker</code>
+	 * This method should be called when this <code>RemoteServiceTracker</code>
 	 * object should end the tracking of services.
 	 */
 	public synchronized void close() {
@@ -236,10 +236,10 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			return;
 		}
 		if (DEBUG) {
-			System.out.println("ServiceTracker.close: " + filter); //$NON-NLS-1$
+			System.out.println("RemoteServiceTracker.close: " + filter); //$NON-NLS-1$
 		}
 		tracked.close();
-		IRemoteServiceReference[] references = getServiceReferences();
+		IRemoteServiceReference[] references = getRemoteServiceReferences();
 		Tracked outgoing = tracked;
 		tracked = null;
 		try {
@@ -255,7 +255,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 		trackingCount = -1;
 		if (DEBUG) {
 			if ((cachedReference == null) && (cachedService == null)) {
-				System.out.println("ServiceTracker.close[cached cleared]: " + filter); //$NON-NLS-1$
+				System.out.println("RemoteServiceTracker.close[cached cleared]: " + filter); //$NON-NLS-1$
 			}
 		}
 	}
@@ -265,13 +265,13 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * <code>IRemoteServiceTrackerCustomizer.addingService</code> method.
 	 * 
 	 * <p>
-	 * This method is only called when this <code>RemoteServiceTracker</code> object
+	 * This method is only called when this <code>RemoteServiceTracker</code></code> object
 	 * has been constructed with a <code>null IRemoteServiceTrackerCustomizer</code>
 	 * argument.
 	 * 
 	 * The default implementation returns the result of calling
 	 * <code>getService</code>, on the <code>BundleContext</code> object
-	 * with which this <code>ServiceTracker</code> object was created, passing
+	 * with which this <code>RemoteServiceTracker</code> object was created, passing
 	 * the specified <code>ServiceReference</code> object.
 	 * <p>
 	 * This method can be overridden in a subclass to customize the service
@@ -280,9 +280,9 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * unget the service.
 	 * 
 	 * @param reference Reference to service being added to this
-	 *        <code>ServiceTracker</code> object.
+	 *        <code>RemoteServiceTracker</code> object.
 	 * @return The IRemoteService object to be tracked for the service added to this
-	 *         <code>RemoteServiceTracker</code> object.
+	 *         <code>RemoteServiceTracker</code></code> object.
 	 * @see IRemoteServiceTrackerCustomizer
 	 */
 	public IRemoteService addingService(IRemoteServiceReference reference) {
@@ -294,7 +294,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * <code>ServiceTrackerCustomizer.modifiedService</code> method.
 	 * 
 	 * <p>
-	 * This method is only called when this <code>ServiceTracker</code> object
+	 * This method is only called when this <code>RemoteServiceTracker</code> object
 	 * has been constructed with a <code>null ServiceTrackerCustomizer</code>
 	 * argument.
 	 * 
@@ -313,13 +313,13 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * <code>ServiceTrackerCustomizer.removedService</code> method.
 	 * 
 	 * <p>
-	 * This method is only called when this <code>ServiceTracker</code> object
+	 * This method is only called when this <code>RemoteServiceTracker</code> object
 	 * has been constructed with a <code>null ServiceTrackerCustomizer</code>
 	 * argument.
 	 * 
 	 * The default implementation calls <code>ungetService</code>, on the
 	 * <code>BundleContext</code> object with which this
-	 * <code>ServiceTracker</code> object was created, passing the specified
+	 * <code>RemoteServiceTracker</code> object was created, passing the specified
 	 * <code>ServiceReference</code> object.
 	 * <p>
 	 * This method can be overridden in a subclass. If the default
@@ -336,7 +336,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/**
 	 * Wait for at least one service to be tracked by this
-	 * <code>ServiceTracker</code> object.
+	 * <code>RemoteServiceTracker</code> object.
 	 * <p>
 	 * It is strongly recommended that <code>waitForService</code> is not used
 	 * during the calling of the <code>BundleActivator</code> methods.
@@ -350,11 +350,11 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 *         current thread.
 	 * @throws IllegalArgumentException If the value of timeout is negative.
 	 */
-	public IRemoteService waitForService(long timeout) throws InterruptedException {
+	public IRemoteService waitForRemoteService(long timeout) throws InterruptedException {
 		if (timeout < 0) {
 			throw new IllegalArgumentException("timeout value is negative"); //$NON-NLS-1$
 		}
-		IRemoteService object = getService();
+		IRemoteService object = getRemoteService();
 		while (object == null) {
 			Tracked t = this.tracked;
 			/*
@@ -369,7 +369,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 					t.wait(timeout);
 				}
 			}
-			object = getService();
+			object = getRemoteService();
 			if (timeout > 0) {
 				return object;
 			}
@@ -379,12 +379,12 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/**
 	 * Return an array of <code>ServiceReference</code> objects for all
-	 * services being tracked by this <code>ServiceTracker</code> object.
+	 * services being tracked by this <code>RemoteServiceTracker</code> object.
 	 * 
 	 * @return Array of <code>ServiceReference</code> objects or
 	 *         <code>null</code> if no service are being tracked.
 	 */
-	public IRemoteServiceReference[] getServiceReferences() {
+	public IRemoteServiceReference[] getRemoteServiceReferences() {
 		Tracked t = this.tracked;
 		/*
 		 * use local var since we are not
@@ -409,7 +409,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/**
 	 * Returns a <code>ServiceReference</code> object for one of the services
-	 * being tracked by this <code>ServiceTracker</code> object.
+	 * being tracked by this <code>RemoteServiceTracker</code> object.
 	 * 
 	 * <p>
 	 * If multiple services are being tracked, the service with the highest
@@ -428,18 +428,18 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 *         no service is being tracked.
 	 * @since 1.1
 	 */
-	public IRemoteServiceReference getServiceReference() {
+	public IRemoteServiceReference getRemoteServiceReference() {
 		IRemoteServiceReference reference = cachedReference;
 		if (reference != null) {
 			if (DEBUG) {
-				System.out.println("ServiceTracker.getServiceReference[cached]: " + filter); //$NON-NLS-1$
+				System.out.println("RemoteServiceTracker.getRemoteServiceReference[cached]: " + filter); //$NON-NLS-1$
 			}
 			return reference;
 		}
 		if (DEBUG) {
-			System.out.println("ServiceTracker.getServiceReference: " + filter); //$NON-NLS-1$
+			System.out.println("RemoteServiceTracker.getRemoteServiceReference: " + filter); //$NON-NLS-1$
 		}
-		IRemoteServiceReference[] references = getServiceReferences();
+		IRemoteServiceReference[] references = getRemoteServiceReferences();
 		int length = (references == null) ? 0 : references.length;
 		if (length == 0) /* if no service is being tracked */
 		{
@@ -485,14 +485,14 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	/**
 	 * Returns the service object for the specified
 	 * <code>ServiceReference</code> object if the referenced service is being
-	 * tracked by this <code>ServiceTracker</code> object.
+	 * tracked by this <code>RemoteServiceTracker</code> object.
 	 * 
 	 * @param reference Reference to the desired service.
 	 * @return Service object or <code>null</code> if the service referenced
 	 *         by the specified <code>ServiceReference</code> object is not
 	 *         being tracked.
 	 */
-	public IRemoteService getService(IRemoteServiceReference reference) {
+	public IRemoteService getRemoteService(IRemoteServiceReference reference) {
 		Tracked t = this.tracked;
 		/*
 		 * use local var since we are not
@@ -508,12 +508,12 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/**
 	 * Return an array of service objects for all services being tracked by this
-	 * <code>ServiceTracker</code> object.
+	 * <code>RemoteServiceTracker</code> object.
 	 * 
 	 * @return Array of service objects or <code>null</code> if no service are
 	 *         being tracked.
 	 */
-	public IRemoteService[] getServices() {
+	public IRemoteService[] getRemoteServices() {
 		Tracked t = this.tracked;
 		/*
 		 * use local var since we are not
@@ -523,14 +523,14 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			return null;
 		}
 		synchronized (t) {
-			IRemoteServiceReference[] references = getServiceReferences();
+			IRemoteServiceReference[] references = getRemoteServiceReferences();
 			int length = (references == null) ? 0 : references.length;
 			if (length == 0) {
 				return null;
 			}
 			IRemoteService[] objects = new IRemoteService[length];
 			for (int i = 0; i < length; i++) {
-				objects[i] = getService(references[i]);
+				objects[i] = getRemoteService(references[i]);
 			}
 			return objects;
 		}
@@ -538,7 +538,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/**
 	 * Returns a service object for one of the services being tracked by this
-	 * <code>ServiceTracker</code> object.
+	 * <code>RemoteServiceTracker</code> object.
 	 * 
 	 * <p>
 	 * If any services are being tracked, this method returns the result of
@@ -547,29 +547,29 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * @return Service object or <code>null</code> if no service is being
 	 *         tracked.
 	 */
-	public IRemoteService getService() {
+	public IRemoteService getRemoteService() {
 		IRemoteService service = cachedService;
 		if (service != null) {
 			if (DEBUG) {
-				System.out.println("ServiceTracker.getService[cached]: " + filter); //$NON-NLS-1$
+				System.out.println("RemoteServiceTracker.getRemoteService[cached]: " + filter); //$NON-NLS-1$
 			}
 			return service;
 		}
 		if (DEBUG) {
-			System.out.println("ServiceTracker.getService: " + filter); //$NON-NLS-1$
+			System.out.println("RemoteServiceTracker.getRemoteService: " + filter); //$NON-NLS-1$
 		}
-		IRemoteServiceReference reference = getServiceReference();
+		IRemoteServiceReference reference = getRemoteServiceReference();
 		if (reference == null) {
 			return null;
 		}
-		return cachedService = getService(reference);
+		return cachedService = getRemoteService(reference);
 	}
 
 	/**
-	 * Remove a service from this <code>ServiceTracker</code> object.
+	 * Remove a service from this <code>RemoteServiceTracker</code> object.
 	 * 
 	 * The specified service will be removed from this
-	 * <code>ServiceTracker</code> object. If the specified service was being
+	 * <code>RemoteServiceTracker</code> object. If the specified service was being
 	 * tracked then the <code>ServiceTrackerCustomizer.removedService</code>
 	 * method will be called for that service.
 	 * 
@@ -589,7 +589,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/**
 	 * Return the number of services being tracked by this
-	 * <code>ServiceTracker</code> object.
+	 * <code>RemoteServiceTracker</code> object.
 	 * 
 	 * @return Number of services being tracked.
 	 */
@@ -606,25 +606,25 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	}
 
 	/**
-	 * Returns the tracking count for this <code>ServiceTracker</code> object.
+	 * Returns the tracking count for this <code>RemoteServiceTracker</code> object.
 	 * 
 	 * The tracking count is initialized to 0 when this
-	 * <code>ServiceTracker</code> object is opened. Every time a service is
-	 * added, modified or removed from this <code>ServiceTracker</code> object
+	 * <code>RemoteServiceTracker</code> object is opened. Every time a service is
+	 * added, modified or removed from this <code>RemoteServiceTracker</code> object
 	 * the tracking count is incremented.
 	 * 
 	 * <p>
 	 * The tracking count can be used to determine if this
-	 * <code>ServiceTracker</code> object has added, modified or removed a
+	 * <code>RemoteServiceTracker</code> object has added, modified or removed a
 	 * service by comparing a tracking count value previously collected with the
 	 * current tracking count value. If the value has not changed, then no
 	 * service has been added, modified or removed from this
-	 * <code>ServiceTracker</code> object since the previous tracking count
+	 * <code>RemoteServiceTracker</code> object since the previous tracking count
 	 * was collected.
 	 * 
 	 * @since 1.2
-	 * @return The tracking count for this <code>ServiceTracker</code> object
-	 *         or -1 if this <code>ServiceTracker</code> object is not open.
+	 * @return The tracking count for this <code>RemoteServiceTracker</code> object
+	 *         or -1 if this <code>RemoteServiceTracker</code> object is not open.
 	 */
 	public int getTrackingCount() {
 		return trackingCount;
@@ -646,7 +646,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 		cachedReference = null; /* clear cached value */
 		cachedService = null; /* clear cached value */
 		if (DEBUG) {
-			System.out.println("ServiceTracker.modified: " + filter); //$NON-NLS-1$
+			System.out.println("RemoteServiceTracker.modified: " + filter); //$NON-NLS-1$
 		}
 	}
 
@@ -729,7 +729,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			int size = references.length;
 			for (int i = 0; i < size; i++) {
 				if (TRACKED_DEBUG) {
-					System.out.println("ServiceTracker.Tracked.setInitialServices: " + references[i]); //$NON-NLS-1$
+					System.out.println("RemoteServiceTracker.Tracked.setInitialServices: " + references[i]); //$NON-NLS-1$
 				}
 				initial.add(references[i]);
 			}
@@ -761,7 +761,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 					if (this.get(reference) != null) {
 						/* if we are already tracking this service */
 						if (TRACKED_DEBUG) {
-							System.out.println("ServiceTracker.Tracked.trackInitialServices[already tracked]: " + reference); //$NON-NLS-1$
+							System.out.println("RemoteServiceTracker.Tracked.trackInitialServices[already tracked]: " + reference); //$NON-NLS-1$
 						}
 						continue; /* skip this service */
 					}
@@ -771,14 +771,14 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 						 * added.
 						 */
 						if (TRACKED_DEBUG) {
-							System.out.println("ServiceTracker.Tracked.trackInitialServices[already adding]: " + reference); //$NON-NLS-1$
+							System.out.println("RemoteServiceTracker.Tracked.trackInitialServices[already adding]: " + reference); //$NON-NLS-1$
 						}
 						continue; /* skip this service */
 					}
 					adding.add(reference);
 				}
 				if (TRACKED_DEBUG) {
-					System.out.println("ServiceTracker.Tracked.trackInitialServices: " + reference); //$NON-NLS-1$
+					System.out.println("RemoteServiceTracker.Tracked.trackInitialServices: " + reference); //$NON-NLS-1$
 				}
 				trackAdding(reference);
 				/*
@@ -790,7 +790,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 		}
 
 		/**
-		 * Called by the owning <code>ServiceTracker</code> object when it is
+		 * Called by the owning <code>RemoteServiceTracker</code> object when it is
 		 * closed.
 		 */
 		protected void close() {
@@ -799,7 +799,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 		/**
 		 * <code>ServiceListener</code> method for the
-		 * <code>ServiceTracker</code> class. This method must NOT be
+		 * <code>RemoteServiceTracker</code> class. This method must NOT be
 		 * synchronized to avoid deadlock potential.
 		 * 
 		 * @param event <code>ServiceEvent</code> object from the framework.
@@ -820,7 +820,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			}
 			IRemoteServiceReference reference = event.getReference();
 			if (TRACKED_DEBUG) {
-				System.out.println("ServiceTracker.Tracked.serviceChanged[" + event.getClass() + "]: " + reference); //$NON-NLS-1$ //$NON-NLS-2$
+				System.out.println("RemoteServiceTracker.Tracked.serviceChanged[" + event.getClass() + "]: " + reference); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 
 			switch (type) {
@@ -871,7 +871,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			if (object != null) /* we are already tracking the service */
 			{
 				if (TRACKED_DEBUG) {
-					System.out.println("ServiceTracker.Tracked.track[modified]: " + reference); //$NON-NLS-1$
+					System.out.println("RemoteServiceTracker.Tracked.track[modified]: " + reference); //$NON-NLS-1$
 				}
 				synchronized (this) {
 					modified(); /* increment modification count */
@@ -892,7 +892,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 					 * being added.
 					 */
 					if (TRACKED_DEBUG) {
-						System.out.println("ServiceTracker.Tracked.track[already adding]: " + reference); //$NON-NLS-1$
+						System.out.println("RemoteServiceTracker.Tracked.track[already adding]: " + reference); //$NON-NLS-1$
 					}
 					return;
 				}
@@ -915,7 +915,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 		 */
 		private void trackAdding(IRemoteServiceReference reference) {
 			if (TRACKED_DEBUG) {
-				System.out.println("ServiceTracker.Tracked.trackAdding: " + reference); //$NON-NLS-1$
+				System.out.println("RemoteServiceTracker.Tracked.trackAdding: " + reference); //$NON-NLS-1$
 			}
 			IRemoteService object = null;
 			boolean becameUntracked = false;
@@ -953,7 +953,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			 */
 			if (becameUntracked) {
 				if (TRACKED_DEBUG) {
-					System.out.println("ServiceTracker.Tracked.trackAdding[removed]: " + reference); //$NON-NLS-1$
+					System.out.println("RemoteServiceTracker.Tracked.trackAdding[removed]: " + reference); //$NON-NLS-1$
 				}
 				/* Call customizer outside of synchronized region */
 				customizer.removedService(reference, object);
@@ -980,7 +980,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 					 * process
 					 */
 					if (TRACKED_DEBUG) {
-						System.out.println("ServiceTracker.Tracked.untrack[removed from initial]: " + reference); //$NON-NLS-1$
+						System.out.println("RemoteServiceTracker.Tracked.untrack[removed from initial]: " + reference); //$NON-NLS-1$
 					}
 					return;
 					/*
@@ -994,7 +994,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 					 * process of being added
 					 */
 					if (TRACKED_DEBUG) {
-						System.out.println("ServiceTracker.Tracked.untrack[being added]: " + reference); //$NON-NLS-1$
+						System.out.println("RemoteServiceTracker.Tracked.untrack[being added]: " + reference); //$NON-NLS-1$
 					}
 					return;
 					/*
@@ -1014,7 +1014,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 				modified(); /* increment modification count */
 			}
 			if (TRACKED_DEBUG) {
-				System.out.println("ServiceTracker.Tracked.untrack[removed]: " + reference); //$NON-NLS-1$
+				System.out.println("RemoteServiceTracker.Tracked.untrack[removed]: " + reference); //$NON-NLS-1$
 			}
 			customizer.removedService(reference, object);
 		}
