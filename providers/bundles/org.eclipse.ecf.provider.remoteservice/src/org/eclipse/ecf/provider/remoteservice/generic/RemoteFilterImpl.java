@@ -16,8 +16,7 @@ import org.eclipse.ecf.internal.provider.remoteservice.Activator;
 import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
-import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.*;
 
 /**
  *
@@ -86,5 +85,9 @@ public class RemoteFilterImpl implements IRemoteFilter {
 
 	public String toString() {
 		return filter.toString();
+	}
+
+	public boolean match(ServiceReference reference) {
+		return false;
 	}
 }
