@@ -9,8 +9,9 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.remoteservice.util;
+package org.eclipse.ecf.remoteservice.util.tracker;
 
+import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 
 /**
@@ -45,44 +46,44 @@ public interface IRemoteServiceTrackerCustomizer {
 	 * A service is being added to the <code>RemoteServiceTracker</code> object.
 	 * 
 	 * <p>
-	 * This method is called before a service which matched the search
+	 * This method is called before a remote service which matched the search
 	 * parameters of the <code>RemoteServiceTracker</code> object is added to it.
-	 * This method should return the service object to be tracked for this
-	 * <code>IRemoteServiceReference</code> object. The returned service object is
+	 * This method should return the IRemoteServic object to be tracked for this
+	 * <code>IRemoteServiceReference</code> object. The returned remote service object is
 	 * stored in the <code>RemoteServiceTracker</code> object and is available from
 	 * the <code>getRemoteService</code> and <code>getRemoteServices</code> methods.
 	 * 
-	 * @param reference Reference to service being added to the
+	 * @param reference remote reference to remote service being added to the
 	 *        <code>RemoteServiceTracker</code> object.
-	 * @return The service object to be tracked for the
+	 * @return The remote service object to be tracked for the
 	 *         <code>IRemoteServiceReference</code> object or <code>null</code> if
 	 *         the <code>IRemoteServiceReference</code> object should not be tracked.
 	 */
-	public Object addingService(IRemoteServiceReference reference);
+	public IRemoteService addingService(IRemoteServiceReference reference);
 
 	/**
-	 * A service tracked by the <code>RemoteServiceTracker</code> object has been
+	 * A remote service tracked by the <code>RemoteServiceTracker</code> object has been
 	 * modified.
 	 * 
 	 * <p>
-	 * This method is called when a service being tracked by the
+	 * This method is called when a remote service being tracked by the
 	 * <code>RemoteServiceTracker</code> object has had it properties modified.
 	 * 
 	 * @param reference IRemoteServiceReference to service that has been modified.
-	 * @param service The service object for the modified service.
+	 * @param remoteService The remote service object for the modified remote service.
 	 */
-	public void modifiedService(IRemoteServiceReference reference, Object service);
+	public void modifiedService(IRemoteServiceReference reference, IRemoteService remoteService);
 
 	/**
-	 * A service tracked by the <code>RemoteServiceTracker</code> object has been
+	 * A remote service tracked by the <code>RemoteServiceTracker</code> object has been
 	 * removed.
 	 * 
 	 * <p>
-	 * This method is called after a service is no longer being tracked by the
+	 * This method is called after a remote service is no longer being tracked by the
 	 * <code>RemoteServiceTracker</code> object.
 	 * 
-	 * @param reference IRemoteServiceReference to service that has been removed.
-	 * @param service The service object for the removed service.
+	 * @param reference IRemoteServiceReference to remote service that has been removed.
+	 * @param remoteService The service object for the removed service.
 	 */
-	public void removedService(IRemoteServiceReference reference, Object service);
+	public void removedService(IRemoteServiceReference reference, IRemoteService remoteService);
 }

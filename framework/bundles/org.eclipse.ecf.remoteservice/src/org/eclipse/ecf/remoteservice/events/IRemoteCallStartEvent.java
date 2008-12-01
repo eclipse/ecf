@@ -15,7 +15,7 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 
 /**
- * Event received when remoted call started.
+ * Event received when remote call started.
  * 
  */
 public interface IRemoteCallStartEvent extends IRemoteCallEvent {

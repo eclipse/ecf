@@ -112,6 +112,59 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException;
 
 	/**
+	 * Asynchronously returns an array of <code>IRemoteServiceReference</code> objects. The
+	 * returned array of <code>IRemoteServiceReference</code> objects contains
+	 * services that were registered under the specified class and match the
+	 * specified idFilter, and filter criteria.
+	 * <p>
+	 * The IAsyncResult is returned immediately, and subsequent calls to {@link IAsyncResult#get()}
+	 * or {@link IAsyncResult#get(long)} will return the actual results received.  The type of
+	 * the Object returned from {@link IAsyncResult#get()} will be IRemoteServiceReference [].
+	 * 
+	 * <p>
+	 * The list is valid at the time of the call to this method, however since
+	 * the Framework is a very dynamic environment, services can be modified or
+	 * unregistered at anytime.
+	 * 
+	 * <p>
+	 * <code>idFilter</code> is used to select a registered services that were
+	 * registered by a given set of containers with id in idFilter. Only
+	 * services exposed by a container with id in idFilter will be returned.
+	 * 
+	 * <p>
+	 * If <code>idFilter</code> is <code>null</code>, all containers are
+	 * considered to match the filter.
+	 * 
+	 * <p>
+	 * <code>filter</code> is used to select the registered service whose
+	 * properties objects contain keys and values which satisfy the filter. See
+	 * {@link Filter} for a description of the filter string syntax.
+	 * 
+	 * <p>
+	 * If <code>filter</code> is <code>null</code>, all registered services
+	 * are considered to match the filter. If <code>filter</code> cannot be
+	 * parsed, an {@link InvalidSyntaxException} will be thrown with a human
+	 * readable message where the filter became unparsable.
+	 * 
+	 * @param idFilter
+	 *            an array of ID instances that will restrict the search for
+	 *            matching container ids If null, all remote containers will be
+	 *            considered in search for matching IRemoteServiceReference
+	 *            instances. May be <code>null</code>.
+	 * 
+	 * @param clazz
+	 *            the fully qualified name of the interface class that describes
+	 *            the desired service. Must not be <code>null</code>.
+	 * @param filter
+	 *            The filter criteria. May be <code>null</code>.
+	 * @return IAsyncResult that through subsequent calls to IAsyncResult#get() will return
+	 *         IRemoteServiceReference [] with IRemoteServiceReferences matching given search criteria. 
+	 *         Will not return <code>null</code>.
+	 * 
+	 * @throws InvalidSyntaxException If filter contains an invalid filter string that cannot be parsed.
+	 */
+	//public IAsyncResult asyncGetRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException;
+	/**
 	 * Get remote service for given IRemoteServiceReference. Note that clients
 	 * that call this method successfully should later call
 	 * {@link IRemoteServiceContainerAdapter#ungetRemoteService(IRemoteServiceReference)}
@@ -146,5 +199,7 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * @see #getRemoteService(IRemoteServiceReference)
 	 */
 	public boolean ungetRemoteService(IRemoteServiceReference reference);
+
+	//public IRemoteFilter createFilter(String filter) throws InvalidSyntaxException;
 
 }

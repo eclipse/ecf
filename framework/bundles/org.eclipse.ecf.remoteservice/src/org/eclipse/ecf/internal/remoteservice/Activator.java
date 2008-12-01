@@ -25,11 +25,17 @@ public class Activator implements BundleActivator {
 	// The shared instance
 	private static Activator plugin;
 
+	private BundleContext context;
+
 	/**
 	 * The constructor
 	 */
 	public Activator() {
 		plugin = this;
+	}
+
+	public BundleContext getContext() {
+		return context;
 	}
 
 	/*
@@ -39,6 +45,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		// nothing to do
+		this.context = context;
 	}
 
 	/*
@@ -47,7 +54,9 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		this.context = null;
 		plugin = null;
+
 	}
 
 	/**
