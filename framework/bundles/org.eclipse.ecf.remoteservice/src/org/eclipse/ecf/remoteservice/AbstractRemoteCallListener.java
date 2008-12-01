@@ -13,7 +13,7 @@ public abstract class AbstractRemoteCallListener implements IRemoteCallListener 
 	protected IRemoteCall remoteCall;
 	protected IRemoteServiceReference remoteReference;
 
-	public void handleServiceEvent(IRemoteServiceEvent event) {
+	public void handleEvent(IRemoteCallEvent event) {
 		if (event instanceof IRemoteCallStartEvent)
 			this.handleRemoteCallStartEvent((IRemoteCallStartEvent) event);
 		else if (event instanceof IRemoteCallCompleteEvent)
