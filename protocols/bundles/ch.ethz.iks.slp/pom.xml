@@ -71,7 +71,7 @@
       				<os family="windows" />
     			</condition>
     			<property name="maven.executable" value="mvn" />
-				<exec dir="runtimeTests" executable="${maven.executable}">
+				<exec dir="runtimeTests" executable="${maven.home}/bin/${maven.executable}">
 					<arg line="package"/>
 				</exec>
 				<delete dir="test/storage" quiet="true"/>
