@@ -57,7 +57,6 @@
     
   <build>
     <plugins>
-      <!--
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.2</version>
@@ -90,10 +89,9 @@
             <goals>
               <goal>run</goal>
             </goals>
-          </execution>      
+          </execution>
         </executions>
       </plugin>
-          -->
       <plugin>
 		    <groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-compiler-plugin</artifactId>
@@ -165,15 +163,13 @@
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.4</version>
 			<scope>provided</scope>
-		</dependency>
-		<!-- 		
+		</dependency>		
       	<dependency>
 			<groupId>ch.ethz.iks.concierge</groupId>
 			<artifactId>concierge</artifactId>
-			<version>1.0.0.RC3</version>
+			<version>1.0_RC2</version>
 			<scope>test</scope>
-		</dependency>
-		-->		
+		</dependency>		
    </dependencies>
    
   <repositories>
@@ -199,7 +195,7 @@
     <repository>
       <id>iks-snapshots</id>
       <name>ETH Zurich IKS Snapshots</name>
-      <url>scp://192.168.24.21/repository/maven2</url>
+      <url>scp://flowsgi.inf.ethz.ch/repository/maven2</url>
     </repository>
   </distributionManagement>
 </project>
