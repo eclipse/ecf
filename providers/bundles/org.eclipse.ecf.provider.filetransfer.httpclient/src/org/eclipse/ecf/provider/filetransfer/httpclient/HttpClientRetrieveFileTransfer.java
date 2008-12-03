@@ -14,7 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.security.auth.login.LoginException;
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.auth.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -37,8 +37,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	/**
 	 * gzip encoding wrapper for httpclient class. Copied from Mylyn project, bug 205708
-	 *
-	 * @author Maarten Meijer
 	 *
 	 */
 	public class GzipGetMethod extends GetMethod {
@@ -128,8 +126,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	private String username;
 
 	private String password;
-
-	private Proxy proxy;
 
 	private int responseCode = -1;
 
@@ -311,6 +307,23 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		}
 	}
 
+	final class ECFCredentialsProvider implements CredentialsProvider {
+
+		/**
+		 * @throws CredentialsNotAvailableException  
+		 */
+		public Credentials getCredentials(AuthScheme scheme, String host, int port, boolean isProxyAuthenticating) throws CredentialsNotAvailableException {
+			if ("ntlm".equalsIgnoreCase(scheme.getSchemeName())) { //$NON-NLS-1$
+				return createNTLMCredentials(getProxy());
+			}
+			return null;
+		}
+	}
+
+	Proxy getProxy() {
+		return proxy;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
@@ -327,7 +340,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			getMethod = new GzipGetMethod(urlString);
 			getMethod.setFollowRedirects(true);
-
+			// Define a CredentialsProvider - found that possibility while debugging in org.apache.commons.httpclient.HttpMethodDirector.processProxyAuthChallenge(HttpMethod)
+			// Seems to be another way to select the credentials.
+			getMethod.getParams().setParameter(CredentialsProvider.PROVIDER, new ECFCredentialsProvider());
 			setRequestHeaderValues();
 
 			final int code = httpClient.executeMethod(getMethod);
@@ -492,11 +507,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new FileNotFoundException(urlString);
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.getResponseBody();
-				// login or reauthenticate due to an expired session
 				getMethod.releaseConnection();
-				// XXX throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
-				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
-
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				getMethod.releaseConnection();
 				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
@@ -551,6 +563,33 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		} else if (proxy.getType().equals(Proxy.Type.SOCKS)) {
 			proxyHelper.setupProxy(proxy);
 		}
+	}
+
+	protected NTCredentials createNTLMCredentials(Proxy p) {
+		if (p == null) {
+			return null;
+		}
+		String un = getNTLMUserName(p);
+		String domain = getNTLMDomainName(p);
+		if (un == null || domain == null)
+			return null;
+		return new NTCredentials(un, p.getPassword(), p.getAddress().getHostName(), domain);
+	}
+
+	protected String getNTLMDomainName(Proxy p) {
+		String domainUsername = p.getUsername();
+		int slashloc = domainUsername.indexOf('\\');
+		if (slashloc == -1)
+			return null;
+		return domainUsername.substring(0, slashloc);
+	}
+
+	protected String getNTLMUserName(Proxy p) {
+		String domainUsername = p.getUsername();
+		int slashloc = domainUsername.indexOf('\\');
+		if (slashloc == -1)
+			return null;
+		return domainUsername.substring(slashloc + 1);
 	}
 
 }
