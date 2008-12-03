@@ -65,18 +65,31 @@
 	<!-- below order does matter!!! -->
 
 	<!-- ECF -->
+	<locator searchPathRef="org.eclipse.ecf" pattern="^ch\.ethz\.iks(\..+)?" />
+ 	<locator searchPathRef="org.eclipse.ecf" pattern="^com\.jcraft\.jsch$" />
+ 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.commons\.codec$" />
+ 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.commons\.logging$" />
+ 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.commons\.httpclient$" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.jivesoftware\.smack$" />
-	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.bittorrent$" />
-	<locator searchPathRef="org.eclipse.ecf" pattern="^ch\.ethz\.iks(\..+)?" />
-
+	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.objectweb\.asm$" />
+	
 	<!-- EMF -->
 	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.emf(\..+)?" />
 	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.net4j(\..+)?" />
 	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.xsd(\..+)?" />
 	
 	<!-- Eclipse --> 
+ 	<locator searchPathRef="org.eclipse" pattern="^com\.ibm(\..+)?" />
+ 	<locator searchPathRef="org.eclipse" pattern="^com\.jcraft\.jsch$" />
+ 	<locator searchPathRef="org.eclipse" pattern="^javax(\..+)?" />
+	<locator searchPathRef="org.eclipse" pattern="^org\.apache(\..+)?" />
 	<locator searchPathRef="org.eclipse" pattern="^org\.eclipse(\..+)?" />
+	<locator searchPathRef="org.eclipse" pattern="^org\.junit(\..+)?" />
+	<locator searchPathRef="org.eclipse" pattern="^org\.mortbay(\..+)?" />
+	<locator searchPathRef="org.eclipse" pattern="^org\.objectweb\.asm$" />
+	<locator searchPathRef="org.eclipse" pattern="^org\.osgi(\..+)?" />
+	<locator searchPathRef="org.eclipse" pattern="^org\.sat4j(\..+)?" />
 
 	<!-- Eclipse other (Orbit atm) -->	
 	<locator searchPathRef="default" pattern=".*" />
