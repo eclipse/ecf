@@ -38,7 +38,7 @@ import ch.ethz.iks.slp.ServiceLocationException;
 /**
  * A DAAdvertisement is sent by a DA to advertise it's service.
  * 
- * @author Jan S. Rellermeyer, ETH Zürich
+ * @author Jan S. Rellermeyer, ETH Zï¿½rich
  * @since 0.1
  */
 class DAAdvertisement extends ReplyMessage {
@@ -126,7 +126,7 @@ class DAAdvertisement extends ReplyMessage {
 							+ "with empty scope list");
 		}
 		origAttrs = input.readUTF();
-		attrList = stringToList(origAttrs, ",");
+		attrList = attributeStringToList(origAttrs);
 		spi = input.readUTF();
 		authBlocks = AuthenticationBlock.parse(input);
 		if (SLPCore.CONFIG.getSecurityEnabled()) {

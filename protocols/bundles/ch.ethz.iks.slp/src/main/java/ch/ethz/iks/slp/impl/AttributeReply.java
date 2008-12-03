@@ -39,7 +39,7 @@ import ch.ethz.iks.slp.ServiceLocationException;
 /**
  * a AttributeReply Message is sent as reaction to a AttributeRequest message.
  * 
- * @author Jan S. Rellermeyer, Systems Group, ETH Zürich
+ * @author Jan S. Rellermeyer, Systems Group, ETH Zï¿½rich
  * @since 0.1
  */
 class AttributeReply extends ReplyMessage {
@@ -87,7 +87,7 @@ class AttributeReply extends ReplyMessage {
 	AttributeReply(final DataInputStream input) throws IOException,
 			ServiceLocationException {
 		errorCode = input.readShort();
-		attributes = stringToList(input.readUTF(), ",");
+		attributes = attributeStringToListLiberal(input.readUTF());
 		authBlocks = AuthenticationBlock.parse(input);
 
 		if (SLPCore.CONFIG.getSecurityEnabled()) {

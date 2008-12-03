@@ -1,0 +1,44 @@
+# Parser generator comes from: 
+# http://www.parse2.com/index.shtml
+#
+# Grammar comes from 2608 [1] and has been completed with 4234 [2]:
+# [1] http://tools.ietf.org/html/rfc2608
+# [2] http://tools.ietf.org/html/rfc4234
+
+attr-list 		= attribute / attribute "," attr-list;
+attribute 		= "(" attr-tag "=" attr-val-list ")" / attr-tag;
+attr-val-list 	= attr-val / attr-val "," attr-val-list;
+attr-tag 		= 1*safe-tag;
+attr-val 		= intval / strval / boolval / opaque;
+intval 			= "-"1*DIGIT;
+strval 			= 1*safe-val;
+boolval 		= "true" / "false";
+opaque 			= "\FF" 1*escape-val;
+safe-val 		= %x20 / %x22-27 / %x2A-2B / %x2D-3B / %x3F-5B / %x5D-7D; #Any character except reserved.
+safe-tag 		= %x20 / %x22-27 / %x2B    / %x2D-3B / %x3F-5B / %x5D-5E / %x60-7D; #Any character except reserved, star and bad-tag.
+#reserved 		= "(" / ")" / "," / "\" / "!"  / "<" / "=" / ">" / "~" / CTL;
+escape-val 		= "\" HEXDIG HEXDIG;
+#bad-tag 		= CR / LF / HTAB / "_";
+#star 			= "*";
+
+##------------------------------------------------------------------------
+## Taken from rfc4234
+## core rules
+##------------------------------------------------------------------------
+
+#ALPHA          =  %x41-5A / %x61-7A;
+#BIT            =  "0" / "1";
+#CHAR           =  %x01-7F;
+#CR             =  %x0D;
+#CRLF           =  (CR LF) / LF;
+#CTL            =  %x00-1F / %x7F;
+DIGIT          =  %x30-39;
+#DQUOTE         =  %x22;
+HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F";
+#HTAB           =  %x09;
+#LF             =  %x0A;
+#LWSP           =  *(WSP / CRLF WSP);
+#OCTET          =  %x00-FF;
+#SP             =  %x20;
+#VCHAR          =  %x21-7E;
+#WSP            =  SP / HTAB;

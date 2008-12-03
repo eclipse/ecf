@@ -41,7 +41,7 @@ import ch.ethz.iks.slp.ServiceURL;
 /**
  * deregister a service from a DA.
  * 
- * @author Jan S. Rellermeyer, ETH Zürich
+ * @author Jan S. Rellermeyer, ETH Zï¿½rich
  * @since 0.1
  */
 class ServiceDeregistration extends SLPMessage {
@@ -103,7 +103,7 @@ class ServiceDeregistration extends SLPMessage {
 			throws ServiceLocationException, IOException {
 		scopeList = stringToList(input.readUTF(), ",");
 		url = ServiceURL.fromBytes(input);
-		attList = stringToList(input.readUTF(), ",");
+		attList = attributeStringToList(input.readUTF());
 
 		if (SLPCore.CONFIG.getSecurityEnabled()) {
 			if (!verify()) {

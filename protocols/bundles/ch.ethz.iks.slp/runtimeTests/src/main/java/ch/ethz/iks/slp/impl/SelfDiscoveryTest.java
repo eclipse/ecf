@@ -11,6 +11,7 @@
 package ch.ethz.iks.slp.impl;
 
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import junit.framework.Assert;
@@ -24,6 +25,7 @@ public class SelfDiscoveryTest extends TestCase {
 
 	private final String HOST_AND_PORT = System.getProperty("net.slp.tests.hostAndPort", "gantenbein:123");
 	private ServiceURL service;
+	private Dictionary properties;
 	
 	public SelfDiscoveryTest() {
 		super("runTests");
@@ -35,9 +37,13 @@ public class SelfDiscoveryTest extends TestCase {
 	public void setUp() throws InterruptedException {
 		try {
 			service = new ServiceURL("service:osgi://" + HOST_AND_PORT, 10800);
-			Dictionary properties = new Hashtable();
+			int i = 0;
+			properties = new Hashtable();
 			properties.put("attr", Boolean.FALSE);
-			properties.put("other", "value");
+			properties.put("attr" + i++, "value");
+			properties.put("attr" + i++, "foo,bar");
+			properties.put("attr" + i++, "foo:bar");
+			properties.put("attr" + i++, "foo bar");
 			TestActivator.advertiser.register(service, properties);
 		} catch (ServiceLocationException e) {
 			Assert.fail(e.getMessage());
@@ -78,7 +84,7 @@ public class SelfDiscoveryTest extends TestCase {
 					"service:osgi://"  + HOST_AND_PORT);
 			count++;
 		}
-		assertEquals(count, 1);
+		assertEquals(1, count);
 	}
 
 	/**
@@ -87,15 +93,27 @@ public class SelfDiscoveryTest extends TestCase {
 	 */
 	public void testAttributes() throws Exception {
 		int count = 0;
+		
+		// not fast but DRY
+		outter:
 		for (ServiceLocationEnumeration attributes = TestActivator.locator
 				.findAttributes(new ServiceType("service:osgi"), null, null); attributes
 				.hasMoreElements();) {
 			final String attribute = attributes.next().toString();
-			assertTrue("(attr=false)".equals(attribute)
-					|| "(other=value)".equals(attribute));
-			count++;
+
+			// inner loop over the dict
+			Enumeration elements = properties.keys();
+			for(;elements.hasMoreElements();) {
+				String key= elements.nextElement().toString();
+				String value = properties.get(key).toString();
+				if(attribute.equals(("(" + key + "=" + value + ")"))) {
+					count++;
+					continue outter;
+				}
+			}
+			fail(attribute + " not found in reference " + properties.toString());
 		}
-		assertEquals(count, 2);
+		assertEquals(properties.size(), count);
 	}
 
 	/**
@@ -111,7 +129,7 @@ public class SelfDiscoveryTest extends TestCase {
 					"service:osgi://" + HOST_AND_PORT);
 			count++;
 		}
-		assertEquals(count, 1);
+		assertEquals(1, count);
 	}
 
 	/**
@@ -127,7 +145,7 @@ public class SelfDiscoveryTest extends TestCase {
 					"service:osgi://" + HOST_AND_PORT);
 			count++;
 		}
-		assertEquals(count, 1);
+		assertEquals(1, count);
 	}
 	
 

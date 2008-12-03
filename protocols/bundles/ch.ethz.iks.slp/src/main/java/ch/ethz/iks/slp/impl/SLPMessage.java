@@ -40,6 +40,10 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 
 import ch.ethz.iks.slp.ServiceLocationException;
+import ch.ethz.iks.slp.impl.attr.AttributeListVisitor;
+import ch.ethz.iks.slp.impl.attr.gen.Parser;
+import ch.ethz.iks.slp.impl.attr.gen.ParserException;
+import ch.ethz.iks.slp.impl.attr.gen.Rule;
 
 /**
  * base class for all messages that the SLP framework uses.
@@ -439,5 +443,60 @@ public abstract class SLPMessage {
 			result.add(tokenizer.nextToken());
 		}
 		return result;
+	}
+
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 * @throws ServiceLocationException
+	 * 
+	 * @author Markus Alexander Kuppe
+	 * @since 1.1
+	 */
+	protected List attributeStringToList(String input) throws ServiceLocationException {
+		if("".equals(input)) {
+			return new ArrayList();
+		}
+		Parser parser = new Parser();
+		try {
+			Rule parse = parser.parse("attr-list", input);
+			AttributeListVisitor visitor = new AttributeListVisitor();
+			parse.visit(visitor);
+			return visitor.getAttributes();
+		} catch (IllegalArgumentException e) {
+			throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR, e.getMessage());
+		} catch (ParserException e) {
+			throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR, e.getMessage());
+		}
+	}
+
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 * @throws ServiceLocationException
+	 * 
+	 * @author Markus Alexander Kuppe
+	 * @since 1.1
+	 */
+	protected List attributeStringToListLiberal(String input) {
+		if("".equals(input)) {
+			return new ArrayList();
+		}
+		Parser parser = new Parser();
+		Rule rule = null;
+		try {
+			rule = parser.parse("attr-list", input);
+		} catch (IllegalArgumentException e) {
+			SLPCore.platform.logError(e.getMessage(), e);
+			// may never happen!!!
+		} catch (ParserException e) {
+			SLPCore.platform.logTraceDrop(e.getMessage());
+			rule = e.getRule();
+		}
+		AttributeListVisitor visitor = new AttributeListVisitor();
+		rule.visit(visitor);
+		return visitor.getAttributes();
 	}
 }

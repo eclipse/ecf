@@ -44,7 +44,7 @@ import ch.ethz.iks.slp.ServiceURL;
  * a ServiceRegistation message is sent to register a service with all DAs in
  * the scopes.
  * 
- * @author Jan S. Rellermeyer, ETH Zürich
+ * @author Jan S. Rellermeyer, ETH Zï¿½rich
  * @since 0.1
  */
 class ServiceRegistration extends SLPMessage {
@@ -133,7 +133,7 @@ class ServiceRegistration extends SLPMessage {
 		url = ServiceURL.fromBytes(input);
 		serviceType = new ServiceType(input.readUTF());
 		scopeList = stringToList(input.readUTF(), ",");
-		attList = stringToList(input.readUTF(), ",");
+		attList = attributeStringToList(input.readUTF());
 		authBlocks = AuthenticationBlock.parse(input);
 
 		if (SLPCore.CONFIG.getSecurityEnabled()) {
