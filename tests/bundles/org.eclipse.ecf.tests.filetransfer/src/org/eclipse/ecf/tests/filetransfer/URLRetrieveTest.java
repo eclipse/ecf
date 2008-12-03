@@ -89,7 +89,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	}
 
 	public void testReceiveFile() throws Exception {
-		addProxy("composent.com",3129,"foo\\bar","password");
+		//addProxy("composent.com",3129,"foo\\bar","password");
 		testReceive(HTTP_RETRIEVE);
 	}
 
