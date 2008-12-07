@@ -183,6 +183,7 @@ public class GenericServer implements IApplication {
 			for (final Iterator i = serverGroups.keySet().iterator(); i.hasNext();) {
 				final TCPServerSOContainerGroup serverGroup = (TCPServerSOContainerGroup) serverGroups.get(i.next());
 				serverGroup.takeOffTheAir();
+				System.out.println("Taking " + serverGroup.getName() + ":" + serverGroup.getPort() + " off the air"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				final Iterator iter = serverGroup.elements();
 				for (; iter.hasNext();) {
 					final TCPServerSOContainer container = (TCPServerSOContainer) iter.next();
@@ -190,6 +191,7 @@ public class GenericServer implements IApplication {
 				}
 			}
 		}
+		serverGroups.clear();
 		synchronized (this) {
 			this.notify();
 		}

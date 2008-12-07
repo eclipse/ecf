@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension-point id="configuration" name="ECF Generic Server Configuration" schema="schema/configuration.exsd"/>
-<!--
+<!-- Example use of org.eclipse.ecf.server.generic.configuration extension point
    <extension
          point="org.eclipse.ecf.server.generic.configuration">
       <connector
@@ -18,7 +18,7 @@
 -->
 
    <!-- Eclipse 3.3.0 has a bug that doesn't allow 'any' threads to run as main apps -->
-   <extension
+<!--   <extension
          id="org.eclipse.ecf.provider.AppGenericServer"
          point="org.eclipse.core.runtime.applications">
       <application
@@ -29,6 +29,7 @@
                class="org.eclipse.ecf.server.generic.app.GenericServer"/>
       </application>
    </extension>
+   -->
    <!-- Eclipse 3.3.1 may have a fix to allow this to run in either main/any thread -->
    <extension
          id="org.eclipse.ecf.provider.GenericServer"
@@ -36,18 +37,6 @@
       <application
             cardinality="*"
             thread="any"
-            visible="true">
-         <run
-               class="org.eclipse.ecf.server.generic.app.GenericServer"/>
-      </application>
-   </extension>
-
-   <extension
-         id="Server"
-         point="org.eclipse.core.runtime.applications">
-      <application
-            cardinality="*"
-            thread="main"
             visible="true">
          <run
                class="org.eclipse.ecf.server.generic.app.GenericServer"/>
