@@ -32,7 +32,7 @@
    -->
    <!-- Eclipse 3.3.1 may have a fix to allow this to run in either main/any thread -->
    <extension
-         id="org.eclipse.ecf.provider.GenericServer"
+         id="Server"
          point="org.eclipse.core.runtime.applications">
       <application
             cardinality="*"
