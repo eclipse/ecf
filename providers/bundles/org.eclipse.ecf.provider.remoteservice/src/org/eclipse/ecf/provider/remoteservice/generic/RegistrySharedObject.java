@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.*;
 import java.util.*;
-import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.provider.remoteservice.*;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.*;
+import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.*;
 
 public class RegistrySharedObject extends BaseSharedObject implements IRemoteServiceContainerAdapter {
@@ -976,11 +977,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return requests.remove(request);
 	}
 
+	protected void logException(int code, String message, Throwable e) {
+		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, code, message, e));
+	}
+
 	protected boolean handleSharedObjectMsg(SharedObjectMsg msg) {
 		try {
 			msg.invoke(this);
+			return true;
 		} catch (final Exception e) {
-			log(MSG_INVOKE_ERROR_CODE, MSG_INVOKE_ERROR_MESSAGE, e);
+			logException(MSG_INVOKE_ERROR_CODE, NLS.bind(MSG_INVOKE_ERROR_MESSAGE, msg), e);
 		}
 		return false;
 	}

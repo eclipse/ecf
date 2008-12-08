@@ -8,12 +8,18 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.remoteservice;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.util.LogHelper;
 import org.osgi.framework.*;
+import org.osgi.service.log.LogService;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
  */
 public class Activator implements BundleActivator {
+
+	private ServiceTracker logServiceTracker = null;
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.remoteservice"; //$NON-NLS-1$
@@ -61,6 +67,21 @@ public class Activator implements BundleActivator {
 	 */
 	public Filter createFilter(String filter) throws InvalidSyntaxException {
 		return context.createFilter(filter);
+	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		return (LogService) logServiceTracker.getService();
+	}
+
+	public void log(IStatus status) {
+		LogService logService = getLogService();
+		if (logService != null) {
+			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
+		}
 	}
 
 }
