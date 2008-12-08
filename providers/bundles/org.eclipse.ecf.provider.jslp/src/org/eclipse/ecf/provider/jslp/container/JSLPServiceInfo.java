@@ -37,7 +37,7 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 		super(null, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
 	}
 
-	public JSLPServiceInfo(IServiceInfo aSI) throws IDCreateException, SecurityException {
+	public JSLPServiceInfo(IServiceInfo aSI) throws IDCreateException {
 		this(aSI.getLocation(), ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME), aSI.getServiceID().getServiceTypeID(), aSI.getServiceID().getServiceName()), aSI.getPriority(), aSI.getWeight(), aSI.getServiceProperties());
 	}
 
