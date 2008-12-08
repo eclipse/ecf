@@ -20,6 +20,7 @@ import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.sharedobject.util.QueueException;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.core.sharedobject.*;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * Base class for shared object classes. This base class provides a number of
@@ -161,7 +162,8 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * @param event the event that was not handled.
 	 */
 	protected void handleUnhandledEvent(Event event) {
-		traceEntering("handleUnhandledEvent", event); //$NON-NLS-1$
+		// By default, simply log as warning
+		Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind("handleUnhandledEvent={0}", event), null)); //$NON-NLS-1$
 	}
 
 	/**
