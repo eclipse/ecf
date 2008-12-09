@@ -65,7 +65,7 @@ public class TransparentProxyTest extends AbstractRemoteServiceTest {
 		// Register
 		adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
 		// Give some time for propagation
-		sleep(3000);
+		sleep(2000);
 
 		final BundleContext bc = Activator.getDefault().getContext();
 		assertNotNull(bc);
@@ -76,9 +76,7 @@ public class TransparentProxyTest extends AbstractRemoteServiceTest {
 		System.out.println("proxy call start");
 		final String result = concatService.concat("OSGi ", "is cool");
 		System.out.println("proxy call end. result=" + result);
-		sleep(3000);
 		bc.ungetService(ref);
-		sleep(3000);
 	}
 
 	/*
