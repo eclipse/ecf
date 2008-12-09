@@ -213,7 +213,8 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * Get the config for this shared object.
 	 * 
 	 * @return ISharedObjectConfig for this object.  The ISharedObjectConfig is 
-	 * set within {@link #init(ISharedObjectConfig)}.  Will not be <code>null</code>.
+	 * set within {@link #init(ISharedObjectConfig)}.  Will not be <code>null</code> as long as the init method
+	 * is called prior to this method being called.
 	 */
 	protected final ISharedObjectConfig getConfig() {
 		return config;
@@ -229,17 +230,21 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	/**
-	 * @return ID that is the home container ID (primary) for this shared object.  Will not be <code>null</code>.
+	 * @return ID that is the home container ID (primary) for this shared object.  Will not be <code>null</code> 
+	 * as long as the {@link #init(ISharedObjectConfig)} method has been called (by container) as a result
+	 * of {@link ISharedObjectManager#addSharedObject(ID, ISharedObject, Map)}.
 	 */
 	protected ID getHomeContainerID() {
 		return getConfig().getHomeContainerID();
 	}
 
 	/**
-	 * @return ID that is the local container ID for this shared object.  Will not be <code>null</code>.
+	 * @return ID that is the local container ID for this shared object.  Will be <code>null</code> if
+	 * the shared object is *not* in a local container (i.e. has been removed from the container).
 	 */
 	protected ID getLocalContainerID() {
-		return getContext().getLocalContainerID();
+		ISharedObjectContext context = getContext();
+		return (context == null) ? null : context.getLocalContainerID();
 	}
 
 	/**
@@ -247,7 +252,8 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * if the surrounding container is not currently connected.
 	 */
 	protected ID getConnectedID() {
-		return getContext().getConnectedID();
+		ISharedObjectContext context = getContext();
+		return (context == null) ? null : context.getConnectedID();
 	}
 
 	/**
@@ -320,7 +326,9 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * @throws IOException if the destroy message cannot be sent (i.e. due to disconnection, etc).
 	 */
 	protected void destroyRemote(ID remoteID) throws IOException {
-		getContext().sendDispose(remoteID);
+		ISharedObjectContext context = getContext();
+		if (context != null)
+			context.sendDispose(remoteID);
 	}
 
 	/**
@@ -339,11 +347,14 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 *             send for other reason
 	 */
 	protected void sendSharedObjectMsgTo(ID toID, SharedObjectMsg msg) throws IOException {
-		Assert.isNotNull(msg, Messages.BaseSharedObject_Message_Not_Null);
-		String method = "sendSharedObjectMsgTo"; //$NON-NLS-1$
-		traceEntering(method, new Object[] {toID, msg});
-		getContext().sendMessage(toID, new SharedObjectMsgEvent(getID(), toID, msg));
-		traceExiting(method);
+		ISharedObjectContext context = getContext();
+		if (context != null) {
+			Assert.isNotNull(msg, Messages.BaseSharedObject_Message_Not_Null);
+			String method = "sendSharedObjectMsgTo"; //$NON-NLS-1$
+			traceEntering(method, new Object[] {toID, msg});
+			context.sendMessage(toID, new SharedObjectMsgEvent(getID(), toID, msg));
+			traceExiting(method);
+		}
 	}
 
 	/**
@@ -547,7 +558,8 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * @see ISharedObjectContext#getGroupMemberIDs()
 	 */
 	protected ID[] getGroupMemberIDs() {
-		return getContext().getGroupMemberIDs();
+		ISharedObjectContext context = getContext();
+		return (context == null) ? new ID[] {} : context.getGroupMemberIDs();
 	}
 
 	/**
@@ -562,23 +574,26 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 *            replica of this shared object.
 	 */
 	protected void replicateToRemoteContainers(ID[] remoteContainers) {
-		traceEntering("replicateToRemoteContainers", remoteContainers); //$NON-NLS-1$
-		try {
-			// Get current group membership
-			ReplicaSharedObjectDescription[] createInfos = getReplicaDescriptions(remoteContainers);
-			if (createInfos != null) {
-				if (createInfos.length == 1) {
-					getContext().sendCreate((remoteContainers == null) ? null : remoteContainers[0], createInfos[0]);
-				} else {
-					for (int i = 0; i < remoteContainers.length; i++) {
-						getContext().sendCreate(remoteContainers[i], createInfos[i]);
+		ISharedObjectContext context = getContext();
+		if (context != null) {
+			traceEntering("replicateToRemoteContainers", remoteContainers); //$NON-NLS-1$
+			try {
+				// Get current group membership
+				ReplicaSharedObjectDescription[] createInfos = getReplicaDescriptions(remoteContainers);
+				if (createInfos != null) {
+					if (createInfos.length == 1) {
+						context.sendCreate((remoteContainers == null) ? null : remoteContainers[0], createInfos[0]);
+					} else {
+						for (int i = 0; i < remoteContainers.length; i++) {
+							context.sendCreate(remoteContainers[i], createInfos[i]);
+						}
 					}
 				}
+			} catch (IOException e) {
+				traceCatching("replicateToRemoteContainers." + DESTROYREMOTE_CODE, //$NON-NLS-1$
+						e);
+				log(DESTROYREMOTE_CODE, "replicateToRemoteContainers", e); //$NON-NLS-1$
 			}
-		} catch (IOException e) {
-			traceCatching("replicateToRemoteContainers." + DESTROYREMOTE_CODE, //$NON-NLS-1$
-					e);
-			log(DESTROYREMOTE_CODE, "replicateToRemoteContainers", e); //$NON-NLS-1$
 		}
 	}
 
