@@ -776,6 +776,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(CALL_RESPONSE, response));
 		} catch (final IOException e) {
 			log(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE, e);
+			// Also print to standard error, just in case
+			e.printStackTrace(System.err);
 		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallResponse"); //$NON-NLS-1$
 	}
