@@ -663,10 +663,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			// publish service in this registry. At this point it's ready to go
 			registry.publishService(registration);
 			localRegisterService(registration);
-			// notify IRemoteServiceListeners synchronously
-			fireRemoteServiceListeners(createRegisteredEvent(registration));
 			notifyAddRegistrationResponse(requestId, null);
 		}
+		// notify IRemoteServiceListeners
+		fireRemoteServiceListeners(createRegisteredEvent(registration));
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), ADD_REGISTRATION);
 	}
 
