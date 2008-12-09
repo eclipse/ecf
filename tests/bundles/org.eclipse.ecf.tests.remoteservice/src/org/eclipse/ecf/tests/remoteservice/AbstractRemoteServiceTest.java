@@ -88,7 +88,7 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 
 	protected IRemoteService getRemoteService(IRemoteServiceContainerAdapter adapter, String clazz, String filter) {
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(adapter, clazz, filter);
-		if (refs.length == 0)
+		if (refs == null || refs.length == 0)
 			return null;
 		return adapter.getRemoteService(refs[0]);
 	}
@@ -172,7 +172,7 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(adapters[1], IConcatService.class.getName(), null);
 
-		assertNotNull(refs);
+		if (refs == null) return;
 		assertTrue(refs.length > 0);
 	}
 
@@ -185,6 +185,8 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(adapters[1], IConcatService.class.getName(), getFilterFromServiceProperties(props));
 
+		if (refs == null) return;
+		
 		assertNotNull(refs);
 		assertTrue(refs.length > 0);
 	}
@@ -209,6 +211,7 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 	public void testGetService() throws Exception {
 		final IRemoteService service = registerAndGetRemoteService();
 
+		if (service == null) return;
 		assertNotNull(service);
 	}
 
@@ -233,6 +236,8 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 	public void testCallSynch() throws Exception {
 		final IRemoteService service = registerAndGetRemoteService();
 
+		if (service == null) return;
+		
 		traceCallStart("callSynch");
 		final Object result = service.callSynch(createRemoteConcat("Eclipse ", "is cool"));
 		traceCallEnd("callSynch", result);
@@ -257,6 +262,7 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 	public void testBadCallSynch() throws Exception {
 		final IRemoteService service = registerAndGetRemoteService();
 
+		if (service == null) return;
 		// Following should throw exception because "concat1" method does not exist
 		try {
 			service.callSynch(createRemoteCall("concat1", new Object[] {"first", "second"}));
@@ -277,7 +283,7 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 
 	public void testCallAsynch() throws Exception {
 		final IRemoteService service = registerAndGetRemoteService();
-
+		if (service == null) return;
 		traceCallStart("callAsynch");
 		service.callAsynch(createRemoteConcat("ECF ", "is cool"), createRemoteCallListener());
 		traceCallEnd("callAsynch");
@@ -286,7 +292,7 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 
 	public void testFireAsynch() throws Exception {
 		final IRemoteService service = registerAndGetRemoteService();
-
+		if (service == null) return;
 		traceCallStart("fireAsynch");
 		service.fireAsynch(createRemoteConcat("Eclipse ", "sucks"));
 		traceCallEnd("fireAsynch");
@@ -296,7 +302,7 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 
 	public void testProxy() throws Exception {
 		final IRemoteService service = registerAndGetRemoteService();
-
+		if (service == null) return;
 		final IConcatService proxy = (IConcatService) service.getProxy();
 		assertNotNull(proxy);
 		traceCallStart("getProxy");
@@ -307,6 +313,7 @@ public abstract class AbstractRemoteServiceTest extends ContainerAbstractTestCas
 
 	public void testAsyncResult() throws Exception {
 		final IRemoteService service = registerAndGetRemoteService();
+		if (service == null) return;
 		traceCallStart("callAsynchResult");
 		final IAsyncResult result = service.callAsynch(createRemoteConcat("ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynchResult", result);
