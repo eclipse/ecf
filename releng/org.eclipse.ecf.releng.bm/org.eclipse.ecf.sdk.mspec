@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <md:mspec xmlns:md="http://www.eclipse.org/buckminster/MetaData-1.0" 
-    installLocation="${install.location}" 
     name="org.eclipse.ecf" 
     materializer="targetPlatform" 
     url="org.eclipse.ecf.sdk.cquery">
