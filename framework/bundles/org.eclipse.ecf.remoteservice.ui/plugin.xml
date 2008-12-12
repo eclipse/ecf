@@ -56,7 +56,7 @@
             id="org.eclipse.ecf.remoteservices.ui.property.ConnectedPropertyTester"
             namespace="org.eclipse.ecf.remoteservices"
             properties="isConnected"
-            type="org.eclipse.ecf.discovery.model.IServiceInfo">
+            type="org.eclipse.ecf.discovery.ui.model.IServiceInfo">
       </propertyTester>
    </extension>
 
