@@ -32,6 +32,13 @@ public final class Messages extends NLS {
 	public static String MethodInvocationDialog_InvocationTypeRemoteServiceProxy;
 	public static String MethodInvocationDialog_InvocationTypeSynchronous;
 
+	public static String AbstractRemoteServiceAccessHandler_DISCONNECT_MENU_TEXT;
+	public static String AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TEXT;
+	public static String AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_EXCEPTION_TITLE;
+	public static String AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_RESP_TEXT;
+	public static String AbstractRemoteServiceAccessHandler_MSG_BOX_RECEIVED_RESP_TITLE;
+	public static String AbstractRemoteServiceAccessHandler_NOT_AVAILABLE_MENU_TEXT;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.eclipse.ecf.internal.remoteservices.ui.handlers.ConnectRemoteServicehandler"
+            id="org.eclipse.ecf.remoteservices.ui.commands.connectCommand"
+            name="Connect Command">
+      </command>
+      <command
+            defaultHandler="org.eclipse.ecf.internal.remoteservices.ui.handlers.ReflectiveRemoteServiceHandler"
+            id="org.eclipse.ecf.remoteservices.ui.commands.reflectiveMethodDialogHandler"
+            name="Reflective Method Invocation Command">
+         <commandParameter
+               id="org.eclipse.ecf.remoteservices.ui.commands.reflectiveMethodDialogParameter"
+               name="name"
+               optional="true">
+         </commandParameter>
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ecf.discovery.ui.DiscoveryView?after=additions">
+         <command
+               commandId="org.eclipse.ecf.remoteservices.ui.commands.connectCommand"
+               id="org.eclipse.ecf.remoteservices.ui.menus.connectCommand"
+               mnemonic="S">
+            <visibleWhen>
+               <with
+                     variable="activeMenuSelection">
+                  <iterate
+                        ifEmpty="false"
+                        operator="and">
+                     <test
+                           args="remotesvcs"
+                           property="org.eclipse.ecf.discovery.isServiceType"
+                           value="true">
+                     </test>
+                     <test
+                           property="org.eclipse.ecf.remoteservices.isConnected"
+                           value="false">
+                     </test>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+
+	 <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.eclipse.ecf.internal.remoteservices.ui.property.ConnectedTester"
+            id="org.eclipse.ecf.remoteservices.ui.property.ConnectedPropertyTester"
+            namespace="org.eclipse.ecf.remoteservices"
+            properties="isConnected"
+            type="org.eclipse.ecf.discovery.model.IServiceInfo">
+      </propertyTester>
+   </extension>
+
+</plugin>
