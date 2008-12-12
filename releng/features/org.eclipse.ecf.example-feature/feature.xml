@@ -42,13 +42,14 @@
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ecf.discovery"/>
       <import plugin="org.eclipse.ecf.discovery.ui"/>
+      <import plugin="org.eclipse.ecf.discovery.ui.edit"/>
+      <import plugin="org.eclipse.ecf.discovery.ui.model"/>
       <import plugin="org.eclipse.ecf.provider"/>
       <import plugin="org.eclipse.ecf.server.generic"/>
       <import plugin="org.eclipse.ecf.datashare"/>
       <import plugin="org.eclipse.ecf.provider.datashare"/>
       <import plugin="org.eclipse.ecf"/>
       <import plugin="org.eclipse.ecf.discovery"/>
-      <import plugin="org.eclipse.ecf.discovery.ui"/>
       <import plugin="org.eclipse.ecf.remoteservice"/>
       <import plugin="org.eclipse.ecf.examples.remoteservices.common"/>
       <import plugin="org.eclipse.ecf.ui"/>
