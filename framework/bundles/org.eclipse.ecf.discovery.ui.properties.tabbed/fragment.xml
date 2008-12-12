@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+      <propertyContributor
+            contributorId="org.eclipse.ecf.discovery.ui.DiscoveryView" labelProvider="org.eclipse.ecf.internal.discovery.ui.ServicePropertiesLabelProvider">
+         <propertyCategory category="discovery"/>
+         
+      </propertyContributor>
+   </extension>
+      <extension point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs contributorId="org.eclipse.ecf.discovery.ui.DiscoveryView">
+         <propertyTab
+            category="discovery"
+               id="discovery.service.name"
+            label="Service"/>
+         <propertyTab
+            afterTab="discovery.service.name"
+            category="discovery"
+               id="discovery.service.type"
+            label="Type"/>
+         <propertyTab
+            afterTab="discovery.service.type"
+            category="discovery"
+               id="discovery.service.properties"
+            label="Properties"/>
+      </propertyTabs>
+   </extension>
+   <extension point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections contributorId="org.eclipse.ecf.discovery.ui.DiscoveryView">
+         <propertySection
+               class="org.eclipse.ecf.internal.discovery.ui.ServicePropertySection"
+               id="discovery.service.id.section.1"
+               tab="discovery.service.name">
+            <input type="java.lang.Object"/>
+         </propertySection>
+         <propertySection
+               afterSection="discovery.service.id.section.1"
+               class="org.eclipse.ecf.internal.discovery.ui.ServiceTypePropertySection"
+               id="discovery.service.id.section.2"
+               tab="discovery.service.type">
+            <input type="org.eclipse.ecf.discovery.ui.model.IServiceInfo"/>
+         </propertySection>
+         <propertySection
+               afterSection="discovery.service.id.section.2"
+               class="org.eclipse.ecf.internal.discovery.ui.ServicePropertiesPropertySection"
+               id="discovery.service.id.section.3"
+               tab="discovery.service.properties">
+            <input type="org.eclipse.ecf.discovery.ui.model.IServiceInfo"/>
+         </propertySection>
+      </propertySections>
+   </extension>
+
+  <!-- map from EMF models to platform's property sources -->
+  <extension
+        point="org.eclipse.core.runtime.adapters">
+     <factory
+           adaptableType="org.eclipse.ecf.internal.discovery.ui.views.DiscoveryView"
+           class="org.eclipse.ecf.internal.discovery.ui.TabbedPropertyAdapterFactory">
+        <adapter
+              type="org.eclipse.ui.views.properties.IPropertySheetPage">
+        </adapter>
+     </factory>
+  </extension>    
+
+</plugin>
