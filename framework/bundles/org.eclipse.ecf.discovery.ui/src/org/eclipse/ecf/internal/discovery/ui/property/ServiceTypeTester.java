@@ -30,6 +30,19 @@ public class ServiceTypeTester extends PropertyTester {
 		}
 		boolean expected = ((Boolean)expectedValue).booleanValue();
 		
+		boolean isServiceType = isServiceType(receiver, args);
+		if(expected && isServiceType) {
+			return true;
+		} else if(expected && !isServiceType) {
+			return false;
+		} else if(!expected && isServiceType) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private boolean isServiceType(Object receiver, Object[] args) {
 		// convert the args to a list we can use for comparison
 		List asList = Arrays.asList(args);
 		
@@ -41,8 +54,7 @@ public class ServiceTypeTester extends PropertyTester {
 			return false;
 		} else {
 			List ecfServices = services.subList(0, args.length);
-			boolean equals = asList.equals(ecfServices);
-			return equals == expected ? true : false;
+			return asList.equals(ecfServices);
 		}
 	}
 }
