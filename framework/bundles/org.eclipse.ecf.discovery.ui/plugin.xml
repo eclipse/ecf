@@ -1,81 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.2"?>
+<?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="serviceAccessHandler" name="ECF Service Access Handler" schema="schema/serviceAccessHandler.exsd"/>
-   <extension
-         point="org.eclipse.ecf.discovery.ui.serviceAccessHandler">
-      <serviceAccessHandler
-            class="org.eclipse.ecf.discovery.ui.UrlServiceAccessHandler">
-      </serviceAccessHandler>
+  <extension
+        point="org.eclipse.ui.views">
+     <view
+           allowMultiple="true"
+           category="org.eclipse.ecf.ui.viewcategory"
+           class="org.eclipse.ecf.internal.discovery.ui.views.DiscoveryView"
+           icon="icons/full/obj16/service_browser_view.gif"
+           id="org.eclipse.ecf.discovery.ui.DiscoveryView"
+           name="%discovery.view">
+     </view>
+  </extension>
+	
+	 <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.eclipse.ecf.internal.discovery.ui.property.ServiceTypeTester"
+            id="org.eclipse.ecf.discovery.ServiceTypePropertyTester"
+            namespace="org.eclipse.ecf.discovery"
+            properties="isServiceType"
+            type="org.eclipse.ecf.discovery.model.IServiceInfo">
+      </propertyTester>
    </extension>
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-            category="org.eclipse.ecf.ui.viewcategory"
-            class="org.eclipse.ecf.discovery.ui.views.DiscoveryView"
-            icon="icons/default_provider_image.gif"
-            id="org.eclipse.ecf.example.collab.discoveryview"
-            name="Service Discovery"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
-      <propertyContributor
-            contributorId="org.eclipse.ecf.example.collab.discoveryview" labelProvider="org.eclipse.ecf.internal.discovery.ui.ServicePropertiesLabelProvider">
-         <propertyCategory category="discovery"/>
-         
-      </propertyContributor>
-   </extension>
-      <extension point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
-      <propertyTabs contributorId="org.eclipse.ecf.example.collab.discoveryview">
-         <propertyTab
-            category="discovery"
-               id="discovery.service.name"
-            label="Service"/>
-         <propertyTab
-            afterTab="discovery.service.name"
-            category="discovery"
-               id="discovery.service.type"
-            label="Type"/>
-         <propertyTab
-            afterTab="discovery.service.type"
-            category="discovery"
-               id="discovery.service.properties"
-            label="Properties"/>
-      </propertyTabs>
-   </extension>
-   <extension point="org.eclipse.ui.views.properties.tabbed.propertySections">
-      <propertySections contributorId="org.eclipse.ecf.example.collab.discoveryview">
-         <propertySection
-               class="org.eclipse.ecf.internal.discovery.ui.ServicePropertySection"
-               id="discovery.service.id.section.1"
-               tab="discovery.service.name">
-            <input type="org.eclipse.ecf.internal.discovery.ui.ViewTreeService"/>
-         </propertySection>
-         <propertySection
-               afterSection="discovery.service.id.section.1"
-               class="org.eclipse.ecf.internal.discovery.ui.ServiceTypePropertySection"
-               id="discovery.service.id.section.2"
-               tab="discovery.service.type">
-            <input type="org.eclipse.ecf.internal.discovery.ui.ViewTreeService"/>
-         </propertySection>
-         <propertySection
-               afterSection="discovery.service.id.section.2"
-               class="org.eclipse.ecf.internal.discovery.ui.ServicePropertiesPropertySection"
-               id="discovery.service.id.section.3"
-               tab="discovery.service.properties">
-            <input type="org.eclipse.ecf.internal.discovery.ui.ViewTreeService"/>
-         </propertySection>
-      </propertySections>
-   </extension>
-
-
-   
-<!--
-   <extension
-         point="org.eclipse.ecf.discovery.ui.serviceAccessHandler">
-      <serviceAccessHandler
-            class="org.eclipse.ecf.internal.discovery.ui.NullServiceAccessHandler">
-      </serviceAccessHandler>
-   </extension>
--->
 </plugin>
