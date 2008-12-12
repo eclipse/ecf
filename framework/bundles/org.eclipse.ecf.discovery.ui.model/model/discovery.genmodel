@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText=""
+    modelDirectory="/org.eclipse.ecf.discovery.ui.model/src" creationCommands="false"
+    creationIcons="false" editDirectory="/org.eclipse.ecf.discovery.ui.edit/src" editorDirectory="/org.eclipse.ecf.discovery.ui/src"
+    modelPluginID="org.eclipse.ecf.discovery.ui.model" forceOverwrite="true" modelName="Discovery"
+    editPluginClass="org.eclipse.ecf.discovery.ui.edit.provider.DiscoveryEditPlugin"
+    editorPluginClass="org.eclipse.ecf.discovery.ui.views.ServiceView" nonNLSMarkers="true"
+    testsDirectory="/org.eclipse.ecf.discovery.ui.tests/src" testSuiteClass="org.eclipse.ecf.discovery.tests.DiscoveryAllTests"
+    importerID="org.eclipse.emf.importer.ecore" containmentProxies="true" providerRootExtendsClass="org.eclipse.ecf.discovery.ui.edit.ItemProviderWithStatusLineAdapter"
+    language="">
+  <foreignModel>discovery.ecore</foreignModel>
+  <genPackages prefix="Model" basePackage="org.eclipse.ecf.discovery" disposableProviderFactory="true"
+      presentationPackageSuffix="ui" generateModelWizard="false" ecorePackage="discovery.ecore#/">
+    <genDataTypes ecoreDataType="discovery.ecore#//ECFIServiceInfo"/>
+    <genDataTypes ecoreDataType="discovery.ecore#//InetAddress"/>
+    <genDataTypes ecoreDataType="discovery.ecore#//ECFIServiceID"/>
+    <genDataTypes ecoreDataType="discovery.ecore#//ECFIServiceTypeID"/>
+    <genDataTypes ecoreDataType="discovery.ecore#//URI"/>
+    <genClasses ecoreClass="discovery.ecore#//IServiceInfo">
+      <genFeatures property="None" createChild="false" propertyCategory="Discovery"
+          ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceInfo/ecfServiceInfo"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          propertyDescription="The human readable form of this service" ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceInfo/ecfName"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          propertyDescription="The location of the service" ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceInfo/ecfLocation"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceInfo/ecfPriority"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceInfo/ecfWeight"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" propertyCategory="Discovery"
+          propertySortChoices="true" ecoreFeature="ecore:EReference discovery.ecore#//IServiceInfo/serviceID"/>
+    </genClasses>
+    <genClasses ecoreClass="discovery.ecore#//INetwork">
+      <genFeatures property="None" children="true" createChild="false" ecoreFeature="ecore:EReference discovery.ecore#//INetwork/hosts"/>
+    </genClasses>
+    <genClasses ecoreClass="discovery.ecore#//IHost">
+      <genFeatures property="None" children="true" createChild="false" propertySortChoices="true"
+          ecoreFeature="ecore:EReference discovery.ecore#//IHost/services"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="" ecoreFeature="ecore:EAttribute discovery.ecore#//IHost/address"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute discovery.ecore#//IHost/name"/>
+    </genClasses>
+    <genClasses ecoreClass="discovery.ecore#//IServiceID">
+      <genFeatures property="None" createChild="false" ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceID/ecfServiceID"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceID/ecfServiceName"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" propertyCategory="Discovery"
+          propertySortChoices="true" ecoreFeature="ecore:EReference discovery.ecore#//IServiceID/serviceTypeID"/>
+    </genClasses>
+    <genClasses ecoreClass="discovery.ecore#//IServiceTypeID">
+      <genFeatures property="None" createChild="false" ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceTypeID/ecfServiceTypeID"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          propertyDescription="The naming authority who defines this service type"
+          ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceTypeID/ecfNamingAuthority"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          propertyDescription="The service hierarchy from abstract type to concrete type"
+          propertyMultiLine="true" ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceTypeID/ecfServices"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          propertyDescription="The protocol used by services of this service type"
+          propertyMultiLine="true" propertySortChoices="true" ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceTypeID/ecfProtocols"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          propertyDescription="The scope in which this service is valid" propertyMultiLine="true"
+          propertySortChoices="true" ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceTypeID/ecfScopes"/>
+      <genFeatures property="Readonly" createChild="false" propertyCategory="Discovery"
+          propertyDescription="The human readable form of this service type" ecoreFeature="ecore:EAttribute discovery.ecore#//IServiceTypeID/ecfServiceName"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
