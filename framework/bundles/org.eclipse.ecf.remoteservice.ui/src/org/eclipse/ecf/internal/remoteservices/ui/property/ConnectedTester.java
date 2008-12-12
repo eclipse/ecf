@@ -40,6 +40,20 @@ public class ConnectedTester extends PropertyTester {
 		}
 		boolean expected = ((Boolean) expectedValue).booleanValue();
 
+		boolean hasContainer = hasContainer(receiver);
+
+		if(expected && hasContainer) {
+			return true;
+		} else if(expected && !hasContainer) {
+			return false;
+		} else if(!expected && hasContainer) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private boolean hasContainer(Object receiver) {
 		// get the container instance
 		IServiceInfo serviceInfo = DiscoveryPropertyTesterUtil.getIServiceInfoReceiver(receiver);
 		final String connectNamespace = getConnectNamespace(serviceInfo);
@@ -49,14 +63,13 @@ public class ConnectedTester extends PropertyTester {
 			IContainer container = containerManager.getContainer(createConnectId);
 			if(container == null) {
 				//Trace.trace(...);
-				return expected == false;
+				return false;
 			}
 			ID connectedId = container.getConnectedID();
-			boolean isConnected = connectedId == null ? false : true;
-			return expected == isConnected;
+			return (connectedId == null ? false : true);
 		} catch (IDCreateException e) {
 			//Trace.trace(...);
-			return expected == false;
+			return false;
 		}
 	}
 

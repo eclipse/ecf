@@ -18,6 +18,11 @@
                optional="true">
          </commandParameter>
       </command>
+      <command
+            defaultHandler="org.eclipse.ecf.internal.remoteservices.ui.handlers.DisonnectRemoteServicehandler"
+            id="org.eclipse.ecf.remoteservices.ui.commands.disconnectCommand"
+            name="Disconnect Command">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -43,6 +48,30 @@
                            value="false">
                      </test>
                   </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="org.eclipse.ecf.remoteservices.ui.commands.disconnectCommand"
+               id="org.eclipse.ecf.remoteservices.ui.menus.disconnectCommand"
+               mnemonic="S"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="activeMenuSelection">
+                  <iterate
+                        ifEmpty="false"
+                        operator="and">
+                     <test
+                           args="remotesvcs"
+                           property="org.eclipse.ecf.discovery.isServiceType"
+                           value="true">
+                     </test>
+                     <test
+                           property="org.eclipse.ecf.remoteservices.isConnected"
+                           value="true">
+                     </test></iterate>
                </with>
             </visibleWhen>
          </command>

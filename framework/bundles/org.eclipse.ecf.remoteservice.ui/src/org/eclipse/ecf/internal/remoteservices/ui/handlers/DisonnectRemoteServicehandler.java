@@ -16,14 +16,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.internal.remoteservices.ui.RemoteServiceHandlerUtil;
 import org.eclipse.osgi.util.NLS;
 
-public class ConnectRemoteServicehandler extends ConnectionHandler {
-
+public class DisonnectRemoteServicehandler extends ConnectionHandler {
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.internal.remoteservices.ui.handlers.ConnectionHandler#getJob()
+	 */
 	protected Job getJob(final ExecutionEvent event) throws ExecutionException {
 		final ID createConnectId = RemoteServiceHandlerUtil.getActiveConnectIDChecked(event);
 		// decouple the long running connect call from the ui thread
@@ -31,10 +33,7 @@ public class ConnectRemoteServicehandler extends ConnectionHandler {
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					final IContainer container = RemoteServiceHandlerUtil.getActiveIRemoteServiceContainerChecked(event);
-					container.connect(createConnectId, null);
-				} catch (ContainerConnectException e) {
-					showException(e);
-					return Status.CANCEL_STATUS;
+					container.disconnect();
 				} catch (ExecutionException e) {
 					showException(e);
 					return Status.CANCEL_STATUS;
