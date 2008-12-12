@@ -15,24 +15,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.naming.ServiceUnavailableException;
-
-import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IAsyncResult;
-import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservices.ui.MethodInvocationDialog;
@@ -43,53 +35,52 @@ import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
-import org.osgi.util.tracker.ServiceTracker;
 
-public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteServiceAccessHandler {
+public class RemoteEnvironmentInfoServiceAccessHandler /*extends AbstractRemoteServiceAccessHandler */ {
 
 	private static final String[] serviceType = new String[]{Constants.DISCOVERY_SERVICE_TYPE, "IRemoteEnvironmentInfo"};
 	static Map remoteEnvironmentContainers = new HashMap();
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler#getContributionsForMatchingService()
-	 */
-	protected IContributionItem[] getContributionsForMatchingService() {
-		IContainer container = null;
-		try {
-			container = findContainerForService(getServiceInfo().getServiceID());
-			if (container == null)
-				return EMPTY_CONTRIBUTION;
-			// Get adapter
-			final IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class);
-			if (adapter == null)
-				return EMPTY_CONTRIBUTION;
-			// If not connected then get connect contribution
-			if (container.getConnectedID() == null) {
-				// The container is not connected so we create/return action for connecting
-				return getContributionItemsForConnect(container, createConnectID());
-			} else {
-				return getContributionItemsForConnectedContainer(container, adapter);
-			}
-		} catch (final ECFException e) {
-			return EMPTY_CONTRIBUTION;
-		}
-	}
-
-	/**
-	 * @param adapter
-	 * @return
-	 */
-	protected IContributionItem[] getContributionItemsForRemoteServiceAdapter(final IRemoteServiceContainerAdapter adapter) {
-		try {
-			final IRemoteServiceReference[] references = getRemoteServiceReferencesForRemoteServiceAdapter(adapter);
-			if (references == null)
-				return NOT_AVAILABLE_CONTRIBUTION;
-			final IRemoteService remoteService = adapter.getRemoteService(references[0]);
-			return new IContributionItem[] {createDialogContributionItem(IRemoteEnvironmentInfo.class, remoteService)};
-		} catch (final Exception e1) {
-			return NOT_AVAILABLE_CONTRIBUTION;
-		}
-	}
+//	/* (non-Javadoc)
+//	 * @see org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler#getContributionsForMatchingService()
+//	 */
+//	protected IContributionItem[] getContributionsForMatchingService() {
+//		IContainer container = null;
+//		try {
+//			container = findContainerForService(getServiceInfo().getServiceID());
+//			if (container == null)
+//				return EMPTY_CONTRIBUTION;
+//			// Get adapter
+//			final IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class);
+//			if (adapter == null)
+//				return EMPTY_CONTRIBUTION;
+//			// If not connected then get connect contribution
+//			if (container.getConnectedID() == null) {
+//				// The container is not connected so we create/return action for connecting
+//				return getContributionItemsForConnect(container, createConnectID());
+//			} else {
+//				return getContributionItemsForConnectedContainer(container, adapter);
+//			}
+//		} catch (final ECFException e) {
+//			return EMPTY_CONTRIBUTION;
+//		}
+//	}
+//
+//	/**
+//	 * @param adapter
+//	 * @return
+//	 */
+//	protected IContributionItem[] getContributionItemsForRemoteServiceAdapter(final IRemoteServiceContainerAdapter adapter) {
+//		try {
+//			final IRemoteServiceReference[] references = getRemoteServiceReferencesForRemoteServiceAdapter(adapter);
+//			if (references == null)
+//				return NOT_AVAILABLE_CONTRIBUTION;
+//			final IRemoteService remoteService = adapter.getRemoteService(references[0]);
+//			return new IContributionItem[] {createDialogContributionItem(IRemoteEnvironmentInfo.class, remoteService)};
+//		} catch (final Exception e1) {
+//			return NOT_AVAILABLE_CONTRIBUTION;
+//		}
+//	}
 
 	private IContributionItem createDialogContributionItem(final Class interfaceClass, final IRemoteService remoteService) {
 		final IAction action = new Action() {
@@ -137,7 +128,7 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 								break;
 						}
 					} catch (final Exception e) {
-						showException(e);
+//						showException(e);
 					}
 				}
 			}
@@ -163,10 +154,10 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 			public void handleEvent(IRemoteCallEvent event) {
 				if (event instanceof IRemoteCallCompleteEvent) {
 					final IRemoteCallCompleteEvent complete = (IRemoteCallCompleteEvent) event;
-					if (complete.hadException()) {
-						showException(complete.getException());
-					} else
-						showResult(interfaceClass.getName(), remoteCall, complete.getResponse());
+//					if (complete.hadException()) {
+//						showException(complete.getException());
+//					} else
+//						showResult(interfaceClass.getName(), remoteCall, complete.getResponse());
 				}
 			}
 		});
@@ -181,14 +172,14 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 		// Make sync call
 		final Object result = remoteService.callSynch(remoteCall);
 		// Show result
-		showResult(interfaceClass.getName(), remoteCall, result);
+//		showResult(interfaceClass.getName(), remoteCall, result);
 	}
 
 	private void invokeFuture(final Class interfaceClass, final IRemoteService remoteService, final IRemoteCall remoteCall) throws InvocationTargetException, InterruptedException {
 		// Make async call with future result
 		final IAsyncResult asyncResult = remoteService.callAsynch(remoteCall);
 		// Call blocking get and show result
-		showResult(interfaceClass.getName(), remoteCall, asyncResult.get());
+//		showResult(interfaceClass.getName(), remoteCall, asyncResult.get());
 	}
 
 	private void invokeRemoteEnvironmentInfo(final IRemoteCall remoteCall, IRemoteEnvironmentInfo proxy) throws Exception {
@@ -208,10 +199,10 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 		} else if (remoteCall.getMethod().equals("getWS")) {
 			result = proxy.getWS();
 		} else {
-			showException(new Exception("Invalid method selected"));
+//			showException(new Exception("Invalid method selected"));
 			return;
 		}
-		showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, result);
+//		showResult(IRemoteEnvironmentInfo.class.getName(), remoteCall, result);
 	}
 
 	private void invokeRemoteEnvironmentInfoProxy(final IRemoteService remoteService, final IRemoteCall remoteCall) throws Exception {
@@ -219,12 +210,12 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 	}
 
 	private void invokeOSGiRemoteEnvironmentInfoProxy(final IRemoteCall remoteCall) throws Exception {
-		final ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(), IRemoteEnvironmentInfo.class.getName(), null);
-		st.open();
-		final IRemoteEnvironmentInfo proxy = (IRemoteEnvironmentInfo) st.getService();
-		st.close();
+//		final ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(), IRemoteEnvironmentInfo.class.getName(), null);
+//		st.open();
+		final IRemoteEnvironmentInfo proxy = null/* (IRemoteEnvironmentInfo) st.getService()*/;
+//		st.close();
 		if (proxy == null) {
-			showException(new ServiceUnavailableException(NLS.bind("{0} remote service not available", IRemoteEnvironmentInfo.class.getName())));
+//			showException(new ServiceUnavailableException(NLS.bind("{0} remote service not available", IRemoteEnvironmentInfo.class.getName())));
 			return;
 		}
 		invokeRemoteEnvironmentInfo(remoteCall, proxy);
@@ -235,44 +226,44 @@ public class RemoteEnvironmentInfoServiceAccessHandler extends AbstractRemoteSer
 		synchronized (remoteEnvironmentContainers) {
 			result = (IContainer) remoteEnvironmentContainers.get(serviceID);
 			if (result == null) {
-				result = createContainer();
+//				result = createContainer();
 				remoteEnvironmentContainers.put(serviceID, result);
 			}
 		}
 		return result;
 	}
 
-	private IContributionItem[] getContributionItemsForConnect(final IContainer container, final ID targetID) {
-		final IAction action = new Action() {
-			public void run() {
-				try {
-					// connect to target ID
-					connectContainer(container, targetID, null);
-				} catch (final ContainerConnectException e) {
-					showException(e);
-				}
-			}
-		};
-		action.setText(NLS.bind("Connect to {0}", targetID.getName()));
-		return new IContributionItem[] {new ActionContributionItem(action)};
-	}
+//	private IContributionItem[] getContributionItemsForConnect(final IContainer container, final ID targetID) {
+//		final IAction action = new Action() {
+//			public void run() {
+//				try {
+//					// connect to target ID
+//					connectContainer(container, targetID, null);
+//				} catch (final ContainerConnectException e) {
+//					showException(e);
+//				}
+//			}
+//		};
+//		action.setText(NLS.bind("Connect to {0}", targetID.getName()));
+//		return new IContributionItem[] {new ActionContributionItem(action)};
+//	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler#getContributionsForService(org.eclipse.ecf.discovery.IServiceInfo)
-	 */
-	public IContributionItem[] getContributionsForService(IServiceInfo svcInfo) {
-		if (svcInfo == null)
-			return EMPTY_CONTRIBUTION;
-		this.serviceInfo = svcInfo;
-		String[] services = svcInfo.getServiceID().getServiceTypeID().getServices();
-		if(services.length < 2) {
-			return EMPTY_CONTRIBUTION;
-		}
-		for (int i = 0; i < services.length; i++) {
-			if(!services[i].equals(serviceType[i]))
-				return EMPTY_CONTRIBUTION;
-		}
-		return getContributionsForMatchingService();
-	}
+//	/* (non-Javadoc)
+//	 * @see org.eclipse.ecf.discovery.ui.views.AbstractRemoteServiceAccessHandler#getContributionsForService(org.eclipse.ecf.discovery.IServiceInfo)
+//	 */
+//	public IContributionItem[] getContributionsForService(IServiceInfo svcInfo) {
+//		if (svcInfo == null)
+//			return EMPTY_CONTRIBUTION;
+//		this.serviceInfo = svcInfo;
+//		String[] services = svcInfo.getServiceID().getServiceTypeID().getServices();
+//		if(services.length < 2) {
+//			return EMPTY_CONTRIBUTION;
+//		}
+//		for (int i = 0; i < services.length; i++) {
+//			if(!services[i].equals(serviceType[i]))
+//				return EMPTY_CONTRIBUTION;
+//		}
+//		return getContributionsForMatchingService();
+//	}
 
 }
