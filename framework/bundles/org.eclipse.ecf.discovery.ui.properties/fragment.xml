@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+  <!-- map from EMF models to platform's property sources -->
+  <extension
+        point="org.eclipse.core.runtime.adapters">
+     <factory
+           adaptableType="org.eclipse.emf.ecore.EObject"
+           class="org.eclipse.ecf.internal.discovery.ui.EObjectPropertySourceFactory">
+        <adapter
+              type="org.eclipse.ui.views.properties.IPropertySource">
+        </adapter>
+     </factory>
+  </extension>    
+</plugin>
