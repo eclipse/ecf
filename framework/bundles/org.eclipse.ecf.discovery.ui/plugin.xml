@@ -20,7 +20,7 @@
             id="org.eclipse.ecf.discovery.ServiceTypePropertyTester"
             namespace="org.eclipse.ecf.discovery"
             properties="isServiceType"
-            type="org.eclipse.ecf.discovery.model.IServiceInfo">
+            type="org.eclipse.ecf.discovery.ui.model.IServiceInfo">
       </propertyTester>
    </extension>
 </plugin>
