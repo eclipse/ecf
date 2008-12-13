@@ -78,7 +78,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	private static final String HANDLE_OPEN_AND_SELECT_FOR_FILE_MSG = "handleOpenAndSelectForFile"; //$NON-NLS-1$
 	private static final String HANDLE_ADD_MARKER_FOR_FILE_MSG = "handleAddMarkerForFile"; //$NON-NLS-1$
 	private static final String HANDLE_USER_UPDATE_MSG = "handleUserUpdate"; //$NON-NLS-1$
-	private static final String HANDLE_UPDATE_TREE_DISPLAY_MSG = "handleUpdateTreeDisplay"; //$NON-NLS-1$
 	private static final String HANDLE_UNREGISTER_PROXY_MSG = "handleUnregisterProxy"; //$NON-NLS-1$
 	private static final String HANDLE_SHOW_TEXT_MSG = "handleShowTextMsg"; //$NON-NLS-1$
 	private static final String HANDLE_USER_MSG = "handleUserMessage"; //$NON-NLS-1$
@@ -326,19 +325,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	protected void handleShowTextMsg(ID remote, String aString) {
 		// Show line on local interface
 		showLineOnGUI(remote, aString);
-	}
-
-	protected void handleUpdateTreeDisplay(final ID fromID, final TreeItem item) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				try {
-					if (localGUI != null)
-						localGUI.updateTreeDisplay(fromID, item);
-				} catch (final Exception e) {
-					log("Exception in showLineOnGUI", e); //$NON-NLS-1$
-				}
-			}
-		});
 	}
 
 	protected void handleUserUpdate(final IUser ud) {
@@ -611,14 +597,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			forwardMsgTo(toID, SharedObjectMsg.createMsg(null, HANDLE_UNREGISTER_PROXY_MSG, localUser, proxyClass));
 		} catch (final IOException e) {
 			log("Exception sendRegisterProxy", e); //$NON-NLS-1$
-		}
-	}
-
-	public void sendUpdateTreeDisplay(ID target, TreeItem item) {
-		try {
-			forwardMsgTo(target, SharedObjectMsg.createMsg(null, HANDLE_UPDATE_TREE_DISPLAY_MSG, localContainerID, item));
-		} catch (final Exception e) {
-			log("Exception on sendUpdateTreeDisplay to remote clients", e); //$NON-NLS-1$
 		}
 	}
 
@@ -1013,17 +991,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 				refreshProject();
 			}
 		};
-	}
-
-	public void updateTreeDisplay(final TreeItem item) {
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				if (localGUI != null)
-					localGUI.updateTreeDisplay(localContainerID, item);
-			}
-		});
-		// Send update message to all replicas
-		sendUpdateTreeDisplay(null, item);
 	}
 
 	public ViewPart getViewPart() {

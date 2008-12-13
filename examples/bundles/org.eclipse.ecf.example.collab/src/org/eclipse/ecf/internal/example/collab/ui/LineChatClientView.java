@@ -26,7 +26,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.HelloMessageSharedObject;
-import org.eclipse.ecf.example.collab.share.TreeItem;
 import org.eclipse.ecf.example.collab.share.url.ShowURLSharedObject;
 import org.eclipse.ecf.example.collab.share.url.StartProgramSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
@@ -350,21 +349,6 @@ public class LineChatClientView implements FileSenderUI {
 
 	public void toFront() {
 		view.setActiveTab(name);
-	}
-
-	public boolean updateTreeDisplay(ID id, TreeItem item) {
-		if (id == null) {
-			return false;
-		} else {
-			for (int i = 0; i < users.size(); i++) {
-				final IUser user = (IUser) users.get(i);
-				if (user.getID().equals(id)) {
-					teamChat.getTableViewer().refresh(user);
-					return true;
-				}
-			}
-			return false;
-		}
 	}
 
 	private class ViewerToolTip extends ToolTip {
