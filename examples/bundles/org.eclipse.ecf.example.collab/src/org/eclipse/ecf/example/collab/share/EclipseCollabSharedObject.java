@@ -10,23 +10,10 @@
  *****************************************************************************/
 package org.eclipse.ecf.example.collab.share;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
+import java.io.*;
+import java.util.*;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -37,21 +24,12 @@ import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.internal.example.collab.presence.PresenceContainer;
-import org.eclipse.ecf.internal.example.collab.ui.ChatLine;
-import org.eclipse.ecf.internal.example.collab.ui.EditorHelper;
-import org.eclipse.ecf.internal.example.collab.ui.FileReceiverUI;
-import org.eclipse.ecf.internal.example.collab.ui.LineChatClientView;
-import org.eclipse.ecf.internal.example.collab.ui.LineChatView;
+import org.eclipse.ecf.internal.example.collab.ui.*;
 import org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.Presence;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.eclipse.ecf.presence.roster.Roster;
-import org.eclipse.ecf.presence.roster.RosterEntry;
-import org.eclipse.ecf.ui.screencapture.ImageWrapper;
-import org.eclipse.ecf.ui.screencapture.ScreenCaptureUtil;
-import org.eclipse.ecf.ui.screencapture.ShowImageShell;
+import org.eclipse.ecf.presence.roster.*;
+import org.eclipse.ecf.ui.screencapture.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.events.DisposeEvent;
@@ -59,12 +37,7 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 
 public class EclipseCollabSharedObject extends GenericSharedObject {
@@ -104,23 +77,23 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	private ID serverID = null;
 	private SharedObjectEventListener sharedObjectEventListener = null;
 	private IWorkbenchWindow workbenchWindow = null;
-	
+
 	private PresenceContainer presenceContainer;
-	
+
 	public EclipseCollabSharedObject() {
 	}
-	
+
 	public EclipseCollabSharedObject(IContainer container, IResource proj, IWorkbenchWindow window, IUser user, String downloaddir) {
 		this.localResource = proj;
 		this.workbenchWindow = window;
 		this.localUser = user;
 		this.downloadDirectory = downloaddir;
 		presenceContainer = new PresenceContainer(container, localUser);
-		
+
 		createOutputView();
 		Assert.isNotNull(localGUI, "Local GUI cannot be created...exiting"); //$NON-NLS-1$
 	}
-	
+
 	public IPresenceContainerAdapter getPresenceContainer() {
 		return presenceContainer;
 	}
@@ -164,6 +137,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	}
 
 	public void destroySelf() {
+		presenceContainer.unregister();
 		// Make sure we disconnect
 		try {
 			if (isHost())
@@ -211,7 +185,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 					windowTitle = NLS.bind(Messages.EclipseCollabSharedObject_TITLE_BAR, localUser.getNickname());
 					LineChatView.setViewName(windowTitle);
 					localGUI = LineChatView.createClientView(EclipseCollabSharedObject.this, projectName, NLS.bind(Messages.EclipseCollabSharedObject_PROJECT_NAME, projectName), getLocalFullDownloadPath());
-					
+
 					presenceContainer.getRosterManager().addRosterListener(new RosterListener(EclipseCollabSharedObject.this, localGUI));
 				} catch (final Exception e) {
 					log("Exception creating LineChatView", e); //$NON-NLS-1$
@@ -292,7 +266,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 					break;
 				}
 			}
-			
+
 			if (!contains) {
 				roster.addItem(new RosterEntry(roster, user, new Presence()));
 			}
@@ -401,7 +375,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			sharedObjectEventListener.memberRemoved(member);
 		}
 		super.memberRemoved(member);
-		
+
 		Roster roster = (Roster) presenceContainer.getRosterManager().getRoster();
 		IRosterItem itemToRemove = null;
 		for (Iterator it = roster.getItems().iterator(); it.hasNext();) {
@@ -411,7 +385,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 				break;
 			}
 		}
-		
+
 		if (itemToRemove != null) {
 			roster.removeItem(itemToRemove);
 		}

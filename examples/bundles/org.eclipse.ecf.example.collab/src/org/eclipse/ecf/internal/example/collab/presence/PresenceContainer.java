@@ -20,18 +20,27 @@ import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 public class PresenceContainer extends AbstractPresenceContainer implements IPresenceSender, IPresenceService {
 
 	private final IContainer container;
 	private final IRosterManager manager;
+	private ServiceRegistration serviceRegistration;
 
 	public PresenceContainer(IContainer container, IUser user) {
 		this.container = container;
 		manager = new RosterManager(this, user);
 
 		BundleContext bundleContext = ClientPlugin.getDefault().getBundle().getBundleContext();
-		bundleContext.registerService(IPresenceService.class.getName(), this, null);
+		serviceRegistration = bundleContext.registerService(IPresenceService.class.getName(), this, null);
+	}
+
+	public void unregister() {
+		if (serviceRegistration != null) {
+			serviceRegistration.unregister();
+			serviceRegistration = null;
+		}
 	}
 
 	public IChatManager getChatManager() {
