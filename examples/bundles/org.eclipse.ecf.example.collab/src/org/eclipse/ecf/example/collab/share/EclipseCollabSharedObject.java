@@ -88,7 +88,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		this.workbenchWindow = window;
 		this.localUser = user;
 		this.downloadDirectory = downloaddir;
-		presenceContainer = new PresenceContainer(container, localUser);
+		presenceContainer = new PresenceContainer(this, container, localUser);
 
 		createOutputView();
 		Assert.isNotNull(localGUI, "Local GUI cannot be created...exiting"); //$NON-NLS-1$
@@ -436,12 +436,16 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void sendPrivateMessageToUser(IUser touser, String msg) {
+	public void sendPrivateMessageToUser(ID toId, String msg) {
 		try {
-			forwardMsgTo(touser.getID(), SharedObjectMsg.createMsg(null, HANDLE_SHOW_PRIVATE_TEXT_MSG, localUser, msg));
+			forwardMsgTo(toId, SharedObjectMsg.createMsg(null, HANDLE_SHOW_PRIVATE_TEXT_MSG, localUser, msg));
 		} catch (final Exception e) {
 			log("Exception on sendShowPrivateTextMsg to remote clients", e); //$NON-NLS-1$
 		}
+	}
+
+	public void sendPrivateMessageToUser(IUser touser, String msg) {
+		sendPrivateMessageToUser(touser.getID(), msg);
 	}
 
 	public void sendRegisterProxy(ID toID, String proxyClass, String name) {
