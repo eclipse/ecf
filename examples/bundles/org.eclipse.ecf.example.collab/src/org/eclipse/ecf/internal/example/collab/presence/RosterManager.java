@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.ecf.core.user.IUser;
-import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.roster.AbstractRosterManager;
@@ -27,10 +26,13 @@ public class RosterManager extends AbstractRosterManager {
 
 	private List presenceListeners = new LinkedList();
 
-	public RosterManager(IPresenceContainerAdapter containerAdapter, IUser user) {
-		super();
+	private PresenceContainer presenceContainer;
 
-		roster = new Roster(containerAdapter, user) {
+	public RosterManager(PresenceContainer presenceContainer, IUser user) {
+		super();
+		this.presenceContainer = presenceContainer;
+
+		roster = new Roster(presenceContainer, user) {
 			public boolean addItem(IRosterItem item) {
 				if (super.addItem(item)) {
 					fireRosterAdd((IRosterEntry) item);
@@ -38,7 +40,7 @@ public class RosterManager extends AbstractRosterManager {
 				}
 				return false;
 			}
-			
+
 			public boolean removeItem(IRosterItem item) {
 				if (super.removeItem(item)) {
 					fireRosterRemove((IRosterEntry) item);
@@ -50,7 +52,7 @@ public class RosterManager extends AbstractRosterManager {
 	}
 
 	public IPresenceSender getPresenceSender() {
-		return null;
+		return presenceContainer;
 	}
 
 	public IRosterSubscriptionSender getRosterSubscriptionSender() {

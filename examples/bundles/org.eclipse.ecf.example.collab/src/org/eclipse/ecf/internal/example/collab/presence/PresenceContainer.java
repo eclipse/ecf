@@ -11,13 +11,17 @@
 package org.eclipse.ecf.internal.example.collab.presence;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
-import org.eclipse.ecf.presence.AbstractPresenceContainer;
-import org.eclipse.ecf.presence.IIMMessageListener;
+import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.presence.*;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
+import org.eclipse.ecf.presence.service.IPresenceService;
+import org.osgi.framework.BundleContext;
 
-public class PresenceContainer extends AbstractPresenceContainer  {
+public class PresenceContainer extends AbstractPresenceContainer implements IPresenceSender, IPresenceService {
 
 	private final IContainer container;
 	private final IRosterManager manager;
@@ -25,6 +29,9 @@ public class PresenceContainer extends AbstractPresenceContainer  {
 	public PresenceContainer(IContainer container, IUser user) {
 		this.container = container;
 		manager = new RosterManager(this, user);
+
+		BundleContext bundleContext = ClientPlugin.getDefault().getBundle().getBundleContext();
+		bundleContext.registerService(IPresenceService.class.getName(), this, null);
 	}
 
 	public IChatManager getChatManager() {
@@ -50,6 +57,10 @@ public class PresenceContainer extends AbstractPresenceContainer  {
 
 	public void removeMessageListener(IIMMessageListener listener) {
 		// unimplemented because messages do not currently go through the presence container
+	}
+
+	public void sendPresenceUpdate(ID targetId, IPresence presence) throws ECFException {
+		// unimplemented as we have no concept of presence support, either online or offline
 	}
 
 }
