@@ -11,11 +11,7 @@
 package org.eclipse.ecf.internal.example.collab.ui.hyperlink;
 
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.SharedMarker;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.*;
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 
@@ -64,10 +60,6 @@ public class EclipseCollabHyperlinkDetector extends AbstractHyperlinkDetector {
 
 	}
 
-	/**
-	 * @param substring
-	 * @return
-	 */
 	private Selection detectSelection(String linkString) {
 		final int beginIndex = linkString.indexOf(SHARE_FILE_HYPERLINK_SELECTION);
 		if (beginIndex == -1)
@@ -107,10 +99,6 @@ public class EclipseCollabHyperlinkDetector extends AbstractHyperlinkDetector {
 		}
 	}
 
-	/**
-	 * @param substring
-	 * @return
-	 */
 	private String detectFileName(String substring) {
 		final int startIndex = substring.indexOf("\""); //$NON-NLS-1$
 		if (startIndex == -1)
