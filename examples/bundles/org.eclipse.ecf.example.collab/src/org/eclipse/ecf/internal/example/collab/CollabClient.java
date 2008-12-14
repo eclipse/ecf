@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2008 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,15 +12,9 @@ package org.eclipse.ecf.internal.example.collab;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
-
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ContainerFactory;
+import java.util.*;
+import org.eclipse.core.resources.*;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -28,11 +22,12 @@ import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.ui.SharedObjectContainerUI;
+import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 
 public class CollabClient {
 	public static final String WORKSPACE_NAME = Messages.CollabClient_WORKSPACE_NAME;
 
-	public static final String GENERIC_CONTAINER_CLIENT_NAME = "ecf.generic.client"; //$NON-NLS-1$
+	public static final String GENERIC_CONTAINER_CLIENT_NAME = GenericContainerInstantiator.TCPCLIENT_NAME;
 
 	static Hashtable clients = new Hashtable();
 
@@ -56,35 +51,26 @@ public class CollabClient {
 	 *            Must not be null.
 	 * @throws Exception
 	 */
-	public void createAndConnectClient(final String containerType, String uri,
-			String nickname, final Object connectData, final IResource resource)
-			throws Exception {
+	public void createAndConnectClient(final String containerType, String uri, String nickname, final Object connectData, final IResource resource) throws Exception {
 		// First create the new container instance
-		final IContainer newClient = ContainerFactory.getDefault()
-				.createContainer(containerType);
+		final IContainer newClient = ContainerFactory.getDefault().createContainer(containerType);
 
 		// Create the targetID instance
-		ID targetID = IDFactory.getDefault().createID(
-				newClient.getConnectNamespace(), uri);
+		ID targetID = IDFactory.getDefault().createID(newClient.getConnectNamespace(), uri);
 
 		// Setup username
 		String username = setupUsername(targetID, nickname);
 		// Create a new container entry to hold onto container once created
-		final ClientEntry newClientEntry = new ClientEntry(containerType,
-				newClient);
+		final ClientEntry newClientEntry = new ClientEntry(containerType, newClient);
 
 		// Setup sharedobject container if the new instance supports
 		// this
-		ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
-				.getAdapter(ISharedObjectContainer.class);
-		SharedObjectContainerUI socui = new SharedObjectContainerUI(this,
-				sharedObjectContainer);
+		ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient.getAdapter(ISharedObjectContainer.class);
+		SharedObjectContainerUI socui = new SharedObjectContainerUI(this, sharedObjectContainer);
 		socui.setup(sharedObjectContainer, newClientEntry, resource, username);
 		// Now connect
 		try {
-			newClient.connect(targetID,
-					ConnectContextFactory.createUsernamePasswordConnectContext(
-							username, connectData));
+			newClient.connect(targetID, ConnectContextFactory.createUsernamePasswordConnectContext(username, connectData));
 		} catch (ContainerConnectException e) {
 			// If we have a connect exception then we remove any previously
 			// added shared object
@@ -174,8 +160,7 @@ public class CollabClient {
 		return null;
 	}
 
-	protected static ClientEntry getClientEntry(IResource proj,
-			String containerType) {
+	protected static ClientEntry getClientEntry(IResource proj, String containerType) {
 		synchronized (clients) {
 			Vector v = getClientEntries(proj);
 			if (v == null)
@@ -214,18 +199,15 @@ public class CollabClient {
 		return false;
 	}
 
-	public synchronized static ISharedObjectContainer getContainer(
-			IResource proj) {
+	public synchronized static ISharedObjectContainer getContainer(IResource proj) {
 		ClientEntry entry = getClientEntry(proj, GENERIC_CONTAINER_CLIENT_NAME);
 		if (entry == null) {
-			entry = getClientEntry(ResourcesPlugin.getWorkspace().getRoot(),
-					GENERIC_CONTAINER_CLIENT_NAME);
+			entry = getClientEntry(ResourcesPlugin.getWorkspace().getRoot(), GENERIC_CONTAINER_CLIENT_NAME);
 		}
 		if (entry != null) {
 			IContainer cont = entry.getContainer();
 			if (cont != null)
-				return (ISharedObjectContainer) cont
-						.getAdapter(ISharedObjectContainer.class);
+				return (ISharedObjectContainer) cont.getAdapter(ISharedObjectContainer.class);
 			else
 				return null;
 		} else
@@ -241,8 +223,7 @@ public class CollabClient {
 		removeClientForResource(proj, entry.getContainer().getConnectedID());
 	}
 
-	protected String setupUsername(ID targetID, String nickname)
-			throws URISyntaxException {
+	protected String setupUsername(ID targetID, String nickname) throws URISyntaxException {
 		String username = null;
 		if (nickname != null) {
 			username = nickname;
