@@ -56,7 +56,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	private static final String HANDLE_UNREGISTER_PROXY_MSG = "handleUnregisterProxy"; //$NON-NLS-1$
 	private static final String HANDLE_SHOW_TEXT_MSG = "handleShowTextMsg"; //$NON-NLS-1$
 	private static final String HANDLE_USER_MSG = "handleUserMessage"; //$NON-NLS-1$
-	private static final String HANDLE_CVS_PROJECT_UPDATE_REQUEST_MSG = "handleCVSProjectUpdateRequest"; //$NON-NLS-1$
 	private static final String HANDLE_REQUEST_USER_UPDATE_MSG = "handleRequestUserUpdate"; //$NON-NLS-1$
 	private static final String HANDLE_REGISTER_PROXY_MSG = "handleRegisterProxy"; //$NON-NLS-1$
 	private static final String HANDLE_SHOW_PRIVATE_TEXT_MSG = "handleShowPrivateTextMsg"; //$NON-NLS-1$
@@ -415,10 +414,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		sendShowTextMsg(aString);
 	}
 
-	public boolean isHost() {
-		return super.isHost();
-	}
-
 	public void disconnect() {
 		getContext().disconnect();
 	}
@@ -526,32 +521,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			forwardMsgTo(requestTarget, SharedObjectMsg.createMsg(null, HANDLE_REQUEST_USER_UPDATE_MSG, localContainerID));
 		} catch (final Exception e) {
 			log("Exception on sendRequestUserUpdate to remote clients", e); //$NON-NLS-1$
-		}
-	}
-
-	public void sendCVSProjectUpdateRequest(IUser touser, String msg) {
-		ID receiver = null;
-		if (touser != null) {
-			receiver = touser.getID();
-		}
-		try {
-			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_CVS_PROJECT_UPDATE_REQUEST_MSG, getUser(), msg);
-			forwardMsgTo(receiver, m);
-			if (receiver == null) {
-				sendSelf(m);
-			}
-		} catch (final Exception e) {
-			log("Exception on sendCVSProjectUpdateRequest to " + touser, e); //$NON-NLS-1$
-		}
-	}
-
-	public boolean isCVSShared() {
-		try {
-			// return CVSWorkspaceRoot.isSharedWithCVS(getProject());
-			return false;
-		} catch (final Exception e) {
-			log("CVS Exception calling isSharedWithCVS in TeamUpdateAction", e); //$NON-NLS-1$
-			return false;
 		}
 	}
 
@@ -966,7 +935,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 				sendSelf(m);
 			}
 		} catch (final Exception e) {
-			log("Exception on sendCVSProjectUpdateRequest to " + touser, e); //$NON-NLS-1$
+			log("Exception on sendShowView to " + touser, e); //$NON-NLS-1$
 		}
 	}
 
