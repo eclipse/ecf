@@ -119,25 +119,33 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			IWorkbenchPage page = windows[i].getActivePage();
 			if (page != null) {
 				MessagesView view = (MessagesView) page.findView(MessagesView.VIEW_ID);
-				if (view == null) {
-					try {
-						view = (MessagesView) page.showView(MessagesView.VIEW_ID, null, IWorkbenchPage.VIEW_CREATE);
-					} catch (PartInitException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return;
+				if (view != null) {
+					view.openTab(chatMessageSender, typingMessageSender, containerID, message.getFromID());
+					view.showMessage(message);
+
+					if (!page.isPartVisible(view)) {
+						IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view.getSite().getService(IWorkbenchSiteProgressService.class);
+						if (service != null) {
+							service.warnOfContentChange();
+						}
 					}
 				}
+				return;
+			}
+		}
 
-				view.openTab(chatMessageSender, typingMessageSender, containerID, message.getFromID());
-				view.showMessage(message);
-
-				if (!page.isPartVisible(view)) {
-					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view.getSite().getService(IWorkbenchSiteProgressService.class);
-					if (service != null) {
-						service.warnOfContentChange();
-					}
+		for (int i = 0; i < windows.length; i++) {
+			IWorkbenchPage page = windows[i].getActivePage();
+			if (page != null) {
+				try {
+					MessagesView view = (MessagesView) page.showView(MessagesView.VIEW_ID);
+					view.openTab(chatMessageSender, typingMessageSender, containerID, message.getFromID());
+					view.showMessage(message);
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+				break;
 			}
 		}
 	}
