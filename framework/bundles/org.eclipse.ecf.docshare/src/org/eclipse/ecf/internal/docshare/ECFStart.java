@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
+import org.eclipse.ecf.docshare.DocShare;
 import org.eclipse.osgi.util.NLS;
 
 public class ECFStart implements IECFStart {
@@ -36,8 +37,7 @@ public class ECFStart implements IECFStart {
 			IContainer container = containerManager.getContainer(event.getLocalContainerID());
 			if (container == null)
 				return;
-			if (event instanceof IContainerConnectedEvent
-					|| event instanceof IContainerDisconnectedEvent) {
+			if (event instanceof IContainerConnectedEvent || event instanceof IContainerDisconnectedEvent) {
 				// connected
 				IChannelContainerAdapter cca = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
 				if (cca == null)
@@ -47,15 +47,12 @@ public class ECFStart implements IECFStart {
 					try {
 						Activator.getDefault().addDocShare(containerID, cca);
 					} catch (ECFException e) {
-						Activator.getDefault().getLog().log(
-								new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING,
-										NLS.bind(
-												Messages.ECFStart_ERROR_DOCUMENT_SHARE_NOT_CREATED,
-												container.getID()), null));
+						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ECFStart_ERROR_DOCUMENT_SHARE_NOT_CREATED, container.getID()), null));
 					}
-				} else if (event instanceof IContainerDisconnectedEvent) {
-					// disconnected
-					Activator.getDefault().removeDocShare(containerID);
+				} else if (event instanceof IContainerDisconnectedEvent || event instanceof IContainerEjectedEvent) {
+					DocShare docShare = Activator.getDefault().removeDocShare(containerID);
+					if (docShare != null)
+						docShare.dispose();
 				}
 			} else if (event instanceof IContainerDisposeEvent) {
 				containerManager.removeListener(containerManagerListener);
@@ -97,8 +94,7 @@ public class ECFStart implements IECFStart {
 	public IStatus run(IProgressMonitor monitor) {
 		final IContainerManager containerManager = Activator.getDefault().getContainerManager();
 		if (containerManager == null)
-			return new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING,
-					Messages.ECFStart_ERROR_CONTAINER_MANAGER_NOT_AVAILABLE, null);
+			return new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.ECFStart_ERROR_CONTAINER_MANAGER_NOT_AVAILABLE, null);
 		containerManager.addListener(containerManagerListener);
 		return Status.OK_STATUS;
 	}
