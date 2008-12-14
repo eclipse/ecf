@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.example.collab.presence;
 
 import java.util.Map;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
@@ -27,6 +28,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 public class PresenceContainer extends AbstractPresenceContainer implements IChatManager, IChatMessageSender, IPresenceSender, IPresenceService {
+
+	private final ListenerList messageListeners = new ListenerList();
 
 	private final EclipseCollabSharedObject sharedObject;
 	private final IContainer container;
@@ -66,12 +69,20 @@ public class PresenceContainer extends AbstractPresenceContainer implements ICha
 		return super.getAdapter(adapter);
 	}
 
+	public void fireMessageEvent(IIMMessageEvent messageEvent) {
+		Object[] listeners = messageListeners.getListeners();
+		for (int i = 0; i < listeners.length; i++) {
+			IIMMessageListener listener = (IIMMessageListener) listeners[i];
+			listener.handleMessageEvent(messageEvent);
+		}
+	}
+
 	public void addMessageListener(IIMMessageListener listener) {
-		// unimplemented because messages do not currently go through the presence container
+		messageListeners.add(listener);
 	}
 
 	public void removeMessageListener(IIMMessageListener listener) {
-		// unimplemented because messages do not currently go through the presence container
+		messageListeners.remove(listener);
 	}
 
 	public void sendPresenceUpdate(ID targetId, IPresence presence) throws ECFException {

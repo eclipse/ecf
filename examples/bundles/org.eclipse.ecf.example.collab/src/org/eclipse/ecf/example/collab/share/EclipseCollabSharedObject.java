@@ -28,6 +28,8 @@ import org.eclipse.ecf.internal.example.collab.ui.*;
 import org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.Presence;
+import org.eclipse.ecf.presence.im.ChatMessage;
+import org.eclipse.ecf.presence.im.ChatMessageEvent;
 import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.ecf.ui.screencapture.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -76,16 +78,14 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	private String localVersion = ""; //$NON-NLS-1$
 	private ID serverID = null;
 	private SharedObjectEventListener sharedObjectEventListener = null;
-	private IWorkbenchWindow workbenchWindow = null;
 
 	private PresenceContainer presenceContainer;
 
 	public EclipseCollabSharedObject() {
 	}
 
-	public EclipseCollabSharedObject(IContainer container, IResource proj, IWorkbenchWindow window, IUser user, String downloaddir) {
+	public EclipseCollabSharedObject(IContainer container, IResource proj, IUser user, String downloaddir) {
 		this.localResource = proj;
-		this.workbenchWindow = window;
 		this.localUser = user;
 		this.downloadDirectory = downloaddir;
 		presenceContainer = new PresenceContainer(this, container, localUser);
@@ -127,9 +127,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		shells.clear();
 		if (sharedObjectEventListener != null) {
 			sharedObjectEventListener = null;
-		}
-		if (workbenchWindow != null) {
-			workbenchWindow = null;
 		}
 		if (localResource != null) {
 			localResource = null;
@@ -230,10 +227,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		return windowTitle;
 	}
 
-	public IWorkbenchWindow getWorkbenchWindow() {
-		return workbenchWindow;
-	}
-
 	// SharedObjectMsg handlers
 	protected void handleCreateObject(ReplicaSharedObjectDescription cons) {
 		try {
@@ -278,6 +271,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	}
 
 	protected void handleShowPrivateTextMsg(final IUser remote, final String aString) {
+		ChatMessageEvent messageEvent = new ChatMessageEvent(remote.getID(), new ChatMessage(remote.getID(), aString));
+		presenceContainer.fireMessageEvent(messageEvent);
 		// Show line on local interface
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {

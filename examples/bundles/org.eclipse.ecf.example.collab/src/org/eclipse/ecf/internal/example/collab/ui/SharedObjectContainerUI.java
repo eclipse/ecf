@@ -12,16 +12,11 @@ package org.eclipse.ecf.internal.example.collab.ui;
 
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.*;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.IContainerEjectedEvent;
-import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
@@ -29,11 +24,7 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.SharedObjectEventListener;
-import org.eclipse.ecf.internal.example.collab.ClientEntry;
-import org.eclipse.ecf.internal.example.collab.CollabClient;
-import org.eclipse.ecf.internal.example.collab.Messages;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ecf.internal.example.collab.*;
 
 public class SharedObjectContainerUI {
 	public static final String JOIN_TIME_FORMAT = "hh:mm:ss a z"; //$NON-NLS-1$
@@ -108,8 +99,7 @@ public class SharedObjectContainerUI {
 	}
 
 	protected void createAndAddSharedObject(final ISharedObjectContainer soContainer, final ClientEntry client, final IResource proj, IUser user, String fileDir) throws Exception {
-		final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		final EclipseCollabSharedObject sharedObject = new EclipseCollabSharedObject(soContainer, proj, ww, user, fileDir);
+		final EclipseCollabSharedObject sharedObject = new EclipseCollabSharedObject(soContainer, proj, user, fileDir);
 		sharedObject.setListener(new SharedObjectEventListener() {
 			public void memberRemoved(ID member) {
 				final ID groupID = client.getContainer().getConnectedID();
