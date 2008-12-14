@@ -104,6 +104,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		Assert.isNotNull(localGUI, "Local GUI cannot be created...exiting"); //$NON-NLS-1$
 	}
 
+	public ID getContainerID() {
+		return containerID;
+	}
+
 	void handleChatMessageEvent(final IChatMessageEvent event) {
 		final IWorkbench workbench = PlatformUI.getWorkbench();
 		workbench.getDisplay().asyncExec(new Runnable() {
@@ -111,6 +115,32 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 				appendMessage(presenceContainer.getChatMessageSender(), presenceContainer.getTypingMessageSender(), event.getChatMessage());
 			}
 		});
+	}
+
+	public MessagesView findMessagesView() {
+		IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
+		for (int i = 0; i < windows.length; i++) {
+			IWorkbenchPage page = windows[i].getActivePage();
+			if (page != null) {
+				MessagesView view = (MessagesView) page.findView(MessagesView.VIEW_ID);
+				if (view != null) {
+					return view;
+				}
+			}
+		}
+
+		for (int i = 0; i < windows.length; i++) {
+			IWorkbenchPage page = windows[i].getActivePage();
+			if (page != null) {
+				try {
+					return (MessagesView) page.showView(MessagesView.VIEW_ID);
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
 	}
 
 	void appendMessage(IChatMessageSender chatMessageSender, ITypingMessageSender typingMessageSender, IChatMessage message) {
@@ -129,8 +159,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 							service.warnOfContentChange();
 						}
 					}
+					return;
 				}
-				return;
 			}
 		}
 
