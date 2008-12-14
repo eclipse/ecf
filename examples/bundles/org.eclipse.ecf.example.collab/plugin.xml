@@ -123,12 +123,6 @@
                relative="org.eclipse.ui.views.ProblemView"
                visible="true">
          </view>
-         <view
-               id="org.eclipse.ecf.example.collab.discoveryview"
-               relationship="stack"
-               relative="org.eclipse.ui.views.ProblemView"
-               visible="true">
-         </view>
       </perspectiveExtension>
    </extension>
    

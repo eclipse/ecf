@@ -25,9 +25,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.sharedobject,
  org.eclipse.ecf.discovery,
- org.eclipse.ecf.discovery.ui,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.provider,
  org.eclipse.ecf.ui,
- org.eclipse.ecf.server.generic
+ org.eclipse.ecf.server.generic,
+ org.eclipse.ecf.presence.ui
 Bundle-ActivationPolicy: lazy

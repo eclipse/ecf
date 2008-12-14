@@ -26,11 +26,10 @@ import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.internal.example.collab.presence.PresenceContainer;
 import org.eclipse.ecf.internal.example.collab.ui.*;
 import org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector;
-import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.Presence;
-import org.eclipse.ecf.presence.im.ChatMessage;
-import org.eclipse.ecf.presence.im.ChatMessageEvent;
+import org.eclipse.ecf.presence.*;
+import org.eclipse.ecf.presence.im.*;
 import org.eclipse.ecf.presence.roster.*;
+import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.ecf.ui.screencapture.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
@@ -41,6 +40,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class EclipseCollabSharedObject extends GenericSharedObject {
 	/**
@@ -77,6 +77,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	private IUser localUser = null;
 	private String localVersion = ""; //$NON-NLS-1$
 	private ID serverID = null;
+	private ID containerID;
 	private SharedObjectEventListener sharedObjectEventListener = null;
 
 	private PresenceContainer presenceContainer;
@@ -88,10 +89,57 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		this.localResource = proj;
 		this.localUser = user;
 		this.downloadDirectory = downloaddir;
+
+		containerID = container.getID();
 		presenceContainer = new PresenceContainer(this, container, localUser);
+		presenceContainer.addMessageListener(new IIMMessageListener() {
+			public void handleMessageEvent(IIMMessageEvent messageEvent) {
+				if (messageEvent instanceof IChatMessageEvent) {
+					handleChatMessageEvent((IChatMessageEvent) messageEvent);
+				}
+			}
+		});
 
 		createOutputView();
 		Assert.isNotNull(localGUI, "Local GUI cannot be created...exiting"); //$NON-NLS-1$
+	}
+
+	void handleChatMessageEvent(final IChatMessageEvent event) {
+		final IWorkbench workbench = PlatformUI.getWorkbench();
+		workbench.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				appendMessage(presenceContainer.getChatMessageSender(), presenceContainer.getTypingMessageSender(), event.getChatMessage());
+			}
+		});
+	}
+
+	void appendMessage(IChatMessageSender chatMessageSender, ITypingMessageSender typingMessageSender, IChatMessage message) {
+		IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
+		for (int i = 0; i < windows.length; i++) {
+			IWorkbenchPage page = windows[i].getActivePage();
+			if (page != null) {
+				MessagesView view = (MessagesView) page.findView(MessagesView.VIEW_ID);
+				if (view == null) {
+					try {
+						view = (MessagesView) page.showView(MessagesView.VIEW_ID, null, IWorkbenchPage.VIEW_CREATE);
+					} catch (PartInitException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return;
+					}
+				}
+
+				view.openTab(chatMessageSender, typingMessageSender, containerID, message.getFromID());
+				view.showMessage(message);
+
+				if (!page.isPartVisible(view)) {
+					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view.getSite().getService(IWorkbenchSiteProgressService.class);
+					if (service != null) {
+						service.warnOfContentChange();
+					}
+				}
+			}
+		}
 	}
 
 	public IPresenceContainerAdapter getPresenceContainer() {
@@ -270,25 +318,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		sendUserUpdate(requestor);
 	}
 
-	protected void handleShowPrivateTextMsg(final IUser remote, final String aString) {
+	protected void handleShowPrivateTextMsg(IUser remote, String aString) {
 		ChatMessageEvent messageEvent = new ChatMessageEvent(remote.getID(), new ChatMessage(remote.getID(), aString));
 		presenceContainer.fireMessageEvent(messageEvent);
-		// Show line on local interface
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				try {
-					if (localGUI != null) {
-						final ChatLine line = new ChatLine(aString);
-						line.setOriginator(remote);
-						line.setPrivate(true);
-						localGUI.showLine(line);
-						localGUI.toFront();
-					}
-				} catch (final Exception e) {
-					log("Exception in showLineOnGUI", e); //$NON-NLS-1$
-				}
-			}
-		});
 	}
 
 	protected void handleShowTextMsg(ID remote, String aString) {
