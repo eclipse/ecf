@@ -13,21 +13,13 @@ package org.eclipse.ecf.internal.example.collab.ui;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IMemento;
-import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 
 public class LineChatView extends ViewPart {
@@ -191,6 +183,7 @@ public class LineChatView extends ViewPart {
 			final LineChatClientView vc = (LineChatClientView) e.nextElement();
 			vc.closeClient();
 		}
+		clientViews.clear();
 	}
 
 	protected void setActiveTab(String name) {
