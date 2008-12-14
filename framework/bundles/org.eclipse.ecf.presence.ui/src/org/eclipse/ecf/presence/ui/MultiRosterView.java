@@ -742,6 +742,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 			MultiRosterAccount account = (MultiRosterAccount) i.next();
 			account.getRosterManager().removePresenceListener(presenceListener);
+			// detach listeners
+			account.dispose();
 		}
 		rosterAccounts.clear();
 		super.dispose();
@@ -785,7 +787,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		rosterAccounts.remove(account);
 		if (rosterAccounts.size() == 0) {
 			setLocalPullDownEnabled(false);
-			pageBook.showPage(helpMessageLabel);
+			// container may disconnect while widgets are being disposed, check for this
+			if (!pageBook.isDisposed()) {
+				pageBook.showPage(helpMessageLabel);
+			}
 		}
 		account.dispose();
 		refreshTreeViewer(null, true);
