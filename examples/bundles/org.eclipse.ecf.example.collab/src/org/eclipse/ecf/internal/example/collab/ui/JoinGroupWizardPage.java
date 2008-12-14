@@ -10,9 +10,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.example.collab.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.internal.example.collab.Messages;
@@ -20,16 +17,10 @@ import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 
 public class JoinGroupWizardPage extends WizardPage {
 
@@ -70,8 +61,8 @@ public class JoinGroupWizardPage extends WizardPage {
 
 	protected Text nicknameText;
 	protected Text joinGroupText;
-	protected Combo combo;
-	protected List containerDescriptions = new ArrayList();
+	private Text text;
+	private ContainerTypeDescription desc;
 	protected String urlPrefix = ""; //$NON-NLS-1$
 
 	// private Button autoLogin = null;
@@ -82,13 +73,11 @@ public class JoinGroupWizardPage extends WizardPage {
 	}
 
 	protected void fillCombo() {
-		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(DEFAULT_CLIENT);
+		desc = ContainerFactory.getDefault().getDescriptionByName(DEFAULT_CLIENT);
 		if (desc != null) {
 			final String name = desc.getName();
 			final String description = desc.getDescription();
-			combo.add(description + " - " + name); //$NON-NLS-1$
-			containerDescriptions.add(desc);
-			combo.select(0);
+			text.setText(description + " - " + name); //$NON-NLS-1$
 		}
 	}
 
@@ -101,14 +90,15 @@ public class JoinGroupWizardPage extends WizardPage {
 		final Label label_4 = new Label(container, SWT.NONE);
 		label_4.setText(Messages.JoinGroupWizardPage_PROTOCOL);
 
-		combo = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
+		text = new Text(container, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
 		final GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		combo.setLayoutData(data);
+		text.setLayoutData(data);
 
 		final Label groupIDLabel = new Label(container, SWT.NONE);
 		groupIDLabel.setText(JOINGROUP_FIELDNAME);
 
 		joinGroupText = new Text(container, SWT.BORDER);
+		joinGroupText.setFocus();
 		joinGroupText.setText(default_url);
 		joinGroupText.setLayoutData(data);
 
@@ -165,16 +155,7 @@ public class JoinGroupWizardPage extends WizardPage {
 		if (dialogSettings != null) {
 			final IDialogSettings pageSettings = dialogSettings.getSection(DIALOG_SETTINGS);
 			if (pageSettings != null) {
-				String strVal = pageSettings.get("provider"); //$NON-NLS-1$
-				if (strVal != null) {
-					final String[] items = combo.getItems();
-					for (int i = 0; i < items.length; ++i)
-						if (strVal.equals(items[i])) {
-							break;
-						}
-				}
-
-				strVal = pageSettings.get("url"); //$NON-NLS-1$
+				String strVal = pageSettings.get("url"); //$NON-NLS-1$
 				if (strVal != null)
 					joinGroupText.setText(strVal);
 
@@ -194,9 +175,7 @@ public class JoinGroupWizardPage extends WizardPage {
 
 			pageSettings.put("url", joinGroupText.getText()); //$NON-NLS-1$
 			pageSettings.put("nickname", nicknameText.getText()); //$NON-NLS-1$
-			final int i = combo.getSelectionIndex();
-			if (i >= 0)
-				pageSettings.put("provider", combo.getItem(i)); //$NON-NLS-1$
+			pageSettings.put("provider", text.getText()); //$NON-NLS-1$
 		}
 	}
 
@@ -215,12 +194,6 @@ public class JoinGroupWizardPage extends WizardPage {
 	}
 
 	public String getContainerType() {
-		final int index = combo.getSelectionIndex();
-		if (index == -1)
-			return null;
-		else {
-			final ContainerTypeDescription desc = (ContainerTypeDescription) containerDescriptions.get(index);
-			return desc.getName();
-		}
+		return desc == null ? null : desc.getName();
 	}
 }
