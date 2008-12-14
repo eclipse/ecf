@@ -12,7 +12,8 @@
 package org.eclipse.ecf.presence.ui;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
@@ -145,11 +146,5 @@ public class MultiRosterAccount {
 		getRosterManager().removeRosterSubscriptionListener(subscriptionListener);
 		getRosterManager().removeRosterListener(updateListener);
 		container.removeListener(containerListener);
-		final IContainerManager containerManager = Activator.getDefault().getContainerManager();
-		if (containerManager != null) {
-			containerManager.removeContainer(container);
-		}
-		// and dispose container
-		container.dispose();
 	}
 }
