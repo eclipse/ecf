@@ -330,6 +330,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	protected void openStreams() throws IncomingFileTransferException {
 		final String urlString = getRemoteFileURL().toString();
 
+		int code = -1;
+
 		try {
 			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_CONNECTION_TIMEOUT);
 			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
@@ -345,7 +347,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			getMethod.getParams().setParameter(CredentialsProvider.PROVIDER, new ECFCredentialsProvider());
 			setRequestHeaderValues();
 
-			final int code = httpClient.executeMethod(getMethod);
+			code = httpClient.executeMethod(getMethod);
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResponseHeaderValues();
@@ -366,7 +368,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
 			}
 		} catch (final Exception e) {
-			throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, getResponseCode());
+			throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code);
 		}
 
 	}
@@ -478,6 +480,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	private boolean openStreamsForResume() {
 		final URL theURL = getRemoteFileURL();
+
+		int code = -1;
+
 		try {
 			remoteFileURL = new URL(theURL.toString());
 			final String urlString = getRemoteFileURL().toString();
@@ -494,7 +499,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			setResumeRequestHeaderValues();
 
-			final int code = httpClient.executeMethod(getMethod);
+			code = httpClient.executeMethod(getMethod);
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResumeResponseHeaderValues();
