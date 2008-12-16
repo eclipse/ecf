@@ -28,7 +28,7 @@ public class ServicePropertiesAdapter {
 	/**
 	 * SLP attribute key for org.eclipse.ecf.discovery.identity.IServiceID.getServiceName()
 	 */
-	private static final String SERVICE_ID_NAME = "x-" + ECLIPSE_ENTERPRISE_NUMBER + "-SERVICE_ID_NAME"; //$NON-NLS-1$ //$NON-NLS-2$
+	private static final String SERVICE_ID_NAME = "x-" + ECLIPSE_ENTERPRISE_NUMBER + "-SERVICEIDNAME"; //$NON-NLS-1$ //$NON-NLS-2$
 	/**
 	 * SLP attribute key for org.eclipse.ecf.discovery.IServiceInfo.getPriority()
 	 */
