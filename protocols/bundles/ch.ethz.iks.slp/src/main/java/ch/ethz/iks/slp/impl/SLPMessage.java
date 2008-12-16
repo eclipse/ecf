@@ -490,6 +490,7 @@ public abstract class SLPMessage {
 			rule = parser.parse("attr-list", input);
 		} catch (IllegalArgumentException e) {
 			SLPCore.platform.logError(e.getMessage(), e);
+			return new ArrayList();
 			// may never happen!!!
 		} catch (ParserException e) {
 			SLPCore.platform.logTraceDrop(e.getMessage());
