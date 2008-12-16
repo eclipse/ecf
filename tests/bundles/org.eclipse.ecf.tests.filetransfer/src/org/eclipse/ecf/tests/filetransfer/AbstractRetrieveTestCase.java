@@ -211,6 +211,16 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 	
 			public void setUserid(String userid) {
 			}
+
+			public String getSource() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public void setSource(String source) {
+				// TODO Auto-generated method stub
+				
+			}
 			
 		};
 		proxyService.setProxyData(new IProxyData[] { proxyData });
