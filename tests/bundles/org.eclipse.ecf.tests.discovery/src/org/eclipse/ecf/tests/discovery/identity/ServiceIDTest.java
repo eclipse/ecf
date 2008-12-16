@@ -32,30 +32,26 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	protected IServiceID createIDFromString(String serviceType) {
 		try {
 			return createIDFromStringWithEx(serviceType);
-		} catch (final IDCreateException e) {
-			fail(e.getMessage());
 		} catch (final ClassCastException e) {
 			fail(e.getMessage());
 		}
 		return null;
 	}
 
-	protected IServiceID createIDFromStringWithEx(String serviceType) throws IDCreateException {
+	protected IServiceID createIDFromStringWithEx(String serviceType) {
 		return ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(namespace), serviceType);
 	}
 
 	protected IServiceID createIDFromServiceTypeID(IServiceTypeID serviceType) {
 		try {
 			return createIDFromServiceTypeIDWithEx(serviceType);
-		} catch (final IDCreateException e) {
-			fail(e.getMessage());
 		} catch (final ClassCastException e) {
 			fail(e.getMessage());
 		}
 		return null;
 	}
 
-	protected IServiceID createIDFromServiceTypeIDWithEx(IServiceTypeID serviceType) throws IDCreateException {
+	protected IServiceID createIDFromServiceTypeIDWithEx(IServiceTypeID serviceType) {
 		return ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(namespace), serviceType);
 	}
 
@@ -121,7 +117,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	/*
 	 * use case: conversion from one IServiceTypeID to another (provider A -> provider B)
 	 */
-	public void testServiceTypeIDWithServiceTypeID() throws IDCreateException {
+	public void testServiceTypeIDWithServiceTypeID() {
 		final Namespace ns = IDFactory.getDefault().getNamespaceByName(namespace);
 		final IServiceTypeID aServiceTypeID = ServiceIDFactory.getDefault().createServiceID(ns, "_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA").getServiceTypeID();
 		final IServiceID sid = createIDFromServiceTypeID(aServiceTypeID);
@@ -149,7 +145,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	/*
 	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String, String)
 	 */
-	public void testServiceIDFactory1() throws IDCreateException, SecurityException {
+	public void testServiceIDFactory1() {
 		String expected = "some Name";
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
 		IServiceID createServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, "_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA", expected);
@@ -159,7 +155,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	/*
 	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String, String)
 	 */
-	public void testServiceIDFactory2() throws IDCreateException, SecurityException {
+	public void testServiceIDFactory2() {
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
 		ServiceTypeID serviceTypeID = new ServiceTypeID(new TestNamespace(), "_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA");
 		IServiceID createServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, serviceTypeID, "some Name");
@@ -184,11 +180,8 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 		final String name = aServiceTypeID.getName();
 		final Namespace namespace2 = stid.getNamespace();
 		IServiceID sid = null;
-		try {
-			sid = (IServiceID) namespace2.createInstance(new Object[] {name, null});
-		} catch (final IDCreateException e) {
-			fail("it should have been possible to create a new instance of " + stid.getClass().getName() + " from the string rep of " + aServiceTypeID.getClass().getName());
-		}
+		sid = (IServiceID) namespace2.createInstance(new Object[] {name, null});
+		assertNotNull("it should have been possible to create a new instance of ", sid);
 		IServiceTypeID instance = sid.getServiceTypeID();
 		assertTrue(instance.hashCode() == stid.hashCode());
 		//TODO-mkuppe decide if equality should be handled by the namespace for IServiceTypeIDs?

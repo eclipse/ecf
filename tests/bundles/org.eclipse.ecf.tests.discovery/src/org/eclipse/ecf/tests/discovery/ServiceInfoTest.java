@@ -13,7 +13,6 @@ package org.eclipse.ecf.tests.discovery;
 import java.net.URI;
 import java.util.Comparator;
 
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -100,13 +99,11 @@ public abstract class ServiceInfoTest extends AbstractDiscoveryTest {
 		IServiceInfo si = null;
 		try {
 			si = getServiceInfo(serviceInfo);
-		} catch (final IDCreateException e) {
-			fail();
 		} catch (final SecurityException e) {
 			fail();
 		}
 		assertTrue(serviceInfoComparator.compare(si, serviceInfo) == 0);
 	}
 
-	protected abstract IServiceInfo getServiceInfo(IServiceInfo aServiceInfo) throws IDCreateException, SecurityException;
+	protected abstract IServiceInfo getServiceInfo(IServiceInfo aServiceInfo);
 }

@@ -22,7 +22,7 @@ public class TestNamespace extends Namespace {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
-	public ID createInstance(Object[] parameters) throws IDCreateException {
+	public ID createInstance(Object[] parameters) {
 		return new TestServiceID(this, (IServiceTypeID) parameters[0], (String) parameters[1]);
 	}
 

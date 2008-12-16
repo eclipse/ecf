@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
@@ -489,12 +488,8 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		testConnect();
 		final Namespace namespace = discoveryContainer.getServicesNamespace();
 		assertNotNull(namespace);
-		try {
-			final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(namespace, serviceInfo.getServiceID().getServiceTypeID());
-			assertNotNull(serviceID);
-		} catch (final IDCreateException e) {
-			fail("It must be possible to obtain a IServiceID");
-		}
+		final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(namespace, serviceInfo.getServiceID().getServiceTypeID());
+		assertNotNull("It must be possible to obtain a IServiceID", serviceID);
 	}
 
 	/**
