@@ -9,9 +9,9 @@
 package org.eclipse.ecf.core.identity;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 
-public class IDCreateException extends ECFException {
+public class IDCreateException extends ECFRuntimeException {
 	private static final long serialVersionUID = 3258416140119323960L;
 
 	public IDCreateException() {
