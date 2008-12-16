@@ -51,7 +51,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	SimpleFIFOQueue queue = null;
 	Thread notificationThread = null;
 
-	public JMDNSDiscoveryContainer(InetAddress addr) throws IDCreateException {
+	public JMDNSDiscoveryContainer(InetAddress addr) {
 		super(JMDNSNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(JMDNSDiscoveryContainer.class.getName() + ";" + addr.toString() + ";" + instanceCount++))); //$NON-NLS-1$  //$NON-NLS-2$
 		Assert.isNotNull(addr);
 		intf = addr;

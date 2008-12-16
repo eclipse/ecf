@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.provider.jmdns.identity;
 
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.ServiceTypeID;
 
@@ -22,7 +21,7 @@ public class JMDNSServiceTypeID extends ServiceTypeID {
 
 	private static final long serialVersionUID = 7549266915001431139L;
 
-	protected JMDNSServiceTypeID(Namespace namespace, String type) throws IDCreateException {
+	protected JMDNSServiceTypeID(Namespace namespace, String type) {
 		super(namespace, type);
 	}
 
