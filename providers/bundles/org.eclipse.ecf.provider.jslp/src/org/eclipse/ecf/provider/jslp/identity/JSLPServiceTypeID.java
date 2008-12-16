@@ -30,7 +30,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 
 	private final ServiceType st;
 
-	protected JSLPServiceTypeID(final Namespace namespace, final String type) throws IDCreateException {
+	protected JSLPServiceTypeID(final Namespace namespace, final String type) {
 		super(namespace);
 		try {
 			st = new ServiceType(type);
@@ -58,7 +58,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		}
 	}
 
-	JSLPServiceTypeID(final Namespace namespace, final ServiceURL anURL, final String[] scopes) throws IDCreateException {
+	JSLPServiceTypeID(final Namespace namespace, final ServiceURL anURL, final String[] scopes) {
 		this(namespace, anURL.getServiceType());
 
 		if (scopes != null && scopes.length > 0) {
@@ -91,7 +91,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		st = new ServiceType(string.substring(0, string.length() - 1));
 	}
 
-	JSLPServiceTypeID(final Namespace namespace, final ServiceType aServiceType) throws IDCreateException {
+	JSLPServiceTypeID(final Namespace namespace, final ServiceType aServiceType) {
 		this(namespace, aServiceType.toString());
 		final String[] newServices = new String[services.length - 1];
 		for (int i = 0; i < services.length - 1; i++) {

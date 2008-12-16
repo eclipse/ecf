@@ -13,8 +13,8 @@ package org.eclipse.ecf.internal.provider.jslp;
 import ch.ethz.iks.slp.ServiceURL;
 import java.net.URI;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
 
@@ -59,12 +59,7 @@ public class ServiceURLAdapter {
 
 	private void setIServiceID(ServiceURL aServiceURL, String aServiceName, String[] scopes) {
 		Namespace namespace = IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME);
-		try {
-			serviceID = (IServiceID) namespace.createInstance(new Object[] {aServiceURL, aServiceName, scopes});
-		} catch (IDCreateException e) {
-			// may never happen
-			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "setIServiceID", e); //$NON-NLS-1$
-		}
+		serviceID = (IServiceID) namespace.createInstance(new Object[] {aServiceURL, aServiceName, scopes});
 	}
 
 	/**

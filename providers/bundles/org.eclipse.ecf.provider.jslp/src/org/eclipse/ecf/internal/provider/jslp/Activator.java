@@ -14,7 +14,6 @@ import ch.ethz.iks.slp.Advertiser;
 import ch.ethz.iks.slp.Locator;
 import java.util.Properties;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
@@ -103,8 +102,6 @@ public class Activator implements BundleActivator {
 					try {
 						jdc = new JSLPDiscoveryContainer();
 						jdc.connect(null, null);
-					} catch (IDCreateException e) {
-						Trace.catching(Activator.PLUGIN_ID, Activator.PLUGIN_ID + "/debug/methods/tracing", this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
 					} catch (ContainerConnectException e) {
 						Trace.catching(Activator.PLUGIN_ID, Activator.PLUGIN_ID + "/debug/methods/tracing", this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
 						jdc = null;

@@ -38,9 +38,8 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	private ID targetID;
 
 	/**
-	 * @throws IDCreateException
 	 */
-	public JSLPDiscoveryContainer() throws IDCreateException {
+	public JSLPDiscoveryContainer() {
 		super(JSLPNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(JSLPDiscoveryContainer.class.getName())));
 	}
 

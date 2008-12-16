@@ -26,7 +26,7 @@ public class JSLPNamespace extends Namespace {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
-	public ID createInstance(Object[] parameters) throws IDCreateException {
+	public ID createInstance(Object[] parameters) {
 		// error case
 		if (parameters == null || parameters.length < 1 || parameters.length > 3) {
 			throw new IDCreateException(Messages.JSLPNamespace_2);
