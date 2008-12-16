@@ -15,6 +15,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.internal.core.identity.Activator;
 
+/**
+ * @since 3.0
+ */
 public class ECFRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 456677468837349011L;
