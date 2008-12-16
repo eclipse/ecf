@@ -41,8 +41,7 @@ public class JSLPServiceInfoTest extends ServiceInfoTest {
 				serviceProperties);
 	}
 
-	protected IServiceInfo getServiceInfo(IServiceInfo aServiceInfo)
-			throws IDCreateException, SecurityException {
+	protected IServiceInfo getServiceInfo(IServiceInfo aServiceInfo) {
 		return new JSLPServiceInfo(aServiceInfo);
 	}
 }
