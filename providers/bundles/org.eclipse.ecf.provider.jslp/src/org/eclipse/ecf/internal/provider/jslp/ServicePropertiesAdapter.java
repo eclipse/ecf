@@ -12,8 +12,7 @@ package org.eclipse.ecf.internal.provider.jslp;
 
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.core.util.StringUtils;
-import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
@@ -67,9 +66,10 @@ public class ServicePropertiesAdapter {
 				String[] strs = StringUtils.split(value.substring(4), "\\"); //$NON-NLS-1$
 				byte[] b = new byte[strs.length];
 				for (int i = 0; i < strs.length; i++) {
-					b[i] = new Byte(strs[i]).byteValue();
+					byte parseInt = (byte) Integer.parseInt(strs[i], 16);
+					b[i] = parseInt;
 				}
-				serviceProperties.setPropertyBytes(key, b);
+				serviceProperties.setPropertyBytes(key, Base64.decodeFromCharArray(b));
 			} else if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) { //$NON-NLS-1$ //$NON-NLS-2$
 				serviceProperties.setProperty(key, new Boolean(value));
 			} else if (isInteger(value)) {
@@ -119,11 +119,12 @@ public class ServicePropertiesAdapter {
 			String key = (String) propertyNames.nextElement();
 			byte[] propertyBytes = serviceProperties.getPropertyBytes(key);
 			if (propertyBytes != null) {
+				byte[] encode = Base64.encodeToCharArray(propertyBytes);
 				StringBuffer buf = new StringBuffer();
 				buf.append(SLP_BYTE_PREFIX);
-				for (int i = 0; i < propertyBytes.length; i++) {
+				for (int i = 0; i < encode.length; i++) {
 					buf.append("\\"); //$NON-NLS-1$
-					buf.append(propertyBytes[i]);
+					buf.append(Integer.toHexString(encode[i]));
 				}
 				dict.put(key, buf.toString());
 			} else {
