@@ -12,7 +12,6 @@ package org.eclipse.ecf.internal.provider.discovery;
 
 import java.util.*;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
@@ -74,12 +73,7 @@ public class Activator implements BundleActivator {
 
 				// register the composite discovery service)
 				final CompositeDiscoveryContainer cdc;
-				try {
-					cdc = new CompositeDiscoveryContainer(discoveries);
-				} catch (IDCreateException e1) {
-					Trace.catching(Activator.PLUGIN_ID, Activator.PLUGIN_ID + "/debug/methods/catching", this.getClass(), "getService(Bundle, ServiceRegistration)", e1); //$NON-NLS-1$ //$NON-NLS-2$
-					return null;
-				}
+				cdc = new CompositeDiscoveryContainer(discoveries);
 				try {
 					cdc.connect(null, null);
 				} catch (ContainerConnectException e) {

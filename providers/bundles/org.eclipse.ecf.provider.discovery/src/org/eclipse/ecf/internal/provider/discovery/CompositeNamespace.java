@@ -22,7 +22,7 @@ public class CompositeNamespace extends Namespace {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
-	public ID createInstance(Object[] parameters) throws IDCreateException {
+	public ID createInstance(Object[] parameters) {
 		if (parameters == null || parameters.length < 1 || parameters.length > 2) {
 			throw new IDCreateException(Messages.CompositeNamespace_WrongParameterCount);
 		} else if (parameters[0] instanceof String) {

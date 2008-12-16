@@ -121,9 +121,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 
 	/**
 	 * @param containers
-	 * @throws IDCreateException
 	 */
-	public CompositeDiscoveryContainer(List containers) throws IDCreateException {
+	public CompositeDiscoveryContainer(List containers) {
 		super(CompositeNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(CompositeDiscoveryContainer.class.getName())));
 		this.containers = containers;
 		this.registeredServices = new HashSet();
@@ -194,11 +193,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	private IServiceID getServiceIDForDiscoveryContainer(IServiceID service, IDiscoveryContainerAdapter dca) {
 		Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(service.getNamespace())) {
-			try {
-				return ServiceIDFactory.getDefault().createServiceID(connectNamespace, service.getServiceTypeID().getName(), service.getName());
-			} catch (IDCreateException e) {
-				Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "getServiceTypeIDForDiscoveryContainer", e); //$NON-NLS-1$
-			}
+			return ServiceIDFactory.getDefault().createServiceID(connectNamespace, service.getServiceTypeID().getName(), service.getName());
 		}
 		return service;
 	}
@@ -261,12 +256,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	private IServiceTypeID getServiceTypeIDForDiscoveryContainer(IServiceTypeID type, IDiscoveryContainerAdapter dca) {
 		Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(type.getNamespace())) {
-			try {
-				IServiceID serviceID = (IServiceID) connectNamespace.createInstance(new Object[] {type, null});
-				return serviceID.getServiceTypeID();
-			} catch (IDCreateException e) {
-				Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "getServiceTypeIDForDiscoveryContainer", e); //$NON-NLS-1$
-			}
+			IServiceID serviceID = (IServiceID) connectNamespace.createInstance(new Object[] {type, null});
+			return serviceID.getServiceTypeID();
 		}
 		return type;
 	}
