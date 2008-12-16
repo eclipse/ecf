@@ -127,7 +127,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		serviceProperties.setProperty(DiscoveryTest.class.getName() + "servicePropertiesIntegerMax", new Integer(Integer.MIN_VALUE));
 		serviceProperties.setProperty(DiscoveryTest.class.getName() + "servicePropertiesIntegerMin", new Integer(Integer.MAX_VALUE));
 		serviceProperties.setProperty(DiscoveryTest.class.getName() + "servicePropertiesBoolean", new Boolean(false));
-		serviceProperties.setPropertyBytes(DiscoveryTest.class.getName() + "servicePropertiesByte", new byte[]{'a', 'b', 'c', 'd'});
+		serviceProperties.setPropertyBytes(DiscoveryTest.class.getName() + "servicePropertiesByte", new byte[]{-127, -126, -125, 0, 1, 2, 3, 'a', 'b', 'c', 'd', 126, 127});
 		serviceInfo = new ServiceInfo(uri, serviceID, 1, 1, serviceProperties);
 		assertNotNull(serviceInfo);
 
