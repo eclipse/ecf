@@ -13,6 +13,7 @@ package org.eclipse.ecf.core.util;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.internal.core.identity.Activator;
 
 public class ECFRuntimeException extends RuntimeException {
 
@@ -29,7 +30,7 @@ public class ECFRuntimeException extends RuntimeException {
 	 *            message associated with exception
 	 */
 	public ECFRuntimeException(String message) {
-		super(message);
+		this(message, null);
 	}
 
 	/**
@@ -37,7 +38,7 @@ public class ECFRuntimeException extends RuntimeException {
 	 *            the cause of the new exception
 	 */
 	public ECFRuntimeException(Throwable cause) {
-		super(cause);
+		this(cause.getMessage(), cause);
 	}
 
 	/**
@@ -45,7 +46,7 @@ public class ECFRuntimeException extends RuntimeException {
 	 * @param cause
 	 */
 	public ECFRuntimeException(String message, Throwable cause) {
-		super(message, cause);
+		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, ((message == null) ? "" : message), cause)); //$NON-NLS-1$
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class ECFRuntimeException extends RuntimeException {
 	 * @param status the status object to be associated with this exception
 	 */
 	public ECFRuntimeException(IStatus status) {
-		super(status.getMessage(), status.getException());
+		super(status.getMessage());
 		this.status = status;
 	}
 
