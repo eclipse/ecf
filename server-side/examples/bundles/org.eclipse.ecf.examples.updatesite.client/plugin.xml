@@ -1,13 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-
    <extension
-         point="org.eclipse.ecf.discovery.ui.serviceAccessHandler">
-      <serviceAccessHandler
-            class="org.eclipse.ecf.internal.examples.updatesite.client.UpdateSiteServiceAccessHandler">
-      </serviceAccessHandler>
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.eclipse.ecf.internal.examples.updatesite.client.UpdateSiteServiceAccessHandler"
+            id="org.eclipse.ecf.examples.updatesite.client.OpenUpdateSite"
+            name="Open Update Site">
+      </command>
    </extension>
-
-
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ecf.discovery.ui.DiscoveryView?after=additions">
+         <command
+               commandId="org.eclipse.ecf.examples.updatesite.client.OpenUpdateSite"
+               id="org.eclipse.ecf.examples.updatesite.client"
+               mnemonic="S">
+            <visibleWhen>
+               <with
+                     variable="activeMenuSelection">
+                  <iterate
+                        ifEmpty="false"
+                        operator="and">
+                     <test
+                           args="updatesite"
+                           property="org.eclipse.ecf.discovery.isServiceType"
+                           value="true">
+                     </test>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+        </menuContribution>
+    </extension>
 </plugin>
