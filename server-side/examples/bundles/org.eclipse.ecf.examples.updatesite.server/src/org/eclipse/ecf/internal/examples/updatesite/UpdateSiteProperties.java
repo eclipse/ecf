@@ -15,24 +15,16 @@ import java.util.Properties;
 import org.eclipse.ecf.discovery.IServiceProperties;
 
 public class UpdateSiteProperties {
-	String path;
 	String name;
 
-	public static final String PATH_PROPERTY = "path"; //$NON-NLS-1$
 	public static final String NAME_PROPERTY = "name"; //$NON-NLS-1$
 
-	public UpdateSiteProperties(String name, String path) {
-		this.path = path;
+	public UpdateSiteProperties(String name) {
 		this.name = name;
 	}
 
 	public UpdateSiteProperties(IServiceProperties serviceProperties) {
-		this.path = serviceProperties.getPropertyString(PATH_PROPERTY);
 		this.name = serviceProperties.getPropertyString(NAME_PROPERTY);
-	}
-
-	public String getPath() {
-		return path;
 	}
 
 	public String getName() {
@@ -41,7 +33,6 @@ public class UpdateSiteProperties {
 
 	public Properties toProperties() {
 		final Properties props = new Properties();
-		props.put(PATH_PROPERTY, this.path);
 		props.put(NAME_PROPERTY, this.name);
 		return props;
 	}

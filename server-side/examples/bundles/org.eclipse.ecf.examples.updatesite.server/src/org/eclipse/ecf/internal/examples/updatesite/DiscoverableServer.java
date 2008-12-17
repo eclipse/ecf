@@ -11,7 +11,7 @@
 
 package org.eclipse.ecf.internal.examples.updatesite;
 
-import java.net.URL;
+import java.net.*;
 import java.security.InvalidParameterException;
 import java.util.Map;
 import javax.naming.ServiceUnavailableException;
@@ -70,7 +70,8 @@ public class DiscoverableServer implements IApplication {
 		// Create service id
 		IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), getCompleteServiceType(), serviceName);
 		// create service info
-		serviceInfo = new ServiceInfo(serviceType, null, getServicePort(), serviceID, new ServiceProperties(new UpdateSiteProperties(serviceName, servicePath).toProperties()));
+		URI uri = URI.create("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + getServicePort() + servicePath); //$NON-NLS-1$ //$NON-NLS-2$
+		serviceInfo = new ServiceInfo(uri, serviceID, new ServiceProperties(new UpdateSiteProperties(serviceName).toProperties()));
 
 		// get http service
 		final HttpService httpService = Activator.getDefault().waitForHttpService(2000);
