@@ -30,14 +30,18 @@ public class AddTest extends ContainerAbstractTestCase {
 
 	public static final String TEST_USERNAME1 = "luca";
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.tests.ContainerAbstractTestCase#getClientCount()
 	 */
 	protected int getClientCount() {
 		return 2;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.tests.ContainerAbstractTestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
@@ -46,7 +50,9 @@ public class AddTest extends ContainerAbstractTestCase {
 		connectClients();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	protected void tearDown() throws Exception {
@@ -58,31 +64,67 @@ public class AddTest extends ContainerAbstractTestCase {
 		final IContainer client0Container = getClient(0);
 		assertNotNull(client0Container);
 		// 
-		final ISharedObjectContainer socontainer = (ISharedObjectContainer) client0Container.getAdapter(ISharedObjectContainer.class);
-		final ISharedObjectManager manager = socontainer.getSharedObjectManager();
+		ISharedObjectContainer socontainer = (ISharedObjectContainer) client0Container
+				.getAdapter(ISharedObjectContainer.class);
+		final ISharedObjectManager manager = socontainer
+				.getSharedObjectManager();
 		assertNotNull(manager);
-		final ID id = manager.addSharedObject(IDFactory.getDefault().createStringID("foo"), new TestSharedObject(TEST_USERNAME0), null);
+		final ID id = manager.addSharedObject(IDFactory.getDefault()
+				.createStringID("foo"), new TestSharedObject(TEST_USERNAME0),
+				null);
 		assertNotNull(id);
 		final ISharedObject sharedObject = manager.getSharedObject(id);
 		assertNotNull(sharedObject);
-		sleep(5000);
+		sleep(3000);
+		for (int clientIndex = 0; clientIndex < getClientCount(); clientIndex++) {
+			socontainer = (ISharedObjectContainer) getClient(clientIndex)
+					.getAdapter(ISharedObjectContainer.class);
+			ISharedObject sharedObj = socontainer.getSharedObjectManager()
+					.getSharedObject(
+							IDFactory.getDefault().createStringID("foo"));
+			if (sharedObj != null) {
+				System.out.println("foo instance=" + sharedObj.toString());
+			}
+		}
+
 	}
 
 	public void testAddTwoSharedObjects() throws Exception {
 		final IContainer client0Container = getClient(0);
 		assertNotNull(client0Container);
-		final ISharedObjectContainer socontainer = (ISharedObjectContainer) client0Container.getAdapter(ISharedObjectContainer.class);
-		final ISharedObjectManager manager = socontainer.getSharedObjectManager();
+		ISharedObjectContainer socontainer = (ISharedObjectContainer) client0Container
+				.getAdapter(ISharedObjectContainer.class);
+		final ISharedObjectManager manager = socontainer
+				.getSharedObjectManager();
 		assertNotNull(manager);
-		final ID id0 = manager.addSharedObject(IDFactory.getDefault().createStringID("foo0"), new TestSharedObject(TEST_USERNAME0), null);
+		final ID id0 = manager.addSharedObject(IDFactory.getDefault()
+				.createStringID("foo0"), new TestSharedObject(TEST_USERNAME0),
+				null);
 		assertNotNull(id0);
-		final ID id1 = manager.addSharedObject(IDFactory.getDefault().createStringID("foo1"), new TestSharedObject(TEST_USERNAME1), null);
+		final ID id1 = manager.addSharedObject(IDFactory.getDefault()
+				.createStringID("foo1"), new TestSharedObject(TEST_USERNAME1),
+				null);
 		assertNotNull(id1);
 		final ISharedObject sharedObject0 = manager.getSharedObject(id0);
 		assertNotNull(sharedObject0);
 		final ISharedObject sharedObject1 = manager.getSharedObject(id1);
 		assertNotNull(sharedObject1);
-		sleep(5000);
+		sleep(3000);
+		for (int clientIndex = 0; clientIndex < getClientCount(); clientIndex++) {
+			socontainer = (ISharedObjectContainer) getClient(clientIndex)
+					.getAdapter(ISharedObjectContainer.class);
+			ISharedObject sharedObj = socontainer.getSharedObjectManager()
+					.getSharedObject(
+							IDFactory.getDefault().createStringID("foo0"));
+			if (sharedObj != null) {
+				System.out.println("foo0 instance=" + sharedObj.toString());
+			}
+			sharedObj = socontainer.getSharedObjectManager().getSharedObject(
+					IDFactory.getDefault().createStringID("foo1"));
+			if (sharedObj != null) {
+				System.out.println("foo1 instance=" + sharedObj.toString());
+			}
+		}
 	}
 
 }
