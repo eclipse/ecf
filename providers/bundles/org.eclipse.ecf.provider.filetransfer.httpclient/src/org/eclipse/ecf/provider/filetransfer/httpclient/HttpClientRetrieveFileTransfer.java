@@ -41,34 +41,25 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	 */
 	public class GzipGetMethod extends GetMethod {
 
-		private static final String APPLICATION_X_GZIP = "application/x-gzip"; //$NON-NLS-1$
-		private static final String CONTENT_TYPE = "Content-Type"; //$NON-NLS-1$
 		private static final String CONTENT_ENCODING = "Content-Encoding"; //$NON-NLS-1$
 		private static final String ACCEPT_ENCODING = "Accept-encoding"; //$NON-NLS-1$
 		private static final String CONTENT_ENCODING_GZIP = "gzip"; //$NON-NLS-1$
-		//		private static final String CONTENT_ENCODING_DEFLATE = "deflate"; //$NON-NLS-1$
 
-		private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP; //  + "," + CONTENT_ENCODING_DEFLATE; //;
+		private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP;
 
 		private boolean gzipReceived = false;
-
-		private boolean deflateReceived = false;
 
 		public GzipGetMethod(String urlString) {
 			super(urlString);
 		}
 
 		private boolean isZippedReply() {
-			boolean zipped = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_GZIP))
+			boolean zipped = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_GZIP));
+			// XXX removed see https://bugs.eclipse.org/bugs/show_bug.cgi?id=237936#c34
 			// apache can also insert something after a 302 redirect
-					|| (null != this.getResponseHeader(CONTENT_TYPE) && this.getResponseHeader(CONTENT_TYPE).getValue().equals(APPLICATION_X_GZIP));
+			//		|| (null != this.getResponseHeader(CONTENT_TYPE) && this.getResponseHeader(CONTENT_TYPE).getValue().equals(APPLICATION_X_GZIP));
 			return zipped;
 		}
-
-		//		private boolean isDeflatedReply() {
-		//			boolean deflated = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_DEFLATE));
-		//			return deflated;
-		//		}
 
 		public int execute(HttpState state, HttpConnection conn) throws HttpException, IOException {
 			// Insert accept-encoding header
@@ -77,8 +68,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			// test what is sent back
 			if (isZippedReply()) {
 				gzipReceived = true;
-				//			} else if (isDeflatedReply()) {
-				//				deflateReceived = true;
 			}
 			return result;
 		}
@@ -89,12 +78,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				if (gzipReceived) {
 					// extract on the fly
 					return new java.util.zip.GZIPInputStream(input);
-					//				} else if (deflateReceived) {
-					//					// extract on the fly
-					//					return new java.util.zip.InflaterInputStream(input);
 				}
 			} catch (IOException e) {
-				Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind("Exception creating {0} input stream", (gzipReceived ? "gzip" : (deflateReceived ? "deflate" : "unknown"))), e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, "Exception creating gzip input stream", e)); //$NON-NLS-1$ 
+				throw e;
 			}
 			return input;
 		}
