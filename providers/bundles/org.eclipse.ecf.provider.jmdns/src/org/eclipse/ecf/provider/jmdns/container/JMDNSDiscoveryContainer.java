@@ -34,6 +34,7 @@ import org.eclipse.osgi.util.NLS;
 public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IDiscoveryService, ServiceListener, ServiceTypeListener {
 
 	private static final String SCHEME_PROPERTY = "jmdns.ptcl"; //$NON-NLS-1$
+	private static final String URI_PATH_PROPERTY = "jmdns.uripath"; //$NON-NLS-1$
 
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
 
@@ -433,10 +434,13 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final int weight = serviceInfo.getWeight();
 		final Properties props = new Properties();
 		String uriProtocol = null;
+		String uriPath = ""; //$NON-NLS-1$
 		for (final Enumeration e = serviceInfo.getPropertyNames(); e.hasMoreElements();) {
 			final String name = (String) e.nextElement();
 			if (name.equals(SCHEME_PROPERTY))
 				uriProtocol = serviceInfo.getPropertyString(name);
+			else if (name.equals(URI_PATH_PROPERTY))
+				uriPath = serviceInfo.getPropertyString(name);
 			else {
 				Object value = serviceInfo.getPropertyString(name);
 				if (value == null)
@@ -445,7 +449,8 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 					props.put(name, value);
 			}
 		}
-		return new org.eclipse.ecf.discovery.ServiceInfo(uriProtocol, addr.getHostAddress(), port, sID, priority, weight, new ServiceProperties(props));
+		final URI uri = URI.create(uriProtocol + "://" + addr.getHostAddress() + ":" + port + uriPath); //$NON-NLS-1$//$NON-NLS-2$
+		return new org.eclipse.ecf.discovery.ServiceInfo(uri, sID, priority, weight, new ServiceProperties(props));
 	}
 
 	ServiceID createServiceID(String type, String name) {
@@ -477,6 +482,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		// Add URI scheme to props
 		URI location = serviceInfo.getLocation();
 		props.put(SCHEME_PROPERTY, location.getScheme());
+		props.put(URI_PATH_PROPERTY, location.getPath());
 		int priority = (serviceInfo.getPriority() == -1) ? 0 : serviceInfo.getPriority();
 		int weight = (serviceInfo.getWeight() == -1) ? 0 : serviceInfo.getWeight();
 		final String serviceName = sID.getServiceName() == null ? location.getHost() : sID.getServiceName();
