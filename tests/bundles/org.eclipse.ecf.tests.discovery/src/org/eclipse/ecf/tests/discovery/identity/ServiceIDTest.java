@@ -24,9 +24,17 @@ import org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest;
 public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 
 	protected String namespace;
+	private String namingAuthority;
+	private String[] protocols;
+	private String[] scopes;
+	private String[] services;
 
-	public ServiceIDTest(String string) {
+	public ServiceIDTest(String string, String[] services, String[] scopes, String[] protocols, String namingAuthority) {
 		namespace = string;
+		this.services = services;
+		this.scopes = scopes;
+		this.protocols = protocols;
+		this.namingAuthority = namingAuthority;
 	}
 
 	protected IServiceID createIDFromString(String serviceType) {
@@ -152,6 +160,100 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 		assertNotNull(createServiceID);
 	}
 
+	/*
+	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String, String)
+	 */
+	public void testServiceIDFactory() {
+		String expected = "some Name";
+		
+		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, scopes, protocols, namingAuthority, expected);
+		assertNotNull(aServiceID);
+
+		IServiceTypeID serviceType = aServiceID.getServiceTypeID();
+		assertEquals(namingAuthority, serviceType.getNamingAuthority());
+		assertTrue(Arrays.equals(services, serviceType.getServices()));
+		assertTrue(Arrays.equals(scopes, serviceType.getScopes()));
+		assertTrue(Arrays.equals(protocols, serviceType.getProtocols()));
+	}
+	
+	/*
+	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String[], String[], String, String)
+	 */
+	public void testServiceIDFactoryNullNA() {
+		String expected = "some Name";
+		
+		try {
+			Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+			ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, scopes, protocols, null, expected);
+		} catch(IDCreateException e) {
+			return;
+		}
+		fail("Invalid services may cause InvalidIDException");
+	}
+	
+	/*
+	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String[], String[], String, String)
+	 */
+	public void testServiceIDFactoryNullProto() {
+		String expected = "some Name";
+		
+		try {
+			Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+			ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, scopes, null, namingAuthority, expected);
+		} catch(IDCreateException e) {
+			return;
+		}
+		fail("Invalid services may cause InvalidIDException");
+	}
+
+	/*
+	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String[], String[], String, String)
+	 */
+	public void testServiceIDFactoryNullServices() {
+		String expected = "some Name";
+		
+		try {
+			Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+			ServiceIDFactory.getDefault().createServiceID(namespaceByName, null, scopes, protocols, namingAuthority, expected);
+		} catch(IDCreateException e) {
+			return;
+		}
+		fail("Invalid services may cause InvalidIDException");
+	}
+	
+	/*
+	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String[], String[], String, String)
+	 */
+	public void testServiceIDFactoryNullScope() {
+		String expected = "some Name";
+		
+		try {
+			Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+			ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, null, protocols, namingAuthority, expected);
+		} catch(IDCreateException e) {
+			return;
+		}
+		fail("Invalid services may cause InvalidIDException");
+	}
+	
+	/*
+	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String)
+	 */
+	public void testServiceIDFactoryDefaults() {
+		String expected = "some Name";
+		
+		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, expected);
+		assertNotNull(aServiceID);
+
+		IServiceTypeID serviceType = aServiceID.getServiceTypeID();
+		assertTrue(Arrays.equals(services, serviceType.getServices()));
+		assertEquals(IServiceTypeID.DEFAULT_NA, serviceType.getNamingAuthority());
+		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_SCOPE, serviceType.getScopes()));
+		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_PROTO, serviceType.getProtocols()));
+	}
+	
 	/*
 	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String, String)
 	 */
