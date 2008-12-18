@@ -25,7 +25,6 @@ import org.eclipse.update.ui.UpdateManagerUI;
 
 public class UpdateSiteServiceAccessHandler extends AbstractHandler {
 	private static final String NAME = "name"; //$NON-NLS-1$
-	static final String BROWSER_PATH_SUFFIX = Messages.UpdateSiteServiceAccessHandler_UPDATESITE_INDEX_HTML;
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
