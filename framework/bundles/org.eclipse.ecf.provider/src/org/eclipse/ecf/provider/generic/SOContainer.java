@@ -492,15 +492,23 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			obj = ois.readObject();
 		} catch (final ClassNotFoundException e) {
 			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, Messages.SOContainer_EXCEPTION_CLASS_NOT_FOUND, e));
+			printToSystemError("deserializeContainerMessage class not found", e); //$NON-NLS-1$
 			return null;
 		} catch (final InvalidClassException e) {
 			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, Messages.SOContainer_EXCEPTION_INVALID_CLASS, e));
+			printToSystemError("deserializeContainerMessage invalid class", e); //$NON-NLS-1$
 			return null;
 		}
 		if (obj instanceof ContainerMessage)
 			return (ContainerMessage) obj;
 		ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, Messages.SOContainer_EXCEPTION_NOT_CONTAINER_MESSAGE, null));
+		printToSystemError("deserializeContainerMessage invalid container message ", new InvalidObjectException("object " + obj + " not appropriate type")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return null;
+	}
+
+	protected static void printToSystemError(String message, Throwable t) {
+		System.err.println(message);
+		t.printStackTrace(System.err);
 	}
 
 	protected ID[] getOtherMemberIDs() {
@@ -632,24 +640,26 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ID toID = mess.getToContainerID();
 		final ContainerMessage.SharedObjectMessage resp = (ContainerMessage.SharedObjectMessage) mess.getData();
 		final ID sharedObjectID = resp.getFromSharedObjectID();
+		SOWrapper sow = null;
+		Serializable obj = null;
 		synchronized (getGroupMembershipLock()) {
-			final SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
+			sow = getSharedObjectWrapper(sharedObjectID);
 			if (sow != null) {
 				try {
-					final Serializable obj = (Serializable) deserializeSharedObjectMessage((byte[]) resp.getData());
-					// Fire container event notifying container listeners about
-					// receiving
-					// event.
-					fireContainerEvent(new ContainerSharedObjectMessageReceivingEvent(getID(), fromID, sharedObjectID, obj));
+					obj = (Serializable) deserializeSharedObjectMessage((byte[]) resp.getData());
 					// Actually deliver event to shared object asynchronously
 					sow.deliverSharedObjectMessage(fromID, obj);
 				} catch (final ClassNotFoundException e) {
-					traceStack("Exception in handleSharedObjectMessage:" + resp, e); //$NON-NLS-1$
 					Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "handleSharedObjectMessage", e); //$NON-NLS-1$
+					printToSystemError("Class not found sharedObjectID=" + sharedObjectID + " containerID=" + fromID, e); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			forward(fromID, toID, mess);
 		}
+		// Fire container event notifying container listeners about
+		// receiving event.
+		if (sow != null)
+			fireContainerEvent(new ContainerSharedObjectMessageReceivingEvent(getID(), fromID, sharedObjectID, obj));
 	}
 
 	/**
