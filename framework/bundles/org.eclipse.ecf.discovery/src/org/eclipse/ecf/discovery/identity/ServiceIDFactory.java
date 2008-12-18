@@ -11,9 +11,9 @@
 
 package org.eclipse.ecf.discovery.identity;
 
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.core.runtime.AssertionFailedException;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.internal.discovery.Messages;
 
 /**
  * ServiceIDFactory implementation.
@@ -52,5 +52,24 @@ public class ServiceIDFactory implements IServiceIDFactory {
 	 */
 	public IServiceID createServiceID(Namespace namespace, IServiceTypeID serviceType) throws IDCreateException {
 		return this.createServiceID(namespace, serviceType, null);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceID(org.eclipse.ecf.core.identity.Namespace, java.lang.String[], java.lang.String[], java.lang.String[], java.lang.String, java.lang.String)
+	 */
+	public IServiceID createServiceID(Namespace namespace, String[] services, String[] scopes, String[] protocols, String namingAuthority, String serviceName) throws IDCreateException {
+		try {
+			IServiceTypeID serviceType = new ServiceTypeID(namespace, services, scopes, protocols, namingAuthority);
+			return (IServiceID) IDFactory.getDefault().createID(namespace, new Object[] {serviceType, serviceName});
+		} catch (AssertionFailedException e) {
+			throw new IDCreateException(Messages.ServiceTypeID_EXCEPTION_SERVICE_TYPE_ID_NOT_PARSEABLE, e);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceID(org.eclipse.ecf.core.identity.Namespace, java.lang.String[], java.lang.String)
+	 */
+	public IServiceID createServiceID(Namespace namespace, String[] services, String serviceName) throws IDCreateException {
+		return this.createServiceID(namespace, services, IServiceTypeID.DEFAULT_SCOPE, IServiceTypeID.DEFAULT_PROTO, IServiceTypeID.DEFAULT_NA, serviceName);
 	}
 }

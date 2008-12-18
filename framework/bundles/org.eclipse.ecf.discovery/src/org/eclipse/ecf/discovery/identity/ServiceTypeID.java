@@ -24,9 +24,6 @@ import org.eclipse.ecf.internal.discovery.Messages;
 public class ServiceTypeID extends BaseID implements IServiceTypeID {
 	private static final long serialVersionUID = 2546630451825262145L;
 
-	protected static final String[] DEFAULT_PROTO = new String[] {"unknown"}; //$NON-NLS-1$
-	protected static final String[] DEFAULT_SCOPE = new String[] {"default"}; //$NON-NLS-1$
-	protected static final String DEFAULT_NA = "IANA"; //$NON-NLS-1$
 	protected static final String DELIM = "._"; //$NON-NLS-1$
 
 	protected String typeName = ""; //$NON-NLS-1$
