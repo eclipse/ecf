@@ -13,9 +13,12 @@ package org.eclipse.ecf.tests.provider.jslp.identity;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.internal.provider.jslp.ServicePropertiesAdapter;
 import org.eclipse.ecf.internal.provider.jslp.ServiceURLAdapter;
 import org.eclipse.ecf.provider.jslp.container.JSLPServiceInfo;
@@ -54,8 +57,8 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		
 		assertEquals("eclipse", stid.getNamingAuthority());
 		assertTrue(Arrays.equals(new String[] {"foo", "bar"}, stid.getServices()));
-		assertTrue(Arrays.equals(new String[] {"default"}, stid.getScopes()));
-		assertTrue(Arrays.equals(new String[] {"unknown"}, stid.getProtocols()));
+		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_SCOPE, stid.getScopes()));
+		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_PROTO, stid.getProtocols()));
 	}
 	
 	/* (non-Javadoc)
@@ -94,12 +97,12 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		
 		String internal = stid.getInternal();
 		assertEquals(internalRep, internal);
-		assertEquals("_foo._bar._unknown.default._eclipse", stid.getName());
+		assertEquals("_foo._bar._" + IServiceTypeID.DEFAULT_PROTO[0] + "." + IServiceTypeID.DEFAULT_SCOPE[0] + "._eclipse", stid.getName());
 		
 		assertEquals("eclipse", stid.getNamingAuthority());
 		assertTrue(Arrays.equals(new String[] {"foo", "bar"}, stid.getServices()));
-		assertTrue(Arrays.equals(new String[] {"default"}, stid.getScopes()));
-		assertTrue(Arrays.equals(new String[] {"unknown"}, stid.getProtocols()));
+		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_SCOPE, stid.getScopes()));
+		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_PROTO, stid.getProtocols()));
 	}
 
 	/* (non-Javadoc)
@@ -119,12 +122,12 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		final IServiceTypeID stid = sid.getServiceTypeID();
 		
 		assertEquals(internalRep, stid.getInternal());
-		assertEquals("_service._foo._bar._unknown.default._eclipse", stid.getName());
+		assertEquals("_service._foo._bar._" + IServiceTypeID.DEFAULT_PROTO[0] + "." + IServiceTypeID.DEFAULT_SCOPE[0] + "._eclipse", stid.getName());
 		
 		assertEquals("eclipse", stid.getNamingAuthority());
 		assertTrue(Arrays.equals(new String[] {"service", "foo", "bar"}, stid.getServices()));
-		assertTrue(Arrays.equals(new String[] {"default"}, stid.getScopes()));
-		assertTrue(Arrays.equals(new String[] {"unknown"}, stid.getProtocols()));
+		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_SCOPE, stid.getScopes()));
+		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_PROTO, stid.getProtocols()));
 	}
 
 	/* (non-Javadoc)
@@ -138,7 +141,7 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		// the internalRep contains "iana" but getInternal may not!
 		final int indexOf = stid.getInternal().toLowerCase().indexOf(IANA.toLowerCase());
 		assertTrue(indexOf == -1);
-		assertEquals(IANA, stid.getNamingAuthority().toLowerCase());
+		assertEquals(IServiceTypeID.DEFAULT_NA, stid.getNamingAuthority());
 		assertNotSame(internalRep, stid.getName());
 	}
 }
