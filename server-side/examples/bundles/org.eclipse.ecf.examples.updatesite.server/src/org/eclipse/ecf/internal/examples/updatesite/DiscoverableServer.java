@@ -80,7 +80,7 @@ public class DiscoverableServer implements IApplication {
 
 		// start http service
 		httpService.registerResources(servicePath, "/", new UpdateSiteContext(httpService.createDefaultHttpContext(), updateSiteLocation)); //$NON-NLS-1$
-		System.out.println("http server\n\tupdateSiteLocation=" + updateSiteLocation + "\n\turl=" + serviceInfo.getLocation() + servicePath); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("http server\n\tupdateSiteLocation=" + updateSiteLocation + "\n\turl=" + serviceInfo.getLocation()); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// setup discovery
 		discovery.registerService(serviceInfo);
