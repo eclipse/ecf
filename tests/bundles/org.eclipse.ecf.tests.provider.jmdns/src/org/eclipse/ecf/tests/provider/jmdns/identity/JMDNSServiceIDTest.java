@@ -17,9 +17,12 @@ import org.eclipse.ecf.tests.discovery.identity.ServiceIDTest;
  *
  */
 public class JMDNSServiceIDTest extends ServiceIDTest {
+	private static final String[] scopes = {"local, default"};
+	private static final String[] services = {"ecf", "foo", "bar"};
+	private static final String[] protocols = {"tcp, udp"};
 
 	public JMDNSServiceIDTest() {
-		super("ecf.namespace.jmdns");
+		super("ecf.namespace.jmdns", services, scopes, protocols, "ecf-eclipse");
 	}
 
 	public void testJMDNSServiceTypeIDWithIPv6() {
