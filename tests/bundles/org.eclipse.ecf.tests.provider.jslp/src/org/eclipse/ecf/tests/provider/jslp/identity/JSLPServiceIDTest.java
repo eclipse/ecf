@@ -32,9 +32,12 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 	private static final int PRIORITY = 42;
 	private static final String ASERVICENAME = "aServicename";
 	private static final String IANA = "iana";
+	private static final String[] scopes = {"ascope"};
+	private static final String[] services = {"ecf", "foo", "bar"};
+	private static final String[] protocols = {"aproto"};
 
 	public JSLPServiceIDTest() {
-		super(JSLPNamespace.NAME);
+		super(JSLPNamespace.NAME, services, scopes, protocols, "ecf-eclipse");
 	}
 
 	/* (non-Javadoc)
@@ -82,7 +85,7 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		final String internalRep = "service:foo.eclipse:bar";
 		final ServiceURL sUrl = new ServiceURL(internalRep + "://localhost:1234/a/path/to/something", ServiceURL.LIFETIME_PERMANENT);
 
-		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, "aServiceNameString"), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
+		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, ASERVICENAME), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
 		assertEquals(serviceInfo.getPriority(), PRIORITY);
 		assertEquals(serviceInfo.getWeight(), WEIGHT);
 		final IServiceID sid = serviceInfo.getServiceID();
