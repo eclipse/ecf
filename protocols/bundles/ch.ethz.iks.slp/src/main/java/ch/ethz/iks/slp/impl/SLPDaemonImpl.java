@@ -309,7 +309,8 @@ public final class SLPDaemonImpl implements SLPDaemon {
 			List attResult = new ArrayList();
 			for (Iterator scopes = attreq.scopeList.iterator(); scopes
 					.hasNext();) {
-				List services = (List) registeredServices.get(scopes.next());
+				String scope = (String) scopes.next();
+				List services = (List) registeredServices.get(scope.toLowerCase());
 				if (services == null) {
 					continue;
 				}
@@ -354,8 +355,9 @@ public final class SLPDaemonImpl implements SLPDaemon {
 					.hasNext();) {
 
 				// iterate over the registered services
+				String scope = (String) scopeIter.next();
 				List services = ((List) registeredServices
-						.get(scopeIter.next()));
+						.get(scope.toLowerCase()));
 				if (services == null) {
 					continue;
 				}
@@ -419,7 +421,7 @@ public final class SLPDaemonImpl implements SLPDaemon {
 		// so find all services within the scopes of the new DA:
 		for (Iterator iter = advert.scopeList.iterator(); iter.hasNext();) {
 			String scope = (String) iter.next();
-			List services = (List) registeredServices.get(scope);
+			List services = (List) registeredServices.get(scope.toLowerCase());
 			if (services != null) {
 				for (Iterator serviceIter = services.iterator(); serviceIter
 						.hasNext();) {
