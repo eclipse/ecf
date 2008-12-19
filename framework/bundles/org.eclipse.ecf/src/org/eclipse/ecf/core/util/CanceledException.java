@@ -9,25 +9,15 @@
 ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
-/**
- * Timeout exception thrown when timeout occurs
- * 
- */
-public class TimeoutException extends InterruptedException {
-	private static final long serialVersionUID = 3256439218179158322L;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 
-	public final long duration;
+public class CanceledException extends CoreException {
 
-	public TimeoutException(long time) {
-		duration = time;
+	private static final long serialVersionUID = -2545133268982994587L;
+
+	public CanceledException(IStatus status) {
+		super(status);
 	}
 
-	public TimeoutException(long time, String message) {
-		super(message);
-		duration = time;
-	}
-
-	public long getDuration() {
-		return duration;
-	}
 }

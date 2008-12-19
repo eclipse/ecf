@@ -9,25 +9,18 @@
 ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 /**
- * Timeout exception thrown when timeout occurs
+ * Interface defining a block that can be called, can return an Object result
+ * and throw an arbitrary Throwable
  * 
  */
-public class TimeoutException extends InterruptedException {
-	private static final long serialVersionUID = 3256439218179158322L;
-
-	public final long duration;
-
-	public TimeoutException(long time) {
-		duration = time;
-	}
-
-	public TimeoutException(long time, String message) {
-		super(message);
-		duration = time;
-	}
-
-	public long getDuration() {
-		return duration;
-	}
+public interface IFutureCallable {
+	/** Perform some action that returns a result or throws an exception
+	 * @param monitor the IProgressMonitor associated with this callable
+	 * @return result from the call
+	 * @throws Throwable
+	 */
+	Object call(IProgressMonitor monitor) throws Throwable;
 }
