@@ -43,7 +43,9 @@ public interface IServiceTypeID extends ID {
 	 * jmDNS => IANA
 	 */
 	/**
-	 * @return String Naming Authority for this ServiceType.  May be <code>null</code>.
+	 * @return String Naming Authority for this ServiceType.  Will not be <code>null</code>.
+	 * If this instance has been created with the provider specific default, this will return
+	 * {@link IServiceTypeID#DEFAULT_NA} instead.
 	 */
 	public String getNamingAuthority();
 
@@ -54,6 +56,8 @@ public interface IServiceTypeID extends ID {
 	/**
 	 * @return String[] of protocols supported.  Will not be <code>null</code>, but may
 	 * be empty array.
+	 * If this instance has been created with the provider specific default, this will return
+	 * {@link IServiceTypeID#DEFAULT_PROTO} instead.
 	 */
 	public String[] getProtocols();
 
@@ -64,6 +68,8 @@ public interface IServiceTypeID extends ID {
 	/**
 	 * @return The scopes in which this Service is registered.  Will not be <code>null</code>, but may
 	 * be empty array.
+	 * If this instance has been created with the provider specific default, this will return
+	 * {@link IServiceTypeID#DEFAULT_SCOPE} instead!
 	 */
 	public String[] getScopes();
 
