@@ -45,7 +45,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 			} else {
 				namingAuthority = na;
 				// remove the naming authority from the string
-				str = replaceAllIgnoreCase(str, "." + na, ""); //$NON-NLS-1$//$NON-NLS-2$
+				str = StringUtils.replaceAllIgnoreCase(str, "." + na, ""); //$NON-NLS-1$//$NON-NLS-2$
 			}
 
 			services = StringUtils.split(str, JSLP_DELIM);
@@ -122,26 +122,6 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		}
 
 		// remove the default naming authority #228876
-		return replaceAllIgnoreCase(str, "." + DEFAULT_NA, ""); //$NON-NLS-1$//$NON-NLS-2$
-	}
-
-	/**
-	 * Returns the string resulting from replacing all occurrences of the target with the replace
-	 * string.  Note that the target matches literally but ignoring the case, and this is not the same behavior as the 
-	 * String.replaceAll, which uses regular expressions for doing the matching.  
-	 * @param string the start string.  Must not be <code>null</code>.
-	 * @param target the target to search for in the start string.  Must not be <code>null</code>.
-	 * @param replace the replacement string to substitute when the target is found.  Must not be <code>null</code>.
-	 * @return String result.  Will not be <code>null</code>.   If target is not found in the given string,
-	 * then the result will be the entire input string.  
-	 * 
-	 * @see StringUtils#replaceAll(String, String, String) but case insensitive
-	 */
-	//TODO-mkuppe https://bugs.eclipse.org/233807
-	private static String replaceAllIgnoreCase(String string, String target, String replace) {
-		final int index = string.toLowerCase().indexOf(target.toLowerCase());
-		if (index == -1)
-			return string;
-		return string.substring(0, index) + replace + replaceAllIgnoreCase(string.substring(index + target.length()), target, replace);
+		return StringUtils.replaceAllIgnoreCase(str, "." + DEFAULT_NA, ""); //$NON-NLS-1$//$NON-NLS-2$
 	}
 }
