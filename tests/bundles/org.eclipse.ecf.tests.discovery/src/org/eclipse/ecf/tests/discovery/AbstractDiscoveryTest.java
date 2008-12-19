@@ -18,9 +18,9 @@ import java.net.UnknownHostException;
 import junit.framework.TestCase;
 
 public abstract class AbstractDiscoveryTest extends TestCase {
-	protected final static String NAMINGAUTHORITY = "IANA";
-	protected final static String SCOPE = "local";
-	protected final static String PROTOCOL = "tcp";
+	protected final static String NAMINGAUTHORITY = "someNamingAuthority";
+	protected final static String SCOPE = "someScope";
+	protected final static String PROTOCOL = "someProtocol";
 	protected final static int PORT = 3282;
 	protected final static String USERNAME = System.getProperty("user.name", "testuser");
 	protected final static String PASSWORD = "testpassword";
