@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.jslp;
 
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.provider.jslp.NullPatternAdvertiser;
 import org.eclipse.ecf.internal.provider.jslp.NullPatternLocator;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
@@ -42,7 +43,7 @@ public class JSLPDiscoveryTest extends DiscoveryTest {
 		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=230182
 		setComparator(new JSLPTestComparator());
 		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=218308
-		setScope("default");
+		setScope(IServiceTypeID.DEFAULT_SCOPE[0]);
 	}
 	
 	/**

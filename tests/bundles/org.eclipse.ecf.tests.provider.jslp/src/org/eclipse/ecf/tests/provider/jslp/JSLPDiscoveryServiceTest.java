@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.jslp;
 
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
 import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 
@@ -22,6 +23,6 @@ public class JSLPDiscoveryServiceTest extends DiscoveryServiceTest {
 		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=230182
 		setComparator(new JSLPTestComparator());
 		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=218308
-		setScope("default");
+		setScope(IServiceTypeID.DEFAULT_SCOPE[0]);
 	}
 }
