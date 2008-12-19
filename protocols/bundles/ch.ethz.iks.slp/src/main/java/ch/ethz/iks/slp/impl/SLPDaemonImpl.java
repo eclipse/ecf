@@ -266,7 +266,8 @@ public final class SLPDaemonImpl implements SLPDaemon {
 
 			List results = new ArrayList();
 			for (Iterator scopes = req.scopeList.iterator(); scopes.hasNext();) {
-				List services = (List) registeredServices.get(scopes.next());
+				String scope = (String) scopes.next();
+				List services = (List) registeredServices.get(scope.toLowerCase());
 				if (services == null) {
 					continue;
 				}
