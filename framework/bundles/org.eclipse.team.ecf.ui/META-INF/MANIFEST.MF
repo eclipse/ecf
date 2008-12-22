@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Team Plug-in
-Bundle-SymbolicName: org.eclipse.ecf.sync.team;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-SymbolicName: org.eclipse.team.ecf.ui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.team.internal.ecf.core.TeamSynchronization
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
