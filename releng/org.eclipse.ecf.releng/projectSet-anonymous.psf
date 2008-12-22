@@ -41,6 +41,8 @@
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.remoteservice.ui,org.eclipse.ecf.remoteservice.ui"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.ui,org.eclipse.ecf.ui"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.sync,org.eclipse.ecf.sync"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.team.ecf.core,org.eclipse.team.ecf.core"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.team.ecf.ui,org.eclipse.team.ecf.ui"/>
 
 	<!-- Orbit bundles -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.apache.commons.codec,org.apache.commons.codec,v1_2_0"/>
