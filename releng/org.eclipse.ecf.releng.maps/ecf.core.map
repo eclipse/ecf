@@ -58,6 +58,8 @@ plugin@org.eclipse.ecf.provider.r_osgi=@CVSTag@,:pserver:anonymous@dev.eclipse.o
 plugin@org.eclipse.ecf.sync=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.sync
 plugin@org.eclipse.ecf.storage=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.storage
 plugin@ch.ethz.iks.slp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/protocols/bundles/ch.ethz.iks.slp
+plugin@org.eclipse.team.ecf.core=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.team.ecf.core
+plugin@org.eclipse.team.ecf.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.team.ecf.ui
 
 plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/com.jcraft.jsch_0.1.31.jar
 plugin@org.objectweb.asm,3.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/org.objectweb.asm_3.0.0.v200803061811.jar
