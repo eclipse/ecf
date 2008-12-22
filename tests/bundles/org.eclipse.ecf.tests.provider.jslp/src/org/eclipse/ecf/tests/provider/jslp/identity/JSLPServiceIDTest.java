@@ -31,16 +31,8 @@ import ch.ethz.iks.slp.ServiceURL;
 
 public class JSLPServiceIDTest extends ServiceIDTest {
 
-	private static final int WEIGHT = 43;
-	private static final int PRIORITY = 42;
-	private static final String ASERVICENAME = "aServicename";
-	private static final String IANA = "iana";
-	private static final String[] scopes = {"ascope"};
-	private static final String[] services = {"ecf", "foo", "bar"};
-	private static final String[] protocols = {"aproto"};
-
 	public JSLPServiceIDTest() {
-		super(JSLPNamespace.NAME, services, scopes, protocols, "ecf-eclipse");
+		super(JSLPNamespace.NAME);
 	}
 
 	/* (non-Javadoc)
@@ -88,11 +80,11 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		final String internalRep = "service:foo.eclipse:bar";
 		final ServiceURL sUrl = new ServiceURL(internalRep + "://localhost:1234/a/path/to/something", ServiceURL.LIFETIME_PERMANENT);
 
-		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, ASERVICENAME), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
+		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, SERVICENAME), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
 		assertEquals(serviceInfo.getPriority(), PRIORITY);
 		assertEquals(serviceInfo.getWeight(), WEIGHT);
 		final IServiceID sid = serviceInfo.getServiceID();
-		assertEquals(sid.getServiceName(), ASERVICENAME);
+		assertEquals(sid.getServiceName(), SERVICENAME);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 		
 		String internal = stid.getInternal();
@@ -114,11 +106,11 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		final String internalRep = "service:service:foo.eclipse:bar";
 		final ServiceURL sUrl = new ServiceURL(internalRep + "://localhost:1234/a/path/to/something", ServiceURL.LIFETIME_PERMANENT);
 
-		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, ASERVICENAME), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
+		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, SERVICENAME), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
 		assertEquals(serviceInfo.getPriority(), PRIORITY);
 		assertEquals(serviceInfo.getWeight(), WEIGHT);
 		final IServiceID sid = serviceInfo.getServiceID();
-		assertEquals(sid.getServiceName(), ASERVICENAME);
+		assertEquals(sid.getServiceName(), SERVICENAME);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 		
 		assertEquals(internalRep, stid.getInternal());
@@ -134,14 +126,42 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 	 * @see org.eclipse.ecf.tests.discovery.identity.ServiceIDTest#testCreateServiceTypeIDFromInternalString()
 	 */
 	public void testCreateServiceTypeIDFromSLPStringWithDefaultNamingAuthority() {
-		final String internalRep = "service:foo." + IANA + ":bar";
+		final String internalRep = "service:foo.iana:bar";
 		final IServiceID sid = (IServiceID) createIDFromString(internalRep);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 
 		// the internalRep contains "iana" but getInternal may not!
-		final int indexOf = stid.getInternal().toLowerCase().indexOf(IANA.toLowerCase());
+		final int indexOf = stid.getInternal().toLowerCase().indexOf("iana");
 		assertTrue(indexOf == -1);
 		assertEquals(IServiceTypeID.DEFAULT_NA, stid.getNamingAuthority());
 		assertNotSame(internalRep, stid.getName());
+	}
+
+	public void testECFDefaultsTojSLP() {
+		String expected = "some Name";
+		
+		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, SERVICES, PROTOCOLS, expected);
+		assertNotNull(aServiceID);
+
+		IServiceTypeID stid = aServiceID.getServiceTypeID();
+		assertTrue(Arrays.equals(SERVICES, stid.getServices()));
+		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_SCOPE, stid.getScopes()));
+		assertTrue(Arrays.equals(PROTOCOLS, stid.getProtocols()));
+
+		String internal = stid.getInternal();
+		assertEquals("service:ecf:foo:bar", internal);
+	}
+
+	public void testjSLPDefaultsToECF() {
+		String expected = "some Name";
+		fail();
+		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, SERVICES, PROTOCOLS, expected);
+		assertNotNull(aServiceID);
+
+		IServiceTypeID stid = aServiceID.getServiceTypeID();
+		String internal = stid.getInternal();
+		assertEquals("service:ecf:foo:bar", internal);
 	}
 }

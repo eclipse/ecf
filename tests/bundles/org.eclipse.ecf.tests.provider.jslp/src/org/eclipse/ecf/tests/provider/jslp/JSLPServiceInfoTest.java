@@ -25,8 +25,8 @@ public class JSLPServiceInfoTest extends ServiceInfoTest {
 	public JSLPServiceInfoTest() {
 		super();
 		uri = createDefaultURI();
-		priority = 456;
-		weight = 789;
+		priority = PRIORITY;
+		weight = WEIGHT;
 		serviceProperties = new ServiceProperties();
 		serviceProperties.setProperty("foobar", new String("foobar"));
 		Namespace namespace = IDFactory.getDefault().getNamespaceByName(
