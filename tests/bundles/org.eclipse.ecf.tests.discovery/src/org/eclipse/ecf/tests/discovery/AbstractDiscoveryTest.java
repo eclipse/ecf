@@ -18,6 +18,9 @@ import java.net.UnknownHostException;
 import junit.framework.TestCase;
 
 public abstract class AbstractDiscoveryTest extends TestCase {
+	protected final static int WEIGHT = 43;
+	protected final static int PRIORITY = 42;
+	protected final static String SERVICENAME = "aServiceNAME";
 	protected final static String NAMINGAUTHORITY = "someNamingAuthority";
 	protected final static String SCOPE = "someScope";
 	protected final static String PROTOCOL = "someProtocol";
@@ -29,12 +32,13 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected final static String FRAGMENT = "aFragment";
 
 	protected final static String[] SERVICES = new String[] {"ecf", "junit", "tests"};
+	protected final static String[] PROTOCOLS = new String[] {PROTOCOL};
 	protected final static String SERVICE_TYPE = "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
 	
 	public URI createDefaultURI() {
 //TODO-mkuppe https://bugs.eclipse.org/216944
 //		return URI.create(PROTOCOL + "://" + USERNAME + ":" + PASSWORD + "@" + getHost() + ":" + PORT + "/" + PATH + "?" + QUERY + "#" + FRAGMENT);
-		return URI.create(PROTOCOL + "://" + USERNAME + "@" + getHost() + ":" + PORT + PATH);
+		return URI.create(PROTOCOLS[0] + "://" + USERNAME + "@" + getHost() + ":" + PORT + PATH);
 	}
 	
 	protected static String getHost() {

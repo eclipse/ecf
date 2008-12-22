@@ -36,6 +36,10 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 		this.protocols = protocols;
 		this.namingAuthority = namingAuthority;
 	}
+	
+	public ServiceIDTest(String namespace) {
+		this(namespace, SERVICES, new String[]{SCOPE}, new String[]{PROTOCOL}, NAMINGAUTHORITY);
+	}
 
 	protected IServiceID createIDFromString(String serviceType) {
 		try {
@@ -244,14 +248,14 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 		String expected = "some Name";
 		
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, expected);
+		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, protocols, expected);
 		assertNotNull(aServiceID);
 
 		IServiceTypeID serviceType = aServiceID.getServiceTypeID();
 		assertTrue(Arrays.equals(services, serviceType.getServices()));
 		assertEquals(IServiceTypeID.DEFAULT_NA, serviceType.getNamingAuthority());
 		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_SCOPE, serviceType.getScopes()));
-		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_PROTO, serviceType.getProtocols()));
+		assertTrue(Arrays.equals(protocols, serviceType.getProtocols()));
 	}
 	
 	/*
