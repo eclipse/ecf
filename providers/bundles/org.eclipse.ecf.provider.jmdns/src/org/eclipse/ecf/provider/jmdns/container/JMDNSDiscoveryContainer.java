@@ -35,6 +35,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 
 	private static final String SCHEME_PROPERTY = "jmdns.ptcl"; //$NON-NLS-1$
 	private static final String URI_PATH_PROPERTY = "jmdns.uripath"; //$NON-NLS-1$
+	private static final String NAMING_AUTHORITY_PROPERTY = "jmdns.namingauthority"; //$NON-NLS-1$
 
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
 
@@ -193,17 +194,21 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Assert.isNotNull(type);
 		List serviceInfos = new ArrayList();
 		synchronized (lock) {
-			if (serviceTypes.contains(type)) {
-				ServiceInfo[] infos = jmdns.list(type.getInternal());
-				for (int i = 0; i < infos.length; i++) {
-					try {
-						if (infos[i] != null) {
-							IServiceInfo si = createIServiceInfoFromServiceInfo(infos[i]);
-							if (si != null)
-								serviceInfos.add(si);
+			// We don't know the naming authority yet (it's part of the service properties)
+			for (Iterator itr = serviceTypes.iterator(); itr.hasNext();) {
+				IServiceTypeID serviceType = (IServiceTypeID) itr.next();
+				if (Arrays.equals(serviceType.getServices(), type.getServices()) && Arrays.equals(serviceType.getProtocols(), type.getProtocols()) && Arrays.equals(serviceType.getScopes(), type.getScopes())) {
+					ServiceInfo[] infos = jmdns.list(type.getInternal());
+					for (int i = 0; i < infos.length; i++) {
+						try {
+							if (infos[i] != null) {
+								IServiceInfo si = createIServiceInfoFromServiceInfo(infos[i]);
+								if (si != null)
+									serviceInfos.add(si);
+							}
+						} catch (Exception e) {
+							Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices", e); //$NON-NLS-1$
 						}
-					} catch (Exception e) {
-						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices", e); //$NON-NLS-1$
 					}
 				}
 			}
@@ -329,10 +334,15 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				if (localJmdns != null) {
 					String serviceType = arg0.getType();
 					String serviceName = arg0.getName();
-					Collection l = getAllListeners(createServiceID(serviceType, serviceName).getServiceTypeID());
-					if (l.size() > 0) {
-						localJmdns.requestServiceInfo(serviceType, serviceName, DEFAULT_REQUEST_TIMEOUT);
+					// explicitly get the service to determine the naming authority (part of the service properties)
+					ServiceInfo info = localJmdns.getServiceInfo(serviceType, serviceName);
+					IServiceInfo aServiceInfo = null;
+					try {
+						aServiceInfo = createIServiceInfoFromServiceInfo(info);
+					} catch (Exception e) {
+						return;
 					}
+					fireDiscovered(aServiceInfo);
 				}
 			}
 		});
@@ -425,9 +435,6 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		String n = serviceInfo.getName();
 		if (st == null || n == null)
 			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);
-		final ServiceID sID = createServiceID(serviceInfo.getType(), serviceInfo.getName());
-		if (sID == null)
-			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);
 		final InetAddress addr = serviceInfo.getAddress();
 		final int port = serviceInfo.getPort();
 		final int priority = serviceInfo.getPriority();
@@ -435,13 +442,16 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final Properties props = new Properties();
 		String uriProtocol = null;
 		String uriPath = ""; //$NON-NLS-1$
+		String namingAuthority = IServiceTypeID.DEFAULT_NA; //$NON-NLS-1$
 		for (final Enumeration e = serviceInfo.getPropertyNames(); e.hasMoreElements();) {
 			final String name = (String) e.nextElement();
-			if (name.equals(SCHEME_PROPERTY))
+			if (SCHEME_PROPERTY.equals(name)) {
 				uriProtocol = serviceInfo.getPropertyString(name);
-			else if (name.equals(URI_PATH_PROPERTY))
+			} else if (URI_PATH_PROPERTY.equals(name)) {
 				uriPath = serviceInfo.getPropertyString(name);
-			else {
+			} else if (NAMING_AUTHORITY_PROPERTY.equals(name)) {
+				namingAuthority = serviceInfo.getPropertyString(name);
+			} else {
 				Object value = serviceInfo.getPropertyString(name);
 				if (value == null)
 					value = serviceInfo.getPropertyBytes(name);
@@ -450,6 +460,10 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			}
 		}
 		final URI uri = URI.create(uriProtocol + "://" + addr.getHostAddress() + ":" + port + uriPath); //$NON-NLS-1$//$NON-NLS-2$
+		final ServiceID sID = createServiceID(serviceInfo.getType() + "_" + namingAuthority, serviceInfo.getName()); //$NON-NLS-1$
+		if (sID == null) {
+			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);
+		}
 		return new org.eclipse.ecf.discovery.ServiceInfo(uri, sID, priority, weight, new ServiceProperties(props));
 	}
 
@@ -483,6 +497,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		URI location = serviceInfo.getLocation();
 		props.put(SCHEME_PROPERTY, location.getScheme());
 		props.put(URI_PATH_PROPERTY, location.getPath());
+		props.put(NAMING_AUTHORITY_PROPERTY, serviceInfo.getServiceID().getServiceTypeID().getNamingAuthority());
 		int priority = (serviceInfo.getPriority() == -1) ? 0 : serviceInfo.getPriority();
 		int weight = (serviceInfo.getWeight() == -1) ? 0 : serviceInfo.getWeight();
 		final String serviceName = sID.getServiceName() == null ? location.getHost() : sID.getServiceName();

@@ -58,9 +58,7 @@ public class JMDNSNamespace extends Namespace {
 				if (parameters == null || parameters.length < 1 || parameters.length > 2) {
 					throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_WRONG_PARAM_COUNT);
 				}
-				if (parameters[0] instanceof JMDNSServiceTypeID) {
-					type = ((JMDNSServiceTypeID) parameters[0]).getInternal();
-				} else if (parameters[0] instanceof IServiceTypeID) {
+				if (parameters[0] instanceof IServiceTypeID) {
 					type = ((IServiceTypeID) parameters[0]).getName();
 				} else if (parameters[0] instanceof String) {
 					type = (String) parameters[0];
