@@ -11,6 +11,7 @@
 package org.eclipse.ecf.provider.jmdns.identity;
 
 import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.provider.jmdns.Messages;
 import org.eclipse.osgi.util.NLS;
 
@@ -59,6 +60,8 @@ public class JMDNSNamespace extends Namespace {
 				}
 				if (parameters[0] instanceof JMDNSServiceTypeID) {
 					type = ((JMDNSServiceTypeID) parameters[0]).getInternal();
+				} else if (parameters[0] instanceof IServiceTypeID) {
+					type = ((IServiceTypeID) parameters[0]).getName();
 				} else if (parameters[0] instanceof String) {
 					type = (String) parameters[0];
 				} else
