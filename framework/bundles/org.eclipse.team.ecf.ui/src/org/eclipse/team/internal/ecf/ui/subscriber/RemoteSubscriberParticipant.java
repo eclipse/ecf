@@ -1,0 +1,65 @@
+/******************************************************************************
+ * Copyright (c) 2008 Versant Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Remy Chi Jian Suen (Versant Corporation) - initial API and implementation
+ ******************************************************************************/
+package org.eclipse.team.internal.ecf.ui.subscriber;
+
+import org.eclipse.core.resources.IResource;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.team.internal.ecf.core.RemoteShare;
+import org.eclipse.team.internal.ecf.core.variants.RemoteResourceVariantTreeSubscriber;
+import org.eclipse.team.internal.ecf.ui.actions.OverrideWithRemoteAction;
+import org.eclipse.team.ui.synchronize.ISynchronizePageConfiguration;
+import org.eclipse.team.ui.synchronize.SubscriberParticipant;
+import org.eclipse.team.ui.synchronize.SynchronizePageActionGroup;
+
+public class RemoteSubscriberParticipant extends SubscriberParticipant {
+
+	public RemoteSubscriberParticipant(RemoteShare share, ID ownId, ID remoteId) {
+		setSubscriber(new RemoteResourceVariantTreeSubscriber(share, ownId, remoteId));
+	}
+
+	public void setResources(IResource[] resources) {
+		RemoteResourceVariantTreeSubscriber subscriber = (RemoteResourceVariantTreeSubscriber) getSubscriber();
+		subscriber.setResources(resources);
+	}
+
+	protected void initializeConfiguration(final ISynchronizePageConfiguration configuration) {
+		super.initializeConfiguration(configuration);
+		configuration.setProperty(ISynchronizePageConfiguration.P_PAGE_DESCRIPTION, "Remote Peer");
+
+		configuration.addActionContribution(new SynchronizePageActionGroup() {
+			public void initialize(ISynchronizePageConfiguration configuration) {
+				super.initialize(configuration);
+				appendToGroup(ISynchronizePageConfiguration.P_CONTEXT_MENU, ISynchronizePageConfiguration.SYNCHRONIZE_GROUP, new OverrideWithRemoteAction(configuration));
+			}
+		});
+
+		configuration.setSupportedModes(ISynchronizePageConfiguration.ALL_MODES);
+		configuration.setMode(ISynchronizePageConfiguration.BOTH_MODE);
+	}
+
+	public String getName() {
+		return "Remote Peer";
+	}
+
+	public String getId() {
+		// note, this value needs to match the value in the plugin.xml
+		return "org.eclipse.ecf.sync.team.participant";
+	}
+
+	public String getSecondaryId() {
+		// TODO: concept of secondary id still needs to be investigated to
+		// understand its uses, we'd return null if we can (it's spec'ed to
+		// accept nulls) but an NPE is thrown at the moment, bug has been filed
+		// against Team regarding this
+		return "secondaryId"; //$NON-NLS-1$
+	}
+
+}

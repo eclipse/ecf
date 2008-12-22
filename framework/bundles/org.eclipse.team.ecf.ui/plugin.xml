@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.team.ui.synchronizeParticipants">
+      <participant
+            class="org.eclipse.team.internal.ecf.ui.subscriber.RemoteSubscriberParticipant"
+            icon="icons/collaboration.gif"
+            id="org.eclipse.ecf.sync.team.participant"
+            name="ECF Remote Peer"
+            persistent="false">
+      </participant>
+   </extension>
+   <extension
+         point="org.eclipse.team.ui.synchronizeWizards">
+      <wizard
+            class="org.eclipse.team.internal.ecf.ui.wizards.RemotePeerSynchronizeWizard"
+            description="Synchronize resources in the workspace with a remote peer&apos;s copy."
+            icon="icons/collaboration.gif"
+            id="org.eclipse.ecf.sync.team.remotePeerSynchronization"
+            name="Remote Peer">
+      </wizard>
+   </extension>
+	<extension point="org.eclipse.core.expressions.definitions">
+	      <definition id="org.eclipse.ecf.sync.team.resourcesDefinition">
+	         <iterate ifEmpty="false">
+	            <adapt type="org.eclipse.core.resources.IResource"/>
+	         </iterate>
+	      </definition>
+	      <definition id="org.eclipse.ecf.sync.team.fileDefinition">
+	         <iterate ifEmpty="false">
+	            <adapt type="org.eclipse.core.resources.IFile"/>
+	         </iterate>
+	      </definition>
+	   </extension>
+	   
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+            <dynamic
+                  class="org.eclipse.team.internal.ecf.ui.handlers.SynchronizeWithMenuContributionItem"
+                  id="org.ecf.sync.team.menuContribution">
+                  <visibleWhen checkEnabled="true">
+                    <or>
+	                  <with variable="activeMenuSelection">
+	                     <reference definitionId="org.eclipse.ecf.sync.team.resourcesDefinition"/>
+	                  </with>
+	                  <with variable="activeMenuEditorInput">
+	                     <reference definitionId="org.eclipse.ecf.sync.team.fileDefinition"/>
+	                  </with>
+                    </or>
+                  </visibleWhen>
+            </dynamic>
+            <dynamic
+                  class="org.eclipse.team.internal.ecf.ui.handlers.CompareWithMenuContributionItem"
+                  id="org.ecf.sync.team.menuContribution2">
+                  <visibleWhen checkEnabled="true">
+                    <or>
+	                  <with variable="activeMenuSelection">
+	                     <reference definitionId="org.eclipse.ecf.sync.team.fileDefinition"/>
+	                  </with>
+	                  <with variable="activeMenuEditorInput">
+	                     <reference definitionId="org.eclipse.ecf.sync.team.fileDefinition"/>
+	                  </with>
+                    </or>
+                  </visibleWhen>
+            </dynamic>
+      </menuContribution>
+   </extension>
+</plugin>
