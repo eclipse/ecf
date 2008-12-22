@@ -25,6 +25,7 @@ import org.eclipse.osgi.util.NLS;
 public class JSLPServiceTypeID extends ServiceTypeID {
 
 	private static final String JSLP_DELIM = ":"; //$NON-NLS-1$
+	private static final String JSLP_DEFAULT_NA = "IANA"; //$NON-NLS-1$
 
 	private static final long serialVersionUID = -4558132760112793805L;
 
@@ -80,7 +81,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		for (int i = 0; i < services.length; i++) {
 			buf.append(services[i]);
 			// #228876
-			if (!namingAuthority.equalsIgnoreCase(DEFAULT_NA) && i == 1) {
+			if (!namingAuthority.equalsIgnoreCase(JSLP_DEFAULT_NA) && i == 1) {
 				buf.append("."); //$NON-NLS-1$
 				buf.append(namingAuthority);
 			}
@@ -122,6 +123,6 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		}
 
 		// remove the default naming authority #228876
-		return StringUtils.replaceAllIgnoreCase(str, "." + DEFAULT_NA, ""); //$NON-NLS-1$//$NON-NLS-2$
+		return StringUtils.replaceAllIgnoreCase(str, "." + JSLP_DEFAULT_NA, ""); //$NON-NLS-1$//$NON-NLS-2$
 	}
 }

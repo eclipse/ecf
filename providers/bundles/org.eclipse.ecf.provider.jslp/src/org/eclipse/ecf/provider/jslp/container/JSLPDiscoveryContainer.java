@@ -192,7 +192,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void unregisterService(IServiceInfo aServiceInfo) throws ECFException {
+	public void unregisterService(IServiceInfo aServiceInfo) {
 		Assert.isNotNull(aServiceInfo);
 		JSLPServiceInfo si = new JSLPServiceInfo(aServiceInfo);
 		try {
