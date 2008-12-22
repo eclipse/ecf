@@ -44,7 +44,8 @@ public interface IServiceIDFactory {
 	 * and a potentially <code>null</code> service name. Scope, Protocol and NamingAuthority will be set to
 	 * {@link IServiceTypeID#DEFAULT_SCOPE}, {@link IServiceTypeID#DEFAULT_PROTO}, {@link IServiceTypeID#DEFAULT_NA}
 	 * @param namespace the Namespace instance to create the service ID with.  Must not be <code>null</code>.
-	 * @param services Array containing the ordered naming hierarchy from 0...n. Must not be <code>null</code>.
+	 * @param serviceType Array containing the ordered naming hierarchy from 0...n. Must not be <code>null</code>.
+	 * @param protocols Array containing the protocols. Must not be <code>null</code>.
 	 * @param serviceName the service name for the service ID.  May be <code>null</code>.
 	 *
 	 * @since 3.0
@@ -52,7 +53,7 @@ public interface IServiceIDFactory {
 	 * @return IServiceID created.  Will not be <code>null</code>.
 	 * @throws IDCreateException if some problem creating the new IServiceID.
 	 */
-	public IServiceID createServiceID(Namespace namespace, String[] services, String serviceName) throws IDCreateException;
+	public IServiceID createServiceID(Namespace namespace, String[] serviceType, String[] protocols, String serviceName) throws IDCreateException;
 
 	/**
 	 * Create an IServiceID.  Creates an immutable IServiceID with a non-<code>null</code> {@link IServiceTypeID}

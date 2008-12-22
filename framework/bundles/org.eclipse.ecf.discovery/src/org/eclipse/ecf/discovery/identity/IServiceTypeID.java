@@ -22,17 +22,17 @@ public interface IServiceTypeID extends ID {
 	 * Default ECF protocols (will be translated into provider specific representation)
 	 * @since 3.0
 	 */
-	public static final String[] DEFAULT_PROTO = new String[] {"DEFAULT-PROTO"}; //$NON-NLS-1$
+	public static final String[] DEFAULT_PROTO = new String[] {"tcp"}; //$NON-NLS-1$
 	/**
 	 * Default ECF scopes (will be translated into provider specific representation)
 	 * @since 3.0
 	 */
-	public static final String[] DEFAULT_SCOPE = new String[] {"DEFAULT-SCOPE"}; //$NON-NLS-1$
+	public static final String[] DEFAULT_SCOPE = new String[] {"default"}; //$NON-NLS-1$
 	/**
 	 * Default ECF naming authority (will be translated into provider specific representation)
 	 * @since 3.0
 	 */
-	public static final String DEFAULT_NA = "DEFAULT-NAMING-AUTHORITY"; //$NON-NLS-1$
+	public static final String DEFAULT_NA = "iana"; //$NON-NLS-1$
 
 	/*
 	 * jSLP => getServices()[0]:getServices()[1][.getNamingAuthoriy():getService()[n]
