@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Team Plug-in
+Bundle-SymbolicName: org.eclipse.team.ecf.core;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.eclipse.team.internal.ecf.core.TeamSynchronization
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.team.core,
+ org.eclipse.ecf,
+ org.eclipse.ecf.datashare,
+ org.eclipse.compare.core,
+ org.eclipse.ecf.presence
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Export-Package: org.eclipse.team.internal.ecf.core;x-friends:="org.eclipse.team.ecf.core",
+ org.eclipse.team.internal.ecf.core.messages;x-friends:="org.eclipse.team.ecf.core",
+ org.eclipse.team.internal.ecf.core.variants;x-friends:="org.eclipse.team.ecf.core"
