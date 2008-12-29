@@ -160,14 +160,14 @@ public class FutureStatus extends Status implements IFutureStatus {
 		return futureSeverity;
 	}
 
-	protected synchronized void setException(Throwable ex) {
+	public synchronized void setException(Throwable ex) {
 		super.setException(ex);
 		resultReady = true;
 		setSeverity(IStatus.ERROR);
 		notifyAll();
 	}
 
-	synchronized void set(Object newValue) {
+	public synchronized void set(Object newValue) {
 		resultValue = newValue;
 		resultReady = true;
 		setSeverity(IStatus.OK);
