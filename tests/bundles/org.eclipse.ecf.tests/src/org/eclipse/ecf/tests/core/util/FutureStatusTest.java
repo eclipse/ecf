@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.util.CanceledException;
 import org.eclipse.ecf.core.util.FutureStatus;
 import org.eclipse.ecf.core.util.IFutureStatus;
-import org.eclipse.ecf.core.util.IFutureCallable;
+import org.eclipse.ecf.core.util.IProgressRunnable;
 import org.eclipse.ecf.core.util.TimeoutException;
 
 import junit.framework.TestCase;
@@ -27,9 +27,9 @@ public class FutureStatusTest extends TestCase {
 	
 	public final static Integer result = new Integer(1);
 	
-	IFutureCallable createBasicCallable() {
-		return new IFutureCallable() {
-			public Object call(IProgressMonitor monitor) throws Throwable {
+	IProgressRunnable createBasicCallable() {
+		return new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Throwable {
 				// This should/will be a long running operation
 				monitor.beginTask("1", ITERATIONS);
 				if (monitor.isCanceled()) return null;
@@ -48,7 +48,7 @@ public class FutureStatusTest extends TestCase {
 		};
 	}
 	
-	protected IFutureStatus createAndRunFutureStatus(IFutureCallable callable, String message, IProgressMonitor progressMonitor) {
+	protected IFutureStatus createAndRunFutureStatus(IProgressRunnable callable, String message, IProgressMonitor progressMonitor) {
 		FutureStatus futureStatus = new FutureStatus(message,progressMonitor);
 		Runnable r = futureStatus.setter(callable);
 		Thread t = new Thread(r);
