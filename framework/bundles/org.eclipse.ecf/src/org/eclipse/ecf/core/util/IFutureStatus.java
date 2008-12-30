@@ -12,6 +12,21 @@ package org.eclipse.ecf.core.util;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 
+/**
+ * A future status object represents the future outcome of some operation.
+ * It allows clients to access information about whether the operation is
+ * completed (#isDone()), along with method to access the status information
+ * associated with the completed operation ({@link #getStatus()}), and 
+ * the actual results of the operation if completed successfully (i.e. {@link #get()} and
+ * {@link #get(long)}.
+ * 
+ * Clients may also access an associated IProgressMonitor via {@link #getProgressMonitor()},
+ * and the returned progress monitor allows cancellation of the underlying operation via
+ * {@link IProgressMonitor#setCanceled(boolean)}.
+ * 
+ * @see IStatus
+ * 
+ */
 public interface IFutureStatus {
 
 	/**
