@@ -8,17 +8,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.remoteservice.generic;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.lang.reflect.Proxy;
-
-import org.eclipse.ecf.core.util.AsyncResult;
-import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.provider.remoteservice.Messages;
-import org.eclipse.ecf.remoteservice.IRemoteCall;
-import org.eclipse.ecf.remoteservice.IRemoteCallListener;
-import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 
@@ -42,8 +36,8 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
-	public IAsyncResult callAsynch(IRemoteCall call) {
-		final AsyncResult result = new AsyncResult();
+	public IFutureStatus callAsynch(IRemoteCall call) {
+		final FutureStatus result = new FutureStatus();
 		final IRemoteCallListener listener = new IRemoteCallListener() {
 			public void handleEvent(IRemoteCallEvent event) {
 				if (event instanceof IRemoteCallCompleteEvent) {

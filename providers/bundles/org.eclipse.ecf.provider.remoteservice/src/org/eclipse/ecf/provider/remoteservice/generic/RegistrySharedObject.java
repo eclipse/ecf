@@ -13,9 +13,11 @@ import java.io.Serializable;
 import java.security.*;
 import java.util.*;
 import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.util.*;
@@ -991,5 +993,43 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			logException(MSG_INVOKE_ERROR_CODE, NLS.bind(MSG_INVOKE_ERROR_MESSAGE, msg), e);
 		}
 		return false;
+	}
+
+	class GetRemoteServiceReferencesJob extends Job {
+
+		private Runnable runnable;
+
+		public GetRemoteServiceReferencesJob(Runnable runnable, String name) {
+			super(name);
+			this.runnable = runnable;
+		}
+
+		protected IStatus run(IProgressMonitor monitor) {
+			this.runnable.run();
+			return Status.OK_STATUS;
+		}
+
+	}
+
+	IProgressMonitor progressMonitor = Job.getJobManager().createProgressGroup();
+
+	public IFutureStatus asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
+		IProgressRunnable fc = new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Throwable {
+				return getRemoteServiceReferences(idFilter, clazz, filter);
+			}
+		};
+		FutureStatus future = new FutureStatus(progressMonitor);
+		Job job = new GetRemoteServiceReferencesJob(future.setter(fc), NLS.bind(Messages.RegistrySharedObject_GET_REMOTE_REF_JOB_NAME, clazz));
+		job.schedule();
+		return future;
+	}
+
+	public Namespace getRemoteServiceNamespace() {
+		return getSOContext().getConnectNamespace();
+	}
+
+	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException {
+		return new RemoteFilterImpl(filter);
 	}
 }

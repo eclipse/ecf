@@ -43,6 +43,7 @@ public class Messages extends NLS {
 	public static String RegistrySharedObject_EXCEPTION_SHARED_OBJECT_INVOKE;
 	public static String RegistrySharedObject_EXCEPTION_TIMEOUT_FOR_CALL_REQUEST;
 	public static String RegistrySharedObject_EXCEPTION_WAIT_INTERRUPTED;
+	public static String RegistrySharedObject_GET_REMOTE_REF_JOB_NAME;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
