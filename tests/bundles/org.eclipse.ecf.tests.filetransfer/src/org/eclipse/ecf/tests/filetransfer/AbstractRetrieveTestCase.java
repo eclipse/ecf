@@ -22,6 +22,8 @@ import junit.framework.TestCase;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
@@ -139,7 +141,7 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 				lock.wait(timeout / 20);
 			}
 			if (!done)
-				throw new TimeoutException(timeout);
+				throw new TimeoutException(new Status(IStatus.ERROR,Activator.PLUGIN_ID,IStatus.ERROR,"timeout",null),(long) timeout);
 		}
 	}
 

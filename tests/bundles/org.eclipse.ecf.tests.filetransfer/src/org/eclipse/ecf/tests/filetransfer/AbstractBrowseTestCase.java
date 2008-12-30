@@ -20,6 +20,8 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.util.TimeoutException;
@@ -113,7 +115,7 @@ public abstract class AbstractBrowseTestCase extends TestCase {
 				lock.wait(timeout / 20);
 			}
 			if (!done)
-				throw new TimeoutException(timeout);
+				throw new TimeoutException(new Status(IStatus.ERROR,Activator.PLUGIN_ID,IStatus.ERROR,"timeout",null),(long) timeout);
 		}
 	}
 
