@@ -16,15 +16,18 @@ import ch.ethz.iks.r_osgi.channels.ChannelEndpointManager;
 import java.io.IOException;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiID;
 import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiNamespace;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
+import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.*;
 import org.osgi.framework.Constants;
 import org.osgi.util.tracker.ServiceTracker;
@@ -211,7 +214,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	public IRemoteServiceReference[] getRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) throws InvalidSyntaxException {
 		Assert.isNotNull(clazz);
 
-		final RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, filter == null ? null : context.createFilter(filter));
+		final RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, filter == null ? null : createRemoteFilter(filter));
 		if (refs == null) {
 			return null;
 		}
@@ -533,4 +536,24 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		return clone;
 	}
 
+	public IFutureStatus asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
+		IProgressRunnable fc = new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Throwable {
+				return getRemoteServiceReferences(idFilter, clazz, filter);
+			}
+		};
+		FutureStatus future = new FutureStatus();
+		// Create and start thread for actually calling getRemoteServiceReferences
+		Thread t = new Thread(future.setter(fc), NLS.bind("Get remote reference for {0}", clazz)); //$NON-NLS-1$
+		t.start();
+		return future;
+	}
+
+	public Namespace getRemoteServiceNamespace() {
+		return getConnectNamespace();
+	}
+
+	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException {
+		return new RemoteFilterImpl(context, filter);
+	}
 }

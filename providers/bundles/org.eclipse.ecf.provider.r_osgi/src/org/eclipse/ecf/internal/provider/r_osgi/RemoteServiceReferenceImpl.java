@@ -12,6 +12,8 @@
 package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.RemoteServiceReference;
+import java.util.Dictionary;
+import java.util.Properties;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 
@@ -118,5 +120,17 @@ final class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 	 */
 	public String toString() {
 		return ref.toString();
+	}
+
+	Dictionary getProperties() {
+		Properties p = new Properties();
+		String[] propKeys = getPropertyKeys();
+		if (propKeys != null) {
+			for (int i = 0; i < propKeys.length; i++) {
+				Object val = getProperty(propKeys[i]);
+				p.put(propKeys[i], val);
+			}
+		}
+		return p;
 	}
 }
