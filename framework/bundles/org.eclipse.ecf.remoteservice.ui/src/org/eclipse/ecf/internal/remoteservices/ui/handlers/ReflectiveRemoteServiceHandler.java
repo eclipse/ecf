@@ -19,7 +19,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.ecf.core.util.CanceledException;
+import org.eclipse.ecf.core.util.IFutureStatus;
 import org.eclipse.ecf.internal.remoteservices.ui.RemoteServiceHandlerUtil;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
@@ -128,9 +129,9 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 
 	protected void invokeFuture(Class cls, IRemoteService remoteService,
 			IRemoteCall remoteCall) throws InterruptedException,
-			InvocationTargetException {
+			InvocationTargetException, CanceledException {
 		// Make async call with future result
-		final IAsyncResult asyncResult = remoteService.callAsynch(remoteCall);
+		final IFutureStatus asyncResult = remoteService.callAsynch(remoteCall);
 		// Call blocking get and show result
 		showResult(cls.getName(), remoteCall, asyncResult.get());
 	}
