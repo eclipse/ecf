@@ -31,6 +31,11 @@ public class TimeoutException extends CoreException {
 		this.duration = time;
 	}
 
+	public TimeoutException(long time) {
+		super(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, IStatus.ERROR, "Timeout", null)); //$NON-NLS-1$
+		this.duration = time;
+	}
+
 	public long getDuration() {
 		return duration;
 	}
