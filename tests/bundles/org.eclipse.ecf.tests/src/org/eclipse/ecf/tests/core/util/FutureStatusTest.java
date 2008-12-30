@@ -49,11 +49,8 @@ public class FutureStatusTest extends TestCase {
 	}
 	
 	protected IFutureStatus createAndRunFutureStatus(IProgressRunnable callable, String message, IProgressMonitor progressMonitor) {
-		FutureStatus futureStatus = new FutureStatus(message,progressMonitor);
-		Runnable r = futureStatus.setter(callable);
-		Thread t = new Thread(r);
-		// This starts a thread to call callable...
-		t.start();
+		FutureStatus futureStatus = new FutureStatus(progressMonitor);
+		new Thread(futureStatus.setter(callable)).start();
 		return futureStatus;
 	}
 	
@@ -170,9 +167,6 @@ public class FutureStatusTest extends TestCase {
 						fail();
 					} catch (CanceledException e) {
 						System.out.println("thread "+Thread.currentThread().getName()+" canceled");
-					} catch (TimeoutException e) {
-						e.printStackTrace();
-						fail();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 						fail();
