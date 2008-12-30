@@ -12,60 +12,64 @@ package org.eclipse.ecf.core.util;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 
-public interface IFutureStatus extends IStatus {
+public interface IFutureStatus {
 
 	/**
-	 * State representing that the computation is still being done.
-	 */
-	public static final int IN_PROGRESS = 0x10;
-
-	/**
-	 * Return progress monitor for this future status.  Will not
-	 * return <code>null</code>.
-	 *
-	 */
-	public IProgressMonitor getProgressMonitor();
-
-	/**
-	 * Returns <tt>true</tt> if this task completed.
+	 * Waits if necessary for the operation to complete, and then retrieves
+	 * and returns result.
 	 * 
-	 * Completion may be due to normal termination, an exception, or
-	 * cancellation -- in all of these cases, this method will return
-	 * <tt>true</tt>.
-	 * 
-	 * @return <tt>true</tt> if this task completed
-	 */
-	boolean isDone();
-
-	/**
-	 * Waits if necessary for the computation to complete, and then retrieves
-	 * its result.
-	 * 
-	 * @return Object that is the result of the asynchronous computation
+	 * @return Object that is the result of the asynchronous operation
 	 *         represented by this future status. This method will block until a
 	 *         result is available or the computation completes with some
 	 *         exception.
 	 * @throws InterruptedException
 	 *             if thread waiting for result is interrupted.
 	 * @throws CanceledException
-	 *             if the operation has been cancelled via the progress monitor available via {@link #getProgressMonitor()}
+	 *             if the operation has been canceled via the progress monitor {@link #getProgressMonitor()}.
 	 */
 	Object get() throws InterruptedException, CanceledException;
 
 	/**
-	 * Waits if necessary for at most the given time for the computation to
-	 * complete, and then retrieves its result, if available.
+	 * Waits if necessary for at most the given time for the operation to
+	 * complete, and then retrieves its result.
 	 * 
 	 * @param waitTimeInMillis
-	 *            the maximum time to wait in milliseconds
-	 * @return the computed result
+	 *            the maximum time to wait in milliseconds for the operation to complete.
+	 * @return the result of the operation.
 	 * @throws InterruptedException
 	 *             if the current thread was interrupted while waiting.
 	 * @throws TimeoutException
 	 *             if the given wait time is exceeded without getting result.
 	 * @throws CanceledException
-	 *             if the operation has been cancelled via the progress monitor available via {@link #getProgressMonitor()}
+	 *             if the operation has been canceled via the progress monitor {@link #getProgressMonitor()}.
 	 */
 	Object get(long waitTimeInMillis) throws InterruptedException, TimeoutException, CanceledException;
+
+	/**
+	 * Return progress monitor for this future status.  Will not return <code>null</code>.
+	 * @return IProgressMonitor the progress monitor associated with the operation.
+	 */
+	public IProgressMonitor getProgressMonitor();
+
+	/**
+	 * Get status for operation.  Will return <code>null</code> if the operation is not complete 
+	 * ({@link #isDone()} returns false).  If {@link #isDone()} returns <code>true</code>, then
+	 * will return a non-<code>null</code> IStatus instance with information about the status of the
+	 * completed operation.
+	 * @return IStatus the status of the operation.  Will return <code>null</code> if {@link #isDone()}
+	 * returns <code>false</code>.
+	 */
+	public IStatus getStatus();
+
+	/**
+	 * Returns <tt>true</tt> if the operation has been completed.
+	 * 
+	 * Completion may be due to normal termination, an exception, or
+	 * cancellation -- in all of these cases, this method will return
+	 * <tt>true</tt>.
+	 * 
+	 * @return <tt>true</tt> if the operation has completed in some manner.
+	 */
+	boolean isDone();
 
 }

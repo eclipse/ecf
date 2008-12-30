@@ -11,8 +11,9 @@ package org.eclipse.ecf.core.util;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
+import org.eclipse.osgi.util.NLS;
 
-public class FutureStatus extends Status implements IFutureStatus {
+public class FutureStatus implements IFutureStatus {
 
 	class FutureStatusProgressMonitor implements IProgressMonitor {
 
@@ -62,37 +63,20 @@ public class FutureStatus extends Status implements IFutureStatus {
 	}
 
 	private Object resultValue = null;
-	private boolean resultReady = false;
-	private int futureSeverity;
-	private IProgressMonitor progressMonitor = null;
-
-	public FutureStatus(String pluginId, String message, IProgressMonitor progressMonitor) {
-		super(IStatus.OK, pluginId, message);
-		this.progressMonitor = new FutureStatusProgressMonitor((progressMonitor == null) ? new NullProgressMonitor() : progressMonitor);
-		setSeverity(IFutureStatus.IN_PROGRESS);
-	}
-
-	public FutureStatus(String message, IProgressMonitor progressMonitor) {
-		this(ECFPlugin.PLUGIN_ID, message, progressMonitor);
-	}
+	private IStatus status = null;
+	private final IProgressMonitor progressMonitor;
 
 	public FutureStatus(IProgressMonitor progressMonitor) {
-		this(null, progressMonitor);
+		this.progressMonitor = new FutureStatusProgressMonitor((progressMonitor == null) ? new NullProgressMonitor() : progressMonitor);
 	}
 
 	public FutureStatus() {
 		this(null);
 	}
 
-	private void throwIfCanceled() throws CanceledException {
-		IProgressMonitor pm = getProgressMonitor();
-		if (pm != null && pm.isCanceled())
-			throw new CanceledException(this);
-	}
-
 	public synchronized Object get() throws InterruptedException, CanceledException {
 		throwIfCanceled();
-		while (!resultReady)
+		while (!isDone())
 			wait();
 		throwIfCanceled();
 		return resultValue;
@@ -102,19 +86,19 @@ public class FutureStatus extends Status implements IFutureStatus {
 		long startTime = (waitTimeInMillis <= 0) ? 0 : System.currentTimeMillis();
 		long waitTime = waitTimeInMillis;
 		throwIfCanceled();
-		if (resultReady)
+		if (isDone())
 			return resultValue;
 		else if (waitTime <= 0)
-			throw new TimeoutException(waitTimeInMillis);
+			throw createTimeoutException(waitTimeInMillis);
 		else {
 			for (;;) {
 				wait(waitTime);
 				throwIfCanceled();
-				if (resultReady)
+				if (isDone())
 					return resultValue;
 				waitTime = waitTimeInMillis - (System.currentTimeMillis() - startTime);
 				if (waitTime <= 0)
-					throw new TimeoutException(waitTimeInMillis);
+					throw createTimeoutException(waitTimeInMillis);
 			}
 		}
 	}
@@ -124,11 +108,11 @@ public class FutureStatus extends Status implements IFutureStatus {
 	}
 
 	public synchronized boolean isDone() {
-		return resultReady;
+		return (status != null);
 	}
 
 	synchronized void setCanceled() {
-		resultReady = true;
+		setStatus(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, IStatus.ERROR, "Operation cancelled", null)); //$NON-NLS-1$
 		notifyAll();
 	}
 
@@ -151,27 +135,35 @@ public class FutureStatus extends Status implements IFutureStatus {
 		};
 	}
 
-	protected synchronized void setSeverity(int severity) {
-		Assert.isTrue(severity == IStatus.OK || severity == IStatus.CANCEL || severity == IStatus.ERROR || severity == IStatus.INFO || severity == IStatus.WARNING || severity == IFutureStatus.IN_PROGRESS);
-		this.futureSeverity = severity;
-	}
-
-	public synchronized int getSeverity() {
-		return futureSeverity;
-	}
-
 	public synchronized void setException(Throwable ex) {
-		super.setException(ex);
-		resultReady = true;
-		setSeverity(IStatus.ERROR);
+		setStatus(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, IStatus.ERROR, "Exception during operation", ex)); //$NON-NLS-1$
 		notifyAll();
 	}
 
 	public synchronized void set(Object newValue) {
 		resultValue = newValue;
-		resultReady = true;
-		setSeverity(IStatus.OK);
+		setStatus(Status.OK_STATUS);
 		notifyAll();
+	}
+
+	public synchronized IStatus getStatus() {
+		return status;
+	}
+
+	private synchronized void setStatus(IStatus status) {
+		this.status = status;
+	}
+
+	private TimeoutException createTimeoutException(long timeout) {
+		setStatus(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, IStatus.ERROR, NLS.bind("Operation timeout after {0}ms", new Long(timeout)), null)); //$NON-NLS-1$
+		return new TimeoutException(getStatus(), timeout);
+	}
+
+	private void throwIfCanceled() throws CanceledException {
+		IProgressMonitor pm = getProgressMonitor();
+		if (pm != null && pm.isCanceled()) {
+			throw new CanceledException(getStatus());
+		}
 	}
 
 }
