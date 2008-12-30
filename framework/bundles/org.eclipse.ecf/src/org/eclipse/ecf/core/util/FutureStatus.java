@@ -136,14 +136,14 @@ public class FutureStatus extends Status implements IFutureStatus {
 	 * Set the underlying function call that will return a result asynchronously
 	 * 
 	 * @param function
-	 *            the {@link IFutureCallable} to be called
+	 *            the {@link IProgressRunnable} to be called
 	 * @return Runnable to run in separate thread
 	 */
-	public Runnable setter(final IFutureCallable function) {
+	public Runnable setter(final IProgressRunnable function) {
 		return new Runnable() {
 			public void run() {
 				try {
-					set(function.call(getProgressMonitor()));
+					set(function.run(getProgressMonitor()));
 				} catch (Throwable ex) {
 					setException(ex);
 				}
