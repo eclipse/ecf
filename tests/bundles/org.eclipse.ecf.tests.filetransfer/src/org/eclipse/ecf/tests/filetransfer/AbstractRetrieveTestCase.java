@@ -141,7 +141,7 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 				lock.wait(timeout / 20);
 			}
 			if (!done)
-				throw new TimeoutException(new Status(IStatus.ERROR,Activator.PLUGIN_ID,IStatus.ERROR,"timeout",null),(long) timeout);
+				throw new TimeoutException(timeout);
 		}
 	}
 
