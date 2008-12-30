@@ -12,7 +12,6 @@
 package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.RemoteOSGiException;
-import ch.ethz.iks.r_osgi.RemoteServiceReference;
 import java.lang.reflect.InvocationTargetException;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.remoteservice.*;
@@ -25,8 +24,8 @@ import org.eclipse.ecf.remoteservice.events.*;
  */
 final class RemoteServiceImpl implements IRemoteService {
 
-	// the service reference
-	private RemoteServiceReference ref;
+	// the ECF remote refImpl
+	RemoteServiceReferenceImpl refImpl;
 
 	// the service object.
 	private Object service;
@@ -40,8 +39,8 @@ final class RemoteServiceImpl implements IRemoteService {
 	 * @param service
 	 *            the service (proxy) object.
 	 */
-	public RemoteServiceImpl(final RemoteServiceReference ref, final Object service) {
-		this.ref = ref;
+	public RemoteServiceImpl(final RemoteServiceReferenceImpl refImpl, final Object service) {
+		this.refImpl = refImpl;
 		this.service = service;
 	}
 
@@ -128,7 +127,7 @@ final class RemoteServiceImpl implements IRemoteService {
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#getProxy()
 	 */
 	public Object getProxy() throws ECFException {
-		if (!ref.isActive()) {
+		if (!refImpl.getR_OSGiServiceReference().isActive()) {
 			throw new ECFException("Container currently not connected"); //$NON-NLS-1$
 		}
 		return service;
@@ -197,7 +196,7 @@ final class RemoteServiceImpl implements IRemoteService {
 		 * @return the result.
 		 * @see org.eclipse.ecf.core.util.IAsyncResult#get(long)
 		 */
-		public synchronized Object get(final long msecs) throws TimeoutException, InterruptedException, InvocationTargetException {
+		public synchronized Object get(final long msecs) throws InterruptedException, InvocationTargetException {
 			if (exception != null) {
 				throw getException();
 			}
@@ -252,8 +251,7 @@ final class RemoteServiceImpl implements IRemoteService {
 					}
 
 					public IRemoteServiceReference getReference() {
-						// return RemoteServiceImpl.this;
-						return null;
+						return refImpl;
 					}
 
 					public long getRequestId() {

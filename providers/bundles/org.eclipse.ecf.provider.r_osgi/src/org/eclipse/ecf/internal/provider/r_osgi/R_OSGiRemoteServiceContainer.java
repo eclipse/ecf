@@ -192,7 +192,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	public IRemoteService getRemoteService(final IRemoteServiceReference reference) {
 		Assert.isNotNull(reference);
 		final RemoteServiceReferenceImpl impl = (RemoteServiceReferenceImpl) reference;
-		return new RemoteServiceImpl(impl.getR_OSGiServiceReference(), remoteService.getRemoteService(impl.getR_OSGiServiceReference()));
+		return new RemoteServiceImpl(impl, remoteService.getRemoteService(impl.getR_OSGiServiceReference()));
 	}
 
 	/**
