@@ -91,8 +91,17 @@ public class ColaDocumentChangeMessage extends DocumentChangeMessage {
 
 	public String toString() {
 		final StringBuffer buf = new StringBuffer("ColaDocumentChangeMessage["); //$NON-NLS-1$
-		buf.append("text=").append(getText()).append(";offset=").append(getOffset()); //$NON-NLS-1$ //$NON-NLS-2$
-		buf.append(";length=").append(getLengthOfReplacedText()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		String tType = "undefined";
+		if (transformType == 0) {
+			tType = "insert";
+		} else if (transformType == 1) {
+			tType = "delete";
+		} else if (transformType == 2) {
+			tType = "replace";
+		}
+		buf.append("transformType="+tType);
+		buf.append(";offset=").append(getOffset()); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append(";length=").append(getLengthOfReplacedText()).append(";text=").append(getText()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append(";operationsCount[local=").append(getLocalOperationsCount()); //$NON-NLS-1$
 		buf.append(";remote=").append(getRemoteOperationsCount()).append("]]"); //$NON-NLS-1$//$NON-NLS-2$
 		return buf.toString();

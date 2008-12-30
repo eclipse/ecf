@@ -108,8 +108,8 @@ public class DocumentChangeMessage implements IDocumentChange, IModelChangeMessa
 
 	public String toString() {
 		final StringBuffer buf = new StringBuffer("DocumentChangeMessage["); //$NON-NLS-1$
-		buf.append("text=").append(text).append(";offset=").append(offset); //$NON-NLS-1$ //$NON-NLS-2$
-		buf.append(";length=").append(length).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("offset=").append(offset); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append(";length=").append(length).append(";text=").append(text).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 

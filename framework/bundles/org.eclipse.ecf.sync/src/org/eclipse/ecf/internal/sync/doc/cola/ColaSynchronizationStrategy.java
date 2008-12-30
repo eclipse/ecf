@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.internal.sync.doc.cola;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,7 +36,7 @@ import org.eclipse.osgi.util.NLS;
 public class ColaSynchronizationStrategy implements IModelSynchronizationStrategy {
 
 	// <ColaDocumentChangeMessage>
-	private final LinkedList unacknowledgedLocalOperations;
+	private final List unacknowledgedLocalOperations;
 	private final boolean isInitiator;
 	private long localOperationsCount;
 	private long remoteOperationsCount;
@@ -51,10 +52,16 @@ public class ColaSynchronizationStrategy implements IModelSynchronizationStrateg
 	}
 
 	public static ColaSynchronizationStrategy getInstanceFor(ID client, boolean isInitiator) {
-		if (sessionStrategies.get(client) == null) {
-			sessionStrategies.put(client, new ColaSynchronizationStrategy(isInitiator));
+		ColaSynchronizationStrategy existingStrategy = (ColaSynchronizationStrategy) sessionStrategies.get(client);
+		if (existingStrategy != null) {
+			Boolean existingStrategyIsInitiator = new Boolean(existingStrategy.isInitiator);
+			if (existingStrategyIsInitiator.equals(new Boolean(isInitiator))) {
+				return existingStrategy;
+			}
 		}
-		return (ColaSynchronizationStrategy) sessionStrategies.get(client);
+		existingStrategy = new ColaSynchronizationStrategy(isInitiator);
+		sessionStrategies.put(client, existingStrategy);
+		return existingStrategy;
 	}
 
 	public static void cleanUpFor(ID client) {
@@ -64,18 +71,6 @@ public class ColaSynchronizationStrategy implements IModelSynchronizationStrateg
 	public static void dispose() {
 		sessionStrategies.clear();
 	}
-	
-	public DocumentChangeMessage registerOutgoingMessage(DocumentChangeMessage localMsg) {
-		Trace.entering(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_ENTERING, this.getClass(), "registerOutgoingMessage", localMsg); //$NON-NLS-1$
-		final ColaDocumentChangeMessage colaMsg = new ColaDocumentChangeMessage(localMsg, localOperationsCount, remoteOperationsCount);
-		if (!colaMsg.isReplacement()) {
-			unacknowledgedLocalOperations.add(colaMsg);
-			localOperationsCount++;
-		}
-		Trace.exiting(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_EXITING, this.getClass(), "registerOutgoingMessage", colaMsg); //$NON-NLS-1$
-		return colaMsg;
-	}
-
 	/**
 	 * Handles proper transformation of incoming <code>ColaDocumentChangeMessage</code>s.
 	 * Returned <code>DocumentChangeMessage</code>s can be applied directly to the
@@ -95,6 +90,7 @@ public class ColaSynchronizationStrategy implements IModelSynchronizationStrateg
 		transformedRemotes.add(transformedRemote);
 
 		remoteOperationsCount++;
+		Trace.trace(Activator.PLUGIN_ID, "unacknowledgedLocalOperations="+unacknowledgedLocalOperations);
 		//this is where the concurrency algorithm is executed
 		if (!unacknowledgedLocalOperations.isEmpty()) {//Do not remove this. It is necessary. The following iterator does not suffice.
 			// remove operations from queue that have been implicitly
@@ -123,7 +119,7 @@ public class ColaSynchronizationStrategy implements IModelSynchronizationStrateg
 			// don't require to be transformed against
 
 			if (!unacknowledgedLocalOperations.isEmpty()) {
-				ColaDocumentChangeMessage localOp = (ColaDocumentChangeMessage) unacknowledgedLocalOperations.getFirst();
+				ColaDocumentChangeMessage localOp = (ColaDocumentChangeMessage) unacknowledgedLocalOperations.get(0);
 				Assert.isTrue(transformedRemote.getRemoteOperationsCount() == localOp.getLocalOperationsCount());
 
 				for (final ListIterator unackOpsListIt = unacknowledgedLocalOperations.listIterator(); unackOpsListIt.hasNext();) {
@@ -196,17 +192,33 @@ public class ColaSynchronizationStrategy implements IModelSynchronizationStrateg
 	 * @see org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategy#registerLocalChange(org.eclipse.ecf.sync.doc.IModelChange)
 	 */
 	public IModelChangeMessage[] registerLocalChange(IModelChange localChange) {
+		List results = new ArrayList();
 		Trace.entering(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_ENTERING, this.getClass(), "registerLocalChange", localChange); //$NON-NLS-1$
 		if (localChange instanceof IDocumentChange) {
 			final IDocumentChange docChange = (IDocumentChange) localChange;
 			final ColaDocumentChangeMessage colaMsg = new ColaDocumentChangeMessage(new DocumentChangeMessage(docChange.getOffset(), docChange.getLengthOfReplacedText(), docChange.getText()), localOperationsCount, remoteOperationsCount);
+			// If not replacement, we simply add to unacknowledgedLocalOperations and add message
+			// to results
 			if (!colaMsg.isReplacement()) {
 				unacknowledgedLocalOperations.add(colaMsg);
 				localOperationsCount++;
+				results.add(colaMsg);
+			} else {
+				// It *is a replacement message, so we add both a delete and an insert message
+				// First create/add a delete message (text set to "")...
+				ColaDocumentChangeMessage delMsg = new ColaDocumentChangeMessage(new DocumentChangeMessage(docChange.getOffset(),docChange.getLengthOfReplacedText(),""), localOperationsCount, remoteOperationsCount);
+				unacknowledgedLocalOperations.add(delMsg);
+				localOperationsCount++;
+				results.add(delMsg);
+				// Then create/add the insert message (length set to 0)
+				ColaDocumentChangeMessage insMsg = new ColaDocumentChangeMessage(new DocumentChangeMessage(docChange.getOffset(),0,docChange.getText()), localOperationsCount, remoteOperationsCount);
+				unacknowledgedLocalOperations.add(insMsg);
+				localOperationsCount++;
+				results.add(insMsg);
 			}
 			Trace.exiting(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_EXITING, this.getClass(), "registerLocalChange", colaMsg); //$NON-NLS-1$
-			return new IModelChangeMessage[] {colaMsg};
-		} else return new IModelChangeMessage[0];
+		}
+		return (IModelChangeMessage[]) results.toArray(new IModelChangeMessage[] {});
 	}
 
 	/* (non-Javadoc)
