@@ -17,6 +17,7 @@ import java.util.Properties;
 
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.ecf.core.util.IFutureStatus;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -360,7 +361,7 @@ public abstract class AbstractRemoteServiceTest extends
 		if (service == null)
 			return;
 		traceCallStart("callAsynchResult");
-		final IAsyncResult result = service.callAsynch(createRemoteConcat(
+		final IFutureStatus result = service.callAsynch(createRemoteConcat(
 				"ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynchResult", result);
 		assertNotNull(result);
@@ -406,7 +407,7 @@ public abstract class AbstractRemoteServiceTest extends
 		// We've got the remote service, so we're good to go
 		assertTrue(remoteService != null);
 		traceCallStart("callAsynchResult");
-		final IAsyncResult result = remoteService
+		final IFutureStatus result = remoteService
 				.callAsynch(createRemoteConcat("ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynch");
 		assertNotNull(result);
