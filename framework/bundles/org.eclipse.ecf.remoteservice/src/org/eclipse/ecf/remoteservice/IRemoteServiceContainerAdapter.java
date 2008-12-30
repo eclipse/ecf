@@ -14,12 +14,13 @@ package org.eclipse.ecf.remoteservice;
 import java.util.Dictionary;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
-import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.IFutureStatus;
+import org.osgi.framework.*;
 
 /**
  * Entry point remote service container adapter. This is the entry point
- * innterface for accessing remote services through ECF containers.
+ * interface for accessing remote services through ECF containers.
  * 
  */
 public interface IRemoteServiceContainerAdapter extends IAdaptable {
@@ -117,9 +118,9 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * services that were registered under the specified class and match the
 	 * specified idFilter, and filter criteria.
 	 * <p>
-	 * The IAsyncResult is returned immediately, and subsequent calls to {@link IAsyncResult#get()}
-	 * or {@link IAsyncResult#get(long)} will return the actual results received.  The type of
-	 * the Object returned from {@link IAsyncResult#get()} will be IRemoteServiceReference [].
+	 * The IFutureStatus is returned immediately, and subsequent calls to {@link IFutureStatus#get()}
+	 * or {@link IFutureStatus#get(long)} will return the actual results received.  The type of
+	 * the Object returned from {@link IFutureStatus#get()} will be IRemoteServiceReference [].
 	 * 
 	 * <p>
 	 * The list is valid at the time of the call to this method, however since
@@ -140,12 +141,6 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * properties objects contain keys and values which satisfy the filter. See
 	 * {@link Filter} for a description of the filter string syntax.
 	 * 
-	 * <p>
-	 * If <code>filter</code> is <code>null</code>, all registered services
-	 * are considered to match the filter. If <code>filter</code> cannot be
-	 * parsed, an {@link InvalidSyntaxException} will be thrown with a human
-	 * readable message where the filter became unparsable.
-	 * 
 	 * @param idFilter
 	 *            an array of ID instances that will restrict the search for
 	 *            matching container ids If null, all remote containers will be
@@ -157,13 +152,14 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 *            the desired service. Must not be <code>null</code>.
 	 * @param filter
 	 *            The filter criteria. May be <code>null</code>.
-	 * @return IAsyncResult that through subsequent calls to IAsyncResult#get() will return
+	 * @return IFutureStatus that through subsequent calls to IFutureStatus#get() will return
 	 *         IRemoteServiceReference [] with IRemoteServiceReferences matching given search criteria. 
 	 *         Will not return <code>null</code>.
 	 * 
-	 * @throws InvalidSyntaxException If filter contains an invalid filter string that cannot be parsed.
+	 * @since 3.0
 	 */
-	//public IAsyncResult asyncGetRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException;
+	public IFutureStatus asyncGetRemoteServiceReferences(ID[] idFilter, String clazz, String filter);
+
 	/**
 	 * Get remote service for given IRemoteServiceReference. Note that clients
 	 * that call this method successfully should later call
@@ -200,6 +196,34 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 */
 	public boolean ungetRemoteService(IRemoteServiceReference reference);
 
-	//public IRemoteFilter createFilter(String filter) throws InvalidSyntaxException;
+	/**
+	 * Get namespace to use for this remote service provider.
+	 * @return Namespace to use for creating IDs for this remote service provider.  Will
+	 * not return <code>null</code>.
+	 * @since 3.0
+	 */
+	public Namespace getRemoteServiceNamespace();
 
+	/**
+	 * Creates a <code>IRemoteFilter</code> object. This <code>IRemoteFilter</code> object may
+	 * be used to match a <code>IRemoteServiceReference</code> object or a
+	 * <code>Dictionary</code> object.
+	 * 
+	 * <p>
+	 * If the filter cannot be parsed, an {@link InvalidSyntaxException} will be
+	 * thrown with a human readable message where the filter became unparsable.
+	 * 
+	 * @param filter The filter string.
+	 * @return A <code>IRemoteFilter</code> object encapsulating the filter string.
+	 * @throws InvalidSyntaxException If <code>filter</code> contains an invalid
+	 *         filter string that cannot be parsed.
+	 * @throws NullPointerException If <code>filter</code> is null.
+	 * @throws java.lang.IllegalStateException If this IRemoteServiceContainerAdapter is no
+	 *         longer valid.
+	 * 
+	 * @since 3.0
+	 * @see "Framework specification for a description of the filter string syntax."
+	 * @see FrameworkUtil#createFilter(String)
+	 */
+	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException;
 }

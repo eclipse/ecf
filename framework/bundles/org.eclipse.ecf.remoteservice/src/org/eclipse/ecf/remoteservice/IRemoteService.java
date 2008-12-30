@@ -11,8 +11,7 @@
 
 package org.eclipse.ecf.remoteservice;
 
-import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.ecf.core.util.*;
 
 /**
  * Interface providing runtime access to a remote service. An instance
@@ -25,9 +24,9 @@ import org.eclipse.ecf.core.util.IAsyncResult;
  * until complete (or timeout) and return the result from the remote or throw
  * exception if remote invocation fails or throws exception</li>
  * <li>callAsynch/1 -- An asynchronous invocation that will not block the caller
- * thread but rather return a non-<code>null</code> {@link IAsyncResult} instance
+ * thread but rather return a non-<code>null</code> {@link IFutureStatus} instance
  * that can be polled for results.  See {@link IAsyncResult#get()},
- * {@link IAsyncResult#get(long)}, and {@link IAsyncResult#isReady()}.
+ * {@link IFutureStatus#get(long)}, and {@link IFutureStatus#isDone()}.
  * timeout, exception, or successful completion)</li>
  * <li>callAsynch/2 -- An asynchronous invocation that will not block the caller
  * thread but rather notify the given listener asynchronously when complete (via
@@ -81,16 +80,16 @@ public interface IRemoteService {
 
 	/**
 	 * Call remote method specified by call parameter asynchronously, and immediately
-	 * return {@link IAsyncResult} instance.  Returned IAsynchResult will not be <code>null</code>,
+	 * return {@link IFutureStatus} instance.  Returned IFutureStatus will not be <code>null</code>,
 	 * and allows the caller to retrieve the actual resulting value from the remote call
 	 * (or exception).
 	 * 
 	 * @param call the remote call to make. Must not be <code>null</code> .
-	 * @return IAsyncResult the asynchronous result to allow the caller to poll
-	 * for whether the result {@link IAsyncResult#isReady()}, and then to {@link IAsyncResult#get(long)}
+	 * @return IFutureStatus the asynchronous result to allow the caller to poll
+	 * for whether the result {@link IFutureStatus#isDone()}, and then to {@link IAsyncResult#get(long)}
 	 * the actual result.
 	 */
-	public IAsyncResult callAsynch(IRemoteCall call);
+	public IFutureStatus callAsynch(IRemoteCall call);
 
 	/**
 	 * Fire remote method specified by call parameter. The remote method will be
