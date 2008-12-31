@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 import org.eclipse.osgi.util.NLS;
 
-public class FutureStatus implements IFutureStatus {
+public class FutureStatus implements IFuture {
 
 	class FutureStatusProgressMonitor implements IProgressMonitor {
 
@@ -164,6 +164,10 @@ public class FutureStatus implements IFutureStatus {
 		if (pm != null && pm.isCanceled()) {
 			throw new CanceledException(getStatus());
 		}
+	}
+
+	public boolean hasValue() {
+		return isDone();
 	}
 
 }
