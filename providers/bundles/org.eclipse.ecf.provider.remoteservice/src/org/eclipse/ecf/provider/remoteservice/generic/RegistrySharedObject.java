@@ -1013,7 +1013,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	IProgressMonitor progressMonitor = Job.getJobManager().createProgressGroup();
 
-	public IFutureStatus asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
+	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
 		IProgressRunnable fc = new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Throwable {
 				return getRemoteServiceReferences(idFilter, clazz, filter);

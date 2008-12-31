@@ -36,7 +36,7 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
-	public IFutureStatus callAsynch(IRemoteCall call) {
+	public IFuture callAsynch(IRemoteCall call) {
 		final FutureStatus result = new FutureStatus();
 		final IRemoteCallListener listener = new IRemoteCallListener() {
 			public void handleEvent(IRemoteCallEvent event) {

@@ -12,7 +12,7 @@ import java.util.Dictionary;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.util.IFutureStatus;
+import org.eclipse.ecf.core.util.IFuture;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 import org.eclipse.ecf.remoteservice.*;
 import org.osgi.framework.InvalidSyntaxException;
@@ -59,7 +59,7 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements IRem
 		return registry.ungetRemoteService(ref);
 	}
 
-	public IFutureStatus asyncGetRemoteServiceReferences(ID[] idFilter, String clazz, String filter) {
+	public IFuture asyncGetRemoteServiceReferences(ID[] idFilter, String clazz, String filter) {
 		return registry.asyncGetRemoteServiceReferences(idFilter, clazz, filter);
 	}
 
