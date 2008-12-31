@@ -24,9 +24,9 @@ import org.eclipse.ecf.core.util.*;
  * until complete (or timeout) and return the result from the remote or throw
  * exception if remote invocation fails or throws exception</li>
  * <li>callAsynch/1 -- An asynchronous invocation that will not block the caller
- * thread but rather return a non-<code>null</code> {@link IFutureStatus} instance
+ * thread but rather return a non-<code>null</code> {@link IFuture} instance
  * that can be polled for results.  See {@link IAsyncResult#get()},
- * {@link IFutureStatus#get(long)}, and {@link IFutureStatus#isDone()}.
+ * {@link IFuture#get(long)}, and {@link IFuture#isDone()}.
  * timeout, exception, or successful completion)</li>
  * <li>callAsynch/2 -- An asynchronous invocation that will not block the caller
  * thread but rather notify the given listener asynchronously when complete (via
@@ -80,16 +80,16 @@ public interface IRemoteService {
 
 	/**
 	 * Call remote method specified by call parameter asynchronously, and immediately
-	 * return {@link IFutureStatus} instance.  Returned IFutureStatus will not be <code>null</code>,
+	 * return {@link IFuture} instance.  Returned IFuture will not be <code>null</code>,
 	 * and allows the caller to retrieve the actual resulting value from the remote call
 	 * (or exception).
 	 * 
 	 * @param call the remote call to make. Must not be <code>null</code> .
-	 * @return IFutureStatus the asynchronous result to allow the caller to poll
-	 * for whether the result {@link IFutureStatus#isDone()}, and then to {@link IAsyncResult#get(long)}
+	 * @return IFuture the asynchronous result to allow the caller to poll
+	 * for whether the result {@link IFuture#isDone()}, and then to {@link IAsyncResult#get(long)}
 	 * the actual result.
 	 */
-	public IFutureStatus callAsynch(IRemoteCall call);
+	public IFuture callAsynch(IRemoteCall call);
 
 	/**
 	 * Fire remote method specified by call parameter. The remote method will be

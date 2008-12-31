@@ -15,7 +15,7 @@ import java.util.Dictionary;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.util.IFutureStatus;
+import org.eclipse.ecf.core.util.IFuture;
 import org.osgi.framework.*;
 
 /**
@@ -118,9 +118,9 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * services that were registered under the specified class and match the
 	 * specified idFilter, and filter criteria.
 	 * <p>
-	 * The IFutureStatus is returned immediately, and subsequent calls to {@link IFutureStatus#get()}
-	 * or {@link IFutureStatus#get(long)} will return the actual results received.  The type of
-	 * the Object returned from {@link IFutureStatus#get()} will be IRemoteServiceReference [].
+	 * The IFuture is returned immediately, and subsequent calls to {@link IFuture#get()}
+	 * or {@link IFuture#get(long)} will return the actual results received.  The type of
+	 * the Object returned from {@link IFuture#get()} will be IRemoteServiceReference [].
 	 * 
 	 * <p>
 	 * The list is valid at the time of the call to this method, however since
@@ -152,13 +152,13 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 *            the desired service. Must not be <code>null</code>.
 	 * @param filter
 	 *            The filter criteria. May be <code>null</code>.
-	 * @return IFutureStatus that through subsequent calls to IFutureStatus#get() will return
+	 * @return IFuture that through subsequent calls to IFuture#get() will return
 	 *         IRemoteServiceReference [] with IRemoteServiceReferences matching given search criteria. 
 	 *         Will not return <code>null</code>.
 	 * 
 	 * @since 3.0
 	 */
-	public IFutureStatus asyncGetRemoteServiceReferences(ID[] idFilter, String clazz, String filter);
+	public IFuture asyncGetRemoteServiceReferences(ID[] idFilter, String clazz, String filter);
 
 	/**
 	 * Get remote service for given IRemoteServiceReference. Note that clients
