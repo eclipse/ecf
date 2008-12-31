@@ -536,7 +536,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		return clone;
 	}
 
-	public IFutureStatus asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
+	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
 		IProgressRunnable fc = new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Throwable {
 				return getRemoteServiceReferences(idFilter, clazz, filter);
