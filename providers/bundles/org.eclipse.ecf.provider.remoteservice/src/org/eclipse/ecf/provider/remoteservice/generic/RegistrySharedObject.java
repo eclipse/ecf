@@ -1019,7 +1019,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				return getRemoteServiceReferences(idFilter, clazz, filter);
 			}
 		};
-		FutureStatus future = new FutureStatus(progressMonitor);
+		SingleOperationFuture future = new SingleOperationFuture(progressMonitor);
 		Job job = new GetRemoteServiceReferencesJob(future.setter(fc), NLS.bind(Messages.RegistrySharedObject_GET_REMOTE_REF_JOB_NAME, clazz));
 		job.schedule();
 		return future;
