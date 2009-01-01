@@ -13,13 +13,13 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 import org.eclipse.osgi.util.NLS;
 
-public class FutureStatus implements IFuture {
+public class SingleOperationFuture implements IFuture {
 
-	class FutureStatusProgressMonitor implements IProgressMonitor {
+	class SingleOperationFutureProgressMonitor implements IProgressMonitor {
 
 		private final IProgressMonitor monitor;
 
-		public FutureStatusProgressMonitor(IProgressMonitor progressMonitor) {
+		public SingleOperationFutureProgressMonitor(IProgressMonitor progressMonitor) {
 			this.monitor = progressMonitor;
 		}
 
@@ -43,9 +43,9 @@ public class FutureStatus implements IFuture {
 			monitor.setCanceled(value);
 			// If this is intended to cancel
 			// the operation, then we also call
-			// FutureStatus.this.setCanceled()
+			// SingleOperationFuture.this.setCanceled()
 			if (value)
-				FutureStatus.this.setCanceled();
+				SingleOperationFuture.this.setCanceled();
 		}
 
 		public void setTaskName(String name) {
@@ -65,13 +65,46 @@ public class FutureStatus implements IFuture {
 	private Object resultValue = null;
 	private IStatus status = null;
 	private final IProgressMonitor progressMonitor;
+	private TimeoutException timeoutException = null;
 
-	public FutureStatus(IProgressMonitor progressMonitor) {
-		this.progressMonitor = new FutureStatusProgressMonitor((progressMonitor == null) ? new NullProgressMonitor() : progressMonitor);
+	public SingleOperationFuture(IExecutor executor, IProgressRunnable progressRunnable, IProgressMonitor progressMonitor) {
+		Assert.isNotNull(executor);
+		Assert.isNotNull(progressRunnable);
+		this.progressMonitor = createProgressMonitor(progressMonitor);
+		executor.execute(setter(progressRunnable));
 	}
 
-	public FutureStatus() {
-		this(null);
+	public SingleOperationFuture(IExecutor executor, IProgressRunnable progressRunnable) {
+		Assert.isNotNull(executor);
+		Assert.isNotNull(progressRunnable);
+		this.progressMonitor = createProgressMonitor(null);
+		executor.execute(setter(progressRunnable));
+	}
+
+	public SingleOperationFuture(IProgressRunnable progressRunnable, IProgressMonitor progressMonitor) {
+		Assert.isNotNull(progressRunnable);
+		this.progressMonitor = createProgressMonitor(progressMonitor);
+		Thread t = new Thread(setter(progressRunnable), this.toString());
+		t.start();
+	}
+
+	public SingleOperationFuture(IProgressRunnable progressRunnable) {
+		Assert.isNotNull(progressRunnable);
+		this.progressMonitor = createProgressMonitor(null);
+		Thread t = new Thread(setter(progressRunnable), this.toString());
+		t.start();
+	}
+
+	public SingleOperationFuture(IProgressMonitor progressMonitor) {
+		this.progressMonitor = createProgressMonitor(progressMonitor);
+	}
+
+	public SingleOperationFuture() {
+		this((IProgressMonitor) null);
+	}
+
+	private IProgressMonitor createProgressMonitor(IProgressMonitor pm) {
+		return new SingleOperationFutureProgressMonitor((pm == null) ? new NullProgressMonitor() : pm);
 	}
 
 	public synchronized Object get() throws InterruptedException, CanceledException {
@@ -83,23 +116,30 @@ public class FutureStatus implements IFuture {
 	}
 
 	public synchronized Object get(long waitTimeInMillis) throws InterruptedException, TimeoutException, CanceledException {
+		// If we've been canceled then throw
+		throwIfCanceled();
+		// If we've previously experienced a timeout then throw
+		if (timeoutException != null)
+			throw timeoutException;
+		// Compute start time and waitTime
 		long startTime = (waitTimeInMillis <= 0) ? 0 : System.currentTimeMillis();
 		long waitTime = waitTimeInMillis;
-		throwIfCanceled();
+		// If waitTime out of bounds then throw timeout exception
+		if (waitTime <= 0)
+			throw createTimeoutException(waitTimeInMillis);
+		// If we're already done, then return result
 		if (isDone())
 			return resultValue;
-		else if (waitTime <= 0)
-			throw createTimeoutException(waitTimeInMillis);
-		else {
-			for (;;) {
-				wait(waitTime);
-				throwIfCanceled();
-				if (isDone())
-					return resultValue;
-				waitTime = waitTimeInMillis - (System.currentTimeMillis() - startTime);
-				if (waitTime <= 0)
-					throw createTimeoutException(waitTimeInMillis);
-			}
+		// Otherwise, wait for some time, then throw if canceled during wait, return value if
+		// we've received one during wait or throw timeout exception if too much time has elapsed
+		for (;;) {
+			wait(waitTime);
+			throwIfCanceled();
+			if (isDone())
+				return resultValue;
+			waitTime = waitTimeInMillis - (System.currentTimeMillis() - startTime);
+			if (waitTime <= 0)
+				throw createTimeoutException(waitTimeInMillis);
 		}
 	}
 
@@ -156,7 +196,8 @@ public class FutureStatus implements IFuture {
 
 	private TimeoutException createTimeoutException(long timeout) {
 		setStatus(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, IStatus.ERROR, NLS.bind("Operation timeout after {0}ms", new Long(timeout)), null)); //$NON-NLS-1$
-		return new TimeoutException(getStatus(), timeout);
+		timeoutException = new TimeoutException(getStatus(), timeout);
+		return timeoutException;
 	}
 
 	private void throwIfCanceled() throws CanceledException {
