@@ -27,7 +27,6 @@ import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiNamespace;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
-import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.*;
 import org.osgi.framework.Constants;
 import org.osgi.util.tracker.ServiceTracker;
@@ -537,16 +536,18 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	}
 
 	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
+		IExecutor executor = new IExecutor() {
+			public void execute(Runnable runnable) {
+				new Thread(runnable, "asyncGetRemoteServiceReferences").start(); //$NON-NLS-1$
+			}
+		};
 		IProgressRunnable fc = new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Throwable {
 				return getRemoteServiceReferences(idFilter, clazz, filter);
 			}
 		};
-		FutureStatus future = new FutureStatus();
 		// Create and start thread for actually calling getRemoteServiceReferences
-		Thread t = new Thread(future.setter(fc), NLS.bind("Get remote reference for {0}", clazz)); //$NON-NLS-1$
-		t.start();
-		return future;
+		return new SingleOperationFuture(executor, fc);
 	}
 
 	public Namespace getRemoteServiceNamespace() {
