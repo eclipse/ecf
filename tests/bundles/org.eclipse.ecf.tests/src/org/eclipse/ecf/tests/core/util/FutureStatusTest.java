@@ -9,14 +9,14 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.core.util;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ecf.core.util.CanceledException;
-import org.eclipse.ecf.core.util.SingleOperationFuture;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.util.IFuture;
 import org.eclipse.ecf.core.util.IProgressRunnable;
+import org.eclipse.ecf.core.util.SingleOperationFuture;
 import org.eclipse.ecf.core.util.TimeoutException;
-
-import junit.framework.TestCase;
 
 public class FutureStatusTest extends TestCase {
 
@@ -88,7 +88,7 @@ public class FutureStatusTest extends TestCase {
 			future.get();
 			// The above get should result in canceled Exception
 			fail();
-		} catch (CanceledException e) {
+		} catch (OperationCanceledException e) {
 			// This is expected...
 		}
 	}
@@ -104,7 +104,7 @@ public class FutureStatusTest extends TestCase {
 						Object o = future.get();
 						//System.out.println("thread "+Thread.currentThread().getName()+" got result = "+o);
 						assertEquals(new Integer(1),o);
-					} catch (CanceledException e) {
+					} catch (OperationCanceledException e) {
 						e.printStackTrace();
 						fail();
 					} catch (InterruptedException e) {
@@ -127,7 +127,7 @@ public class FutureStatusTest extends TestCase {
 					try {
 						future.get(SHORTDURATION);
 						fail();
-					} catch (CanceledException e) {
+					} catch (OperationCanceledException e) {
 						e.printStackTrace();
 						fail();
 					} catch (TimeoutException e) {
@@ -154,7 +154,7 @@ public class FutureStatusTest extends TestCase {
 						pm.setCanceled(true);
 						future.get();
 						fail();
-					} catch (CanceledException e) {
+					} catch (OperationCanceledException e) {
 						System.out.println("thread "+Thread.currentThread().getName()+" canceled");
 					} catch (InterruptedException e) {
 						e.printStackTrace();
