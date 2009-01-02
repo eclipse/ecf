@@ -107,7 +107,7 @@ public class SingleOperationFuture implements IFuture {
 		return new SingleOperationFutureProgressMonitor((pm == null) ? new NullProgressMonitor() : pm);
 	}
 
-	public synchronized Object get() throws InterruptedException, CanceledException {
+	public synchronized Object get() throws InterruptedException, OperationCanceledException {
 		throwIfCanceled();
 		while (!isDone())
 			wait();
@@ -115,7 +115,7 @@ public class SingleOperationFuture implements IFuture {
 		return resultValue;
 	}
 
-	public synchronized Object get(long waitTimeInMillis) throws InterruptedException, TimeoutException, CanceledException {
+	public synchronized Object get(long waitTimeInMillis) throws InterruptedException, TimeoutException, OperationCanceledException {
 		// If we've been canceled then throw
 		throwIfCanceled();
 		// If we've previously experienced a timeout then throw
@@ -200,10 +200,10 @@ public class SingleOperationFuture implements IFuture {
 		return timeoutException;
 	}
 
-	private void throwIfCanceled() throws CanceledException {
+	private void throwIfCanceled() throws OperationCanceledException {
 		IProgressMonitor pm = getProgressMonitor();
 		if (pm != null && pm.isCanceled()) {
-			throw new CanceledException(getStatus());
+			throw new OperationCanceledException("Operation canceled"); //$NON-NLS-1$
 		}
 	}
 

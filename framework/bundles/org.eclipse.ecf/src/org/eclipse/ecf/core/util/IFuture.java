@@ -9,8 +9,7 @@
 ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.*;
 
 /**
  * <p>
@@ -47,10 +46,10 @@ public interface IFuture {
 	 * @return Object result of the asynchronous operation(s)
 	 * @throws InterruptedException
 	 *             if thread calling this method is interrupted.
-	 * @throws CanceledException
+	 * @throws OperationCanceledException
 	 *             if the operation has been canceled via progress monitor {@link #getProgressMonitor()}.
 	 */
-	Object get() throws InterruptedException, CanceledException;
+	Object get() throws InterruptedException, OperationCanceledException;
 
 	/**
 	 * Waits if necessary for one or more operations to complete, and then returns result(s).
@@ -64,10 +63,10 @@ public interface IFuture {
 	 *             if thread calling this method is interrupted.
 	 * @throws TimeoutException
 	 *             if the given wait time is exceeded without getting result.
-	 * @throws CanceledException
+	 * @throws OperationCanceledException
 	 *             if the operation has been canceled via progress monitor {@link #getProgressMonitor()}.
 	 */
-	Object get(long waitTimeInMillis) throws InterruptedException, TimeoutException, CanceledException;
+	Object get(long waitTimeInMillis) throws InterruptedException, TimeoutException, OperationCanceledException;
 
 	/**
 	 * Return progress monitor associated with this future status.  Will not return <code>null</code>.
