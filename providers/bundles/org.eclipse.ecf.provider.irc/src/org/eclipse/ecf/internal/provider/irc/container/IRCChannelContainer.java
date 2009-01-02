@@ -225,7 +225,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 					connectLock.wait(2000);
 				}
 				if (connectWaiting)
-					throw new TimeoutException(CONNECT_TIMEOUT, NLS.bind(Messages.IRCChannelContainer_Exception_Connect_Timeout, connectID.getName()));
+					throw new TimeoutException(NLS.bind(Messages.IRCChannelContainer_Exception_Connect_Timeout, connectID.getName()), CONNECT_TIMEOUT);
 				this.targetID = connectID;
 				fireContainerEvent(new ContainerConnectedEvent(this.getID(), this.targetID));
 			} catch (Exception e) {
