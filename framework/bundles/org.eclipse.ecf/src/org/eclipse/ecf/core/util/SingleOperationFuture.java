@@ -196,7 +196,7 @@ public class SingleOperationFuture implements IFuture {
 
 	private TimeoutException createTimeoutException(long timeout) {
 		setStatus(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, IStatus.ERROR, NLS.bind("Operation timeout after {0}ms", new Long(timeout)), null)); //$NON-NLS-1$
-		timeoutException = new TimeoutException(getStatus(), timeout);
+		timeoutException = new TimeoutException("Timout", timeout); //$NON-NLS-1$
 		return timeoutException;
 	}
 

@@ -9,10 +9,6 @@
 package org.eclipse.ecf.core.util;
 
 import java.lang.reflect.InvocationTargetException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.internal.core.ECFPlugin;
-import org.eclipse.osgi.util.NLS;
 
 /**
  * Class to represent asynchronous result (aka Future)
@@ -64,7 +60,7 @@ public class AsyncResult implements IAsyncResult {
 	}
 
 	private TimeoutException createTimeoutException(long timeout) {
-		return new TimeoutException(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, IStatus.ERROR, NLS.bind("Operation timeout after {0}ms", new Long(timeout)), null), timeout); //$NON-NLS-1$
+		return new TimeoutException(timeout);
 	}
 
 	/* (non-Javadoc)
