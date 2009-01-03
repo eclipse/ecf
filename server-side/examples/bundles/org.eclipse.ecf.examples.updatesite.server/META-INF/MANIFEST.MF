@@ -8,7 +8,7 @@ Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Bundle-Localization: plugin
 Import-Package: javax.naming,
- javax.servlet.http;version="[2.4.0,2.6.0)",
+ javax.servlet.http,
  org.eclipse.osgi.util,
  org.osgi.framework,
  org.osgi.service.http,
