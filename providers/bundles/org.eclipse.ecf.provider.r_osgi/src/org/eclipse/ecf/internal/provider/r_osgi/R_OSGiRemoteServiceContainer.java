@@ -541,13 +541,14 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 				new Thread(runnable, "asyncGetRemoteServiceReferences").start(); //$NON-NLS-1$
 			}
 		};
-		IProgressRunnable fc = new IProgressRunnable() {
+		SingleOperationFuture future = new SingleOperationFuture();
+		executor.execute(future.setter(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Throwable {
 				return getRemoteServiceReferences(idFilter, clazz, filter);
 			}
-		};
+		}));
 		// Create and start thread for actually calling getRemoteServiceReferences
-		return new SingleOperationFuture(executor, fc);
+		return future;
 	}
 
 	public Namespace getRemoteServiceNamespace() {
