@@ -74,27 +74,6 @@ public class SingleOperationFuture implements IFuture {
 		executor.execute(setter(progressRunnable));
 	}
 
-	public SingleOperationFuture(IExecutor executor, IProgressRunnable progressRunnable) {
-		Assert.isNotNull(executor);
-		Assert.isNotNull(progressRunnable);
-		this.progressMonitor = createProgressMonitor(null);
-		executor.execute(setter(progressRunnable));
-	}
-
-	public SingleOperationFuture(IProgressRunnable progressRunnable, IProgressMonitor progressMonitor) {
-		Assert.isNotNull(progressRunnable);
-		this.progressMonitor = createProgressMonitor(progressMonitor);
-		Thread t = new Thread(setter(progressRunnable), this.toString());
-		t.start();
-	}
-
-	public SingleOperationFuture(IProgressRunnable progressRunnable) {
-		Assert.isNotNull(progressRunnable);
-		this.progressMonitor = createProgressMonitor(null);
-		Thread t = new Thread(setter(progressRunnable), this.toString());
-		t.start();
-	}
-
 	public SingleOperationFuture(IProgressMonitor progressMonitor) {
 		this.progressMonitor = createProgressMonitor(progressMonitor);
 	}
