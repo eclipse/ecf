@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.util.IProgressRunnable;
 import org.eclipse.ecf.core.util.SingleOperationFuture;
 import org.eclipse.ecf.core.util.TimeoutException;
 
-public class FutureStatusTest extends TestCase {
+public class FutureTest extends TestCase {
 
 	public final static int ITERATIONS = 30;
 	public final static int WAITTIME = 500;
@@ -48,9 +48,15 @@ public class FutureStatusTest extends TestCase {
 		};
 	}
 	
+	protected IFuture createAndStartFuture() {
+		SingleOperationFuture result = new SingleOperationFuture();
+		new Thread(result.setter(createBasicCallable())).start();
+		return result;
+	}
+	
 	public void testGet() throws Exception {
 		// The API implementer would do this
-		IFuture future = new SingleOperationFuture(createBasicCallable());
+		IFuture future = createAndStartFuture();
 		// We're the client...so we'll wait for a second or so and then call get
 		Object result = future.get();
 		assertNotNull(result);
@@ -59,7 +65,7 @@ public class FutureStatusTest extends TestCase {
 	
 	public void testGetWithLongTimeout() throws Exception {
 		// The API implementer would do this
-		IFuture future = new SingleOperationFuture(createBasicCallable());
+		IFuture future = createAndStartFuture();
 		// We're the client...so we'll wait for a second or so and then call get
 		Object result = future.get(LONGDURATION);
 		assertNotNull(result);
@@ -68,7 +74,7 @@ public class FutureStatusTest extends TestCase {
 
 	public void testGetWithShortTimeout() throws Exception {
 		// The API implementer would do this
-		IFuture future = new SingleOperationFuture(createBasicCallable());
+		IFuture future = createAndStartFuture();
 		// We're playing the role of the client...so we'll wait for a second or so and then call get
 		try {
 			future.get(SHORTDURATION);
@@ -80,7 +86,7 @@ public class FutureStatusTest extends TestCase {
 
 	public void testCancel() throws Exception {
 		// The API implementer would do this
-		final IFuture future = new SingleOperationFuture(createBasicCallable());
+		final IFuture future = createAndStartFuture();
 		// We're playing the role of the client...so we'll wait for a second or so and then call get
 		try {
 			IProgressMonitor pm = future.getProgressMonitor();
@@ -95,7 +101,7 @@ public class FutureStatusTest extends TestCase {
 
 	public void testGetWithMultipleClientThreads() throws Exception {
 		// The API implementer would do this
-		final IFuture future = new SingleOperationFuture(createBasicCallable());
+		final IFuture future = createAndStartFuture();
 		// For this we will have 10 client threads all trying to get the result
 		for(int i=0; i < 10; i++) {
 			final Thread t = new Thread(new Runnable() {
@@ -119,7 +125,7 @@ public class FutureStatusTest extends TestCase {
 	
 	public void testTimeoutWithMultipleClientThreads() throws Exception {
 		// The API implementer would do this
-		final IFuture future = new SingleOperationFuture(createBasicCallable());
+		final IFuture future = createAndStartFuture();
 		// For this we will have 10 client threads all trying to get the result
 		for(int i=0; i < 10; i++) {
 			final Thread t = new Thread(new Runnable() {
@@ -144,7 +150,7 @@ public class FutureStatusTest extends TestCase {
 
 	public void testCancelWithMultipleClientThreads() throws Exception {
 		// The API implementer would do this
-		final IFuture future = new SingleOperationFuture(createBasicCallable());
+		final IFuture future = createAndStartFuture();
 		// For this we will have 10 client threads all trying to get the result
 		for(int i=0; i < 10; i++) {
 			final Thread t = new Thread(new Runnable() {
