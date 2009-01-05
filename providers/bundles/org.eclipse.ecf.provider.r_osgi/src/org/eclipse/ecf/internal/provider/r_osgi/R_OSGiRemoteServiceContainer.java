@@ -536,19 +536,12 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	}
 
 	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
-		IExecutor executor = new IExecutor() {
-			public void execute(Runnable runnable) {
-				new Thread(runnable, "asyncGetRemoteServiceReferences").start(); //$NON-NLS-1$
-			}
-		};
-		SingleOperationFuture future = new SingleOperationFuture();
-		executor.execute(future.setter(new IProgressRunnable() {
+		IExecutor executor = new ThreadExecutor();
+		return executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Throwable {
 				return getRemoteServiceReferences(idFilter, clazz, filter);
 			}
-		}));
-		// Create and start thread for actually calling getRemoteServiceReferences
-		return future;
+		}, null);
 	}
 
 	public Namespace getRemoteServiceNamespace() {
