@@ -13,9 +13,10 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.ecf.core.util.IExecutor;
 import org.eclipse.ecf.core.util.IFuture;
 import org.eclipse.ecf.core.util.IProgressRunnable;
-import org.eclipse.ecf.core.util.SingleOperationFuture;
+import org.eclipse.ecf.core.util.ThreadExecutor;
 import org.eclipse.ecf.core.util.TimeoutException;
 
 public class FutureTest extends TestCase {
@@ -27,7 +28,7 @@ public class FutureTest extends TestCase {
 	
 	public final static Integer result = new Integer(1);
 	
-	IProgressRunnable createBasicCallable() {
+	IProgressRunnable createProgressRunnable() {
 		return new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Throwable {
 				// This should/will be a long running operation
@@ -49,9 +50,8 @@ public class FutureTest extends TestCase {
 	}
 	
 	protected IFuture createAndStartFuture() {
-		SingleOperationFuture result = new SingleOperationFuture();
-		new Thread(result.setter(createBasicCallable())).start();
-		return result;
+		IExecutor executor = new ThreadExecutor();
+		return executor.execute(createProgressRunnable(), null);
 	}
 	
 	public void testGet() throws Exception {
