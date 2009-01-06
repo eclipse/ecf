@@ -34,7 +34,7 @@ public interface IExecutor {
 
 	/**
 	 * Execute the given {@link IProgressRunnable} (i.e. call {@link IProgressRunnable#run(IProgressMonitor)}
-	 * asynchronously (without blocking).  Must also return a non-<code>null</code> instance of {@link IFuture} that allows
+	 * asynchronously (without blocking).  Will return a non-<code>null</code> instance of {@link IFuture} that allows
 	 * clients to inspect the state of the asynchronous execution and retrieve any results via {@link IFuture#get()}
 	 * or {@link IFuture#get(long)}.
 	 *   
@@ -44,24 +44,5 @@ public interface IExecutor {
 	 * as well as access to any return values of {@link IProgressRunnable#run(IProgressMonitor)}.
 	 */
 	IFuture execute(IProgressRunnable runnable, IProgressMonitor monitor);
-
-	/**
-	 * @return <code>true</code> if the call to {@link #execute(IProgressRunnable, IProgressMonitor)} has
-	 * been made and the asynchronous execution has been started.  Returns <code>false</code> if
-	 * {@link #execute(IProgressRunnable, IProgressMonitor)} has not yet been called.
-	 * 
-	 * @see #isDone()
-	 */
-	boolean hasStarted();
-
-	/**
-	 * @return <code>true</code> if the call to {@link #execute(IProgressRunnable, IProgressMonitor)} has
-	 * been made and the asynchronous execution has finished.  Returns <code>false</code> if
-	 * {@link #execute(IProgressRunnable, IProgressMonitor)} has not yet been called, or the execution
-	 * has not yet completed.
-	 * 
-	 * @see #isDone()
-	 */
-	boolean isDone();
 
 }
