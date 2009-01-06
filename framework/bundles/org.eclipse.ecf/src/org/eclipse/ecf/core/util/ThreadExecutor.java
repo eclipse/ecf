@@ -29,10 +29,16 @@ public class ThreadExecutor implements IExecutor {
 		return NLS.bind("ThreadExecutor for {0}", runnable.toString()); //$NON-NLS-1$
 	}
 
-	protected Thread createAndConfigureThread(Runnable runnable, String threadName) {
-		Thread t = new Thread(runnable, threadName);
-		t.setDaemon(true);
-		return t;
+	protected Runnable createRunnable(final SingleOperationFuture sof, final IProgressRunnable progressRunnable) {
+		return new Runnable() {
+			public void run() {
+				try {
+					sof.set(progressRunnable.run(sof.getProgressMonitor()));
+				} catch (Throwable t) {
+					sof.setException(t);
+				}
+			}
+		};
 	}
 
 	public synchronized IFuture execute(IProgressRunnable runnable, IProgressMonitor monitor) throws IllegalThreadStateException {
@@ -41,8 +47,8 @@ public class ThreadExecutor implements IExecutor {
 			throw new IllegalThreadStateException("Thread for this executor already created"); //$NON-NLS-1$
 		// Now create SingleOperationFuture
 		SingleOperationFuture sof = new SingleOperationFuture(monitor);
-		// Create and set the thread for this operation
-		this.thread = createAndConfigureThread(sof.setter(runnable), createThreadName(runnable));
+		// Create the thread for this operation
+		this.thread = new Thread(createRunnable(sof, runnable), createThreadName(runnable));
 		// start thread
 		this.thread.start();
 		return sof;

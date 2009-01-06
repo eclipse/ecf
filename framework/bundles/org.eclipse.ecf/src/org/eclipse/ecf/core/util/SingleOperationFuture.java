@@ -12,19 +12,19 @@ package org.eclipse.ecf.core.util;
 import org.eclipse.core.runtime.*;
 import org.eclipse.osgi.util.NLS;
 
-public class SingleOperationFuture implements IFuture {
+public class SingleOperationFuture implements IFuture, ICancelable {
 
 	private Object resultValue = null;
 	private IStatus status = null;
-	private final IProgressMonitor progressMonitor;
+	private IProgressMonitor progressMonitor;
 	private TimeoutException timeoutException = null;
-
-	public SingleOperationFuture(IProgressMonitor progressMonitor) {
-		this.progressMonitor = new SingleOperationFutureProgressMonitor(this, (progressMonitor == null) ? new NullProgressMonitor() : progressMonitor);
-	}
 
 	public SingleOperationFuture() {
 		this((IProgressMonitor) null);
+	}
+
+	public SingleOperationFuture(IProgressMonitor progressMonitor) {
+		setProgressMonitor(progressMonitor);
 	}
 
 	public synchronized Object get() throws InterruptedException, OperationCanceledException {
@@ -71,28 +71,13 @@ public class SingleOperationFuture implements IFuture {
 		return (status != null);
 	}
 
-	protected synchronized void setCanceled() {
+	public synchronized void setCanceled() {
 		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Operation canceled", null)); //$NON-NLS-1$ //$NON-NLS-2$
 		notifyAll();
 	}
 
-	/**
-	 * Set the underlying function call that will return a result asynchronously
-	 * 
-	 * @param function
-	 *            the {@link IProgressRunnable} to be called
-	 * @return Runnable to run in separate thread
-	 */
-	public Runnable setter(final IProgressRunnable function) {
-		return new Runnable() {
-			public void run() {
-				try {
-					set(function.run(getProgressMonitor()));
-				} catch (Throwable ex) {
-					setException(ex);
-				}
-			}
-		};
+	public synchronized void setProgressMonitor(IProgressMonitor progressMonitor) {
+		this.progressMonitor = new FutureProgressMonitor(this, (progressMonitor == null) ? new NullProgressMonitor() : progressMonitor);
 	}
 
 	public synchronized void setException(Throwable ex) {
