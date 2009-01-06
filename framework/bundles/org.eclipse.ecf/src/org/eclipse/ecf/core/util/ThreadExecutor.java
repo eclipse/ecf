@@ -16,6 +16,7 @@ import org.eclipse.osgi.util.NLS;
 public class ThreadExecutor implements IExecutor {
 
 	protected Thread thread;
+	protected boolean started;
 
 	public ThreadExecutor() {
 		// nothing
@@ -33,6 +34,7 @@ public class ThreadExecutor implements IExecutor {
 		return new Runnable() {
 			public void run() {
 				try {
+					started = true;
 					sof.set(progressRunnable.run(sof.getProgressMonitor()));
 				} catch (Throwable t) {
 					sof.setException(t);
@@ -49,16 +51,17 @@ public class ThreadExecutor implements IExecutor {
 		SingleOperationFuture sof = new SingleOperationFuture(monitor);
 		// Create the thread for this operation
 		this.thread = new Thread(createRunnable(sof, runnable), createThreadName(runnable));
+		this.thread.setDaemon(true);
 		// start thread
 		this.thread.start();
 		return sof;
 	}
 
 	public synchronized boolean hasStarted() {
-		return (thread != null);
+		return started;
 	}
 
 	public synchronized boolean isDone() {
-		return (thread == null || !thread.isAlive());
+		return (thread != null && !thread.isAlive());
 	}
 }
