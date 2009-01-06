@@ -39,9 +39,10 @@ public interface IExecutor {
 	 * or {@link IFuture#get(long)}.
 	 *   
 	 * @param runnable the {@link IProgressRunnable} to invoke.  Must not be <code>null</code>.
-	 * @param monitor any {@link IProgressMonitor} to be passed to the runnable.
+	 * @param monitor any {@link IProgressMonitor} to be passed to the runnable.  May be <code>null</code>.
 	 * @return {@link IFuture} to allow for inspection of the state of the computation by clients,
-	 * as well as access to any return values of {@link IProgressRunnable#run(IProgressMonitor)}.
+	 * as well as access to any return values of {@link IProgressRunnable#run(IProgressMonitor)}.  Will not
+	 * be <code>null</code>.
 	 */
 	IFuture execute(IProgressRunnable runnable, IProgressMonitor monitor);
 
