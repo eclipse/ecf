@@ -49,6 +49,8 @@
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.apache.commons.httpclient,org.apache.commons.httpclient,v3_0_1"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.apache.commons.logging,org.apache.commons.logging,v1_0_4"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.objectweb.asm,org.objectweb.asm,v3_0"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/javax.mail,javax.mail,v1_4_0"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/javax.activation,javax.activation,v1_1_0"/>
 
 	<!-- EMF bundles -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/modeling,org.eclipse.emf/org.eclipse.emf/plugins/org.eclipse.emf,org.eclipse.emf,R2_4_maintenance"/>
