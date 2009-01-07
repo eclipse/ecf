@@ -536,7 +536,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	}
 
 	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
-		IExecutor executor = new ThreadExecutor();
+		IExecutor executor = new ThreadsExecutor();
 		return executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Throwable {
 				return getRemoteServiceReferences(idFilter, clazz, filter);
