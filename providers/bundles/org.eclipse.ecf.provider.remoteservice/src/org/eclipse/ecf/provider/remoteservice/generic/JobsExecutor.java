@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.osgi.util.NLS;
 
 public class JobsExecutor extends AbstractExecutor {
 
@@ -54,12 +53,16 @@ public class JobsExecutor extends AbstractExecutor {
 	}
 
 	protected String createJobName(String executorName, int jobCounter, IProgressRunnable runnable) {
-		return NLS.bind("Executor({0}).{1}", executorName, Integer.toString(jobCounter)); //$NON-NLS-1$
+		return "JobsExecutor(" + executorName + ")." + jobCounter; //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	protected AbstractFuture createFuture(IProgressMonitor progressMonitor) {
+		return new SingleOperationFuture(progressMonitor);
 	}
 
 	public IFuture execute(final IProgressRunnable runnable, final IProgressMonitor clientProgressMonitor) {
 		Assert.isNotNull(runnable);
-		final SingleOperationFuture sof = new SingleOperationFuture(clientProgressMonitor);
+		final AbstractFuture sof = createFuture(clientProgressMonitor);
 		Job job = new Job(createJobName(fExecutorName, fJobCounter++, runnable)) {
 			{
 				setSystem(fSystem);
