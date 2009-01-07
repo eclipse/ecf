@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
+  * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -10,11 +10,11 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.lang.reflect.*;
 import java.lang.reflect.Proxy;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.*;
-import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
-import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
+import org.eclipse.osgi.util.NLS;
 
 public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
@@ -36,21 +36,13 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
-	public IFuture callAsynch(IRemoteCall call) {
-		final SingleOperationFuture result = new SingleOperationFuture();
-		final IRemoteCallListener listener = new IRemoteCallListener() {
-			public void handleEvent(IRemoteCallEvent event) {
-				if (event instanceof IRemoteCallCompleteEvent) {
-					IRemoteCallCompleteEvent cce = (IRemoteCallCompleteEvent) event;
-					if (cce.hadException())
-						result.setException(cce.getException());
-					else
-						result.set(cce.getResponse());
-				}
+	public IFuture callAsynch(final IRemoteCall call) {
+		JobsExecutor executor = new JobsExecutor(NLS.bind("callAsynch({0}", call.getMethod())); //$NON-NLS-1$
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Throwable {
+				return callSynch(call);
 			}
-		};
-		callAsynch(call, listener);
-		return result;
+		}, null);
 	}
 
 	public Object callSynch(IRemoteCall call) throws ECFException {

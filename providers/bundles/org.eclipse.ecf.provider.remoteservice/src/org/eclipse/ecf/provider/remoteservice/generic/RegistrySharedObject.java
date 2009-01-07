@@ -998,63 +998,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	IProgressMonitor progressMonitor = Job.getJobManager().createProgressGroup();
 
 	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
-		IExecutor executor = createJobExecutor(NLS.bind("asyncGetRemoteServiceReferences - {0}", clazz)); //$NON-NLS-1$
+		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Throwable {
 				return getRemoteServiceReferences(idFilter, clazz, filter);
 			}
 		}, null);
-	}
-
-	class JobExecutor extends Job implements IExecutor {
-
-		protected boolean started;
-
-		protected SingleOperationFuture future;
-		protected IProgressRunnable progressRunnable;
-
-		public JobExecutor(String name) {
-			super(name);
-		}
-
-		protected IStatus run(IProgressMonitor monitor) {
-			started = true;
-			IProgressMonitor pm = future.getProgressMonitor();
-			// First check to make sure things haven't been canceled
-			if (pm.isCanceled())
-				return future.getStatus();
-			// Now add progress monitor as child of future progress monitor
-			if (pm instanceof FutureProgressMonitor) {
-				((FutureProgressMonitor) progressMonitor).setChildProgressMonitor(monitor);
-			}
-			// Now call progressRunnable.run
-			try {
-				future.set(progressRunnable.run(pm));
-			} catch (Throwable t) {
-				future.setException(t);
-			}
-			return future.getStatus();
-		}
-
-		public IFuture execute(IProgressRunnable runnable, IProgressMonitor monitor) {
-			Assert.isNotNull(runnable);
-			progressRunnable = runnable;
-			future = new SingleOperationFuture(monitor);
-			schedule();
-			return future;
-		}
-
-		public boolean hasStarted() {
-			return started;
-		}
-
-		public boolean isDone() {
-			return (future != null && future.isDone());
-		}
-	}
-
-	private IExecutor createJobExecutor(String name) {
-		return new JobExecutor(name);
 	}
 
 	public Namespace getRemoteServiceNamespace() {
