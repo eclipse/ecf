@@ -13,46 +13,62 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 
-public class ThreadExecutor implements IExecutor {
+public class ThreadsExecutor implements IExecutor, IRunnableExecutor {
 
-	protected Thread thread;
-
-	public ThreadExecutor() {
+	public ThreadsExecutor() {
 		// nothing
 	}
 
-	public Thread getThread() {
-		return thread;
-	}
-
 	protected String createThreadName(IProgressRunnable runnable) {
-		return NLS.bind("ThreadExecutor for {0}", runnable.toString()); //$NON-NLS-1$
+		return NLS.bind("ThreadsExecutor for {0}", runnable.toString()); //$NON-NLS-1$
 	}
 
 	protected Runnable createRunnable(final SingleOperationFuture sof, final IProgressRunnable progressRunnable) {
 		return new Runnable() {
 			public void run() {
+				preRunnable();
 				try {
 					sof.set(progressRunnable.run(sof.getProgressMonitor()));
 				} catch (Throwable t) {
 					sof.setException(t);
 				}
+				postRunnable();
 			}
 		};
 	}
 
+	protected void preRunnable() {
+		// By default do nothing
+	}
+
+	protected void postRunnable() {
+		// By default do nothing
+	}
+
+	public void configureThreadForExecution(Thread t) {
+		// By default, we'll make the thread a daemon thread
+		t.setDaemon(true);
+	}
+
 	public synchronized IFuture execute(IProgressRunnable runnable, IProgressMonitor monitor) throws IllegalThreadStateException {
 		Assert.isNotNull(runnable);
-		if (thread != null)
-			throw new IllegalThreadStateException("Thread for this executor already created"); //$NON-NLS-1$
 		// Now create SingleOperationFuture
 		SingleOperationFuture sof = new SingleOperationFuture(monitor);
 		// Create the thread for this operation
-		this.thread = new Thread(createRunnable(sof, runnable), createThreadName(runnable));
-		this.thread.setDaemon(true);
+		Thread thread = new Thread(createRunnable(sof, runnable), createThreadName(runnable));
+		configureThreadForExecution(thread);
 		// start thread
-		this.thread.start();
+		thread.start();
 		return sof;
+	}
+
+	public void execute(final Runnable runnable) {
+		execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Throwable {
+				runnable.run();
+				return null;
+			}
+		}, null);
 	}
 
 }
