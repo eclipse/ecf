@@ -12,7 +12,7 @@ package org.eclipse.ecf.core.util;
 import org.eclipse.core.runtime.*;
 import org.eclipse.osgi.util.NLS;
 
-public class SingleOperationFuture implements IFuture, ICancelable {
+public class SingleOperationFuture implements IFuture, ICancelable, ISafeProgressRunner {
 
 	private Object resultValue = null;
 	private IStatus status = null;
@@ -24,7 +24,7 @@ public class SingleOperationFuture implements IFuture, ICancelable {
 	}
 
 	public SingleOperationFuture(IProgressMonitor progressMonitor) {
-		setProgressMonitor(progressMonitor);
+		this.progressMonitor = new FutureProgressMonitor(this, (progressMonitor == null) ? new NullProgressMonitor() : progressMonitor);
 	}
 
 	public synchronized Object get() throws InterruptedException, OperationCanceledException {
@@ -71,21 +71,35 @@ public class SingleOperationFuture implements IFuture, ICancelable {
 		return (status != null);
 	}
 
+	/**
+	 * This method is not intended to be called by clients.  Rather, it should only be used by {@link IExecutor}s.
+	 * 
+	 * @noreference
+	 */
 	public synchronized void setCanceled() {
 		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Operation canceled", null)); //$NON-NLS-1$ //$NON-NLS-2$
 		notifyAll();
 	}
 
-	public synchronized void setProgressMonitor(IProgressMonitor progressMonitor) {
-		this.progressMonitor = new FutureProgressMonitor(this, (progressMonitor == null) ? new NullProgressMonitor() : progressMonitor);
+	/**
+	 * This method is not intended to be called by clients.  Rather it should only be used by {@link IExecutor}s.
+	 * 
+	 * @noreference
+	 */
+	public void safeRun(IProgressRunnable runnable) {
+		try {
+			set(runnable.run(getProgressMonitor()));
+		} catch (Throwable t) {
+			setException(t);
+		}
 	}
 
-	public synchronized void setException(Throwable ex) {
+	private synchronized void setException(Throwable ex) {
 		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Exception during operation", ex)); //$NON-NLS-1$ //$NON-NLS-2$
 		notifyAll();
 	}
 
-	public synchronized void set(Object newValue) {
+	private synchronized void set(Object newValue) {
 		resultValue = newValue;
 		setStatus(Status.OK_STATUS);
 		notifyAll();

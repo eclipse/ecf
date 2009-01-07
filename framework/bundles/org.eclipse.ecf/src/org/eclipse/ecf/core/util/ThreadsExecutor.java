@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 
-public class ThreadsExecutor implements IExecutor, IRunnableExecutor {
+public class ThreadsExecutor extends AbstractExecutor {
 
 	public ThreadsExecutor() {
 		// nothing
@@ -23,15 +23,11 @@ public class ThreadsExecutor implements IExecutor, IRunnableExecutor {
 		return NLS.bind("ThreadsExecutor for {0}", runnable.toString()); //$NON-NLS-1$
 	}
 
-	protected Runnable createRunnable(final SingleOperationFuture sof, final IProgressRunnable progressRunnable) {
+	protected Runnable createRunnable(final ISafeProgressRunner sof, final IProgressRunnable progressRunnable) {
 		return new Runnable() {
 			public void run() {
 				preRunnable();
-				try {
-					sof.set(progressRunnable.run(sof.getProgressMonitor()));
-				} catch (Throwable t) {
-					sof.setException(t);
-				}
+				sof.safeRun(progressRunnable);
 				postRunnable();
 			}
 		};
@@ -60,15 +56,6 @@ public class ThreadsExecutor implements IExecutor, IRunnableExecutor {
 		// start thread
 		thread.start();
 		return sof;
-	}
-
-	public void execute(final Runnable runnable) {
-		execute(new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Throwable {
-				runnable.run();
-				return null;
-			}
-		}, null);
 	}
 
 }

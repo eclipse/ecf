@@ -9,17 +9,6 @@
 ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IProgressMonitor;
-
-public class ImmediateExecutor extends AbstractExecutor implements IExecutor, IRunnableExecutor {
-
-	public IFuture execute(IProgressRunnable runnable, IProgressMonitor monitor) {
-		Assert.isNotNull(runnable);
-		SingleOperationFuture sof = new SingleOperationFuture(monitor);
-		// Actually run the runnable immediately.
-		sof.safeRun(runnable);
-		return sof;
-	}
-
+public interface ISafeProgressRunner {
+	void safeRun(IProgressRunnable runnable);
 }
