@@ -13,9 +13,11 @@ package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.RemoteOSGiException;
 import java.lang.reflect.InvocationTargetException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.remoteservice.*;
-import org.eclipse.ecf.remoteservice.events.*;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
 
 /**
  * The R-OSGi adapter implementation of the IRemoteService interface.
@@ -67,20 +69,12 @@ final class RemoteServiceImpl implements IRemoteService {
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
 	public IFuture callAsynch(final IRemoteCall call) {
-		final SingleOperationFuture result = new SingleOperationFuture();
-		final IRemoteCallListener listener = new IRemoteCallListener() {
-			public void handleEvent(IRemoteCallEvent event) {
-				if (event instanceof IRemoteCallCompleteEvent) {
-					IRemoteCallCompleteEvent cce = (IRemoteCallCompleteEvent) event;
-					if (cce.hadException())
-						result.setException(cce.getException());
-					else
-						result.set(cce.getResponse());
-				}
+		final ThreadsExecutor executor = new ThreadsExecutor();
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Throwable {
+				return callSynch(call);
 			}
-		};
-		callAsynch(call, listener);
-		return result;
+		}, null);
 	}
 
 	/**
