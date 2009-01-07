@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.util.IExecutor;
 import org.eclipse.ecf.core.util.IFuture;
 import org.eclipse.ecf.core.util.IProgressRunnable;
-import org.eclipse.ecf.core.util.ThreadExecutor;
+import org.eclipse.ecf.core.util.ThreadsExecutor;
 import org.eclipse.ecf.core.util.TimeoutException;
 
 public class FutureTest extends TestCase {
@@ -50,7 +50,7 @@ public class FutureTest extends TestCase {
 	}
 	
 	protected IFuture createAndStartFuture() {
-		IExecutor executor = new ThreadExecutor();
+		IExecutor executor = new ThreadsExecutor();
 		return executor.execute(createProgressRunnable(), null);
 	}
 	
