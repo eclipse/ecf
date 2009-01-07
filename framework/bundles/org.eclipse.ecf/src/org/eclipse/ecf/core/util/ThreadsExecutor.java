@@ -11,7 +11,6 @@ package org.eclipse.ecf.core.util;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.osgi.util.NLS;
 
 public class ThreadsExecutor extends AbstractExecutor {
 
@@ -20,7 +19,7 @@ public class ThreadsExecutor extends AbstractExecutor {
 	}
 
 	protected String createThreadName(IProgressRunnable runnable) {
-		return NLS.bind("ThreadsExecutor for {0}", runnable.toString()); //$NON-NLS-1$
+		return "ThreadsExecutor(" + runnable.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	protected Runnable createRunnable(final ISafeProgressRunner sof, final IProgressRunnable progressRunnable) {
@@ -46,10 +45,14 @@ public class ThreadsExecutor extends AbstractExecutor {
 		t.setDaemon(true);
 	}
 
+	protected AbstractFuture createFuture(IProgressMonitor monitor) {
+		return new SingleOperationFuture(monitor);
+	}
+
 	public synchronized IFuture execute(IProgressRunnable runnable, IProgressMonitor monitor) throws IllegalThreadStateException {
 		Assert.isNotNull(runnable);
-		// Now create SingleOperationFuture
-		SingleOperationFuture sof = new SingleOperationFuture(monitor);
+		// Now create future
+		AbstractFuture sof = createFuture(monitor);
 		// Create the thread for this operation
 		Thread thread = new Thread(createRunnable(sof, runnable), createThreadName(runnable));
 		configureThreadForExecution(thread);

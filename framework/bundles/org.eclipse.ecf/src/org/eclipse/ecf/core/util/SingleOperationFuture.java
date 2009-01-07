@@ -10,13 +10,11 @@
 package org.eclipse.ecf.core.util;
 
 import org.eclipse.core.runtime.*;
-import org.eclipse.osgi.util.NLS;
 
-public class SingleOperationFuture implements IFuture, ICancelable, ISafeProgressRunner {
+public class SingleOperationFuture extends AbstractFuture {
 
 	private Object resultValue = null;
 	private IStatus status = null;
-	private IProgressMonitor progressMonitor;
 	private TimeoutException timeoutException = null;
 
 	public SingleOperationFuture() {
@@ -24,7 +22,8 @@ public class SingleOperationFuture implements IFuture, ICancelable, ISafeProgres
 	}
 
 	public SingleOperationFuture(IProgressMonitor progressMonitor) {
-		this.progressMonitor = new FutureProgressMonitor(this, (progressMonitor == null) ? new NullProgressMonitor() : progressMonitor);
+		super();
+		setProgressMonitor(new FutureProgressMonitor(this, (progressMonitor == null) ? new NullProgressMonitor() : progressMonitor));
 	}
 
 	public synchronized Object get() throws InterruptedException, OperationCanceledException {
@@ -61,10 +60,6 @@ public class SingleOperationFuture implements IFuture, ICancelable, ISafeProgres
 			if (waitTime <= 0)
 				throw createTimeoutException(waitTimeInMillis);
 		}
-	}
-
-	public IProgressMonitor getProgressMonitor() {
-		return progressMonitor;
 	}
 
 	public synchronized boolean isDone() {
@@ -114,7 +109,7 @@ public class SingleOperationFuture implements IFuture, ICancelable, ISafeProgres
 	}
 
 	private TimeoutException createTimeoutException(long timeout) {
-		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, NLS.bind("Operation timeout after {0}ms", new Long(timeout)), null)); //$NON-NLS-1$ //$NON-NLS-2$
+		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Operation timeout after " + timeout + "ms", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		timeoutException = new TimeoutException("Timout", timeout); //$NON-NLS-1$
 		return timeoutException;
 	}

@@ -24,4 +24,6 @@ public abstract class AbstractExecutor implements IRunnableExecutor, IExecutor {
 
 	public abstract IFuture execute(IProgressRunnable runnable, IProgressMonitor monitor);
 
+	protected abstract AbstractFuture createFuture(IProgressMonitor progressMonitor);
+
 }

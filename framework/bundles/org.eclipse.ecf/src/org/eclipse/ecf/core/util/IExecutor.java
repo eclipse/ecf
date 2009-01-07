@@ -19,9 +19,9 @@ import org.eclipse.core.runtime.jobs.Job;
  * {@link IProgressRunnable}, upon calling {@link #execute(IProgressRunnable, IProgressMonitor)}. 
  * </p>
  * <p>
- * Note that implementations may decide what/how to execute the given runnable (i.e.
- * via a {@link Thread}, or a {@link Job}, or a ThreadPool or some other asynchronous
- * invocation mechanism.  But the intended contract of {@link #execute(IProgressRunnable, IProgressMonitor)} is that
+ * Note that implementations may decide what/how to execute the given IProgressRunnable (i.e.
+ * via a {@link Thread}, or a {@link Job}, or a ThreadPool or some other invocation mechanism.  
+ * But the intended contract of {@link #execute(IProgressRunnable, IProgressMonitor)} is that
  * the {@link IProgressRunnable#run(IProgressMonitor)} method will be invoked by
  * this executor in a timely manner <b>without</b> blocking.
  * </p>
@@ -33,11 +33,19 @@ import org.eclipse.core.runtime.jobs.Job;
 public interface IExecutor {
 
 	/**
-	 * Execute the given {@link IProgressRunnable} (i.e. call {@link IProgressRunnable#run(IProgressMonitor)}
-	 * asynchronously (without blocking).  Will return a non-<code>null</code> instance of {@link IFuture} that allows
-	 * clients to inspect the state of the asynchronous execution and retrieve any results via {@link IFuture#get()}
+	 * <p>
+	 * Execute the given {@link IProgressRunnable} (i.e. call {@link IProgressRunnable#run(IProgressMonitor)}.
+	 * Will return a non-<code>null</code> instance of {@link IFuture} that allows
+	 * clients to inspect the state of the execution and retrieve any results via {@link IFuture#get()}
 	 * or {@link IFuture#get(long)}.
-	 *   
+	 * </p>
+	 * <p>
+	 * Note that implementers may decide whether to invoke {@link IProgressRunnable#run(IProgressMonitor)} 
+	 * asynchronously or synchronously, but since IProgressRunnables are frequently going to be longer-running
+	 * operations, implementers should proceed carefully before implementing with synchronous (blocking)
+	 * invocation.  Implementers should typically implement via some non-blocking asynchronous invocation 
+	 * mechanism, e.g. Threads, Jobs, ThreadPools etc.
+	 * </p>
 	 * @param runnable the {@link IProgressRunnable} to invoke.  Must not be <code>null</code>.
 	 * @param monitor any {@link IProgressMonitor} to be passed to the runnable.  May be <code>null</code>.
 	 * @return {@link IFuture} to allow for inspection of the state of the computation by clients,
