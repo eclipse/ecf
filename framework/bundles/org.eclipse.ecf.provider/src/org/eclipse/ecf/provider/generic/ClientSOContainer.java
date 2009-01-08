@@ -372,6 +372,70 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		}
 	}
 
+	protected void sendCreate(ID sharedObjectId, ID toContainerId, SharedObjectDescription sd) throws IOException {
+		// Get connect lock, then call super version
+		synchronized (connectLock) {
+			checkConnected();
+			super.sendCreate(sharedObjectId, toContainerId, sd);
+		}
+	}
+
+	protected void sendCreateResponse(ID homeId, ID sharedObjectId, Throwable t, long identifier) throws IOException {
+		// Get connect lock, then call super version
+		synchronized (connectLock) {
+			checkConnected();
+			super.sendCreateResponse(homeId, sharedObjectId, t, identifier);
+		}
+	}
+
+	protected void sendCreateResponseSharedObjectMessage(ID toContainerId, ID fromSharedObject, Throwable t, long ident) throws IOException {
+		// Get connect lock, then call super version
+		synchronized (connectLock) {
+			checkConnected();
+			super.sendCreateResponseSharedObjectMessage(toContainerId, fromSharedObject, t, ident);
+		}
+	}
+
+	protected ID[] sendCreateSharedObjectMessage(ID toContainerId, SharedObjectDescription sd) throws IOException {
+		// Get connect lock, then call super version
+		synchronized (connectLock) {
+			checkConnected();
+			return super.sendCreateSharedObjectMessage(toContainerId, sd);
+		}
+	}
+
+	protected void sendDispose(ID toContainerId, ID sharedObjectId) throws IOException {
+		// Get connect lock, then call super version
+		synchronized (connectLock) {
+			checkConnected();
+			super.sendDispose(toContainerId, sharedObjectId);
+		}
+	}
+
+	protected void sendDisposeSharedObjectMessage(ID toContainerId, ID fromSharedObject) throws IOException {
+		// Get connect lock, then call super version
+		synchronized (connectLock) {
+			checkConnected();
+			super.sendDisposeSharedObjectMessage(toContainerId, fromSharedObject);
+		}
+	}
+
+	protected void sendMessage(ID toContainerId, ID sharedObjectId, Object message) throws IOException {
+		// Get connect lock, then call super version
+		synchronized (connectLock) {
+			checkConnected();
+			super.sendMessage(toContainerId, sharedObjectId, message);
+		}
+	}
+
+	protected void sendSharedObjectMessage(ID toContainerId, ID fromSharedObject, Serializable data) throws IOException {
+		// Get connect lock, then call super version
+		synchronized (connectLock) {
+			checkConnected();
+			super.sendSharedObjectMessage(toContainerId, fromSharedObject, data);
+		}
+	}
+
 	protected void disconnect(Throwable exception) {
 		synchronized (getConnectLock()) {
 			// If we are currently connected then get connection lock and send
