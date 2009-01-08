@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.util.IExecutor;
 import org.eclipse.ecf.core.util.IFuture;
 import org.eclipse.ecf.core.util.IProgressRunnable;
+import org.eclipse.ecf.core.util.JobsExecutor;
 import org.eclipse.ecf.core.util.ThreadsExecutor;
 import org.eclipse.ecf.core.util.TimeoutException;
 
@@ -53,7 +54,130 @@ public class FutureTest extends TestCase {
 		IExecutor executor = new ThreadsExecutor();
 		return executor.execute(createProgressRunnable(), null);
 	}
+
+	protected IFuture createAndStartJobsFuture() {
+		IExecutor executor = new JobsExecutor("testjobsexecutor");
+		return executor.execute(createProgressRunnable(), null);
+	}
+
+	public void testJobsGet() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartJobsFuture();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get();
+		assertNotNull(result);
+		assertEquals(new Integer(1), result);
+	}
 	
+	public void testJobsGetWithLongTimeout() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartJobsFuture();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get(LONGDURATION);
+		assertNotNull(result);
+		assertEquals(new Integer(1), result);
+	}
+
+	public void testJobsGetWithShortTimeout() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartJobsFuture();
+		// We're playing the role of the client...so we'll wait for a second or so and then call get
+		try {
+			future.get(SHORTDURATION);
+			fail();
+		} catch (TimeoutException e) {
+			assertTrue(e.getDuration() == SHORTDURATION);
+		}
+	}
+
+	public void testJobsCancel() throws Exception {
+		// The API implementer would do this
+		final IFuture future = createAndStartFuture();
+		// We're playing the role of the client...so we'll wait for a second or so and then call get
+		try {
+			IProgressMonitor pm = future.getProgressMonitor();
+			pm.setCanceled(true);
+			future.get();
+			// The above get should result in canceled Exception
+			fail();
+		} catch (OperationCanceledException e) {
+			// This is expected...
+		}
+	}
+
+	public void testJobsGetWithMultipleClientThreads() throws Exception {
+		// The API implementer would do this
+		final IFuture future = createAndStartJobsFuture();
+		// For this we will have 10 client threads all trying to get the result
+		for(int i=0; i < 10; i++) {
+			final Thread t = new Thread(new Runnable() {
+				public void run() {
+					try {
+						Object o = future.get();
+						//System.out.println("thread "+Thread.currentThread().getName()+" got result = "+o);
+						assertEquals(new Integer(1),o);
+					} catch (OperationCanceledException e) {
+						e.printStackTrace();
+						fail();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						fail();
+					}
+				}},""+i);
+			t.start();
+			t.join();
+		}
+	}
+	
+	public void testJobsTimeoutWithMultipleClientThreads() throws Exception {
+		// The API implementer would do this
+		final IFuture future = createAndStartJobsFuture();
+		// For this we will have 10 client threads all trying to get the result
+		for(int i=0; i < 10; i++) {
+			final Thread t = new Thread(new Runnable() {
+				public void run() {
+					try {
+						future.get(SHORTDURATION);
+						fail();
+					} catch (OperationCanceledException e) {
+						e.printStackTrace();
+						fail();
+					} catch (TimeoutException e) {
+						System.out.println("thread "+Thread.currentThread().getName()+" timed out");
+						assertTrue(e.getDuration() == SHORTDURATION);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						fail();
+					}
+				}},""+i);
+			t.start();
+		}
+	}
+
+	public void testJobsCancelWithMultipleClientThreads() throws Exception {
+		// The API implementer would do this
+		final IFuture future = createAndStartJobsFuture();
+		// For this we will have 10 client threads all trying to get the result
+		for(int i=0; i < 10; i++) {
+			final Thread t = new Thread(new Runnable() {
+				public void run() {
+					try {
+						IProgressMonitor pm = future.getProgressMonitor();
+						pm.setCanceled(true);
+						future.get();
+						fail();
+					} catch (OperationCanceledException e) {
+						System.out.println("thread "+Thread.currentThread().getName()+" canceled");
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						fail();
+					}
+				}},""+i);
+			t.start();
+			t.join();
+		}
+	}
+
 	public void testGet() throws Exception {
 		// The API implementer would do this
 		IFuture future = createAndStartFuture();
