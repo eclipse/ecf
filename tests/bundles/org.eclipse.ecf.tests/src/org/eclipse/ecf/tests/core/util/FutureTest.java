@@ -12,6 +12,7 @@ package org.eclipse.ecf.tests.core.util;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.util.IExecutor;
 import org.eclipse.ecf.core.util.IFuture;
@@ -24,7 +25,7 @@ public class FutureTest extends TestCase {
 
 	public final static int ITERATIONS = 30;
 	public final static int WAITTIME = 500;
-	public final static int SHORTDURATION = 3000;
+	public final static int SHORTDURATION = 1000;
 	public final static int LONGDURATION = 40000;
 	
 	public final static Integer result = new Integer(1);
@@ -50,6 +51,14 @@ public class FutureTest extends TestCase {
 		};
 	}
 	
+	IProgressRunnable createProgressRunnableWithNPE() {
+		return new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Throwable {
+				throw new NullPointerException("Our Exception");
+			}
+		};
+	}
+
 	protected IFuture createAndStartFuture() {
 		IExecutor executor = new ThreadsExecutor();
 		return executor.execute(createProgressRunnable(), null);
@@ -58,6 +67,16 @@ public class FutureTest extends TestCase {
 	protected IFuture createAndStartJobsFuture() {
 		IExecutor executor = new JobsExecutor("testjobsexecutor");
 		return executor.execute(createProgressRunnable(), null);
+	}
+
+	protected IFuture createAndStartFutureWithNPE() {
+		IExecutor executor = new ThreadsExecutor();
+		return executor.execute(createProgressRunnableWithNPE(), null);
+	}
+
+	protected IFuture createAndStartJobsFutureWithNPE() {
+		IExecutor executor = new JobsExecutor("testjobsexecutor");
+		return executor.execute(createProgressRunnableWithNPE(), null);
 	}
 
 	public void testJobsGet() throws Exception {
@@ -69,6 +88,33 @@ public class FutureTest extends TestCase {
 		assertEquals(new Integer(1), result);
 	}
 	
+	public void testJobsGetOKStatus() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartJobsFuture();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get();
+		assertNotNull(result);
+		assertEquals(new Integer(1), result);
+		IStatus status = future.getStatus();
+		assertNotNull(status);
+		assertTrue(status.isOK());
+	}
+
+	public void testJobsGetExceptionStatus() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartJobsFutureWithNPE();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get();
+		assertNull(result);
+		IStatus status = future.getStatus();
+		assertNotNull(status);
+		assertTrue(status.getSeverity()==IStatus.ERROR);
+		Throwable t = status.getException();
+		assertNotNull(t);
+		assertTrue(t instanceof NullPointerException);
+	}
+
+
 	public void testJobsGetWithLongTimeout() throws Exception {
 		// The API implementer would do this
 		IFuture future = createAndStartJobsFuture();
@@ -95,13 +141,15 @@ public class FutureTest extends TestCase {
 		final IFuture future = createAndStartFuture();
 		// We're playing the role of the client...so we'll wait for a second or so and then call get
 		try {
-			IProgressMonitor pm = future.getProgressMonitor();
-			pm.setCanceled(true);
+			future.cancel();
 			future.get();
 			// The above get should result in canceled Exception
 			fail();
 		} catch (OperationCanceledException e) {
 			// This is expected...
+			IStatus status = future.getStatus();
+			assertNotNull(status);
+			assertTrue(status.getSeverity()==IStatus.CANCEL);
 		}
 	}
 
@@ -151,6 +199,7 @@ public class FutureTest extends TestCase {
 					}
 				}},""+i);
 			t.start();
+			t.join();
 		}
 	}
 
@@ -162,8 +211,7 @@ public class FutureTest extends TestCase {
 			final Thread t = new Thread(new Runnable() {
 				public void run() {
 					try {
-						IProgressMonitor pm = future.getProgressMonitor();
-						pm.setCanceled(true);
+						future.cancel();
 						future.get();
 						fail();
 					} catch (OperationCanceledException e) {
@@ -174,8 +222,8 @@ public class FutureTest extends TestCase {
 					}
 				}},""+i);
 			t.start();
-			t.join();
 		}
+		Thread.sleep(3000);
 	}
 
 	public void testGet() throws Exception {
@@ -187,6 +235,32 @@ public class FutureTest extends TestCase {
 		assertEquals(new Integer(1), result);
 	}
 	
+	public void testGetOKStatus() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartFuture();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get();
+		assertNotNull(result);
+		assertEquals(new Integer(1), result);
+		IStatus status = future.getStatus();
+		assertNotNull(status);
+		assertTrue(status.isOK());
+	}
+	
+	public void testGetExceptionStatus() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartFutureWithNPE();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get();
+		assertNull(result);
+		IStatus status = future.getStatus();
+		assertNotNull(status);
+		assertTrue(status.getSeverity()==IStatus.ERROR);
+		Throwable t = status.getException();
+		assertNotNull(t);
+		assertTrue(t instanceof NullPointerException);
+	}
+
 	public void testGetWithLongTimeout() throws Exception {
 		// The API implementer would do this
 		IFuture future = createAndStartFuture();
@@ -213,13 +287,14 @@ public class FutureTest extends TestCase {
 		final IFuture future = createAndStartFuture();
 		// We're playing the role of the client...so we'll wait for a second or so and then call get
 		try {
-			IProgressMonitor pm = future.getProgressMonitor();
-			pm.setCanceled(true);
+			future.cancel();
 			future.get();
 			// The above get should result in canceled Exception
 			fail();
 		} catch (OperationCanceledException e) {
-			// This is expected...
+			IStatus status = future.getStatus();
+			assertNotNull(status);
+			assertTrue(status.getSeverity()==IStatus.CANCEL);
 		}
 	}
 
@@ -269,6 +344,7 @@ public class FutureTest extends TestCase {
 					}
 				}},""+i);
 			t.start();
+			t.join();
 		}
 	}
 
@@ -280,8 +356,7 @@ public class FutureTest extends TestCase {
 			final Thread t = new Thread(new Runnable() {
 				public void run() {
 					try {
-						IProgressMonitor pm = future.getProgressMonitor();
-						pm.setCanceled(true);
+						future.cancel();
 						future.get();
 						fail();
 					} catch (OperationCanceledException e) {
@@ -292,8 +367,8 @@ public class FutureTest extends TestCase {
 					}
 				}},""+i);
 			t.start();
-			t.join();
 		}
+		Thread.sleep(3000);
 	}
 
 }
