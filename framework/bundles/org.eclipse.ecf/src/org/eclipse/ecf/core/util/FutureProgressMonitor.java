@@ -9,18 +9,16 @@
 ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ProgressMonitorWrapper;
 
 public class FutureProgressMonitor extends ProgressMonitorWrapper {
 
-	private final ICancelable cancelable;
 	private IProgressMonitor monitor;
 	private Object lock = new Object();
 
-	public FutureProgressMonitor(ICancelable cancelable, IProgressMonitor progressMonitor) {
+	public FutureProgressMonitor(IProgressMonitor progressMonitor) {
 		super(progressMonitor);
-		Assert.isNotNull(cancelable);
-		this.cancelable = cancelable;
 	}
 
 	public void beginTask(String name, int totalWork) {
@@ -53,11 +51,6 @@ public class FutureProgressMonitor extends ProgressMonitorWrapper {
 			if (monitor != null)
 				monitor.setCanceled(value);
 		}
-		// If this is intended to cancel
-		// the operation, then we also call
-		// ICancelable.this.setCanceled()
-		if (value)
-			this.cancelable.setCanceled();
 	}
 
 	public void setTaskName(String name) {

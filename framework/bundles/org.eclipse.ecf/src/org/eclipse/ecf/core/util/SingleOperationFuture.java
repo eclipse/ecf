@@ -16,6 +16,7 @@ public class SingleOperationFuture extends AbstractFuture {
 	private Object resultValue = null;
 	private IStatus status = null;
 	private TimeoutException timeoutException = null;
+	protected IProgressMonitor progressMonitor;
 
 	public SingleOperationFuture() {
 		this((IProgressMonitor) null);
@@ -23,7 +24,7 @@ public class SingleOperationFuture extends AbstractFuture {
 
 	public SingleOperationFuture(IProgressMonitor progressMonitor) {
 		super();
-		setProgressMonitor(new FutureProgressMonitor(this, (progressMonitor == null) ? new NullProgressMonitor() : progressMonitor));
+		setProgressMonitor(new FutureProgressMonitor((progressMonitor == null) ? new NullProgressMonitor() : progressMonitor));
 	}
 
 	public synchronized Object get() throws InterruptedException, OperationCanceledException {
@@ -67,16 +68,6 @@ public class SingleOperationFuture extends AbstractFuture {
 	}
 
 	/**
-	 * This method is not intended to be called by clients.  Rather, it should only be used by {@link IExecutor}s.
-	 * 
-	 * @noreference
-	 */
-	public synchronized void setCanceled() {
-		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Operation canceled", null)); //$NON-NLS-1$ //$NON-NLS-2$
-		notifyAll();
-	}
-
-	/**
 	 * This method is not intended to be called by clients.  Rather it should only be used by {@link IExecutor}s.
 	 * 
 	 * @noreference
@@ -89,19 +80,36 @@ public class SingleOperationFuture extends AbstractFuture {
 		}
 	}
 
-	private synchronized void setException(Throwable ex) {
+	public synchronized IStatus getStatus() {
+		return status;
+	}
+
+	public boolean hasValue() {
+		// for a single operation future, hasValue means that the single 
+		// operation has completed, and there will be no more.
+		return isDone();
+	}
+
+	public synchronized boolean cancel() {
+		if (isDone())
+			return false;
+		if (isCanceled())
+			return false;
+		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Operation canceled", null)); //$NON-NLS-1$ //$NON-NLS-2$
+		getProgressMonitor().setCanceled(true);
+		notifyAll();
+		return true;
+	}
+
+	protected synchronized void setException(Throwable ex) {
 		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Exception during operation", ex)); //$NON-NLS-1$ //$NON-NLS-2$
 		notifyAll();
 	}
 
-	private synchronized void set(Object newValue) {
+	protected synchronized void set(Object newValue) {
 		resultValue = newValue;
 		setStatus(Status.OK_STATUS);
 		notifyAll();
-	}
-
-	public synchronized IStatus getStatus() {
-		return status;
 	}
 
 	private synchronized void setStatus(IStatus status) {
@@ -121,10 +129,15 @@ public class SingleOperationFuture extends AbstractFuture {
 		}
 	}
 
-	public boolean hasValue() {
-		// for a single operation future, hasValue means that the single 
-		// operation has completed, and there will be no more.
-		return isDone();
+	protected void setProgressMonitor(IProgressMonitor progressMonitor) {
+		this.progressMonitor = progressMonitor;
 	}
 
+	protected IProgressMonitor getProgressMonitor() {
+		return progressMonitor;
+	}
+
+	protected synchronized boolean isCanceled() {
+		return getProgressMonitor().isCanceled();
+	}
 }

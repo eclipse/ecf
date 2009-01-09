@@ -39,6 +39,14 @@ import org.eclipse.core.runtime.*;
 public interface IFuture {
 
 	/**
+	 * Cancel the operation
+	 * @return <tt>false</tt> if the operation could not be canceled,
+	 * typically because it has already completed normally;
+	 * <tt>true</tt> otherwise
+	 */
+	public boolean cancel();
+
+	/**
 	 * Waits if necessary for one or more operations to complete, and then returns result(s).
 	 * This method will block until either a) at least one result is available; or b) at 
 	 * least one operation throws an exception.
@@ -67,12 +75,6 @@ public interface IFuture {
 	 *             if the operation has been canceled via progress monitor {@link #getProgressMonitor()}.
 	 */
 	Object get(long waitTimeInMillis) throws InterruptedException, TimeoutException, OperationCanceledException;
-
-	/**
-	 * Return progress monitor associated with this future status.  Will not return <code>null</code>.
-	 * @return IProgressMonitor the progress monitor associated with the operation(s).
-	 */
-	public IProgressMonitor getProgressMonitor();
 
 	/**
 	 * <p>

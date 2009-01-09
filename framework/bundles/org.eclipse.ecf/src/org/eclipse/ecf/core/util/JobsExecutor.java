@@ -69,12 +69,11 @@ public class JobsExecutor extends AbstractExecutor {
 			}
 
 			protected IStatus run(IProgressMonitor monitor) {
-				IProgressMonitor pm = sof.getProgressMonitor();
 				// First check to make sure things haven't been canceled
-				if (pm.isCanceled())
+				if (sof.isCanceled())
 					return sof.getStatus();
 				// Now add progress monitor as child of future progress monitor
-				setChildProgressMonitor(pm, monitor);
+				setChildProgressMonitor(sof.getProgressMonitor(), monitor);
 				// Now run safely
 				safeRun(sof, runnable);
 				return sof.getStatus();
