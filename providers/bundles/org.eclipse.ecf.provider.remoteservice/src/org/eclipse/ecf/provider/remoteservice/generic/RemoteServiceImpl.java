@@ -39,7 +39,7 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	public IFuture callAsynch(final IRemoteCall call) {
 		JobsExecutor executor = new JobsExecutor(NLS.bind("callAsynch({0}", call.getMethod())); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Throwable {
+			public Object run(IProgressMonitor monitor) throws Exception {
 				return callSynch(call);
 			}
 		}, null);

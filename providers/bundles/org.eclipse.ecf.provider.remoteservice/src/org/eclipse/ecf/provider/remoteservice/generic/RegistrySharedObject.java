@@ -1000,7 +1000,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
 		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Throwable {
+			public Object run(IProgressMonitor monitor) throws Exception {
 				return getRemoteServiceReferences(idFilter, clazz, filter);
 			}
 		}, null);
