@@ -12,8 +12,6 @@ package org.eclipse.ecf.core.util;
 
 import java.util.*;
 import org.eclipse.core.runtime.jobs.*;
-import org.eclipse.ecf.core.util.IExecutor;
-import org.eclipse.ecf.core.util.IRunnableExecutor;
 
 public class RealmJobsExecutor extends JobsExecutor implements IExecutor, IRunnableExecutor {
 
