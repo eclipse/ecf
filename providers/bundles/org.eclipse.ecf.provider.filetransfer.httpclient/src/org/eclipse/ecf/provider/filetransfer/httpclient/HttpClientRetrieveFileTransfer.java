@@ -343,10 +343,12 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 				getMethod.releaseConnection();
 				throw new FileNotFoundException(urlString);
-			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
-				getMethod.getResponseBody();
+			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
+				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
+			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
+				getMethod.releaseConnection();
+				throw new LoginException("Forbidden"); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				getMethod.releaseConnection();
 				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
