@@ -26,7 +26,7 @@ public class ThreadsExecutor extends AbstractExecutor {
 		return new Runnable() {
 			public void run() {
 				preSafeRun();
-				sof.safeRun(progressRunnable);
+				sof.runWithProgress(progressRunnable);
 				postSafeRun();
 			}
 		};

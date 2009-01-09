@@ -35,7 +35,7 @@ public class ImmediateExecutor extends AbstractExecutor implements IExecutor, IR
 		Assert.isNotNull(runnable);
 		AbstractFuture sof = createFuture(monitor);
 		// Actually run the runnable immediately.  See NOTE above
-		sof.safeRun(runnable);
+		sof.runWithProgress(runnable);
 		return sof;
 	}
 

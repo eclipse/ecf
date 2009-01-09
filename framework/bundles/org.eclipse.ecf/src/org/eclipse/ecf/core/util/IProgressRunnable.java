@@ -20,7 +20,7 @@ public interface IProgressRunnable {
 	/** Perform some action that returns a result or throws an exception
 	 * @param monitor the IProgressMonitor associated with this callable
 	 * @return result from the call
-	 * @throws Throwable
+	 * @throws Exception
 	 */
-	Object run(IProgressMonitor monitor) throws Throwable;
+	Object run(IProgressMonitor monitor) throws Exception;
 }

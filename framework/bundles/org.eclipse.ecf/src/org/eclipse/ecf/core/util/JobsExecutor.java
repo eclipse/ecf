@@ -48,7 +48,7 @@ public class JobsExecutor extends AbstractExecutor {
 	}
 
 	protected void safeRun(ISafeProgressRunner runner, IProgressRunnable progressRunnable) {
-		runner.safeRun(progressRunnable);
+		runner.runWithProgress(progressRunnable);
 	}
 
 	protected String createJobName(String executorName, int jobCounter, IProgressRunnable runnable) {

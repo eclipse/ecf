@@ -72,16 +72,21 @@ public class SingleOperationFuture extends AbstractFuture {
 	 * 
 	 * @noreference
 	 */
-	public void safeRun(IProgressRunnable runnable) {
-		try {
-			if (!isCanceled()) {
-				Object result = runnable.run(getProgressMonitor());
-				if (!isCanceled())
-					set(result);
-			}
-		} catch (Throwable t) {
-			if (!isCanceled())
-				setException(t);
+	public void runWithProgress(final IProgressRunnable runnable) {
+		Assert.isNotNull(runnable);
+		if (!isCanceled()) {
+			SafeRunner.run(new ISafeRunnable() {
+				public void handleException(Throwable exception) {
+					if (!isCanceled())
+						setException(exception);
+				}
+
+				public void run() throws Exception {
+					Object result = runnable.run(getProgressMonitor());
+					if (!isCanceled())
+						set(result);
+				}
+			});
 		}
 	}
 

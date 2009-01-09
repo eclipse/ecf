@@ -15,7 +15,7 @@ public abstract class AbstractExecutor implements IRunnableExecutor, IExecutor {
 
 	public void execute(final Runnable runnable) {
 		execute(new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Throwable {
+			public Object run(IProgressMonitor monitor) throws Exception {
 				runnable.run();
 				return null;
 			}

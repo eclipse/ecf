@@ -10,5 +10,5 @@
 package org.eclipse.ecf.core.util;
 
 public interface ISafeProgressRunner {
-	void safeRun(IProgressRunnable runnable);
+	void runWithProgress(IProgressRunnable runnable);
 }
