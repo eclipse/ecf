@@ -69,9 +69,9 @@ final class RemoteServiceImpl implements IRemoteService {
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
 	public IFuture callAsynch(final IRemoteCall call) {
-		final ThreadsExecutor executor = new ThreadsExecutor();
+		final AbstractExecutor executor = new ThreadsExecutor();
 		return executor.execute(new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Throwable {
+			public Object run(IProgressMonitor monitor) throws Exception {
 				return callSynch(call);
 			}
 		}, null);
