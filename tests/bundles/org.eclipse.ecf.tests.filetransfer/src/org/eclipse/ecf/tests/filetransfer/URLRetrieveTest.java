@@ -12,10 +12,13 @@
 package org.eclipse.ecf.tests.filetransfer;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
@@ -23,6 +26,7 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.equinox.internal.p2.artifact.repository.ECFTransport;
 
 public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
@@ -106,9 +110,23 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		}
 	}
 	
-
-	public void testReceiveGzipFile() throws Exception {
+	public void testReceiveGzip() throws Exception {
 		testReceive(BUG_237936_URL);
 	}
 
-}
+	public void testReceiveGzipWithGZFile() throws Exception {
+		File f = File.createTempFile("foo", "pascal.pack.gz");
+		FileOutputStream fos = new FileOutputStream(f);
+		System.out.println(f);
+		IStatus s = ECFTransport
+				.getInstance()
+				.download(
+						"http://download.eclipse.org/eclipse/updates/3.5-I-builds/plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz",
+						fos, new NullProgressMonitor());
+		fos.close();
+		if (f != null) {
+			System.out.println(f.length());
+			assertTrue("4.0", f.length() < 50000);
+		}
+	}
+ }
