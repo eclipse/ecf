@@ -32,7 +32,7 @@ public class FutureTest extends TestCase {
 	
 	IProgressRunnable createProgressRunnable() {
 		return new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Throwable {
+			public Object run(IProgressMonitor monitor) throws Exception {
 				// This should/will be a long running operation
 				monitor.beginTask("1", ITERATIONS);
 				if (monitor.isCanceled()) return null;
@@ -53,7 +53,7 @@ public class FutureTest extends TestCase {
 	
 	IProgressRunnable createProgressRunnableWithNPE() {
 		return new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Throwable {
+			public Object run(IProgressMonitor monitor) throws Exception {
 				throw new NullPointerException("Our Exception");
 			}
 		};
