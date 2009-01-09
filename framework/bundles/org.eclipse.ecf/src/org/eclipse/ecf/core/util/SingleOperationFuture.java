@@ -74,9 +74,14 @@ public class SingleOperationFuture extends AbstractFuture {
 	 */
 	public void safeRun(IProgressRunnable runnable) {
 		try {
-			set(runnable.run(getProgressMonitor()));
+			if (!isCanceled()) {
+				Object result = runnable.run(getProgressMonitor());
+				if (!isCanceled())
+					set(result);
+			}
 		} catch (Throwable t) {
-			setException(t);
+			if (!isCanceled())
+				setException(t);
 		}
 	}
 
@@ -95,7 +100,7 @@ public class SingleOperationFuture extends AbstractFuture {
 			return false;
 		if (isCanceled())
 			return false;
-		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Operation canceled", null)); //$NON-NLS-1$ //$NON-NLS-2$
+		setStatus(new Status(IStatus.CANCEL, "org.eclipse.equinox.future", IStatus.CANCEL, "Operation canceled", null)); //$NON-NLS-1$ //$NON-NLS-2$
 		getProgressMonitor().setCanceled(true);
 		notifyAll();
 		return true;

@@ -26,4 +26,12 @@ public abstract class AbstractExecutor implements IRunnableExecutor, IExecutor {
 
 	protected abstract AbstractFuture createFuture(IProgressMonitor progressMonitor);
 
+	protected void preSafeRun() {
+		// By default do nothing
+	}
+
+	protected void postSafeRun() {
+		// By default do nothing
+	}
+
 }
