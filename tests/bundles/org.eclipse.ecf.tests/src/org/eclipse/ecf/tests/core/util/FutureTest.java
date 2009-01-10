@@ -114,6 +114,31 @@ public class FutureTest extends TestCase {
 		assertTrue(t instanceof NullPointerException);
 	}
 
+	public void testJobsGetOKStatus1() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartJobsFuture();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get(0);
+		assertNotNull(result);
+		assertEquals(new Integer(1), result);
+		IStatus status = future.getStatus();
+		assertNotNull(status);
+		assertTrue(status.isOK());
+	}
+
+	public void testJobsGetExceptionStatus1() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartJobsFutureWithNPE();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get(0);
+		assertNull(result);
+		IStatus status = future.getStatus();
+		assertNotNull(status);
+		assertTrue(status.getSeverity()==IStatus.ERROR);
+		Throwable t = status.getException();
+		assertNotNull(t);
+		assertTrue(t instanceof NullPointerException);
+	}
 
 	public void testJobsGetWithLongTimeout() throws Exception {
 		// The API implementer would do this
@@ -260,6 +285,33 @@ public class FutureTest extends TestCase {
 		assertNotNull(t);
 		assertTrue(t instanceof NullPointerException);
 	}
+
+	public void testGetOKStatus1() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartFuture();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get(0);
+		assertNotNull(result);
+		assertEquals(new Integer(1), result);
+		IStatus status = future.getStatus();
+		assertNotNull(status);
+		assertTrue(status.isOK());
+	}
+	
+	public void testGetExceptionStatus1() throws Exception {
+		// The API implementer would do this
+		IFuture future = createAndStartFutureWithNPE();
+		// We're the client...so we'll wait for a second or so and then call get
+		Object result = future.get(0);
+		assertNull(result);
+		IStatus status = future.getStatus();
+		assertNotNull(status);
+		assertTrue(status.getSeverity()==IStatus.ERROR);
+		Throwable t = status.getException();
+		assertNotNull(t);
+		assertTrue(t instanceof NullPointerException);
+	}
+
 
 	public void testGetWithLongTimeout() throws Exception {
 		// The API implementer would do this
