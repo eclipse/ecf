@@ -36,21 +36,21 @@ public class SingleOperationFuture extends AbstractFuture {
 	}
 
 	public synchronized Object get(long waitTimeInMillis) throws InterruptedException, TimeoutException, OperationCanceledException {
+		// If waitTime out of bounds then throw illegal argument exception
+		if (waitTimeInMillis < 0)
+			throw new IllegalArgumentException("waitTimeInMillis must be => 0"); //$NON-NLS-1$
 		// If we've been canceled then throw
 		throwIfCanceled();
 		// If we've previously experienced a timeout then throw
 		if (timeoutException != null)
 			throw timeoutException;
-		// Compute start time and waitTime
-		long startTime = (waitTimeInMillis <= 0) ? 0 : System.currentTimeMillis();
-		long waitTime = waitTimeInMillis;
-		// If waitTime out of bounds then throw timeout exception
-		if (waitTime <= 0)
-			throw createTimeoutException(waitTimeInMillis);
 		// If we're already done, then return result
 		if (isDone())
 			return resultValue;
 		// Otherwise, wait for some time, then throw if canceled during wait, return value if
+		// Compute start time and set waitTime
+		long startTime = System.currentTimeMillis();
+		long waitTime = waitTimeInMillis;
 		// we've received one during wait or throw timeout exception if too much time has elapsed
 		for (;;) {
 			wait(waitTime);
