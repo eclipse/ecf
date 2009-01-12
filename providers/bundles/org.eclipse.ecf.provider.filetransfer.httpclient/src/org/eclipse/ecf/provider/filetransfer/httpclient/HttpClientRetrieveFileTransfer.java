@@ -63,7 +63,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 		public int execute(HttpState state, HttpConnection conn) throws HttpException, IOException {
 			// Insert accept-encoding header
-			this.setRequestHeader(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
+			if (getFileRangeSpecification() == null)
+				this.setRequestHeader(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
 			int result = super.execute(state, conn);
 			// test what is sent back
 			if (isZippedReply()) {
