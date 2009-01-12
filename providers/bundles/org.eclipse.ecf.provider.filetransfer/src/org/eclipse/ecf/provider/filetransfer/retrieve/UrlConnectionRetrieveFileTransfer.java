@@ -378,7 +378,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	}
 
 	private void setCompressionRequestHeader() {
-		urlConnection.setRequestProperty(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
+		if (rangeSpecification == null)
+			urlConnection.setRequestProperty(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
 	}
 
 	private Compression getCompressionResponseHeader() {
