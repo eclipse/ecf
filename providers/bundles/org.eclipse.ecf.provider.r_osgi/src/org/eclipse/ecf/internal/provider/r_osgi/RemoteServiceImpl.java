@@ -53,10 +53,10 @@ final class RemoteServiceImpl implements IRemoteService {
 	 *            the call object.
 	 * @param listener
 	 *            the callback listener.
-	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall,
+	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsync(org.eclipse.ecf.remoteservice.IRemoteCall,
 	 *      org.eclipse.ecf.remoteservice.IRemoteCallListener)
 	 */
-	public void callAsynch(final IRemoteCall call, final IRemoteCallListener listener) {
+	public void callAsync(final IRemoteCall call, final IRemoteCallListener listener) {
 		new AsyncResult(call, listener).start();
 	}
 
@@ -66,13 +66,13 @@ final class RemoteServiceImpl implements IRemoteService {
 	 * @param call
 	 *            the call object.
 	 * @return the result proxy.
-	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsync(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
-	public IFuture callAsynch(final IRemoteCall call) {
+	public IFuture callAsync(final IRemoteCall call) {
 		final AbstractExecutor executor = new ThreadsExecutor();
 		return executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
-				return callSynch(call);
+				return callSync(call);
 			}
 		}, null);
 	}
@@ -83,9 +83,9 @@ final class RemoteServiceImpl implements IRemoteService {
 	 * @param call
 	 *            the call object.
 	 * @return the result or <code>null</code>
-	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callSynch(org.eclipse.ecf.remoteservice.IRemoteCall)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callSync(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
-	public Object callSynch(final IRemoteCall call) throws ECFException {
+	public Object callSync(final IRemoteCall call) throws ECFException {
 		final Class[] formalParams = new Class[call.getParameters().length];
 		for (int i = 0; i < formalParams.length; i++) {
 			formalParams[i] = call.getParameters()[i].getClass();
@@ -102,11 +102,11 @@ final class RemoteServiceImpl implements IRemoteService {
 	 * 
 	 * @param call
 	 *            the call object.
-	 * @see org.eclipse.ecf.remoteservice.IRemoteService#fireAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteService#fireAsync(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
-	public void fireAsynch(final IRemoteCall call) throws ECFException {
+	public void fireAsync(final IRemoteCall call) throws ECFException {
 		try {
-			callAsynch(call);
+			callAsync(call);
 		} catch (RemoteOSGiException r) {
 			throw new ECFException(r);
 		} catch (Throwable t) {
@@ -255,7 +255,7 @@ final class RemoteServiceImpl implements IRemoteService {
 			}
 
 			try {
-				r = callSynch(call);
+				r = callSync(call);
 			} catch (Throwable t) {
 				e = t;
 			}
