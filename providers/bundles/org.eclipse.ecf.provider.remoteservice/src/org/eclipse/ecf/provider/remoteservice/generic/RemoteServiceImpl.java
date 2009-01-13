@@ -29,27 +29,27 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		this.registration = registration;
 	}
 
-	public void callAsynch(IRemoteCall call, IRemoteCallListener listener) {
+	public void callAsync(IRemoteCall call, IRemoteCallListener listener) {
 		sharedObject.sendCallRequestWithListener(registration, call, listener);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
-	public IFuture callAsynch(final IRemoteCall call) {
+	public IFuture callAsync(final IRemoteCall call) {
 		JobsExecutor executor = new JobsExecutor(NLS.bind("callAsynch({0}", call.getMethod())); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
-				return callSynch(call);
+				return callSync(call);
 			}
 		}, null);
 	}
 
-	public Object callSynch(IRemoteCall call) throws ECFException {
+	public Object callSync(IRemoteCall call) throws ECFException {
 		return sharedObject.callSynch(registration, call);
 	}
 
-	public void fireAsynch(IRemoteCall call) throws ECFException {
+	public void fireAsync(IRemoteCall call) throws ECFException {
 		sharedObject.sendFireRequest(registration, call);
 	}
 
@@ -69,7 +69,7 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	}
 
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-		return this.callSynch(new IRemoteCall() {
+		return this.callSync(new IRemoteCall() {
 
 			public String getMethod() {
 				return method.getName();
