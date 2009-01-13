@@ -83,7 +83,7 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 			try {
 				switch (invokeType) {
 				case MethodInvocationDialog.ASYNC_FIRE_AND_GO:
-					remoteService.callAsynch(remoteCall);
+					remoteService.callAsync(remoteCall);
 					break;
 				case MethodInvocationDialog.ASYNC_FUTURE_RESULT:
 					invokeFuture(cls, remoteService, remoteCall);
@@ -131,7 +131,7 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 			IRemoteCall remoteCall) throws InterruptedException,
 			InvocationTargetException, OperationCanceledException {
 		// Make async call with future result
-		final IFuture asyncResult = remoteService.callAsynch(remoteCall);
+		final IFuture asyncResult = remoteService.callAsync(remoteCall);
 		// Call blocking get and show result
 		showResult(cls.getName(), remoteCall, asyncResult.get());
 	}
@@ -139,7 +139,7 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 	private void invokeAsyncListener(final Class interfaceClass,
 			final IRemoteService remoteService, final IRemoteCall remoteCall) {
 		// Make async call
-		remoteService.callAsynch(remoteCall, new IRemoteCallListener() {
+		remoteService.callAsync(remoteCall, new IRemoteCallListener() {
 			public void handleEvent(IRemoteCallEvent event) {
 				if (event instanceof IRemoteCallCompleteEvent) {
 					final IRemoteCallCompleteEvent complete = (IRemoteCallCompleteEvent) event;
