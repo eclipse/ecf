@@ -59,7 +59,7 @@ public interface IRemoteService {
 	 *             thrown if disconnect occurs, caller not currently connected,
 	 *             or remote throws Exception
 	 */
-	public Object callSynch(IRemoteCall call) throws ECFException;
+	public Object callSync(IRemoteCall call) throws ECFException;
 
 	/**
 	 * Call remote method specified by call parameter asynchronously, and notify
@@ -76,7 +76,7 @@ public interface IRemoteService {
 	 * @see org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent
 	 * @see org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent
 	 */
-	public void callAsynch(IRemoteCall call, IRemoteCallListener listener);
+	public void callAsync(IRemoteCall call, IRemoteCallListener listener);
 
 	/**
 	 * Call remote method specified by call parameter asynchronously, and immediately
@@ -89,7 +89,7 @@ public interface IRemoteService {
 	 * for whether the result {@link IFuture#isDone()}, and then to {@link IAsyncResult#get(long)}
 	 * the actual result.
 	 */
-	public IFuture callAsynch(IRemoteCall call);
+	public IFuture callAsync(IRemoteCall call);
 
 	/**
 	 * Fire remote method specified by call parameter. The remote method will be
@@ -102,7 +102,7 @@ public interface IRemoteService {
 	 * @throws ECFException
 	 *             if caller not currently connected
 	 */
-	public void fireAsynch(IRemoteCall call) throws ECFException;
+	public void fireAsync(IRemoteCall call) throws ECFException;
 
 	/**
 	 * Get local proxy for remote interface. The local proxy may then be used to
