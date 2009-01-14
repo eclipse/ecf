@@ -132,14 +132,14 @@ public class SingleOperationFuture extends AbstractFuture {
 
 	private TimeoutException createTimeoutException(long timeout) {
 		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Operation timeout after " + timeout + "ms", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		timeoutException = new TimeoutException("Timout", timeout); //$NON-NLS-1$
+		timeoutException = new TimeoutException("Single operation timeout", timeout); //$NON-NLS-1$
 		return timeoutException;
 	}
 
 	private void throwIfCanceled() throws OperationCanceledException {
 		IProgressMonitor pm = getProgressMonitor();
 		if (pm != null && pm.isCanceled()) {
-			throw new OperationCanceledException("Operation canceled"); //$NON-NLS-1$
+			throw new OperationCanceledException("Single operation canceled"); //$NON-NLS-1$
 		}
 	}
 

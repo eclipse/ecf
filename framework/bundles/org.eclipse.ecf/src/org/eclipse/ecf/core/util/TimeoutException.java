@@ -17,7 +17,7 @@ public class TimeoutException extends Exception {
 
 	private static final long serialVersionUID = -3198307514925924297L;
 
-	public final long duration;
+	private final long duration;
 
 	public TimeoutException(long time) {
 		duration = time;
