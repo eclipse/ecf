@@ -11,6 +11,10 @@ package org.eclipse.ecf.core.util;
 
 import org.eclipse.core.runtime.*;
 
+/**
+ * Future implementation for a single operation.
+ * 
+ */
 public class SingleOperationFuture extends AbstractFuture {
 
 	private Object resultValue = null;

@@ -5,8 +5,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 public abstract class AbstractFuture implements IFuture, ISafeProgressRunner {
 
 	protected AbstractFuture() {
-		// Do nothing.  Note that subclasses must set 
-		// progressMonitor to some non-null value
+		// do thing.  Subclasses must override as appropriate
 	}
 
 	protected abstract boolean isCanceled();

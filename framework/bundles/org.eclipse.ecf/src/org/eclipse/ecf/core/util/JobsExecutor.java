@@ -69,7 +69,6 @@ public class JobsExecutor extends AbstractExecutor {
 			}
 
 			protected IStatus run(IProgressMonitor monitor) {
-				preSafeRun();
 				// First check to make sure things haven't been canceled
 				if (sof.isCanceled())
 					return sof.getStatus();
@@ -77,7 +76,6 @@ public class JobsExecutor extends AbstractExecutor {
 				setChildProgressMonitor(sof.getProgressMonitor(), monitor);
 				// Now run safely
 				safeRun(sof, runnable);
-				postSafeRun();
 				return sof.getStatus();
 			}
 		};
