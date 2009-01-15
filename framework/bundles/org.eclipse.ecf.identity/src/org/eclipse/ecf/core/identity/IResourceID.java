@@ -8,7 +8,7 @@ import java.net.URI;
  * and so can be identified via a {@link URI}.
  * 
  */
-public interface IResourceID {
+public interface IResourceID extends ID {
 
 	/**
 	 * Convert this resource ID to a {@link URI}.
