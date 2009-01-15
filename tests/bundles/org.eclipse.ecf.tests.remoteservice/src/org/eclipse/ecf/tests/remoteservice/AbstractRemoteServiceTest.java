@@ -277,7 +277,7 @@ public abstract class AbstractRemoteServiceTest extends
 			return;
 
 		traceCallStart("callSynch");
-		final Object result = service.callSynch(createRemoteConcat("Eclipse ",
+		final Object result = service.callSync(createRemoteConcat("Eclipse ",
 				"is cool"));
 		traceCallEnd("callSynch", result);
 
@@ -306,7 +306,7 @@ public abstract class AbstractRemoteServiceTest extends
 		// Following should throw exception because "concat1" method does not
 		// exist
 		try {
-			service.callSynch(createRemoteCall("concat1", new Object[] {
+			service.callSync(createRemoteCall("concat1", new Object[] {
 					"first", "second" }));
 			fail();
 		} catch (final ECFException e) {
@@ -316,7 +316,7 @@ public abstract class AbstractRemoteServiceTest extends
 		// Following should throw exception because wrong number of params for
 		// concat
 		try {
-			service.callSynch(createRemoteCall("concat",
+			service.callSync(createRemoteCall("concat",
 					new Object[] { "first" }));
 			fail();
 		} catch (final ECFException e) {
@@ -330,7 +330,7 @@ public abstract class AbstractRemoteServiceTest extends
 		if (service == null)
 			return;
 		traceCallStart("callAsynch");
-		service.callAsynch(createRemoteConcat("ECF ", "is cool"),
+		service.callAsync(createRemoteConcat("ECF ", "is cool"),
 				createRemoteCallListener());
 		traceCallEnd("callAsynch");
 	}
@@ -340,7 +340,7 @@ public abstract class AbstractRemoteServiceTest extends
 		if (service == null)
 			return;
 		traceCallStart("fireAsynch");
-		service.fireAsynch(createRemoteConcat("Eclipse ", "sucks"));
+		service.fireAsync(createRemoteConcat("Eclipse ", "sucks"));
 		traceCallEnd("fireAsynch");
 
 	}
@@ -361,7 +361,7 @@ public abstract class AbstractRemoteServiceTest extends
 		if (service == null)
 			return;
 		traceCallStart("callAsynchResult");
-		final IFuture result = service.callAsynch(createRemoteConcat(
+		final IFuture result = service.callAsync(createRemoteConcat(
 				"ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynchResult", result);
 		assertNotNull(result);
@@ -408,7 +408,7 @@ public abstract class AbstractRemoteServiceTest extends
 		assertTrue(remoteService != null);
 		traceCallStart("callAsynchResult");
 		final IFuture result = remoteService
-				.callAsynch(createRemoteConcat("ECF AsynchResults ", "are cool"));
+				.callAsync(createRemoteConcat("ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynch");
 		assertNotNull(result);
 	}
