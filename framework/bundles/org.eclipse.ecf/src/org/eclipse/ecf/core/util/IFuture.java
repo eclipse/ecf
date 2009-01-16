@@ -36,7 +36,7 @@ import org.eclipse.core.runtime.*;
  * @see IStatus
  * 
  */
-public interface IFuture {
+public interface IFuture extends IAdaptable {
 
 	/**
 	 * Cancel the operation

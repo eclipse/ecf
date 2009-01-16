@@ -10,7 +10,6 @@
 package org.eclipse.ecf.core.util;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 
 /**
  * <p>
@@ -20,7 +19,7 @@ import org.eclipse.core.runtime.jobs.Job;
  * </p>
  * <p>
  * Note that implementations may decide what/how to execute the given IProgressRunnable (i.e.
- * via a {@link Thread}, or a {@link Job}, or a ThreadPool or some other invocation mechanism.  
+ * via a {@link Thread}, or a Job, or a ThreadPool or some other invocation mechanism.  
  * But the intended contract of {@link #execute(IProgressRunnable, IProgressMonitor)} is that
  * the {@link IProgressRunnable#run(IProgressMonitor)} method will be invoked by
  * this executor in a timely manner <b>without</b> blocking.

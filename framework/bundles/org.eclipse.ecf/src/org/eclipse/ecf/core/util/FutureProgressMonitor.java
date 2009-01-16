@@ -12,12 +12,12 @@ package org.eclipse.ecf.core.util;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ProgressMonitorWrapper;
 
-class FutureProgressMonitor extends ProgressMonitorWrapper {
+public class FutureProgressMonitor extends ProgressMonitorWrapper {
 
 	private IProgressMonitor monitor;
 	private Object lock = new Object();
 
-	FutureProgressMonitor(IProgressMonitor progressMonitor) {
+	public FutureProgressMonitor(IProgressMonitor progressMonitor) {
 		super(progressMonitor);
 	}
 

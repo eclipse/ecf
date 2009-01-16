@@ -10,6 +10,7 @@
 package org.eclipse.ecf.core.util;
 
 import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
  * Future implementation for a single operation.
@@ -109,14 +110,14 @@ public class SingleOperationFuture extends AbstractFuture {
 			return false;
 		if (isCanceled())
 			return false;
-		setStatus(new Status(IStatus.CANCEL, "org.eclipse.equinox.future", IStatus.CANCEL, "Operation canceled", null)); //$NON-NLS-1$ //$NON-NLS-2$
+		setStatus(new Status(IStatus.CANCEL, ECFPlugin.PLUGIN_ID, IStatus.CANCEL, "Operation canceled", null)); //$NON-NLS-1$
 		getProgressMonitor().setCanceled(true);
 		notifyAll();
 		return true;
 	}
 
 	protected synchronized void setException(Throwable ex) {
-		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Exception during operation", ex)); //$NON-NLS-1$ //$NON-NLS-2$
+		setStatus(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, IStatus.ERROR, "Exception during operation", ex)); //$NON-NLS-1$
 		notifyAll();
 	}
 
@@ -131,7 +132,7 @@ public class SingleOperationFuture extends AbstractFuture {
 	}
 
 	private TimeoutException createTimeoutException(long timeout) {
-		setStatus(new Status(IStatus.ERROR, "org.eclipse.equinox.future", IStatus.ERROR, "Operation timeout after " + timeout + "ms", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		setStatus(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, IStatus.ERROR, "Operation timeout after " + timeout + "ms", null)); //$NON-NLS-1$ //$NON-NLS-2$
 		timeoutException = new TimeoutException("Single operation timeout", timeout); //$NON-NLS-1$
 		return timeoutException;
 	}
@@ -143,15 +144,28 @@ public class SingleOperationFuture extends AbstractFuture {
 		}
 	}
 
-	protected void setProgressMonitor(IProgressMonitor progressMonitor) {
+	protected synchronized void setProgressMonitor(IProgressMonitor progressMonitor) {
 		this.progressMonitor = progressMonitor;
 	}
 
-	protected IProgressMonitor getProgressMonitor() {
+	public synchronized IProgressMonitor getProgressMonitor() {
 		return progressMonitor;
 	}
 
-	protected synchronized boolean isCanceled() {
+	public synchronized boolean isCanceled() {
 		return getProgressMonitor().isCanceled();
 	}
+
+	public Object getAdapter(Class adapter) {
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this)) {
+			return this;
+		}
+		final IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
+		if (adapterManager == null)
+			return null;
+		return adapterManager.loadAdapter(this, adapter.getName());
+	}
+
 }

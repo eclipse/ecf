@@ -4,12 +4,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 public abstract class AbstractFuture implements IFuture, ISafeProgressRunner {
 
-	protected AbstractFuture() {
-		// do thing.  Subclasses must override as appropriate
-	}
+	public abstract boolean isCanceled();
 
-	protected abstract boolean isCanceled();
-
-	protected abstract IProgressMonitor getProgressMonitor();
+	public abstract IProgressMonitor getProgressMonitor();
 
 }

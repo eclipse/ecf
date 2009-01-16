@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * method will be called by the thread that calls {@link #execute(IProgressRunnable, IProgressMonitor)}, meaning
  * that calling #execute(IProgressRunnable, IProgressMonitor) may block the calling thread indefinitely.
  * </p>
- * @see JobsExecutor
  * @see ThreadsExecutor
  */
 public class ImmediateExecutor extends AbstractExecutor implements IExecutor, IRunnableExecutor {
