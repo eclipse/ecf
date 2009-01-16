@@ -26,42 +26,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.ethz.iks.util;
+package ch.ethz.iks.r_osgi.impl;
 
-import java.util.StringTokenizer;
+import ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage;
 
 /**
- * String utilities.
+ * Internal callback for asynchronous message calls.
  * 
- * @author Jan S. Rellermeyer, ETH Zurich
- * @since 0.2
+ * @author Jan S. Rellermeyer
  */
-public final class StringUtils {
+interface AsyncCallback {
 
-	/**
-	 * hide the default constructor.
-	 */
-	private StringUtils() {
-	}
+	void result(final RemoteOSGiMessage msg);
 
-	/**
-	 * transforms a string list into an array of Strings.
-	 * 
-	 * @param data
-	 *            the string list.
-	 * @param delim
-	 *            the list delimiter.
-	 * @return the array of strings.
-	 * @since 0.2
-	 */
-	public static String[] stringToArray(final String data, final String delim) {
-		final StringTokenizer tokenizer = new StringTokenizer(data, delim);
-		final String[] tokens = new String[tokenizer.countTokens()];
-		final int tokenCount = tokenizer.countTokens();
-		for (int i = 0; i < tokenCount; i++) {
-			tokens[i] = tokenizer.nextToken().trim();
-		}
-
-		return tokens;
-	}
 }

@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -38,9 +38,9 @@ import java.net.UnknownHostException;
 /**
  * <p>
  * URI is, well, an URI, as described in RFC 2396. Since
- * <code>java.net.URI</code> exists only since version 1.4, R-OSGi uses its
- * own URI class. This is a lightweight implementation, it does only as much as
- * is needed for R-OSGi. Furthermore, certain protocol schemes do address
+ * <code>java.net.URI</code> exists only since version 1.4, R-OSGi uses its own
+ * URI class. This is a lightweight implementation, it does only as much as is
+ * needed for R-OSGi. Furthermore, certain protocol schemes do address
  * resolution to avoid URI schizophrenia.
  * 
  * @author Jan S. Rellermeyer, ETH Zurich
@@ -84,8 +84,27 @@ public final class URI implements Serializable {
 	}
 
 	/**
+	 * create a new URI
+	 * 
+	 * @param uriString
+	 *            the string
+	 * @param hostLookup
+	 *            do a host lookup?
+	 */
+	public URI(final String uriString, final boolean hostLookup) {
+		parse(uriString);
+		if (hostLookup) {
+			try {
+				host = InetAddress.getByName(hostString);
+			} catch (final UnknownHostException uhe) {
+				host = null;
+			}
+		}
+	}
+
+	/**
 	 * convenience method for creating a new URI instance. Never throws and
-	 * exception, even if the input is unparsable. Should be used only in
+	 * exception, even if the input is not well-formed. Should be used only in
 	 * controlled environments when it can be assured that the input is valid.
 	 * 
 	 * @param uriString
@@ -95,7 +114,7 @@ public final class URI implements Serializable {
 	public static URI create(final String uriString) {
 		try {
 			return new URI(uriString);
-		} catch (Throwable t) {
+		} catch (final Throwable t) {
 			return null;
 		}
 	}
@@ -103,48 +122,40 @@ public final class URI implements Serializable {
 	/**
 	 * parse an URI.
 	 */
-	/**
-	 * parse an URI.
-	 */
 	private void parse(final String uriString) {
 		try {
 			int cs = 0;
 			int ce = uriString.length();
-			final int p1 = uriString.indexOf("://");
+			final int p1 = uriString.indexOf("://"); //$NON-NLS-1$
 			if (p1 > -1) {
 				scheme = uriString.substring(0, p1);
 				cs = p1 + 3;
 			} else {
-				scheme = "r-osgi";
+				scheme = "r-osgi"; //$NON-NLS-1$
 			}
-			final int p2 = uriString.lastIndexOf("#");
+			final int p2 = uriString.lastIndexOf("#"); //$NON-NLS-1$
 			if (p2 > -1) {
 				fragment = uriString.substring(p2 + 1);
 				ce = p2;
 			}
-			final int p3 = uriString.indexOf(":", cs);
+			final int p3 = uriString.indexOf(":", cs); //$NON-NLS-1$
 			if (p3 > -1) {
 				port = Integer.parseInt(uriString.substring(p3 + 1, ce));
 				ce = p3;
 			} else {
-				if ("r-osgi".equals(scheme)) {
+				if ("r-osgi".equals(scheme)) { //$NON-NLS-1$
+					// FIXME: this should be the actual port of this instance
+					// !?!
 					port = 9278;
-				} else if ("http".equals(scheme)) {
+				} else if ("http".equals(scheme)) { //$NON-NLS-1$
 					port = 80;
-				} else if ("https".equals(scheme)) {
+				} else if ("https".equals(scheme)) { //$NON-NLS-1$
 					port = 443;
 				}
 			}
 			hostString = uriString.substring(cs, ce);
-			if (scheme.startsWith("r-osgi") || scheme.startsWith("http")) {
-				try {
-					host = InetAddress.getByName(hostString);
-				} catch (UnknownHostException uhe) {
-					host = null;
-				}
-			}
-		} catch (IndexOutOfBoundsException i) {
-			throw new IllegalArgumentException(uriString + " caused "
+		} catch (final IndexOutOfBoundsException i) {
+			throw new IllegalArgumentException(uriString + " caused " //$NON-NLS-1$
 					+ i.getMessage());
 		}
 	}
@@ -190,9 +201,9 @@ public final class URI implements Serializable {
 	 * 
 	 * @param add
 	 *            the fragment.
-	 * @return
+	 * @return the resolved URI
 	 */
-	public URI resolve(String add) {
+	public URI resolve(final String add) {
 		return URI.create(toString() + add);
 	}
 
@@ -211,8 +222,8 @@ public final class URI implements Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return scheme + "://" + getHost() + ":" + port
-				+ (fragment == null ? "" : "#" + fragment);
+		return scheme + "://" + getHost() + ":" + port //$NON-NLS-1$ //$NON-NLS-2$
+				+ (fragment == null ? "" : "#" + fragment); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -221,7 +232,7 @@ public final class URI implements Serializable {
 	 */
 	public boolean equals(final Object other) {
 		if (other instanceof String) {
-			return equals(URI.create((String) other));
+			return equals(new URI((String) other, true));
 		} else if (other instanceof URI) {
 			final URI otherURI = (URI) other;
 			return scheme.equals(otherURI.scheme)

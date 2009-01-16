@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -70,7 +70,8 @@ public final class RemoteServiceEvent extends EventObject {
 	 * @param remoteRef
 	 *            the remote service reference.
 	 */
-	public RemoteServiceEvent(final int type, final RemoteServiceReference remoteRef) {
+	public RemoteServiceEvent(final int type,
+			final RemoteServiceReference remoteRef) {
 		super(remoteRef);
 		this.type = type;
 	}
@@ -90,7 +91,7 @@ public final class RemoteServiceEvent extends EventObject {
 	 * @return the remote service reference.
 	 */
 	public RemoteServiceReference getRemoteReference() {
-		return (RemoteServiceReference) this.getSource();
+		return (RemoteServiceReference) getSource();
 	}
 
 }

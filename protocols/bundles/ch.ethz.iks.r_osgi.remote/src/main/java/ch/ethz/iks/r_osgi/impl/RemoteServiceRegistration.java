@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
  *
@@ -82,29 +82,33 @@ final class RemoteServiceRegistration {
 	 * creates a new RemoteService object.
 	 * 
 	 * @param ref
-	 *            the <code>ServiceReference</code> under which the service
-	 *            was registered. Can be a surrogate.
+	 *            the <code>ServiceReference</code> under which the service was
+	 *            registered. Can be a surrogate.
 	 * @param service
 	 *            the <code>ServiceReference</code>
 	 * @throws ClassNotFoundException
 	 *             if one of the interface classes cannot be found.
 	 * @throws ServiceLocationException
 	 */
-	RemoteServiceRegistration(final ServiceReference ref, final ServiceReference service) throws ClassNotFoundException {
+	RemoteServiceRegistration(final ServiceReference ref,
+			final ServiceReference service) throws ClassNotFoundException {
 
-		this.reference = service;
-		this.serviceID = ((Long) service.getProperty(Constants.SERVICE_ID)).longValue();
-		this.interfaceNames = (String[]) service.getProperty(Constants.OBJECTCLASS);
+		reference = service;
+		serviceID = ((Long) service.getProperty(Constants.SERVICE_ID))
+				.longValue();
+		interfaceNames = (String[]) service.getProperty(Constants.OBJECTCLASS);
 
 		// get the service object
-		this.serviceObject = RemoteOSGiActivator.context.getService(service);
+		serviceObject = RemoteOSGiActivator.getActivator().getContext().getService(service);
 		if (serviceObject == null) {
 			throw new IllegalStateException("Service is not present."); //$NON-NLS-1$
 		}
 
 		// get the interface classes
-		final ClassLoader bundleLoader = serviceObject.getClass().getClassLoader();
-		final String[] interfaceNames = (String[]) service.getProperty(Constants.OBJECTCLASS);
+		final ClassLoader bundleLoader = serviceObject.getClass()
+				.getClassLoader();
+		final String[] interfaceNames = (String[]) service
+				.getProperty(Constants.OBJECTCLASS);
 		final int interfaceCount = interfaceNames.length;
 		final Class[] serviceInterfaces = new Class[interfaceCount];
 
@@ -113,18 +117,26 @@ final class RemoteServiceRegistration {
 			serviceInterfaces[i] = bundleLoader.loadClass(interfaceNames[i]);
 			final Method[] methods = serviceInterfaces[i].getMethods();
 			for (int j = 0; j < methods.length; j++) {
-				methodTable.put(methods[j].getName() + Type.getMethodDescriptor(methods[j]), methods[j]);
+				methodTable.put(methods[j].getName()
+						+ Type.getMethodDescriptor(methods[j]), methods[j]);
 			}
 		}
 
 		final Dictionary headers = service.getBundle().getHeaders();
-		final CodeAnalyzer analyzer = new CodeAnalyzer(bundleLoader, (String) headers.get(Constants.IMPORT_PACKAGE), (String) headers.get(Constants.EXPORT_PACKAGE));
+		final CodeAnalyzer analyzer = new CodeAnalyzer(bundleLoader,
+				(String) headers.get(Constants.IMPORT_PACKAGE),
+				(String) headers.get(Constants.EXPORT_PACKAGE));
 		try {
-			deliverServiceMessage = analyzer.analyze(interfaceNames, (String) ref.getProperty(RemoteOSGiService.SMART_PROXY), (String[]) ref.getProperty(RemoteOSGiService.INJECTIONS), (String) ref.getProperty(RemoteOSGiServiceImpl.PRESENTATION));
-			deliverServiceMessage.setServiceID(((Long) ref.getProperty(Constants.SERVICE_ID)).toString());
-		} catch (Exception e) {
+			deliverServiceMessage = analyzer.analyze(interfaceNames,
+					(String) ref.getProperty(RemoteOSGiService.SMART_PROXY),
+					(String[]) ref.getProperty(RemoteOSGiService.INJECTIONS),
+					(String) ref.getProperty(RemoteOSGiService.PRESENTATION));
+			deliverServiceMessage.setServiceID(((Long) ref
+					.getProperty(Constants.SERVICE_ID)).toString());
+		} catch (final Exception e) {
 			if (RemoteOSGiServiceImpl.log != null) {
-				RemoteOSGiServiceImpl.log.log(LogService.LOG_ERROR, "Error during remote service registration", e);
+				RemoteOSGiServiceImpl.log.log(LogService.LOG_ERROR,
+						"Error during remote service registration", e); //$NON-NLS-1$
 			}
 		}
 	}
@@ -221,13 +233,8 @@ final class RemoteServiceRegistration {
 	DeliverServiceMessage getDeliverServiceMessage() {
 		return deliverServiceMessage;
 	}
-	
-	/**
-	 * get a string representation.
-	 * @return a string representation.
-	 */
-	public String toString() {
-		return "RemoteServiceRegistration{" + reference.toString() + "}";
-	}
 
+	public String toString() {
+		return "RemoteServiceRegistration{" + reference.toString() + "}"; //$NON-NLS-1$ //$NON-NLS-2$
+	}
 }

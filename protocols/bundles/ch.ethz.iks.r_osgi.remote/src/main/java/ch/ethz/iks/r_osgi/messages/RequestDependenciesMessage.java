@@ -26,70 +26,87 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.ethz.iks.r_osgi.channels;
+package ch.ethz.iks.r_osgi.messages;
 
 import java.io.IOException;
-
-import ch.ethz.iks.r_osgi.Remoting;
-import ch.ethz.iks.r_osgi.URI;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Arrays;
 
 /**
- * Interface for services that create transport channel implementations. Must
- * not necessarily be an OSGi service factory, since this service is only used
- * by the R-OSGi bundle.
+ * Request bundle dependencies.
  * 
- * @author Jan S. Rellermeyer, ETH Zurich
- * @since 0.6
+ * @author Jan S. Rellermeyer
+ * 
  */
-public interface NetworkChannelFactory {
+public class RequestDependenciesMessage extends RemoteOSGiMessage {
 
 	/**
-	 * this constant should be set in the properties. The <code>String</code>
-	 * set to this property is matched with the protocol argument that client
-	 * bundles requesting for connections. Can also be a <code>String[]</code>.
+	 * the packages.
 	 */
-	String PROTOCOL_PROPERTY = "protocol"; //$NON-NLS-1$
+	private String[] packages;
 
 	/**
-	 * get a new connection to a remote OSGi framework.
+	 * create a new message.
+	 */
+	public RequestDependenciesMessage() {
+		super(RemoteOSGiMessage.REQUEST_DEPENDENCIES);
+	}
+
+	/**
+	 * create a new message from the wire.
 	 * 
-	 * @param endpoint
-	 *            the channel endpoint.
-	 * @param endpointURI
-	 *            the endpoint to connect to.
-	 * @return a new transport channel that is typically already connected to
-	 *         the endpoint and ready to send messages.
+	 * @param input
+	 *            the input stream.
 	 * @throws IOException
-	 *             in case of connection errors.
+	 *             in case of IO problems.
 	 */
-	NetworkChannel getConnection(final ChannelEndpoint endpoint,
-			final URI endpointURI) throws IOException;
+	public RequestDependenciesMessage(final ObjectInputStream input)
+			throws IOException {
+		super(RemoteOSGiMessage.REQUEST_DEPENDENCIES);
+		packages = readStringArray(input);
+	}
 
 	/**
-	 * activate the network channel factory. Called by R-OSGi.
-	 * 
-	 * @param remoting
-	 * @throws IOException
+	 * write the body of the message to the wire.
 	 */
-	void activate(final Remoting remoting) throws IOException;
+	public void writeBody(final ObjectOutputStream output) throws IOException {
+		writeStringArray(output, packages);
+	}
 
 	/**
-	 * deactivate the network channel factory. Called by R-OSGi.
+	 * get the packages that have to be resolved.
 	 * 
-	 * @param remoting
-	 * @throws IOException
+	 * @return the packages.
 	 */
-	void deactivate(final Remoting remoting) throws IOException;
+	public String[] getPackages() {
+		return packages;
+	}
 
 	/**
-	 * return the port number on which the factory listens for incoming
-	 * connections.
+	 * set the packages that have to be resolved.
 	 * 
-	 * @param protocol
-	 *            the protocol, important if the factory can create channels for
-	 *            multiple protocols, e.g., "http" and "https".
-	 * @return the port number.
+	 * @param packages
+	 *            the packages.
 	 */
-	int getListeningPort(final String protocol);
+	public void setPackages(final String[] packages) {
+		this.packages = packages;
+	}
+
+	/**
+	 * String representation for debug outputs.
+	 * 
+	 * @return a string representation.
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		final StringBuffer buffer = new StringBuffer();
+		buffer.append("[REQUEST_DEPENDENCIES]"); //$NON-NLS-1$
+		buffer.append("- XID: "); //$NON-NLS-1$
+		buffer.append(xid);
+		buffer.append(", packages: "); //$NON-NLS-1$
+		buffer.append(Arrays.asList(packages));
+		return buffer.toString();
+	}
 
 }

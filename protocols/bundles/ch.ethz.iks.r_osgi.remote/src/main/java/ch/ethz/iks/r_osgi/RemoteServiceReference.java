@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -59,8 +59,8 @@ public interface RemoteServiceReference {
 	 * 
 	 * @param key
 	 *            the key.
-	 * @return the property belonging to the given key, or <code>null</code>
-	 *         if there is no such property set.
+	 * @return the property belonging to the given key, or <code>null</code> if
+	 *         there is no such property set.
 	 */
 	Object getProperty(String key);
 

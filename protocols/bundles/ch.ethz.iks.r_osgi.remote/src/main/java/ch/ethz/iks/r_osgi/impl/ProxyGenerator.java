@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
  *
@@ -30,8 +30,6 @@ package ch.ethz.iks.r_osgi.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -45,12 +43,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.CRC32;
+
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;
@@ -58,9 +57,10 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.osgi.service.log.LogService;
-import ch.ethz.iks.r_osgi.URI;
+
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import ch.ethz.iks.r_osgi.Remoting;
+import ch.ethz.iks.r_osgi.URI;
 import ch.ethz.iks.r_osgi.channels.ChannelEndpoint;
 import ch.ethz.iks.r_osgi.messages.DeliverServiceMessage;
 import ch.ethz.iks.r_osgi.types.ServiceUIComponent;
@@ -113,12 +113,12 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 	 * a list of super interfaces describing the whole interface hierarchy of
 	 * the service interface.
 	 */
-	private List superInterfaces = new ArrayList();
+	private final List superInterfaces = new ArrayList();
 
 	/**
 	 * the set of visited interfaces to avoid loops
 	 */
-	private Set visitedInterfaces = new HashSet();
+	private final Set visitedInterfaces = new HashSet();
 
 	/**
 	 * smart proxy class name.
@@ -145,17 +145,17 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 	/**
 	 * the boxed types.
 	 */
-	private static final String[] BOXED_TYPE = { "ERROR", "java/lang/Boolean",
-			"java/lang/Character", "java/lang/Byte", "java/lang/Short",
-			"java/lang/Integer", "java/lang/Float", "java/lang/Long",
-			"java/lang/Double" };
+	private static final String[] BOXED_TYPE = { "ERROR", "java/lang/Boolean", //$NON-NLS-1$ //$NON-NLS-2$
+			"java/lang/Character", "java/lang/Byte", "java/lang/Short", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"java/lang/Integer", "java/lang/Float", "java/lang/Long", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"java/lang/Double" }; //$NON-NLS-1$
 
 	/**
 	 * the unbox methods.
 	 */
-	private static final String[] UNBOX_METHOD = { "ERROR", "booleanValue",
-			"charValue", "byteValue", "shortValue", "intValue", "floatValue",
-			"longValue", "doubleValue" };
+	private static final String[] UNBOX_METHOD = { "ERROR", "booleanValue", //$NON-NLS-1$ //$NON-NLS-2$
+			"charValue", "byteValue", "shortValue", "intValue", "floatValue", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
+			"longValue", "doubleValue" }; //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * the character table for generating a signature from an IP address.
@@ -201,7 +201,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 	protected InputStream generateProxyBundle(final URI service,
 			final DeliverServiceMessage deliv) throws IOException {
 
-		this.uri = service.toString();
+		uri = service.toString();
 		sourceID = generateSourceID(uri);
 		implemented = new HashSet();
 		injections = deliv.getInjections();
@@ -216,26 +216,26 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 
 		// generate Jar
 		final Manifest mf = new Manifest();
-		Attributes attr = mf.getMainAttributes();
-		attr.putValue("Manifest-Version", "1.0");
-		attr.putValue("Created-By", "R-OSGi Proxy Generator");
-		attr.putValue("Bundle-Activator", className);
-		attr.putValue("Bundle-Classpath", ".");
+		final Attributes attr = mf.getMainAttributes();
+		attr.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
+		attr.putValue("Created-By", "R-OSGi Proxy Generator"); //$NON-NLS-1$ //$NON-NLS-2$
+		attr.putValue("Bundle-Activator", className); //$NON-NLS-1$
+		attr.putValue("Bundle-Classpath", "."); //$NON-NLS-1$ //$NON-NLS-2$
 		attr
 				.putValue(
-						"Import-Package",
-						"org.osgi.framework, ch.ethz.iks.r_osgi, ch.ethz.iks.r_osgi.types, ch.ethz.iks.r_osgi.channels"
-								+ ("".equals(deliv.getImports()) ? "" : ", ")
+						"Import-Package", //$NON-NLS-1$
+						"org.osgi.framework, ch.ethz.iks.r_osgi, ch.ethz.iks.r_osgi.types, ch.ethz.iks.r_osgi.channels" //$NON-NLS-1$
+								+ ("".equals(deliv.getImports()) ? "" : ", ") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 								+ deliv.getImports());
-		if (!"".equals(deliv.getExports())) {
-			attr.putValue("Export-Package", deliv.getExports());
+		if (!"".equals(deliv.getExports())) { //$NON-NLS-1$
+			attr.putValue("Export-Package", deliv.getExports()); //$NON-NLS-1$
 		}
 		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		final JarOutputStream out = new JarOutputStream(bout, mf);
 
 		CRC32 crc = new CRC32();
 		crc.update(bytes, 0, bytes.length);
-		jarEntry = new JarEntry(implName + ".class");
+		jarEntry = new JarEntry(implName + ".class"); //$NON-NLS-1$
 		jarEntry.setSize(bytes.length);
 		jarEntry.setCrc(crc.getValue());
 
@@ -251,7 +251,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 
 			String name = injectionNames[i];
 			// the original smart proxy class is omitted
-			if (name.equals(smartProxyClassNameDashed + ".class")) {
+			if (name.equals(smartProxyClassNameDashed + ".class")) { //$NON-NLS-1$
 				continue;
 			}
 			final byte[] data = (byte[]) injections.get(name);
@@ -315,12 +315,12 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 	private byte[] generateProxyClass(final String[] interfaceNames,
 			final byte[] interfaceClass) throws IOException {
 		serviceInterfaceNames = interfaceNames;
-		implName = "proxy/" + sourceID + "/"
-				+ interfaceNames[0].replace('.', '/') + "Impl";
+		implName = "proxy/" + sourceID + "/" //$NON-NLS-1$ //$NON-NLS-2$
+				+ interfaceNames[0].replace('.', '/') + "Impl"; //$NON-NLS-1$
 
 		final ClassReader reader = new ClassReader(interfaceClass);
 		writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-		reader.accept(this, null, ClassReader.SKIP_DEBUG);
+		reader.accept(this, ClassReader.SKIP_DEBUG);
 		visitedInterfaces.add(interfaceNames[0].replace('.', '/'));
 		recurseInterfaceHierarchy();
 		serviceInterfaceNames = null;
@@ -346,17 +346,17 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			final byte[] interfaceClass, final String proxyName,
 			final byte[] proxyClass) throws IOException {
 		serviceInterfaceNames = interfaceNames;
-		implName = "proxy/" + sourceID + "/" + proxyName.replace('.', '/')
-				+ "Impl";
+		implName = "proxy/" + sourceID + "/" + proxyName.replace('.', '/') //$NON-NLS-1$ //$NON-NLS-2$
+				+ "Impl"; //$NON-NLS-1$
 		smartProxyClassName = proxyName;
 		smartProxyClassNameDashed = smartProxyClassName.replace('.', '/');
 		final ClassReader reader = new ClassReader(proxyClass);
 		writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-		reader.accept(this, null, ClassReader.SKIP_DEBUG);
+		reader.accept(this, ClassReader.SKIP_DEBUG);
 		visitedInterfaces.add(smartProxyClassNameDashed);
 		recurseInterfaceHierarchy();
 		serviceInterfaceNames = null;
-		byte[] bytes = writer.toByteArray();
+		final byte[] bytes = writer.toByteArray();
 		return bytes;
 	}
 
@@ -367,17 +367,17 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				final String superIface = (String) superInterfaces.remove(0);
 				if (!visitedInterfaces.contains(superIface)) {
 					final byte[] bytes = (byte[]) injections.get(superIface
-							+ ".class");
+							+ ".class"); //$NON-NLS-1$
 					final ClassReader reader;
 					if (bytes == null) {
 						try {
 							reader = new ClassReader(Class.forName(
 									superIface.replace('/', '.'))
 									.getClassLoader().getResourceAsStream(
-											superIface + ".class"));
-						} catch (IOException ioe) {
-							throw new IOException("While processing "
-									+ superIface.replace('/', '.') + ": "
+											superIface + ".class")); //$NON-NLS-1$
+						} catch (final IOException ioe) {
+							throw new IOException("While processing " //$NON-NLS-1$
+									+ superIface.replace('/', '.') + ": " //$NON-NLS-1$
 									+ ioe.getMessage());
 						}
 					} else {
@@ -385,10 +385,10 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 					}
 
 					visitedInterfaces.add(superIface);
-					reader.accept(this, null, 0);
+					reader.accept(this, 0);
 				}
 			}
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -422,7 +422,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 
 			if (RemoteOSGiServiceImpl.PROXY_DEBUG) {
 				RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
-						"creating proxy class " + implName);
+						"creating proxy class " + implName); //$NON-NLS-1$
 			}
 
 			final String[] serviceInterfaces = new String[serviceInterfaceNames.length + 1];
@@ -430,23 +430,23 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				serviceInterfaces[i] = serviceInterfaceNames[i].replace('.',
 						'/');
 			}
-			serviceInterfaces[serviceInterfaceNames.length] = "org/osgi/framework/BundleActivator";
+			serviceInterfaces[serviceInterfaceNames.length] = "org/osgi/framework/BundleActivator"; //$NON-NLS-1$
 
 			if ((access & ACC_INTERFACE) == 0) {
 				// we have a smart proxy
 				final Set ifaces = new HashSet();
 				ifaces.addAll(Arrays.asList(interfaces));
-				ifaces.add("org/osgi/framework/BundleActivator");
+				ifaces.add("org/osgi/framework/BundleActivator"); //$NON-NLS-1$
 				ifaces.addAll(Arrays.asList(serviceInterfaces));
 				// V1_1
 				writer.visit(
-						(version >= V1_5 && RemoteOSGiServiceImpl.IS_5) ? V1_5
+						(version >= V1_5 && RemoteOSGiServiceImpl.IS_JAVA5) ? V1_5
 								: V1_2, ACC_PUBLIC + ACC_SUPER, implName, null,
 						superName, (String[]) ifaces.toArray(new String[ifaces
 								.size()]));
 
 				if (java.util.Arrays.asList(interfaces).contains(
-						"ch/ethz/iks/r_osgi/SmartProxy")) {
+						"ch/ethz/iks/r_osgi/SmartProxy")) { //$NON-NLS-1$
 					addLifecycleSupport = true;
 				}
 
@@ -454,21 +454,21 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 
 				// we have an interface
 				writer.visit(
-						(version >= V1_5 && RemoteOSGiServiceImpl.IS_5) ? V1_5
+						(version >= V1_5 && RemoteOSGiServiceImpl.IS_JAVA5) ? V1_5
 								: V1_2, ACC_PUBLIC + ACC_SUPER, implName, null,
-						"java/lang/Object", serviceInterfaces);
+						"java/lang/Object", serviceInterfaces); //$NON-NLS-1$
 				if (RemoteOSGiServiceImpl.PROXY_DEBUG) {
 					RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
-							"Creating Proxy Bundle from Interfaces "
+							"Creating Proxy Bundle from Interfaces " //$NON-NLS-1$
 									+ Arrays.asList(serviceInterfaceNames));
 				}
 
 				// creates a MethodWriter for the (implicit) constructor
-				method = writer.visitMethod(ACC_PUBLIC, "<init>", "()V", null,
+				method = writer.visitMethod(ACC_PUBLIC, "<init>", "()V", null, //$NON-NLS-1$ //$NON-NLS-2$
 						null);
 				method.visitVarInsn(ALOAD, 0);
-				method.visitMethodInsn(INVOKESPECIAL, "java/lang/Object",
-						"<init>", "()V");
+				method.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", //$NON-NLS-1$
+						"<init>", "()V"); //$NON-NLS-1$ //$NON-NLS-2$
 				method.visitInsn(RETURN);
 				method.visitMaxs(2, 1);
 				method.visitEnd();
@@ -482,41 +482,41 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				}
 			}
 
-			field = writer.visitField(ACC_PRIVATE, "endpoint", "L" + ENDPOINT_I
-					+ ";", null, null);
+			field = writer.visitField(ACC_PRIVATE, "endpoint", "L" + ENDPOINT_I //$NON-NLS-1$ //$NON-NLS-2$
+					+ ";", null, null); //$NON-NLS-1$
 			field.visitEnd();
 
 			{
-				method = writer.visitMethod(ACC_PUBLIC, "start",
-						"(Lorg/osgi/framework/BundleContext;)V", null,
-						new String[] { "java/lang/Exception" });
+				method = writer.visitMethod(ACC_PUBLIC, "start", //$NON-NLS-1$
+						"(Lorg/osgi/framework/BundleContext;)V", null, //$NON-NLS-1$
+						new String[] { "java/lang/Exception" }); //$NON-NLS-1$
 				method.visitCode();
 				method.visitVarInsn(ALOAD, 1);
 				method.visitVarInsn(ALOAD, 1);
 				method.visitLdcInsn(Remoting.class.getName());
 				method
 						.visitMethodInsn(INVOKEINTERFACE,
-								"org/osgi/framework/BundleContext",
-								"getServiceReference",
-								"(Ljava/lang/String;)Lorg/osgi/framework/ServiceReference;");
+								"org/osgi/framework/BundleContext", //$NON-NLS-1$
+								"getServiceReference", //$NON-NLS-1$
+								"(Ljava/lang/String;)Lorg/osgi/framework/ServiceReference;"); //$NON-NLS-1$
 				method
 						.visitMethodInsn(INVOKEINTERFACE,
-								"org/osgi/framework/BundleContext",
-								"getService",
-								"(Lorg/osgi/framework/ServiceReference;)Ljava/lang/Object;");
+								"org/osgi/framework/BundleContext", //$NON-NLS-1$
+								"getService", //$NON-NLS-1$
+								"(Lorg/osgi/framework/ServiceReference;)Ljava/lang/Object;"); //$NON-NLS-1$
 				method.visitTypeInsn(CHECKCAST, REMOTING_I);
 				method.visitVarInsn(ASTORE, 2);
 				method.visitVarInsn(ALOAD, 0);
 				method.visitVarInsn(ALOAD, 2);
 				method.visitLdcInsn(uri);
 				method.visitMethodInsn(INVOKEINTERFACE, REMOTING_I,
-						"getEndpoint", "(Ljava/lang/String;)L" + ENDPOINT_I
-								+ ";");
-				method.visitFieldInsn(PUTFIELD, implName, "endpoint", "L"
-						+ ENDPOINT_I + ";");
+						"getEndpoint", "(Ljava/lang/String;)L" + ENDPOINT_I //$NON-NLS-1$ //$NON-NLS-2$
+								+ ";"); //$NON-NLS-1$
+				method.visitFieldInsn(PUTFIELD, implName, "endpoint", "L" //$NON-NLS-1$ //$NON-NLS-2$
+						+ ENDPOINT_I + ";"); //$NON-NLS-1$
 				method.visitVarInsn(ALOAD, 0);
-				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L"
-						+ ENDPOINT_I + ";");
+				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L" //$NON-NLS-1$ //$NON-NLS-2$
+						+ ENDPOINT_I + ";"); //$NON-NLS-1$
 				method.visitLdcInsn(uri);
 				method.visitVarInsn(ALOAD, 1);
 
@@ -526,7 +526,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				} else {
 					method.visitIntInsn(BIPUSH, len);
 				}
-				method.visitTypeInsn(ANEWARRAY, "java/lang/String");
+				method.visitTypeInsn(ANEWARRAY, "java/lang/String"); //$NON-NLS-1$
 				for (int i = 0; i < len && i < 6; i++) {
 					method.visitInsn(DUP);
 					method.visitInsn(ICONST[i]);
@@ -541,42 +541,42 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				}
 				method.visitVarInsn(ALOAD, 0);
 				method.visitVarInsn(ALOAD, 0);
-				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L"
-						+ ENDPOINT_I + ";");
+				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L" //$NON-NLS-1$ //$NON-NLS-2$
+						+ ENDPOINT_I + ";"); //$NON-NLS-1$
 				method.visitLdcInsn(uri);
 				method.visitMethodInsn(INVOKEINTERFACE, ENDPOINT_I,
-						"getProperties",
-						"(Ljava/lang/String;)Ljava/util/Dictionary;");
+						"getProperties", //$NON-NLS-1$
+						"(Ljava/lang/String;)Ljava/util/Dictionary;"); //$NON-NLS-1$
 				method
 						.visitMethodInsn(
 								INVOKEINTERFACE,
-								"org/osgi/framework/BundleContext",
-								"registerService",
-								"([Ljava/lang/String;Ljava/lang/Object;Ljava/util/Dictionary;)Lorg/osgi/framework/ServiceRegistration;");
+								"org/osgi/framework/BundleContext", //$NON-NLS-1$
+								"registerService", //$NON-NLS-1$
+								"([Ljava/lang/String;Ljava/lang/Object;Ljava/util/Dictionary;)Lorg/osgi/framework/ServiceRegistration;"); //$NON-NLS-1$
 				method
 						.visitMethodInsn(INVOKEINTERFACE, ENDPOINT_I,
-								"trackRegistration",
-								"(Ljava/lang/String;Lorg/osgi/framework/ServiceRegistration;)V");
+								"trackRegistration", //$NON-NLS-1$
+								"(Ljava/lang/String;Lorg/osgi/framework/ServiceRegistration;)V"); //$NON-NLS-1$
 				method.visitVarInsn(ALOAD, 0);
-				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L"
-						+ ENDPOINT_I + ";");
+				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L" //$NON-NLS-1$ //$NON-NLS-2$
+						+ ENDPOINT_I + ";"); //$NON-NLS-1$
 				method.visitLdcInsn(uri);
 				method.visitMethodInsn(INVOKEINTERFACE, ENDPOINT_I,
-						"getProperties",
-						"(Ljava/lang/String;)Ljava/util/Dictionary;");
+						"getProperties", //$NON-NLS-1$
+						"(Ljava/lang/String;)Ljava/util/Dictionary;"); //$NON-NLS-1$
 				method.visitLdcInsn(RemoteOSGiService.PRESENTATION);
-				method.visitMethodInsn(INVOKEVIRTUAL, "java/util/Dictionary",
-						"get", "(Ljava/lang/Object;)Ljava/lang/Object;");
-				method.visitTypeInsn(CHECKCAST, "java/lang/String");
+				method.visitMethodInsn(INVOKEVIRTUAL, "java/util/Dictionary", //$NON-NLS-1$
+						"get", "(Ljava/lang/Object;)Ljava/lang/Object;"); //$NON-NLS-1$ //$NON-NLS-2$
+				method.visitTypeInsn(CHECKCAST, "java/lang/String"); //$NON-NLS-1$
 				method.visitVarInsn(ASTORE, 3);
 				method.visitVarInsn(ALOAD, 3);
-				Label l0 = new Label();
+				final Label l0 = new Label();
 				method.visitJumpInsn(IFNULL, l0);
 				method.visitVarInsn(ALOAD, 3);
-				method.visitMethodInsn(INVOKESTATIC, "java/lang/Class",
-						"forName", "(Ljava/lang/String;)Ljava/lang/Class;");
-				method.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class",
-						"newInstance", "()Ljava/lang/Object;");
+				method.visitMethodInsn(INVOKESTATIC, "java/lang/Class", //$NON-NLS-1$
+						"forName", "(Ljava/lang/String;)Ljava/lang/Class;"); //$NON-NLS-1$ //$NON-NLS-2$
+				method.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", //$NON-NLS-1$
+						"newInstance", "()Ljava/lang/Object;"); //$NON-NLS-1$ //$NON-NLS-2$
 				method.visitTypeInsn(CHECKCAST, UICOMP_I);
 				method.visitVarInsn(ASTORE, 4);
 				method.visitVarInsn(ALOAD, 4);
@@ -584,56 +584,56 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				method.visitVarInsn(ALOAD, 1);
 				method
 						.visitMethodInsn(INVOKEINTERFACE, UICOMP_I,
-								"initComponent",
-								"(Ljava/lang/Object;Lorg/osgi/framework/BundleContext;)V");
+								"initComponent", //$NON-NLS-1$
+								"(Ljava/lang/Object;Lorg/osgi/framework/BundleContext;)V"); //$NON-NLS-1$
 				method.visitVarInsn(ALOAD, 1);
 				method.visitLdcInsn(ServiceUIComponent.class.getName());
 				method.visitVarInsn(ALOAD, 4);
 				method.visitVarInsn(ALOAD, 0);
-				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L"
-						+ ENDPOINT_I + ";");
+				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L" //$NON-NLS-1$ //$NON-NLS-2$
+						+ ENDPOINT_I + ";"); //$NON-NLS-1$
 				method.visitLdcInsn(uri);
 				method.visitMethodInsn(INVOKEINTERFACE, ENDPOINT_I,
-						"getPresentationProperties",
-						"(Ljava/lang/String;)Ljava/util/Dictionary;");
+						"getPresentationProperties", //$NON-NLS-1$
+						"(Ljava/lang/String;)Ljava/util/Dictionary;"); //$NON-NLS-1$
 				method
 						.visitMethodInsn(
 								INVOKEINTERFACE,
-								"org/osgi/framework/BundleContext",
-								"registerService",
-								"(Ljava/lang/String;Ljava/lang/Object;Ljava/util/Dictionary;)Lorg/osgi/framework/ServiceRegistration;");
+								"org/osgi/framework/BundleContext", //$NON-NLS-1$
+								"registerService", //$NON-NLS-1$
+								"(Ljava/lang/String;Ljava/lang/Object;Ljava/util/Dictionary;)Lorg/osgi/framework/ServiceRegistration;"); //$NON-NLS-1$
 				method.visitInsn(POP);
 				method.visitLabel(l0);
 				if (addLifecycleSupport) {
 					method.visitVarInsn(ALOAD, 0);
 					method.visitVarInsn(ALOAD, 1);
-					method.visitMethodInsn(INVOKEVIRTUAL, implName, "started",
-							"(Lorg/osgi/framework/BundleContext;)V");
+					method.visitMethodInsn(INVOKEVIRTUAL, implName, "started", //$NON-NLS-1$
+							"(Lorg/osgi/framework/BundleContext;)V"); //$NON-NLS-1$
 				}
 				method.visitInsn(RETURN);
 				method.visitMaxs(7, 5);
 				method.visitEnd();
 			}
 			{
-				method = writer.visitMethod(ACC_PUBLIC, "stop",
-						"(Lorg/osgi/framework/BundleContext;)V", null,
-						new String[] { "java/lang/Exception" });
+				method = writer.visitMethod(ACC_PUBLIC, "stop", //$NON-NLS-1$
+						"(Lorg/osgi/framework/BundleContext;)V", null, //$NON-NLS-1$
+						new String[] { "java/lang/Exception" }); //$NON-NLS-1$
 				method.visitCode();
 				method.visitVarInsn(ALOAD, 0);
-				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L"
-						+ ENDPOINT_I + ";");
+				method.visitFieldInsn(GETFIELD, implName, "endpoint", "L" //$NON-NLS-1$//$NON-NLS-2$
+						+ ENDPOINT_I + ";"); //$NON-NLS-1$
 				method.visitLdcInsn(uri);
 				method.visitMethodInsn(INVOKEINTERFACE, ENDPOINT_I,
-						"untrackRegistration", "(Ljava/lang/String;)V");
+						"untrackRegistration", "(Ljava/lang/String;)V"); //$NON-NLS-1$ //$NON-NLS-2$
 				method.visitVarInsn(ALOAD, 0);
 				method.visitInsn(ACONST_NULL);
-				method.visitFieldInsn(PUTFIELD, implName, "endpoint", "L"
-						+ ENDPOINT_I + ";");
+				method.visitFieldInsn(PUTFIELD, implName, "endpoint", "L" //$NON-NLS-1$ //$NON-NLS-2$
+						+ ENDPOINT_I + ";"); //$NON-NLS-1$
 				if (addLifecycleSupport) {
 					method.visitVarInsn(ALOAD, 0);
 					method.visitVarInsn(ALOAD, 1);
-					method.visitMethodInsn(INVOKEVIRTUAL, implName, "stopped",
-							"(Lorg/osgi/framework/BundleContext;)V");
+					method.visitMethodInsn(INVOKEVIRTUAL, implName, "stopped", //$NON-NLS-1$
+							"(Lorg/osgi/framework/BundleContext;)V"); //$NON-NLS-1$
 				}
 				method.visitInsn(RETURN);
 				method.visitMaxs(2, 2);
@@ -736,7 +736,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 	 */
 	public FieldVisitor visitField(final int access, final String name,
 			final String desc, final String signature, final Object value) {
-		if (name.equals("endpoint")) {
+		if (name.equals("endpoint")) { //$NON-NLS-1$
 			return null;
 		}
 		return writer.visitField(access, name, checkRewriteDesc(desc),
@@ -772,12 +772,12 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			boolean needsBoxing = false;
 
 			methodAccess = (methodAccess ^ ACC_ABSTRACT);
-			MethodVisitor method = writer.visitMethod(methodAccess, name, desc,
-					signature, exceptions);
+			final MethodVisitor method = writer.visitMethod(methodAccess, name,
+					desc, signature, exceptions);
 
 			method.visitVarInsn(ALOAD, 0);
-			method.visitFieldInsn(GETFIELD, implName, "endpoint", "L"
-					+ ENDPOINT_I + ";");
+			method.visitFieldInsn(GETFIELD, implName, "endpoint", "L" //$NON-NLS-1$ //$NON-NLS-2$
+					+ ENDPOINT_I + ";"); //$NON-NLS-1$
 			method.visitLdcInsn(uri);
 			method.visitLdcInsn(name + desc);
 			if (args.length < 5) {
@@ -785,7 +785,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			} else {
 				method.visitIntInsn(BIPUSH, args.length);
 			}
-			method.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+			method.visitTypeInsn(ANEWARRAY, "java/lang/Object"); //$NON-NLS-1$
 			int slot = 1;
 
 			// boxing of primitive type arguments
@@ -801,12 +801,12 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 					method.visitInsn(DUP);
 					method.visitInsn(ICONST[i]);
 					method.visitTypeInsn(NEW,
-							"ch/ethz/iks/r_osgi/types/BoxedPrimitive");
+							"ch/ethz/iks/r_osgi/types/BoxedPrimitive"); //$NON-NLS-1$
 					method.visitInsn(DUP);
 					method.visitVarInsn(args[i].getOpcode(ILOAD), slot);
 					method.visitMethodInsn(INVOKESPECIAL,
-							"ch/ethz/iks/r_osgi/types/BoxedPrimitive",
-							"<init>", "(" + args[i].getDescriptor() + ")V");
+							"ch/ethz/iks/r_osgi/types/BoxedPrimitive", //$NON-NLS-1$
+							"<init>", "(" + args[i].getDescriptor() + ")V"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					method.visitInsn(AASTORE);
 					slot += args[i].getSize();
 					needsBoxing = true;
@@ -825,12 +825,12 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 					method.visitInsn(DUP);
 					method.visitIntInsn(BIPUSH, i);
 					method.visitTypeInsn(NEW,
-							"ch/ethz/iks/r_osgi/types/BoxedPrimitive");
+							"ch/ethz/iks/r_osgi/types/BoxedPrimitive"); //$NON-NLS-1$
 					method.visitInsn(DUP);
 					method.visitVarInsn(args[i].getOpcode(ILOAD), slot);
 					method.visitMethodInsn(INVOKESPECIAL,
-							"ch/ethz/iks/r_osgi/types/BoxedPrimitive",
-							"<init>", "(" + args[i].getDescriptor() + ")V");
+							"ch/ethz/iks/r_osgi/types/BoxedPrimitive", //$NON-NLS-1$
+							"<init>", "(" + args[i].getDescriptor() + ")V"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					method.visitInsn(AASTORE);
 					slot += args[i].getSize();
 					needsBoxing = true;
@@ -838,8 +838,8 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			}
 			method
 					.visitMethodInsn(INVOKEINTERFACE, ENDPOINT_I,
-							"invokeMethod",
-							"(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;");
+							"invokeMethod", //$NON-NLS-1$
+							"(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;"); //$NON-NLS-1$
 
 			// unboxing of primitive type return values.
 			final Type returnType = Type.getReturnType(desc);
@@ -859,7 +859,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			case Type.BYTE:
 				method.visitTypeInsn(CHECKCAST, BOXED_TYPE[sort]);
 				method.visitMethodInsn(INVOKEVIRTUAL, BOXED_TYPE[sort],
-						UNBOX_METHOD[sort], "()" + returnType.getDescriptor());
+						UNBOX_METHOD[sort], "()" + returnType.getDescriptor()); //$NON-NLS-1$
 				method.visitInsn(returnType.getOpcode(IRETURN));
 				break;
 			case Type.ARRAY:
@@ -869,16 +869,16 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				final int esort = returnType.getElementType().getSort();
 				if (esort < Type.ARRAY) {
 					for (int i = 0; i < returnType.getDimensions(); i++) {
-						a.append("[");
+						a.append("["); //$NON-NLS-1$
 					}
 					// primitive array
 					method.visitTypeInsn(CHECKCAST, a.toString()
 							+ returnType.getElementType().toString());
 				} else {
 					// object array
-					a.append("[");
+					a.append("["); //$NON-NLS-1$
 					method.visitTypeInsn(CHECKCAST, a.toString()
-							+ returnType.getInternalName() + ";");
+							+ returnType.getInternalName() + ";"); //$NON-NLS-1$
 				}
 				method.visitInsn(ARETURN);
 				break;
@@ -897,7 +897,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 
 		} else {
 			// proxy method, contains code so just rewrite the code ...
-			MethodVisitor method = writer.visitMethod(access, name, desc,
+			final MethodVisitor method = writer.visitMethod(access, name, desc,
 					signature, exceptions);
 			implemented.add(name + desc);
 			return new MethodRewriter(method);
@@ -917,7 +917,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 		/**
 		 * 
 		 */
-		private ClassRewriter(ClassWriter writer) {
+		ClassRewriter(final ClassWriter writer) {
 			super(writer);
 		}
 
@@ -932,7 +932,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			// rewriting
 
 			super.cv.visit(
-					(version >= V1_5 && RemoteOSGiServiceImpl.IS_5) ? V1_5
+					(version >= V1_5 && RemoteOSGiServiceImpl.IS_JAVA5) ? V1_5
 							: V1_2, access, checkRewrite(name), signature,
 					checkRewrite(superName), interfaces);
 		}
@@ -957,12 +957,12 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 		 *            internal name of the enclosing class of the class.
 		 * @param name
 		 *            the name of the method that contains the class, or
-		 *            <tt>null</tt> if the class is not enclosed in a method
-		 *            of its enclosing class.
+		 *            <tt>null</tt> if the class is not enclosed in a method of
+		 *            its enclosing class.
 		 * @param desc
 		 *            the descriptor of the method that contains the class, or
-		 *            <tt>null</tt> if the class is not enclosed in a method
-		 *            of its enclosing class.
+		 *            <tt>null</tt> if the class is not enclosed in a method of
+		 *            its enclosing class.
 		 */
 		public void visitOuterClass(final String owner, final String name,
 				final String desc) {
@@ -991,7 +991,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				final String desc, final String signature,
 				final String[] exceptions) {
 
-			if ("<init>()V".equals(name + desc)) {
+			if ("<init>()V".equals(name + desc)) { //$NON-NLS-1$
 				return null;
 			}
 
@@ -1010,7 +1010,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 		 * @param methodWriter
 		 *            methodWriter
 		 */
-		private MethodRewriter(final MethodVisitor methodWriter) {
+		MethodRewriter(final MethodVisitor methodWriter) {
 			super(methodWriter);
 		}
 
@@ -1022,7 +1022,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 		 * @see org.objectweb.asm.MethodVisitor#visitTypeInsn(int,
 		 *      java.lang.String)
 		 */
-		public void visitTypeInsn(final int opcode, String desc) {
+		public void visitTypeInsn(final int opcode, final String desc) {
 			super.mv.visitTypeInsn(opcode, checkRewrite(desc));
 		}
 
@@ -1127,10 +1127,10 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 	 * @return sourceID
 	 */
 	private static String generateSourceID(final String id) {
-		final int pos1 = id.indexOf("://");
-		char[] chars = id.substring(pos1 + 3).replace('/', '_').replace(':',
-				'_').replace('-', '_').toCharArray();
-		StringBuffer buffer = new StringBuffer();
+		final int pos1 = id.indexOf("://"); //$NON-NLS-1$
+		final char[] chars = id.substring(pos1 + 3).replace('/', '_').replace(
+				':', '_').replace('-', '_').toCharArray();
+		final StringBuffer buffer = new StringBuffer();
 		for (int i = 0; i < chars.length; i++) {
 			if (chars[i] == '.') {
 				buffer.append('o');
@@ -1148,7 +1148,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 		return buffer.toString();
 	}
 
-	private String checkRewrite(String clazzName) {
+	String checkRewrite(final String clazzName) {
 		if (smartProxyClassNameDashed == null) {
 			return clazzName;
 		}
@@ -1156,7 +1156,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			return null;
 		}
 		if (clazzName.equals(smartProxyClassNameDashed)
-				|| clazzName.startsWith(smartProxyClassNameDashed + "$")) {
+				|| clazzName.startsWith(smartProxyClassNameDashed + "$")) { //$NON-NLS-1$
 			final String rest = clazzName.substring(smartProxyClassNameDashed
 					.length());
 			return implName + rest;
@@ -1165,7 +1165,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 		}
 	}
 
-	private String checkRewriteDesc(final String desc) {
+	String checkRewriteDesc(final String desc) {
 		if (smartProxyClassNameDashed == null) {
 			return desc;
 		}
@@ -1173,15 +1173,15 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			return null;
 		}
 		String result = desc;
-		int i = result.indexOf(smartProxyClassNameDashed + ";");
+		int i = result.indexOf(smartProxyClassNameDashed + ";"); //$NON-NLS-1$
 		while (i > 0) {
-			int j = i + smartProxyClassNameDashed.length();
+			final int j = i + smartProxyClassNameDashed.length();
 			result = result.substring(0, i) + implName + result.substring(j);
 			i = result.indexOf(smartProxyClassNameDashed, j);
 		}
-		i = result.indexOf(smartProxyClassNameDashed + "$");
+		i = result.indexOf(smartProxyClassNameDashed + "$"); //$NON-NLS-1$
 		while (i > 0) {
-			int j = i + smartProxyClassNameDashed.length();
+			final int j = i + smartProxyClassNameDashed.length();
 			result = result.substring(0, i) + implName + result.substring(j);
 			i = result.indexOf(smartProxyClassNameDashed, j);
 		}

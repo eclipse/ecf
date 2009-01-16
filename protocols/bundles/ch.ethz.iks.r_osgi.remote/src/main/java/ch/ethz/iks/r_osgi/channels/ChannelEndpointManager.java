@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -109,6 +109,7 @@ public interface ChannelEndpointManager {
 	 *             if the transformation fails.
 	 * @since 0.2
 	 */
-	public Timestamp transformTimestamp(final Timestamp timestamp) throws RemoteOSGiException;
+	public Timestamp transformTimestamp(final Timestamp timestamp)
+			throws RemoteOSGiException;
 
 }

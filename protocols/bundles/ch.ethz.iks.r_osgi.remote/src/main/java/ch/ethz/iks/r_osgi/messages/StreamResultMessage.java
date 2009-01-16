@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -31,8 +31,6 @@ package ch.ethz.iks.r_osgi.messages;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import ch.ethz.iks.util.SmartSerializer;
 
 /**
  * Stream result message.
@@ -96,22 +94,26 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 	 *      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	 *      | result == -2 &amp;&amp; len &gt; 0: b                                    |
 	 *      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	 * </pre>.
+	 * </pre>
+	 * 
+	 * .
 	 * 
 	 * @param input
-	 *            an <code>ObjectInputStream</code> that provides the body of
-	 *            a R-OSGi network packet.
+	 *            an <code>ObjectInputStream</code> that provides the body of a
+	 *            R-OSGi network packet.
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @throws ClassNotFoundException
 	 */
-	StreamResultMessage(final ObjectInputStream input) throws IOException {
+	StreamResultMessage(final ObjectInputStream input) throws IOException,
+			ClassNotFoundException {
 		super(STREAM_RESULT);
 		result = input.readShort();
 		switch (result) {
 		case RESULT_ARRAY:
-			this.len = input.readInt();
+			len = input.readInt();
 			if (len > 0) {
-				this.b = new byte[len];
+				b = new byte[len];
 				int rem = len;
 				int read;
 				while ((rem > 0)
@@ -119,12 +121,12 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 					rem = rem - read;
 				}
 				if (rem > 0) {
-					throw new IOException("Premature end of input stream.");
+					throw new IOException("Premature end of input stream."); //$NON-NLS-1$
 				}
 			}
 			break;
 		case RESULT_EXCEPTION:
-			exception = (IOException) SmartSerializer.deserialize(input);
+			exception = (IOException) input.readObject();
 			break;
 		case RESULT_WRITE_OK:
 			break;
@@ -154,16 +156,16 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 				out.write(b, 0, len);
 			}
 		} else if (result == RESULT_EXCEPTION) {
-			SmartSerializer.serialize(exception, out);
+			out.writeObject(exception);
 		}
 	}
 
 	/**
 	 * did the stream operation cause an exception ?
 	 * 
-	 * @return <code>true</code>, if an exception has been thrown on the
-	 *         remote side. In this case, the exception can be retrieved through
-	 *         the <code>getException</code> method.
+	 * @return <code>true</code>, if an exception has been thrown on the remote
+	 *         side. In this case, the exception can be retrieved through the
+	 *         <code>getException</code> method.
 	 */
 	public boolean causedException() {
 		return (result == RESULT_EXCEPTION);
@@ -241,7 +243,7 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 	 * @param exception
 	 *            the exception that was thrown.
 	 */
-	public void setException(IOException exception) {
+	public void setException(final IOException exception) {
 		this.exception = exception;
 	}
 
@@ -252,7 +254,7 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 		buffer.append("[STREAM_RESULT] - XID: "); //$NON-NLS-1$
 		buffer.append(xid);
 		buffer.append(", result: "); //$NON-NLS-1$
@@ -265,4 +267,3 @@ public final class StreamResultMessage extends RemoteOSGiMessage {
 	}
 
 }
-

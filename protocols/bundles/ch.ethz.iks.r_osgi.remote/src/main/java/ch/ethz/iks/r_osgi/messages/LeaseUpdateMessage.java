@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -32,8 +32,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
-
-import ch.ethz.iks.util.SmartSerializer;
 
 /**
  * Lease update message. Sent whenever the information expressed in the original
@@ -99,19 +97,23 @@ public final class LeaseUpdateMessage extends RemoteOSGiMessage {
 	 *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	 *    |   service information or url or topic array                      \
 	 *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	 * </pre>.
+	 * </pre>
+	 * 
+	 * .
 	 * 
 	 * @param input
-	 *            an <code>ObjectInputStream</code> that provides the body of
-	 *            a R-OSGi network packet.
+	 *            an <code>ObjectInputStream</code> that provides the body of a
+	 *            R-OSGi network packet.
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @throws ClassNotFoundException
 	 */
-	LeaseUpdateMessage(final ObjectInputStream input) throws IOException {
+	LeaseUpdateMessage(final ObjectInputStream input) throws IOException,
+			ClassNotFoundException {
 		super(LEASE_UPDATE);
 		type = input.readShort();
 		serviceID = input.readUTF();
-		payload = (Object[]) SmartSerializer.deserialize(input);
+		payload = (Object[]) input.readObject();
 	}
 
 	/**
@@ -121,11 +123,12 @@ public final class LeaseUpdateMessage extends RemoteOSGiMessage {
 	 *            the ObjectOutputStream.
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @see ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		out.writeShort(type);
 		out.writeUTF(serviceID);
-		SmartSerializer.serialize(payload, out);
+		out.writeObject(payload);
 	}
 
 	/**
@@ -196,17 +199,19 @@ public final class LeaseUpdateMessage extends RemoteOSGiMessage {
 		buffer.append("[STATE_UPDATE] - XID: "); //$NON-NLS-1$
 		buffer.append(xid);
 		buffer.append(", service "); //$NON-NLS-1$
-		buffer.append("#" + serviceID);
+		buffer.append("#" + serviceID); //$NON-NLS-1$
 		buffer.append(", type "); //$NON-NLS-1$
 		buffer.append(type);
 		if (type == TOPIC_UPDATE) {
 			buffer.append(", topics added: "); //$NON-NLS-1$
-			buffer.append(payload[0] == null ? "" : Arrays.asList((String[]) payload[0]).toString());
+			buffer.append(payload[0] == null ? "" : Arrays.asList( //$NON-NLS-1$
+					(String[]) payload[0]).toString());
 			buffer.append(", topics removed: "); //$NON-NLS-1$
-			buffer.append(payload[1] == null ? "" : Arrays.asList((String[]) payload[1]).toString());
+			buffer.append(payload[1] == null ? "" : Arrays.asList( //$NON-NLS-1$
+					(String[]) payload[1]).toString());
 		} else {
 			buffer.append(", service interfaces: "); //$NON-NLS-1$
-			buffer.append(payload[0] == null ? "" : Arrays.asList(
+			buffer.append(payload[0] == null ? "" : Arrays.asList( //$NON-NLS-1$
 					(String[]) payload[0]).toString());
 			buffer.append(", properties: "); //$NON-NLS-1$
 			buffer.append(payload[1]);

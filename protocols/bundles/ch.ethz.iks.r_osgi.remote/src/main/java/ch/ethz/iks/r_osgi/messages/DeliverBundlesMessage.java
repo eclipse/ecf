@@ -1,6 +1,6 @@
 /* Copyright (c) 2006-2009 Jan S. Rellermeyer
  * Systems Group,
- * Department of Computer Science, ETH Zurich.
+ * Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,73 +26,84 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.ethz.iks.r_osgi.channels;
+
+package ch.ethz.iks.r_osgi.messages;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-import ch.ethz.iks.r_osgi.URI;
-import ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage;
-
-/**
- * <p>
- * Interface for all transport channel classes. Implementations of this
- * interface are typically returned by services that offer the
- * <code>TransportChannelFactory</code> service.
- * </p>
- * 
- * @author Jan S. Rellermeyer, ETH Zurich
- * @since 0.6
- */
-public interface NetworkChannel {
+public class DeliverBundlesMessage extends RemoteOSGiMessage {
 
 	/**
-	 * get the protocol that this channel uses on the transport layer.
-	 * 
-	 * @return the protocol identifier as <code>String</code>. Should be in
-	 *         lowercase.
-	 * @since 0.6
+	 * the bytes of the bundles
 	 */
-	String getProtocol();
+	private byte[][] bytes;
+
+	public DeliverBundlesMessage() {
+		super(RemoteOSGiMessage.DELIVER_BUNDLES);
+	}
 
 	/**
-	 * get the URI of the remote address.
+	 * create a new message from the wire.
 	 * 
-	 * @return the ID.
-	 */
-	URI getRemoteAddress();
-
-	/**
-	 * get the URI of the local address.
-	 * 
-	 * @return the ID.
-	 */
-	URI getLocalAddress();
-
-	/**
-	 * bind the network channel to a channel endpoint.
-	 * 
-	 * @param endpoint
-	 *            the channel endpoint.
-	 */
-	void bind(final ChannelEndpoint endpoint);
-
-	/**
-	 * close the network channel.
-	 * 
+	 * @param input
+	 *            the input stream.
 	 * @throws IOException
-	 *             if something goes wrong.
+	 *             in case of IO problems.
 	 */
-	void close() throws IOException;
+	public DeliverBundlesMessage(final ObjectInputStream input)
+			throws IOException {
+		super(RemoteOSGiMessage.DELIVER_BUNDLES);
+		final int bundleCount = input.readInt();
+		bytes = new byte[bundleCount][];
+		for (int i = 0; i < bundleCount; i++) {
+			bytes[i] = readBytes(input);
+		}
+	}
 
 	/**
-	 * send a message through the channel.
-	 * 
-	 * @param message
-	 *            the message to be sent.
-	 * @throws IOException
-	 *             if the transport fails.
-	 * @since 0.6
+	 * write the body of this message to the wire.
 	 */
-	void sendMessage(final RemoteOSGiMessage message) throws IOException;
+	protected void writeBody(final ObjectOutputStream output)
+			throws IOException {
+		output.writeInt(bytes.length);
+		for (int i = 0; i < bytes.length; i++) {
+			writeBytes(output, bytes[i]);
+		}
+	}
+
+	/**
+	 * get the bytes of the dependency bundles.
+	 * 
+	 * @return the bundle bytes.
+	 */
+	public byte[][] getDependencies() {
+		return bytes;
+	}
+
+	/**
+	 * set the bytes of the dependency bundles.
+	 * 
+	 * @param bytes
+	 */
+	public void setDependencies(final byte[][] bytes) {
+		this.bytes = bytes;
+	}
+
+	/**
+	 * String representation for debug outputs.
+	 * 
+	 * @return a string representation.
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		final StringBuffer buffer = new StringBuffer();
+		buffer.append("[DELIVER_BUNDLES]"); //$NON-NLS-1$
+		buffer.append("- XID: "); //$NON-NLS-1$
+		buffer.append(xid);
+		buffer.append(", ... "); //$NON-NLS-1$
+		return buffer.toString();
+	}
 
 }

@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -29,7 +29,9 @@
 package ch.ethz.iks.r_osgi.channels;
 
 import java.util.Dictionary;
+
 import org.osgi.framework.ServiceRegistration;
+
 import ch.ethz.iks.r_osgi.URI;
 import ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage;
 
@@ -66,7 +68,8 @@ public interface ChannelEndpoint {
 	 *             on the original service method.
 	 * @since 0.6
 	 */
-	Object invokeMethod(final String service, final String methodSignature, final Object[] args) throws Throwable;
+	Object invokeMethod(final String service, final String methodSignature,
+			final Object[] args) throws Throwable;
 
 	/**
 	 * get the attributes of a service. This function is used to simplify proxy

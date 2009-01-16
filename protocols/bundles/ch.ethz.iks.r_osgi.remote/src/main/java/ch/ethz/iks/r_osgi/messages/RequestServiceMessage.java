@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -41,7 +41,7 @@ import java.io.ObjectOutputStream;
  * @author Jan S. Rellermeyer, ETH Zurich
  * @since 0.1
  */
-public final class FetchServiceMessage extends RemoteOSGiMessage {
+public final class RequestServiceMessage extends RemoteOSGiMessage {
 
 	/**
 	 * the service ID.
@@ -52,8 +52,8 @@ public final class FetchServiceMessage extends RemoteOSGiMessage {
 	 * creates a new FetchServiceMessage from <code>ServiceURL</code>.
 	 * 
 	 */
-	public FetchServiceMessage() {
-		super(FETCH_SERVICE);
+	public RequestServiceMessage() {
+		super(REQUEST_SERVICE);
 	}
 
 	/**
@@ -70,13 +70,13 @@ public final class FetchServiceMessage extends RemoteOSGiMessage {
 	 * </pre>
 	 * 
 	 * @param input
-	 *            an <code>ObjectInputStream</code> that provides the body of
-	 *            a R-OSGi network packet.
+	 *            an <code>ObjectInputStream</code> that provides the body of a
+	 *            R-OSGi network packet.
 	 * @throws IOException
 	 *             if something goes wrong.
 	 */
-	FetchServiceMessage(final ObjectInputStream input) throws IOException {
-		super(FETCH_SERVICE);
+	RequestServiceMessage(final ObjectInputStream input) throws IOException {
+		super(REQUEST_SERVICE);
 		serviceID = input.readUTF();
 	}
 
@@ -87,6 +87,7 @@ public final class FetchServiceMessage extends RemoteOSGiMessage {
 	 *            the <code>ObjectOutputStream</code>
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @see ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		out.writeUTF(serviceID);
@@ -119,7 +120,7 @@ public final class FetchServiceMessage extends RemoteOSGiMessage {
 	 */
 	public String toString() {
 		final StringBuffer buffer = new StringBuffer();
-		buffer.append("[FETCH_MESSAGE]"); //$NON-NLS-1$
+		buffer.append("[REQUEST_SERVICE]"); //$NON-NLS-1$
 		buffer.append("- XID: "); //$NON-NLS-1$
 		buffer.append(xid);
 		buffer.append(", serviceID: "); //$NON-NLS-1$

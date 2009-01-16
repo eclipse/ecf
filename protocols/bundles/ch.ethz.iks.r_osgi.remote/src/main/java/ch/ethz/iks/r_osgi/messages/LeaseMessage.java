@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -33,8 +33,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Dictionary;
-
-import ch.ethz.iks.util.SmartSerializer;
 
 /**
  * Lease message. Is exchanged when a channel is established. Leases are the
@@ -89,12 +87,14 @@ public final class LeaseMessage extends RemoteOSGiMessage {
 	 * </pre>
 	 * 
 	 * @param input
-	 *            an <code>ObjectInputStream</code> that provides the body of
-	 *            a R-OSGi network packet.
+	 *            an <code>ObjectInputStream</code> that provides the body of a
+	 *            R-OSGi network packet.
 	 * @throws IOException
 	 *             if something goes wrong.
+	 * @throws ClassNotFoundException
 	 */
-	LeaseMessage(final ObjectInputStream input) throws IOException {
+	LeaseMessage(final ObjectInputStream input) throws IOException,
+			ClassNotFoundException {
 		super(LEASE);
 		final int serviceCount = input.readShort();
 		serviceIDs = new String[serviceCount];
@@ -103,10 +103,9 @@ public final class LeaseMessage extends RemoteOSGiMessage {
 		for (short i = 0; i < serviceCount; i++) {
 			serviceIDs[i] = input.readUTF();
 			serviceInterfaces[i] = readStringArray(input);
-			serviceProperties[i] = (Dictionary) SmartSerializer
-			.deserialize(input);
+			serviceProperties[i] = (Dictionary) input.readObject();
 		}
-		this.topics = readStringArray(input);
+		topics = readStringArray(input);
 	}
 
 	/**
@@ -192,6 +191,7 @@ public final class LeaseMessage extends RemoteOSGiMessage {
 	 *            the output stream
 	 * @throws IOException
 	 *             in case of IO errors.
+	 * @see ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		final int slen = serviceInterfaces.length;
@@ -199,7 +199,7 @@ public final class LeaseMessage extends RemoteOSGiMessage {
 		for (short i = 0; i < slen; i++) {
 			out.writeUTF(serviceIDs[i]);
 			writeStringArray(out, serviceInterfaces[i]);
-			SmartSerializer.serialize(serviceProperties[i], out);
+			out.writeObject(serviceProperties[i]);
 		}
 		writeStringArray(out, topics);
 	}

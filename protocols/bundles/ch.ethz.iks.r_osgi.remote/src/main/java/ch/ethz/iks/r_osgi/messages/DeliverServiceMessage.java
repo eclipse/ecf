@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
  *
@@ -125,7 +125,6 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 	 */
 	DeliverServiceMessage(final ObjectInputStream input) throws IOException {
 		super(DELIVER_SERVICE);
-
 		// the serviceID
 		serviceID = input.readUTF();
 		// imports
@@ -135,8 +134,8 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 		// interface names
 		serviceInterfaceNames = readStringArray(input);
 		// smart proxy name, if defined.
-		String p = input.readUTF();
-		smartProxyName = "".equals(p) ? null : p;
+		final String p = input.readUTF();
+		smartProxyName = "".equals(p) ? null : p; //$NON-NLS-1$
 		// process all class injections
 		final short blocks = input.readShort();
 		injections = new HashMap(blocks);
@@ -161,7 +160,8 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 		out.writeUTF(smartProxyName == null ? "" : smartProxyName); //$NON-NLS-1$
 		final short blocks = (short) injections.size();
 		out.writeShort(blocks);
-		final String[] injectionNames = (String[]) injections.keySet().toArray(new String[blocks]);
+		final String[] injectionNames = (String[]) injections.keySet().toArray(
+				new String[blocks]);
 		for (short i = 0; i < blocks; i++) {
 			out.writeUTF(injectionNames[i]);
 			writeBytes(out, (byte[]) injections.get(injectionNames[i]));
@@ -213,7 +213,7 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 	 *            the interface class names.
 	 */
 	public void setInterfaceNames(final String[] interfaceNames) {
-		this.serviceInterfaceNames = interfaceNames;
+		serviceInterfaceNames = interfaceNames;
 	}
 
 	/**
@@ -222,7 +222,9 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 	 * @return the interface class.
 	 */
 	public byte[] getInterfaceClass() {
-		return (byte[]) injections.get(serviceInterfaceNames[0].replace('.', '/') + ".class"); //$NON-NLS-1$
+		return (byte[]) injections.get(serviceInterfaceNames[0].replace('.',
+				'/')
+				+ ".class"); //$NON-NLS-1$
 	}
 
 	/**
@@ -253,7 +255,8 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 		if (smartProxyName == null) {
 			return null;
 		}
-		return (byte[]) injections.get(smartProxyName.replace('.', '/') + ".class");
+		return (byte[]) injections.get(smartProxyName.replace('.', '/')
+				+ ".class"); //$NON-NLS-1$
 	}
 
 	/**
@@ -310,7 +313,7 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 		buffer.append("[DELIVER_SERVICE] - XID: "); //$NON-NLS-1$
 		buffer.append(xid);
 		buffer.append(", serviceID: "); //$NON-NLS-1$

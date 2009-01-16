@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -50,12 +50,13 @@ import ch.ethz.iks.r_osgi.types.Timestamp;
  * 
  * @author Jan S. Rellermeyer, ETH Zurich
  */
-class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointManager {
+final class ChannelEndpointMultiplexer implements ChannelEndpoint,
+		ChannelEndpointManager {
 
 	/**
 	 * the primary channel.
 	 */
-	private ChannelEndpointImpl primary;
+	ChannelEndpointImpl primary;
 
 	/**
 	 * the policies.
@@ -79,6 +80,10 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 	 *            the primary channel endpoint.
 	 */
 	ChannelEndpointMultiplexer(final ChannelEndpointImpl primary) {
+		if (primary == null) {
+			throw new IllegalArgumentException(
+					"Multiplexer must not be constructed from NULL primary endpoint"); //$NON-NLS-1$
+		}
 		this.primary = primary;
 	}
 
@@ -118,20 +123,23 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 	 * @see ch.ethz.iks.r_osgi.channels.ChannelEndpoint#invokeMethod(java.lang.String,
 	 *      java.lang.String, java.lang.Object[])
 	 */
-	public Object invokeMethod(String serviceURI, String methodSignature, Object[] args) throws Throwable {
+	public Object invokeMethod(final String serviceURI,
+			final String methodSignature, final Object[] args) throws Throwable {
 		final Mapping mapping = (Mapping) mappings.get(serviceURI);
 		if (mapping == null) {
 			return primary.invokeMethod(serviceURI, methodSignature, args);
 		} else {
 			final Integer p = (Integer) policies.get(serviceURI);
 			if (p == null) {
-				return primary.invokeMethod(mapping.getMapped(primary), methodSignature, args);
+				return primary.invokeMethod(mapping.getMapped(primary),
+						methodSignature, args);
 			} else {
 				final int policy = p.intValue();
 				if (policy == LOADBALANCING_ANY_POLICY) {
 					final ChannelEndpoint endpoint = mapping.getAny();
 					try {
-						return endpoint.invokeMethod(mapping.getMapped(endpoint), methodSignature, args);
+						return endpoint.invokeMethod(mapping
+								.getMapped(endpoint), methodSignature, args);
 					} catch (final RemoteOSGiException e) {
 						final ChannelEndpointImpl next = mapping.getNext();
 						if (next != null) {
@@ -139,9 +147,13 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 							primary = next;
 							primary.trackRegistration(serviceURI, reg);
 							if (RemoteOSGiServiceImpl.DEBUG) {
-								RemoteOSGiServiceImpl.log.log(LogService.LOG_INFO, "DOING FAILOVER TO " + primary.getRemoteAddress());
+								RemoteOSGiServiceImpl.log.log(
+										LogService.LOG_INFO,
+										"DOING FAILOVER TO " //$NON-NLS-1$
+												+ primary.getRemoteAddress());
 							}
-							return primary.invokeMethod(mapping.getMapped(primary), methodSignature, args);
+							return primary.invokeMethod(mapping
+									.getMapped(primary), methodSignature, args);
 						}
 						dispose();
 						throw e;
@@ -149,9 +161,10 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 				} else {
 					try {
 						if (!primary.isConnected()) {
-							throw new RemoteOSGiException("channel went down");
+							throw new RemoteOSGiException("channel went down"); //$NON-NLS-1$
 						}
-						return primary.invokeMethod(mapping.getMapped(primary), methodSignature, args);
+						return primary.invokeMethod(mapping.getMapped(primary),
+								methodSignature, args);
 					} catch (final RemoteOSGiException e) {
 						if (policy == FAILOVER_REDUNDANCY_POLICY) {
 							// do the failover
@@ -161,9 +174,16 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 								primary = next;
 								primary.trackRegistration(serviceURI, reg);
 								if (RemoteOSGiServiceImpl.DEBUG) {
-									RemoteOSGiServiceImpl.log.log(LogService.LOG_INFO, "DOING FAILOVER TO " + primary.getRemoteAddress());
+									RemoteOSGiServiceImpl.log
+											.log(
+													LogService.LOG_INFO,
+													"DOING FAILOVER TO " //$NON-NLS-1$
+															+ primary
+																	.getRemoteAddress());
 								}
-								return primary.invokeMethod(mapping.getMapped(primary), methodSignature, args);
+								return primary.invokeMethod(mapping
+										.getMapped(primary), methodSignature,
+										args);
 							}
 						}
 						dispose();
@@ -179,7 +199,8 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 	 * @see ch.ethz.iks.r_osgi.channels.ChannelEndpoint#receivedMessage(ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage)
 	 */
 	public void receivedMessage(final RemoteOSGiMessage msg) {
-		throw new IllegalArgumentException("Not supported through endpoint multiplexer");
+		throw new IllegalArgumentException(
+				"Not supported through endpoint multiplexer"); //$NON-NLS-1$
 	}
 
 	/**
@@ -187,9 +208,10 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 	 * @see ch.ethz.iks.r_osgi.channels.ChannelEndpoint#trackRegistration(java.lang.String,
 	 *      org.osgi.framework.ServiceRegistration)
 	 */
-	public void trackRegistration(final String service, final ServiceRegistration reg) {
-		this.reg = reg;
-		primary.trackRegistration(service, reg);
+	public void trackRegistration(final String service,
+			final ServiceRegistration sreg) {
+		reg = sreg;
+		primary.trackRegistration(service, sreg);
 	}
 
 	/**
@@ -202,7 +224,7 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 
 	/**
 	 * 
-	 * @return <code>true</code> if is connected, <code>false otherwise</code>.
+	 * @see ch.ethz.iks.r_osgi.channels.ChannelEndpoint#isConnected()
 	 */
 	public boolean isConnected() {
 		return true;
@@ -218,33 +240,34 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 		private final List redundant = new ArrayList(0);
 		private final Map uriMapping = new HashMap(0);
 
-		private Mapping(final String serviceURI) {
+		Mapping(final String serviceURI) {
 			uriMapping.put(primary, serviceURI);
 		}
 
-		private void addRedundant(final String redundantServiceURI, final ChannelEndpoint endpoint) {
+		void addRedundant(final String redundantServiceURI,
+				final ChannelEndpoint endpoint) {
 			redundant.add(endpoint);
 			uriMapping.put(endpoint, redundantServiceURI);
 		}
 
-		private void removeRedundant(final ChannelEndpoint endpoint) {
+		void removeRedundant(final ChannelEndpoint endpoint) {
 			redundant.remove(endpoint);
 			uriMapping.remove(endpoint);
 		}
 
-		private String getMapped(final ChannelEndpoint endpoint) {
+		String getMapped(final ChannelEndpoint endpoint) {
 			return (String) uriMapping.get(endpoint);
 		}
 
-		private ChannelEndpointImpl getNext() {
+		ChannelEndpointImpl getNext() {
 			return (ChannelEndpointImpl) redundant.remove(0);
 		}
 
-		private boolean isEmpty() {
+		boolean isEmpty() {
 			return redundant.size() == 0;
 		}
 
-		private ChannelEndpoint getAny() {
+		ChannelEndpoint getAny() {
 			final int ran = random.nextInt(redundant.size() + 1);
 			if (ran == 0) {
 				return primary;
@@ -260,8 +283,10 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 	 * @see ch.ethz.iks.r_osgi.channels.ChannelEndpointManager#addRedundantEndpoint(ch.ethz.iks.r_osgi.URI,
 	 *      ch.ethz.iks.r_osgi.URI)
 	 */
-	public void addRedundantEndpoint(final URI service, final URI redundantService) {
-		final ChannelEndpoint redundantEndpoint = RemoteOSGiServiceImpl.getChannel(redundantService);
+	public void addRedundantEndpoint(final URI service,
+			final URI redundantService) {
+		final ChannelEndpoint redundantEndpoint = RemoteOSGiServiceImpl
+				.getChannel(redundantService);
 		primary.hasRedundantLinks = true;
 		Mapping mapping = (Mapping) mappings.get(service);
 		if (mapping == null) {
@@ -284,8 +309,10 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 	 * @see ch.ethz.iks.r_osgi.channels.ChannelEndpointManager#removeRedundantEndpoint(ch.ethz.iks.r_osgi.URI,
 	 *      ch.ethz.iks.r_osgi.URI)
 	 */
-	public void removeRedundantEndpoint(final URI service, final URI redundantService) {
-		final ChannelEndpoint redundantEndpoint = RemoteOSGiServiceImpl.getChannel(redundantService);
+	public void removeRedundantEndpoint(final URI service,
+			final URI redundantService) {
+		final ChannelEndpoint redundantEndpoint = RemoteOSGiServiceImpl
+				.getChannel(redundantService);
 		final Mapping mapping = (Mapping) mappings.get(service.toString());
 		mapping.removeRedundant(redundantEndpoint);
 		if (mapping.isEmpty()) {
@@ -313,7 +340,8 @@ class ChannelEndpointMultiplexer implements ChannelEndpoint, ChannelEndpointMana
 	 *             if the transformation fails.
 	 * @since 0.2
 	 */
-	public Timestamp transformTimestamp(final Timestamp timestamp) throws RemoteOSGiException {
+	public Timestamp transformTimestamp(final Timestamp timestamp)
+			throws RemoteOSGiException {
 		return primary.getOffset().transform(timestamp);
 	}
 

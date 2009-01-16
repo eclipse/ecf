@@ -26,42 +26,28 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.ethz.iks.util;
-
-import java.util.StringTokenizer;
+package ch.ethz.iks.r_osgi;
 
 /**
- * String utilities.
+ * Callback for getting the result of an asynchronous remote call. Will be
+ * called by the system as soon as the call has completed, either successfully
+ * or with an exception.
  * 
- * @author Jan S. Rellermeyer, ETH Zurich
- * @since 0.2
+ * @author Jan S. Rellermeyer
+ * 
  */
-public final class StringUtils {
+public interface AsyncRemoteCallCallback {
 
 	/**
-	 * hide the default constructor.
-	 */
-	private StringUtils() {
-	}
-
-	/**
-	 * transforms a string list into an array of Strings.
+	 * get the result of the remote call.
 	 * 
-	 * @param data
-	 *            the string list.
-	 * @param delim
-	 *            the list delimiter.
-	 * @return the array of strings.
-	 * @since 0.2
+	 * @param success
+	 *            indicated if the call has completed successfully or with an
+	 *            exception.
+	 * @param o
+	 *            the result of the call or the exception is success is set to
+	 *            <code>false</code>.
 	 */
-	public static String[] stringToArray(final String data, final String delim) {
-		final StringTokenizer tokenizer = new StringTokenizer(data, delim);
-		final String[] tokens = new String[tokenizer.countTokens()];
-		final int tokenCount = tokenizer.countTokens();
-		for (int i = 0; i < tokenCount; i++) {
-			tokens[i] = tokenizer.nextToken().trim();
-		}
+	void remoteCallResult(final boolean success, final Object o);
 
-		return tokens;
-	}
 }

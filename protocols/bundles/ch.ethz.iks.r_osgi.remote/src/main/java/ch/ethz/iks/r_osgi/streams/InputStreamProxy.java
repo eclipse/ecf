@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -43,12 +43,12 @@ public class InputStreamProxy extends InputStream {
 	/**
 	 * the stream id.
 	 */
-	private short streamID;
+	private final short streamID;
 
 	/**
 	 * the channel endpoint.
 	 */
-	private ChannelEndpointImpl endpoint;
+	private final ChannelEndpointImpl endpoint;
 
 	/**
 	 * Create a new input stream proxy.
@@ -58,7 +58,8 @@ public class InputStreamProxy extends InputStream {
 	 * @param endpoint
 	 *            the channel endpoint.
 	 */
-	public InputStreamProxy(final short streamID, final ChannelEndpointImpl endpoint) {
+	public InputStreamProxy(final short streamID,
+			final ChannelEndpointImpl endpoint) {
 		this.streamID = streamID;
 		this.endpoint = endpoint;
 	}
@@ -77,7 +78,8 @@ public class InputStreamProxy extends InputStream {
 	 * 
 	 * @see java.io.InputStream#read(byte[], int, int)
 	 */
-	public int read(final byte[] b, final int off, final int len) throws IOException {
+	public int read(final byte[] b, final int off, final int len)
+			throws IOException {
 		return endpoint.readStream(streamID, b, off, len);
 	}
 

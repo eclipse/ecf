@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -60,7 +60,8 @@ public final class CollectionUtils {
 	 * @return boolean.
 	 * @since 0.1
 	 */
-	public static boolean addUnique(final Collection collection, final Object value) {
+	public static boolean addUnique(final Collection collection,
+			final Object value) {
 		if (collection.contains(value)) {
 			return false;
 		}
@@ -77,9 +78,10 @@ public final class CollectionUtils {
 	 * @return boolean.
 	 * @since 0.1
 	 */
-	public static boolean addAllUnique(final Collection collection, final Collection values) {
+	public static boolean addAllUnique(final Collection collection,
+			final Collection values) {
 		boolean changed = false;
-		for (Iterator iter = values.iterator(); iter.hasNext();) {
+		for (final Iterator iter = values.iterator(); iter.hasNext();) {
 			changed = addUnique(collection, iter.next());
 		}
 		return changed;
@@ -95,7 +97,8 @@ public final class CollectionUtils {
 	 * @return the intersection, i.e. all elements that are in both collections.
 	 * @since 0.1
 	 */
-	public static Collection intersection(final Collection c1, final Collection c2) {
+	public static Collection intersection(final Collection c1,
+			final Collection c2) {
 		final List list = new ArrayList();
 		final Object[] members_c1 = c1.toArray();
 		for (int i = 0; i < members_c1.length; i++) {
@@ -107,14 +110,15 @@ public final class CollectionUtils {
 	}
 
 	public static Collection union(final Collection c1, final Collection c2) {
-		List list = new ArrayList();
+		final List list = new ArrayList();
 		addAllUnique(list, c1);
 		addAllUnique(list, c2);
 		return list;
 	}
 
-	public static Collection rightDifference(final Collection c1, final Collection c2) {
-		List result = new ArrayList();
+	public static Collection rightDifference(final Collection c1,
+			final Collection c2) {
+		final List result = new ArrayList();
 		final Object[] members_c1 = c1.toArray();
 		for (int i = 0; i < members_c1.length; i++) {
 			if (!c2.contains(members_c1[i])) {
@@ -124,7 +128,8 @@ public final class CollectionUtils {
 		return result;
 	}
 
-	public static Collection leftDifference(final Collection c1, final Collection c2) {
+	public static Collection leftDifference(final Collection c1,
+			final Collection c2) {
 		return rightDifference(c2, c1);
 	}
 
@@ -143,7 +148,8 @@ public final class CollectionUtils {
 	 *            the value to be added to the list.
 	 * @since 0.1
 	 */
-	public static void addValue(final Map map, final Object key, final Object value) {
+	public static void addValue(final Map map, final Object key,
+			final Object value) {
 		List values;
 
 		if ((values = (List) map.get(key)) == null) {
@@ -168,7 +174,8 @@ public final class CollectionUtils {
 	 *            the capacity of the value list.
 	 * @since 0.6
 	 */
-	public static void addValue(final Map map, final Object key, final Object value, final int maxEntries) {
+	public static void addValue(final Map map, final Object key,
+			final Object value, final int maxEntries) {
 		List values;
 
 		if ((values = (List) map.get(key)) == null) {
@@ -193,7 +200,8 @@ public final class CollectionUtils {
 	 *            the value to be deleted in the lists.
 	 * @since 0.1
 	 */
-	public static void removeValue(final Map map, final Object[] keys, final Object value) {
+	public static void removeValue(final Map map, final Object[] keys,
+			final Object value) {
 		List values;
 		for (int i = 0; i < keys.length; i++) {
 			if ((values = (List) map.get(keys[i])) == null) {

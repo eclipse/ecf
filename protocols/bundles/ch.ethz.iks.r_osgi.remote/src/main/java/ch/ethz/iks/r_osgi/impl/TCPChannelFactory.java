@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -30,12 +30,12 @@ package ch.ethz.iks.r_osgi.impl;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.BindException;
 
 import org.osgi.service.log.LogService;
 
@@ -45,6 +45,8 @@ import ch.ethz.iks.r_osgi.channels.ChannelEndpoint;
 import ch.ethz.iks.r_osgi.channels.NetworkChannel;
 import ch.ethz.iks.r_osgi.channels.NetworkChannelFactory;
 import ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage;
+import ch.ethz.iks.util.SmartObjectInputStream;
+import ch.ethz.iks.util.SmartObjectOutputStream;
 
 /**
  * channel factory for (persistent) TCP transport. This is the default protocol.
@@ -54,9 +56,10 @@ import ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage;
  */
 final class TCPChannelFactory implements NetworkChannelFactory {
 
-	static final String PROTOCOL = "r-osgi";
-	private Remoting remoting;
-	private TCPThread thread;
+	static final String PROTOCOL = "r-osgi"; //$NON-NLS-1$
+	Remoting remoting;
+	private TCPAcceptorThread thread;
+	protected int listeningPort;
 
 	/**
 	 * get a new connection.
@@ -66,8 +69,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 	 * @param endpointURI
 	 *            the URI of the remote host.
 	 * @return the transport channel.
-	 * @see ch.ethz.iks.r_osgi.channels.NetworkChannelFactory#getConnection(ch.ethz.iks.r_osgi.channels.ChannelEndpoint,
-	 *      URI)
+	 * @see ch.ethz.iks.r_osgi.channels.NetworkChannelFactory#getConnection(ch.ethz.iks.r_osgi.channels.ChannelEndpoint)
 	 */
 	public NetworkChannel getConnection(final ChannelEndpoint endpoint,
 			final URI endpointURI) throws IOException {
@@ -79,9 +81,9 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 	 * 
 	 * @see ch.ethz.iks.r_osgi.channels.NetworkChannelFactory#activate(ch.ethz.iks.r_osgi.Remoting)
 	 */
-	public void activate(final Remoting remoting) throws IOException {
-		this.remoting = remoting;
-		thread = new TCPThread();
+	public void activate(final Remoting r) throws IOException {
+		remoting = r;
+		thread = new TCPAcceptorThread();
 		thread.start();
 	}
 
@@ -90,10 +92,18 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 	 * 
 	 * @see ch.ethz.iks.r_osgi.channels.NetworkChannelFactory#deactivate(ch.ethz.iks.r_osgi.Remoting)
 	 */
-	public void deactivate(final Remoting remoting) throws IOException {
-		if (thread != null)
-			thread.interrupt();
-		this.remoting = null;
+	public void deactivate(final Remoting r) throws IOException {
+		thread.interrupt();
+		remoting = null;
+	}
+
+	/**
+	 * get the listening port.
+	 * 
+	 * @see ch.ethz.iks.r_osgi.channels.NetworkChannelFactory#getListeningPort(java.lang.String)
+	 */
+	public int getListeningPort(final String protocol) {
+		return listeningPort;
 	}
 
 	/**
@@ -106,7 +116,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		/**
 		 * the socket.
 		 */
-		private Socket socket;
+		Socket socket;
 
 		/**
 		 * the remote endpoint address.
@@ -121,22 +131,22 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		/**
 		 * the input stream.
 		 */
-		private ObjectInputStream input;
+		protected ObjectInputStream input;
 
 		/**
 		 * the output stream.
 		 */
-		private ObjectOutputStream output;
+		protected ObjectOutputStream output;
 
 		/**
 		 * the channel endpoint.
 		 */
-		private ChannelEndpoint endpoint;
+		ChannelEndpoint endpoint;
 
 		/**
 		 * connected ?
 		 */
-		private boolean connected = true;
+		boolean connected = true;
 
 		/**
 		 * create a new TCPChannel.
@@ -155,7 +165,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 				port = 9278;
 			}
 			this.endpoint = endpoint;
-			this.remoteEndpointAddress = endpointAddress;
+			remoteEndpointAddress = endpointAddress;
 			open(new Socket(endpointAddress.getHost(), port));
 			new ReceiverThread().start();
 		}
@@ -169,8 +179,8 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 *             in case of IO errors.
 		 */
 		public TCPChannel(final Socket socket) throws IOException {
-			this.remoteEndpointAddress = URI.create(getProtocol() + "://"
-					+ socket.getInetAddress().getHostName() + ":"
+			remoteEndpointAddress = URI.create(getProtocol() + "://" //$NON-NLS-1$
+					+ socket.getInetAddress().getHostName() + ":" //$NON-NLS-1$
 					+ socket.getPort());
 			open(socket);
 		}
@@ -183,8 +193,8 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 * 
 		 * @see ch.ethz.iks.r_osgi.channels.NetworkChannel#bind(ch.ethz.iks.r_osgi.channels.ChannelEndpoint)
 		 */
-		public void bind(ChannelEndpoint endpoint) {
-			this.endpoint = endpoint;
+		public void bind(final ChannelEndpoint e) {
+			endpoint = e;
 			new ReceiverThread().start();
 		}
 
@@ -196,21 +206,21 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 * @throws IOException
 		 *             if something goes wrong.
 		 */
-		private void open(final Socket socket) throws IOException {
-			this.socket = socket;
-			this.localEndpointAddress = URI.create(getProtocol() + "://"
-					+ socket.getLocalAddress().getHostName() + ":"
+		private void open(final Socket s) throws IOException {
+			socket = s;
+			localEndpointAddress = URI.create(getProtocol() + "://" //$NON-NLS-1$
+					+ socket.getLocalAddress().getHostName() + ":" //$NON-NLS-1$
 					+ socket.getLocalPort());
 			try {
-				this.socket.setKeepAlive(true);
+				socket.setKeepAlive(true);
 			} catch (final Throwable t) {
 				// for 1.2 VMs that do not support the setKeepAlive
 			}
-			this.socket.setTcpNoDelay(true);
-			this.output = new ObjectOutputStream(new BufferedOutputStream(
+			socket.setTcpNoDelay(true);
+			output = new SmartObjectOutputStream(new BufferedOutputStream(
 					socket.getOutputStream()));
 			output.flush();
-			input = new ObjectInputStream(new BufferedInputStream(socket
+			input = new SmartObjectInputStream(new BufferedInputStream(socket
 					.getInputStream()));
 		}
 
@@ -221,14 +231,11 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 * @see java.lang.Object#toString()
 		 */
 		public String toString() {
-			return "TCPChannel (" + getRemoteAddress() + ")";
+			return "TCPChannel (" + getRemoteAddress() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		/**
 		 * close the channel.
-		 * 
-		 * @throws IOException
-		 *             if problem on close.
 		 */
 		public void close() throws IOException {
 			socket.close();
@@ -271,15 +278,14 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 *            the message.
 		 * @throws IOException
 		 *             in case of IO errors.
-		 * @see ch.ethz.iks.r_osgi.channels.NetworkChannel#sendMessage(RemoteOSGiMessage)
+		 * @see ch.ethz.iks.r_osgi.channels.NetworkChannel#sendMessage(ch.ethz.iks.r_osgi.RemoteOSGiMessage)
 		 */
 		public void sendMessage(final RemoteOSGiMessage message)
 				throws IOException {
 			if (RemoteOSGiServiceImpl.MSG_DEBUG) {
 				RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
-						"{TCP Channel} sending " + message);
+						"{TCP Channel} sending " + message); //$NON-NLS-1$
 			}
-
 			message.send(output);
 		}
 
@@ -290,10 +296,10 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 * @author Jan S. Rellermeyer, ETH Zurich
 		 * @since 0.6
 		 */
-		private class ReceiverThread extends Thread {
-			private ReceiverThread() {
-				this.setName("TCPChannel:ReceiverThread:" + getRemoteAddress());
-				this.setDaemon(true);
+		class ReceiverThread extends Thread {
+			ReceiverThread() {
+				setName("TCPChannel:ReceiverThread:" + getRemoteAddress()); //$NON-NLS-1$
+				setDaemon(true);
 			}
 
 			public void run() {
@@ -303,7 +309,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 								.parse(input);
 						if (RemoteOSGiServiceImpl.MSG_DEBUG) {
 							RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
-									"{TCP Channel} received " + msg);
+									"{TCP Channel} received " + msg); //$NON-NLS-1$
 						}
 						endpoint.receivedMessage(msg);
 					} catch (final IOException ioe) {
@@ -325,7 +331,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 	/**
 	 * TCPThread, handles incoming tcp messages.
 	 */
-	private final class TCPThread extends Thread {
+	protected final class TCPAcceptorThread extends Thread {
 		/**
 		 * the socket.
 		 */
@@ -337,25 +343,29 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 * @throws IOException
 		 *             if the server socket cannot be opened.
 		 */
-		TCPThread() throws IOException {
+		TCPAcceptorThread() throws IOException {
+			setName("TCPChannel:TCPAcceptorThread"); //$NON-NLS-1$
+			setDaemon(true);
+
 			int e = 0;
 			while (true) {
 				try {
-					socket = new ServerSocket(RemoteOSGiServiceImpl.R_OSGI_PORT
-							+ e);
+					listeningPort = RemoteOSGiServiceImpl.R_OSGI_PORT + e;
+					socket = new ServerSocket(listeningPort);
+
 					if (e != 0) {
 						System.err
-								.println("Port "
+								.println("WARNING: Port " //$NON-NLS-1$
 										+ RemoteOSGiServiceImpl.R_OSGI_PORT
-										+ " already in use. This instance of R-OSGi is running on port "
-										+ (RemoteOSGiServiceImpl.R_OSGI_PORT + e));
+										+ " already in use. This instance of R-OSGi is running on port " //$NON-NLS-1$
+										+ listeningPort);
 					}
+					RemoteOSGiServiceImpl.R_OSGI_PORT = listeningPort;
 					return;
-				} catch (BindException b) {
+				} catch (final BindException b) {
 					e++;
 				}
 			}
-
 		}
 
 		/**

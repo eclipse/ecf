@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -32,8 +32,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import ch.ethz.iks.util.SmartSerializer;
-
 /**
  * <p>
  * MethodResultMessage is used to return the result of a method invocation to
@@ -43,7 +41,7 @@ import ch.ethz.iks.util.SmartSerializer;
  * @author Jan S. Rellermeyer, ETH Zurich
  * @since 0.1
  */
-public final class MethodResultMessage extends RemoteOSGiMessage {
+public final class RemoteCallResultMessage extends RemoteOSGiMessage {
 
 	/**
 	 * the error flag.
@@ -64,8 +62,8 @@ public final class MethodResultMessage extends RemoteOSGiMessage {
 	 * creates a new MethodResultMessage from InvokeMethodMessage and set the
 	 * exception.
 	 */
-	public MethodResultMessage() {
-		super(METHOD_RESULT);
+	public RemoteCallResultMessage() {
+		super(REMOTE_CALL_RESULT);
 	}
 
 	/**
@@ -79,22 +77,26 @@ public final class MethodResultMessage extends RemoteOSGiMessage {
 	 *      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	 *      |  error flag   | result or Exception                           \
 	 *      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	 * </pre>.
+	 * </pre>
+	 * 
+	 * .
 	 * 
 	 * @param input
-	 *            an <code>ObjectInputStream</code> that provides the body of
-	 *            a R-OSGi network packet.
+	 *            an <code>ObjectInputStream</code> that provides the body of a
+	 *            R-OSGi network packet.
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @throws ClassNotFoundException
 	 */
-	MethodResultMessage(final ObjectInputStream input) throws IOException {
-		super(METHOD_RESULT);
+	RemoteCallResultMessage(final ObjectInputStream input) throws IOException,
+			ClassNotFoundException {
+		super(REMOTE_CALL_RESULT);
 		errorFlag = input.readByte();
 		if (errorFlag == 0) {
-			result = SmartSerializer.deserialize(input);
+			result = input.readObject();
 			exception = null;
 		} else {
-			exception = (Throwable) SmartSerializer.deserialize(input);
+			exception = (Throwable) input.readObject();
 			result = null;
 		}
 	}
@@ -106,23 +108,24 @@ public final class MethodResultMessage extends RemoteOSGiMessage {
 	 *            the ObjectOutputStream.
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @see ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		if (exception == null) {
 			out.writeByte(0);
-			SmartSerializer.serialize(result, out);
+			out.writeObject(result);
 		} else {
 			out.writeByte(1);
-			SmartSerializer.serialize(exception, out);
+			out.writeObject(exception);
 		}
 	}
 
 	/**
 	 * did the method invocation cause an exception ?
 	 * 
-	 * @return <code>true</code>, if an exception has been thrown on the
-	 *         remote side. In this case, the exception can be retrieved through
-	 *         the <code>getException</code> method.
+	 * @return <code>true</code>, if an exception has been thrown on the remote
+	 *         side. In this case, the exception can be retrieved through the
+	 *         <code>getException</code> method.
 	 */
 	public boolean causedException() {
 		return (errorFlag == 1);
@@ -145,7 +148,7 @@ public final class MethodResultMessage extends RemoteOSGiMessage {
 	 */
 	public void setResult(final Object result) {
 		this.result = result;
-		this.errorFlag = 0;
+		errorFlag = 0;
 	}
 
 	/**
@@ -164,8 +167,8 @@ public final class MethodResultMessage extends RemoteOSGiMessage {
 	 *            the exception.
 	 */
 	public void setException(final Throwable t) {
-		this.exception = t;
-		this.errorFlag = 1;
+		exception = t;
+		errorFlag = 1;
 	}
 
 	/**
@@ -176,7 +179,7 @@ public final class MethodResultMessage extends RemoteOSGiMessage {
 	 */
 	public String toString() {
 		final StringBuffer buffer = new StringBuffer();
-		buffer.append("[METHOD_RESULT] - XID: "); //$NON-NLS-1$
+		buffer.append("[REMOTE_CALL_RESULT] - XID: "); //$NON-NLS-1$
 		buffer.append(xid);
 		buffer.append(", errorFlag: "); //$NON-NLS-1$
 		buffer.append(errorFlag);

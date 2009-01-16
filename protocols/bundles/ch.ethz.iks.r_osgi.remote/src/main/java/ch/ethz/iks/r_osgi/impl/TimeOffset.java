@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -116,24 +116,25 @@ final class TimeOffset {
 	 *            the series.
 	 */
 	void update(final long[] timeSeries) {
-		int len = timeSeries.length / 2;
-		long[] offsets = new long[len];
+		final int len = timeSeries.length / 2;
+		final long[] offsets = new long[len];
 		long l = 0;
 		long h = 0;
 		for (int i = 0; i < len; i++) {
-			long local = timeSeries[2 * i];
-			long remote = timeSeries[2 * i + 1];
+			final long local = timeSeries[2 * i];
+			final long remote = timeSeries[2 * i + 1];
 			offsets[i] = local - remote;
 			l = l + MathUtils.lower32(offsets[i]);
 			h = h + MathUtils.higher32(offsets[i]);
 		}
-		int shift = MathUtils.log2(len);
+		final int shift = MathUtils.log2(len);
 		l = l >>> shift;
 		h = h << (32 - shift);
-		long mean = (h | l);
+		final long mean = (h | l);
 		if (lastUpdate != 0) {
 			// heuristic adaptation of seriesLength
-			long stddev = (MathUtils.max(offsets) - MathUtils.min(offsets)) / 3;
+			final long stddev = (MathUtils.max(offsets) - MathUtils
+					.min(offsets)) / 3;
 			/*
 			 * System.out.println("STDDEV " + stddev);
 			 */
@@ -147,7 +148,7 @@ final class TimeOffset {
 				seriesLength *= 2;
 			}
 			// heuristic adaptation of lifetime
-			long diff = MathUtils.abs(offset - mean);
+			final long diff = MathUtils.abs(offset - mean);
 			/*
 			 * System.out.println("DIFF " + diff);
 			 */

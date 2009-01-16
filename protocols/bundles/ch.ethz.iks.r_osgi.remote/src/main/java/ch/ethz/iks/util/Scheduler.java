@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -37,6 +37,9 @@ import java.util.TreeMap;
  * Scheduler utility. Objects can be scheduled and the registered listener is
  * called when the scheduled object becomes due.
  * 
+ * Notice: this class is going to be removed once R-OSGi moves to CDC/Foundation
+ * 1.1 and the java.util.Timer class can be used instead.
+ * 
  * @author Jan S. Rellermeyer, ETH Zurich.
  * @since 0.6
  */
@@ -46,28 +49,28 @@ public final class Scheduler {
 	 * the expiration queue. All scheduled objects are places in ascending order
 	 * of their timestamp.
 	 */
-	private SortedMap expirationQueue = new TreeMap();
+	final SortedMap expirationQueue = new TreeMap();
 
 	/**
 	 * data index of the expiration queue to lookup for which timestamp an
 	 * object is scheduled.
 	 */
-	private Map expirationDataIndex = new HashMap(0);
+	private final Map expirationDataIndex = new HashMap(0);
 
 	/**
 	 * the listener that is called whenever a scheduled object has become due.
 	 */
-	private ScheduleListener listener;
+	final ScheduleListener listener;
 
 	/**
 	 * the schedule thread.
 	 */
-	private ScheduleThread thread;
+	private final ScheduleThread thread;
 
 	/**
 	 * the thread variable.
 	 */
-	private boolean running;
+	boolean running;
 
 	/**
 	 * create a new scheduler.
@@ -78,7 +81,7 @@ public final class Scheduler {
 	 */
 	public Scheduler(final ScheduleListener listener) {
 		this.listener = listener;
-		this.thread = new ScheduleThread();
+		thread = new ScheduleThread();
 		start();
 	}
 
@@ -111,7 +114,7 @@ public final class Scheduler {
 	 */
 	public boolean isScheduled(final Object object) {
 		synchronized (expirationQueue) {
-			Long scheduled = (Long) expirationDataIndex.get(object);
+			final Long scheduled = (Long) expirationDataIndex.get(object);
 			return (scheduled != null);
 		}
 	}
@@ -127,12 +130,14 @@ public final class Scheduler {
 	 *             if the object is already scheduled with a different
 	 *             timestamp.
 	 */
-	public void schedule(final Object object, final long timestamp) throws IllegalStateException {
+	public void schedule(final Object object, final long timestamp)
+			throws IllegalStateException {
 		synchronized (expirationQueue) {
 			if (isScheduled(object)) {
-				throw new IllegalStateException("Object " + object + " is already scheduled."); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new IllegalStateException("Object " + object //$NON-NLS-1$
+						+ " is already scheduled."); //$NON-NLS-1$ 
 			}
-			Long ts = new Long(timestamp);
+			final Long ts = new Long(timestamp);
 			expirationQueue.put(ts, object);
 			expirationDataIndex.put(object, ts);
 			expirationQueue.notifyAll();
@@ -162,7 +167,7 @@ public final class Scheduler {
 	 */
 	public void unschedule(final Object object) {
 		synchronized (expirationQueue) {
-			Long scheduled = (Long) expirationDataIndex.remove(object);
+			final Long scheduled = (Long) expirationDataIndex.remove(object);
 			expirationQueue.remove(scheduled);
 		}
 	}
@@ -195,13 +200,20 @@ public final class Scheduler {
 						} else {
 							// we have work, do everything that is due
 							Long nextActivity;
-							while (!expirationQueue.isEmpty() && (nextActivity = ((Long) expirationQueue.firstKey())).longValue() <= System.currentTimeMillis() + 10) {
-								final Object object = expirationQueue.remove(nextActivity);
-								listener.due(Scheduler.this, nextActivity.longValue(), object);
+							while (!expirationQueue.isEmpty()
+									&& (nextActivity = ((Long) expirationQueue
+											.firstKey())).longValue() <= System
+											.currentTimeMillis() + 10) {
+								final Object object = expirationQueue
+										.remove(nextActivity);
+								listener.due(Scheduler.this, nextActivity
+										.longValue(), object);
 							}
 							if (!expirationQueue.isEmpty()) {
-								nextActivity = ((Long) expirationQueue.firstKey());
-								final long next = nextActivity.longValue() - System.currentTimeMillis() - 10;
+								nextActivity = ((Long) expirationQueue
+										.firstKey());
+								final long next = nextActivity.longValue()
+										- System.currentTimeMillis() - 10;
 								/*
 								 * there are some activities in the future,
 								 * sleep until the first activity becomes due
@@ -213,7 +225,7 @@ public final class Scheduler {
 						}
 					}
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}

@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -43,14 +43,13 @@ public interface Remoting {
 	/**
 	 * get the endpoint of the channel to the denoted service url. If the peer
 	 * is not connected, it returns <code>null</code>.
-	 * @param url 
 	 * 
-	 * @param serviceURL
-	 *            the service url.
+	 * @param uri
+	 *            the service uri.
 	 * @return the endpoint or <code>null</code>
 	 * @since 0.6
 	 */
-	ChannelEndpoint getEndpoint(final String url);
+	ChannelEndpoint getEndpoint(final String uri);
 
 	/**
 	 * create an endpoint.

@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -58,7 +58,8 @@ public class OutputStreamProxy extends OutputStream {
 	 * @param endpoint
 	 *            the endpoint.
 	 */
-	public OutputStreamProxy(final short streamID, final ChannelEndpointImpl endpoint) {
+	public OutputStreamProxy(final short streamID,
+			final ChannelEndpointImpl endpoint) {
 		this.streamID = streamID;
 		this.endpoint = endpoint;
 	}
@@ -71,22 +72,22 @@ public class OutputStreamProxy extends OutputStream {
 	 * @throws IOException
 	 *             in case of IO failures.
 	 */
-	public void write(int b) throws IOException {
+	public void write(final int b) throws IOException {
 		endpoint.writeStream(streamID, b);
 	}
 
 	/**
 	 * write to the stream.
 	 * 
-	 * @param b
+	 * @param the
 	 *            bytes.
 	 * @param off
 	 *            the offset.
 	 * @param len
 	 *            the length.
-	 * @throws IOException 
 	 */
-	public void write(byte[] b, int off, int len) throws IOException {
+	public void write(final byte[] b, final int off, final int len)
+			throws IOException {
 		endpoint.writeStream(streamID, b, off, len);
 	}
 

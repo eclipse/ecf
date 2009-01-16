@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -53,7 +53,7 @@ public abstract class RemoteOSGiMessage {
 	/**
 	 * type code for fetch service messages.
 	 */
-	public static final short FETCH_SERVICE = 2;
+	public static final short REQUEST_SERVICE = 2;
 
 	/**
 	 * type code for deliver service messages.
@@ -70,12 +70,12 @@ public abstract class RemoteOSGiMessage {
 	/**
 	 * type code for invoke method messages.
 	 */
-	public static final short INVOKE_METHOD = 5;
+	public static final short REMOTE_CALL = 5;
 
 	/**
 	 * type code for method result messages.
 	 */
-	public static final short METHOD_RESULT = 6;
+	public static final short REMOTE_CALL_RESULT = 6;
 
 	/**
 	 * type code for remote event messages.
@@ -103,6 +103,22 @@ public abstract class RemoteOSGiMessage {
 	public static final short STREAM_RESULT = 11;
 
 	/**
+	 * type code for request dependency message.
+	 */
+	public static final short REQUEST_DEPENDENCIES = 12;
+	
+	/**
+	 * type code for request bundle message
+	 */
+	public static final short REQUEST_BUNDLE = 13;
+
+	/**
+	 * type code for deliver bundles message
+	 */
+	public static final short DELIVER_BUNDLES = 14;
+
+	
+	/**
 	 * the type code or functionID in SLP notation.
 	 */
 	private short funcID;
@@ -110,7 +126,7 @@ public abstract class RemoteOSGiMessage {
 	/**
 	 * the transaction id.
 	 */
-	protected short xid;
+	protected int xid;
 
 	/**
 	 * hides the default constructor.
@@ -123,10 +139,10 @@ public abstract class RemoteOSGiMessage {
 	 * get the transaction ID.
 	 * 
 	 * @return the xid.
-	 * @see RemoteOSGiMessage#getXID()
+	 * @see ch.ethz.iks.r_osgi.RemoteOSGiMessage#getXID()
 	 * @since 0.6
 	 */
-	public final short getXID() {
+	public final int getXID() {
 		return xid;
 	}
 
@@ -136,14 +152,14 @@ public abstract class RemoteOSGiMessage {
 	 * @param xid
 	 *            set the xid.
 	 */
-	public void setXID(short xid) {
+	public void setXID(final int xid) {
 		this.xid = xid;
 	}
 
 	/**
 	 * Get the function ID (type code) of the message.
 	 * 
-	 * @see RemoteOSGiMessage#getFuncID()
+	 * @see ch.ethz.iks.r_osgi.RemoteOSGiMessage#getFuncID()
 	 * @return the type code.
 	 * @since 0.6
 	 */
@@ -170,48 +186,59 @@ public abstract class RemoteOSGiMessage {
 	 * @param input
 	 *            the DataInput providing the network packet.
 	 * @return the RemoteOSGiMessage.
-	 * @throws IOException 
+	 * @throws ClassNotFoundException
 	 * @throws SocketException
 	 *             if something goes wrong.
 	 */
-	public static RemoteOSGiMessage parse(final ObjectInputStream input) throws IOException {
+	public static RemoteOSGiMessage parse(final ObjectInputStream input)
+			throws IOException, ClassNotFoundException {
 		input.readByte(); // version, currently unused
 		final short funcID = input.readByte();
-		final short xid = input.readShort();
+		final int xid = input.readInt();
 		RemoteOSGiMessage msg;
 		switch (funcID) {
-			case LEASE :
-				msg = new LeaseMessage(input);
-				break;
-			case FETCH_SERVICE :
-				msg = new FetchServiceMessage(input);
-				break;
-			case DELIVER_SERVICE :
-				msg = new DeliverServiceMessage(input);
-				break;
-			case INVOKE_METHOD :
-				msg = new InvokeMethodMessage(input);
-				break;
-			case METHOD_RESULT :
-				msg = new MethodResultMessage(input);
-				break;
-			case REMOTE_EVENT :
-				msg = new RemoteEventMessage(input);
-				break;
-			case TIME_OFFSET :
-				msg = new TimeOffsetMessage(input);
-				break;
-			case LEASE_UPDATE :
-				msg = new LeaseUpdateMessage(input);
-				break;
-			case STREAM_REQUEST :
-				msg = new StreamRequestMessage(input);
-				break;
-			case STREAM_RESULT :
-				msg = new StreamResultMessage(input);
-				break;
-			default :
-				throw new RemoteOSGiException("funcID " + funcID + " not supported."); //$NON-NLS-1$ 
+		case LEASE:
+			msg = new LeaseMessage(input);
+			break;
+		case REQUEST_SERVICE:
+			msg = new RequestServiceMessage(input);
+			break;
+		case DELIVER_SERVICE:
+			msg = new DeliverServiceMessage(input);
+			break;
+		case REMOTE_CALL:
+			msg = new RemoteCallMessage(input);
+			break;
+		case REMOTE_CALL_RESULT:
+			msg = new RemoteCallResultMessage(input);
+			break;
+		case REMOTE_EVENT:
+			msg = new RemoteEventMessage(input);
+			break;
+		case TIME_OFFSET:
+			msg = new TimeOffsetMessage(input);
+			break;
+		case LEASE_UPDATE:
+			msg = new LeaseUpdateMessage(input);
+			break;
+		case STREAM_REQUEST:
+			msg = new StreamRequestMessage(input);
+			break;
+		case STREAM_RESULT:
+			msg = new StreamResultMessage(input);
+			break;
+		case REQUEST_DEPENDENCIES:
+			msg = new RequestDependenciesMessage(input);
+			break;
+		case REQUEST_BUNDLE:
+			msg = new RequestBundleMessage(input);
+			break;
+		case DELIVER_BUNDLES:
+			msg = new DeliverBundlesMessage(input);
+			break;
+		default:
+			throw new RemoteOSGiException("funcID " + funcID //$NON-NLS-1$
+					+ " not supported."); //$NON-NLS-1$ 
 		}
 		msg.funcID = funcID;
 		msg.xid = xid;
@@ -230,10 +257,10 @@ public abstract class RemoteOSGiMessage {
 		synchronized (out) {
 			out.write(1);
 			out.write(funcID);
-			out.writeShort(xid);
+			out.writeInt(xid);
 			writeBody(out);
-			out.flush();
 			out.reset();
+			out.flush();
 		}
 	}
 
@@ -245,7 +272,8 @@ public abstract class RemoteOSGiMessage {
 	 * @throws IOException
 	 *             in case of IO failures.
 	 */
-	protected abstract void writeBody(final ObjectOutputStream output) throws IOException;
+	protected abstract void writeBody(final ObjectOutputStream output)
+			throws IOException;
 
 	/**
 	 * reads the bytes encoded as SLP string.
@@ -256,7 +284,8 @@ public abstract class RemoteOSGiMessage {
 	 * @throws IOException
 	 *             in case of IO failures.
 	 */
-	protected static byte[] readBytes(final ObjectInputStream input) throws IOException {
+	protected static byte[] readBytes(final ObjectInputStream input)
+			throws IOException {
 		final int length = input.readInt();
 		final byte[] buffer = new byte[length];
 		input.readFully(buffer);
@@ -273,7 +302,8 @@ public abstract class RemoteOSGiMessage {
 	 * @throws IOException
 	 *             in case of IO failures.
 	 */
-	protected static void writeBytes(final ObjectOutputStream out, final byte[] bytes) throws IOException {
+	protected static void writeBytes(final ObjectOutputStream out,
+			final byte[] bytes) throws IOException {
 		out.writeInt(bytes.length);
 		if (bytes.length > 0) {
 			out.write(bytes);
@@ -290,7 +320,8 @@ public abstract class RemoteOSGiMessage {
 	 * @throws IOException
 	 *             in case of IO failures.
 	 */
-	protected static void writeStringArray(final ObjectOutputStream out, final String[] strings) throws IOException {
+	protected static void writeStringArray(final ObjectOutputStream out,
+			final String[] strings) throws IOException {
 		final short length = (short) strings.length;
 		out.writeShort(length);
 		for (short i = 0; i < length; i++) {
@@ -307,7 +338,8 @@ public abstract class RemoteOSGiMessage {
 	 * @throws IOException
 	 *             in case of IO failures.
 	 */
-	protected static String[] readStringArray(final ObjectInputStream in) throws IOException {
+	protected static String[] readStringArray(final ObjectInputStream in)
+			throws IOException {
 		final short length = in.readShort();
 		final String[] result = new String[length];
 		for (short i = 0; i < length; i++) {

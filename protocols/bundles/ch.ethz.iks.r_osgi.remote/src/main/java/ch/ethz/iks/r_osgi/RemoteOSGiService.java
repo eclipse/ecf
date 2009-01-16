@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -31,7 +31,7 @@ package ch.ethz.iks.r_osgi;
 import java.io.IOException;
 
 import org.osgi.framework.Filter;
-import ch.ethz.iks.r_osgi.URI;
+
 import ch.ethz.iks.r_osgi.channels.ChannelEndpointManager;
 
 /**
@@ -39,8 +39,8 @@ import ch.ethz.iks.r_osgi.channels.ChannelEndpointManager;
  * RemoteOSGiService provides transparent access to services on remote service
  * platforms. It uses SLP as underlying discovery protocol. Local services can
  * be registered for remoting, applications can register listeners for
- * <code>ServiceTypes</code> to be informed whenever matching services have
- * been discovered.
+ * <code>ServiceTypes</code> to be informed whenever matching services have been
+ * discovered.
  * </p>
  * <p>
  * As soon as a service has been discovered and the listener has been informed,
@@ -86,17 +86,6 @@ public interface RemoteOSGiService {
 	String R_OSGi_REGISTRATION = "service.remote.registration"; //$NON-NLS-1$
 
 	/**
-	 * policy "service_proxy" means: dynamically build a proxy at client side.
-	 * (default)
-	 * 
-	 * @since 0.5
-	 * @deprecated With the new model, service proxies is the only supported
-	 *             policy. Any value set to the R_OSGi_REGISTRATION policy will
-	 *             have the effect of SERVICE_PROXY_POLICY;
-	 */
-	String SERVICE_PROXY_POLICY = "service_proxy"; //$NON-NLS-1$
-
-	/**
 	 * Can be set to use a smart proxy. Smart proxies have to be abstract
 	 * classes implementing the service interface. All abstract methods are
 	 * implemented as remote calls, implemented methods remain untouched. This
@@ -126,9 +115,9 @@ public interface RemoteOSGiService {
 	 * property for registration of a service UI component that gived the user a
 	 * presentation of the service. The value of the property in the service
 	 * property dictionary has to be a name of a class implementing
-	 * <code>org.service.proposition.remote.ServiceUIComponent</code>. When
-	 * this property is set, the presentation is injected into the bundle and
-	 * the R-OSGi ServiceUI can display the presentation when the service is
+	 * <code>org.service.proposition.remote.ServiceUIComponent</code>. When this
+	 * property is set, the presentation is injected into the bundle and the
+	 * R-OSGi ServiceUI can display the presentation when the service is
 	 * discovered.
 	 * 
 	 * @since 0.5
@@ -155,12 +144,13 @@ public interface RemoteOSGiService {
 	 * @return the array of remote service references of the services that the
 	 *         remote frameworks offers.
 	 * @throws RemoteOSGiException
-	 * 			   in case of protocol errors
-	 * @throws IOException
 	 *             in case of connection errors.
+	 *             if the connection attempt fails.
+	 * @throws IOException
 	 * @since 0.6
 	 */
-	RemoteServiceReference[] connect(final URI endpoint) throws IOException, RemoteOSGiException;
+	RemoteServiceReference[] connect(final URI endpoint)
+			throws RemoteOSGiException, IOException;
 
 	/**
 	 * disconnect from a connected host.
@@ -194,10 +184,11 @@ public interface RemoteOSGiService {
 	 *            services.
 	 * @param filter
 	 *            a filter string, or <code>null</code>
-	 * @return an array of remote service references, or <code>null</code> if
-	 *         no services match.
+	 * @return an array of remote service references, or <code>null</code> if no
+	 *         services match.
 	 */
-	RemoteServiceReference[] getRemoteServiceReferences(final URI endpointAddress, final String clazz, final Filter filter);
+	RemoteServiceReference[] getRemoteServiceReferences(
+			final URI endpointAddress, final String clazz, final Filter filter);
 
 	/**
 	 * get the a remote service. If there is no proxy bundle for the service so
@@ -209,6 +200,23 @@ public interface RemoteOSGiService {
 	 *         service is present.
 	 */
 	Object getRemoteService(final RemoteServiceReference ref);
+
+	/**
+	 * get a copy of the bundle that has registered the remote service.
+	 * 
+	 * @param ref
+	 *            the remote service reference
+	 * @param timeout
+	 *            number of milliseconds to wait for the service to be
+	 *            registered after the bundle has been started. A value of 0
+	 *            means indefinite time, a negative value means don't wait at
+	 *            all.
+	 * @return the service object or null if the timeout is exceeded and the
+	 *         service has not appeared.
+	 * @throws InterruptedException 
+	 */
+	Object getRemoteServiceBundle(final RemoteServiceReference ref,
+			final int timeout) throws InterruptedException;
 
 	/**
 	 * unget the service. The proxy bundle will be uninstalled. The service will
@@ -229,5 +237,31 @@ public interface RemoteOSGiService {
 	 *         exists.
 	 */
 	ChannelEndpointManager getEndpointManager(final URI remoteEndpointAddress);
+
+	/**
+	 * make an asynchronous remote call to a service
+	 * 
+	 * @param service
+	 *            the URI of the service
+	 * @param methodSignature
+	 *            the signature of the method to call
+	 * @param args
+	 *            the arguments to pass
+	 * @param callback
+	 *            a callback to be called when the result is available
+	 */
+	void asyncRemoteCall(final URI service, final String methodSignature,
+			final Object[] args, final AsyncRemoteCallCallback callback);
+
+	/**
+	 * get the port on which the corresponding NetworkChannelFactory for the
+	 * given protocol listens for incoming connections.
+	 * 
+	 * @param protocol
+	 *            the protocol identifier string. E.g., "r-osgi" for the default
+	 *            TCP-based transport
+	 * @return the port number or -1 if the protocol is not supported.
+	 */
+	int getListeningPort(final String protocol);
 
 }

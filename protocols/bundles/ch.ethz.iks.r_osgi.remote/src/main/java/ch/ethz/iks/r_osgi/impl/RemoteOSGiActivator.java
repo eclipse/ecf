@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -35,6 +35,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import ch.ethz.iks.r_osgi.Remoting;
 import ch.ethz.iks.r_osgi.channels.NetworkChannelFactory;
@@ -52,7 +53,17 @@ public final class RemoteOSGiActivator implements BundleActivator {
 	 */
 	private RemoteOSGiServiceImpl remoting;
 
-	static BundleContext context;
+	private static RemoteOSGiActivator instance;
+
+	private BundleContext context;
+
+	static RemoteOSGiActivator getActivator() {
+		return instance;
+	}
+
+	BundleContext getContext() {
+		return context;
+	}
 
 	/**
 	 * called when the bundle is started.
@@ -64,11 +75,12 @@ public final class RemoteOSGiActivator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(final BundleContext context) throws Exception {
-		RemoteOSGiActivator.context = context;
+		instance = this;
+		this.context = context;
 
 		// get the log service, if present
 		final ServiceReference logRef = context
-				.getServiceReference("org.osgi.service.log.LogService");
+				.getServiceReference("org.osgi.service.log.LogService"); //$NON-NLS-1$
 		if (logRef != null) {
 			RemoteOSGiServiceImpl.log = (LogService) context.getService(logRef);
 		}
@@ -80,11 +92,10 @@ public final class RemoteOSGiActivator implements BundleActivator {
 
 		// and register the service
 		context.registerService(new String[] {
-				RemoteOSGiService.class.getName(), Remoting.class.getName() },
-				remoting, null);
-		
+				RemoteOSGiService.class.getName(), Remoting.class.getName() }, remoting, null);
+
 		// register the default tcp channel
-		if (!"false"
+		if (!"false" //$NON-NLS-1$
 				.equals(context
 						.getProperty(RemoteOSGiServiceImpl.REGISTER_DEFAULT_TCP_CHANNEL))) {
 			final Dictionary properties = new Hashtable();
@@ -92,6 +103,7 @@ public final class RemoteOSGiActivator implements BundleActivator {
 					TCPChannelFactory.PROTOCOL);
 			context.registerService(NetworkChannelFactory.class.getName(),
 					new TCPChannelFactory(), properties);
+			// TODO: add default transport supported intents
 		}
 	}
 
@@ -107,6 +119,7 @@ public final class RemoteOSGiActivator implements BundleActivator {
 	public void stop(final BundleContext context) throws Exception {
 		// unregister and clean up
 		remoting.cleanup();
-		RemoteOSGiActivator.context = null;
+		instance = null;
+		this.context = null;
 	}
 }

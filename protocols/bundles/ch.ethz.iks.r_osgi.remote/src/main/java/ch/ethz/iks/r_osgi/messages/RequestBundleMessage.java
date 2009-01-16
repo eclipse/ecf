@@ -26,42 +26,82 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.ethz.iks.util;
+package ch.ethz.iks.r_osgi.messages;
 
-import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
- * String utilities.
+ * Request the bundle of a service.
  * 
- * @author Jan S. Rellermeyer, ETH Zurich
- * @since 0.2
+ * @author Jan S. Rellermeyer
+ * 
  */
-public final class StringUtils {
+public class RequestBundleMessage extends RemoteOSGiMessage {
 
 	/**
-	 * hide the default constructor.
+	 * the service ID.
 	 */
-	private StringUtils() {
+	private String serviceID;
+
+	/**
+	 * create a new request bundle message.
+	 */
+	public RequestBundleMessage() {
+		super(REQUEST_BUNDLE);
+
 	}
 
 	/**
-	 * transforms a string list into an array of Strings.
+	 * create a new request bundle message.
+	 */
+	public RequestBundleMessage(final ObjectInputStream input)
+			throws IOException {
+		super(REQUEST_BUNDLE);
+		serviceID = input.readUTF();
+	}
+
+	/**
+	 * write the message to the wire.
+	 */
+	protected void writeBody(final ObjectOutputStream out) throws IOException {
+		out.writeUTF(serviceID);
+	}
+
+	/**
+	 * get the service ID.
 	 * 
-	 * @param data
-	 *            the string list.
-	 * @param delim
-	 *            the list delimiter.
-	 * @return the array of strings.
-	 * @since 0.2
+	 * @return the service ID.
 	 */
-	public static String[] stringToArray(final String data, final String delim) {
-		final StringTokenizer tokenizer = new StringTokenizer(data, delim);
-		final String[] tokens = new String[tokenizer.countTokens()];
-		final int tokenCount = tokenizer.countTokens();
-		for (int i = 0; i < tokenCount; i++) {
-			tokens[i] = tokenizer.nextToken().trim();
-		}
-
-		return tokens;
+	public String getServiceID() {
+		return serviceID;
 	}
+
+	/**
+	 * get the service ID.
+	 * 
+	 * @param serviceID
+	 *            the service ID.
+	 */
+	public void setServiceID(final String serviceID) {
+		this.serviceID = serviceID;
+	}
+
+	/**
+	 * String representation for debug outputs.
+	 * 
+	 * @return a string representation.
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		final StringBuffer buffer = new StringBuffer();
+		buffer.append("[REQUEST_BUNDLE]"); //$NON-NLS-1$
+		buffer.append("- XID: "); //$NON-NLS-1$
+		buffer.append(xid);
+		buffer.append(", serviceID: "); //$NON-NLS-1$
+		buffer.append(serviceID);
+		return buffer.toString();
+	}
+
 }

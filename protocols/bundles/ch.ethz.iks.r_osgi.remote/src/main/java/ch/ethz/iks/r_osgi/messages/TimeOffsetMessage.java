@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -66,11 +66,13 @@ public final class TimeOffsetMessage extends RemoteOSGiMessage {
 	 *       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	 *       |                   Marshalled Long[]                           \
 	 *       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	 * </pre>.
+	 * </pre>
+	 * 
+	 * .
 	 * 
 	 * @param input
-	 *            an <code>ObjectInputStream</code> that provides the body of
-	 *            a R-OSGi network packet.
+	 *            an <code>ObjectInputStream</code> that provides the body of a
+	 *            R-OSGi network packet.
 	 * @throws IOException
 	 *             in case of IO failures.
 	 */
@@ -90,6 +92,7 @@ public final class TimeOffsetMessage extends RemoteOSGiMessage {
 	 *            the ObjectOutputStream.
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @see ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		out.writeInt(timeSeries.length);
@@ -113,10 +116,9 @@ public final class TimeOffsetMessage extends RemoteOSGiMessage {
 	 * for retransmissions: replace the last timestamp with the current one. The
 	 * sending method must increase the XID to signal that this is a "new"
 	 * message rather than a strict retransmission.
-	 * @param newXID 
 	 */
-	public void restamp(short newXID) {
-		this.xid = newXID;
+	public void restamp(final int newXID) {
+		xid = newXID;
 		timeSeries[timeSeries.length - 1] = System.currentTimeMillis();
 	}
 
@@ -136,7 +138,7 @@ public final class TimeOffsetMessage extends RemoteOSGiMessage {
 	 *            the time series.
 	 */
 	public final void setTimeSeries(final long[] series) {
-		this.timeSeries = series;
+		timeSeries = series;
 	}
 
 	/**
@@ -154,13 +156,13 @@ public final class TimeOffsetMessage extends RemoteOSGiMessage {
 		for (int i = 0; i < timeSeries.length; i++) {
 			buffer.append(timeSeries[i]);
 			if (i < timeSeries.length - 1) {
-				buffer.append(", ");
+				buffer.append(", "); //$NON-NLS-1$
 			}
 		}
 		buffer.append("]"); //$NON-NLS-1$
 		for (int i = 0; i < timeSeries.length; i++) {
 			buffer.append(timeSeries[i]);
-			buffer.append(", ");
+			buffer.append(", "); //$NON-NLS-1$
 		}
 		return buffer.toString();
 	}

@@ -1,5 +1,5 @@
-/* Copyright (c) 2006-2008 Jan S. Rellermeyer
- * Information and Communication Systems Research Group (IKS),
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
  *
@@ -28,11 +28,10 @@
  */
 package ch.ethz.iks.r_osgi.messages;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.IOException;
 import java.util.Dictionary;
-import ch.ethz.iks.util.SmartSerializer;
 
 /**
  * <p>
@@ -48,7 +47,7 @@ public final class RemoteEventMessage extends RemoteOSGiMessage {
 	/**
 	 * the event property contains the sender's uri.
 	 */
-	public static final String EVENT_SENDER_URI = "sender.uri";
+	public static final String EVENT_SENDER_URI = "sender.uri"; //$NON-NLS-1$
 
 	/**
 	 * 
@@ -82,18 +81,22 @@ public final class RemoteEventMessage extends RemoteOSGiMessage {
 	 *         +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	 *         | Properties                                                    \
 	 *         +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	 * </pre>.
+	 * </pre>
+	 * 
+	 * .
 	 * 
 	 * @param input
-	 *            an <code>ObjectInputStream</code> that provides the body of
-	 *            a R-OSGi network packet.
+	 *            an <code>ObjectInputStream</code> that provides the body of a
+	 *            R-OSGi network packet.
 	 * @throws IOException
 	 *             in case of IO failures.
+	 * @throws ClassNotFoundException
 	 */
-	RemoteEventMessage(final ObjectInputStream input) throws IOException {
+	RemoteEventMessage(final ObjectInputStream input) throws IOException,
+			ClassNotFoundException {
 		super(REMOTE_EVENT);
 		topic = input.readUTF();
-		properties = (Dictionary) SmartSerializer.deserialize(input);
+		properties = (Dictionary) input.readObject();
 	}
 
 	/**
@@ -152,7 +155,7 @@ public final class RemoteEventMessage extends RemoteOSGiMessage {
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		out.writeUTF(topic);
-		SmartSerializer.serialize(properties, out);
+		out.writeObject(properties);
 	}
 
 	/**
@@ -162,7 +165,7 @@ public final class RemoteEventMessage extends RemoteOSGiMessage {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 		buffer.append("[REMOTE_EVENT] - XID: "); //$NON-NLS-1$
 		buffer.append(xid);
 		buffer.append("topic: "); //$NON-NLS-1$
