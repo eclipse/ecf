@@ -17,6 +17,7 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.RemoteFileSystemException;
@@ -30,7 +31,6 @@ import org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser;
 public class FileStoreBrowser extends AbstractFileSystemBrowser {
 
 	IFileStore fileStore;
-	URL efsDirectory;
 
 	/**
 	 * @param store 
@@ -41,11 +41,9 @@ public class FileStoreBrowser extends AbstractFileSystemBrowser {
 	 * 
 	 */
 	public FileStoreBrowser(IFileStore store, URL efsDirectory, IFileID directoryID2, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
-		super(directoryID2, listener);
+		super(directoryID2, listener,efsDirectory,null,null);
 		Assert.isNotNull(store);
 		this.fileStore = store;
-		Assert.isNotNull(efsDirectory);
-		this.efsDirectory = efsDirectory;
 	}
 
 	/* (non-Javadoc)
@@ -57,12 +55,16 @@ public class FileStoreBrowser extends AbstractFileSystemBrowser {
 			final IFileInfo[] fileInfos = fileStore.childInfos(EFS.NONE, null);
 			remoteFiles = new IRemoteFile[fileInfos.length];
 			for (int i = 0; i < fileInfos.length; i++) {
-				remoteFiles[i] = new EFSRemoteFile(FileIDFactory.getDefault().createFileID(fileID.getNamespace(), new URL(efsDirectory + "/" + fileInfos[i].getName())), fileInfos[i]); //$NON-NLS-1$
+				remoteFiles[i] = new EFSRemoteFile(FileIDFactory.getDefault().createFileID(fileID.getNamespace(), new URL(directoryOrFile + "/" + fileInfos[i].getName())), fileInfos[i]); //$NON-NLS-1$
 			}
 		} else {
 			remoteFiles = new IRemoteFile[1];
 			remoteFiles[0] = new EFSRemoteFile(fileID, fileStoreInfo);
 		}
+	}
+
+	protected void setupProxy(Proxy proxy) {
+		// Not implemented
 	}
 
 }
