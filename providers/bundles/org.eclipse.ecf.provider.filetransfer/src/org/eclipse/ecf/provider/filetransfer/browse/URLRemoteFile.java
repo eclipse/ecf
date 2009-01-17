@@ -11,7 +11,8 @@
 
 package org.eclipse.ecf.provider.filetransfer.browse;
 
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.filetransfer.*;
@@ -25,12 +26,13 @@ public class URLRemoteFile implements IRemoteFile {
 
 	IFileID fileID;
 
-	URLConnection urlConnection;
+	long lastModified;
+	long fileLength;
 	IRemoteFileAttributes remoteFileAttributes;
 
-	public URLRemoteFile(URLConnection urlConnection, IFileID fileID) {
-		Assert.isNotNull(urlConnection);
-		this.urlConnection = urlConnection;
+	public URLRemoteFile(long lastModified, long fileLength, IFileID fileID) {
+		this.lastModified = lastModified;
+		this.fileLength = fileLength;
 		Assert.isNotNull(fileID);
 		this.fileID = fileID;
 		remoteFileAttributes = new URLRemoteFileAttributes();
@@ -54,11 +56,11 @@ public class URLRemoteFile implements IRemoteFile {
 			}
 
 			public long getLastModified() {
-				return urlConnection.getLastModified();
+				return lastModified;
 			}
 
 			public long getLength() {
-				return urlConnection.getContentLength();
+				return fileLength;
 			}
 
 			public String getName() {
@@ -103,6 +105,10 @@ public class URLRemoteFile implements IRemoteFile {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this))
+			return this;
 		IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
 		if (adapterManager == null)
 			return null;

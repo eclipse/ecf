@@ -14,11 +14,8 @@ package org.eclipse.ecf.provider.filetransfer.browse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
-import org.eclipse.core.net.proxy.IProxyData;
-import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -40,11 +37,6 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	private static final String DEFAULT_READ_TIMEOUT = "30000"; //$NON-NLS-1$
 
-	URL directoryOrFile;
-
-	IConnectContext connectContext;
-	Proxy proxy;
-
 	private JREProxyHelper proxyHelper = null;
 
 	protected String username = null;
@@ -56,10 +48,7 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 	 * @param listener
 	 */
 	public URLFileSystemBrowser(IFileID directoryOrFileID, IRemoteFileSystemListener listener, URL directoryOrFileURL, IConnectContext connectContext, Proxy proxy) {
-		super(directoryOrFileID, listener);
-		this.directoryOrFile = directoryOrFileURL;
-		this.connectContext = connectContext;
-		this.proxy = proxy;
+		super(directoryOrFileID, listener, directoryOrFileURL, connectContext, proxy);
 		proxyHelper = new JREProxyHelper();
 	}
 
@@ -100,7 +89,7 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 		InputStream ins = urlConnection.getInputStream();
 		ins.close();
 		remoteFiles = new IRemoteFile[1];
-		remoteFiles[0] = new URLRemoteFile(urlConnection, fileID);
+		remoteFiles[0] = new URLRemoteFile(urlConnection.getLastModified(), urlConnection.getContentLength(), fileID);
 	}
 
 	protected void setupAuthentication() throws IOException, UnsupportedCallbackException {
@@ -133,71 +122,6 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	protected void setupProxy(final Proxy proxy2) {
 		proxyHelper.setupProxy(proxy2);
-	}
-
-	/**
-	 * Select a single proxy from a set of proxies available for the given host.  This implementation
-	 * selects in the following manner:  1) If proxies provided is null or array of 0 length, null 
-	 * is returned.  If only one proxy is available (array of length 1) then the entry is returned.
-	 * If proxies provided is length > 1, then if the type of a proxy in the array matches the given
-	 * protocol (e.g. http, https), then the first matching proxy is returned.  If the protocol does
-	 * not match any of the proxies, then the *first* proxy (i.e. proxies[0]) is returned.  Subclasses may
-	 * override if desired.
-	 * 
-	 * @param protocol the target protocol (e.g. http, https, scp, etc).  Will not be <code>null</code>.
-	 * @param proxies the proxies to select from.  May be <code>null</code> or array of length 0.
-	 * @return proxy data selected from the proxies provided.  
-	 */
-	protected IProxyData selectProxyFromProxies(String protocol, IProxyData[] proxies) {
-		if (proxies == null || proxies.length == 0)
-			return null;
-		// If only one proxy is available, then use that
-		if (proxies.length == 1)
-			return proxies[0];
-		// If more than one proxy is available, then if http/https protocol then look for that
-		// one...if not found then use first
-		if (protocol.equalsIgnoreCase("http")) { //$NON-NLS-1$
-			for (int i = 0; i < proxies.length; i++) {
-				if (proxies[i].getType().equals(IProxyData.HTTP_PROXY_TYPE))
-					return proxies[i];
-			}
-		} else if (protocol.equalsIgnoreCase("https")) { //$NON-NLS-1$
-			for (int i = 0; i < proxies.length; i++) {
-				if (proxies[i].getType().equals(IProxyData.HTTPS_PROXY_TYPE))
-					return proxies[i];
-			}
-		}
-		// If we haven't found it yet, then return the first one.
-		return proxies[0];
-	}
-
-	protected void setupProxies() {
-		// If it's been set directly (via ECF API) then this overrides platform settings
-		if (proxy == null) {
-			try {
-				IProxyService proxyService = Activator.getDefault().getProxyService();
-				// Only do this if platform service exists
-				if (proxyService != null) {
-					// Setup via proxyService entry
-					URL target = directoryOrFile;
-					final IProxyData[] proxies = proxyService.getProxyDataForHost(target.getHost());
-					IProxyData selectedProxy = selectProxyFromProxies(target.getProtocol(), proxies);
-					if (selectedProxy != null) {
-						proxy = new Proxy(((selectedProxy.getType().equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(selectedProxy.getHost(), selectedProxy.getPort()), selectedProxy.getUserId(), selectedProxy.getPassword());
-					}
-				}
-
-			} catch (Exception e) {
-				// If we don't even have the classes for this (i.e. the org.eclipse.core.net plugin not available)
-				// then we simply log and ignore
-				Activator.logNoProxyWarning(e);
-			} catch (NoClassDefFoundError e) {
-				Activator.logNoProxyWarning(e);
-			}
-		}
-		if (proxy != null)
-			setupProxy(proxy);
-
 	}
 
 }

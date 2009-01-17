@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.filetransfer.browse;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.RemoteFileSystemException;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -31,7 +32,7 @@ public class LocalFileSystemBrowser extends AbstractFileSystemBrowser {
 	 * @param directoryID2 
 	 */
 	public LocalFileSystemBrowser(IFileID directoryID2, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
-		super(directoryID2, listener);
+		super(directoryID2, listener, null, null, null);
 		try {
 			local = new File(directoryID2.getURL().getPath());
 		} catch (MalformedURLException e) {
@@ -52,6 +53,10 @@ public class LocalFileSystemBrowser extends AbstractFileSystemBrowser {
 			remoteFiles = new LocalRemoteFile[1];
 			remoteFiles[0] = new LocalRemoteFile(local);
 		}
+	}
+
+	protected void setupProxy(Proxy proxy) {
+		// nothing
 	}
 
 }
