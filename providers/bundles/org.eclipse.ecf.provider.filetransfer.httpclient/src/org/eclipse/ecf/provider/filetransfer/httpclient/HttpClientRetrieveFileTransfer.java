@@ -55,9 +55,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 		private boolean isZippedReply() {
 			boolean zipped = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_GZIP));
-			// XXX removed see https://bugs.eclipse.org/bugs/show_bug.cgi?id=237936#c34
-			// apache can also insert something after a 302 redirect
-			//		|| (null != this.getResponseHeader(CONTENT_TYPE) && this.getResponseHeader(CONTENT_TYPE).getValue().equals(APPLICATION_X_GZIP));
 			return zipped;
 		}
 
@@ -65,6 +62,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			// Insert accept-encoding header
 			if (getFileRangeSpecification() == null)
 				this.setRequestHeader(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
+			gzipReceived = false;
 			int result = super.execute(state, conn);
 			// test what is sent back
 			if (isZippedReply()) {
