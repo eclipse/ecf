@@ -15,4 +15,18 @@
       </retrieveFileTransferProtocolFactory>
    </extension>
 
+   <extension
+         point="org.eclipse.ecf.provider.filetransfer.browseFileTransferProtocolFactory">
+      <browseFileTransferProtocolFactory
+            class="org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientBrowseFileTransferFactory"
+            protocol="http"
+            priority="50">
+      </browseFileTransferProtocolFactory>
+      <browseFileTransferProtocolFactory
+            class="org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientBrowseFileTransferFactory"
+            protocol="https"
+            priority="50">
+      </browseFileTransferProtocolFactory>
+   </extension>
+
 </plugin>

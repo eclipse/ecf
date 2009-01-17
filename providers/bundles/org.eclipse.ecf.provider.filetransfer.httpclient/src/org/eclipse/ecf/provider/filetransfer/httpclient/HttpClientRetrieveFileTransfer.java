@@ -22,8 +22,7 @@ import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
-import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.core.util.ProxyAddress;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.*;
@@ -75,6 +74,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			InputStream input = super.getResponseBodyAsStream();
 			try {
 				if (gzipReceived) {
+					Trace.trace(Activator.PLUGIN_ID, "retrieve content-encoding: gzip"); //$NON-NLS-1$
 					// extract on the fly
 					return new java.util.zip.GZIPInputStream(input);
 				}
@@ -176,11 +176,14 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 		if (credentials != null && username != null) {
 			final AuthScope authScope = new AuthScope(getHostFromURL(urlString), getPortFromURL(urlString), AuthScope.ANY_REALM);
+			Trace.trace(Activator.PLUGIN_ID, "retrieve credentials=" + credentials); //$NON-NLS-1$
 			httpClient.getState().setCredentials(authScope, credentials);
 		}
 	}
 
 	protected void setupHostAndPort(String urlString) {
+		String host = getHostFromURL(urlString);
+		int port = getPortFromURL(urlString);
 		if (urlUsesHttps(urlString)) {
 			ISSLSocketFactoryModifier sslSocketFactoryModifier = Activator.getDefault().getSSLSocketFactoryModifier();
 			Protocol sslProtocol = null;
@@ -190,11 +193,13 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			} else {
 				psf = new HttpClientSslProtocolSocketFactory(proxy);
 			}
-			sslProtocol = new Protocol(HTTPS, psf, getPortFromURL(urlString));
+			sslProtocol = new Protocol(HTTPS, psf, port);
 			Protocol.registerProtocol(HTTPS, sslProtocol);
-			httpClient.getHostConfiguration().setHost(getHostFromURL(urlString), getPortFromURL(urlString), sslProtocol);
+			Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
+			httpClient.getHostConfiguration().setHost(host, port, sslProtocol);
 		} else {
-			httpClient.getHostConfiguration().setHost(getHostFromURL(urlString), getPortFromURL(urlString));
+			Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
+			httpClient.getHostConfiguration().setHost(host, port);
 		}
 	}
 
@@ -207,7 +212,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new InvalidFileRangeSpecificationException(Messages.HttpClientRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO, rangeSpec);
 			if (endPosition != -1L && endPosition <= startPosition)
 				throw new InvalidFileRangeSpecificationException(Messages.HttpClientRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START, rangeSpec);
-			setRangeHeader("bytes=" + startPosition + "-" + ((endPosition == -1L) ? "" : ("" + endPosition))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			String rangeHeader = "bytes=" + startPosition + "-" + ((endPosition == -1L) ? "" : ("" + endPosition)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			Trace.trace(Activator.PLUGIN_ID, "retrieve range header=" + rangeHeader); //$NON-NLS-1$
+			setRangeHeader(rangeHeader);
 		}
 		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		getMethod.addRequestHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
@@ -314,6 +321,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
+
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "openStreams"); //$NON-NLS-1$
 		final String urlString = getRemoteFileURL().toString();
 
 		int code = -1;
@@ -333,7 +342,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			getMethod.getParams().setParameter(CredentialsProvider.PROVIDER, new ECFCredentialsProvider());
 			setRequestHeaderValues();
 
+			Trace.trace(Activator.PLUGIN_ID, "retrieve=" + urlString); //$NON-NLS-1$
+
 			code = httpClient.executeMethod(getMethod);
+
+			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + code); //$NON-NLS-1$
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResponseHeaderValues();
@@ -356,9 +369,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
 			}
 		} catch (final Exception e) {
-			throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code);
+			IncomingFileTransferException ex = new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code);
+			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreams", ex); //$NON-NLS-1$
+			throw ex;
 		}
-
+		Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreams"); //$NON-NLS-1$
 	}
 
 	/*
@@ -467,6 +482,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	private boolean openStreamsForResume() {
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "openStreamsForResume"); //$NON-NLS-1$
 		final URL theURL = getRemoteFileURL();
 
 		int code = -1;
@@ -487,7 +503,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			setResumeRequestHeaderValues();
 
+			Trace.trace(Activator.PLUGIN_ID, "resume get " + urlString); //$NON-NLS-1$
+
 			code = httpClient.executeMethod(getMethod);
+
+			Trace.trace(Activator.PLUGIN_ID, "resume get resp=" + code); //$NON-NLS-1$
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResumeResponseHeaderValues();
@@ -508,12 +528,15 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				getMethod.releaseConnection();
 				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
 			}
+			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreamsForResume", Boolean.TRUE); //$NON-NLS-1$
 			return true;
 		} catch (final Exception e) {
 			this.exception = e;
 			this.done = true;
+			Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreamsForResume", e); //$NON-NLS-1$
 			hardClose();
 			fireTransferReceiveDoneEvent();
+			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreamsForResume", Boolean.FALSE); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -550,14 +573,16 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			if (proxyUsername != null) {
 				final Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
 				final AuthScope proxyAuthScope = new AuthScope(address.getHostName(), address.getPort(), AuthScope.ANY_REALM);
+				Trace.trace(Activator.PLUGIN_ID, "retrieve httpproxy=" + proxyAuthScope + ";credentials" + credentials); //$NON-NLS-1$ //$NON-NLS-2$
 				httpClient.getState().setProxyCredentials(proxyAuthScope, credentials);
 			}
 		} else if (proxy.getType().equals(Proxy.Type.SOCKS)) {
+			Trace.trace(Activator.PLUGIN_ID, "retrieve socksproxy=" + proxy.getAddress()); //$NON-NLS-1$
 			proxyHelper.setupProxy(proxy);
 		}
 	}
 
-	protected NTCredentials createNTLMCredentials(Proxy p) {
+	protected static NTCredentials createNTLMCredentials(Proxy p) {
 		if (p == null) {
 			return null;
 		}
@@ -568,7 +593,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return new NTCredentials(un, p.getPassword(), p.getAddress().getHostName(), domain);
 	}
 
-	protected String getNTLMDomainName(Proxy p) {
+	protected static String getNTLMDomainName(Proxy p) {
 		String domainUsername = p.getUsername();
 		int slashloc = domainUsername.indexOf('\\');
 		if (slashloc == -1)
@@ -576,12 +601,37 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return domainUsername.substring(0, slashloc);
 	}
 
-	protected String getNTLMUserName(Proxy p) {
+	protected static String getNTLMUserName(Proxy p) {
 		String domainUsername = p.getUsername();
 		int slashloc = domainUsername.indexOf('\\');
 		if (slashloc == -1)
 			return null;
 		return domainUsername.substring(slashloc + 1);
+	}
+
+	protected void fireReceiveStartEvent() {
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "fireReceiveStartEvent len=" + fileLength + ";rcvd=" + bytesReceived); //$NON-NLS-1$ //$NON-NLS-2$
+		super.fireReceiveStartEvent();
+	}
+
+	protected void fireReceiveResumedEvent() {
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "fireReceiveResumedEvent len=" + fileLength + ";rcvd=" + bytesReceived); //$NON-NLS-1$ //$NON-NLS-2$
+		super.fireReceiveResumedEvent();
+	}
+
+	protected void fireTransferReceiveDataEvent() {
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "fireTransferReceiveDataEvent len=" + fileLength + ";rcvd=" + bytesReceived); //$NON-NLS-1$ //$NON-NLS-2$
+		super.fireTransferReceiveDataEvent();
+	}
+
+	protected void fireTransferReceiveDoneEvent() {
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "fireTransferReceiveDoneEvent len=" + fileLength + ";rcvd=" + bytesReceived); //$NON-NLS-1$ //$NON-NLS-2$
+		super.fireTransferReceiveDoneEvent();
+	}
+
+	protected void fireTransferReceivePausedEvent() {
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "fireTransferReceivePausedEvent len=" + fileLength + ";rcvd=" + bytesReceived); //$NON-NLS-1$ //$NON-NLS-2$
+		super.fireTransferReceivePausedEvent();
 	}
 
 }
