@@ -23,9 +23,7 @@ import org.eclipse.core.runtime.*;
  * {@link #get(long)}.
  * </p>
  * <p>
- * Clients may also access an associated IProgressMonitor via {@link #getProgressMonitor()},
- * and the returned progress monitor allows cancellation of the underlying operation(s) via
- * {@link IProgressMonitor#setCanceled(boolean)}.
+ * Clients may cancel the given operation by calling {@link #cancel()}.
  * </p>
  * <p>
  * Clients may also access information about whether all operations have completed (if multiple
@@ -55,7 +53,7 @@ public interface IFuture extends IAdaptable {
 	 * @throws InterruptedException
 	 *             if thread calling this method is interrupted.
 	 * @throws OperationCanceledException
-	 *             if the operation has been canceled via progress monitor {@link #getProgressMonitor()}.
+	 *             if the operation has been canceled via {@link IFuture#cancel()}.
 	 */
 	Object get() throws InterruptedException, OperationCanceledException;
 
@@ -72,7 +70,7 @@ public interface IFuture extends IAdaptable {
 	 * @throws TimeoutException
 	 *             if the given wait time is exceeded without getting result.
 	 * @throws OperationCanceledException
-	 *             if the operation has been canceled via progress monitor {@link #getProgressMonitor()}.
+	 *             if the operation has been canceled via {@link IFuture#cancel()}.
 	 */
 	Object get(long waitTimeInMillis) throws InterruptedException, TimeoutException, OperationCanceledException;
 
