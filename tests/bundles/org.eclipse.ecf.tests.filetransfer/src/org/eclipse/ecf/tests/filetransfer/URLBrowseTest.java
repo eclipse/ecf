@@ -41,7 +41,7 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 	public void testBrowseURLs() throws Exception {
 		for (int i = 0; i < testURLs.length; i++) {
 			testBrowse(testURLs[i]);
-			Thread.sleep(1000);
+			Thread.sleep(3000);
 		}
 	}
 }
