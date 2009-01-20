@@ -477,7 +477,6 @@ Contributors: Composent, Inc. - initial API and implementation
          fragment="true"
          unpack="false"/>
 
-
    <plugin
          id="org.eclipse.ecf.example.clients"
          download-size="0"
@@ -529,6 +528,13 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.examples.updatesite.server"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.emory.mathcs.backport"
          download-size="0"
          install-size="0"
          version="0.0.0"
