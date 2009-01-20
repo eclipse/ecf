@@ -6,11 +6,11 @@ org.eclipse.ecf.provider.filetransfer.httpclient/debug/filter = *
 org.eclipse.ecf.provider.filetransfer.httpclient/debug/flag = true
 
 # Trace when exceptions are caught
-org.eclipse.ecf.provider.filetransfer.httpclient/debug/exceptions/catching=false
+org.eclipse.ecf.provider.filetransfer.httpclient/debug/exceptions/catching=true
 # Trace when exceptions are thrown
-org.eclipse.ecf.provider.filetransfer.httpclient/debug/exceptions/throwing=false
+org.eclipse.ecf.provider.filetransfer.httpclient/debug/exceptions/throwing=true
 
 # Trace when methods are entered
-org.eclipse.ecf.provider.filetransfer.httpclient/debug/methods/entering=false
+org.eclipse.ecf.provider.filetransfer.httpclient/debug/methods/entering=true
 # Trace when methods are exited
-org.eclipse.ecf.provider.filetransfer.httpclient/debug/methods/exiting=false
+org.eclipse.ecf.provider.filetransfer.httpclient/debug/methods/exiting=true
