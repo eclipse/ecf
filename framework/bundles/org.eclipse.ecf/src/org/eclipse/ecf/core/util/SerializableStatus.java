@@ -204,7 +204,9 @@ public class SerializableStatus implements IStatus, Serializable {
 
 	private Throwable createNewExceptionFor(Throwable exception2) {
 		Exception re = new Exception(exception2.getMessage());
-		re.setStackTrace(exception2.getStackTrace());
+		// setStackTrace not in Foundation 1.1 as per
+		// bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=261781
+		// re.setStackTrace(exception2.getStackTrace());
 		return re;
 	}
 
