@@ -18,6 +18,9 @@ public class SerializableStatus implements IStatus, Serializable {
 
 	private static final long serialVersionUID = -1874392357776889683L;
 
+	public static final IStatus OK_STATUS = new SerializableStatus(OK, ECFPlugin.PLUGIN_ID, OK, "ok", null); //$NON-NLS-1$
+	public static final IStatus CANCEL_STATUS = new SerializableStatus(CANCEL, ECFPlugin.PLUGIN_ID, 1, "", null); //$NON-NLS-1$
+
 	/**
 	 * The severity. One of
 	 * <ul>
