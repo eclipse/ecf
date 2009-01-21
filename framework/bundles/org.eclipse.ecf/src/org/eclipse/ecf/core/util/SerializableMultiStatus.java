@@ -109,8 +109,8 @@ public class SerializableMultiStatus extends SerializableStatus {
 	 * 
 	 * @param status
 	 *            the status to merge into this one
-	 * @see #add(IStatus)
-	 * @see #addAll(IStatus)
+	 * @see #add(SerializableStatus)
+	 * @see #addAll(SerializableStatus)
 	 */
 	public void merge(SerializableStatus status) {
 		Assert.isLegal(status != null);
