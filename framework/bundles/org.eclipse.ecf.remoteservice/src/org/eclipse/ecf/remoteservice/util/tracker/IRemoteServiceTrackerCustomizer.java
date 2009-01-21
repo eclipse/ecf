@@ -39,6 +39,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
  * <code>IRemoteServiceTrackerCustomizer</code> object while holding any locks.
  * <code>IRemoteServiceTrackerCustomizer</code> implementations must also be
  * thread-safe.
+ * @since 3.0
  * 
  */
 public interface IRemoteServiceTrackerCustomizer {

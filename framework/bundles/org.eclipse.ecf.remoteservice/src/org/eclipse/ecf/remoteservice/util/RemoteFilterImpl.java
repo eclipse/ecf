@@ -19,6 +19,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.osgi.framework.*;
 
 /**
+ * @since 3.0
  *
  */
 public class RemoteFilterImpl implements IRemoteFilter {
