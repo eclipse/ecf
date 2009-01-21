@@ -17,6 +17,7 @@ import org.eclipse.ecf.internal.discovery.Messages;
 
 /**
  * ServiceIDFactory implementation.
+ * @since 3.0
  */
 public class ServiceIDFactory implements IServiceIDFactory {
 
@@ -54,7 +55,8 @@ public class ServiceIDFactory implements IServiceIDFactory {
 		return this.createServiceID(namespace, serviceType, null);
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * @since 3.0
 	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceID(org.eclipse.ecf.core.identity.Namespace, java.lang.String[], java.lang.String[], java.lang.String[], java.lang.String, java.lang.String)
 	 */
 	public IServiceID createServiceID(Namespace namespace, String[] serviceType, String[] scopes, String[] protocols, String namingAuthority, String serviceName) throws IDCreateException {
@@ -66,8 +68,9 @@ public class ServiceIDFactory implements IServiceIDFactory {
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceID(org.eclipse.ecf.core.identity.Namespace, java.lang.String[], java.lang.String[], java.lang.String)
+	 * @since 3.0
 	 */
 	public IServiceID createServiceID(Namespace namespace, String[] serviceType, String[] protocols, String serviceName) throws IDCreateException {
 		return this.createServiceID(namespace, serviceType, IServiceTypeID.DEFAULT_SCOPE, protocols, IServiceTypeID.DEFAULT_NA, serviceName);
