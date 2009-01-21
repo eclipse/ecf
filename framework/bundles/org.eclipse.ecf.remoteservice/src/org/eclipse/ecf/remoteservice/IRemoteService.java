@@ -58,6 +58,7 @@ public interface IRemoteService {
 	 * @throws ECFException
 	 *             thrown if disconnect occurs, caller not currently connected,
 	 *             or remote throws Exception
+	 * @since 3.0
 	 */
 	public Object callSync(IRemoteCall call) throws ECFException;
 
@@ -75,6 +76,7 @@ public interface IRemoteService {
 	 * 
 	 * @see org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent
 	 * @see org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent
+	 * @since 3.0
 	 */
 	public void callAsync(IRemoteCall call, IRemoteCallListener listener);
 
@@ -88,6 +90,7 @@ public interface IRemoteService {
 	 * @return IFuture the asynchronous result to allow the caller to poll
 	 * for whether the result {@link IFuture#isDone()}, and then to {@link IAsyncResult#get(long)}
 	 * the actual result.
+	 * @since 3.0
 	 */
 	public IFuture callAsync(IRemoteCall call);
 
@@ -101,6 +104,7 @@ public interface IRemoteService {
 	 *            the remote call to make. Must not be <code>null</code> .
 	 * @throws ECFException
 	 *             if caller not currently connected
+	 * @since 3.0
 	 */
 	public void fireAsync(IRemoteCall call) throws ECFException;
 
