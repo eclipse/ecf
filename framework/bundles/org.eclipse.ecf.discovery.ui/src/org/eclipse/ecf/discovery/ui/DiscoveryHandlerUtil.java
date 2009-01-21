@@ -18,6 +18,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+/**
+ * @since 3.0
+ */
 public class DiscoveryHandlerUtil {
 	public static IServiceInfo getActiveIServiceInfoChecked(ExecutionEvent event) throws ExecutionException {
 		ISelection selection = HandlerUtil.getCurrentSelectionChecked(event);

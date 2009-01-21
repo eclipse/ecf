@@ -13,6 +13,9 @@ package org.eclipse.ecf.discovery.ui;
 
 import org.eclipse.ecf.discovery.IServiceInfo;
 
+/**
+ * @since 3.0
+ */
 public class DiscoveryPropertyTesterUtil {
 
 	public static IServiceInfo getIServiceInfoReceiver(Object receiver) {
