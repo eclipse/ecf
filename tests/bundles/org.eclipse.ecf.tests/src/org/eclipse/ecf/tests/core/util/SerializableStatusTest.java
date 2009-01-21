@@ -1,11 +1,10 @@
 package org.eclipse.ecf.tests.core.util;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.SerializableStatus;
 import org.eclipse.ecf.internal.tests.Activator;
-
-import junit.framework.TestCase;
 
 public class SerializableStatusTest extends TestCase {
 
