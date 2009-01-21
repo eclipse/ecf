@@ -997,6 +997,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	IProgressMonitor progressMonitor = Job.getJobManager().createProgressGroup();
 
+	/**
+	 * @since 3.0
+	 */
 	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
 		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
@@ -1006,10 +1009,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}, null);
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public Namespace getRemoteServiceNamespace() {
 		return getSOContext().getConnectNamespace();
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException {
 		return new RemoteFilterImpl(filter);
 	}
