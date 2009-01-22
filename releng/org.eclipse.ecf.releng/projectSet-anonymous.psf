@@ -9,7 +9,6 @@
 	<!-- feature projects -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.core-feature,org.eclipse.ecf.core-feature"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.example-feature,org.eclipse.ecf.example-feature"/>
-	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.discovery-feature,org.eclipse.ecf.discovery-feature"/>
 
 	<!-- updatesite project -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.updatesite,org.eclipse.ecf.updatesite"/>
