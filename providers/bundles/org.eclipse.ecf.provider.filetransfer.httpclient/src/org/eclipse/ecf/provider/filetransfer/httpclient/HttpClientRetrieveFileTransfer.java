@@ -58,6 +58,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		}
 
 		public int execute(HttpState state, HttpConnection conn) throws HttpException, IOException {
+			Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "GzipGetMethod.execute. gzipReceived=" + gzipReceived); //$NON-NLS-1$
 			// Insert accept-encoding header
 			if (getFileRangeSpecification() == null)
 				this.setRequestHeader(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
@@ -67,6 +68,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			if (isZippedReply()) {
 				gzipReceived = true;
 			}
+			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "GzipGetMethod.execute.  gzipReceived=" + gzipReceived, new Integer(result)); //$NON-NLS-1$
 			return result;
 		}
 
