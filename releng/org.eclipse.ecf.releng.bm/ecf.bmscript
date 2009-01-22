@@ -1,4 +1,0 @@
-setpref targetPlatformPath=${install.location}
-import org.eclipse.ecf/releng/org.eclipse.ecf.releng.bm/org.eclipse.ecf.sdk.mspec
-build -clean
-perform org.eclipse.ecf.sdk#feature.exports
