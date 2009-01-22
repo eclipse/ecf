@@ -5,7 +5,6 @@
 	xmlns="http://www.eclipse.org/buckminster/CSpec-1.0">
 	<dependencies>
 		<!-- Place your Dependencies here -->
-		<dependency name="org.eclipse.rcp" componentType="eclipse.feature"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
