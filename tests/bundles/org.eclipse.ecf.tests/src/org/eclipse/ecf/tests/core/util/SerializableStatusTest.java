@@ -3,7 +3,7 @@ package org.eclipse.ecf.tests.core.util;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.ecf.core.util.SerializableStatus;
+import org.eclipse.ecf.core.status.SerializableStatus;
 import org.eclipse.ecf.internal.tests.Activator;
 
 public class SerializableStatusTest extends TestCase {
