@@ -19,13 +19,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import edu.emory.mathcs.backport.java.util.concurrent.locks.Lock;
-import edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobManager;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
@@ -55,7 +55,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 public class ServiceResource extends ResourceImpl implements Resource {
 
 	private class ServiceDiscoveryListener implements IServiceListener {
-		private volatile Lock lock = new ReentrantLock(true);;
+		private volatile ILock lock;
 		public static final String DISCOVERY_CONTAINER = "ecf.singleton.discovery"; //$NON-NLS-1$
 
 		private IContainer container;
@@ -63,12 +63,17 @@ public class ServiceResource extends ResourceImpl implements Resource {
 		private IDiscoveryContainerAdapter discovery;
 		private Comparator aComparator = new ECFServiceInfoComparator();
 
+		private ServiceDiscoveryListener() {
+			IJobManager jobManager = Job.getJobManager();
+			lock = jobManager.newLock();
+		}
+		
 		/**
 		 * Connect to the underlying ECF discovery service
 		 */
 		public void connect() {
-			lock.lock();
 			try {
+				lock.acquire();
 				container = ContainerFactory.getDefault().createContainer(DISCOVERY_CONTAINER, new Object[] { "ecf.discovery.*" });
 				discovery = (IDiscoveryContainerAdapter) container.getAdapter(IDiscoveryContainerAdapter.class);
 				if (discovery != null) {
@@ -93,7 +98,7 @@ public class ServiceResource extends ResourceImpl implements Resource {
 			} catch (ContainerConnectException e) {
 				ModelPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, ModelPlugin.PLUGIN_ID, e.getMessage(), e));
 			} finally {
-				lock.unlock();
+				lock.release();
 			}
 		}
 
@@ -214,8 +219,8 @@ public class ServiceResource extends ResourceImpl implements Resource {
 		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceRemoved(org.eclipse.ecf.discovery.IServiceEvent)
 		 */
 		public void serviceUndiscovered(IServiceEvent ecfEvent) {
-			lock.lock();
 			try {
+				lock.acquire();
 				Trace.entering(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID + "/methods/entering", ServiceResource.class, "serviceRemoved", ecfEvent);
 				org.eclipse.ecf.discovery.IServiceInfo ecfServiceInfo = ecfEvent.getServiceInfo();
 
@@ -246,7 +251,7 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				}
 				Trace.exiting(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID + "/methods/exiting", ServiceResource.class, "serviceRemoved", ecfEvent);
 			} finally {
-				lock.unlock();
+				lock.release();
 			}
 		}
 
@@ -256,11 +261,11 @@ public class ServiceResource extends ResourceImpl implements Resource {
 		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceResolved(org.eclipse.ecf.discovery.IServiceEvent)
 		 */
 		public void serviceDiscovered(IServiceEvent ecfEvent) {
-			lock.lock();
 			try {
+				lock.acquire();
 				serviceDiscovered(ecfEvent.getServiceInfo());
 			} finally {
-				lock.unlock();
+				lock.release();
 			}
 		}
 

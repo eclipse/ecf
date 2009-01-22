@@ -10,8 +10,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.4.0,4.0.0)",
  org.eclipse.emf.ecore;bundle-version="[2.2.0,3.0.0)",
  org.eclipse.ecf.discovery;bundle-version="2.0.0",
- org.eclipse.ecf;bundle-version="2.0.0",
- edu.emory.mathcs.backport;bundle-version="3.1.0"
+ org.eclipse.ecf;bundle-version="2.0.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.ecf.discovery.ui.model,
  org.eclipse.ecf.discovery.ui.model.impl,
