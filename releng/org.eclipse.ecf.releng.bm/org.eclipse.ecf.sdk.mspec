@@ -7,6 +7,4 @@
     <md:mspecNode namePattern="org.eclipse.ecf.*" materializer="workspace"/>
     <md:mspecNode namePattern="ch.ethz.iks.*" materializer="workspace"/>
     <md:mspecNode namePattern="org.jivesoftware.smack" materializer="workspace"/>
-
-    <md:mspecNode namePattern="edu.emory.mathcs.backport" materializer="workspace"/>
 </md:mspec>

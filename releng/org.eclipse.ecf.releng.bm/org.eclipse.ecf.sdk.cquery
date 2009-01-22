@@ -15,7 +15,5 @@
     <cq:advisorNode namePattern="org.jivesoftware.smack" useTargetPlatform="false"/>
     <cq:advisorNode namePattern="org.objectweb.asm" useTargetPlatform="false"/>
 
-    <cq:advisorNode namePattern="edu.emory.mathcs.backport" useTargetPlatform="false"/>
-
     <cq:advisorNode namePattern=".*" useTargetPlatform="false" mutableLevel="REJECT" sourceLevel="REJECT"/>
 </cq:componentQuery>
