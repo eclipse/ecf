@@ -5,9 +5,7 @@
 	xmlns="http://www.eclipse.org/buckminster/CSpec-1.0">
 	<dependencies>
 		<!-- Place your Dependencies here -->
-		<dependency name="org.eclipse.rcp" componentType="eclipse.feature"/>
-		<dependency name="org.eclipse.osgi.services" componentType="osgi.bundle"/>
-		<dependency name="com.jcraft.jsch" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
