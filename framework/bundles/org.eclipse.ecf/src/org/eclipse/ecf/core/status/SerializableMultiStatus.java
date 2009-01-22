@@ -7,7 +7,7 @@
  * Contributors:
  *   EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.core.util;
+package org.eclipse.ecf.core.status;
 
 import org.eclipse.core.runtime.*;
 
