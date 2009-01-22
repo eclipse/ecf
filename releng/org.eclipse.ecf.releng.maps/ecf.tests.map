@@ -1,4 +1,4 @@
-feature@org.eclipse.ecf.tests=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.tests-feature
+feature@org.eclipse.ecf.tests_feature=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.tests-feature
 
 plugin@org.eclipse.ecf.tests=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests
 plugin@org.eclipse.ecf.tests.datashare=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.datashare
