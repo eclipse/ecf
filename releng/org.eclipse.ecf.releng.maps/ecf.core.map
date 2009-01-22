@@ -71,7 +71,7 @@ plugin@org.eclipse.ecf.examples.updatesite.server=@CVSTag@,:pserver:anonymous@de
 plugin@org.eclipse.ecf.examples.updatesite.client=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/server-side/examples/bundles/org.eclipse.ecf.examples.updatesite.client
 
 <!-- no build for edu.emory.mathcs.backport at Orbit yet -->
-plugin@edu.emory.mathcs.backport=CVS,tag=v2001218-1100,cvsroot=:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,,org.eclipse.orbit/edu.emory.mathcs.backport
+plugin@edu.emory.mathcs.backport=v2001218-1100,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,,org.eclipse.orbit/edu.emory.mathcs.backport
 
 plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/com.jcraft.jsch_0.1.31.jar
 plugin@org.objectweb.asm,3.0.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/org.objectweb.asm_3.0.0.v200803061811.jar
