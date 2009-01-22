@@ -82,7 +82,7 @@
 
 	<!-- materialize the test dependencies into the workspace -->
 	<target name="materialize-test">
-		<materialize mspec="org.eclipse.ecf.test.mspec"/>
+		<materialize mspec="org.eclipse.ecf.tests.mspec"/>
 	</target>
 
 	<!-- build the test suite -->
@@ -96,7 +96,7 @@
 			collectingfolder="${test}"
 			forcecontextqualifier="${osgi.qualifier}"
 			timestamp="${build.timestamp}" 
-			topLevelElementId="org.eclipse.ecf.test.feature"/>
+			topLevelElementId="org.eclipse.ecf.tests_feature"/>
 	</target>
 
 	<property name="test.tmp.dir" value="${basedir}/tmp" />
