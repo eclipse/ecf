@@ -1,0 +1,58 @@
+<project name="common" basedir=".">
+
+	<!-- explicitly set the tstamp -->
+	<tstamp/>
+
+	<!-- make all system env vars accessible with ${env.VAR_NAME} -->
+	<property environment="env"/>
+
+	<dirname property="imported.basedir" file="${ant.file.common}"/>
+
+	<!-- source the Shell Environment into env namespace and the properties for the platform -->
+	<property environment="env" />
+	<property file="${imported.basedir}/${os.name}-${os.arch}.properties" />
+	<property file="${imported.basedir}/common.properties" />
+
+	<!-- Determine the current OSGi properties -->
+	<condition property="HOST.OSGI.ARCH" value="x86">
+		<or>
+			<os arch="x86"/>
+			<os arch="i386"/>
+		</or>
+	</condition>
+	<condition property="HOST.OSGI.ARCH" value="x86_64" else="sparc">
+		<or>
+			<os arch="x86_64"/>
+			<os arch="i686"/>
+			<os arch="AMD64"/>
+		</or>
+	</condition>
+	<condition property="HOST.OSGI.OS" value="win32">
+		<os family="windows"/>
+	</condition>
+	<condition property="HOST.OSGI.OS" value="linux" else="solaris">
+		<os name="Linux"/>
+	</condition>
+	<condition property="HOST.OSGI.WS" value="win32" else="gtk">
+		<os family="windows"/>
+	</condition>
+
+	<!-- load additional ant tasks -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="${ANT_1.0b3}/ant-contrib-1.0b3.jar"/>
+		</classpath>
+	</taskdef>
+	<taskdef name="for" classname="net.sf.antcontrib.logic.ForTask">
+		<classpath>
+			<pathelement location="${ANT_1.0b3}/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+	<taskdef resource="emma_ant.properties">
+		<classpath>
+			<pathelement location="${EMMA_2.0.5312}/lib/emma.jar" />
+			<pathelement location="${EMMA_2.0.5312}/lib/emma_ant.jar" />
+		</classpath>
+	</taskdef>
+</project>
+

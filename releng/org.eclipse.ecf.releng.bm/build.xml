@@ -1,0 +1,342 @@
+<project name="org.eclipse.ecf.releng.bm" default="all" basedir=".">
+
+	<import file="common.xml"/>
+
+	<!--===============================-->
+	<!-- pde.debug "-d" sets the forked VM into debug mode -->
+	<!-- pde.debug.port "1044" binds the VM remote debug interface to 1044 -->
+	<!-- pde.debug.suspend "y" The forked VM is suspended until a connection is made to pde.debug.port -->
+	<!--===============================-->
+	<property name="pde.debug" value="-" />
+	<!-- "-" causes unknown arg but build to continue whereas "" causes build to crash -->
+	<property name="pde.debug.port" value="1044" />
+	<property name="pde.debug.suspend" value="n" />
+	<property name="test.debug" value="-" />
+	<property name="test.debug.port" value="1044" />
+	<property name="test.debug.suspend" value="n" />
+	<property name="osgi.console.telnet.port" value="2023" />
+	<property name="buckminster.debug.level" value="info"/>
+	<!-- either debug, info, warning, error in that order -->
+
+	<!--=======================-->
+	<!-- build properties -->
+	<!--=======================-->
+
+	<property name="targetPlatformPath" value="${basedir}/targetPlatform/" /> <!-- path where 3rd party dependencies are materialzed to by BM to be picked up by PDE build later -->
+	<property name="output.dir" value="${basedir}/output" />
+
+	<property name="context.qualifier" value="000" />
+	<property name="build.tag" value="${user.name}" />
+
+	<property name="build.number" value="000" />
+	<property name="build.dir" value="${basedir}" />
+	<property name="build.label" value="output" />
+	<property name="build.type" value="I" />
+	<property name="build.timestamp" value="000" />
+
+	<property name="ecf" value="ecf"/>
+	<property name="test" value="test"/>
+
+	<!-- Adds padding zeros to an int property based on pattern.
+	     Parameters:
+	         in: The in property takes as int 
+	         out: The out property that will receive the padded int
+	         pattern: pattern (default is 000)
+	  -->
+	<macrodef name="padding">
+		<attribute name="in"/>
+		<attribute name="out"/>
+		<attribute name="pattern" default="000"/>
+		<sequential>
+			<propertyfile file="some.generated.properties">
+				<entry key="@{out}" type="int" value="@{in}" operation="=" pattern="@{pattern}"/>
+			</propertyfile>
+			<property file="some.generated.properties"/>
+			<delete file="some.generated.properties"/>
+		</sequential>
+	</macrodef>
+	<padding in="${context.qualifier}" out="osgi.qualifier"/>
+
+	<!-- these props shouldn't be overwritten -->
+	<property name="ecf.build.id" value="${ecf}-${build.number}-${build.tag}" />
+	<property name="test.build.id" value="${test}-${build.number}-${build.tag}" />
+
+	<!-- materialize the ecf dependencies into the workspace -->
+	<target name="materialize-ecf">
+		<materialize mspec="org.eclipse.ecf.sdk.mspec"/>
+	</target>
+
+	<!-- build ECF with Eclipse PDE build -->
+	<target name="compile-ecf" depends="">
+		<compile 
+			archiveprefix="${ecf}" 
+			builddirectory="${build.dir}" 
+			buildid="${ecf.build.id}" 
+			buildlabel="${build.label}" 
+			buildtype="${build.type}"
+			collectingfolder="${ecf}"
+			forcecontextqualifier="${osgi.qualifier}"
+			timestamp="${build.timestamp}" 
+			topLevelElementId="org.eclipse.pde.build.container.feature"/>
+	</target>
+
+	<!-- materialize the test dependencies into the workspace -->
+	<target name="materialize-test">
+		<materialize mspec="org.eclipse.ecf.test.mspec"/>
+	</target>
+
+	<!-- build the test suite -->
+	<target name="compile-test">
+		<compile 
+			archiveprefix="${test}" 
+			builddirectory="${build.dir}" 
+			buildid="${test.build.id}" 
+			buildlabel="${build.label}" 
+			buildtype="${build.type}"
+			collectingfolder="${test}"
+			forcecontextqualifier="${osgi.qualifier}"
+			timestamp="${build.timestamp}" 
+			topLevelElementId="org.eclipse.ecf.test.feature"/>
+	</target>
+
+	<property name="test.tmp.dir" value="${basedir}/tmp" />
+	<property name="test.suite.headless" value="false" />
+	<property name="test.suite.debug" value="debug" />
+	<property name="test.suite.result.dir" value="${output.dir}/testlogs" />
+	<property name="test.suite.coverage.dir" value="${output.dir}/coveragelogs" />
+	<path id="instrument.classpath">
+		<fileset dir="${test.tmp.dir}/${ecf}/plugins">
+			<include name="ch.ethz.iks.*.jar" />
+			<include name="org.eclipse.ecf.*.jar" />
+			<exclude name="org.eclipse.emf*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="deploy-test">
+		<unzip src="${output.dir}/${ecf.build.id}-${HOST.OSGI.OS}.${HOST.OSGI.WS}.${HOST.OSGI.ARCH}.zip" dest="${test.tmp.dir}"/>
+		<unzip src="${output.dir}/org.eclipse.ecf.test.feature-${test.build.id}.zip" dest="${test.tmp.dir}"/>
+		<move todir="${test.tmp.dir}/eclipse">
+			<fileset dir="${test.tmp.dir}/${test}"/>
+		</move>
+		<!-- create a link file so ecf recognizes the test feature -->
+		<mkdir dir="${test.tmp.dir}/${ecf}/links" />
+		<propertyfile file="${test.tmp.dir}/${ecf}/links/test.link">
+			<entry key="path" value="${test.tmp.dir}" />
+		</propertyfile>
+	</target>
+
+	<target name="instrument-test">
+		<emma enabled="true">
+			<instr instrpathref="instrument.classpath" mode="overwrite" metadatafile="${test.suite.coverage.dir}/metadata.ec" >
+			</instr>
+		</emma>
+	</target>
+
+	<target name="run-test">
+		<mkdir dir="${test.suite.result.dir}"/>
+		<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
+			<classpath>
+				<fileset dir="${test.tmp.dir}/${ecf}/plugins">
+					<include name="**/org.eclipse.equinox.launcher*.jar"/>
+				</fileset>
+				<pathelement location="${EMMA_2.0.5312}/lib/emma.jar" />
+			</classpath>
+			<arg value="${test.debug}"/>
+			<arg value="-application" />
+			<arg value="org.pluginbuilder.autotestsuite.application.autoTestApplication" />
+			<arg value="-testApplication" />
+			<arg value="org.eclipse.ui.ide.workbench" />
+			<arg value="-clean" />
+			<!-- debugging -->
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${test.debug.port},server=y,suspend=${test.debug.suspend}" />
+			<jvmarg value="-Xdebug" />
+			<!-- test suite properties -->
+			<jvmarg value="-Dautotestsuite.headless=${test.suite.headless}" />
+			<jvmarg value="-Dautotestsuite.debug=${test.suite.debug}" />
+			<jvmarg value="-Dautotestsuite.results.directory=${test.suite.result.dir}" />
+			<!-- emma class instrumentation -->
+			<jvmarg value="-Demma.coverage.out.file=${test.suite.coverage.dir}/coverage.ec" />
+			<jvmarg value="-Dosgi.parentClassloader=app"/>
+			<jvmarg value="-XX:MaxPermSize=512M" />
+			<jvmarg value="-XX:PermSize=256M" />
+			<jvmarg value="-Xms256m" />
+			<jvmarg value="-Xmx512m" />
+		</java>
+	</target>
+
+	<target name="report-test">
+		<emma enabled="true">
+			<report>
+				<sourcepath>
+					<dirset dir="${basedir}/plugins">
+						<include name="**/src" />
+					</dirset>
+				</sourcepath>
+				<fileset dir="${test.suite.coverage.dir}">
+					<include name="*.ec" />
+				</fileset>
+				<txt outfile="${test.suite.coverage.dir}/coverage.txt" />
+				<html outfile="${test.suite.coverage.dir}/coverage.html" />
+			</report>
+		</emma>
+	</target>
+
+	<target name="clean" />
+	
+	<target name="materialize" depends="materialize-ecf, materialize-test" />
+
+	<target name="compile" depends="compile-ecf, compile-test" />
+
+	<target name="test" depends="deploy-test, instrument-test, run-test, report-test" />
+
+	<target name="all" depends="clean, materialize-ecf, compile-ecf, materialize-test, compile-test, test" />
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: materialize         
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="materialize">
+		<attribute name="mspec" />
+		<sequential>
+			<!-- Explicitly unset targetPlatformPath so nothing gets picked from there e.g. org.eclipse.equinox.launcher + other bm properties -->
+			<echo file="${basedir}/.settings.bmscript" append="false">
+			    org.eclipse.buckminster.core.prefs.setpref org.eclipse.buckminster.core.maxParallelResolutions=1
+			    org.eclipse.buckminster.core.prefs.setpref org.eclipse.buckminster.core.maxParallelMaterializations=1
+			    org.eclipse.buckminster.core.prefs.setpref org.eclipse.buckminster.pde.targetPlatformPath=${targetPlatformPath}
+			</echo>
+    			<mkdir dir="${targetPlatformPath}" />
+			<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
+				<classpath>
+					<fileset dir="${BUCKMINSTER_BUILDER_REV09868}/plugins">
+						<include name="**/org.eclipse.equinox.launcher*.jar"/>
+					</fileset>
+				</classpath>
+				<arg value="-data" />
+				<arg value="${basedir}" />
+				<arg line="--scriptfile .settings.bmscript"/>
+				<!-- osgi locations -->
+				<jvmarg value="-Dosgi.configuration.cascade=true" />
+				<jvmarg value="-Dosgi.sharedConfiguration.area=${BUCKMINSTER_BUILDER_REV09868}/configuration" />
+				<jvmarg value="-Dosgi.sharedConfiguration.area.readOnly=true" />
+				<jvmarg value="-Dosgi.configuration.area=${basedir}/.configuration" />
+				<jvmarg value="-Dosgi.user.area=@none" />
+			</java>
+			<delete file="${basedir}/.settings.bmscript"/>
+						
+			<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
+				<classpath>
+					<fileset dir="${BUCKMINSTER_BUILDER_REV09868}/plugins">
+						<include name="**/org.eclipse.equinox.launcher*.jar"/>
+					</fileset>
+				</classpath>
+				<arg value="--displaystacktrace"/>
+				<arg value="--loglevel"/>
+				<arg value="${buckminster.debug.level}"/>
+				<arg value="-clean" />
+				<arg value="-data" />
+				<arg value="${basedir}" />
+				<arg value="import" />
+				<arg value="--bomfile"/>
+				<arg value="${basedir}/@{mspec}.bom" />
+				<arg value="${basedir}/@{mspec}" />
+				<!-- debugging -->
+				<jvmarg value="-Xdebug" />
+				<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${pde.debug.port},server=y,suspend=${pde.debug.suspend}" />
+				<!-- osgi locations -->
+				<jvmarg value="-Dosgi.configuration.cascade=true" />
+				<jvmarg value="-Dosgi.sharedConfiguration.area=${BUCKMINSTER_BUILDER_REV09868}/configuration" />
+				<jvmarg value="-Dosgi.sharedConfiguration.area.readOnly=true" />
+				<jvmarg value="-Dosgi.configuration.area=${basedir}/.configuration" />
+				<jvmarg value="-Dosgi.user.area=@none" />
+				<!-- the Eclipse java indexer has a lot to do so give it some ram -->
+				<jvmarg value="-XX:MaxPermSize=512M" />
+				<jvmarg value="-XX:PermSize=256M" />
+				<jvmarg value="-Xms256m" />
+				<jvmarg value="-Xmx512m" />
+			</java>
+		</sequential>
+	</macrodef>
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: compile         
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="compile">
+		<attribute name="product" default="-DdoNotRepeatThis=true"/>
+		<!-- must not be blank -->
+		<attribute name="customTargets" default="-DamIEvil=true" />
+		<attribute name="collectingFolder"/>
+		<attribute name="configs" default="*,*,*"/>
+		<attribute name="buildDirectory"/>
+		<attribute name="archivePrefix"/>
+		<attribute name="archiveSuffix" default=".zip"/>
+		<attribute name="timestamp"/>
+		<attribute name="buildType"/>
+		<attribute name="buildLabel"/>
+		<attribute name="buildId"/>
+		<attribute name="buildFile" default="build.xml"/>
+		<attribute name="forceContextQualifier"/>
+		<attribute name="recursive" default="false"/>
+		<attribute name="topLevelElementType" default="feature"/>
+		<attribute name="pluginPath" default="${targetPlatformPath}" />
+		<!-- either feature or plugin -->
+		<attribute name="topLevelElementId"/>
+		<sequential>
+			<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
+				<classpath>
+					<fileset dir="${BUCKMINSTER_BUILDER_REV09868}/plugins">
+						<include name="**/org.eclipse.equinox.launcher*.jar"/>
+					</fileset>
+				</classpath>
+				<arg value="${pde.debug}"/>
+				<arg value="-application" />
+				<arg value="org.eclipse.ant.core.antRunner" />
+				<arg value="-buildfile" />
+				<arg value="${BUCKMINSTER_BUILDER_REV09868}/plugins/org.eclipse.pde.build_3.5.0.v20090105/scripts/@{buildFile}" />
+				<arg value="-clean" />
+				<arg value="-data" />
+				<arg value="${basedir}" />
+				<arg value="-console" />
+				<arg value="${osgi.console.telnet.port}" />
+				<!-- debugging -->
+				<jvmarg value="-Xdebug" />
+				<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${pde.debug.port},server=y,suspend=${pde.debug.suspend}" />
+				<!-- osgi locations -->
+				<jvmarg value="-Dosgi.configuration.cascade=true" />
+				<jvmarg value="-Dosgi.sharedConfiguration.area=${BUCKMINSTER_BUILDER_REV09868}/configuration" />
+				<jvmarg value="-Dosgi.sharedConfiguration.area.readOnly=true" />
+				<jvmarg value="-Dosgi.configuration.area=${basedir}/.configuration" />
+				<jvmarg value="-Dosgi.user.area=@none" />
+				<!-- parameters build -->
+				<jvmarg value="@{product}"/>
+				<jvmarg value="@{customTargets}"/>
+				<jvmarg value="-DarchivePrefix=@{archivePrefix}" />
+				<jvmarg value="-Dconfigs=@{configs}" />
+				<jvmarg value="-DbuildId=@{buildId}" />
+				<jvmarg value="-DbuildLabel=@{buildLabel}" />
+				<jvmarg value="-DbuildType=@{buildType}" />
+				<jvmarg value="-Dtimestamp=@{timestamp}" />
+				<jvmarg value="-DbuildDirectory=@{buildDirectory}" />
+				<jvmarg value="-DcollectingFolder=@{collectingFolder}" />
+				<jvmarg value="-DforceContextQualifier=@{forceContextQualifier}" />
+				<jvmarg value="-Drecursive=@{recursive}" />
+				<jvmarg value="-DtopLevelElementId=@{topLevelElementId}" />
+				<jvmarg value="-DtopLevelElementType=@{topLevelElementType}" />
+				<jvmarg value="-DpluginPath=@{pluginPath}" />
+				<!-- common -->
+				<jvmarg value="-DJ2SE-1.5=${J2SE-1.5}" />
+				<jvmarg value="-DbaseLocation=" />
+				<jvmarg value="-DskipBase=true" />
+				<jvmarg value="-DskipMaps=true" />
+				<jvmarg value="-DskipFetch=true" />
+				<jvmarg value="-DrunPackager=true" />
+				<jvmarg value="-DoutputUpdateJars=false" />
+				<jvmarg value="-DjavacDebugInfo=true" />
+				<jvmarg value="-DjavacFailOnError=true" />
+				<jvmarg value="-DjavacVerbose=false" />
+				<jvmarg value="-DgenerateFeatureVersionSuffix=false" />
+				<jvmarg value="-DgenerateVersionsLists=true" />
+				<jvmarg value="-DflattenDependencies=true" />
+				<jvmarg value="-DindividualSourceBundles=true" />
+			</java>
+		</sequential>
+	</macrodef>
+</project>
