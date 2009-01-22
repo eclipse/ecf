@@ -12,7 +12,7 @@ plugin@org.eclipse.ecf.tests.sync=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/c
 
 plugin@org.eclipse.ecf.tests.protocol.msn=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.protocol.msn
 
-plugin@org.eclipse.ecf.tests.provider.filetransfer.efc=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.efc
+plugin@org.eclipse.ecf.tests.provider.filetransfer.efs=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.efs
 plugin@org.eclipse.ecf.tests.provider.filetransfer.scp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.scp
 plugin@org.eclipse.ecf.tests.provider.filetransfer.xmpp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.xmpp
 plugin@org.eclipse.ecf.tests.provider.jmdns=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.jmdns
