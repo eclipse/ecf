@@ -77,7 +77,7 @@
 			collectingfolder="${ecf}"
 			forcecontextqualifier="${osgi.qualifier}"
 			timestamp="${build.timestamp}" 
-			topLevelElementId="org.eclipse.pde.build.container.feature"/>
+			topLevelElementId="org.eclipse.ecf.sdk"/>
 	</target>
 
 	<!-- materialize the test dependencies into the workspace -->
@@ -181,7 +181,31 @@
 		</emma>
 	</target>
 
-	<target name="clean" />
+	<target name="clean">
+		<!-- delete temp build files and directories-->
+		<delete includeemptydirs="true">
+			<fileset dir="${build.dir}/plugins" includes="**/bin/**" />
+			<fileset dir="${build.dir}/plugins" includes="**/@dot/**" />
+			<fileset dir="${build.dir}/plugins" includes="**/temp.folder/**" />
+			<fileset dir="${build.dir}/plugins" includes="**/javaCompiler.*.args" />
+			<fileset dir="${build.dir}/features" includes="**/feature.temp.folder/**" />
+		</delete>
+
+		<!-- build artefacts of a previous build -->
+		<delete dir="${build.dir}/${build.id}" />
+
+		<!-- generated build scripts -->
+		<delete>
+			<fileset dir="${build.dir}" includes="package*.xml" />
+			<fileset dir="${build.dir}" includes="fetch*.xml" />
+			<fileset dir="${build.dir}" includes="assemble*.xml" />
+			<fileset dir="${build.dir}" includes="final*.properties" />
+			<fileset dir="${build.dir}" includes="compile*.xml" />
+		</delete>
+		<delete dir="${build.dir}/features/org.eclipse.pde.build.container.feature" />
+		<delete dir="${build.dir}/maps" />
+		<delete dir="${build.dir}/tmp" />
+	</target>
 	
 	<target name="materialize" depends="materialize-ecf, materialize-test" />
 
@@ -333,7 +357,7 @@
 				<jvmarg value="-DjavacFailOnError=true" />
 				<jvmarg value="-DjavacVerbose=false" />
 				<jvmarg value="-DgenerateFeatureVersionSuffix=false" />
-				<jvmarg value="-DgenerateVersionsLists=true" />
+				<jvmarg value="-DgenerateVersionsLists=false" />
 				<jvmarg value="-DflattenDependencies=true" />
 				<jvmarg value="-DindividualSourceBundles=true" />
 			</java>

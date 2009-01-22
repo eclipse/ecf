@@ -43,6 +43,13 @@
 		</provider>
 	</searchPath>
 
+	<!-- pluginbuilder -->
+	<searchPath name="org.pluginbuilder">
+		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+			<uri format="http://self-3-4.pluginbuilder.org/nightly/updateSite/?importType=binary"/>
+		</provider>
+	</searchPath>
+
 	<!-- default -->
 	<searchPath name="default">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
@@ -91,6 +98,9 @@
 	<locator searchPathRef="org.eclipse" pattern="^org\.osgi(\..+)?" />
 	<locator searchPathRef="org.eclipse" pattern="^org\.sat4j(\..+)?" />
 
+	<!-- PluginBuilder -->
+	<locator searchPathRef="org.pluginbuilder" pattern="^org\.pluginbuilder(\..+)?" />
+	
 	<!-- Eclipse other (Orbit atm) -->	
 	<locator searchPathRef="default" pattern=".*" />
 </rmap>
