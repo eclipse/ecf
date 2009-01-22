@@ -346,7 +346,9 @@
 				<jvmarg value="-DtopLevelElementType=@{topLevelElementType}" />
 				<jvmarg value="-DpluginPath=@{pluginPath}" />
 				<!-- common -->
+				<jvmarg value="-DCDC-1.1/Foundation-1.1=${CDC-1.1/Foundation-1.1}" />
 				<jvmarg value="-DJ2SE-1.5=${J2SE-1.5}" />
+				<jvmarg value="-DJavaSE-1.6=${JavaSE-1.6}" />
 				<jvmarg value="-DbaseLocation=" />
 				<jvmarg value="-DskipBase=true" />
 				<jvmarg value="-DskipMaps=true" />
