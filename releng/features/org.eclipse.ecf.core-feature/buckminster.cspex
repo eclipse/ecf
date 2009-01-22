@@ -5,18 +5,7 @@
 	xmlns="http://www.eclipse.org/buckminster/CSpec-1.0">
 	<dependencies>
 		<!-- Place your Dependencies here -->
-		<!-- BM currently doesn't honor Import-Package, thus we need to tell BM to materialze following bundles -->
-		<!-- http://www.eclipse.org/newsportal/article.php?id=634&group=eclipse.tools.buckminster#634 -->
-		<dependency name="org.eclipse.osgi.services" componentType="osgi.bundle"/>
-		<dependency name="com.jcraft.jsch" componentType="osgi.bundle"/>
-		<!-- Neither does BM resolve platform specific bundles correctly -->
-		<dependency name="org.eclipse.swt.gtk.linux.x86_64" componentType="osgi.bundle"/>
-		<dependency name="org.eclipse.swt.gtk.linux.x86" componentType="osgi.bundle"/>
-		<dependency name="org.eclipse.swt.gtk.linux.ppc" componentType="osgi.bundle"/>
-		<dependency name="org.eclipse.swt.carbon.macosx" componentType="osgi.bundle"/>
-		<dependency name="org.eclipse.swt.gtk.solaris.sparc" componentType="osgi.bundle"/>
-		<dependency name="org.eclipse.swt.win32.win32.x86_64" componentType="osgi.bundle"/>
-		<dependency name="org.eclipse.swt.win32.win32.x86" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.platform" componentType="ecilpse.feature"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
