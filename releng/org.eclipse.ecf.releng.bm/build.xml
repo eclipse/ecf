@@ -25,7 +25,7 @@
 	<property name="sdk.feature.id" value="org.eclipse.ecf.sdk" />
 	<property name="tests.feature.id" value="org.eclipse.ecf.tests_feature" />
 	<property name="sdk" value="sdk"/>
-	<property name="test" value="test"/>
+	<property name="tests" value="tests"/>
 
 	<property name="targetPlatformPath" value="${basedir}/targetPlatform/" /> <!-- path where 3rd party dependencies are materialzed to by BM to be picked up by PDE build later -->
 	<property name="output.dir" value="${basedir}/output" />
@@ -60,8 +60,8 @@
 	<padding in="${context.qualifier}" out="osgi.qualifier"/>
 
 	<!-- these props shouldn't be overwritten -->
-	<property name="ecf.build.id" value="${sdk}-${build.number}-${build.tag}" />
-	<property name="tests.build.id" value="${test}-${build.number}-${build.tag}" />
+	<property name="sdk.build.id" value="${sdk}-${build.number}-${build.tag}" />
+	<property name="tests.build.id" value="${tests}-${build.number}-${build.tag}" />
 
 	<!-- materialize the ecf dependencies into the workspace -->
 	<target name="materialize-sdk">
@@ -88,22 +88,23 @@
 	</target>
 
 	<!-- build the test suite -->
-	<target name="compile-test">
+	<target name="compile-tests">
 		<compile 
-			archiveprefix="${test}" 
+			archiveprefix="${tests}" 
 			builddirectory="${build.dir}" 
 			buildid="${tests.build.id}" 
 			buildlabel="${build.label}" 
 			buildtype="${build.type}"
-			collectingfolder="${test}"
+			collectingfolder="${tests}"
 			forcecontextqualifier="${osgi.qualifier}"
 			timestamp="${build.timestamp}" 
-			topLevelElementId="${tests.feature.id}"/>
+			groupConfigurations="true"
+			topLevelElementId="${testss.feature.id}"/>
 	</target>
 
 	<property name="test.tmp.dir" value="${basedir}/tmp" />
-	<property name="test.suite.headless" value="false" />
-	<property name="test.suite.debug" value="debug" />
+	<property name="test.suite.headless" value="true" /> <!-- we don't have UI tests yet -->
+	<property name="test.suite.debug" value="true" />
 	<property name="test.suite.result.dir" value="${output.dir}/testlogs" />
 	<property name="test.suite.coverage.dir" value="${output.dir}/coveragelogs" />
 	<path id="instrument.classpath">
@@ -115,16 +116,15 @@
 	</path>
 
 	<target name="deploy-tests">
-		<unzip src="${output.dir}/${sdk.feature.id}-${ecf.build.id}.zip" dest="${test.tmp.dir}"/>
+		<unzip src="${output.dir}/${sdk.feature.id}-${sdk.build.id}.zip" dest="${test.tmp.dir}"/>
 		<unzip src="${output.dir}/${tests.feature.id}-${tests.build.id}.zip" dest="${test.tmp.dir}"/>
-		<move todir="${test.tmp.dir}/eclipse">
-			<fileset dir="${test.tmp.dir}/${sdk}"/>
+		<move todir="${test.tmp.dir}/${sdk}">
+			<fileset dir="${test.tmp.dir}/${tests}"/>
 		</move>
-		<!-- create a link file so ecf recognizes the test feature -->
-		<mkdir dir="${test.tmp.dir}/${tests}/links" />
-		<propertyfile file="${test.tmp.dir}/${tests}/links/sdk.link">
-			<entry key="path" value="${test.tmp.dir}" />
-		</propertyfile>
+		<echo file="${test.tmp.dir}/${sdk}/configuration/config.ini" append="false">
+			osgi.bundles=org.eclipse.equinox.common@2:start,org.eclipse.update.configurator@3:start,org.eclipse.core.runtime@start
+			osgi.bundles.defaultStartLevel=4
+		</echo>
 	</target>
 
 	<target name="instrument-tests">
@@ -211,11 +211,11 @@
 	
 	<target name="materialize" depends="materialize-sdk, materialize-tests" />
 
-	<target name="compile" depends="compile-sdk, compile-test" />
+	<target name="compile" depends="compile-sdk, compile-tests" />
 
 	<target name="test" depends="deploy-tests, instrument-tests, run-tests, report-tests" />
 
-	<target name="all" depends="clean, materialize-sdk, compile-sdk, materialize-tests, compile-test, test" />
+	<target name="all" depends="clean, materialize-sdk, compile-sdk, materialize-tests, compile-tests, test" />
 
 	<!-- = = = = = = = = = = = = = = = = =
           macrodef: materialize         
@@ -262,7 +262,7 @@
 				<arg value="${basedir}" />
 				<arg value="import" />
 				<arg value="--bomfile"/>
-				<arg value="${basedir}/@{mspec}.bom" />
+				<arg value="${output.dir}/@{mspec}.bom" />
 				<arg value="${basedir}/@{mspec}" />
 				<!-- debugging -->
 				<jvmarg value="-Xdebug" />
@@ -303,6 +303,7 @@
 		<attribute name="recursive" default="false"/>
 		<attribute name="topLevelElementType" default="feature"/>
 		<attribute name="pluginPath" default="${targetPlatformPath}" />
+		<attribute name="groupConfigurations" default="false" /> <!-- http://help.eclipse.org/ganymede/index.jsp?topic=/org.eclipse.pde.doc.user/tasks/pde_controlling_output.htm -->
 		<!-- either feature or plugin -->
 		<attribute name="topLevelElementId"/>
 		<sequential>
@@ -365,6 +366,7 @@
 				<jvmarg value="-DgenerateVersionsLists=false" />
 				<jvmarg value="-DflattenDependencies=true" />
 				<jvmarg value="-DindividualSourceBundles=true" />
+				<jvmarg value="-DgroupConfigurations=@{groupConfigurations}" />
 			</java>
 		</sequential>
 	</macrodef>
