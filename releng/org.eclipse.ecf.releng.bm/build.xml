@@ -10,7 +10,7 @@
 	<property name="tests.feature.id" value="org.eclipse.ecf.tests_feature" />
 
 	<property name="coverage.include.name.pattern" value="org.eclipse.ecf*.jar" />
-	<property name="test.suite.include.name.pattern" value="org.eclipse.ecf.tests*" />
+	<property name="test.suite.include.name.pattern" value="org\.eclipse\.ecf\.tests(\..+)?" />
 	
 	<property name="product" value="product"/>
 	<property name="tests" value="tests"/>
