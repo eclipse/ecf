@@ -16,20 +16,20 @@
 	<property name="tests" value="tests"/>
 
 	<!-- Below this line props shouldn't be changed -->
-	<property name="sdk.build.id" value="${product}-${build.tag}-${build.number}" />
-	<property name="tests.build.id" value="${tests}-${build.tag}-${build.number}" />
 	
 	<property name="targetPlatformPath" value="${basedir}/targetPlatform/" /> <!-- path where 3rd party dependencies are materialzed to by BM to be picked up by PDE build later -->
 	<property name="output.dir" value="${basedir}/output" />
+	<property name="build.dir" value="${basedir}" />
+	<property name="build.label" value="output" />
 
 	<property name="context.qualifier" value="000" />
 	<property name="build.tag" value="${user.name}" />
-
 	<property name="build.number" value="000" />
-	<property name="build.dir" value="${basedir}" />
-	<property name="build.label" value="output" />
 	<property name="build.type" value="I" />
 	<property name="build.timestamp" value="000" />
+
+	<property name="product.build.id" value="${product}-${build.tag}-${build.number}" />
+	<property name="tests.build.id" value="${tests}-${build.tag}-${build.number}" />
 
 	<!--===============================-->
 	<!-- pde.debug "-d" sets the forked VM into debug mode -->
@@ -121,7 +121,7 @@
 	</path>
 
 	<target name="deploy-tests">
-		<unzip src="${output.dir}/${product.feature.id}-${sdk.build.id}.zip" dest="${test.tmp.dir}"/>
+		<unzip src="${output.dir}/${product.feature.id}-${product.build.id}.zip" dest="${test.tmp.dir}"/>
 		<unzip src="${output.dir}/${tests.feature.id}-${tests.build.id}-${HOST.OSGI.OS}.${HOST.OSGI.WS}.${HOST.OSGI.ARCH}.zip" dest="${test.tmp.dir}"/>
 		<move todir="${test.tmp.dir}/${product}">
 			<fileset dir="${test.tmp.dir}/${tests}"/>
