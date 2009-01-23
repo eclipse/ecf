@@ -11,11 +11,12 @@
 package org.eclipse.ecf.example.collab.share;
 
 import org.eclipse.ecf.internal.example.collab.ui.LineChatClientView;
-import org.eclipse.ecf.presence.roster.IRoster;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.eclipse.ecf.presence.roster.IRosterListener;
+import org.eclipse.ecf.presence.roster.*;
 
+/**
+ * 
+ * @since 2.0
+ */
 public class RosterListener implements IRosterListener {
 
 	private final EclipseCollabSharedObject sharedObject;

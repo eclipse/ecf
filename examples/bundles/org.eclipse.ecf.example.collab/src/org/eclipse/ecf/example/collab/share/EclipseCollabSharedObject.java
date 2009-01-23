@@ -84,6 +84,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	public EclipseCollabSharedObject() {
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public EclipseCollabSharedObject(IContainer container, IResource proj, IUser user, String downloaddir) {
 		this.localResource = proj;
 		this.localUser = user;
@@ -103,6 +106,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		Assert.isNotNull(localGUI, "Local GUI cannot be created...exiting"); //$NON-NLS-1$
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public ID getContainerID() {
 		return containerID;
 	}
@@ -116,6 +122,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public MessagesView findMessagesView() {
 		IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
 		for (int i = 0; i < windows.length; i++) {
@@ -179,6 +188,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public IPresenceContainerAdapter getPresenceContainer() {
 		return presenceContainer;
 	}
@@ -292,10 +304,16 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		return Messages.EclipseCollabSharedObject_TREE_TOP_LABEL;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public IUser getUser() {
 		return localUser;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public IUser getUserForID(final ID user) {
 		return (localGUI != null) ? localGUI.getUser(user) : null;
 	}
@@ -321,6 +339,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void handleNotifyUserAdded(IUser user) {
 		boolean add = false;
 		try {
@@ -355,6 +376,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		sendUserUpdate(requestor);
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void handleShowPrivateTextMsg(IUser remote, String aString) {
 		ChatMessageEvent messageEvent = new ChatMessageEvent(remote.getID(), new ChatMessage(remote.getID(), aString));
 		presenceContainer.fireMessageEvent(messageEvent);
@@ -365,6 +389,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		showLineOnGUI(remote, aString);
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void handleUserUpdate(final IUser ud) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -378,6 +405,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void handleUserMessage(final IUser sender, String msg) {
 		// Show line on local interface
 		final String message = msg;
@@ -397,6 +427,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected synchronized void handleStartedTyping(IUser user) {
 		if (localGUI != null)
 			localGUI.startedTyping(user);
@@ -488,6 +521,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 	}
 
 	// SharedObjectMsg senders
+	/**
+	 * @since 2.0
+	 */
 	public void sendNotifyUserAdded() {
 		try {
 			forwardMsgTo(null, SharedObjectMsg.createMsg(null, HANDLE_NOTIFY_USER_ADDED_MSG, localUser));
@@ -496,6 +532,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void sendPrivateMessageToUser(ID toId, String msg) {
 		try {
 			forwardMsgTo(toId, SharedObjectMsg.createMsg(null, HANDLE_SHOW_PRIVATE_TEXT_MSG, localUser, msg));
@@ -504,6 +543,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void sendPrivateMessageToUser(IUser touser, String msg) {
 		sendPrivateMessageToUser(touser.getID(), msg);
 	}
@@ -516,6 +558,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void sendRequestUserUpdate(ID requestTarget) {
 		try {
 			forwardMsgTo(requestTarget, SharedObjectMsg.createMsg(null, HANDLE_REQUEST_USER_UPDATE_MSG, localContainerID));
@@ -524,6 +569,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void sendRingMessageToUser(IUser user, String msg) {
 		ID receiver = null;
 		if (user != null) {
@@ -706,6 +754,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			return length;
 		}
 
+		/**
+		 * @since 2.0
+		 */
 		public String toString() {
 			final StringBuffer buf = new StringBuffer("SharedMarker["); //$NON-NLS-1$
 			buf.append("message=").append(message).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -715,6 +766,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void sendAddMarkerForFile(IUser touser, String resourceName, int offset, int length) {
 		ID receiver = null;
 		if (touser != null) {
@@ -731,6 +785,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void sendOpenAndSelectForFile(IUser touser, String resourceName, int offset, int length) {
 		ID receiver = null;
 		if (touser != null) {
@@ -747,6 +804,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void sendLaunchEditorForFile(IUser touser, String resourceName) {
 		ID receiver = null;
 		if (touser != null) {
@@ -828,10 +888,16 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void handleAddMarkerForFile(final IUser fromuser, final String resourceName, SharedMarker marker) {
 		addMarkerForFile(getLocalFileForRemote(resourceName), marker);
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void handleOpenAndSelectForFile(final IUser fromuser, final String resourceName, SharedMarker marker) {
 		final IUser local = getUserForID(fromuser.getID());
 		if (local != null) {
@@ -841,12 +907,18 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected boolean isLocalUser(IUser fromuser) {
 		if (fromuser != null && fromuser.getID().equals(getUser().getID()))
 			return true;
 		return false;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void verifyAndOpenEditorLocally(final IUser fromuser, final String resourceName, final Runnable runnable) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -863,6 +935,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void handleLaunchEditorForFile(final IUser fromuser, final String resourceName) {
 		final IUser local = getUserForID(fromuser.getID());
 		if (local != null) {
@@ -880,6 +955,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		return ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER);
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void showEventInChatOutput(IUser fromuser, String resourceName, SharedMarker marker, Runnable runnable) {
 		if (localGUI != null) {
 			showRawLine(fromuser.getID(), createDisplayStringForEditorOpen(resourceName, marker), runnable);
@@ -907,6 +985,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		return aFile;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void sendShowViewWithID(IUser touser, String id, String secID, Integer mode) {
 		ID receiver = null;
 		if (touser != null) {
@@ -923,6 +1004,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public void sendShowView(IUser touser, String id) {
 		ID receiver = null;
 		if (touser != null) {
@@ -939,6 +1023,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void handleShowViewWithID(IUser fromUser, final String id, final String secID, final Integer mode) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
@@ -951,6 +1038,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		});
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected void handleShowView(IUser fromUser, final String id) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
