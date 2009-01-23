@@ -99,7 +99,7 @@
 			forcecontextqualifier="${osgi.qualifier}"
 			timestamp="${build.timestamp}" 
 			groupConfigurations="true"
-			topLevelElementId="${testss.feature.id}"/>
+			topLevelElementId="${tests.feature.id}"/>
 	</target>
 
 	<property name="test.tmp.dir" value="${basedir}/tmp" />
