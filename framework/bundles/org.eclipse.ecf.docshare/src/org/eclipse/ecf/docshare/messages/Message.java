@@ -17,6 +17,7 @@ import org.eclipse.ecf.sync.IModelChangeMessage;
 import org.eclipse.ecf.sync.SerializationException;
 
 /**
+ * @since 2.1
  *
  */
 public class Message implements IModelChangeMessage, Serializable {

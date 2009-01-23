@@ -12,6 +12,7 @@
 package org.eclipse.ecf.docshare.messages;
 
 /**
+ * @since 2.1
  *
  */
 public class SelectionMessage extends Message {

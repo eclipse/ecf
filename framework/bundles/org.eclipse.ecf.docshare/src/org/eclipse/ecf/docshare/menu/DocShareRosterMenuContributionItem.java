@@ -10,12 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.docshare.menu;
 
-import org.eclipse.ecf.docshare.DocShare;
-
 import java.util.Iterator;
 import java.util.List;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.docshare.DocShare;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.Messages;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
@@ -28,6 +27,9 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.*;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+/**
+ * @since 2.1
+ */
 public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContributionItem {
 
 	public DocShareRosterMenuContributionItem() {

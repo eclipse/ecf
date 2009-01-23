@@ -11,14 +11,13 @@
 
 package org.eclipse.ecf.docshare.menu;
 
-import org.eclipse.ecf.docshare.DocShare;
-
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.docshare.DocShare;
 import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.Messages;
 import org.eclipse.ecf.presence.roster.IRoster;
@@ -29,6 +28,7 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
+ * @since 2.1
  *
  */
 public class DocShareRosterMenuHandler extends AbstractRosterMenuHandler {

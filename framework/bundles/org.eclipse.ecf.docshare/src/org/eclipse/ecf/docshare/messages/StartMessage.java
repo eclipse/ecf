@@ -14,6 +14,7 @@ package org.eclipse.ecf.docshare.messages;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
+ * @since 2.1
  *
  */
 public class StartMessage extends Message {

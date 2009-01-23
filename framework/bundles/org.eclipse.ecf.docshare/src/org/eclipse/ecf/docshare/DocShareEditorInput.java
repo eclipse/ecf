@@ -14,6 +14,9 @@ package org.eclipse.ecf.docshare;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 
+/**
+ * @since 2.1
+ */
 public class DocShareEditorInput extends FileStoreEditorInput {
 
 	private final String user;

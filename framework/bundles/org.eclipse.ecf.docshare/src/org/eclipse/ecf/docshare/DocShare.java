@@ -45,6 +45,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
  * Represents a document sharing session between two participants.
+ * @since 2.1
  */
 public class DocShare extends AbstractShare {
 
