@@ -112,8 +112,8 @@
 	<property name="test.suite.debug" value="true" />
 	<property name="test.suite.result.dir" value="${output.dir}/testlogs" />
 	<property name="test.suite.coverage.dir" value="${output.dir}/coveragelogs" />
-	<property name="${test.suite.include.name.pattern}" value=".*(test|tests)$" />
-	<property name="${test.suite.exclude.name.pattern}" value="" />
+	<property name="test.suite.include.name.pattern" value=".*(test|tests)$" />
+	<property name="test.suite.exclude.name.pattern" value="" />
 	<path id="instrument.classpath">
 		<fileset dir="${test.tmp.dir}/${product}/plugins">
 			<include name="${coverage.include.name.pattern}" />
