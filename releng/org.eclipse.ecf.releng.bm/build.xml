@@ -89,6 +89,7 @@
 
 	<!-- build the test suite -->
 	<target name="compile-tests">
+		<!-- we build the tests for the current platform -->
 		<compile 
 			archiveprefix="${tests}" 
 			builddirectory="${build.dir}" 
@@ -98,7 +99,7 @@
 			collectingfolder="${tests}"
 			forcecontextqualifier="${osgi.qualifier}"
 			timestamp="${build.timestamp}" 
-			groupConfigurations="true"
+			configs="${HOST.OSGI.OS},${HOST.OSGI.WS},${HOST.OSGI.ARCH}" 
 			topLevelElementId="${tests.feature.id}"/>
 	</target>
 
@@ -117,10 +118,11 @@
 
 	<target name="deploy-tests">
 		<unzip src="${output.dir}/${sdk.feature.id}-${sdk.build.id}.zip" dest="${test.tmp.dir}"/>
-		<unzip src="${output.dir}/${tests.feature.id}-${tests.build.id}.zip" dest="${test.tmp.dir}"/>
+		<unzip src="${output.dir}/${tests.feature.id}-${tests.build.id}-${HOST.OSGI.OS}.${HOST.OSGI.WS}.${HOST.OSGI.ARCH}.zip" dest="${test.tmp.dir}"/>
 		<move todir="${test.tmp.dir}/${sdk}">
 			<fileset dir="${test.tmp.dir}/${tests}"/>
 		</move>
+		<mkdir dir="${test.tmp.dir}/${sdk}/configuration" />
 		<echo file="${test.tmp.dir}/${sdk}/configuration/config.ini" append="false">
 			osgi.bundles=org.eclipse.equinox.common@2:start,org.eclipse.update.configurator@3:start,org.eclipse.core.runtime@start
 			osgi.bundles.defaultStartLevel=4
