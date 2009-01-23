@@ -52,27 +52,22 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			super(urlString);
 		}
 
-		private boolean isZippedReply() {
+		private boolean isZippedResponse() {
 			boolean zipped = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_GZIP));
 			return zipped;
 		}
 
 		public int execute(HttpState state, HttpConnection conn) throws HttpException, IOException {
-			Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "GzipGetMethod.execute. gzipReceived=" + gzipReceived); //$NON-NLS-1$
+			Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "GzipGetMethod.execute"); //$NON-NLS-1$
 			// Insert accept-encoding header
-			if (getFileRangeSpecification() == null)
-				this.setRequestHeader(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
-			gzipReceived = false;
 			int result = super.execute(state, conn);
 			// test what is sent back
-			if (isZippedReply()) {
-				gzipReceived = true;
-			}
-			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "GzipGetMethod.execute.  gzipReceived=" + gzipReceived, new Integer(result)); //$NON-NLS-1$
+			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "GzipGetMethod.execute", new Integer(result)); //$NON-NLS-1$
 			return result;
 		}
 
 		public InputStream getResponseBodyAsUnzippedStream() throws IOException {
+			gzipReceived = isZippedResponse();
 			InputStream input = super.getResponseBodyAsStream();
 			try {
 				if (gzipReceived) {
@@ -345,7 +340,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			setRequestHeaderValues();
 
 			Trace.trace(Activator.PLUGIN_ID, "retrieve=" + urlString); //$NON-NLS-1$
-
+			// Set request header for possible gzip encoding
+			if (getFileRangeSpecification() == null)
+				getMethod.setRequestHeader(GzipGetMethod.ACCEPT_ENCODING, GzipGetMethod.CONTENT_ENCODING_ACCEPTED);
+			// Actually execute get and get response code (since redirect is set to true, then
+			// redirect response code handled internally
 			code = httpClient.executeMethod(getMethod);
 
 			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + code); //$NON-NLS-1$
