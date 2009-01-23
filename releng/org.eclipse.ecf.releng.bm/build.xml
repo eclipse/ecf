@@ -21,6 +21,11 @@
 	<!--=======================-->
 	<!-- build properties -->
 	<!--=======================-->
+	
+	<property name="sdk.feature.id" value="org.eclipse.ecf.sdk" />
+	<property name="tests.feature.id" value="org.eclipse.ecf.tests_feature" />
+	<property name="sdk" value="sdk"/>
+	<property name="test" value="test"/>
 
 	<property name="targetPlatformPath" value="${basedir}/targetPlatform/" /> <!-- path where 3rd party dependencies are materialzed to by BM to be picked up by PDE build later -->
 	<property name="output.dir" value="${basedir}/output" />
@@ -33,9 +38,6 @@
 	<property name="build.label" value="output" />
 	<property name="build.type" value="I" />
 	<property name="build.timestamp" value="000" />
-
-	<property name="ecf" value="ecf"/>
-	<property name="test" value="test"/>
 
 	<!-- Adds padding zeros to an int property based on pattern.
 	     Parameters:
@@ -58,30 +60,30 @@
 	<padding in="${context.qualifier}" out="osgi.qualifier"/>
 
 	<!-- these props shouldn't be overwritten -->
-	<property name="ecf.build.id" value="${ecf}-${build.number}-${build.tag}" />
-	<property name="test.build.id" value="${test}-${build.number}-${build.tag}" />
+	<property name="ecf.build.id" value="${sdk}-${build.number}-${build.tag}" />
+	<property name="tests.build.id" value="${test}-${build.number}-${build.tag}" />
 
 	<!-- materialize the ecf dependencies into the workspace -->
-	<target name="materialize-ecf">
+	<target name="materialize-sdk">
 		<materialize mspec="org.eclipse.ecf.sdk.mspec"/>
 	</target>
 
 	<!-- build ECF with Eclipse PDE build -->
-	<target name="compile-ecf" depends="">
+	<target name="compile-sdk" depends="">
 		<compile 
-			archiveprefix="${ecf}" 
+			archiveprefix="${sdk}" 
 			builddirectory="${build.dir}" 
-			buildid="${ecf.build.id}" 
+			buildid="${sdk.build.id}" 
 			buildlabel="${build.label}" 
 			buildtype="${build.type}"
-			collectingfolder="${ecf}"
+			collectingfolder="${sdk}"
 			forcecontextqualifier="${osgi.qualifier}"
 			timestamp="${build.timestamp}" 
-			topLevelElementId="org.eclipse.ecf.sdk"/>
+			topLevelElementId="${sdk.feature.id}"/>
 	</target>
 
 	<!-- materialize the test dependencies into the workspace -->
-	<target name="materialize-test">
+	<target name="materialize-tests">
 		<materialize mspec="org.eclipse.ecf.tests.mspec"/>
 	</target>
 
@@ -90,13 +92,13 @@
 		<compile 
 			archiveprefix="${test}" 
 			builddirectory="${build.dir}" 
-			buildid="${test.build.id}" 
+			buildid="${tests.build.id}" 
 			buildlabel="${build.label}" 
 			buildtype="${build.type}"
 			collectingfolder="${test}"
 			forcecontextqualifier="${osgi.qualifier}"
 			timestamp="${build.timestamp}" 
-			topLevelElementId="org.eclipse.ecf.tests_feature"/>
+			topLevelElementId="${tests.feature.id}"/>
 	</target>
 
 	<property name="test.tmp.dir" value="${basedir}/tmp" />
@@ -105,38 +107,38 @@
 	<property name="test.suite.result.dir" value="${output.dir}/testlogs" />
 	<property name="test.suite.coverage.dir" value="${output.dir}/coveragelogs" />
 	<path id="instrument.classpath">
-		<fileset dir="${test.tmp.dir}/${ecf}/plugins">
+		<fileset dir="${test.tmp.dir}/${sdk}/plugins">
 			<include name="ch.ethz.iks.*.jar" />
 			<include name="org.eclipse.ecf.*.jar" />
 			<exclude name="org.eclipse.emf*.jar"/>
 		</fileset>
 	</path>
 
-	<target name="deploy-test">
-		<unzip src="${output.dir}/${ecf.build.id}-${HOST.OSGI.OS}.${HOST.OSGI.WS}.${HOST.OSGI.ARCH}.zip" dest="${test.tmp.dir}"/>
-		<unzip src="${output.dir}/org.eclipse.ecf.test.feature-${test.build.id}.zip" dest="${test.tmp.dir}"/>
+	<target name="deploy-tests">
+		<unzip src="${output.dir}/${sdk.feature.id}-${ecf.build.id}.zip" dest="${test.tmp.dir}"/>
+		<unzip src="${output.dir}/${tests.feature.id}-${tests.build.id}.zip" dest="${test.tmp.dir}"/>
 		<move todir="${test.tmp.dir}/eclipse">
-			<fileset dir="${test.tmp.dir}/${test}"/>
+			<fileset dir="${test.tmp.dir}/${sdk}"/>
 		</move>
 		<!-- create a link file so ecf recognizes the test feature -->
-		<mkdir dir="${test.tmp.dir}/${ecf}/links" />
-		<propertyfile file="${test.tmp.dir}/${ecf}/links/test.link">
+		<mkdir dir="${test.tmp.dir}/${tests}/links" />
+		<propertyfile file="${test.tmp.dir}/${tests}/links/sdk.link">
 			<entry key="path" value="${test.tmp.dir}" />
 		</propertyfile>
 	</target>
 
-	<target name="instrument-test">
+	<target name="instrument-tests">
 		<emma enabled="true">
 			<instr instrpathref="instrument.classpath" mode="overwrite" metadatafile="${test.suite.coverage.dir}/metadata.ec" >
 			</instr>
 		</emma>
 	</target>
 
-	<target name="run-test">
+	<target name="run-tests">
 		<mkdir dir="${test.suite.result.dir}"/>
 		<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
 			<classpath>
-				<fileset dir="${test.tmp.dir}/${ecf}/plugins">
+				<fileset dir="${test.tmp.dir}/${sdk}/plugins">
 					<include name="**/org.eclipse.equinox.launcher*.jar"/>
 				</fileset>
 				<pathelement location="${EMMA_2.0.5312}/lib/emma.jar" />
@@ -164,7 +166,7 @@
 		</java>
 	</target>
 
-	<target name="report-test">
+	<target name="report-tests">
 		<emma enabled="true">
 			<report>
 				<sourcepath>
@@ -207,13 +209,13 @@
 		<delete dir="${build.dir}/tmp" />
 	</target>
 	
-	<target name="materialize" depends="materialize-ecf, materialize-test" />
+	<target name="materialize" depends="materialize-sdk, materialize-tests" />
 
-	<target name="compile" depends="compile-ecf, compile-test" />
+	<target name="compile" depends="compile-sdk, compile-test" />
 
-	<target name="test" depends="deploy-test, instrument-test, run-test, report-test" />
+	<target name="test" depends="deploy-tests, instrument-tests, run-tests, report-tests" />
 
-	<target name="all" depends="clean, materialize-ecf, compile-ecf, materialize-test, compile-test, test" />
+	<target name="all" depends="clean, materialize-sdk, compile-sdk, materialize-tests, compile-test, test" />
 
 	<!-- = = = = = = = = = = = = = = = = =
           macrodef: materialize         
