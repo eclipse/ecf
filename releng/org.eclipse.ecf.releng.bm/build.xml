@@ -180,6 +180,7 @@
 					<include name="*.ec" />
 				</fileset>
 				<txt outfile="${test.suite.coverage.dir}/coverage.txt" />
+				<xml outfile="${test.suite.coverage.dir}/coverage.xml" />
 				<html outfile="${test.suite.coverage.dir}/coverage.html" />
 			</report>
 		</emma>
