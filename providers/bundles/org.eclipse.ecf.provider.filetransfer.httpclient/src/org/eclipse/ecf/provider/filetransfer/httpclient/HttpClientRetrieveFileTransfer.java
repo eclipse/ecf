@@ -61,6 +61,17 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "GzipGetMethod.execute"); //$NON-NLS-1$
 			// Insert accept-encoding header
 			int result = super.execute(state, conn);
+			// Code to deal with implications described on bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=261881
+			switch (result) {
+				case HttpStatus.SC_MOVED_TEMPORARILY :
+				case HttpStatus.SC_MOVED_PERMANENTLY :
+				case HttpStatus.SC_SEE_OTHER :
+				case HttpStatus.SC_TEMPORARY_REDIRECT :
+					Trace.trace(Activator.PLUGIN_ID, "GzipGetMethod.execute.  Received redirect=" + result + ".  Removing gzip accept encoding"); //$NON-NLS-1$ //$NON-NLS-2$
+					gzipReceived = false;
+					removeRequestHeader(GzipGetMethod.ACCEPT_ENCODING);
+				default :
+			}
 			// test what is sent back
 			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "GzipGetMethod.execute", new Integer(result)); //$NON-NLS-1$
 			return result;
