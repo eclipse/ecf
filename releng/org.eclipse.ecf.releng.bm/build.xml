@@ -238,7 +238,7 @@
 			    org.eclipse.buckminster.core.prefs.setpref org.eclipse.buckminster.core.maxParallelMaterializations=1
 			    org.eclipse.buckminster.core.prefs.setpref org.eclipse.buckminster.pde.targetPlatformPath=${targetPlatformPath}
 			</echo>
-    			<mkdir dir="${targetPlatformPath}" />
+   			<mkdir dir="${targetPlatformPath}" />
 			<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
 				<classpath>
 					<fileset dir="${BUCKMINSTER_BUILDER_REV09868}/plugins">
@@ -257,6 +257,7 @@
 			</java>
 			<delete file="${basedir}/.settings.bmscript"/>
 						
+   			<mkdir dir="${output.dir}" />
 			<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
 				<classpath>
 					<fileset dir="${BUCKMINSTER_BUILDER_REV09868}/plugins">
