@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.ecf.osgi.services.distribution
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipse.ecf.internal.osgi.services.distribution.Activator
+Bundle-Vendor: %pluginProvider
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Import-Package: org.eclipse.ecf.core.util,
+ org.osgi.framework;version="1.3.0",
+ org.osgi.framework.hooks.service
+Bundle-ActivationPolicy: lazy
+Bundle-Localization: plugin

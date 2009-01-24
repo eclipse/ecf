@@ -1,0 +1,16 @@
+# Debugging options for the org.eclipse.ecf.osgi.services.distribution plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.osgi.services.distribution plug-in
+org.eclipse.ecf.osgi.services.distribution/debug=true
+org.eclipse.ecf.osgi.services.distribution/debug/filter = *
+org.eclipse.ecf.osgi.services.distribution/debug/flag = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.osgi.services.distribution/debug/exceptions/catching=true
+# Trace when exceptions are thrown
+org.eclipse.ecf.osgi.services.distribution/debug/exceptions/throwing=true
+
+# Trace when methods are entered
+org.eclipse.ecf.osgi.services.distribution/debug/methods/entering=true
+# Trace when methods are exited
+org.eclipse.ecf.osgi.services.distribution/debug/methods/exiting=true
