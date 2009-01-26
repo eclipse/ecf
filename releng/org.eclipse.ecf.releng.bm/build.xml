@@ -111,6 +111,7 @@
 	<property name="test.suite.headless" value="true" /> <!-- we don't have UI tests yet -->
 	<property name="test.suite.debug" value="true" />
 	<property name="test.suite.result.dir" value="${output.dir}/testlogs" />
+	<property name="test.suite.report.dir" value="${test.suite.result.dir}/report" />
 	<property name="test.suite.coverage.dir" value="${output.dir}/coveragelogs" />
 	<property name="test.suite.include.name.pattern" value=".*(test|tests)$" />
 	<property name="test.suite.exclude.name.pattern" value="" />
@@ -182,6 +183,13 @@
 	</target>
 
 	<target name="report-tests">
+		<mkdir dir="${test.suite.report.dir}" />
+		<junitreport todir="${test.suite.report.dir}">
+		    <fileset dir="${test.suite.result.dir}">
+			<include name="*.xml"/>
+		    </fileset>
+		    <report format="frames" todir="${test.suite.report.dir}/html"/>
+		</junitreport>
 		<emma enabled="true">
 			<report>
 				<sourcepath>
