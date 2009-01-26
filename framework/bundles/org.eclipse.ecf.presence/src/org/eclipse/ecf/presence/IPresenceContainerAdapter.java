@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
+import org.eclipse.ecf.presence.search.IUserSearchManager;
 
 /**
  * Entry point presence container adapter. For setting up listeners for presence
@@ -71,4 +72,14 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 *         available, returns <code>null</code>.
 	 */
 	public IChatRoomManager getChatRoomManager();
+
+	/**
+	 * Retrieve interface for search on the provide. The returned
+	 * IUserSearchManager (if not <code>null</code>) can be used to search users
+	 * related to the same provider.
+	 * 
+	 * @return IUserSearchManager. <code>null</code> if no search 
+	 *         available for this provider.
+	 */
+	public IUserSearchManager getUserSearchManager();
 }
