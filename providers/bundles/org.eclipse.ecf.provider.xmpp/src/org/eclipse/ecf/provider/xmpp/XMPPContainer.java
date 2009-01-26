@@ -73,6 +73,9 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.packet.MUCUser;
 import org.jivesoftware.smackx.packet.XHTMLExtension;
 
+/**
+ * @since 3.0
+ */
 public class XMPPContainer extends ClientSOContainer implements IPresenceService {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
@@ -107,6 +110,9 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 
 	protected XMPPContainerPresenceHelper presenceHelper = null;
 	
+	/**
+	 * @since 3.0
+	 */
 	protected XMPPUserSearchManager searchManager = null;
 
 	protected ID presenceHelperID = null;
@@ -138,6 +144,9 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 		return presenceHelper.getRosterManager();
 	}
 	
+	/**
+	 * @since 3.0
+	 */
 	public IUserSearchManager getUserSearchManager() {
 		return searchManager;
 	}
