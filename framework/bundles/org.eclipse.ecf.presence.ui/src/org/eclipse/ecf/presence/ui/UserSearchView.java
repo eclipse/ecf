@@ -36,6 +36,7 @@ import org.eclipse.ui.part.ViewPart;
  * View class for displaying multiple users that match a search in a tree viewer. This view part
  * provides the ability to display multiple users in a single tree viewer. This class may be subclassed as
  * desired to add or customize behavior.
+ * @since 2.0
  */
 public class UserSearchView extends ViewPart {
 

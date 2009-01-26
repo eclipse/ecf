@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.Viewer;
  * an ITreeContentProvider suitable for use by tree viewers that accepts
  * ITreeContentProviders as input. This class may be subclassed in order to
  * customize the behavior/display of other content providers.
+ * @since 2.0
  * 
  */
 public class UserSearchContentProvider implements ITreeContentProvider {

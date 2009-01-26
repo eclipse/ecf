@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.Image;
  * LabelProvider suitable for use by viewers that accepts LabelProvider as
  * input. This class may be subclassed in order to customize the
  * behavior/display of other label providers.
+ * @since 2.0
  * 
  */
 public class UserSearchLabelProvider extends LabelProvider {
