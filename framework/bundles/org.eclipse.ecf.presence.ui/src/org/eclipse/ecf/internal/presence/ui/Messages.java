@@ -194,6 +194,7 @@ public class Messages extends NLS {
 	public static String MultiRosterView_ShowOffline;
 	public static String MultiRosterView_ShowEmptyGroups;
 	public static String MultiRosterView_AddContact;
+	public static String MultiRosterView_SearchContact;
 
 	public static String MessagesView_ClearChatLog;
 	public static String MessagesView_ClearChatLogDialogTitle;
@@ -208,6 +209,35 @@ public class Messages extends NLS {
 	public static String AddContactDialog_UserID;
 	public static String AddContactDialog_Alias;
 	public static String AddContactDialog_Account;
+
+	public static String SearchContactDialog_DialogTitle;
+	public static String SearchContactDialog;
+	public static String SearchContactDialog_InfoSearching;
+	public static String SearchContactDialog_InfoSearchFields;
+	public static String SearchContactDialog_InfoContactFields;
+	public static String SearchContactDialog_ButtonSearch;
+	public static String SearchContactDialog_ButtonStop;
+	public static String SearchContactDialog_ButtonAddContact;
+
+	public static String SearchContactDialog_ContactInfo;
+
+	public static String SearchContactDialog_AddContactMessage;
+
+	public static String SearchContactDialog_RunInBackground;
+
+	public static String SearchContactDialog_RunInBackGroundToolTip;
+
+	public static String SearchContactDialog_SearchingMessage;
+
+	public static String SearchContactDialog_TableResultColumnName;
+
+	public static String SearchContactDialog_TableResultColumnUsername;
+
+	public static String SearchContactDialog_TableSearchColumnField;
+
+	public static String SearchContactDialog_TableSearchColumnValue;
+
+	public static String SearchContactDialog_UserSearchJobName;
 
 	public static String ReceiveAuthorizeRequestDialog_AUTH_REQUEST_FROM;
 
@@ -243,6 +273,8 @@ public class Messages extends NLS {
 	public static String ChatRoomPreferencePage_CHATROOM_SHOW_USER_PRESENCE_TEXT;
 
 	public static String ChatRoomPreferencePage_SCROLL_OUTPUT_ON_INPUT;
+
+	public static String UserSearchLabelProvider_ContactsFound;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
