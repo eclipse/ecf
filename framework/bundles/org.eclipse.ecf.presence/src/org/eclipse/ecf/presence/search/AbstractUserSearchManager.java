@@ -15,7 +15,7 @@ import java.util.*;
  * Abstract implementation of IUserSearchManager. Provides implementations of listener
  * methods that subsclasses may use to avoid having to implement them
  * themselves. This class may be subclassed as needed.
- * @since 3.0
+ * @since 2.0
  */
 public abstract class AbstractUserSearchManager implements IUserSearchManager {
 

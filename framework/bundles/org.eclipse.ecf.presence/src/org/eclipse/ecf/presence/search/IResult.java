@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.user.IUser;
 /**
  * Each result returned for the search will be reach through this interface.
  * The result contain the user that match the search.
- * @since 3.0
+ * @since 2.0
  */
 public interface IResult extends IAdaptable {
 

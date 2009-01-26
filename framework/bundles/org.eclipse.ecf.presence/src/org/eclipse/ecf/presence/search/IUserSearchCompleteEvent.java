@@ -11,7 +11,7 @@ package org.eclipse.ecf.presence.search;
 
 /**
  * This event indicate that a user search was completed
- *@since 3.0
+ *@since 2.0
  */
 public interface IUserSearchCompleteEvent extends IUserSearchEvent {
 

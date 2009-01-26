@@ -29,7 +29,7 @@ import java.util.List;
  *		criteria.add(and);
  * </pre>
  * 
- * @since 3.0
+ * @since 2.0
  */
 public interface ICriteria {
 

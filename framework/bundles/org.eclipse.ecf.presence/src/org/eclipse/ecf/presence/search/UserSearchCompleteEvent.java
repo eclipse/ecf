@@ -11,7 +11,7 @@ package org.eclipse.ecf.presence.search;
 
 /**
  * 
- * @since 3.0
+ * @since 2.0
  */
 public class UserSearchCompleteEvent implements IUserSearchCompleteEvent {
 

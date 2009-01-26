@@ -13,7 +13,7 @@ package org.eclipse.ecf.presence.search;
  * 
  * Base class implementation of {@link ICriterion} for simple comparisons. Subclasses may be created as
  * appropriate.
- * @since 3.0
+ * @since 2.0
  */
 public class SimpleCriterion implements ICriterion {
 

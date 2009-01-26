@@ -16,7 +16,7 @@ import org.eclipse.ecf.internal.presence.PresencePlugin;
 /**
  * This Class implements {@link IResultList}. Subclasses may be created as
  * appropriate.
- * @since 3.0
+ * @since 2.0
  */
 public class ResultList implements IResultList {
 

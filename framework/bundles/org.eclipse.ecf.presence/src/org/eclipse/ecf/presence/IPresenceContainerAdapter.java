@@ -80,6 +80,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @return IUserSearchManager. <code>null</code> if no search 
 	 *         available for this provider.
+	 *         
+	 * @since 2.0
 	 */
 	public IUserSearchManager getUserSearchManager();
 }

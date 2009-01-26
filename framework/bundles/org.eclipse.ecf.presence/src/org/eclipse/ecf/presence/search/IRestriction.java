@@ -12,7 +12,7 @@ package org.eclipse.ecf.presence.search;
 /**
  * Instances implementing this interface provide methods to compose the corrects operations for each
  * provide
- * @since 3.0
+ * @since 2.0
  */
 public interface IRestriction {
 

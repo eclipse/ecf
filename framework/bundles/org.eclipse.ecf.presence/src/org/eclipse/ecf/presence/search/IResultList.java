@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.IAdaptable;
 
 /**
  * This interface provides methods to handle the result list that match the search.
- * @since 3.0
+ * @since 2.0
  */
 public interface IResultList extends IAdaptable {
 

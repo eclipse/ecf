@@ -15,7 +15,7 @@ package org.eclipse.ecf.presence.search;
  * Note these methods will be called asynchronously not blocking a search action.
  * The provider is free to call the methods below with an arbitrary thread, so the
  * implementation of these methods must be appropriately prepared.
- * @since 3.0
+ * @since 2.0
  */
 public interface IUserSearchListener {
 

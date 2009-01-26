@@ -16,7 +16,7 @@ package org.eclipse.ecf.presence.search;
  * that together are able to compose an entire expression to project 
  * a result that match the criteria. The instances of this should be 
  * created for {@link IRestriction} implementations.
- * @since 3.0
+ * @since 2.0
  */
 public interface ICriterion {
 

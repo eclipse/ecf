@@ -14,7 +14,7 @@ import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * 
- * @since 3.0
+ * @since 2.0
  */
 public class UserSearchException extends ECFException {
 

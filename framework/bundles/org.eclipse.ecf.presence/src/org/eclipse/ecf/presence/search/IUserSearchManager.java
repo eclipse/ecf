@@ -14,7 +14,7 @@ import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Get a search mechanism for an account.
- * @since 3.0
+ * @since 2.0
  */
 public interface IUserSearchManager {
 

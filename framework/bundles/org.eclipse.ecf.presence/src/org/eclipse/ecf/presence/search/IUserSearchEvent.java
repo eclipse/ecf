@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.util.Event;
  * An event received by a user search. This interface address the events 
  * that happens on user search API. There be different sub-interfaces of IUserSearchEvent to
  * represent different types of events.
- * @since 3.0
+ * @since 2.0
  */
 public interface IUserSearchEvent extends Event {
 	// no methods for interface

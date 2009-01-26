@@ -13,7 +13,7 @@ package org.eclipse.ecf.presence.search;
 /**
  * Provide access for the list of matched query results. This interface can be
  * extended to supply more features around the result list.
- * @since 3.0
+ * @since 2.0
  */
 public interface ISearch {
 

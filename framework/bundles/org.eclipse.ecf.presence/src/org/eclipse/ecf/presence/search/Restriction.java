@@ -13,7 +13,7 @@ package org.eclipse.ecf.presence.search;
  * This Class implements {@link IRestriction}. Subclasses may be created as
  * appropriate. It is just a simple implementation that can be considered 
  * for some provider or even used as base for some implementation.
- * @since 3.0
+ * @since 2.0
  */
 public class Restriction implements IRestriction {
 
