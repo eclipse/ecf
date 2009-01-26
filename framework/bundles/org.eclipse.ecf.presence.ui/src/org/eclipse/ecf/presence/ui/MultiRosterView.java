@@ -97,6 +97,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	private IAction addContactAction;
 
+	private IAction searchContactAction;
+
 	private IAction openChatRoomAction;
 
 	private IAction openAccountChatRoomAction;
@@ -480,6 +482,20 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		};
 
+		searchContactAction = new Action() {
+			public void run() {
+				IStructuredSelection iss = (IStructuredSelection) treeViewer.getSelection();
+				IRoster roster = (IRoster) iss.getFirstElement();
+				MultiRosterAccount account = findAccountForUser(roster.getUser().getID());
+				if (account != null) {
+					SearchContactDialog dialog = new SearchContactDialog(treeViewer.getControl().getShell(), account);
+					dialog.open();
+				}
+			}
+		};
+
+		searchContactAction.setText(Messages.MultiRosterView_SearchContact);
+
 		openChatRoomAction = new Action() {
 			public void run() {
 				selectAndJoinChatRoomForAccounts((MultiRosterAccount[]) rosterAccounts.toArray(new MultiRosterAccount[] {}));
@@ -618,6 +634,11 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 			manager.add(addContactAction);
 			manager.add(new Separator());
+			//add if the provider supports user search
+			if (((IRoster) element).getPresenceContainerAdapter().getUserSearchManager().isEnabled()) {
+				manager.add(searchContactAction);
+				manager.add(new Separator());
+			}
 			manager.add(openAccountChatRoomAction);
 			manager.add(new Separator());
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -701,6 +722,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		showOfflineAction.setEnabled(enabled);
 		showEmptyGroupsAction.setEnabled(enabled);
 		addContactAction.setEnabled(enabled);
+		searchContactAction.setEnabled(enabled);
 		openChatRoomAction.setEnabled(enabled);
 		disconnectAllAccountsAction.setEnabled(enabled);
 	}
@@ -721,6 +743,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 		manager.add(new Separator());
 		manager.add(addContactAction);
+		manager.add(new Separator());
+		manager.add(searchContactAction);
 		manager.add(new Separator());
 		manager.add(openChatRoomAction);
 		manager.add(new Separator());
