@@ -12,8 +12,11 @@
 package org.eclipse.ecf.tests.provider.filetransfer.efs;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -36,6 +39,17 @@ public class RetrieveTest extends AbstractRetrieveTestCase {
 		tmpFile = File.createTempFile("ECFTest", "");
 	}
 
+	protected void handleStartEvent(IIncomingFileTransferReceiveStartEvent event) {
+		super.handleStartEvent(event);
+		try {
+			event.receive(tmpFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -49,7 +63,8 @@ public class RetrieveTest extends AbstractRetrieveTestCase {
 	}
 
 	public void testRetrieve() throws Exception {
-		super.testRetrieve(new URL("efs:file:///test.txt"));
+		URL url = new File("test.txt").toURI().toURL();
+		super.testRetrieve(new URL("efs:"+url.toString()));
 		waitForDone(5000);
 		assertHasEvent(startEvents, IIncomingFileTransferReceiveStartEvent.class);
 		assertHasMoreThanEventCount(dataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);

@@ -27,7 +27,7 @@ public class SendTest extends AbstractSendTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		inputFile = new File("test.txt");
-		outputFile = new URL("efs:file://c:/ECFtest.txt");
+		outputFile = File.createTempFile("ECFTest", "").toURL();
 	}
 
 	/* (non-Javadoc)
