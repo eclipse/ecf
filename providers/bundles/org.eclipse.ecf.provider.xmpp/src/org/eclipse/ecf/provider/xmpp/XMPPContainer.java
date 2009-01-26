@@ -41,6 +41,7 @@ import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.internal.provider.xmpp.filetransfer.XMPPOutgoingFileTransferHelper;
+import org.eclipse.ecf.internal.provider.xmpp.search.XMPPUserSearchManager;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionPacketEvent;
@@ -50,6 +51,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
+import org.eclipse.ecf.presence.search.IUserSearchManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
@@ -104,6 +106,8 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	protected XMPPOutgoingFileTransferHelper outgoingFileTransferContainerAdapter = null;
 
 	protected XMPPContainerPresenceHelper presenceHelper = null;
+	
+	protected XMPPUserSearchManager searchManager = null;
 
 	protected ID presenceHelperID = null;
 
@@ -112,6 +116,7 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 		this.keepAlive = keepAlive;
 		accountManager = new XMPPContainerAccountManager();
 		chatRoomManager = new XMPPChatRoomManager(getID());
+		searchManager = new XMPPUserSearchManager();
 		this.presenceHelperID = IDFactory.getDefault().createStringID(CONTAINER_HELPER_ID);
 		presenceHelper = new XMPPContainerPresenceHelper(this);
 		outgoingFileTransferContainerAdapter = new XMPPOutgoingFileTransferHelper(this);
@@ -131,6 +136,10 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 
 	public IRosterManager getRosterManager() {
 		return presenceHelper.getRosterManager();
+	}
+	
+	public IUserSearchManager getUserSearchManager() {
+		return searchManager;
 	}
 
 	public IAccountManager getAccountManager() {
@@ -238,6 +247,8 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 			final ECFConnection conn = getECFConnection();
 			accountManager.setConnection(conn.getXMPPConnection());
 			chatRoomManager.setConnection(getConnectNamespace(), originalTarget, conn);
+			searchManager.setConnection(getConnectNamespace(), originalTarget,conn);
+			searchManager.setEnabled(!isGoogle(originalTarget));
 			presenceHelper.setUser(new User(originalTarget));
 			outgoingFileTransferContainerAdapter.setConnection(conn.getXMPPConnection());
 			return originalTarget;
