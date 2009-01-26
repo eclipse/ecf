@@ -12,8 +12,10 @@
 package org.eclipse.ecf.tests;
 
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerFactory;
@@ -52,6 +54,7 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		findEmptySocket();
+		loadUsernamesAndPasswords();
 	}
 
 	/**
@@ -147,22 +150,36 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 
 	protected IContainer[] createClients() throws Exception {
 		final IContainer[] result = new IContainer[getClientCount()];
-		usernames = new String[getClientCount()];
-		passwords = new String[getClientCount()];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = createClient(i);
-			String uname = System.getProperty("username" + i);
-			if (uname == null && i == 0)
-				uname = System.getProperty("username");
-			if (uname != null)
-				usernames[i] = uname;
-			String pword = System.getProperty("password" + i);
-			if (pword == null && i == 0)
-				pword = System.getProperty("password");
-			if (pword != null)
-				passwords[i] = pword;
 		}
 		return result;
+	}
+	
+	protected void loadUsernamesAndPasswords() {
+		// Default behavior is to look for system properties
+		int i = 0;
+		boolean done = false;
+		List us = new ArrayList();
+		List ps = new ArrayList();
+		while (!done) {
+			String uname = System.getProperty("username"+i);
+			String pword = System.getProperty("password"+i);
+			if (uname == null && i==0) {
+				uname = System.getProperty("username");
+				pword = System.getProperty("password");
+			}
+			if (uname == null) {
+				done = true;
+			} else {
+				us.add(uname);
+				ps.add(pword);
+			}
+		}
+		if (us.size() > 0) {
+			usernames = (String []) us.toArray(new String [] {});
+			passwords = (String []) ps.toArray(new String [] {});
+		}
 	}
 
 	protected IContainer createClient(int index) throws Exception {
@@ -201,6 +218,7 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected IConnectContext getConnectContext(int client) {
+		if (usernames == null) return null;
 		return createUsernamePasswordConnectContext(getUsername(client), getPassword(client));
 	}
 
