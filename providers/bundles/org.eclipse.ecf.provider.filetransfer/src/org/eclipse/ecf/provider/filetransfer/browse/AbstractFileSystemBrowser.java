@@ -186,7 +186,7 @@ public abstract class AbstractFileSystemBrowser {
 			try {
 				IProxyService proxyService = Activator.getDefault().getProxyService();
 				// Only do this if platform service exists
-				if (proxyService != null) {
+				if (proxyService != null && proxyService.isProxiesEnabled()) {
 					// Setup via proxyService entry
 					URL target = directoryOrFile;
 					final IProxyData[] proxies = proxyService.getProxyDataForHost(target.getHost());
@@ -195,7 +195,6 @@ public abstract class AbstractFileSystemBrowser {
 						proxy = new Proxy(((selectedProxy.getType().equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(selectedProxy.getHost(), selectedProxy.getPort()), selectedProxy.getUserId(), selectedProxy.getPassword());
 					}
 				}
-
 			} catch (Exception e) {
 				// If we don't even have the classes for this (i.e. the org.eclipse.core.net plugin not available)
 				// then we simply log and ignore
@@ -206,7 +205,6 @@ public abstract class AbstractFileSystemBrowser {
 		}
 		if (proxy != null)
 			setupProxy(proxy);
-
 	}
 
 }
