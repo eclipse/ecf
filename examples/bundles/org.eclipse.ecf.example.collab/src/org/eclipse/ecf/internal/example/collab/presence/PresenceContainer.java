@@ -23,6 +23,7 @@ import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.ecf.presence.im.*;
 import org.eclipse.ecf.presence.im.IChatMessage.Type;
 import org.eclipse.ecf.presence.roster.IRosterManager;
+import org.eclipse.ecf.presence.search.IUserSearchManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -111,6 +112,11 @@ public class PresenceContainer extends AbstractPresenceContainer implements ICha
 
 	public void sendChatMessage(ID toId, String body) throws ECFException {
 		sendChatMessage(toId, null, null, null, body, null);
+	}
+
+	public IUserSearchManager getUserSearchManager() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
