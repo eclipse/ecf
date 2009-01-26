@@ -76,7 +76,7 @@
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
 			<matcher base="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20080807152315/bundles/">
 			    <group name="MATCH">
-				<name prefix="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20080807152315/bundles/" pattern="([a-zA-Z0-9]+\.)*[a-zA-Z0-9]+" suffix="_"/>
+				<name prefix="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20080807152315/bundles/" pattern="([a-zA-Z0-9]+\.)*[a-zA-Z0-9_]+" suffix="_"/>
 				<version pattern="([0-9]+\.){2}[0-9]+(\.[a-zA-Z0-9-_]+)*" suffix=".jar"/>
 			    </group>
 			</matcher>

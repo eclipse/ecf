@@ -37,5 +37,5 @@
     <cq:advisorNode namePattern="org.objectweb.asm" useTargetPlatform="false"/>
 
 	<!-- the rest we want binary only -->
-    <cq:advisorNode namePattern=".*" useTargetPlatform="false" mutableLevel="REJECT" sourceLevel="REJECT"/>
+    <cq:advisorNode namePattern=".*" useTargetPlatform="false" skipComponent="true" mutableLevel="REJECT" sourceLevel="REJECT"/>
 </cq:componentQuery>
