@@ -63,6 +63,12 @@ import org.eclipse.ecf.presence.roster.IRosterListener;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
+import org.eclipse.ecf.presence.search.ICriteria;
+import org.eclipse.ecf.presence.search.ISearch;
+import org.eclipse.ecf.presence.search.IRestriction;
+import org.eclipse.ecf.presence.search.IUserSearchListener;
+import org.eclipse.ecf.presence.search.IUserSearchManager;
+import org.eclipse.ecf.presence.search.UserSearchException;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ecf.protocol.msn.ChatSession;
 import org.eclipse.ecf.protocol.msn.Contact;
@@ -756,6 +762,50 @@ final class MSNContainer implements IContainer, IChatManager,
 	public IChat createChat(ID targetUser, IIMMessageListener messageListener) throws ECFException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * TODO Implement a User Search Manager for MSN
+	 * for while it just returns a manger
+	 * to inform that user search is not allow
+	 * for this provider see {@link IUserSearchManager#isEnabled()}
+	 */
+	public IUserSearchManager getUserSearchManager() {
+		return new IUserSearchManager(){
+
+			public ICriteria createCriteria() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public IRestriction createRestriction() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public String[] getUserPropertiesFields()
+					throws ContainerConnectException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public boolean isEnabled() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			public ISearch search(ICriteria criteria)
+					throws UserSearchException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public void search(ICriteria criteria, IUserSearchListener listener) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		};
 	}
 
 }
