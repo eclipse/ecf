@@ -78,6 +78,13 @@
             name="%views.multiRosterView">
       </view>
       <view
+            category="org.eclipse.ecf.ui.viewcategory"
+            class="org.eclipse.ecf.presence.ui.UserSearchView"
+            icon="icons/contacts.gif"
+            id="org.eclipse.ecf.presence.ui.UserSearchView"
+            name="%views.userSearchView">
+      </view>
+      <view
             allowMultiple="true"
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
