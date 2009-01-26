@@ -139,6 +139,12 @@
 			</instr>
 		</emma>
 	</target>
+	
+	<!-- read in all properties test-prefix.* and pass them to run-test's vm as *-->
+	<propertyset id="test-properties">
+		<propertyref prefix="test-prefix"/>
+		<mapper type="glob" from="test-prefix.*" to="*"/>
+	</propertyset>
 
 	<target name="run-tests">
 		<mkdir dir="${test.suite.result.dir}"/>
@@ -155,6 +161,7 @@
 			<arg value="-testApplication" />
 			<arg value="org.eclipse.ui.ide.workbench" />
 			<arg value="-clean" />
+			<syspropertyset refid="test-properties" />
 			<!-- debugging -->
 			<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${test.debug.port},server=y,suspend=${test.debug.suspend}" />
 			<jvmarg value="-Xdebug" />
