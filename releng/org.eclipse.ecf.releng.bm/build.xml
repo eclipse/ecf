@@ -142,7 +142,7 @@
 
 	<target name="run-tests">
 		<mkdir dir="${test.suite.result.dir}"/>
-		<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
+		<java classname="org.eclipse.core.launcher.Main" fork="yes" clonevm="true" failonerror="true">
 			<classpath>
 				<fileset dir="${test.tmp.dir}/${product}/plugins">
 					<include name="**/org.eclipse.equinox.launcher*.jar"/>
