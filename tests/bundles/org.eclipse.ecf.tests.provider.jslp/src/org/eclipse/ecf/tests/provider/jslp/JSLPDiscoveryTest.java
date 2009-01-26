@@ -23,8 +23,6 @@ import org.osgi.framework.BundleException;
 public class JSLPDiscoveryTest extends DiscoveryTest {
 
 	static {
-		// we need SA functionality
-		assertFalse("jSLP tests require net.slp.uaonly to be set to false because they need SA functionality.", new Boolean(System.getProperty("net.slp.uaonly")).booleanValue());
 		// tests need root privileges to bind to slp port 427 in SA mode
 		int port;
 		try {
