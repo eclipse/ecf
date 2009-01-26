@@ -109,13 +109,10 @@
 	
 	<!-- Eclipse --> 
  	<locator searchPathRef="org.eclipse" pattern="^com\.ibm(\..+)?" />
- 	<locator searchPathRef="org.eclipse" pattern="^com\.jcraft\.jsch$" />
  	<locator searchPathRef="org.eclipse" pattern="^javax(\..+)?" />
-	<locator searchPathRef="org.eclipse" pattern="^org\.apache(\..+)?" />
 	<locator searchPathRef="org.eclipse" pattern="^org\.eclipse(\..+)?" />
 	<locator searchPathRef="org.eclipse" pattern="^org\.junit(\..+)?" />
 	<locator searchPathRef="org.eclipse" pattern="^org\.mortbay(\..+)?" />
-	<locator searchPathRef="org.eclipse" pattern="^org\.objectweb\.asm$" />
 	<locator searchPathRef="org.eclipse" pattern="^org\.osgi(\..+)?" />
 	<locator searchPathRef="org.eclipse" pattern="^org\.sat4j(\..+)?" />
 
