@@ -35,6 +35,7 @@ public class Messages extends NLS {
 	public static String XMPPContainer_UNEXPECTED_EVENT;
 	public static String XMPPContainer_UNEXPECTED_XMPP_MESSAGE;
 	public static String XMPPContainer_UNRECOGONIZED_CONTAINER_MESSAGE;
+	public static String XMPPContainer_UNRECOGONIZED_SEARCH_SERVICE;
 	public static String XMPPFileID_EXCEPTION_FILE_IDS_NOT_URLS;
 	public static String XMPPFileNamespace_EXCEPTION_FILEID_FILENAME_NOT_NULL;
 	public static String XMPPFileNamespace_EXCEPTION_FILEID_TARGETID_NOT_NULL;
@@ -50,6 +51,7 @@ public class Messages extends NLS {
 	public static String XMPPRoomNamespace_EXCEPTION_ID_CREAT;
 	public static String XMPPRoomNamespace_EXCEPTION_INVALID_ARGUMENTS;
 	public static String XMPPSNamespace_EXCEPTION_ID_CREATE;
+	public static String XMPPUserSearchManager_JOB;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
