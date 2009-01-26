@@ -175,6 +175,7 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 				us.add(uname);
 				ps.add(pword);
 			}
+			i++;
 		}
 		if (us.size() > 0) {
 			usernames = (String []) us.toArray(new String [] {});
