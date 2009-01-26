@@ -94,12 +94,10 @@
 
 	<!-- ECF -->
 	<locator searchPathRef="org.eclipse.ecf" pattern="^ch\.ethz\.iks(\..+)?" />
-	<!--
  	<locator searchPathRef="org.eclipse.ecf" pattern="^com\.jcraft\.jsch$" />
  	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.commons\.codec$" />
  	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.commons\.logging$" />
  	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.commons\.httpclient$" />
-	-->
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.jivesoftware\.smack$" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.objectweb\.asm$" />
