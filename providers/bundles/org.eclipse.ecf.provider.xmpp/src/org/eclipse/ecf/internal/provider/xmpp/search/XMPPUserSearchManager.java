@@ -223,7 +223,7 @@ public class XMPPUserSearchManager extends AbstractUserSearchManager {
 					listener.handleUserSearchEvent(complete);
 				} catch (UserSearchException e) {
 					log(e.getLocalizedMessage(), e);
-					return Status.CANCEL_STATUS;
+					return new Status(IStatus.ERROR,XmppPlugin.PLUGIN_ID,IStatus.ERROR,"Exception in user search",e);
 				}
 				return Status.OK_STATUS;
 			}
