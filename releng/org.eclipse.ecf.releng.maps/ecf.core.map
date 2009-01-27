@@ -61,6 +61,10 @@ plugin@ch.ethz.iks.slp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,
 plugin@org.eclipse.team.ecf.core=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.team.ecf.core
 plugin@org.eclipse.team.ecf.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.team.ecf.ui
 
+plugin@org.eclipse.ecf.osgi.services=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services
+plugin@org.eclipse.ecf.osgi.services.discovery=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.discovery
+plugin@org.eclipse.ecf.osgi.services.distribution=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.distribution
+
 plugin@org.eclipse.ecf.example.clients=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.clients
 plugin@org.eclipse.ecf.example.collab=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.collab 
 plugin@org.eclipse.ecf.example.collab.editor=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.collab.editor
