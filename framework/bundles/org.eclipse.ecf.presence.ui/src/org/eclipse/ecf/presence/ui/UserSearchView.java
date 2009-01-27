@@ -170,7 +170,7 @@ public class UserSearchView extends ViewPart {
 
 	/**
 	 * Add the MultiRosterAccount for add user contact
-	 * @param account
+	 * @param multiRosterAccount
 	 * @return boolean
 	 */
 	public boolean addMultiRosterAccount(MultiRosterAccount multiRosterAccount) {
@@ -192,7 +192,7 @@ public class UserSearchView extends ViewPart {
 
 	/**
 	 * Show a message into the view before show the result in a tree view
-	 * @param string
+	 * @param message
 	 */
 	public void showMessage(String message) {
 		helpMessageLabel.setText(message);
