@@ -152,7 +152,7 @@
 		<java classname="org.eclipse.core.launcher.Main" fork="yes" clonevm="true" failonerror="false">
 			<classpath>
 				<fileset dir="${test.tmp.dir}/${product}/plugins">
-					<include name="**/org.eclipse.equinox.launcher*.jar"/>
+					<include name="**/org.ecl/opt/build.ecf/ecf.build/P30-v20090127-0125ipse.equinox.launcher*.jar"/>
 				</fileset>
 				<pathelement location="${EMMA_2.0.5312}/lib/emma.jar" />
 			</classpath>
@@ -209,28 +209,28 @@
 
 	<target name="clean">
 		<!-- delete temp build files and directories-->
-		<delete includeemptydirs="true">
-			<fileset dir="${build.dir}/plugins" includes="**/bin/**" />
-			<fileset dir="${build.dir}/plugins" includes="**/@dot/**" />
-			<fileset dir="${build.dir}/plugins" includes="**/temp.folder/**" />
-			<fileset dir="${build.dir}/plugins" includes="**/javaCompiler.*.args" />
-			<fileset dir="${build.dir}/features" includes="**/feature.temp.folder/**" />
+		<delete includeemptydirs="true" failonerror="false" >
+			<fileset dir="${build.dir}/plugins" includes="**/bin/**"/>
+			<fileset dir="${build.dir}/plugins" includes="**/@dot/**"/>
+			<fileset dir="${build.dir}/plugins" includes="**/temp.folder/**"/>
+			<fileset dir="${build.dir}/plugins" includes="**/javaCompiler.*.args"/>
+			<fileset dir="${build.dir}/features" includes="**/feature.temp.folder/**"/>
 		</delete>
 
 		<!-- build artefacts of a previous build -->
-		<delete dir="${build.dir}/${build.id}" />
+		<delete dir="${build.dir}/${build.id}" failonerror="false" />
 
 		<!-- generated build scripts -->
-		<delete>
+		<delete failonerror="false" >
 			<fileset dir="${build.dir}" includes="package*.xml" />
 			<fileset dir="${build.dir}" includes="fetch*.xml" />
 			<fileset dir="${build.dir}" includes="assemble*.xml" />
 			<fileset dir="${build.dir}" includes="final*.properties" />
 			<fileset dir="${build.dir}" includes="compile*.xml" />
 		</delete>
-		<delete dir="${build.dir}/features/org.eclipse.pde.build.container.feature" />
-		<delete dir="${build.dir}/maps" />
-		<delete dir="${build.dir}/tmp" />
+		<delete dir="${build.dir}/features/org.eclipse.pde.build.container.feature" failonerror="false" />
+		<delete dir="${build.dir}/maps" failonerror="false" />
+		<delete dir="${build.dir}/tmp" failonerror="false" />
 	</target>
 	
 	<target name="materialize" depends="materialize-product, materialize-tests" />
