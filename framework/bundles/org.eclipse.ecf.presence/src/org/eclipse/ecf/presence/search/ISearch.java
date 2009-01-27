@@ -26,7 +26,7 @@ public interface ISearch {
 
 	/**
 	 * 
-	 * @param IResultList
+	 * @param resultList
 	 */
 	public void setResultList(IResultList resultList);
 

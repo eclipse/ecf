@@ -23,7 +23,7 @@ public class LogicalCriterion implements ICriterion {
 	final String operator;
 
 	/**
-	 * Creates a logic operation for compose a {@link ICrteria}
+	 * Creates a logic operation for compose a {@link ICriteria}
 	 * @param left Criterion on the left side of the expression
 	 * @param right Criterion on the right side of the expression
 	 * @param operator Operator considered on the logical. Ex: And

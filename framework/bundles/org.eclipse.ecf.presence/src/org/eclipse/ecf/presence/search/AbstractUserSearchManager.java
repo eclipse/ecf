@@ -25,7 +25,7 @@ public abstract class AbstractUserSearchManager implements IUserSearchManager {
 	/**
 	 * Add listener to {@link IUserSearchListener}. The listener's handleEvent method will be
 	 * asynchronously called.
-	 * @param listener
+	 * @param l
 	 * 				 the IUserSearchListener to add
 	 */
 	public void addListener(IUserSearchListener l) {
@@ -37,7 +37,7 @@ public abstract class AbstractUserSearchManager implements IUserSearchManager {
 	/**
 	 * Remove listener from the listener list.
 	 * 
-	 * @param listener
+	 * @param l
 	 *            the IUserSearchListener to remove
 	 */
 	public void removeListener(IUserSearchListener l) {
