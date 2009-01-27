@@ -41,7 +41,6 @@ import org.eclipse.ecf.presence.search.ResultList;
 import org.eclipse.ecf.presence.search.UserSearchCompleteEvent;
 import org.eclipse.ecf.presence.search.UserSearchException;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
-import org.eclipse.osgi.util.NLS;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.FormField;
@@ -302,14 +301,6 @@ public class XMPPUserSearchManager extends AbstractUserSearchManager {
 		this.enabled = enabled;
 	}
 
-	/**
-	 * @see AbstractUserSearchManager#createUserSearchListener
-	 */
-	public IUserSearchListener createUserSearchListener() {
-		return new UserListener();
-
-	}
-
 	// utility methods
 	protected void log(String msg, Throwable e) {
 		XmppPlugin.log(msg, e);
@@ -324,30 +315,6 @@ public class XMPPUserSearchManager extends AbstractUserSearchManager {
 	 */
 	public void fireUserSearchEvent(IUserSearchEvent event) {
 		super.fireUserSearchEvent(event);
-	}
-
-	/**
-	 * Returns a default implementation for IUserSearchListner
-	 * 
-	 * @return IUserSearchListener
-	 */
-
-	class UserListener implements IUserSearchListener {
-
-		public void handleUserSearchEvent(IUserSearchEvent event) {
-			try {
-
-				ISearch searchResult = search(criteria);
-				fireUserSearchEvent(new UserSearchCompleteEvent(searchResult));
-
-			} catch (UserSearchException e) {
-				log(NLS.bind(
-						Messages.XMPPContainer_EXCEPTION_HANDLING_ASYCH_EVENT,
-						e), e);
-			}
-
-		}
-
 	}
 
 }
