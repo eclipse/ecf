@@ -26,7 +26,7 @@ public interface IResultList extends IAdaptable {
 	 * @return Collection of IResult. Will not return <code>null</code>.
 	 *         May return an empty Collection.
 	 */
-	public Collection geResults();
+	public Collection getResults();
 
 	/**
 	 * Get the result that math the specific field and value

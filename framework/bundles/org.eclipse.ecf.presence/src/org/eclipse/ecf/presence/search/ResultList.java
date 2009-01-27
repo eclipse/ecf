@@ -67,12 +67,7 @@ public class ResultList implements IResultList {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.ui.presence.search.IResultList#getEntries()
-	 */
-	public Collection geResults() {
+	public Collection getResults() {
 		return results;
 	}
 
@@ -100,4 +95,9 @@ public class ResultList implements IResultList {
 		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer("ResultList["); //$NON-NLS-1$
+		sb.append("results=").append(getResults()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		return sb.toString();
+	}
 }

@@ -29,4 +29,9 @@ public class UserSearchCompleteEvent implements IUserSearchCompleteEvent {
 		return search;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer("UserSearchCompleteEvent[search="); //$NON-NLS-1$
+		sb.append(getSearch()).append("]"); //$NON-NLS-1$
+		return sb.toString();
+	}
 }
