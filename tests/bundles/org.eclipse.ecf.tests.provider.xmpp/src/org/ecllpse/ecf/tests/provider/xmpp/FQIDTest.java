@@ -74,7 +74,6 @@ public class FQIDTest extends TestCase {
 		assertNotNull(localfqid.getResourceName());
 
 		final IFQID idfqid = (IFQID) id2.getAdapter(IFQID.class);
-		assertTrue(local.equals(id2));
 		assertTrue(!localfqid.getFQName().equals(idfqid.getFQName()));
 		assertTrue(!localfqid.getResourceName().equals(idfqid.getResourceName()));
 	}
