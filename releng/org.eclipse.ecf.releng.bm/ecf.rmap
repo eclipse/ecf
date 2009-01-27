@@ -99,6 +99,7 @@
  	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.commons\.logging$" />
  	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.commons\.httpclient$" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.ecf(\..+)?" />
+	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.team\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.jivesoftware\.smack$" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.objectweb\.asm$" />
 	
