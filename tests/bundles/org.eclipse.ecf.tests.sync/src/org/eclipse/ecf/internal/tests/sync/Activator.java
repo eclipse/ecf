@@ -9,6 +9,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 
+	
 	private BundleContext context;
 	private ServiceTracker serviceTracker;
 	
