@@ -49,7 +49,7 @@ public class UserSearchLabelProvider extends LabelProvider {
 		if (element instanceof IResult) {
 			return ((IResult) element).getUser().getName();
 		} else if (element instanceof IResultList) {
-			return ((IResultList) element).geResults().size() + Messages.UserSearchLabelProvider_ContactsFound;
+			return ((IResultList) element).getResults().size() + Messages.UserSearchLabelProvider_ContactsFound;
 		}
 		return element.toString();
 	}

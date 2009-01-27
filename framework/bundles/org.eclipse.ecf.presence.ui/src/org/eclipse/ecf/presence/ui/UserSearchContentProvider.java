@@ -33,7 +33,7 @@ public class UserSearchContentProvider implements ITreeContentProvider {
 	 */
 	public Object[] getChildren(Object parentElement) {
 		if (parentElement instanceof IResultList) {
-			return ((IResultList) parentElement).geResults().toArray();
+			return ((IResultList) parentElement).getResults().toArray();
 		}
 		return EMPTY_ARRAY;
 	}
@@ -58,7 +58,7 @@ public class UserSearchContentProvider implements ITreeContentProvider {
 	public boolean hasChildren(Object element) {
 		if (element instanceof IResultList) {
 			IResultList list = (IResultList) element;
-			if (list.geResults().size() > 0)
+			if (list.getResults().size() > 0)
 				return true;
 		}
 		return false;

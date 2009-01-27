@@ -91,7 +91,7 @@ public class SearchContactDialog extends Dialog {
 						IResultList resultList = search.getResultList();
 						//clean the table for a new result list
 						tableResult.removeAll();
-						for (Iterator iterator = resultList.geResults().iterator(); iterator.hasNext();) {
+						for (Iterator iterator = resultList.getResults().iterator(); iterator.hasNext();) {
 							IResult result = (IResult) iterator.next();
 							TableItem item = new TableItem(tableResult, SWT.NONE);
 							item.setText(0, result.getUser().getName());
