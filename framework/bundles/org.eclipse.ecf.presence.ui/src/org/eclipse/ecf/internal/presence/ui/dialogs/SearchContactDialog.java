@@ -268,11 +268,11 @@ public class SearchContactDialog extends Dialog {
 					view.addResult(event.getSearch().getResultList());
 				} catch (PartInitException e) {
 					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, e.getLocalizedMessage(), e));
-					return Status.CANCEL_STATUS;
+					return new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Exception showing search results view", e); //$NON-NLS-1$
 				}
 				return Status.OK_STATUS;
 			}
-		}.schedule(3000);
+		}.schedule();
 
 	}
 
