@@ -64,12 +64,4 @@ public abstract class AbstractUserSearchManager implements IUserSearchManager {
 		}
 	}
 
-	/**
-	 * Returns a specific implementation of {@link IUserSearchListener} for each provider.
-	 * This listener usually is invoked from an user search event ({@link IUserSearchEvent}),
-	 * fired for a non-blocking search.
-	 * @return IUserSearchListener. Will not be <code>null</code>
-	 */
-	protected abstract IUserSearchListener createUserSearchListener();
-
 }
