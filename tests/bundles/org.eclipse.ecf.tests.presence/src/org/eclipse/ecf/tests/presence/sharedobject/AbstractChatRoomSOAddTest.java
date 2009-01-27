@@ -35,6 +35,7 @@ public abstract class AbstractChatRoomSOAddTest extends AbstractPresenceTestCase
 	}
 
 	protected void setUp() throws Exception {
+		super.setUp();
 		setClientCount(2);
 		chatRoomContainer = new IChatRoomContainer[2];
 		clients = createClients();

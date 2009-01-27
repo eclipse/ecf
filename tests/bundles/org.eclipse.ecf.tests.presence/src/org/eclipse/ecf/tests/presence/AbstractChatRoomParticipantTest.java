@@ -70,6 +70,7 @@ public abstract class AbstractChatRoomParticipantTest extends AbstractPresenceTe
 	 * @see org.eclipse.ecf.tests.presence.AbstractPresenceTestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
+		super.setUp();
 		setClientCount(2);
 		clients = createClients();
 		IChatRoomManager chat0, chat1;

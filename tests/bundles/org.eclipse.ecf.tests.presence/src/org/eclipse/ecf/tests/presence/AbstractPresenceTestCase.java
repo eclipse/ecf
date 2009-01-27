@@ -27,6 +27,7 @@ public abstract class AbstractPresenceTestCase extends ContainerAbstractTestCase
 	protected abstract String getClientContainerName();
 
 	protected void setUp() throws Exception {
+		super.setUp();
 		setClientCount(2);
 		clients = createClients();
 	}

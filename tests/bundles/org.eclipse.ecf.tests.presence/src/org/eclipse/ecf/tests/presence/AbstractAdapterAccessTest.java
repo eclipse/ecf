@@ -31,6 +31,7 @@ public abstract class AbstractAdapterAccessTest extends ContainerAbstractTestCas
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
+		super.setUp();
 		clients = createClients();
 	}
 

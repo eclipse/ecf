@@ -50,6 +50,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 	 * @see org.eclipse.ecf.tests.presence.AbstractPresenceTestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
+		super.setUp();
 		setClientCount(2);
 		clients = createClients();
 		chat0 = getPresenceAdapter(0).getChatManager();

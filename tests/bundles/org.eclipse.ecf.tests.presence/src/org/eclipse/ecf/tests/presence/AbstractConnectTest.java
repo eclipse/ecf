@@ -23,6 +23,7 @@ public abstract class AbstractConnectTest extends AbstractPresenceTestCase {
 	public static final int WAITTIME = 3000;
 
 	protected void setUp() throws Exception {
+		super.setUp();
 		setClientCount(CLIENT_COUNT);
 		clients = createClients();
 	}
