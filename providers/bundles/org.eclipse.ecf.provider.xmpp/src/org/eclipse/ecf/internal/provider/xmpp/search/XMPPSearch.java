@@ -49,4 +49,9 @@ public class XMPPSearch implements ISearch {
 	}
 	
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer("XMPPSearch["); //$NON-NLS-1$
+		sb.append("criteria=").append(getCriteria()).append(";resultlist=").append(getResultList()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		return sb.toString();
+	}
 }

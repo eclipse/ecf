@@ -149,7 +149,7 @@ public class XMPPUserSearchManager extends AbstractUserSearchManager {
 												.getServiceName());
 						// create a result list from ReportedData
 						IResultList partialResultList = createResultList(data);
-						resultList.addAll(partialResultList.geResults());
+						resultList.addAll(partialResultList.getResults());
 					}
 				}
 			}

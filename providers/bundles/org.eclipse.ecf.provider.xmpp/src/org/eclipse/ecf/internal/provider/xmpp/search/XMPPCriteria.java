@@ -66,7 +66,7 @@ public class XMPPCriteria implements ICriteria {
 			sb.append(criterion.toString());
 			sb.append("];");//$NON-NLS-1$
 		}
-		sb.append("];");//$NON-NLS-1$
+		sb.append("]");//$NON-NLS-1$
 		return sb.toString();
 	}
 
