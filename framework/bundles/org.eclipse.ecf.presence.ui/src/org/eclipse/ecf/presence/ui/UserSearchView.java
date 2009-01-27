@@ -139,7 +139,8 @@ public class UserSearchView extends ViewPart {
 	public void dispose() {
 		treeViewer = null;
 		users.clear();
-		account.container.removeListener(listener);
+		if (account != null)
+			account.container.removeListener(listener);
 		super.dispose();
 	}
 
