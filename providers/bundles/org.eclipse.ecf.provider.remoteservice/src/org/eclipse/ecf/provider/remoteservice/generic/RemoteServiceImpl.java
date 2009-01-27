@@ -39,7 +39,7 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
 	/**
 	 * @since 3.0
-	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsync(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
 	public IFuture callAsync(final IRemoteCall call) {
 		JobsExecutor executor = new JobsExecutor(NLS.bind("callAsynch({0}", call.getMethod())); //$NON-NLS-1$
