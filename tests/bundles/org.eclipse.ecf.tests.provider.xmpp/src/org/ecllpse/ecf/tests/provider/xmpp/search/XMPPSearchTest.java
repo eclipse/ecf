@@ -84,7 +84,7 @@ public class XMPPSearchTest extends AbstractSearchTest {
 		assertNotNull(searchResult);
 
 		// check if there is at least one result
-		assertTrue(0 != searchResult.getResultList().geResults().size());
+		assertTrue(0 != searchResult.getResultList().getResults().size());
 	}
 
 	/**
@@ -121,9 +121,9 @@ public class XMPPSearchTest extends AbstractSearchTest {
 			IResultList resultList = search.getResultList();
 
 			// check if there is at least one result
-			assertTrue(0 != resultList.geResults().size());
+			assertTrue(0 != resultList.getResults().size());
 
-			Iterator it = resultList.geResults().iterator();
+			Iterator it = resultList.getResults().iterator();
 			while (it.hasNext()) {
 				IResult type = (IResult) it.next();
 				System.out.println(type.getUser().getName() + " : "
@@ -165,7 +165,7 @@ public class XMPPSearchTest extends AbstractSearchTest {
 		IResultList resultList = search.getResultList();
 
 		// check if there is at least one result
-		assertTrue(1 == resultList.geResults().size());
+		assertTrue(1 == resultList.getResults().size());
 
 	}
 
@@ -199,7 +199,7 @@ public class XMPPSearchTest extends AbstractSearchTest {
 		IResultList resultList = search.getResultList();
 
 		// check if there is at least one result
-		assertTrue(1 == resultList.geResults().size());
+		assertTrue(1 == resultList.getResults().size());
 
 	}
 
