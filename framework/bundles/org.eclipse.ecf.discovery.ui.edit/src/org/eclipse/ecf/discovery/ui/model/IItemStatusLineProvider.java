@@ -16,7 +16,7 @@ public interface IItemStatusLineProvider {
 	 * This fetches the status line text specific to this object instance.
 	 * 
 	 * @param object
-	 * @return
+	 * @return String the status line text
 	 */
 	public String getStatusLineText(Object object);
 }
