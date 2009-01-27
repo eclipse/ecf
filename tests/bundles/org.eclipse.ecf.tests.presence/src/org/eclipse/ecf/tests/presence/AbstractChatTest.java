@@ -78,8 +78,6 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 		final IChatMessage message = (IChatMessage) receivedChatMessages.get(0);
 		assertTrue(message.getBody().equals("abcdef"));
 		assertTrue(message.getType().equals(IChatMessage.Type.CHAT));
-		final ID fromID = message.getFromID();
-		assertTrue(fromID.equals(getServerConnectID(0)));
 		assertNull(message.getSubject());
 		final Map props = message.getProperties();
 		assertNotNull(props);
@@ -101,8 +99,6 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 		assertTrue(message.getSubject().equals("subject1"));
 		assertTrue(message.getBody().equals("uvwxyz"));
 		assertTrue(message.getType().equals(IChatMessage.Type.CHAT));
-		final ID fromID = message.getFromID();
-		assertTrue(fromID.equals(getServerConnectID(0)));
 		final Map props = message.getProperties();
 		assertNotNull(props);
 		assertTrue(props.size() == 1);
@@ -123,8 +119,6 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 		assertNull(message.getSubject());
 		assertTrue(message.getBody().equals(""));
 		assertTrue(message.getType().equals(IChatMessage.Type.CHAT));
-		final ID fromID = message.getFromID();
-		assertTrue(fromID.equals(getServerConnectID(0)));
 		final Map props = message.getProperties();
 		assertNotNull(props);
 		assertTrue(props.size() == 1);
