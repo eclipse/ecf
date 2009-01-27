@@ -152,7 +152,7 @@
 		<java classname="org.eclipse.core.launcher.Main" fork="yes" clonevm="true" failonerror="false">
 			<classpath>
 				<fileset dir="${test.tmp.dir}/${product}/plugins">
-					<include name="**/org.ecl/opt/build.ecf/ecf.build/P30-v20090127-0125ipse.equinox.launcher*.jar"/>
+					<include name="**/org.eclipse.equinox.launcher*.jar"/>
 				</fileset>
 				<pathelement location="${EMMA_2.0.5312}/lib/emma.jar" />
 			</classpath>
