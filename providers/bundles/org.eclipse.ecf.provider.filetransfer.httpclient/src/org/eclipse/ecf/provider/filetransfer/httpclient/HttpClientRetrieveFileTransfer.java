@@ -607,6 +607,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected static String getNTLMDomainName(Proxy p) {
 		String domainUsername = p.getUsername();
+		if (domainUsername == null)
+			return null;
 		int slashloc = domainUsername.indexOf('\\');
 		if (slashloc == -1)
 			return null;
@@ -615,6 +617,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected static String getNTLMUserName(Proxy p) {
 		String domainUsername = p.getUsername();
+		if (domainUsername == null)
+			return null;
 		int slashloc = domainUsername.indexOf('\\');
 		if (slashloc == -1)
 			return null;
