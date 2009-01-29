@@ -162,4 +162,14 @@ public class ContainerManagerServiceTest extends ContainerFactoryServiceAbstract
 		}
 	}
 
+	public void testGetContainerDescriptionN() throws Exception {
+		IContainer[] c = createContainers(10);
+		assertNotNull(c);
+		for(int i=0; i < 10; i++) {
+			ContainerTypeDescription description = containerManager.getContainerTypeDescription(c[i].getID());
+			assertNotNull(description);
+		}
+	}
+	
+
 }
