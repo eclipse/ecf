@@ -8,6 +8,7 @@ Bundle-Vendor: %pluginProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Import-Package: org.eclipse.ecf.core.util,
  org.osgi.framework;version="1.3.0",
- org.osgi.framework.hooks.service
+ org.osgi.framework.hooks.service,
+ org.osgi.service.distribution;version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin

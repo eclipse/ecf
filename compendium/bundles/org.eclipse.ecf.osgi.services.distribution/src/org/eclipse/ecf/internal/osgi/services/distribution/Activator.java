@@ -14,6 +14,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.framework.hooks.service.FindHook;
+import org.osgi.service.distribution.DistributionProvider;
 
 public class Activator implements BundleActivator {
 
@@ -24,6 +25,9 @@ public class Activator implements BundleActivator {
 	
 	private ServiceRegistration findHookRegistration;
 	private ServiceRegistration eventHookRegistration;
+	private ServiceRegistration distributionProviderRegistration;
+	
+	private ECFRSDistributionProvider distributionProvider;
 	
 	public static Activator getDefault() {
 		return plugin;
@@ -40,14 +44,20 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
+		this.distributionProvider = new ECFRSDistributionProvider();
 		addServiceRegistryHooks();
+		addDistributionProvider();
 	}
 
 	private void addServiceRegistryHooks() {
-		this.findHookRegistration = this.context.registerService(FindHook.class.getName(), new FindHookImpl(), null);
-		this.eventHookRegistration = this.context.registerService(EventHook.class.getName(), new EventHookImpl(), null);
+		this.findHookRegistration = this.context.registerService(FindHook.class.getName(), new FindHookImpl(distributionProvider), null);
+		this.eventHookRegistration = this.context.registerService(EventHook.class.getName(), new EventHookImpl(distributionProvider), null);
 	}
 
+	private void addDistributionProvider() {
+		this.distributionProviderRegistration = this.context.registerService(DistributionProvider.class.getName(),distributionProvider,null);
+	}
+	
 	private void removeServiceRegistryHooks() {
 		if (this.findHookRegistration != null) {
 			this.findHookRegistration.unregister();
@@ -59,12 +69,20 @@ public class Activator implements BundleActivator {
 		}
 	}
 	
+	private void removeDistributionProvider() {
+		if (this.distributionProviderRegistration != null) {
+			this.distributionProviderRegistration.unregister();
+			this.distributionProviderRegistration = null;
+		}
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
+		removeDistributionProvider();
 		removeServiceRegistryHooks();
+		this.distributionProvider = null;
 		this.context = null;
 		plugin = null;
 	}

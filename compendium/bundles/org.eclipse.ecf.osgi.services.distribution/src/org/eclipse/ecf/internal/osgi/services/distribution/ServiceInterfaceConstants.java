@@ -9,23 +9,8 @@
 ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.Collection;
+public interface ServiceInterfaceConstants {
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.hooks.service.FindHook;
-
-public class FindHookImpl implements FindHook {
-
-	private final ECFRSDistributionProvider distributionProvider;
+	public static final String OSGI_REMOTE_INTERFACES_KEY = "osgi.remote.interfaces";
 	
-	public FindHookImpl(ECFRSDistributionProvider distributionProvider) {
-		this.distributionProvider = distributionProvider;
-	}
-
-	public void find(BundleContext context, String name, String filter,
-			boolean allServices, Collection references) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
