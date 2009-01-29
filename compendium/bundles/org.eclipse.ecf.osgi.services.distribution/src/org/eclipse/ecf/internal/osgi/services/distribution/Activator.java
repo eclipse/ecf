@@ -9,12 +9,14 @@
 ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
+import org.eclipse.ecf.core.IContainerManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.framework.hooks.service.FindHook;
 import org.osgi.service.distribution.DistributionProvider;
+import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 
@@ -28,6 +30,8 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration distributionProviderRegistration;
 	
 	private DistributionProviderImpl distributionProvider;
+	
+	private ServiceTracker containerManagerTracker;
 	
 	public static Activator getDefault() {
 		return plugin;
@@ -82,9 +86,21 @@ public class Activator implements BundleActivator {
 	public void stop(BundleContext ctxt) throws Exception {
 		removeDistributionProvider();
 		removeServiceRegistryHooks();
+		if (containerManagerTracker != null) {
+			containerManagerTracker.close();
+			containerManagerTracker = null;
+		}
 		this.distributionProvider = null;
 		this.context = null;
 		plugin = null;
+	}
+
+	public IContainerManager getContainerManager() {
+		if (containerManagerTracker == null) {
+			containerManagerTracker = new ServiceTracker(this.context,IContainerManager.class.getName(),null);
+			containerManagerTracker.open();
+		}
+		return (IContainerManager) containerManagerTracker.getService();
 	}
 
 }

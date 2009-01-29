@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
@@ -126,6 +128,9 @@ public class EventHookImpl implements EventHook {
 
 	private IRemoteServiceContainerAdapter findAndChooseContainerAdapter(
 			String[] remotes, ServiceReference serviceReference, Map ecfConfiguration) {
+		IContainerManager containerManager = Activator.getDefault().getContainerManager();
+		IContainer [] containers = containerManager.getAllContainers();
+		
 		// TODO Auto-generated method stub
 		return null;
 	}
