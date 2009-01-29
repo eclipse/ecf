@@ -4,7 +4,7 @@
 	xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0"
 	xmlns="http://www.eclipse.org/buckminster/CSpec-1.0">
 	<dependencies>
-		<dependency name="org.eclipse.platform.feature.group" componentType="eclipse.feature"/>
+		<dependency name="org.eclipse.platform.feature.jar" componentType="eclipse.feature"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
