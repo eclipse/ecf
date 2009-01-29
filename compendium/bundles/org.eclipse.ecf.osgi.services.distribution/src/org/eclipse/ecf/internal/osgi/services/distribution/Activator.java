@@ -27,7 +27,7 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration eventHookRegistration;
 	private ServiceRegistration distributionProviderRegistration;
 	
-	private ECFRSDistributionProvider distributionProvider;
+	private DistributionProviderImpl distributionProvider;
 	
 	public static Activator getDefault() {
 		return plugin;
@@ -44,7 +44,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
-		this.distributionProvider = new ECFRSDistributionProvider();
+		this.distributionProvider = new DistributionProviderImpl();
 		addServiceRegistryHooks();
 		addDistributionProvider();
 	}

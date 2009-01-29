@@ -17,7 +17,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.distribution.DistributionProvider;
 
-public class ECFRSDistributionProvider implements DistributionProvider {
+public class DistributionProviderImpl implements DistributionProvider {
 
 	Map exposedServices = Collections.synchronizedMap(new HashMap());
 	Map publishedServices = Collections.synchronizedMap(new HashMap());

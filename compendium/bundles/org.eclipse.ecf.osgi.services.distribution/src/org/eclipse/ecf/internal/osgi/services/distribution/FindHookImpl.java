@@ -16,9 +16,9 @@ import org.osgi.framework.hooks.service.FindHook;
 
 public class FindHookImpl implements FindHook {
 
-	private final ECFRSDistributionProvider distributionProvider;
+	private final DistributionProviderImpl distributionProvider;
 	
-	public FindHookImpl(ECFRSDistributionProvider distributionProvider) {
+	public FindHookImpl(DistributionProviderImpl distributionProvider) {
 		this.distributionProvider = distributionProvider;
 	}
 

@@ -9,8 +9,13 @@
 ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-public interface ServiceInterfaceConstants {
+public interface RFC119ServiceInterfaceProperties {
 
 	public static final String OSGI_REMOTE_INTERFACES_KEY = "osgi.remote.interfaces";
 	
+	// org.eclipse.ecf,org.eclipse.ecf.containerID=<id>
+	public static final String OSGI_REMOTE_CONFIGURATION_TYPE = "osgi.remote.configuration.type";
+	
+	
+	public static final String ECF_REMOTE_CONFIGURATION_TYPE_VALUE = "org.eclipse.ecf";
 }
