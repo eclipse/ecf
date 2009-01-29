@@ -52,6 +52,24 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		instance = new ContainerFactory();
 	}
 
+	class ContainerEntry {
+		private final IContainer container;
+		private final ContainerTypeDescription typeDescription;
+
+		public ContainerEntry(IContainer container, ContainerTypeDescription typeDescription) {
+			this.container = container;
+			this.typeDescription = typeDescription;
+		}
+
+		public IContainer getContainer() {
+			return this.container;
+		}
+
+		public ContainerTypeDescription getContainerTypeDescription() {
+			return this.typeDescription;
+		}
+	}
+
 	public static IContainerFactory getDefault() {
 		return instance;
 	}
@@ -61,13 +79,16 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 			public void dispose() {
 				synchronized (containers) {
 					for (Iterator i = containers.keySet().iterator(); i.hasNext();) {
-						IContainer c = (IContainer) containers.get(i.next());
-						try {
-							c.dispose();
-						} catch (Throwable e) {
-							// Log exception
-							ECFPlugin.getDefault().log(new Status(IStatus.ERROR, ECFPlugin.getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "container dispose error", e)); //$NON-NLS-1$
-							Trace.catching(ECFPlugin.PLUGIN_ID, ECFDebugOptions.EXCEPTIONS_CATCHING, ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
+						ContainerEntry entry = (ContainerEntry) containers.get(i.next());
+						if (entry != null) {
+							IContainer c = entry.getContainer();
+							try {
+								c.dispose();
+							} catch (Throwable e) {
+								// Log exception
+								ECFPlugin.getDefault().log(new Status(IStatus.ERROR, ECFPlugin.getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "container dispose error", e)); //$NON-NLS-1$
+								Trace.catching(ECFPlugin.PLUGIN_ID, ECFDebugOptions.EXCEPTIONS_CATCHING, ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
+							}
 						}
 					}
 					containers.clear();
@@ -263,7 +284,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		// Add to containers map if container.getID() provides a valid value.
 		ID containerID = container.getID();
 		if (containerID != null)
-			addContainer(container);
+			addContainer(container, cd);
 		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, ContainerFactory.class, method, container);
 		return container;
 	}
@@ -322,11 +343,15 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * @see org.eclipse.ecf.core.IContainerManager#getAllContainers()
 	 */
 	public IContainer[] getAllContainers() {
-		List containersList = null;
+		List containerValues = new ArrayList();
 		synchronized (containers) {
-			containersList = new ArrayList(containers.values());
+			Collection containerEntrys = containers.values();
+			for (Iterator i = containerEntrys.iterator(); i.hasNext();) {
+				ContainerEntry entry = (ContainerEntry) i.next();
+				containerValues.add(entry.getContainer());
+			}
 		}
-		return (IContainer[]) containersList.toArray(new IContainer[] {});
+		return (IContainer[]) containerValues.toArray(new IContainer[] {});
 	}
 
 	/*
@@ -338,7 +363,10 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		if (containerID == null)
 			return null;
 		synchronized (containers) {
-			return (IContainer) containers.get(containerID);
+			ContainerEntry entry = (ContainerEntry) containers.get(containerID);
+			if (entry == null)
+				return null;
+			return entry.getContainer();
 		}
 	}
 
@@ -374,22 +402,18 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainerManager#addContainer(org.eclipse.ecf.core.IContainer)
-	 */
-	public IContainer addContainer(IContainer container) {
+	public IContainer addContainer(IContainer container, ContainerTypeDescription typeDescription) {
 		Assert.isNotNull(container);
+		Assert.isNotNull(typeDescription);
 		ID containerID = container.getID();
 		Assert.isNotNull(containerID, Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
-		IContainer result = null;
+		ContainerEntry result = null;
 		synchronized (containers) {
-			result = (IContainer) containers.put(containerID, container);
+			result = (ContainerEntry) containers.put(containerID, new ContainerEntry(container, typeDescription));
 		}
 		if (result == null)
 			fireContainerAdded(container);
-		return result;
+		return container;
 	}
 
 	/**
@@ -436,6 +460,17 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			IContainerManagerListener cml = (IContainerManagerListener) i.next();
 			cml.containerRemoved(result);
+		}
+	}
+
+	public ContainerTypeDescription getContainerTypeDescription(ID containerID) {
+		if (containerID == null)
+			return null;
+		synchronized (containers) {
+			ContainerEntry entry = (ContainerEntry) containers.get(containerID);
+			if (entry == null)
+				return null;
+			return entry.getContainerTypeDescription();
 		}
 	}
 

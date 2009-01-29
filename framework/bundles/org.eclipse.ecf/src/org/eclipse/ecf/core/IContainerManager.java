@@ -32,6 +32,15 @@ public interface IContainerManager {
 	public IContainer getContainer(ID containerID);
 
 	/**
+	 * Get the container type description used to create the container with the given ID.
+	 * 
+	 * @param containerID the ID of the container to get the description for.
+	 * @return ContainerTypeDescription for the container with the given ID.  Will return <code>null</code>
+	 * if no container with the given containerID exists under this manager.
+	 */
+	public ContainerTypeDescription getContainerTypeDescription(ID containerID);
+
+	/**
 	 * Get all containers known to this container manager.
 	 * 
 	 * @return IContainer[] of active container instances known to this
@@ -62,9 +71,10 @@ public interface IContainerManager {
 	 *            value. If <code>container.getID()</code> returns
 	 *            <code>null</code> then this method will throw a
 	 *            {@link NullPointerException}.
+	 * @param typeDescription the container type description used to create the given container.  Must not be <code>null</code>.
 	 * @return IContainer previously added (with same ID).
 	 */
-	public IContainer addContainer(IContainer container);
+	public IContainer addContainer(IContainer container, ContainerTypeDescription typeDescription);
 
 	/**
 	 * Remove given container from manager.
