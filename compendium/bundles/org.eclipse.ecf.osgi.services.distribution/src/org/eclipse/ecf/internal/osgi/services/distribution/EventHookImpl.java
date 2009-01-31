@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.Constants;
@@ -31,7 +32,7 @@ public class EventHookImpl implements EventHook {
 
 	private final static String[] EMPTY_STRING_ARRAY = new String[0];
 	private final static String REMOTE_INTERFACES_WILDCARD = "*";
-	public final static String ECF_RS_PROVIDER_CONFIGURATION = "org.eclipse.ecf";
+	public final static String ECF_RS_PROVIDER_CONFIGURATION = "ecf";
 	
 	private final DistributionProviderImpl distributionProvider;
 	
@@ -42,62 +43,65 @@ public class EventHookImpl implements EventHook {
 	}
 
 	public void event(ServiceEvent event, Collection contexts) {
-		traceEntering("event");
 		switch (event.getType()) {
 		case ServiceEvent.MODIFIED:
-			handleModifiedServiceEvent(event.getServiceReference(),event.getSource(),contexts);
+			handleModifiedServiceEvent(event.getServiceReference(),contexts);
 			break;
 		case ServiceEvent.MODIFIED_ENDMATCH:
 			break;
 		case ServiceEvent.REGISTERED:
-			handleRegisteredServiceEvent(event.getServiceReference(),event.getSource(),contexts);
+			handleRegisteredServiceEvent(event.getServiceReference(),contexts);
 			break;
 		case ServiceEvent.UNREGISTERING:
-			handleUnregisteringServiceEvent(event.getServiceReference(),event.getSource(),contexts);
+			handleUnregisteringServiceEvent(event.getServiceReference(),contexts);
 			break;
 		default:
 			break;
 		}
-		traceExiting("event");
 	}
 
 	private void handleUnregisteringServiceEvent(
-			ServiceReference serviceReference, Object source,
-			Collection contexts) {
+			ServiceReference serviceReference, Collection contexts) {
 		traceEntering("handleUnregisteringServiceEvent");
 		// TODO
 		traceExiting("handleUnregisteringServiceEvent");
 	}
 
 	Object getRemoteInterfaces(ServiceReference sr) {
-		return sr.getProperty(RFC119ServiceInterfaceProperties.OSGI_REMOTE_INTERFACES_KEY);
+		return sr.getProperty(ServiceConstants.OSGI_REMOTE_INTERFACES_KEY);
 	}
 	
 	private void handleRegisteredServiceEvent(
-			ServiceReference serviceReference, Object source,
-			Collection contexts) {
-		traceEntering("handleRegisteredServiceEvent");
+			ServiceReference serviceReference, Collection contexts) {
+		// This checkes to see if the serviceReference has any remote interfaces declared via
+		// osgi.remote.interfaces
 		Object remoteInterfaces = getRemoteInterfaces(serviceReference);
-		Map ecfConfiguration = getECFConfiguration(serviceReference);
-		if (remoteInterfaces != null && ecfConfiguration != null) {
-			trace("handleRegisteredServiceEvent","serviceReference="+serviceReference+" has remoteInterfaces="+remoteInterfaces);
-			String [] remotes = null;
-			if (remoteInterfaces instanceof String[]) {
-				remotes = getInterfacesForServiceReference((String[]) remoteInterfaces,serviceReference);
-			}
-			trace("handleRegisteredServiceEvent","serviceReference="+serviceReference+" has remotes="+Arrays.asList(remotes));
-			if (remotes != null) {
-				registerRemoteInterfaces(remotes,serviceReference,source, ecfConfiguration);
-			}
-		} else {
-			trace("handleRegisteredServiceEvent","serviceReference="+serviceReference+" has no remoteInterfaces");
+		// If so then we handle further, if not then ignore
+		if (remoteInterfaces != null) {
+			// get configuration determines whether we are the correct distribution provider,
+			// as there could be others.  If we are, then getConfiguration returns a non-null Map.
+			Map configuration = getConfiguration(serviceReference);
+			if (configuration != null) {
+				trace("handleRegisteredServiceEvent","serviceReference="+serviceReference+" has remoteInterfaces="+remoteInterfaces);
+				// The osgi.remote.interfaces should be of type String []
+				String [] remoteInterfacesArr = (String []) ((remoteInterfaces instanceof String[])?remoteInterfaces:null);
+				// We compare the osgi.remote.interfaces with those exposed by the service reference and 
+				// make sure that the agree
+				String [] remotes = (remoteInterfacesArr != null)?getInterfacesForServiceReference(remoteInterfacesArr, serviceReference):null;
+				// If they do, then remotes != null
+				if (remotes != null) {
+					// We get the list of ECF distribution providers (IRemoteServiceContainerAdapters)
+					IRemoteServiceContainerAdapter [] rscas = findRemoteServiceContainerAdapters(remotes,serviceReference,configuration);
+					// If there are relevant ones then actually register a remote service with them.
+					if (rscas != null) registerRemoteService(rscas,remotes,serviceReference);
+				} else trace("handleRegisteredServiceEvent","serviceReference="+serviceReference+" has no remote interfaces");
+			} else trace("handleRegisteredServiceEvent","serviceReference="+serviceReference+" is not recognized as ecf configuration");
 		}
-		traceExiting("handleRegisteredServiceEvent");
 	}
 
-	private Map getECFConfiguration(ServiceReference serviceReference) {
+	private Map getConfiguration(ServiceReference serviceReference) {
 		// Get property osgi.remote.configuration.type
-		String[] remoteConfigurationType = (String []) serviceReference.getProperty(RFC119ServiceInterfaceProperties.OSGI_REMOTE_CONFIGURATION_TYPE);
+		String[] remoteConfigurationType = (String []) serviceReference.getProperty(ServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE);
 		if (remoteConfigurationType != null && remoteConfigurationType[0].equals(ECF_RS_PROVIDER_CONFIGURATION)) {
 			return parseECFConfigurationType(remoteConfigurationType);
 		}
@@ -110,35 +114,44 @@ public class EventHookImpl implements EventHook {
 		return results;
 	}
 
-	private void registerRemoteInterfaces(String[] remotes,
-			ServiceReference serviceReference, Object source, Map ecfConfiguration) {
-		traceEntering("registerRemoteInterfaces");
-		IRemoteServiceContainerAdapter ca = findAndChooseContainerAdapter(remotes,serviceReference,ecfConfiguration);
-		if (ca == null) {
-			trace("registerRemoteInterface","no container adapter found serviceReference="+serviceReference);
-		} else {
-			notifyRemoteServiceRegistered(serviceReference, ca.registerRemoteService(remotes, source, createPropertiesForRemoteService(remotes, serviceReference)));
+	protected Object getService(ServiceReference sr) {
+		return Activator.getDefault().getContext().getService(sr);
+	}
+	
+	protected void registerRemoteService(IRemoteServiceContainerAdapter[] rscas, String[] remoteInterfaces, ServiceReference sr) {
+		for(int i=0; i < rscas.length; i++) {
+			trace("registerRemoteService","registering sr="+sr+" with rsca="+rscas[i]);
+			notifyRemoteServiceRegistered(sr,rscas[i].registerRemoteService(remoteInterfaces, getService(sr), createPropertiesForRemoteService(rscas[i],remoteInterfaces,sr)));
 		}
 	}
+	
+	protected Dictionary createPropertiesForRemoteService(
+			IRemoteServiceContainerAdapter iRemoteServiceContainerAdapter,
+			String[] remotes, ServiceReference sr) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	private void notifyRemoteServiceRegistered(ServiceReference serviceReference, IRemoteServiceRegistration registerRemoteService) {
-		remoteServiceReferences.put(serviceReference, registerRemoteService);
+	private void notifyRemoteServiceRegistered(ServiceReference serviceReference, IRemoteServiceRegistration remoteServiceRegistration) {
+		remoteServiceReferences.put(serviceReference, remoteServiceRegistration);
 		distributionProvider.addExposedService(serviceReference);
 	}
 
-	private IRemoteServiceContainerAdapter findAndChooseContainerAdapter(
+	protected IRemoteServiceContainerAdapter[] findRemoteServiceContainerAdapters(
 			String[] remotes, ServiceReference serviceReference, Map ecfConfiguration) {
 		IContainerManager containerManager = Activator.getDefault().getContainerManager();
-		IContainer [] containers = containerManager.getAllContainers();
-		
-		// TODO Auto-generated method stub
-		return null;
+		return (containerManager != null)?getRSCAsFromContainers(containerManager.getAllContainers()):null;
 	}
 
-	private Dictionary createPropertiesForRemoteService(String[] remotes,
-			ServiceReference serviceReference) {
-		// TODO Auto-generated method stub
-		return null;
+	private IRemoteServiceContainerAdapter[] getRSCAsFromContainers(
+			IContainer[] containers) {
+		if (containers == null) return null;
+		List rscas = new ArrayList();
+		for(int i=0; i < containers.length; i++) {
+			IRemoteServiceContainerAdapter rsca = (IRemoteServiceContainerAdapter) containers[i].getAdapter(IRemoteServiceContainerAdapter.class);
+			if (rsca != null) rscas.add(rsca);
+		}
+		return (IRemoteServiceContainerAdapter[]) rscas.toArray(new IRemoteServiceContainerAdapter[] {});
 	}
 
 	private String[] getInterfacesForServiceReference(
@@ -149,15 +162,12 @@ public class EventHookImpl implements EventHook {
 		for(int i=0; i < remoteInterfaces.length; i++) {
 			String intf = remoteInterfaces[i];
 			if (REMOTE_INTERFACES_WILDCARD.equals(intf)) return (String []) interfaces.toArray(new String[] {});
-			if (intf != null && interfaces.contains(intf)) {
-				results.add(intf);
-			}
+			if (intf != null && interfaces.contains(intf)) results.add(intf);
 		}
 		return (String []) results.toArray(new String [] {});
 	}
 
-	private void handleModifiedServiceEvent(ServiceReference serviceReference,
-			Object source, Collection contexts) {
+	private void handleModifiedServiceEvent(ServiceReference serviceReference, Collection contexts) {
 		traceEntering("handleModifiedServiceEvent");
 		// TODO
 		traceExiting("handleModifiedServiceEvent");
