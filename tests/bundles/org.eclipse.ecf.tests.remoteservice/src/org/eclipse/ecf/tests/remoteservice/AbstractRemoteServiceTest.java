@@ -16,7 +16,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.IAsyncResult;
 import org.eclipse.ecf.core.util.IFuture;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
