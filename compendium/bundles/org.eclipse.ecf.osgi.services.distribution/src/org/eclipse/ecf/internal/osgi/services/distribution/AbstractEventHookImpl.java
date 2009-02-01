@@ -60,7 +60,7 @@ public abstract class AbstractEventHookImpl implements EventHook {
 		}
 	}
 
-	private void handleRegisteredServiceEvent(
+	protected void handleRegisteredServiceEvent(
 			ServiceReference serviceReference, Collection contexts) {
 		// This checks to see if the serviceReference has any remote interfaces declared via
 		// osgi.remote.interfaces
@@ -123,7 +123,17 @@ public abstract class AbstractEventHookImpl implements EventHook {
 	
 	protected void handleUnregisteringServiceEvent(
 			ServiceReference serviceReference, Collection contexts) {
-		// TODO
+		IRemoteServiceRegistration remoteRegistration = removeRemoteRegistration(serviceReference);
+		if (remoteRegistration != null) {
+			trace("handleUnregisteringServiceEvent","found serviceRegistration="+remoteRegistration);
+			distributionProvider.removeRemoteService(serviceReference);
+			remoteRegistration.unregister();
+		}
+	}
+
+	private IRemoteServiceRegistration removeRemoteRegistration(
+			ServiceReference serviceReference) {
+		return (IRemoteServiceRegistration) remoteServiceReferences.remove(serviceReference);
 	}
 
 	protected void handleModifiedServiceEvent(ServiceReference serviceReference, Collection contexts) {

@@ -47,15 +47,28 @@ public class DistributionProviderImpl implements DistributionProvider {
 		return (ServiceReference) exposedServices.remove(sid);
 	}
 	
+	ServiceReference removeExposedService(ServiceReference sr) {
+		return removeExposedService(getServiceId(sr));
+	}
+	
 	ServiceReference removePublishedService(Long sid) {
 		if (sid == null) return null;
 		return (ServiceReference) publishedServices.remove(sid);
 	}
 	
+	ServiceReference removePublishedService(ServiceReference sr) {
+		return removePublishedService(getServiceId(sr));
+	}
+
 	ServiceReference removeRemoteService(Long sid) {
 		if (sid == null) return null;
 		return (ServiceReference) remoteServices.remove(sid);
 	}
+
+	ServiceReference removeRemoteService(ServiceReference sr) {
+		return removeRemoteService(getServiceId(sr));
+	}
+
 
 	boolean containsExposedService(Long sid) {
 		if (sid == null) return false;
