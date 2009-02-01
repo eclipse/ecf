@@ -21,4 +21,8 @@ public interface DebugOptions {
 
 	public static final String METHODS_EXITING = DEBUG + "/methods/exiting"; //$NON-NLS-1$
 
+	public static final String EVENTHOOKDEBUG = DEBUG + "/eventhook";
+	
+	public static final String FINDHOOKDEBUG = DEBUG + "/findhook";
+
 }

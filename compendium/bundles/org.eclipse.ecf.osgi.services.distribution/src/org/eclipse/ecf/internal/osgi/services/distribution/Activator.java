@@ -54,8 +54,8 @@ public class Activator implements BundleActivator {
 	}
 
 	private void addServiceRegistryHooks() {
-		this.findHookRegistration = this.context.registerService(FindHook.class.getName(), new FindHookImpl(distributionProvider), null);
-		this.eventHookRegistration = this.context.registerService(EventHook.class.getName(), new EventHookImpl(distributionProvider), null);
+		this.findHookRegistration = this.context.registerService(FindHook.class.getName(), new ECFFindHookImpl(distributionProvider), null);
+		this.eventHookRegistration = this.context.registerService(EventHook.class.getName(), new ECFEventHookImpl(distributionProvider), null);
 	}
 
 	private void addDistributionProvider() {

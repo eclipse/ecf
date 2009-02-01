@@ -15,25 +15,28 @@ import org.eclipse.ecf.core.util.Trace;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.service.FindHook;
 
-public class FindHookImpl implements FindHook {
+public abstract class AbstractFindHookImpl implements FindHook {
 
 	private final DistributionProviderImpl distributionProvider;
 	
-	public FindHookImpl(DistributionProviderImpl distributionProvider) {
+	public AbstractFindHookImpl(DistributionProviderImpl distributionProvider) {
 		this.distributionProvider = distributionProvider;
 	}
 
 	public void find(BundleContext context, String name, String filter,
 			boolean allServices, Collection references) {
-		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "find",new Object[] { context, name, filter, new Boolean(allServices), references });
 		handleFind(context,name,filter,allServices,references);
-		Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "find",references);
 	}
 
 	private void handleFind(BundleContext context, String name, String filter,
 			boolean allServices, Collection references) {
+		trace("handleFind","params="+new Object[] { context, name, filter, new Boolean(allServices), references });		
 		// TODO Auto-generated method stub
-		
 	}
+
+	private void trace(String methodName, String message) {
+		Trace.trace(Activator.PLUGIN_ID, DebugOptions.FINDHOOKDEBUG, this.getClass(), methodName, message);
+	}
+	
 
 }

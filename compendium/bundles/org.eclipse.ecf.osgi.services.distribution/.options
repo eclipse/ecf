@@ -14,3 +14,8 @@ org.eclipse.ecf.osgi.services.distribution/debug/exceptions/throwing=true
 org.eclipse.ecf.osgi.services.distribution/debug/methods/entering=true
 # Trace when methods are exited
 org.eclipse.ecf.osgi.services.distribution/debug/methods/exiting=true
+
+org.eclipse.ecf.osgi.services.distribution/debug/findhook=true
+
+org.eclipse.ecf.osgi.services.distribution/debug/eventhook=true
+
