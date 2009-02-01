@@ -440,13 +440,16 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		ID containerID = container.getID();
 		if (containerID == null)
 			return null;
-		IContainer result = null;
+		ContainerEntry result = null;
 		synchronized (containers) {
-			result = (IContainer) containers.remove(containerID);
+			result = (ContainerEntry) containers.remove(containerID);
 		}
-		if (result != null)
-			fireContainerRemoved(result);
-		return result;
+		IContainer resultContainer = null;
+		if (result != null) {
+			resultContainer = result.getContainer();
+			fireContainerRemoved(resultContainer);
+		}
+		return resultContainer;
 	}
 
 	/**
