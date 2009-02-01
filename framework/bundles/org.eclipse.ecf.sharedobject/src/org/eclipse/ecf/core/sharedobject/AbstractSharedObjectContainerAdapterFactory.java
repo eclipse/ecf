@@ -83,6 +83,8 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends Abstra
 		// Check to see if the container already has the given shared object
 		// If so then return it
 		ISharedObjectManager manager = container.getSharedObjectManager();
+		if (manager == null)
+			return null;
 		ISharedObject so = manager.getSharedObject(adapterID);
 		if (so != null)
 			return so;
