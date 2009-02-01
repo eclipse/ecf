@@ -68,15 +68,11 @@ public class EventHookImpl implements EventHook {
 		traceExiting("handleUnregisteringServiceEvent");
 	}
 
-	Object getRemoteInterfaces(ServiceReference sr) {
-		return sr.getProperty(ServiceConstants.OSGI_REMOTE_INTERFACES_KEY);
-	}
-	
 	private void handleRegisteredServiceEvent(
 			ServiceReference serviceReference, Collection contexts) {
 		// This checkes to see if the serviceReference has any remote interfaces declared via
 		// osgi.remote.interfaces
-		Object remoteInterfaces = getRemoteInterfaces(serviceReference);
+		Object remoteInterfaces = serviceReference.getProperty(ServiceConstants.OSGI_REMOTE_INTERFACES_KEY);
 		// If so then we handle further, if not then ignore
 		if (remoteInterfaces != null) {
 			// get configuration determines whether we are the correct distribution provider,
