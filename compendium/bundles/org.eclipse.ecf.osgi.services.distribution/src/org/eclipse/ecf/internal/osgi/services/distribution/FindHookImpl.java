@@ -11,6 +11,7 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.Collection;
 
+import org.eclipse.ecf.core.util.Trace;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.service.FindHook;
 
@@ -24,8 +25,15 @@ public class FindHookImpl implements FindHook {
 
 	public void find(BundleContext context, String name, String filter,
 			boolean allServices, Collection references) {
-		// TODO Auto-generated method stub
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "find",new Object[] { context, name, filter, new Boolean(allServices), references });
+		handleFind(context,name,filter,allServices,references);
+		Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "find",references);
+	}
 
+	private void handleFind(BundleContext context, String name, String filter,
+			boolean allServices, Collection references) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
