@@ -16,6 +16,7 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
@@ -128,8 +129,12 @@ public class EventHookImpl implements EventHook {
 	protected Dictionary createPropertiesForRemoteService(
 			IRemoteServiceContainerAdapter iRemoteServiceContainerAdapter,
 			String[] remotes, ServiceReference sr) {
-		// TODO Auto-generated method stub
-		return null;
+		String [] propKeys = sr.getPropertyKeys();
+		Properties newProps = new Properties();
+		for(int i=0; i < propKeys.length; i++) {
+			newProps.put(propKeys[i], sr.getProperty(propKeys[i]));
+		}
+		return newProps;
 	}
 
 	private void notifyRemoteServiceRegistered(ServiceReference serviceReference, IRemoteServiceRegistration remoteServiceRegistration) {
