@@ -11,7 +11,9 @@ package org.eclipse.ecf.tests.osgi.services.distribution;
 
 import java.util.Properties;
 
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.tests.remoteservice.IConcatService;
 import org.osgi.framework.BundleContext;
 
@@ -40,12 +42,25 @@ public class RegisterTest extends AbstractDistributionTest implements ServiceCon
 		return "ecf.generic.client";
 	}
 	
-	public void testRegister() throws Exception {
+	protected void registerConcatService(Properties props) throws Exception {
 		BundleContext bc = Activator.getDefault().getContext();
-		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
-		props.put(OSGI_REMOTE_CONFIGURATION_TYPE,new String[] { ECF_REMOTE_CONFIGURATION_TYPE });
 		bc.registerService(new String[] { IConcatService.class.getName() }, createService(), props);
 	}
 	
+	public void testRegisterAllRSContainers() throws Exception {
+		Properties props = new Properties();
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		props.put(OSGI_REMOTE_CONFIGURATION_TYPE,new String[] { ECF_REMOTE_CONFIGURATION_TYPE });
+		registerConcatService(props);
+	}
+	
+	public void testRegisterServerContainer() throws Exception {
+		Properties props = new Properties();
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		props.put(OSGI_REMOTE_CONFIGURATION_TYPE,new String[] { ECF_REMOTE_CONFIGURATION_TYPE });
+		IContainer serverContainer = getServer();
+		props.put(Constants.REMOTE_SERVICE_CONTAINER_ID, serverContainer.getID());
+		registerConcatService(props);
+	}
+
 }
