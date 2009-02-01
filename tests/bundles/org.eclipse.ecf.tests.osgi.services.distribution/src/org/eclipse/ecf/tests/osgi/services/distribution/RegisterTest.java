@@ -43,8 +43,8 @@ public class RegisterTest extends AbstractDistributionTest implements ServiceCon
 	public void testRegister() throws Exception {
 		BundleContext bc = Activator.getDefault().getContext();
 		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES_KEY, new String[] {"*"});
-		props.put(OSGI_REMOTE_CONFIGURATION_TYPE,new String[] {"ecf"});
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		props.put(OSGI_REMOTE_CONFIGURATION_TYPE,new String[] { ECF_REMOTE_CONFIGURATION_TYPE });
 		bc.registerService(new String[] { IConcatService.class.getName() }, createService(), props);
 	}
 	
