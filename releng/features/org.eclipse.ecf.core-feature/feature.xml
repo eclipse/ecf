@@ -547,7 +547,7 @@ Contributors: Composent, Inc. - initial API and implementation
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
+<!--
    <plugin
          id="org.eclipse.ecf.osgi.services"
          download-size="0"
@@ -568,5 +568,5 @@ Contributors: Composent, Inc. - initial API and implementation
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
+-->
 </feature>
