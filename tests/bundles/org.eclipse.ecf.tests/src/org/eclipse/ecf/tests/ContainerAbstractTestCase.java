@@ -20,10 +20,12 @@ import java.util.List;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.internal.tests.Activator;
 import org.eclipse.osgi.util.NLS;
 
 public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
@@ -193,11 +195,17 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 		clients = createClients();
 	}
 
+	protected void removeFromContainerManager(IContainer container) {
+		IContainerManager manager = Activator.getDefault().getContainerManager();
+		if (manager != null) manager.removeContainer(container);
+	}
+	
 	protected void cleanUpClients() {
 		if (clients != null) {
 			for (int i = 0; i < clients.length; i++) {
 				clients[i].disconnect();
 				clients[i].dispose();
+				removeFromContainerManager(clients[i]);
 				clients[i] = null;
 			}
 			clients = null;
@@ -209,6 +217,7 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 		serverID = null;
 		server.disconnect();
 		server.dispose();
+		removeFromContainerManager(server);
 		server = null;
 	}
 
