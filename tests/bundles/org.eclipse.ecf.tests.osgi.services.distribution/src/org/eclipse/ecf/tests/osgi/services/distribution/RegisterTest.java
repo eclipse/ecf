@@ -9,6 +9,9 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.IContainer;
@@ -16,10 +19,13 @@ import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.tests.remoteservice.IConcatService;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 
 public class RegisterTest extends AbstractDistributionTest implements ServiceConstants {
 
+	List /* ServiceRegistration */ registrations = new ArrayList();
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -35,6 +41,10 @@ public class RegisterTest extends AbstractDistributionTest implements ServiceCon
 	
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		for(Iterator i=registrations.iterator(); i.hasNext(); ) {
+			ServiceRegistration reg = (ServiceRegistration) i.next();
+			reg.unregister();
+		}
 		cleanUpServerAndClients();
 	}
 
@@ -44,7 +54,7 @@ public class RegisterTest extends AbstractDistributionTest implements ServiceCon
 	
 	protected void registerConcatService(Properties props) throws Exception {
 		BundleContext bc = Activator.getDefault().getContext();
-		bc.registerService(new String[] { IConcatService.class.getName() }, createService(), props);
+		registrations.add(bc.registerService(new String[] { IConcatService.class.getName() }, createService(), props));
 	}
 	
 	public void testRegisterAllRSContainers() throws Exception {
