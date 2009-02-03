@@ -254,7 +254,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 			// should not happen
 		}
 		return URI.create(ServiceConstants.PROTOCOL
-				+ ServiceConstants.PROTOCOL_SEPARATOR + locationStr);
+				+ ServicePropertyUtils.PROTOCOL_SEPARATOR + locationStr);
 	}
 
 	private void traceException(String string, Throwable e) {

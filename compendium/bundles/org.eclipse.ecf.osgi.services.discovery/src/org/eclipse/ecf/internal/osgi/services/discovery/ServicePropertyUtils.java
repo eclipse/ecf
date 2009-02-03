@@ -17,15 +17,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.eclipse.ecf.discovery.IServiceProperties;
 import org.osgi.framework.ServiceReference;
 
 public class ServicePropertyUtils {
+
+	public static final String PROTOCOL_SEPARATOR = ":";
+	public static final String ENDPOINT_INTERFACE_NAME_SEPARATOR = PROTOCOL_SEPARATOR;
+	public static final String INTERFACE_VERSION_SEPARATOR = PROTOCOL_SEPARATOR;
 
 	private static final String COLLECTION_SEPARATOR = ",";
 
 	public static Collection getCollectionProperty(ServiceReference sr,
 			String propName) {
-		if (sr == null)
+		if (sr == null || propName == null)
 			return null;
 		Object val = sr.getProperty(propName);
 		if (val == null || !(val instanceof Collection))
@@ -35,13 +40,27 @@ public class ServicePropertyUtils {
 
 	public static String getStringProperty(ServiceReference reference,
 			String propKey) {
+		if (reference == null || propKey == null)
+			return null;
 		Object val = reference.getProperty(propKey);
 		if (val == null || !(val instanceof String))
 			return null;
 		return (String) val;
 	}
 
+	public static String getStringProperty(IServiceProperties svcProps,
+			String propKey) {
+		if (svcProps == null || propKey == null)
+			return null;
+		Object val = svcProps.getProperty(propKey);
+		if (val == null || !(val instanceof String))
+			return null;
+		return (String) val;
+	}
+
 	public static URL getURLProperty(ServiceReference reference, String propKey) {
+		if (reference == null || propKey == null)
+			return null;
 		Object val = reference.getProperty(propKey);
 		if (val == null || !(val instanceof URL))
 			return null;
@@ -50,6 +69,8 @@ public class ServicePropertyUtils {
 
 	public static Map getMapProperty(ServiceReference reference,
 			String propKeyServiceProperties) {
+		if (reference == null || propKeyServiceProperties == null)
+			return null;
 		Object val = reference.getProperty(propKeyServiceProperties);
 		if (val == null || !(val instanceof Map))
 			return null;
@@ -57,6 +78,8 @@ public class ServicePropertyUtils {
 	}
 
 	public static String createStringFromCollection(Collection svcInterfaces) {
+		if (svcInterfaces == null)
+			return null;
 		StringBuffer result = new StringBuffer();
 		for (Iterator i = svcInterfaces.iterator(); i.hasNext();) {
 			String item = (String) i.next();
@@ -68,6 +91,8 @@ public class ServicePropertyUtils {
 	}
 
 	public static Collection createCollectionFromString(String value) {
+		if (value == null)
+			return null;
 		StringTokenizer t = new StringTokenizer(value, COLLECTION_SEPARATOR);
 		List result = new ArrayList();
 		while (t.hasMoreTokens()) {

@@ -9,12 +9,20 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceProperties;
 import org.osgi.service.discovery.ServiceEndpointDescription;
+import org.osgi.service.discovery.ServicePublication;
 
 public class ServiceEndpointDescriptionImpl implements
 		ServiceEndpointDescription {
@@ -26,42 +34,118 @@ public class ServiceEndpointDescriptionImpl implements
 	}
 
 	public String getEndpointID() {
-		// TODO Auto-generated method stub
-		return null;
+		return ServicePropertyUtils.getStringProperty(serviceInfo
+				.getServiceProperties(),
+				ServicePublication.PROP_KEY_ENDPOINT_ID);
 	}
 
 	public String getEndpointInterfaceName(String interfaceName) {
-		// TODO Auto-generated method stub
+		if (interfaceName == null)
+			return null;
+		String intfNames = serviceInfo.getServiceProperties()
+				.getPropertyString(
+						ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME);
+		if (intfNames == null)
+			return null;
+		Collection c = ServicePropertyUtils
+				.createCollectionFromString(intfNames);
+		if (c == null)
+			return null;
+		// 
+		for (Iterator i = c.iterator(); i.hasNext();) {
+			String intfName = (String) i.next();
+			if (intfName != null && intfName.startsWith(interfaceName)) {
+				// return just endpointInterfaceName
+				return intfName
+						.substring(
+								intfName.length()
+										+ ServicePropertyUtils.ENDPOINT_INTERFACE_NAME_SEPARATOR
+												.length()).trim();
+			}
+		}
 		return null;
 	}
 
 	public URL getLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		String urlExternalForm = ServicePropertyUtils.getStringProperty(
+				serviceInfo.getServiceProperties(),
+				ServicePublication.PROP_KEY_ENDPOINT_LOCATION);
+		if (urlExternalForm == null)
+			return null;
+		URL url = null;
+		try {
+			url = new URL(urlExternalForm);
+		} catch (MalformedURLException e) {
+			// XXX log to error
+		}
+		return url;
 	}
 
 	public Map getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+		Map result = new HashMap();
+		IServiceProperties serviceProperties = serviceInfo
+				.getServiceProperties();
+		if (serviceProperties != null) {
+			for (Enumeration e = serviceProperties.getPropertyNames(); e
+					.hasMoreElements();) {
+				String propName = (String) e.nextElement();
+				Object val = serviceProperties.getProperty(propName);
+				result.put(propName, val);
+			}
+		}
+		return result;
 	}
 
 	public Object getProperty(String key) {
-		// TODO Auto-generated method stub
-		return null;
+		IServiceProperties serviceProperties = serviceInfo
+				.getServiceProperties();
+		if (key == null)
+			return null;
+		return serviceProperties.getProperty(key);
 	}
 
 	public Collection getPropertyKeys() {
-		// TODO Auto-generated method stub
-		return null;
+		IServiceProperties serviceProperties = serviceInfo
+				.getServiceProperties();
+		List result = new ArrayList();
+		for (Enumeration e = serviceProperties.getPropertyNames(); e
+				.hasMoreElements();) {
+			String name = (String) e.nextElement();
+			result.add(name);
+		}
+		return result;
 	}
 
 	public Collection getProvidedInterfaces() {
-		// TODO Auto-generated method stub
-		return null;
+		String providedInterfacesStr = serviceInfo.getServiceProperties()
+				.getPropertyString(
+						ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
+		return ServicePropertyUtils
+				.createCollectionFromString(providedInterfacesStr);
 	}
 
 	public String getVersion(String interfaceName) {
-		// TODO Auto-generated method stub
+		String intfNames = serviceInfo.getServiceProperties()
+				.getPropertyString(
+						ServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION);
+		if (intfNames == null)
+			return null;
+		Collection c = ServicePropertyUtils
+				.createCollectionFromString(intfNames);
+		if (c == null)
+			return null;
+		// 
+		for (Iterator i = c.iterator(); i.hasNext();) {
+			String intfName = (String) i.next();
+			if (intfName != null && intfName.startsWith(interfaceName)) {
+				// return just version string
+				return intfName
+						.substring(
+								intfName.length()
+										+ ServicePropertyUtils.INTERFACE_VERSION_SEPARATOR
+												.length()).trim();
+			}
+		}
 		return null;
 	}
 

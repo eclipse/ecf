@@ -11,6 +11,5 @@ package org.eclipse.ecf.osgi.services.discovery;
 
 public interface ServiceConstants {
 	public static final String PROTOCOL = "osgiservices";
-	public static final String PROTOCOL_SEPARATOR = ":";
-
+	
 }
