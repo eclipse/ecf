@@ -9,48 +9,87 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.osgi.services.discovery.ServiceConstants;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-public class ServicePublicationCustomizer implements ServiceTrackerCustomizer {
+public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 
-	public static final String SERVICES_DISCOVERY_TYPE = "_osgiservices";
-	public static final String DEFAULT_URI_SCHEME = "osgiservices";
-
-	private static long nextServiceID = 0L;
-	
+	private IDiscoveryService discovery;
+	private final String serviceNamePrefix;
 	private Map serviceInfos = Collections.synchronizedMap(new HashMap());
+
+	private final IServiceListener serviceListener = new IServiceListener() {
+		public void serviceDiscovered(IServiceEvent anEvent) {
+			handleServiceDiscovered(anEvent);
+		}
+
+		public void serviceUndiscovered(IServiceEvent anEvent) {
+			handleServiceUndiscovered(anEvent);
+		}
+	};
+
+	void handleServiceDiscovered(IServiceEvent anEvent) {
+		// TODO Auto-generated method stub
+
+	}
+
+	void handleServiceUndiscovered(IServiceEvent anEvent) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public ServicePublicationHandler(IDiscoveryService discovery,
+			String serviceNamePrefix) {
+		Assert.isNotNull(discovery);
+		this.discovery = discovery;
+		this.discovery.addServiceListener(serviceListener);
+		Assert.isNotNull(serviceNamePrefix);
+		this.serviceNamePrefix = serviceNamePrefix;
+	}
+
+	public ServiceReference[] getPublishedServices() {
+		return (ServiceReference[]) serviceInfos.keySet().toArray(
+				new ServiceReference[] {});
+	}
 
 	IServiceInfo addServiceInfo(ServiceReference sr, IServiceInfo si) {
 		return (IServiceInfo) serviceInfos.put(sr, si);
 	}
-	
+
 	IServiceInfo removeServiceInfo(ServiceReference sr) {
 		return (IServiceInfo) serviceInfos.remove(sr);
 	}
-	
+
 	IServiceInfo getServiceInfo(ServiceReference sr) {
 		return (IServiceInfo) serviceInfos.get(sr);
 	}
-	
+
 	public Object addingService(ServiceReference reference) {
 		ServicePublication servicePublication = (ServicePublication) Activator
 				.getDefault().getContext().getService(reference);
@@ -62,8 +101,8 @@ public class ServicePublicationCustomizer implements ServiceTrackerCustomizer {
 			ServicePublication servicePublication) {
 		// Get required service property "service.interface", which should be a
 		// Collection of Strings
-		Collection svcInterfaces = getCollectionProperty(reference,
-				ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
+		Collection svcInterfaces = ServicePropertyUtils.getCollectionProperty(
+				reference, ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
 		if (svcInterfaces == null) {
 			trace(
 					"createServiceInfo",
@@ -72,17 +111,19 @@ public class ServicePublicationCustomizer implements ServiceTrackerCustomizer {
 							+ " is null or not instance of Collection as specified by RFC119");
 			return;
 		}
-		Collection interfaceVersions = getCollectionProperty(reference,
-				ServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION);
-		Collection endpointInterfaces = getCollectionProperty(reference,
-				ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME);
-		Map svcProperties = getMapProperty(reference,
+		Collection interfaceVersions = ServicePropertyUtils
+				.getCollectionProperty(reference,
+						ServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION);
+		Collection endpointInterfaces = ServicePropertyUtils
+				.getCollectionProperty(reference,
+						ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME);
+		Map svcProperties = ServicePropertyUtils.getMapProperty(reference,
 				ServicePublication.PROP_KEY_SERVICE_PROPERTIES);
-		URL location = getURLProperty(reference,
+		URL location = ServicePropertyUtils.getURLProperty(reference,
 				ServicePublication.PROP_KEY_ENDPOINT_LOCATION);
-		String id = getStringProperty(reference,
+		String id = ServicePropertyUtils.getStringProperty(reference,
 				ServicePublication.PROP_KEY_ENDPOINT_ID);
-		ServiceInfo svcInfo = createServiceInfo(svcInterfaces,
+		ServiceInfo svcInfo = createServiceInfo(reference, svcInterfaces,
 				interfaceVersions, endpointInterfaces, svcProperties, location,
 				id);
 		if (svcInfo == null) {
@@ -93,10 +134,11 @@ public class ServicePublicationCustomizer implements ServiceTrackerCustomizer {
 		}
 	}
 
-	private ServiceInfo createServiceInfo(Collection svcInterfaces,
-			Collection interfaceVersions, Collection endpointInterfaces,
-			Map svcProperties, URL location, String id) {
-		IServiceID serviceID = createServiceID(id);
+	private ServiceInfo createServiceInfo(ServiceReference serviceReference,
+			Collection svcInterfaces, Collection interfaceVersions,
+			Collection endpointInterfaces, Map svcProperties, URL location,
+			String id) {
+		IServiceID serviceID = createServiceID(serviceReference);
 		if (serviceID == null)
 			return null;
 		URI uri = createURI(location);
@@ -114,15 +156,18 @@ public class ServicePublicationCustomizer implements ServiceTrackerCustomizer {
 		if (svcInterfaces != null)
 			serviceProperties.setProperty(
 					ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
-					createStringFromCollection(svcInterfaces));
+					ServicePropertyUtils
+							.createStringFromCollection(svcInterfaces));
 		if (interfaceVersions != null)
 			serviceProperties.setProperty(
 					ServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION,
-					createStringFromCollection(interfaceVersions));
+					ServicePropertyUtils
+							.createStringFromCollection(interfaceVersions));
 		if (endpointInterfaces != null)
 			serviceProperties.setProperty(
 					ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME,
-					createStringFromCollection(endpointInterfaces));
+					ServicePropertyUtils
+							.createStringFromCollection(endpointInterfaces));
 		if (svcProperties != null) {
 			for (Iterator i = svcProperties.keySet().iterator(); i.hasNext();) {
 				String key = (String) i.next();
@@ -145,21 +190,16 @@ public class ServicePublicationCustomizer implements ServiceTrackerCustomizer {
 		return serviceProperties;
 	}
 
-	private String createStringFromCollection(Collection svcInterfaces) {
-		StringBuffer result = new StringBuffer();
-		for (Iterator i = svcInterfaces.iterator(); i.hasNext();) {
-			String item = (String) i.next();
-			result.append(item);
-			if (i.hasNext())
-				result.append(",");
-		}
-		return result.toString();
-	}
-
 	private URI createURI(URL location) {
-		if (location == null)
-			return createDefaultURI();
-		return URI.create(DEFAULT_URI_SCHEME + ":" + location.toExternalForm());
+		String locationStr = null;
+		try {
+			locationStr = (location == null) ? "" : URLEncoder.encode(location
+					.toExternalForm(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// should not happen
+		}
+		return URI.create(ServiceConstants.PROTOCOL
+				+ ServiceConstants.PROTOCOL_SEPARATOR + locationStr);
 	}
 
 	private void traceException(String string, Throwable e) {
@@ -167,91 +207,36 @@ public class ServicePublicationCustomizer implements ServiceTrackerCustomizer {
 				this.getClass(), string, e);
 	}
 
-	private URI createDefaultURI() {
-		return URI.create("osgiservices:");
-	}
-
-	private IServiceID createServiceID(String id) {
-		IDiscoveryService discovery = Activator.getDefault()
-				.getDiscoveryService();
+	private IServiceID createServiceID(ServiceReference serviceReference) {
 		if (discovery == null)
 			return null;
-		String serviceName = (id == null || "".equals(id)) ? createDefaultServiceName()
-				: id;
+		String serviceName = serviceNamePrefix
+				+ serviceReference.getProperty(Constants.SERVICE_ID);
 		return ServiceIDFactory.getDefault().createServiceID(
-				discovery.getServicesNamespace(), SERVICES_DISCOVERY_TYPE,
+				discovery.getServicesNamespace(), getDiscoveryType(),
 				serviceName);
 	}
 
-	private String createDefaultServiceName() {
-		return DEFAULT_URI_SCHEME+"."+nextServiceID++;
+	private IServiceTypeID getDiscoveryType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	private void registerServiceInfo(IDiscoveryService discovery, ServiceReference reference, IServiceInfo svcInfo) {
+	private void publishService(ServiceReference reference, IServiceInfo svcInfo) {
 		synchronized (serviceInfos) {
 			try {
 				addServiceInfo(reference, svcInfo);
 				discovery.registerService(svcInfo);
 			} catch (ECFException e) {
-				traceException("publishService",e);
+				traceException("publishService", e);
 				removeServiceInfo(reference);
 			}
 		}
 	}
 
-	private void unregisterServiceInfo(IDiscoveryService discovery, ServiceReference reference) {
-		synchronized (serviceInfos) {
-			try {
-				IServiceInfo svcInfo = removeServiceInfo(reference);
-				if (svcInfo != null) discovery.unregisterService(svcInfo);
-			} catch (ECFException e) {
-				traceException("publishService",e);
-			}
-		}
-	}
-
-	private void publishService(ServiceReference reference, IServiceInfo svcInfo) {
-		IDiscoveryService discovery = Activator.getDefault().getDiscoveryService();
-		if (discovery == null) {
-			trace("publishService","no discovery available...cannot publish svcInfo="+svcInfo+" for serviceReference="+reference);
-			return;
-		}
-		registerServiceInfo(discovery,reference,svcInfo);
-	}
-
-	private String getStringProperty(ServiceReference reference, String propKey) {
-		Object val = reference.getProperty(propKey);
-		if (val == null || !(val instanceof String))
-			return null;
-		return (String) val;
-	}
-
-	private URL getURLProperty(ServiceReference reference, String propKey) {
-		Object val = reference.getProperty(propKey);
-		if (val == null || !(val instanceof URL))
-			return null;
-		return (URL) val;
-	}
-
-	private Map getMapProperty(ServiceReference reference,
-			String propKeyServiceProperties) {
-		Object val = reference.getProperty(propKeyServiceProperties);
-		if (val == null || !(val instanceof Map))
-			return null;
-		return (Map) val;
-	}
-
-	private Collection getCollectionProperty(ServiceReference reference,
-			String propName) {
-		Object val = reference.getProperty(propName);
-		if (val == null || !(val instanceof Collection))
-			return null;
-		return (Collection) val;
-	}
-
 	public void modifiedService(ServiceReference reference, Object service) {
 		unpublishService(reference);
-		addServicePublication(reference,(ServicePublication) service);
+		addServicePublication(reference, (ServicePublication) service);
 	}
 
 	public void removedService(ServiceReference reference, Object service) {
@@ -259,12 +244,15 @@ public class ServicePublicationCustomizer implements ServiceTrackerCustomizer {
 	}
 
 	private void unpublishService(ServiceReference reference) {
-		IDiscoveryService discovery = Activator.getDefault().getDiscoveryService();
-		if (discovery == null) {
-			trace("unpublishService","no discovery available...cannot unpublish for serviceReference="+reference);
-			return;
+		synchronized (serviceInfos) {
+			try {
+				IServiceInfo svcInfo = removeServiceInfo(reference);
+				if (svcInfo != null)
+					discovery.unregisterService(svcInfo);
+			} catch (ECFException e) {
+				traceException("publishService", e);
+			}
 		}
-		unregisterServiceInfo(discovery,reference);
 	}
 
 	protected void trace(String methodName, String message) {
@@ -272,4 +260,15 @@ public class ServicePublicationCustomizer implements ServiceTrackerCustomizer {
 				.getClass(), methodName, message);
 	}
 
+	public void dispose() {
+		if (discovery != null) {
+			discovery.removeServiceListener(serviceListener);
+			for (Iterator i = serviceInfos.keySet().iterator(); i.hasNext();) {
+				ServiceReference sr = (ServiceReference) i.next();
+				unpublishService(sr);
+			}
+			serviceInfos.clear();
+			discovery = null;
+		}
+	}
 }

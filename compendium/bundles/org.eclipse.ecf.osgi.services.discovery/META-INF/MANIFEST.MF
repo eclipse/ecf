@@ -16,3 +16,5 @@ Import-Package: org.eclipse.ecf.core.util,
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common
+Export-Package: org.eclipse.ecf.internal.osgi.services.discovery;x-friends:="org.eclipse.ecf.osgi.services.distribution",
+ org.eclipse.ecf.osgi.services.discovery
