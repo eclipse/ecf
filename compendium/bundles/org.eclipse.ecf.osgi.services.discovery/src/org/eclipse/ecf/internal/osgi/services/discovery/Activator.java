@@ -14,6 +14,8 @@ import java.net.URL;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -23,6 +25,7 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker servicePublicationTracker;
 	private ServiceTracker discoveryServiceTracker;
+	private ServiceTracker discoveredServiceTrackerTracker;
 
 	private BundleContext context;
 	private static Activator plugin;
@@ -71,6 +74,15 @@ public class Activator implements BundleActivator {
 		return (IDiscoveryService) discoveryServiceTracker.getService();
 	}
 
+	public ServiceReference[] getDiscoveredServiceTrackerReferences() {
+		if (discoveredServiceTrackerTracker == null) {
+			discoveredServiceTrackerTracker = new ServiceTracker(this.context,
+					DiscoveredServiceTracker.class.getName(), null);
+			discoveredServiceTrackerTracker.open();
+		}
+		return discoveredServiceTrackerTracker.getServiceReferences();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -78,6 +90,10 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		if (discoveredServiceTrackerTracker != null) {
+			discoveredServiceTrackerTracker.close();
+			discoveredServiceTrackerTracker = null;
+		}
 		if (discoveryServiceTracker != null) {
 			discoveryServiceTracker.close();
 			discoveryServiceTracker = null;

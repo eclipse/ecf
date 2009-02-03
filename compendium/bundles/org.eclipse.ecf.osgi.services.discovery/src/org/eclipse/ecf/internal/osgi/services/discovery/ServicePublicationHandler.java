@@ -13,13 +13,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.IServiceEvent;
@@ -35,6 +39,8 @@ import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.osgi.services.discovery.ServiceConstants;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.discovery.DiscoveredServiceNotification;
+import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -46,20 +52,69 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 
 	private final IServiceListener serviceListener = new IServiceListener() {
 		public void serviceDiscovered(IServiceEvent anEvent) {
-			handleServiceDiscovered(anEvent);
+			handleServiceDiscovered(anEvent.getLocalContainerID(), anEvent
+					.getServiceInfo());
 		}
 
 		public void serviceUndiscovered(IServiceEvent anEvent) {
-			handleServiceUndiscovered(anEvent);
+			handleServiceUndiscovered(anEvent.getLocalContainerID(), anEvent
+					.getServiceInfo());
 		}
 	};
 
-	void handleServiceDiscovered(IServiceEvent anEvent) {
-		// TODO Auto-generated method stub
-
+	void handleServiceDiscovered(ID localContainerID, IServiceInfo serviceInfo) {
+		IServiceID serviceID = serviceInfo.getServiceID();
+		if (matchServiceID(serviceID)) {
+			trace("handleServiceDiscovered", " Found serviceID=" + serviceID);
+			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
+			if (discoveredTrackers != null) {
+				for (int i = 0; i < discoveredTrackers.length; i++) {
+					discoveredTrackers[i]
+							.serviceChanged(createDiscoveredServiceNotification(serviceInfo));
+				}
+			}
+		}
 	}
 
-	void handleServiceUndiscovered(IServiceEvent anEvent) {
+	private DiscoveredServiceNotification createDiscoveredServiceNotification(
+			IServiceInfo serviceInfo) {
+		return new DiscoveredServiceNotificationImpl(
+				DiscoveredServiceNotification.AVAILABLE, serviceInfo);
+	}
+
+	private DiscoveredServiceTracker[] findMatchingDiscoveredServiceTrackers(
+			IServiceInfo serviceInfo) {
+		ServiceReference[] sourceTrackers = Activator.getDefault()
+				.getDiscoveredServiceTrackerReferences();
+		if (sourceTrackers == null)
+			return null;
+		List matchingTrackers = new ArrayList();
+		for (int i = 0; i < sourceTrackers.length; i++) {
+			if (matchWithDiscoveredServiceInfo(sourceTrackers[i], serviceInfo))
+				matchingTrackers.add(Activator.getDefault().getContext()
+						.getService(sourceTrackers[i]));
+		}
+		return (DiscoveredServiceTracker[]) matchingTrackers
+				.toArray(new DiscoveredServiceTracker[] {});
+	}
+
+	private boolean matchWithDiscoveredServiceInfo(
+			ServiceReference serviceReference, IServiceInfo serviceInfo) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean matchServiceID(IServiceID serviceId) {
+		IServiceTypeID serviceTypeID = serviceId.getServiceTypeID();
+		// TODO Auto-generated method stub
+		// XXX need to check service typeID to check that services contains
+		List services = Arrays.asList(serviceTypeID.getServices());
+		if (services.contains(ServiceConstants.PROTOCOL))
+			return true;
+		return false;
+	}
+
+	void handleServiceUndiscovered(ID localContainerID, IServiceInfo serviceInfo) {
 		// TODO Auto-generated method stub
 
 	}
