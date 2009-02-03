@@ -116,8 +116,9 @@ public class DistributionProviderImpl implements DistributionProvider {
 	}
 
 	public ServiceReference[] getPublishedServices() {
-		// TODO get from discovery bundle
-		return new ServiceReference[0];
+		return org.eclipse.ecf.internal.osgi.services.discovery.Activator
+				.getDefault().getServicePublicationHandler()
+				.getPublishedServices();
 	}
 
 	public ServiceReference[] getRemoteServices() {
