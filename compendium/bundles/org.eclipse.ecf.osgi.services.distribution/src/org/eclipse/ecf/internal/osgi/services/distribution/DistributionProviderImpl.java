@@ -20,7 +20,6 @@ import org.osgi.service.distribution.DistributionProvider;
 public class DistributionProviderImpl implements DistributionProvider {
 
 	Map exposedServices = Collections.synchronizedMap(new HashMap());
-	Map publishedServices = Collections.synchronizedMap(new HashMap());
 	Map remoteServices = Collections.synchronizedMap(new HashMap());
 
 	Long getServiceId(ServiceReference sr) {
@@ -31,12 +30,6 @@ public class DistributionProviderImpl implements DistributionProvider {
 		if (sr == null)
 			return null;
 		return (ServiceReference) exposedServices.put(getServiceId(sr), sr);
-	}
-
-	ServiceReference addPublishedService(ServiceReference sr) {
-		if (sr == null)
-			return null;
-		return (ServiceReference) publishedServices.put(getServiceId(sr), sr);
 	}
 
 	ServiceReference addRemoteService(ServiceReference sr) {
@@ -55,16 +48,6 @@ public class DistributionProviderImpl implements DistributionProvider {
 		return removeExposedService(getServiceId(sr));
 	}
 
-	ServiceReference removePublishedService(Long sid) {
-		if (sid == null)
-			return null;
-		return (ServiceReference) publishedServices.remove(sid);
-	}
-
-	ServiceReference removePublishedService(ServiceReference sr) {
-		return removePublishedService(getServiceId(sr));
-	}
-
 	ServiceReference removeRemoteService(Long sid) {
 		if (sid == null)
 			return null;
@@ -81,12 +64,6 @@ public class DistributionProviderImpl implements DistributionProvider {
 		return exposedServices.containsKey(sid);
 	}
 
-	boolean containsPublishedService(Long sid) {
-		if (sid == null)
-			return false;
-		return publishedServices.containsKey(sid);
-	}
-
 	boolean containsRemoteService(Long sid) {
 		if (sid == null)
 			return false;
@@ -97,12 +74,6 @@ public class DistributionProviderImpl implements DistributionProvider {
 		if (sid == null)
 			return null;
 		return (ServiceReference) exposedServices.get(sid);
-	}
-
-	ServiceReference getPublishedService(Long sid) {
-		if (sid == null)
-			return null;
-		return (ServiceReference) publishedServices.get(sid);
 	}
 
 	ServiceReference getRemoteService(Long sid) {
@@ -123,10 +94,15 @@ public class DistributionProviderImpl implements DistributionProvider {
 		Map result = new HashMap();
 		if (sr == null)
 			return result;
-		ServiceReference publishedService = getPublishedService(getServiceId(sr));
+		ServiceReference publishedService = getPublishedService(sr);
 		if (publishedService == null)
 			return result;
 		return getPropertyMap(result, publishedService);
+	}
+
+	private ServiceReference getPublishedService(ServiceReference sr) {
+		// TODO get from discovery bundle
+		return null;
 	}
 
 	private Map getPropertyMap(Map result, ServiceReference sr) {
@@ -140,8 +116,8 @@ public class DistributionProviderImpl implements DistributionProvider {
 	}
 
 	public ServiceReference[] getPublishedServices() {
-		return (ServiceReference[]) publishedServices.entrySet().toArray(
-				new ServiceReference[] {});
+		// TODO get from discovery bundle
+		return new ServiceReference[0];
 	}
 
 	public ServiceReference[] getRemoteServices() {
