@@ -173,7 +173,7 @@ public final class Client implements ISynchAsynchConnection {
 			send(new ConnectRequestMessage(anURI, (Serializable) data));
 			res = (ConnectResultMessage) readObject();
 		} catch (final Exception e) {
-			throw new ECFException("Exception during connection to " + remote.getName(), e);
+			throw new ECFException("Exception during connection to " + remote.getName(), e); //$NON-NLS-1$
 		}
 		debug("connect;rcv:" + res); //$NON-NLS-1$
 		// Setup threads
