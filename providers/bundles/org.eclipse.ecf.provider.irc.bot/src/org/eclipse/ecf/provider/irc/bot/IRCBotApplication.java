@@ -25,7 +25,7 @@ public class IRCBotApplication implements IApplication {
 		
 		for(Iterator it = bots.values().iterator(); it.hasNext();) {
 			IBotEntry entry = (IBotEntry) it.next();
-			Bot bot = new Bot(entry);
+			new Bot(entry);
 		}
 		
 		while (true) {
