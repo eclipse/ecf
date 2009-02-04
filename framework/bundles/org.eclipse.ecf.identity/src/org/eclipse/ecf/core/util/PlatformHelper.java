@@ -62,8 +62,8 @@ public class PlatformHelper {
 			return adapterManagerCache;
 		if (isPlatformAvailable()) {
 			try {
-				Method m = platformClass.getMethod("getAdapterManager", null); //$NON-NLS-1$
-				adapterManagerCache = (IAdapterManager) m.invoke(null, null);
+				Method m = platformClass.getMethod("getAdapterManager", (Class []) null); //$NON-NLS-1$
+				adapterManagerCache = (IAdapterManager) m.invoke(null, (Object []) null);
 				return adapterManagerCache;
 			} catch (Exception e) {
 				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Exception in PlatformHelper.getPlatformAdapterManager()", e)); //$NON-NLS-1$
@@ -78,8 +78,8 @@ public class PlatformHelper {
 			return extensionRegistryCache;
 		if (isPlatformAvailable()) {
 			try {
-				Method m = platformClass.getMethod("getExtensionRegistry", null); //$NON-NLS-1$
-				extensionRegistryCache = (IExtensionRegistry) m.invoke(null, null);
+				Method m = platformClass.getMethod("getExtensionRegistry", (Class []) null); //$NON-NLS-1$
+				extensionRegistryCache = (IExtensionRegistry) m.invoke(null, (Object []) null);
 				return extensionRegistryCache;
 			} catch (Exception e) {
 				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Exception in PlatformHelper.getExtensionRegistry()", e)); //$NON-NLS-1$
