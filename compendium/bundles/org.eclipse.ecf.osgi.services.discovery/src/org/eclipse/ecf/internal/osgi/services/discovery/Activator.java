@@ -23,6 +23,8 @@ public class Activator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.discovery";
 
+	private static final long DISCOVERY_TIMEOUT = 0;
+
 	private ServiceTracker servicePublicationTracker;
 	private ServiceTracker discoveryServiceTracker;
 	private ServiceTracker discoveredServiceTrackerTracker;
@@ -46,6 +48,7 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		this.context = ctxt;
 		IDiscoveryService discovery = getDiscoveryService();
+		if (discovery == null) throw new NullPointerException("discovery service cannot be found");
 		URL bundleURL = ctxt.getBundle().getEntry("/");
 		String bundleURLString = bundleURL.toExternalForm();
 		if (!bundleURLString.endsWith("/"))
@@ -65,13 +68,13 @@ public class Activator implements BundleActivator {
 		return servicePublicationHandler;
 	}
 
-	public IDiscoveryService getDiscoveryService() {
+	public IDiscoveryService getDiscoveryService() throws InterruptedException {
 		if (discoveryServiceTracker == null) {
 			discoveryServiceTracker = new ServiceTracker(this.context,
 					IDiscoveryService.class.getName(), null);
 			discoveryServiceTracker.open();
 		}
-		return (IDiscoveryService) discoveryServiceTracker.getService();
+		return (IDiscoveryService) discoveryServiceTracker.waitForService(DISCOVERY_TIMEOUT);
 	}
 
 	public ServiceReference[] getDiscoveredServiceTrackerReferences() {
