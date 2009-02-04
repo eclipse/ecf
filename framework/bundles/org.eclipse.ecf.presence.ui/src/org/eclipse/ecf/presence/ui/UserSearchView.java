@@ -165,7 +165,7 @@ public class UserSearchView extends ViewPart {
 		treeViewer.setInput(users);
 		pageBook.showPage(treeViewer.getControl());
 		treeViewer.expandToLevel(DEFAULT_EXPAND_LEVEL);
-		helpMessageLabel.setText("");
+		helpMessageLabel.setText(""); //$NON-NLS-1$
 		return true;
 	}
 
