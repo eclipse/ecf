@@ -12,16 +12,9 @@
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient.ssl;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
+import java.net.*;
 import javax.net.ssl.SSLSocketFactory;
-
-import org.apache.commons.httpclient.ConnectTimeoutException;
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.ProxyClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.Protocol;
@@ -102,8 +95,8 @@ public class SSLSocketFactoryModifier implements ISSLSocketFactoryModifier, Prot
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.internal.provider.filetransfer.httpclient.ISSLSocketFactoryModifier#getProtocolSocketFactoryForProxy(org.eclipse.ecf.core.util.Proxy)
 	 */
-	public ProtocolSocketFactory getProtocolSocketFactoryForProxy(Proxy proxy) {
-		this.proxy = proxy;
+	public ProtocolSocketFactory getProtocolSocketFactoryForProxy(Proxy p) {
+		this.proxy = p;
 		return this;
 	}
 
