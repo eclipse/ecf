@@ -10,38 +10,19 @@
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import java.net.*;
+import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.discovery.IServiceEvent;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceListener;
-import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.ServiceInfo;
-import org.eclipse.ecf.discovery.ServiceProperties;
-import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.IServiceTypeID;
-import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
+import org.eclipse.ecf.discovery.*;
+import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.osgi.services.discovery.ServiceConstants;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.discovery.DiscoveredServiceNotification;
-import org.osgi.service.discovery.DiscoveredServiceTracker;
-import org.osgi.service.discovery.ServicePublication;
+import org.osgi.service.discovery.*;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class ServicePublicationHandler implements ServiceTrackerCustomizer {
@@ -70,16 +51,12 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
 					discoveredTrackers[i]
-							.serviceChanged(createDiscoveredServiceNotification(serviceInfo));
+							.serviceChanged(new DiscoveredServiceNotificationImpl(
+									DiscoveredServiceNotification.AVAILABLE,
+									serviceInfo));
 				}
 			}
 		}
-	}
-
-	private DiscoveredServiceNotification createDiscoveredServiceNotification(
-			IServiceInfo serviceInfo) {
-		return new DiscoveredServiceNotificationImpl(
-				DiscoveredServiceNotification.AVAILABLE, serviceInfo);
 	}
 
 	private DiscoveredServiceTracker[] findMatchingDiscoveredServiceTrackers(
@@ -101,7 +78,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	private boolean matchWithDiscoveredServiceInfo(
 			ServiceReference serviceReference, IServiceInfo serviceInfo) {
 		// TODO Auto-generated method stub
-		return false;
+		// XXX for now match everything. See RFC119
+		return true;
 	}
 
 	private boolean matchServiceID(IServiceID serviceId) {
@@ -115,8 +93,19 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	}
 
 	void handleServiceUndiscovered(ID localContainerID, IServiceInfo serviceInfo) {
-		// TODO Auto-generated method stub
-
+		IServiceID serviceID = serviceInfo.getServiceID();
+		if (matchServiceID(serviceID)) {
+			trace("handleServiceUniscovered", " Found serviceID=" + serviceID);
+			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
+			if (discoveredTrackers != null) {
+				for (int i = 0; i < discoveredTrackers.length; i++) {
+					discoveredTrackers[i]
+							.serviceChanged(new DiscoveredServiceNotificationImpl(
+									DiscoveredServiceNotification.UNAVAILABLE,
+									serviceInfo));
+				}
+			}
+		}
 	}
 
 	public ServicePublicationHandler(IDiscoveryService discovery,
@@ -274,6 +263,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 
 	private IServiceTypeID getDiscoveryType() {
 		// TODO Auto-generated method stub
+		// XXX this has to return an appropriate service type
 		return null;
 	}
 
