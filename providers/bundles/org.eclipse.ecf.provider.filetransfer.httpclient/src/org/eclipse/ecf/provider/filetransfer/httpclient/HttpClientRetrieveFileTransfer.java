@@ -1,11 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. All rights reserved. This
+ * Copyright (c) 2004, 2009 Composent, Inc., IBM All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: Composent, Inc. - initial API and implementation
- * 				 Maarten Meijer - bug 237936, added gzip encoded transfer default
+ * Contributors: 
+ *  Composent, Inc. - initial API and implementation
+ *  Maarten Meijer - bug 237936, added gzip encoded transfer default
+ *  Henrich Kraemer - bug 263869, testHttpsReceiveFile fails using HTTP proxy
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
@@ -16,8 +18,7 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
+import org.apache.commons.httpclient.protocol.*;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
@@ -95,6 +96,50 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	}
 
+	public static final class HostConfigHelper {
+		private String targetURL;
+		private String targetPath;
+
+		private HostConfiguration hostConfiguration;
+
+		public HostConfigHelper() {
+			hostConfiguration = new HostConfiguration();
+		}
+
+		public HostConfiguration getHostConfiguration() {
+			return hostConfiguration;
+		}
+
+		public void setTargetHostByURL(String url) {
+			this.targetURL = url;
+			this.targetPath = getPathFromURL(targetURL);
+			String host = getHostFromURL(targetURL);
+			int port = getPortFromURL(targetURL);
+			if (HttpClientRetrieveFileTransfer.urlUsesHttps(targetURL)) {
+				ISSLSocketFactoryModifier sslSocketFactoryModifier = Activator.getDefault().getSSLSocketFactoryModifier();
+				Protocol sslProtocol = null;
+				SecureProtocolSocketFactory psf = null;
+				if (sslSocketFactoryModifier != null) {
+					psf = sslSocketFactoryModifier.getProtocolSocketFactory();
+				} else {
+					psf = new HttpClientSslProtocolSocketFactory();
+				}
+				sslProtocol = new Protocol(HttpClientRetrieveFileTransfer.HTTPS, (ProtocolSocketFactory) psf, port);
+				Protocol.registerProtocol(HttpClientRetrieveFileTransfer.HTTPS, sslProtocol);
+				Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
+				hostConfiguration.setHost(host, port, sslProtocol);
+			} else {
+				Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
+				hostConfiguration.setHost(host, port);
+			}
+		}
+
+		public String getTargetRelativePath() {
+			return targetPath;
+		}
+
+	}
+
 	private static final String USERNAME_PREFIX = Messages.HttpClientRetrieveFileTransfer_Username_Prefix;
 
 	protected static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
@@ -130,6 +175,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	protected IFileID fileid = null;
 
 	protected JREProxyHelper proxyHelper = null;
+
+	private HostConfigHelper hostConfigHelper;
 
 	public HttpClientRetrieveFileTransfer(HttpClient httpClient) {
 		this.httpClient = httpClient;
@@ -190,25 +237,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	protected void setupHostAndPort(String urlString) {
-		String host = getHostFromURL(urlString);
-		int port = getPortFromURL(urlString);
-		if (urlUsesHttps(urlString)) {
-			ISSLSocketFactoryModifier sslSocketFactoryModifier = Activator.getDefault().getSSLSocketFactoryModifier();
-			Protocol sslProtocol = null;
-			ProtocolSocketFactory psf = null;
-			if (sslSocketFactoryModifier != null) {
-				psf = sslSocketFactoryModifier.getProtocolSocketFactoryForProxy(proxy);
-			} else {
-				psf = new HttpClientSslProtocolSocketFactory(proxy);
-			}
-			sslProtocol = new Protocol(HTTPS, psf, port);
-			Protocol.registerProtocol(HTTPS, sslProtocol);
-			Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
-			httpClient.getHostConfiguration().setHost(host, port, sslProtocol);
-		} else {
-			Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
-			httpClient.getHostConfiguration().setHost(host, port);
-		}
+		getHostConfiguration(); // creates hostConfigHelper if needed
+		hostConfigHelper.setTargetHostByURL(urlString);
 	}
 
 	protected void setRequestHeaderValues() throws InvalidFileRangeSpecificationException {
@@ -343,7 +373,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			setupHostAndPort(urlString);
 
-			getMethod = new GzipGetMethod(urlString);
+			getMethod = new GzipGetMethod(hostConfigHelper.getTargetRelativePath());
 			getMethod.setFollowRedirects(true);
 			// Define a CredentialsProvider - found that possibility while debugging in org.apache.commons.httpclient.HttpMethodDirector.processProxyAuthChallenge(HttpMethod)
 			// Seems to be another way to select the credentials.
@@ -356,7 +386,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				getMethod.setRequestHeader(GzipGetMethod.ACCEPT_ENCODING, GzipGetMethod.CONTENT_ENCODING_ACCEPTED);
 			// Actually execute get and get response code (since redirect is set to true, then
 			// redirect response code handled internally
-			code = httpClient.executeMethod(getMethod);
+			code = httpClient.executeMethod(getHostConfiguration(), getMethod);
 
 			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + code); //$NON-NLS-1$
 
@@ -442,6 +472,16 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return Integer.parseInt(url.substring(colonPort + 1, end));
 	}
 
+	protected static String getPathFromURL(String url) {
+		final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
+		final int requestPath = url.indexOf('/', colonSlashSlash + 3);
+		if (requestPath < 0)
+			return "/"; //$NON-NLS-1$
+
+		int end = url.length();
+		return url.substring(requestPath, end);
+	}
+
 	protected static boolean urlUsesHttps(String url) {
 		return url.matches(HTTPS + ".*"); //$NON-NLS-1$
 	}
@@ -510,14 +550,16 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			setupHostAndPort(urlString);
 
-			getMethod = new GzipGetMethod(urlString);
+			String path = hostConfigHelper.getTargetRelativePath();
+
+			getMethod = new GzipGetMethod(path);
 			getMethod.setFollowRedirects(true);
 
 			setResumeRequestHeaderValues();
 
 			Trace.trace(Activator.PLUGIN_ID, "resume get " + urlString); //$NON-NLS-1$
 
-			code = httpClient.executeMethod(getMethod);
+			code = httpClient.executeMethod(getHostConfiguration(), getMethod);
 
 			Trace.trace(Activator.PLUGIN_ID, "resume get resp=" + code); //$NON-NLS-1$
 
@@ -573,13 +615,20 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return super.getAdapter(adapter);
 	}
 
+	private HostConfiguration getHostConfiguration() {
+		if (hostConfigHelper == null) {
+			hostConfigHelper = new HostConfigHelper();
+		}
+		return hostConfigHelper.getHostConfiguration();
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#setupProxy(org.eclipse.ecf.core.util.Proxy)
 	 */
 	protected void setupProxy(Proxy proxy) {
 		if (proxy.getType().equals(Proxy.Type.HTTP)) {
 			final ProxyAddress address = proxy.getAddress();
-			httpClient.getHostConfiguration().setProxy(getHostFromURL(address.getHostName()), address.getPort());
+			getHostConfiguration().setProxy(getHostFromURL(address.getHostName()), address.getPort());
 			final String proxyUsername = proxy.getUsername();
 			final String proxyPassword = proxy.getPassword();
 			if (proxyUsername != null) {

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2008 Composent, Inc. and others.
+ * Copyright (c) 2008, 2009 Composent, Inc., IBM and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Henrich Kraemer - bug 263869, testHttpsReceiveFile fails using HTTP proxy
  *****************************************************************************/
 
 package org.eclipse.ecf.provider.filetransfer.httpclient;
@@ -19,8 +20,6 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.security.*;
@@ -31,6 +30,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.*;
 import org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser;
 import org.eclipse.ecf.provider.filetransfer.browse.URLRemoteFile;
+import org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransfer.HostConfigHelper;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
@@ -52,6 +52,8 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 	protected HttpClient httpClient = null;
 
 	protected GetMethod getMethod;
+
+	protected HostConfigHelper hostConfigHelper;
 
 	/**
 	 * @param directoryOrFileID
@@ -79,7 +81,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		// setup https host and port
 		setupHostAndPort(urlString);
 
-		getMethod = new GetMethod(urlString);
+		getMethod = new GetMethod(hostConfigHelper.getTargetRelativePath());
 		getMethod.setFollowRedirects(true);
 		// Define a CredentialsProvider - found that possibility while debugging in org.apache.commons.httpclient.HttpMethodDirector.processProxyAuthChallenge(HttpMethod)
 		// Seems to be another way to select the credentials.
@@ -92,7 +94,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		try {
 			Trace.trace(Activator.PLUGIN_ID, "browse=" + urlString); //$NON-NLS-1$
 
-			int code = httpClient.executeMethod(getMethod);
+			int code = httpClient.executeMethod(getHostConfiguration(), getMethod);
 
 			Trace.trace(Activator.PLUGIN_ID, "browse resp=" + code); //$NON-NLS-1$
 
@@ -154,25 +156,8 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 	}
 
 	protected void setupHostAndPort(String urlString) {
-		String host = HttpClientRetrieveFileTransfer.getHostFromURL(urlString);
-		int port = HttpClientRetrieveFileTransfer.getPortFromURL(urlString);
-		if (HttpClientRetrieveFileTransfer.urlUsesHttps(urlString)) {
-			ISSLSocketFactoryModifier sslSocketFactoryModifier = Activator.getDefault().getSSLSocketFactoryModifier();
-			Protocol sslProtocol = null;
-			ProtocolSocketFactory psf = null;
-			if (sslSocketFactoryModifier != null) {
-				psf = sslSocketFactoryModifier.getProtocolSocketFactoryForProxy(proxy);
-			} else {
-				psf = new HttpClientSslProtocolSocketFactory(proxy);
-			}
-			sslProtocol = new Protocol(HttpClientRetrieveFileTransfer.HTTPS, psf, port);
-			Protocol.registerProtocol(HttpClientRetrieveFileTransfer.HTTPS, sslProtocol);
-			Trace.trace(Activator.PLUGIN_ID, "browse host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
-			httpClient.getHostConfiguration().setHost(host, port, sslProtocol);
-		} else {
-			Trace.trace(Activator.PLUGIN_ID, "browse host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
-			httpClient.getHostConfiguration().setHost(host, port);
-		}
+		getHostConfiguration(); // creates hostConfigHelper if needed
+		hostConfigHelper.setTargetHostByURL(urlString);
 	}
 
 	protected Credentials getFileRequestCredentials() throws UnsupportedCallbackException, IOException {
@@ -202,10 +187,17 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		}
 	}
 
+	private HostConfiguration getHostConfiguration() {
+		if (hostConfigHelper == null) {
+			hostConfigHelper = new HostConfigHelper();
+		}
+		return hostConfigHelper.getHostConfiguration();
+	}
+
 	protected void setupProxy(Proxy proxy) {
 		if (proxy.getType().equals(Proxy.Type.HTTP)) {
 			final ProxyAddress address = proxy.getAddress();
-			httpClient.getHostConfiguration().setProxy(HttpClientRetrieveFileTransfer.getHostFromURL(address.getHostName()), address.getPort());
+			getHostConfiguration().setProxy(HttpClientRetrieveFileTransfer.getHostFromURL(address.getHostName()), address.getPort());
 			final String proxyUsername = proxy.getUsername();
 			final String proxyPassword = proxy.getPassword();
 			if (proxyUsername != null) {
