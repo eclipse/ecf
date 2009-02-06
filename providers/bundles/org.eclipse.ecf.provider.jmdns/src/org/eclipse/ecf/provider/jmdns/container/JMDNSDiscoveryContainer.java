@@ -459,7 +459,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 					props.put(name, value);
 			}
 		}
-		final URI uri = URI.create(uriProtocol + "://" + addr.getHostAddress() + ":" + port + uriPath); //$NON-NLS-1$//$NON-NLS-2$
+		final URI uri = URI.create(((uriProtocol == null) ? "unknown" : uriProtocol) + "://" + addr.getHostAddress() + ":" + port + ((uriPath == null) ? "" : uriPath)); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		final ServiceID sID = createServiceID(serviceInfo.getType() + "_" + namingAuthority, serviceInfo.getName()); //$NON-NLS-1$
 		if (sID == null) {
 			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);
@@ -495,13 +495,17 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		}
 		// Add URI scheme to props
 		URI location = serviceInfo.getLocation();
-		props.put(SCHEME_PROPERTY, location.getScheme());
-		props.put(URI_PATH_PROPERTY, location.getPath());
+		if (location != null) {
+			props.put(SCHEME_PROPERTY, location.getScheme());
+			String path = location.getPath();
+			if (path != null)
+				props.put(URI_PATH_PROPERTY, path);
+		}
 		props.put(NAMING_AUTHORITY_PROPERTY, serviceInfo.getServiceID().getServiceTypeID().getNamingAuthority());
 		int priority = (serviceInfo.getPriority() == -1) ? 0 : serviceInfo.getPriority();
 		int weight = (serviceInfo.getWeight() == -1) ? 0 : serviceInfo.getWeight();
 		final String serviceName = sID.getServiceName() == null ? location.getHost() : sID.getServiceName();
-		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), serviceName, location.getPort(), weight, priority, props);
+		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), serviceName, (location.getPort() == -1) ? 65535 : location.getPort(), weight, priority, props);
 		return si;
 	}
 
