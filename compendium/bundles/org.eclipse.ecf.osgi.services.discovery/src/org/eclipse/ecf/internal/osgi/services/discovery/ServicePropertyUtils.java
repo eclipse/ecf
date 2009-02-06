@@ -10,13 +10,7 @@
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
+import java.util.*;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.osgi.framework.ServiceReference;
 
@@ -45,6 +39,16 @@ public class ServicePropertyUtils {
 		Object val = reference.getProperty(propKey);
 		if (val == null || !(val instanceof String))
 			return null;
+		return (String) val;
+	}
+
+	public static String getStringProperty(ServiceReference reference,
+			String propKey, String defaultValue) {
+		if (reference == null || propKey == null)
+			return null;
+		Object val = reference.getProperty(propKey);
+		if (val == null || !(val instanceof String))
+			return defaultValue;
 		return (String) val;
 	}
 

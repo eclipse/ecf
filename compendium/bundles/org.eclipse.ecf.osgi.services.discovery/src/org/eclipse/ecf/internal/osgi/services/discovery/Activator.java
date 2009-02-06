@@ -9,12 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import java.net.URL;
-
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.*;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
@@ -23,7 +19,7 @@ public class Activator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.discovery";
 
-	private static final long DISCOVERY_TIMEOUT = 0;
+	private static final long DISCOVERY_TIMEOUT = 5000;
 
 	private ServiceTracker servicePublicationTracker;
 	private ServiceTracker discoveryServiceTracker;
@@ -47,14 +43,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
-		IDiscoveryService discovery = getDiscoveryService();
-		if (discovery == null) throw new NullPointerException("discovery service cannot be found");
-		URL bundleURL = ctxt.getBundle().getEntry("/");
-		String bundleURLString = bundleURL.toExternalForm();
-		if (!bundleURLString.endsWith("/"))
-			bundleURLString = bundleURLString + "/";
-		servicePublicationHandler = new ServicePublicationHandler(discovery,
-				bundleURLString);
+		servicePublicationHandler = new ServicePublicationHandler();
 		servicePublicationTracker = new ServiceTracker(context,
 				ServicePublication.class.getName(), servicePublicationHandler);
 		servicePublicationTracker.open();
@@ -74,7 +63,8 @@ public class Activator implements BundleActivator {
 					IDiscoveryService.class.getName(), null);
 			discoveryServiceTracker.open();
 		}
-		return (IDiscoveryService) discoveryServiceTracker.waitForService(DISCOVERY_TIMEOUT);
+		return (IDiscoveryService) discoveryServiceTracker
+				.waitForService(DISCOVERY_TIMEOUT);
 	}
 
 	public ServiceReference[] getDiscoveredServiceTrackerReferences() {

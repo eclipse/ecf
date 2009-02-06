@@ -14,3 +14,6 @@ org.eclipse.ecf.osgi.services.discovery/debug/exceptions/throwing=true
 org.eclipse.ecf.osgi.services.discovery/debug/methods/entering=true
 # Trace when methods are exited
 org.eclipse.ecf.osgi.services.discovery/debug/methods/exiting=true
+
+# Trace service publication events
+org.eclipse.ecf.osgi.services.discovery/debug/servicepublication=true

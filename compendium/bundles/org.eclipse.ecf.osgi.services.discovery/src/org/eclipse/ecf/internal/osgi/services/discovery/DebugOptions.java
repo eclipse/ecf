@@ -23,6 +23,7 @@ public interface DebugOptions {
 
 	public static final String METHODS_EXITING = DEBUG + "/methods/exiting"; //$NON-NLS-1$
 
-	public static final String SVCPUBHANDLERDEBUG = DEBUG + "/eventhook";
+	public static final String SVCPUBHANDLERDEBUG = DEBUG
+			+ "/servicepublication";
 
 }
