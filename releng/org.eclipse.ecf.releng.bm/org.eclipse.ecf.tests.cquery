@@ -34,5 +34,5 @@
     <cq:advisorNode namePattern="org.jivesoftware.smack" useTargetPlatform="false"/>
 
 	<!-- the rest we want binary only -->
-    <cq:advisorNode namePattern=".*" useTargetPlatform="false" skipComponent="false" mutableLevel="REJECT" sourceLevel="REJECT"/>
+    <cq:advisorNode namePattern=".*" useTargetPlatform="false" skipComponent="true" mutableLevel="REJECT" sourceLevel="REJECT"/>
 </cq:componentQuery>
