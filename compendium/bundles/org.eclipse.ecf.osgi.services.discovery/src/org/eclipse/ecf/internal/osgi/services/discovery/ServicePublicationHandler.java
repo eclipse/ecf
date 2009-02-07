@@ -51,6 +51,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
 					discoveredTrackers[i]
 							.serviceChanged(new DiscoveredServiceNotificationImpl(
+									localContainerID,
 									DiscoveredServiceNotification.AVAILABLE,
 									serviceInfo));
 				}
@@ -67,6 +68,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
 					discoveredTrackers[i]
 							.serviceChanged(new DiscoveredServiceNotificationImpl(
+									localContainerID,
 									DiscoveredServiceNotification.UNAVAILABLE,
 									serviceInfo));
 				}

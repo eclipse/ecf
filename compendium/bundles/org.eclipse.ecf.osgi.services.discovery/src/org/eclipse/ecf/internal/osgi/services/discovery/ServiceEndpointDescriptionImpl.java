@@ -11,16 +11,11 @@ package org.eclipse.ecf.internal.osgi.services.discovery;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
+import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.osgi.service.discovery.ServiceEndpointDescription;
 import org.osgi.service.discovery.ServicePublication;
 
@@ -29,8 +24,12 @@ public class ServiceEndpointDescriptionImpl implements
 
 	private final IServiceInfo serviceInfo;
 
-	public ServiceEndpointDescriptionImpl(IServiceInfo serviceInfo) {
+	public ServiceEndpointDescriptionImpl(ID localContainerID,
+			IServiceInfo serviceInfo) {
 		this.serviceInfo = serviceInfo;
+		// add localContainerID to set of service properties exposed by this
+		this.serviceInfo.getServiceProperties().setProperty(
+				ECFServicePublication.CONTAINER_ID_PROP, localContainerID);
 	}
 
 	public String getEndpointID() {
