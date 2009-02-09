@@ -14,11 +14,12 @@ import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 /**
- * Event sent to {@link IFileTransferListener} associated with {@link IIncomingFileTransfer} 
- * instances when file transfer is resumed.
+ * Event sent to {@link IFileTransferListener} associated with
+ * {@link IIncomingFileTransfer} instances when file transfer is resumed.
  * 
  */
-public interface IIncomingFileTransferReceiveResumedEvent extends IFileTransferEvent {
+public interface IIncomingFileTransferReceiveResumedEvent extends
+		IIncomingFileTransferEvent {
 
 	/**
 	 * Get IFileID for incoming file
@@ -29,57 +30,62 @@ public interface IIncomingFileTransferReceiveResumedEvent extends IFileTransferE
 	public IFileID getFileID();
 
 	/**
-	 * Get incoming file transfer object by specifying a local File	instance to
+	 * Get incoming file transfer object by specifying a local File instance to
 	 * save the received contents to.
 	 * 
 	 * @param localFileToSave
 	 *            the file on the local file system to receive and save the
-	 *            remote file. Must not be <code>null</code>. 
-	 * @param append 
-	 *            if <code>true</code>, and data received is appended to the given
-	 *            localFileToSave.  If <code>false</code>, data are written to the 
-	 *            beginning of the given localFileToSave, and any existing contents 
-	 *            are overwritten.
-	 * @return IIncomingFileTransfer 
-	 *            the incoming file transfer object. Will not be <code>null</code>.
+	 *            remote file. Must not be <code>null</code>.
+	 * @param append
+	 *            if <code>true</code>, and data received is appended to the
+	 *            given localFileToSave. If <code>false</code>, data are written
+	 *            to the beginning of the given localFileToSave, and any
+	 *            existing contents are overwritten.
+	 * @return IIncomingFileTransfer the incoming file transfer object. Will not
+	 *         be <code>null</code>.
 	 * @throws IOException
-	 *            if localFileToSave cannot be opened for writing.
+	 *             if localFileToSave cannot be opened for writing.
 	 * @since 2.0
 	 */
-	public IIncomingFileTransfer receive(File localFileToSave, boolean append) throws IOException;
+	public IIncomingFileTransfer receive(File localFileToSave, boolean append)
+			throws IOException;
 
 	/**
-	 * Just like {@link #receive(File,boolean)} but this method also give the caller
-	 * a chance to provide a factory that creates the job that will perform	the
-	 * actual file transfer. The intended use for this is when the user of the
-	 * framework needs more elaborate control over such jobs such as waiting for a
-	 * group of parallel file transfers to complete. Such functionality can	for
-	 * instance exploit the Eclipse runtime concept of Job families.
+	 * Just like {@link #receive(File,boolean)} but this method also give the
+	 * caller a chance to provide a factory that creates the job that will
+	 * perform the actual file transfer. The intended use for this is when the
+	 * user of the framework needs more elaborate control over such jobs such as
+	 * waiting for a group of parallel file transfers to complete. Such
+	 * functionality can for instance exploit the Eclipse runtime concept of Job
+	 * families.
 	 * 
 	 * @param localFileToSave
 	 *            the file on the local file system to receive and save the
-	 *            remote file. Must not be <code>null</code>. 
-	 * @param append 
-	 *            if <code>true</code>, and data received is appended to the given
-	 *            localFileToSave.  If <code>false</code>, data are written to the
-	 *            beginning of the given localFileToSave, and any existing contents 
-	 *            are	overwritten.
-	 * @param fileTransferJob 
-	 *            A subclass of {@link FileTransferJob} to use to run the actual 
-	 *            transfer.  If <code>null</code>, provider will create default
-	 *            implementation.  NOTE: the given job should *not* be scheduled/started 
-	 *            prior to being provided as parameter to this method.
-	 * @return IIncomingFileTransfer 
-	 *            the incoming file transfer object. NOTE: the caller is responsible 
-	 *            for calling {@link OutputStream#close()} on the OutputStream provided. 
-	 *            If the stream provided is buffered, then 
-	 *            {@link BufferedOutputStream#flush()} should be called to guarantee 
-	 *            that the data received is actually written to the given OutputStream.
+	 *            remote file. Must not be <code>null</code>.
+	 * @param append
+	 *            if <code>true</code>, and data received is appended to the
+	 *            given localFileToSave. If <code>false</code>, data are written
+	 *            to the beginning of the given localFileToSave, and any
+	 *            existing contents are overwritten.
+	 * @param fileTransferJob
+	 *            A subclass of {@link FileTransferJob} to use to run the actual
+	 *            transfer. If <code>null</code>, provider will create default
+	 *            implementation. NOTE: the given job should *not* be
+	 *            scheduled/started prior to being provided as parameter to this
+	 *            method.
+	 * @return IIncomingFileTransfer the incoming file transfer object. NOTE:
+	 *         the caller is responsible for calling
+	 *         {@link OutputStream#close()} on the OutputStream provided. If the
+	 *         stream provided is buffered, then
+	 *         {@link BufferedOutputStream#flush()} should be called to
+	 *         guarantee that the data received is actually written to the given
+	 *         OutputStream.
 	 * @throws IOException
-	 *            if streamToStore cannot be opened for writing.
+	 *             if streamToStore cannot be opened for writing.
 	 * @since 2.0
 	 */
-	public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob, boolean append) throws IOException;
+	public IIncomingFileTransfer receive(File localFileToSave,
+			FileTransferJob fileTransferJob, boolean append) throws IOException;
 
 	/**
 	 * Get incoming file transfer by specifying an OutputStream instance to save
@@ -92,44 +98,49 @@ public interface IIncomingFileTransferReceiveResumedEvent extends IFileTransferE
 	 * @param streamToStore
 	 *            the output stream to store the incoming file. Must not be
 	 *            <code>null</code>.
-	 * @return IIncomingFileTransfer 
-	 *            the incoming file transfer object. NOTE: the caller is responsible 
-	 *            for calling {@link OutputStream#close()} on the OutputStream 
-	 *            provided. If the stream provided is buffered, then
-	 *            {@link BufferedOutputStream#flush()} should be called to
-	 *            guarantee that the data received is actually written to the
-	 *            given OutputStream.
+	 * @return IIncomingFileTransfer the incoming file transfer object. NOTE:
+	 *         the caller is responsible for calling
+	 *         {@link OutputStream#close()} on the OutputStream provided. If the
+	 *         stream provided is buffered, then
+	 *         {@link BufferedOutputStream#flush()} should be called to
+	 *         guarantee that the data received is actually written to the given
+	 *         OutputStream.
 	 * @throws IOException
-	 *            if streamToStore cannot be opened for writing
+	 *             if streamToStore cannot be opened for writing
 	 */
-	public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException;
+	public IIncomingFileTransfer receive(OutputStream streamToStore)
+			throws IOException;
 
 	/**
-	 * Just like {@link #receive(OutputStream)} but this method also give the caller
-	 * a chance to provide a factory that creates the job that will perform the
-	 * actual file transfer. The intended use for this is when the user of the
-	 * framework needs more elaborate control over such jobs such as waiting for a
-	 * group of parallel file transfers to complete. Such functionality can for
-	 * instance exploit the Eclipse runtime concept of Job families.
+	 * Just like {@link #receive(OutputStream)} but this method also give the
+	 * caller a chance to provide a factory that creates the job that will
+	 * perform the actual file transfer. The intended use for this is when the
+	 * user of the framework needs more elaborate control over such jobs such as
+	 * waiting for a group of parallel file transfers to complete. Such
+	 * functionality can for instance exploit the Eclipse runtime concept of Job
+	 * families.
 	 * 
 	 * @param streamToStore
 	 *            the output stream to store the incoming file. Must not be
 	 *            <code>null</code>.
-	 * @param fileTransferJob 
-	 *            A subclass of {@link FileTransferJob} to use to run the actual transfer.  
-	 *            If <code>null</code>, provider will create default implementation.  
-	 *            NOTE: the given job should *not* be scheduled/started prior to being 
-	 *            provided as a parameter to this method.
-	 * @return IIncomingFileTransfer 
-	 *            the incoming file transfer object. NOTE: the caller is responsible 
-	 *            for calling {@link OutputStream#close()} on the OutputStream provided. 
-	 *            If the stream provided is buffered, then
-	 *            {@link BufferedOutputStream#flush()} should be called to guarantee
-	 *            that the data received is actually written to the given OutputStream.
+	 * @param fileTransferJob
+	 *            A subclass of {@link FileTransferJob} to use to run the actual
+	 *            transfer. If <code>null</code>, provider will create default
+	 *            implementation. NOTE: the given job should *not* be
+	 *            scheduled/started prior to being provided as a parameter to
+	 *            this method.
+	 * @return IIncomingFileTransfer the incoming file transfer object. NOTE:
+	 *         the caller is responsible for calling
+	 *         {@link OutputStream#close()} on the OutputStream provided. If the
+	 *         stream provided is buffered, then
+	 *         {@link BufferedOutputStream#flush()} should be called to
+	 *         guarantee that the data received is actually written to the given
+	 *         OutputStream.
 	 * @throws IOException
-	 *            if streamToStore cannot be opened for writing
+	 *             if streamToStore cannot be opened for writing
 	 */
-	public IIncomingFileTransfer receive(OutputStream streamToStore, FileTransferJob fileTransferJob) throws IOException;
+	public IIncomingFileTransfer receive(OutputStream streamToStore,
+			FileTransferJob fileTransferJob) throws IOException;
 
 	/**
 	 * Cancel incoming file transfer
