@@ -28,6 +28,7 @@ import org.eclipse.ui.actions.CompoundContributionItem;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.menus.CommandContributionItem;
+import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.services.IServiceLocator;
 
 /**
@@ -42,7 +43,6 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	protected static final IContributionItem[] NO_CONTRIBUTIONS = new IContributionItem[] {};
 
 	private static final String ROSTERCOMMAND_PREFIX = "org.eclipse.ecf.presence.ui.rosterCommand."; //$NON-NLS-1$
-	private static final List contributionItems = new ArrayList();
 	private static final List handlerActivations = new ArrayList();
 	private static int commandIdIndex = 0;
 
@@ -269,7 +269,11 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	 * @return CommandContributionItem created.  Must not return <code>null</code>.
 	 */
 	protected CommandContributionItem createCommandContributionItemForEntry(String commandId, IRosterEntry rosterEntry) {
-		return new CommandContributionItem(serviceLocator, null, commandId, new HashMap(), getRosterEntryImageDescriptor(rosterEntry), null, null, rosterEntry.getName(), null, null, CommandContributionItem.STYLE_PUSH);
+		CommandContributionItemParameter p = new CommandContributionItemParameter(serviceLocator, null, commandId, CommandContributionItem.STYLE_PUSH);
+		p.icon = getRosterEntryImageDescriptor(rosterEntry);
+		p.label = rosterEntry.getName();
+		// 3.4 return new CommandContributionItem(serviceLocator, null, commandId, new HashMap(), getRosterEntryImageDescriptor(rosterEntry), null, null, rosterEntry.getName(), null, null, CommandContributionItem.STYLE_PUSH);
+		return new CommandContributionItem(p);
 	}
 
 	/* (non-Javadoc)
@@ -277,7 +281,6 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	 */
 	public void dispose() {
 		super.dispose();
-		contributionItems.clear();
 		if (handlerService != null) {
 			handlerService.deactivateHandlers(handlerActivations);
 			handlerService = null;
@@ -285,11 +288,6 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 		}
 		handlerActivations.clear();
 		commandService = null;
-	}
-
-	protected void clearOldContributions() {
-		contributionItems.clear();
-		handlerService.deactivateHandlers(handlerActivations);
 	}
 
 	protected List getPresenceContainerAdapters() {
@@ -311,7 +309,7 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	 * @see org.eclipse.ui.actions.CompoundContributionItem#getContributionItems()
 	 */
 	protected IContributionItem[] getContributionItems() {
-		clearOldContributions();
+		//		clearOldContributions();
 		List presenceContainers = getPresenceContainerAdapters();
 		if (presenceContainers.size() == 0)
 			return NO_CONTRIBUTIONS;
