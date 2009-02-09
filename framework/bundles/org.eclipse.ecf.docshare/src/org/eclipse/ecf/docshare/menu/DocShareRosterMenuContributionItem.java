@@ -66,7 +66,6 @@ public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContri
 	 * @see org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuContributionItem#getContributionItems()
 	 */
 	protected IContributionItem[] getContributionItems() {
-		clearOldContributions();
 		// Make sure this is a text editor
 		final IEditorPart editorPart = getEditorPart();
 		if (editorPart == null || !(editorPart instanceof ITextEditor))
