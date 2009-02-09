@@ -8,13 +8,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
-import java.io.Serializable;
-
 /**
  * Event 'tag' interface. This is a super-interface for all ECF event
  * interfaces/classes
  * 
  */
-public interface Event extends Serializable {
+public interface Event {
 	// No methods. This is a 'tag' interface
 }
