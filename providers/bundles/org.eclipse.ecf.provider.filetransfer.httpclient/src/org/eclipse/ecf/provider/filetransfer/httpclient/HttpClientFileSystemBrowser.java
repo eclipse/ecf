@@ -19,7 +19,7 @@ import java.net.URL;
 import javax.security.auth.login.LoginException;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.security.*;
@@ -51,7 +51,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	protected HttpClient httpClient = null;
 
-	protected GetMethod getMethod;
+	protected HeadMethod headMethod;
 
 	protected HostConfigHelper hostConfigHelper;
 
@@ -81,25 +81,25 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		// setup https host and port
 		setupHostAndPort(urlString);
 
-		getMethod = new GetMethod(hostConfigHelper.getTargetRelativePath());
-		getMethod.setFollowRedirects(true);
+		headMethod = new HeadMethod(hostConfigHelper.getTargetRelativePath());
+		headMethod.setFollowRedirects(true);
 		// Define a CredentialsProvider - found that possibility while debugging in org.apache.commons.httpclient.HttpMethodDirector.processProxyAuthChallenge(HttpMethod)
 		// Seems to be another way to select the credentials.
-		getMethod.getParams().setParameter(CredentialsProvider.PROVIDER, new ECFCredentialsProvider());
+		headMethod.getParams().setParameter(CredentialsProvider.PROVIDER, new ECFCredentialsProvider());
 		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
-		getMethod.addRequestHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		headMethod.addRequestHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
 
 		long lastModified = 0;
 		long fileLength = -1;
 		try {
 			Trace.trace(Activator.PLUGIN_ID, "browse=" + urlString); //$NON-NLS-1$
 
-			int code = httpClient.executeMethod(getHostConfiguration(), getMethod);
+			int code = httpClient.executeMethod(getHostConfiguration(), headMethod);
 
 			Trace.trace(Activator.PLUGIN_ID, "browse resp=" + code); //$NON-NLS-1$
 
 			if (code == HttpURLConnection.HTTP_OK) {
-				fileLength = getMethod.getResponseContentLength();
+				fileLength = headMethod.getResponseContentLength();
 				lastModified = getLastModifiedTimeFromHeader();
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 				throw new FileNotFoundException(urlString);
@@ -118,12 +118,12 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "runRequest", e); //$NON-NLS-1$
 			throw e;
 		} finally {
-			getMethod.releaseConnection();
+			headMethod.releaseConnection();
 		}
 	}
 
 	private long getLastModifiedTimeFromHeader() throws IOException {
-		Header lastModifiedHeader = getMethod.getResponseHeader("Last-Modified"); //$NON-NLS-1$
+		Header lastModifiedHeader = headMethod.getResponseHeader("Last-Modified"); //$NON-NLS-1$
 		if (lastModifiedHeader == null)
 			return 0L;
 		String lastModifiedString = lastModifiedHeader.getValue();
