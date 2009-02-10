@@ -11,6 +11,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
+import org.eclipse.ecf.provider.filetransfer.util.PollingInputStream;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -40,6 +42,8 @@ public abstract class AbstractRetrieveFileTransfer implements
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
 	private static final int FILETRANSFER_ERRORCODE = 1001;
+
+	protected static final int POLLING_RETRY_ATTEMPTS = 20;
 
 	protected Job job;
 
@@ -99,13 +103,17 @@ public abstract class AbstractRetrieveFileTransfer implements
 							getRemoteFileURL().toString()
 									+ Messages.AbstractRetrieveFileTransfer_Progress_Data,
 							work);
+			InputStream readInputStream = new PollingInputStream(
+					remoteFileContents, POLLING_RETRY_ATTEMPTS, monitor);
 			try {
 				while (!isDone() && !isPaused()) {
-					if (monitor.isCanceled())
+					try {
+						final int bytes = readInputStream.read(buf);
+						handleReceivedData(buf, bytes, factor, monitor);
+					} catch (OperationCanceledException e) {
 						throw new UserCancelledException(
 								Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
-					final int bytes = remoteFileContents.read(buf);
-					handleReceivedData(buf, bytes, factor, monitor);
+					}
 				}
 			} catch (final Exception e) {
 				exception = e;

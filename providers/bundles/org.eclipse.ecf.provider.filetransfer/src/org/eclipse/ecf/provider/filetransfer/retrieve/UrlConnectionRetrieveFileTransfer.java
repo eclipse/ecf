@@ -21,7 +21,8 @@ import org.eclipse.ecf.internal.provider.filetransfer.*;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
-public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
+public class UrlConnectionRetrieveFileTransfer extends
+		AbstractRetrieveFileTransfer {
 
 	private static final String USERNAME_PREFIX = Messages.UrlConnectionRetrieveFileTransfer_USERNAME_PROMPT;
 
@@ -31,11 +32,11 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	private static final String JRE_CONNECT_TIMEOUT_PROPERTY = "sun.net.client.defaultConnectTimeout"; //$NON-NLS-1$
 
-	private static final String DEFAULT_CONNECT_TIMEOUT = "30000"; //$NON-NLS-1$
+	private static final String DEFAULT_CONNECT_TIMEOUT = "15000"; //$NON-NLS-1$
 
 	private static final String JRE_READ_TIMEOUT_PROPERTY = "sun.net.client.defaultReadTimeout"; //$NON-NLS-1$
 
-	private static final String DEFAULT_READ_TIMEOUT = "30000"; //$NON-NLS-1$
+	private static final String DEFAULT_READ_TIMEOUT = "1000"; //$NON-NLS-1$
 
 	protected URLConnection urlConnection;
 
@@ -58,8 +59,12 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		proxyHelper = new JREProxyHelper();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getRemoteFileName()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #getRemoteFileName()
 	 */
 	public String getRemoteFileName() {
 		return remoteFileName;
@@ -69,11 +74,13 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		setupTimeouts();
 		urlConnection = getRemoteFileURL().openConnection();
 		// set cache to off if using jar protocol
-		// this is for addressing bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=235933
+		// this is for addressing bug
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=235933
 		if (getRemoteFileURL().getProtocol().equalsIgnoreCase("jar")) { //$NON-NLS-1$
 			urlConnection.setUseCaches(false);
 		}
-		IURLConnectionModifier connectionModifier = Activator.getDefault().getURLConnectionModifier();
+		IURLConnectionModifier connectionModifier = Activator.getDefault()
+				.getURLConnectionModifier();
 		if (connectionModifier != null) {
 			connectionModifier.setSocketFactoryForConnection(urlConnection);
 		}
@@ -85,29 +92,39 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	protected void setResumeRequestHeaderValues() throws IOException {
 		if (this.bytesReceived <= 0 || this.fileLength <= this.bytesReceived)
-			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR);
+			throw new IOException(
+					Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR);
 		setRangeHeader("bytes=" + this.bytesReceived + "-"); //$NON-NLS-1$ //$NON-NLS-2$
-		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
+		// set max-age for cache control to 0 for bug
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		urlConnection.setRequestProperty("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
-	protected void setRequestHeaderValues() throws InvalidFileRangeSpecificationException {
+	protected void setRequestHeaderValues()
+			throws InvalidFileRangeSpecificationException {
 		final IFileRangeSpecification rangeSpec = getFileRangeSpecification();
 		if (rangeSpec != null && isHTTP()) {
 			final long startPosition = rangeSpec.getStartPosition();
 			final long endPosition = rangeSpec.getEndPosition();
 			if (startPosition < 0)
-				throw new InvalidFileRangeSpecificationException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO, rangeSpec);
+				throw new InvalidFileRangeSpecificationException(
+						Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO,
+						rangeSpec);
 			if (endPosition != -1L && endPosition <= startPosition)
-				throw new InvalidFileRangeSpecificationException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START, rangeSpec);
+				throw new InvalidFileRangeSpecificationException(
+						Messages.UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START,
+						rangeSpec);
 			setRangeHeader("bytes=" + startPosition + "-" + ((endPosition == -1L) ? "" : ("" + endPosition))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		// Add http 1.1 'Connection: close' header in order to potentially avoid
-		// server issue described here https://bugs.eclipse.org/bugs/show_bug.cgi?id=234916#c13
+		// server issue described here
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=234916#c13
 		// See bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=247197
-		// also see http 1.1 rfc section 14-10 in http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+		// also see http 1.1 rfc section 14-10 in
+		// http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
 		urlConnection.setRequestProperty("Connection", "close"); //$NON-NLS-1$ //$NON-NLS-2$
-		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
+		// set max-age for cache control to 0 for bug
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		urlConnection.setRequestProperty("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
@@ -161,15 +178,19 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	protected void getResponseHeaderValues() throws IOException {
 		if (!isConnected())
-			throw new ConnectException(Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
+			throw new ConnectException(
+					Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
 		if (getResponseCode() == -1)
-			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE);
+			throw new IOException(
+					Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE);
 		setLastModifiedTime(urlConnection.getLastModified());
 		setFileLength(urlConnection.getContentLength());
 
-		String contentDispositionValue = urlConnection.getHeaderField(HttpHelper.CONTENT_DISPOSITION_HEADER);
+		String contentDispositionValue = urlConnection
+				.getHeaderField(HttpHelper.CONTENT_DISPOSITION_HEADER);
 		if (contentDispositionValue != null) {
-			remoteFileName = HttpHelper.getRemoteFileNameFromContentDispositionHeader(contentDispositionValue);
+			remoteFileName = HttpHelper
+					.getRemoteFileNameFromContentDispositionHeader(contentDispositionValue);
 		}
 
 		if (remoteFileName == null) {
@@ -186,41 +207,52 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	protected void getResumeResponseHeaderValues() throws IOException {
 		if (!isConnected())
-			throw new ConnectException(Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
+			throw new ConnectException(
+					Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
 		if (getResponseCode() != HTTP_RANGE_RESPONSE)
-			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST);
+			throw new IOException(
+					Messages.UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST);
 		if (lastModifiedTime != urlConnection.getLastModified())
-			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS);
+			throw new IOException(
+					Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS);
 	}
 
 	/**
-	 * @param proxy2 the ECF proxy to setup
+	 * @param proxy2
+	 *            the ECF proxy to setup
 	 */
 	protected void setupProxy(final Proxy proxy2) {
 		proxyHelper.setupProxy(proxy2);
 	}
 
-	protected void setupAuthentication() throws IOException, UnsupportedCallbackException {
+	protected void setupAuthentication() throws IOException,
+			UnsupportedCallbackException {
 		if (connectContext == null)
 			return;
-		final CallbackHandler callbackHandler = connectContext.getCallbackHandler();
+		final CallbackHandler callbackHandler = connectContext
+				.getCallbackHandler();
 		if (callbackHandler == null)
 			return;
 		final NameCallback usernameCallback = new NameCallback(USERNAME_PREFIX);
 		final ObjectCallback passwordCallback = new ObjectCallback();
 		// Call callback with username and password callbacks
-		callbackHandler.handle(new Callback[] {usernameCallback, passwordCallback});
+		callbackHandler.handle(new Callback[] { usernameCallback,
+				passwordCallback });
 		username = usernameCallback.getName();
 		Object o = passwordCallback.getObject();
 		if (!(o instanceof String))
-			throw new UnsupportedCallbackException(passwordCallback, Messages.UrlConnectionRetrieveFileTransfer_UnsupportedCallbackException);
+			throw new UnsupportedCallbackException(
+					passwordCallback,
+					Messages.UrlConnectionRetrieveFileTransfer_UnsupportedCallbackException);
 		password = (String) passwordCallback.getObject();
 		// Now set authenticator to our authenticator with user and password
 		Authenticator.setDefault(new UrlConnectionAuthenticator());
 	}
 
 	class UrlConnectionAuthenticator extends Authenticator {
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.net.Authenticator#getPasswordAuthentication()
 		 */
 		protected PasswordAuthentication getPasswordAuthentication() {
@@ -230,10 +262,13 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
+	 * 
+	 * @seeorg.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#
+	 * setConnectContextForAuthentication
+	 * (org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+	public void setConnectContextForAuthentication(
+			IConnectContext connectContext) {
 		super.setConnectContextForAuthentication(connectContext);
 		this.username = null;
 		this.password = null;
@@ -241,8 +276,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #openStreams()
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
 		try {
@@ -256,7 +293,11 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			getResponseHeaderValues();
 			fireReceiveStartEvent();
 		} catch (final Exception e) {
-			IncomingFileTransferException except = new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e);
+			IncomingFileTransferException except = new IncomingFileTransferException(
+					NLS
+							.bind(
+									Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT,
+									getRemoteFileURL().toString()), e);
 			hardClose();
 			throw except;
 		}
@@ -264,8 +305,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #hardClose()
 	 */
 	protected void hardClose() {
 		super.hardClose();
@@ -279,8 +322,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doPause()
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #doPause()
 	 */
 	protected boolean doPause() {
 		if (isPaused() || !isConnected() || isDone())
@@ -291,8 +336,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doResume()
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #doResume()
 	 */
 	protected boolean doResume() {
 		if (!isPaused() || isConnected())
@@ -302,8 +349,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	/*
 	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getAdapter(java.lang.Class)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
 		if (adapter == null)
@@ -314,9 +363,11 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	}
 
 	private void setupTimeouts() {
-		String existingTimeout = System.getProperty(JRE_CONNECT_TIMEOUT_PROPERTY);
+		String existingTimeout = System
+				.getProperty(JRE_CONNECT_TIMEOUT_PROPERTY);
 		if (existingTimeout == null) {
-			System.setProperty(JRE_CONNECT_TIMEOUT_PROPERTY, DEFAULT_CONNECT_TIMEOUT);
+			System.setProperty(JRE_CONNECT_TIMEOUT_PROPERTY,
+					DEFAULT_CONNECT_TIMEOUT);
 		}
 		existingTimeout = System.getProperty(JRE_READ_TIMEOUT_PROPERTY);
 		if (existingTimeout == null) {
@@ -325,7 +376,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	}
 
 	/**
-	 * @return <code>true</code> if streams successfully, <code>false</code> otherwise.
+	 * @return <code>true</code> if streams successfully, <code>false</code>
+	 *         otherwise.
 	 */
 	private boolean openStreamsForResume() {
 		final URL theURL = getRemoteFileURL();
@@ -356,7 +408,11 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	private static final String CONTENT_ENCODING_GZIP = "gzip"; //$NON-NLS-1$
 	//	private static final String CONTENT_ENCODING_DEFLATE = "deflate"; //$NON-NLS-1$
 
-	private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP; //  + "," + CONTENT_ENCODING_DEFLATE;
+	private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP; // +
+
+	// ","
+	// +
+	// CONTENT_ENCODING_DEFLATE;
 
 	private static class Compression {
 
@@ -379,7 +435,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	private void setCompressionRequestHeader() {
 		if (rangeSpecification == null)
-			urlConnection.setRequestProperty(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
+			urlConnection.setRequestProperty(ACCEPT_ENCODING,
+					CONTENT_ENCODING_ACCEPTED);
 	}
 
 	private Compression getCompressionResponseHeader() {
@@ -389,8 +446,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			return Compression.NONE;
 		} else if (encoding.equalsIgnoreCase(CONTENT_ENCODING_GZIP)) {
 			return Compression.GZIP;
-			//		} else if (encoding.equalsIgnoreCase(CONTENT_ENCODING_DEFLATE)) {
-			//			return Compression.DEFLATE;
+			// } else if (encoding.equalsIgnoreCase(CONTENT_ENCODING_DEFLATE)) {
+			// return Compression.DEFLATE;
 		}
 		return Compression.NONE;
 	}
@@ -401,8 +458,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 		if (Compression.GZIP == type) {
 			return new java.util.zip.GZIPInputStream(input);
-			//		} else if (Compression.DEFLATE == type) {
-			//			return new java.util.zip.InflaterInputStream(input);
+			// } else if (Compression.DEFLATE == type) {
+			// return new java.util.zip.InflaterInputStream(input);
 		}
 		return input;
 	}
