@@ -144,6 +144,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
 
+	protected static final int DEFAULT_READ_TIMEOUT = 30000;
+
 	protected static final int HTTP_PORT = 80;
 
 	protected static final int HTTPS_PORT = 443;
@@ -366,7 +368,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		int code = -1;
 
 		try {
-			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_CONNECTION_TIMEOUT);
+			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_READ_TIMEOUT);
 			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
 
 			setupAuthentication(urlString);
@@ -543,7 +545,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			remoteFileURL = new URL(theURL.toString());
 			final String urlString = getRemoteFileURL().toString();
 
-			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_CONNECTION_TIMEOUT);
+			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_READ_TIMEOUT);
 			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
 
 			setupAuthentication(urlString);
