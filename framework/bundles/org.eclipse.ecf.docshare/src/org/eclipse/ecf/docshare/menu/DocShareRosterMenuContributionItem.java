@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2008 Composent, Inc. and others.
+ * Copyright (c) 2008, 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    IBM Corporation - support for certain non-text editors
  *****************************************************************************/
 package org.eclipse.ecf.docshare.menu;
 
@@ -67,9 +68,16 @@ public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContri
 	 */
 	protected IContributionItem[] getContributionItems() {
 		// Make sure this is a text editor
-		final IEditorPart editorPart = getEditorPart();
-		if (editorPart == null || !(editorPart instanceof ITextEditor))
+		IEditorPart editorPart = getEditorPart();
+		if (editorPart == null)
 			return NO_CONTRIBUTIONS;
+		// A frequent pattern for multi-page editors with one source page
+		if (!(editorPart instanceof ITextEditor)) {
+			editorPart = (IEditorPart) editorPart.getAdapter(ITextEditor.class);
+			if (editorPart == null)
+				return NO_CONTRIBUTIONS;
+		}
+
 		// If we are already engaged in a doc share (either as initiator or as receiver)
 		// Then present menu item to stop
 		final List presenceContainerAdapters = getPresenceContainerAdapters();

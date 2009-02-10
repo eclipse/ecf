@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007, 2008 Composent, Inc. and others.
+ * Copyright (c) 2007, 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *    Mustafa K. Isik - conflict resolution via operational transformations
  *    Marcelo Mayworm - Adding sync API dependence
+ *    IBM Corporation - support for certain non-text editors
  *****************************************************************************/
 
 package org.eclipse.ecf.docshare;
@@ -340,7 +341,13 @@ public class DocShare extends AbstractShare {
 						// If so, then we create a new DocShareEditorInput
 						final DocShareEditorInput dsei = new DocShareEditorInput(getTempFileStore(senderUsername, filename, startContent), senderUsername, filename);
 						// Then open up text editor
-						final ITextEditor ep = (ITextEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(dsei, getEditorIdForFileName(filename));
+						final ITextEditor ep;
+						IEditorPart editorPart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(dsei, getEditorIdForFileName(filename));
+						// if it's not a text editor, offer it a chance to give us one
+						if (editorPart != null && !(editorPart instanceof ITextEditor))
+							ep = (ITextEditor) editorPart.getAdapter(ITextEditor.class);
+						else
+							ep = (ITextEditor) editorPart;
 						// Then change our local state
 						localStartShare(getLocalRosterManager(), our, senderID, our, ep);
 					} else {

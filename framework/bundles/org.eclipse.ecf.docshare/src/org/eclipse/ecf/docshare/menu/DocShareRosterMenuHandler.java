@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Composent, Inc. and others.
+ * Copyright (c) 2007, 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    IBM Corporation - support for certain non-text editors
  *****************************************************************************/
 
 package org.eclipse.ecf.docshare.menu;
@@ -53,14 +54,15 @@ public class DocShareRosterMenuHandler extends AbstractRosterMenuHandler {
 		final IEditorPart ep = wp.getActiveEditor();
 		if (ep instanceof ITextEditor)
 			return (ITextEditor) ep;
+		if (ep != null)
+			return (ITextEditor) ep.getAdapter(ITextEditor.class);
 		return null;
 	}
 
-	private String getFileName(IEditorPart editorPart) {
+	private String getInputName(IEditorPart editorPart) {
 		final IEditorInput input = editorPart.getEditorInput();
-		if (input instanceof IFileEditorInput) {
-			final IFileEditorInput fei = (IFileEditorInput) input;
-			return fei.getName();
+		if (input != null) {
+			return input.getName();
 		}
 		return null;
 	}
@@ -87,11 +89,11 @@ public class DocShareRosterMenuHandler extends AbstractRosterMenuHandler {
 			final ITextEditor textEditor = getTextEditor();
 			if (textEditor == null)
 				showErrorMessage(Messages.DocShareRosterMenuHandler_EXCEPTION_EDITOR_NOT_TEXT);
-			final String fileName = getFileName(textEditor);
-			if (fileName == null)
+			final String inputName = getInputName(textEditor);
+			if (inputName == null)
 				showErrorMessage(Messages.DocShareRosterMenuHandler_NO_FILENAME_WITH_CONTENT);
 			final IUser user = roster.getUser();
-			sender.startShare(user.getID(), user.getName(), rosterEntry.getUser().getID(), fileName, textEditor);
+			sender.startShare(user.getID(), user.getName(), rosterEntry.getUser().getID(), inputName, textEditor);
 		}
 		return null;
 	}
