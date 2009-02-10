@@ -34,6 +34,8 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	protected static final String HTTPS_RETRIEVE = "https://www.verisign.com";
 	private static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
 
+	private static final String FTP_RETRIEVE = "ftp://ftp.osuosl.org/pub/eclipse/rt/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
+	
 	// See bug 237936
 	private static final String BUG_237936_URL = "http://www.eclipse.org/downloads/download.php?file=/webtools/updates/site.xml&format=xml&countryCode=us&timeZone=-5&responseType=xml";
 
@@ -96,7 +98,11 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		//addProxy("composent.com",3129,"foo\\bar","password");
 		testReceive(HTTP_RETRIEVE);
 	}
-
+	
+	public void testFTPReceiveFile() throws Exception {
+		testReceive(FTP_RETRIEVE);
+	}
+	
 	public void testHttpsReceiveFile() throws Exception {
 		testReceive(HTTPS_RETRIEVE);
 	}
