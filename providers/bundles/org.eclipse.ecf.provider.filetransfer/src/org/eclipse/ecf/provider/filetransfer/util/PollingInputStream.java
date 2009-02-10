@@ -43,8 +43,7 @@ public class PollingInputStream extends FilterInputStream {
 	 * @param monitor
 	 *            the progress monitor to be polled for cancellation
 	 */
-	public PollingInputStream(InputStream in, int numAttempts,
-			IProgressMonitor monitor) {
+	public PollingInputStream(InputStream in, int numAttempts, IProgressMonitor monitor) {
 		super(in);
 		this.numAttempts = numAttempts;
 		this.monitor = monitor;
@@ -82,8 +81,7 @@ public class PollingInputStream extends FilterInputStream {
 					if (checkCancellation())
 						throw new OperationCanceledException();
 					if (++attempts == numAttempts)
-						throw new InterruptedIOException(
-								"Timeout while closing input stream");
+						throw new InterruptedIOException("Timeout while closing input stream"); //$NON-NLS-1$
 				} catch (IOException e) {
 					// ignore it - see
 					// https://bugs.eclipse.org/bugs/show_bug.cgi?id=203423#c10
@@ -93,9 +91,7 @@ public class PollingInputStream extends FilterInputStream {
 	}
 
 	private void logError(String message, IOException e) {
-		Activator.getDefault().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-						message, e));
+		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, message, e));
 	}
 
 	/**
@@ -119,8 +115,7 @@ public class PollingInputStream extends FilterInputStream {
 				return in.read();
 			} catch (InterruptedIOException e) {
 				if (++attempts == numAttempts)
-					throw new InterruptedIOException(
-							"Timeout while reading input stream");
+					throw new InterruptedIOException("Timeout while reading input stream"); //$NON-NLS-1$
 			}
 		}
 	}
@@ -155,8 +150,7 @@ public class PollingInputStream extends FilterInputStream {
 				if (e.bytesTransferred != 0)
 					return e.bytesTransferred; // keep partial transfer
 				if (++attempts == numAttempts)
-					throw new InterruptedIOException(
-							"Timeout while reading input stream");
+					throw new InterruptedIOException("Timeout while reading input stream"); //$NON-NLS-1$
 			}
 		}
 	}
@@ -186,8 +180,7 @@ public class PollingInputStream extends FilterInputStream {
 				if (e.bytesTransferred != 0)
 					return e.bytesTransferred; // keep partial transfer
 				if (++attempts == numAttempts)
-					throw new InterruptedIOException(
-							"Timeout while reading input stream");
+					throw new InterruptedIOException("Timeout while reading input stream"); //$NON-NLS-1$
 			}
 		}
 	}
@@ -234,8 +227,7 @@ public class PollingInputStream extends FilterInputStream {
 	private boolean checkCancellation() {
 		if (cancellable) {
 			return monitor.isCanceled();
-		} else {
-			return false;
 		}
+		return false;
 	}
 }

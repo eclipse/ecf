@@ -62,8 +62,7 @@ public class TimeoutInputStream extends FilterInputStream {
 	 *            throwing an InterruptedIOException; 0 blocks indefinitely, -1
 	 *            closes the stream in the background
 	 */
-	public TimeoutInputStream(InputStream in, int bufferSize, long readTimeout,
-			long closeTimeout) {
+	public TimeoutInputStream(InputStream in, int bufferSize, long readTimeout, long closeTimeout) {
 		super(in);
 		this.readTimeout = readTimeout;
 		this.closeTimeout = closeTimeout;
@@ -77,8 +76,7 @@ public class TimeoutInputStream extends FilterInputStream {
 		thread.start();
 	}
 
-	public TimeoutInputStream(InputStream in, int bufferSize, long readTimeout,
-			long closeTimeout, boolean growWhenFull) {
+	public TimeoutInputStream(InputStream in, int bufferSize, long readTimeout, long closeTimeout, boolean growWhenFull) {
 		this(in, bufferSize, readTimeout, closeTimeout);
 		this.growWhenFull = growWhenFull;
 	}
@@ -160,8 +158,7 @@ public class TimeoutInputStream extends FilterInputStream {
 	 * @throws IOException
 	 *             if an i/o error occurs
 	 */
-	public synchronized int read(byte[] buffer, int off, int len)
-			throws IOException {
+	public synchronized int read(byte[] buffer, int off, int len) throws IOException {
 		if (!syncFill())
 			return -1; // EOF reached
 		int pos = off;
@@ -259,7 +256,7 @@ public class TimeoutInputStream extends FilterInputStream {
 	/**
 	 * Runs the thread in the background.
 	 */
-	private void runThread() {
+	void runThread() {
 		try {
 			readUntilDone();
 		} catch (IOException e) {
