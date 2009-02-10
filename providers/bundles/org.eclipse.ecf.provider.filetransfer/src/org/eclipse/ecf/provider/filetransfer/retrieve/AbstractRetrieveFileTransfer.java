@@ -11,8 +11,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
-import org.eclipse.ecf.provider.filetransfer.util.PollingInputStream;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,6 +32,8 @@ import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
+import org.eclipse.ecf.provider.filetransfer.util.PollingInputStream;
+import org.eclipse.ecf.provider.filetransfer.util.TimeoutInputStream;
 import org.eclipse.osgi.util.NLS;
 
 public abstract class AbstractRetrieveFileTransfer implements
@@ -44,6 +44,12 @@ public abstract class AbstractRetrieveFileTransfer implements
 	private static final int FILETRANSFER_ERRORCODE = 1001;
 
 	protected static final int POLLING_RETRY_ATTEMPTS = 20;
+
+	protected static final int TIMEOUT_INPUTSTREAM_BUFFER_SIZE = 8192;
+
+	protected static final int READ_TIMEOUT = 1000;
+
+	protected static final int CLOSE_TIMEOUT = 1000;
 
 	protected Job job;
 
@@ -119,6 +125,14 @@ public abstract class AbstractRetrieveFileTransfer implements
 				exception = e;
 				done = true;
 			} finally {
+				try {
+					if (readInputStream != null)
+						readInputStream.close();
+				} catch (final IOException e) {
+					Activator.getDefault().log(
+							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+									IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+				}
 				hardClose();
 				monitor.done();
 				try {
@@ -149,7 +163,8 @@ public abstract class AbstractRetrieveFileTransfer implements
 	}
 
 	protected void setInputStream(InputStream ins) {
-		remoteFileContents = ins;
+		remoteFileContents = new TimeoutInputStream(ins,
+				TIMEOUT_INPUTSTREAM_BUFFER_SIZE, READ_TIMEOUT, CLOSE_TIMEOUT);
 	}
 
 	protected void setOutputStream(OutputStream outs) {
