@@ -17,11 +17,11 @@ import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.internal.provider.irc.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
+import org.eclipse.equinox.concurrent.future.TimeoutException;
 import org.eclipse.osgi.util.NLS;
 import org.schwering.irc.lib.IRCUser;
 
@@ -29,7 +29,8 @@ import org.schwering.irc.lib.IRCUser;
  * IContainer class used to represent a specific IRC channel (e.g. #eclipse-dev)
  * 
  */
-public class IRCChannelContainer extends IRCAbstractContainer implements IChatMessageSender, IChatRoomContainer {
+public class IRCChannelContainer extends IRCAbstractContainer implements
+		IChatMessageSender, IChatRoomContainer {
 
 	private static final long CONNECT_TIMEOUT = 10000;
 
@@ -47,7 +48,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 
 	protected IChatRoomMessageSender sender = new IChatRoomMessageSender() {
 		public void sendMessage(String message) throws ECFException {
-			rootContainer.doSendChannelMessage(targetID.getName(), ircUser.toString(), message);
+			rootContainer.doSendChannelMessage(targetID.getName(), ircUser
+					.toString(), message);
 		}
 	};
 
@@ -59,19 +61,23 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatParticipantListener(org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener)
+	 * @seeorg.eclipse.ecf.presence.chatroom.IChatRoomContainer#
+	 * addChatParticipantListener
+	 * (org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener)
 	 */
-	public void addChatRoomParticipantListener(IChatRoomParticipantListener participantListener) {
+	public void addChatRoomParticipantListener(
+			IChatRoomParticipantListener participantListener) {
 		participantListeners.add(participantListener);
 	}
 
-	public void removeChatRoomParticipantListener(IChatRoomParticipantListener participantListener) {
+	public void removeChatRoomParticipantListener(
+			IChatRoomParticipantListener participantListener) {
 		participantListeners.remove(participantListener);
 	}
 
 	protected void handleUserQuit(String name) {
 		if (containsChannelParticipant(createIDFromString(name)) != null)
-			firePresenceListeners(false, new String[] {name});
+			firePresenceListeners(false, new String[] { name });
 	}
 
 	private IPresence createPresence(final boolean available) {
@@ -81,7 +87,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 			Map properties = new HashMap();
 
 			public Mode getMode() {
-				return (available ? IPresence.Mode.AVAILABLE : IPresence.Mode.AWAY);
+				return (available ? IPresence.Mode.AVAILABLE
+						: IPresence.Mode.AWAY);
 			}
 
 			public Map getProperties() {
@@ -93,7 +100,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 			}
 
 			public Type getType() {
-				return (available ? IPresence.Type.AVAILABLE : IPresence.Type.UNAVAILABLE);
+				return (available ? IPresence.Type.AVAILABLE
+						: IPresence.Type.UNAVAILABLE);
 			}
 
 			public Object getAdapter(Class adapter) {
@@ -117,7 +125,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 	protected ID removeChannelParticipant(ID participantID) {
 		if (channelParticipants.remove(participantID))
 			return participantID;
-		ID operatorID = createIDFromString(OPERATOR_PREFIX + participantID.getName());
+		ID operatorID = createIDFromString(OPERATOR_PREFIX
+				+ participantID.getName());
 		if (channelParticipants.remove(operatorID))
 			return operatorID;
 		return null;
@@ -126,7 +135,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 	protected ID containsChannelParticipant(ID participantID) {
 		if (channelParticipants.contains(participantID))
 			return participantID;
-		ID operatorID = createIDFromString(OPERATOR_PREFIX + participantID.getName());
+		ID operatorID = createIDFromString(OPERATOR_PREFIX
+				+ participantID.getName());
 		if (channelParticipants.contains(operatorID))
 			return operatorID;
 		return null;
@@ -140,21 +150,28 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 				ID participantID = createIDFromString(users[j]);
 				if (addChannelParticipant(participantID)) {
 					// Notify all listeners
-					for (Iterator i = participantListeners.iterator(); i.hasNext();) {
-						IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
+					for (Iterator i = participantListeners.iterator(); i
+							.hasNext();) {
+						IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
+								.next();
 
 						l.handleArrived(new User(participantID));
-						l.handlePresenceUpdated(participantID, createPresence(true));
+						l.handlePresenceUpdated(participantID,
+								createPresence(true));
 					}
 				}
 			} else {
 				ID removeID = removeChannelParticipant(createIDFromString(users[j]));
 				if (removeID != null) {
 					// Notify all listeners
-					for (Iterator i = participantListeners.iterator(); i.hasNext();) {
-						IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
+					for (Iterator i = participantListeners.iterator(); i
+							.hasNext();) {
+						IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
+								.next();
 
-						l.handlePresenceUpdated(removeID, createPresence(false));
+						l
+								.handlePresenceUpdated(removeID,
+										createPresence(false));
 						l.handleDeparted(new User(removeID));
 					}
 
@@ -172,7 +189,9 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatMessageSender()
+	 * @see
+	 * org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatMessageSender
+	 * ()
 	 */
 	public IChatRoomMessageSender getChatRoomMessageSender() {
 		return sender;
@@ -192,7 +211,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 				}
 			}
 		} else
-			firePresenceListeners(true, new String[] {getIRCUserName(user)});
+			firePresenceListeners(true, new String[] { getIRCUserName(user) });
 	}
 
 	protected void fireContainerEvent(IContainerEvent event) {
@@ -202,18 +221,23 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
-	 *      org.eclipse.ecf.core.security.IConnectContext)
+	 * @see
+	 * org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
+	 * org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID connectID, IConnectContext connectContext) throws ContainerConnectException {
+	public void connect(ID connectID, IConnectContext connectContext)
+			throws ContainerConnectException {
 		// Actually do join here
 		if (connectID == null)
-			throw new ContainerConnectException(Messages.IRCChannelContainer_Exception_TargetID_Null);
+			throw new ContainerConnectException(
+					Messages.IRCChannelContainer_Exception_TargetID_Null);
 		if (connectWaiting)
-			throw new ContainerConnectException(Messages.IRCChannelContainer_Exception_Connecting);
+			throw new ContainerConnectException(
+					Messages.IRCChannelContainer_Exception_Connecting);
 		// Get channel name
 		String channelName = connectID.getName();
-		fireContainerEvent(new ContainerConnectingEvent(this.getID(), connectID, connectContext));
+		fireContainerEvent(new ContainerConnectingEvent(this.getID(),
+				connectID, connectContext));
 		// Get password via callback in connectContext
 		String pw = getPasswordFromConnectContext(connectContext);
 		synchronized (connectLock) {
@@ -225,12 +249,20 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 					connectLock.wait(2000);
 				}
 				if (connectWaiting)
-					throw new TimeoutException(NLS.bind(Messages.IRCChannelContainer_Exception_Connect_Timeout, connectID.getName()), CONNECT_TIMEOUT);
+					throw new TimeoutException(
+							NLS
+									.bind(
+											Messages.IRCChannelContainer_Exception_Connect_Timeout,
+											connectID.getName()),
+							CONNECT_TIMEOUT);
 				this.targetID = connectID;
-				fireContainerEvent(new ContainerConnectedEvent(this.getID(), this.targetID));
+				fireContainerEvent(new ContainerConnectedEvent(this.getID(),
+						this.targetID));
 			} catch (Exception e) {
 				this.targetID = null;
-				throw new ContainerConnectException(NLS.bind(Messages.IRCChannelContainer_Exception_Connect_Failed, connectID.getName()), e);
+				throw new ContainerConnectException(NLS.bind(
+						Messages.IRCChannelContainer_Exception_Connect_Failed,
+						connectID.getName()), e);
 			} finally {
 				connectWaiting = false;
 			}
@@ -267,7 +299,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 	 * @see org.eclipse.ecf.core.IContainer#getConnectNamespace()
 	 */
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
+		return IDFactory.getDefault().getNamespaceByName(
+				StringID.class.getName());
 	}
 
 	protected boolean isLocalUserChannelOperator() {
@@ -277,7 +310,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 	protected boolean isLocalUserChannelOperator(String chOperator) {
 		if (!isChannelOperator(chOperator))
 			return false;
-		String localUserName = (ircUser == null) ? null : (OPERATOR_PREFIX + ircUser.getNick());
+		String localUserName = (ircUser == null) ? null
+				: (OPERATOR_PREFIX + ircUser.getNick());
 		if (localUserName == null)
 			return false;
 		if (chOperator.equals(localUserName))
@@ -289,7 +323,9 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 		this.channelOperator = channelOperator;
 	}
 
-	public void sendChatMessage(ID toID, ID threadID, org.eclipse.ecf.presence.im.IChatMessage.Type type, String subject, String body, Map properties) throws ECFException {
+	public void sendChatMessage(ID toID, ID threadID,
+			org.eclipse.ecf.presence.im.IChatMessage.Type type, String subject,
+			String body, Map properties) throws ECFException {
 		rootContainer.sendChatMessage(toID, body);
 	}
 
@@ -302,18 +338,25 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 	}
 
 	public ID[] getChatRoomParticipants() {
-		return (ID[]) channelParticipants.toArray(new ID[channelParticipants.size()]);
+		return (ID[]) channelParticipants.toArray(new ID[channelParticipants
+				.size()]);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatRoomAdminSender()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatRoomAdminSender
+	 * ()
 	 */
 	public IChatRoomAdminSender getChatRoomAdminSender() {
 		synchronized (this) {
 			if (adminSender == null) {
 				adminSender = new IChatRoomAdminSender() {
-					public void sendSubjectChange(String newsubject) throws ECFException {
-						rootContainer.doSendSubjectChangeMessage(targetID.getName(), newsubject);
+					public void sendSubjectChange(String newsubject)
+							throws ECFException {
+						rootContainer.doSendSubjectChangeMessage(targetID
+								.getName(), newsubject);
 					}
 				};
 			}
