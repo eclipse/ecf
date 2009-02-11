@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,7 @@ package org.eclipse.ecf.remoteservice;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.IFuture;
+import org.eclipse.equinox.concurrent.future.IFuture;
 
 /**
  * Helper class for making it easier to call a remote service with method name and optional parameters.
