@@ -18,8 +18,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
  * {@link IIncomingFileTransfer} instances when file transfer is resumed.
  * 
  */
-public interface IIncomingFileTransferReceiveResumedEvent extends
-		IIncomingFileTransferEvent {
+public interface IIncomingFileTransferReceiveResumedEvent extends IIncomingFileTransferEvent {
 
 	/**
 	 * Get IFileID for incoming file
@@ -47,8 +46,7 @@ public interface IIncomingFileTransferReceiveResumedEvent extends
 	 *             if localFileToSave cannot be opened for writing.
 	 * @since 2.0
 	 */
-	public IIncomingFileTransfer receive(File localFileToSave, boolean append)
-			throws IOException;
+	public IIncomingFileTransfer receive(File localFileToSave, boolean append) throws IOException;
 
 	/**
 	 * Just like {@link #receive(File,boolean)} but this method also give the
@@ -84,8 +82,7 @@ public interface IIncomingFileTransferReceiveResumedEvent extends
 	 *             if streamToStore cannot be opened for writing.
 	 * @since 2.0
 	 */
-	public IIncomingFileTransfer receive(File localFileToSave,
-			FileTransferJob fileTransferJob, boolean append) throws IOException;
+	public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob, boolean append) throws IOException;
 
 	/**
 	 * Get incoming file transfer by specifying an OutputStream instance to save
@@ -108,8 +105,7 @@ public interface IIncomingFileTransferReceiveResumedEvent extends
 	 * @throws IOException
 	 *             if streamToStore cannot be opened for writing
 	 */
-	public IIncomingFileTransfer receive(OutputStream streamToStore)
-			throws IOException;
+	public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException;
 
 	/**
 	 * Just like {@link #receive(OutputStream)} but this method also give the
@@ -139,8 +135,7 @@ public interface IIncomingFileTransferReceiveResumedEvent extends
 	 * @throws IOException
 	 *             if streamToStore cannot be opened for writing
 	 */
-	public IIncomingFileTransfer receive(OutputStream streamToStore,
-			FileTransferJob fileTransferJob) throws IOException;
+	public IIncomingFileTransfer receive(OutputStream streamToStore, FileTransferJob fileTransferJob) throws IOException;
 
 	/**
 	 * Cancel incoming file transfer
