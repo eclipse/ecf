@@ -36,8 +36,7 @@ import org.eclipse.ecf.provider.filetransfer.util.PollingInputStream;
 import org.eclipse.ecf.provider.filetransfer.util.TimeoutInputStream;
 import org.eclipse.osgi.util.NLS;
 
-public abstract class AbstractRetrieveFileTransfer implements
-		IIncomingFileTransfer, IRetrieveFileTransfer, IFileTransferPausable {
+public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTransfer, IRetrieveFileTransfer, IFileTransferPausable {
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
@@ -100,25 +99,17 @@ public abstract class AbstractRetrieveFileTransfer implements
 			transferStartTime = System.currentTimeMillis();
 			final byte[] buf = new byte[buff_length];
 			final long totalWork = ((fileLength == -1) ? 100 : fileLength);
-			double factor = (totalWork > Integer.MAX_VALUE) ? (((double) Integer.MAX_VALUE) / ((double) totalWork))
-					: 1.0;
-			int work = (totalWork > Integer.MAX_VALUE) ? Integer.MAX_VALUE
-					: (int) totalWork;
-			monitor
-					.beginTask(
-							getRemoteFileURL().toString()
-									+ Messages.AbstractRetrieveFileTransfer_Progress_Data,
-							work);
-			InputStream readInputStream = new PollingInputStream(
-					remoteFileContents, POLLING_RETRY_ATTEMPTS, monitor);
+			double factor = (totalWork > Integer.MAX_VALUE) ? (((double) Integer.MAX_VALUE) / ((double) totalWork)) : 1.0;
+			int work = (totalWork > Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) totalWork;
+			monitor.beginTask(getRemoteFileURL().toString() + Messages.AbstractRetrieveFileTransfer_Progress_Data, work);
+			InputStream readInputStream = new PollingInputStream(remoteFileContents, POLLING_RETRY_ATTEMPTS, monitor);
 			try {
 				while (!isDone() && !isPaused()) {
 					try {
 						final int bytes = readInputStream.read(buf);
 						handleReceivedData(buf, bytes, factor, monitor);
 					} catch (OperationCanceledException e) {
-						throw new UserCancelledException(
-								Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
+						throw new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
 					}
 				}
 			} catch (final Exception e) {
@@ -129,9 +120,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 					if (readInputStream != null)
 						readInputStream.close();
 				} catch (final IOException e) {
-					Activator.getDefault().log(
-							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-									IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+					Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
 				}
 				hardClose();
 				monitor.done();
@@ -142,15 +131,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 						fireTransferReceiveDoneEvent();
 				} catch (Exception e) {
 					// simply log
-					Activator
-							.getDefault()
-							.log(
-									new Status(
-											IStatus.ERROR,
-											Activator.PLUGIN_ID,
-											IStatus.ERROR,
-											Messages.AbstractRetrieveFileTransfer_EXCEPTION_IN_FINALLY,
-											e));
+					Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.AbstractRetrieveFileTransfer_EXCEPTION_IN_FINALLY, e));
 				}
 			}
 			return getFinalStatus(exception);
@@ -163,8 +144,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	}
 
 	protected void setInputStream(InputStream ins) {
-		remoteFileContents = new TimeoutInputStream(ins,
-				TIMEOUT_INPUTSTREAM_BUFFER_SIZE, READ_TIMEOUT, CLOSE_TIMEOUT);
+		remoteFileContents = new TimeoutInputStream(ins, TIMEOUT_INPUTSTREAM_BUFFER_SIZE, READ_TIMEOUT, CLOSE_TIMEOUT);
 	}
 
 	protected void setOutputStream(OutputStream outs) {
@@ -187,20 +167,12 @@ public abstract class AbstractRetrieveFileTransfer implements
 		return options;
 	}
 
-	protected void handleReceivedData(byte[] buf, int bytes, double factor,
-			IProgressMonitor monitor) throws IOException {
+	protected void handleReceivedData(byte[] buf, int bytes, double factor, IProgressMonitor monitor) throws IOException {
 		if (bytes != -1) {
 			bytesReceived += bytes;
 			localFileContents.write(buf, 0, bytes);
-			downloadRateBytesPerSecond = (bytesReceived / ((System
-					.currentTimeMillis() + 1 - transferStartTime) / 1000.0));
-			monitor
-					.setTaskName(createJobName()
-							+ Messages.AbstractRetrieveFileTransfer_Progress_Data
-							+ NLS
-									.bind(
-											Messages.AbstractRetrieveFileTransfer_InfoTransferRate,
-											toHumanReadableBytes(downloadRateBytesPerSecond)));
+			downloadRateBytesPerSecond = (bytesReceived / ((System.currentTimeMillis() + 1 - transferStartTime) / 1000.0));
+			monitor.setTaskName(createJobName() + Messages.AbstractRetrieveFileTransfer_Progress_Data + NLS.bind(Messages.AbstractRetrieveFileTransfer_InfoTransferRate, toHumanReadableBytes(downloadRateBytesPerSecond)));
 			monitor.worked((int) Math.round(factor * bytes));
 			fireTransferReceiveDataEvent();
 		} else
@@ -225,8 +197,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 			unit = Messages.AbstractRetrieveFileTransfer_SizeUnitBytes;
 		}
 
-		DecimalFormat df = new DecimalFormat(NLS.bind(
-				Messages.AbstractRetrieveFileTransfer_TransferRateFormat, unit));
+		DecimalFormat df = new DecimalFormat(NLS.bind(Messages.AbstractRetrieveFileTransfer_TransferRateFormat, unit));
 		return df.format(convertedSize);
 	}
 
@@ -241,26 +212,11 @@ public abstract class AbstractRetrieveFileTransfer implements
 
 	protected IStatus getFinalStatus(Throwable exception1) {
 		if (exception1 == null)
-			return new Status(
-					IStatus.OK,
-					Activator.getDefault().getBundle().getSymbolicName(),
-					0,
-					Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK,
-					null);
+			return new Status(IStatus.OK, Activator.getDefault().getBundle().getSymbolicName(), 0, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK, null);
 		else if (exception1 instanceof UserCancelledException)
-			return new Status(
-					IStatus.CANCEL,
-					Activator.PLUGIN_ID,
-					FILETRANSFER_ERRORCODE,
-					Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled,
-					exception1);
+			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled, exception1);
 		else
-			return new Status(
-					IStatus.ERROR,
-					Activator.PLUGIN_ID,
-					FILETRANSFER_ERRORCODE,
-					Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception,
-					exception1);
+			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception, exception1);
 	}
 
 	protected void hardClose() {
@@ -268,17 +224,13 @@ public abstract class AbstractRetrieveFileTransfer implements
 			if (remoteFileContents != null)
 				remoteFileContents.close();
 		} catch (final IOException e) {
-			Activator.getDefault().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
 		}
 		try {
 			if (localFileContents != null && closeOutputStream)
 				localFileContents.close();
 		} catch (final IOException e) {
-			Activator.getDefault().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
 		}
 		job = null;
 		remoteFileContents = null;
@@ -286,69 +238,62 @@ public abstract class AbstractRetrieveFileTransfer implements
 	}
 
 	protected void fireTransferReceivePausedEvent() {
-		listener
-				.handleTransferEvent(new IIncomingFileTransferReceivePausedEvent() {
+		listener.handleTransferEvent(new IIncomingFileTransferReceivePausedEvent() {
 
-					private static final long serialVersionUID = -1317411290525985140L;
+			private static final long serialVersionUID = -1317411290525985140L;
 
-					public IIncomingFileTransfer getSource() {
-						return AbstractRetrieveFileTransfer.this;
-					}
+			public IIncomingFileTransfer getSource() {
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					public String toString() {
-						final StringBuffer sb = new StringBuffer(
-								"IIncomingFileTransferReceivePausedEvent["); //$NON-NLS-1$
-						sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-								.append(";fileLength=").append(fileLength).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
-						return sb.toString();
-					}
-				});
+			public String toString() {
+				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceivePausedEvent["); //$NON-NLS-1$
+				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+						.append(";fileLength=").append(fileLength).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+				return sb.toString();
+			}
+		});
 	}
 
 	protected void fireTransferReceiveDoneEvent() {
-		listener
-				.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
+		listener.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
 
-					private static final long serialVersionUID = 6925524078226825710L;
+			private static final long serialVersionUID = 6925524078226825710L;
 
-					public IIncomingFileTransfer getSource() {
-						return AbstractRetrieveFileTransfer.this;
-					}
+			public IIncomingFileTransfer getSource() {
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					public Exception getException() {
-						return AbstractRetrieveFileTransfer.this.getException();
-					}
+			public Exception getException() {
+				return AbstractRetrieveFileTransfer.this.getException();
+			}
 
-					public String toString() {
-						final StringBuffer sb = new StringBuffer(
-								"IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
-						sb
-								.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-								.append(";fileLength=").append(fileLength).append(";exception=").append(getException()) //$NON-NLS-1$ //$NON-NLS-2$
-								.append("]"); //$NON-NLS-1$
-						return sb.toString();
-					}
-				});
+			public String toString() {
+				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
+				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+						.append(";fileLength=").append(fileLength).append(";exception=").append(getException()) //$NON-NLS-1$ //$NON-NLS-2$
+						.append("]"); //$NON-NLS-1$
+				return sb.toString();
+			}
+		});
 	}
 
 	protected void fireTransferReceiveDataEvent() {
-		listener
-				.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
-					private static final long serialVersionUID = -5656328374614130161L;
+		listener.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
+			private static final long serialVersionUID = -5656328374614130161L;
 
-					public IIncomingFileTransfer getSource() {
-						return AbstractRetrieveFileTransfer.this;
-					}
+			public IIncomingFileTransfer getSource() {
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					public String toString() {
-						final StringBuffer sb = new StringBuffer(
-								"IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
-						sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-								.append(";fileLength=").append(fileLength) //$NON-NLS-1$ 
-								.append("]"); //$NON-NLS-1$
-						return sb.toString();
-					}
-				});
+			public String toString() {
+				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
+				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+						.append(";fileLength=").append(fileLength) //$NON-NLS-1$ 
+						.append("]"); //$NON-NLS-1$
+				return sb.toString();
+			}
+		});
 	}
 
 	/*
@@ -358,8 +303,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	 * setConnectContextForAuthentication
 	 * (org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void setConnectContextForAuthentication(
-			IConnectContext connectContext) {
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		this.connectContext = connectContext;
 	}
 
@@ -392,8 +336,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	public void cancel() {
 		if (isPaused()) {
 			done = true;
-			this.exception = new UserCancelledException(
-					Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
+			this.exception = new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
 			fireTransferReceiveDoneEvent();
 		} else if (job != null)
 			job.cancel();
@@ -459,10 +402,8 @@ public abstract class AbstractRetrieveFileTransfer implements
 		if (adapter.isInstance(this)) {
 			return this;
 		}
-		final IAdapterManager adapterManager = Activator.getDefault()
-				.getAdapterManager();
-		return (adapterManager == null) ? null : adapterManager.loadAdapter(
-				this, adapter.getName());
+		final IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	/**
@@ -483,9 +424,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	 * sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID,
 	 * org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
 	 */
-	public void sendRetrieveRequest(final IFileID remoteFileID1,
-			IFileTransferListener transferListener, Map options1)
-			throws IncomingFileTransferException {
+	public void sendRetrieveRequest(final IFileID remoteFileID1, IFileTransferListener transferListener, Map options1) throws IncomingFileTransferException {
 		sendRetrieveRequest(remoteFileID1, null, transferListener, options1);
 	}
 
@@ -496,8 +435,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	 * getRetrieveNamespace()
 	 */
 	public Namespace getRetrieveNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(
-				FileTransferNamespace.PROTOCOL);
+		return IDFactory.getDefault().getNamespaceByName(FileTransferNamespace.PROTOCOL);
 	}
 
 	/*
@@ -576,203 +514,185 @@ public abstract class AbstractRetrieveFileTransfer implements
 	}
 
 	protected void fireReceiveStartEvent() {
-		listener
-				.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
-					private static final long serialVersionUID = -513800598918052184L;
+		listener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
+			private static final long serialVersionUID = -513800598918052184L;
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeorg.eclipse.ecf.filetransfer.events.
-					 * IIncomingFileTransferEvent#getFileID()
-					 */
-					public IIncomingFileTransfer getSource() {
-						return AbstractRetrieveFileTransfer.this;
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @seeorg.eclipse.ecf.filetransfer.events.
+			 * IIncomingFileTransferEvent#getFileID()
+			 */
+			public IIncomingFileTransfer getSource() {
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeorg.eclipse.ecf.filetransfer.events.
-					 * IIncomingFileTransferReceiveStartEvent#getFileID()
-					 */
-					public IFileID getFileID() {
-						return remoteFileID;
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @seeorg.eclipse.ecf.filetransfer.events.
+			 * IIncomingFileTransferReceiveStartEvent#getFileID()
+			 */
+			public IFileID getFileID() {
+				return remoteFileID;
+			}
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeorg.eclipse.ecf.filetransfer.events.
-					 * IIncomingFileTransferReceiveStartEvent
-					 * #receive(java.io.File)
-					 */
-					public IIncomingFileTransfer receive(File localFileToSave)
-							throws IOException {
-						return receive(localFileToSave, null);
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @seeorg.eclipse.ecf.filetransfer.events.
+			 * IIncomingFileTransferReceiveStartEvent
+			 * #receive(java.io.File)
+			 */
+			public IIncomingFileTransfer receive(File localFileToSave) throws IOException {
+				return receive(localFileToSave, null);
+			}
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeorg.eclipse.ecf.filetransfer.events.
-					 * IIncomingFileTransferReceiveStartEvent
-					 * #receive(java.io.File,
-					 * org.eclipse.ecf.filetransfer.FileTransferJob)
-					 */
-					public IIncomingFileTransfer receive(File localFileToSave,
-							FileTransferJob fileTransferJob) throws IOException {
-						setOutputStream(new BufferedOutputStream(
-								new FileOutputStream(localFileToSave)));
-						setupAndScheduleJob(fileTransferJob);
-						return AbstractRetrieveFileTransfer.this;
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @seeorg.eclipse.ecf.filetransfer.events.
+			 * IIncomingFileTransferReceiveStartEvent
+			 * #receive(java.io.File,
+			 * org.eclipse.ecf.filetransfer.FileTransferJob)
+			 */
+			public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob) throws IOException {
+				setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
+				setupAndScheduleJob(fileTransferJob);
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					/**
-					 * @param streamToStore
-					 * @return incoming file transfer instance.
-					 * @throws IOException
-					 *             not thrown in this implementation.
-					 */
-					public IIncomingFileTransfer receive(
-							OutputStream streamToStore) throws IOException {
-						return receive(streamToStore, null);
-					}
+			/**
+			 * @param streamToStore
+			 * @return incoming file transfer instance.
+			 * @throws IOException
+			 *             not thrown in this implementation.
+			 */
+			public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
+				return receive(streamToStore, null);
+			}
 
-					/**
-					 * @throws IOException
-					 *             not actually thrown by this implementation.
-					 */
-					public IIncomingFileTransfer receive(
-							OutputStream streamToStore,
-							FileTransferJob fileTransferJob) throws IOException {
-						setOutputStream(streamToStore);
-						setCloseOutputStream(false);
-						setupAndScheduleJob(fileTransferJob);
-						return AbstractRetrieveFileTransfer.this;
-					}
+			/**
+			 * @throws IOException
+			 *             not actually thrown by this implementation.
+			 */
+			public IIncomingFileTransfer receive(OutputStream streamToStore, FileTransferJob fileTransferJob) throws IOException {
+				setOutputStream(streamToStore);
+				setCloseOutputStream(false);
+				setupAndScheduleJob(fileTransferJob);
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeorg.eclipse.ecf.filetransfer.events.
-					 * IIncomingFileTransferReceiveStartEvent#cancel()
-					 */
-					public void cancel() {
-						hardClose();
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @seeorg.eclipse.ecf.filetransfer.events.
+			 * IIncomingFileTransferReceiveStartEvent#cancel()
+			 */
+			public void cancel() {
+				hardClose();
+			}
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @see java.lang.Object#toString()
-					 */
-					public String toString() {
-						final StringBuffer sb = new StringBuffer(
-								"IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
-						sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-						sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-								.append("]"); //$NON-NLS-1$
-						return sb.toString();
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see java.lang.Object#toString()
+			 */
+			public String toString() {
+				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
+				sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+						.append("]"); //$NON-NLS-1$
+				return sb.toString();
+			}
 
-				});
+		});
 	}
 
 	protected void fireReceiveResumedEvent() {
-		listener
-				.handleTransferEvent(new IIncomingFileTransferReceiveResumedEvent() {
+		listener.handleTransferEvent(new IIncomingFileTransferReceiveResumedEvent() {
 
-					private static final long serialVersionUID = 7111739642849612839L;
+			private static final long serialVersionUID = 7111739642849612839L;
 
-					public IIncomingFileTransfer getSource() {
-						return AbstractRetrieveFileTransfer.this;
-					}
+			public IIncomingFileTransfer getSource() {
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeorg.eclipse.ecf.filetransfer.events.
-					 * IIncomingFileTransferReceiveStartEvent#getFileID()
-					 */
-					public IFileID getFileID() {
-						return remoteFileID;
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @seeorg.eclipse.ecf.filetransfer.events.
+			 * IIncomingFileTransferReceiveStartEvent#getFileID()
+			 */
+			public IFileID getFileID() {
+				return remoteFileID;
+			}
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeorg.eclipse.ecf.filetransfer.events.
-					 * IIncomingFileTransferReceiveStartEvent
-					 * #receive(java.io.File)
-					 */
-					public IIncomingFileTransfer receive(File localFileToSave,
-							boolean append) throws IOException {
-						return receive(localFileToSave, null, append);
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @seeorg.eclipse.ecf.filetransfer.events.
+			 * IIncomingFileTransferReceiveStartEvent
+			 * #receive(java.io.File)
+			 */
+			public IIncomingFileTransfer receive(File localFileToSave, boolean append) throws IOException {
+				return receive(localFileToSave, null, append);
+			}
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeorg.eclipse.ecf.filetransfer.events.
-					 * IIncomingFileTransferReceiveStartEvent
-					 * #receive(java.io.File,
-					 * org.eclipse.ecf.filetransfer.FileTransferJob)
-					 */
-					public IIncomingFileTransfer receive(File localFileToSave,
-							FileTransferJob fileTransferJob, boolean append)
-							throws IOException {
-						setOutputStream(new BufferedOutputStream(
-								new FileOutputStream(localFileToSave.getName(),
-										append)));
-						setupAndScheduleJob(fileTransferJob);
-						return AbstractRetrieveFileTransfer.this;
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @seeorg.eclipse.ecf.filetransfer.events.
+			 * IIncomingFileTransferReceiveStartEvent
+			 * #receive(java.io.File,
+			 * org.eclipse.ecf.filetransfer.FileTransferJob)
+			 */
+			public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob, boolean append) throws IOException {
+				setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave.getName(), append)));
+				setupAndScheduleJob(fileTransferJob);
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					/**
-					 * @param streamToStore
-					 * @return incoming file transfer instance.
-					 * @throws IOException
-					 *             not thrown in this implementation.
-					 */
-					public IIncomingFileTransfer receive(
-							OutputStream streamToStore) throws IOException {
-						return receive(streamToStore, null);
-					}
+			/**
+			 * @param streamToStore
+			 * @return incoming file transfer instance.
+			 * @throws IOException
+			 *             not thrown in this implementation.
+			 */
+			public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
+				return receive(streamToStore, null);
+			}
 
-					/**
-					 * @throws IOException
-					 *             not actually thrown by this implementation.
-					 */
-					public IIncomingFileTransfer receive(
-							OutputStream streamToStore,
-							FileTransferJob fileTransferJob) throws IOException {
-						setOutputStream(streamToStore);
-						setCloseOutputStream(false);
-						setupAndScheduleJob(fileTransferJob);
-						return AbstractRetrieveFileTransfer.this;
-					}
+			/**
+			 * @throws IOException
+			 *             not actually thrown by this implementation.
+			 */
+			public IIncomingFileTransfer receive(OutputStream streamToStore, FileTransferJob fileTransferJob) throws IOException {
+				setOutputStream(streamToStore);
+				setCloseOutputStream(false);
+				setupAndScheduleJob(fileTransferJob);
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					/*
-					 * (non-Javadoc)
-					 * 
-					 * @seeorg.eclipse.ecf.filetransfer.events.
-					 * IIncomingFileTransferReceiveStartEvent#cancel()
-					 */
-					public void cancel() {
-						hardClose();
-					}
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @seeorg.eclipse.ecf.filetransfer.events.
+			 * IIncomingFileTransferReceiveStartEvent#cancel()
+			 */
+			public void cancel() {
+				hardClose();
+			}
 
-					public String toString() {
-						final StringBuffer sb = new StringBuffer(
-								"IIncomingFileTransferReceiveResumedEvent["); //$NON-NLS-1$
-						sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-						sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-								.append("]"); //$NON-NLS-1$
-						return sb.toString();
-					}
+			public String toString() {
+				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveResumedEvent["); //$NON-NLS-1$
+				sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+						.append("]"); //$NON-NLS-1$
+				return sb.toString();
+			}
 
-				});
+		});
 	}
 
 	/*
@@ -794,16 +714,9 @@ public abstract class AbstractRetrieveFileTransfer implements
 	 * org.eclipse.ecf.filetransfer.IFileRangeSpecification,
 	 * org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
 	 */
-	public void sendRetrieveRequest(IFileID rFileID,
-			IFileRangeSpecification rangeSpec,
-			IFileTransferListener transferListener, Map ops)
-			throws IncomingFileTransferException {
-		Assert.isNotNull(rFileID,
-				Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
-		Assert
-				.isNotNull(
-						transferListener,
-						Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
+	public void sendRetrieveRequest(IFileID rFileID, IFileRangeSpecification rangeSpec, IFileTransferListener transferListener, Map ops) throws IncomingFileTransferException {
+		Assert.isNotNull(rFileID, Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
+		Assert.isNotNull(transferListener, Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
 		this.job = null;
 		this.remoteFileURL = null;
 		this.remoteFileID = rFileID;
@@ -822,11 +735,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 		try {
 			this.remoteFileURL = rFileID.getURL();
 		} catch (final MalformedURLException e) {
-			throw new IncomingFileTransferException(
-					NLS
-							.bind(
-									Messages.AbstractRetrieveFileTransfer_MalformedURLException,
-									rFileID), e);
+			throw new IncomingFileTransferException(NLS.bind(Messages.AbstractRetrieveFileTransfer_MalformedURLException, rFileID), e);
 		}
 		setupProxies();
 		openStreams();
@@ -863,8 +772,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	 *            of length 0.
 	 * @return proxy data selected from the proxies provided.
 	 */
-	protected IProxyData selectProxyFromProxies(String protocol,
-			IProxyData[] proxies) {
+	protected IProxyData selectProxyFromProxies(String protocol, IProxyData[] proxies) {
 		if (proxies == null || proxies.length == 0)
 			return null;
 		// If only one proxy is available, then use that
@@ -893,25 +801,15 @@ public abstract class AbstractRetrieveFileTransfer implements
 		// settings
 		if (proxy == null) {
 			try {
-				IProxyService proxyService = Activator.getDefault()
-						.getProxyService();
+				IProxyService proxyService = Activator.getDefault().getProxyService();
 				// Only do this if platform service exists
 				if (proxyService != null && proxyService.isProxiesEnabled()) {
 					// Setup via proxyService entry
 					URL target = getRemoteFileURL();
-					final IProxyData[] proxies = proxyService
-							.getProxyDataForHost(target.getHost());
-					IProxyData selectedProxy = selectProxyFromProxies(target
-							.getProtocol(), proxies);
+					final IProxyData[] proxies = proxyService.getProxyDataForHost(target.getHost());
+					IProxyData selectedProxy = selectProxyFromProxies(target.getProtocol(), proxies);
 					if (selectedProxy != null) {
-						proxy = new Proxy(
-								((selectedProxy.getType()
-										.equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS
-										: Proxy.Type.HTTP), new ProxyAddress(
-										selectedProxy.getHost(), selectedProxy
-												.getPort()), selectedProxy
-										.getUserId(), selectedProxy
-										.getPassword());
+						proxy = new Proxy(((selectedProxy.getType().equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(selectedProxy.getHost(), selectedProxy.getPort()), selectedProxy.getUserId(), selectedProxy.getPassword());
 					}
 				}
 			} catch (Exception e) {
