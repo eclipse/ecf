@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
@@ -35,6 +34,7 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.equinox.concurrent.future.TimeoutException;
 
 /**
  *

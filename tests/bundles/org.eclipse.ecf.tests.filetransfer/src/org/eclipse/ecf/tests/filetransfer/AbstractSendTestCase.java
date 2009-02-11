@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
@@ -33,6 +32,7 @@ import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDataEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.equinox.concurrent.future.TimeoutException;
 
 /**
  *
