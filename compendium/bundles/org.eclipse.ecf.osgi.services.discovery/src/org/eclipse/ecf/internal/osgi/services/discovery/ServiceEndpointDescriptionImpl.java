@@ -148,4 +148,12 @@ public class ServiceEndpointDescriptionImpl implements
 		return null;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl[");
+		sb.append("providedinterfaces=").append(getProvidedInterfaces());
+		sb.append(";location=").append(getLocation());
+		sb.append(";props=").append(getProperties()).append("]");
+		return sb.toString();
+	}
+
 }

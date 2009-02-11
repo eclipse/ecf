@@ -35,4 +35,10 @@ public class DiscoveredServiceNotificationImpl implements
 		return type;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer("DiscoveredServiceNotificationImpl[");
+		sb.append("type=").append(getType()).append(";sed=").append(
+				getServiceEndpointDescription()).append("]");
+		return sb.toString();
+	}
 }
