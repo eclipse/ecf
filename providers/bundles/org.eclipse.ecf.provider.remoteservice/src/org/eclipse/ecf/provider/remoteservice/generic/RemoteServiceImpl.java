@@ -9,11 +9,13 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.lang.reflect.*;
-import java.lang.reflect.Proxy;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.JobsExecutor;
 import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.equinox.concurrent.future.IFuture;
+import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.eclipse.osgi.util.NLS;
 
 public class RemoteServiceImpl implements IRemoteService, InvocationHandler {

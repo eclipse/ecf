@@ -12,9 +12,9 @@ import java.util.Dictionary;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.util.IFuture;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.equinox.concurrent.future.IFuture;
 import org.osgi.framework.InvalidSyntaxException;
 
 public class RemoteServiceContainer extends TCPClientSOContainer implements IRemoteServiceContainerAdapter {

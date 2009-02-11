@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.provider.remoteservice.*;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.*;
+import org.eclipse.equinox.concurrent.future.*;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.*;
 
