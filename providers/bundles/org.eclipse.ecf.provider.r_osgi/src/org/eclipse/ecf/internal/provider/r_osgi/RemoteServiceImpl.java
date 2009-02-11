@@ -14,10 +14,12 @@ package org.eclipse.ecf.internal.provider.r_osgi;
 import ch.ethz.iks.r_osgi.RemoteOSGiException;
 import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.IAsyncResult;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
+import org.eclipse.equinox.concurrent.future.*;
 
 /**
  * The R-OSGi adapter implementation of the IRemoteService interface.
