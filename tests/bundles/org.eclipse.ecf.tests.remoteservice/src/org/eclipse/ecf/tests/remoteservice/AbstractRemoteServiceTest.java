@@ -16,7 +16,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.IFuture;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -28,6 +27,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
+import org.eclipse.equinox.concurrent.future.IFuture;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
