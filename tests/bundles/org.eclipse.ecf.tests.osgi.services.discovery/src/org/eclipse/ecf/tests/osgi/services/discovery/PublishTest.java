@@ -10,6 +10,7 @@
 package org.eclipse.ecf.tests.osgi.services.discovery;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -17,11 +18,15 @@ import junit.framework.TestCase;
 
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.discovery.DiscoveredServiceNotification;
 import org.osgi.service.discovery.ServicePublication;
+import org.osgi.service.discovery.DiscoveredServiceTracker;
 
 public class PublishTest extends TestCase {
 
 	BundleContext context;
+	List serviceRegistrations = new ArrayList();
 	
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -30,10 +35,22 @@ public class PublishTest extends TestCase {
 	
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		for(Iterator i=serviceRegistrations.iterator(); i.hasNext(); ) {
+			ServiceRegistration reg = (ServiceRegistration) i.next();
+			reg.unregister();
+		}
 		context = null;
 	}
 	
 	class TestServicePublication implements ECFServicePublication {
+		
+	}
+	
+	class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
+
+		public void serviceChanged(DiscoveredServiceNotification notification) {
+			System.out.println("DiscoveredServiceTrackerImpl.serviceChanged("+notification+")");
+		}
 		
 	}
 	
@@ -47,10 +64,23 @@ public class PublishTest extends TestCase {
 		return new TestServicePublication();
 	}
 	
+	protected DiscoveredServiceTracker createDiscoveredServiceTracker() {
+		return new DiscoveredServiceTrackerImpl();
+	}
+	
+	public void testDiscoveryTrackerPublish() throws Exception {
+		serviceRegistrations.add(context.registerService(DiscoveredServiceTracker.class.getName(), createDiscoveredServiceTracker(), null));
+	}
+	
 	public void testServicePublish() throws Exception {
 	    List interfaces = new ArrayList();
 	    interfaces.add("foo.bar");
-		context.registerService(ServicePublication.class.getName(), createServicePublication(), createServicePublicationProperties(interfaces));
-		Thread.sleep(10000);
+		serviceRegistrations.add(context.registerService(ServicePublication.class.getName(), createServicePublication(), createServicePublicationProperties(interfaces)));
+		Thread.sleep(5000);
+	}
+	
+	public void testDiscoveryTrackerAndServicePublish() throws Exception {
+		testDiscoveryTrackerPublish();
+		testServicePublish();
 	}
 }
