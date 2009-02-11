@@ -17,3 +17,4 @@ Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.ecf.internal.remoteservices.ui.Activator
+Import-Package: org.eclipse.equinox.concurrent.future;version="1.0.0"
