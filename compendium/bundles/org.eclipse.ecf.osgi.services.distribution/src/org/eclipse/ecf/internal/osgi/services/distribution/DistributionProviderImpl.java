@@ -9,10 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.*;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.distribution.DistributionProvider;
@@ -101,7 +98,9 @@ public class DistributionProviderImpl implements DistributionProvider {
 	}
 
 	private ServiceReference getPublishedService(ServiceReference sr) {
-		// TODO get from discovery bundle
+		List l = Arrays.asList(getPublishedServices());
+		if (l.contains(sr))
+			return sr;
 		return null;
 	}
 
