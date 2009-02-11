@@ -9,6 +9,7 @@
 package org.eclipse.ecf.core.util;
 
 import java.lang.reflect.InvocationTargetException;
+import org.eclipse.equinox.concurrent.future.TimeoutException;
 
 /**
  * Class to represent asynchronous result (aka Future)

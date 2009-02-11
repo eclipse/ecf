@@ -13,6 +13,7 @@ package org.eclipse.ecf.core.util;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.equinox.concurrent.future.*;
 
 public class JobsExecutor extends AbstractExecutor {
 
