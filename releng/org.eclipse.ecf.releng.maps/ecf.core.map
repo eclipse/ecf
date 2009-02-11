@@ -65,6 +65,8 @@ plugin@org.eclipse.ecf.osgi.services=@CVSTag@,:pserver:anonymous@dev.eclipse.org
 plugin@org.eclipse.ecf.osgi.services.discovery=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.discovery
 plugin@org.eclipse.ecf.osgi.services.distribution=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.distribution
 
+plugin@org.eclipse.equinox.concurrent=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.equinox/components/bundles/org.eclipse.equinox.concurrent
+
 plugin@org.eclipse.ecf.example.clients=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.clients
 plugin@org.eclipse.ecf.example.collab=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.collab 
 plugin@org.eclipse.ecf.example.collab.editor=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.collab.editor
