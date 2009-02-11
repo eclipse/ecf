@@ -9,7 +9,6 @@
 package org.eclipse.ecf.datashare;
 
 import java.util.Map;
-
 import org.eclipse.ecf.core.identity.ID;
 
 /**
@@ -26,6 +25,7 @@ public class BaseChannelConfig implements IChannelConfig {
 	protected Map properties = null;
 
 	public BaseChannelConfig() {
+		//
 	}
 
 	public BaseChannelConfig(ID id, IChannelListener listener, Map properties) {

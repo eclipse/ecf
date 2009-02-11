@@ -19,5 +19,5 @@ import org.eclipse.ecf.datashare.IChannelContainerAdapter;
  * service clients.
  */
 public interface IDatashareService extends IChannelContainerAdapter {
-
+	//
 }

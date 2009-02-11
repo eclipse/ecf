@@ -12,15 +12,11 @@
 package org.eclipse.ecf.datashare;
 
 import java.util.Map;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.datashare.events.IChannelConnectEvent;
-import org.eclipse.ecf.datashare.events.IChannelDisconnectEvent;
-import org.eclipse.ecf.datashare.events.IChannelEvent;
-import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
+import org.eclipse.ecf.datashare.events.*;
 
 /**
  * Abstract class for sharing data using {@link IChannel}.  Subclasses should
@@ -86,12 +82,14 @@ public abstract class AbstractShare {
 	 * @param cde
 	 */
 	protected void handleDisconnectEvent(IChannelDisconnectEvent cde) {
+		// 
 	}
 
 	/**
 	 * @param cce
 	 */
 	protected void handleConnectEvent(IChannelConnectEvent cce) {
+		//
 	}
 
 	/**
