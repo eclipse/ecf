@@ -253,5 +253,23 @@ public final class StringUtils {
 			return string;
 		return string.substring(0, index) + replace + replaceAllIgnoreCase(string.substring(index + target.length()), target, replace);
 	}
-
+	
+	/**
+	 * Returns the string resulting from replacing the first occurrences of the target with the replace
+	 * string.  Note that the target matches literally, and this is not the same behavior as the 
+	 * String.replaceAll, which uses regular expressions for doing the matching.  
+	 * @param string the start string.  Must not be <code>null</code>.
+	 * @param target the target to search for in the start string.  Must not be <code>null</code>.
+	 * @param replace the replacement string to substitute when the target is found.  Must not be <code>null</code>.
+	 * @return String result.  Will not be <code>null</code>.   If target is not found in the given string,
+	 * then the result will be the entire input string.  
+	 * 
+	 * @since 3.0
+	 */
+	public static String replaceFirst(String string, String target, String replace) {
+		final int index = string.indexOf(target);
+		if (index == -1)
+			return string;
+		return string.substring(0, index) + replace + string.substring(index + target.length());
+	}
 }
