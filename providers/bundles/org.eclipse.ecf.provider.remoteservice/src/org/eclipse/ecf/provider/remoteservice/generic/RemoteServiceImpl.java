@@ -8,10 +8,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.remoteservice.generic;
 
+import org.eclipse.ecf.core.jobs.JobsExecutor;
+
 import java.lang.reflect.*;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.JobsExecutor;
 import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.equinox.concurrent.future.IFuture;

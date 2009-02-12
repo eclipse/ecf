@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.remoteservice.generic;
 
+import org.eclipse.ecf.core.jobs.JobsExecutor;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.*;
