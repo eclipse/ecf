@@ -18,3 +18,6 @@ plugin@org.eclipse.ecf.tests.provider.filetransfer.xmpp=@CVSTag@,:pserver:anonym
 plugin@org.eclipse.ecf.tests.provider.jmdns=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.jmdns
 plugin@org.eclipse.ecf.tests.provider.jslp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.jslp
 plugin@org.eclipse.ecf.tests.provider.xmpp=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.xmpp
+
+plugin@org.eclipse.ecf.tests.osgi.services.discovery=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.osgi.services.discovery
+plugin@org.eclipse.ecf.tests.osgi.services.distribution=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution
