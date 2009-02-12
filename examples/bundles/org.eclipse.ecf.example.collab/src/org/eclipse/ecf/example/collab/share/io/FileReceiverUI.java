@@ -9,12 +9,14 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.example.collab.ui;
+package org.eclipse.ecf.example.collab.share.io;
 
 import java.io.File;
-
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * @since 2.0
+ */
 public interface FileReceiverUI {
 
 	public void receiveStart(ID from, File aFile, long length, float rate);

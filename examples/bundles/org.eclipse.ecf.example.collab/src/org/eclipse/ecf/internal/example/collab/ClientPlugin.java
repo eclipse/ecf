@@ -24,7 +24,7 @@ import org.osgi.framework.BundleContext;
 public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConstants {
 	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab"; //$NON-NLS-1$
 
-	public static final String COLLABORATION_IMAGE = "collaboration";
+	public static final String COLLABORATION_IMAGE = "collaboration"; //$NON-NLS-1$
 
 	// The shared instance.
 	private static ClientPlugin plugin;

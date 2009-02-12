@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
+import org.eclipse.ecf.example.collab.share.io.FileSenderUI;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

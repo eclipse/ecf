@@ -12,6 +12,8 @@
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
+import org.eclipse.ecf.example.collab.share.io.FileSenderUI;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;

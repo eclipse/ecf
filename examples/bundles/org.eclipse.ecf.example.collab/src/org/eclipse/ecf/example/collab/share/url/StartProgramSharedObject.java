@@ -15,14 +15,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
-import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
+import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.example.collab.share.GenericSharedObject;
 import org.eclipse.ecf.internal.example.collab.Trace;
 
 public class StartProgramSharedObject extends GenericSharedObject {
-	public static Trace myDebug = Trace.create("progsharedobject"); //$NON-NLS-1$
+	private static Trace myDebug = Trace.create("progsharedobject"); //$NON-NLS-1$
 	public static final Boolean DEFAULT_INCLUDE_SERVER = Boolean.FALSE;
 	// Host values
 	protected String[] cmds;
@@ -40,8 +38,7 @@ public class StartProgramSharedObject extends GenericSharedObject {
 
 	}
 
-	public StartProgramSharedObject(ID rcvr, String cmds[], String env[],
-			Boolean includeHost, Boolean includeServer) throws Exception {
+	public StartProgramSharedObject(ID rcvr, String cmds[], String env[], Boolean includeHost, Boolean includeServer) throws Exception {
 		receiver = rcvr;
 		this.cmds = cmds;
 		this.env = ((env == null) ? new String[0] : env);
@@ -64,16 +61,13 @@ public class StartProgramSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public StartProgramSharedObject(ID rcvr, String hostCmds[],
-			String hostEnv[], String replicaCmds[], String replicaEnv[],
-			Boolean includeHost, Boolean includeServer) throws Exception {
+	public StartProgramSharedObject(ID rcvr, String hostCmds[], String hostEnv[], String replicaCmds[], String replicaEnv[], Boolean includeHost, Boolean includeServer) throws Exception {
 		this(rcvr, hostCmds, hostEnv, includeHost, includeServer);
 		this.replicaCmds = replicaCmds;
 		this.replicaEnv = replicaEnv;
 	}
 
-	public StartProgramSharedObject(ID rcvr, String cmds[], String env[])
-			throws Exception {
+	public StartProgramSharedObject(ID rcvr, String cmds[], String env[]) throws Exception {
 		this(rcvr, cmds, env, Boolean.FALSE, null);
 	}
 
@@ -101,8 +95,7 @@ public class StartProgramSharedObject extends GenericSharedObject {
 		}
 	}
 
-	public void init(ISharedObjectConfig config)
-			throws SharedObjectInitException {
+	public void init(ISharedObjectConfig config) throws SharedObjectInitException {
 		super.init(config);
 		Map props = config.getProperties();
 		debug("props is " + props); //$NON-NLS-1$
@@ -118,22 +111,17 @@ public class StartProgramSharedObject extends GenericSharedObject {
 
 	}
 
-	protected ReplicaSharedObjectDescription getReplicaDescription(
-			ID remoteMember) {
-		Object args[] = { receiver, (replicaCmds == null) ? cmds : replicaCmds,
-				(replicaEnv == null) ? env : replicaEnv, includeHost,
-				includeServer };
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID remoteMember) {
+		Object args[] = {receiver, (replicaCmds == null) ? cmds : replicaCmds, (replicaEnv == null) ? env : replicaEnv, includeHost, includeServer};
 		HashMap map = new HashMap();
 		map.put("args", args); //$NON-NLS-1$
-		return new ReplicaSharedObjectDescription(getClass(), getID(),
-				getHomeContainerID(), map, getNextReplicateID());
+		return new ReplicaSharedObjectDescription(getClass(), getID(), getHomeContainerID(), map, getNextReplicateID());
 	}
 
 	public void activated(ID[] others) {
 		debug("activated()"); //$NON-NLS-1$
 		try {
-			if (!getContext().isGroupManager()
-					|| includeServer.equals(Boolean.TRUE)) {
+			if (!getContext().isGroupManager() || includeServer.equals(Boolean.TRUE)) {
 				startup();
 			} else {
 				debug("Not executing commands because is server"); //$NON-NLS-1$
@@ -181,8 +169,7 @@ public class StartProgramSharedObject extends GenericSharedObject {
 				} else
 					proc = Runtime.getRuntime().exec(cmds);
 			} else {
-				proc = Runtime.getRuntime().exec(cmds,
-						(env.length == 0) ? null : env);
+				proc = Runtime.getRuntime().exec(cmds, (env.length == 0) ? null : env);
 			}
 		}
 	}

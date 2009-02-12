@@ -15,18 +15,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerTransaction;
-import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.sharedobject.SharedObjectAddAbortException;
-import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
+import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.internal.example.collab.Messages;
-import org.eclipse.ecf.internal.example.collab.ui.FileReceiverUI;
-import org.eclipse.ecf.internal.example.collab.ui.FileSenderUI;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
@@ -40,6 +33,9 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements Fil
 	protected FileReceiverUI receiverUI = null;
 	protected EclipseCollabSharedObject receiver = null;
 
+	/**
+	 * @since 2.0
+	 */
 	public EclipseFileTransfer(FileSenderUI view, ID target, InputStream ins, FileTransferParams params, ID sharedObjectID) {
 		super(target, ins, params);
 		this.senderUI = view;

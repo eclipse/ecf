@@ -19,8 +19,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.user.IUser;
-import org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer;
-import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
+import org.eclipse.ecf.example.collab.share.io.*;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.internal.example.collab.presence.PresenceContainer;
@@ -1069,6 +1068,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 		return wp.showView(id);
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public FileReceiverUI getFileReceiverUI(EclipseFileTransfer transfer, FileTransferParams params) {
 		return new FileReceiverUI() {
 			public void receiveStart(ID from, File aFile, long length, float rate) {

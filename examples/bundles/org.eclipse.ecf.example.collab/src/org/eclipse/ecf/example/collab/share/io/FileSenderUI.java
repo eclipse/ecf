@@ -9,10 +9,13 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.example.collab.ui;
+package org.eclipse.ecf.example.collab.share.io;
 
 import java.io.File;
 
+/**
+ * @since 2.0
+ */
 public interface FileSenderUI {
 
 	public void sendStart(File aFile, long length, float rate);

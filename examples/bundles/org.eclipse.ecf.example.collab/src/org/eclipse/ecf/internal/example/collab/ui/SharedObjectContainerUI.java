@@ -65,11 +65,11 @@ public class SharedObjectContainerUI {
 		} catch (final Exception e) {
 		}
 		try {
-			topElements.put("Username", System.getProperty("user.name"));
+			topElements.put("Username", System.getProperty("user.name")); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (final Exception e) {
 		}
 		try {
-			topElements.put("Hostname/IP", InetAddress.getLocalHost().toString());
+			topElements.put("Hostname/IP", InetAddress.getLocalHost().toString()); //$NON-NLS-1$
 		} catch (final Exception e) {
 		}
 		return new User(clientID, usernick, usernick, topElements);

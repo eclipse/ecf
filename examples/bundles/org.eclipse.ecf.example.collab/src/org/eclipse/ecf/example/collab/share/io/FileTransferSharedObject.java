@@ -11,21 +11,11 @@
 
 package org.eclipse.ecf.example.collab.share.io;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.io.*;
+import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
-import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
+import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.example.collab.share.SharedObjectMsg;
 import org.eclipse.ecf.example.collab.share.TransactionSharedObject;
 import org.eclipse.ecf.internal.example.collab.Messages;
@@ -150,8 +140,10 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 			try {
 				final String parent = aFile.getParent();
 
-				if (parent != null && new File(parent).mkdirs())
-					/**/;
+				if (parent != null) {
+					new File(parent).mkdirs();
+				}
+
 			} catch (final Exception ex) {
 				// Log this exception.
 				log(NLS.bind("Exception creating local directory for ", aFile), //$NON-NLS-1$
@@ -389,6 +381,9 @@ public class FileTransferSharedObject extends TransactionSharedObject {
 		}
 	}
 
+	/**
+	 * @throws IOException  
+	 */
 	protected void hardClose() throws IOException {
 		if (inputStream != null) {
 			try {
