@@ -12,7 +12,6 @@
 package org.eclipse.ecf.remoteservice;
 
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.IAsyncResult;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
 /**

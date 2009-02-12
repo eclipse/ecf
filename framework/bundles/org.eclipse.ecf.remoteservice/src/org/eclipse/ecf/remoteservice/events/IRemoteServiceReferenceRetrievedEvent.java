@@ -1,7 +1,7 @@
 package org.eclipse.ecf.remoteservice.events;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.equinox.concurrent.future.IFuture;
 
 /**
  * @since 3.0
@@ -12,5 +12,5 @@ public interface IRemoteServiceReferenceRetrievedEvent extends IRemoteServiceEve
 
 	public String getFilter();
 
-	public IAsyncResult getAsyncResult();
+	public IFuture getAsyncResult();
 }
