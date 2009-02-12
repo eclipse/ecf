@@ -21,18 +21,18 @@ import org.eclipse.equinox.concurrent.future.IFuture;
  * may then be used to communicate with a remote service. The methods on this
  * interface support accessing the remote service in several ways:<br/>
  * <ul>
- * <li>callSynch -- A synchronous invocation that will block the calling thread
+ * <li>callSync -- A synchronous invocation that will block the calling thread
  * until complete (or timeout) and return the result from the remote or throw
  * exception if remote invocation fails or throws exception</li>
- * <li>callAsynch/1 -- An asynchronous invocation that will not block the caller
+ * <li>callAsync/1 -- An asynchronous invocation that will not block the caller
  * thread but rather return a non-<code>null</code> {@link IFuture} instance
- * that can be polled for results.  See {@link IAsyncResult#get()},
+ * that can be polled for results.  See {@link IFuture#get()},
  * {@link IFuture#get(long)}, and {@link IFuture#isDone()}.
  * timeout, exception, or successful completion)</li>
- * <li>callAsynch/2 -- An asynchronous invocation that will not block the caller
+ * <li>callAsync/2 -- An asynchronous invocation that will not block the caller
  * thread but rather notify the given listener asynchronously when complete (via
  * timeout, exception, or successful completion)</li>
- * <li>fireAsynch -- An asynchronous invocation that will simply execute the
+ * <li>fireAsync -- An asynchronous invocation that will simply execute the
  * remote method asynchronously, but will not provide any response or remote
  * method failure information</li>
  * <li>getProxy -- Access to a local proxy for the remote service that will
@@ -89,7 +89,7 @@ public interface IRemoteService {
 	 * 
 	 * @param call the remote call to make. Must not be <code>null</code> .
 	 * @return IFuture the asynchronous result to allow the caller to poll
-	 * for whether the result {@link IFuture#isDone()}, and then to {@link IAsyncResult#get(long)}
+	 * for whether the result {@link IFuture#isDone()}, and then to {@link IFuture#get()}
 	 * the actual result.
 	 * @since 3.0
 	 */
