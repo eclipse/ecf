@@ -69,6 +69,8 @@ public class RequestDependenciesMessage extends RemoteOSGiMessage {
 
 	/**
 	 * write the body of the message to the wire.
+	 * @param output 
+	 * @throws IOException 
 	 */
 	public void writeBody(final ObjectOutputStream output) throws IOException {
 		writeStringArray(output, packages);

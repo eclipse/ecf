@@ -92,7 +92,6 @@ public final class TimeOffsetMessage extends RemoteOSGiMessage {
 	 *            the ObjectOutputStream.
 	 * @throws IOException
 	 *             in case of IO failures.
-	 * @see ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		out.writeInt(timeSeries.length);
@@ -116,6 +115,7 @@ public final class TimeOffsetMessage extends RemoteOSGiMessage {
 	 * for retransmissions: replace the last timestamp with the current one. The
 	 * sending method must increase the XID to signal that this is a "new"
 	 * message rather than a strict retransmission.
+	 * @param newXID 
 	 */
 	public void restamp(final int newXID) {
 		xid = newXID;

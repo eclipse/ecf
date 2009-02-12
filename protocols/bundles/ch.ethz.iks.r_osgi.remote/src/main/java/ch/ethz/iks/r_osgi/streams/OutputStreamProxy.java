@@ -78,13 +78,13 @@ public class OutputStreamProxy extends OutputStream {
 
 	/**
 	 * write to the stream.
+	 * @param b 
 	 * 
-	 * @param the
-	 *            bytes.
 	 * @param off
 	 *            the offset.
 	 * @param len
 	 *            the length.
+	 * @throws IOException 
 	 */
 	public void write(final byte[] b, final int off, final int len)
 			throws IOException {

@@ -69,7 +69,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 	 * @param endpointURI
 	 *            the URI of the remote host.
 	 * @return the transport channel.
-	 * @see ch.ethz.iks.r_osgi.channels.NetworkChannelFactory#getConnection(ch.ethz.iks.r_osgi.channels.ChannelEndpoint)
+	 * @throws IOException 
 	 */
 	public NetworkChannel getConnection(final ChannelEndpoint endpoint,
 			final URI endpointURI) throws IOException {
@@ -188,7 +188,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		/**
 		 * bind the channel to a channel endpoint.
 		 * 
-		 * @param endpoint
+		 * @param e
 		 *            the channel endpoint.
 		 * 
 		 * @see ch.ethz.iks.r_osgi.channels.NetworkChannel#bind(ch.ethz.iks.r_osgi.channels.ChannelEndpoint)
@@ -236,6 +236,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 
 		/**
 		 * close the channel.
+		 * @throws IOException 
 		 */
 		public void close() throws IOException {
 			socket.close();
@@ -278,7 +279,6 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 		 *            the message.
 		 * @throws IOException
 		 *             in case of IO errors.
-		 * @see ch.ethz.iks.r_osgi.channels.NetworkChannel#sendMessage(ch.ethz.iks.r_osgi.RemoteOSGiMessage)
 		 */
 		public void sendMessage(final RemoteOSGiMessage message)
 				throws IOException {

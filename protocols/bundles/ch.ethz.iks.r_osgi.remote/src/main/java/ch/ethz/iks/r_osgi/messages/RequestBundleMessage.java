@@ -55,6 +55,8 @@ public class RequestBundleMessage extends RemoteOSGiMessage {
 
 	/**
 	 * create a new request bundle message.
+	 * @param input 
+	 * @throws IOException 
 	 */
 	public RequestBundleMessage(final ObjectInputStream input)
 			throws IOException {

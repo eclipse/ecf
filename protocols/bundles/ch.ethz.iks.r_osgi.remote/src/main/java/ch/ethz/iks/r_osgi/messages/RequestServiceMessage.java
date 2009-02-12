@@ -87,7 +87,6 @@ public final class RequestServiceMessage extends RemoteOSGiMessage {
 	 *            the <code>ObjectOutputStream</code>
 	 * @throws IOException
 	 *             in case of IO failures.
-	 * @see ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		out.writeUTF(serviceID);

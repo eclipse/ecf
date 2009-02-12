@@ -222,10 +222,6 @@ final class ChannelEndpointMultiplexer implements ChannelEndpoint,
 		primary.untrackRegistration(service);
 	}
 
-	/**
-	 * 
-	 * @see ch.ethz.iks.r_osgi.channels.ChannelEndpoint#isConnected()
-	 */
 	public boolean isConnected() {
 		return true;
 	}

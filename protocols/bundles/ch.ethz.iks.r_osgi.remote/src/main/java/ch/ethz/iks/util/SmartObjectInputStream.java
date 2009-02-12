@@ -258,6 +258,8 @@ public final class SmartObjectInputStream extends ObjectInputStream {
 	}
 
 	/**
+	 * @return String
+	 * @throws IOException 
 	 * @deprecated
 	 */
 	public final String readLine() throws IOException {

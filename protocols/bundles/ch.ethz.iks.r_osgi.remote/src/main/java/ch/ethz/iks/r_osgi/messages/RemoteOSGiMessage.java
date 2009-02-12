@@ -139,7 +139,6 @@ public abstract class RemoteOSGiMessage {
 	 * get the transaction ID.
 	 * 
 	 * @return the xid.
-	 * @see ch.ethz.iks.r_osgi.RemoteOSGiMessage#getXID()
 	 * @since 0.6
 	 */
 	public final int getXID() {
@@ -159,7 +158,6 @@ public abstract class RemoteOSGiMessage {
 	/**
 	 * Get the function ID (type code) of the message.
 	 * 
-	 * @see ch.ethz.iks.r_osgi.RemoteOSGiMessage#getFuncID()
 	 * @return the type code.
 	 * @since 0.6
 	 */
@@ -186,6 +184,7 @@ public abstract class RemoteOSGiMessage {
 	 * @param input
 	 *            the DataInput providing the network packet.
 	 * @return the RemoteOSGiMessage.
+	 * @throws IOException 
 	 * @throws ClassNotFoundException
 	 * @throws SocketException
 	 *             if something goes wrong.

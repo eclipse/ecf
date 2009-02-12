@@ -139,7 +139,7 @@ public final class BoxedPrimitive implements Serializable {
 	/**
 	 * box a <code>byte</code> value.
 	 * 
-	 * @param s
+	 * @param b
 	 *            the <code>short</code> value.
 	 */
 	public BoxedPrimitive(final byte b) {

@@ -191,7 +191,6 @@ public final class LeaseMessage extends RemoteOSGiMessage {
 	 *            the output stream
 	 * @throws IOException
 	 *             in case of IO errors.
-	 * @see ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage#getBody()
 	 */
 	public void writeBody(final ObjectOutputStream out) throws IOException {
 		final int slen = serviceInterfaces.length;
