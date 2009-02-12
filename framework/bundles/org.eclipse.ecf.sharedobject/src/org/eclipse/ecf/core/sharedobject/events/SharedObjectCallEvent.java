@@ -13,7 +13,7 @@ package org.eclipse.ecf.core.sharedobject.events;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.equinox.concurrent.future.IFuture;
 
 public class SharedObjectCallEvent implements ISharedObjectCallEvent {
 	private static final long serialVersionUID = 3904674977264250933L;
@@ -22,21 +22,22 @@ public class SharedObjectCallEvent implements ISharedObjectCallEvent {
 
 	Event event;
 
-	IAsyncResult result;
+	IFuture result;
 
-	public SharedObjectCallEvent(ID sender, Event evt, IAsyncResult res) {
+	/**
+	 * @since 2.0
+	 */
+	public SharedObjectCallEvent(ID sender, Event evt, IFuture res) {
 		super();
 		this.sender = sender;
 		this.event = evt;
 		this.result = res;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.events.ISharedObjectCallEvent#getAsyncResult()
+	/**
+	 * @since 2.0
 	 */
-	public IAsyncResult getAsyncResult() {
+	public IFuture getAsyncResult() {
 		return result;
 	}
 
