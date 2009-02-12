@@ -43,9 +43,9 @@ public class Activator implements BundleActivator {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(BundleContext c) throws Exception {
 		// nothing to do
-		this.context = context;
+		this.context = c;
 	}
 
 	/*
@@ -53,7 +53,7 @@ public class Activator implements BundleActivator {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext c) throws Exception {
 		this.context = null;
 		plugin = null;
 
