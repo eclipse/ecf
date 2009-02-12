@@ -8,7 +8,7 @@
 *   EclipseSource - initial API and implementation
 *   IBM Corporation - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.core.util;
+package org.eclipse.ecf.core.jobs;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
