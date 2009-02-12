@@ -6,7 +6,8 @@ Bundle-Version: 0.3.1
 Fragment-Host: org.eclipse.ecf.protocol.msn;bundle-version="0.3.1"
 Bundle-Localization: plugin
 Require-Bundle: org.junit
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
+ J2SE-1.4
 Bundle-Vendor: %providerName
 Export-Package: org.eclipse.ecf.tests.protocol.msn,
  org.eclipse.ecf.tests.protocol.msn.internal;x-internal:=true
