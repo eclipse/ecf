@@ -7,13 +7,14 @@ Bundle-ClassPath: .
 Bundle-Activator: org.eclipse.ecf.internal.discovery.ui.DiscoveryUIPlugin$Implementation
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
-Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.4.0,4.0.0)",
+Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
+ J2SE-1.4
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.3.0,4.0.0)",
  org.eclipse.ecf.discovery.ui.edit;bundle-version="3.0.0",
  org.eclipse.emf.edit.ui;bundle-version="[2.2.0,3.0.0)",
- org.eclipse.ui;bundle-version="[3.4.0,4.0.0)",
+ org.eclipse.ui;bundle-version="[3.3.0,4.0.0)",
  org.eclipse.ecf.discovery.ui.model;bundle-version="3.0.0",
- org.eclipse.core.expressions;bundle-version="3.4.0",
+ org.eclipse.core.expressions;bundle-version="3.3.0",
  org.eclipse.ecf.discovery;bundle-version="2.1.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.ecf.discovery.ui;version="3.0.0"
