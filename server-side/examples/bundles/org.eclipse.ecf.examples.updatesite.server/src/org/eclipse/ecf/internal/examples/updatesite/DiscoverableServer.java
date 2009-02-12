@@ -14,7 +14,6 @@ package org.eclipse.ecf.internal.examples.updatesite;
 import java.net.*;
 import java.security.InvalidParameterException;
 import java.util.Map;
-import javax.naming.ServiceUnavailableException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.*;
@@ -64,8 +63,6 @@ public class DiscoverableServer implements IApplication {
 
 		// get discovery service
 		discovery = Activator.getDefault().waitForDiscoveryService(5000);
-		if (discovery == null)
-			throw new ServiceUnavailableException("Discovery service not found."); //$NON-NLS-1$
 
 		// Create service id
 		IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), getCompleteServiceType(), serviceName);
@@ -75,8 +72,6 @@ public class DiscoverableServer implements IApplication {
 
 		// get http service
 		final HttpService httpService = Activator.getDefault().waitForHttpService(2000);
-		if (httpService == null)
-			throw new ServiceUnavailableException("Http service not found."); //$NON-NLS-1$
 
 		// start http service
 		httpService.registerResources(servicePath, "/", new UpdateSiteContext(httpService.createDefaultHttpContext(), updateSiteLocation)); //$NON-NLS-1$
