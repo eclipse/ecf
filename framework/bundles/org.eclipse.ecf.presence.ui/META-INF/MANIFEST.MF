@@ -20,7 +20,8 @@ Export-Package: org.eclipse.ecf.internal.presence.ui;x-internal:=true,
  org.eclipse.ecf.presence.ui.dnd,
  org.eclipse.ecf.presence.ui.menu,
  org.eclipse.ecf.presence.ui.roster
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
+ J2SE-1.4
 Import-Package: org.eclipse.core.expressions,
  org.eclipse.jface.text,
  org.eclipse.jface.text.source,
