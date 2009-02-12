@@ -9,57 +9,32 @@
 package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-
+import java.util.*;
 import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.sharedobject.ISharedObject;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
-import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
-import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
-import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageListener;
+import org.eclipse.ecf.core.sharedobject.*;
+import org.eclipse.ecf.core.sharedobject.events.*;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
-import org.eclipse.ecf.core.util.AsyncResult;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.IAsyncResult;
-import org.eclipse.ecf.core.util.ICallable;
-import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
-import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
-import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
+import org.eclipse.ecf.internal.provider.xmpp.events.*;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
-import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.IPresenceListener;
-import org.eclipse.ecf.presence.IPresenceSender;
-import org.eclipse.ecf.presence.im.IChatManager;
-import org.eclipse.ecf.presence.im.ITypingMessage;
-import org.eclipse.ecf.presence.im.TypingMessage;
-import org.eclipse.ecf.presence.roster.AbstractRosterManager;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.IRosterGroup;
-import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.eclipse.ecf.presence.roster.IRosterManager;
-import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
+import org.eclipse.ecf.presence.*;
+import org.eclipse.ecf.presence.im.*;
+import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
+import org.eclipse.equinox.concurrent.future.*;
+import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterGroup;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.packet.Presence.Mode;
 import org.jivesoftware.smack.packet.Presence.Type;
 import org.jivesoftware.smackx.packet.VCard;
@@ -592,8 +567,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		IRosterEntry entry = null;
 		if (entrys.length > 0) {
 			for (int i = 0; i < entrys.length; i++) {
-				entry = new org.eclipse.ecf.presence.roster.RosterEntry(entrys[i].parent,entrys[i].user,entrys[i].presence);
-				//roster.addItem(entry);
+				entry = new org.eclipse.ecf.presence.roster.RosterEntry(
+						entrys[i].parent, entrys[i].user, entrys[i].presence);
+				// roster.addItem(entry);
 			}
 			rosterManager.notifyRosterUpdate(roster);
 			fireSetRosterEntry(false, entry);
@@ -601,19 +577,19 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	class AdditionalClientRosterEntry {
-		
+
 		IRosterItem parent;
 		IUser user;
 		IPresence presence;
-		
-		public AdditionalClientRosterEntry(IRosterItem parent, IUser user, IPresence presence) {
+
+		public AdditionalClientRosterEntry(IRosterItem parent, IUser user,
+				IPresence presence) {
 			this.parent = parent;
 			this.user = user;
 			this.presence = presence;
 		}
 	}
-	
-	
+
 	private AdditionalClientRosterEntry updatePresenceForMatchingEntry(
 			org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID,
 			IPresence newPresence) {
@@ -633,15 +609,18 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				entry.setPresence(newPresence);
 				// and notify with roster update
 				rosterManager.notifyRosterUpdate(entry);
-			} else if (fromID.getResourceName() != null && !newPresence.getType().equals(IPresence.Type.UNAVAILABLE)) {
-				return new AdditionalClientRosterEntry(entry.getParent(), new User(fromID, user.getName()), newPresence);
+			} else if (fromID.getResourceName() != null
+					&& !newPresence.getType()
+							.equals(IPresence.Type.UNAVAILABLE)) {
+				return new AdditionalClientRosterEntry(entry.getParent(),
+						new User(fromID, user.getName()), newPresence);
 			}
 		}
 		return null;
 	}
 
-	private AdditionalClientRosterEntry[] updatePresenceInGroup(IRosterGroup group,
-			XMPPID fromID, IPresence newPresence) {
+	private AdditionalClientRosterEntry[] updatePresenceInGroup(
+			IRosterGroup group, XMPPID fromID, IPresence newPresence) {
 		List results = new ArrayList();
 		final Collection groupEntries = group.getEntries();
 		synchronized (groupEntries) {
@@ -653,7 +632,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 					results.add(newEntry);
 			}
 		}
-		return (AdditionalClientRosterEntry[]) results.toArray(new AdditionalClientRosterEntry[] {});
+		return (AdditionalClientRosterEntry[]) results
+				.toArray(new AdditionalClientRosterEntry[] {});
 	}
 
 	protected void handleRoster(Roster roster) {
@@ -762,10 +742,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 		private static final long serialVersionUID = 7843634971520771692L;
 
-		IAsyncResult asyncResult = null;
+		IFuture asyncResult = null;
 		String fromID = null;
 
-		XMPPPresence(String fromID, Presence xmppPresence, IAsyncResult future) {
+		XMPPPresence(String fromID, Presence xmppPresence, IFuture future) {
 			super(createIPresenceType(xmppPresence), xmppPresence.getStatus(),
 					createIPresenceMode(xmppPresence), ECFConnection
 							.getPropertiesFromPacket(xmppPresence), null);
@@ -811,13 +791,13 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected IPresence createIPresence(final Presence xmppPresence) {
-		final AsyncResult asyncResult = new AsyncResult();
-		final Thread t = new Thread(asyncResult.setter(new ICallable() {
-			public Object call() throws Throwable {
-				return getVCardForPresence(xmppPresence);
-			}
-		}));
-		t.start();
+		final IFuture asyncResult = new ThreadsExecutor().execute(
+				new IProgressRunnable() {
+					public Object run(IProgressMonitor monitor)
+							throws Exception {
+						return getVCardForPresence(xmppPresence);
+					}
+				}, null);
 		return new XMPPPresence(xmppPresence.getFrom(), xmppPresence,
 				asyncResult);
 	}
