@@ -10,16 +10,11 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.ui.wizards;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.SafeRunnable;
-import org.eclipse.jface.wizard.IWizard;
-import org.eclipse.jface.wizard.IWizardNode;
-import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.jface.wizard.*;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IPluginContribution;
@@ -45,8 +40,7 @@ public abstract class WizardNode implements IWizardNode, IPluginContribution {
 
 	protected WizardPage parentWizardPage;
 
-	public WizardNode(IWorkbench workbench, WizardPage wizardPage,
-			WorkbenchWizardElement wizardElement) {
+	public WizardNode(IWorkbench workbench, WizardPage wizardPage, WorkbenchWizardElement wizardElement) {
 		super();
 		this.workbench = workbench;
 		this.parentWizardPage = wizardPage;
@@ -85,8 +79,7 @@ public abstract class WizardNode implements IWizardNode, IPluginContribution {
 	 * @see org.eclipse.ui.IPluginContribution#getLocalId()
 	 */
 	public String getLocalId() {
-		IPluginContribution contribution = (IPluginContribution) wizardElement
-				.getAdapter(IPluginContribution.class);
+		IPluginContribution contribution = (IPluginContribution) wizardElement.getAdapter(IPluginContribution.class);
 		if (contribution != null)
 			return contribution.getLocalId();
 		return wizardElement.getId();
@@ -98,8 +91,7 @@ public abstract class WizardNode implements IWizardNode, IPluginContribution {
 	 * @see org.eclipse.ui.IPluginContribution#getPluginId()
 	 */
 	public String getPluginId() {
-		IPluginContribution contribution = (IPluginContribution) wizardElement
-				.getAdapter(IPluginContribution.class);
+		IPluginContribution contribution = (IPluginContribution) wizardElement.getAdapter(IPluginContribution.class);
 		if (contribution != null)
 			return contribution.getLocalId();
 		return null;
@@ -119,45 +111,35 @@ public abstract class WizardNode implements IWizardNode, IPluginContribution {
 		final IWizard[] newWizard = new IWizard[1];
 		final IStatus statuses[] = new IStatus[1];
 		// Start busy indicator.
-		BusyIndicator.showWhile(parentWizardPage.getShell().getDisplay(),
-				new Runnable() {
-					public void run() {
-						SafeRunner.run(new SafeRunnable() {
-							/**
-							 * Add the exception details to status is one
-							 * happens.
-							 */
-							public void handleException(Throwable e) {
-								IPluginContribution contribution = (IPluginContribution) wizardElement
-										.getAdapter(IPluginContribution.class);
-								statuses[0] = new Status(
-										IStatus.ERROR,
-										contribution != null ? contribution
-												.getPluginId()
-												: Activator.PLUGIN_ID,
-										IStatus.OK,
-										e.getMessage() == null ? "" : e.getMessage(), //$NON-NLS-1$,
-										e);
-							}
+		BusyIndicator.showWhile(parentWizardPage.getShell().getDisplay(), new Runnable() {
+			public void run() {
+				SafeRunner.run(new SafeRunnable() {
+					/**
+					 * Add the exception details to status is one
+					 * happens.
+					 */
+					public void handleException(Throwable e) {
+						IPluginContribution contribution = (IPluginContribution) wizardElement.getAdapter(IPluginContribution.class);
+						statuses[0] = new Status(IStatus.ERROR, contribution != null ? contribution.getPluginId() : Activator.PLUGIN_ID, IStatus.OK, e.getMessage() == null ? "" : e.getMessage(), //$NON-NLS-1$,
+								e);
+					}
 
-							public void run() {
-								try {
-									newWizard[0] = createWizard();
-									// create instance of target wizard
-								} catch (CoreException e) {
-									statuses[0] = e.getStatus();
-								}
-							}
-						});
+					public void run() {
+						try {
+							newWizard[0] = createWizard();
+							// create instance of target wizard
+						} catch (CoreException e) {
+							statuses[0] = e.getStatus();
+						}
 					}
 				});
+			}
+		});
 
 		if (statuses[0] != null) {
-			parentWizardPage
-					.setErrorMessage("The selected wizard could not be started.");
-			ErrorDialog.openError(parentWizardPage.getShell(),
-					"Problem Opening Wizard",
-					"The selected wizard could not be started.", statuses[0]);
+			parentWizardPage.setErrorMessage("The selected wizard could not be started."); //$NON-NLS-1$
+			ErrorDialog.openError(parentWizardPage.getShell(), "Problem Opening Wizard", //$NON-NLS-1$
+					"The selected wizard could not be started.", statuses[0]); //$NON-NLS-1$
 			return null;
 		}
 

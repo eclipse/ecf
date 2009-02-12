@@ -13,8 +13,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 /**
  * Action class to synchronously invoke {@link IContainer#connect(ID, IConnectContext)}.
  */
-public class SynchContainerConnectAction implements
-		IWorkbenchWindowActionDelegate {
+public class SynchContainerConnectAction implements IWorkbenchWindowActionDelegate {
 
 	protected IWorkbenchWindow window;
 
@@ -27,9 +26,8 @@ public class SynchContainerConnectAction implements
 	protected IExceptionHandler exceptionHandler;
 
 	protected Runnable successBlock;
-	
-	public SynchContainerConnectAction(IContainer container, ID targetID,
-			IConnectContext connectContext, IExceptionHandler exceptionHandler, Runnable successBlock) {
+
+	public SynchContainerConnectAction(IContainer container, ID targetID, IConnectContext connectContext, IExceptionHandler exceptionHandler, Runnable successBlock) {
 		this.container = container;
 		this.targetID = targetID;
 		this.connectContext = connectContext;
@@ -37,13 +35,11 @@ public class SynchContainerConnectAction implements
 		this.successBlock = successBlock;
 	}
 
-	public SynchContainerConnectAction(IContainer container, ID targetID,
-			IConnectContext connectContext, IExceptionHandler exceptionHandler) {
-		this(container,targetID,connectContext,exceptionHandler,null);
+	public SynchContainerConnectAction(IContainer container, ID targetID, IConnectContext connectContext, IExceptionHandler exceptionHandler) {
+		this(container, targetID, connectContext, exceptionHandler, null);
 	}
 
-	public SynchContainerConnectAction(IContainer container, ID targetID,
-			IConnectContext connectContext) {
+	public SynchContainerConnectAction(IContainer container, ID targetID, IConnectContext connectContext) {
 		this(container, targetID, connectContext, null);
 	}
 
@@ -54,14 +50,13 @@ public class SynchContainerConnectAction implements
 		this.window = null;
 	}
 
-	protected void handleConnectException(IAction action,
-			ContainerConnectException e) {
+	protected void handleConnectException(IAction action, ContainerConnectException e) {
 		if (exceptionHandler != null)
 			exceptionHandler.handleException(e);
 	}
 
-	public void init(IWorkbenchWindow window) {
-		this.window = window;
+	public void init(IWorkbenchWindow w) {
+		this.window = w;
 	}
 
 	public void run(IAction action) {
@@ -76,6 +71,7 @@ public class SynchContainerConnectAction implements
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
+		//
 	}
 
 	protected IWorkbenchWindow getWindow() {

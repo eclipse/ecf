@@ -10,18 +10,8 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.ui.wizards;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
+import java.util.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.ui.Activator;
 
 /**
@@ -56,7 +46,7 @@ public class WizardsRegistryReader extends RegistryReader {
 	 */
 	final public static String GENERAL_WIZARD_CATEGORY = "org.eclipse.ui.Basic"; //$NON-NLS-1$
 
-	final private static String UNCATEGORIZED_WIZARD_CATEGORY_LABEL = "Other";
+	final private static String UNCATEGORIZED_WIZARD_CATEGORY_LABEL = "Other"; //$NON-NLS-1$
 
 	private final static String CATEGORY_SEPARATOR = "/";//$NON-NLS-1$
 
@@ -119,8 +109,7 @@ public class WizardsRegistryReader extends RegistryReader {
 	 * implementation uses a defering strategy. For more info see <code>readWizards</code>.
 	 * </p>
 	 */
-	protected void addNewElementToResult(WorkbenchWizardElement element,
-			IConfigurationElement config) {
+	protected void addNewElementToResult(WorkbenchWizardElement element, IConfigurationElement config) {
 		// TODO: can we remove the config parameter?
 		deferWizard(element);
 	}
@@ -131,10 +120,8 @@ public class WizardsRegistryReader extends RegistryReader {
 	 * @param element
 	 * @since 3.1
 	 */
-	private WizardCollectionElement createCollectionElement(
-			WizardCollectionElement parent, IConfigurationElement element) {
-		WizardCollectionElement newElement = new WizardCollectionElement(
-				element, parent);
+	private WizardCollectionElement createCollectionElement(WizardCollectionElement parent, IConfigurationElement element) {
+		WizardCollectionElement newElement = new WizardCollectionElement(element, parent);
 
 		parent.add(newElement);
 		return newElement;
@@ -155,11 +142,8 @@ public class WizardsRegistryReader extends RegistryReader {
 	 * @param label
 	 *            java.lang.String
 	 */
-	protected WizardCollectionElement createCollectionElement(
-			WizardCollectionElement parent, String id, String pluginId,
-			String label) {
-		WizardCollectionElement newElement = new WizardCollectionElement(id,
-				pluginId, label, parent);
+	protected WizardCollectionElement createCollectionElement(WizardCollectionElement parent, String id, String pluginId, String label) {
+		WizardCollectionElement newElement = new WizardCollectionElement(id, pluginId, label, parent);
 
 		parent.add(newElement);
 		return newElement;
@@ -252,8 +236,7 @@ public class WizardsRegistryReader extends RegistryReader {
 		// Traverse down into parent category.
 		if (categoryPath != null) {
 			for (int i = 0; i < categoryPath.length; i++) {
-				WizardCollectionElement tempElement = getChildWithID(parent,
-						categoryPath[i]);
+				WizardCollectionElement tempElement = getChildWithID(parent, categoryPath[i]);
 				if (tempElement == null)
 					// The parent category is invalid. By returning here the
 					// category will be dropped and any wizard within the
@@ -270,8 +253,7 @@ public class WizardsRegistryReader extends RegistryReader {
 			return;
 
 		if (parent != null) {
-			createCollectionElement(parent, (IConfigurationElement) category
-					.getAdapter(IConfigurationElement.class));
+			createCollectionElement(parent, (IConfigurationElement) category.getAdapter(IConfigurationElement.class));
 		}
 	}
 
@@ -283,15 +265,13 @@ public class WizardsRegistryReader extends RegistryReader {
 			ArrayList primary = new ArrayList();
 			for (Iterator i = deferPrimary.iterator(); i.hasNext();) {
 				String id = (String) i.next();
-				WorkbenchWizardElement element = getWizardElements()
-						.findWizard(id, true);
+				WorkbenchWizardElement element = getWizardElements().findWizard(id, true);
 				if (element != null) {
 					primary.add(element);
 				}
 			}
 
-			primaryWizards = (WorkbenchWizardElement[]) primary
-					.toArray(new WorkbenchWizardElement[primary.size()]);
+			primaryWizards = (WorkbenchWizardElement[]) primary.toArray(new WorkbenchWizardElement[primary.size()]);
 
 			deferPrimary = null;
 		}
@@ -306,10 +286,8 @@ public class WizardsRegistryReader extends RegistryReader {
 	 * @param config
 	 *            configuration element
 	 */
-	private void finishWizard(WorkbenchWizardElement element,
-			IConfigurationElement config) {
-		StringTokenizer familyTokenizer = new StringTokenizer(
-				getCategoryStringFor(config), CATEGORY_SEPARATOR);
+	private void finishWizard(WorkbenchWizardElement element, IConfigurationElement config) {
+		StringTokenizer familyTokenizer = new StringTokenizer(getCategoryStringFor(config), CATEGORY_SEPARATOR);
 
 		// use the period-separated sections of the current Wizard's category
 		// to traverse through the NamedSolution "tree" that was previously
@@ -319,8 +297,7 @@ public class WizardsRegistryReader extends RegistryReader {
 		boolean moveToOther = false;
 
 		while (familyTokenizer.hasMoreElements()) {
-			WizardCollectionElement tempCollectionElement = getChildWithID(
-					currentCollectionElement, familyTokenizer.nextToken());
+			WizardCollectionElement tempCollectionElement = getChildWithID(currentCollectionElement, familyTokenizer.nextToken());
 
 			if (tempCollectionElement == null) { // can't find the path; bump
 				// it to uncategorized
@@ -346,8 +323,7 @@ public class WizardsRegistryReader extends RegistryReader {
 		if (deferWizards != null) {
 			Iterator iter = deferWizards.iterator();
 			while (iter.hasNext()) {
-				WorkbenchWizardElement wizard = (WorkbenchWizardElement) iter
-						.next();
+				WorkbenchWizardElement wizard = (WorkbenchWizardElement) iter.next();
 				IConfigurationElement config = wizard.getConfigurationElement();
 				finishWizard(wizard, config);
 			}
@@ -360,8 +336,7 @@ public class WizardsRegistryReader extends RegistryReader {
 	 * category is not specified then return a default one.
 	 */
 	protected String getCategoryStringFor(IConfigurationElement config) {
-		String result = config
-				.getAttribute(IWizardRegistryConstants.ELEMENT_CATEGORY);
+		String result = config.getAttribute(IWizardRegistryConstants.ELEMENT_CATEGORY);
 		if (result == null) {
 			result = UNCATEGORIZED_WIZARD_CATEGORY;
 		}
@@ -379,8 +354,7 @@ public class WizardsRegistryReader extends RegistryReader {
 	 * @param id
 	 *            java.lang.String
 	 */
-	protected WizardCollectionElement getChildWithID(
-			WizardCollectionElement parent, String id) {
+	protected WizardCollectionElement getChildWithID(WizardCollectionElement parent, String id) {
 		Object[] children = parent.getChildren(null);
 		for (int i = 0; i < children.length; ++i) {
 			WizardCollectionElement currentChild = (WizardCollectionElement) children[i];
@@ -394,15 +368,11 @@ public class WizardsRegistryReader extends RegistryReader {
 	 * Moves given element to "Other" category, previously creating one if
 	 * missing.
 	 */
-	protected void moveElementToUncategorizedCategory(
-			WizardCollectionElement root, WorkbenchWizardElement element) {
-		WizardCollectionElement otherCategory = getChildWithID(root,
-				UNCATEGORIZED_WIZARD_CATEGORY);
+	protected void moveElementToUncategorizedCategory(WizardCollectionElement root, WorkbenchWizardElement element) {
+		WizardCollectionElement otherCategory = getChildWithID(root, UNCATEGORIZED_WIZARD_CATEGORY);
 
 		if (otherCategory == null) {
-			otherCategory = createCollectionElement(root,
-					UNCATEGORIZED_WIZARD_CATEGORY, null,
-					UNCATEGORIZED_WIZARD_CATEGORY_LABEL);
+			otherCategory = createCollectionElement(root, UNCATEGORIZED_WIZARD_CATEGORY, null, UNCATEGORIZED_WIZARD_CATEGORY_LABEL);
 		}
 
 		otherCategory.add(element);
@@ -417,8 +387,7 @@ public class WizardsRegistryReader extends RegistryReader {
 		for (int nX = 0; nX < children.length; nX++) {
 			WizardCollectionElement child = (WizardCollectionElement) children[nX];
 			pruneEmptyCategories(child);
-			boolean shouldPrune = child.getId().equals(
-					FULL_EXAMPLES_WIZARD_CATEGORY);
+			boolean shouldPrune = child.getId().equals(FULL_EXAMPLES_WIZARD_CATEGORY);
 			if (child.isEmpty() && shouldPrune) {
 				parent.remove(child);
 			}
@@ -432,18 +401,15 @@ public class WizardsRegistryReader extends RegistryReader {
 		if (element.getName().equals(IWizardRegistryConstants.ELEMENT_CATEGORY)) {
 			deferCategory(element);
 			return true;
-		} else if (element.getName().equals(
-				IWizardRegistryConstants.PRIMARY_WIZARD)) {
+		} else if (element.getName().equals(IWizardRegistryConstants.PRIMARY_WIZARD)) {
 			if (deferPrimary == null) {
 				deferPrimary = new HashSet();
 			}
-			deferPrimary.add(element
-					.getAttribute(IWizardRegistryConstants.ATT_ID));
+			deferPrimary.add(element.getAttribute(IWizardRegistryConstants.ATT_ID));
 
 			return true;
 		} else {
-			if (!element.getName().equals(
-					IWizardRegistryConstants.ELEMENT_WIZARD))
+			if (!element.getName().equals(IWizardRegistryConstants.ELEMENT_WIZARD))
 				return false;
 			WorkbenchWizardElement wizard = createWizardElement(element);
 			if (wizard != null) {
@@ -467,8 +433,7 @@ public class WizardsRegistryReader extends RegistryReader {
 		if (readAll) {
 			if (!areWizardsRead()) {
 				createEmptyWizardCollection();
-				IExtensionRegistry registry = Activator.getDefault()
-						.getExtensionRegistry();
+				IExtensionRegistry registry = Activator.getDefault().getExtensionRegistry();
 				if (registry != null)
 					readRegistry(registry, plugin, pluginPoint);
 			}
@@ -532,8 +497,7 @@ public class WizardsRegistryReader extends RegistryReader {
 	 * May answer null if there was not enough information in the Extension to
 	 * create an adequate wizard
 	 */
-	protected WorkbenchWizardElement createWizardElement(
-			IConfigurationElement element) {
+	protected WorkbenchWizardElement createWizardElement(IConfigurationElement element) {
 		// WizardElements must have a name attribute
 		if (element.getAttribute(IWizardRegistryConstants.ATT_NAME) == null) {
 			logMissingAttribute(element, IWizardRegistryConstants.ATT_NAME);
@@ -570,12 +534,10 @@ public class WizardsRegistryReader extends RegistryReader {
 		Object[] wizards = getWizardCollectionElements();
 		for (int nX = 0; nX < wizards.length; nX++) {
 			WizardCollectionElement collection = (WizardCollectionElement) wizards[nX];
-			WorkbenchWizardElement[] elements = collection
-					.getWorkbenchWizardElements();
+			WorkbenchWizardElement[] elements = collection.getWorkbenchWizardElements();
 			for (int i = 0; i < elements.length; i++) {
 				WorkbenchWizardElement element = elements[i];
-				IConfigurationElement configElement = element
-						.getConfigurationElement();
+				IConfigurationElement configElement = element.getConfigurationElement();
 				String att = configElement.getAttribute(attName);
 				if (att != null && att.equals(value))
 					return element;

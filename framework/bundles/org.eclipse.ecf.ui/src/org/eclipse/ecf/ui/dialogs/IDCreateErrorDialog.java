@@ -23,11 +23,10 @@ import org.eclipse.swt.widgets.Shell;
 public class IDCreateErrorDialog extends ErrorDialog {
 
 	public IDCreateErrorDialog(Shell parentShell, String targetID, IDCreateException createException) {
-		super(parentShell, "ID Create Error",
-				NLS.bind("Could not create ID with {0}",
-						targetID), createException.getStatus(),
-				IStatus.ERROR);
+		super(parentShell, "ID Create Error", //$NON-NLS-1$
+				NLS.bind("Could not create ID with {0}", //$NON-NLS-1$
+						targetID), createException.getStatus(), IStatus.ERROR);
 
 	}
-	
+
 }

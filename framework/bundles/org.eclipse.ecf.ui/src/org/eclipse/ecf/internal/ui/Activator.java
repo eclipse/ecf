@@ -29,7 +29,7 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.ui"; //$NON-NLS-1$
 
-	public static final String PREF_DISPLAY_TIMESTAMP = "TextChatComposite.displaytimestamp";
+	public static final String PREF_DISPLAY_TIMESTAMP = "TextChatComposite.displaytimestamp"; //$NON-NLS-1$
 
 	// The shared instance.
 	private static Activator plugin;
@@ -45,7 +45,7 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static void log(String message, Throwable e) {
-		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "Caught exception", e));
+		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "Caught exception", e)); //$NON-NLS-1$
 	}
 
 	/**

@@ -10,23 +10,14 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.ui.wizards;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.IWizard;
-import org.eclipse.ui.IPluginContribution;
-import org.eclipse.ui.IWorkbenchWizard;
-import org.eclipse.ui.SelectionEnabler;
-import org.eclipse.ui.model.IWorkbenchAdapter;
-import org.eclipse.ui.model.IWorkbenchAdapter2;
-import org.eclipse.ui.model.WorkbenchAdapter;
+import org.eclipse.ui.*;
+import org.eclipse.ui.model.*;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.wizards.IWizardCategory;
 import org.eclipse.ui.wizards.IWizardDescriptor;
@@ -34,8 +25,7 @@ import org.eclipse.ui.wizards.IWizardDescriptor;
 /**
  * Instances represent registered wizards.
  */
-public class WorkbenchWizardElement extends WorkbenchAdapter implements
-		IAdaptable, IPluginContribution, IWizardDescriptor {
+public class WorkbenchWizardElement extends WorkbenchAdapter implements IAdaptable, IPluginContribution, IWizardDescriptor {
 	private String id;
 
 	private ImageDescriptor imageDescriptor;
@@ -102,8 +92,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * @throws CoreException
 	 */
 	public Object createExecutableExtension() throws CoreException {
-		return configurationElement
-				.createExecutableExtension(IWizardRegistryConstants.ATT_CLASS);
+		return configurationElement.createExecutableExtension(IWizardRegistryConstants.ATT_CLASS);
 	}
 
 	/**
@@ -111,8 +100,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * this object. Returns <code>null</code> if no such object can be found.
 	 */
 	public Object getAdapter(Class adapter) {
-		if (adapter == IWorkbenchAdapter.class
-				|| adapter == IWorkbenchAdapter2.class)
+		if (adapter == IWorkbenchAdapter.class || adapter == IWorkbenchAdapter2.class)
 			return this;
 		else if (adapter == IPluginContribution.class)
 			return this;
@@ -129,8 +117,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	}
 
 	public String getContainerTypeName() {
-		return configurationElement
-				.getAttribute(IWizardRegistryConstants.ATT_CONTAINER_TYPE_NAME);
+		return configurationElement.getAttribute(IWizardRegistryConstants.ATT_CONTAINER_TYPE_NAME);
 	}
 
 	/**
@@ -139,8 +126,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * @return java.lang.String
 	 */
 	public String getDescription() {
-		return configurationElement
-				.getAttribute(IWizardRegistryConstants.ATT_DESCRIPTION);
+		return configurationElement.getAttribute(IWizardRegistryConstants.ATT_DESCRIPTION);
 	}
 
 	/**
@@ -148,12 +134,10 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 */
 	public ImageDescriptor getImageDescriptor() {
 		if (imageDescriptor == null) {
-			String iconName = configurationElement
-					.getAttribute(IWizardRegistryConstants.ATT_ICON);
+			String iconName = configurationElement.getAttribute(IWizardRegistryConstants.ATT_ICON);
 			if (iconName == null)
 				return null;
-			imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
-					configurationElement.getNamespaceIdentifier(), iconName);
+			imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(configurationElement.getNamespaceIdentifier(), iconName);
 		}
 		return imageDescriptor;
 	}
@@ -169,8 +153,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * Returns the name of this wizard element.
 	 */
 	public String getLabel(Object element) {
-		return configurationElement
-				.getAttribute(IWizardRegistryConstants.ATT_NAME);
+		return configurationElement.getAttribute(IWizardRegistryConstants.ATT_NAME);
 	}
 
 	/**
@@ -195,8 +178,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 *            the original selection
 	 * @return the converted selection or an empty selection
 	 */
-	private IStructuredSelection convertToResources(
-			IStructuredSelection originalSelection) {
+	private IStructuredSelection convertToResources(IStructuredSelection originalSelection) {
 		/*
 		 * Object selectionService = PlatformUI.getWorkbench().getService(
 		 * ISelectionConversionService.class); if (selectionService == null ||
@@ -222,8 +204,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * @see org.eclipse.ui.IPluginContribution#getPluginId()
 	 */
 	public String getPluginId() {
-		return (configurationElement != null) ? configurationElement
-				.getNamespaceIdentifier() : null;
+		return (configurationElement != null) ? configurationElement.getNamespaceIdentifier() : null;
 	}
 
 	/*
@@ -233,12 +214,10 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 */
 	public ImageDescriptor getDescriptionImage() {
 		if (descriptionImage == null) {
-			String descImage = configurationElement
-					.getAttribute(IWizardRegistryConstants.ATT_DESCRIPTION_IMAGE);
+			String descImage = configurationElement.getAttribute(IWizardRegistryConstants.ATT_DESCRIPTION_IMAGE);
 			if (descImage == null)
 				return null;
-			descriptionImage = AbstractUIPlugin.imageDescriptorFromPlugin(
-					configurationElement.getNamespaceIdentifier(), descImage);
+			descriptionImage = AbstractUIPlugin.imageDescriptorFromPlugin(configurationElement.getNamespaceIdentifier(), descImage);
 		}
 		return descriptionImage;
 	}
@@ -250,8 +229,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 */
 	public String getHelpHref() {
 		// XXX todo change to constant
-		return configurationElement
-				.getAttribute(IWizardRegistryConstants.HELP_HREF);
+		return configurationElement.getAttribute(IWizardRegistryConstants.HELP_HREF);
 	}
 
 	/*
@@ -260,8 +238,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * @see org.eclipse.ui.wizards.INewWizardDescriptor#createWizard()
 	 */
 	public IWorkbenchWizard createWizard() throws CoreException {
-		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-				0, "Cannot create workbench wizard", null));
+		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Cannot create workbench wizard", null)); //$NON-NLS-1$
 	}
 
 	public IWizard createWizardForNode() throws CoreException {
@@ -340,11 +317,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * @see org.eclipse.ui.wizards.IWizardDescriptor#canFinishEarly()
 	 */
 	public boolean canFinishEarly() {
-		return Boolean
-				.valueOf(
-						configurationElement
-								.getAttribute(IWizardRegistryConstants.CAN_FINISH_EARLY))
-				.booleanValue();
+		return Boolean.valueOf(configurationElement.getAttribute(IWizardRegistryConstants.CAN_FINISH_EARLY)).booleanValue();
 	}
 
 	/*
@@ -353,8 +326,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * @see org.eclipse.ui.wizards.IWizardDescriptor#hasPages()
 	 */
 	public boolean hasPages() {
-		String hasPagesString = configurationElement
-				.getAttribute(IWizardRegistryConstants.HAS_PAGES);
+		String hasPagesString = configurationElement.getAttribute(IWizardRegistryConstants.HAS_PAGES);
 		// default value is true
 		if (hasPagesString == null)
 			return true;

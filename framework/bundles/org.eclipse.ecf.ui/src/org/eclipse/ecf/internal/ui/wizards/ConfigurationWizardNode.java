@@ -25,16 +25,13 @@ public class ConfigurationWizardNode extends WizardNode {
 
 	protected ContainerConfigurationResult containerHolder = null;
 
-	public ConfigurationWizardNode(IWorkbench workbench, WizardPage wizardPage,
-			WorkbenchWizardElement wizardElement,
-			ContainerTypeDescription containerTypeDescription) {
+	public ConfigurationWizardNode(IWorkbench workbench, WizardPage wizardPage, WorkbenchWizardElement wizardElement, ContainerTypeDescription containerTypeDescription) {
 		super(workbench, wizardPage, wizardElement);
 		this.typeDescription = containerTypeDescription;
 	}
 
 	public IWizard createWizard() throws CoreException {
-		IConfigurationWizard configWizard = ((IConfigurationWizard) getWizardElement()
-				.createWizardForNode());
+		IConfigurationWizard configWizard = ((IConfigurationWizard) getWizardElement().createWizardForNode());
 		configWizard.init(getWorkbench(), typeDescription);
 		return configWizard;
 	}
@@ -42,8 +39,6 @@ public class ConfigurationWizardNode extends WizardNode {
 	public ContainerConfigurationResult getConfigurationResult() {
 		if (containerHolder != null)
 			return containerHolder;
-		else
-			return ((IConfigurationWizard) getWizard())
-					.getConfigurationResult();
+		return ((IConfigurationWizard) getWizard()).getConfigurationResult();
 	}
 }

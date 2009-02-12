@@ -11,34 +11,18 @@
 package org.eclipse.ecf.ui.wizards;
 
 import java.util.ArrayList;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.Messages;
-import org.eclipse.ecf.internal.ui.wizards.ConfigurationWizardNode;
-import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
-import org.eclipse.ecf.internal.ui.wizards.WizardActivityFilter;
-import org.eclipse.ecf.internal.ui.wizards.WizardCollectionElement;
-import org.eclipse.ecf.internal.ui.wizards.WizardContentProvider;
-import org.eclipse.ecf.internal.ui.wizards.WizardsRegistryReader;
-import org.eclipse.ecf.internal.ui.wizards.WorkbenchLabelProvider;
-import org.eclipse.ecf.internal.ui.wizards.WorkbenchWizardElement;
+import org.eclipse.ecf.internal.ui.wizards.*;
 import org.eclipse.ecf.ui.ContainerConfigurationResult;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardSelectionPage;
 import org.eclipse.osgi.util.NLS;
@@ -46,9 +30,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.activities.ITriggerPoint;
 import org.eclipse.ui.activities.WorkbenchActivityHelper;
@@ -102,8 +84,7 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 		 *            message describing what the user should choose from the
 		 *            tree.
 		 */
-		protected CategorizedWizardSelectionTree(IWizardCategory categories,
-				String msg) {
+		protected CategorizedWizardSelectionTree(IWizardCategory categories, String msg) {
 			this.wizardCategories = categories;
 			this.message = msg;
 		}
@@ -144,9 +125,7 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 		 */
 		private void createFilteredTree(Composite parent) {
 			// Create a FilteredTree for the categories and wizards
-			FilteredTree filteredTree = new FilteredTree(parent, SWT.SINGLE
-					| SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER,
-					new WizardPatternFilter());
+			FilteredTree filteredTree = new FilteredTree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, new WizardPatternFilter());
 			viewer = filteredTree.getViewer();
 			filteredTree.setFont(parent.getFont());
 
@@ -160,8 +139,7 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 						if (wizardCategory != null && wizardCategory.equals(id))
 							return 1;
 						String uncategorizedCategory = Messages.ConfigurationWizardSelectionPage_UNCATEGORIZED_WIZARD_CATEGORY;
-						if (uncategorizedCategory != null
-								&& uncategorizedCategory.equals(id))
+						if (uncategorizedCategory != null && uncategorizedCategory.equals(id))
 							return 3;
 						return 2;
 					}
@@ -174,8 +152,7 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 
 			if (wizardCategories != null) {
 				if (wizardCategories.getParent() == null) {
-					IWizardCategory[] children = wizardCategories
-							.getCategories();
+					IWizardCategory[] children = wizardCategories.getCategories();
 					for (int i = 0; i < children.length; i++) {
 						inputArray.add(children[i]);
 					}
@@ -224,7 +201,7 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 			 * @see org.eclipse.ui.internal.dialogs.PatternFilter#isElementMatch(org.eclipse.jface.viewers.Viewer,
 			 *      java.lang.Object)
 			 */
-			protected boolean isLeafMatch(Viewer viewer, Object element) {
+			protected boolean isLeafMatch(Viewer v, Object element) {
 				if (element instanceof WizardCollectionElement)
 					return false;
 
@@ -255,10 +232,7 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 		private void layoutTopControl(Control control) {
 			GridData data = new GridData(GridData.FILL_BOTH);
 
-			int availableRows = control.getParent().getDisplay()
-					.getClientArea().height
-					/ (control.getParent().getFont().getFontData())[0]
-							.getHeight();
+			int availableRows = control.getParent().getDisplay().getClientArea().height / (control.getParent().getFont().getFontData())[0].getHeight();
 
 			// Only give a height hint if the dialog is going to be too small
 			if (availableRows > 50) {
@@ -271,46 +245,30 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 		}
 	}
 
-	public ConfigurationWizardSelectionPage(IWorkbench workbench,
-			IStructuredSelection selection) {
-		super(
-				Messages.ConfigurationWizardSelectionPage_CONFIGURATION_WIZARD_PAGE_NAME);
+	public ConfigurationWizardSelectionPage(IWorkbench workbench, IStructuredSelection selection) {
+		super(Messages.ConfigurationWizardSelectionPage_CONFIGURATION_WIZARD_PAGE_NAME);
 		this.workbench = workbench;
 		this.currentResourceSelection = selection;
 		setTitle(Messages.Select);
 	}
 
 	protected ITriggerPoint getTriggerPoint() {
-		return getWorkbench().getActivitySupport().getTriggerPointManager()
-				.getTriggerPoint(IWizardRegistryConstants.CONFIGURE_EPOINT_ID);
+		return getWorkbench().getActivitySupport().getTriggerPointManager().getTriggerPoint(IWizardRegistryConstants.CONFIGURE_EPOINT_ID);
 	}
 
 	protected ContainerConfigurationResult getContainerResult() {
 		ConfigurationWizardNode cwn = (ConfigurationWizardNode) getSelectedNode();
 		if (cwn == null)
 			return null;
-		return ((IConfigurationWizard) getSelectedNode().getWizard())
-				.getConfigurationResult();
+		return ((IConfigurationWizard) getSelectedNode().getWizard()).getConfigurationResult();
 	}
 
-	private ContainerTypeDescription getContainerTypeDescriptionForElement(
-			WorkbenchWizardElement element) {
-		ContainerTypeDescription typeDescription = ContainerFactory
-				.getDefault().getDescriptionByName(
-						element.getContainerTypeName());
+	private ContainerTypeDescription getContainerTypeDescriptionForElement(WorkbenchWizardElement element) {
+		ContainerTypeDescription typeDescription = ContainerFactory.getDefault().getDescriptionByName(element.getContainerTypeName());
 		if (typeDescription == null) {
-			String msg = NLS.bind(
-					Messages.ConfigurationWizardSelectionPage_ERROR_MESSAGE,
-					element);
+			String msg = NLS.bind(Messages.ConfigurationWizardSelectionPage_ERROR_MESSAGE, element);
 			setErrorMessage(msg);
-			ErrorDialog
-					.openError(
-							getShell(),
-							Messages.ConfigurationWizardSelectionPage_CONFIGRATION_ERROR_TITLE,
-							Messages.ConfigurationWizardSelectionPage_CONFIGURATION_ERROR_MESSAGE,
-							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-									CONTAINERTYPEDESCRIPTION_ERROR_CODE, msg,
-									null));
+			ErrorDialog.openError(getShell(), Messages.ConfigurationWizardSelectionPage_CONFIGRATION_ERROR_TITLE, Messages.ConfigurationWizardSelectionPage_CONFIGURATION_ERROR_MESSAGE, new Status(IStatus.ERROR, Activator.PLUGIN_ID, CONTAINERTYPEDESCRIPTION_ERROR_CODE, msg, null));
 			return null;
 		}
 		return typeDescription;
@@ -324,23 +282,18 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 			return;
 		}
 
-		setSelectedNode(new ConfigurationWizardNode(getWorkbench(), this,
-				wizardElement,
-				getContainerTypeDescriptionForElement(wizardElement)));
+		setSelectedNode(new ConfigurationWizardNode(getWorkbench(), this, wizardElement, getContainerTypeDescriptionForElement(wizardElement)));
 		setMessage(wizardElement.getDescription());
 	}
 
 	protected IWizardCategory getRootCategory() {
-		return new WizardsRegistryReader(Activator.PLUGIN_ID,
-				IWizardRegistryConstants.CONFIGURE_EPOINT).getWizardElements();
+		return new WizardsRegistryReader(Activator.PLUGIN_ID, IWizardRegistryConstants.CONFIGURE_EPOINT).getWizardElements();
 	}
 
 	public IWizardPage getNextPage() {
 		ITriggerPoint triggerPoint = getTriggerPoint();
 
-		if (triggerPoint == null
-				|| WorkbenchActivityHelper.allowUseOf(triggerPoint,
-						getSelectedNode())) {
+		if (triggerPoint == null || WorkbenchActivityHelper.allowUseOf(triggerPoint, getSelectedNode())) {
 			return super.getNextPage();
 		}
 		return null;
@@ -348,21 +301,18 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 
 	protected Composite createTreeViewer(Composite parent) {
 		IWizardCategory root = getRootCategory();
-		wizardSelectionTree = new CategorizedWizardSelectionTree(root,
-				Messages.ConfigurationWizardSelectionPage_SELECT);
+		wizardSelectionTree = new CategorizedWizardSelectionTree(root, Messages.ConfigurationWizardSelectionPage_SELECT);
 		Composite importComp = wizardSelectionTree.createControl(parent);
-		wizardSelectionTree.getViewer().addSelectionChangedListener(
-				new ISelectionChangedListener() {
-					public void selectionChanged(SelectionChangedEvent event) {
-						listSelectionChanged(event.getSelection());
-					}
-				});
-		wizardSelectionTree.getViewer().addDoubleClickListener(
-				new IDoubleClickListener() {
-					public void doubleClick(DoubleClickEvent event) {
-						treeDoubleClicked(event);
-					}
-				});
+		wizardSelectionTree.getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				listSelectionChanged(event.getSelection());
+			}
+		});
+		wizardSelectionTree.getViewer().addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				treeDoubleClicked(event);
+			}
+		});
 		setTreeViewer(wizardSelectionTree.getViewer());
 		return importComp;
 	}

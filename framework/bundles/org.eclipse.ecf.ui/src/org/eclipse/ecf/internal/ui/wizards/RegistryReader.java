@@ -10,16 +10,8 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.ui.wizards;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import java.util.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.ui.Activator;
 
 public abstract class RegistryReader {
@@ -30,6 +22,7 @@ public abstract class RegistryReader {
 	 * The constructor.
 	 */
 	protected RegistryReader() {
+		//
 	}
 
 	/**
@@ -39,30 +32,23 @@ public abstract class RegistryReader {
 	protected static void logError(IConfigurationElement element, String text) {
 		IExtension extension = element.getDeclaringExtension();
 		StringBuffer buf = new StringBuffer();
-		buf
-				.append("Plugin " + Activator.PLUGIN_ID + ", extension " + extension.getExtensionPointUniqueIdentifier());//$NON-NLS-2$//$NON-NLS-1$
+		buf.append("Plugin " + Activator.PLUGIN_ID + ", extension " + extension.getExtensionPointUniqueIdentifier());//$NON-NLS-2$//$NON-NLS-1$
 		buf.append("\n" + text);//$NON-NLS-1$
-		Activator.getDefault().getLog().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, 5555, buf
-						.toString(), null));
+		Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 5555, buf.toString(), null));
 	}
 
 	/**
 	 * Logs a very common registry error when a required attribute is missing.
 	 */
-	protected static void logMissingAttribute(IConfigurationElement element,
-			String attributeName) {
-		logError(element,
-				"Required attribute '" + attributeName + "' not defined");//$NON-NLS-2$//$NON-NLS-1$
+	protected static void logMissingAttribute(IConfigurationElement element, String attributeName) {
+		logError(element, "Required attribute '" + attributeName + "' not defined");//$NON-NLS-2$//$NON-NLS-1$
 	}
 
 	/**
 	 * Logs a very common registry error when a required child is missing.
 	 */
-	protected static void logMissingElement(IConfigurationElement element,
-			String elementName) {
-		logError(element,
-				"Required sub element '" + elementName + "' not defined");//$NON-NLS-2$//$NON-NLS-1$
+	protected static void logMissingElement(IConfigurationElement element, String elementName) {
+		logError(element, "Required sub element '" + elementName + "' not defined");//$NON-NLS-2$//$NON-NLS-1$
 	}
 
 	/**
@@ -148,10 +134,8 @@ public abstract class RegistryReader {
 	 * @param extensionPoint
 	 *            the extension point id
 	 */
-	public void readRegistry(IExtensionRegistry registry, String pluginId,
-			String extensionPoint) {
-		IExtensionPoint point = registry.getExtensionPoint(pluginId,
-				extensionPoint);
+	public void readRegistry(IExtensionRegistry registry, String pluginId, String extensionPoint) {
+		IExtensionPoint point = registry.getExtensionPoint(pluginId, extensionPoint);
 		if (point == null)
 			return;
 		IExtension[] extensions = point.getExtensions();
@@ -170,8 +154,7 @@ public abstract class RegistryReader {
 	 * @since 3.1
 	 */
 	public static String getDescription(IConfigurationElement configElement) {
-		IConfigurationElement[] children = configElement
-				.getChildren(IWizardRegistryConstants.ATT_DESCRIPTION);
+		IConfigurationElement[] children = configElement.getChildren(IWizardRegistryConstants.ATT_DESCRIPTION);
 		if (children.length >= 1)
 			return children[0].getValue();
 		return "";//$NON-NLS-1$
@@ -189,17 +172,14 @@ public abstract class RegistryReader {
 	 * @return the value of the attribute or nested class element
 	 * @since 3.1
 	 */
-	public static String getClassValue(IConfigurationElement configElement,
-			String classAttributeName) {
+	public static String getClassValue(IConfigurationElement configElement, String classAttributeName) {
 		String className = configElement.getAttribute(classAttributeName);
 		if (className != null)
 			return className;
-		IConfigurationElement[] candidateChildren = configElement
-				.getChildren(classAttributeName);
+		IConfigurationElement[] candidateChildren = configElement.getChildren(classAttributeName);
 		if (candidateChildren.length == 0)
 			return null;
 
-		return candidateChildren[0]
-				.getAttribute(IWizardRegistryConstants.ATT_CLASS);
+		return candidateChildren[0].getAttribute(IWizardRegistryConstants.ATT_CLASS);
 	}
 }

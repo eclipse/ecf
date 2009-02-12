@@ -18,10 +18,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-public class CategoryPreferencePage extends PreferencePage implements
-		IWorkbenchPreferencePage {
+public class CategoryPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
 	public CategoryPreferencePage() {
+		// nothing
 	}
 
 	public CategoryPreferencePage(String title) {
@@ -38,6 +38,7 @@ public class CategoryPreferencePage extends PreferencePage implements
 	}
 
 	public void init(IWorkbench workbench) {
+		// nothing
 	}
 
 }

@@ -11,7 +11,6 @@
 package org.eclipse.ecf.ui.wizards;
 
 import java.net.URI;
-
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.jface.wizard.WizardPage;
@@ -20,10 +19,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 
 /**
  * A abstract <tt>WizardPage</tt> subclass that can be customized to request
@@ -32,7 +28,7 @@ import org.eclipse.swt.widgets.Text;
  */
 public abstract class AbstractConnectWizardPage extends WizardPage {
 
-	private Text connectText;
+	Text connectText;
 
 	private Text usernameText;
 
@@ -99,8 +95,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 
 		autoLoginBtn = new Button(parent, SWT.CHECK);
 		autoLoginBtn.setText(Messages.AbstractConnectWizardPage_LOGIN_AUTOMATICALLY_LABEL);
-		autoLoginBtn.setLayoutData(new GridData(SWT.END, SWT.CENTER, true,
-				false, 2, 1));
+		autoLoginBtn.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false, 2, 1));
 
 		if (uri != null) {
 			connectText.setText(uri.toString());
@@ -161,7 +156,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 		setPageComplete(message == null);
 	}
 
-	private class InputVerifier implements ModifyListener {
+	class InputVerifier implements ModifyListener {
 
 		public void modifyText(ModifyEvent e) {
 			if (connectText.getText().equals("")) { //$NON-NLS-1$

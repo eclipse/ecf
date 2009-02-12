@@ -12,15 +12,11 @@ package org.eclipse.ecf.internal.ui.wizards;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.IPluginContribution;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.WorkbenchException;
+import org.eclipse.ui.*;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
 /**
@@ -31,12 +27,11 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
  * A category may specify its parent category in order to achieve hierarchy.
  * </p>
  */
-public class Category implements IWorkbenchAdapter, IPluginContribution,
-		IAdaptable {
+public class Category implements IWorkbenchAdapter, IPluginContribution, IAdaptable {
 	/**
 	 * Name of the miscellaneous category
 	 */
-	public final static String MISC_NAME = "Other";
+	public final static String MISC_NAME = "Other"; //$NON-NLS-1$
 
 	/**
 	 * Identifier of the miscellaneous category
@@ -84,8 +79,7 @@ public class Category implements IWorkbenchAdapter, IPluginContribution,
 	 * 		the ID, label, and optional parent category path.
 	 * @throws WorkbenchException if the ID or label is <code>null</code
 	 */
-	public Category(IConfigurationElement configElement)
-			throws WorkbenchException {
+	public Category(IConfigurationElement configElement) throws WorkbenchException {
 		id = configElement.getAttribute(IWizardRegistryConstants.ATT_ID);
 
 		configurationElement = configElement;
@@ -129,8 +123,7 @@ public class Category implements IWorkbenchAdapter, IPluginContribution,
 	 * (non-Javadoc) Method declared on IWorkbenchAdapter.
 	 */
 	public ImageDescriptor getImageDescriptor(Object object) {
-		return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(
-				ISharedImages.IMG_OBJ_FOLDER);
+		return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER);
 	}
 
 	/*
@@ -155,8 +148,7 @@ public class Category implements IWorkbenchAdapter, IPluginContribution,
 	 * @return the label
 	 */
 	public String getLabel() {
-		return configurationElement == null ? name : configurationElement
-				.getAttribute(IWizardRegistryConstants.ATT_NAME);
+		return configurationElement == null ? name : configurationElement.getAttribute(IWizardRegistryConstants.ATT_NAME);
 	}
 
 	/**
@@ -186,8 +178,7 @@ public class Category implements IWorkbenchAdapter, IPluginContribution,
 	 * @return the unparsed parent path or <code>null</code>
 	 */
 	public String getRawParentPath() {
-		return configurationElement == null ? null : configurationElement
-				.getAttribute(IWizardRegistryConstants.ATT_PARENT_CATEGORY);
+		return configurationElement == null ? null : configurationElement.getAttribute(IWizardRegistryConstants.ATT_PARENT_CATEGORY);
 	}
 
 	/**

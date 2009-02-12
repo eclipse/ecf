@@ -8,10 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.ui.actions;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -31,18 +28,15 @@ import org.eclipse.osgi.util.NLS;
  */
 public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 
-	public AsynchContainerConnectAction(IContainer container, ID targetID,
-			IConnectContext connectContext, IExceptionHandler exceptionHandler, Runnable successBlock) {
+	public AsynchContainerConnectAction(IContainer container, ID targetID, IConnectContext connectContext, IExceptionHandler exceptionHandler, Runnable successBlock) {
 		super(container, targetID, connectContext, exceptionHandler, successBlock);
 	}
 
-	public AsynchContainerConnectAction(IContainer container, ID targetID,
-			IConnectContext connectContext, IExceptionHandler exceptionHandler) {
+	public AsynchContainerConnectAction(IContainer container, ID targetID, IConnectContext connectContext, IExceptionHandler exceptionHandler) {
 		super(container, targetID, connectContext, exceptionHandler);
 	}
 
-	public AsynchContainerConnectAction(IContainer container, ID targetID,
-			IConnectContext connectContext) {
+	public AsynchContainerConnectAction(IContainer container, ID targetID, IConnectContext connectContext) {
 		this(container, targetID, connectContext, null);
 	}
 
@@ -57,16 +51,10 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 		if (exceptionHandler != null)
 			return exceptionHandler.handleException(e);
 		else if (e instanceof ECFException) {
-			return new MultiStatus(
-					Activator.PLUGIN_ID,
-					IStatus.ERROR,
-					new IStatus[] { getStatusForECFException((ECFException) e) },
-					NLS.bind("Connect to {0} failed.",
-							targetID.getName()), null);
+			return new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, new IStatus[] {getStatusForECFException((ECFException) e)}, NLS.bind("Connect to {0} failed.", //$NON-NLS-1$
+					targetID.getName()), null);
 		} else
-			return new Status(IStatus.ERROR,
-					Activator.PLUGIN_ID, IStatus.ERROR,
-					e.getLocalizedMessage(), null);
+			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, e.getLocalizedMessage(), null);
 	}
 
 	protected IStatus getStatusForECFException(ECFException exception) {
@@ -74,20 +62,20 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 		Throwable cause = status.getException();
 		if (cause instanceof ECFException) {
 			return getStatusForECFException((ECFException) cause);
-		} else
-			return status;
+		}
+		return status;
 	}
 
 	class ContainerMutex implements ISchedulingRule {
 
-		IContainer container;
+		IContainer c;
 
 		public ContainerMutex(IContainer container) {
-			this.container = container;
+			this.c = container;
 		}
 
 		protected boolean isSameContainer(IContainer other) {
-			if (other != null && container.getID().equals(other.getID()))
+			if (other != null && c.getID().equals(other.getID()))
 				return true;
 			return false;
 		}
@@ -99,8 +87,7 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 		public boolean isConflicting(ISchedulingRule rule) {
 			if (rule == this)
 				return true;
-			else if (rule instanceof ContainerMutex
-					&& isSameContainer(((ContainerMutex) rule).getContainer()))
+			else if (rule instanceof ContainerMutex && isSameContainer(((ContainerMutex) rule).getContainer()))
 				return true;
 			else
 				return false;
@@ -119,9 +106,7 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 		}
 
 		public IStatus run(IProgressMonitor monitor) {
-			monitor.beginTask(NLS.bind(
-					Messages.AsynchContainerConnectAction_MONITOR_BEGIN_TASK,
-					(targetID==null)?"":targetID.getName()), 100);
+			monitor.beginTask(NLS.bind(Messages.AsynchContainerConnectAction_MONITOR_BEGIN_TASK, (targetID == null) ? "" : targetID.getName()), 100); //$NON-NLS-1$
 			monitor.worked(30);
 			try {
 				container.connect(targetID, connectContext);
@@ -146,7 +131,7 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 	public void run(IAction action) {
 		new AsynchActionJob().schedule();
 	}
-	
+
 	public void run() {
 		this.run(null);
 	}

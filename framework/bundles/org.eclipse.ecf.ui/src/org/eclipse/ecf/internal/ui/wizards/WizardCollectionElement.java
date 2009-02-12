@@ -11,16 +11,9 @@
 package org.eclipse.ecf.internal.ui.wizards;
 
 import java.util.Iterator;
-
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.IPluginContribution;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
 import org.eclipse.ui.model.AdaptableList;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.wizards.IWizardCategory;
@@ -31,8 +24,7 @@ import org.eclipse.ui.wizards.IWizardDescriptor;
  * facilitating the definition of tree structures composed of these elements.
  * Instances also store a list of wizards.
  */
-public class WizardCollectionElement extends AdaptableList implements
-		IPluginContribution, IWizardCategory {
+public class WizardCollectionElement extends AdaptableList implements IPluginContribution, IWizardCategory {
 	private String id;
 
 	private String pluginId;
@@ -58,8 +50,7 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * @param parent
 	 *            the parent
 	 */
-	public WizardCollectionElement(String id, String pluginId, String name,
-			WizardCollectionElement parent) {
+	public WizardCollectionElement(String id, String pluginId, String name, WizardCollectionElement parent) {
 		this.name = name;
 		this.id = id;
 		this.pluginId = pluginId;
@@ -74,8 +65,7 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * @param parent
 	 * @since 3.1
 	 */
-	public WizardCollectionElement(IConfigurationElement element,
-			WizardCollectionElement parent) {
+	public WizardCollectionElement(IConfigurationElement element, WizardCollectionElement parent) {
 		configElement = element;
 		id = configElement.getAttribute(IWizardRegistryConstants.ATT_ID);
 		this.parent = parent;
@@ -114,16 +104,15 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * @return WizardCollectionElement
 	 */
 	public WizardCollectionElement findChildCollection(IPath searchPath) {
-		Object[] children = getChildren(null);
+		Object[] c = getChildren(null);
 		String searchString = searchPath.segment(0);
-		for (int i = 0; i < children.length; ++i) {
-			WizardCollectionElement currentCategory = (WizardCollectionElement) children[i];
+		for (int i = 0; i < c.length; ++i) {
+			WizardCollectionElement currentCategory = (WizardCollectionElement) c[i];
 			if (currentCategory.getId().equals(searchString)) {
 				if (searchPath.segmentCount() == 1)
 					return currentCategory;
 
-				return currentCategory.findChildCollection(searchPath
-						.removeFirstSegments(1));
+				return currentCategory.findChildCollection(searchPath.removeFirstSegments(1));
 			}
 		}
 
@@ -140,14 +129,13 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * @return the category, or <code>null</code> if not found
 	 * @since 3.1
 	 */
-	public WizardCollectionElement findCategory(String id) {
-		Object[] children = getChildren(null);
-		for (int i = 0; i < children.length; ++i) {
-			WizardCollectionElement currentCategory = (WizardCollectionElement) children[i];
-			if (id.equals(currentCategory.getId()))
+	public WizardCollectionElement findCategory(String lid) {
+		Object[] c = getChildren(null);
+		for (int i = 0; i < c.length; ++i) {
+			WizardCollectionElement currentCategory = (WizardCollectionElement) c[i];
+			if (lid.equals(currentCategory.getId()))
 				return currentCategory;
-			WizardCollectionElement childCategory = currentCategory
-					.findCategory(id);
+			WizardCollectionElement childCategory = currentCategory.findCategory(lid);
 			if (childCategory != null)
 				return childCategory;
 		}
@@ -165,17 +153,16 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * @return the element
 	 */
 	public WorkbenchWizardElement findWizard(String searchId, boolean recursive) {
-		Object[] wizards = getWizards();
-		for (int i = 0; i < wizards.length; ++i) {
-			WorkbenchWizardElement currentWizard = (WorkbenchWizardElement) wizards[i];
+		Object[] w = getWizards();
+		for (int i = 0; i < w.length; ++i) {
+			WorkbenchWizardElement currentWizard = (WorkbenchWizardElement) w[i];
 			if (currentWizard.getId().equals(searchId))
 				return currentWizard;
 		}
 		if (!recursive)
 			return null;
 		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
-			WizardCollectionElement child = (WizardCollectionElement) iterator
-					.next();
+			WizardCollectionElement child = (WizardCollectionElement) iterator.next();
 			WorkbenchWizardElement result = child.findWizard(searchId, true);
 			if (result != null)
 				return result;
@@ -204,8 +191,7 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * Returns the label for this collection.
 	 */
 	public String getLabel(Object o) {
-		return configElement != null ? configElement
-				.getAttribute(IWizardRegistryConstants.ATT_NAME) : name;
+		return configElement != null ? configElement.getAttribute(IWizardRegistryConstants.ATT_NAME) : name;
 	}
 
 	/**
@@ -233,8 +219,7 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * @see org.eclipse.ui.wizards.IWizardCategory#getWizards()
 	 */
 	public IWizardDescriptor[] getWizards() {
-		return (IWizardDescriptor[]) wizards
-				.getTypedChildren(IWizardDescriptor.class);
+		return (IWizardDescriptor[]) wizards.getTypedChildren(IWizardDescriptor.class);
 	}
 
 	/**
@@ -244,8 +229,7 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * @since 3.1
 	 */
 	public WorkbenchWizardElement[] getWorkbenchWizardElements() {
-		return (WorkbenchWizardElement[]) wizards
-				.getTypedChildren(WorkbenchWizardElement.class);
+		return (WorkbenchWizardElement[]) wizards.getTypedChildren(WorkbenchWizardElement.class);
 	}
 
 	/**
@@ -275,8 +259,7 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * @see org.eclipse.ui.model.IWorkbenchAdapter#getImageDescriptor(java.lang.Object)
 	 */
 	public ImageDescriptor getImageDescriptor(Object object) {
-		return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(
-				ISharedImages.IMG_OBJ_FOLDER);
+		return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER);
 	}
 
 	/*
@@ -369,8 +352,8 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * 
 	 * @see org.eclipse.ui.wizards.IWizardCategory#findWizard(java.lang.String)
 	 */
-	public IWizardDescriptor findWizard(String id) {
-		return findWizard(id, true);
+	public IWizardDescriptor findWizard(String i) {
+		return findWizard(i, true);
 	}
 
 	/*

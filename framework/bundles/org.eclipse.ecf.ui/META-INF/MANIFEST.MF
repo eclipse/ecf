@@ -9,8 +9,6 @@ Bundle-ManifestVersion: 2
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.ui;x-internal:=true,
  org.eclipse.ecf.internal.ui.actions;x-internal:=true,
- org.eclipse.ecf.internal.ui.deprecated;x-internal:=true,
- org.eclipse.ecf.internal.ui.deprecated.views;x-internal:=true,
  org.eclipse.ecf.internal.ui.perspectives;x-internal:=true,
  org.eclipse.ecf.internal.ui.wizards;x-internal:=true,
  org.eclipse.ecf.ui,

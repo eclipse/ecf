@@ -11,14 +11,11 @@
 package org.eclipse.ecf.internal.ui;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.ecf.internal.ui.deprecated.ChatPreferencePage;
 
 public class UIPreferenceInitializer extends AbstractPreferenceInitializer {
 
 	public void initializeDefaultPreferences() {
-		Activator.getDefault().getPreferenceStore().setDefault(
-				ChatPreferencePage.PREF_BROWSER_FOR_CHAT,
-				ChatPreferencePage.VIEW);
+		//Activator.getDefault().getPreferenceStore().setDefault(ChatPreferencePage.PREF_BROWSER_FOR_CHAT, ChatPreferencePage.VIEW);
 	}
 
 }
