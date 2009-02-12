@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
@@ -1002,7 +1003,7 @@ public class ChatComposite extends Composite {
 		if (rgb == null || rgb.equals("")) { //$NON-NLS-1$
 			return new Color(getShell().getDisplay(), 0, 0, 0);
 		} else {
-			final String[] vals = rgb.split(","); //$NON-NLS-1$
+			final String[] vals = StringUtils.split(rgb, ","); //$NON-NLS-1$
 			return new Color(getShell().getDisplay(), Integer.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer.parseInt(vals[2]));
 		}
 	}
