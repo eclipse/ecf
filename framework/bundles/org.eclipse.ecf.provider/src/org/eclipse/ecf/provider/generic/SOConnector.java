@@ -20,11 +20,8 @@ import java.util.Hashtable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConnector;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectEvent;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectCallEvent;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.sharedobject.util.QueueException;
-import org.eclipse.ecf.core.util.AsyncResult;
-import org.eclipse.ecf.core.util.IAsyncResult;
 
 public class SOConnector implements ISharedObjectConnector {
 	ID sender;
@@ -52,17 +49,6 @@ public class SOConnector implements ISharedObjectConnector {
 				queue.enqueue(event);
 			}
 		}
-	}
-
-	protected IAsyncResult[] fireCallEvent(ISharedObjectEvent event) throws QueueException {
-		IAsyncResult[] results = new IAsyncResult[receiverQueues.size()];
-		int i = 0;
-		for (Enumeration e = receiverQueues.elements(); e.hasMoreElements();) {
-			IQueueEnqueue queue = (IQueueEnqueue) e.nextElement();
-			results[i] = new AsyncResult();
-			queue.enqueue(new SharedObjectCallEvent(event.getSenderSharedObjectID(), event, results[i]));
-		}
-		return results;
 	}
 
 	/*
@@ -99,10 +85,6 @@ public class SOConnector implements ISharedObjectConnector {
 	 */
 	public void enqueue(ISharedObjectEvent[] events) throws QueueException {
 		fireEvents(events);
-	}
-
-	public IAsyncResult[] callAsynch(ISharedObjectEvent arg) throws Exception {
-		return fireCallEvent(arg);
 	}
 
 	/*

@@ -507,7 +507,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
-	 * @since 1.4
+	 * @since 2.0
 	 */
 	protected static void printToSystemError(String message, Throwable t) {
 		System.err.println(message);
