@@ -22,8 +22,6 @@ import junit.framework.TestCase;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
@@ -212,16 +210,6 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 			}
 	
 			public void setUserid(String userid) {
-			}
-
-			public String getSource() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			public void setSource(String source) {
-				// TODO Auto-generated method stub
-				
 			}
 			
 		};
