@@ -109,6 +109,9 @@
 	<!-- ECF help documentation -->
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/doc/bundles/org.eclipse.ecf.doc,org.eclipse.ecf.doc"/>
 
+	<!-- Equinox concurrent -->
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.equinox/components/bundles/org.eclipse.equinox.concurrent,org.eclipse.equinox.concurrent"/>
+
 	<!-- Examples -->
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.clients,org.eclipse.ecf.example.clients"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.collab,org.eclipse.ecf.example.collab"/>
