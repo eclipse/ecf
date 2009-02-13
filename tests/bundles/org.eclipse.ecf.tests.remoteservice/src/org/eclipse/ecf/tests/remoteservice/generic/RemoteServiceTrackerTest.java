@@ -11,14 +11,10 @@
 
 package org.eclipse.ecf.tests.remoteservice.generic;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.util.tracker.RemoteServiceTracker;
 import org.eclipse.ecf.tests.remoteservice.AbstractServiceTrackerTest;
-import org.eclipse.ecf.tests.remoteservice.IConcatService;
 
 /**
  *
