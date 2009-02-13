@@ -10,41 +10,23 @@ package org.eclipse.ecf.provider.xmpp;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
+import java.util.*;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.security.Callback;
-import org.eclipse.ecf.core.security.CallbackHandler;
-import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.security.ObjectCallback;
-import org.eclipse.ecf.core.security.UnsupportedCallbackException;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
+import org.eclipse.ecf.internal.provider.xmpp.*;
 import org.eclipse.ecf.internal.provider.xmpp.Messages;
-import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomContainer;
-import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomManager;
-import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerAccountManager;
-import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerContext;
-import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerPresenceHelper;
-import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
-import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
-import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
-import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
+import org.eclipse.ecf.internal.provider.xmpp.events.*;
 import org.eclipse.ecf.internal.provider.xmpp.filetransfer.XMPPOutgoingFileTransferHelper;
 import org.eclipse.ecf.internal.provider.xmpp.search.XMPPUserSearchManager;
-import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
-import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
-import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionPacketEvent;
+import org.eclipse.ecf.internal.provider.xmpp.smack.*;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
@@ -53,40 +35,35 @@ import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.search.IUserSearchManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
-import org.eclipse.ecf.provider.comm.AsynchEvent;
-import org.eclipse.ecf.provider.comm.ConnectionCreateException;
-import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.provider.generic.ClientSOContainer;
-import org.eclipse.ecf.provider.generic.ContainerMessage;
-import org.eclipse.ecf.provider.generic.SOConfig;
-import org.eclipse.ecf.provider.generic.SOContainerConfig;
-import org.eclipse.ecf.provider.generic.SOContext;
-import org.eclipse.ecf.provider.generic.SOWrapper;
+import org.eclipse.ecf.provider.comm.*;
+import org.eclipse.ecf.provider.generic.*;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.osgi.util.NLS;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smackx.packet.MUCUser;
 import org.jivesoftware.smackx.packet.XHTMLExtension;
 
 /**
  * @since 3.0
  */
-public class XMPPContainer extends ClientSOContainer implements IPresenceService {
+public class XMPPContainer extends ClientSOContainer implements
+		IPresenceService {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 
-	public static final String CONNECT_NAMESPACE = XmppPlugin.getDefault().getNamespaceIdentifier();
+	public static final String CONNECT_NAMESPACE = XmppPlugin.getDefault()
+			.getNamespaceIdentifier();
 
-	public static final String CONTAINER_HELPER_ID = XMPPContainer.class.getName() + ".xmpphandler"; //$NON-NLS-1$
+	public static final String CONTAINER_HELPER_ID = XMPPContainer.class
+			.getName()
+			+ ".xmpphandler"; //$NON-NLS-1$
 
 	protected static final String GOOGLE_SERVICENAME = "gmail.com"; //$NON-NLS-1$
 
-	private static final String[] googleHosts = {GOOGLE_SERVICENAME, "talk.google.com", "googlemail.com"}; //$NON-NLS-1$ //$NON-NLS-2$
+	private static final String[] googleHosts = { GOOGLE_SERVICENAME,
+			"talk.google.com", "googlemail.com" }; //$NON-NLS-1$ //$NON-NLS-2$
 
 	public static final String XMPP_GOOGLE_OVERRIDE_PROP_NAME = "ecf.xmpp.google.override"; //$NON-NLS-1$
 
@@ -95,37 +72,41 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	static {
 		for (int i = 0; i < googleHosts.length; i++)
 			googleNames.add(googleHosts[i]);
-		final String override = System.getProperty(XMPP_GOOGLE_OVERRIDE_PROP_NAME);
+		final String override = System
+				.getProperty(XMPP_GOOGLE_OVERRIDE_PROP_NAME);
 		if (override != null)
 			googleNames.add(override.toLowerCase());
 	}
 
 	protected int keepAlive = 0;
 
-	protected XMPPContainerAccountManager accountManager = null;
+	XMPPContainerAccountManager accountManager = null;
 
-	protected XMPPChatRoomManager chatRoomManager = null;
+	XMPPChatRoomManager chatRoomManager = null;
 
-	protected XMPPOutgoingFileTransferHelper outgoingFileTransferContainerAdapter = null;
+	XMPPOutgoingFileTransferHelper outgoingFileTransferContainerAdapter = null;
 
-	protected XMPPContainerPresenceHelper presenceHelper = null;
-	
+	XMPPContainerPresenceHelper presenceHelper = null;
+
 	/**
 	 * @since 3.0
 	 */
-	protected XMPPUserSearchManager searchManager = null;
+	XMPPUserSearchManager searchManager = null;
 
 	protected ID presenceHelperID = null;
 
-	protected XMPPContainer(SOContainerConfig config, int keepAlive) throws Exception {
+	protected XMPPContainer(SOContainerConfig config, int keepAlive)
+			throws Exception {
 		super(config);
 		this.keepAlive = keepAlive;
 		accountManager = new XMPPContainerAccountManager();
 		chatRoomManager = new XMPPChatRoomManager(getID());
 		searchManager = new XMPPUserSearchManager();
-		this.presenceHelperID = IDFactory.getDefault().createStringID(CONTAINER_HELPER_ID);
+		this.presenceHelperID = IDFactory.getDefault().createStringID(
+				CONTAINER_HELPER_ID);
 		presenceHelper = new XMPPContainerPresenceHelper(this);
-		outgoingFileTransferContainerAdapter = new XMPPOutgoingFileTransferHelper(this);
+		outgoingFileTransferContainerAdapter = new XMPPOutgoingFileTransferHelper(
+				this);
 	}
 
 	public XMPPContainer() throws Exception {
@@ -137,13 +118,14 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	}
 
 	public XMPPContainer(String userhost, int ka) throws Exception {
-		this(new SOContainerConfig(IDFactory.getDefault().createStringID(userhost)), ka);
+		this(new SOContainerConfig(IDFactory.getDefault().createStringID(
+				userhost)), ka);
 	}
 
 	public IRosterManager getRosterManager() {
 		return presenceHelper.getRosterManager();
 	}
-	
+
 	/**
 	 * @since 3.0
 	 */
@@ -169,18 +151,22 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	 * @see org.eclipse.ecf.provider.generic.SOContainer#getConnectNamespace()
 	 */
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getNamespaceIdentifier());
+		return IDFactory.getDefault().getNamespaceByName(
+				XmppPlugin.getDefault().getNamespaceIdentifier());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#connect(org.eclipse.ecf.core.identity.ID,
-	 *      org.eclipse.ecf.core.security.IConnectContext)
+	 * @see
+	 * org.eclipse.ecf.provider.generic.ClientSOContainer#connect(org.eclipse
+	 * .ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID remote, IConnectContext joinContext) throws ContainerConnectException {
+	public void connect(ID remote, IConnectContext joinContext)
+			throws ContainerConnectException {
 		try {
-			getSharedObjectManager().addSharedObject(presenceHelperID, presenceHelper, null);
+			getSharedObjectManager().addSharedObject(presenceHelperID,
+					presenceHelper, null);
 			super.connect(remote, joinContext);
 			XmppPlugin.getDefault().registerService(this);
 		} catch (final ContainerConnectException e) {
@@ -188,7 +174,9 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 			throw e;
 		} catch (final SharedObjectAddException e1) {
 			disconnect();
-			throw new ContainerConnectException(NLS.bind(Messages.XMPPContainer_EXCEPTION_ADDING_SHARED_OBJECT, presenceHelperID), e1);
+			throw new ContainerConnectException(NLS.bind(
+					Messages.XMPPContainer_EXCEPTION_ADDING_SHARED_OBJECT,
+					presenceHelperID), e1);
 		}
 	}
 
@@ -199,7 +187,8 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	 */
 	public void disconnect() {
 		final ID groupID = getConnectedID();
-		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), groupID));
+		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(),
+				groupID));
 		synchronized (getConnectLock()) {
 			// If we are currently connected
 			if (isConnected()) {
@@ -238,7 +227,8 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.provider.generic.SOContainer#getAdapter(java.lang.Class)
+	 * @see
+	 * org.eclipse.ecf.provider.generic.SOContainer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(IPresenceContainerAdapter.class))
@@ -249,30 +239,37 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 			return super.getAdapter(clazz);
 	}
 
-	protected ID handleConnectResponse(ID originalTarget, Object serverData) throws Exception {
+	protected ID handleConnectResponse(ID originalTarget, Object serverData)
+			throws Exception {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
 			addNewRemoteMember(originalTarget, null);
 
 			final ECFConnection conn = getECFConnection();
 			accountManager.setConnection(conn.getXMPPConnection());
-			chatRoomManager.setConnection(getConnectNamespace(), originalTarget, conn);
-			searchManager.setConnection(getConnectNamespace(), originalTarget,conn);
+			chatRoomManager.setConnection(getConnectNamespace(),
+					originalTarget, conn);
+			searchManager.setConnection(getConnectNamespace(), originalTarget,
+					conn);
 			searchManager.setEnabled(!isGoogle(originalTarget));
 			presenceHelper.setUser(new User(originalTarget));
-			outgoingFileTransferContainerAdapter.setConnection(conn.getXMPPConnection());
+			outgoingFileTransferContainerAdapter.setConnection(conn
+					.getXMPPConnection());
 			return originalTarget;
 
 		} else
-			throw new ConnectException(Messages.XMPPContainer_EXCEPTION_INVALID_RESPONSE_FROM_SERVER);
+			throw new ConnectException(
+					Messages.XMPPContainer_EXCEPTION_INVALID_RESPONSE_FROM_SERVER);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#createConnection(org.eclipse.ecf.core.identity.ID,
-	 *      java.lang.Object)
+	 * @see
+	 * org.eclipse.ecf.provider.generic.ClientSOContainer#createConnection(org
+	 * .eclipse.ecf.core.identity.ID, java.lang.Object)
 	 */
-	protected ISynchAsynchConnection createConnection(ID remoteSpace, Object data) throws ConnectionCreateException {
+	protected ISynchAsynchConnection createConnection(ID remoteSpace,
+			Object data) throws ConnectionCreateException {
 		final boolean google = isGoogle(remoteSpace);
 		return new ECFConnection(google, getConnectNamespace(), receiver);
 	}
@@ -291,10 +288,13 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#getConnectData(org.eclipse.ecf.core.identity.ID,
-	 *      org.eclipse.ecf.core.security.IConnectContext)
+	 * @see
+	 * org.eclipse.ecf.provider.generic.ClientSOContainer#getConnectData(org
+	 * .eclipse.ecf.core.identity.ID,
+	 * org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	protected Object getConnectData(ID remote, IConnectContext joinContext) throws IOException, UnsupportedCallbackException {
+	protected Object getConnectData(ID remote, IConnectContext joinContext)
+			throws IOException, UnsupportedCallbackException {
 		final Callback[] callbacks = createAuthorizationCallbacks();
 		if (joinContext != null && callbacks != null && callbacks.length > 0) {
 			final CallbackHandler handler = joinContext.getCallbackHandler();
@@ -329,7 +329,8 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#getConnectTimeout()
+	 * @see
+	 * org.eclipse.ecf.provider.generic.ClientSOContainer#getConnectTimeout()
 	 */
 	protected int getConnectTimeout() {
 		return keepAlive;
@@ -358,7 +359,8 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 			} else if (aPacket instanceof Presence) {
 				deliverEvent(new PresenceEvent((Presence) aPacket));
 			} else {
-				log(NLS.bind(Messages.XMPPContainer_UNEXPECTED_XMPP_MESSAGE, aPacket.toXML()), null);
+				log(NLS.bind(Messages.XMPPContainer_UNEXPECTED_XMPP_MESSAGE,
+						aPacket.toXML()), null);
 			}
 		}
 	}
@@ -369,7 +371,8 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 			final Object extension = i.next();
 			if (extension instanceof XHTMLExtension) {
 				final XHTMLExtension xhtmlExtension = (XHTMLExtension) extension;
-				deliverEvent(new MessageEvent((Message) packet, xhtmlExtension.getBodies()));
+				deliverEvent(new MessageEvent((Message) packet, xhtmlExtension
+						.getBodies()));
 				return true;
 			}
 			if (packet instanceof Presence && extension instanceof MUCUser) {
@@ -382,17 +385,23 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.provider.generic.SOContainer#createSharedObjectContext(org.eclipse.ecf.provider.generic.SOConfig,
-	 *      org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue)
+	 * @see
+	 * org.eclipse.ecf.provider.generic.SOContainer#createSharedObjectContext
+	 * (org.eclipse.ecf.provider.generic.SOConfig,
+	 * org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue)
 	 */
-	protected SOContext createSharedObjectContext(SOConfig soconfig, IQueueEnqueue queue) {
-		return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig.getHomeContainerID(), this, soconfig.getProperties(), queue);
+	protected SOContext createSharedObjectContext(SOConfig soconfig,
+			IQueueEnqueue queue) {
+		return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig
+				.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#processAsynch(org.eclipse.ecf.provider.comm.AsynchEvent)
+	 * @see
+	 * org.eclipse.ecf.provider.generic.ClientSOContainer#processAsynch(org.
+	 * eclipse.ecf.provider.comm.AsynchEvent)
 	 */
 	protected void processAsynch(AsynchEvent e) {
 		try {
@@ -407,9 +416,11 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 				// this should be a ContainerMessage
 				final Object cm = deserializeContainerMessage((byte[]) obj);
 				if (cm == null)
-					throw new IOException(Messages.XMPPContainer_EXCEPTION_DESERIALIZED_OBJECT_NULL);
+					throw new IOException(
+							Messages.XMPPContainer_EXCEPTION_DESERIALIZED_OBJECT_NULL);
 				final ContainerMessage contMessage = (ContainerMessage) cm;
-				final IChatRoomContainer chat = chatRoomManager.findReceiverChatRoom(contMessage.getToContainerID());
+				final IChatRoomContainer chat = chatRoomManager
+						.findReceiverChatRoom(contMessage.getToContainerID());
 				if (chat != null && chat instanceof XMPPChatRoomContainer) {
 					final XMPPChatRoomContainer cont = (XMPPChatRoomContainer) chat;
 					cont.handleContainerMessage(contMessage);
@@ -425,14 +436,18 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 				} else if (data instanceof ContainerMessage.SharedObjectDisposeMessage) {
 					handleSharedObjectDisposeMessage(contMessage);
 				} else {
-					debug(NLS.bind(Messages.XMPPContainer_UNRECOGONIZED_CONTAINER_MESSAGE, contMessage));
+					debug(NLS
+							.bind(
+									Messages.XMPPContainer_UNRECOGONIZED_CONTAINER_MESSAGE,
+									contMessage));
 				}
 			} else {
 				// Unexpected type...
 				log(NLS.bind(Messages.XMPPContainer_UNEXPECTED_EVENT, e), null);
 			}
 		} catch (final Exception except) {
-			log(NLS.bind(Messages.XMPPContainer_EXCEPTION_HANDLING_ASYCH_EVENT, e), except);
+			log(NLS.bind(Messages.XMPPContainer_EXCEPTION_HANDLING_ASYCH_EVENT,
+					e), except);
 		}
 	}
 
