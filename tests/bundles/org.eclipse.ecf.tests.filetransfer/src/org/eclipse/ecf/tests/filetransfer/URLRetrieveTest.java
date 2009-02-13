@@ -127,7 +127,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		IStatus s = ECFTransport
 				.getInstance()
 				.download(
-						"http://download.eclipse.org/eclipse/updates/3.5-I-builds/plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz",
+						"http://download.eclipse.org/eclipse/updates/3.4/plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz",
 						fos, new NullProgressMonitor());
 		fos.close();
 		if (f != null) {
