@@ -5,15 +5,6 @@
     <cq:property key="target.os" value="*"/>
     <cq:property key="target.ws" value="*"/>
 
-    <!-- 3.5 comes with a new macosx (x86 & ppc) ws which seems to confuse BM -->
-    <cq:advisorNode namePattern="org.eclipse.core.filesystem.macosx" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.equinox.security.macosx" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.swt.carbon.macosx" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.swt.cocoa.macosx" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.equinox.launcher.carbon.macosx" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.equinox.launcher.cocoa.macosx" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.ui.carbon" skipComponent="true" useTargetPlatform="false"/>
-
 	<!-- https://bugs.eclipse.org/244850 -->
     <cq:advisorNode namePattern="org.eclipse.ecf.core.source" skipComponent="true" useTargetPlatform="false"/>
     <cq:advisorNode namePattern="org.eclipse.ecf.examples.source" skipComponent="true" useTargetPlatform="false"/>
@@ -35,5 +26,5 @@
     <cq:advisorNode namePattern="org.jivesoftware.smack" useTargetPlatform="false"/>
 
 	<!-- the rest we want binary only -->
-    <cq:advisorNode namePattern=".*" useTargetPlatform="false" skipComponent="true" mutableLevel="REJECT" sourceLevel="REJECT"/>
+    <cq:advisorNode namePattern=".*" useTargetPlatform="false" skipComponent="false" mutableLevel="REJECT" sourceLevel="REJECT"/>
 </cq:componentQuery>

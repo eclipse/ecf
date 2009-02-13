@@ -9,30 +9,9 @@
 	
 	<!-- org.eclipse -->
 	<searchPath name="org.eclipse">
-		<!-- Work around https://bugs.eclipse.org/262002 -->
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
-			<matcher base="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.5milestones/plugins/">
-			    <group name="MATCH">
-				<name prefix="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.5milestones/plugins/" pattern="([a-zA-Z0-9]+\.)*[a-zA-Z0-9_]+" suffix="_"/>
-				<version pattern="([0-9]+\.){2}[0-9]+(\.[a-zA-Z0-9-_]+)*" suffix=".jar"/>
-			    </group>
-			</matcher>
-			<uri format="${MATCH}"/>
-		</provider>
-		<provider readerType="eclipse.import" componentTypes="eclipse.feature" mutable="false" source="false">
-			<matcher base="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.5milestones/features/">
-			    <group name="MATCH">
-				<name prefix="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.5milestones/features/" pattern="([a-zA-Z0-9]+\.)*[a-zA-Z0-9_]+" suffix="_"/>
-				<version pattern="([0-9]+\.){2}[0-9]+(\.[a-zA-Z0-9-_]+)*" suffix=".jar"/>
-			    </group>
-			</matcher>
-			<uri format="${MATCH}"/>
-		</provider>
-		<!--
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
 			<uri format="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.5milestones?importType=binary"/>
 		</provider>
-		-->
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
 			<uri format=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse,org.eclipse.releng/maps">
@@ -44,7 +23,7 @@
 	<!-- emf -->
 	<searchPath name="org.eclipse.emf">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://rsync.osuosl.org/pub/eclipse/modeling/emf/updates/releases/site.xml?importType=binary"/>
+			<uri format="http://rsync.osuosl.org/pub/eclipse/modeling/emf/updates/milestones?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
@@ -67,7 +46,7 @@
 	<!-- pluginbuilder -->
 	<searchPath name="org.pluginbuilder">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://ecf2.osuosl.org/pluginbuilder/site.xml?importType=binary"/>
+			<uri format="http://ecf2.osuosl.org/pluginbuilder?importType=binary"/>
 		</provider>
 	</searchPath>
 
@@ -107,6 +86,7 @@
 	<locator searchPathRef="org.eclipse" pattern="^org\.eclipse(\..+)?" />
 	<locator searchPathRef="org.eclipse" pattern="^org\.junit4?" />
 	<locator searchPathRef="org.eclipse" pattern="^org\.osgi(\..+)?" />
+	<locator searchPathRef="org.eclipse" pattern="^org\.apache\.ant?" />
 
 	<!-- PluginBuilder -->
 	<locator searchPathRef="org.pluginbuilder" pattern="^org\.pluginbuilder(\..+)?" />
