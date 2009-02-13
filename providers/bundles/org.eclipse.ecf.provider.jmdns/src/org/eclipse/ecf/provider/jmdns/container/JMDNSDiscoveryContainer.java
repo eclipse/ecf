@@ -429,7 +429,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		return new org.eclipse.ecf.discovery.ServiceInfo(null, null, -1, sID);
 	}
 
-	private IServiceInfo createIServiceInfoFromServiceInfo(final ServiceInfo serviceInfo) throws Exception {
+	IServiceInfo createIServiceInfoFromServiceInfo(final ServiceInfo serviceInfo) throws Exception {
 		Assert.isNotNull(serviceInfo);
 		String st = serviceInfo.getType();
 		String n = serviceInfo.getName();
@@ -442,7 +442,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final Properties props = new Properties();
 		String uriProtocol = null;
 		String uriPath = ""; //$NON-NLS-1$
-		String namingAuthority = IServiceTypeID.DEFAULT_NA; //$NON-NLS-1$
+		String namingAuthority = IServiceTypeID.DEFAULT_NA;
 		for (final Enumeration e = serviceInfo.getPropertyNames(); e.hasMoreElements();) {
 			final String name = (String) e.nextElement();
 			if (SCHEME_PROPERTY.equals(name)) {
