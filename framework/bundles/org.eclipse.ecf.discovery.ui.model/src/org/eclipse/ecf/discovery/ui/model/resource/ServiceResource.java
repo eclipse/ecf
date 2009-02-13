@@ -192,6 +192,8 @@ public class ServiceResource extends ResourceImpl implements Resource {
 
 			// use an URI Converter to allow possible model extender to rewrite
 			// URI
+			// TODO replace with ExtensibleURIConverterImpl once EMF dep moves
+			// up to 2.4
 			URIConverter uriConverter = new URIConverterImpl();
 			URI uri = uriConverter.normalize(URI.createURI(name));
 
