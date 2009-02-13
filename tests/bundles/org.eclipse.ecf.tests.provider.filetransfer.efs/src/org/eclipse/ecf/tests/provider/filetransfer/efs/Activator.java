@@ -1,7 +1,6 @@
 package org.eclipse.ecf.tests.provider.filetransfer.efs;
 
 import org.eclipse.core.runtime.Plugin;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
