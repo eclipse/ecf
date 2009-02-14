@@ -54,9 +54,9 @@ import org.eclipse.ecf.protocol.bittorrent.internal.torrent.PieceState;
  */
 public class TorrentManager {
 
-	private static final String DOWN_SPEED_KEY = "down.speed";
+	private static final String DOWN_SPEED_KEY = "down.speed"; //$NON-NLS-1$
 
-	private static final String UP_SPEED_KEY = "up.speed";
+	private static final String UP_SPEED_KEY = "up.speed"; //$NON-NLS-1$
 
 	private static MessageDigest shaDigest;
 
@@ -134,7 +134,7 @@ public class TorrentManager {
 	 * A unique identification string is used to identify this client when
 	 * talking with the tracker.
 	 */
-	private final String peerID = "E088----" + createPeerID();
+	private final String peerID = "E088----" + createPeerID(); //$NON-NLS-1$
 
 	private final String hexHash;
 
@@ -359,8 +359,7 @@ public class TorrentManager {
 		String[] filenames = torrent.getFilenames();
 		if (filenames.length != 1 && !targetFile.exists()
 				&& !targetFile.mkdirs()) {
-			throw new IOException("The folders needed by this torrent could "
-					+ "not be created");
+			throw new IOException("The folders needed by this torrent could not be created"); //$NON-NLS-1$
 		}
 		files = new DataFile[filenames.length];
 
@@ -448,8 +447,7 @@ public class TorrentManager {
 				File file = new File(targetFile + File.separator + filenames[i]);
 				if (!file.getParentFile().exists()
 						&& !file.getParentFile().mkdirs()) {
-					throw new IOException("The folders needed by this torrent "
-							+ "could not be created");
+					throw new IOException("The folders needed by this torrent could not be created"); //$NON-NLS-1$
 				}
 
 				long fileLength = torrent.getLengths()[i];
@@ -591,7 +589,7 @@ public class TorrentManager {
 		speedMonitoringThread.start();
 		trackerThread.start();
 		fireStateChangedEvent(ITorrentStateListener.STARTED);
-		queryTracker("started");
+		queryTracker("started"); //$NON-NLS-1$
 		fireStateChangedEvent(ITorrentStateListener.EXCHANGING);
 	}
 
@@ -620,7 +618,7 @@ public class TorrentManager {
 		speedMonitoringThread = null;
 		running = false;
 		connectionPool.close();
-		queryTracker("stopped");
+		queryTracker("stopped"); //$NON-NLS-1$
 		fireStateChangedEvent(ITorrentStateListener.STOPPED);
 		store();
 	}
@@ -673,7 +671,7 @@ public class TorrentManager {
 				+ (event == null ? "" : "&event=" + event) + "&numwant=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				+ request + "&compact=1" + "&key=" + key //$NON-NLS-1$ //$NON-NLS-2$
 				+ (trackerID != null ? "&trackerid=" + trackerID : ""); //$NON-NLS-1$ //$NON-NLS-2$
-		TorrentConfiguration.debug("Querying the tracker at " + link);
+		TorrentConfiguration.debug("Querying the tracker at " + link); //$NON-NLS-1$
 		URL url = new URL(link);
 		BEncodedDictionary dictionary = Decode.bDecode(url.openStream());
 		if (event != null && event.equals("stopped")) { //$NON-NLS-1$
@@ -683,8 +681,7 @@ public class TorrentManager {
 		String failure = (String) dictionary.get("failure reason"); //$NON-NLS-1$
 		if (failure != null) {
 			fireTrackerErrorEvent(failure);
-			TorrentConfiguration.debug("The client could not connect to the "
-					+ "tracker, the reason provided was - " + failure);
+			TorrentConfiguration.debug("The client could not connect to the tracker, the reason provided was - " + failure); //$NON-NLS-1$
 			return;
 		}
 		timeout = ((Long) dictionary.get("interval")).intValue() * 1000; //$NON-NLS-1$
@@ -699,15 +696,15 @@ public class TorrentManager {
 
 		Object peersList = dictionary.get("peers"); //$NON-NLS-1$
 		if (peersList instanceof List) {
-			TorrentConfiguration.debug("No peers were returned");
+			TorrentConfiguration.debug("No peers were returned"); //$NON-NLS-1$
 			return;
 		}
 
 		String string = (String) peersList;
 		byte[] bytes = string.getBytes("ISO-8859-1"); //$NON-NLS-1$
 		for (int i = 0; i < string.length(); i += 6) {
-			String ip = (bytes[i] & 0xff) + "." + (bytes[i + 1] & 0xff) + "."
-					+ (bytes[i + 2] & 0xff) + "." + (bytes[i + 3] & 0xff);
+			String ip = (bytes[i] & 0xff) + "." + (bytes[i + 1] & 0xff) + "." //$NON-NLS-1$ //$NON-NLS-2$
+					+ (bytes[i + 2] & 0xff) + "." + (bytes[i + 3] & 0xff); //$NON-NLS-1$
 			int port = Integer.parseInt(Integer
 					.toHexString(bytes[i + 4] & 0xff)
 					+ Integer.toHexString(bytes[i + 5] & 0xff), 16);
@@ -737,11 +734,10 @@ public class TorrentManager {
 	 */
 	private byte[] getPiece(int piece) throws IOException {
 		if (piece < 0) {
-			throw new IllegalArgumentException("The piece number cannot be "
-					+ "negative");
+			throw new IllegalArgumentException("The piece number cannot be negative"); //$NON-NLS-1$
 		} else if (piece >= hasPiece.length) {
-			throw new IllegalArgumentException("The piece number " + piece
-					+ " does not exist");
+			throw new IllegalArgumentException("The piece number " + piece //$NON-NLS-1$
+					+ " does not exist"); //$NON-NLS-1$
 		}
 
 		byte[][] data = new byte[files.length][0];
@@ -782,9 +778,7 @@ public class TorrentManager {
 			return null;
 		}
 		if (offset + length > piece.length) {
-			throw new IllegalArgumentException("The block of data that is "
-					+ "being requested goes beyond the range of the requested "
-					+ "piece");
+			throw new IllegalArgumentException("The block of data that is being requested goes beyond the range of the requested piece"); //$NON-NLS-1$
 		}
 		byte[] block = new byte[length];
 		System.arraycopy(piece, offset, block, 0, length);
@@ -810,7 +804,7 @@ public class TorrentManager {
 			IOException {
 		byte[] data = getPiece(piece);
 		return data == null ? false : torrent.getPieces()[piece]
-				.equals(new String(shaDigest.digest(data), "ISO-8859-1"));
+				.equals(new String(shaDigest.digest(data), "ISO-8859-1")); //$NON-NLS-1$
 	}
 
 	private void saveState() throws IOException {
@@ -868,7 +862,7 @@ public class TorrentManager {
 			throws IOException {
 		if (hashCheck(number)) {
 			TorrentConfiguration
-					.debug("Piece " + number + " passed hash check");
+					.debug("Piece " + number + " passed hash check"); //$NON-NLS-1$ //$NON-NLS-2$
 			hasPiece[number] = true;
 			updateBitfield(number);
 			firePieceCompletedEvent(++completedPieces);
@@ -883,10 +877,10 @@ public class TorrentManager {
 			fireStateChangedEvent(ITorrentStateListener.FINISHED);
 			connectionPool.disconnectSeeds();
 			// let the tracker know that the download has completed
-			queryTracker("completed");
+			queryTracker("completed"); //$NON-NLS-1$
 		} else {
-			TorrentConfiguration.debug("Piece " + number
-					+ " has failed the hash check");
+			TorrentConfiguration.debug("Piece " + number //$NON-NLS-1$
+					+ " has failed the hash check"); //$NON-NLS-1$
 			piece.reset();
 			int pieceLength = piece.getLength();
 			discarded += pieceLength;
@@ -1032,8 +1026,7 @@ public class TorrentManager {
 
 	void addPieceAvailability(boolean[] peerPieces) {
 		if (peerPieces.length != pieceAvailability.length) {
-			throw new IllegalArgumentException("The length of the array is "
-					+ "not " + pieceAvailability.length);
+			throw new IllegalArgumentException("The length of the array is not " + pieceAvailability.length); //$NON-NLS-1$
 		}
 		for (int i = 0; i < pieceAvailability.length; i++) {
 			if (peerPieces[i]) {
@@ -1044,8 +1037,7 @@ public class TorrentManager {
 
 	void removePieceAvailability(boolean[] peerPieces) {
 		if (peerPieces.length != pieceAvailability.length) {
-			throw new IllegalArgumentException("The length of the array is "
-					+ "not " + pieceAvailability.length);
+			throw new IllegalArgumentException("The length of the array is not " + pieceAvailability.length); //$NON-NLS-1$
 		}
 		for (int i = 0; i < pieceAvailability.length; i++) {
 			if (peerPieces[i]) {
@@ -1085,8 +1077,7 @@ public class TorrentManager {
 	 */
 	public synchronized void setFilesToDownload(int[] downloadChoices) {
 		if (files.length != downloadChoices.length) {
-			throw new IllegalArgumentException("The provided array should be "
-					+ "of length " + files.length);
+			throw new IllegalArgumentException("The provided array should be of length " + files.length); //$NON-NLS-1$
 		}
 
 		for (int i = 0; i < downloadChoices.length; i++) {
@@ -1122,14 +1113,6 @@ public class TorrentManager {
 			}
 		}
 		isSelective = false;
-	}
-	
-	public synchronized void setFilesToDownload(boolean[] files) {
-		// TODO: unimplemented
-	}
-	
-	public synchronized void setDownloadingPriorities(boolean[] files) {
-		// TODO: unimplemented
 	}
 
 	public void setMaxDownloadSpeed(long maximum) {
@@ -1487,7 +1470,7 @@ public class TorrentManager {
 	 */
 	private void setPieces(PieceState[] states) {
 		if (this.states.length != states.length) {
-			throw new IllegalArgumentException("The array's size should be "
+			throw new IllegalArgumentException("The array's size should be " //$NON-NLS-1$
 					+ this.states.length);
 		}
 		this.states = states;
@@ -1522,7 +1505,7 @@ public class TorrentManager {
 	private class HashCheckThread extends Thread {
 
 		private HashCheckThread() {
-			super("Hash Check Thread - " + torrent.getName());
+			super("Hash Check Thread - " + torrent.getName()); //$NON-NLS-1$
 		}
 
 		private void cleanup() {
@@ -1623,7 +1606,7 @@ public class TorrentManager {
 	private class TrackerThread extends Thread {
 
 		private TrackerThread() {
-			super("Tracker Thread - " + torrent.getName());
+			super("Tracker Thread - " + torrent.getName()); //$NON-NLS-1$
 		}
 
 		public void run() {
@@ -1643,7 +1626,7 @@ public class TorrentManager {
 	private class SpeedMonitoringThread extends Thread {
 
 		private SpeedMonitoringThread() {
-			super("Speed Monitoring Thread - " + torrent.getName());
+			super("Speed Monitoring Thread - " + torrent.getName()); //$NON-NLS-1$
 		}
 
 		public void run() {
