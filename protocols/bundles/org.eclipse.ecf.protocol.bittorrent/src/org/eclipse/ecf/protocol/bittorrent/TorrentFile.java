@@ -67,7 +67,7 @@ public class TorrentFile {
 
 	static {
 		try {
-			shaDigest = MessageDigest.getInstance("SHA-1");
+			shaDigest = MessageDigest.getInstance("SHA-1"); //$NON-NLS-1$
 		} catch (final NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
@@ -86,29 +86,29 @@ public class TorrentFile {
 	 */
 	public TorrentFile(File file) throws IllegalArgumentException, IOException {
 		if (file == null) {
-			throw new IllegalArgumentException("The file cannot be null");
+			throw new IllegalArgumentException("The file cannot be null"); //$NON-NLS-1$
 		} else if (file.isDirectory()) {
-			throw new IllegalArgumentException("The provided file is a " + "directory");
+			throw new IllegalArgumentException("The provided file is a directory"); //$NON-NLS-1$
 		}
 		name = file.getName();
-		if (name.endsWith(".torrent")) {
+		if (name.endsWith(".torrent")) { //$NON-NLS-1$
 			name = name.substring(0, name.length() - 8);
 		}
 
 		dictionary = Decode.bDecode(new FileInputStream(file));
-		torrentData = dictionary.toString().getBytes("ISO-8859-1");
-		tracker = (String) dictionary.get("announce");
-		final BEncodedDictionary info = (BEncodedDictionary) dictionary.get("info");
-		final List list = (List) info.get("files");
+		torrentData = dictionary.toString().getBytes("ISO-8859-1"); //$NON-NLS-1$
+		tracker = (String) dictionary.get("announce"); //$NON-NLS-1$
+		final BEncodedDictionary info = (BEncodedDictionary) dictionary.get("info"); //$NON-NLS-1$
+		final List list = (List) info.get("files"); //$NON-NLS-1$
 		if (list != null) {
 			filenames = new String[list.size()];
 			lengths = new long[filenames.length];
 			total = 0;
 			for (int i = 0; i < filenames.length; i++) {
 				final BEncodedDictionary aDictionary = (BEncodedDictionary) list.get(i);
-				lengths[i] = ((Long) aDictionary.get("length")).longValue();
+				lengths[i] = ((Long) aDictionary.get("length")).longValue(); //$NON-NLS-1$
 				total += lengths[i];
-				final List aList = (List) aDictionary.get("path");
+				final List aList = (List) aDictionary.get("path"); //$NON-NLS-1$
 				final StringBuffer buffer = new StringBuffer();
 				synchronized (buffer) {
 					for (int j = 0; j < aList.size(); j++) {
@@ -118,20 +118,20 @@ public class TorrentFile {
 				filenames[i] = buffer.toString();
 			}
 		} else {
-			lengths = new long[] {((Long) info.get("length")).longValue()};
+			lengths = new long[] {((Long) info.get("length")).longValue()}; //$NON-NLS-1$
 			total = lengths[0];
-			filenames = new String[] {(String) info.get("name")};
+			filenames = new String[] {(String) info.get("name")}; //$NON-NLS-1$
 		}
-		pieceLength = ((Long) info.get("piece length")).intValue();
+		pieceLength = ((Long) info.get("piece length")).intValue(); //$NON-NLS-1$
 		buffer = ByteBuffer.allocate(pieceLength);
-		final String shaPieces = (String) info.get("pieces");
+		final String shaPieces = (String) info.get("pieces"); //$NON-NLS-1$
 		pieces = new String[shaPieces.length() / 20];
 		for (int i = 0; i < pieces.length; i++) {
 			pieces[i] = shaPieces.substring(i * 20, i * 20 + 20);
 		}
 		numPieces = pieces.length;
-		infoHash = new String(shaDigest.digest(info.toString().getBytes("ISO-8859-1")), "ISO-8859-1");
-		final byte[] bytes = infoHash.getBytes("ISO-8859-1");
+		infoHash = new String(shaDigest.digest(info.toString().getBytes("ISO-8859-1")), "ISO-8859-1"); //$NON-NLS-1$ //$NON-NLS-2$
+		final byte[] bytes = infoHash.getBytes("ISO-8859-1"); //$NON-NLS-1$
 		final StringBuffer hash = new StringBuffer(40);
 		for (int i = 0; i < bytes.length; i++) {
 			if (-1 < bytes[i] && bytes[i] < 16) {
@@ -148,14 +148,14 @@ public class TorrentFile {
 		final FileChannel channel = new FileInputStream(file).getChannel();
 		while (channel.read(buffer) == pieceLength) {
 			buffer.rewind();
-			if (!pieces[count].equals(new String(shaDigest.digest(buffer.array()), "ISO-8859-1"))) {
+			if (!pieces[count].equals(new String(shaDigest.digest(buffer.array()), "ISO-8859-1"))) { //$NON-NLS-1$
 				return false;
 			}
 			count++;
 		}
 		buffer.rewind();
 		shaDigest.update(buffer.array(), 0, remainder);
-		return pieces[pieces.length - 1].equals(new String(shaDigest.digest(), "ISO-8859-1"));
+		return pieces[pieces.length - 1].equals(new String(shaDigest.digest(), "ISO-8859-1")); //$NON-NLS-1$
 	}
 
 	private boolean hashCheckFolder() throws FileNotFoundException, IOException {
@@ -166,7 +166,7 @@ public class TorrentFile {
 			final FileChannel channel = new FileInputStream(download).getChannel();
 			while ((read += channel.read(buffer)) == pieceLength) {
 				buffer.rewind();
-				if (!pieces[count].equals(new String(shaDigest.digest(buffer.array()), "ISO-8859-1"))) {
+				if (!pieces[count].equals(new String(shaDigest.digest(buffer.array()), "ISO-8859-1"))) { //$NON-NLS-1$
 					return false;
 				}
 				count++;
@@ -175,7 +175,7 @@ public class TorrentFile {
 		}
 		buffer.rewind();
 		shaDigest.update(buffer.array(), 0, read);
-		return pieces[pieces.length - 1].equals(new String(shaDigest.digest(), "ISO-8859-1"));
+		return pieces[pieces.length - 1].equals(new String(shaDigest.digest(), "ISO-8859-1")); //$NON-NLS-1$
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class TorrentFile {
 	 */
 	public boolean validate() throws IllegalStateException, IOException {
 		if (file == null) {
-			throw new IllegalStateException("The target file for this " + "torrent has not yet been set");
+			throw new IllegalStateException("The target file for this torrent has not yet been set"); //$NON-NLS-1$
 		}
 		return file.isDirectory() ? hashCheckFolder() : hashCheckFile();
 	}
@@ -215,9 +215,9 @@ public class TorrentFile {
 	 */
 	public void setTargetFile(File file) throws IllegalArgumentException {
 		if (file == null) {
-			throw new IllegalArgumentException("The file cannot be null");
+			throw new IllegalArgumentException("The file cannot be null"); //$NON-NLS-1$
 		} else if (filenames.length == 1 && file.isDirectory()) {
-			throw new IllegalArgumentException("This torrent is downloading a " + "file, the actual file should be set here and not a " + "directory");
+			throw new IllegalArgumentException("This torrent is downloading a file, the actual file should be set here and not a directory"); //$NON-NLS-1$
 		}
 		this.file = file;
 	}
