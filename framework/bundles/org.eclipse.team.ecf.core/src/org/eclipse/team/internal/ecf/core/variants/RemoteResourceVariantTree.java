@@ -12,7 +12,6 @@ package org.eclipse.team.internal.ecf.core.variants;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -49,11 +48,11 @@ final class RemoteResourceVariantTree extends AbstractResourceVariantTree {
 		return share.fetchVariant(ownId, remoteId, resource, monitor);
 	}
 
-	protected boolean setVariant(IResource local, IResourceVariant remote) throws TeamException {
+	protected boolean setVariant(IResource local, IResourceVariant remote) {
 		return true;
 	}
 
-	public void flushVariants(IResource resource, int depth) throws TeamException {
+	public void flushVariants(IResource resource, int depth) {
 		// does not appear to be called by the Team APIs
 	}
 
@@ -61,26 +60,25 @@ final class RemoteResourceVariantTree extends AbstractResourceVariantTree {
 		return share.getResourceVariant(ownId, remoteId, resource);
 	}
 
-	public boolean hasResourceVariant(IResource resource) throws TeamException {
+	public boolean hasResourceVariant(IResource resource) {
 		return true;
 	}
 
 	public IResource[] members(IResource resource) throws TeamException {
 		if (resource.getType() == IResource.FILE || !resource.exists()) {
 			return new IResource[0];
-		} else {
-			try {
-				IResource[] members = ((IContainer) resource).members();
-				List nonDerivedMembers = new ArrayList(members.length);
-				for (int i = 0; i < members.length; i++) {
-					if (!members[i].isDerived()) {
-						nonDerivedMembers.add(members[i]);
-					}
+		}
+		try {
+			IResource[] members = ((IContainer) resource).members();
+			List nonDerivedMembers = new ArrayList(members.length);
+			for (int i = 0; i < members.length; i++) {
+				if (!members[i].isDerived()) {
+					nonDerivedMembers.add(members[i]);
 				}
-				return (IResource[]) nonDerivedMembers.toArray(new IResource[nonDerivedMembers.size()]);
-			} catch (CoreException e) {
-				throw new TeamException(e.getStatus());
 			}
+			return (IResource[]) nonDerivedMembers.toArray(new IResource[nonDerivedMembers.size()]);
+		} catch (CoreException e) {
+			throw new TeamException(e.getStatus());
 		}
 	}
 

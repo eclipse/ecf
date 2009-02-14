@@ -10,15 +10,9 @@
  ******************************************************************************/
 package org.eclipse.team.internal.ecf.core.variants;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.Serializable;
-
+import java.io.*;
 import org.eclipse.core.resources.IEncodedStorage;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.*;
 
 final class RemoteStorage implements IEncodedStorage, Serializable {
 
@@ -34,7 +28,7 @@ final class RemoteStorage implements IEncodedStorage, Serializable {
 		this.bytes = bytes;
 	}
 
-	public String getCharset() throws CoreException {
+	public String getCharset() {
 		return charset;
 	}
 

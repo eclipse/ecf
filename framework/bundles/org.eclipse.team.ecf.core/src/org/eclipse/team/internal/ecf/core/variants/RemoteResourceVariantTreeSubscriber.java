@@ -15,10 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.core.synchronize.SyncInfo;
-import org.eclipse.team.core.variants.IResourceVariant;
-import org.eclipse.team.core.variants.IResourceVariantComparator;
-import org.eclipse.team.core.variants.IResourceVariantTree;
-import org.eclipse.team.core.variants.ResourceVariantTreeSubscriber;
+import org.eclipse.team.core.variants.*;
 import org.eclipse.team.internal.ecf.core.RemoteShare;
 import org.eclipse.team.internal.ecf.core.RemoteSyncInfo;
 
@@ -51,7 +48,7 @@ public class RemoteResourceVariantTreeSubscriber extends ResourceVariantTreeSubs
 
 	public String getName() {
 		//FIXME: return a proper name :)
-		return "getName();";
+		return "getName();"; //$NON-NLS-1$
 	}
 
 	public IResourceVariantComparator getResourceComparator() {
@@ -69,7 +66,7 @@ public class RemoteResourceVariantTreeSubscriber extends ResourceVariantTreeSubs
 		return info;
 	}
 
-	public boolean isSupervised(IResource resource) throws TeamException {
+	public boolean isSupervised(IResource resource) {
 		return true;
 	}
 

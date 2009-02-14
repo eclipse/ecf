@@ -12,15 +12,8 @@ package org.eclipse.team.internal.ecf.core.variants;
 
 import java.io.Serializable;
 import java.util.Date;
-
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IStorage;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.team.core.TeamException;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.team.core.variants.IResourceVariant;
 import org.eclipse.team.internal.ecf.core.TeamSynchronization;
 
@@ -98,7 +91,7 @@ public class RemoteResourceVariant implements IResourceVariant, Serializable {
 		return path;
 	}
 
-	public IStorage getStorage(IProgressMonitor monitor) throws TeamException {
+	public IStorage getStorage(IProgressMonitor monitor) {
 		return storage;
 	}
 

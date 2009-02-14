@@ -10,39 +10,17 @@
  ******************************************************************************/
 package org.eclipse.team.internal.ecf.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
+import java.io.*;
+import java.util.*;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.core.variants.IResourceVariant;
-import org.eclipse.team.internal.ecf.core.messages.FetchResponse;
-import org.eclipse.team.internal.ecf.core.messages.FetchVariantRequest;
-import org.eclipse.team.internal.ecf.core.messages.FetchVariantsRequest;
-import org.eclipse.team.internal.ecf.core.messages.IResponse;
-import org.eclipse.team.internal.ecf.core.messages.ShareRequest;
-import org.eclipse.team.internal.ecf.core.messages.ShareResponse;
+import org.eclipse.team.internal.ecf.core.messages.*;
 import org.eclipse.team.internal.ecf.core.variants.RemoteResourceVariant;
 
 public class RemoteShare extends AbstractShare {
@@ -82,7 +60,7 @@ public class RemoteShare extends AbstractShare {
 			return new IResourceVariant[0];
 		}
 
-		monitor.subTask("Fetching " + variant.getName());
+		monitor.subTask("Fetching " + variant.getName()); //$NON-NLS-1$
 
 		sendMessage(remoteId, new FetchVariantsRequest(ownId, remoteVariant.getPath(), remoteVariant.getType()));
 
@@ -95,7 +73,7 @@ public class RemoteShare extends AbstractShare {
 			} catch (InterruptedException e) {
 				// TODO: do we want to handle this differently...?
 				Thread.interrupted();
-				throw new TeamException("Interrupted whilst fetching members");
+				throw new TeamException("Interrupted whilst fetching members"); //$NON-NLS-1$
 			}
 		}
 		monitor.done();
@@ -106,7 +84,7 @@ public class RemoteShare extends AbstractShare {
 	}
 
 	public synchronized IResourceVariant fetchVariant(ID ownId, ID remoteId, IResource resource, IProgressMonitor monitor) throws TeamException {
-		monitor.subTask("Fetching " + resource.getFullPath().toString().substring(1));
+		monitor.subTask("Fetching " + resource.getFullPath().toString().substring(1)); //$NON-NLS-1$
 
 		sendMessage(remoteId, new FetchVariantRequest(ownId, resource.getFullPath().toString(), resource.getType()));
 
