@@ -105,8 +105,8 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 		final String serviceType = "_service._dns-srv._udp.ecf.eclipse.org._IANA";
 		final IServiceID sid = createIDFromString(serviceType);
 		final IServiceTypeID stid = sid.getServiceTypeID();
-		assertEquals(stid.getName(), serviceType);
-		assertEquals(stid.getNamingAuthority(), "IANA");
+		assertTrue(serviceType.equalsIgnoreCase(stid.getName()));
+		assertTrue("IANA".equalsIgnoreCase(stid.getNamingAuthority()));
 		assertTrue(Arrays.equals(stid.getProtocols(), new String[] {"udp"}));
 		assertTrue(Arrays.equals(stid.getScopes(), new String[] {"ecf.eclipse.org"}));
 		assertTrue(Arrays.equals(stid.getServices(), new String[] {"service", "dns-srv"}));
@@ -139,7 +139,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 		assertNotSame(aServiceTypeID.getInternal(), stid.getInternal());
 
 		// members should be the same
-		assertEquals(aServiceTypeID.getNamingAuthority(), stid.getNamingAuthority());
+		assertTrue(aServiceTypeID.getNamingAuthority().equalsIgnoreCase(stid.getNamingAuthority()));
 		assertTrue(Arrays.equals(aServiceTypeID.getServices(), stid.getServices()));
 		assertTrue(Arrays.equals(aServiceTypeID.getScopes(), stid.getScopes()));
 		assertTrue(Arrays.equals(aServiceTypeID.getProtocols(), stid.getProtocols()));
