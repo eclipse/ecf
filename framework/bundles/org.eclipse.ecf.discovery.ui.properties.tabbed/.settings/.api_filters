@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.ecf.discovery.ui.properties.tabbed" version="2">
+    <resource path="src/org/eclipse/ecf/internal/discovery/ui/ServicePropertiesPropertySource.java" type="org.eclipse.ecf.internal.discovery.ui.ServicePropertiesPropertySource$ServicePropertyDescriptor">
+        <filter id="571473929">
+            <message_arguments>
+                <message_argument value="TextPropertyDescriptor"/>
+                <message_argument value="ServicePropertyDescriptor"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
