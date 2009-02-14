@@ -41,7 +41,7 @@ class MessageNotificationPopup extends PopupDialog {
 	private ID userID;
 
 	MessageNotificationPopup(IWorkbenchWindow window, Shell parent, ID userID) {
-		super(parent, PopupDialog.INFOPOPUP_SHELLSTYLE | SWT.ON_TOP, false, false, false, false, null, null);
+		super(parent, PopupDialog.INFOPOPUP_SHELLSTYLE | SWT.ON_TOP, false, false, false, false, false, null, null);
 		this.window = window;
 		this.userID = userID;
 	}
