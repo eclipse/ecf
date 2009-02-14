@@ -158,8 +158,7 @@ public final class Decode {
 
 	public static BEncodedDictionary bDecode(String string) {
 		if (string.charAt(0) != 'd') {
-			throw new IllegalArgumentException("The string must begin with a "
-					+ "dictionary");
+			throw new IllegalArgumentException("The string must begin with a dictionary"); //$NON-NLS-1$
 		}
 		return parse(string.substring(1));
 	}
