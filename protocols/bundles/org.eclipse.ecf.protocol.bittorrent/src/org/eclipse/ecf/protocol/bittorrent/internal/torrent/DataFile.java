@@ -56,7 +56,7 @@ public class DataFile {
 	 *             file and specifying its length
 	 */
 	public DataFile(File aFile, long length) throws IOException {
-		file = new RandomAccessFile(aFile, "rw");
+		file = new RandomAccessFile(aFile, "rw"); //$NON-NLS-1$
 		if (aFile.length() > length) {
 			aFile.delete();
 		}
@@ -86,8 +86,7 @@ public class DataFile {
 	public void setPieces(int[] pieces, int initialLength, int length)
 			throws IllegalArgumentException {
 		if (pieces.length > 2 && initialLength > length) {
-			throw new IllegalArgumentException("The first piece's length "
-					+ "cannot be larger than a regular piece's length");
+			throw new IllegalArgumentException("The first piece's length cannot be larger than a regular piece's length"); //$NON-NLS-1$
 		}
 
 		this.pieces = pieces;
@@ -144,8 +143,7 @@ public class DataFile {
 
 		int seek = pieceLengths[index] + offset;
 		if (seek >= this.length) {
-			throw new IllegalArgumentException("The seeking position cannot "
-					+ "be greater than this file's length");
+			throw new IllegalArgumentException("The seeking position cannot be greater than this file's length"); //$NON-NLS-1$
 		}
 
 		synchronized (file) {

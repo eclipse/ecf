@@ -177,7 +177,7 @@ class Block {
 	 *         represents for a piece
 	 */
 	public String toString() {
-		return index + "-" + (index + blockLength);
+		return index + "-" + (index + blockLength); //$NON-NLS-1$
 	}
 
 }

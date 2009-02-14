@@ -163,11 +163,11 @@ public class PieceState {
 	 *            the string to parse
 	 */
 	public void parse(String information) {
-		String[] split = information.split(":", 2);
+		String[] split = information.split(":", 2); //$NON-NLS-1$
 		if (split.length != 1) {
-			split = split[1].split(":");
+			split = split[1].split(":"); //$NON-NLS-1$
 			for (int i = 0; i < split.length; i++) {
-				final String[] blockInfo = split[i].split("-");
+				final String[] blockInfo = split[i].split("-"); //$NON-NLS-1$
 				final int index = Integer.parseInt(blockInfo[0]);
 				final int blockLength = Integer.parseInt(blockInfo[1]) - index;
 				addDownloadedBlock(index, blockLength);
@@ -188,10 +188,10 @@ public class PieceState {
 	public String toString() {
 		final StringBuffer buffer = new StringBuffer(Integer.toString(number));
 		synchronized (buffer) {
-			buffer.append(":");
+			buffer.append(":"); //$NON-NLS-1$
 			for (int i = 0; i < blocks.size(); i++) {
 				buffer.append(blocks.get(i));
-				buffer.append(":");
+				buffer.append(":"); //$NON-NLS-1$
 			}
 			buffer.deleteCharAt(buffer.length() - 1);
 		}

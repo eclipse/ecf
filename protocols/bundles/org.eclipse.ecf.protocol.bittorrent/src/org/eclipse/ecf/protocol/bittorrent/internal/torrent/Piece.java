@@ -99,8 +99,7 @@ public class Piece {
 	 */
 	public Piece(PieceState state, int number) throws IllegalArgumentException {
 		if (number < 0) {
-			throw new IllegalArgumentException("A piece number cannot be "
-					+ "negative");
+			throw new IllegalArgumentException("A piece number cannot be negative"); //$NON-NLS-1$
 		}
 		this.state = state;
 		this.number = number;
@@ -119,8 +118,7 @@ public class Piece {
 	 */
 	public void setLength(int length) throws IllegalArgumentException {
 		if (length < 0) {
-			throw new IllegalArgumentException("A piece's length cannot be "
-					+ "negative");
+			throw new IllegalArgumentException("A piece's length cannot be negative"); //$NON-NLS-1$
 		}
 		this.length = length;
 		isLastPiece = length % BLOCK_REQUEST_SIZE != 0;
@@ -285,10 +283,9 @@ public class Piece {
 	public void addFile(DataFile file, int length)
 			throws IllegalArgumentException {
 		if (file == null) {
-			throw new IllegalArgumentException("The file cannot be null");
+			throw new IllegalArgumentException("The file cannot be null"); //$NON-NLS-1$
 		} else if (length < 0) {
-			throw new IllegalArgumentException("The length cannot be a "
-					+ "negative number");
+			throw new IllegalArgumentException("The length cannot be a negative number"); //$NON-NLS-1$
 		}
 		files.add(file);
 		fileLengths.add(new Integer(length));
@@ -396,8 +393,7 @@ public class Piece {
 	public synchronized int[] getRequestInformation()
 			throws IllegalStateException {
 		if (length == -1) {
-			throw new IllegalStateException("The length has not been set "
-					+ "yet for this piece");
+			throw new IllegalStateException("The length has not been set yet for this piece"); //$NON-NLS-1$
 		} else if (isComplete()) {
 			return null;
 		}
