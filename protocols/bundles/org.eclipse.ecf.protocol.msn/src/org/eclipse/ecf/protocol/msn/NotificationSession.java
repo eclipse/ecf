@@ -83,7 +83,7 @@ final class NotificationSession extends DispatchSession {
 	 * should be called so that a connection attempt can be made to the server
 	 * that the user has been redirected to.
 	 * 
-	 * @param username
+	 * @param userEmail
 	 *            the user's MSN email address login
 	 * @param password
 	 *            the user's password
@@ -93,26 +93,25 @@ final class NotificationSession extends DispatchSession {
 	 *             If an I/O error occurs while attempting to authenticate with
 	 *             the servers
 	 */
-	boolean login(String username, String password) throws IOException {
-		response = connect(username);
+	boolean login(String userEmail, String password) throws IOException {
+		response = connect(userEmail);
 		if (response.getCommand().equals("USR")) { //$NON-NLS-1$
-			String ticket = request.getTicket(username, password, response.getParam(3));
+			String ticket = request.getTicket(userEmail, password, response.getParam(3));
 			password = null;
 
 			if (ticket == null) {
 				throw new ConnectException("Wrong username and/or password.");
-			} else {
-				write("USR", "TWN S " + ticket); //$NON-NLS-1$ //$NON-NLS-2$
-				ticket = null;
-				String input = super.read();
-				if (!input.startsWith("USR")) { //$NON-NLS-1$
-					throw new ConnectException("An error occurred while attempting to authenticate " + "with the Tweener server.");
-				}
-
-				retrieveBuddyList();
-				this.username = username;
-				return true;
 			}
+			write("USR", "TWN S " + ticket); //$NON-NLS-1$ //$NON-NLS-2$
+			ticket = null;
+			String input = super.read();
+			if (!input.startsWith("USR")) { //$NON-NLS-1$
+				throw new ConnectException("An error occurred while attempting to authenticate " + "with the Tweener server.");
+			}
+
+			retrieveBuddyList();
+			this.username = userEmail;
+			return true;
 		} else if (!response.getCommand().equals("XFR")) { //$NON-NLS-1$
 			throw new ConnectException("Unable to connect to the MSN server.");
 		} else {

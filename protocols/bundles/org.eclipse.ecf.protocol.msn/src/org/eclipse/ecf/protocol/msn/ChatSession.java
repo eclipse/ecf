@@ -125,21 +125,21 @@ public final class ChatSession extends Session {
 	/**
 	 * Invites the user with the specified email to this chat session.
 	 * 
-	 * @param email
+	 * @param userEmail
 	 *            the user's email address
 	 * @throws IOException
 	 *             If an I/O error occurs while attempting to send the
 	 *             invitation to the user
 	 */
-	public void invite(String email) throws IOException {
+	public void invite(String userEmail) throws IOException {
 		synchronized (contacts) {
 			for (int i = 0; i < contacts.size(); i++) {
-				if (((Contact) contacts.get(i)).getEmail().equals(email)) {
+				if (((Contact) contacts.get(i)).getEmail().equals(userEmail)) {
 					return;
 				}
 			}
 		}
-		write("CAL", email); //$NON-NLS-1$
+		write("CAL", userEmail); //$NON-NLS-1$
 	}
 
 	/**
@@ -219,20 +219,20 @@ public final class ChatSession extends Session {
 	 * given email. Comparison is done with the String class's equals(String)
 	 * method, so case sensitivity is an issue.
 	 * 
-	 * @param email
+	 * @param userEmail
 	 *            the email of the contact being sought after
 	 * @return the contact that uses the specified email
 	 * @throws IllegalArgumentException
 	 *             If the contact could not be found
 	 */
-	private Contact findContact(String email) throws IllegalArgumentException {
+	private Contact findContact(String userEmail) throws IllegalArgumentException {
 		for (int i = 0; i < contacts.size(); i++) {
 			final Contact contact = (Contact) contacts.get(i);
-			if (contact.getEmail().equals(email)) {
+			if (contact.getEmail().equals(userEmail)) {
 				return contact;
 			}
 		}
-		throw new IllegalArgumentException("A contact with the email " + email + " could not be found in this ChatSession.");
+		throw new IllegalArgumentException("A contact with the email " + userEmail + " could not be found in this ChatSession.");
 	}
 
 	/**

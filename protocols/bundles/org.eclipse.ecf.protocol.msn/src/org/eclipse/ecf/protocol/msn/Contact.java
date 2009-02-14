@@ -94,13 +94,13 @@ public final class Contact {
 	 * every listener within {@link #listeners}. This method is automatically
 	 * invoked when {@link #setStatus(Status)} is called.
 	 * 
-	 * @param status
+	 * @param newStatus
 	 *            the status that this contact has now switched to
 	 */
-	private void fireStatusChanged(Status status) {
+	private void fireStatusChanged(Status newStatus) {
 		synchronized (listeners) {
 			for (int i = 0; i < listeners.size(); i++) {
-				((IContactListener) listeners.get(i)).statusChanged(status);
+				((IContactListener) listeners.get(i)).statusChanged(newStatus);
 			}
 		}
 	}
@@ -110,13 +110,13 @@ public final class Contact {
 	 * listener within {@link #listeners}. This method is automatically invoked
 	 * when {@link #setDisplayName(String)} is called.
 	 * 
-	 * @param name
+	 * @param newName
 	 *            the new name of this contact
 	 */
-	private void fireNameChanged(String name) {
+	private void fireNameChanged(String newName) {
 		synchronized (listeners) {
 			for (int i = 0; i < listeners.size(); i++) {
-				((IContactListener) listeners.get(i)).nameChanged(name);
+				((IContactListener) listeners.get(i)).nameChanged(newName);
 			}
 		}
 	}

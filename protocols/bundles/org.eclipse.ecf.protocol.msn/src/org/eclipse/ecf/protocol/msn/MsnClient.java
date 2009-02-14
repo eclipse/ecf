@@ -13,7 +13,6 @@ package org.eclipse.ecf.protocol.msn;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;
-
 import org.eclipse.ecf.protocol.msn.events.ISessionListener;
 import org.eclipse.ecf.protocol.msn.internal.encode.ResponseCommand;
 import org.eclipse.ecf.protocol.msn.internal.encode.StringUtils;
@@ -120,7 +119,7 @@ public final class MsnClient {
 	/**
 	 * Connects the client to the MSN servers.
 	 * 
-	 * @param username
+	 * @param userEmail
 	 *            the user's email address that is associated with an MSN
 	 *            account
 	 * @param password
@@ -129,19 +128,19 @@ public final class MsnClient {
 	 *             If an I/O error occurred while connecting to the dispatch or
 	 *             notification servers.
 	 */
-	public void connect(String username, String password) throws IOException {
-		this.username = username;
+	public void connect(String userEmail, String password) throws IOException {
+		this.username = userEmail;
 		final DispatchSession dispatch = new DispatchSession(hostname, port);
 		// get the address of the notification server by first authenticating
 		// ourselves
-		final String address = dispatch.authenticate(username);
+		final String address = dispatch.authenticate(userEmail);
 		// close the session
 		dispatch.close();
 		// connect the notification session to the received address
 		notification.openSocket(address);
 		try {
 			// keep looping until we've connected successfully
-			while (!notification.login(username, password)) {
+			while (!notification.login(userEmail, password)) {
 				notification.reset();
 			}
 		} catch (final RuntimeException e) {

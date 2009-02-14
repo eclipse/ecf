@@ -11,4 +11,4 @@ Export-Package: org.eclipse.ecf.protocol.msn,
  org.eclipse.ecf.protocol.msn.internal.encode;x-internal:=true,
  org.eclipse.ecf.protocol.msn.internal.net;x-internal:=true
 Bundle-Vendor: %providerName
-Eclipse-LazyStart: false
+Bundle-ActivationPolicy: lazy

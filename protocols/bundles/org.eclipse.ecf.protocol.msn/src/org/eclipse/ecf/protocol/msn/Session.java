@@ -277,7 +277,7 @@ abstract class Session {
 	/**
 	 * IdleThread waits for an indefinite amount of time for incoming messages.
 	 */
-	private class IdleThread extends Thread {
+	class IdleThread extends Thread {
 
 		/**
 		 * Begin waiting for incoming messages indefinitely.
