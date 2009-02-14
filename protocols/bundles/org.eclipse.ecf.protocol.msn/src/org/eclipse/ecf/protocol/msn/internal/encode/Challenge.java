@@ -25,7 +25,7 @@ public final class Challenge {
 		try {
 			instance = MessageDigest.getInstance("MD5"); //$NON-NLS-1$
 		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException("No MD5 digest found");
+			throw new RuntimeException("No MD5 digest found"); //$NON-NLS-1$
 		}
 	}
 

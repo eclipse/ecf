@@ -63,7 +63,7 @@ public final class Status {
 		} else if (literal.equals("HDN")) { //$NON-NLS-1$
 			return APPEAR_OFFLINE;
 		} else {
-			throw new IllegalArgumentException("Unknown literal: " + literal);
+			throw new IllegalArgumentException("Unknown literal: " + literal); //$NON-NLS-1$
 		}
 	}
 

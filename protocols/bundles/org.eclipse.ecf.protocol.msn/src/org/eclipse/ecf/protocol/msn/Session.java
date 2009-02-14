@@ -292,7 +292,7 @@ abstract class Session {
 				} catch (IOException e) {
 					return;
 				} catch (RuntimeException e) {
-					System.out.println("Exception occurred: ");
+					System.out.println("Exception occurred:"); //$NON-NLS-1$
 					e.printStackTrace();
 				}
 			}

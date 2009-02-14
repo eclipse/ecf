@@ -100,20 +100,20 @@ final class NotificationSession extends DispatchSession {
 			password = null;
 
 			if (ticket == null) {
-				throw new ConnectException("Wrong username and/or password.");
+				throw new ConnectException("Wrong username and/or password."); //$NON-NLS-1$
 			}
 			write("USR", "TWN S " + ticket); //$NON-NLS-1$ //$NON-NLS-2$
 			ticket = null;
 			String input = super.read();
 			if (!input.startsWith("USR")) { //$NON-NLS-1$
-				throw new ConnectException("An error occurred while attempting to authenticate " + "with the Tweener server.");
+				throw new ConnectException("An error occurred while attempting to authenticate with the Tweener server."); //$NON-NLS-1$
 			}
 
 			retrieveBuddyList();
 			this.username = userEmail;
 			return true;
 		} else if (!response.getCommand().equals("XFR")) { //$NON-NLS-1$
-			throw new ConnectException("Unable to connect to the MSN server.");
+			throw new ConnectException("Unable to connect to the MSN server."); //$NON-NLS-1$
 		} else {
 			alternateServer = response.getParam(2);
 			return false;
@@ -211,7 +211,7 @@ final class NotificationSession extends DispatchSession {
 	 */
 	ResponseCommand getChatSession() throws IOException {
 		if (client.getStatus() == Status.APPEAR_OFFLINE || client.getStatus() == Status.OFFLINE) {
-			throw new ConnectException("Switchboards cannot be created when " + "the user is hidden or offline.");
+			throw new ConnectException("Switchboards cannot be created when the user is hidden or offline."); //$NON-NLS-1$
 		}
 		write("XFR", "SB"); //$NON-NLS-1$ //$NON-NLS-2$
 		String command = response.getCommand();
