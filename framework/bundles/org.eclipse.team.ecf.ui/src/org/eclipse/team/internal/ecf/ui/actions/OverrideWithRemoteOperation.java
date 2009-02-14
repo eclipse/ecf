@@ -11,22 +11,10 @@
 package org.eclipse.team.internal.ecf.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.*;
 import org.eclipse.compare.structuremergeviewer.IDiffElement;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IStorage;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.team.core.synchronize.SyncInfo;
@@ -44,12 +32,11 @@ class OverrideWithRemoteOperation extends SynchronizeModelOperation {
 	private ISchedulingRule createSchedulingRule(Collection rules) {
 		if (rules.size() == 1) {
 			return (ISchedulingRule) rules.iterator().next();
-		} else {
-			return new MultiRule((ISchedulingRule[]) rules.toArray(new ISchedulingRule[rules.size()]));
 		}
+		return new MultiRule((ISchedulingRule[]) rules.toArray(new ISchedulingRule[rules.size()]));
 	}
 
-	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+	public void run(IProgressMonitor monitor) throws InvocationTargetException {
 		SyncInfoSet syncInfoSet = getSyncInfoSet();
 		SyncInfo[] syncInfos = syncInfoSet.getSyncInfos();
 

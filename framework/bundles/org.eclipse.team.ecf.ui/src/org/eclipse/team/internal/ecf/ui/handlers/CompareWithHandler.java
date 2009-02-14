@@ -15,10 +15,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -102,10 +99,9 @@ class CompareWithHandler extends AbstractRosterMenuHandler {
 			} else {
 				return null;
 			}
-		} else {
-			IEditorPart editor = HandlerUtil.getActiveEditorChecked(event);
-			return (IFile) editor.getEditorInput().getAdapter(IFile.class);
 		}
+		IEditorPart editor = HandlerUtil.getActiveEditorChecked(event);
+		return (IFile) editor.getEditorInput().getAdapter(IFile.class);
 	}
 
 }

@@ -13,15 +13,11 @@ package org.eclipse.team.internal.ecf.ui.handlers;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
@@ -41,9 +37,7 @@ import org.eclipse.team.internal.ecf.ui.subscriber.RemoteSubscriberParticipant;
 import org.eclipse.team.internal.ecf.ui.wizards.RemotePeerSynchronizeWizard;
 import org.eclipse.team.ui.TeamUI;
 import org.eclipse.team.ui.synchronize.ISynchronizeParticipant;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.*;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 class SynchronizeWithHandler extends AbstractRosterMenuHandler {
@@ -155,11 +149,10 @@ class SynchronizeWithHandler extends AbstractRosterMenuHandler {
 				resources[i] = (IResource) ((IAdaptable) workspaceSelection.get(i)).getAdapter(IResource.class);
 			}
 			return resources;
-		} else {
-			IEditorPart editor = HandlerUtil.getActiveEditorChecked(event);
-			IFile file = (IFile) editor.getEditorInput().getAdapter(IFile.class);
-			return file == null ? new IResource[0] : new IResource[] {file};
 		}
+		IEditorPart editor = HandlerUtil.getActiveEditorChecked(event);
+		IFile file = (IFile) editor.getEditorInput().getAdapter(IFile.class);
+		return file == null ? new IResource[0] : new IResource[] {file};
 	}
 
 }

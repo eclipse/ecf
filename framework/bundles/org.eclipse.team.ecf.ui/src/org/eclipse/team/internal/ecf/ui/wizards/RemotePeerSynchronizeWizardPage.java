@@ -10,36 +10,17 @@
  ******************************************************************************/
 package org.eclipse.team.internal.ecf.ui.wizards;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.roster.IRoster;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.IRosterGroup;
-import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.eclipse.ecf.presence.roster.IRosterManager;
+import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -92,9 +73,8 @@ class RemotePeerSynchronizeWizardPage extends WizardPage {
 					} catch (CoreException e) {
 						return new IResource[0];
 					}
-				} else {
-					return new IResource[0];
 				}
+				return new IResource[0];
 			}
 
 			public boolean hasChildren(Object element) {
@@ -110,9 +90,8 @@ class RemotePeerSynchronizeWizardPage extends WizardPage {
 					} catch (CoreException e) {
 						return false;
 					}
-				} else {
-					return false;
 				}
+				return false;
 			}
 		});
 		resourcesViewer.setLabelProvider(WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
@@ -201,7 +180,7 @@ class RemotePeerSynchronizeWizardPage extends WizardPage {
 		});
 	}
 
-	private void verify() {
+	void verify() {
 		if (resourcesViewer.getCheckedElements().length == 0) {
 			setPageComplete(false);
 			return;
