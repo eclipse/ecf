@@ -62,7 +62,7 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		final IServiceID sid = (IServiceID) createIDFromString(SERVICE_TYPE);
 		final JSLPServiceTypeID stid = (JSLPServiceTypeID) sid.getServiceTypeID();
 
-		assertEquals("service:" + SERVICES[0] + ":" + SERVICES[1] + ":" + SERVICES[2], stid.getInternal());
+		assertEquals("service:" + SERVICES[0] + ":" + SERVICES[1] + "." + NAMINGAUTHORITY + ":" + SERVICES[2], stid.getInternal());
 		assertEquals(SERVICE_TYPE, stid.getName());
 		
 		assertEquals(NAMINGAUTHORITY, stid.getNamingAuthority());
@@ -150,18 +150,28 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		assertTrue(Arrays.equals(PROTOCOLS, stid.getProtocols()));
 
 		String internal = stid.getInternal();
-		assertEquals("service:ecf:foo:bar", internal);
+		assertEquals("service:" + SERVICES[0] + ":" + SERVICES[1] + ":" + SERVICES[2], internal);
 	}
 
 	public void testjSLPDefaultsToECF() {
 		String expected = "some Name";
-		fail();
+		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, SERVICES, new String[]{SCOPE}, PROTOCOLS, NAMINGAUTHORITY, expected);
+		assertNotNull(aServiceID);
+
+		IServiceTypeID stid = aServiceID.getServiceTypeID();
+		assertEquals(NAMINGAUTHORITY, stid.getNamingAuthority());
+		assertEquals("_ecf._junit._tests._someProtocol." + SCOPE + "._" + NAMINGAUTHORITY + "@" + expected, aServiceID.getName());
+	}
+	
+	public void testjSLPDefaultsToECF2() {
+		String expected = "some Name";
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
 		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, SERVICES, PROTOCOLS, expected);
 		assertNotNull(aServiceID);
 
 		IServiceTypeID stid = aServiceID.getServiceTypeID();
-		String internal = stid.getInternal();
-		assertEquals("service:ecf:foo:bar", internal);
+		assertEquals(IServiceTypeID.DEFAULT_NA, stid.getNamingAuthority());
+		assertEquals("_ecf._junit._tests._someProtocol." + IServiceTypeID.DEFAULT_SCOPE[0] + "._" + IServiceTypeID.DEFAULT_NA + "@" + expected, aServiceID.getName());
 	}
 }
