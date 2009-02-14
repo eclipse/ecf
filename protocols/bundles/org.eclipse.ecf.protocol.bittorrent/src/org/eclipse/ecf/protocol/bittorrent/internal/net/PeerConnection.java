@@ -31,12 +31,6 @@ import org.eclipse.ecf.protocol.bittorrent.internal.torrent.Piece;
  */
 class PeerConnection extends Thread {
 
-	/**
-	 * A byte array that represents a "keep alive" message to ensure that the
-	 * connection does not drop. This is synonymous with a 'ping'.
-	 */
-	private static final byte[] KEEP_ALIVE = { 0x00, 0x00, 0x00, 0x00 };
-
 	private static final byte[] CHOKE = { 0x00, 0x00, 0x00, 0x01, 0x00 };
 
 	private static final byte[] UNCHOKE = { 0x00, 0x00, 0x00, 0x01, 0x01 };
@@ -93,9 +87,6 @@ class PeerConnection extends Thread {
 
 	private final byte[] blockInfo = { 0x00, 0x00, 0x00, 0x09, 0x07, 0x00,
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-	private final byte[] cancel = { 0x00, 0x00, 0x00, 0x0d, 0x08, 0x00, 0x00,
-			0x00, 0x00 };
 
 	private final boolean[] haveMessages;
 
@@ -196,7 +187,7 @@ class PeerConnection extends Thread {
 			buffer.append(torrent.getInfoHash());
 			buffer.append(manager.getPeerID());
 		}
-		handshake = buffer.toString().getBytes("ISO-8859-1");
+		handshake = buffer.toString().getBytes("ISO-8859-1"); //$NON-NLS-1$
 		peerPieces = new boolean[torrent.getNumPieces()];
 		haveMessages = new boolean[peerPieces.length];
 		Arrays.fill(peerPieces, false);
@@ -230,9 +221,9 @@ class PeerConnection extends Thread {
 			}
 		} catch (IOException e) {
 			String message = e.getMessage();
-			TorrentConfiguration.debug("The connection with " + ip + ":" + port
-					+ " has been closed"
-					+ (message == null ? "." : ": " + message));
+			TorrentConfiguration.debug("The connection with " + ip + ":" + port //$NON-NLS-1$ //$NON-NLS-2$
+					+ " has been closed" //$NON-NLS-1$
+					+ (message == null ? "." : ": " + message)); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (RuntimeException e) {
 			close();
 			throw e;
@@ -245,12 +236,12 @@ class PeerConnection extends Thread {
 			channel = SocketChannel.open(address);
 			address = null;
 		} catch (SocketException e) {
-			TorrentConfiguration.debug("Unable to connect to " + ip + ":"
-					+ port + " - " + e.getMessage());
+			TorrentConfiguration.debug("Unable to connect to " + ip + ":" //$NON-NLS-1$ //$NON-NLS-2$
+					+ port + " - " + e.getMessage()); //$NON-NLS-1$
 			return;
 		}
-		TorrentConfiguration.debug("Established outgoing connection with " + ip
-				+ ":" + port);
+		TorrentConfiguration.debug("Established outgoing connection with " + ip //$NON-NLS-1$
+				+ ":" + port); //$NON-NLS-1$
 
 		sendHandshake();
 		int read = 0;
@@ -263,14 +254,13 @@ class PeerConnection extends Thread {
 			}
 			ret = channel.read(buffer);
 			if (ret == -1) {
-				TorrentConfiguration.debug("End of stream has been reached "
-						+ "with " + ip + ":" + port);
+				TorrentConfiguration.debug("End of stream has been reached with " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 				return;
 			}
 			read += ret;
 		}
-		TorrentConfiguration.debug("Received [BT_HANDSHAKE] message from " + ip
-				+ ":" + port);
+		TorrentConfiguration.debug("Received [BT_HANDSHAKE] message from " + ip //$NON-NLS-1$
+				+ ":" + port); //$NON-NLS-1$
 		byte[] client = new byte[20];
 		System.arraycopy(buffer.array(), 48, client, 0, 20);
 		processClientName(new String(client));
@@ -284,8 +274,7 @@ class PeerConnection extends Thread {
 				}
 				ret = channel.read(buffer);
 				if (ret == -1) {
-					TorrentConfiguration.debug("End of stream has been "
-							+ "reached with " + ip + ":" + port);
+					TorrentConfiguration.debug("End of stream has been reached with " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 					return;
 				}
 				read += ret;
@@ -297,8 +286,7 @@ class PeerConnection extends Thread {
 					}
 					ret = channel.read(buffer);
 					if (ret == -1) {
-						TorrentConfiguration.debug("End of stream has been "
-								+ "reached with " + ip + ":" + port);
+						TorrentConfiguration.debug("End of stream has been reached with " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 						return;
 					}
 					read += ret;
@@ -313,8 +301,7 @@ class PeerConnection extends Thread {
 						}
 						ret = channel.read(buffer);
 						if (ret == -1) {
-							TorrentConfiguration.debug("End of stream has "
-									+ "been reached with " + ip + ":" + port);
+							TorrentConfiguration.debug("End of stream has been reached with " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 							return;
 						}
 						read += ret;
@@ -338,12 +325,12 @@ class PeerConnection extends Thread {
 			} else if (buffer.get(78) == 0 && buffer.get(79) == 0
 					&& buffer.get(80) == 0) {
 				TorrentConfiguration
-						.debug("Received [BT_KEEPALIVE] message from " + ip
-								+ ":" + port);
+						.debug("Received [BT_KEEPALIVE] message from " + ip //$NON-NLS-1$
+								+ ":" + port); //$NON-NLS-1$
 			} else {
 				TorrentConfiguration
-						.debug("Received an unidentifiable message from " + ip
-								+ ":" + port);
+						.debug("Received an unidentifiable message from " + ip //$NON-NLS-1$
+								+ ":" + port); //$NON-NLS-1$
 				return;
 			}
 		} else {
@@ -355,15 +342,15 @@ class PeerConnection extends Thread {
 	}
 
 	private void answer() throws IOException {
-		TorrentConfiguration.debug("Established incoming connection from " + ip
-				+ ":" + port);
+		TorrentConfiguration.debug("Established incoming connection from " + ip //$NON-NLS-1$
+				+ ":" + port); //$NON-NLS-1$
 		sendHandshake();
 		sendBitfield();
 		query();
 	}
 
 	private void query() throws IOException {
-		TorrentConfiguration.debug("Entering the main loop with " + ip + ":"
+		TorrentConfiguration.debug("Entering the main loop with " + ip + ":" //$NON-NLS-1$ //$NON-NLS-2$
 				+ port);
 		byte[] array = null;
 		int read = 0;
@@ -388,8 +375,7 @@ class PeerConnection extends Thread {
 				}
 				ret = channel.read(buffer);
 				if (ret == -1) {
-					TorrentConfiguration.debug("End of stream has been "
-							+ "reached with " + ip + ":" + port);
+					TorrentConfiguration.debug("End of stream has been reached with " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 					return;
 				}
 				manager.updateDownloadRequestSpeed(ret);
@@ -411,8 +397,8 @@ class PeerConnection extends Thread {
 
 			if (array[0] == 0 && array[1] == 0 && array[2] == 0
 					&& array[3] == 0) {
-				TorrentConfiguration.debug("Received [BT_KEEPALIVE] from " + ip
-						+ ":" + port);
+				TorrentConfiguration.debug("Received [BT_KEEPALIVE] from " + ip //$NON-NLS-1$
+						+ ":" + port); //$NON-NLS-1$
 				array = truncate(array, 4);
 				read -= 4;
 			}
@@ -433,8 +419,7 @@ class PeerConnection extends Thread {
 							}
 							ret = channel.read(buffer);
 							if (ret == -1) {
-								TorrentConfiguration.debug("End of stream has "
-										+ "been reached with " + ip + ":"
+								TorrentConfiguration.debug("End of stream has been reached with " + ip + ":" //$NON-NLS-1$ //$NON-NLS-2$
 										+ port);
 								return;
 							}
@@ -457,8 +442,7 @@ class PeerConnection extends Thread {
 						}
 						ret = channel.read(buffer);
 						if (ret == -1) {
-							TorrentConfiguration.debug("End of stream has "
-									+ "been reached with " + ip + ":" + port);
+							TorrentConfiguration.debug("End of stream has been reached with " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 							return;
 						}
 						read += ret;
@@ -484,8 +468,7 @@ class PeerConnection extends Thread {
 							}
 							ret = channel.read(buffer);
 							if (ret == -1) {
-								TorrentConfiguration.debug("End of stream has "
-										+ "been reached with " + ip + ":"
+								TorrentConfiguration.debug("End of stream has been reached with " + ip + ":" //$NON-NLS-1$ //$NON-NLS-2$
 										+ port);
 								return;
 							}
@@ -523,8 +506,7 @@ class PeerConnection extends Thread {
 						}
 						ret = channel.read(buffer);
 						if (ret == -1) {
-							TorrentConfiguration.debug("End of stream has "
-									+ "been reached with " + ip + ":" + port);
+							TorrentConfiguration.debug("End of stream has been reached with " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 							return;
 						}
 
@@ -564,9 +546,9 @@ class PeerConnection extends Thread {
 					array = truncate(array, 9);
 					read -= 9;
 				} else {
-					TorrentConfiguration.debug("An ID of " + array[4]
-							+ " has been encountered. Closing connection with "
-							+ ip + ":" + port);
+					TorrentConfiguration.debug("An ID of " + array[4] //$NON-NLS-1$
+							+ " has been encountered. Closing connection with " //$NON-NLS-1$
+							+ ip + ":" + port); //$NON-NLS-1$
 					return;
 				}
 			}
@@ -617,92 +599,92 @@ class PeerConnection extends Thread {
 		switch (peerID.charAt(0)) {
 		case '-':
 			String client = peerID.substring(1, 3);
-			String version = peerID.charAt(3) + "." + peerID.charAt(4) + "."
-					+ peerID.charAt(5) + "." + peerID.charAt(6);
-			if (client.equals("AR")) {
-				clientName = "Arctic " + version;
-			} else if (client.equals("AX")) {
-				clientName = "BitPump " + version;
-			} else if (client.equals("AZ")) {
-				clientName = "Azureus " + version;
-			} else if (client.equals("BB")) {
-				clientName = "BitBuddy " + version;
-			} else if (client.equals("BC")) {
-				clientName = "BitComet " + version;
-			} else if (client.equals("BS")) {
-				clientName = "BTSlave " + version;
-			} else if (client.equals("BX")) {
-				clientName = "Bittorrent X " + version;
-			} else if (client.equals("CD")) {
-				clientName = "Enhanced CTorrent " + version;
-			} else if (client.equals("CT")) {
-				clientName = "CTorrent " + version;
-			} else if (client.equals("LP")) {
-				clientName = "Lphant " + version;
-			} else if (client.equals("LT")) {
-				clientName = "libtorrent " + version;
-			} else if (client.equals("lt")) {
-				clientName = "libTorrent " + version;
-			} else if (client.equals("MP")) {
-				clientName = "MooPolice " + version;
-			} else if (client.equals("MT")) {
-				clientName = "MoonlightTorrent " + version;
-			} else if (client.equals("QT")) {
-				clientName = "QT 4 Torrent example " + version;
-			} else if (client.equals("RT")) {
-				clientName = "Retriever " + version;
-			} else if (client.equals("SB")) {
-				clientName = "Swiftbit " + version;
-			} else if (client.equals("SS")) {
-				clientName = "SwarmScope " + version;
-			} else if (client.equals("SZ")) {
-				clientName = "Shareaza " + version;
-			} else if (client.equals("TN")) {
-				clientName = "TorrentDotNet " + version;
-			} else if (client.equals("TR")) {
-				clientName = "Transmission " + version;
-			} else if (client.equals("TS")) {
-				clientName = "TorrentStorm " + version;
-			} else if (client.equals("UT")) {
-				clientName = "µTorrent " + version;
-			} else if (client.equals("XT")) {
-				clientName = "XanTorrent " + version;
-			} else if (client.equals("ZT")) {
-				clientName = "ZipTorrent " + version;
+			String version = peerID.charAt(3) + "." + peerID.charAt(4) + "." //$NON-NLS-1$ //$NON-NLS-2$
+					+ peerID.charAt(5) + "." + peerID.charAt(6); //$NON-NLS-1$
+			if (client.equals("AR")) { //$NON-NLS-1$
+				clientName = "Arctic " + version; //$NON-NLS-1$
+			} else if (client.equals("AX")) { //$NON-NLS-1$
+				clientName = "BitPump " + version; //$NON-NLS-1$
+			} else if (client.equals("AZ")) { //$NON-NLS-1$
+				clientName = "Azureus " + version; //$NON-NLS-1$
+			} else if (client.equals("BB")) { //$NON-NLS-1$
+				clientName = "BitBuddy " + version; //$NON-NLS-1$
+			} else if (client.equals("BC")) { //$NON-NLS-1$
+				clientName = "BitComet " + version; //$NON-NLS-1$
+			} else if (client.equals("BS")) { //$NON-NLS-1$
+				clientName = "BTSlave " + version; //$NON-NLS-1$
+			} else if (client.equals("BX")) { //$NON-NLS-1$
+				clientName = "Bittorrent X " + version; //$NON-NLS-1$
+			} else if (client.equals("CD")) { //$NON-NLS-1$
+				clientName = "Enhanced CTorrent " + version; //$NON-NLS-1$
+			} else if (client.equals("CT")) { //$NON-NLS-1$
+				clientName = "CTorrent " + version; //$NON-NLS-1$
+			} else if (client.equals("LP")) { //$NON-NLS-1$
+				clientName = "Lphant " + version; //$NON-NLS-1$
+			} else if (client.equals("LT")) { //$NON-NLS-1$
+				clientName = "libtorrent " + version; //$NON-NLS-1$
+			} else if (client.equals("lt")) { //$NON-NLS-1$
+				clientName = "libTorrent " + version; //$NON-NLS-1$
+			} else if (client.equals("MP")) { //$NON-NLS-1$
+				clientName = "MooPolice " + version; //$NON-NLS-1$
+			} else if (client.equals("MT")) { //$NON-NLS-1$
+				clientName = "MoonlightTorrent " + version; //$NON-NLS-1$
+			} else if (client.equals("QT")) { //$NON-NLS-1$
+				clientName = "QT 4 Torrent example " + version; //$NON-NLS-1$
+			} else if (client.equals("RT")) { //$NON-NLS-1$
+				clientName = "Retriever " + version; //$NON-NLS-1$
+			} else if (client.equals("SB")) { //$NON-NLS-1$
+				clientName = "Swiftbit " + version; //$NON-NLS-1$
+			} else if (client.equals("SS")) { //$NON-NLS-1$
+				clientName = "SwarmScope " + version; //$NON-NLS-1$
+			} else if (client.equals("SZ")) { //$NON-NLS-1$
+				clientName = "Shareaza " + version; //$NON-NLS-1$
+			} else if (client.equals("TN")) { //$NON-NLS-1$
+				clientName = "TorrentDotNet " + version; //$NON-NLS-1$
+			} else if (client.equals("TR")) { //$NON-NLS-1$
+				clientName = "Transmission " + version; //$NON-NLS-1$
+			} else if (client.equals("TS")) { //$NON-NLS-1$
+				clientName = "TorrentStorm " + version; //$NON-NLS-1$
+			} else if (client.equals("UT")) { //$NON-NLS-1$
+				clientName = "µTorrent " + version; //$NON-NLS-1$
+			} else if (client.equals("XT")) { //$NON-NLS-1$
+				clientName = "XanTorrent " + version; //$NON-NLS-1$
+			} else if (client.equals("ZT")) { //$NON-NLS-1$
+				clientName = "ZipTorrent " + version; //$NON-NLS-1$
 			} else {
-				clientName = "Unknown";
+				clientName = "Unknown"; //$NON-NLS-1$
 			}
 			break;
 		case 'A':
-			clientName = "ABC " + peerID.charAt(1) + "." + peerID.charAt(2)
-					+ "." + peerID.charAt(3);
+			clientName = "ABC " + peerID.charAt(1) + "." + peerID.charAt(2) //$NON-NLS-1$ //$NON-NLS-2$
+					+ "." + peerID.charAt(3); //$NON-NLS-1$
 			break;
 		case 'M':
-			clientName = "Mainline " + peerID.charAt(1) + "."
-					+ peerID.charAt(3) + "." + peerID.charAt(5);
+			clientName = "Mainline " + peerID.charAt(1) + "." //$NON-NLS-1$ //$NON-NLS-2$
+					+ peerID.charAt(3) + "." + peerID.charAt(5); //$NON-NLS-1$
 			break;
 		case 'O':
-			clientName = "Osprey Permaseed " + peerID.charAt(1) + "."
-					+ peerID.charAt(2) + "." + peerID.charAt(3);
+			clientName = "Osprey Permaseed " + peerID.charAt(1) + "." //$NON-NLS-1$ //$NON-NLS-2$
+					+ peerID.charAt(2) + "." + peerID.charAt(3); //$NON-NLS-1$
 			break;
 		case 'R':
-			clientName = "Tribler " + peerID.charAt(1) + "." + peerID.charAt(2)
-					+ "." + peerID.charAt(3);
+			clientName = "Tribler " + peerID.charAt(1) + "." + peerID.charAt(2) //$NON-NLS-1$ //$NON-NLS-2$
+					+ "." + peerID.charAt(3); //$NON-NLS-1$
 			break;
 		case 'S':
-			clientName = "Shadow's client " + peerID.charAt(1) + "."
-					+ peerID.charAt(2) + "." + peerID.charAt(3);
+			clientName = "Shadow's client " + peerID.charAt(1) + "." //$NON-NLS-1$ //$NON-NLS-2$
+					+ peerID.charAt(2) + "." + peerID.charAt(3); //$NON-NLS-1$
 			break;
 		case 'T':
-			clientName = "BitTornado " + peerID.charAt(1) + "."
-					+ peerID.charAt(2) + "." + peerID.charAt(3);
+			clientName = "BitTornado " + peerID.charAt(1) + "." //$NON-NLS-1$ //$NON-NLS-2$
+					+ peerID.charAt(2) + "." + peerID.charAt(3); //$NON-NLS-1$
 			break;
 		case 'U':
-			clientName = "UPnP NAT Bit Torrent " + peerID.charAt(1) + "."
-					+ peerID.charAt(2) + "." + peerID.charAt(3);
+			clientName = "UPnP NAT Bit Torrent " + peerID.charAt(1) + "." //$NON-NLS-1$ //$NON-NLS-2$
+					+ peerID.charAt(2) + "." + peerID.charAt(3); //$NON-NLS-1$
 			break;
 		default:
-			clientName = "Unknown";
+			clientName = "Unknown"; //$NON-NLS-1$
 			break;
 		}
 	}
@@ -710,18 +692,18 @@ class PeerConnection extends Thread {
 	private boolean processMessage(byte[] array) throws IOException {
 		switch (array[4]) {
 		case 0:
-			TorrentConfiguration.debug("Received [BT_CHOKE] message from " + ip
-					+ ":" + port);
+			TorrentConfiguration.debug("Received [BT_CHOKE] message from " + ip //$NON-NLS-1$
+					+ ":" + port); //$NON-NLS-1$
 			peerIsChoking = true;
 			break;
 		case 1:
-			TorrentConfiguration.debug("Received [BT_UNCHOKE] message from "
-					+ ip + ":" + port);
+			TorrentConfiguration.debug("Received [BT_UNCHOKE] message from " //$NON-NLS-1$
+					+ ip + ":" + port); //$NON-NLS-1$
 			peerIsChoking = false;
 			break;
 		case 2:
-			TorrentConfiguration.debug("Received [BT_INTERESTED] message from "
-					+ ip + ":" + port);
+			TorrentConfiguration.debug("Received [BT_INTERESTED] message from " //$NON-NLS-1$
+					+ ip + ":" + port); //$NON-NLS-1$
 			if (peerIsInterested) {
 				break;
 			}
@@ -732,8 +714,8 @@ class PeerConnection extends Thread {
 			break;
 		case 3:
 			TorrentConfiguration
-					.debug("Received [BT_NOT_INTERESTED] message from " + ip
-							+ ":" + port);
+					.debug("Received [BT_NOT_INTERESTED] message from " + ip //$NON-NLS-1$
+							+ ":" + port); //$NON-NLS-1$
 			if (!peerIsInterested) {
 				break;
 			}
@@ -766,8 +748,8 @@ class PeerConnection extends Thread {
 			hasPiece[count++] = (bit & 128) != 0;
 		}
 		System.arraycopy(hasPiece, 0, peerPieces, 0, peerPieces.length);
-		TorrentConfiguration.debug("Received [BT_BITFIELD] message from " + ip
-				+ ":" + port);
+		TorrentConfiguration.debug("Received [BT_BITFIELD] message from " + ip //$NON-NLS-1$
+				+ ":" + port); //$NON-NLS-1$
 		manager.addPieceAvailability(peerPieces);
 
 		for (int i = 0; i < peerPieces.length; i++) {
@@ -784,8 +766,8 @@ class PeerConnection extends Thread {
 			peerPieces[piece] = true;
 			manager.updatePieceAvailability(piece);
 		}
-		TorrentConfiguration.debug("Received [BT_HAVE piece #" + piece
-				+ "] message from " + ip + ":" + port);
+		TorrentConfiguration.debug("Received [BT_HAVE piece #" + piece //$NON-NLS-1$
+				+ "] message from " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (int i = 0; i < peerPieces.length; i++) {
 			if (!peerPieces[i]) {
@@ -795,10 +777,6 @@ class PeerConnection extends Thread {
 		peerIsSeed = true;
 	}
 
-	private void processCancel(byte[] array) {
-		// TODO: unimplemented
-	}
-
 	private void processPiece(byte[] array) throws IOException {
 		int piece = Decode.decodeFourByteNumber(array, 5);
 		int index = Decode.decodeFourByteNumber(array, 9);
@@ -806,9 +784,9 @@ class PeerConnection extends Thread {
 
 		manager.write(piece, index, array, 13, length);
 		downloaded += length;
-		TorrentConfiguration.debug("Received [BT_PIECE data for #" + piece
-				+ ": " + index + "->" + (length + index - 1)
-				+ "] message from " + ip + ":" + port);
+		TorrentConfiguration.debug("Received [BT_PIECE data for #" + piece //$NON-NLS-1$
+				+ ": " + index + "->" + (length + index - 1) //$NON-NLS-1$ //$NON-NLS-2$
+				+ "] message from " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	private boolean processRequest(byte[] array) throws IOException {
@@ -816,21 +794,20 @@ class PeerConnection extends Thread {
 		int index = Decode.decodeFourByteNumber(array, 9);
 		int length = Decode.decodeFourByteNumber(array, 13);
 		if (isChoking) {
-			TorrentConfiguration.debug("Ignoring [BT_REQUEST piece #" + piece
-					+ ": " + index + "->" + (index + length - 1)
-					+ "] message from " + ip + ":" + port
-					+ " as this peer is currently choked");
+			TorrentConfiguration.debug("Ignoring [BT_REQUEST piece #" + piece //$NON-NLS-1$
+					+ ": " + index + "->" + (index + length - 1) //$NON-NLS-1$ //$NON-NLS-2$
+					+ "] message from " + ip + ":" + port //$NON-NLS-1$ //$NON-NLS-2$
+					+ " as this peer is currently choked"); //$NON-NLS-1$
 			return true;
 		}
-		TorrentConfiguration.debug("Received [BT_REQUEST piece #" + piece
-				+ ": " + index + "->" + (index + length - 1)
-				+ "] message from " + ip + ":" + port);
+		TorrentConfiguration.debug("Received [BT_REQUEST piece #" + piece //$NON-NLS-1$
+				+ ": " + index + "->" + (index + length - 1) //$NON-NLS-1$ //$NON-NLS-2$
+				+ "] message from " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if (length > 131072) {
-			TorrentConfiguration.debug("The requesting of " + length
-					+ " bytes violates the standard maximum amount of "
-					+ "131072, the connection to " + ip + ":" + port
-					+ " will be closed.");
+			TorrentConfiguration.debug("The requesting of " + length //$NON-NLS-1$
+					+ " bytes violates the standard maximum amount of 131072, the connection to " + ip + ":" + port //$NON-NLS-1$ //$NON-NLS-2$
+					+ " will be closed."); //$NON-NLS-1$
 			return false;
 		}
 
@@ -888,9 +865,9 @@ class PeerConnection extends Thread {
 			}
 		}
 
-		TorrentConfiguration.debug("Sent [BT_PIECE data for #" + piece + ": "
-				+ index + "->" + (length + index - 1) + "] message to " + ip
-				+ ":" + port);
+		TorrentConfiguration.debug("Sent [BT_PIECE data for #" + piece + ": " //$NON-NLS-1$ //$NON-NLS-2$
+				+ index + "->" + (length + index - 1) + "] message to " + ip //$NON-NLS-1$ //$NON-NLS-2$
+				+ ":" + port); //$NON-NLS-1$
 		return true;
 	}
 
@@ -899,7 +876,7 @@ class PeerConnection extends Thread {
 		sendBuffer.flip();
 		channel.write(sendBuffer);
 		sendBuffer.clear();
-		TorrentConfiguration.debug("Sent [BT_HANDSHAKE] message to " + ip + ":"
+		TorrentConfiguration.debug("Sent [BT_HANDSHAKE] message to " + ip + ":" //$NON-NLS-1$ //$NON-NLS-2$
 				+ port);
 	}
 
@@ -925,7 +902,7 @@ class PeerConnection extends Thread {
 		sendBuffer.flip();
 		channel.write(sendBuffer);
 		sendBuffer.clear();
-		TorrentConfiguration.debug("Sent [BT_BITFIELD] message to " + ip + ":"
+		TorrentConfiguration.debug("Sent [BT_BITFIELD] message to " + ip + ":" //$NON-NLS-1$ //$NON-NLS-2$
 				+ port);
 	}
 
@@ -953,10 +930,10 @@ class PeerConnection extends Thread {
 		sendBuffer.flip();
 		channel.write(sendBuffer);
 		sendBuffer.clear();
-		TorrentConfiguration.debug("Sent [BT_REQUEST piece #" + information[0]
-				+ ": " + information[1] + "->"
-				+ (information[1] + information[2] - 1) + "] message to " + ip
-				+ ":" + port);
+		TorrentConfiguration.debug("Sent [BT_REQUEST piece #" + information[0] //$NON-NLS-1$
+				+ ": " + information[1] + "->" //$NON-NLS-1$ //$NON-NLS-2$
+				+ (information[1] + information[2] - 1) + "] message to " + ip //$NON-NLS-1$
+				+ ":" + port); //$NON-NLS-1$
 
 		return information[2] + 13;
 	}
@@ -975,8 +952,8 @@ class PeerConnection extends Thread {
 				sendBuffer.flip();
 				channel.write(sendBuffer);
 				sendBuffer.clear();
-				TorrentConfiguration.debug("Sent [BT_HAVE PIECE #" + i
-						+ "] message to " + ip + ":" + port);
+				TorrentConfiguration.debug("Sent [BT_HAVE PIECE #" + i //$NON-NLS-1$
+						+ "] message to " + ip + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 				haveMessages[i] = false;
 			}
 		}
@@ -988,13 +965,6 @@ class PeerConnection extends Thread {
 			sendUnchoke();
 			sendUnchoke = false;
 		}
-	}
-
-	private void sendKeepAlive() throws IOException {
-		sendBuffer.put(KEEP_ALIVE);
-		sendBuffer.flip();
-		channel.write(sendBuffer);
-		sendBuffer.clear();
 	}
 
 	/**
@@ -1011,8 +981,8 @@ class PeerConnection extends Thread {
 			channel.write(sendBuffer);
 			sendBuffer.clear();
 			isInterested = true;
-			TorrentConfiguration.debug("Sent [BT_INTERESTED] message to " + ip
-					+ ":" + port);
+			TorrentConfiguration.debug("Sent [BT_INTERESTED] message to " + ip //$NON-NLS-1$
+					+ ":" + port); //$NON-NLS-1$
 		}
 	}
 
@@ -1030,8 +1000,8 @@ class PeerConnection extends Thread {
 			channel.write(sendBuffer);
 			sendBuffer.clear();
 			isInterested = false;
-			TorrentConfiguration.debug("Sent [BT_NOT_INTERESTED] message to "
-					+ ip + ":" + port);
+			TorrentConfiguration.debug("Sent [BT_NOT_INTERESTED] message to " //$NON-NLS-1$
+					+ ip + ":" + port); //$NON-NLS-1$
 		}
 	}
 
@@ -1049,7 +1019,7 @@ class PeerConnection extends Thread {
 			channel.write(sendBuffer);
 			sendBuffer.clear();
 			isChoking = true;
-			TorrentConfiguration.debug("Sent [BT_CHOKE] message to " + ip + ":"
+			TorrentConfiguration.debug("Sent [BT_CHOKE] message to " + ip + ":" //$NON-NLS-1$ //$NON-NLS-2$
 					+ port);
 		}
 	}
@@ -1068,8 +1038,8 @@ class PeerConnection extends Thread {
 			channel.write(sendBuffer);
 			sendBuffer.clear();
 			isChoking = false;
-			TorrentConfiguration.debug("Sent [BT_UNCHOKE] message to " + ip
-					+ ":" + port);
+			TorrentConfiguration.debug("Sent [BT_UNCHOKE] message to " + ip //$NON-NLS-1$
+					+ ":" + port); //$NON-NLS-1$
 		}
 	}
 
@@ -1095,7 +1065,7 @@ class PeerConnection extends Thread {
 		sendUnchoke = false;
 		Arrays.fill(haveMessages, false);
 
-		clientName = "Unknown";
+		clientName = "Unknown"; //$NON-NLS-1$
 	}
 
 	private void cleanup() {
@@ -1156,11 +1126,9 @@ class PeerConnection extends Thread {
 	 */
 	void queueHaveMessage(int number) throws IllegalArgumentException {
 		if (number < 0) {
-			throw new IllegalArgumentException("The piece number cannot be "
-					+ "negative");
+			throw new IllegalArgumentException("The piece number cannot be negative"); //$NON-NLS-1$
 		} else if (number >= peerPieces.length) {
-			throw new IllegalArgumentException("The piece number is greater "
-					+ "than the number of pieces");
+			throw new IllegalArgumentException("The piece number is greater than the number of pieces"); //$NON-NLS-1$
 		}
 		haveMessages[number] = true;
 	}
