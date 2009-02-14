@@ -12,7 +12,6 @@
 package org.eclipse.ecf.presence.ui.menu;
 
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 
 /**
@@ -25,7 +24,7 @@ public class NoopRosterMenuContributionItem extends AbstractRosterMenuContributi
 	 */
 	protected AbstractRosterMenuHandler createRosterEntryHandler(IRosterEntry rosterEntry) {
 		return new AbstractRosterMenuHandler(rosterEntry) {
-			public Object execute(ExecutionEvent arg0) throws ExecutionException {
+			public Object execute(ExecutionEvent arg0) {
 				System.out.println("execute(" + arg0 + ") on rosterEntry=" + getRosterEntry()); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			}
