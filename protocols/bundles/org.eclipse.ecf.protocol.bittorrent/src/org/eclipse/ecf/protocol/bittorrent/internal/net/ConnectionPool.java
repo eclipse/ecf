@@ -312,7 +312,7 @@ class ConnectionPool {
 	private class OptimisticUnchokingThread extends Thread {
 
 		public OptimisticUnchokingThread() {
-			super("Optimistic Unchoking Thread "
+			super("Optimistic Unchoking Thread " //$NON-NLS-1$
 					+ manager.getTorrentFile().getName());
 		}
 
