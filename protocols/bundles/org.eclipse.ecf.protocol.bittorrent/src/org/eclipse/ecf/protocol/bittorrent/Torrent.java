@@ -144,7 +144,7 @@ public class Torrent {
 	public void addTorrentStateListener(ITorrentStateListener listener)
 			throws IllegalArgumentException {
 		if (listener == null) {
-			throw new IllegalArgumentException("The listener cannot be null");
+			throw new IllegalArgumentException("The listener cannot be null"); //$NON-NLS-1$
 		}
 		manager.addTorrentStateListener(listener);
 	}
@@ -162,7 +162,7 @@ public class Torrent {
 	public void addTorrentProgressListener(ITorrentProgressListener listener)
 			throws IllegalArgumentException {
 		if (listener == null) {
-			throw new IllegalArgumentException("The listener cannot be null");
+			throw new IllegalArgumentException("The listener cannot be null"); //$NON-NLS-1$
 		}
 		manager.addTorrentProgressListener(listener);
 	}
@@ -180,7 +180,7 @@ public class Torrent {
 	public void addPieceProgressListener(IPieceProgressListener listener)
 			throws IllegalArgumentException {
 		if (listener == null) {
-			throw new IllegalArgumentException("The listener cannot be null");
+			throw new IllegalArgumentException("The listener cannot be null"); //$NON-NLS-1$
 		}
 		manager.addPieceProgressListener(listener);
 	}
@@ -197,7 +197,7 @@ public class Torrent {
 	 */
 	public void addHashCheckListener(IHashCheckListener listener) {
 		if (listener == null) {
-			throw new IllegalArgumentException("The listener cannot be null");
+			throw new IllegalArgumentException("The listener cannot be null"); //$NON-NLS-1$
 		}
 		manager.addHashCheckListener(listener);
 	}
@@ -215,7 +215,7 @@ public class Torrent {
 	public void addTorrentErrorListener(ITorrentErrorListener listener)
 			throws IllegalArgumentException {
 		if (listener == null) {
-			throw new IllegalArgumentException("The listener cannot be null");
+			throw new IllegalArgumentException("The listener cannot be null"); //$NON-NLS-1$
 		}
 		manager.addTorrentErrorListener(listener);
 	}
@@ -300,8 +300,7 @@ public class Torrent {
 	public void setMaxConnections(int maxConnections)
 			throws IllegalArgumentException {
 		if (maxConnections < 0) {
-			throw new IllegalArgumentException("The maximum number of "
-					+ "connections cannot be negative");
+			throw new IllegalArgumentException("The maximum number of connections cannot be negative"); //$NON-NLS-1$
 		}
 		manager.setMaxConnections(maxConnections);
 	}
@@ -324,7 +323,7 @@ public class Torrent {
 	 */
 	public void setFilesToDownload(int[] downloadChoices) {
 		if (downloadChoices == null) {
-			throw new IllegalArgumentException("The array cannot be null");
+			throw new IllegalArgumentException("The array cannot be null"); //$NON-NLS-1$
 		}
 		manager.setFilesToDownload(downloadChoices);
 	}

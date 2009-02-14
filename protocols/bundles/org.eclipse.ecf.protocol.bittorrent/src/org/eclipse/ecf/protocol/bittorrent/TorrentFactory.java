@@ -39,16 +39,16 @@ public final class TorrentFactory {
 
 	private static Torrent createTorrent(TorrentFile file, Properties properties) throws IOException {
 		if (TorrentConfiguration.statePath == null) {
-			throw new IllegalStateException("The folder to store " + "configuration information has not been set yet");
+			throw new IllegalStateException("The folder to store configuration information has not been set yet"); //$NON-NLS-1$
 		} else if (file == null) {
-			throw new IllegalArgumentException("The torrent cannot be null");
+			throw new IllegalArgumentException("The torrent cannot be null"); //$NON-NLS-1$
 		}
 		synchronized (CREATED_TORRENTS) {
 			Torrent torrent = (Torrent) CREATED_TORRENTS.get(file.getInfoHash());
 			if (torrent == null) {
 				final File targetFile = file.getTargetFile();
 				if (targetFile == null) {
-					throw new IllegalArgumentException("The target file or folder for " + "this torrent has not been set yet");
+					throw new IllegalArgumentException("The target file or folder for this torrent has not been set yet"); //$NON-NLS-1$
 				}
 				torrent = new Torrent(file, properties);
 				CREATED_TORRENTS.put(file.getInfoHash(), torrent);
@@ -96,18 +96,18 @@ public final class TorrentFactory {
 	 */
 	public static Torrent[] getSavedTorrents() throws IllegalStateException, IOException {
 		if (TorrentConfiguration.statePath == null) {
-			throw new IllegalStateException("The folder to store " + "configuration information has not been set yet");
+			throw new IllegalStateException("The folder to store configuration information has not been set yet"); //$NON-NLS-1$
 		}
 		final File[] files = TorrentConfiguration.statePath.listFiles(TORRENTS_FILTER);
 		final int count = files.length;
 		final Torrent[] torrents = new Torrent[count];
 		for (int i = 0; i < count; i++) {
 			String path = files[i].getAbsolutePath();
-			path = path.substring(0, path.lastIndexOf(".")) + ".properties";
+			path = path.substring(0, path.lastIndexOf(".")) + ".properties"; //$NON-NLS-1$ //$NON-NLS-2$
 			final Properties properties = new Properties();
 			properties.load(new FileInputStream(path));
 			final TorrentFile file = new TorrentFile(files[i]);
-			file.setTargetFile(new File(properties.getProperty("target")));
+			file.setTargetFile(new File(properties.getProperty("target"))); //$NON-NLS-1$
 			torrents[i] = createTorrent(file, properties);
 		}
 		return torrents;
@@ -136,7 +136,7 @@ public final class TorrentFactory {
 		 *         with <code>.torrent</code>, <code>false</code> otherwise
 		 */
 		public boolean accept(File pathname) {
-			return pathname.getName().endsWith(".torrent");
+			return pathname.getName().endsWith(".torrent"); //$NON-NLS-1$
 		}
 	}
 

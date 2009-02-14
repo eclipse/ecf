@@ -65,14 +65,14 @@ public final class TorrentConfiguration {
 			int hour = calendar.get(Calendar.HOUR);
 			int minute = calendar.get(Calendar.MINUTE);
 			int second = calendar.get(Calendar.SECOND);
-			String hourString = (hour < 10 ? "0" + hour : Integer
+			String hourString = (hour < 10 ? "0" + hour : Integer //$NON-NLS-1$
 					.toString(hour));
-			String minuteString = (minute < 10 ? "0" + minute : Integer
+			String minuteString = (minute < 10 ? "0" + minute : Integer //$NON-NLS-1$
 					.toString(minute));
-			String secondString = second < 10 ? "0" + second : Integer
+			String secondString = second < 10 ? "0" + second : Integer //$NON-NLS-1$
 					.toString(second);
-			debugListener.print(hourString + ":" + minuteString + ":"
-					+ secondString + " " + message);
+			debugListener.print(hourString + ":" + minuteString + ":" //$NON-NLS-1$ //$NON-NLS-2$
+					+ secondString + " " + message); //$NON-NLS-1$
 		}
 	}
 
@@ -103,17 +103,16 @@ public final class TorrentConfiguration {
 		if (statePath != null) {
 			return;
 		} else if (directory == null) {
-			throw new IllegalArgumentException("The provided directory cannot "
-					+ "be null");
+			throw new IllegalArgumentException("The provided directory cannot be null"); //$NON-NLS-1$
 		} else if (directory.isFile()) {
 			throw new IllegalArgumentException(directory.getAbsolutePath()
-					+ " is a file");
+					+ " is a file"); //$NON-NLS-1$
 		} else if (!directory.exists() && !directory.mkdirs()) {
-			throw new IllegalArgumentException("The directory "
-					+ directory.getAbsolutePath() + " could not be made");
+			throw new IllegalArgumentException("The directory " //$NON-NLS-1$
+					+ directory.getAbsolutePath() + " could not be made"); //$NON-NLS-1$
 		} else if (!directory.canWrite()) {
 			throw new IllegalArgumentException(directory.getAbsolutePath()
-					+ " cannot be written to");
+					+ " cannot be written to"); //$NON-NLS-1$
 		}
 		statePath = directory;
 		TorrentManager.setStatePath(statePath);
@@ -130,7 +129,7 @@ public final class TorrentConfiguration {
 	 */
 	public static void remove(String hexHash) {
 		if (hexHash == null) {
-			throw new IllegalArgumentException("The hash cannot be null");
+			throw new IllegalArgumentException("The hash cannot be null"); //$NON-NLS-1$
 		}
 		Torrent torrent = TorrentServer.remove(hexHash);
 		if (torrent != null) {
