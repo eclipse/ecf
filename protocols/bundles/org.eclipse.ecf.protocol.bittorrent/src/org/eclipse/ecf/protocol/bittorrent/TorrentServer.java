@@ -77,8 +77,7 @@ public class TorrentServer {
 	 */
 	public static void setPort(int port) throws IOException {
 		if (port < 0) {
-			throw new IllegalArgumentException("Cannot listen for incoming "
-					+ "connections on a negative port: " + port);
+			throw new IllegalArgumentException("Cannot listen for incoming connections on a negative port: " + port); //$NON-NLS-1$
 		}
 
 		if (peerListener == null || TorrentServer.port != port) {
@@ -136,7 +135,7 @@ public class TorrentServer {
 	}
 
 	private TorrentServer(int port) throws IOException {
-		this(new InetSocketAddress("localhost", port));
+		this(new InetSocketAddress("localhost", port)); //$NON-NLS-1$
 	}
 
 	/**
@@ -152,7 +151,7 @@ public class TorrentServer {
 	private class ListeningThread extends Thread {
 
 		public ListeningThread() {
-			super("Listening Thread");
+			super("Listening Thread"); //$NON-NLS-1$
 		}
 
 		public void run() {
@@ -188,7 +187,7 @@ public class TorrentServer {
 					}
 					System.arraycopy(bufferArray, 28, handshake, 0, 20);
 					Torrent torrent = (Torrent) activeTorrents.get(new String(
-							handshake, "ISO-8859-1"));
+							handshake, "ISO-8859-1")); //$NON-NLS-1$
 					if (torrent != null) {
 						torrent.connectTo(socketChannel);
 					} else {
