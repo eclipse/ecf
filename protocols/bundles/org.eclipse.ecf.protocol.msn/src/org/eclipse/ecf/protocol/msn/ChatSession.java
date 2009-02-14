@@ -108,7 +108,7 @@ public final class ChatSession extends Session {
 		// FIXME: check if this indexOf(String) call can be replaced with
 		// startsWith(String)
 		if (input == null || input.indexOf("USR") == -1) { //$NON-NLS-1$
-			throw new ConnectException("Authentication has failed with the " + "switchboard server.");
+			throw new ConnectException("Authentication has failed with the switchboard server."); //$NON-NLS-1$
 		}
 		idle();
 	}
@@ -232,7 +232,7 @@ public final class ChatSession extends Session {
 				return contact;
 			}
 		}
-		throw new IllegalArgumentException("A contact with the email " + userEmail + " could not be found in this ChatSession.");
+		throw new IllegalArgumentException("A contact with the email " + userEmail + " could not be found in this ChatSession."); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**

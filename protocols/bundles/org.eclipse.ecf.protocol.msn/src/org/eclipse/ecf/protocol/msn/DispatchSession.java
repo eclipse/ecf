@@ -70,7 +70,7 @@ class DispatchSession extends Session {
 		String input = super.read().trim();
 		if (!input.startsWith("VER")) { //$NON-NLS-1$
 			// TODO: throw a more descriptive exception
-			throw new ConnectException("The server did not respond properly.");
+			throw new ConnectException("The server did not respond properly."); //$NON-NLS-1$
 		}
 
 		write("CVR", "0x040c winnt 5.1 i386 MSNMSGR 7.0.0813 msmsgs " //$NON-NLS-1$ //$NON-NLS-2$
@@ -78,7 +78,7 @@ class DispatchSession extends Session {
 		input = super.read().trim();
 		if (!input.startsWith("CVR")) { //$NON-NLS-1$
 			// TODO: throw a more descriptive exception
-			throw new ConnectException("The server did not respond properly.");
+			throw new ConnectException("The server did not respond properly."); //$NON-NLS-1$
 		}
 
 		write("USR", "TWN I " + username); //$NON-NLS-1$ //$NON-NLS-2$
@@ -99,7 +99,7 @@ class DispatchSession extends Session {
 	String authenticate(String username) throws ConnectException, IOException {
 		final ResponseCommand received = connect(username);
 		if (!received.getCommand().equals("XFR")) { //$NON-NLS-1$
-			throw new ConnectException("The server did not respond properly.");
+			throw new ConnectException("The server did not respond properly."); //$NON-NLS-1$
 		}
 		return received.getParam(2);
 	}
