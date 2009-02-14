@@ -13,6 +13,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.presence
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
-Export-Package: org.eclipse.team.internal.ecf.core;x-friends:="org.eclipse.team.ecf.core",
- org.eclipse.team.internal.ecf.core.messages;x-friends:="org.eclipse.team.ecf.core",
- org.eclipse.team.internal.ecf.core.variants;x-friends:="org.eclipse.team.ecf.core"
+Export-Package: org.eclipse.team.internal.ecf.core;x-friends:="org.eclipse.team.ecf.ui",
+ org.eclipse.team.internal.ecf.core.messages;x-friends:="org.eclipse.team.ecf.ui",
+ org.eclipse.team.internal.ecf.core.variants;x-friends:="org.eclipse.team.ecf.ui"
