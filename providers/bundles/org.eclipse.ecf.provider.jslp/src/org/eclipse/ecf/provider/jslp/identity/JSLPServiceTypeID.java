@@ -125,4 +125,13 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		// remove the default naming authority #228876
 		return StringUtils.replaceAllIgnoreCase(str, "." + JSLP_DEFAULT_NA, ""); //$NON-NLS-1$//$NON-NLS-2$
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.identity.ServiceTypeID#getName()
+	 */
+	public String getName() {
+		String name = super.getName();
+		name = StringUtils.replaceAll(name, JSLP_DEFAULT_NA, IServiceTypeID.DEFAULT_NA);
+		return name;
+	}
 }
