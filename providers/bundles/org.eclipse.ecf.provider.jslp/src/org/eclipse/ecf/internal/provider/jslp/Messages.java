@@ -16,6 +16,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.jslp.messages"; //$NON-NLS-1$
 	public static String ContainerInstantiator_0;
 	public static String JSLPDiscoveryContainer_0;
+	public static String JSLPDiscoveryContainer_ContainerIsDisposed;
 	public static String JSLPDiscoveryJob_NO_JSLP_BUNDLE;
 	public static String JSLPDiscoveryJob_TITLE;
 	public static String JSLPNamespace_2;
