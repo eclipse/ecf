@@ -23,7 +23,7 @@
 	<!-- emf -->
 	<searchPath name="org.eclipse.emf">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://rsync.osuosl.org/pub/eclipse/modeling/emf/updates/milestones?importType=binary"/>
+			<uri format="http://rsync.osuosl.org/pub/eclipse/modeling/emf/updates/interim?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
