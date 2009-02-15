@@ -72,7 +72,10 @@ public final class JSLPDiscoveryJob extends Job {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "run", e); //$NON-NLS-1$
 		}
 
-		this.schedule(JSLPDiscoveryContainer.REDISCOVER);
+		// check if the JSLPDiscoveryContainer has been disconnected or disposed
+		if (discoveryContainer.getConnectedID() != null) {
+			this.schedule(JSLPDiscoveryContainer.REDISCOVER);
+		}
 		return Status.OK_STATUS;
 	}
 
