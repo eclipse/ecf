@@ -52,6 +52,7 @@ public final class JSLPDiscoveryJob extends Job {
 					ServicePropertiesAdapter spa = new ServicePropertiesAdapter((List) entry.getValue());
 					IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, spa.getServiceName()), spa.getPriority(), spa.getWeight(), spa);
 					services.put(url, serviceInfo);
+					discoveryContainer.fireServiceTypeDiscovered(serviceInfo.getServiceID().getServiceTypeID());
 					discoveryContainer.fireServiceDiscovered(serviceInfo);
 				}
 				monitor.worked(1);
