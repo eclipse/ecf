@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.osgi.framework.*;
@@ -74,9 +76,19 @@ public class Activator implements BundleActivator {
 	}
 
 	private void addDistributionProvider() {
+		final Dictionary properties = new Hashtable();
+		properties.put(DistributionProvider.PROP_KEY_VENDOR_NAME,
+				DistributionProviderImpl.VENDOR_NAME);
+		properties.put(DistributionProvider.PROP_KEY_PRODUCT_NAME,
+				DistributionProviderImpl.PRODUCT_NAME);
+		properties.put(DistributionProvider.PROP_KEY_PRODUCT_VERSION,
+				DistributionProviderImpl.PRODUCT_VERSION);
+		// JR TODO: the supported intents are a function of the providers
+		// available
+		properties.put(DistributionProvider.PROP_KEY_SUPPORTED_INTENTS, "");
 		this.distributionProviderRegistration = this.context.registerService(
 				DistributionProvider.class.getName(), distributionProvider,
-				null);
+				properties);
 	}
 
 	private void removeServiceRegistryHooks() {

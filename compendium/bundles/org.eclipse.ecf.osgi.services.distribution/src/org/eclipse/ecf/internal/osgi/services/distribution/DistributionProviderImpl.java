@@ -16,6 +16,10 @@ import org.osgi.service.distribution.DistributionProvider;
 
 public class DistributionProviderImpl implements DistributionProvider {
 
+	public static Object VENDOR_NAME = "Eclipse Foundation";
+	public static Object PRODUCT_NAME = "Eclipse ECF";
+	public static Object PRODUCT_VERSION = "1.0.0";
+
 	Map exposedServices = Collections.synchronizedMap(new HashMap());
 	Map remoteServices = Collections.synchronizedMap(new HashMap());
 
