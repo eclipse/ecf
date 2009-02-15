@@ -119,9 +119,13 @@ public class DistributionProviderImpl implements DistributionProvider {
 	}
 
 	public ServiceReference[] getPublishedServices() {
-		return org.eclipse.ecf.internal.osgi.services.discovery.Activator
-				.getDefault().getServicePublicationHandler()
-				.getPublishedServices();
+		// JR: XXX SMELL: this should not access the internals of the discovery
+		// part since the discovery is optional.
+		/*
+		 * return org.eclipse.ecf.internal.osgi.services.discovery.Activator
+		 * .getDefault().getServicePublicationHandler() .getPublishedServices();
+		 */
+		return null;
 	}
 
 	public ServiceReference[] getRemoteServices() {
