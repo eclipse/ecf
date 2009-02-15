@@ -9,19 +9,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
 
 public abstract class AbstractEventHookImpl implements EventHook {
@@ -55,8 +47,8 @@ public abstract class AbstractEventHookImpl implements EventHook {
 		}
 	}
 
-	protected void handleRegisteredServiceEvent(
-			ServiceReference serviceReference, Collection contexts) {
+	void handleRegisteredServiceEvent(ServiceReference serviceReference,
+			Collection contexts) {
 		// This checks to see if the serviceReference has any remote interfaces
 		// declared via
 		// osgi.remote.interfaces

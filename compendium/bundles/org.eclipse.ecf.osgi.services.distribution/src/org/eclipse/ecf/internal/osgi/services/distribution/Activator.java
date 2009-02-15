@@ -10,9 +10,8 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import org.eclipse.ecf.core.IContainerManager;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
+import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
+import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.distribution.DistributionProvider;
 import org.osgi.util.tracker.ServiceTracker;
@@ -55,9 +54,23 @@ public class Activator implements BundleActivator {
 	}
 
 	private void addServiceRegistryHooks() {
+		// register the event hook to get informed when new services appear
+		final ECFEventHookImpl hook = new ECFEventHookImpl(distributionProvider);
 		this.eventHookRegistration = this.context.registerService(
-				EventHook.class.getName(), new ECFEventHookImpl(
-						distributionProvider), null);
+				EventHook.class.getName(), hook, null);
+		// register all existing services which have the marker property
+		try {
+			final ServiceReference[] refs = this.context
+					.getServiceReferences(null, "("
+							+ ServiceConstants.OSGI_REMOTE_INTERFACES + "=*)");
+			if (refs != null) {
+				for (int i = 0; i < refs.length; i++) {
+					hook.handleRegisteredServiceEvent(refs[i], null);
+				}
+			}
+		} catch (InvalidSyntaxException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void addDistributionProvider() {
