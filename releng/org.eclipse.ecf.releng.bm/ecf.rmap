@@ -46,7 +46,7 @@
 	<!-- pluginbuilder -->
 	<searchPath name="org.pluginbuilder">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://ecf2.osuosl.org/pluginbuilder?importType=binary"/>
+			<uri format="http://self-3-4.pluginbuilder.org/nightly/p2-updateSite/?importType=binary"/>
 		</provider>
 	</searchPath>
 
