@@ -165,11 +165,11 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 		List us = new ArrayList();
 		List ps = new ArrayList();
 		while (!done) {
-			String uname = System.getProperty("username"+i);
-			String pword = System.getProperty("password"+i);
+			String uname = System.getProperty("test-prefix.username"+i);
+			String pword = System.getProperty("test-prefix.password"+i);
 			if (uname == null && i==0) {
-				uname = System.getProperty("username");
-				pword = System.getProperty("password");
+				uname = System.getProperty("test-prefix.username");
+				pword = System.getProperty("test-prefix.password");
 			}
 			if (uname == null) {
 				done = true;
