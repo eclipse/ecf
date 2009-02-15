@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.discovery.listener;
 
-import junit.framework.TestCase;
-
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
@@ -21,6 +19,7 @@ import org.eclipse.ecf.discovery.IServiceTypeListener;
 public class TestListener implements IServiceListener, IServiceTypeListener {
 
 	private IContainerEvent event;
+	private int eventCount;
 	
 	/**
 	 * @return the event that has been received by this TestListener
@@ -29,11 +28,18 @@ public class TestListener implements IServiceListener, IServiceTypeListener {
 		return event;
 	}
 
+	/**
+	 * @return The amount of events sent to this TestListener
+	 */
+	public int getEventCount() {
+		return eventCount;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
 	 */
 	public void serviceDiscovered(IServiceEvent anEvent) {
-		TestCase.assertNull("Received several IServiceEvent", event);
+		eventCount++;
 		event = anEvent;
 		synchronized (this) {
 			notifyAll();
@@ -50,9 +56,9 @@ public class TestListener implements IServiceListener, IServiceTypeListener {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeDiscovered(org.eclipse.ecf.discovery.IServiceTypeEvent)
 	 */
-	public void serviceTypeDiscovered(IServiceTypeEvent event) {
-		TestCase.assertNull("Received several IServiceEvent", event);
-		this.event = event;
+	public void serviceTypeDiscovered(IServiceTypeEvent anEvent) {
+		eventCount++;
+		event = anEvent;
 		synchronized (this) {
 			notifyAll();
 		}

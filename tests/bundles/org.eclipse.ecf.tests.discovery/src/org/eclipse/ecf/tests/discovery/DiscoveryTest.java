@@ -17,6 +17,7 @@ import java.util.Properties;
 
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -25,8 +26,6 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceTypeEvent;
-import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -60,6 +59,10 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		final IDiscoveryContainerAdapter adapter = (IDiscoveryContainerAdapter) container.getAdapter(clazz);
 		assertNotNull("Adapter must not be null", adapter);
 		return adapter;
+	}
+	
+	protected IContainer getContainer(String containerUnderTest) throws ContainerCreateException {
+		return ContainerFactory.getDefault().createContainer(containerUnderTest);
 	}
 
 	protected IServiceID createServiceID(String serviceType, String serviceName) throws Exception {
@@ -111,7 +114,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		assertNotNull(containerUnderTest);
 		assertTrue(containerUnderTest.startsWith("ecf.discovery."));
 
-		container = ContainerFactory.getDefault().createContainer(containerUnderTest);
+		container = getContainer(containerUnderTest);
 		discoveryContainer = getAdapter(IDiscoveryContainerAdapter.class);
 
 		assertNotNull(container);
@@ -358,6 +361,10 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	protected void addServiceListener(TestListener serviceListener) {
 		discoveryContainer.addServiceListener(serviceListener);
 		addListenerRegisterAndWait(serviceListener, serviceInfo);
+		discoveryContainer.removeServiceListener(serviceListener);
+		assertNotNull("Test listener didn't receive discovery", serviceListener.getEvent());
+		assertEquals("Test listener received more than 1 discovery event", 1, serviceListener.getEventCount());
+		assertTrue("Container mismatch", serviceListener.getEvent().getLocalContainerID().equals(container.getConnectedID()));
 		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) serviceListener.getEvent()).getServiceInfo(), serviceInfo) == 0);
 	}
 
@@ -396,6 +403,11 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		final TestListener tsl = new TestListener();
 		discoveryContainer.addServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		addListenerRegisterAndWait(tsl, serviceInfo);
+		discoveryContainer.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
+		
+		assertNotNull("Test listener didn't receive discovery", tsl.getEvent());
+		assertEquals("Test listener received more than 1 discovery event", 1, tsl.getEventCount());
+		assertTrue("Container mismatch", tsl.getEvent().getLocalContainerID().equals(container.getConnectedID()));
 		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) tsl.getEvent()).getServiceInfo(), serviceInfo) == 0);
 	}
 
@@ -410,8 +422,6 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 				fail("Some discovery unrelated threading issues?");
 			}
 		}
-		assertNotNull("Test listener didn't receive discovery", testServiceListener.getEvent());
-		assertTrue("Container mismatch", testServiceListener.getEvent().getLocalContainerID().equals(container.getConnectedID()));
 	}
 
 	/**
@@ -433,21 +443,29 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 */
 	public void testAddServiceTypeListener() {
 		testConnect();
-		final IServiceTypeListener serviceTypeListener = createServiceTypeListener();
-		discoveryContainer.addServiceTypeListener(serviceTypeListener);
-	}
+		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
 
-	/**
-	 * @return A newly IServiceTypeListener which prints to System.out when a service is discovered
-	 */
-	protected IServiceTypeListener createServiceTypeListener() {
-		return new IServiceTypeListener() {
+		final TestListener testTypeListener = new TestListener();
+		discoveryContainer.addServiceTypeListener(testTypeListener);
 
-			public void serviceTypeDiscovered(IServiceTypeEvent event) {
-				System.out.println("serviceTypeDiscovered(" + event + ")");
+		synchronized (testTypeListener) {
+			// register a service which we expect the test listener to get notified of
+			registerService();
+			try {
+				testTypeListener.wait(waitTimeForProvider);
+			} catch (final InterruptedException e) {
+				Thread.currentThread().interrupt();
+				fail("Some discovery unrelated threading issues?");
 			}
-		};
+		}
+		
+		discoveryContainer.removeServiceTypeListener(testTypeListener);
+		
+		assertNotNull("Test listener didn't receive discovery", testTypeListener.getEvent());
+		assertEquals("Test listener received more than 1 discovery event", 1, testTypeListener.getEventCount());
+		assertTrue("Container mismatch", testTypeListener.getEvent().getLocalContainerID().equals(container.getConnectedID()));
 	}
+	
 
 	/**
 	 * Test method for
