@@ -9,13 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
+import java.util.*;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
@@ -23,7 +17,9 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.discovery.ServicePublication;
 
 public class ECFEventHookImpl extends AbstractEventHookImpl {
 
@@ -40,6 +36,7 @@ public class ECFEventHookImpl extends AbstractEventHookImpl {
 					"remoteConfigurationType is null or empty so does not match ECF remote configuration type");
 			return;
 		}
+		// XXX JR: I don't think this is correct.
 		// If the first remote configuration type value is not for us, then we
 		// don't do anything with it
 		if (!remoteConfigurationType[0]
@@ -64,7 +61,39 @@ public class ECFEventHookImpl extends AbstractEventHookImpl {
 		}
 		// Now actually register remote service with remote service container
 		// adapters
-		registerRemoteService(rscas, remoteInterfaces, serviceReference);
+		final Collection identifiers = registerRemoteService(rscas,
+				remoteInterfaces, serviceReference);
+		publishRemoteServices(serviceReference, remoteInterfaces, identifiers);
+	}
+
+	private void publishRemoteServices(final ServiceReference ref,
+			final String[] remoteInterfaces, final Collection /*
+															 * <? extends
+															 * String>
+															 */identifiers) {
+		final Dictionary properties = new Hashtable();
+		final BundleContext context = Activator.getDefault().getContext();
+		properties.put(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
+				remoteInterfaces);
+		properties.put(ServicePublication.PROP_KEY_SERVICE_PROPERTIES,
+				getServiceProperties(ref));
+		final String[] ids = (String[]) identifiers
+				.toArray(new String[identifiers.size()]);
+		for (int i = 0; i < ids.length; i++) {
+			properties.put(ServicePublication.PROP_KEY_ENDPOINT_ID, ids[i]);
+			context.registerService(ServicePublication.class.getName(),
+					new ServicePublication() {
+					}, properties);
+		}
+	}
+
+	private Map getServiceProperties(final ServiceReference ref) {
+		final String[] keys = ref.getPropertyKeys();
+		final Map map = new HashMap(keys.length);
+		for (int i = 0; i < keys.length; i++) {
+			map.put(keys[i], ref.getProperty(keys[i]));
+		}
+		return map;
 	}
 
 	private Map parseECFConfigurationType(String[] remoteConfigurationType) {
@@ -73,9 +102,10 @@ public class ECFEventHookImpl extends AbstractEventHookImpl {
 		return results;
 	}
 
-	protected void registerRemoteService(
+	protected Collection /* <? extends String> */registerRemoteService(
 			IRemoteServiceContainerAdapter[] rscas, String[] remoteInterfaces,
 			ServiceReference sr) {
+		final ArrayList result = new ArrayList();
 		for (int i = 0; i < rscas.length; i++) {
 			IRemoteServiceRegistration remoteRegistration = rscas[i]
 					.registerRemoteService(remoteInterfaces, getService(sr),
@@ -84,8 +114,10 @@ public class ECFEventHookImpl extends AbstractEventHookImpl {
 			trace("registerRemoteService",
 					"REGISTERED REMOTE SERVICE serviceReference=" + sr
 							+ " remoteRegistration=" + remoteRegistration);
+			result.add(remoteRegistration.getContainerID());
 			fireRemoteServiceRegistered(sr, remoteRegistration);
 		}
+		return result;
 	}
 
 	protected Dictionary createPropertiesForRemoteService(
