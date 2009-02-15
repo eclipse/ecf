@@ -247,6 +247,8 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		// add the hint property for R-OSGi that this service is intended to be
 		// accessed remotely.
 		props.put(RemoteOSGiService.R_OSGi_REGISTRATION, Boolean.TRUE);
+		// remove the RFC 119 hint, if present, to avoid loops
+		props.remove("osgi.remote.interfaces"); //$NON-NLS-1$
 		props.put(org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE_CONTAINER_ID, containerID);
 
 		// register the service with the local framework
