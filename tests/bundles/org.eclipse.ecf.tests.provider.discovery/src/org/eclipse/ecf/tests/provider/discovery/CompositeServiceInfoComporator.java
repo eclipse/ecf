@@ -25,13 +25,26 @@ public class CompositeServiceInfoComporator extends ServiceInfoComparator {
 		if (arg0 instanceof IServiceInfo && arg1 instanceof IServiceInfo) {
 			final IServiceInfo first = (IServiceInfo) arg0;
 			final IServiceInfo second = (IServiceInfo) arg1;
+			boolean priority = first.getPriority() == second.getPriority();
+			boolean weight = first.getWeight() == second.getWeight();
+
 			final URI uri1 = first.getLocation();
 			final URI uri2 = second.getLocation();
-			IServiceID firstID = first.getServiceID();
-			IServiceID secondID = second.getServiceID();
-			//TODO-mkuppe No prio, weight and protocol atm in the JSLP testcase
-			boolean serviceIDs = firstID.getName().equals(secondID.getName()) && firstID.getServiceName().equals(secondID.getServiceName()) && firstID.getServiceTypeID().equals(secondID.getServiceTypeID());
-			final boolean result = (serviceIDs && uri1.getHost().equals(uri2.getHost()) && uri1.getPort() == uri2.getPort()/* && first.getPriority() == second.getPriority() && first.getWeight() == second.getWeight() */&& compareServiceProperties(first.getServiceProperties(), second.getServiceProperties()));
+			boolean port = uri1.getPort() == uri2.getPort();
+			boolean host = uri1.getHost().equals(uri2.getHost());
+
+			final IServiceID firstID = first.getServiceID();
+			final IServiceID secondID = second.getServiceID();
+			boolean serviceType = firstID.getServiceTypeID().equals(secondID.getServiceTypeID());
+			boolean serviceName = firstID.getServiceName().equals(secondID.getServiceName());
+
+			String firstName = firstID.getName();
+			String secondName = secondID.getName();
+			boolean name = firstName.equals(secondName);
+			
+			boolean serviceProperties = true; /*compareServiceProperties(first.getServiceProperties(), second.getServiceProperties());*/
+			
+			final boolean result = name && serviceType && serviceName && host && port && priority && weight && serviceProperties;
 			if (result == true) {
 				return 0;
 			}
