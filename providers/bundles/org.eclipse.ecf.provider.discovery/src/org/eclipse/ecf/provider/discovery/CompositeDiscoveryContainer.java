@@ -355,4 +355,12 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 			return containers.remove(object);
 		}
 	}
+
+	/**
+	 * @return The List of currently registered containers.
+	 * @since 2.1
+	 */
+	public List getDiscoveryContainers() {
+		return Collections.unmodifiableList(containers);
+	}
 }
