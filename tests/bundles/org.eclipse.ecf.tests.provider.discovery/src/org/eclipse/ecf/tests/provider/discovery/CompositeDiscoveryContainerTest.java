@@ -12,6 +12,7 @@ package org.eclipse.ecf.tests.provider.discovery;
 
 import java.util.List;
 
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
@@ -29,8 +30,10 @@ public class CompositeDiscoveryContainerTest extends DiscoveryTest {
 	
 	/**
 	 * Check if 
+	 * @throws ContainerConnectException 
 	 */
-	public void testAddContainerWithRegisteredServices() {
+	public void testAddContainerWithRegisteredServices() throws ContainerConnectException {
+		container.connect(null, null);
 		 try {
 			discoveryContainer.registerService(serviceInfo);
 		} catch (ECFException e) {
@@ -43,7 +46,8 @@ public class CompositeDiscoveryContainerTest extends DiscoveryTest {
 		assertEquals("registerService(aService) wasn't called on TestDiscoveryContainer", serviceInfo, registeredServices.get(0));
 	}
 
-	public void testAddContainerWithoutRegisteredServices() {
+	public void testAddContainerWithoutRegisteredServices() throws ContainerConnectException {
+		container.connect(null, null);
 		 try {
 			discoveryContainer.registerService(serviceInfo);
 			discoveryContainer.unregisterService(serviceInfo);
