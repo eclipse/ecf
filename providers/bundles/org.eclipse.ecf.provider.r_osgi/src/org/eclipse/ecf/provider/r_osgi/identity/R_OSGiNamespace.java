@@ -114,10 +114,4 @@ public class R_OSGiNamespace extends Namespace {
 		return new String[] {NAMESPACE_SCHEME};
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.identity.Namespace#toExternalForm(org.eclipse.ecf.core.identity.BaseID)
-	 */
-	protected String toExternalForm(BaseID id) {
-		return this.getClass().getName() + Namespace.SCHEME_SEPARATOR + id.toExternalForm();
-	}
 }

@@ -109,4 +109,12 @@ public class R_OSGiID extends BaseID {
 		return uri.toString();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.identity.ID#toExternalForm()
+	 */
+	public String toExternalForm() {
+		return uri.toString();
+	}
 }
