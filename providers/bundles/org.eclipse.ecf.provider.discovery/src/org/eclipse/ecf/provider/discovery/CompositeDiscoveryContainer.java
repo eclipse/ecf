@@ -38,8 +38,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 			if (!col.isEmpty()) {
 				for (Iterator itr = col.iterator(); itr.hasNext();) {
 					IServiceListener isl = (IServiceListener) itr.next();
-					// we want to pretend the discovery event comes from us, thus we change the connectedid
-					isl.serviceDiscovered(new ServiceContainerEvent(event.getServiceInfo(), getConnectedID()));
+					// we want to pretend the discovery event comes from us, thus we change the connectedId
+					isl.serviceDiscovered(new CompositeServiceContainerEvent(event, getConnectedID()));
 					Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "serviceDiscovered", //$NON-NLS-1$
 							"serviceResolved fired for listener " //$NON-NLS-1$
 									+ isl.toString() + " with event: " + event.toString()); //$NON-NLS-1$
@@ -58,8 +58,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 			if (!col.isEmpty()) {
 				for (Iterator itr = col.iterator(); itr.hasNext();) {
 					IServiceListener isl = (IServiceListener) itr.next();
-					// we want to pretend the discovery event comes from us, thus we change the connectedid
-					isl.serviceUndiscovered(new ServiceContainerEvent(event.getServiceInfo(), getConnectedID()));
+					// we want to pretend the discovery event comes from us, thus we change the connectedId
+					isl.serviceUndiscovered(new CompositeServiceContainerEvent(event, getConnectedID()));
 					Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "serviceUndiscovered", //$NON-NLS-1$
 							"serviceRemoved fired for listener " //$NON-NLS-1$
 									+ isl.toString() + " with event: " + event.toString()); //$NON-NLS-1$
@@ -83,7 +83,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 				for (Iterator itr = serviceTypeListeners.iterator(); itr.hasNext();) {
 					IServiceTypeListener listener = (IServiceTypeListener) itr.next();
 					// we want to pretend the discovery event comes from us, thus we change the connectedId
-					listener.serviceTypeDiscovered(new ServiceTypeContainerEvent(event.getServiceTypeID(), getConnectedID()));
+					listener.serviceTypeDiscovered(new CompositeServiceTypeContainerEvent(event, getConnectedID()));
 					Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "serviceTypeDiscovered", //$NON-NLS-1$
 							"serviceTypeDiscovered fired for listener " //$NON-NLS-1$
 									+ listener.toString() + " with event: " + event.toString()); //$NON-NLS-1$
