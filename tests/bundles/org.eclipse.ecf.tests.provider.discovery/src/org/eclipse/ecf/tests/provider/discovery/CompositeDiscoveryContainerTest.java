@@ -24,10 +24,16 @@ public class CompositeDiscoveryContainerTest extends DiscoveryTest {
 	public CompositeDiscoveryContainerTest() {
 		super("ecf.discovery.*");
 		setComparator(new CompositeServiceInfoComporator());
-		// Composite receives from more the nested IDCAs and thus may receive more than one event (ATM we have two nested providers in ECF)
-		eventsToExpect = 2;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#setUp()
+	 */
+	protected void setUp() throws Exception {
+		super.setUp();
+		eventsToExpect = ((CompositeDiscoveryContainer) discoveryContainer).getDiscoveryContainers().size();
+	}
+
 	/**
 	 * Check if 
 	 * @throws ContainerConnectException 
