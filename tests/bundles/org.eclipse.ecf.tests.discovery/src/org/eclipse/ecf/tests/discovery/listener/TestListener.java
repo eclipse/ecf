@@ -29,7 +29,10 @@ public class TestListener {
 	 * @return the event that has been received by this TestListener
 	 */
 	public IContainerEvent getEvent() {
-		return (IContainerEvent) events.get(0);
+		if(events.size() >= 1) {
+			return (IContainerEvent) events.get(0);
+		}
+		return null;
 	}
 
 	/**
