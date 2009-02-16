@@ -63,10 +63,10 @@ public class ECFEventHookImpl extends AbstractEventHookImpl {
 		// adapters
 		final Collection identifiers = registerRemoteService(rscas,
 				remoteInterfaces, serviceReference);
-		publishRemoteServices(serviceReference, remoteInterfaces, identifiers);
+		publishRemoteService(serviceReference, remoteInterfaces, identifiers);
 	}
 
-	private void publishRemoteServices(final ServiceReference ref,
+	private void publishRemoteService(final ServiceReference ref,
 			final String[] remoteInterfaces, final Collection /*
 															 * <? extends
 															 * String>
@@ -84,6 +84,9 @@ public class ECFEventHookImpl extends AbstractEventHookImpl {
 			context.registerService(ServicePublication.class.getName(),
 					new ServicePublication() {
 					}, properties);
+			trace("publishRemoteService",
+					"PUBLISH REMOTE SERVICE serviceReference=" + ref + " ID="
+							+ ids[i]);
 		}
 	}
 
@@ -114,7 +117,7 @@ public class ECFEventHookImpl extends AbstractEventHookImpl {
 			trace("registerRemoteService",
 					"REGISTERED REMOTE SERVICE serviceReference=" + sr
 							+ " remoteRegistration=" + remoteRegistration);
-			result.add(remoteRegistration.getContainerID());
+			result.add(remoteRegistration.getContainerID().toString());
 			fireRemoteServiceRegistered(sr, remoteRegistration);
 		}
 		return result;
