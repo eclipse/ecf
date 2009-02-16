@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Markus Alexander Kuppe (ecf-dev_eclipse.org <at> lemmster <dot> de) - Reworked completely
  *****************************************************************************/
 
 package org.eclipse.ecf.tests.discovery;
@@ -49,6 +50,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	protected IContainer container = null;
 	protected IDiscoveryContainerAdapter discoveryContainer = null;
 
+	protected int eventsToExpect = 1;
 	
 	public DiscoveryTest(String name) {
 		super();
@@ -363,7 +365,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		addListenerRegisterAndWait(serviceListener, serviceInfo);
 		discoveryContainer.removeServiceListener(serviceListener);
 		assertNotNull("Test listener didn't receive discovery", serviceListener.getEvent());
-		assertEquals("Test listener received more than 1 discovery event", 1, serviceListener.getEventCount());
+		assertEquals("Test listener received more than expected discovery event", eventsToExpect, serviceListener.getEventCount());
 		assertTrue("Container mismatch", serviceListener.getEvent().getLocalContainerID().equals(container.getConnectedID()));
 		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) serviceListener.getEvent()).getServiceInfo(), serviceInfo) == 0);
 	}
@@ -406,7 +408,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		discoveryContainer.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		
 		assertNotNull("Test listener didn't receive discovery", tsl.getEvent());
-		assertEquals("Test listener received more than 1 discovery event", 1, tsl.getEventCount());
+		assertEquals("Test listener received more than expected discovery event", eventsToExpect, tsl.getEventCount());
 		assertTrue("Container mismatch", tsl.getEvent().getLocalContainerID().equals(container.getConnectedID()));
 		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) tsl.getEvent()).getServiceInfo(), serviceInfo) == 0);
 	}
@@ -462,7 +464,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		discoveryContainer.removeServiceTypeListener(testTypeListener);
 		
 		assertNotNull("Test listener didn't receive discovery", testTypeListener.getEvent());
-		assertEquals("Test listener received more than 1 discovery event", 1, testTypeListener.getEventCount());
+		assertEquals("Test listener received more than expected discovery event", eventsToExpect, testTypeListener.getEventCount());
 		assertTrue("Container mismatch", testTypeListener.getEvent().getLocalContainerID().equals(container.getConnectedID()));
 	}
 	
