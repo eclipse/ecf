@@ -10,33 +10,25 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.discovery.listener;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.ecf.discovery.IServiceTypeEvent;
+import org.eclipse.ecf.discovery.IServiceTypeListener;
 
-import org.eclipse.ecf.core.events.IContainerEvent;
+public class TestServiceTypeListener extends TestListener implements IServiceTypeListener {
 
-public class TestListener {
-
-	protected List events;
-	protected int amountOfEventsToExpect;
-	
-	public TestListener(int eventsToExpect) {
-		amountOfEventsToExpect = eventsToExpect;
-		events = new ArrayList(eventsToExpect);
+	public TestServiceTypeListener(int eventsToExpect) {
+		super(eventsToExpect);
 	}
 
-	/**
-	 * @return the event that has been received by this TestListener
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeDiscovered(org.eclipse.ecf.discovery.IServiceTypeEvent)
 	 */
-	public IContainerEvent getEvent() {
-		return (IContainerEvent) events.get(0);
-	}
-
-	/**
-	 * @return The amount of events sent to this TestListener
-	 */
-	public int getEventCount() {
-		return events.size();
+	public void serviceTypeDiscovered(IServiceTypeEvent anEvent) {
+		events.add(anEvent);
+		if(getEventCount() == amountOfEventsToExpect) {
+			synchronized (this) {
+				notifyAll();
+			}
+		}
 	}
 
 }

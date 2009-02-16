@@ -32,7 +32,8 @@ import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
-import org.eclipse.ecf.tests.discovery.listener.TestListener;
+import org.eclipse.ecf.tests.discovery.listener.TestServiceListener;
+import org.eclipse.ecf.tests.discovery.listener.TestServiceTypeListener;
 
 public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 
@@ -360,7 +361,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		fail("A disposed container must not be reusable");
 	}
 
-	protected void addServiceListener(TestListener serviceListener) {
+	protected void addServiceListener(TestServiceListener serviceListener) {
 		discoveryContainer.addServiceListener(serviceListener);
 		addListenerRegisterAndWait(serviceListener, serviceInfo);
 		discoveryContainer.removeServiceListener(serviceListener);
@@ -377,7 +378,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	public void testAddServiceListenerIServiceListener() {
 		testConnect();
 		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
-		final TestListener tsl = new TestListener(eventsToExpect);
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect);
 		addServiceListener(tsl);
 	}
 
@@ -402,7 +403,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		testConnect();
 		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
 
-		final TestListener tsl = new TestListener(eventsToExpect);
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect);
 		discoveryContainer.addServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		addListenerRegisterAndWait(tsl, serviceInfo);
 		discoveryContainer.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
@@ -413,7 +414,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) tsl.getEvent()).getServiceInfo(), serviceInfo) == 0);
 	}
 
-	private void addListenerRegisterAndWait(TestListener testServiceListener, IServiceInfo aServiceInfo) {
+	private void addListenerRegisterAndWait(TestServiceListener testServiceListener, IServiceInfo aServiceInfo) {
 		synchronized (testServiceListener) {
 			// register a service which we expect the test listener to get notified of
 			registerService();
@@ -447,7 +448,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		testConnect();
 		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
 
-		final TestListener testTypeListener = new TestListener(eventsToExpect);
+		final TestServiceTypeListener testTypeListener = new TestServiceTypeListener(eventsToExpect);
 		discoveryContainer.addServiceTypeListener(testTypeListener);
 
 		synchronized (testTypeListener) {
@@ -518,7 +519,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 */
 	public void testRemoveServiceListenerIServiceListener() {
 		testConnect();
-		final TestListener serviceListener = new TestListener(eventsToExpect);
+		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect);
 		addServiceListener(serviceListener);
 		discoveryContainer.removeServiceListener(serviceListener);
 	}
@@ -542,7 +543,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 */
 	public void testRemoveServiceListenerIServiceTypeIDIServiceListener() {
 		testConnect();
-		final TestListener serviceListener = new TestListener(eventsToExpect);
+		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect);
 		addServiceListener(serviceListener);
 		discoveryContainer.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), serviceListener);
 	}
@@ -566,9 +567,29 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 */
 	public void testRemoveServiceTypeListener() {
 		testConnect();
-		final TestListener serviceTypeListener = new TestListener(eventsToExpect);
-		addServiceListener(serviceTypeListener);
-		discoveryContainer.removeServiceTypeListener(serviceTypeListener);
+		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
+
+		final TestServiceTypeListener testTypeListener = new TestServiceTypeListener(eventsToExpect);
+		discoveryContainer.addServiceTypeListener(testTypeListener);
+
+		synchronized (testTypeListener) {
+			// register a service which we expect the test listener to get notified of
+			registerService();
+			try {
+				testTypeListener.wait(waitTimeForProvider);
+			} catch (final InterruptedException e) {
+				Thread.currentThread().interrupt();
+				fail("Some discovery unrelated threading issues?");
+			}
+		}
+		
+		discoveryContainer.removeServiceTypeListener(testTypeListener);
+		
+		assertNotNull("Test listener didn't receive discovery", testTypeListener.getEvent());
+		assertEquals("Test listener received more than expected discovery event", eventsToExpect, testTypeListener.getEventCount());
+		assertTrue("Container mismatch", testTypeListener.getEvent().getLocalContainerID().equals(container.getConnectedID()));
+		
+		//TODO reregister and verify the listener doesn't receive any events any longer.
 	}
 
 	/**
