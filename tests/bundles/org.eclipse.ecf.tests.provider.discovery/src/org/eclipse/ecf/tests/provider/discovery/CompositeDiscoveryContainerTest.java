@@ -24,6 +24,9 @@ public class CompositeDiscoveryContainerTest extends DiscoveryTest {
 	public CompositeDiscoveryContainerTest() {
 		super("ecf.discovery.*");
 		setComparator(new CompositeServiceInfoComporator());
+		//TODO  jSLP currently has the longer rediscovery interval
+		setWaitTimeForProvider(Long.parseLong(System.getProperty("net.slp.rediscover", new Long(60L * 1000L).toString()))); //$NON-NLS-1$);
+		System.setProperty("net.slp.scopeHints", SCOPE);
 	}
 	
 	/* (non-Javadoc)
