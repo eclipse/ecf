@@ -25,12 +25,4 @@ public class CompositeServiceID extends ServiceID {
 	public CompositeServiceID(CompositeNamespace compositeNamespace, IServiceTypeID serviceTypeID, String string) {
 		super(compositeNamespace, serviceTypeID, string);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.identity.BaseID#getName()
-	 */
-	public String getName() {
-		return name;
-	}
-
 }
