@@ -20,6 +20,9 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.eclipse.ecf.tests.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.discovery.ServicePublication;
+import org.osgi.util.tracker.ServiceTracker;
 
 import junit.framework.TestCase;
 
@@ -32,6 +35,7 @@ public class ServicePublicationTest extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
+		// JR: this should not be necessary
 		final ID containerID = IDFactory.getDefault().createStringID(
 				"r-osgi://localhost:9278");
 		container = ContainerFactory.getDefault().createContainer(
@@ -42,22 +46,34 @@ public class ServicePublicationTest extends TestCase {
 		container.dispose();
 	}
 
-	public void testServicePublication() {
+	public void testServicePublication() throws InterruptedException {
 		final BundleContext context = Activator.getDefault().getContext();
 
 		// register a service with the marker property set
 		final Dictionary props = new Hashtable();
 		props.put(ServiceConstants.OSGI_REMOTE_INTERFACES,
 				new String[] { TestServiceInterface1.class.getName() });
+		// JR: this should not be necessary
 		props
 				.put(
 						ServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE,
 						new String[] { ServiceConstants.ECF_REMOTE_CONFIGURATION_TYPE });
+		
+		// prepare a service tracker
+		final ServiceTracker tracker = new ServiceTracker(context, TestServiceInterface1.class.getName(), null);
+		tracker.open();
+		
+		// register the (remote-enabled) service
 		context.registerService(TestServiceInterface1.class.getName(),
 				new TestService1(), props);
 
+		// wait for service to become registered
+		tracker.waitForService(5000);
+		
 		// expected behavior: an endpoint is published
-		// TODO...
+		final ServiceReference ref = context.getServiceReference(ServicePublication.class.getName());
+		assertTrue(ref != null);
 	}
+
 
 }
