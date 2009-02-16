@@ -377,7 +377,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	public void testAddServiceListenerIServiceListener() {
 		testConnect();
 		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
-		final TestListener tsl = new TestListener();
+		final TestListener tsl = new TestListener(eventsToExpect);
 		addServiceListener(tsl);
 	}
 
@@ -402,7 +402,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		testConnect();
 		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
 
-		final TestListener tsl = new TestListener();
+		final TestListener tsl = new TestListener(eventsToExpect);
 		discoveryContainer.addServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		addListenerRegisterAndWait(tsl, serviceInfo);
 		discoveryContainer.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
@@ -447,7 +447,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		testConnect();
 		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
 
-		final TestListener testTypeListener = new TestListener();
+		final TestListener testTypeListener = new TestListener(eventsToExpect);
 		discoveryContainer.addServiceTypeListener(testTypeListener);
 
 		synchronized (testTypeListener) {
@@ -518,7 +518,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 */
 	public void testRemoveServiceListenerIServiceListener() {
 		testConnect();
-		final TestListener serviceListener = new TestListener();
+		final TestListener serviceListener = new TestListener(eventsToExpect);
 		addServiceListener(serviceListener);
 		discoveryContainer.removeServiceListener(serviceListener);
 	}
@@ -542,7 +542,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 */
 	public void testRemoveServiceListenerIServiceTypeIDIServiceListener() {
 		testConnect();
-		final TestListener serviceListener = new TestListener();
+		final TestListener serviceListener = new TestListener(eventsToExpect);
 		addServiceListener(serviceListener);
 		discoveryContainer.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), serviceListener);
 	}
@@ -566,7 +566,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 */
 	public void testRemoveServiceTypeListener() {
 		testConnect();
-		final TestListener serviceTypeListener = new TestListener();
+		final TestListener serviceTypeListener = new TestListener(eventsToExpect);
 		addServiceListener(serviceTypeListener);
 		discoveryContainer.removeServiceTypeListener(serviceTypeListener);
 	}
