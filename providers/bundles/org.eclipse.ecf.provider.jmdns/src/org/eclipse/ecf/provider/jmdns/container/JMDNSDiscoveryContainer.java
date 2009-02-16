@@ -487,9 +487,11 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		if (svcProps != null) {
 			for (final Enumeration e = svcProps.getPropertyNames(); e.hasMoreElements();) {
 				final String key = (String) e.nextElement();
-				final Object val = svcProps.getProperty(key);
+				final Object val = svcProps.getPropertyBytes(key);
 				if (val != null) {
 					props.put(key, val);
+				} else {
+					props.put(key, svcProps.getProperty(key).toString());
 				}
 			}
 		}
