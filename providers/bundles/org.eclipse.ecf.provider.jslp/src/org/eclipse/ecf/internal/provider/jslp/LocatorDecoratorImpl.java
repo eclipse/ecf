@@ -10,9 +10,13 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.jslp;
 
+import java.util.List;
+
 import ch.ethz.iks.slp.*;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.util.StringUtils;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 
 /**
  * This decorator add additional methods which will eventually be moved to jSLP itself
@@ -85,17 +89,34 @@ public class LocatorDecoratorImpl implements LocatorDecorator {
 	 * @see org.eclipse.ecf.internal.provider.jslp.LocatorDecorator#getServiceURLs()
 	 */
 	public Map getServiceURLs() throws ServiceLocationException {
-		Enumeration stEnum = findServiceTypes(null, null);
+		List scopeHints = getScopeHints();
+		Enumeration stEnum = findServiceTypes(null, scopeHints);
 		Set aSet = new HashSet(Collections.list(stEnum));
 		Map result = new HashMap();
 		for (Iterator itr = aSet.iterator(); itr.hasNext();) {
 			String type = (String) itr.next();
-			ServiceLocationEnumeration services = findServices(new ServiceType(type), null, null);
+			ServiceLocationEnumeration services = findServices(new ServiceType(type), scopeHints, null);
 			while (services.hasMoreElements()) {
 				ServiceURL url = (ServiceURL) services.next();
-				result.put(url, Collections.list(findAttributes(url, null, null)));
+				result.put(url, Collections.list(findAttributes(url, scopeHints, null)));
 			}
 		}
 		return result;
+	}
+
+	//TODO because of https://bugs.eclipse.org/218308 as consumer is allowed to pass additional hints
+	private List getScopeHints() {
+		String hints = System.getProperty("net.slp.scopeHints"); //$NON-NLS-1$
+		if (hints != null) {
+			hints = hints.toLowerCase();
+			String[] scopes = StringUtils.split(hints, ","); //$NON-NLS-1$
+			List scopeList = Arrays.asList(scopes);
+			List defaultScope = Arrays.asList(IServiceTypeID.DEFAULT_SCOPE);
+			List result = new ArrayList(); // j9 throws UnsupportedOperation on addAll on scopeList
+			result.addAll(defaultScope);
+			result.addAll(scopeList);
+			return result;
+		}
+		return null;
 	}
 }
