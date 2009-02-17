@@ -42,7 +42,7 @@ public class CompositeServiceInfoComporator extends ServiceInfoComparator {
 			String secondName = secondID.getName();
 			boolean name = firstName.equals(secondName);
 			
-			boolean serviceProperties = true; /*compareServiceProperties(first.getServiceProperties(), second.getServiceProperties());*/
+			boolean serviceProperties = compareServiceProperties(first.getServiceProperties(), second.getServiceProperties());
 			
 			final boolean result = name && serviceType && serviceName && host && port && priority && weight && serviceProperties;
 			if (result == true) {
@@ -51,5 +51,4 @@ public class CompositeServiceInfoComporator extends ServiceInfoComparator {
 		}
 		return -1;
 	}
-
 }
