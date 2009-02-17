@@ -13,3 +13,4 @@ Require-Bundle: org.junit;bundle-version="3.8.2",
  org.apache.commons.logging;bundle-version="1.0.4",
  org.apache.commons.codec;bundle-version="1.2.0"
 Bundle-Localization: plugin
+Export-Package: org.apache.commons.httpclient.server

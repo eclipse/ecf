@@ -1,7 +1,7 @@
 /*
- * $Header: /home/data/cvs/rt/org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.apache.httpclient.server/src/org/apache/commons/httpclient/server/SimpleHttpServer.java,v 1.1 2009/02/13 18:07:51 slewis Exp $
- * $Revision: 1.1 $
- * $Date: 2009/02/13 18:07:51 $
+ * $Header: /home/data/cvs/rt/org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.apache.httpclient.server/src/org/apache/commons/httpclient/server/SimpleHttpServer.java,v 1.2 2009/02/17 21:58:54 slewis Exp $
+ * $Revision: 1.2 $
+ * $Date: 2009/02/17 21:58:54 $
  *
  * ====================================================================
  *
@@ -63,7 +63,12 @@ public class SimpleHttpServer implements Runnable {
      * @throws IOException  if anything goes wrong during initialization
      */
     public SimpleHttpServer() throws IOException {
-        this(null, 0);
+        this("");
+    }
+
+    	
+    public SimpleHttpServer(String serverThreadName) throws IOException {
+        this(serverThreadName, null, 0);
     }
 
     /**
@@ -71,9 +76,14 @@ public class SimpleHttpServer implements Runnable {
      * factory and the TCP port
      * 
      * @param   port    Desired TCP port
+     * @throws IOException 
      * @throws IOException  if anything goes wrong during initialization
      */
-    public SimpleHttpServer(SimpleSocketFactory socketfactory, int port) 
+    public SimpleHttpServer(SimpleSocketFactory socketfactory, int port) throws IOException {
+    	this("", socketfactory, port);
+    }
+    
+    public SimpleHttpServer(String serverThreadName, SimpleSocketFactory socketfactory, int port) 
         throws IOException {
         if (socketfactory == null) {
             socketfactory = new SimplePlainSocketFactory();
@@ -83,7 +93,7 @@ public class SimpleHttpServer implements Runnable {
             LOG.debug("Starting test HTTP server on port " + getLocalPort());
         }
         tg = new ThreadGroup("SimpleHttpServer thread group");
-        t = new Thread(tg, this, "SimpleHttpServer listener");
+        t = new Thread(tg, this, serverThreadName + "(SimpleHttpServer listener at port " + listener.getLocalPort() + ")");
         t.setDaemon(true);
         t.start();
     }
@@ -95,7 +105,11 @@ public class SimpleHttpServer implements Runnable {
      * @throws IOException  if anything goes wrong during initialization
      */
     public SimpleHttpServer(int port) throws IOException {
-        this(null, port);
+        this("", null, port);
+    }
+
+    public SimpleHttpServer(String serverThreadName, int port) throws IOException {
+        this(serverThreadName, null, port);
     }
 
     public String getTestname() {
@@ -200,6 +214,7 @@ public class SimpleHttpServer implements Runnable {
                         socket.close();
                         break;
                     }
+                    
                     SimpleHttpServerConnection conn = new SimpleHttpServerConnection(socket); 
                     this.connections.addConnection(conn);
 
