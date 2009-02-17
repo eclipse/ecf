@@ -21,7 +21,8 @@ public class ECFSSLSocketFactory extends SSLSocketFactory {
 
 	private SSLContext sslContext = null;
 
-	private String defaultProtocolNames = System.getProperty(DEFAULT_SSL_PROTOCOL);
+	private String defaultProtocolNames = System
+			.getProperty(DEFAULT_SSL_PROTOCOL);
 
 	private SSLSocketFactory getSSLSocketFactory() throws IOException {
 		if (null == sslContext) {
@@ -33,7 +34,8 @@ public class ECFSSLSocketFactory extends SSLSocketFactory {
 				throw ioe;
 			}
 		}
-		return (sslContext == null) ? (SSLSocketFactory) SSLSocketFactory.getDefault() : sslContext.getSocketFactory();
+		return (sslContext == null) ? (SSLSocketFactory) SSLSocketFactory
+				.getDefault() : sslContext.getSocketFactory();
 	}
 
 	public SSLContext getSSLContext(String protocols) {
@@ -44,18 +46,27 @@ public class ECFSSLSocketFactory extends SSLSocketFactory {
 			for (int i = 0; i < protocolNames.length; i++) {
 				try {
 					rtvContext = SSLContext.getInstance(protocolNames[i]);
-					rtvContext.init(null, new TrustManager[] {new ECFTrustManager()}, new SecureRandom());
+					rtvContext.init(null,
+							new TrustManager[] { new ECFTrustManager() },
+							new SecureRandom());
 					break;
 				} catch (Exception e) {
-					// just continue to look for SSLContexts with the next protocolName
+					// just continue to look for SSLContexts with the next
+					// protocolName
 				}
 			}
 		}
 		return rtvContext;
 	}
 
-	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
-		return getSSLSocketFactory().createSocket(socket, host, port, autoClose);
+	public Socket createSocket() throws IOException {
+		return getSSLSocketFactory().createSocket();
+	}
+
+	public Socket createSocket(Socket socket, String host, int port,
+			boolean autoClose) throws IOException {
+		return getSSLSocketFactory()
+				.createSocket(socket, host, port, autoClose);
 	}
 
 	public String[] getDefaultCipherSuites() {
@@ -74,20 +85,25 @@ public class ECFSSLSocketFactory extends SSLSocketFactory {
 		}
 	}
 
-	public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+	public Socket createSocket(String host, int port) throws IOException,
+			UnknownHostException {
 		return getSSLSocketFactory().createSocket(host, port);
 	}
 
-	public Socket createSocket(InetAddress address, int port) throws IOException {
+	public Socket createSocket(InetAddress address, int port)
+			throws IOException {
 		return getSSLSocketFactory().createSocket(address, port);
 	}
 
-	public Socket createSocket(InetAddress address, int port, InetAddress arg2, int arg3) throws IOException {
+	public Socket createSocket(InetAddress address, int port, InetAddress arg2,
+			int arg3) throws IOException {
 		return getSSLSocketFactory().createSocket(address, port);
 	}
 
-	public Socket createSocket(String host, int port, InetAddress address, int localPort) throws IOException, UnknownHostException {
-		return getSSLSocketFactory().createSocket(host, port, address, localPort);
+	public Socket createSocket(String host, int port, InetAddress address,
+			int localPort) throws IOException, UnknownHostException {
+		return getSSLSocketFactory().createSocket(host, port, address,
+				localPort);
 	}
 
 }
