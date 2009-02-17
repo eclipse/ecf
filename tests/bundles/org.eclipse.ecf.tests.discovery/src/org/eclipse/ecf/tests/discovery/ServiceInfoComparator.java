@@ -27,8 +27,17 @@ public class ServiceInfoComparator implements Comparator {
 			return false;
 		for (final Enumeration e = p1.getPropertyNames(); e.hasMoreElements();) {
 			final String key = (String) e.nextElement();
-			final Object o1 = p1.getProperty(key);
-			final Object o2 = p2.getProperty(key);
+			
+			Object o1 = p1.getProperty(key);
+			Object o2 = p2.getProperty(key);
+
+			if  (p1.getPropertyBytes(key) != null) {
+				o1 = p1.getPropertyBytes(key);
+			} 
+			if (p2.getPropertyBytes(key) != null) {
+				o2 = p2.getPropertyBytes(key);
+			}
+
 			if ((o1 instanceof byte[]) && (o2 instanceof byte[])) {
 				final byte[] b1 = (byte[]) o1;
 				final byte[] b2 = (byte[]) o2;
