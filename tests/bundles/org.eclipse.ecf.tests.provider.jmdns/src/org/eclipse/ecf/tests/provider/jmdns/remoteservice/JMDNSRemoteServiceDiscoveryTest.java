@@ -20,26 +20,11 @@
 *****************************************************************************/
 package org.eclipse.ecf.tests.provider.jmdns.remoteservice;
 
-import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
 
 public class JMDNSRemoteServiceDiscoveryTest extends DiscoveryTest {
 
 	public JMDNSRemoteServiceDiscoveryTest() {
 		super("ecf.discovery.jmdns");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#setUp()
-	 */
-	protected void setUp() throws Exception {
-		super.setUp();
-
-		//TODO http://bugs.eclipse.org/259480
-		IServiceProperties serviceProperties = serviceInfo.getServiceProperties();
-		serviceProperties.setPropertyString(DiscoveryTest.class.getName() + "servicePropertiesIntegerMax", "FIXME: http://bugs.eclipse.org/259480");
-		serviceProperties.setPropertyString(DiscoveryTest.class.getName() + "servicePropertiesIntegerMin", "FIXME: http://bugs.eclipse.org/259480");
-		serviceProperties.setPropertyString(DiscoveryTest.class.getName() + "servicePropertiesBoolean", "FIXME: http://bugs.eclipse.org/259480");
-		serviceProperties.setPropertyString(DiscoveryTest.class.getName() + "servicePropertiesByte", "FIXME: http://bugs.eclipse.org/259480");
 	}
 }
