@@ -10,8 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.jmdns.container;
 
-import java.io.IOException;
-import java.io.InvalidObjectException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.*;
@@ -444,19 +443,23 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		String uriPath = ""; //$NON-NLS-1$
 		String namingAuthority = IServiceTypeID.DEFAULT_NA;
 		for (final Enumeration e = serviceInfo.getPropertyNames(); e.hasMoreElements();) {
-			final String name = (String) e.nextElement();
-			if (SCHEME_PROPERTY.equals(name)) {
-				uriProtocol = serviceInfo.getPropertyString(name);
-			} else if (URI_PATH_PROPERTY.equals(name)) {
-				uriPath = serviceInfo.getPropertyString(name);
-			} else if (NAMING_AUTHORITY_PROPERTY.equals(name)) {
-				namingAuthority = serviceInfo.getPropertyString(name);
+			final String key = (String) e.nextElement();
+			if (SCHEME_PROPERTY.equals(key)) {
+				uriProtocol = serviceInfo.getPropertyString(key);
+			} else if (URI_PATH_PROPERTY.equals(key)) {
+				uriPath = serviceInfo.getPropertyString(key);
+			} else if (NAMING_AUTHORITY_PROPERTY.equals(key)) {
+				namingAuthority = serviceInfo.getPropertyString(key);
 			} else {
-				Object value = serviceInfo.getPropertyString(name);
-				if (value == null)
-					value = serviceInfo.getPropertyBytes(name);
-				if (value != null)
-					props.put(name, value);
+				final byte[] bytes = serviceInfo.getPropertyBytes(key);
+				try {
+					ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes));
+					Object object = in.readObject();
+					in.close();
+					props.put(key, object);
+				} catch (StreamCorruptedException ioe) {
+					props.put(key, serviceInfo.getPropertyString(key));
+				}
 			}
 		}
 		final URI uri = URI.create(((uriProtocol == null) ? "unknown" : uriProtocol) + "://" + addr.getHostAddress() + ":" + port + ((uriPath == null) ? "" : uriPath)); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -487,11 +490,25 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		if (svcProps != null) {
 			for (final Enumeration e = svcProps.getPropertyNames(); e.hasMoreElements();) {
 				final String key = (String) e.nextElement();
-				final Object val = svcProps.getPropertyBytes(key);
-				if (val != null) {
+				final Object val = svcProps.getProperty(key);
+				if (val instanceof String) {
 					props.put(key, val);
-				} else {
-					props.put(key, svcProps.getProperty(key).toString());
+				} else if (val instanceof Serializable) {
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					try {
+						ObjectOutputStream out = new ObjectOutputStream(bos);
+						out.writeObject(val);
+						out.close();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					byte[] buf = bos.toByteArray();
+					props.put(key, buf);
+					//				} else if (svcProps.getPropertyBytes(key) != null) {
+					//					byte[] bytes = svcProps.getPropertyBytes(key);
+					//					props.put(key, bytes);
+				} else if (val != null) {
+					props.put(key, val.toString());
 				}
 			}
 		}
