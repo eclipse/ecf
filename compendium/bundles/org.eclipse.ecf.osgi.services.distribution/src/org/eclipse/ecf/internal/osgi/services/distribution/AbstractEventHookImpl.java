@@ -22,7 +22,11 @@ public abstract class AbstractEventHookImpl implements EventHook {
 
 	private final DistributionProviderImpl distributionProvider;
 
-	private final Map remoteServiceReferences = new HashMap();
+	private final Map srvRefToRemoteSrvRegistration = new HashMap(); /*
+																	 * ServiceReference
+																	 * ->
+																	 * IRemoteServiceRegistration
+																	 */
 
 	public AbstractEventHookImpl(DistributionProviderImpl distributionProvider) {
 		this.distributionProvider = distributionProvider;
@@ -109,9 +113,19 @@ public abstract class AbstractEventHookImpl implements EventHook {
 	protected void fireRemoteServiceRegistered(
 			ServiceReference serviceReference,
 			IRemoteServiceRegistration remoteServiceRegistration) {
-		remoteServiceReferences
-				.put(serviceReference, remoteServiceRegistration);
+		srvRefToRemoteSrvRegistration.put(serviceReference,
+				remoteServiceRegistration);
 		distributionProvider.addExposedService(serviceReference);
+	}
+
+	protected void fireRemoteServicePublished(ServiceReference serviceReference) {
+		// XXX SL what if this is called multiple times with the same service
+		// reference?
+		// There doesn't seem to be anything in the spec for
+		// DistributionProvider.getPublishedServices()
+		// That provides for the possibility that a single servicereference will
+		// be published
+		distributionProvider.addPublishedService(serviceReference);
 	}
 
 	private String[] getInterfacesForServiceReference(
@@ -149,7 +163,7 @@ public abstract class AbstractEventHookImpl implements EventHook {
 
 	private IRemoteServiceRegistration removeRemoteRegistration(
 			ServiceReference serviceReference) {
-		return (IRemoteServiceRegistration) remoteServiceReferences
+		return (IRemoteServiceRegistration) srvRefToRemoteSrvRegistration
 				.remove(serviceReference);
 	}
 

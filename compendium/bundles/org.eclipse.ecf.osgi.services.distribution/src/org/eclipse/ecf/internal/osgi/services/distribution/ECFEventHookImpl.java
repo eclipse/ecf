@@ -14,11 +14,9 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.*;
 import org.osgi.service.discovery.ServicePublication;
 
 public class ECFEventHookImpl extends AbstractEventHookImpl {
@@ -29,22 +27,6 @@ public class ECFEventHookImpl extends AbstractEventHookImpl {
 
 	protected void registerRemoteService(ServiceReference serviceReference,
 			String[] remoteInterfaces, String[] remoteConfigurationType) {
-		if (remoteConfigurationType == null
-				|| remoteConfigurationType.length == 0) {
-			trace(
-					"registerRemoteService",
-					"remoteConfigurationType is null or empty so does not match ECF remote configuration type");
-			return;
-		}
-		// XXX JR: I don't think this is correct.
-		// If the first remote configuration type value is not for us, then we
-		// don't do anything with it
-		if (!remoteConfigurationType[0]
-				.equals(ServiceConstants.ECF_REMOTE_CONFIGURATION_TYPE)) {
-			trace("registerRemoteService",
-					"remoteConfigurationType not ECF type");
-			return;
-		}
 		Map ecfConfiguration = parseECFConfigurationType(remoteConfigurationType);
 		// We get the list of ECF distribution providers
 		// (IRemoteServiceContainerAdapters)
@@ -81,12 +63,17 @@ public class ECFEventHookImpl extends AbstractEventHookImpl {
 				.toArray(new String[identifiers.size()]);
 		for (int i = 0; i < ids.length; i++) {
 			properties.put(ServicePublication.PROP_KEY_ENDPOINT_ID, ids[i]);
-			context.registerService(ServicePublication.class.getName(),
+			ServiceRegistration serviceRegistration = context.registerService(
+					ServicePublication.class.getName(),
 					new ServicePublication() {
 					}, properties);
 			trace("publishRemoteService",
 					"PUBLISH REMOTE SERVICE serviceReference=" + ref + " ID="
 							+ ids[i]);
+			// XXX. This doesn't account for multiple ServicePublications for a
+			// single
+			// ServiceReference ref
+			// fireRemoteServicePublished(ref);
 		}
 	}
 
