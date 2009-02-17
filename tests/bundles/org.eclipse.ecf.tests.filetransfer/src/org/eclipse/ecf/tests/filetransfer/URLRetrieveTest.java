@@ -16,9 +16,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
+import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -27,9 +29,9 @@ import org.eclipse.equinox.internal.p2.artifact.repository.ECFTransport;
 
 public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
-	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
-	protected static final String HTTPS_RETRIEVE = "https://www.verisign.com";
-	private static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
+	public static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
+	public static final String HTTPS_RETRIEVE = "https://www.verisign.com";
+	public static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
 
 	private static final String FTP_RETRIEVE = "ftp://ftp.osuosl.org/pub/eclipse/rt/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
 	
@@ -58,6 +60,14 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		if (tmpFile != null)
 			tmpFile.delete();
 		tmpFile = null;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase#handleStartConnectEvent(org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent)
+	 */
+	protected void handleStartConnectEvent(IFileTransferConnectStartEvent event) {
+		super.handleStartConnectEvent(event);
 	}
 
 	/* (non-Javadoc)

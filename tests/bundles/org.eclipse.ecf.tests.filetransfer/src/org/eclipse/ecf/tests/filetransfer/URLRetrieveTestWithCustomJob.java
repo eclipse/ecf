@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.ecf.filetransfer.FileTransferJob;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
@@ -76,32 +74,7 @@ public class URLRetrieveTestWithCustomJob extends AbstractRetrieveTestCase {
 		final IFileID fileID = createFileID(new URL(url));
 
 		fileTransferJob = new FileTransferJob(fileID.getName());
-		fileTransferJob.addJobChangeListener(new IJobChangeListener() {
-			public void aboutToRun(IJobChangeEvent event) {
-				System.out.println("aboutToRun(" + event + ")");
-			}
-
-			public void awake(IJobChangeEvent event) {
-				System.out.println("awake(" + event + ")");
-			}
-
-			public void done(IJobChangeEvent event) {
-				System.out.println("done(" + event + ")");
-			}
-
-			public void running(IJobChangeEvent event) {
-				System.out.println("running(" + event + ")");
-			}
-
-			public void scheduled(IJobChangeEvent event) {
-				System.out.println("scheduled(" + event + ")");
-			}
-
-			public void sleeping(IJobChangeEvent event) {
-				System.out.println("sleeping(" + event + ")");
-			}
-		});
-
+		fileTransferJob.addJobChangeListener(new JobChangeTraceListener(startTime));
 		retrieveAdapter.sendRetrieveRequest(fileID, listener, null);
 
 		waitForDone(10000);
