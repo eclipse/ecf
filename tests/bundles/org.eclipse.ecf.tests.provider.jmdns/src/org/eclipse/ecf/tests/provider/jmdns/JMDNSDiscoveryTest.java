@@ -18,13 +18,13 @@
 * Contributors:
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
-package org.eclipse.ecf.tests.provider.jmdns.remoteservice;
+package org.eclipse.ecf.tests.provider.jmdns;
 
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
 
-public class JMDNSRemoteServiceDiscoveryTest extends DiscoveryTest {
+public class JMDNSDiscoveryTest extends DiscoveryTest {
 
-	public JMDNSRemoteServiceDiscoveryTest() {
+	public JMDNSDiscoveryTest() {
 		super("ecf.discovery.jmdns");
 	}
 }

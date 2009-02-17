@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.jmdns
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 3.0.0.qualifier
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf,
  org.eclipse.ecf.discovery,
@@ -11,8 +11,7 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.provider.jmdns
 Bundle-Vendor: %plugin.provider
 Export-Package: org.eclipse.ecf.tests.provider.jmdns,
- org.eclipse.ecf.tests.provider.jmdns.identity,
- org.eclipse.ecf.tests.provider.jmdns.remoteservice
+ org.eclipse.ecf.tests.provider.jmdns.identity
 Import-Package: org.osgi.framework
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
