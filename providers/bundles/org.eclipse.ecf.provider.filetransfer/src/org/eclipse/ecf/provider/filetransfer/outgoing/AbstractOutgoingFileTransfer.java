@@ -297,6 +297,7 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		if (fileTransferJob == null)
 			fileTransferJob = new FileTransferJob(createJobName());
 		fileTransferJob.setFileTransferRunnable(fileTransferRunnable);
+		fileTransferJob.setFileTransfer(this);
 		job = fileTransferJob;
 		job.schedule();
 	}

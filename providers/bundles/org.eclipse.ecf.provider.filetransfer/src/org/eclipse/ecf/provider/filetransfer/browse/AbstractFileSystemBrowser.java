@@ -43,10 +43,13 @@ public abstract class AbstractFileSystemBrowser {
 
 	protected IConnectContext connectContext;
 
-	Job job = null;
+	protected DirectoryJob job = null;
+
 	Object lock = new Object();
 
-	class DirectoryJob extends Job {
+	protected class DirectoryJob extends Job {
+
+		private IRemoteFileSystemRequest request;
 
 		public DirectoryJob() {
 			super(fileID.getName());
@@ -66,6 +69,14 @@ public abstract class AbstractFileSystemBrowser {
 			return Status.OK_STATUS;
 		}
 
+		public void setRequest(IRemoteFileSystemRequest request) {
+			this.request = request;
+		}
+
+		public IRemoteFileSystemRequest getRequest() {
+			return request;
+		}
+
 	}
 
 	protected void cleanUp() {
@@ -77,6 +88,7 @@ public abstract class AbstractFileSystemBrowser {
 	/**
 	 * Run the actual request.  This method is called within the job created to actually get the
 	 * directory or file information.
+	 * @param request 
 	 * @throws Exception if some problem with making the request or receiving response to the request.
 	 */
 	protected abstract void runRequest() throws Exception;
@@ -91,28 +103,47 @@ public abstract class AbstractFileSystemBrowser {
 		this.proxy = proxy;
 	}
 
+	public abstract class RemoteFileSystemRequest implements IRemoteFileSystemRequest {
+		public void cancel() {
+			synchronized (lock) {
+				if (job != null)
+					job.cancel();
+			}
+		}
+
+		public IFileID getFileID() {
+			return fileID;
+		}
+
+		public IRemoteFileSystemListener getRemoteFileListener() {
+			return listener;
+		}
+
+	}
+
 	public IRemoteFileSystemRequest sendBrowseRequest() {
 		job = new DirectoryJob();
+
+		IRemoteFileSystemRequest request = createRemoteFileSystemRequest();
+		job.setRequest(request);
+
 		job.schedule();
-		return new IRemoteFileSystemRequest() {
+		return request;
+	}
 
-			public void cancel() {
-				synchronized (lock) {
-					if (job != null)
-						job.cancel();
+	protected IRemoteFileSystemRequest createRemoteFileSystemRequest() {
+		return new RemoteFileSystemRequest() {
+			public Object getAdapter(Class adapter) {
+				if (adapter == null) {
+					return null;
 				}
-			}
-
-			public IFileID getFileID() {
-				return fileID;
-			}
-
-			public IRemoteFileSystemListener getRemoteFileListener() {
-				return listener;
+				if (adapter.isInstance(this)) {
+					return this;
+				}
+				return null;
 			}
 
 		};
-
 	}
 
 	/**

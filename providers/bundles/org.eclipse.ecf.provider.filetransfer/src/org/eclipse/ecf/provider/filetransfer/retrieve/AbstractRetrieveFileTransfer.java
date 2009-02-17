@@ -50,6 +50,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected static final int CLOSE_TIMEOUT = 1000;
 
+	protected Object jobLock = new Object();
 	protected Job job;
 
 	protected URL remoteFileURL;
@@ -62,7 +63,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected boolean done = false;
 
-	protected long bytesReceived = 0;
+	protected volatile long bytesReceived = 0;
 
 	protected InputStream remoteFileContents;
 
@@ -94,6 +95,10 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		//
 	}
 
+	protected InputStream wrapTransferReadInputStream(InputStream inputStream, IProgressMonitor monitor) {
+		return new PollingInputStream(remoteFileContents, POLLING_RETRY_ATTEMPTS, monitor);
+	}
+
 	private IFileTransferRunnable fileTransferRunnable = new IFileTransferRunnable() {
 		public IStatus performFileTransfer(IProgressMonitor monitor) {
 			transferStartTime = System.currentTimeMillis();
@@ -102,7 +107,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			double factor = (totalWork > Integer.MAX_VALUE) ? (((double) Integer.MAX_VALUE) / ((double) totalWork)) : 1.0;
 			int work = (totalWork > Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) totalWork;
 			monitor.beginTask(getRemoteFileURL().toString() + Messages.AbstractRetrieveFileTransfer_Progress_Data, work);
-			InputStream readInputStream = new PollingInputStream(remoteFileContents, POLLING_RETRY_ATTEMPTS, monitor);
+			InputStream readInputStream = wrapTransferReadInputStream(remoteFileContents, monitor);
 			try {
 				while (!isDone() && !isPaused()) {
 					try {
@@ -113,8 +118,9 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 					}
 				}
 			} catch (final Exception e) {
-				exception = e;
-				done = true;
+				if (!isDone()) {
+					setDoneException(e);
+				}
 			} finally {
 				try {
 					if (readInputStream != null)
@@ -167,7 +173,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		return options;
 	}
 
-	protected void handleReceivedData(byte[] buf, int bytes, double factor, IProgressMonitor monitor) throws IOException {
+	protected synchronized void handleReceivedData(byte[] buf, int bytes, double factor, IProgressMonitor monitor) throws IOException {
 		if (bytes != -1) {
 			bytesReceived += bytes;
 			localFileContents.write(buf, 0, bytes);
@@ -176,7 +182,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			monitor.worked((int) Math.round(factor * bytes));
 			fireTransferReceiveDataEvent();
 		} else
-			done = true;
+			setDone(true);
 	}
 
 	public static String toHumanReadableBytes(double size) {
@@ -232,7 +238,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		} catch (final IOException e) {
 			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
 		}
-		job = null;
+		// leave job intact to ensure only one done event is fired
 		remoteFileContents = null;
 		localFileContents = null;
 	}
@@ -328,6 +334,45 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		return bytesReceived;
 	}
 
+	// TODO: replace other instances.
+	/**
+	 * @since 3.0
+	 */
+	protected UserCancelledException newUserCancelledException() {
+		return new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
+	}
+
+	protected synchronized void resetDoneAndException() {
+		setDone(false);
+		this.exception = null;
+	}
+
+	protected synchronized void setDone(boolean done) {
+		this.done = done;
+	}
+
+	protected synchronized void setDoneException(Exception e) {
+		this.done = true;
+		this.exception = e;
+	}
+
+	protected synchronized boolean isCanceled() {
+		return done && exception instanceof UserCancelledException;
+	}
+
+	protected void setDoneCanceled() {
+		setDoneCanceled(newUserCancelledException());
+	}
+
+	protected synchronized void setDoneCanceled(Exception e) {
+		this.done = true;
+		if (e instanceof UserCancelledException) {
+			exception = e;
+		} else {
+			exception = newUserCancelledException();
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -335,11 +380,14 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 */
 	public void cancel() {
 		if (isPaused()) {
-			done = true;
-			this.exception = new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
+			setDoneCanceled();
 			fireTransferReceiveDoneEvent();
-		} else if (job != null)
-			job.cancel();
+			return;
+		}
+		synchronized (jobLock) {
+			if (job != null)
+				job.cancel();
+		}
 	}
 
 	/*
@@ -347,7 +395,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 * 
 	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#getException()
 	 */
-	public Exception getException() {
+	public synchronized Exception getException() {
 		return exception;
 	}
 
@@ -387,7 +435,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 * 
 	 * @see org.eclipse.ecf.filetransfer.IFileTransfer#isDone()
 	 */
-	public boolean isDone() {
+	public synchronized boolean isDone() {
 		return done;
 	}
 
@@ -509,8 +557,14 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		}
 		// Now set to our runnable
 		fileTransferJob.setFileTransferRunnable(fileTransferRunnable);
-		job = fileTransferJob;
-		job.schedule();
+		fileTransferJob.setFileTransfer(this);
+		if (isDone()) {
+			return;
+		}
+		synchronized (jobLock) {
+			job = fileTransferJob;
+			job.schedule();
+		}
 	}
 
 	protected void fireReceiveStartEvent() {
@@ -590,7 +644,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			 * IIncomingFileTransferReceiveStartEvent#cancel()
 			 */
 			public void cancel() {
-				hardClose();
+				AbstractRetrieveFileTransfer.this.cancel();
 			}
 
 			/*
@@ -600,7 +654,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			 */
 			public String toString() {
 				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
-				sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+				sb.append("isdone=").append(isDone()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
 						.append("]"); //$NON-NLS-1$
 				return sb.toString();
@@ -618,35 +672,14 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 				return AbstractRetrieveFileTransfer.this;
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @seeorg.eclipse.ecf.filetransfer.events.
-			 * IIncomingFileTransferReceiveStartEvent#getFileID()
-			 */
 			public IFileID getFileID() {
 				return remoteFileID;
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @seeorg.eclipse.ecf.filetransfer.events.
-			 * IIncomingFileTransferReceiveStartEvent
-			 * #receive(java.io.File)
-			 */
 			public IIncomingFileTransfer receive(File localFileToSave, boolean append) throws IOException {
 				return receive(localFileToSave, null, append);
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @seeorg.eclipse.ecf.filetransfer.events.
-			 * IIncomingFileTransferReceiveStartEvent
-			 * #receive(java.io.File,
-			 * org.eclipse.ecf.filetransfer.FileTransferJob)
-			 */
 			public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob, boolean append) throws IOException {
 				setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave.getName(), append)));
 				setupAndScheduleJob(fileTransferJob);
@@ -686,7 +719,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 			public String toString() {
 				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveResumedEvent["); //$NON-NLS-1$
-				sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+				sb.append("isdone=").append(isDone()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
 						.append("]"); //$NON-NLS-1$
 				return sb.toString();
@@ -717,15 +750,16 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	public void sendRetrieveRequest(IFileID rFileID, IFileRangeSpecification rangeSpec, IFileTransferListener transferListener, Map ops) throws IncomingFileTransferException {
 		Assert.isNotNull(rFileID, Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
 		Assert.isNotNull(transferListener, Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
-		this.job = null;
+		synchronized (jobLock) {
+			this.job = null;
+		}
 		this.remoteFileURL = null;
 		this.remoteFileID = rFileID;
 		this.listener = transferListener;
 		this.remoteFileContents = null;
 		this.localFileContents = null;
 		this.closeOutputStream = true;
-		this.done = false;
-		this.exception = null;
+		resetDoneAndException();
 		this.bytesReceived = 0;
 		this.fileLength = -1;
 		this.options = ops;
