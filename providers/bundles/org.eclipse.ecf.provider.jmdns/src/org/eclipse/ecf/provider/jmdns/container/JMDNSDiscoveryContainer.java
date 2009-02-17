@@ -323,7 +323,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 * @see javax.jmdns.ServiceListener#serviceAdded(javax.jmdns.ServiceEvent)
 	 */
 	public void serviceAdded(final ServiceEvent arg0) {
-		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceAdded(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceAdded(" + arg0.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		runInThread(new Runnable() {
 			public void run() {
 				JmDNS localJmdns = null;
