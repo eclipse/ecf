@@ -11,12 +11,13 @@
 
 package org.eclipse.ecf.filetransfer;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 /**
  * Remote file request.
  */
-public interface IRemoteFileSystemRequest {
+public interface IRemoteFileSystemRequest extends IAdaptable {
 
 	/**
 	 * Cancel this request.

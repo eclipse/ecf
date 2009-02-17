@@ -42,6 +42,7 @@ import org.eclipse.ecf.internal.filetransfer.Messages;
 public class FileTransferJob extends Job {
 
 	private IFileTransferRunnable fileTransferRunnable;
+	private IFileTransfer fileTransfer;
 
 	/**
 	 * @param name the name for this file transfer job.  Should not be <code>null</code>.
@@ -54,12 +55,28 @@ public class FileTransferJob extends Job {
 		this.fileTransferRunnable = fileTransferRunnable;
 	}
 
+	/**
+	 * @since 3.0
+	 */
+	public final void setFileTransfer(IFileTransfer fileTransfer) {
+		this.fileTransfer = fileTransfer;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected final IStatus run(IProgressMonitor mntr) {
 		if (this.fileTransferRunnable == null)
 			return new Status(IStatus.ERROR, org.eclipse.ecf.internal.filetransfer.Activator.PLUGIN_ID, IStatus.ERROR, Messages.FileTransferJob_STATUSERROR_NO_RUNNABLE, null);
+		if (this.fileTransfer == null)
+			return new Status(IStatus.ERROR, org.eclipse.ecf.internal.filetransfer.Activator.PLUGIN_ID, IStatus.ERROR, Messages.FileTransferJob_STATUSERROR_NO_TRANSFER, null);
 		return this.fileTransferRunnable.performFileTransfer(mntr);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.jobs.Job#canceling()
+	 */
+	protected void canceling() {
+		fileTransfer.cancel();
 	}
 }

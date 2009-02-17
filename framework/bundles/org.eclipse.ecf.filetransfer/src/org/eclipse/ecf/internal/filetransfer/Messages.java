@@ -19,6 +19,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.filetransfer.messages"; //$NON-NLS-1$
 	public static String FileTransferJob_STATUSERROR_NO_RUNNABLE;
+	public static String FileTransferJob_STATUSERROR_NO_TRANSFER;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
