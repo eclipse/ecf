@@ -13,27 +13,23 @@
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.Socket;
 import javax.net.ssl.*;
-import org.apache.commons.httpclient.ConnectTimeoutException;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
+import org.eclipse.ecf.filetransfer.events.socketfactory.INonconnectedSocketFactory;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient.ISSLSocketFactoryModifier;
 
-/**
- *
- */
-public class HttpClientSslProtocolSocketFactory implements SecureProtocolSocketFactory {
+public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFactoryModifier, INonconnectedSocketFactory {
 	public static final String DEFAULT_SSL_PROTOCOL = "https.protocols"; //$NON-NLS-1$
 
 	private SSLContext sslContext = null;
 
 	private String defaultProtocolNames = System.getProperty(DEFAULT_SSL_PROTOCOL);
 
-	public HttpClientSslProtocolSocketFactory() {
+	public HttpClientDefaultSSLSocketFactoryModifier() {
 		// empty
 	}
 
-	private SSLSocketFactory getSSLSocketFactory() throws IOException {
+	public SSLSocketFactory getSSLSocketFactory() throws IOException {
 		if (null == sslContext) {
 			try {
 				sslContext = getSSLContext(defaultProtocolNames);
@@ -64,26 +60,16 @@ public class HttpClientSslProtocolSocketFactory implements SecureProtocolSocketF
 		return rtvContext;
 	}
 
-	public Socket createSocket(String remoteHost, int remotePort) throws IOException, UnknownHostException {
-		return getSSLSocketFactory().createSocket(remoteHost, remotePort);
+	public Socket createSocket() throws IOException {
+		return getSSLSocketFactory().createSocket();
 	}
 
-	public Socket createSocket(String remoteHost, int remotePort, InetAddress clientHost, int clientPort) throws IOException, UnknownHostException {
-		return getSSLSocketFactory().createSocket(remoteHost, remotePort, clientHost, clientPort);
+	public void dispose() {
+		// empty
 	}
 
-	public Socket createSocket(String remoteHost, int remotePort, InetAddress clientHost, int clientPort, HttpConnectionParams params) throws IOException, UnknownHostException, ConnectTimeoutException {
-		if (params == null || params.getConnectionTimeout() == 0)
-			return getSSLSocketFactory().createSocket(remoteHost, remotePort, clientHost, clientPort);
-
-		Socket socket = getSSLSocketFactory().createSocket();
-		socket.bind(new InetSocketAddress(clientHost, clientPort));
-		socket.connect(new InetSocketAddress(remoteHost, remotePort), params.getConnectionTimeout());
-		return socket;
-	}
-
-	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
-		return getSSLSocketFactory().createSocket(socket, host, port, autoClose);
+	public INonconnectedSocketFactory getNonconnnectedSocketFactory() {
+		return this;
 	}
 
 }

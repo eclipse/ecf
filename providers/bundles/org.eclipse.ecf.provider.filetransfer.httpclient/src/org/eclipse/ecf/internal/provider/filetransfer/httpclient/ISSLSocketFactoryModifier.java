@@ -12,14 +12,18 @@
 
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient;
 
-import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
+import java.io.IOException;
+import javax.net.ssl.SSLSocketFactory;
+import org.eclipse.ecf.filetransfer.events.socketfactory.INonconnectedSocketFactory;
 
 /**
  * Internal interface to allow for use of httpclient.ssl provided socket factory
  */
 public interface ISSLSocketFactoryModifier {
 
-	public SecureProtocolSocketFactory getProtocolSocketFactory();
+	public SSLSocketFactory getSSLSocketFactory() throws IOException;
+
+	public INonconnectedSocketFactory getNonconnnectedSocketFactory();
 
 	public void dispose();
 

@@ -12,8 +12,9 @@
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.*;
+import java.util.Iterator;
+import javax.net.SocketFactory;
 import javax.security.auth.login.LoginException;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
@@ -25,6 +26,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.filetransfer.*;
+import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.*;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
@@ -97,12 +99,17 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	public static final class HostConfigHelper {
+		private IAdaptable source;
+		private ISocketConnectionCallback socketConnectCallback;
 		private String targetURL;
 		private String targetPath;
 
 		private HostConfiguration hostConfiguration;
 
-		public HostConfigHelper() {
+		public HostConfigHelper(IAdaptable source, ISocketConnectionCallback socketConnectCallback) {
+			Assert.isNotNull(source);
+			this.source = source;
+			this.socketConnectCallback = socketConnectCallback;
 			hostConfiguration = new HostConfiguration();
 		}
 
@@ -115,22 +122,22 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			this.targetPath = getPathFromURL(targetURL);
 			String host = getHostFromURL(targetURL);
 			int port = getPortFromURL(targetURL);
+
 			if (HttpClientRetrieveFileTransfer.urlUsesHttps(targetURL)) {
 				ISSLSocketFactoryModifier sslSocketFactoryModifier = Activator.getDefault().getSSLSocketFactoryModifier();
-				Protocol sslProtocol = null;
-				SecureProtocolSocketFactory psf = null;
-				if (sslSocketFactoryModifier != null) {
-					psf = sslSocketFactoryModifier.getProtocolSocketFactory();
-				} else {
-					psf = new HttpClientSslProtocolSocketFactory();
+				if (sslSocketFactoryModifier == null) {
+					sslSocketFactoryModifier = new HttpClientDefaultSSLSocketFactoryModifier();
 				}
-				sslProtocol = new Protocol(HttpClientRetrieveFileTransfer.HTTPS, (ProtocolSocketFactory) psf, port);
-				Protocol.registerProtocol(HttpClientRetrieveFileTransfer.HTTPS, sslProtocol);
+				SecureProtocolSocketFactory psf = new ECFHttpClientSecureProtocolSocketFactory(sslSocketFactoryModifier, source, socketConnectCallback);
+				Protocol sslProtocol = new Protocol(HttpClientRetrieveFileTransfer.HTTPS, (ProtocolSocketFactory) psf, port);
+
 				Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
 				hostConfiguration.setHost(host, port, sslProtocol);
 			} else {
+				ProtocolSocketFactory psf = new ECFHttpClientProtocolSocketFactory(SocketFactory.getDefault(), source, socketConnectCallback);
+				Protocol protocol = new Protocol(HttpClientRetrieveFileTransfer.HTTP, psf, port);
 				Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
-				hostConfiguration.setHost(host, port);
+				hostConfiguration.setHost(host, port, protocol);
 			}
 		}
 
@@ -180,10 +187,15 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	private HostConfigHelper hostConfigHelper;
 
+	private ConnectingSocketMonitor connectingSockets;
+	private FileTransferJob connectJob;
+
 	public HttpClientRetrieveFileTransfer(HttpClient httpClient) {
 		this.httpClient = httpClient;
 		Assert.isNotNull(this.httpClient);
 		proxyHelper = new JREProxyHelper();
+		connectingSockets = new ConnectingSocketMonitor(1);
+
 	}
 
 	/* (non-Javadoc)
@@ -191,6 +203,44 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	 */
 	public String getRemoteFileName() {
 		return remoteFileName;
+	}
+
+	public synchronized void cancel() {
+		if (isCanceled()) {
+			return; // break job cancel recursion
+		}
+		setDoneCanceled(exception);
+		boolean fireDoneEvent = true;
+		if (connectJob != null) {
+			connectJob.cancel();
+		}
+		synchronized (jobLock) {
+			if (job != null) {
+				// Its the transfer jobs responsibility to throw the event.
+				fireDoneEvent = false;
+				job.cancel();
+			}
+		}
+		if (getMethod != null) {
+			if (!getMethod.isAborted()) {
+				getMethod.abort();
+			}
+		}
+		if (connectingSockets != null) {
+			// this should unblock socket connect calls, if any
+			for (Iterator iterator = connectingSockets.getConnectingSockets().iterator(); iterator.hasNext();) {
+				Socket socket = (Socket) iterator.next();
+				try {
+					socket.close();
+				} catch (IOException e) {
+					Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "cancel", e); //$NON-NLS-1$
+				}
+			}
+		}
+		hardClose();
+		if (fireDoneEvent) {
+			fireTransferReceiveDoneEvent();
+		}
 	}
 
 	/*
@@ -357,6 +407,14 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return proxy;
 	}
 
+	protected void setInputStream(InputStream ins) {
+		remoteFileContents = ins;
+	}
+
+	protected InputStream wrapTransferReadInputStream(InputStream inputStream, IProgressMonitor monitor) {
+		return inputStream;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
@@ -386,10 +444,38 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			// Set request header for possible gzip encoding
 			if (getFileRangeSpecification() == null)
 				getMethod.setRequestHeader(GzipGetMethod.ACCEPT_ENCODING, GzipGetMethod.CONTENT_ENCODING_ACCEPTED);
+
+			fireConnectStartEvent();
+			if (isDone()) {
+				return;
+			}
+			IStatus status = null;
+
+			connectingSockets.clear();
 			// Actually execute get and get response code (since redirect is set to true, then
 			// redirect response code handled internally
-			code = httpClient.executeMethod(getHostConfiguration(), getMethod);
+			if (connectJob == null) {
+				status = performConnect(new NullProgressMonitor());
+			} else {
+				connectJob.schedule();
+				connectJob.join();
+				status = connectJob.getResult();
+				connectJob = null;
+			}
+			if (isDone()) {
+				return;
+			}
+			if (status.matches(IStatus.CANCEL)) {
+				exception = (Exception) status.getException();
+				cancel();
+				return;
+			}
+			//TODO: should this be an event? 
+			if (status.matches(IStatus.ERROR)) {
+				throw (Exception) status.getException();
+			}
 
+			code = responseCode;
 			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + code); //$NON-NLS-1$
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
@@ -587,8 +673,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreamsForResume", Boolean.TRUE); //$NON-NLS-1$
 			return true;
 		} catch (final Exception e) {
-			this.exception = e;
-			this.done = true;
+			setDoneException(e);
 			Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreamsForResume", e); //$NON-NLS-1$
 			hardClose();
 			fireTransferReceiveDoneEvent();
@@ -619,7 +704,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	private HostConfiguration getHostConfiguration() {
 		if (hostConfigHelper == null) {
-			hostConfigHelper = new HostConfigHelper();
+			hostConfigHelper = new HostConfigHelper(HttpClientRetrieveFileTransfer.this, connectingSockets);
 		}
 		return hostConfigHelper.getHostConfiguration();
 	}
@@ -676,9 +761,82 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return domainUsername.substring(slashloc + 1);
 	}
 
-	protected void fireReceiveStartEvent() {
-		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "fireReceiveStartEvent len=" + fileLength + ";rcvd=" + bytesReceived); //$NON-NLS-1$ //$NON-NLS-2$
-		super.fireReceiveStartEvent();
+	protected void fireConnectStartEvent() {
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "fireConnectStartEvent"); //$NON-NLS-1$ 
+		// TODO: should the following be in super.fireReceiveStartEvent();
+		listener.handleTransferEvent(new IFileTransferConnectStartEvent() {
+			public IFileID getFileID() {
+				return remoteFileID;
+			}
+
+			public void cancel() {
+				HttpClientRetrieveFileTransfer.this.cancel();
+			}
+
+			public FileTransferJob prepareConnectJob(FileTransferJob j) {
+				return HttpClientRetrieveFileTransfer.this.prepareConnectJob(j);
+			}
+
+			public void connectUsingJob(FileTransferJob j) {
+				HttpClientRetrieveFileTransfer.this.connectUsingJob(j);
+			}
+
+			public String toString() {
+				final StringBuffer sb = new StringBuffer("IFileTransferConnectStartEvent["); //$NON-NLS-1$
+				sb.append(getFileID());
+				sb.append("]"); //$NON-NLS-1$
+				return sb.toString();
+			}
+
+			public Object getAdapter(Class adapter) {
+				return HttpClientRetrieveFileTransfer.this.getAdapter(adapter);
+			}
+		});
+	}
+
+	protected String createConnectJobName() {
+		return getRemoteFileURL().toString() + createRangeName() + ": connecting."; //$NON-NLS-1$
+	}
+
+	protected FileTransferJob prepareConnectJob(FileTransferJob cjob) {
+		if (cjob == null) {
+			// Create our own
+			cjob = new FileTransferJob(createJobName());
+		}
+		cjob.setFileTransfer(this);
+		cjob.setFileTransferRunnable(fileConnectRunnable);
+		return cjob;
+	}
+
+	protected void connectUsingJob(FileTransferJob cjob) {
+		Assert.isNotNull(cjob);
+		this.connectJob = cjob;
+	}
+
+	private IFileTransferRunnable fileConnectRunnable = new IFileTransferRunnable() {
+		public IStatus performFileTransfer(IProgressMonitor monitor) {
+			return performConnect(monitor);
+		}
+	};
+
+	private IStatus performConnect(IProgressMonitor monitor) {
+		// there might be more ticks in the future perhaps for 
+		// connect socket, certificate validation, send request, authenticate,
+		int ticks = 1;
+		monitor.beginTask(getRemoteFileURL().toString() + " Connecting", ticks); //$NON-NLS-1$
+		Exception ex = null;
+		try {
+			if (monitor.isCanceled())
+				throw newUserCancelledException();
+			responseCode = httpClient.executeMethod(getHostConfiguration(), getMethod);
+			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + responseCode); //$NON-NLS-1$
+		} catch (final Exception e) {
+			ex = e;
+		} finally {
+			monitor.done();
+		}
+		return getFinalStatus(ex);
+
 	}
 
 	protected void fireReceiveResumedEvent() {

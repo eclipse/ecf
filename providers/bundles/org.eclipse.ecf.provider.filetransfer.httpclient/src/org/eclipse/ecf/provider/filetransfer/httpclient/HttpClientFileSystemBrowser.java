@@ -24,8 +24,7 @@ import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.filetransfer.IRemoteFile;
-import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
+import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.*;
 import org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser;
@@ -63,7 +62,26 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		super(directoryOrFileID, listener, directoryOrFileURL, connectContext, proxy);
 		Assert.isNotNull(httpClient);
 		this.httpClient = httpClient;
-		proxyHelper = new JREProxyHelper();
+		this.proxyHelper = new JREProxyHelper();
+
+	}
+
+	class HttpClientRemoteFileSystemRequest extends RemoteFileSystemRequest {
+
+		public Object getAdapter(Class adapter) {
+			if (adapter == null) {
+				return null;
+			}
+			if (adapter.isInstance(this)) {
+				return this;
+			}
+			return null;
+		}
+
+	}
+
+	protected IRemoteFileSystemRequest createRemoteFileSystemRequest() {
+		return super.createRemoteFileSystemRequest();
 	}
 
 	/* (non-Javadoc)
@@ -189,7 +207,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	private HostConfiguration getHostConfiguration() {
 		if (hostConfigHelper == null) {
-			hostConfigHelper = new HostConfigHelper();
+			hostConfigHelper = new HostConfigHelper(job.getRequest(), null);
 		}
 		return hostConfigHelper.getHostConfiguration();
 	}
