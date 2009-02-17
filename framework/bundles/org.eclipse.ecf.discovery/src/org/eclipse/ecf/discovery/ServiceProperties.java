@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.discovery;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -144,8 +145,9 @@ public class ServiceProperties implements IServiceProperties {
 	}
 
 	// proper equals/hashcode for byte[]
-	private class ByteArrayWrapper {
+	private static class ByteArrayWrapper implements Serializable {
 
+		private static final long serialVersionUID = -8528836675536956297L;
 		private final byte[] value;
 
 		public ByteArrayWrapper(byte[] value) {
