@@ -69,7 +69,11 @@ public class SingletonDiscoveryContainer implements IDiscoveryContainerAdapter, 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		return this;
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this))
+			return this;
+		return null;
 	}
 
 	//******************* below just delegates ******************//
