@@ -9,8 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 import javax.jmdns.impl.DNSConstants;
 import javax.jmdns.impl.DNSOutgoing;
@@ -27,7 +27,7 @@ import javax.jmdns.impl.ServiceInfoImpl;
  */
 public class Announcer extends TimerTask
 {
-    static Logger logger = Logger.getLogger(Announcer.class.getName());
+//    static Logger logger = Logger.getLogger(Announcer.class.getName());
 
     /**
      * 
@@ -121,7 +121,7 @@ public class Announcer extends TimerTask
                     if (info.getState() == taskState && info.getTask() == this)
                     {
                         info.advanceState();
-                        logger.finer("run() JmDNS announcing " + info.getQualifiedName() + " state " + info.getState());
+//                        logger.finer("run() JmDNS announcing " + info.getQualifiedName() + " state " + info.getState());
                         if (out == null)
                         {
                             out = new DNSOutgoing(DNSConstants.FLAGS_QR_RESPONSE | DNSConstants.FLAGS_AA);
@@ -132,7 +132,7 @@ public class Announcer extends TimerTask
             }
             if (out != null)
             {
-                logger.finer("run() JmDNS announcing #" + taskState);
+//                logger.finer("run() JmDNS announcing #" + taskState);
                 this.jmDNSImpl.send(out);
             }
             else
@@ -144,7 +144,7 @@ public class Announcer extends TimerTask
         }
         catch (Throwable e)
         {
-            logger.log(Level.WARNING, "run() exception ", e);
+//            logger.log(Level.WARNING, "run() exception ", e);
             this.jmDNSImpl.recover();
         }
 

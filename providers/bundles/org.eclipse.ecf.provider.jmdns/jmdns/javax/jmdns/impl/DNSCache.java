@@ -7,7 +7,7 @@ package javax.jmdns.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 /**
  * A table of DNS entries. This is a hash table which can handle multiple
@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  */
 public class DNSCache
 {
-    private static Logger logger = Logger.getLogger(DNSCache.class.getName());
+//    private static Logger logger = Logger.getLogger(DNSCache.class.getName());
     // Implementation note:
     // We might completely hide the existence of CacheNode's in a future version
     // of DNSCache. But this will require to implement two (inner) classes for
@@ -70,7 +70,7 @@ public class DNSCache
      */
     public static class CacheNode
     {
-        private static Logger logger = Logger.getLogger(CacheNode.class.getName());
+//        private static Logger logger = Logger.getLogger(CacheNode.class.getName());
         private final DNSEntry value;
         private CacheNode next;
 

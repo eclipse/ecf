@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
@@ -49,7 +49,7 @@ import javax.jmdns.impl.tasks.TypeResolver;
  */
 public class JmDNSImpl extends JmDNS
 {
-    private static Logger logger = Logger.getLogger(JmDNSImpl.class.getName());
+//    private static Logger logger = Logger.getLogger(JmDNSImpl.class.getName());
 
     /**
      * This is the multicast group, we are listening to for multicast DNS
@@ -178,7 +178,7 @@ public class JmDNSImpl extends JmDNS
      */
     public JmDNSImpl() throws IOException
     {
-        logger.finer("JmDNS instance created");
+//        logger.finer("JmDNS instance created");
         try
         {
             final InetAddress addr = InetAddress.getLocalHost();
@@ -276,7 +276,7 @@ public class JmDNSImpl extends JmDNS
             }
             catch (final Exception exception)
             {
-                logger.log(Level.WARNING, "start() Registration exception ", exception);
+//                logger.log(Level.WARNING, "start() Registration exception ", exception);
             }
         }
     }
@@ -302,7 +302,7 @@ public class JmDNSImpl extends JmDNS
 
     private void closeMulticastSocket()
     {
-        logger.finer("closeMulticastSocket()");
+//        logger.finer("closeMulticastSocket()");
         if (socket != null)
         {
             // close socket
@@ -317,8 +317,8 @@ public class JmDNSImpl extends JmDNS
             }
             catch (final Exception exception)
             {
-                logger.log(Level.WARNING, "closeMulticastSocket() Close socket exception ",
-                        exception);
+//                logger.log(Level.WARNING, "closeMulticastSocket() Close socket exception ",
+//                        exception);
             }
             socket = null;
         }
@@ -627,7 +627,7 @@ public class JmDNSImpl extends JmDNS
         {
             // empty
         }
-        logger.fine("registerService() JmDNS registered service as " + info);
+//        logger.fine("registerService() JmDNS registered service as " + info);
     }
 
     /**
@@ -671,7 +671,7 @@ public class JmDNSImpl extends JmDNS
      */
     public void unregisterAllServices()
     {
-        logger.finer("unregisterAllServices()");
+//        logger.finer("unregisterAllServices()");
         if (services.size() == 0)
         {
             return;
@@ -739,39 +739,39 @@ public class JmDNSImpl extends JmDNS
      * 
      * @return returns true, if the name of the host had to be changed.
      */
-    private boolean makeHostNameUnique(DNSRecord.Address host)
-    {
-        final String originalName = host.getName();
-        System.currentTimeMillis();
-
-        boolean collision;
-        do
-        {
-            collision = false;
-
-            // Check for collision in cache
-            for (DNSCache.CacheNode j = cache.find(host.getName().toLowerCase()); j != null; j = j
-                    .next())
-            {
-                if (false)
-                {
-                    host.name = incrementName(host.getName());
-                    collision = true;
-                    break;
-                }
-            }
-        }
-        while (collision);
-
-        if (originalName.equals(host.getName()))
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
+//    private boolean makeHostNameUnique(DNSRecord.Address host)
+//    {
+//        final String originalName = host.getName();
+//        System.currentTimeMillis();
+//
+//        boolean collision;
+//        do
+//        {
+//            collision = false;
+//
+//            // Check for collision in cache
+//            for (DNSCache.CacheNode j = cache.find(host.getName().toLowerCase()); j != null; j = j
+//                    .next())
+//            {
+//                if (false)
+//                {
+//                    host.name = incrementName(host.getName());
+//                    collision = true;
+//                    break;
+//                }
+//            }
+//        }
+//        while (collision);
+//
+//        if (originalName.equals(host.getName()))
+//        {
+//            return false;
+//        }
+//        else
+//        {
+//            return true;
+//        }
+//    }
 
     /**
      * Generate a possibly unique name for a service using the information we
@@ -799,14 +799,14 @@ public class JmDNSImpl extends JmDNS
                     final DNSRecord.Service s = (DNSRecord.Service) a;
                     if (s.port != info.port || !s.server.equals(localHost.getName()))
                     {
-                        logger
-                                .finer("makeServiceNameUnique() JmDNS.makeServiceNameUnique srv collision:"
-                                        + a
-                                        + " s.server="
-                                        + s.server
-                                        + " "
-                                        + localHost.getName()
-                                        + " equals:" + (s.server.equals(localHost.getName())));
+//                        logger
+//                                .finer("makeServiceNameUnique() JmDNS.makeServiceNameUnique srv collision:"
+//                                        + a
+//                                        + " s.server="
+//                                        + s.server
+//                                        + " "
+//                                        + localHost.getName()
+//                                        + " equals:" + (s.server.equals(localHost.getName())));
                         info.setName(incrementName(info.getName()));
                         collision = true;
                         break;
@@ -1118,12 +1118,12 @@ public class JmDNSImpl extends JmDNS
             try
             {
                 final DNSIncoming msg = new DNSIncoming(packet);
-                logger.finest("send() JmDNS out:" + msg.print(true));
+//                logger.finest("send() JmDNS out:" + msg.print(true));
             }
             catch (final IOException e)
             {
-                logger.throwing(getClass().toString(),
-                        "send(DNSOutgoing) - JmDNS can not parse what it sends!!!", e);
+//                logger.throwing(getClass().toString(),
+//                        "send(DNSOutgoing) - JmDNS can not parse what it sends!!!", e);
             }
             final MulticastSocket ms = socket;
             if (ms != null && !ms.isClosed())
@@ -1164,7 +1164,7 @@ public class JmDNSImpl extends JmDNS
      */
     public void recover()
     {
-        logger.finer("recover()");
+//        logger.finer("recover()");
         // We have an IO error so lets try to recover if anything happens lets
         // close it.
         // This should cover the case of the IP address changing under our feet
@@ -1174,7 +1174,7 @@ public class JmDNSImpl extends JmDNS
             { // Synchronize only if we are not already in process to prevent
                 // dead locks
                 //
-                logger.finer("recover() Cleanning up");
+//                logger.finer("recover() Cleanning up");
                 // Stop JmDNS
                 setState(DNSState.CANCELED); // This protects against recursive
                 // calls
@@ -1190,7 +1190,7 @@ public class JmDNSImpl extends JmDNS
                 closeMulticastSocket();
                 //
                 cache.clear();
-                logger.finer("recover() All is clean");
+//                logger.finer("recover() All is clean");
                 //
                 // All is clear now start the services
                 //
@@ -1201,9 +1201,9 @@ public class JmDNSImpl extends JmDNS
                 }
                 catch (final Exception exception)
                 {
-                    logger.log(Level.WARNING, "recover() Start services exception ", exception);
+//                    logger.log(Level.WARNING, "recover() Start services exception ", exception);
                 }
-                logger.log(Level.WARNING, "recover() We are back!");
+//                logger.log(Level.WARNING, "recover() We are back!");
             }
         }
     }
@@ -1359,7 +1359,7 @@ public class JmDNSImpl extends JmDNS
      */
     private void disposeServiceCollectors()
     {
-        logger.finer("disposeServiceCollectors()");
+//        logger.finer("disposeServiceCollectors()");
         synchronized (serviceCollectors)
         {
             for (final Iterator i = serviceCollectors.values().iterator(); i.hasNext();)
@@ -1379,7 +1379,7 @@ public class JmDNSImpl extends JmDNS
      */
     private static class ServiceCollector implements ServiceListener
     {
-        private static Logger logger = Logger.getLogger(ServiceCollector.class.getName());
+//        private static Logger logger = Logger.getLogger(ServiceCollector.class.getName());
         /**
          * A set of collected service instance names.
          */

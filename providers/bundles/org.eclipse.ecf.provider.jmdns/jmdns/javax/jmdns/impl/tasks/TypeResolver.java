@@ -7,8 +7,8 @@ package javax.jmdns.impl.tasks;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 import javax.jmdns.impl.DNSConstants;
 import javax.jmdns.impl.DNSOutgoing;
@@ -27,7 +27,7 @@ import javax.jmdns.impl.JmDNSImpl;
  */
 public class TypeResolver extends TimerTask
 {
-    static Logger logger = Logger.getLogger(TypeResolver.class.getName());
+//    static Logger logger = Logger.getLogger(TypeResolver.class.getName());
 
     /**
      * 
@@ -60,7 +60,7 @@ public class TypeResolver extends TimerTask
             {
                 if (count++ < 3)
                 {
-                    logger.finer("run() JmDNS querying type");
+//                    logger.finer("run() JmDNS querying type");
                     DNSOutgoing out = new DNSOutgoing(DNSConstants.FLAGS_QR_QUERY);
                     out.addQuestion(new DNSQuestion("_services._mdns._udp.local.", DNSConstants.TYPE_PTR, DNSConstants.CLASS_IN));
                     for (Iterator iterator = this.jmDNSImpl.getServiceTypes().values().iterator(); iterator.hasNext();)
@@ -85,7 +85,7 @@ public class TypeResolver extends TimerTask
         }
         catch (Throwable e)
         {
-            logger.log(Level.WARNING, "run() exception ", e);
+//            logger.log(Level.WARNING, "run() exception ", e);
             this.jmDNSImpl.recover();
         }
     }

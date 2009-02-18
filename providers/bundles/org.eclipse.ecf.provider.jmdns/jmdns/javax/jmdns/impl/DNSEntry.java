@@ -5,7 +5,7 @@
 
 package javax.jmdns.impl;
 
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 /**
  * DNS entry with a name, type, and class. This is the base
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class DNSEntry
 {
-    private static Logger logger = Logger.getLogger(DNSEntry.class.getName());
+//    private static Logger logger = Logger.getLogger(DNSEntry.class.getName());
     String key;
     String name;
     int type;

@@ -8,8 +8,8 @@ import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 import javax.jmdns.impl.DNSConstants;
 import javax.jmdns.impl.DNSEntry;
@@ -27,7 +27,7 @@ import javax.jmdns.impl.ServiceInfoImpl;
  */
 public class Responder extends TimerTask
 {
-    static Logger logger = Logger.getLogger(Responder.class.getName());
+//    static Logger logger = Logger.getLogger(Responder.class.getName());
 
     /**
      * 
@@ -64,7 +64,7 @@ public class Responder extends TimerTask
             if (entry instanceof DNSQuestion)
             {
                 DNSQuestion q = (DNSQuestion) entry;
-                logger.finest("start() question=" + q);
+//                logger.finest("start() question=" + q);
                 iAmTheOnlyOne &= (q.getType() == DNSConstants.TYPE_SRV
                     || q.getType() == DNSConstants.TYPE_TXT
                     || q.getType() == DNSConstants.TYPE_A
@@ -82,7 +82,7 @@ public class Responder extends TimerTask
         {
             delay = 0;
         }
-        logger.finest("start() Responder chosen delay=" + delay);
+//        logger.finest("start() Responder chosen delay=" + delay);
         this.jmDNSImpl.schedule(this, delay);
     }
 
@@ -253,7 +253,7 @@ public class Responder extends TimerTask
                         DNSRecord knownAnswer = (DNSRecord) i.next();
                         if (knownAnswer.getTtl() > DNSConstants.DNS_TTL / 2 && answers.remove(knownAnswer))
                         {
-                            logger.log(Level.FINER, "JmDNS Responder Known Answer Removed");
+//                            logger.log(Level.FINER, "JmDNS Responder Known Answer Removed");
                         }
                     }
 
@@ -261,7 +261,7 @@ public class Responder extends TimerTask
                     // responde if we have answers
                     if (answers.size() != 0)
                     {
-                        logger.finer("run() JmDNS responding");
+//                        logger.finer("run() JmDNS responding");
                         DNSOutgoing out = null;
                         if (isUnicast)
                         {
@@ -282,7 +282,7 @@ public class Responder extends TimerTask
                 }
                 catch (Throwable e)
                 {
-                    logger.log(Level.WARNING, "run() exception ", e);
+//                    logger.log(Level.WARNING, "run() exception ", e);
                     this.jmDNSImpl.close();
                 }
             }

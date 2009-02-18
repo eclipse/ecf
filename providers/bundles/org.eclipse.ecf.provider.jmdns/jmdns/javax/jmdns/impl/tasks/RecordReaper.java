@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import javax.jmdns.impl.DNSCache;
 import javax.jmdns.impl.DNSConstants;
@@ -22,7 +22,7 @@ import javax.jmdns.impl.JmDNSImpl;
  */
 public class RecordReaper extends TimerTask
 {
-    static Logger logger = Logger.getLogger(RecordReaper.class.getName());
+//    static Logger logger = Logger.getLogger(RecordReaper.class.getName());
 
     /**
      * 
@@ -50,7 +50,7 @@ public class RecordReaper extends TimerTask
             {
                 return;
             }
-            logger.finest("run() JmDNS reaping cache");
+//            logger.finest("run() JmDNS reaping cache");
 
             // Remove expired answers from the cache
             // -------------------------------------

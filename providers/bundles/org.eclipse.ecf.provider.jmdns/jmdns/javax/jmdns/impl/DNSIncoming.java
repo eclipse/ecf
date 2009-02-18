@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 /**
  * Parse an incoming DNS message into its components.
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  */
 public final class DNSIncoming
 {
-    private static Logger logger = Logger.getLogger(DNSIncoming.class.getName());
+//    private static Logger logger = Logger.getLogger(DNSIncoming.class.getName());
     
     // This is a hack to handle a bug in the BonjourConformanceTest
     // It is sending out target strings that don't follow the "domain name"
@@ -151,7 +151,7 @@ public final class DNSIncoming
                             // Maybe we should do something with those
                             break;
                         default :
-                            logger.finer("DNSIncoming() unknown type:" + type);
+//                            logger.finer("DNSIncoming() unknown type:" + type);
                             break;
                     }
 
@@ -189,7 +189,7 @@ public final class DNSIncoming
         }
         catch (IOException e)
         {
-            logger.log(Level.WARNING, "DNSIncoming() dump " + print(true) + "\n exception ", e);
+//            logger.log(Level.WARNING, "DNSIncoming() dump " + print(true) + "\n exception ", e);
             throw e;
         }
     }

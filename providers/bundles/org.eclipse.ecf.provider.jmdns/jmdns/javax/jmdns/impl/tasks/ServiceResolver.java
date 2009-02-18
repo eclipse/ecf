@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 import javax.jmdns.impl.DNSConstants;
 import javax.jmdns.impl.DNSOutgoing;
@@ -29,7 +29,7 @@ import javax.jmdns.impl.ServiceInfoImpl;
  */
 public class ServiceResolver extends TimerTask
 {
-    static Logger logger = Logger.getLogger(ServiceResolver.class.getName());
+//    static Logger logger = Logger.getLogger(ServiceResolver.class.getName());
 
     /**
      * 
@@ -60,7 +60,7 @@ public class ServiceResolver extends TimerTask
             {
                 if (count++ < 3)
                 {
-                    logger.finer("run() JmDNS querying service");
+//                    logger.finer("run() JmDNS querying service");
                     long now = System.currentTimeMillis();
                     DNSOutgoing out = new DNSOutgoing(DNSConstants.FLAGS_QR_QUERY);
                     out.addQuestion(new DNSQuestion(type, DNSConstants.TYPE_PTR, DNSConstants.CLASS_IN));
@@ -94,7 +94,7 @@ public class ServiceResolver extends TimerTask
         }
         catch (Throwable e)
         {
-            logger.log(Level.WARNING, "run() exception ", e);
+//            logger.log(Level.WARNING, "run() exception ", e);
             this.jmDNSImpl.recover();
         }
     }

@@ -12,8 +12,8 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 /**
  * HostInfo information on the local host to be able to cope with change of addresses.
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class HostInfo
 {
-    private static Logger logger = Logger.getLogger(HostInfo.class.getName());
+//    private static Logger logger = Logger.getLogger(HostInfo.class.getName());
     protected String name;
     protected InetAddress address;
     protected NetworkInterface interfaze;
@@ -46,7 +46,7 @@ public class HostInfo
             catch (Exception exception)
             {
                 // FIXME Shouldn't we take an action here?
-                logger.log(Level.WARNING, "LocalHostInfo() exception ", exception);
+//                logger.log(Level.WARNING, "LocalHostInfo() exception ", exception);
             }
         }
     }

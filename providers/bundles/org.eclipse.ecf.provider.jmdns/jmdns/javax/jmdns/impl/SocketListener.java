@@ -6,15 +6,15 @@ package javax.jmdns.impl;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 /**
  * Listen for multicast packets.
  */
 class SocketListener implements Runnable
 {
-    static Logger logger = Logger.getLogger(SocketListener.class.getName());
+//    static Logger logger = Logger.getLogger(SocketListener.class.getName());
 
     /**
      * 
@@ -51,7 +51,7 @@ class SocketListener implements Runnable
                     }
 
                     DNSIncoming msg = new DNSIncoming(packet);
-                    logger.finest("SocketListener.run() JmDNS in:" + msg.print(true));
+//                    logger.finest("SocketListener.run() JmDNS in:" + msg.print(true));
 
                     synchronized (this.jmDNSImpl.getIoLock())
                     {
@@ -71,7 +71,7 @@ class SocketListener implements Runnable
                 }
                 catch (IOException e)
                 {
-                    logger.log(Level.WARNING, "run() exception ", e);
+//                    logger.log(Level.WARNING, "run() exception ", e);
                 }
             }
         }
@@ -79,7 +79,7 @@ class SocketListener implements Runnable
         {
             if (this.jmDNSImpl.getState() != DNSState.CANCELED)
             {
-                logger.log(Level.WARNING, "run() exception ", e);
+//                logger.log(Level.WARNING, "run() exception ", e);
                 this.jmDNSImpl.recover();
             }
         }

@@ -5,7 +5,7 @@
 
 package javax.jmdns.impl;
 
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 /**
  * A DNS question.
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public final class DNSQuestion extends DNSEntry
 {
-    private static Logger logger = Logger.getLogger(DNSQuestion.class.getName());
+//    private static Logger logger = Logger.getLogger(DNSQuestion.class.getName());
 
     /**
      * Create a question.

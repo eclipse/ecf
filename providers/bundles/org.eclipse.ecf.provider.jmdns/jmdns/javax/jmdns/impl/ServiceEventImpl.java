@@ -4,7 +4,7 @@
 
 package javax.jmdns.impl;
 
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
@@ -18,7 +18,7 @@ import javax.jmdns.ServiceInfo;
  */
 public class ServiceEventImpl extends ServiceEvent
 {
-    private static Logger logger = Logger.getLogger(ServiceEvent.class.getName());
+//    private static Logger logger = Logger.getLogger(ServiceEvent.class.getName());
     /**
      * The type name of the service.
      */

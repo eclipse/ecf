@@ -6,8 +6,8 @@ package javax.jmdns.impl.tasks;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 import javax.jmdns.impl.DNSConstants;
 import javax.jmdns.impl.DNSOutgoing;
@@ -27,7 +27,7 @@ import javax.jmdns.impl.ServiceInfoImpl;
  */
 public class ServiceInfoResolver extends TimerTask
 {
-    static Logger logger = Logger.getLogger(ServiceInfoResolver.class.getName());
+//    static Logger logger = Logger.getLogger(ServiceInfoResolver.class.getName());
 
     /**
      * 
@@ -94,7 +94,7 @@ public class ServiceInfoResolver extends TimerTask
         }
         catch (Throwable e)
         {
-            logger.log(Level.WARNING, "run() exception ", e);
+//            logger.log(Level.WARNING, "run() exception ", e);
             this.jmDNSImpl.recover();
         }
     }

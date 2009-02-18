@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 import javax.jmdns.impl.DNSConstants;
 import javax.jmdns.impl.DNSOutgoing;
@@ -33,7 +33,7 @@ import javax.jmdns.impl.ServiceInfoImpl;
  */
 public class Prober extends TimerTask
 {
-    static Logger logger = Logger.getLogger(Prober.class.getName());
+//    static Logger logger = Logger.getLogger(Prober.class.getName());
 
     /**
      * 
@@ -151,7 +151,7 @@ public class Prober extends TimerTask
                         if (info.getState() == taskState && info.getTask() == this)
                         {
                             info.advanceState();
-                            logger.fine("run() JmDNS probing " + info.getQualifiedName() + " state " + info.getState());
+//                            logger.fine("run() JmDNS probing " + info.getQualifiedName() + " state " + info.getState());
                             if (out == null)
                             {
                                 out = new DNSOutgoing(DNSConstants.FLAGS_QR_QUERY);
@@ -167,7 +167,7 @@ public class Prober extends TimerTask
                 }
                 if (out != null)
                 {
-                    logger.finer("run() JmDNS probing #" + taskState);
+//                    logger.finer("run() JmDNS probing #" + taskState);
                     this.jmDNSImpl.send(out);
                 }
                 else
@@ -180,7 +180,7 @@ public class Prober extends TimerTask
             }
             catch (Throwable e)
             {
-                logger.log(Level.WARNING, "run() exception ", e);
+//                logger.log(Level.WARNING, "run() exception ", e);
                 this.jmDNSImpl.recover();
             }
 

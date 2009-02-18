@@ -7,8 +7,8 @@ package javax.jmdns.impl.tasks;
 import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 import javax.jmdns.impl.DNSConstants;
 import javax.jmdns.impl.DNSOutgoing;
@@ -21,7 +21,7 @@ import javax.jmdns.impl.ServiceInfoImpl;
  */
 public class Canceler extends TimerTask
 {
-    static Logger logger = Logger.getLogger(Canceler.class.getName());
+//    static Logger logger = Logger.getLogger(Canceler.class.getName());
 
     /**
      * 
@@ -84,7 +84,7 @@ public class Canceler extends TimerTask
         {
             if (++count < 3)
             {
-                logger.finer("run() JmDNS canceling service");
+//                logger.finer("run() JmDNS canceling service");
                 // announce the service
                 //long now = System.currentTimeMillis();
                 DNSOutgoing out = new DNSOutgoing(DNSConstants.FLAGS_QR_RESPONSE | DNSConstants.FLAGS_AA);
@@ -110,7 +110,7 @@ public class Canceler extends TimerTask
         }
         catch (Throwable e)
         {
-            logger.log(Level.WARNING, "run() exception ", e);
+//            logger.log(Level.WARNING, "run() exception ", e);
             this.jmDNSImpl.recover();
         }
     }
