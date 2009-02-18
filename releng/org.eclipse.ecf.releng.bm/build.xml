@@ -11,7 +11,8 @@
 
 	<property name="coverage.include.name.pattern" value="org.eclipse.ecf*.jar" />
 	<property name="test.suite.include.name.pattern" value="^org\.eclipse\.ecf\.tests(\..+)?" />
-	
+	<property name="test.suite.exclude.name.pattern" value="org.eclipse.ecf.tests.apache.*" />
+
 	<property name="product" value="product"/>
 	<property name="tests" value="tests"/>
 
@@ -114,7 +115,7 @@
 	<property name="test.suite.report.dir" value="${test.suite.result.dir}/report" />
 	<property name="test.suite.coverage.dir" value="${output.dir}/coveragelogs" />
 	<property name="test.suite.include.name.pattern" value=".*(test|tests)$" />
-	<property name="test.suite.exclude.name.pattern" value="org.eclipse.ecf.tests.apache.*" />
+	<property name="test.suite.exclude.name.pattern" value="" />
 	<path id="instrument.classpath">
 		<fileset dir="${test.tmp.dir}/${product}/plugins">
 			<include name="${coverage.include.name.pattern}" />
