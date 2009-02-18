@@ -22,7 +22,6 @@ public class DistributionProviderImpl implements DistributionProvider {
 
 	Map exposedServices = Collections.synchronizedMap(new HashMap());
 	Map remoteServices = Collections.synchronizedMap(new HashMap());
-	Map publishedServices = Collections.synchronizedMap(new HashMap());
 
 	Long getServiceId(ServiceReference sr) {
 		return (Long) sr.getProperty(Constants.SERVICE_ID);
@@ -38,22 +37,6 @@ public class DistributionProviderImpl implements DistributionProvider {
 		if (sr == null)
 			return null;
 		return (ServiceReference) remoteServices.put(getServiceId(sr), sr);
-	}
-
-	ServiceReference addPublishedService(ServiceReference sr) {
-		if (sr == null)
-			return null;
-		return (ServiceReference) publishedServices.put(getServiceId(sr), sr);
-	}
-
-	ServiceReference removePublishedService(ServiceReference sr) {
-		return removePublishedService(getServiceId(sr));
-	}
-
-	ServiceReference removePublishedService(Long sid) {
-		if (sid == null)
-			return null;
-		return (ServiceReference) publishedServices.remove(sid);
 	}
 
 	ServiceReference removeExposedService(Long sid) {
@@ -135,9 +118,9 @@ public class DistributionProviderImpl implements DistributionProvider {
 		return result;
 	}
 
+	// XXX word on the street is that this is being removed from spec
 	public ServiceReference[] getPublishedServices() {
-		return (ServiceReference[]) publishedServices.entrySet().toArray(
-				new ServiceReference[] {});
+		return null;
 	}
 
 	public ServiceReference[] getRemoteServices() {

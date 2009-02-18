@@ -118,16 +118,6 @@ public abstract class AbstractEventHookImpl implements EventHook {
 		distributionProvider.addExposedService(serviceReference);
 	}
 
-	protected void fireRemoteServicePublished(ServiceReference serviceReference) {
-		// XXX SL what if this is called multiple times with the same service
-		// reference?
-		// There doesn't seem to be anything in the spec for
-		// DistributionProvider.getPublishedServices()
-		// That provides for the possibility that a single servicereference will
-		// be published
-		distributionProvider.addPublishedService(serviceReference);
-	}
-
 	private String[] getInterfacesForServiceReference(
 			String[] remoteInterfaces, ServiceReference serviceReference) {
 		if (remoteInterfaces == null || remoteInterfaces.length == 0)
