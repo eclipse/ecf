@@ -17,8 +17,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
@@ -37,7 +35,7 @@ import org.eclipse.equinox.concurrent.future.TimeoutException;
 /**
  *
  */
-public abstract class AbstractBrowseTestCase extends TestCase {
+public abstract class AbstractBrowseTestCase extends AbstractFileTransferTestCase {
 
 	protected IRemoteFileSystemBrowserContainerAdapter adapter = null;
 
@@ -93,16 +91,16 @@ public abstract class AbstractBrowseTestCase extends TestCase {
 		 * @param event
 		 */
 	protected void handleUnknownEvent(IRemoteFileSystemEvent event) {
-		System.out.println("handleUnknownEvent(" + event + ")");
+		trace("handleUnknownEvent(" + event + ")");
 	}
 
 	/**
 	 * @param event
 	 */
 	protected void handleFileSystemBrowseEvent(IRemoteFileSystemBrowseEvent event) {
-		System.out.println("handleFileSystemBrowseEvent(" + event + ")");
+		trace("handleFileSystemBrowseEvent(" + event + ")");
 		if (event.getException() != null) {
-			System.out.println(event.getException());
+			trace(event.getException().toString());
 		}
 	}
 
@@ -128,7 +126,7 @@ public abstract class AbstractBrowseTestCase extends TestCase {
 			if (eventType.isInstance(o))
 				count++;
 		}
-		assertTrue(count == eventCount);
+		assertEquals(eventCount, count);
 	}
 
 	protected void assertHasMoreThanEventCount(Collection collection, Class eventType, int eventCount) {
@@ -151,20 +149,21 @@ public abstract class AbstractBrowseTestCase extends TestCase {
 			assertNotNull(firstInfo);
 			final IFileID firstID = first.getID();
 			assertNotNull(firstID);
-			System.out.println("firstID=" + firstID);
+			trace("firstID=" + firstID);
 			// Now check out info
 			assertNotNull(firstInfo.getName());
 			assertTrue(firstInfo.getLastModified() > 0);
-			System.out.println("lastModified=" + new SimpleDateFormat().format(new Date(firstInfo.getLastModified())));
-			System.out.println("length=" + firstInfo.getLength());
-			System.out.println("isDirectory=" + firstInfo.isDirectory());
+			trace("lastModified=" + new SimpleDateFormat().format(new Date(firstInfo.getLastModified())));
+			trace("length=" + firstInfo.getLength());
+			trace("isDirectory=" + firstInfo.isDirectory());
 			final IRemoteFileAttributes attributes = firstInfo.getAttributes();
 			assertNotNull(attributes);
 			final Iterator attrNames = attributes.getAttributeKeys();
 			for (; attrNames.hasNext();) {
 				final String key = (String) attrNames.next();
-				System.out.print("attrname=" + key);
-				System.out.println(" attrvalue=" + attributes.getAttribute(key));
+				String s = "attrname=" + key;
+				s += " attrvalue=" + attributes.getAttribute(key);
+				trace(s);
 			}
 		}
 	}

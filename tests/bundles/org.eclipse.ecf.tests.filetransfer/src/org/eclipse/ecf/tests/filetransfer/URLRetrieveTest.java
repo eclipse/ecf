@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;

@@ -17,8 +17,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Assert;
@@ -34,12 +32,11 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.equinox.concurrent.future.TimeoutException;
-import org.eclipse.osgi.util.NLS;
 
 /**
  *
  */
-public abstract class AbstractRetrieveTestCase extends TestCase {
+public abstract class AbstractRetrieveTestCase extends AbstractFileTransferTestCase {
 
 	IRetrieveFileTransferContainerAdapter retrieveAdapter = null;
 
@@ -53,13 +50,7 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 	protected boolean done = false;
 
 	Object lock = new Object();
-
-	protected long startTime;
-
-	protected void trace(String msg) {
-		Trace.trace(System.currentTimeMillis() - startTime, msg);
-	}
-
+	
 	protected IRetrieveFileTransferContainerAdapter getRetrieveAdapter() throws Exception {
 		return (IRetrieveFileTransferContainerAdapter) ContainerFactory.getDefault().createContainer().getAdapter(IRetrieveFileTransferContainerAdapter.class);
 	}
@@ -140,32 +131,6 @@ public abstract class AbstractRetrieveTestCase extends TestCase {
 		doneEvents = null;
 		super.tearDown();
 	}
-
-    private static final String BANNER =
-        "==================== {0} {1} ===================={2}";
-	
-    protected String getFullName() {
-    	String name =getClass().getName();
-        return name.substring(name.lastIndexOf('.') + 1) + '.' + getName();
-    }
-    
-    public void runBare() throws Throwable {
-        startTime = System.currentTimeMillis();
-        trace(NLS.bind(BANNER, new Object[]{"RUNNING", getFullName(), ""}));
-        Throwable throwable = null;
-        try {
-            super.runBare();
-        } catch (Throwable t) {
-        	throwable = t;
-        	throw t;
-        } finally {
-            long endTime = System.currentTimeMillis();
-            long elapsedTime = endTime - startTime;
-            trace(
-                NLS.bind(BANNER, new Object[] {(throwable != null? "FAILED " : "PASSED "), getFullName(),
-                " (elapsed time: " + elapsedTime + " ms)"}));
-        }
-    }
 
 	protected void testRetrieve(URL fileToRetrieve) throws Exception {
 		Assert.isNotNull(fileToRetrieve);

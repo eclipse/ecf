@@ -27,13 +27,22 @@ import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketConnectedEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketListener;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.tests.filetransfer.httpserver.SimpleServer;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
+import org.eclipse.ecf.tests.filetransfer.SocketEventTestUtil.SocketInReadWrapper;
+import org.eclipse.ecf.tests.filetransfer.SocketEventTestUtil.TrackSocketEvents;
 
 public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 
 	File tmpFile = null;
+	private TrackSocketEvents socketEvents;
+	private SocketInReadWrapper socketInReadWrapper;
+
 
 	/*
 	 * (non-Javadoc)
@@ -59,6 +68,26 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 			tmpFile.delete();
 		tmpFile = null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase#handleStartConnectEvent(org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent)
+	 */
+	protected void handleStartConnectEvent(IFileTransferConnectStartEvent event) {
+		super.handleStartConnectEvent(event);
+		this.socketEvents = SocketEventTestUtil.observeSocketEvents(event);
+		ISocketEventSource source = (ISocketEventSource) event.getAdapter(ISocketEventSource.class);
+		source.addListener(new ISocketListener() {
+
+			public void handleSocketEvent(ISocketEvent event) {
+				if (event instanceof ISocketConnectedEvent) {
+					ISocketConnectedEvent connectedEvent = (ISocketConnectedEvent) event;
+					socketInReadWrapper = new SocketInReadWrapper(connectedEvent.getSocket(), startTime);
+					connectedEvent.setSocket(socketInReadWrapper);
+				}
+			}
+		});
+		
+	}
 
 	protected void handleDoneEvent(IIncomingFileTransferReceiveDoneEvent event) {
 		super.handleDoneEvent(event);
@@ -82,7 +111,7 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 					IFileTransferConnectStartEvent event) {
 				assertNotNull(event.getFileID());
 				assertNotNull(event.getFileID().getFilename());
-
+				assertNull(socketInReadWrapper);
 				event.cancel();
 			}
 		};
@@ -103,6 +132,8 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 				.getException());
 
 		assertNull(tmpFile);
+		
+		socketEvents.validateNoSocketCreated();
 
 	}
 
@@ -126,6 +157,8 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 						super.running(jobEvent);
 						spawnCancelThread(doCancel, new ICancelable() {
 							public void cancel() {
+								assertNotNull(socketInReadWrapper);
+								assertTrue(socketInReadWrapper.inRead);
 								event.cancel();
 							}
 						});
@@ -168,6 +201,9 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 
 			assertNull(tmpFile);
 
+			assertFalse(socketInReadWrapper.inRead);
+			socketEvents.validateOneSocketCreatedAndClosed();
+			
 		} finally {
 			server.shutdown();
 		}
@@ -201,8 +237,12 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 					final IIncomingFileTransferReceiveStartEvent event) {
 				spawnCancelThread(doCancel, new ICancelable() {
 					public void cancel() {
+						waitForSocketInRead();
+						assertNotNull(socketInReadWrapper);
+						assertTrue(socketInReadWrapper.inRead);
 						event.cancel();
 					}
+
 				});
 				try {
 					createTempFile();
@@ -231,8 +271,6 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 					doCancel[0] = Boolean.TRUE;
 				}
 				
-				w.write("123");
-				w.flush();
 				conn.setKeepAlive(true);
 				// 
 				return stalledInRequestHandler(doCancel);
@@ -261,20 +299,33 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 			assertTrue(tmpFile.exists());
 			assertEquals(0, tmpFile.length());
 
+			assertFalse(socketInReadWrapper.inRead);
+			socketEvents.validateOneSocketCreatedAndClosed();
 		} finally {
 			server.shutdown();
 		}
 	}
 
+	private void waitForSocketInRead() {
+		assertNotNull(socketInReadWrapper);
+		while (!socketInReadWrapper.inRead) {
+			try {
+				Thread.sleep(0);
+			} catch (InterruptedException e) {
+			}
+		}
+		assertTrue(socketInReadWrapper.inRead);
+	}
+	
 	public void testReceiveFile_cancelTransferJobAfterOneBlock() throws Exception {
-		testReceiveFile_cancelTransferJobInMiddle(AbstractRetrieveFileTransfer.DEFAULT_BUF_LENGTH*2);
+		testReceiveFile_cancelTransferJobInMiddle(AbstractRetrieveFileTransfer.DEFAULT_BUF_LENGTH*2, false);
 	}
 	
 	public void testReceiveFile_cancelTransferJobInMiddle() throws Exception {
-		testReceiveFile_cancelTransferJobInMiddle(20000);
+		testReceiveFile_cancelTransferJobInMiddle(20000, true);
 	}
 	
-	public void testReceiveFile_cancelTransferJobInMiddle(final long len) throws Exception {
+	public void testReceiveFile_cancelTransferJobInMiddle(final long len, final boolean expectedSocketInRead) throws Exception {
 		final Object[] doCancel = new Object[1];
 
 		final IFileTransferListener listener = createFileTransferListener();
@@ -295,6 +346,9 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 					final IIncomingFileTransferReceiveStartEvent event) {
 				spawnCancelThread(doCancel, new ICancelable() {
 					public void cancel() {
+						if (expectedSocketInRead) {
+							waitForSocketInRead();
+						}
 						event.cancel();
 					}
 				});
@@ -360,6 +414,9 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 			assertTrue(tmpFile.exists());
 			assertEquals(len/2, tmpFile.length());
 
+			assertFalse(socketInReadWrapper.inRead);
+			socketEvents.validateOneSocketCreatedAndClosed();
+			
 		} finally {
 			server.shutdown();
 		}
