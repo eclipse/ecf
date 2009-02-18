@@ -35,7 +35,7 @@ public abstract class AbstractFileSystemBrowser {
 	protected IFileID fileID = null;
 	protected IRemoteFileSystemListener listener = null;
 
-	protected Exception exception = null;
+	private Exception exception = null;
 	protected IRemoteFile[] remoteFiles = null;
 
 	protected Proxy proxy;
@@ -58,10 +58,10 @@ public abstract class AbstractFileSystemBrowser {
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
 				if (monitor.isCanceled())
-					throw new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
+					throw newUserCancelledException();
 				runRequest();
 			} catch (Exception e) {
-				AbstractFileSystemBrowser.this.exception = e;
+				AbstractFileSystemBrowser.this.setException(e);
 			} finally {
 				listener.handleRemoteFileEvent(createRemoteFileEvent());
 				cleanUp();
@@ -75,6 +75,19 @@ public abstract class AbstractFileSystemBrowser {
 
 		public IRemoteFileSystemRequest getRequest() {
 			return request;
+		}
+
+		protected void canceling() {
+			request.cancel();
+		}
+
+	}
+
+	protected void cancel() {
+		synchronized (lock) {
+			if (job != null) {
+				job.cancel();
+			}
 		}
 
 	}
@@ -236,6 +249,30 @@ public abstract class AbstractFileSystemBrowser {
 		}
 		if (proxy != null)
 			setupProxy(proxy);
+	}
+
+	protected synchronized void setException(Exception exception) {
+		this.exception = exception;
+	}
+
+	protected synchronized Exception getException() {
+		return this.exception;
+	}
+
+	protected synchronized boolean isCanceled() {
+		return exception instanceof UserCancelledException;
+	}
+
+	protected synchronized void setCanceled(Exception e) {
+		if (e instanceof UserCancelledException) {
+			exception = e;
+		} else {
+			exception = newUserCancelledException();
+		}
+	}
+
+	protected UserCancelledException newUserCancelledException() {
+		return new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
 	}
 
 }
