@@ -187,7 +187,7 @@ public class ServiceResource extends ResourceImpl implements Resource {
 
 			// replace the ECF delimiter
 			name = StringUtils.replaceAll(name, "._", "/"); //$NON-NLS-1$ //$NON-NLS-2$
-			name = StringUtils.replaceFirst(name, "\\.", "/"); //$NON-NLS-1$ //$NON-NLS-2$
+			name = StringUtils.replaceFirst(name, ".", "/"); //$NON-NLS-1$ //$NON-NLS-2$
 			name = "ecf://" + name; //$NON-NLS-1$
 
 			// use an URI Converter to allow possible model extender to rewrite
