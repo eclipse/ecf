@@ -114,7 +114,7 @@
 	<property name="test.suite.report.dir" value="${test.suite.result.dir}/report" />
 	<property name="test.suite.coverage.dir" value="${output.dir}/coveragelogs" />
 	<property name="test.suite.include.name.pattern" value=".*(test|tests)$" />
-	<property name="test.suite.exclude.name.pattern" value="" />
+	<property name="test.suite.exclude.name.pattern" value="org.eclipse.ecf.tests.apache.*" />
 	<path id="instrument.classpath">
 		<fileset dir="${test.tmp.dir}/${product}/plugins">
 			<include name="${coverage.include.name.pattern}" />
