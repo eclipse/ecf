@@ -1,9 +1,11 @@
 feature@org.eclipse.ecf.tests_feature=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.tests-feature
 
 plugin@org.eclipse.ecf.tests=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests
+plugin@org.eclipse.ecf.tests.apache.httpclient.server=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.apache.httpclient.server
 plugin@org.eclipse.ecf.tests.datashare=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.datashare
 plugin@org.eclipse.ecf.tests.discovery=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.discovery
 plugin@org.eclipse.ecf.tests.filetransfer=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.filetransfer
+plugin@org.eclipse.ecf.tests.filetransfer.httpserver=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.filetransfer.httpserver
 plugin@org.eclipse.ecf.tests.presence=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.presence
 plugin@org.eclipse.ecf.tests.remoteservice=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.remoteservice
 plugin@org.eclipse.ecf.tests.sharedobject=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.sharedobject
