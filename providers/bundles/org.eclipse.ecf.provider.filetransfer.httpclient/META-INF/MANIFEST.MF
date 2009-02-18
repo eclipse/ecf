@@ -22,7 +22,7 @@ Import-Package: org.apache.commons.httpclient,
  org.osgi.service.log;version="1.3.0",
  org.osgi.service.url;version="1.0.0",
  org.osgi.util.tracker;version="1.3.2"
-Export-Package: org.eclipse.ecf.internal.provider.filetransfer.httpclient,
+Export-Package: org.eclipse.ecf.internal.provider.filetransfer.httpclient;x-internal:=true,
  org.eclipse.ecf.provider.filetransfer.httpclient
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

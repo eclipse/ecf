@@ -25,10 +25,14 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketListener;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.*;
+import org.eclipse.ecf.provider.filetransfer.events.socket.SocketEventSource;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
 import org.eclipse.ecf.provider.filetransfer.retrieve.HttpHelper;
@@ -98,18 +102,18 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	}
 
-	public static final class HostConfigHelper {
-		private IAdaptable source;
-		private ISocketConnectionCallback socketConnectCallback;
+	static final class HostConfigHelper {
+		private ISocketEventSource source;
+		private ISocketListener socketListener;
 		private String targetURL;
 		private String targetPath;
 
 		private HostConfiguration hostConfiguration;
 
-		public HostConfigHelper(IAdaptable source, ISocketConnectionCallback socketConnectCallback) {
+		public HostConfigHelper(ISocketEventSource source, ISocketListener socketListener) {
 			Assert.isNotNull(source);
 			this.source = source;
-			this.socketConnectCallback = socketConnectCallback;
+			this.socketListener = socketListener;
 			hostConfiguration = new HostConfiguration();
 		}
 
@@ -128,13 +132,13 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				if (sslSocketFactoryModifier == null) {
 					sslSocketFactoryModifier = new HttpClientDefaultSSLSocketFactoryModifier();
 				}
-				SecureProtocolSocketFactory psf = new ECFHttpClientSecureProtocolSocketFactory(sslSocketFactoryModifier, source, socketConnectCallback);
+				SecureProtocolSocketFactory psf = new ECFHttpClientSecureProtocolSocketFactory(sslSocketFactoryModifier, source, socketListener);
 				Protocol sslProtocol = new Protocol(HttpClientRetrieveFileTransfer.HTTPS, (ProtocolSocketFactory) psf, port);
 
 				Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
 				hostConfiguration.setHost(host, port, sslProtocol);
 			} else {
-				ProtocolSocketFactory psf = new ECFHttpClientProtocolSocketFactory(SocketFactory.getDefault(), source, socketConnectCallback);
+				ProtocolSocketFactory psf = new ECFHttpClientProtocolSocketFactory(SocketFactory.getDefault(), source, socketListener);
 				Protocol protocol = new Protocol(HttpClientRetrieveFileTransfer.HTTP, psf, port);
 				Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
 				hostConfiguration.setHost(host, port, protocol);
@@ -186,6 +190,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	protected JREProxyHelper proxyHelper = null;
 
 	private HostConfigHelper hostConfigHelper;
+	private SocketEventSource socketEventSource;
 
 	private ConnectingSocketMonitor connectingSockets;
 	private FileTransferJob connectJob;
@@ -195,6 +200,18 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		Assert.isNotNull(this.httpClient);
 		proxyHelper = new JREProxyHelper();
 		connectingSockets = new ConnectingSocketMonitor(1);
+		socketEventSource = new SocketEventSource() {
+			public Object getAdapter(Class adapter) {
+				if (adapter == null) {
+					return null;
+				}
+				if (adapter.isInstance(this)) {
+					return this;
+				}
+				return HttpClientRetrieveFileTransfer.this.getAdapter(adapter);
+			}
+
+		};
 
 	}
 
@@ -699,12 +716,14 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			return null;
 		if (adapter.equals(IFileTransferPausable.class) && isHTTP11())
 			return this;
+		if (adapter.equals(ISocketEventSource.class))
+			return this.socketEventSource;
 		return super.getAdapter(adapter);
 	}
 
 	private HostConfiguration getHostConfiguration() {
 		if (hostConfigHelper == null) {
-			hostConfigHelper = new HostConfigHelper(HttpClientRetrieveFileTransfer.this, connectingSockets);
+			hostConfigHelper = new HostConfigHelper(socketEventSource, connectingSockets);
 		}
 		return hostConfigHelper.getHostConfiguration();
 	}
@@ -795,7 +814,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	protected String createConnectJobName() {
-		return getRemoteFileURL().toString() + createRangeName() + ": connecting."; //$NON-NLS-1$
+		return getRemoteFileURL().toString() + createRangeName() + ": connecting.";
 	}
 
 	protected FileTransferJob prepareConnectJob(FileTransferJob cjob) {
@@ -823,7 +842,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		// there might be more ticks in the future perhaps for 
 		// connect socket, certificate validation, send request, authenticate,
 		int ticks = 1;
-		monitor.beginTask(getRemoteFileURL().toString() + " Connecting", ticks); //$NON-NLS-1$
+		monitor.beginTask(getRemoteFileURL().toString() + " Connecting", ticks);
 		Exception ex = null;
 		try {
 			if (monitor.isCanceled())

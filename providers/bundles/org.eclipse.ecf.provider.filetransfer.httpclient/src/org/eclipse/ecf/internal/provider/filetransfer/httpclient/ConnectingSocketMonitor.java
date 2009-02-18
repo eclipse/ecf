@@ -11,39 +11,36 @@
 
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.*;
+import org.eclipse.ecf.filetransfer.events.socket.*;
 
-public class ConnectingSocketMonitor implements ISocketConnectionCallback {
+public class ConnectingSocketMonitor implements ISocketListener {
 
-	private Set connectingSockets;
+	private Map connectingSockets;
 
 	public ConnectingSocketMonitor(int initialCapacity) {
-		connectingSockets = Collections.synchronizedSet(new HashSet(initialCapacity));
+		connectingSockets = Collections.synchronizedMap(new HashMap(initialCapacity));
 	}
 
 	public ConnectingSocketMonitor() {
-		connectingSockets = Collections.synchronizedSet(new HashSet());
+		connectingSockets = Collections.synchronizedMap(new HashMap());
 	}
 
 	public Collection getConnectingSockets() {
-		return Collections.unmodifiableCollection(connectingSockets);
+		return Collections.unmodifiableCollection(connectingSockets.keySet());
 	}
 
 	public void clear() {
 		connectingSockets.clear();
 	}
 
-	public void onSocketConnected(Socket socket) {
-		connectingSockets.remove(socket);
-	}
-
-	public void onSocketConnectionFailed(Socket socket, IOException e) {
-		connectingSockets.remove(socket);
-	}
-
-	public void onSocketCreated(Socket socket) {
-		connectingSockets.add(socket);
+	public void handleSocketEvent(ISocketEvent event) {
+		if (event instanceof ISocketCreatedEvent) {
+			connectingSockets.put(event.getFactorySocket(), event);
+		} else if (event instanceof ISocketConnectedEvent) {
+			connectingSockets.remove(event.getFactorySocket());
+		} else if (event instanceof ISocketClosedEvent) {
+			connectingSockets.remove(event.getFactorySocket());
+		}
 	}
 }

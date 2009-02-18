@@ -14,8 +14,8 @@ package org.eclipse.ecf.provider.filetransfer.httpclient;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.*;
+import java.util.Iterator;
 import javax.security.auth.login.LoginException;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
@@ -24,11 +24,14 @@ import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.*;
 import org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser;
 import org.eclipse.ecf.provider.filetransfer.browse.URLRemoteFile;
+import org.eclipse.ecf.provider.filetransfer.events.socket.SocketEventSource;
 import org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransfer.HostConfigHelper;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
@@ -44,13 +47,15 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	private JREProxyHelper proxyHelper = null;
 
+	private ConnectingSocketMonitor connectingSockets;
+
 	protected String username = null;
 
 	protected String password = null;
 
 	protected HttpClient httpClient = null;
 
-	protected HeadMethod headMethod;
+	protected volatile HeadMethod headMethod;
 
 	protected HostConfigHelper hostConfigHelper;
 
@@ -63,25 +68,69 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		Assert.isNotNull(httpClient);
 		this.httpClient = httpClient;
 		this.proxyHelper = new JREProxyHelper();
+		this.connectingSockets = new ConnectingSocketMonitor(1);
 
 	}
 
 	class HttpClientRemoteFileSystemRequest extends RemoteFileSystemRequest {
+		protected SocketEventSource socketEventSource;
+
+		HttpClientRemoteFileSystemRequest() {
+			this.socketEventSource = new SocketEventSource() {
+				public Object getAdapter(Class adapter) {
+					if (adapter == null) {
+						return null;
+					}
+					if (adapter.isInstance(this)) {
+						return this;
+					}
+					if (adapter.isInstance(HttpClientRemoteFileSystemRequest.this)) {
+						return HttpClientRemoteFileSystemRequest.this;
+					}
+					return null;
+				}
+			};
+		}
 
 		public Object getAdapter(Class adapter) {
 			if (adapter == null) {
 				return null;
 			}
-			if (adapter.isInstance(this)) {
-				return this;
-			}
-			return null;
+			return socketEventSource.getAdapter(adapter);
 		}
 
+		public void cancel() {
+			HttpClientFileSystemBrowser.this.cancel();
+		}
 	}
 
 	protected IRemoteFileSystemRequest createRemoteFileSystemRequest() {
-		return super.createRemoteFileSystemRequest();
+		return new HttpClientRemoteFileSystemRequest();
+	}
+
+	protected void cancel() {
+		if (isCanceled()) {
+			return; // break job cancel recursion
+		}
+		setCanceled(getException());
+		super.cancel();
+		if (headMethod != null) {
+			if (!headMethod.isAborted()) {
+				headMethod.abort();
+			}
+		}
+		if (connectingSockets != null) {
+			// this should unblock socket connect calls, if any
+			for (Iterator iterator = connectingSockets.getConnectingSockets().iterator(); iterator.hasNext();) {
+				Socket socket = (Socket) iterator.next();
+				try {
+					socket.close();
+				} catch (IOException e) {
+					Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "cancel", e); //$NON-NLS-1$
+				}
+			}
+		}
+
 	}
 
 	/* (non-Javadoc)
@@ -109,6 +158,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 		long lastModified = 0;
 		long fileLength = -1;
+		connectingSockets.clear();
 		try {
 			Trace.trace(Activator.PLUGIN_ID, "browse=" + urlString); //$NON-NLS-1$
 
@@ -207,7 +257,8 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	private HostConfiguration getHostConfiguration() {
 		if (hostConfigHelper == null) {
-			hostConfigHelper = new HostConfigHelper(job.getRequest(), null);
+			ISocketEventSource source = (ISocketEventSource) job.getRequest().getAdapter(ISocketEventSource.class);
+			hostConfigHelper = new HostConfigHelper(source, connectingSockets);
 		}
 		return hostConfigHelper.getHostConfiguration();
 	}

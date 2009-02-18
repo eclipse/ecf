@@ -15,20 +15,21 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import javax.net.ssl.SSLSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketListener;
 import org.eclipse.ecf.filetransfer.events.socketfactory.INonconnectedSocketFactory;
 
 public final class ECFHttpClientSecureProtocolSocketFactory extends ECFHttpClientProtocolSocketFactory implements SecureProtocolSocketFactory {
 
 	private ISSLSocketFactoryModifier sslSocketFactoryModifier;
 
-	public ECFHttpClientSecureProtocolSocketFactory(final ISSLSocketFactoryModifier sslSocketFactoryModifier, IAdaptable source, ISocketConnectionCallback socketConnectCallback) {
+	public ECFHttpClientSecureProtocolSocketFactory(final ISSLSocketFactoryModifier sslSocketFactoryModifier, ISocketEventSource source, ISocketListener socketConnectListener) {
 		super(new INonconnectedSocketFactory() {
 			public Socket createSocket() throws IOException {
 				return sslSocketFactoryModifier.getNonconnnectedSocketFactory().createSocket();
 			}
 
-		}, source, socketConnectCallback);
+		}, source, socketConnectListener);
 
 		this.sslSocketFactoryModifier = sslSocketFactoryModifier;
 	}

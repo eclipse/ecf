@@ -16,47 +16,39 @@ import javax.net.SocketFactory;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.filetransfer.events.socket.*;
 import org.eclipse.ecf.filetransfer.events.socketfactory.INonconnectedSocketFactory;
+import org.eclipse.ecf.provider.filetransfer.events.socket.SocketEventCreateUtil;
 
 public class ECFHttpClientProtocolSocketFactory implements ProtocolSocketFactory {
 
-	protected IAdaptable source;
+	protected ISocketEventSource source;
 	private INonconnectedSocketFactory unconnectedFactory;
-	private ISocketConnectionCallback socketConnectCallback;
+	private ISocketListener socketConnectListener;
 
-	private static final ISocketConnectionCallback NULL_CONNECT_CALLBACK = new ISocketConnectionCallback() {
-
-		public void onSocketConnected(Socket socket) {
-			//empty
-		}
-
-		public void onSocketConnectionFailed(Socket socket, IOException e) {
-			//empty
-		}
-
-		public void onSocketCreated(Socket socket) {
+	private static final ISocketListener NULL_SOCKET_EVENT_LISTENER = new ISocketListener() {
+		public void handleSocketEvent(ISocketEvent event) {
 			//empty
 		}
 
 	};
 
-	public ECFHttpClientProtocolSocketFactory(INonconnectedSocketFactory unconnectedFactory, IAdaptable source, ISocketConnectionCallback socketConnectCallback) {
+	public ECFHttpClientProtocolSocketFactory(INonconnectedSocketFactory unconnectedFactory, ISocketEventSource source, ISocketListener socketConnectListener) {
 		super();
 		Assert.isNotNull(unconnectedFactory);
 		Assert.isNotNull(source);
 		this.unconnectedFactory = unconnectedFactory;
 		this.source = source;
-		this.socketConnectCallback = socketConnectCallback != null ? socketConnectCallback : NULL_CONNECT_CALLBACK;
+		this.socketConnectListener = socketConnectListener != null ? socketConnectListener : NULL_SOCKET_EVENT_LISTENER;
 	}
 
-	public ECFHttpClientProtocolSocketFactory(final SocketFactory socketFactory, IAdaptable source, ISocketConnectionCallback socketConnectCallback) {
+	public ECFHttpClientProtocolSocketFactory(final SocketFactory socketFactory, ISocketEventSource source, ISocketListener socketConnectListener) {
 		this(new INonconnectedSocketFactory() {
 			public Socket createSocket() throws IOException {
 				return socketFactory.createSocket();
 			}
 
-		}, source, socketConnectCallback);
+		}, source, socketConnectListener);
 	}
 
 	public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort) throws IOException, UnknownHostException {
@@ -86,17 +78,7 @@ public class ECFHttpClientProtocolSocketFactory implements ProtocolSocketFactory
 	}
 
 	private Socket createSocket(final InetSocketAddress remoteInetAddress, final InetSocketAddress localInetAddress, int timeout) throws IOException {
-		final Socket socket = unconnectedFactory.createSocket();
-		socketConnectCallback.onSocketCreated(socket);
-		try {
-			socket.bind(localInetAddress);
-			socket.connect(remoteInetAddress, timeout);
-		} catch (IOException e) {
-			socketConnectCallback.onSocketConnectionFailed(socket, e);
-			throw e;
-		}
-		socketConnectCallback.onSocketConnected(socket);
-		return socket;
+		return SocketEventCreateUtil.createSocket(socketConnectListener, source, unconnectedFactory, remoteInetAddress, localInetAddress, timeout);
 	}
 
 	public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
