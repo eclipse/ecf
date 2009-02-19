@@ -24,6 +24,7 @@ import org.eclipse.ecf.internal.provider.jslp.ServiceURLAdapter;
 import org.eclipse.ecf.provider.jslp.container.JSLPServiceInfo;
 import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
 import org.eclipse.ecf.provider.jslp.identity.JSLPServiceTypeID;
+import org.eclipse.ecf.tests.discovery.DiscoveryTestHelper;
 import org.eclipse.ecf.tests.discovery.identity.ServiceIDTest;
 
 import ch.ethz.iks.slp.ServiceLocationException;
@@ -59,16 +60,16 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 	 * test from ECF discovery -> jSLP
 	 */
 	public void testRemoveServicePrefixECFtojSLP() throws ServiceLocationException {
-		final IServiceID sid = (IServiceID) createIDFromString(SERVICE_TYPE);
+		final IServiceID sid = (IServiceID) createIDFromString(DiscoveryTestHelper.SERVICE_TYPE);
 		final JSLPServiceTypeID stid = (JSLPServiceTypeID) sid.getServiceTypeID();
 
-		assertEquals("service:" + SERVICES[0] + ":" + SERVICES[1] + "." + NAMINGAUTHORITY + ":" + SERVICES[2], stid.getInternal());
-		assertEquals(SERVICE_TYPE, stid.getName());
+		assertEquals("service:" + DiscoveryTestHelper.SERVICES[0] + ":" + DiscoveryTestHelper.SERVICES[1] + "." + DiscoveryTestHelper.NAMINGAUTHORITY + ":" + DiscoveryTestHelper.SERVICES[2], stid.getInternal());
+		assertEquals(DiscoveryTestHelper.SERVICE_TYPE, stid.getName());
 		
-		assertEquals(NAMINGAUTHORITY, stid.getNamingAuthority());
-		assertTrue(Arrays.equals(SERVICES, stid.getServices()));
-		assertTrue(Arrays.equals(new String[] {SCOPE}, stid.getScopes()));
-		assertTrue(Arrays.equals(new String[] {PROTOCOL}, stid.getProtocols()));
+		assertEquals(DiscoveryTestHelper.NAMINGAUTHORITY, stid.getNamingAuthority());
+		assertTrue(Arrays.equals(DiscoveryTestHelper.SERVICES, stid.getServices()));
+		assertTrue(Arrays.equals(new String[] {DiscoveryTestHelper.SCOPE}, stid.getScopes()));
+		assertTrue(Arrays.equals(new String[] {DiscoveryTestHelper.PROTOCOL}, stid.getProtocols()));
 	}
 	
 	/* (non-Javadoc)
@@ -80,11 +81,11 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		final String internalRep = "service:foo.eclipse:bar";
 		final ServiceURL sUrl = new ServiceURL(internalRep + "://localhost:1234/a/path/to/something", ServiceURL.LIFETIME_PERMANENT);
 
-		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, SERVICENAME), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
-		assertEquals(serviceInfo.getPriority(), PRIORITY);
-		assertEquals(serviceInfo.getWeight(), WEIGHT);
+		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, DiscoveryTestHelper.SERVICENAME), DiscoveryTestHelper.PRIORITY, DiscoveryTestHelper.WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
+		assertEquals(serviceInfo.getPriority(), DiscoveryTestHelper.PRIORITY);
+		assertEquals(serviceInfo.getWeight(), DiscoveryTestHelper.WEIGHT);
 		final IServiceID sid = serviceInfo.getServiceID();
-		assertEquals(sid.getServiceName(), SERVICENAME);
+		assertEquals(sid.getServiceName(), DiscoveryTestHelper.SERVICENAME);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 		
 		String internal = stid.getInternal();
@@ -106,11 +107,11 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		final String internalRep = "service:service:foo.eclipse:bar";
 		final ServiceURL sUrl = new ServiceURL(internalRep + "://localhost:1234/a/path/to/something", ServiceURL.LIFETIME_PERMANENT);
 
-		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, SERVICENAME), PRIORITY, WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
-		assertEquals(serviceInfo.getPriority(), PRIORITY);
-		assertEquals(serviceInfo.getWeight(), WEIGHT);
+		final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(sUrl, DiscoveryTestHelper.SERVICENAME), DiscoveryTestHelper.PRIORITY, DiscoveryTestHelper.WEIGHT, new ServicePropertiesAdapter(new ArrayList()));
+		assertEquals(serviceInfo.getPriority(), DiscoveryTestHelper.PRIORITY);
+		assertEquals(serviceInfo.getWeight(), DiscoveryTestHelper.WEIGHT);
 		final IServiceID sid = serviceInfo.getServiceID();
-		assertEquals(sid.getServiceName(), SERVICENAME);
+		assertEquals(sid.getServiceName(), DiscoveryTestHelper.SERVICENAME);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 		
 		assertEquals(internalRep, stid.getInternal());
@@ -141,33 +142,33 @@ public class JSLPServiceIDTest extends ServiceIDTest {
 		String expected = "some Name";
 		
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, SERVICES, PROTOCOLS, expected);
+		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, DiscoveryTestHelper.SERVICES, DiscoveryTestHelper.PROTOCOLS, expected);
 		assertNotNull(aServiceID);
 
 		IServiceTypeID stid = aServiceID.getServiceTypeID();
-		assertTrue(Arrays.equals(SERVICES, stid.getServices()));
+		assertTrue(Arrays.equals(DiscoveryTestHelper.SERVICES, stid.getServices()));
 		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_SCOPE, stid.getScopes()));
-		assertTrue(Arrays.equals(PROTOCOLS, stid.getProtocols()));
+		assertTrue(Arrays.equals(DiscoveryTestHelper.PROTOCOLS, stid.getProtocols()));
 
 		String internal = stid.getInternal();
-		assertEquals("service:" + SERVICES[0] + ":" + SERVICES[1] + ":" + SERVICES[2], internal);
+		assertEquals("service:" + DiscoveryTestHelper.SERVICES[0] + ":" + DiscoveryTestHelper.SERVICES[1] + ":" + DiscoveryTestHelper.SERVICES[2], internal);
 	}
 
 	public void testjSLPDefaultsToECF() {
 		String expected = "some Name";
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, SERVICES, new String[]{SCOPE}, PROTOCOLS, NAMINGAUTHORITY, expected);
+		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, DiscoveryTestHelper.SERVICES, new String[]{DiscoveryTestHelper.SCOPE}, DiscoveryTestHelper.PROTOCOLS, DiscoveryTestHelper.NAMINGAUTHORITY, expected);
 		assertNotNull(aServiceID);
 
 		IServiceTypeID stid = aServiceID.getServiceTypeID();
-		assertEquals(NAMINGAUTHORITY, stid.getNamingAuthority());
-		assertEquals("_ecf._junit._tests._someProtocol." + SCOPE + "._" + NAMINGAUTHORITY + "@" + expected, aServiceID.getName());
+		assertEquals(DiscoveryTestHelper.NAMINGAUTHORITY, stid.getNamingAuthority());
+		assertEquals("_ecf._junit._tests._someProtocol." + DiscoveryTestHelper.SCOPE + "._" + DiscoveryTestHelper.NAMINGAUTHORITY + "@" + expected, aServiceID.getName());
 	}
 	
 	public void testjSLPDefaultsToECF2() {
 		String expected = "some Name";
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, SERVICES, PROTOCOLS, expected);
+		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, DiscoveryTestHelper.SERVICES, DiscoveryTestHelper.PROTOCOLS, expected);
 		assertNotNull(aServiceID);
 
 		IServiceTypeID stid = aServiceID.getServiceTypeID();
