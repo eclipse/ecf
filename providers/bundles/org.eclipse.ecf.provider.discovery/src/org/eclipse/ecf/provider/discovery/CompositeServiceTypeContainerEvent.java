@@ -8,7 +8,7 @@
  * Contributors:
  *     Markus Alexander Kuppe (ecf-dev_eclipse.org <at> lemmster <dot> de) - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.provider.discovery;
+package org.eclipse.ecf.provider.discovery;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.IServiceTypeEvent;
@@ -26,7 +26,7 @@ public class CompositeServiceTypeContainerEvent extends ServiceTypeContainerEven
 	/**
 	 * @return the origLocalContainerId
 	 */
-	public ID getOrigLocalContainerId() {
+	public ID getOriginalLocalContainerId() {
 		return origLocalContainerId;
 	}
 }
