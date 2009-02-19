@@ -182,7 +182,9 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 				IContainer container = (IContainer) itr.next();
 				container.dispose();
 			}
+			containers.clear();
 		}
+		targetID = null;
 		super.dispose();
 	}
 
