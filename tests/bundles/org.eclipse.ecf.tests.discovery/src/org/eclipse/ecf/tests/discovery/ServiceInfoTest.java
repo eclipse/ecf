@@ -13,6 +13,8 @@ package org.eclipse.ecf.tests.discovery;
 import java.net.URI;
 import java.util.Comparator;
 
+import junit.framework.TestCase;
+
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -20,7 +22,7 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 /**
  * 
  */
-public abstract class ServiceInfoTest extends AbstractDiscoveryTest {
+public abstract class ServiceInfoTest extends TestCase {
 
 	protected URI uri;
 	protected IServiceID serviceID;

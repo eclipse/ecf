@@ -28,18 +28,7 @@ public class TestListener {
 	/**
 	 * @return the event that has been received by this TestListener
 	 */
-	public IContainerEvent getEvent() {
-		if(events.size() >= 1) {
-			return (IContainerEvent) events.get(0);
-		}
-		return null;
+	public IContainerEvent[] getEvent() {
+		return (IContainerEvent[]) events.toArray(new IContainerEvent[0]);
 	}
-
-	/**
-	 * @return The amount of events sent to this TestListener
-	 */
-	public int getEventCount() {
-		return events.size();
-	}
-
 }

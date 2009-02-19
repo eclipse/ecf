@@ -24,7 +24,7 @@ public class TestServiceTypeListener extends TestListener implements IServiceTyp
 	 */
 	public void serviceTypeDiscovered(IServiceTypeEvent anEvent) {
 		events.add(anEvent);
-		if(getEventCount() == amountOfEventsToExpect) {
+		if(events.size() == amountOfEventsToExpect) {
 			synchronized (this) {
 				notifyAll();
 			}

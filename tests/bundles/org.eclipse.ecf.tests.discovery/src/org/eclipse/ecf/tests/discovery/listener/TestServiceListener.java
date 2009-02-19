@@ -24,7 +24,7 @@ public class TestServiceListener extends TestListener implements IServiceListene
 	 */
 	public void serviceDiscovered(IServiceEvent anEvent) {
 		events.add(anEvent);
-		if(getEventCount() == amountOfEventsToExpect) {
+		if(events.size() == amountOfEventsToExpect) {
 			synchronized (this) {
 				notifyAll();
 			}

@@ -12,6 +12,8 @@ package org.eclipse.ecf.tests.discovery.identity;
 
 import java.util.Arrays;
 
+import junit.framework.TestCase;
+
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -19,9 +21,9 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.discovery.identity.ServiceTypeID;
-import org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest;
+import org.eclipse.ecf.tests.discovery.DiscoveryTestHelper;
 
-public abstract class ServiceIDTest extends AbstractDiscoveryTest {
+public abstract class ServiceIDTest extends TestCase {
 
 	protected String namespace;
 	private String namingAuthority;
@@ -38,7 +40,7 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	}
 	
 	public ServiceIDTest(String namespace) {
-		this(namespace, SERVICES, new String[]{SCOPE}, new String[]{PROTOCOL}, NAMINGAUTHORITY);
+		this(namespace, DiscoveryTestHelper.SERVICES, new String[]{DiscoveryTestHelper.SCOPE}, new String[]{DiscoveryTestHelper.PROTOCOL}, DiscoveryTestHelper.NAMINGAUTHORITY);
 	}
 
 	protected IServiceID createIDFromString(String serviceType) {
@@ -89,13 +91,13 @@ public abstract class ServiceIDTest extends AbstractDiscoveryTest {
 	 * use case: consumer instantiates a IServiceTypeID with the generic (ECF) String
 	 */
 	public void testServiceTypeIDWithECFGenericString() {
-		final IServiceID sid = createIDFromString(SERVICE_TYPE);
+		final IServiceID sid = createIDFromString(DiscoveryTestHelper.SERVICE_TYPE);
 		final IServiceTypeID stid = sid.getServiceTypeID();
-		assertEquals(stid.getName(), SERVICE_TYPE);
-		assertEquals(stid.getNamingAuthority(), NAMINGAUTHORITY);
-		assertTrue(Arrays.equals(stid.getProtocols(), new String[] {PROTOCOL}));
-		assertTrue(Arrays.equals(stid.getScopes(), new String[] {SCOPE}));
-		assertTrue(Arrays.equals(stid.getServices(), SERVICES));
+		assertEquals(stid.getName(), DiscoveryTestHelper.SERVICE_TYPE);
+		assertEquals(stid.getNamingAuthority(), DiscoveryTestHelper.NAMINGAUTHORITY);
+		assertTrue(Arrays.equals(stid.getProtocols(), new String[] {DiscoveryTestHelper.PROTOCOL}));
+		assertTrue(Arrays.equals(stid.getScopes(), new String[] {DiscoveryTestHelper.SCOPE}));
+		assertTrue(Arrays.equals(stid.getServices(), DiscoveryTestHelper.SERVICES));
 	}
 
 	/*

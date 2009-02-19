@@ -57,19 +57,12 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		container.disconnect();
 		return container;
 	}
-
-	public void testDispose() {
-		// do nothing, we cannot dispose because we intent to reuse the container in the next test
-	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	protected void tearDown() throws Exception {
 		discoveryContainer.unregisterService(serviceInfo);
-		discoveryContainer = null;
-		// DST recycle the IDCA instance, thus we cannot call dispose() on the container!!!
-		container.disconnect();
-		container = null;
 	}
 }
