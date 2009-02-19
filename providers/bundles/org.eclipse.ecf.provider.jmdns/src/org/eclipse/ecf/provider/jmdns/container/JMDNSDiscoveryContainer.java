@@ -358,18 +358,6 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 */
 	public void serviceResolved(final ServiceEvent arg0) {
 		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceResolved(" + arg0.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		runInThread(new Runnable() {
-			public void run() {
-				if(getConnectedID() == null || disposed) {
-					return;
-				}
-				try {
-					fireDiscovered(createIServiceInfoFromServiceEvent(arg0));
-				} catch (final Exception e) {
-					Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceResolved", e); //$NON-NLS-1$
-				}
-			}
-		});
 	}
 
 	void fireDiscovered(IServiceInfo serviceInfo) {
