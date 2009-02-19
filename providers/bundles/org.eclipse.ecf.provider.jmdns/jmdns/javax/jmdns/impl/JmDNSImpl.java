@@ -650,13 +650,13 @@ public class JmDNSImpl extends JmDNS
         // accesses to synchronized methods on that object. This is not
         // what we want!
         final Object lock = new Object();
-        new Canceler(this, info, lock).start(timer);
 
         // Remind: We get a deadlock here, if the Canceler does not run!
         try
         {
             synchronized (lock)
             {
+            	new Canceler(this, info, lock).start(timer);
                 lock.wait();
             }
         }
