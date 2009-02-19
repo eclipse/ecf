@@ -135,7 +135,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 */
 	public void disconnect() {
 		synchronized (lock) {
-			if(getConnectedID() == null || disposed) {
+			if (getConnectedID() == null || disposed) {
 				return;
 			}
 			ID connectedID = getConnectedID();
@@ -229,11 +229,11 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Assert.isNotNull(serviceInfo);
 		final ServiceInfo svcInfo = createServiceInfoFromIServiceInfo(serviceInfo);
 		checkServiceInfo(svcInfo);
-			try {
-				jmdns.registerService(svcInfo);
-			} catch (final IOException e) {
-				throw new ECFException(Messages.JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE, e);
-			}
+		try {
+			jmdns.registerService(svcInfo);
+		} catch (final IOException e) {
+			throw new ECFException(Messages.JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE, e);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -272,7 +272,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		// Else run in thread
 		runInThread(new Runnable() {
 			public void run() {
-				if(getConnectedID() == null || disposed) {
+				if (getConnectedID() == null || disposed) {
 					return;
 				}
 				boolean added = false;
@@ -310,7 +310,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				String serviceName = arg0.getName();
 				IServiceInfo aServiceInfo = null;
 				synchronized (lock) {
-					if(getConnectedID() == null && disposed) {
+					if (getConnectedID() == null || disposed) {
 						return;
 					}
 					// explicitly get the service to determine the naming authority (part of the service properties)
@@ -337,7 +337,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceRemoved(" + arg0.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		runInThread(new Runnable() {
 			public void run() {
-				if(getConnectedID() == null || disposed) {
+				if (getConnectedID() == null || disposed) {
 					return;
 				}
 				try {
