@@ -21,6 +21,9 @@ import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class GenericContainerInstantiator implements IContainerInstantiator {
 
+	/**
+	 * @since 2.0
+	 */
 	protected static final String[] genericProviderIntents = {"passByValue", "exactlyOnce", "ordered",}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	public static final String TCPCLIENT_NAME = "ecf.generic.client"; //$NON-NLS-1$
@@ -199,10 +202,9 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 		return getInterfacesAndAdaptersForClass(TCPClientSOContainer.class);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedParameterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
+	 * @since 2.0
 	 */
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		if (!isClient(description))
@@ -210,6 +212,10 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 		return new Class[][] { {}, {ID.class}, {ID.class, Integer.class}};
 	}
 
+	/**
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedIntents(org.eclipse.ecf.core.ContainerTypeDescription)
+	 * @since 2.0
+	 */
 	public String[] getSupportedIntents(ContainerTypeDescription description) {
 		return genericProviderIntents;
 	}
