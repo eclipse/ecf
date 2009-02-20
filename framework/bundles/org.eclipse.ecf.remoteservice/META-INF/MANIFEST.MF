@@ -10,7 +10,6 @@ Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.remoteservice;x-internal:=true,
  org.eclipse.ecf.remoteservice,
  org.eclipse.ecf.remoteservice.events,
- org.eclipse.ecf.remoteservice.service,
  org.eclipse.ecf.remoteservice.util,
  org.eclipse.ecf.remoteservice.util.tracker
 Bundle-RequiredExecutionEnvironment: CDC-1.0/Foundation-1.0,
