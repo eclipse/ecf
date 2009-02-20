@@ -477,4 +477,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		}
 	}
 
+	public IContainerFactory getContainerFactory() {
+		return this;
+	}
 }

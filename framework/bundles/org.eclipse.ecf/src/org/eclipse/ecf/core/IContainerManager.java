@@ -20,6 +20,14 @@ import org.eclipse.ecf.core.identity.ID;
 public interface IContainerManager {
 
 	/**
+	 * Get container factory associated with this container manager.
+	 * @return IContainerFactory.  Will not return <code>null</code>.
+	 * 
+	 * @since 3.0
+	 */
+	public IContainerFactory getContainerFactory();
+
+	/**
 	 * Get container for given ID. If <code>containerID</code> is
 	 * <code>, null will be returned.  If 
 	 * active container with given <code>containerID,</code> is not known to this container manager,
