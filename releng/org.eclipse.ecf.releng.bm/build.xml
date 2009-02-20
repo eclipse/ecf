@@ -11,7 +11,7 @@
 
 	<property name="coverage.include.name.pattern" value="org.eclipse.ecf*.jar" />
 	<property name="test.suite.include.name.pattern" value="^org\.eclipse\.ecf\.tests(\..+)?" />
-	<property name="test.suite.exclude.name.pattern" value="org.eclipse.ecf.tests.apache.*" />
+	<property name="test.suite.include.class.pattern" value="^org\.eclipse\.ecf(\..+)?" />
 
 	<property name="product" value="product"/>
 	<property name="tests" value="tests"/>
@@ -116,6 +116,8 @@
 	<property name="test.suite.coverage.dir" value="${output.dir}/coveragelogs" />
 	<property name="test.suite.include.name.pattern" value=".*(test|tests)$" />
 	<property name="test.suite.exclude.name.pattern" value="" />
+	<property name="test.suite.include.class.pattern" value=".*" />
+	<property name="test.suite.exclude.class.pattern" value=".*All(Tests|PDETests|_Tests|PDETests).*" />
 	<path id="instrument.classpath">
 		<fileset dir="${test.tmp.dir}/${product}/plugins">
 			<include name="${coverage.include.name.pattern}" />
@@ -173,6 +175,8 @@
 			<jvmarg value="-Dautotestsuite.results.directory=${test.suite.result.dir}" />
 			<jvmarg value="-Dautotestsuite.plugin.inclusions=${test.suite.include.name.pattern}" />
 			<jvmarg value="-Dautotestsuite.plugin.exclusions=${test.suite.exclude.name.pattern}" />
+			<jvmarg value="-Dautotestsuite.class.inclusions=${test.suite.include.class.pattern}" />
+			<jvmarg value="-Dautotestsuite.class.exclusions=${test.suite.exclude.class.pattern}" />
 			<!-- emma class instrumentation -->
 			<jvmarg value="-Demma.coverage.out.file=${test.suite.coverage.dir}/coverage.ec" />
 			<jvmarg value="-Dosgi.parentClassloader=app"/>
