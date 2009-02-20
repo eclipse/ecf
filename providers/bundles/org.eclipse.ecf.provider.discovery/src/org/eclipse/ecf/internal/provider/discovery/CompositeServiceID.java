@@ -22,7 +22,7 @@ public class CompositeServiceID extends ServiceID {
 	 * @param serviceTypeID
 	 * @param string
 	 */
-	public CompositeServiceID(CompositeNamespace compositeNamespace, IServiceTypeID serviceTypeID, String string) {
+	public CompositeServiceID(final CompositeNamespace compositeNamespace, final IServiceTypeID serviceTypeID, final String string) {
 		super(compositeNamespace, serviceTypeID, string);
 	}
 }

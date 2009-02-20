@@ -33,11 +33,11 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		/* (non-Javadoc)
 		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
 		 */
-		public void serviceDiscovered(IServiceEvent event) {
-			Collection col = getListeners(event.getServiceInfo().getServiceID().getServiceTypeID());
+		public void serviceDiscovered(final IServiceEvent event) {
+			final Collection col = getListeners(event.getServiceInfo().getServiceID().getServiceTypeID());
 			if (!col.isEmpty()) {
-				for (Iterator itr = col.iterator(); itr.hasNext();) {
-					IServiceListener isl = (IServiceListener) itr.next();
+				for (final Iterator itr = col.iterator(); itr.hasNext();) {
+					final IServiceListener isl = (IServiceListener) itr.next();
 					// we want to pretend the discovery event comes from us, thus we change the connectedId
 					isl.serviceDiscovered(new CompositeServiceContainerEvent(event, getConnectedID()));
 					Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "serviceDiscovered", //$NON-NLS-1$
@@ -53,11 +53,11 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		/* (non-Javadoc)
 		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceUndiscovered(org.eclipse.ecf.discovery.IServiceEvent)
 		 */
-		public void serviceUndiscovered(IServiceEvent event) {
-			Collection col = getListeners(event.getServiceInfo().getServiceID().getServiceTypeID());
+		public void serviceUndiscovered(final IServiceEvent event) {
+			final Collection col = getListeners(event.getServiceInfo().getServiceID().getServiceTypeID());
 			if (!col.isEmpty()) {
-				for (Iterator itr = col.iterator(); itr.hasNext();) {
-					IServiceListener isl = (IServiceListener) itr.next();
+				for (final Iterator itr = col.iterator(); itr.hasNext();) {
+					final IServiceListener isl = (IServiceListener) itr.next();
 					// we want to pretend the discovery event comes from us, thus we change the connectedId
 					isl.serviceUndiscovered(new CompositeServiceContainerEvent(event, getConnectedID()));
 					Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "serviceUndiscovered", //$NON-NLS-1$
@@ -76,12 +76,12 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		/* (non-Javadoc)
 		 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
 		 */
-		public synchronized void serviceTypeDiscovered(IServiceTypeEvent event) {
+		public synchronized void serviceTypeDiscovered(final IServiceTypeEvent event) {
 			// notify our listeners first so they get a chance to register for
 			// the type before the underlying provider fires service added
 			synchronized (serviceTypeListeners) {
-				for (Iterator itr = serviceTypeListeners.iterator(); itr.hasNext();) {
-					IServiceTypeListener listener = (IServiceTypeListener) itr.next();
+				for (final Iterator itr = serviceTypeListeners.iterator(); itr.hasNext();) {
+					final IServiceTypeListener listener = (IServiceTypeListener) itr.next();
 					// we want to pretend the discovery event comes from us, thus we change the connectedId
 					listener.serviceTypeDiscovered(new CompositeServiceTypeContainerEvent(event, getConnectedID()));
 					Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "serviceTypeDiscovered", //$NON-NLS-1$
@@ -91,13 +91,13 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 			}
 			// add ourself as a listener to the underlying providers. This might
 			// trigger a serviceAdded alread
-			IServiceTypeID istid = event.getServiceTypeID();
+			final IServiceTypeID istid = event.getServiceTypeID();
 			synchronized (containers) {
-				for (Iterator itr = containers.iterator(); itr.hasNext();) {
+				for (final Iterator itr = containers.iterator(); itr.hasNext();) {
 					// TODO ccstl doesn't have to be a listener for a non
 					// matching (namespace) container, but it doesn't hurt
 					// either
-					IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+					final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
 					idca.addServiceListener(istid, ccsl);
 				}
 			}
@@ -125,7 +125,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	/**
 	 * @param containers
 	 */
-	public CompositeDiscoveryContainer(List containers) {
+	public CompositeDiscoveryContainer(final List containers) {
 		super(CompositeNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(CompositeDiscoveryContainer.class.getName())));
 		this.containers = containers;
 		this.registeredServices = new HashSet();
@@ -134,19 +134,19 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID aTargetID, IConnectContext connectContext) throws ContainerConnectException {
+	public void connect(final ID aTargetID, final IConnectContext connectContext) throws ContainerConnectException {
 		if (targetID != null || getConfig() == null) {
 			throw new ContainerConnectException(Messages.CompositeDiscoveryContainer_AlreadyConnected);
 		}
 		targetID = (aTargetID == null) ? getConfig().getID() : aTargetID;
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID, connectContext));
 		synchronized (containers) {
-			for (Iterator itr = containers.iterator(); itr.hasNext();) {
-				IContainer container = (IContainer) itr.next();
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IContainer container = (IContainer) itr.next();
 				if (container.getConnectedID() == null) {
 					container.connect(targetID, connectContext);
 				}
-				IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) container;
+				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) container;
 				idca.addServiceListener(ccsl);
 				idca.addServiceTypeListener(ccstl);
 			}
@@ -161,8 +161,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), getConnectedID()));
 		targetID = null;
 		synchronized (containers) {
-			for (Iterator itr = containers.iterator(); itr.hasNext();) {
-				IContainer container = (IContainer) itr.next();
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IContainer container = (IContainer) itr.next();
 				container.disconnect();
 			}
 		}
@@ -178,8 +178,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	public void dispose() {
 		disconnect();
 		synchronized (containers) {
-			for (Iterator itr = containers.iterator(); itr.hasNext();) {
-				IContainer container = (IContainer) itr.next();
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IContainer container = (IContainer) itr.next();
 				container.dispose();
 			}
 			containers.clear();
@@ -195,8 +195,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		return targetID;
 	}
 
-	private IServiceID getServiceIDForDiscoveryContainer(IServiceID service, IDiscoveryContainerAdapter dca) {
-		Namespace connectNamespace = dca.getServicesNamespace();
+	private IServiceID getServiceIDForDiscoveryContainer(final IServiceID service, final IDiscoveryContainerAdapter dca) {
+		final Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(service.getNamespace())) {
 			return ServiceIDFactory.getDefault().createServiceID(connectNamespace, service.getServiceTypeID().getName(), service.getServiceName());
 		}
@@ -206,13 +206,13 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID)
 	 */
-	public IServiceInfo getServiceInfo(IServiceID aService) {
+	public IServiceInfo getServiceInfo(final IServiceID aService) {
 		Assert.isNotNull(aService);
 		synchronized (containers) {
-			for (Iterator itr = containers.iterator(); itr.hasNext();) {
-				IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
-				IServiceID isi = getServiceIDForDiscoveryContainer(aService, idca);
-				IServiceInfo service = idca.getServiceInfo(isi);
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+				final IServiceID isi = getServiceIDForDiscoveryContainer(aService, idca);
+				final IServiceInfo service = idca.getServiceInfo(isi);
 				if (service != null) {
 					return service;
 				}
@@ -221,8 +221,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		return null;
 	}
 
-	private IServiceInfo getServiceInfoForDiscoveryContainer(IServiceInfo aSi, IDiscoveryContainerAdapter idca) {
-		IServiceID serviceID = getServiceIDForDiscoveryContainer(aSi.getServiceID(), idca);
+	private IServiceInfo getServiceInfoForDiscoveryContainer(final IServiceInfo aSi, final IDiscoveryContainerAdapter idca) {
+		final IServiceID serviceID = getServiceIDForDiscoveryContainer(aSi.getServiceID(), idca);
 		return new ServiceInfo(aSi.getLocation(), serviceID, aSi.getPriority(), aSi.getWeight(), aSi.getServiceProperties());
 	}
 
@@ -230,11 +230,11 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServices()
 	 */
 	public IServiceInfo[] getServices() {
-		Set set = new HashSet();
+		final Set set = new HashSet();
 		synchronized (containers) {
-			for (Iterator itr = containers.iterator(); itr.hasNext();) {
-				IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
-				IServiceInfo[] services = idca.getServices();
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+				final IServiceInfo[] services = idca.getServices();
 				set.addAll(Arrays.asList(services));
 			}
 		}
@@ -244,24 +244,24 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)
 	 */
-	public IServiceInfo[] getServices(IServiceTypeID type) {
+	public IServiceInfo[] getServices(final IServiceTypeID type) {
 		Assert.isNotNull(type);
-		Set set = new HashSet();
+		final Set set = new HashSet();
 		synchronized (containers) {
-			for (Iterator itr = containers.iterator(); itr.hasNext();) {
-				IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
-				IServiceTypeID isti = getServiceTypeIDForDiscoveryContainer(type, idca);
-				IServiceInfo[] services = idca.getServices(isti);
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+				final IServiceTypeID isti = getServiceTypeIDForDiscoveryContainer(type, idca);
+				final IServiceInfo[] services = idca.getServices(isti);
 				set.addAll(Arrays.asList(services));
 			}
 		}
 		return (IServiceInfo[]) set.toArray(new IServiceInfo[set.size()]);
 	}
 
-	private IServiceTypeID getServiceTypeIDForDiscoveryContainer(IServiceTypeID type, IDiscoveryContainerAdapter dca) {
-		Namespace connectNamespace = dca.getServicesNamespace();
+	private IServiceTypeID getServiceTypeIDForDiscoveryContainer(final IServiceTypeID type, final IDiscoveryContainerAdapter dca) {
+		final Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(type.getNamespace())) {
-			IServiceID serviceID = (IServiceID) connectNamespace.createInstance(new Object[] {type, null});
+			final IServiceID serviceID = (IServiceID) connectNamespace.createInstance(new Object[] {type, null});
 			return serviceID.getServiceTypeID();
 		}
 		return type;
@@ -271,11 +271,11 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServiceTypes()
 	 */
 	public IServiceTypeID[] getServiceTypes() {
-		Set set = new HashSet();
+		final Set set = new HashSet();
 		synchronized (containers) {
-			for (Iterator itr = containers.iterator(); itr.hasNext();) {
-				IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
-				IServiceTypeID[] services = idca.getServiceTypes();
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+				final IServiceTypeID[] services = idca.getServiceTypes();
 				set.addAll(Arrays.asList(services));
 			}
 		}
@@ -285,15 +285,15 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void registerService(IServiceInfo serviceInfo) throws ECFException {
+	public void registerService(final IServiceInfo serviceInfo) throws ECFException {
 		Assert.isNotNull(serviceInfo);
 		synchronized (registeredServices) {
 			Assert.isTrue(registeredServices.add(serviceInfo));
 		}
 		synchronized (containers) {
-			for (Iterator itr = containers.iterator(); itr.hasNext();) {
-				IDiscoveryContainerAdapter dca = (IDiscoveryContainerAdapter) itr.next();
-				IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, dca);
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IDiscoveryContainerAdapter dca = (IDiscoveryContainerAdapter) itr.next();
+				final IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, dca);
 				dca.registerService(isi);
 				Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "registerService", "registeredService " //$NON-NLS-1$ //$NON-NLS-2$
 						+ serviceInfo.toString());
@@ -304,16 +304,16 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void unregisterService(IServiceInfo serviceInfo) throws ECFException {
+	public void unregisterService(final IServiceInfo serviceInfo) throws ECFException {
 		Assert.isNotNull(serviceInfo);
 		synchronized (registeredServices) {
 			// no assert as unregisterService might be called with an non-existing ISI
 			registeredServices.remove(serviceInfo);
 		}
 		synchronized (containers) {
-			for (Iterator itr = containers.iterator(); itr.hasNext();) {
-				IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
-				IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, idca);
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+				final IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, idca);
 				idca.unregisterService(isi);
 			}
 		}
@@ -324,15 +324,15 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @return true on success
 	 * @see java.util.List#add(java.lang.Object)
 	 */
-	public boolean addContainer(Object object) {
+	public boolean addContainer(final Object object) {
 		// register previously registered with the new IDS
 		synchronized (registeredServices) {
-			IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) object;
-			for (Iterator itr = registeredServices.iterator(); itr.hasNext();) {
-				IServiceInfo serviceInfo = (IServiceInfo) itr.next();
+			final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) object;
+			for (final Iterator itr = registeredServices.iterator(); itr.hasNext();) {
+				final IServiceInfo serviceInfo = (IServiceInfo) itr.next();
 				try {
 					idca.registerService(serviceInfo);
-				} catch (ECFException e) {
+				} catch (final ECFException e) {
 					// we eat the exception here since the original registerService call is long done
 					Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "addContainer(Object)", e); //$NON-NLS-1$
 				}
@@ -350,7 +350,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @return true on success
 	 * @see java.util.List#remove(java.lang.Object)
 	 */
-	public boolean removeContainer(Object object) {
+	public boolean removeContainer(final Object object) {
 		synchronized (containers) {
 			Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "removeContainer(Object)", "removeContainer " //$NON-NLS-1$ //$NON-NLS-2$
 					+ object.toString());

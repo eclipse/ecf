@@ -16,9 +16,9 @@ import org.eclipse.ecf.discovery.ServiceTypeContainerEvent;
 
 public class CompositeServiceTypeContainerEvent extends ServiceTypeContainerEvent implements IServiceTypeEvent {
 
-	private ID origLocalContainerId;
+	private final ID origLocalContainerId;
 
-	public CompositeServiceTypeContainerEvent(IServiceTypeEvent event, ID connectedId) {
+	public CompositeServiceTypeContainerEvent(final IServiceTypeEvent event, final ID connectedId) {
 		super(event.getServiceTypeID(), connectedId);
 		origLocalContainerId = event.getLocalContainerID();
 	}
