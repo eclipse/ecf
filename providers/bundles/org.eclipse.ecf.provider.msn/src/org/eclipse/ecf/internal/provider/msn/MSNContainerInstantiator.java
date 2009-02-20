@@ -37,4 +37,8 @@ public class MSNContainerInstantiator implements IContainerInstantiator {
 		return null;
 	}
 
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return null;
+	}
+
 }
