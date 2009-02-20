@@ -10,9 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.container;
 
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
@@ -26,15 +24,18 @@ public class IRCContainerInstantiator implements IContainerInstantiator {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription,
-	 *      java.lang.Object[])
+	 * @see
+	 * org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org
+	 * .eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args) throws ContainerCreateException {
 		try {
 			return new IRCRootContainer(IDFactory.getDefault().createGUID());
 		} catch (IDCreateException e) {
-			throw new ContainerCreateException(Messages.IRCContainerInstantiator_Exception_CreateID_Failed, e);
+			throw new ContainerCreateException(
+					Messages.IRCContainerInstantiator_Exception_CreateID_Failed,
+					e);
 		}
 	}
 
@@ -48,5 +49,9 @@ public class IRCContainerInstantiator implements IContainerInstantiator {
 	public Class[][] getSupportedParameterTypes(
 			ContainerTypeDescription description) {
 		return new Class[0][0];
+	}
+
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return null;
 	}
 }
