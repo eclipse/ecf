@@ -9,26 +9,16 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.Collection;
 import org.eclipse.ecf.core.util.Trace;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.hooks.service.FindHook;
+import org.osgi.service.discovery.DiscoveredServiceNotification;
+import org.osgi.service.discovery.DiscoveredServiceTracker;
 
-public class ECFFindHookImpl implements FindHook {
+public class ECFDiscoveredServiceTracker implements DiscoveredServiceTracker {
 
-	private final DistributionProviderImpl distributionProvider;
-
-	public ECFFindHookImpl(DistributionProviderImpl distributionProvider) {
-		this.distributionProvider = distributionProvider;
-	}
-
-	public void find(BundleContext context, String name, String filter,
-			boolean allServices, Collection references) {
+	public void serviceChanged(DiscoveredServiceNotification notification) {
 		// XXX TODO
 		Trace.entering(Activator.PLUGIN_ID, DebugOptions.FINDHOOKDEBUG, this
-				.getClass(), "find", new Object[] {
-				context.getBundle().getSymbolicName(), name, filter,
-				new Boolean(allServices), references });
+				.getClass(), "serviceChanged", notification);
 	}
 
 }
