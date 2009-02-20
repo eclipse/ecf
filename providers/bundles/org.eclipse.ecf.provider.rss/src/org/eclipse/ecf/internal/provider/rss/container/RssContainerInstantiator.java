@@ -13,12 +13,12 @@ package org.eclipse.ecf.internal.provider.rss.container;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 
 /**
  * 
  */
-public class RssContainerInstantiator implements IContainerInstantiator {
+public class RssContainerInstantiator extends GenericContainerInstantiator {
 
 	/*
 	 * (non-Javadoc)
@@ -72,15 +72,4 @@ public class RssContainerInstantiator implements IContainerInstantiator {
 		}
 	}
 
-	public String[] getSupportedAdapterTypes(
-			ContainerTypeDescription description) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Class[][] getSupportedParameterTypes(
-			ContainerTypeDescription description) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
