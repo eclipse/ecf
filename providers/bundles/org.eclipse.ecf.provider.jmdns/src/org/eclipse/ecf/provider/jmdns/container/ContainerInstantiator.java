@@ -12,11 +12,7 @@ package org.eclipse.ecf.provider.jmdns.container;
 
 import java.io.IOException;
 import java.net.InetAddress;
-
-import org.eclipse.ecf.core.AbstractContainer;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
@@ -49,6 +45,10 @@ public class ContainerInstantiator implements IContainerInstantiator {
 
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		return new Class[0][0];
+	}
+
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return null;
 	}
 
 }
