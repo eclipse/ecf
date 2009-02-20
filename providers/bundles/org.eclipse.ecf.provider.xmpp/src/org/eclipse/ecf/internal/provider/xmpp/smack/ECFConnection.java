@@ -9,36 +9,18 @@
 package org.eclipse.ecf.internal.provider.xmpp.smack;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
+import java.util.*;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerAuthenticationException;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
-import org.eclipse.ecf.provider.comm.DisconnectEvent;
-import org.eclipse.ecf.provider.comm.IAsynchEventHandler;
-import org.eclipse.ecf.provider.comm.IConnectionListener;
-import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.provider.comm.*;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.Roster;
-import org.jivesoftware.smack.RosterEntry;
-import org.jivesoftware.smack.SSLXMPPConnection;
-import org.jivesoftware.smack.SmackConfiguration;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.packet.Message.Type;
 
 public class ECFConnection implements ISynchAsynchConnection {
@@ -60,7 +42,6 @@ public class ECFConnection implements ISynchAsynchConnection {
 	private XMPPConnection connection = null;
 	private IAsynchEventHandler handler = null;
 	private boolean isStarted = false;
-	private String serverName;
 	private int serverPort = -1;
 	private String serverResource;
 	private final Map properties = null;
@@ -160,8 +141,34 @@ public class ECFConnection implements ISynchAsynchConnection {
 		Roster.setDefaultSubscriptionMode(Roster.SUBSCRIPTION_MANUAL);
 
 		final XMPPID jabberURI = getXMPPID(remote);
-		final String username = jabberURI.getNodename();
-		serverName = jabberURI.getHostname();
+
+		String username = jabberURI.getUsername();
+		String hostname = jabberURI.getHostname();
+		String hostnameOverride = null;
+
+		// Check for the URI form of "joe@bloggs.org@talk.google.com", which
+		// would at this point would have
+		// - username = "joe@bloggs.org"
+		// - hostname = "talk.google.com"
+		// - hostnameOverride = null
+		//
+		// We need to turn this into:
+		// - username = "joe"
+		// - hostname = "bloggs.org"
+		// - hostnameOverride = "talk.google.com"
+
+		int atSignIdx = username.lastIndexOf('@');
+		if (atSignIdx != -1) {
+			hostnameOverride = hostname;
+			hostname = username.substring(atSignIdx + 1);
+			username = username.substring(0, atSignIdx);
+		}
+
+		if (google && hostnameOverride == null) {
+			hostnameOverride = GOOGLE_TALK_HOST;
+		}
+		final String serviceName = hostname;
+
 		serverPort = jabberURI.getPort();
 		serverResource = jabberURI.getResourceName();
 		if (serverResource == null
@@ -170,17 +177,34 @@ public class ECFConnection implements ISynchAsynchConnection {
 			jabberURI.setResourceName(serverResource);
 		}
 		try {
-			if (google)
-				serverName = GOOGLE_TALK_HOST;
-			if (secure) {
-				serverPort = (serverPort < 0)?XMPPS_DEFAULT_PORT:serverPort;
-				connection = new SSLXMPPConnection(serverName,
-						serverPort, jabberURI.getHostname());
+			if (hostnameOverride != null) {
+				if (secure) {
+					if (serverPort == -1) {
+						serverPort = XMPPS_DEFAULT_PORT;
+					}
+					connection = new SSLXMPPConnection(hostnameOverride,
+							serverPort, serviceName);
+				} else {
+					if (serverPort == -1) {
+						serverPort = XMPP_DEFAULT_PORT;
+					}
+					connection = new XMPPConnection(hostnameOverride,
+							serverPort, serviceName);
+				}
+			} else if (serverPort == -1) {
+				if (secure) {
+					connection = new SSLXMPPConnection(serviceName);
+				} else {
+					connection = new XMPPConnection(serviceName);
+				}
 			} else {
-				serverPort = (serverPort < 0)?XMPP_DEFAULT_PORT:serverPort;
-				connection = new XMPPConnection(serverName, serverPort,
-						jabberURI.getHostname());
+				if (secure) {
+					connection = new SSLXMPPConnection(serviceName, serverPort);
+				} else {
+					connection = new XMPPConnection(serviceName, serverPort);
+				}
 			}
+
 			connection.addPacketListener(packetListener, null);
 			connection.addConnectionListener(connectionListener);
 			// Login

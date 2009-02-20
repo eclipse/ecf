@@ -13,7 +13,6 @@ package org.eclipse.ecf.provider.xmpp.identity;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Iterator;
-
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.StringUtils;
@@ -177,7 +176,7 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceToExternalForm()
 	 */
 	protected String namespaceToExternalForm() {
-		return getNamespace().getScheme()+"://"+getFQName();
+		return getNamespace().getScheme() + "://" + getFQName();
 	}
 
 	public String getUsername() {
@@ -201,8 +200,12 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	}
 
 	public String getUsernameAtHost() {
-		return getUsername() + USER_HOST_DELIMITER + getHostname()
-				+ ((getPort() == -1) ? "" : ":" + getPort());
+		// if we use the full "user@domain@server" format, detect that here
+		if (getUsername().indexOf(USER_HOST_DELIMITER) != -1)
+			return getUsername();
+		else
+			return getUsername() + USER_HOST_DELIMITER + getHostname()
+					+ ((getPort() == -1) ? "" : ":" + getPort());
 	}
 
 	public String getFQName() {
