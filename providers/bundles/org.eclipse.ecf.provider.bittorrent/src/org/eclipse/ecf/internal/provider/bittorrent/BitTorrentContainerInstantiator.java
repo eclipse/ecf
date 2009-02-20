@@ -43,4 +43,8 @@ public final class BitTorrentContainerInstantiator implements
 		return null;
 	}
 
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return null;
+	}
+
 }
