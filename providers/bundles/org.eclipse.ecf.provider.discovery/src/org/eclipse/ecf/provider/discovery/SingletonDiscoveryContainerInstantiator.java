@@ -67,4 +67,8 @@ public class SingletonDiscoveryContainerInstantiator implements IContainerInstan
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		return new Class[][] {{String.class}};
 	}
+
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return null;
+	}
 }

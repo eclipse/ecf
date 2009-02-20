@@ -11,15 +11,8 @@
 
 package org.eclipse.ecf.provider.discovery;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerFactory;
+import java.util.*;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
@@ -76,6 +69,10 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 	 */
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		return new Class[0][0];
+	}
+
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return null;
 	}
 
 }
