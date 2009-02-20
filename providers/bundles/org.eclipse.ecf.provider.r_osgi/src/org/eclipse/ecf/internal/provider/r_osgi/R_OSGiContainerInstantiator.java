@@ -27,6 +27,8 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
  */
 public final class R_OSGiContainerInstantiator implements IContainerInstantiator {
 
+	public static final String[] r_OSGiIntents = {"passByValue", "exactlyOnce", "ordered",}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
 	/**
 	 * creates a new container instance.
 	 * 
@@ -77,6 +79,10 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	 */
 	public Class[][] getSupportedParameterTypes(final ContainerTypeDescription description) {
 		return new Class[][] {new Class[] {}, new Class[] {ID.class}};
+	}
+
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return r_OSGiIntents;
 	}
 
 }
