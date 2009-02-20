@@ -10,8 +10,8 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.*;
-import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -133,8 +133,9 @@ public class DistributionProviderImpl implements DistributionProvider {
 
 	public Collection /* String */getSupportedIntents() {
 		List result = new ArrayList();
-		List containerDescriptions = ContainerFactory.getDefault()
-				.getDescriptions();
+		IContainerFactory containerFactory = Activator.getDefault()
+				.getContainerManager().getContainerFactory();
+		List containerDescriptions = containerFactory.getDescriptions();
 		if (containerDescriptions != null) {
 			for (Iterator i = containerDescriptions.iterator(); i.hasNext();) {
 				ContainerTypeDescription ctd = (ContainerTypeDescription) i
