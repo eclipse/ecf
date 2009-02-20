@@ -23,15 +23,15 @@ public class SingletonDiscoveryContainerInstantiator implements IContainerInstan
 
 	private static IContainer INSTANCE;
 
-	private static synchronized IContainer getInstance(String containerName) throws ContainerCreateException {
+	private static synchronized IContainer getInstance(final String containerName) throws ContainerCreateException {
 		if (INSTANCE == null) {
-			IContainerFactory factory = ContainerFactory.getDefault();
-			List list = factory.getDescriptions();
-			for (Iterator itr = list.iterator(); itr.hasNext();) {
-				ContainerTypeDescription ctd = (ContainerTypeDescription) itr.next();
-				String name = ctd.getName();
+			final IContainerFactory factory = ContainerFactory.getDefault();
+			final List list = factory.getDescriptions();
+			for (final Iterator itr = list.iterator(); itr.hasNext();) {
+				final ContainerTypeDescription ctd = (ContainerTypeDescription) itr.next();
+				final String name = ctd.getName();
 				if (name.equals(containerName)) {
-					IContainer createContainer = factory.createContainer(ctd.getName());
+					final IContainer createContainer = factory.createContainer(ctd.getName());
 					INSTANCE = new SingletonDiscoveryContainer(createContainer);
 					return INSTANCE;
 				}
@@ -46,9 +46,9 @@ public class SingletonDiscoveryContainerInstantiator implements IContainerInstan
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */
-	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
+	public IContainer createInstance(final ContainerTypeDescription description, final Object[] parameters) throws ContainerCreateException {
 		if (parameters != null && parameters.length == 1 && parameters[0] instanceof String) {
-			String containerName = (String) parameters[0];
+			final String containerName = (String) parameters[0];
 			return getInstance(containerName);
 		}
 		throw new ContainerCreateException("Missing parameter"); //$NON-NLS-1$
@@ -57,17 +57,20 @@ public class SingletonDiscoveryContainerInstantiator implements IContainerInstan
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
+	public String[] getSupportedAdapterTypes(final ContainerTypeDescription description) {
 		return new String[] {IDiscoveryContainerAdapter.class.getName()};
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedParameterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
+	public Class[][] getSupportedParameterTypes(final ContainerTypeDescription description) {
 		return new Class[][] {{String.class}};
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedIntents(org.eclipse.ecf.core.ContainerTypeDescription)
+	 */
 	public String[] getSupportedIntents(ContainerTypeDescription description) {
 		return null;
 	}

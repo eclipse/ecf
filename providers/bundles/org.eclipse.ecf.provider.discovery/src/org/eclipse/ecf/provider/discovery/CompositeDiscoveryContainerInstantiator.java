@@ -11,8 +11,15 @@
 
 package org.eclipse.ecf.provider.discovery;
 
-import java.util.*;
-import org.eclipse.ecf.core.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
@@ -26,28 +33,28 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription,
 	 *      java.lang.Object[])
 	 */
-	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
+	public IContainer createInstance(final ContainerTypeDescription description, final Object[] parameters) throws ContainerCreateException {
 
 		try {
-			IContainerFactory factory = ContainerFactory.getDefault();
-			List containers = new ArrayList();
-			List list = factory.getDescriptions();
-			for (Iterator itr = list.iterator(); itr.hasNext();) {
-				ContainerTypeDescription ctd = (ContainerTypeDescription) itr.next();
-				String name = ctd.getName();
+			final IContainerFactory factory = ContainerFactory.getDefault();
+			final List containers = new ArrayList();
+			final List list = factory.getDescriptions();
+			for (final Iterator itr = list.iterator(); itr.hasNext();) {
+				final ContainerTypeDescription ctd = (ContainerTypeDescription) itr.next();
+				final String name = ctd.getName();
 				if (!name.equals("ecf.discovery.*") //$NON-NLS-1$
 						&& name.startsWith("ecf.discovery.")) { //$NON-NLS-1$
-					IContainer container = factory.createContainer(ctd.getName());
+					final IContainer container = factory.createContainer(ctd.getName());
 					containers.add(container);
 				}
 			}
 			return new CompositeDiscoveryContainer(containers);
-		} catch (IDCreateException e) {
-			ContainerCreateException excep = new ContainerCreateException(Messages.CompositeDiscoveryContainerInstantiator);
+		} catch (final IDCreateException e) {
+			final ContainerCreateException excep = new ContainerCreateException(Messages.CompositeDiscoveryContainerInstantiator);
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
-		} catch (ContainerCreateException e) {
-			ContainerCreateException excep = new ContainerCreateException(Messages.CompositeDiscoveryContainerInstantiator);
+		} catch (final ContainerCreateException e) {
+			final ContainerCreateException excep = new ContainerCreateException(Messages.CompositeDiscoveryContainerInstantiator);
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		}
@@ -58,7 +65,7 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 	 * 
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
+	public String[] getSupportedAdapterTypes(final ContainerTypeDescription description) {
 		return new String[] {IDiscoveryContainerAdapter.class.getName()};
 	}
 
@@ -67,10 +74,13 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 	 * 
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedParameterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
+	public Class[][] getSupportedParameterTypes(final ContainerTypeDescription description) {
 		return new Class[0][0];
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedIntents(org.eclipse.ecf.core.ContainerTypeDescription)
+	 */
 	public String[] getSupportedIntents(ContainerTypeDescription description) {
 		return null;
 	}
