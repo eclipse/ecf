@@ -20,33 +20,42 @@ import org.eclipse.ecf.internal.provider.jmdns.Messages;
 
 public class ContainerInstantiator implements IContainerInstantiator {
 
-	public ContainerInstantiator() {
-		super();
-	}
-
-	public IContainer createInstance(ContainerTypeDescription description, Object[] args) throws ContainerCreateException {
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
+	 */
+	public IContainer createInstance(final ContainerTypeDescription description, final Object[] args) throws ContainerCreateException {
 		try {
-			AbstractContainer container = new JMDNSDiscoveryContainer(InetAddress.getLocalHost());
+			final AbstractContainer container = new JMDNSDiscoveryContainer(InetAddress.getLocalHost());
 			return container;
-		} catch (IDCreateException e) {
-			ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_CONTAINER_CREATE);
+		} catch (final IDCreateException e) {
+			final ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_CONTAINER_CREATE);
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
-		} catch (IOException e) {
-			ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_GETTING_INETADDRESS);
+		} catch (final IOException e) {
+			final ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_GETTING_INETADDRESS);
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		}
 	}
 
-	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
+	 */
+	public String[] getSupportedAdapterTypes(final ContainerTypeDescription description) {
 		return new String[] {IDiscoveryContainerAdapter.class.getName()};
 	}
 
-	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedParameterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
+	 */
+	public Class[][] getSupportedParameterTypes(final ContainerTypeDescription description) {
 		return new Class[0][0];
 	}
 
+	/** 
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedIntents(org.eclipse.ecf.core.ContainerTypeDescription)
+	 * @since 2.2
+	 */
 	public String[] getSupportedIntents(ContainerTypeDescription description) {
 		return null;
 	}
