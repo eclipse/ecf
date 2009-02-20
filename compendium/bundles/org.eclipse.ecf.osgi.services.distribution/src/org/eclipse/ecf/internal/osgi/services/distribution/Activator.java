@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
+import org.osgi.framework.hooks.service.FindHook;
 import org.osgi.service.distribution.DistributionProvider;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -27,6 +28,7 @@ public class Activator implements BundleActivator {
 
 	private ServiceRegistration eventHookRegistration;
 	private ServiceRegistration distributionProviderRegistration;
+	private ServiceRegistration listenerHookRegistration;
 
 	private DistributionProviderImpl distributionProvider;
 
@@ -60,6 +62,10 @@ public class Activator implements BundleActivator {
 		final ECFEventHookImpl hook = new ECFEventHookImpl(distributionProvider);
 		this.eventHookRegistration = this.context.registerService(
 				EventHook.class.getName(), hook, null);
+
+		final FindHook findHook = new ECFFindHookImpl(distributionProvider);
+		this.listenerHookRegistration = this.context.registerService(
+				FindHook.class.getName(), findHook, null);
 		// register all existing services which have the marker property
 		try {
 			final ServiceReference[] refs = this.context
@@ -94,6 +100,10 @@ public class Activator implements BundleActivator {
 		if (this.eventHookRegistration != null) {
 			this.eventHookRegistration.unregister();
 			this.eventHookRegistration = null;
+		}
+		if (this.listenerHookRegistration != null) {
+			this.listenerHookRegistration.unregister();
+			this.listenerHookRegistration = null;
 		}
 	}
 
