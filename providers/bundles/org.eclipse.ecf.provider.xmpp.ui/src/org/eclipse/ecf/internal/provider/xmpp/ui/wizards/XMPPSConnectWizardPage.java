@@ -11,19 +11,12 @@
 package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
 import java.util.regex.Matcher;
-
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 
 final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 
@@ -55,12 +48,14 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 	}
 
 	public void createControl(Composite parent) {
-		
+
 		parent = new Composite(parent, SWT.NONE);
-		
+
 		parent.setLayout(new GridLayout());
-		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true,
+				false);
+		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText(Messages.XMPPConnectWizardPage_LABEL_USERID);
@@ -84,6 +79,30 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 
 		label = new Label(parent, SWT.RIGHT);
 		label.setText(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_TEMPLATE);
+		label.setLayoutData(endData);
+
+		label = new Label(parent, SWT.LEFT);
+		label.setText(Messages.XMPPConnectWizardPage_WIZARD_ALT_SERVER);
+
+		serverText = new Text(parent, SWT.SINGLE | SWT.BORDER);
+		serverText.setLayoutData(fillData);
+		serverText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				verify();
+			}
+		});
+		serverText.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				verify();
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				verify();
+			}
+		});
+
+		label = new Label(parent, SWT.RIGHT);
+		label.setText(Messages.XMPPConnectWizardPage_WIZARD_ALT_SERVER_TEXT);
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);

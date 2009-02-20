@@ -10,12 +10,10 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.eclipse.ecf.internal.provider.xmpp.ui.Activator;
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
 import org.eclipse.ecf.ui.SharedImages;
@@ -23,16 +21,10 @@ import org.eclipse.ecf.ui.util.PasswordCacheHelper;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 
 public class XMPPConnectWizardPage extends WizardPage {
 
@@ -42,13 +34,21 @@ public class XMPPConnectWizardPage extends WizardPage {
 
 	String usernameAtHost;
 
-	static Pattern emailPattern = Pattern.compile(".+@.+.[a-z]+(:[0-9]+)?");
+	Text serverText;
+
+	// Note that this in many ways is more liberal than RCF5322
+	static Pattern emailPattern = Pattern
+			.compile(".+@[-a-z0-9]+(\\.[-a-z0-9]+)+(:[0-9]+)?");
+
+	static Pattern serverPattern = Pattern
+			.compile("([-a-z0-9]+(\\.[-a-z0-9]+)*)?");
 
 	XMPPConnectWizardPage() {
 		super(""); //$NON-NLS-1$
 		setTitle(Messages.XMPPConnectWizardPage_WIZARD_TITLE);
 		setDescription(Messages.XMPPConnectWizardPage_WIZARD_DESCRIPTION);
-		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_CHAT_WIZARD));
+		setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_CHAT_WIZARD));
 		setPageComplete(false);
 	}
 
@@ -63,8 +63,12 @@ public class XMPPConnectWizardPage extends WizardPage {
 			updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS);
 		} else {
 			final Matcher matcher = emailPattern.matcher(text);
+			final Matcher hostMatcher = serverPattern.matcher(serverText
+					.getText());
 			if (!matcher.matches()) {
 				updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+			} else if (!hostMatcher.matches()) {
+				updateStatus(Messages.XMPPConnectWizardPage_WIZARD_ALT_SERVER_INCOMPLETE);
 			} else {
 				restorePassword(text);
 				updateStatus(null);
@@ -73,12 +77,14 @@ public class XMPPConnectWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
-		
+
 		parent = new Composite(parent, SWT.NONE);
-		
+
 		parent.setLayout(new GridLayout());
-		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true,
+				false);
+		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText(Messages.XMPPConnectWizardPage_LABEL_USERID);
@@ -102,6 +108,30 @@ public class XMPPConnectWizardPage extends WizardPage {
 
 		label = new Label(parent, SWT.RIGHT);
 		label.setText(Messages.XMPPConnectWizardPage_USERID_TEMPLATE);
+		label.setLayoutData(endData);
+
+		label = new Label(parent, SWT.LEFT);
+		label.setText(Messages.XMPPConnectWizardPage_WIZARD_ALT_SERVER);
+
+		serverText = new Text(parent, SWT.SINGLE | SWT.BORDER);
+		serverText.setLayoutData(fillData);
+		serverText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				verify();
+			}
+		});
+		serverText.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				verify();
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				verify();
+			}
+		});
+
+		label = new Label(parent, SWT.RIGHT);
+		label.setText(Messages.XMPPConnectWizardPage_WIZARD_ALT_SERVER_TEXT);
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);
@@ -137,7 +167,21 @@ public class XMPPConnectWizardPage extends WizardPage {
 	}
 
 	String getConnectID() {
-		return connectText.getText();
+		String server = serverText.getText().trim();
+		String userID = connectText.getText();
+
+		// Check if the user typed in a hostname
+		if ("".equals(server))
+			return userID;
+		else {
+			// Now, did they add the port number part?
+			int colonIdx = userID.lastIndexOf(':');
+			if (colonIdx > 0) // Yep, move the port to the end
+				return userID.substring(0, colonIdx) + "@" + server
+						+ userID.substring(colonIdx);
+			else
+				return userID + "@" + server; // Nah, nothing to move
+		}
 	}
 
 	String getPassword() {
@@ -149,7 +193,8 @@ public class XMPPConnectWizardPage extends WizardPage {
 		setPageComplete(message == null);
 	}
 
-	private static final String PAGE_SETTINGS = XMPPConnectWizardPage.class.getName();
+	private static final String PAGE_SETTINGS = XMPPConnectWizardPage.class
+			.getName();
 	private static final int MAX_COMBO_VALUES = 40;
 	private static final String COMBO_TEXT_KEY = "connectTextValue";
 	private static final String COMBO_BOX_ITEMS_KEY = "comboValues";
@@ -174,7 +219,8 @@ public class XMPPConnectWizardPage extends WizardPage {
 			if (itemsToSaveLength > MAX_COMBO_VALUES)
 				itemsToSaveLength = MAX_COMBO_VALUES;
 			final String[] itemsToSave = new String[itemsToSaveLength];
-			System.arraycopy(items.toArray(new String[] {}), 0, itemsToSave, 0, itemsToSaveLength);
+			System.arraycopy(items.toArray(new String[] {}), 0, itemsToSave, 0,
+					itemsToSaveLength);
 			pageSettings.put(COMBO_BOX_ITEMS_KEY, itemsToSave);
 		}
 	}

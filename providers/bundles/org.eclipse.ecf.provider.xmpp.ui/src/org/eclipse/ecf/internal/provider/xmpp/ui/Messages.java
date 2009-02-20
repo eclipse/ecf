@@ -59,6 +59,9 @@ public class Messages extends NLS {
 	public static String XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE;
 	public static String XMPPConnectWizardPage_USERID_TEMPLATE;
 	public static String XMPPConnectWizardPage_WIZARD_PASSWORD;
+	public static String XMPPConnectWizardPage_WIZARD_ALT_SERVER;
+	public static String XMPPConnectWizardPage_WIZARD_ALT_SERVER_TEXT;
+	public static String XMPPConnectWizardPage_WIZARD_ALT_SERVER_INCOMPLETE;
 	public static String XMPPConnectWizard_FILE_RECEIVE_TITLE;
 	public static String XMPPConnectWizard_FILE_RECEIVE_MESSAGE;
 	public static String XMPPCompoundContributionItem_SEND_FILE;
@@ -73,7 +76,7 @@ public class Messages extends NLS {
 
 	public static String XMPPConnectWizard_WIZARD_TITLE;
 	public static String XMPPSConnectWizard_WIZARD_TITLE;
-	
+
 	private Messages() {
 	}
 
