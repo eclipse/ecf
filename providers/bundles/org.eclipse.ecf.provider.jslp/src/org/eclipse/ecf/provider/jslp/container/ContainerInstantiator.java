@@ -18,22 +18,18 @@ import org.eclipse.ecf.internal.provider.jslp.Messages;
 
 public class ContainerInstantiator implements IContainerInstantiator {
 
-	public ContainerInstantiator() {
-		super();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription,
 	 *      java.lang.Object[])
 	 */
-	public IContainer createInstance(ContainerTypeDescription description, Object[] args) throws ContainerCreateException {
+	public IContainer createInstance(final ContainerTypeDescription description, final Object[] args) throws ContainerCreateException {
 		try {
-			JSLPDiscoveryContainer container = new JSLPDiscoveryContainer();
+			final JSLPDiscoveryContainer container = new JSLPDiscoveryContainer();
 			return container;
 		} catch (IDCreateException e) {
-			ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_0);
+			final ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_0);
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		}
@@ -44,7 +40,7 @@ public class ContainerInstantiator implements IContainerInstantiator {
 	 * 
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
+	public String[] getSupportedAdapterTypes(final ContainerTypeDescription description) {
 		return new String[] {IDiscoveryContainerAdapter.class.getName()};
 	}
 
@@ -53,11 +49,15 @@ public class ContainerInstantiator implements IContainerInstantiator {
 	 * 
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedParameterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
+	public Class[][] getSupportedParameterTypes(final ContainerTypeDescription description) {
 		return new Class[0][0];
 	}
 
-	public String[] getSupportedIntents(ContainerTypeDescription description) {
+	/**
+	 * @since 2.2
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedIntents(org.eclipse.ecf.core.ContainerTypeDescription)
+	 */
+	public String[] getSupportedIntents(final ContainerTypeDescription description) {
 		return null;
 	}
 
