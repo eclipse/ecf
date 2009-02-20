@@ -8,13 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp;
 
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
-import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
-import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
 
@@ -22,8 +16,8 @@ public class XMPPContainerInstantiator extends GenericContainerInstantiator {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(ContainerDescription,
-	 *      java.lang.Object[])
+	 * @seeorg.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(
+	 * ContainerDescription, java.lang.Object[])
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args) throws ContainerCreateException {
@@ -55,13 +49,11 @@ public class XMPPContainerInstantiator extends GenericContainerInstantiator {
 					"Exception creating generic container", e);
 		}
 	}
-
-	public String[] getSupportedAdapterTypes(
-			ContainerTypeDescription description) {
-		return new String[] { IChatRoomManager.class.getName(),
-				IPresenceContainerAdapter.class.getName(),
-				ISendFileTransferContainerAdapter.class.getName(),
-				ISharedObjectContainer.class.getName() };
-	}
-
+	/*
+	 * public String[] getSupportedAdapterTypes( ContainerTypeDescription
+	 * description) { return new String[] { IChatRoomManager.class.getName(),
+	 * IPresenceContainerAdapter.class.getName(),
+	 * ISendFileTransferContainerAdapter.class.getName(),
+	 * ISharedObjectContainer.class.getName() }; }
+	 */
 }
