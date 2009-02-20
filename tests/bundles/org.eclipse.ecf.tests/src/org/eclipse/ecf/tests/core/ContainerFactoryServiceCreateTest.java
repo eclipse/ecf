@@ -82,6 +82,11 @@ public class ContainerFactoryServiceCreateTest extends ContainerFactoryServiceAb
 			public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 				return new Class[][] {{String.class, Class.class}};
 			}
+
+			public String[] getSupportedIntents(
+					ContainerTypeDescription description) {
+				return null;
+			}
 		}, DESCRIPTION);
 	}
 

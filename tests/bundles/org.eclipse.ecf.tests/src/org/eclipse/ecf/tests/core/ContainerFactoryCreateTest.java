@@ -25,6 +25,10 @@ import org.eclipse.ecf.core.security.IConnectContext;
 
 public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase {
 
+	private static final String INTENTTWO = "intenttwo";
+
+	private static final String INTENTONE = "intentone";
+
 	protected static final String CONTAINER_TYPE_NAME = ContainerFactoryCreateTest.class.getName();
 
 	protected static final String BASE_CONTAINER_TYPE_NAME = "ecf.base";
@@ -76,6 +80,11 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 
 			public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 				return new Class[][] {{String.class, Class.class}};
+			}
+
+			public String[] getSupportedIntents(
+					ContainerTypeDescription description) {
+				return new String[] { INTENTONE, INTENTTWO } ;
 			}
 		}, DESCRIPTION);
 	}
@@ -204,5 +213,11 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 		assertTrue(parameterTypes[0][1].equals(Class.class));
 
 	}
-
+	public void testContainerTypeDescriptionGetSupportedIntents() {
+		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
+		final String[] intents = desc.getSupportedIntents();
+		assertTrue(intents.length == 2);
+		assertTrue(intents[0] == INTENTONE);
+		assertTrue(intents[1] == INTENTTWO);
+	}
 }

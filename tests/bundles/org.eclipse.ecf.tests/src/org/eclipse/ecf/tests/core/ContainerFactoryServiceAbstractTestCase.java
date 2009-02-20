@@ -70,6 +70,11 @@ public abstract class ContainerFactoryServiceAbstractTestCase extends TestCase {
 							ContainerTypeDescription description) {
 						return null;
 					}
+
+					public String[] getSupportedIntents(
+							ContainerTypeDescription description) {
+						return null;
+					}
 				}, DESCRIPTION);
 	}
 

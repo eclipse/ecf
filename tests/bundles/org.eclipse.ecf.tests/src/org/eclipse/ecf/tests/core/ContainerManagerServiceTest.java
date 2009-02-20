@@ -121,6 +121,11 @@ public class ContainerManagerServiceTest extends ContainerFactoryServiceAbstract
 							ContainerTypeDescription description) {
 						return new Class[][] { { String.class , Class.class }};
 					}
+
+					public String[] getSupportedIntents(
+							ContainerTypeDescription description) {
+						return null;
+					}
 				}, DESCRIPTION);
 	}
 	
