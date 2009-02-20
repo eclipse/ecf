@@ -83,9 +83,8 @@ public class Activator implements BundleActivator {
 				DistributionProviderImpl.PRODUCT_NAME);
 		properties.put(DistributionProvider.PROP_KEY_PRODUCT_VERSION,
 				DistributionProviderImpl.PRODUCT_VERSION);
-		// JR TODO: the supported intents are a function of the providers
-		// available
-		properties.put(DistributionProvider.PROP_KEY_SUPPORTED_INTENTS, "");
+		properties.put(DistributionProvider.PROP_KEY_SUPPORTED_INTENTS,
+				distributionProvider.getSupportedIntents());
 		this.distributionProviderRegistration = this.context.registerService(
 				DistributionProvider.class.getName(), distributionProvider,
 				properties);

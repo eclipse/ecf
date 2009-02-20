@@ -10,6 +10,9 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.*;
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.distribution.DistributionProvider;
@@ -126,6 +129,33 @@ public class DistributionProviderImpl implements DistributionProvider {
 	public ServiceReference[] getRemoteServices() {
 		return (ServiceReference[]) remoteServices.entrySet().toArray(
 				new ServiceReference[] {});
+	}
+
+	public Collection /* String */getSupportedIntents() {
+		List result = new ArrayList();
+		List containerDescriptions = ContainerFactory.getDefault()
+				.getDescriptions();
+		if (containerDescriptions != null) {
+			for (Iterator i = containerDescriptions.iterator(); i.hasNext();) {
+				ContainerTypeDescription ctd = (ContainerTypeDescription) i
+						.next();
+				String[] adapterTypes = ctd.getSupportedAdapterTypes();
+				if (adapterTypes != null) {
+					List at = Arrays.asList(adapterTypes);
+					if (at.contains(IRemoteServiceContainerAdapter.class
+							.getName())) {
+						String[] intents = ctd.getSupportedIntents();
+						if (intents != null) {
+							for (int j = 0; j < intents.length; j++) {
+								if (!result.contains(intents[j]))
+									result.add(intents[j]);
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 }
