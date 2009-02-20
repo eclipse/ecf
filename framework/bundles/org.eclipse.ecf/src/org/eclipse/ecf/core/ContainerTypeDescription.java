@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
@@ -158,8 +160,14 @@ public class ContainerTypeDescription {
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
 		}
+		List resultList = new ArrayList();
+		for (int i = 0; i < result.length; i++) {
+			resultList.add(result[i]);
+		}
+		if (!resultList.contains(IContainer.class.getName()))
+			resultList.add(IContainer.class.getName());
 		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
-		return result;
+		return (String[]) resultList.toArray(new String[] {});
 	}
 
 	protected void traceAndLogException(int code, String method, Throwable e) {
@@ -192,6 +200,26 @@ public class ContainerTypeDescription {
 		Class[][] result = new Class[0][0];
 		try {
 			Class[][] r = getInstantiator().getSupportedParameterTypes(this);
+			if (r != null)
+				result = r;
+		} catch (Exception e) {
+			traceAndLogException(IStatus.ERROR, method, e);
+		}
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
+		return result;
+	}
+
+	/**
+	 * @return String[] of container's intents.
+	 * 
+	 * @since 3.0
+	 */
+	public String[] getSupportedIntents() {
+		String method = "getSupportedIntents"; //$NON-NLS-1$
+		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
+		String[] result = new String[0];
+		try {
+			String[] r = getInstantiator().getSupportedIntents(this);
 			if (r != null)
 				result = r;
 		} catch (Exception e) {

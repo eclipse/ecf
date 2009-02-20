@@ -8,9 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.provider;
 
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.*;
 
 /**
  * Interface that must be implemented by extensions of the containerFactory
@@ -121,5 +119,14 @@ public interface IContainerInstantiator {
 	 *         given description.
 	 */
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description);
+
+	/**
+	 * Get supported intents for the container instantiated by this instantiator.
+	 * 
+	 * @param description the ContainerTypeDescription to return the intents for
+	 * @return String[] supported intents.  <code>null</code> may be returned by
+	 *         the provider if no intents are supported for this description.	 
+	 */
+	public String[] getSupportedIntents(ContainerTypeDescription description);
 
 }

@@ -22,6 +22,7 @@ import org.eclipse.ecf.internal.core.Messages;
  */
 public class BaseContainerInstantiator implements IContainerInstantiator {
 
+	protected static String[] NO_ADAPTERS_ARRAY = new String[] {IContainer.class.getName()};
 	protected static String[] EMPTY_STRING_ARRAY = new String[] {};
 	protected static Class[][] EMPTY_CLASS_ARRAY = new Class[][] {{}};
 
@@ -67,7 +68,7 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
 	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
-		return EMPTY_STRING_ARRAY;
+		return NO_ADAPTERS_ARRAY;
 	}
 
 	/* (non-Javadoc)
@@ -77,4 +78,7 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 		return EMPTY_CLASS_ARRAY;
 	}
 
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return EMPTY_STRING_ARRAY;
+	}
 }
