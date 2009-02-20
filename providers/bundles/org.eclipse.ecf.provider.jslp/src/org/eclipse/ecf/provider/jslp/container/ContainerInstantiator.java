@@ -57,4 +57,8 @@ public class ContainerInstantiator implements IContainerInstantiator {
 		return new Class[0][0];
 	}
 
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return null;
+	}
+
 }
