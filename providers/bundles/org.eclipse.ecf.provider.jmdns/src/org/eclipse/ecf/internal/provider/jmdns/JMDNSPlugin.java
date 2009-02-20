@@ -71,28 +71,28 @@ public class JMDNSPlugin implements BundleActivator {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext ctxt) throws Exception {
+	public void start(final BundleContext ctxt) throws Exception {
 		this.context = ctxt;
 		LOCALHOST = InetAddress.getLocalHost();
 
-		Properties props = new Properties();
+		final Properties props = new Properties();
 		props.put(IDiscoveryService.CONTAINER_ID, IDFactory.getDefault().createStringID("org.eclipse.ecf.provider.jmdns.container.JMDNSDiscoveryContainer")); //$NON-NLS-1$
 		props.put(IDiscoveryService.CONTAINER_NAME, NAME);
-		props.put(Constants.SERVICE_RANKING, new Integer(750));
+		props.put(Constants.SERVICE_RANKING, Integer.toString(750));
 		context.registerService(IDiscoveryService.class.getName(), new ServiceFactory() {
 			private volatile JMDNSDiscoveryContainer jdc;
 
 			/* (non-Javadoc)
 			 * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration)
 			 */
-			public Object getService(Bundle bundle, ServiceRegistration registration) {
+			public Object getService(final Bundle bundle, final ServiceRegistration registration) {
 				if (jdc == null) {
 					try {
 						jdc = new JMDNSDiscoveryContainer(LOCALHOST);
 						jdc.connect(null, null);
-					} catch (IDCreateException e) {
+					} catch (final IDCreateException e) {
 						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSPlugin.PLUGIN_ID + "/debug/methods/catching", this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
-					} catch (ContainerConnectException e) {
+					} catch (final ContainerConnectException e) {
 						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSPlugin.PLUGIN_ID + "/debug/methods/catching", this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
 						jdc = null;
 					}
@@ -103,7 +103,7 @@ public class JMDNSPlugin implements BundleActivator {
 			/* (non-Javadoc)
 			 * @see org.osgi.framework.ServiceFactory#ungetService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration, java.lang.Object)
 			 */
-			public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+			public void ungetService(final Bundle bundle, final ServiceRegistration registration, final Object service) {
 				//TODO-mkuppe we later might want to dispose jSLP when the last!!! consumer ungets the service 
 				//Though don't forget about the (ECF) Container which might still be in use
 			}
@@ -112,15 +112,16 @@ public class JMDNSPlugin implements BundleActivator {
 	}
 
 	protected Bundle getBundle() {
-		if (context == null)
+		if (context == null) {
 			return null;
+		}
 		return context.getBundle();
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext ctxt) throws Exception {
+	public void stop(final BundleContext ctxt) throws Exception {
 		if (serviceRegistration != null) {
 			serviceRegistration.unregister();
 			serviceRegistration = null;
@@ -149,10 +150,11 @@ public class JMDNSPlugin implements BundleActivator {
 	 * @param string
 	 * @param t
 	 */
-	public void logException(String string, Throwable t) {
+	public void logException(final String string, final Throwable t) {
 		getLogService();
-		if (logService != null)
+		if (logService != null) {
 			logService.log(LogService.LOG_ERROR, string, t);
+		}
 	}
 
 	protected LogService getLogService() {
@@ -161,18 +163,20 @@ public class JMDNSPlugin implements BundleActivator {
 			logServiceTracker.open();
 		}
 		logService = (LogService) logServiceTracker.getService();
-		if (logService == null)
+		if (logService == null) {
 			logService = new SystemLogService(PLUGIN_ID);
+		}
 		return logService;
 	}
 
 	/**
 	 * @param errorString
 	 */
-	public void logError(String errorString) {
+	public void logError(final String errorString) {
 		getLogService();
-		if (logService != null)
+		if (logService != null) {
 			logService.log(LogService.LOG_ERROR, errorString);
+		}
 	}
 
 }

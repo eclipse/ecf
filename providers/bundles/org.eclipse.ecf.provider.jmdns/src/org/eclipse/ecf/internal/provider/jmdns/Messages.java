@@ -16,7 +16,7 @@ import org.eclipse.osgi.util.NLS;
 /**
  *
  */
-public class Messages extends NLS {
+public final class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.jmdns.messages"; //$NON-NLS-1$
 	public static String ContainerInstantiator_EXCEPTION_CONTAINER_CREATE;
 	public static String ContainerInstantiator_EXCEPTION_GETTING_INETADDRESS;

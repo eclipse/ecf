@@ -30,13 +30,13 @@ public class JMDNSNamespace extends Namespace {
 		super();
 	}
 
-	private String getInitFromExternalForm(Object[] args) {
+	private String getInitFromExternalForm(final Object[] args) {
 		if (args == null || args.length < 1 || args[0] == null)
 			return null;
 		if (args[0] instanceof String) {
-			String arg = (String) args[0];
+			final String arg = (String) args[0];
 			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
-				int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+				final int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
 				if (index >= arg.length())
 					return null;
 				return arg.substring(index + 1);
@@ -48,10 +48,10 @@ public class JMDNSNamespace extends Namespace {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	*/
-	public ID createInstance(Object[] parameters) {
+	public ID createInstance(final Object[] parameters) {
 		String type = null;
 		try {
-			String init = getInitFromExternalForm(parameters);
+			final String init = getInitFromExternalForm(parameters);
 			if (init != null)
 				type = init;
 			else {
@@ -65,7 +65,7 @@ public class JMDNSNamespace extends Namespace {
 				} else
 					throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_TYPE_PARAM_NOT_STRING);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
 		}
 		final JMDNSServiceTypeID stid = new JMDNSServiceTypeID(this, type);
