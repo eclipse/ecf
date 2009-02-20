@@ -19,9 +19,9 @@ import org.eclipse.core.runtime.Assert;
  */
 public class LocatorDecoratorImpl implements LocatorDecorator {
 
-	private Locator locator;
+	private final Locator locator;
 
-	public LocatorDecoratorImpl(Locator aLocator) {
+	public LocatorDecoratorImpl(final Locator aLocator) {
 		Assert.isNotNull(aLocator);
 		locator = aLocator;
 	}
@@ -29,28 +29,28 @@ public class LocatorDecoratorImpl implements LocatorDecorator {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findAttributes(ch.ethz.iks.slp.ServiceType, java.util.List, java.util.List)
 	 */
-	public ServiceLocationEnumeration findAttributes(ServiceType type, List scopes, List attributeIds) throws ServiceLocationException {
+	public ServiceLocationEnumeration findAttributes(final ServiceType type, final List scopes, final List attributeIds) throws ServiceLocationException {
 		return locator.findAttributes(type, scopes, attributeIds);
 	}
 
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findAttributes(ch.ethz.iks.slp.ServiceURL, java.util.List, java.util.List)
 	 */
-	public ServiceLocationEnumeration findAttributes(ServiceURL url, List scopes, List attributeIds) throws ServiceLocationException {
+	public ServiceLocationEnumeration findAttributes(final ServiceURL url, final List scopes, final List attributeIds) throws ServiceLocationException {
 		return locator.findAttributes(url, scopes, attributeIds);
 	}
 
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findServices(ch.ethz.iks.slp.ServiceType, java.util.List, java.lang.String)
 	 */
-	public ServiceLocationEnumeration findServices(ServiceType type, List scopes, String searchFilter) throws ServiceLocationException, IllegalArgumentException {
+	public ServiceLocationEnumeration findServices(final ServiceType type, final List scopes, final String searchFilter) throws ServiceLocationException, IllegalArgumentException {
 		return locator.findServices(type, scopes, searchFilter);
 	}
 
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findServiceTypes(java.lang.String, java.util.List)
 	 */
-	public ServiceLocationEnumeration findServiceTypes(String namingAuthority, List scopes) throws ServiceLocationException {
+	public ServiceLocationEnumeration findServiceTypes(final String namingAuthority, final List scopes) throws ServiceLocationException {
 		return locator.findServiceTypes(namingAuthority, scopes);
 	}
 
@@ -64,18 +64,18 @@ public class LocatorDecoratorImpl implements LocatorDecorator {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#setLocale(java.util.Locale)
 	 */
-	public void setLocale(Locale locale) {
+	public void setLocale(final Locale locale) {
 		locator.setLocale(locale);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.internal.provider.jslp.LocatorDecorator#getServiceURLs(ch.ethz.iks.slp.ServiceType, java.util.List)
 	 */
-	public Map getServiceURLs(ServiceType aServiceType, List scopes) throws ServiceLocationException {
-		Map result = new HashMap();
-		ServiceLocationEnumeration services = findServices(aServiceType, scopes, null);
+	public Map getServiceURLs(final ServiceType aServiceType, final List scopes) throws ServiceLocationException {
+		final Map result = new HashMap();
+		final ServiceLocationEnumeration services = findServices(aServiceType, scopes, null);
 		while (services.hasMoreElements()) {
-			ServiceURL url = (ServiceURL) services.next();
+			final ServiceURL url = (ServiceURL) services.next();
 			result.put(url, Collections.list(findAttributes(url, scopes, null)));
 		}
 		return result;
@@ -85,14 +85,14 @@ public class LocatorDecoratorImpl implements LocatorDecorator {
 	 * @see org.eclipse.ecf.internal.provider.jslp.LocatorDecorator#getServiceURLs()
 	 */
 	public Map getServiceURLs() throws ServiceLocationException {
-		Enumeration stEnum = findServiceTypes(null, null);
-		Set aSet = new HashSet(Collections.list(stEnum));
-		Map result = new HashMap();
-		for (Iterator itr = aSet.iterator(); itr.hasNext();) {
-			String type = (String) itr.next();
-			ServiceLocationEnumeration services = findServices(new ServiceType(type), null, null);
+		final Enumeration stEnum = findServiceTypes(null, null);
+		final Set aSet = new HashSet(Collections.list(stEnum));
+		final Map result = new HashMap();
+		for (final Iterator itr = aSet.iterator(); itr.hasNext();) {
+			final String type = (String) itr.next();
+			final ServiceLocationEnumeration services = findServices(new ServiceType(type), null, null);
 			while (services.hasMoreElements()) {
-				ServiceURL url = (ServiceURL) services.next();
+				final ServiceURL url = (ServiceURL) services.next();
 				result.put(url, Collections.list(findAttributes(url, null, null)));
 			}
 		}

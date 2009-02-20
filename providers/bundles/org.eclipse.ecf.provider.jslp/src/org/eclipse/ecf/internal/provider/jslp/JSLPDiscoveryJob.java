@@ -23,10 +23,10 @@ import org.osgi.framework.Bundle;
 
 public final class JSLPDiscoveryJob extends Job {
 
-	private JSLPDiscoveryContainer discoveryContainer;
-	private Map services;
+	private final JSLPDiscoveryContainer discoveryContainer;
+	private final Map services;
 
-	public JSLPDiscoveryJob(JSLPDiscoveryContainer container) {
+	public JSLPDiscoveryJob(final JSLPDiscoveryContainer container) {
 		super(Messages.JSLPDiscoveryJob_TITLE);
 		discoveryContainer = container;
 		services = Collections.synchronizedMap(new HashMap());
@@ -37,20 +37,20 @@ public final class JSLPDiscoveryJob extends Job {
 	 * 
 	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	protected IStatus run(IProgressMonitor monitor) {
+	protected IStatus run(final IProgressMonitor monitor) {
 		Assert.isNotNull(monitor);
 		try {
-			Map availableServices = Activator.getDefault().getLocator().getServiceURLs();
-			Map removedServices = new HashMap(services);
-			for (Iterator itr = availableServices.entrySet().iterator(); itr.hasNext() && !monitor.isCanceled();) {
-				Map.Entry entry = (Map.Entry) itr.next();
-				ServiceURL url = (ServiceURL) entry.getKey();
+			final Map availableServices = Activator.getDefault().getLocator().getServiceURLs();
+			final Map removedServices = new HashMap(services);
+			for (final Iterator itr = availableServices.entrySet().iterator(); itr.hasNext() && !monitor.isCanceled();) {
+				final Map.Entry entry = (Map.Entry) itr.next();
+				final ServiceURL url = (ServiceURL) entry.getKey();
 				// do we know the service already?
 				if (removedServices.containsKey(url)) {
 					removedServices.remove(url);
 				} else { // we don't know the service, so we need to create the
-					ServicePropertiesAdapter spa = new ServicePropertiesAdapter((List) entry.getValue());
-					IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, spa.getServiceName()), spa.getPriority(), spa.getWeight(), spa);
+					final ServicePropertiesAdapter spa = new ServicePropertiesAdapter((List) entry.getValue());
+					final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, spa.getServiceName()), spa.getPriority(), spa.getWeight(), spa);
 					services.put(url, serviceInfo);
 					discoveryContainer.fireServiceTypeDiscovered(serviceInfo.getServiceID().getServiceTypeID());
 					discoveryContainer.fireServiceDiscovered(serviceInfo);
@@ -58,14 +58,16 @@ public final class JSLPDiscoveryJob extends Job {
 				monitor.worked(1);
 			}
 			// at this point removedServices only contains stale services
-			for (Iterator itr = removedServices.keySet().iterator(); itr.hasNext() && !monitor.isCanceled();) {
-				Object key = itr.next();
-				discoveryContainer.fireServiceUndiscovered((IServiceInfo) removedServices.get(key));
+			for (final Iterator itr = removedServices.entrySet().iterator(); itr.hasNext() && !monitor.isCanceled();) {
+				final Map.Entry entry = (Map.Entry) itr.next();
+				final Object key = entry.getKey();
+				final IServiceInfo value = (IServiceInfo) entry.getValue();
+				discoveryContainer.fireServiceUndiscovered(value);
 				services.remove(key);
 				monitor.worked(1);
 			}
 
-		} catch (ServiceLocationException e) {
+		} catch (final ServiceLocationException e) {
 			// TODO-mkuppe if the advertiser is gone, we run into this exception
 			// but we have to let the listeners know about the gone services
 			// too
@@ -84,7 +86,7 @@ public final class JSLPDiscoveryJob extends Job {
 	 */
 	public boolean shouldRun() {
 		if (Activator.getDefault() != null) {// system went down, no bundle
-			int state = Activator.getDefault().getBundle().getState();
+			final int state = Activator.getDefault().getBundle().getState();
 			return (state == Bundle.ACTIVE || state == Bundle.STARTING);
 		}
 		return false;

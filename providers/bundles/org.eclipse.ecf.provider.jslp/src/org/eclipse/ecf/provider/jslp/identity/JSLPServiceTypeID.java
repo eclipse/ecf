@@ -41,7 +41,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 
 			final String na = st.getNamingAuthority();
 			String str = st.toString();
-			if (na.equals("")) { //$NON-NLS-1$
+			if ("".equals(na)) { //$NON-NLS-1$
 				namingAuthority = DEFAULT_NA;
 			} else {
 				namingAuthority = na;
@@ -67,7 +67,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		}
 
 		// set the protocol if provided
-		String protocol = anURL.getProtocol();
+		final String protocol = anURL.getProtocol();
 		if (protocol != null) {
 			protocols = new String[] {protocol};
 			createType();
@@ -77,28 +77,29 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 	JSLPServiceTypeID(final Namespace namespace, final IServiceTypeID type) {
 		super(namespace, type);
 
-		StringBuffer buf = new StringBuffer("service:"); //$NON-NLS-1$
+		final StringBuffer buf = new StringBuffer("service:"); //$NON-NLS-1$
 		for (int i = 0; i < services.length; i++) {
 			buf.append(services[i]);
 			// #228876
 			if (!namingAuthority.equalsIgnoreCase(JSLP_DEFAULT_NA) && i == 1) {
-				buf.append("."); //$NON-NLS-1$
+				buf.append('.');
 				buf.append(namingAuthority);
 			}
-			buf.append(":"); //$NON-NLS-1$
+			buf.append(':');
 		}
 		// remove dangling colon
-		String string = buf.toString();
+		final String string = buf.toString();
 		st = new ServiceType(string.substring(0, string.length() - 1));
 	}
 
 	JSLPServiceTypeID(final Namespace namespace, final ServiceType aServiceType) {
 		this(namespace, aServiceType.toString());
+
+		// remove the SLP "service" prefix
 		final String[] newServices = new String[services.length - 1];
-		for (int i = 0; i < services.length - 1; i++) {
-			newServices[i] = services[i + 1];
-		}
+		System.arraycopy(services, 1, newServices, 0, newServices.length);
 		services = newServices;
+
 		createType();
 	}
 

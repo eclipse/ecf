@@ -32,14 +32,14 @@ public class NullPatternLocator implements LocatorDecorator {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findAttributes(ch.ethz.iks.slp.ServiceURL, java.util.List, java.util.List)
 	 */
-	public ServiceLocationEnumeration findAttributes(ServiceURL url, List scopes, List attributeIds) {
+	public ServiceLocationEnumeration findAttributes(final ServiceURL url, final List scopes, final List attributeIds) {
 		return emptyServiceLocationEnumeration;
 	}
 
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findAttributes(ch.ethz.iks.slp.ServiceType, java.util.List, java.util.List)
 	 */
-	public ServiceLocationEnumeration findAttributes(ServiceType type, List scopes, List attributeIds) {
+	public ServiceLocationEnumeration findAttributes(final ServiceType type, final List scopes, final List attributeIds) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "findAttributes(ch.ethz.iks.slp.ServiceType, java.util.List, java.util.List)", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		return emptyServiceLocationEnumeration;
 	}
@@ -47,7 +47,7 @@ public class NullPatternLocator implements LocatorDecorator {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findServiceTypes(java.lang.String, java.util.List)
 	 */
-	public ServiceLocationEnumeration findServiceTypes(String namingAuthority, List scopes) {
+	public ServiceLocationEnumeration findServiceTypes(final String namingAuthority, final List scopes) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "findServiceTypes(String, List)", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		return emptyServiceLocationEnumeration;
 	}
@@ -55,7 +55,7 @@ public class NullPatternLocator implements LocatorDecorator {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#findServices(ch.ethz.iks.slp.ServiceType, java.util.List, java.lang.String)
 	 */
-	public ServiceLocationEnumeration findServices(ServiceType type, List scopes, String searchFilter) throws IllegalArgumentException {
+	public ServiceLocationEnumeration findServices(final ServiceType type, final List scopes, final String searchFilter) throws IllegalArgumentException {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "findServies(ServiceType, List, String)", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		return emptyServiceLocationEnumeration;
 	}
@@ -71,14 +71,14 @@ public class NullPatternLocator implements LocatorDecorator {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Locator#setLocale(java.util.Locale)
 	 */
-	public void setLocale(Locale locale) {
+	public void setLocale(final Locale locale) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "setLocale(Locale)", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.internal.provider.jslp.LocatorDecorator#getServiceURLs(ch.ethz.iks.slp.ServiceType, java.util.List)
 	 */
-	public Map getServiceURLs(ServiceType serviceType, List scopes) {
+	public Map getServiceURLs(final ServiceType serviceType, final List scopes) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "getServiceURLs(ServiceType, List scopes", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		return new HashMap();
 	}

@@ -22,28 +22,28 @@ public class NullPatternAdvertiser implements Advertiser {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Advertiser#addAttributes(ch.ethz.iks.slp.ServiceURL, java.util.Dictionary)
 	 */
-	public void addAttributes(ServiceURL url, Dictionary attributes) {
+	public void addAttributes(final ServiceURL url, final Dictionary attributes) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "addAttributes(ServiceURL, Dictionary)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Advertiser#deleteAttributes(ch.ethz.iks.slp.ServiceURL, java.util.Dictionary)
 	 */
-	public void deleteAttributes(ServiceURL url, Dictionary attributeIds) {
+	public void deleteAttributes(final ServiceURL url, final Dictionary attributeIds) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "deleteAttributes(ServiceURL, Dictionary)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Advertiser#deregister(ch.ethz.iks.slp.ServiceURL)
 	 */
-	public void deregister(ServiceURL url) {
+	public void deregister(final ServiceURL url) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "deregister(ServiceURL)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Advertiser#deregister(ch.ethz.iks.slp.ServiceURL, java.util.List)
 	 */
-	public void deregister(ServiceURL url, List scopes) {
+	public void deregister(final ServiceURL url, final List scopes) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "deregister(ServiceURL, List)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
@@ -62,7 +62,7 @@ public class NullPatternAdvertiser implements Advertiser {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "getMyIP()", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		try {
 			return InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
+		} catch (final UnknownHostException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "getMyIP()", e); //$NON-NLS-1$
 		}
 		return null;
@@ -71,21 +71,21 @@ public class NullPatternAdvertiser implements Advertiser {
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Advertiser#register(ch.ethz.iks.slp.ServiceURL, java.util.Dictionary)
 	 */
-	public void register(ServiceURL url, Dictionary attributes) {
+	public void register(final ServiceURL url, final Dictionary attributes) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "register(ServiceURL, Dictionary)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Advertiser#register(ch.ethz.iks.slp.ServiceURL, java.util.List, java.util.Dictionary)
 	 */
-	public void register(ServiceURL url, List scopes, Dictionary attributes) {
+	public void register(final ServiceURL url, final List scopes, final Dictionary attributes) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "register(ServiceURL, List, Dictionary)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	/* (non-Javadoc)
 	 * @see ch.ethz.iks.slp.Advertiser#setLocale(java.util.Locale)
 	 */
-	public void setLocale(Locale locale) {
+	public void setLocale(final Locale locale) {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "setLocale(Locale)", Advertiser.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 	}
 }

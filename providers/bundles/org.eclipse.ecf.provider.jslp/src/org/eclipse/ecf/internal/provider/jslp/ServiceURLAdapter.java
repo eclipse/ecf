@@ -26,39 +26,39 @@ public class ServiceURLAdapter {
 	private URI uri;
 	private IServiceID serviceID;
 
-	public ServiceURLAdapter(ServiceURL aServiceURL, String aServiceName) {
+	public ServiceURLAdapter(final ServiceURL aServiceURL, final String aServiceName) {
 		this(aServiceURL, aServiceName, new String[0]);
 	}
 
-	public ServiceURLAdapter(ServiceURL aServiceURL, String aServiceName, String[] scopes) {
+	public ServiceURLAdapter(final ServiceURL aServiceURL, final String aServiceName, final String[] scopes) {
 		Assert.isNotNull(aServiceURL);
 		Assert.isNotNull(scopes);
 		setIServiceID(aServiceURL, aServiceName, scopes);
 		setURI(aServiceURL);
 	}
 
-	private void setURI(ServiceURL aServiceURL) {
-		StringBuffer buf = new StringBuffer();
+	private void setURI(final ServiceURL aServiceURL) {
+		final StringBuffer buf = new StringBuffer();
 		String protocol = aServiceURL.getProtocol();
 		if (protocol == null) {
 			protocol = "unknown"; //$NON-NLS-1$
 		}
 		buf.append(protocol);
 		buf.append("://"); //$NON-NLS-1$
-		String userInfo = aServiceURL.getUserInfo();
+		final String userInfo = aServiceURL.getUserInfo();
 		if (!"".equals(userInfo)) { //$NON-NLS-1$
 			buf.append(userInfo);
-			buf.append("@"); //$NON-NLS-1$
+			buf.append('@');
 		}
 		buf.append(aServiceURL.getHost());
-		buf.append(":"); //$NON-NLS-1$
+		buf.append(':');
 		buf.append(aServiceURL.getPort());
 		buf.append(aServiceURL.getURLPath());
 		uri = URI.create(buf.toString());
 	}
 
-	private void setIServiceID(ServiceURL aServiceURL, String aServiceName, String[] scopes) {
-		Namespace namespace = IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME);
+	private void setIServiceID(final ServiceURL aServiceURL, final String aServiceName, final String[] scopes) {
+		final Namespace namespace = IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME);
 		serviceID = (IServiceID) namespace.createInstance(new Object[] {aServiceURL, aServiceName, scopes});
 	}
 

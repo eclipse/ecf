@@ -55,7 +55,7 @@ public class Activator implements BundleActivator {
 
 	public LocatorDecorator getLocator() {
 		locatorSt.open();
-		Locator aLocator = (Locator) locatorSt.getService();
+		final Locator aLocator = (Locator) locatorSt.getService();
 		if (aLocator == null) {
 			return new NullPatternLocator();
 		}
@@ -64,7 +64,7 @@ public class Activator implements BundleActivator {
 
 	public Advertiser getAdvertiser() {
 		advertiserSt.open();
-		Advertiser advertiser = (Advertiser) advertiserSt.getService();
+		final Advertiser advertiser = (Advertiser) advertiserSt.getService();
 		if (advertiser == null) {
 			return new NullPatternAdvertiser();
 		}
@@ -86,7 +86,7 @@ public class Activator implements BundleActivator {
 		advertiserSt = new ServiceTracker(context, Advertiser.class.getName(), null);
 
 		// register ourself as an OSGi service
-		Properties props = new Properties();
+		final Properties props = new Properties();
 		props.put(IDiscoveryService.CONTAINER_ID, IDFactory.getDefault().createStringID("org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer")); //$NON-NLS-1$
 		props.put(IDiscoveryService.CONTAINER_NAME, JSLPDiscoveryContainer.NAME);
 		props.put(Constants.SERVICE_RANKING, new Integer(500));
@@ -97,12 +97,12 @@ public class Activator implements BundleActivator {
 			/* (non-Javadoc)
 			 * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration)
 			 */
-			public Object getService(Bundle bundle, ServiceRegistration registration) {
+			public Object getService(final Bundle bundle, final ServiceRegistration registration) {
 				if (jdc == null) {
 					try {
 						jdc = new JSLPDiscoveryContainer();
 						jdc.connect(null, null);
-					} catch (ContainerConnectException e) {
+					} catch (final ContainerConnectException e) {
 						Trace.catching(Activator.PLUGIN_ID, Activator.PLUGIN_ID + "/debug/methods/tracing", this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
 						jdc = null;
 					}
@@ -113,7 +113,7 @@ public class Activator implements BundleActivator {
 			/* (non-Javadoc)
 			 * @see org.osgi.framework.ServiceFactory#ungetService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration, java.lang.Object)
 			 */
-			public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+			public void ungetService(final Bundle bundle, final ServiceRegistration registration, final Object service) {
 				//TODO-mkuppe we later might want to dispose jSLP when the last!!! consumer ungets the service 
 				//Though don't forget about the (ECF) Container which might still be in use
 			}
@@ -125,7 +125,7 @@ public class Activator implements BundleActivator {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(final BundleContext context) throws Exception {
 		//TODO-mkuppe here we should do something like a deregisterAll(), but see ungetService(...);
 		plugin = null;
 		bundleContext = null;

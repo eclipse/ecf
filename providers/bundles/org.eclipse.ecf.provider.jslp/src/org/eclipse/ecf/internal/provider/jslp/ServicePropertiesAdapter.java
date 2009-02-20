@@ -38,24 +38,24 @@ public class ServicePropertiesAdapter {
 	private static final String WEIGHT = "x-" + ECLIPSE_ENTERPRISE_NUMBER + "-WEIGHT"; //$NON-NLS-1$ //$NON-NLS-2$
 
 	private static final String SLP_BYTE_PREFIX = "\\FF"; //$NON-NLS-1$
-	private IServiceProperties serviceProperties;
+	private final IServiceProperties serviceProperties;
 
 	private String serviceName;
 	private int priority = ServiceInfo.DEFAULT_PRIORITY;
 	private int weight = ServiceInfo.DEFAULT_WEIGHT;
 
-	public ServicePropertiesAdapter(List aList) {
+	public ServicePropertiesAdapter(final List aList) {
 		Assert.isNotNull(aList);
 		serviceProperties = new ServiceProperties();
-		for (Iterator itr = aList.iterator(); itr.hasNext();) {
-			String[] str = StringUtils.split((String) itr.next(), "="); //$NON-NLS-1$
+		for (final Iterator itr = aList.iterator(); itr.hasNext();) {
+			final String[] str = StringUtils.split((String) itr.next(), "="); //$NON-NLS-1$
 			if (str.length != 2) {
 				Trace.trace(Activator.PLUGIN_ID, "/debug/methods/tracing", this.getClass(), "ServicePropertiesAdapter(List)", "Skipped broken service attribute " + str); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 				continue;
 			}
 			// remove the brackets "( )" from the string value which are added by jSLP for the LDAP style string representation
-			String key = str[0].substring(1);
-			String value = str[1].substring(0, str[1].length() - 1);
+			final String key = str[0].substring(1);
+			final String value = str[1].substring(0, str[1].length() - 1);
 			if (key.equalsIgnoreCase(SERVICE_ID_NAME)) {
 				serviceName = value;
 			} else if (key.equalsIgnoreCase(PRIORITY)) {
@@ -63,47 +63,47 @@ public class ServicePropertiesAdapter {
 			} else if (key.equalsIgnoreCase(WEIGHT)) {
 				weight = Integer.parseInt(value);
 			} else if (value.startsWith(SLP_BYTE_PREFIX)) {
-				String[] strs = StringUtils.split(value.substring(4), "\\"); //$NON-NLS-1$
-				byte[] b = new byte[strs.length];
+				final String[] strs = StringUtils.split(value.substring(4), "\\"); //$NON-NLS-1$
+				final byte[] b = new byte[strs.length];
 				for (int i = 0; i < strs.length; i++) {
-					byte parseInt = (byte) Integer.parseInt(strs[i], 16);
+					final byte parseInt = (byte) Integer.parseInt(strs[i], 16);
 					b[i] = parseInt;
 				}
 				serviceProperties.setPropertyBytes(key, Base64.decodeFromCharArray(b));
 			} else if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) { //$NON-NLS-1$ //$NON-NLS-2$
-				serviceProperties.setProperty(key, new Boolean(value));
+				serviceProperties.setProperty(key, Boolean.valueOf(value));
 			} else if (isInteger(value)) {
-				serviceProperties.setProperty(key, new Integer(value));
+				serviceProperties.setProperty(key, Integer.valueOf(value));
 			} else {
 				serviceProperties.setProperty(key, value);
 			}
 		}
 	}
 
-	public ServicePropertiesAdapter(IServiceInfo sInfo) {
+	public ServicePropertiesAdapter(final IServiceInfo sInfo) {
 		Assert.isNotNull(sInfo);
-		IServiceID sID = sInfo.getServiceID();
+		final IServiceID sID = sInfo.getServiceID();
 		Assert.isNotNull(sID);
-		IServiceProperties sp = sInfo.getServiceProperties();
+		final IServiceProperties sp = sInfo.getServiceProperties();
 		Assert.isNotNull(sp);
 
 		serviceProperties = new ServiceProperties(sp);
 		if (sInfo.getPriority() >= 0) {
-			serviceProperties.setPropertyString(PRIORITY, new Integer(sInfo.getPriority()).toString());
+			serviceProperties.setPropertyString(PRIORITY, Integer.toString(sInfo.getPriority()));
 		}
 		if (sInfo.getWeight() >= 0) {
-			serviceProperties.setPropertyString(WEIGHT, new Integer(sInfo.getWeight()).toString());
+			serviceProperties.setPropertyString(WEIGHT, Integer.toString(sInfo.getWeight()));
 		}
 		if (sID.getServiceName() != null) {
 			serviceProperties.setPropertyString(SERVICE_ID_NAME, sID.getServiceName());
 		}
 	}
 
-	private boolean isInteger(String value) {
+	private boolean isInteger(final String value) {
 		try {
 			Integer.parseInt(value);
 			return true;
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return false;
 		}
 	}
@@ -113,17 +113,17 @@ public class ServicePropertiesAdapter {
 	}
 
 	public Dictionary toProperties() {
-		Dictionary dict = new Properties();
-		Enumeration propertyNames = serviceProperties.getPropertyNames();
+		final Dictionary dict = new Properties();
+		final Enumeration propertyNames = serviceProperties.getPropertyNames();
 		while (propertyNames.hasMoreElements()) {
-			String key = (String) propertyNames.nextElement();
-			byte[] propertyBytes = serviceProperties.getPropertyBytes(key);
+			final String key = (String) propertyNames.nextElement();
+			final byte[] propertyBytes = serviceProperties.getPropertyBytes(key);
 			if (propertyBytes != null) {
-				byte[] encode = Base64.encodeToCharArray(propertyBytes);
-				StringBuffer buf = new StringBuffer();
+				final byte[] encode = Base64.encodeToCharArray(propertyBytes);
+				final StringBuffer buf = new StringBuffer();
 				buf.append(SLP_BYTE_PREFIX);
 				for (int i = 0; i < encode.length; i++) {
-					buf.append("\\"); //$NON-NLS-1$
+					buf.append('\\');
 					buf.append(Integer.toHexString(encode[i]));
 				}
 				dict.put(key, buf.toString());

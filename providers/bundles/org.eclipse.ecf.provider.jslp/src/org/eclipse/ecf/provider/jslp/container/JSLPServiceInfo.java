@@ -25,7 +25,7 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 
 	private static final long serialVersionUID = 6828789192986625259L;
 
-	public JSLPServiceInfo(URI anURI, IServiceID serviceID, int priority, int weight, IServiceProperties props) {
+	public JSLPServiceInfo(final URI anURI, final IServiceID serviceID, final int priority, final int weight, final IServiceProperties props) {
 		super(anURI, serviceID, priority, weight, props);
 	}
 
@@ -33,24 +33,24 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 	 * @param serviceID
 	 * @deprecated
 	 */
-	public JSLPServiceInfo(IServiceID serviceID) {
+	public JSLPServiceInfo(final IServiceID serviceID) {
 		super(null, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
 	}
 
-	public JSLPServiceInfo(IServiceInfo aSI) throws IDCreateException {
+	public JSLPServiceInfo(final IServiceInfo aSI) throws IDCreateException {
 		this(aSI.getLocation(), ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME), aSI.getServiceID().getServiceTypeID(), aSI.getServiceID().getServiceName()), aSI.getPriority(), aSI.getWeight(), aSI.getServiceProperties());
 	}
 
-	public JSLPServiceInfo(ServiceURLAdapter anAdapter, int priority, int weight, ServicePropertiesAdapter aServicePropertiesAdapter) {
+	public JSLPServiceInfo(final ServiceURLAdapter anAdapter, final int priority, final int weight, final ServicePropertiesAdapter aServicePropertiesAdapter) {
 		this(anAdapter.getURI(), anAdapter.getIServiceID(), priority, weight, aServicePropertiesAdapter.toServiceProperties());
 	}
 
 	public ServiceURL getServiceURL() throws ServiceLocationException {
-		IServiceTypeID stid = getServiceID().getServiceTypeID();
-		URI location = getLocation();
-		String scheme = location.getScheme();
-		String authority = location.getAuthority();
-		String path = location.getPath() == null ? "" : location.getPath(); //$NON-NLS-1$
+		final IServiceTypeID stid = getServiceID().getServiceTypeID();
+		final URI location = getLocation();
+		final String scheme = location.getScheme();
+		final String authority = location.getAuthority();
+		final String path = location.getPath() == null ? "" : location.getPath(); //$NON-NLS-1$
 		return new ServiceURL(stid.getInternal() + "://" + scheme + "://" + authority + path, ServiceURL.LIFETIME_PERMANENT); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }
