@@ -71,7 +71,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 			// register a service which we expect the test listener to get notified of
 			registerService();
 			try {
-				testServiceListener.wait(/*waitTimeForProvider*/);
+				testServiceListener.wait(waitTimeForProvider);
 			} catch (final InterruptedException e) {
 				Thread.currentThread().interrupt();
 				fail("Some discovery unrelated threading issues?");
@@ -221,7 +221,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 			// register a service which we expect the test listener to get notified of
 			registerService();
 			try {
-				testTypeListener.wait(/*waitTimeForProvider*/);
+				testTypeListener.wait(waitTimeForProvider);
 			} catch (final InterruptedException e) {
 				Thread.currentThread().interrupt();
 				fail("Some discovery unrelated threading issues?");
@@ -276,7 +276,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 			// register a service which we expect the test listener to get notified of
 			registerService();
 			try {
-				testTypeListener.wait(/*waitTimeForProvider*/);
+				testTypeListener.wait(waitTimeForProvider);
 			} catch (final InterruptedException e) {
 				Thread.currentThread().interrupt();
 				fail("Some discovery unrelated threading issues?");
