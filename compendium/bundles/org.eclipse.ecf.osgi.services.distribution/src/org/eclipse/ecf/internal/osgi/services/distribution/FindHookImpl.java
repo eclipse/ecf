@@ -14,12 +14,12 @@ import org.eclipse.ecf.core.util.Trace;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.service.FindHook;
 
-public class ECFFindHookImpl implements FindHook {
+public class FindHookImpl implements FindHook {
 
-	private final DistributionProviderImpl distributionProvider;
+	// private final DistributionProviderImpl distributionProvider;
 
-	public ECFFindHookImpl(DistributionProviderImpl distributionProvider) {
-		this.distributionProvider = distributionProvider;
+	public FindHookImpl(DistributionProviderImpl distributionProvider) {
+		// this.distributionProvider = distributionProvider;
 	}
 
 	public void find(BundleContext context, String name, String filter,

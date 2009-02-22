@@ -59,11 +59,11 @@ public class Activator implements BundleActivator {
 
 	private void addServiceRegistryHooks() {
 		// register the event hook to get informed when new services appear
-		final ECFEventHookImpl hook = new ECFEventHookImpl(distributionProvider);
+		final EventHookImpl hook = new EventHookImpl(distributionProvider);
 		this.eventHookRegistration = this.context.registerService(
 				EventHook.class.getName(), hook, null);
 
-		final FindHook findHook = new ECFFindHookImpl(distributionProvider);
+		final FindHook findHook = new FindHookImpl(distributionProvider);
 		this.listenerHookRegistration = this.context.registerService(
 				FindHook.class.getName(), findHook, null);
 		// register all existing services which have the marker property

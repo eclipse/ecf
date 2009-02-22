@@ -20,9 +20,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.ServicePublication;
 
-public class ECFEventHookImpl extends AbstractEventHookImpl {
+public class EventHookImpl extends AbstractEventHookImpl {
 
-	public ECFEventHookImpl(DistributionProviderImpl distributionProvider) {
+	public EventHookImpl(DistributionProviderImpl distributionProvider) {
 		super(distributionProvider);
 	}
 
