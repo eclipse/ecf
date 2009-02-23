@@ -14,8 +14,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.eclipse.ecf.remoteservice.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.ServicePublication;
@@ -43,34 +42,56 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			return;
 		}
 		// Now actually register remote service with remote service container
-		// adapters
-		final Collection identifiers = registerRemoteService(rscas,
-				remoteInterfaces, serviceReference);
-		publishRemoteService(serviceReference, remoteInterfaces, identifiers);
+		// adapters. Then publish
+		for (int i = 0; i < rscas.length; i++) {
+			IRemoteServiceRegistration remoteRegistration = rscas[i]
+					.registerRemoteService(remoteInterfaces,
+							getService(serviceReference),
+							createPropertiesForRemoteService(rscas[i],
+									remoteInterfaces, serviceReference));
+			trace("registerRemoteService",
+					"REGISTERED REMOTE SERVICE serviceReference="
+							+ serviceReference + " remoteRegistration="
+							+ remoteRegistration);
+			// Save service reference and remote registration
+			fireRemoteServiceRegistered(serviceReference, remoteRegistration);
+			// And publish remote service (ServicePublication) for discovery
+			publishRemoteService(rscas[i], serviceReference, remoteInterfaces);
+		}
 	}
 
-	private void publishRemoteService(final ServiceReference ref,
-			final String[] remoteInterfaces, final Collection /*
-															 * <? extends
-															 * String>
-															 */identifiers) {
+	private void publishRemoteService(IRemoteServiceContainerAdapter rsca,
+			ServiceReference ref, String[] remoteInterfaces) {
 		final Dictionary properties = new Hashtable();
 		final BundleContext context = Activator.getDefault().getContext();
 		properties.put(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
-				remoteInterfaces);
+				getAsCollection(remoteInterfaces));
 		properties.put(ServicePublication.PROP_KEY_SERVICE_PROPERTIES,
 				getServiceProperties(ref));
-		final String[] ids = (String[]) identifiers
-				.toArray(new String[identifiers.size()]);
-		for (int i = 0; i < ids.length; i++) {
-			properties.put(ServicePublication.PROP_KEY_ENDPOINT_ID, ids[i]);
-			context.registerService(ServicePublication.class.getName(),
-					new ServicePublication() {
-					}, properties);
-			trace("publishRemoteService",
-					"PUBLISH REMOTE SERVICE serviceReference=" + ref + " ID="
-							+ ids[i]);
+		// Get container for rcsa
+		IContainer container = (IContainer) rsca.getAdapter(IContainer.class);
+		// If it's available put it's id in the endpoint id
+		if (container != null)
+			properties.put(ServicePublication.PROP_KEY_ENDPOINT_ID, container
+					.getID().toString());
+		// Specify remote service namespace name for local namespace name
+		properties.put(Constants.SERVICE_NAMESPACE, rsca
+				.getRemoteServiceNamespace().getName());
+		context.registerService(ServicePublication.class.getName(),
+				new ServicePublication() {
+				}, properties);
+		trace("publishRemoteService",
+				"PUBLISH REMOTE SERVICE serviceReference=" + ref
+						+ " properties=" + properties);
+
+	}
+
+	private Collection getAsCollection(String[] remoteInterfaces) {
+		List result = new ArrayList();
+		for (int i = 0; i < remoteInterfaces.length; i++) {
+			result.add(remoteInterfaces[i]);
 		}
+		return result;
 	}
 
 	private Map getServiceProperties(final ServiceReference ref) {
