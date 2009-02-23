@@ -14,7 +14,7 @@ import java.net.*;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -301,7 +301,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				trace("publishService", "publishing serviceReference="
 						+ reference + ", svcInfo=" + svcInfo);
 				discovery.registerService(svcInfo);
-			} catch (ECFException e) {
+			} catch (ECFRuntimeException e) {
 				traceException("publishService", e);
 				removeServiceInfo(reference);
 			}
@@ -323,7 +323,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				IServiceInfo svcInfo = removeServiceInfo(reference);
 				if (svcInfo != null)
 					discovery.unregisterService(svcInfo);
-			} catch (ECFException e) {
+			} catch (ECFRuntimeException e) {
 				traceException("publishService", e);
 			}
 		}
