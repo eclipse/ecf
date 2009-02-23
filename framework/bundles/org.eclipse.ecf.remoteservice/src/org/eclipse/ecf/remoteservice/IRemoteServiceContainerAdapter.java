@@ -161,6 +161,36 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	public IFuture asyncGetRemoteServiceReferences(ID[] idFilter, String clazz, String filter);
 
 	/**
+	 * Get namespace to use for this remote service provider.
+	 * @return Namespace to use for creating IRemoteServiceID for this remote service provider.  Will
+	 * not return <code>null</code>.
+	 * @since 3.0
+	 */
+	public Namespace getRemoteServiceNamespace();
+
+	/**
+	 * Get a remote service ID from a containerID and a containerRelative long value.  Will return a non-null value
+	 * if the IRemoteServiceRegistration/Reference is currently 'known' to this container adapter.  <code>null</code> 
+	 * if not.
+	 * @param containerID the containerID that is the server/host for the remote service.  Must not be <code>null</code>.  This 
+	 * must be the containerID for the <b>server</b>/host of the remote service.  
+	 * @param containerRelativeID the long value identifying the remote service relative to the container ID.
+	 * @return IRemoteServiceID instance if the associated IRemoteServiceRegistration/Reference is known to this container
+	 * adapter, <code>null</code> if it is not.
+	 */
+	public IRemoteServiceID getRemoteServiceID(ID containerID, long containerRelativeID);
+
+	/**
+	 * Get the remote service reference known to this container for the given IRemoteServiceID.  Note that
+	 * this method must be guaranteed not to block by the provider implementation.
+	 * 
+	 * @param serviceID the serviceID to retrieve the IRemoteServiceReference for.
+	 * @return IRemoteServiceReference the remote service reference associated with the given serviceID.
+	 * Will return <code>null</code> if no IRemoteServiceReference found for the given serviceID.
+	 */
+	public IRemoteServiceReference getRemoteServiceReference(IRemoteServiceID serviceID);
+
+	/**
 	 * Get remote service for given IRemoteServiceReference. Note that clients
 	 * that call this method successfully should later call
 	 * {@link IRemoteServiceContainerAdapter#ungetRemoteService(IRemoteServiceReference)}
@@ -195,14 +225,6 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * @see #getRemoteService(IRemoteServiceReference)
 	 */
 	public boolean ungetRemoteService(IRemoteServiceReference reference);
-
-	/**
-	 * Get namespace to use for this remote service provider.
-	 * @return Namespace to use for creating IDs for this remote service provider.  Will
-	 * not return <code>null</code>.
-	 * @since 3.0
-	 */
-	public Namespace getRemoteServiceNamespace();
 
 	/**
 	 * Creates a <code>IRemoteFilter</code> object. This <code>IRemoteFilter</code> object may

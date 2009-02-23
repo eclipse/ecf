@@ -23,6 +23,14 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public interface IRemoteServiceReference {
 	/**
+	 * Get the remote service ID for this reference.  Will not return <code>null</code>.
+	 * 
+	 * @return IRemoteServiceID the id for the remote service associated with this
+	 * reference.
+	 */
+	public IRemoteServiceID getID();
+
+	/**
 	 * Get container ID for remote service
 	 * 
 	 * @return ID the containerID for this reference (where the service is

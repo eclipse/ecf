@@ -12,7 +12,6 @@
 package org.eclipse.ecf.remoteservice;
 
 import java.util.Dictionary;
-
 import org.eclipse.ecf.core.identity.ID;
 
 /**
@@ -23,6 +22,15 @@ import org.eclipse.ecf.core.identity.ID;
  * 
  */
 public interface IRemoteServiceRegistration {
+
+	/**
+	 * Get the remote service ID for this registration.  Will not return <code>null</code>.
+	 * 
+	 * @return IRemoteServiceID the id for the remote service associated with this
+	 * registration.
+	 */
+	public IRemoteServiceID getID();
+
 	/**
 	 * Get the container ID for the registration
 	 * 
