@@ -15,7 +15,6 @@ import java.util.Properties;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
@@ -127,11 +126,7 @@ public class DiscoverableServer implements IApplication {
 	public void stop() {
 		if (serviceInfo != null) {
 			if (discoveryService != null) {
-				try {
-					discoveryService.unregisterService(serviceInfo);
-				} catch (final ECFException e) {
-					e.printStackTrace();
-				}
+				discoveryService.unregisterService(serviceInfo);
 				serviceInfo = null;
 				final IContainer container = (IContainer) discoveryService.getAdapter(IContainer.class);
 				if (container != null) {
