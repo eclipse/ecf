@@ -10,6 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.jmdns.container;
 
+import org.eclipse.ecf.core.util.ECFRuntimeException;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.URI;
@@ -21,7 +23,6 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
@@ -225,14 +226,14 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void registerService(final IServiceInfo serviceInfo) throws ECFException {
+	public void registerService(final IServiceInfo serviceInfo) {
 		Assert.isNotNull(serviceInfo);
 		final ServiceInfo svcInfo = createServiceInfoFromIServiceInfo(serviceInfo);
 		checkServiceInfo(svcInfo);
 		try {
 			jmdns.registerService(svcInfo);
 		} catch (final IOException e) {
-			throw new ECFException(Messages.JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE, e);
+			throw new ECFRuntimeException(Messages.JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE, e);
 		}
 	}
 
@@ -365,10 +366,10 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	}
 
 	/*******************************************/
-	private void checkServiceInfo(final ServiceInfo serviceInfo) throws ECFException {
+	private void checkServiceInfo(final ServiceInfo serviceInfo) {
 		final String serviceName = serviceInfo.getName();
 		if (serviceName == null)
-			throw new ECFException(Messages.JMDNSDiscoveryContainer_SERVICE_NAME_NOT_NULL);
+			throw new ECFRuntimeException(Messages.JMDNSDiscoveryContainer_SERVICE_NAME_NOT_NULL);
 	}
 
 	private IServiceTypeID createServiceTypeID(final String type) {
