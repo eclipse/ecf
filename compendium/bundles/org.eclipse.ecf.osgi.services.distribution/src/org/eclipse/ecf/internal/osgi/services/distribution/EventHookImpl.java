@@ -159,7 +159,7 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			IRemoteServiceContainerAdapter rsca,
 			ServiceReference serviceReference, Map ecfConfiguration) {
 		Object cID = serviceReference
-				.getProperty(org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE_CONTAINER_ID);
+				.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID);
 		if (cID == null || !(cID instanceof ID)) {
 			Trace
 					.trace(

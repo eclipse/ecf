@@ -288,7 +288,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteServiceContainerAdapter adapter,
 			ServiceEndpointDescription description) {
 		String namespaceName = (String) description
-				.getProperty(Constants.REMOTESERVICE_NAMESPACE_NAME);
+				.getProperty(Constants.SERVICE_NAMESPACE);
 		if (namespaceName != null) {
 			Namespace namespace = adapter.getRemoteServiceNamespace();
 			if (namespace.getName().equals(namespaceName))
