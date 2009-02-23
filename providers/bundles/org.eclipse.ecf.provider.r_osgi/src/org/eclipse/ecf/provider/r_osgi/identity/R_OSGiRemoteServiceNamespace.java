@@ -12,6 +12,9 @@ package org.eclipse.ecf.provider.r_osgi.identity;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.remoteservice.RemoteServiceID;
 
+/**
+ * @since 3.0
+ */
 public class R_OSGiRemoteServiceNamespace extends Namespace {
 
 	private static final long serialVersionUID = 3682739978873980993L;
