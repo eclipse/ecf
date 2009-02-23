@@ -46,7 +46,7 @@ public class DiscoverableServer implements IApplication {
 	private String serviceHostID = "ecftcp://localhost:3285/server"; //$NON-NLS-1$
 	private String clientContainerType = "ecf.generic.client"; //$NON-NLS-1$
 	private String clientConnectTarget = "ecftcp://localhost:3285/server"; //$NON-NLS-1$
-	private String serviceType = Constants.DISCOVERY_SERVICE_TYPE;
+	private String serviceType = "remotesvcs"; //$NON-NLS-1$
 
 	private IContainer serviceHostContainer;
 
