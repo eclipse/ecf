@@ -242,4 +242,6 @@ public interface Constants {
 	 */
 	public static final String DISCOVERY_CONTAINER_FACTORY_PROPERTY = "cft"; //$NON-NLS-1$
 
+	public static final String REMOTESERVICE_NAMESPACE_NAME = "remote.service.namespace";
+
 }
