@@ -41,7 +41,8 @@ public abstract class BaseID implements ID {
 	 * @see java.lang.Comparable#compareTo(T)
 	 */
 	public int compareTo(Object o) {
-		Assert.isTrue(o != null && o instanceof BaseID, "incompatible types for compare"); //$NON-NLS-1$
+		Assert.isTrue(o != null && o instanceof BaseID,
+				"incompatible types for compare"); //$NON-NLS-1$
 		return namespace.getCompareToForObject(this, (BaseID) o);
 	}
 
@@ -51,9 +52,9 @@ public abstract class BaseID implements ID {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object o) {
-		if (o == null)
-			return false;
-		if (!(o instanceof BaseID)) {
+		if (this == o)
+			return true;
+		if (o == null || !(o instanceof BaseID)) {
 			return false;
 		}
 		return namespace.testIDEquals(this, (BaseID) o);
@@ -98,42 +99,51 @@ public abstract class BaseID implements ID {
 	/**
 	 * Called by {@link Namespace#getCompareToForObject(BaseID, BaseID)}.
 	 * 
-	 * @param o the other ID to compare to.  Will not be <code>null</code>.
+	 * @param o
+	 *            the other ID to compare to. Will not be <code>null</code>.
 	 * @return the appropriate value as per {@link Comparable} contract.
 	 */
 	protected abstract int namespaceCompareTo(BaseID o);
 
 	/**
 	 * Called by {@link Namespace#testIDEquals(BaseID, BaseID)}.
-	 * @param o the other ID to test against.  May be <code>null</code>.
-	 * @return <code>true</code> if this ID is equal to the given ID.  <code>false</code> otherwise.
+	 * 
+	 * @param o
+	 *            the other ID to test against. May be <code>null</code>.
+	 * @return <code>true</code> if this ID is equal to the given ID.
+	 *         <code>false</code> otherwise.
 	 */
 	protected abstract boolean namespaceEquals(BaseID o);
 
 	/**
 	 * Called by {@link Namespace#getNameForID(BaseID)}.
 	 * 
-	 * @return String name for this ID.  Must not be <code>null</code>.  Value returned should be unique within this Namespace.
+	 * @return String name for this ID. Must not be <code>null</code>. Value
+	 *         returned should be unique within this Namespace.
 	 */
 	protected abstract String namespaceGetName();
 
 	/**
 	 * Called by {@link Namespace#getHashCodeForID(BaseID)}.
 	 * 
-	 * @return int hashCode for this ID.  Returned value must be unique within this process.
+	 * @return int hashCode for this ID. Returned value must be unique within
+	 *         this process.
 	 */
 	protected abstract int namespaceHashCode();
 
 	/**
-	 * Called by {@link Namespace#toExternalForm(BaseID)}. 
+	 * Called by {@link Namespace#toExternalForm(BaseID)}.
 	 * 
-	 * @return String that represents this ID.  Default implementation is to return
-	 * <pre>
+	 * @return String that represents this ID. Default implementation is to
+	 *         return
+	 * 
+	 *         <pre>
 	 * namespace.getScheme() + Namespace.SCHEME_SEPARATOR + namespaceGetName();
 	 * </pre>
 	 */
 	protected String namespaceToExternalForm() {
-		return namespace.getScheme() + Namespace.SCHEME_SEPARATOR + namespaceGetName();
+		return namespace.getScheme() + Namespace.SCHEME_SEPARATOR
+				+ namespaceGetName();
 	}
 
 	/*
@@ -142,7 +152,8 @@ public abstract class BaseID implements ID {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class clazz) {
-		IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		IAdapterManager adapterManager = Activator.getDefault()
+				.getAdapterManager();
 		if (adapterManager == null)
 			return null;
 		return adapterManager.loadAdapter(this, clazz.getName());
