@@ -94,7 +94,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 
 	private void startRegTracker() {
 		try {
-			final String filter = "(" + org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE_CONTAINER_ID + "=" + containerID + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			final String filter = "(" + org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID + "=" + containerID + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			remoteServicesTracker = new ServiceTracker(context, context.createFilter(filter), new ServiceTrackerCustomizer() {
 
 				public Object addingService(ServiceReference reference) {
@@ -261,7 +261,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		props.put(RemoteOSGiService.R_OSGi_REGISTRATION, Boolean.TRUE);
 		// remove the RFC 119 hint, if present, to avoid loops
 		props.remove("osgi.remote.interfaces"); //$NON-NLS-1$
-		props.put(org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE_CONTAINER_ID, containerID);
+		props.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID, containerID);
 		// register the service with the local framework
 		final ServiceRegistration reg = context.registerService(clazzes, service, props);
 		// Set ECF remote service id property based upon local service property
