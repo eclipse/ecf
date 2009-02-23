@@ -843,18 +843,19 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		// connect socket, certificate validation, send request, authenticate,
 		int ticks = 1;
 		monitor.beginTask(getRemoteFileURL().toString() + " Connecting", ticks);
-		Exception ex = null;
 		try {
 			if (monitor.isCanceled())
 				throw newUserCancelledException();
 			responseCode = httpClient.executeMethod(getHostConfiguration(), getMethod);
 			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + responseCode); //$NON-NLS-1$
 		} catch (final Exception e) {
-			ex = e;
+			if (!isDone()) {
+				setDoneException(e);
+			}
 		} finally {
 			monitor.done();
 		}
-		return getFinalStatus(ex);
+		return getFinalStatus(exception);
 
 	}
 
