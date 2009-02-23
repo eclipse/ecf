@@ -11,7 +11,6 @@ package org.eclipse.ecf.discovery;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.identity.*;
 
 /**
@@ -117,10 +116,8 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * @param serviceInfo
 	 *            IServiceInfo of the service to be published. Must not be
 	 *            <code>null</code>.
-	 * @throws ECFException
-	 *             if service info cannot be registered with this service
 	 */
-	public void registerService(IServiceInfo serviceInfo) throws ECFException;
+	public void registerService(IServiceInfo serviceInfo);
 
 	/**
 	 * Remove a service listener. Remove the listener from this container
@@ -160,8 +157,6 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * @param serviceInfo
 	 *            IServiceInfo defining the service to unregister. Must not be
 	 *            <code>null</code>.
-	 * @throws ECFException
-	 *             if service info cannot be unregistered with this service
 	 */
-	public void unregisterService(IServiceInfo serviceInfo) throws ECFException;
+	public void unregisterService(IServiceInfo serviceInfo);
 }
