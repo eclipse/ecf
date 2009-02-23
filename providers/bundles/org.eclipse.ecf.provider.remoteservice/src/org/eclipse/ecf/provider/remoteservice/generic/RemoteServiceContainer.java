@@ -70,7 +70,7 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements IRem
 	 * @since 3.0
 	 */
 	public Namespace getRemoteServiceNamespace() {
-		return getConnectNamespace();
+		return registry.getRemoteServiceNamespace();
 	}
 
 	/**
@@ -78,5 +78,16 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements IRem
 	 */
 	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException {
 		return registry.createRemoteFilter(filter);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference getRemoteServiceReference(IRemoteServiceID serviceID) {
+		return registry.getRemoteServiceReference(serviceID);
+	}
+
+	public IRemoteServiceID getRemoteServiceID(ID containerID, long containerRelativeID) {
+		return registry.getRemoteServiceID(containerID, containerRelativeID);
 	}
 }

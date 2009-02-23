@@ -9,6 +9,7 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 
 public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
@@ -53,11 +54,15 @@ public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 	protected String getRemoteClass() {
 		return clazz;
 	}
-	
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer("RemoteServiceReferenceImpl["); //$NON-NLS-1$
 		buf.append("class=").append(getRemoteClass()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("registration=").append(getRegistration()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
+	}
+
+	public IRemoteServiceID getID() {
+		return registration.getID();
 	}
 }

@@ -13,8 +13,7 @@ import java.lang.reflect.Array;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.internal.provider.remoteservice.Messages;
-import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
-import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.eclipse.ecf.remoteservice.*;
 
 public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration, Serializable {
 
@@ -24,9 +23,6 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 	/** service classes for this registration. */
 	protected String[] clazzes;
-
-	/** service id. */
-	protected long serviceid;
 
 	/** properties for this registration. */
 	protected Properties properties;
@@ -40,8 +36,6 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 	/** The registration state */
 	protected int state = REGISTERED;
 
-	protected ID containerID = null;
-
 	public static final int REGISTERED = 0x00;
 
 	public static final int UNREGISTERING = 0x01;
@@ -52,6 +46,8 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 	protected transient RegistrySharedObject sharedObject = null;
 
+	protected IRemoteServiceID remoteServiceID;
+
 	public RemoteServiceRegistrationImpl() {
 		//
 
@@ -61,10 +57,9 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		this.sharedObject = sharedObject1;
 		this.service = svc;
 		this.clazzes = clzzes;
-		this.containerID = registry.getContainerID();
 		this.reference = new RemoteServiceReferenceImpl(this);
 		synchronized (registry) {
-			serviceid = registry.getNextServiceId();
+			this.remoteServiceID = registry.createRemoteServiceID(registry.getNextServiceId());
 			this.properties = createProperties(props);
 			registry.publishService(this);
 		}
@@ -75,7 +70,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 	}
 
 	public ID getContainerID() {
-		return containerID;
+		return (remoteServiceID == null) ? null : remoteServiceID.getContainerID();
 	}
 
 	protected String[] getClasses() {
@@ -122,7 +117,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 		resultProps.setProperty(RemoteServiceRegistryImpl.REMOTEOBJECTCLASS, clazzes);
 
-		resultProps.setProperty(RemoteServiceRegistryImpl.REMOTESERVICE_ID, new Long(serviceid));
+		resultProps.setProperty(RemoteServiceRegistryImpl.REMOTESERVICE_ID, new Long(getID().getContainerRelativeID()));
 
 		final Object ranking = resultProps.getProperty(RemoteServiceRegistryImpl.REMOTESERVICE_RANKING);
 
@@ -315,7 +310,10 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 	}
 
 	public long getServiceId() {
-		return serviceid;
+		IRemoteServiceID rsID = getID();
+		if (rsID == null)
+			return 0L;
+		return rsID.getContainerRelativeID();
 	}
 
 	public Object callService(RemoteCallImpl call) throws Exception {
@@ -324,13 +322,18 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer("RemoteServiceRegistrationImpl["); //$NON-NLS-1$
-		buf.append("containerID=").append(containerID).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-		buf.append("serviceid=").append(serviceid).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("remoteServiceID=").append(getID()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("containerID=").append(getContainerID()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("serviceid=").append(getID().getContainerRelativeID()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("serviceranking=").append(serviceranking).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("classes=").append(Arrays.asList(clazzes)).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("state=").append(state).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("properties=").append(properties).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
+	}
+
+	public IRemoteServiceID getID() {
+		return this.remoteServiceID;
 	}
 
 }

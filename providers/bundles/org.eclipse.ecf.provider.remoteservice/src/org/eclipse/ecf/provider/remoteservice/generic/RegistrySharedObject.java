@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.remoteservice.generic;
 
-import org.eclipse.ecf.core.jobs.JobsExecutor;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.*;
@@ -18,8 +16,8 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.util.*;
@@ -1016,7 +1014,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 * @since 3.0
 	 */
 	public Namespace getRemoteServiceNamespace() {
-		return getSOContext().getConnectNamespace();
+		return IDFactory.getDefault().getNamespaceByName(RemoteServiceNamespace.NAME);
 	}
 
 	/**
@@ -1024,5 +1022,51 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException {
 		return new RemoteFilterImpl(filter);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference getRemoteServiceReference(IRemoteServiceID serviceId) {
+		ID containerID = serviceId.getContainerID();
+		RemoteServiceRegistrationImpl registration = null;
+		if (this.localRegistry.containerID.equals(containerID)) {
+			synchronized (localRegistry) {
+				registration = localRegistry.findRegistrationForServiceId(serviceId.getContainerRelativeID());
+				if (registration != null)
+					return registration.getReference();
+			}
+		} else {
+			synchronized (remoteRegistrys) {
+				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
+				for (final Iterator i = registrys.iterator(); i.hasNext();) {
+					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
+					registration = registry.findRegistrationForServiceId(serviceId.getContainerRelativeID());
+				}
+			}
+		}
+		return (registration == null) ? null : registration.getReference();
+	}
+
+	public IRemoteServiceID getRemoteServiceID(ID containerId, long containerRelativeId) {
+		if (containerId == null)
+			return null;
+		synchronized (localRegistry) {
+			if (localRegistry.containerID.equals(containerId)) {
+				RemoteServiceRegistrationImpl reg = localRegistry.findRegistrationForServiceId(containerRelativeId);
+				if (reg != null)
+					return reg.getID();
+			}
+		}
+		synchronized (remoteRegistrys) {
+			final ArrayList registrys = new ArrayList(remoteRegistrys.values());
+			for (final Iterator i = registrys.iterator(); i.hasNext();) {
+				final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
+				RemoteServiceRegistrationImpl reg = registry.findRegistrationForServiceId(containerRelativeId);
+				if (reg != null)
+					return reg.getID();
+			}
+		}
+		return null;
 	}
 }

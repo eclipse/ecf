@@ -17,5 +17,13 @@
          <adapter type="org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter"/>
       </factory>
    </extension>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceNamespace"
+            description="Generic remote service namespace"
+            name="ecf.namespace.generic.remoteservice">
+      </namespace>
+   </extension>
 
 </plugin>

@@ -11,6 +11,7 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 import java.io.Serializable;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.remoteservice.*;
 
 public class RemoteServiceRegistryImpl implements Serializable {
@@ -185,6 +186,10 @@ public class RemoteServiceRegistryImpl implements Serializable {
 		final StringBuffer buf = new StringBuffer("RemoteServiceRegistryImpl["); //$NON-NLS-1$
 		buf.append("all=").append(allPublishedServices).append(";").append("byclass=").append(publishedServicesByClass).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		return buf.toString();
+	}
+
+	public IRemoteServiceID createRemoteServiceID(long serviceid) {
+		return (IRemoteServiceID) IDFactory.getDefault().createID(IDFactory.getDefault().getNamespaceByName(RemoteServiceNamespace.NAME), new Object[] {containerID, new Long(serviceid)});
 	}
 
 }
