@@ -28,6 +28,7 @@ public interface IRemoteServiceRegistration {
 	 * 
 	 * @return IRemoteServiceID the id for the remote service associated with this
 	 * registration.
+	 * @since 3.0
 	 */
 	public IRemoteServiceID getID();
 

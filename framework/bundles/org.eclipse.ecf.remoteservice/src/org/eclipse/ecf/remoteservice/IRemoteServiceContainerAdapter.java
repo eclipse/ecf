@@ -177,6 +177,7 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * @param containerRelativeID the long value identifying the remote service relative to the container ID.
 	 * @return IRemoteServiceID instance if the associated IRemoteServiceRegistration/Reference is known to this container
 	 * adapter, <code>null</code> if it is not.
+	 * @since 3.0
 	 */
 	public IRemoteServiceID getRemoteServiceID(ID containerID, long containerRelativeID);
 
@@ -187,6 +188,7 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * @param serviceID the serviceID to retrieve the IRemoteServiceReference for.
 	 * @return IRemoteServiceReference the remote service reference associated with the given serviceID.
 	 * Will return <code>null</code> if no IRemoteServiceReference found for the given serviceID.
+	 * @since 3.0
 	 */
 	public IRemoteServiceReference getRemoteServiceReference(IRemoteServiceID serviceID);
 

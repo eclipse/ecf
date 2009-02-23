@@ -118,6 +118,7 @@ public interface Constants {
 	 * object passed to the
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
+	 * @since 3.0
 	 */
 	public static final String SERVICE_CONTAINER_FACTORY_NAME = "rsvc.cfn"; //$NON-NLS-1$
 
@@ -128,6 +129,7 @@ public interface Constants {
 	 * object passed to the
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
+	 * @since 3.0
 	 */
 	public static final String SERVICE_CONTAINER_TARGET = "rsvc.target"; //$NON-NLS-1$
 
@@ -136,6 +138,7 @@ public interface Constants {
 	 * <p>
 	 * This property may be supplied in the properties <code>Dictionary</code>
 	 * object passed to the <code>BundleContext.registerService</code> method.
+	 * @since 3.0
 	 */
 	public static final String SERVICE_CONTAINER_ID_FACTORY = "rsvc.cidf"; //$NON-NLS-1$
 
@@ -144,6 +147,7 @@ public interface Constants {
 	 * <p>
 	 * This property may be supplied in the properties <code>Dictionary</code>
 	 * object passed to the <code>BundleContext.registerService</code> method.
+	 * @since 3.0
 	 */
 	public static final String SERVICE_CONTAINER_ID = "rsvc.cid"; //$NON-NLS-1$
 
@@ -172,6 +176,7 @@ public interface Constants {
 	 * Discovery service property to specify a namespace name for creating a connect id.  Note that
 	 * this property should be equal to the name of the namespace retrieved from {@link IContainer#getConnectNamespace()}.
 	 * Note that this property is <b>optional</b>.
+	 * @since 3.0
 	 */
 	public static final String SERVICE_CONNECT_ID_NAMESPACE = "rsvc.cnct.id.ns"; //$NON-NLS-1$
 
@@ -179,6 +184,7 @@ public interface Constants {
 	 * Discovery service property to specify value for creating a connect id.  Note that
 	 * this property should be equal to connectID retrieved from {@link IContainer#getConnectedID()}.
 	 * Note that this property is <b>optional</b>.
+	 * @since 3.0
 	 */
 	public static final String SERVICE_CONNECT_ID = "rsvc.cnct.id"; //$NON-NLS-1$
 
@@ -188,7 +194,7 @@ public interface Constants {
 	 * expected that clients will use the value of this property, along with the SERVICE_ID_PROPERTY
 	 * to create an ID instance for the 'idFilter' parameter via
 	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter). 
-
+	 * @since 3.0
 	 */
 	public static final String SERVICE_IDFILTER_NAMESPACE = "rsvc.idfltr.ns"; //$NON-NLS-1$
 
@@ -198,12 +204,14 @@ public interface Constants {
 	 * that clients will use the value of this property, along with the SERVICE_IDFILTER_NAMESPACE
 	 * to create an ID instance for the 'idFilter' parameter via
 	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter). 
+	 * @since 3.0
 	 */
 	public static final String SERVICE_IDFILTER_ID = "rsvc.idfltr.id"; //$NON-NLS-1$
 
 	/**
 	 * Discovery Service property specifying the clazz paramter in  
 	 * remoteServiceContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter);
+	 * @since 3.0
 	 */
 	public static final String SERVICE_OBJECTCLASS = "rsvc.robjectclass"; //$NON-NLS-1$
 
@@ -213,12 +221,14 @@ public interface Constants {
 	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter).  
 	 * Note that this
 	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above.
+	 * @since 3.0
 	 */
 	public static final String SERVICE_FILTER_PROPERTY = "rsvc.fltr"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property specifying the expected namespace name for corresponding
 	 * to remoteServiceContainerAdapter.getRemoteServicesNamespace()
+	 * @since 3.0
 	 */
 	public static final String SERVICE_NAMESPACE = "rsvc.ns"; //$NON-NLS-1$
 

@@ -27,6 +27,7 @@ public interface IRemoteServiceReference {
 	 * 
 	 * @return IRemoteServiceID the id for the remote service associated with this
 	 * reference.
+	 * @since 3.0
 	 */
 	public IRemoteServiceID getID();
 

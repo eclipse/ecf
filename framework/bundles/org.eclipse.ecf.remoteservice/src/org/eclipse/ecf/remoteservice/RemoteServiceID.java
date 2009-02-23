@@ -11,8 +11,10 @@ package org.eclipse.ecf.remoteservice;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 
+/**
+ * @since 3.0
+ */
 public class RemoteServiceID extends BaseID implements IRemoteServiceID {
 
 	private static final String SEPARATOR = "/"; //$NON-NLS-1$
