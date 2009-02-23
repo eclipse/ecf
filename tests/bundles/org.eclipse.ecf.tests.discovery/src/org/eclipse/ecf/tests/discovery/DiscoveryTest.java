@@ -14,7 +14,7 @@ package org.eclipse.ecf.tests.discovery;
 
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
@@ -53,7 +53,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	protected void registerService() {
 		try {
 			discoveryContainer.registerService(serviceInfo);
-		} catch (final ECFException e) {
+		} catch (final ECFRuntimeException e) {
 			fail("IServiceInfo may be valid with this IDCA");
 		}
 	}
@@ -61,7 +61,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	protected void unregisterService() {
 		try {
 			discoveryContainer.unregisterService(serviceInfo);
-		} catch (final ECFException e) {
+		} catch (final ECFRuntimeException e) {
 			fail("unregistering of " + serviceInfo + " should just work");
 		}
 	}

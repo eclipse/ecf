@@ -13,7 +13,7 @@ package org.eclipse.ecf.tests.discovery;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
@@ -98,7 +98,7 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 		testConnect();
 		try {
 			discoveryContainer.unregisterService(null);
-		} catch (final ECFException e) {
+		} catch (final ECFRuntimeException e) {
 			fail("null must cause AssertionFailedException");
 		} catch (final AssertionFailedException e) {
 			return;
@@ -183,7 +183,7 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 		testConnect();
 		try {
 			discoveryContainer.registerService(null);
-		} catch (final ECFException e) {
+		} catch (final ECFRuntimeException e) {
 			fail("null must cause AssertionFailedException");
 		} catch (final AssertionFailedException e) {
 			return;
