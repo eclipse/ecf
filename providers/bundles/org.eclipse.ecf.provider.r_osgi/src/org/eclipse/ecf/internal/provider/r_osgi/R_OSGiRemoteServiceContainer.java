@@ -264,11 +264,26 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		props.put(org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE_CONTAINER_ID, containerID);
 		// register the service with the local framework
 		final ServiceRegistration reg = context.registerService(clazzes, service, props);
+		// Set ECF remote service id property based upon local service property
+		reg.setProperties(prepareProperties(reg.getReference()));
 
 		remoteServicesRegs.put(reg.getReference(), reg);
-		// Get service ID and container ID, construct a IRemoteServiceID, and provide to new registration
-		Long l = (Long) reg.getReference().getProperty(Constants.SERVICE_ID);
-		return new RemoteServiceRegistrationImpl(createRemoteServiceID(containerID, l), reg);
+		// Construct a IRemoteServiceID, and provide to new registration impl instance
+		return new RemoteServiceRegistrationImpl(createRemoteServiceID(containerID, (Long) reg.getReference().getProperty(Constants.SERVICE_ID)), reg);
+	}
+
+	Dictionary prepareProperties(ServiceReference reference) {
+		String[] propKeys = reference.getPropertyKeys();
+		Dictionary newDictionary = new Properties();
+		for (int i = 0; i < propKeys.length; i++) {
+			Object v = reference.getProperty(propKeys[i]);
+			newDictionary.put(propKeys[i], v);
+			// Make the remote service SERVICE_ID have the same value as OSGi SERVICE_ID
+			if (Constants.SERVICE_ID.equals(propKeys[i])) {
+				newDictionary.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID, v);
+			}
+		}
+		return newDictionary;
 	}
 
 	/**
