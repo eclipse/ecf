@@ -69,7 +69,7 @@ public class RegisterTest extends AbstractDistributionTest implements ServiceCon
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		props.put(OSGI_REMOTE_CONFIGURATION_TYPE,new String[] { ECF_REMOTE_CONFIGURATION_TYPE });
 		IContainer serverContainer = getServer();
-		props.put(Constants.REMOTE_SERVICE_CONTAINER_ID, serverContainer.getID());
+		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		registerConcatService(props);
 	}
 
