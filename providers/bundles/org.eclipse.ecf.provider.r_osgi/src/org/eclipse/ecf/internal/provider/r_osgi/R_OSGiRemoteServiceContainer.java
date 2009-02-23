@@ -589,17 +589,20 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		if (serviceId == null)
 			return null;
 		ID cID = serviceId.getContainerID();
+		// If the container ID isn't relevant to us we ignore
 		if (cID instanceof R_OSGiID) {
+			// If it's not the same as who we're connected to, we ignore
 			if (cID.equals(getConnectedID())) {
 				final String filter = "(" + Constants.SERVICE_ID + "=" + serviceId + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				try {
+					// Get remote service references...I imagine this can/would block
 					RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(((R_OSGiID) cID).getURI(), null, context.createFilter(filter));
-					// Refs should be null or one long
+					// There should be either zero or 1 remote service reference
 					if (refs == null || refs.length == 0)
 						return null;
 					return new RemoteServiceReferenceImpl(createRemoteServiceID(refs[0]), refs[0]);
 				} catch (InvalidSyntaxException e) {
-					// shouldn't happen
+					// shouldn't happen as filter better be well formed
 					return null;
 				}
 			}
