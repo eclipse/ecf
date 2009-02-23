@@ -74,10 +74,10 @@ public class ConnectedTester extends PropertyTester {
 	}
 
 	private String getConnectNamespace(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.DISCOVERY_CONNECT_ID_NAMESPACE_PROPERTY);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_CONNECT_ID_NAMESPACE);
 	}
 
 	private String getConnectID(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.DISCOVERY_CONNECT_ID_PROPERTY);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_CONNECT_ID);
 	}
 }

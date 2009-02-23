@@ -84,24 +84,24 @@ public class RemoteServiceHandlerUtil {
 	}
 	
 	private static String getServiceNamespace(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.DISCOVERY_SERVICE_ID_NAMESPACE_PROPERTY);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_IDFILTER_NAMESPACE);
 	}
 	private static String getServiceID(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.DISCOVERY_SERVICE_ID_PROPERTY);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_IDFILTER_ID);
 	}
 	private static String getRemoteServiceClass(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.DISCOVERY_OBJECTCLASS_PROPERTY);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_OBJECTCLASS);
 	}
 	private static String getFilter(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.DISCOVERY_FILTER_PROPERTY);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_FILTER_PROPERTY);
 	}
 	private static String getConnectNamespace(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.DISCOVERY_CONNECT_ID_NAMESPACE_PROPERTY);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_CONNECT_ID_NAMESPACE);
 	}
 	private static String getConnectID(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.DISCOVERY_CONNECT_ID_PROPERTY);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_CONNECT_ID);
 	}
 	private static String getContainerFactory(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.DISCOVERY_CONTAINER_FACTORY_PROPERTY);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_CONTAINER_FACTORY_NAME);
 	}
 }
