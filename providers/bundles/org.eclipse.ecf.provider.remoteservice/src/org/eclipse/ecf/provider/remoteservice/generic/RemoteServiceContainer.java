@@ -87,6 +87,9 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements IRem
 		return registry.getRemoteServiceReference(serviceID);
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public IRemoteServiceID getRemoteServiceID(ID containerID, long containerRelativeID) {
 		return registry.getRemoteServiceID(containerID, containerRelativeID);
 	}

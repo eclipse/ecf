@@ -12,6 +12,9 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.remoteservice.RemoteServiceID;
 
+/**
+ * @since 3.0
+ */
 public class RemoteServiceNamespace extends Namespace {
 
 	private static final long serialVersionUID = 1389616654436118037L;

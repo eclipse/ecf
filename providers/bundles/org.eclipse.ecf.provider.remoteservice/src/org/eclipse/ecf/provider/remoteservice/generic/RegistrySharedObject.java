@@ -1048,6 +1048,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return (registration == null) ? null : registration.getReference();
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public IRemoteServiceID getRemoteServiceID(ID containerId, long containerRelativeId) {
 		if (containerId == null)
 			return null;

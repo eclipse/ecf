@@ -62,6 +62,9 @@ public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 		return buf.toString();
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public IRemoteServiceID getID() {
 		return registration.getID();
 	}

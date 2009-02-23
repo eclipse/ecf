@@ -188,6 +188,9 @@ public class RemoteServiceRegistryImpl implements Serializable {
 		return buf.toString();
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public IRemoteServiceID createRemoteServiceID(long serviceid) {
 		return (IRemoteServiceID) IDFactory.getDefault().createID(IDFactory.getDefault().getNamespaceByName(RemoteServiceNamespace.NAME), new Object[] {containerID, new Long(serviceid)});
 	}

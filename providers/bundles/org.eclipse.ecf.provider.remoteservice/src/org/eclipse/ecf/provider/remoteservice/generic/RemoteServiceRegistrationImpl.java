@@ -15,6 +15,9 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.*;
 
+/**
+ * @since 3.0
+ */
 public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration, Serializable {
 
 	private static final long serialVersionUID = -3206899332723536545L;
@@ -46,6 +49,9 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 	protected transient RegistrySharedObject sharedObject = null;
 
+	/**
+	 * @since 3.0
+	 */
 	protected IRemoteServiceID remoteServiceID;
 
 	public RemoteServiceRegistrationImpl() {
@@ -332,6 +338,9 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		return buf.toString();
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public IRemoteServiceID getID() {
 		return this.remoteServiceID;
 	}
