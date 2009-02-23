@@ -18,7 +18,7 @@ public class R_OSGiRemoteServiceNamespace extends Namespace {
 
 	private static final String REMOTE_SERVICE_SCHEME = "r_osgiremoteservice"; //$NON-NLS-1$
 
-	public static final String NAME = "r_osgi.namespace.remoteservice"; //$NON-NLS-1$
+	public static final String NAME = "ecf.namespace.r_osgi.remoteservice"; //$NON-NLS-1$
 
 	public R_OSGiRemoteServiceNamespace(String name, String desc) {
 		super(name, desc);

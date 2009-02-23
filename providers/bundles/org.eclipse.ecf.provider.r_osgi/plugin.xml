@@ -8,6 +8,11 @@
             description="R-OSGi Namespace"
             name="ecf.namespace.r_osgi">
       </namespace>
+      <namespace
+            class="org.eclipse.ecf.provider.r_osgi.identity.R_OSGiRemoteServiceNamespace"
+            description="R-OSGi Remote Service Namespace"
+            name="ecf.namespace.r_osgi.remoteservice">
+      </namespace>
    </extension>
    <extension
          point="org.eclipse.ecf.containerFactory">
