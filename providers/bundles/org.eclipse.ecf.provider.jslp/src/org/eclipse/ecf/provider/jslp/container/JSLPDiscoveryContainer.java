@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -180,7 +180,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void registerService(IServiceInfo aServiceInfo) throws ECFException {
+	public void registerService(IServiceInfo aServiceInfo) {
 		Assert.isNotNull(aServiceInfo);
 		try {
 			JSLPServiceInfo si = new JSLPServiceInfo(aServiceInfo);
@@ -188,7 +188,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 			Activator.getDefault().getAdvertiser().register(si.getServiceURL(), Arrays.asList(stid.getScopes()), new ServicePropertiesAdapter(si).toProperties());
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "registerService(IServiceInfo)", e); //$NON-NLS-1$
-			throw new ECFException(e.getMessage(), e);
+			throw new ECFRuntimeException(e.getMessage(), e);
 		}
 	}
 
