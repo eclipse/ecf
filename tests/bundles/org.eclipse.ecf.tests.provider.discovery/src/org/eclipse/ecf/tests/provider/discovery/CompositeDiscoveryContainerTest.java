@@ -13,7 +13,7 @@ package org.eclipse.ecf.tests.provider.discovery;
 import java.util.List;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
 import org.eclipse.ecf.tests.discovery.DiscoveryTest;
@@ -48,7 +48,7 @@ public class CompositeDiscoveryContainerTest extends DiscoveryTest {
 			container.connect(null, null);
 			try {
 				discoveryContainer.registerService(serviceInfo);
-			} catch (ECFException e) {
+			} catch (ECFRuntimeException e) {
 				fail("Registering a service failed on a new IDCA");
 			}
 			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryContainer;
@@ -68,7 +68,7 @@ public class CompositeDiscoveryContainerTest extends DiscoveryTest {
 			try {
 				discoveryContainer.registerService(serviceInfo);
 				discoveryContainer.unregisterService(serviceInfo);
-			} catch (ECFException e) {
+			} catch (ECFRuntimeException e) {
 				fail("Re-/Unregistering a service failed on a new IDCA");
 			}
 			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryContainer;

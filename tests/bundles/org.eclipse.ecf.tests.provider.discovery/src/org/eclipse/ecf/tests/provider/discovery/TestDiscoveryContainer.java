@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
@@ -87,7 +86,7 @@ public class TestDiscoveryContainer implements IDiscoveryContainerAdapter {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void registerService(IServiceInfo serviceInfo) throws ECFException {
+	public void registerService(IServiceInfo serviceInfo) {
 		this.services.add(serviceInfo);
 	}
 
@@ -116,7 +115,7 @@ public class TestDiscoveryContainer implements IDiscoveryContainerAdapter {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void unregisterService(IServiceInfo serviceInfo) throws ECFException {
+	public void unregisterService(IServiceInfo serviceInfo) {
 		this.services.remove(serviceInfo);
 	}
 
