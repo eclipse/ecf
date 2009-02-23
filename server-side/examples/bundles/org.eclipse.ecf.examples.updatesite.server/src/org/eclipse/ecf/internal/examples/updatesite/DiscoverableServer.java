@@ -15,7 +15,6 @@ import java.net.*;
 import java.security.InvalidParameterException;
 import java.util.Map;
 import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
@@ -146,12 +145,7 @@ public class DiscoverableServer implements IApplication {
 	 */
 	public void stop() {
 		if (discovery != null && serviceInfo != null) {
-			try {
-				discovery.unregisterService(serviceInfo);
-			} catch (ECFException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			discovery.unregisterService(serviceInfo);
 			discovery = null;
 			serviceInfo = null;
 		}
