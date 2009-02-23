@@ -57,20 +57,18 @@ public class RegisterTest extends AbstractDistributionTest implements ServiceCon
 		registrations.add(bc.registerService(new String[] { IConcatService.class.getName() }, createService(), props));
 	}
 	
-	public void testRegisterAllRSContainers() throws Exception {
+	public void testRegisterAllContainers() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
-		props.put(OSGI_REMOTE_CONFIGURATION_TYPE,new String[] { ECF_REMOTE_CONFIGURATION_TYPE });
 		registerConcatService(props);
 	}
 	
 	public void testRegisterServerContainer() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
-		props.put(OSGI_REMOTE_CONFIGURATION_TYPE,new String[] { ECF_REMOTE_CONFIGURATION_TYPE });
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		registerConcatService(props);
 	}
-
+	
 }

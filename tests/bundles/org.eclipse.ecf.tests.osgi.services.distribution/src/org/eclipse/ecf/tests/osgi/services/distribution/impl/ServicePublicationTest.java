@@ -56,12 +56,6 @@ public class ServicePublicationTest extends ECFAbstractTestCase {
 		// register a service with the marker property set
 		final Dictionary props = new Hashtable();
 		props.put(ServiceConstants.OSGI_REMOTE_INTERFACES, ifaces);
-		// JR: this should not be necessary
-		props
-				.put(
-						ServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE,
-						new String[] { ServiceConstants.ECF_REMOTE_CONFIGURATION_TYPE });
-
 		// prepare a service tracker
 		final ServiceTracker tracker = new ServiceTracker(context,
 				TestServiceInterface1.class.getName(), null);
