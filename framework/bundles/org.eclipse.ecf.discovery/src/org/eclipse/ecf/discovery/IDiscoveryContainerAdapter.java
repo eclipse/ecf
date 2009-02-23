@@ -30,13 +30,6 @@ import org.eclipse.ecf.discovery.identity.*;
  */
 public interface IDiscoveryContainerAdapter extends IAdaptable {
 
-	/** ECF Service Property Names **/
-	public static final String CONTAINER_FACTORY_NAME_PROPERTY = "org.eclipse.ecf.containerFactoryName"; //$NON-NLS-1$
-	public static final String CONTAINER_CONNECT_TARGET = "org.eclipse.ecf.connectTarget"; //$NON-NLS-1$
-	public static final String CONTAINER_CONNECT_TARGET_PROTOCOL = "org.eclipse.ecf.connectTargetProtocol"; //$NON-NLS-1$
-	public static final String CONTAINER_CONNECT_TARGET_PATH = "org.eclipse.ecf.connectTargetPath"; //$NON-NLS-1$
-	public static final String CONTAINER_CONNECT_REQUIRES_PASSWORD = "org.eclipse.ecf.connectContextRequiresPassword"; //$NON-NLS-1$
-
 	/**
 	 * Add a service listener. The given listener will have its method called
 	 * when a service is discovered.
