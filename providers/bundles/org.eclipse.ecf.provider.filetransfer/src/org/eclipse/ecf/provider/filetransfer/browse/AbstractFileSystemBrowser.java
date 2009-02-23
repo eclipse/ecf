@@ -101,7 +101,6 @@ public abstract class AbstractFileSystemBrowser {
 	/**
 	 * Run the actual request.  This method is called within the job created to actually get the
 	 * directory or file information.
-	 * @param request 
 	 * @throws Exception if some problem with making the request or receiving response to the request.
 	 */
 	protected abstract void runRequest() throws Exception;
