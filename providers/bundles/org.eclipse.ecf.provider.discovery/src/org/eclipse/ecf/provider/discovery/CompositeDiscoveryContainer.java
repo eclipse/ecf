@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
@@ -285,7 +285,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void registerService(final IServiceInfo serviceInfo) throws ECFException {
+	public void registerService(final IServiceInfo serviceInfo) {
 		Assert.isNotNull(serviceInfo);
 		synchronized (registeredServices) {
 			Assert.isTrue(registeredServices.add(serviceInfo));
@@ -304,7 +304,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void unregisterService(final IServiceInfo serviceInfo) throws ECFException {
+	public void unregisterService(final IServiceInfo serviceInfo) {
 		Assert.isNotNull(serviceInfo);
 		synchronized (registeredServices) {
 			// no assert as unregisterService might be called with an non-existing ISI
@@ -332,7 +332,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 				final IServiceInfo serviceInfo = (IServiceInfo) itr.next();
 				try {
 					idca.registerService(serviceInfo);
-				} catch (final ECFException e) {
+				} catch (final ECFRuntimeException e) {
 					// we eat the exception here since the original registerService call is long done
 					Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "addContainer(Object)", e); //$NON-NLS-1$
 				}

@@ -14,7 +14,6 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
@@ -116,7 +115,7 @@ public class SingletonDiscoveryContainer implements IDiscoveryContainerAdapter, 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void registerService(final IServiceInfo serviceInfo) throws ECFException {
+	public void registerService(final IServiceInfo serviceInfo) {
 		discovery.registerService(serviceInfo);
 	}
 
@@ -137,7 +136,7 @@ public class SingletonDiscoveryContainer implements IDiscoveryContainerAdapter, 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void unregisterService(final IServiceInfo serviceInfo) throws ECFException {
+	public void unregisterService(final IServiceInfo serviceInfo) {
 		discovery.unregisterService(serviceInfo);
 	}
 
