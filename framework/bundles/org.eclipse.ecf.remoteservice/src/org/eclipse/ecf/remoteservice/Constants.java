@@ -19,7 +19,7 @@ import org.eclipse.ecf.core.IContainer;
 public interface Constants {
 
 	/**
-	 * Service property (named &quot;remote.objectClass&quot;) identifying all
+	 * Remote service property (named &quot;remote.objectClass&quot;) identifying all
 	 * of the class names under which a service was registered in the remote
 	 * services API (of type <code>java.lang.String[]</code>).
 	 * 
@@ -27,10 +27,10 @@ public interface Constants {
 	 * This property is set by the remote services API when a service is
 	 * registered.
 	 */
-	public static final String OBJECTCLASS = "remote.objectClass"; //$NON-NLS-1$
+	public static final String OBJECTCLASS = "robjectClass"; //$NON-NLS-1$
 
 	/**
-	 * Service property (named &quot;remote.service.id&quot;) identifying a
+	 * Remote service property (named &quot;remote.service.id&quot;) identifying a
 	 * service's registration number (of type <code>java.lang.Long</code>).
 	 * 
 	 * <p>
@@ -40,7 +40,7 @@ public interface Constants {
 	 * services API was started. These values are NOT persistent across restarts
 	 * of the remote services API.
 	 */
-	public static final String SERVICE_ID = "remote.service.id"; //$NON-NLS-1$
+	public static final String SERVICE_ID = "rsvc.id"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remote.service.ranking&quot;) identifying a
@@ -72,7 +72,7 @@ public interface Constants {
 	 * <code>java.lang.Integer</code>, it is deemed to have a ranking value
 	 * of zero.
 	 */
-	public static final String SERVICE_RANKING = "remote.service.ranking"; //$NON-NLS-1$
+	public static final String SERVICE_RANKING = "rsvc.ranking"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remote.service.vendor&quot;) identifying a
@@ -84,7 +84,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String SERVICE_VENDOR = "remote.service.vendor"; //$NON-NLS-1$
+	public static final String SERVICE_VENDOR = "rsvc.vendor"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remoteservice.description&quot;)
@@ -96,7 +96,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String SERVICE_DESCRIPTION = "remote.service.description"; //$NON-NLS-1$
+	public static final String SERVICE_DESCRIPTION = "rsvc.desc"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remoteservice.description&quot;)
@@ -109,17 +109,17 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String SERVICE_REGISTRATION_TARGETS = "remote.service.registration.targets"; //$NON-NLS-1$
+	public static final String SERVICE_REGISTRATION_TARGETS = "rsvc.reg.targets"; //$NON-NLS-1$
 
 	/**
-	 * Service property that defines the container factory name.
+	 * Remote service property that defines the container factory name.
 	 * <p>
 	 * This property may be supplied in the properties <code>Dictionary</code>
 	 * object passed to the
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String CONTAINER_FACTORY_NAME = "org.eclipse.ecf.containerFactoryName"; //$NON-NLS-1$
+	public static final String SERVICE_CONTAINER_FACTORY_NAME = "rsvc.cfn"; //$NON-NLS-1$
 
 	/**
 	 * Service property that defines the container target for connection.
@@ -129,25 +129,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String CONTAINER_TARGET = "org.eclipse.ecf.containerTarget"; //$NON-NLS-1$
-
-	/**
-	 * Service property that defines the container target password.
-	 * <p>
-	 * This property may be supplied in the properties <code>Dictionary</code>
-	 * object passed to the
-	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
-	 * method.
-	 */
-	public static final String CONTAINER_PASSWORD = "org.eclipse.ecf.containerPassword"; //$NON-NLS-1$
-
-	/**
-	 * Service property that defines the remote service container ID.
-	 * <p>
-	 * This property may be supplied in the properties <code>Dictionary</code>
-	 * object passed to the <code>BundleContext.registerService</code> method.
-	 */
-	public static final String REMOTE_SERVICE_CONTAINER_ID = "org.eclipse.ecf.containerID"; //$NON-NLS-1$
+	public static final String SERVICE_CONTAINER_TARGET = "rsvc.target"; //$NON-NLS-1$
 
 	/**
 	 * Service property that defines the remote service container ID factory name.
@@ -155,7 +137,15 @@ public interface Constants {
 	 * This property may be supplied in the properties <code>Dictionary</code>
 	 * object passed to the <code>BundleContext.registerService</code> method.
 	 */
-	public static final String REMOTE_SERVICE_CONTAINER_ID_FACTORY_NAME = "org.eclipse.ecf.containerID.factory"; //$NON-NLS-1$
+	public static final String SERVICE_CONTAINER_ID_FACTORY = "rsvc.cidf"; //$NON-NLS-1$
+
+	/**
+	 * Remote service property that defines the remote service container ID.
+	 * <p>
+	 * This property may be supplied in the properties <code>Dictionary</code>
+	 * object passed to the <code>BundleContext.registerService</code> method.
+	 */
+	public static final String SERVICE_CONTAINER_ID = "rsvc.cid"; //$NON-NLS-1$
 
 	/**
 	 * Service property that determines whether a remote service proxy is automatically added to the local
@@ -174,59 +164,49 @@ public interface Constants {
 	 * </pre>
 	 * 
 	 */
-	public static final String AUTOREGISTER_REMOTE_PROXY = "org.eclipse.ecf.serviceRegistrationRemote"; //$NON-NLS-1$
+	public static final String AUTOREGISTER_REMOTE_PROXY = "rsvc.areg"; //$NON-NLS-1$
 
 	// Constants for use with the ECF remote services API
 
 	/**
-	 * Constant defining the ECF remote services discovery service type.  This service type should
-	 * be provided in the service type id when registering a remote service.  Then clients may
-	 * identify an ECF remote service type ID and therefore be made aware of how the client can
-	 * interact with the service.  
-	 */
-	public static final String DISCOVERY_SERVICE_TYPE = "remotesvcs"; //$NON-NLS-1$
-
-	/**
 	 * Discovery service property to specify a namespace name for creating a connect id.  Note that
 	 * this property should be equal to the name of the namespace retrieved from {@link IContainer#getConnectNamespace()}.
-	 * Note that this property is <b>optional</b> if DISCOVERY_SERVICE_TYPE is specified.
+	 * Note that this property is <b>optional</b>.
 	 */
-	public static final String DISCOVERY_CONNECT_ID_NAMESPACE_PROPERTY = "cns"; //$NON-NLS-1$
+	public static final String SERVICE_CONNECT_ID_NAMESPACE = "rsvc.cnct.id.ns"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property to specify value for creating a connect id.  Note that
 	 * this property should be equal to connectID retrieved from {@link IContainer#getConnectedID()}.
-	 * Note that this property is <b>optional</b> if DISCOVERY_SERVICE_TYPE is specified.
+	 * Note that this property is <b>optional</b>.
 	 */
-	public static final String DISCOVERY_CONNECT_ID_PROPERTY = "cid"; //$NON-NLS-1$
+	public static final String SERVICE_CONNECT_ID = "rsvc.cnct.id"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property to specify a namespace name for creating a target service ID.
-	 * Note that this property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above. It is 
-	 * expected that clients will use the value of this property, along with the DISCOVERY_SERVICE_ID_PROPERTY
+	 * Note that this property is <b>optional</b>. It is 
+	 * expected that clients will use the value of this property, along with the SERVICE_ID_PROPERTY
 	 * to create an ID instance for the 'idFilter' parameter via
 	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter). 
 
 	 */
-	public static final String DISCOVERY_SERVICE_ID_NAMESPACE_PROPERTY = "sns"; //$NON-NLS-1$
+	public static final String SERVICE_IDFILTER_NAMESPACE = "rsvc.idfltr.ns"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property for a 'remotesvcs' discovery type.  Note that this
-	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above.  It is expected
-	 * that clients will use the value of this property, along with the DISCOVERY_CONNECT_ID_NAMESPACE_PROPERTY
+	 * property is <b>optional</b>.  It is expected
+	 * that clients will use the value of this property, along with the SERVICE_IDFILTER_NAMESPACE
 	 * to create an ID instance for the 'idFilter' parameter via
 	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter). 
 	 */
-	public static final String DISCOVERY_SERVICE_ID_PROPERTY = "sid"; //$NON-NLS-1$
+	public static final String SERVICE_IDFILTER_ID = "rsvc.idfltr.id"; //$NON-NLS-1$
 
 	/**
-	 * Discovery service property for specifying the remote interface type.  Note that this
-	 * property is <b>required</b> if the DISCOVERY_SERVICE_TYPE is as given.  It is expected
-	 * that clients will use the value of this property to perform service lookups with the 
-	 * 'clazz' parameter via
-	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter).  
+	 * Discovery Service property specifying the clazz paramter in  
+	 * remoteServiceContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter);
 	 */
-	public static final String DISCOVERY_OBJECTCLASS_PROPERTY = "cls"; //$NON-NLS-1$
+	public static final String SERVICE_OBJECTCLASS = "rsvc.robjectclass"; //$NON-NLS-1$
+
 	/**
 	 * Discovery service property for specifying the service lookup filter for
 	 * client service lookup via 
@@ -234,14 +214,12 @@ public interface Constants {
 	 * Note that this
 	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above.
 	 */
-	public static final String DISCOVERY_FILTER_PROPERTY = "fltr"; //$NON-NLS-1$
+	public static final String SERVICE_FILTER_PROPERTY = "rsvc.fltr"; //$NON-NLS-1$
 
 	/**
-	 * Discovery service property for specifying the container factory type.  Note that this
-	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is used as given above.
+	 * Discovery service property specifying the expected namespace name for corresponding
+	 * to remoteServiceContainerAdapter.getRemoteServicesNamespace()
 	 */
-	public static final String DISCOVERY_CONTAINER_FACTORY_PROPERTY = "cft"; //$NON-NLS-1$
-
-	public static final String REMOTESERVICE_NAMESPACE_NAME = "remote.service.namespace"; //$NON-NLS-1$
+	public static final String SERVICE_NAMESPACE = "rsvc.ns"; //$NON-NLS-1$
 
 }

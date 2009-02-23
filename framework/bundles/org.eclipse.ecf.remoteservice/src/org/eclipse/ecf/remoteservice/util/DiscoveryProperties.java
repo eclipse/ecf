@@ -33,31 +33,31 @@ public class DiscoveryProperties extends Properties {
 		ID containerID = container.getID();
 		String targetNamespace = (containerID == null) ? null : containerID.getNamespace().getName();
 		String targetID = (containerID == null) ? null : containerID.getName();
-		put(Constants.DISCOVERY_OBJECTCLASS_PROPERTY, clazz);
+		put(Constants.SERVICE_OBJECTCLASS, clazz);
 		Assert.isNotNull(containerFactory);
-		put(Constants.DISCOVERY_CONTAINER_FACTORY_PROPERTY, containerFactory);
+		put(Constants.SERVICE_CONTAINER_FACTORY_NAME, containerFactory);
 		if (connectNamespace != null)
-			put(Constants.DISCOVERY_CONNECT_ID_NAMESPACE_PROPERTY, connectNamespace);
+			put(Constants.SERVICE_CONNECT_ID_NAMESPACE, connectNamespace);
 		if (connectID != null)
-			put(Constants.DISCOVERY_CONNECT_ID_PROPERTY, connectID);
+			put(Constants.SERVICE_CONNECT_ID, connectID);
 		if (targetNamespace != null)
-			put(Constants.DISCOVERY_SERVICE_ID_NAMESPACE_PROPERTY, targetNamespace);
+			put(Constants.SERVICE_IDFILTER_NAMESPACE, targetNamespace);
 		if (targetID != null)
-			put(Constants.DISCOVERY_SERVICE_ID_PROPERTY, targetID);
+			put(Constants.SERVICE_IDFILTER_ID, targetID);
 	}
 
 	public DiscoveryProperties(String clazz, String containerFactory, String connectNamespace, String connectID, String targetNamespace, String targetID) {
 		Assert.isNotNull(clazz);
-		put(Constants.DISCOVERY_OBJECTCLASS_PROPERTY, clazz);
+		put(Constants.SERVICE_OBJECTCLASS, clazz);
 		Assert.isNotNull(containerFactory);
-		put(Constants.DISCOVERY_CONTAINER_FACTORY_PROPERTY, containerFactory);
+		put(Constants.SERVICE_CONTAINER_FACTORY_NAME, containerFactory);
 		if (connectNamespace != null)
-			put(Constants.DISCOVERY_CONNECT_ID_NAMESPACE_PROPERTY, connectNamespace);
+			put(Constants.SERVICE_CONNECT_ID_NAMESPACE, connectNamespace);
 		if (connectID != null)
-			put(Constants.DISCOVERY_CONNECT_ID_PROPERTY, connectID);
+			put(Constants.SERVICE_CONNECT_ID, connectID);
 		if (targetNamespace != null)
-			put(Constants.DISCOVERY_SERVICE_ID_NAMESPACE_PROPERTY, targetNamespace);
+			put(Constants.SERVICE_IDFILTER_NAMESPACE, targetNamespace);
 		if (targetID != null)
-			put(Constants.DISCOVERY_SERVICE_ID_PROPERTY, targetID);
+			put(Constants.SERVICE_IDFILTER_ID, targetID);
 	}
 }

@@ -29,7 +29,7 @@ public class RemoteServiceProperties extends Properties {
 
 	public RemoteServiceProperties(String containerFactory, ID containerID) {
 		super();
-		put(Constants.REMOTE_SERVICE_CONTAINER_ID_FACTORY_NAME, containerFactory);
-		put(Constants.REMOTE_SERVICE_CONTAINER_ID, containerID.getName());
+		put(Constants.SERVICE_CONTAINER_ID_FACTORY, containerFactory);
+		put(Constants.SERVICE_CONTAINER_ID, containerID.getName());
 	}
 }
