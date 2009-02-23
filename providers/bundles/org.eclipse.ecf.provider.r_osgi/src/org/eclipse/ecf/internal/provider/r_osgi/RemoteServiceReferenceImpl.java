@@ -14,7 +14,9 @@ package org.eclipse.ecf.internal.provider.r_osgi;
 import ch.ethz.iks.r_osgi.RemoteServiceReference;
 import java.util.Dictionary;
 import java.util.Properties;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 
 /**
@@ -25,21 +27,15 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 final class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 
 	// the container ID from where the remote service reference was retrieved.
-	private ID containerID;
+	private IRemoteServiceID remoteServiceID;
 
 	// the R-OSGi remote service reference.
 	private RemoteServiceReference ref;
 
-	/**
-	 * constructor.
-	 * 
-	 * @param containerID
-	 *            the container ID.
-	 * @param rref
-	 *            the R-OSGi remote service reference.
-	 */
-	public RemoteServiceReferenceImpl(final ID containerID, final RemoteServiceReference rref) {
-		this.containerID = containerID;
+	public RemoteServiceReferenceImpl(final IRemoteServiceID remoteServiceID, final RemoteServiceReference rref) {
+		Assert.isNotNull(remoteServiceID);
+		Assert.isNotNull(rref);
+		this.remoteServiceID = remoteServiceID;
 		this.ref = rref;
 	}
 
@@ -50,7 +46,7 @@ final class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceReference#getContainerID()
 	 */
 	public ID getContainerID() {
-		return containerID;
+		return getID().getContainerID();
 	}
 
 	/**
@@ -119,7 +115,10 @@ final class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return ref.toString();
+		StringBuffer buf = new StringBuffer("RemoteServiceReference["); //$NON-NLS-1$
+		buf.append("remoteServiceID=").append(getID()); //$NON-NLS-1$
+		buf.append(";ref=").append(ref).append("]"); //$NON-NLS-1$//$NON-NLS-2$
+		return buf.toString();
 	}
 
 	Dictionary getProperties() {
@@ -133,4 +132,9 @@ final class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 		}
 		return p;
 	}
+
+	public IRemoteServiceID getID() {
+		return remoteServiceID;
+	}
+
 }

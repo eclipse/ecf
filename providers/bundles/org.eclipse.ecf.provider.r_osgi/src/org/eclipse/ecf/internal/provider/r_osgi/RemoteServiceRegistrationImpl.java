@@ -12,9 +12,9 @@
 package org.eclipse.ecf.internal.provider.r_osgi;
 
 import java.util.Dictionary;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
-import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.eclipse.ecf.remoteservice.*;
 import org.osgi.framework.ServiceRegistration;
 
 /**
@@ -24,8 +24,7 @@ import org.osgi.framework.ServiceRegistration;
  */
 final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration {
 
-	// the container ID.
-	private ID containerID;
+	private IRemoteServiceID remoteServiceID;
 
 	// the service registration.
 	private ServiceRegistration reg;
@@ -38,8 +37,10 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 	 * @param reg
 	 *            the R-OSGi internal service registration.
 	 */
-	public RemoteServiceRegistrationImpl(final ID containerID, final ServiceRegistration reg) {
-		this.containerID = containerID;
+	public RemoteServiceRegistrationImpl(final IRemoteServiceID remoteServiceID, final ServiceRegistration reg) {
+		Assert.isNotNull(remoteServiceID);
+		Assert.isNotNull(reg);
+		this.remoteServiceID = remoteServiceID;
 		this.reg = reg;
 	}
 
@@ -50,7 +51,7 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceRegistration#getContainerID()
 	 */
 	public ID getContainerID() {
-		return containerID;
+		return getID().getContainerID();
 	}
 
 	/**
@@ -104,5 +105,9 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 	 */
 	public void unregister() {
 		reg.unregister();
+	}
+
+	public IRemoteServiceID getID() {
+		return remoteServiceID;
 	}
 }

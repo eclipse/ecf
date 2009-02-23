@@ -21,8 +21,7 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiID;
-import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiNamespace;
+import org.eclipse.ecf.provider.r_osgi.identity.*;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
@@ -134,16 +133,19 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 				switch (event.getType()) {
 					case RemoteServiceEvent.REGISTERED :
 						listener.handleServiceEvent(new IRemoteServiceRegisteredEvent() {
+
+							IRemoteServiceReference reference = new RemoteServiceReferenceImpl(createRemoteServiceID(event.getRemoteReference()), event.getRemoteReference());
+
 							public String[] getClazzes() {
 								return (String[]) event.getRemoteReference().getProperty(Constants.OBJECTCLASS);
 							}
 
 							public ID getContainerID() {
-								return containerID;
+								return getReference().getContainerID();
 							}
 
 							public IRemoteServiceReference getReference() {
-								return new RemoteServiceReferenceImpl(containerID, event.getRemoteReference());
+								return reference;
 							}
 
 							public String toString() {
@@ -153,6 +155,8 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 						return;
 					case RemoteServiceEvent.UNREGISTERING :
 						listener.handleServiceEvent(new IRemoteServiceUnregisteredEvent() {
+							IRemoteServiceReference reference = new RemoteServiceReferenceImpl(createRemoteServiceID(event.getRemoteReference()), event.getRemoteReference());
+
 							public String[] getClazzes() {
 								return (String[]) event.getRemoteReference().getProperty(Constants.OBJECTCLASS);
 							}
@@ -162,7 +166,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 							}
 
 							public IRemoteServiceReference getReference() {
-								return new RemoteServiceReferenceImpl(containerID, event.getRemoteReference());
+								return reference;
 							}
 
 							public String toString() {
@@ -219,9 +223,17 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		}
 		final IRemoteServiceReference[] result = new IRemoteServiceReference[refs.length];
 		for (int i = 0; i < refs.length; i++) {
-			result[i] = new RemoteServiceReferenceImpl(containerID, refs[i]);
+			result[i] = new RemoteServiceReferenceImpl(createRemoteServiceID(refs[i]), refs[i]);
 		}
 		return result;
+	}
+
+	IRemoteServiceID createRemoteServiceID(R_OSGiID cID, Long l) {
+		return (IRemoteServiceID) IDFactory.getDefault().createID(getRemoteServiceNamespace(), new Object[] {cID, l});
+	}
+
+	IRemoteServiceID createRemoteServiceID(RemoteServiceReference rref) {
+		return createRemoteServiceID(new R_OSGiID(rref.getURI().toString()), (Long) rref.getProperty(Constants.SERVICE_ID));
 	}
 
 	/**
@@ -250,13 +262,13 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		// remove the RFC 119 hint, if present, to avoid loops
 		props.remove("osgi.remote.interfaces"); //$NON-NLS-1$
 		props.put(org.eclipse.ecf.remoteservice.Constants.REMOTE_SERVICE_CONTAINER_ID, containerID);
-
 		// register the service with the local framework
 		final ServiceRegistration reg = context.registerService(clazzes, service, props);
 
 		remoteServicesRegs.put(reg.getReference(), reg);
-
-		return new RemoteServiceRegistrationImpl(containerID, reg);
+		// Get service ID and container ID, construct a IRemoteServiceID, and provide to new registration
+		Long l = (Long) reg.getReference().getProperty(Constants.SERVICE_ID);
+		return new RemoteServiceRegistrationImpl(createRemoteServiceID(containerID, l), reg);
 	}
 
 	/**
@@ -547,10 +559,36 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	}
 
 	public Namespace getRemoteServiceNamespace() {
-		return getConnectNamespace();
+		return IDFactory.getDefault().getNamespaceByName(R_OSGiRemoteServiceNamespace.NAME);
 	}
 
 	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException {
 		return new RemoteFilterImpl(context, filter);
+	}
+
+	public IRemoteServiceID getRemoteServiceID(ID containerId, long containerRelativeId) {
+		return (IRemoteServiceID) IDFactory.getDefault().createID(getRemoteServiceNamespace(), new Object[] {containerID, new Long(containerRelativeId)});
+	}
+
+	public IRemoteServiceReference getRemoteServiceReference(IRemoteServiceID serviceId) {
+		if (serviceId == null)
+			return null;
+		ID cID = serviceId.getContainerID();
+		if (cID instanceof R_OSGiID) {
+			if (cID.equals(getConnectedID())) {
+				final String filter = "(" + Constants.SERVICE_ID + "=" + serviceId + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				try {
+					RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(((R_OSGiID) cID).getURI(), null, context.createFilter(filter));
+					// Refs should be null or one long
+					if (refs == null || refs.length == 0)
+						return null;
+					return new RemoteServiceReferenceImpl(createRemoteServiceID(refs[0]), refs[0]);
+				} catch (InvalidSyntaxException e) {
+					// shouldn't happen
+					return null;
+				}
+			}
+		}
+		return null;
 	}
 }
