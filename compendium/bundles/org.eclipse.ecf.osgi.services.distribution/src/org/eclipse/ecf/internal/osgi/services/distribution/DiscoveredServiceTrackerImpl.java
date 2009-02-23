@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.remoteservice.*;
@@ -286,7 +287,13 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	private boolean includeRCSAForDescription(IContainer container,
 			IRemoteServiceContainerAdapter adapter,
 			ServiceEndpointDescription description) {
-		// TODO Auto-generated method stub
+		String namespaceName = (String) description
+				.getProperty(Constants.REMOTESERVICE_NAMESPACE_NAME);
+		if (namespaceName != null) {
+			Namespace namespace = adapter.getRemoteServiceNamespace();
+			if (namespace.getName().equals(namespaceName))
+				return true;
+		}
 		return true;
 	}
 
