@@ -15,11 +15,13 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
@@ -38,6 +40,8 @@ public abstract class AbstractRemoteServiceTest extends
 
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 
+	protected IRemoteServiceID[] ids;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -49,6 +53,7 @@ public abstract class AbstractRemoteServiceTest extends
 	protected void setClientCount(int count) {
 		super.setClientCount(count);
 		adapters = new IRemoteServiceContainerAdapter[count];
+		ids = new IRemoteServiceID[count];
 	}
 
 	protected void setupRemoteServiceAdapters() throws Exception {
@@ -67,6 +72,13 @@ public abstract class AbstractRemoteServiceTest extends
 		return new IRemoteServiceListener() {
 			public void handleServiceEvent(IRemoteServiceEvent event) {
 				System.out.println((server?"server":"client")+"handleServiceEvent(" + event + ")");
+				if (event instanceof IRemoteServiceRegisteredEvent) {
+					if (server) {
+						ids[0] = event.getReference().getID();
+					} else {
+						ids[1] = event.getReference().getID();
+					}
+				}
 			}
 		};
 	}
@@ -169,13 +181,25 @@ public abstract class AbstractRemoteServiceTest extends
 			assertNotNull(adapters[i]);
 	}
 
+	public void testRemoteServiceNamespace() throws Exception {
+		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
+		assertNotNull(adapters);
+		for(int i=0; i < adapters.length; i++) {
+			Namespace namespace = adapters[i].getRemoteServiceNamespace();
+			assertNotNull(namespace);
+		}
+	}
+	
 	public void testRegisterService() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// adapter [0] is the service 'server'
 		final IRemoteServiceRegistration reg = registerService(adapters[0],
 				IConcatService.class.getName(), createService(), null, 1500);
 		assertNotNull(reg);
-		assertNotNull(reg.getContainerID());
+		IRemoteServiceID remoteServiceID = reg.getID();
+		assertNotNull(remoteServiceID);
+		assertNotNull(remoteServiceID.getContainerID());
+		assertTrue(ids[0].equals(remoteServiceID));
 	}
 
 	public void testUnregisterService() throws Exception {
