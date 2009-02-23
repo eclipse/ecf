@@ -21,7 +21,7 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
-import org.osgi.framework.Constants;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.*;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -190,6 +190,23 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		IServiceProperties serviceProperties = createServiceProperties(
 				svcInterfaces, interfaceVersions, endpointInterfaces,
 				svcProperties, location, id);
+		// ECF remote service property
+		// Specify container factory name
+		String serviceContainerFactoryName = (String) serviceReference
+				.getProperty(Constants.SERVICE_CONTAINER_FACTORY_NAME);
+		if (serviceContainerFactoryName != null) {
+			serviceProperties.setPropertyString(
+					Constants.SERVICE_CONTAINER_FACTORY_NAME,
+					serviceContainerFactoryName);
+		}
+		// ECF remote service property
+		// Specify remote service namespace name
+		String serviceNamespace = (String) serviceReference
+				.getProperty(Constants.SERVICE_NAMESPACE);
+		if (serviceNamespace != null) {
+			serviceProperties.setPropertyString(Constants.SERVICE_NAMESPACE,
+					serviceNamespace);
+		}
 		return new ServiceInfo(uri, serviceID, serviceProperties);
 	}
 
