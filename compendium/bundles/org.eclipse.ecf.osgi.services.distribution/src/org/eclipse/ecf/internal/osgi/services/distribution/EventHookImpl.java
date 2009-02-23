@@ -10,8 +10,8 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.*;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.remoteservice.*;
@@ -21,6 +21,39 @@ import org.osgi.service.discovery.ServicePublication;
 
 public class EventHookImpl extends AbstractEventHookImpl {
 
+	/**
+	 * 
+	 * Inner class for holding onto the triple:
+	 * IContainer->IRemoteServiceContainerAdapter->ContainerTypeDescription
+	 */
+	class RSCAHolder {
+		private IContainer container;
+		private IRemoteServiceContainerAdapter rsca;
+		private ContainerTypeDescription ctd;
+
+		public RSCAHolder(IContainer c, IRemoteServiceContainerAdapter ca,
+				ContainerTypeDescription d) {
+			Assert.isNotNull(c);
+			Assert.isNotNull(ca);
+			Assert.isNotNull(d);
+			this.container = c;
+			this.rsca = ca;
+			this.ctd = d;
+		}
+
+		public IContainer getContainer() {
+			return container;
+		}
+
+		public IRemoteServiceContainerAdapter getContainerAdapter() {
+			return rsca;
+		}
+
+		public ContainerTypeDescription getContainerTypeDescription() {
+			return ctd;
+		}
+	}
+
 	public EventHookImpl(DistributionProviderImpl distributionProvider) {
 		super(distributionProvider);
 	}
@@ -28,10 +61,9 @@ public class EventHookImpl extends AbstractEventHookImpl {
 	protected void registerRemoteService(ServiceReference serviceReference,
 			String[] remoteInterfaces, String[] remoteConfigurationType) {
 		Map ecfConfiguration = parseECFConfigurationType(remoteConfigurationType);
-		// We get the list of ECF distribution providers
+		// First we find ECF distribution providers
 		// (IRemoteServiceContainerAdapters)
-		IRemoteServiceContainerAdapter[] rscas = findRemoteServiceContainerAdapters(
-				serviceReference, ecfConfiguration);
+		RSCAHolder[] rscas = findRSCAHolders(serviceReference, ecfConfiguration);
 		// If there are relevant ones then actually register a remote service
 		// with them.
 		if (rscas == null) {
@@ -42,10 +74,16 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			return;
 		}
 		// Now actually register remote service with remote service container
-		// adapters. Then publish
+		// adapters found above. This involves three steps:
+		// 1) registering the remote service with each ECF
+		// IRemoteServiceContainerAdapter
+		// 2) save service reference and remote registration
+		// 3) publish remote service (ServicePublication) for discovery
 		for (int i = 0; i < rscas.length; i++) {
+			// Step 1
 			IRemoteServiceRegistration remoteRegistration = rscas[i]
-					.registerRemoteService(remoteInterfaces,
+					.getContainerAdapter().registerRemoteService(
+							remoteInterfaces,
 							getService(serviceReference),
 							createPropertiesForRemoteService(rscas[i],
 									remoteInterfaces, serviceReference));
@@ -53,33 +91,49 @@ public class EventHookImpl extends AbstractEventHookImpl {
 					"REGISTERED REMOTE SERVICE serviceReference="
 							+ serviceReference + " remoteRegistration="
 							+ remoteRegistration);
-			// Save service reference and remote registration
+			// Step 2
 			fireRemoteServiceRegistered(serviceReference, remoteRegistration);
-			// And publish remote service (ServicePublication) for discovery
+			// Step 3
 			publishRemoteService(rscas[i], serviceReference, remoteInterfaces);
 		}
 	}
 
-	private void publishRemoteService(IRemoteServiceContainerAdapter rsca,
-			ServiceReference ref, String[] remoteInterfaces) {
+	private void publishRemoteService(RSCAHolder holder, ServiceReference ref,
+			String[] remoteInterfaces) {
+		// First create properties for new ServicePublication
 		final Dictionary properties = new Hashtable();
 		final BundleContext context = Activator.getDefault().getContext();
+		// Set mandatory ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME
 		properties.put(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
 				getAsCollection(remoteInterfaces));
+		// XXX TODO set optional
+		// ServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION
+		// XXX TODO set optional
+		// ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME
+		// Set optional ServicePublication.PROP_KEY_SERVICE_PROPERTIES
 		properties.put(ServicePublication.PROP_KEY_SERVICE_PROPERTIES,
 				getServiceProperties(ref));
-		// Get container for rcsa
-		IContainer container = (IContainer) rsca.getAdapter(IContainer.class);
-		// If it's available put it's id in the endpoint id
-		if (container != null)
-			properties.put(ServicePublication.PROP_KEY_ENDPOINT_ID, container
-					.getID().toString());
-		// Specify remote service namespace name for local namespace name
-		properties.put(Constants.SERVICE_NAMESPACE, rsca
-				.getRemoteServiceNamespace().getName());
+		// XXX TODO set optional ServicePublication.PROP_KEY_ENDPOINT_LOCATION
+		// Set optional ServicePublication.PROP_KEY_ENDPOINT_ID to
+		// container.getID().toString()
+		IContainer container = holder.getContainer();
+		properties.put(ServicePublication.PROP_KEY_ENDPOINT_ID, container
+				.getID().toString());
+
+		// ECF remote service property
+		// Specify container factory name
+		properties.put(Constants.SERVICE_CONTAINER_FACTORY_NAME, holder
+				.getContainerTypeDescription().getName());
+		// ECF remote service property
+		// Specify remote service namespace name
+		properties.put(Constants.SERVICE_NAMESPACE, holder
+				.getContainerAdapter().getRemoteServiceNamespace().getName());
+		// Now, at long last, register the ServicePublication.
+		// The RFC 119 discovery should/will pick this up and send it out
 		context.registerService(ServicePublication.class.getName(),
 				new ServicePublication() {
 				}, properties);
+		// And it's done
 		trace("publishRemoteService",
 				"PUBLISH REMOTE SERVICE serviceReference=" + ref
 						+ " properties=" + properties);
@@ -110,12 +164,13 @@ public class EventHookImpl extends AbstractEventHookImpl {
 	}
 
 	protected Collection /* <? extends String> */registerRemoteService(
-			IRemoteServiceContainerAdapter[] rscas, String[] remoteInterfaces,
-			ServiceReference sr) {
+			RSCAHolder[] rscas, String[] remoteInterfaces, ServiceReference sr) {
 		final ArrayList result = new ArrayList();
 		for (int i = 0; i < rscas.length; i++) {
 			IRemoteServiceRegistration remoteRegistration = rscas[i]
-					.registerRemoteService(remoteInterfaces, getService(sr),
+					.getContainerAdapter().registerRemoteService(
+							remoteInterfaces,
+							getService(sr),
 							createPropertiesForRemoteService(rscas[i],
 									remoteInterfaces, sr));
 			trace("registerRemoteService",
@@ -127,8 +182,7 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		return result;
 	}
 
-	protected Dictionary createPropertiesForRemoteService(
-			IRemoteServiceContainerAdapter iRemoteServiceContainerAdapter,
+	protected Dictionary createPropertiesForRemoteService(RSCAHolder holder,
 			String[] remotes, ServiceReference sr) {
 		String[] propKeys = sr.getPropertyKeys();
 		Properties newProps = new Properties();
@@ -138,18 +192,19 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		return newProps;
 	}
 
-	protected IRemoteServiceContainerAdapter[] findRemoteServiceContainerAdapters(
-			ServiceReference serviceReference, Map ecfConfiguration) {
+	protected RSCAHolder[] findRSCAHolders(ServiceReference serviceReference,
+			Map ecfConfiguration) {
 		IContainerManager containerManager = Activator.getDefault()
 				.getContainerManager();
-		return (containerManager != null) ? getRSCAsFromContainers(
-				containerManager.getAllContainers(), serviceReference,
-				ecfConfiguration) : null;
+		return (containerManager != null) ? findRSCAHoldersWithContainerManager(
+				containerManager, serviceReference, ecfConfiguration)
+				: null;
 	}
 
-	private IRemoteServiceContainerAdapter[] getRSCAsFromContainers(
-			IContainer[] containers, ServiceReference serviceReference,
-			Map ecfConfiguration) {
+	private RSCAHolder[] findRSCAHoldersWithContainerManager(
+			IContainerManager containerManager,
+			ServiceReference serviceReference, Map ecfConfiguration) {
+		IContainer[] containers = containerManager.getAllContainers();
 		if (containers == null)
 			return null;
 		List rscas = new ArrayList();
@@ -162,25 +217,42 @@ public class EventHookImpl extends AbstractEventHookImpl {
 								Activator.PLUGIN_ID,
 								DebugOptions.DEBUG,
 								this.getClass(),
-								"getRCSAsFromContainers",
+								"getRSCAHoldersFromContainers",
 								"Container="
 										+ containers[i]
 										+ " not an IRemoteServiceContainerAdapter. Excluding rsca="
 										+ rsca + " from remote registration");
 				continue;
-			} else if (includeContainer(containers[i], rsca, serviceReference,
-					ecfConfiguration))
-				rscas.add(rsca);
+			} else {
+				ContainerTypeDescription desc = containerManager
+						.getContainerTypeDescription(containers[i].getID());
+				if (desc == null) {
+					Trace
+							.trace(
+									Activator.PLUGIN_ID,
+									DebugOptions.DEBUG,
+									this.getClass(),
+									"getRSCAHoldersFromContainers",
+									"Container="
+											+ containers[i]
+											+ " has null container type description. Excluding rsca="
+											+ rsca
+											+ " from remote registration");
+				} else if (includeContainer(containers[i], rsca, desc,
+						serviceReference, ecfConfiguration))
+					rscas.add(new RSCAHolder(containers[i], rsca, desc));
+			}
 		}
-		return (IRemoteServiceContainerAdapter[]) rscas
-				.toArray(new IRemoteServiceContainerAdapter[] {});
+		return (RSCAHolder[]) rscas.toArray(new RSCAHolder[] {});
 	}
 
 	protected boolean includeContainer(IContainer container,
-			IRemoteServiceContainerAdapter rsca,
+			IRemoteServiceContainerAdapter rsca, ContainerTypeDescription desc,
 			ServiceReference serviceReference, Map ecfConfiguration) {
 		Object cID = serviceReference
 				.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID);
+		// If the SERVICE_CONTAINER_ID property is not set, then we'll include
+		// it by default
 		if (cID == null || !(cID instanceof ID)) {
 			Trace
 					.trace(
@@ -195,19 +267,22 @@ public class EventHookImpl extends AbstractEventHookImpl {
 									+ " in remote registration");
 			return true;
 		}
+		// Or if the id is specified and it's the same as the containerID under
+		// consideration
+		// then it's included
 		ID containerID = (ID) cID;
 		if (container.getID().equals(containerID)) {
 			Trace.trace(Activator.PLUGIN_ID, DebugOptions.DEBUG, this
 					.getClass(), "includeContainer", "serviceReference="
 					+ serviceReference + " has MATCHING container id="
-					+ containerID + ".  INCLUDING rsca=" + rsca
+					+ containerID + ".  INCLUDING rsca=" + container.getID()
 					+ " in remote registration");
 			return true;
 		}
 		Trace.trace(Activator.PLUGIN_ID, DebugOptions.DEBUG, this.getClass(),
 				"includeContainer", "serviceReference=" + serviceReference
-						+ " has non-matching container id=" + containerID
-						+ ".  EXCLUDING rsca=" + rsca
+						+ " has non-matching id=" + containerID
+						+ ".  EXCLUDING id=" + container.getID()
 						+ " in remote registration");
 		return false;
 	}
