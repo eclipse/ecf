@@ -58,7 +58,7 @@ public abstract class AbstractRemoteServiceDescription {
 	}
 
 	public String getContainerFactoryName() {
-		return getProperty(org.eclipse.ecf.remoteservice.Constants.CONTAINER_FACTORY_NAME);
+		return getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_FACTORY_NAME);
 	}
 
 	public IContainer createContainer() throws ContainerCreateException {
@@ -85,6 +85,6 @@ public abstract class AbstractRemoteServiceDescription {
 	}
 
 	public ID createTargetID(Namespace namespace) throws IDCreateException {
-		return IDFactory.getDefault().createID(namespace, getProperty(org.eclipse.ecf.remoteservice.Constants.CONTAINER_TARGET));
+		return IDFactory.getDefault().createID(namespace, getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_TARGET));
 	}
 }
