@@ -24,9 +24,19 @@ public abstract class AbstractEventHookImpl implements EventHook {
 
 	private final Map srvRefToRemoteSrvRegistration = new HashMap(); /*
 																	 * ServiceReference
-																	 * ->
+																	 * -> Vector
+																	 * of
 																	 * IRemoteServiceRegistration
 																	 */
+
+	private final Map srvRefToServicePublicationRegistration = new HashMap(); /*
+																			 * ServiceReference
+																			 * -
+																			 * >
+																			 * Vector
+																			 * of
+																			 * ServiceRegistration
+																			 */
 
 	public AbstractEventHookImpl(DistributionProviderImpl distributionProvider) {
 		this.distributionProvider = distributionProvider;
@@ -113,9 +123,67 @@ public abstract class AbstractEventHookImpl implements EventHook {
 	protected void fireRemoteServiceRegistered(
 			ServiceReference serviceReference,
 			IRemoteServiceRegistration remoteServiceRegistration) {
-		srvRefToRemoteSrvRegistration.put(serviceReference,
-				remoteServiceRegistration);
-		distributionProvider.addExposedService(serviceReference);
+		synchronized (srvRefToRemoteSrvRegistration) {
+			List l = (List) srvRefToRemoteSrvRegistration.get(serviceReference);
+			if (l == null) {
+				l = new ArrayList();
+				srvRefToRemoteSrvRegistration.put(serviceReference, l);
+			}
+			l.add(remoteServiceRegistration);
+			distributionProvider.addExposedService(serviceReference);
+		}
+	}
+
+	protected void fireRemoteServiceUnregistered(ServiceReference reference) {
+
+		synchronized (srvRefToRemoteSrvRegistration) {
+			distributionProvider.removeExposedService(reference);
+			List l = (List) srvRefToRemoteSrvRegistration.remove(reference);
+			if (l != null) {
+				for (Iterator i = l.iterator(); i.hasNext();) {
+					IRemoteServiceRegistration reg = (IRemoteServiceRegistration) i
+							.next();
+					if (reg != null) {
+						trace("fireRemoteServiceUnregistered", "sr="
+								+ reference + "; reg=" + reg);
+						reg.unregister();
+					}
+				}
+				l.clear();
+			}
+		}
+	}
+
+	protected void fireRemoteServicePublished(
+			ServiceReference serviceReference,
+			ServiceRegistration servicePublicationRegistration) {
+		synchronized (srvRefToServicePublicationRegistration) {
+			List l = (List) srvRefToServicePublicationRegistration
+					.get(serviceReference);
+			if (l == null) {
+				l = new ArrayList();
+				srvRefToServicePublicationRegistration.put(serviceReference, l);
+			}
+			l.add(servicePublicationRegistration);
+		}
+	}
+
+	protected void fireRemoteServiceUnpublished(ServiceReference reference) {
+		synchronized (srvRefToServicePublicationRegistration) {
+			List l = (List) srvRefToServicePublicationRegistration
+					.remove(reference);
+			if (l != null) {
+				for (Iterator i = l.iterator(); i.hasNext();) {
+					ServiceRegistration reg = (ServiceRegistration) i.next();
+					if (reg != null) {
+						trace("fireRemoteServiceUnpublished", "sr=" + reference
+								+ "; reg=" + reg);
+						reg.unregister();
+					}
+				}
+				l.clear();
+			}
+		}
 	}
 
 	private String[] getInterfacesForServiceReference(
@@ -142,19 +210,8 @@ public abstract class AbstractEventHookImpl implements EventHook {
 
 	protected void handleUnregisteringServiceEvent(
 			ServiceReference serviceReference, Collection contexts) {
-		IRemoteServiceRegistration remoteRegistration = removeRemoteRegistration(serviceReference);
-		if (remoteRegistration != null) {
-			trace("handleUnregisteringServiceEvent",
-					"found serviceRegistration=" + remoteRegistration);
-			distributionProvider.removeRemoteService(serviceReference);
-			remoteRegistration.unregister();
-		}
-	}
-
-	private IRemoteServiceRegistration removeRemoteRegistration(
-			ServiceReference serviceReference) {
-		return (IRemoteServiceRegistration) srvRefToRemoteSrvRegistration
-				.remove(serviceReference);
+		fireRemoteServiceUnregistered(serviceReference);
+		fireRemoteServiceUnpublished(serviceReference);
 	}
 
 	protected void handleModifiedServiceEvent(

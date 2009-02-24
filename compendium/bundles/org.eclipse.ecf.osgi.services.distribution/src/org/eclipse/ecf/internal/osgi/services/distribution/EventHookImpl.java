@@ -15,8 +15,8 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.remoteservice.*;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.eclipse.ecf.remoteservice.Constants;
+import org.osgi.framework.*;
 import org.osgi.service.discovery.ServicePublication;
 
 public class EventHookImpl extends AbstractEventHookImpl {
@@ -130,9 +130,10 @@ public class EventHookImpl extends AbstractEventHookImpl {
 				.getContainerAdapter().getRemoteServiceNamespace().getName());
 		// Now, at long last, register the ServicePublication.
 		// The RFC 119 discovery should/will pick this up and send it out
-		context.registerService(ServicePublication.class.getName(),
-				new ServicePublication() {
+		ServiceRegistration reg = context.registerService(
+				ServicePublication.class.getName(), new ServicePublication() {
 				}, properties);
+		fireRemoteServicePublished(ref, reg);
 		// And it's done
 		trace("publishRemoteService",
 				"PUBLISH REMOTE SERVICE serviceReference=" + ref
