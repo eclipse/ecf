@@ -17,8 +17,7 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
-import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
+import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.remoteservice.Constants;
@@ -286,18 +285,18 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 			return null;
 		String namingAuthority = ServicePropertyUtils.getStringProperty(
 				serviceReference, ECFServicePublication.NAMING_AUTHORITY_PROP,
-				ECFServicePublication.DEFAULT_NAMING_AUTHORITY);
+				IServiceTypeID.DEFAULT_NA);
 		String scope = ServicePropertyUtils.getStringProperty(serviceReference,
 				ECFServicePublication.SCOPE_PROP,
-				ECFServicePublication.DEFAULT_SCOPE);
+				IServiceTypeID.DEFAULT_SCOPE[0]);
 		String protocol = ServicePropertyUtils.getStringProperty(
 				serviceReference, ECFServicePublication.SERVICE_PROTOCOL_PROP,
-				ECFServicePublication.DEFAULT_SERVICE_PROTOCOL);
+				IServiceTypeID.DEFAULT_PROTO[0]);
 		String serviceName = ServicePropertyUtils.getStringProperty(
 				serviceReference, ECFServicePublication.SERVICE_NAME_PROP,
 				getDefaultServiceName(serviceReference));
 		String serviceType = "_" + ECFServicePublication.SERVICE_TYPE + "._"
-				+ protocol + "." + scope + "." + namingAuthority;
+				+ protocol + "._" + scope + "._" + namingAuthority;
 		return ServiceIDFactory.getDefault().createServiceID(
 				discovery.getServicesNamespace(), serviceType, serviceName);
 	}

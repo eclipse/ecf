@@ -13,16 +13,12 @@ import org.osgi.service.discovery.ServicePublication;
 
 public interface ECFServicePublication extends ServicePublication {
 
+	public static final String CONTAINER_ID_PROP = "ecfsp.container.id";
 	public static final String SERVICE_TYPE = "osgiservices";
 	public static final String DEFAULT_SERVICE_NAME_PREFIX = "service.";
-	public static final String CONTAINER_ID_PROP = "ecf.containerid";
 
-	public static final String SERVICE_NAME_PROP = "ecf.service.name";
-
-	public static final String NAMING_AUTHORITY_PROP = "ecf.naming.authority";
-	public static final String DEFAULT_NAMING_AUTHORITY = "_IANA";
-	public static final String SCOPE_PROP = "ecf.scope";
-	public static final String DEFAULT_SCOPE = "local";
-	public static final String SERVICE_PROTOCOL_PROP = "ecf.protocol";
-	public static final String DEFAULT_SERVICE_PROTOCOL = "tcp";
+	public static final String SERVICE_NAME_PROP = "ecfsp.svcname";
+	public static final String NAMING_AUTHORITY_PROP = "ecfsp.namingauth";
+	public static final String SCOPE_PROP = "ecfsp.scope";
+	public static final String SERVICE_PROTOCOL_PROP = "ecfsp.protocol";
 }
