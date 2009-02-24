@@ -106,19 +106,20 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// Set mandatory ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME
 		properties.put(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
 				getAsCollection(remoteInterfaces));
+
 		// XXX TODO set optional
 		// ServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION
 		// XXX TODO set optional
 		// ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME
+
 		// Set optional ServicePublication.PROP_KEY_SERVICE_PROPERTIES
 		properties.put(ServicePublication.PROP_KEY_SERVICE_PROPERTIES,
 				getServiceProperties(ref));
-		// XXX TODO set optional ServicePublication.PROP_KEY_ENDPOINT_LOCATION
 		// Set optional ServicePublication.PROP_KEY_ENDPOINT_ID to
-		// container.getID().toString()
+		// container.getID().toExternalForm()
 		IContainer container = holder.getContainer();
 		properties.put(ServicePublication.PROP_KEY_ENDPOINT_ID, container
-				.getID().toString());
+				.getID().toExternalForm());
 
 		// ECF remote service property
 		// Specify container factory name
