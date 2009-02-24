@@ -125,10 +125,6 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// Specify container factory name
 		properties.put(Constants.SERVICE_CONTAINER_FACTORY_NAME, holder
 				.getContainerTypeDescription().getName());
-		// ECF remote service property
-		// Specify remote service namespace name
-		properties.put(Constants.SERVICE_NAMESPACE, holder
-				.getContainerAdapter().getRemoteServiceNamespace().getName());
 		// Now, at long last, register the ServicePublication.
 		// The RFC 119 discovery should/will pick this up and send it out
 		ServiceRegistration reg = context.registerService(
