@@ -9,6 +9,8 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.IContainer;
@@ -16,6 +18,7 @@ import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -45,10 +48,12 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		return "ecf.generic.client";
 	}
 	
+
 	public void testRegisterAllContainers() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		registerDefaultService(props);
+		Thread.sleep(3000);
 	}
 	
 	public void testRegisterServerContainer() throws Exception {
@@ -57,6 +62,7 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		registerDefaultService(props);
+		Thread.sleep(3000);
 	}
 	
 	public void testRegisterServicePublication() throws Exception {
@@ -68,13 +74,14 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
-		registerDefaultService(props);
+		ServiceRegistration reg = registerDefaultService(props);
 
+		Thread.sleep(3000);
+		
 		// Now get ServicePublications from tracker
 		ServiceReference [] servicePublicationSRs = servicePublicationTracker.getServiceReferences();
+		List servicePublicationSRsList = Arrays.asList(servicePublicationSRs);
 		assertTrue(servicePublicationSRs != null);
-		for(int i=0; i < servicePublicationSRs.length; i++) {
-			System.out.println("testRegisterServicePublication["+i+"]="+servicePublicationSRs[i]);
-		}
 	}
+	
 }

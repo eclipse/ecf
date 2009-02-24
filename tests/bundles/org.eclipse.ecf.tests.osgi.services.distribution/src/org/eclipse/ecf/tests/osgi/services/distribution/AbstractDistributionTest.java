@@ -155,16 +155,18 @@ public abstract class AbstractDistributionTest extends
 		};
 	}
 
-	protected void registerService(String[] clazzes, Object service, Properties props) throws Exception {
-		registrations.add(getContext().registerService(clazzes, service, props));
+	protected ServiceRegistration registerService(String[] clazzes, Object service, Properties props) throws Exception {
+		ServiceRegistration reg = getContext().registerService(clazzes, service, props);
+		registrations.add(reg);
+		return reg;
 	}
 
-	protected void registerService(String clazz, Object service, Properties props) throws Exception {
-		registerService(new String[] { clazz }, service, props);
+	protected ServiceRegistration registerService(String clazz, Object service, Properties props) throws Exception {
+		return registerService(new String[] { clazz }, service, props);
 	}
 	
-	protected void registerDefaultService(Properties props) throws Exception {
-		registerService(getDefaultServiceClasses(), createDefaultService(), props);
+	protected ServiceRegistration registerDefaultService(Properties props) throws Exception {
+		return registerService(getDefaultServiceClasses(), createDefaultService(), props);
 	}
 	
 
