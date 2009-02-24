@@ -9,23 +9,19 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.eclipse.ecf.remoteservice.Constants;
-import org.eclipse.ecf.tests.remoteservice.IConcatService;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.discovery.ServicePublication;
+import org.osgi.util.tracker.ServiceTracker;
 
 
-public class RegisterTest extends AbstractDistributionTest implements ServiceConstants {
+public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest implements ServiceConstants, ECFServicePublication {
 
-	List /* ServiceRegistration */ registrations = new ArrayList();
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -36,15 +32,12 @@ public class RegisterTest extends AbstractDistributionTest implements ServiceCon
 		setClientCount(1);
 		createServerAndClients();
 		connectClients();
+		setupRemoteServiceAdapters();
 	}
 
 	
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		for(Iterator i=registrations.iterator(); i.hasNext(); ) {
-			ServiceRegistration reg = (ServiceRegistration) i.next();
-			reg.unregister();
-		}
 		cleanUpServerAndClients();
 	}
 
@@ -52,15 +45,10 @@ public class RegisterTest extends AbstractDistributionTest implements ServiceCon
 		return "ecf.generic.client";
 	}
 	
-	protected void registerConcatService(Properties props) throws Exception {
-		BundleContext bc = Activator.getDefault().getContext();
-		registrations.add(bc.registerService(new String[] { IConcatService.class.getName() }, createService(), props));
-	}
-	
 	public void testRegisterAllContainers() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
-		registerConcatService(props);
+		registerDefaultService(props);
 	}
 	
 	public void testRegisterServerContainer() throws Exception {
@@ -68,7 +56,25 @@ public class RegisterTest extends AbstractDistributionTest implements ServiceCon
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
-		registerConcatService(props);
+		registerDefaultService(props);
 	}
 	
+	public void testRegisterServicePublication() throws Exception {
+		// First set up service tracker for ServicePublication
+		ServiceTracker servicePublicationTracker = new ServiceTracker(getContext(), ServicePublication.class.getName(), null);
+		servicePublicationTracker.open();
+		
+		Properties props = new Properties();
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		IContainer serverContainer = getServer();
+		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		registerDefaultService(props);
+
+		// Now get ServicePublications from tracker
+		ServiceReference [] servicePublicationSRs = servicePublicationTracker.getServiceReferences();
+		assertTrue(servicePublicationSRs != null);
+		for(int i=0; i < servicePublicationSRs.length; i++) {
+			System.out.println("testRegisterServicePublication["+i+"]="+servicePublicationSRs[i]);
+		}
+	}
 }

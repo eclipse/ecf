@@ -9,10 +9,13 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
-import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
@@ -21,13 +24,17 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 import org.eclipse.ecf.tests.remoteservice.IConcatService;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceRegistration;
 
 public abstract class AbstractDistributionTest extends
 		ContainerAbstractTestCase {
 
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 
+	protected List /* ServiceRegistration */ registrations = new ArrayList();
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -36,6 +43,21 @@ public abstract class AbstractDistributionTest extends
 	 */
 	protected abstract String getClientContainerName();
 
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		for(Iterator i=registrations.iterator(); i.hasNext(); ) {
+			ServiceRegistration reg = (ServiceRegistration) i.next();
+			reg.unregister();
+		}
+		registrations.clear();
+		if (adapters != null) {
+			for(int i=0;i < adapters.length; i++) {
+				adapters[i] = null;
+			}
+			adapters = null;
+		}
+	}
+	
 	protected void setClientCount(int count) {
 		super.setClientCount(count);
 		adapters = new IRemoteServiceContainerAdapter[count];
@@ -49,6 +71,10 @@ public abstract class AbstractDistributionTest extends
 		}
 	}
 
+	protected BundleContext getContext() {
+		return Activator.getDefault().getContext();
+	}
+	
 	protected IRemoteServiceContainerAdapter[] getRemoteServiceAdapters() {
 		return adapters;
 	}
@@ -67,7 +93,7 @@ public abstract class AbstractDistributionTest extends
 		}
 	}
 
-	protected IRemoteServiceRegistration registerService(
+	protected IRemoteServiceRegistration registerRemoteService(
 			IRemoteServiceContainerAdapter adapter, String serviceInterface,
 			Object service, Dictionary serviceProperties, int sleepTime) {
 		final IRemoteServiceRegistration result = adapter
@@ -114,34 +140,11 @@ public abstract class AbstractDistributionTest extends
 		return (filter == null) ? null : filter.toString();
 	}
 
-	protected IRemoteService registerAndGetRemoteService(
-			IRemoteServiceContainerAdapter server,
-			IRemoteServiceContainerAdapter client, String serviceName,
-			Dictionary serviceProperties, int sleepTime) {
-		registerService(server, serviceName, createService(),
-				serviceProperties, sleepTime);
-		return getRemoteService(client, serviceName,
-				getFilterFromServiceProperties(serviceProperties));
+	protected String[] getDefaultServiceClasses() {
+		return new String[] { IConcatService.class.getName() };
 	}
-
-	protected IRemoteCall createRemoteCall(final String method,
-			final Object[] params) {
-		return new IRemoteCall() {
-			public String getMethod() {
-				return method;
-			}
-
-			public Object[] getParameters() {
-				return params;
-			}
-
-			public long getTimeout() {
-				return 3000;
-			}
-		};
-	}
-
-	protected Object createService() {
+	
+	protected Object createDefaultService() {
 		return new IConcatService() {
 			public String concat(String string1, String string2) {
 				final String result = string1.concat(string2);
@@ -151,6 +154,19 @@ public abstract class AbstractDistributionTest extends
 			}
 		};
 	}
+
+	protected void registerService(String[] clazzes, Object service, Properties props) throws Exception {
+		registrations.add(getContext().registerService(clazzes, service, props));
+	}
+
+	protected void registerService(String clazz, Object service, Properties props) throws Exception {
+		registerService(new String[] { clazz }, service, props);
+	}
+	
+	protected void registerDefaultService(Properties props) throws Exception {
+		registerService(getDefaultServiceClasses(), createDefaultService(), props);
+	}
+	
 
 
 }
