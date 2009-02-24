@@ -199,14 +199,6 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 					Constants.SERVICE_CONTAINER_FACTORY_NAME,
 					serviceContainerFactoryName);
 		}
-		// ECF remote service property
-		// Specify remote service namespace name
-		String serviceNamespace = (String) serviceReference
-				.getProperty(Constants.SERVICE_NAMESPACE);
-		if (serviceNamespace != null) {
-			serviceProperties.setPropertyString(Constants.SERVICE_NAMESPACE,
-					serviceNamespace);
-		}
 		return new ServiceInfo(uri, serviceID, serviceProperties);
 	}
 
