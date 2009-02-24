@@ -150,11 +150,10 @@ public class EventHookImpl extends AbstractEventHookImpl {
 	}
 
 	private Map getServiceProperties(final ServiceReference ref) {
-		final String[] keys = ref.getPropertyKeys();
-		final Map map = new HashMap(keys.length);
-		for (int i = 0; i < keys.length; i++) {
-			map.put(keys[i], ref.getProperty(keys[i]));
-		}
+		Map map = (Map) ref
+				.getProperty(ServicePublication.PROP_KEY_SERVICE_PROPERTIES);
+		if (map == null)
+			map = new HashMap();
 		return map;
 	}
 
