@@ -238,8 +238,12 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 					serviceProperties.setProperty(key, (String) val);
 				else if (val instanceof byte[])
 					serviceProperties.setProperty(key, (byte[]) val);
-				else
-					serviceProperties.setProperty(key, val);
+				else if (val instanceof Collection)
+					serviceProperties.setProperty(key, ServicePropertyUtils
+							.createStringFromCollection((Collection) val));
+				else if (val instanceof String[])
+					serviceProperties.setProperty(key, Arrays
+							.asList((String[]) val));
 			}
 		}
 		if (location != null)
@@ -308,7 +312,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 
 	private String getDefaultServiceName(ServiceReference serviceReference) {
 		return ECFServicePublication.DEFAULT_SERVICE_NAME_PREFIX
-				+ serviceReference.getProperty(Constants.SERVICE_ID);
+				+ serviceReference
+						.getProperty(org.osgi.framework.Constants.SERVICE_ID);
 	}
 
 	private void publishService(ServiceReference reference, IServiceInfo svcInfo) {
