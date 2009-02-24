@@ -45,7 +45,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	void handleServiceDiscovered(ID localContainerID, IServiceInfo serviceInfo) {
 		IServiceID serviceID = serviceInfo.getServiceID();
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceDiscovered", "serviceID=" + serviceID);
+			trace("handleOSGIServiceDiscovered", "serviceInfo=" + serviceInfo);
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
@@ -62,7 +62,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	void handleServiceUndiscovered(ID localContainerID, IServiceInfo serviceInfo) {
 		IServiceID serviceID = serviceInfo.getServiceID();
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceUndiscovered", "serviceID=" + serviceID);
+			trace("handleOSGIServiceUndiscovered", "serviceInfo=" + serviceInfo);
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
