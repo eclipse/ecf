@@ -94,12 +94,14 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			// Step 2
 			fireRemoteServiceRegistered(serviceReference, remoteRegistration);
 			// Step 3
-			publishRemoteService(rscas[i], serviceReference, remoteInterfaces);
+			publishRemoteService(rscas[i], serviceReference, remoteInterfaces,
+					remoteRegistration);
 		}
 	}
 
 	private void publishRemoteService(RSCAHolder holder, ServiceReference ref,
-			String[] remoteInterfaces) {
+			String[] remoteInterfaces,
+			IRemoteServiceRegistration remoteRegistration) {
 		// First create properties for new ServicePublication
 		final Dictionary properties = new Hashtable();
 		final BundleContext context = Activator.getDefault().getContext();
@@ -125,6 +127,10 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// Specify container factory name
 		properties.put(Constants.SERVICE_CONTAINER_FACTORY_NAME, holder
 				.getContainerTypeDescription().getName());
+		// Specify remote service id AS STRING
+		properties.put(Constants.SERVICE_ID, ((Long) remoteRegistration
+				.getProperty(Constants.SERVICE_ID)).toString());
+
 		// Now, at long last, register the ServicePublication.
 		// The RFC 119 discovery should/will pick this up and send it out
 		ServiceRegistration reg = context.registerService(
