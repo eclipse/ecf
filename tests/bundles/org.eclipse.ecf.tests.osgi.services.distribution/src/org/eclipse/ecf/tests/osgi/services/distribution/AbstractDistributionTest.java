@@ -144,7 +144,7 @@ public abstract class AbstractDistributionTest extends
 		return new String[] { IConcatService.class.getName() };
 	}
 	
-	protected Object createDefaultService() {
+	protected Object getDefaultService() {
 		return new IConcatService() {
 			public String concat(String string1, String string2) {
 				final String result = string1.concat(string2);
@@ -166,7 +166,7 @@ public abstract class AbstractDistributionTest extends
 	}
 	
 	protected ServiceRegistration registerDefaultService(Properties props) throws Exception {
-		return registerService(getDefaultServiceClasses(), createDefaultService(), props);
+		return registerService(getDefaultServiceClasses(), getDefaultService(), props);
 	}
 	
 

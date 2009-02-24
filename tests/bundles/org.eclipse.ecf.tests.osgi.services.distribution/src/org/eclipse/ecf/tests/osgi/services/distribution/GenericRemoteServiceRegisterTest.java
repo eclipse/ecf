@@ -9,8 +9,6 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.IContainer;
@@ -19,6 +17,8 @@ import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.discovery.DiscoveredServiceNotification;
+import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -80,8 +80,59 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		
 		// Now get ServicePublications from tracker
 		ServiceReference [] servicePublicationSRs = servicePublicationTracker.getServiceReferences();
-		List servicePublicationSRsList = Arrays.asList(servicePublicationSRs);
 		assertTrue(servicePublicationSRs != null);
+		assertTrue(servicePublicationSRs.length > 0);
+		
+		// Now unregister
+		registrations.remove(reg);
+		reg.unregister();
+		
+		// Now get new service references again.
+		ServiceReference[] servicePublicationSRsNew = servicePublicationTracker.getServiceReferences();
+		if (servicePublicationSRsNew != null) {
+			assertTrue(servicePublicationSRsNew.length < servicePublicationSRs.length);
+		}
 	}
 	
+	DiscoveredServiceNotification dsNotification = null;
+	
+	DiscoveredServiceTracker createDiscoveredServiceTracker() {
+		return new DiscoveredServiceTracker() {
+			public void serviceChanged(
+					DiscoveredServiceNotification notification) {
+				if (notification.getType()==DiscoveredServiceNotification.AVAILABLE) {
+					System.out.println("serviceAvailable("+notification.getServiceEndpointDescription()+")");
+					if (dsNotification == null) dsNotification = notification;
+				} else {
+					System.out.println("serviceUnavailable("+notification.getServiceEndpointDescription()+")");
+					dsNotification = null;
+				}
+			}
+		};
+	}
+	
+	public void testLocalDiscoveredServiceTracker() throws Exception {
+		// First set up discovered service tracker
+		ServiceRegistration dstReg = getContext().registerService(DiscoveredServiceTracker.class.getName(), createDiscoveredServiceTracker(), null);
+		
+		Properties props = new Properties();
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		IContainer serverContainer = getServer();
+		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		ServiceRegistration svcReg = getContext().registerService(getDefaultServiceClasses(), getDefaultService(), props);
+
+		Thread.sleep(3000);
+		
+		assertNotNull(dsNotification);
+		// unregister service
+		
+		svcReg.unregister();
+		
+		Thread.sleep(3000);
+		
+		assertNull(dsNotification);
+		
+		dstReg.unregister();
+	}
+
 }
