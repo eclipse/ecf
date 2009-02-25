@@ -115,5 +115,11 @@ public class ServiceTrackerTest extends AbstractServiceTrackerTest {
 		st.close();
 		sleep(3000);
 	}
+	
+	protected void addRemoteServiceListeners() {
+		for (int i = 0; i < adapters.length; i++) {
+			adapters[i].addRemoteServiceListener(createRemoteServiceListener(true));
+		}
+	}
 
 }

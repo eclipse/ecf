@@ -84,4 +84,10 @@ public class RemoteServiceTest extends AbstractRemoteServiceTest {
 		return R_OSGi.CLIENT_CONTAINER_NAME;
 	}
 
+	protected void addRemoteServiceListeners() {
+		for (int i = 0; i < adapters.length; i++) {
+			adapters[i].addRemoteServiceListener(createRemoteServiceListener(true));
+		}
+	}
+	
 }

@@ -121,37 +121,10 @@ public class TransparentProxyTest extends AbstractRemoteServiceTest {
 		bc.ungetService(ref);
 		sleep(3000);
 	}
-
-	/**
-	 * TODO: can be removed in favor of extending
-	 * org.eclipse.ecf.tests.remoteservice.generic.TransparentProxyTest or
-	 * something similar, if the dependency on the clients array can be avoided
-	 * and the getRemoteServiceAdapters() method can be used instead (as I do it
-	 * in here).
-	 * @throws Exception 
-	 */
-	/*
-	public void testIRemoteService() throws Exception {
-		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
-		// client [0]/adapter[0] is the service 'server'
-		// client [1]/adapter[1] is the service target (client)
-		final Dictionary props = new Hashtable();
-		props.put(Constants.SERVICE_REGISTRATION_TARGETS, ((IContainer) getRemoteServiceAdapters()[1]).getConnectedID());
-		props.put(Constants.AUTOREGISTER_REMOTE_PROXY, "true");
-		// Register
-		adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
-		// Give some time for propagation
-		sleep(3000);
-
-		final BundleContext bc = Activator.getDefault().getContext();
-		assertNotNull(bc);
-		final ServiceReference ref = bc.getServiceReference(IConcatService.class.getName());
-		assertNotNull(ref);
-		final IRemoteService remoteService = (IRemoteService) ref.getProperty(Constants.REMOTE_SERVICE);
-		assertNotNull(remoteService);
-		// Call it asynch with listener
-		remoteService.callAsynch(createRemoteConcat("OSGi ", "Sucks (sic)"), createRemoteCallListener());
-		sleep(3000);
+	
+	protected void addRemoteServiceListeners() {
+		for (int i = 0; i < adapters.length; i++) {
+			adapters[i].addRemoteServiceListener(createRemoteServiceListener(true));
+		}
 	}
-	*/
 }
