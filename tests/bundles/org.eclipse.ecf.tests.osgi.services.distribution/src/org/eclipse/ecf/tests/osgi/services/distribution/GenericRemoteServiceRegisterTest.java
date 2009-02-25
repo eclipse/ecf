@@ -50,7 +50,7 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 	public void testRegisterAllContainers() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
-		registerDefaultService(props);
+		ServiceRegistration reg = registerDefaultService(props);
 		Thread.sleep(3000);
 	}
 	public void testRegisterServerContainer() throws Exception {
@@ -131,4 +131,5 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		
 		dstReg.unregister();
 	}
+	
 }
