@@ -655,6 +655,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (remoteContainerID == null || getLocalContainerID().equals(remoteContainerID)) {
 			return;
 		}
+		boolean added = false;
 		synchronized (remoteRegistrys) {
 			// Find registry for remoteContainer
 			RemoteServiceRegistryImpl registry = getRemoteRegistry(remoteContainerID);
@@ -664,12 +665,18 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				addRemoteRegistry(registry);
 			}
 			// publish service in this registry. At this point it's ready to go
-			registry.publishService(registration);
-			localRegisterService(registration);
+			RemoteServiceRegistrationImpl[] regs = registry.getRegistrations();
+			List regList = Arrays.asList(regs);
+			if (!regList.contains(registration)) {
+				added = true;
+				registry.publishService(registration);
+				localRegisterService(registration);
+			}
 			notifyAddRegistrationResponse(requestId, null);
 		}
 		// notify IRemoteServiceListeners
-		fireRemoteServiceListeners(createRegisteredEvent(registration));
+		if (added)
+			fireRemoteServiceListeners(createRegisteredEvent(registration));
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), ADD_REGISTRATION);
 	}
 

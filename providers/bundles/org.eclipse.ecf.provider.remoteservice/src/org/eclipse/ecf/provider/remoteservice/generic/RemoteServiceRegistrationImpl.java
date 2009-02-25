@@ -59,6 +59,20 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 	}
 
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null)
+			return false;
+		if (!(o.getClass().equals(this.getClass())))
+			return false;
+		return getID().equals(((RemoteServiceRegistrationImpl) o).getID());
+	}
+
+	public int hashCode() {
+		return getID().hashCode();
+	}
+
 	public void publish(RegistrySharedObject sharedObject1, RemoteServiceRegistryImpl registry, Object svc, String[] clzzes, Dictionary props) {
 		this.sharedObject = sharedObject1;
 		this.service = svc;
