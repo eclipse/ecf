@@ -11,12 +11,21 @@
 
 package org.eclipse.ecf.discovery;
 
+import java.util.Properties;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
 /**
  * @since 3.0
  */
 public interface IDiscoveryAdvertiser extends IAdaptable {
+	/**
+	 * The name of the discovery container under which it is registered with the
+	 * OSGi runtime as a {@link Properties}
+	 */
+	public static final String CONTAINER_NAME = "org.eclipse.ecf.discovery.containerName"; //$NON-NLS-1$
+
 	/**
 	 * Register the given service. This publishes the service defined by the
 	 * first parameter to the underlying publishing mechanism
@@ -47,4 +56,19 @@ public interface IDiscoveryAdvertiser extends IAdaptable {
 	 *         successfully
 	 */
 	public void unregisterAllServices();
+
+	/**
+	 * Get a Namespace for services associated with this discovery container
+	 * adapter. The given Namespace may be used via {@link ServiceIDFactory} to
+	 * create IServiceIDs rather than simple IDs. For example:
+	 * 
+	 * <pre>
+	 * IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(
+	 * 		container.getServicesNamespace(), serviceType, serviceName);
+	 * </pre>
+	 * 
+	 * @return Namespace for creating service IDs. Will not be <code>null</code>
+	 *         .
+	 */
+	public Namespace getServicesNamespace();
 }

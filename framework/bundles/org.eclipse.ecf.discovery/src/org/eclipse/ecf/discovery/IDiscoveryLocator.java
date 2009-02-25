@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.discovery;
 
+import java.util.Properties;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.*;
@@ -20,6 +21,11 @@ import org.eclipse.equinox.concurrent.future.IFuture;
  * @since 3.0
  */
 public interface IDiscoveryLocator extends IAdaptable {
+	/**
+	 * The name of the discovery container under which it is registered with the
+	 * OSGi runtime as a {@link Properties}
+	 */
+	public static final String CONTAINER_NAME = "org.eclipse.ecf.discovery.containerName"; //$NON-NLS-1$
 
 	/**
 	 * Synchronously retrieve info about the service
