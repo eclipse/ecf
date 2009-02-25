@@ -216,7 +216,21 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#ungetRemoteService(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
 	 */
 	public boolean ungetRemoteService(IRemoteServiceReference ref) {
-		return true;
+		IRemoteServiceID serviceID = ref.getID();
+		if (serviceID == null)
+			return false;
+		synchronized (localRegistry) {
+			RemoteServiceRegistrationImpl registry = localRegistry.findRegistrationForRemoteServiceId(serviceID);
+			if (registry != null)
+				return true;
+		}
+		synchronized (remoteRegistrys) {
+			final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(serviceID.getContainerID());
+			if (registry != null) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected ISharedObjectContext getSOContext() {

@@ -182,6 +182,15 @@ public class RemoteServiceRegistryImpl implements Serializable {
 		return null;
 	}
 
+	protected RemoteServiceRegistrationImpl findRegistrationForRemoteServiceId(IRemoteServiceID remoteServiceID) {
+		for (final Iterator i = allPublishedServices.iterator(); i.hasNext();) {
+			final RemoteServiceRegistrationImpl reg = (RemoteServiceRegistrationImpl) i.next();
+			if (remoteServiceID.equals(reg.getID()))
+				return reg;
+		}
+		return null;
+	}
+
 	public String toString() {
 		final StringBuffer buf = new StringBuffer("RemoteServiceRegistryImpl["); //$NON-NLS-1$
 		buf.append("all=").append(allPublishedServices).append(";").append("byclass=").append(publishedServicesByClass).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
