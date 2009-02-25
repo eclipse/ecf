@@ -7,7 +7,7 @@
  * Contributors:
  *   EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.osgi.services.discovery;
+package org.eclipse.ecf.osgi.services.discovery;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,21 +15,29 @@ import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
+import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.internal.osgi.services.discovery.ServicePropertyUtils;
 import org.osgi.service.discovery.ServiceEndpointDescription;
 import org.osgi.service.discovery.ServicePublication;
 
 public class ServiceEndpointDescriptionImpl implements
 		ServiceEndpointDescription {
 
+	private final ID discoveryContainerID;
 	private final IServiceInfo serviceInfo;
 
 	public ServiceEndpointDescriptionImpl(ID localContainerID,
 			IServiceInfo serviceInfo) {
+		this.discoveryContainerID = localContainerID;
 		this.serviceInfo = serviceInfo;
-		// add localContainerID to set of service properties exposed by this
-		this.serviceInfo.getServiceProperties().setProperty(
-				ECFServicePublication.DISCOVERY_CONTAINER_ID_PROP, localContainerID);
+	}
+
+	public ID getDiscoveryContainerID() {
+		return discoveryContainerID;
+	}
+
+	public IServiceID getServiceID() {
+		return this.serviceInfo.getServiceID();
 	}
 
 	public String getEndpointID() {

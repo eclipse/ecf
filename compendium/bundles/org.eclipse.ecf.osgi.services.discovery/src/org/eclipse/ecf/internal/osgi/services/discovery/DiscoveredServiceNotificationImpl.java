@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescriptionImpl;
+
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.osgi.service.discovery.DiscoveredServiceNotification;

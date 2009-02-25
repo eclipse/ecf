@@ -13,7 +13,6 @@ import org.osgi.service.discovery.ServicePublication;
 
 public interface ECFServicePublication extends ServicePublication {
 
-	public static final String DISCOVERY_CONTAINER_ID_PROP = "ecf.sp.container.id";
 	public static final String SERVICE_TYPE = "osgiservices";
 	public static final String DEFAULT_SERVICE_NAME_PREFIX = "service.";
 
