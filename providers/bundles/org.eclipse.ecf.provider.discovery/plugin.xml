@@ -6,7 +6,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainerInstantiator"
             description="Composite Discovery Container"
-            name="ecf.discovery.*"
+            name="ecf.discovery.composite"
             server="true">
        </containerFactory>
       <containerFactory

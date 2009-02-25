@@ -36,8 +36,11 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 			for (final Iterator itr = list.iterator(); itr.hasNext();) {
 				final ContainerTypeDescription ctd = (ContainerTypeDescription) itr.next();
 				final String name = ctd.getName();
-				if (!name.equals("ecf.discovery.*") //$NON-NLS-1$
-						&& name.startsWith("ecf.discovery.")) { //$NON-NLS-1$
+				// do not call ourself
+				if (name.startsWith(CompositeDiscoveryContainer.NAME)) {
+					continue;
+				}
+				if (name.startsWith("ecf.discovery.") && !(name.endsWith(".locator") || name.endsWith(".advertiser"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					final IContainer container = factory.createContainer(ctd.getName());
 					containers.add(container);
 				}
