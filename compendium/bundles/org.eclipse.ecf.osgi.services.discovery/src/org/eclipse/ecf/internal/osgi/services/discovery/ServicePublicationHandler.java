@@ -9,7 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import java.net.URI;
+import java.net.*;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
@@ -177,7 +177,6 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 							+ ". ServicePublication.PROP_KEY_SERVICE_PROPERTIES not set");
 			return;
 		}
-		;
 
 		// Add them
 		addPropertiesToDiscoveryServiceProperties(discoveryServiceProperties,
@@ -197,25 +196,35 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				servicePublicationEndpointID);
 
 		// Get ECF properties
-		String containerFactoryName = ServicePropertyUtils.getStringProperty(
-				reference, Constants.SERVICE_CONTAINER_FACTORY_NAME);
-		if (containerFactoryName == null) {
+		String connectNamespaceName = ServicePropertyUtils.getStringProperty(
+				reference, Constants.SERVICE_CONNECT_ID_NAMESPACE);
+		if (connectNamespaceName == null) {
 			trace("handleServicePublication", "ignoring " + reference
-					+ ". Constants.SERVICE_CONTAINER_FACTORY_NAME not set");
+					+ ". Constants.SERVICE_CONNECT_ID_NAMESPACE not set");
 			return;
 		}
 		discoveryServiceProperties.setPropertyString(
-				Constants.SERVICE_CONTAINER_FACTORY_NAME, containerFactoryName);
+				Constants.SERVICE_CONNECT_ID_NAMESPACE, connectNamespaceName);
 
-		String containerClassname = ServicePropertyUtils.getStringProperty(
-				reference, Constants.SERVICE_CONTAINER_CLASSNAME);
-		if (containerClassname == null) {
+		String idnamespace = ServicePropertyUtils.getStringProperty(reference,
+				Constants.SERVICE_IDFILTER_NAMESPACE);
+		if (idnamespace == null) {
 			trace("handleServicePublication", "ignoring " + reference
-					+ ". Constants.SERVICE_CONTAINER_CLASSNAME not set");
+					+ ". Constants.SERVICE_IDFILTER_NAMESPACE not set");
 			return;
 		}
 		discoveryServiceProperties.setPropertyString(
-				Constants.SERVICE_CONTAINER_CLASSNAME, containerClassname);
+				Constants.SERVICE_IDFILTER_NAMESPACE, idnamespace);
+
+		String rsnamespace = ServicePropertyUtils.getStringProperty(reference,
+				Constants.SERVICE_NAMESPACE);
+		if (rsnamespace == null) {
+			trace("handleServicePublication", "ignoring " + reference
+					+ ". Constants.SERVICE_NAMESPACE not set");
+			return;
+		}
+		discoveryServiceProperties.setPropertyString(
+				Constants.SERVICE_NAMESPACE, rsnamespace);
 
 		Long remoteServiceID = (Long) reference
 				.getProperty(Constants.SERVICE_ID);
@@ -232,13 +241,14 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		try {
 			IServiceID serviceID = createServiceID(
 					servicePublicationServiceProperties, remoteServiceID);
-			URI uri = URI.create(ECFServicePublication.SERVICE_TYPE
-					+ ServicePropertyUtils.PROTOCOL_SEPARATOR + "none");
+			URI uri = createURI(servicePublicationEndpointID);
 
 			svcInfo = new ServiceInfo(uri, serviceID,
 					discoveryServiceProperties);
 
 		} catch (IDCreateException e) {
+			traceException("handleServicePublication", e);
+		} catch (URISyntaxException e) {
 			traceException("handleServicePublication", e);
 		}
 		if (svcInfo == null) {
@@ -247,6 +257,39 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 			return;
 		}
 		publishService(reference, svcInfo);
+	}
+
+	private URI createURI(String servicePublicationEndpointID)
+			throws URISyntaxException {
+		boolean done = false;
+		URI uri = null;
+		String str = servicePublicationEndpointID;
+		while (!done) {
+			try {
+				uri = new URI(str);
+				if (!uri.isOpaque()) {
+					done = true;
+				} else {
+					str = uri.getRawSchemeSpecificPart();
+				}
+			} catch (URISyntaxException e) {
+				done = true;
+			}
+		}
+		String scheme = ECFServicePublication.SERVICE_TYPE;
+		int port = 32565;
+		if (uri != null) {
+			port = uri.getPort();
+			if (port == -1)
+				port = 32565;
+		}
+		String host = null;
+		try {
+			host = InetAddress.getLocalHost().getHostAddress();
+		} catch (Exception e) {
+			host = "localhost";
+		}
+		return new URI(scheme, null, host, port, null, null, null);
 	}
 
 	private void addPropertiesToDiscoveryServiceProperties(
@@ -268,15 +311,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 			} else if (val instanceof byte[]) {
 				discoveryServiceProperties.setPropertyBytes(keyStr,
 						(byte[]) val);
-			} else {
-				discoveryServiceProperties.setProperty(keyStr, val);
 			}
 		}
-	}
-
-	private void traceException(String string, Throwable e) {
-		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
-				this.getClass(), string, e);
 	}
 
 	private IDiscoveryService discovery;
@@ -363,6 +399,11 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	protected void trace(String methodName, String message) {
 		Trace.trace(Activator.PLUGIN_ID, DebugOptions.SVCPUBHANDLERDEBUG, this
 				.getClass(), methodName, message);
+	}
+
+	protected void traceException(String string, Throwable e) {
+		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
+				this.getClass(), string, e);
 	}
 
 	public void dispose() {
