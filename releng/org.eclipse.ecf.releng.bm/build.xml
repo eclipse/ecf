@@ -165,6 +165,8 @@
 			<arg value="-testApplication" />
 			<arg value="org.eclipse.ui.ide.workbench" />
 			<arg value="-clean" />
+			<arg value="-console" />
+			<arg value="${osgi.console.telnet.port}" />
 			<syspropertyset refid="test-properties" />
 			<!-- debugging -->
 			<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${test.debug.port},server=y,suspend=${test.debug.suspend}" />
