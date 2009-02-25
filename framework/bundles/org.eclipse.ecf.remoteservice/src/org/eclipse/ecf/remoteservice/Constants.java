@@ -27,7 +27,7 @@ public interface Constants {
 	 * This property is set by the remote services API when a service is
 	 * registered.
 	 */
-	public static final String OBJECTCLASS = "robjectClass"; //$NON-NLS-1$
+	public static final String OBJECTCLASS = "ecf.robjectClass"; //$NON-NLS-1$
 
 	/**
 	 * Remote service property (named &quot;remote.service.id&quot;) identifying a
@@ -40,7 +40,7 @@ public interface Constants {
 	 * services API was started. These values are NOT persistent across restarts
 	 * of the remote services API.
 	 */
-	public static final String SERVICE_ID = "rsvc.id"; //$NON-NLS-1$
+	public static final String SERVICE_ID = "ecf.rsvc.id"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remote.service.ranking&quot;) identifying a
@@ -72,7 +72,7 @@ public interface Constants {
 	 * <code>java.lang.Integer</code>, it is deemed to have a ranking value
 	 * of zero.
 	 */
-	public static final String SERVICE_RANKING = "rsvc.ranking"; //$NON-NLS-1$
+	public static final String SERVICE_RANKING = "ecf.rsvc.ranking"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remote.service.vendor&quot;) identifying a
@@ -84,7 +84,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String SERVICE_VENDOR = "rsvc.vendor"; //$NON-NLS-1$
+	public static final String SERVICE_VENDOR = "ecf.rsvc.vendor"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remoteservice.description&quot;)
@@ -96,7 +96,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String SERVICE_DESCRIPTION = "rsvc.desc"; //$NON-NLS-1$
+	public static final String SERVICE_DESCRIPTION = "ecf.rsvc.desc"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remoteservice.description&quot;)
@@ -109,7 +109,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String SERVICE_REGISTRATION_TARGETS = "rsvc.reg.targets"; //$NON-NLS-1$
+	public static final String SERVICE_REGISTRATION_TARGETS = "ecf.rsvc.reg.targets"; //$NON-NLS-1$
 
 	/**
 	 * Remote service property that defines the container factory name.
@@ -120,7 +120,7 @@ public interface Constants {
 	 * method.
 	 * @since 3.0
 	 */
-	public static final String SERVICE_CONTAINER_FACTORY_NAME = "rsvc.cfn"; //$NON-NLS-1$
+	public static final String SERVICE_CONTAINER_FACTORY_NAME = "ecf.rsvc.cfn"; //$NON-NLS-1$
 
 	/**
 	 * Service property that defines the container target for connection.
@@ -131,7 +131,7 @@ public interface Constants {
 	 * method.
 	 * @since 3.0
 	 */
-	public static final String SERVICE_CONTAINER_TARGET = "rsvc.target"; //$NON-NLS-1$
+	public static final String SERVICE_CONTAINER_TARGET = "ecf.rsvc.target"; //$NON-NLS-1$
 
 	/**
 	 * Service property that defines the remote service container ID factory name.
@@ -140,7 +140,7 @@ public interface Constants {
 	 * object passed to the <code>BundleContext.registerService</code> method.
 	 * @since 3.0
 	 */
-	public static final String SERVICE_CONTAINER_ID_FACTORY = "rsvc.cidf"; //$NON-NLS-1$
+	public static final String SERVICE_CONTAINER_ID_FACTORY = "ecf.rsvc.cidf"; //$NON-NLS-1$
 
 	/**
 	 * Remote service property that defines the remote service container ID.
@@ -149,7 +149,7 @@ public interface Constants {
 	 * object passed to the <code>BundleContext.registerService</code> method.
 	 * @since 3.0
 	 */
-	public static final String SERVICE_CONTAINER_ID = "rsvc.cid"; //$NON-NLS-1$
+	public static final String SERVICE_CONTAINER_ID = "ecf.rsvc.cid"; //$NON-NLS-1$
 
 	/**
 	 * Service property that determines whether a remote service proxy is automatically added to the local
@@ -168,7 +168,7 @@ public interface Constants {
 	 * </pre>
 	 * 
 	 */
-	public static final String AUTOREGISTER_REMOTE_PROXY = "rsvc.areg"; //$NON-NLS-1$
+	public static final String AUTOREGISTER_REMOTE_PROXY = "ecf.rsvc.areg"; //$NON-NLS-1$
 
 	// Constants for use with the ECF remote services API
 
@@ -178,7 +178,7 @@ public interface Constants {
 	 * Note that this property is <b>optional</b>.
 	 * @since 3.0
 	 */
-	public static final String SERVICE_CONNECT_ID_NAMESPACE = "rsvc.cnct.id.ns"; //$NON-NLS-1$
+	public static final String SERVICE_CONNECT_ID_NAMESPACE = "ecf.rsvc.cnct.id.ns"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property to specify value for creating a connect id.  Note that
@@ -186,7 +186,7 @@ public interface Constants {
 	 * Note that this property is <b>optional</b>.
 	 * @since 3.0
 	 */
-	public static final String SERVICE_CONNECT_ID = "rsvc.cnct.id"; //$NON-NLS-1$
+	public static final String SERVICE_CONNECT_ID = "ecf.rsvc.cnct.id"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property to specify a namespace name for creating a target service ID.
@@ -196,7 +196,7 @@ public interface Constants {
 	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter). 
 	 * @since 3.0
 	 */
-	public static final String SERVICE_IDFILTER_NAMESPACE = "rsvc.idfltr.ns"; //$NON-NLS-1$
+	public static final String SERVICE_IDFILTER_NAMESPACE = "ecf.rsvc.idfltr.ns"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property for a 'remotesvcs' discovery type.  Note that this
@@ -206,14 +206,14 @@ public interface Constants {
 	 * remoteServicesContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter). 
 	 * @since 3.0
 	 */
-	public static final String SERVICE_IDFILTER_ID = "rsvc.idfltr.id"; //$NON-NLS-1$
+	public static final String SERVICE_IDFILTER_ID = "ecf.rsvc.idfltr.id"; //$NON-NLS-1$
 
 	/**
 	 * Discovery Service property specifying the clazz paramter in  
 	 * remoteServiceContainerAdapter.getRemoteServiceReferences(ID [] idFilter, String clazz, String filter);
 	 * @since 3.0
 	 */
-	public static final String SERVICE_OBJECTCLASS = "rsvc.robjectclass"; //$NON-NLS-1$
+	public static final String SERVICE_OBJECTCLASS = "ecf.rsvc.robjectclass"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property for specifying the service lookup filter for
@@ -223,13 +223,15 @@ public interface Constants {
 	 * property is <b>optional</b> if the DISCOVERY_SERVICE_TYPE is as given above.
 	 * @since 3.0
 	 */
-	public static final String SERVICE_FILTER_PROPERTY = "rsvc.fltr"; //$NON-NLS-1$
+	public static final String SERVICE_FILTER_PROPERTY = "ecf.rsvc.fltr"; //$NON-NLS-1$
 
 	/**
 	 * Discovery service property specifying the expected namespace name for corresponding
 	 * to remoteServiceContainerAdapter.getRemoteServicesNamespace()
 	 * @since 3.0
 	 */
-	public static final String SERVICE_NAMESPACE = "rsvc.ns"; //$NON-NLS-1$
+	public static final String SERVICE_NAMESPACE = "ecf.rsvc.ns"; //$NON-NLS-1$
+
+	public static final String SERVICE_CONTAINER_CLASSNAME = "ecf.rsvc.cclass"; //$NON-NLS-1$
 
 }
