@@ -20,9 +20,9 @@
 *****************************************************************************/
 package org.eclipse.ecf.tests.provider.jmdns;
 
-import org.eclipse.ecf.tests.discovery.DiscoveryTest;
+import org.eclipse.ecf.tests.discovery.DiscoveryContainerTest;
 
-public class JMDNSDiscoveryTest extends DiscoveryTest {
+public class JMDNSDiscoveryTest extends DiscoveryContainerTest {
 
 	public JMDNSDiscoveryTest() {
 		super("ecf.discovery.jmdns");
