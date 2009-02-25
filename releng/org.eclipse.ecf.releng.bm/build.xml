@@ -236,6 +236,7 @@
 		<delete dir="${build.dir}/features/org.eclipse.pde.build.container.feature" failonerror="false" />
 		<delete dir="${build.dir}/maps" failonerror="false" />
 		<delete dir="${build.dir}/tmp" failonerror="false" />
+		<delete dir="${build.dir}/workspace" failonerror="false" />
 	</target>
 	
 	<target name="materialize" depends="materialize-product, materialize-tests" />
