@@ -53,13 +53,13 @@ public class ServiceURLTest extends TestCase {
 	public void testServiceURL2() throws Exception {
 		String urlString = "service:test:myservice://localhost:80";
 		ServiceURL url = new ServiceURL(urlString, 0);
-		assertEquals(url.getServiceType().toString(), "service:test:myservice");
-		assertEquals(url.getHost(), "localhost");
-		assertEquals(url.getPort(), 80);
-		assertEquals(url.getURLPath(), "");
-		assertEquals(url.getUserInfo(), "");
-		assertEquals(url.getProtocol(), null);
-		assertEquals(url.toString(), urlString);
+		assertEquals("service:test:myservice", url.getServiceType().toString());
+		assertEquals("localhost", url.getHost());
+		assertEquals(80, url.getPort());
+		assertEquals("", url.getURLPath());
+		assertEquals("", url.getUserInfo());
+		assertEquals(null, url.getProtocol());
+		assertEquals(urlString, url.toString());
 	}
 
 	public void testServiceURL3() throws Exception {
@@ -160,5 +160,40 @@ public class ServiceURLTest extends TestCase {
 		assertEquals(url.toString(), "service:test://http://foobar@localhost");
 		assertEquals(url.getUserInfo(), "foobar");
 		assertTrue("".equals(url.getServiceType().getNamingAuthority()));
+	}
+	
+	// https://bugs.eclipse.org/258252
+	public void testServiceURL258252a() throws Exception {
+		String urlString = "service:test:myservice://localhost:80/my:path";
+		ServiceURL url = new ServiceURL(urlString, 0);
+		assertEquals(url.getServiceType().toString(), "service:test:myservice");
+		assertEquals(url.getHost(), "localhost");
+		assertEquals(url.getPort(), 80);
+		assertEquals(url.getURLPath(), "/my:path");
+		assertEquals(url.getUserInfo(), "");
+		assertEquals(url.getProtocol(), null);
+		assertEquals(url.toString(), urlString);
+	}
+	public void testServiceURL258252b() throws Exception {
+		String urlString = "service:test:myservice://localhost/my:path";
+		ServiceURL url = new ServiceURL(urlString, 0);
+		assertEquals(url.getServiceType().toString(), "service:test:myservice");
+		assertEquals(url.getHost(), "localhost");
+		assertEquals(url.getPort(), 0);
+		assertEquals(url.getURLPath(), "/my:path");
+		assertEquals(url.getUserInfo(), "");
+		assertEquals(url.getProtocol(), null);
+		assertEquals(url.toString(), urlString);
+	}
+	public void testServiceURL258252c() throws Exception {
+		String urlString = "service:test:myservice://localhost/foo/bar#path";
+		ServiceURL url = new ServiceURL(urlString, 0);
+		assertEquals(url.getServiceType().toString(), "service:test:myservice");
+		assertEquals(url.getHost(), "localhost");
+		assertEquals(url.getPort(), 0);
+		assertEquals(url.getURLPath(), "/foo/bar#path");
+		assertEquals(url.getUserInfo(), "");
+		assertEquals(url.getProtocol(), null);
+		assertEquals(url.toString(), urlString);
 	}
 }
