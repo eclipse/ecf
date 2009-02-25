@@ -325,9 +325,21 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @see java.util.List#add(java.lang.Object)
 	 */
 	public boolean addContainer(final Object object) {
+		// connect the new container if necessary and register ourself as listeners
+		IContainer iContainer = (IContainer) object;
+		if (iContainer.getConnectedID() == null) {
+			try {
+				iContainer.connect(targetID, null);
+			} catch (ContainerConnectException e) {
+				// we eat the exception here
+				Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "addContainer(Object)", e); //$NON-NLS-1$
+			}
+		}
+		final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) object;
+		idca.addServiceListener(ccsl);
+		idca.addServiceTypeListener(ccstl);
 		// register previously registered with the new IDS
 		synchronized (registeredServices) {
-			final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) object;
 			for (final Iterator itr = registeredServices.iterator(); itr.hasNext();) {
 				final IServiceInfo serviceInfo = (IServiceInfo) itr.next();
 				try {
@@ -351,6 +363,9 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @see java.util.List#remove(java.lang.Object)
 	 */
 	public boolean removeContainer(final Object object) {
+		final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) object;
+		idca.removeServiceListener(ccsl);
+		idca.removeServiceTypeListener(ccstl);
 		synchronized (containers) {
 			Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "removeContainer(Object)", "removeContainer " //$NON-NLS-1$ //$NON-NLS-2$
 					+ object.toString());
