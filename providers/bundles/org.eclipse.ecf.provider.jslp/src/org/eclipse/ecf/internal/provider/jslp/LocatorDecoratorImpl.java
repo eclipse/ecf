@@ -69,6 +69,24 @@ public class LocatorDecoratorImpl implements LocatorDecorator {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.internal.provider.jslp.LocatorDecorator#getServiceURLs(java.lang.String, java.util.List)
+	 */
+	public List getServiceURLs(final String namingAuthority, final List scopes) throws ServiceLocationException {
+		final Enumeration stEnum = findServiceTypes(namingAuthority, scopes);
+		final Set aSet = new HashSet(Collections.list(stEnum));
+		final List result = new ArrayList();
+		for (final Iterator itr = aSet.iterator(); itr.hasNext();) {
+			final String type = (String) itr.next();
+			final ServiceLocationEnumeration services = findServices(new ServiceType(type), scopes, null);
+			while (services.hasMoreElements()) {
+				final ServiceURL url = (ServiceURL) services.next();
+				result.add(url);
+			}
+		}
+		return result;
+	}
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.internal.provider.jslp.LocatorDecorator#getServiceURLs(ch.ethz.iks.slp.ServiceType, java.util.List)
 	 */
 	public Map getServiceURLs(final ServiceType aServiceType, final List scopes) throws ServiceLocationException {

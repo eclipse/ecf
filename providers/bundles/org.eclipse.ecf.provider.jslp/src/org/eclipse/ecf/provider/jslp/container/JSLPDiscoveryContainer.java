@@ -10,7 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.jslp.container;
 
-import ch.ethz.iks.slp.*;
+import ch.ethz.iks.slp.ServiceLocationException;
+import ch.ethz.iks.slp.ServiceURL;
 import java.util.*;
 import java.util.Map.Entry;
 import org.eclipse.core.runtime.Assert;
@@ -132,13 +133,13 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServiceTypes()
 	 */
 	public IServiceTypeID[] getServiceTypes() {
-		List result = new ArrayList();
+		Set result = new HashSet();
 		try {
-			ServiceLocationEnumeration slenum = Activator.getDefault().getLocator().findServiceTypes(null, null);
-			for (; slenum.hasMoreElements();) {
-				ServiceType st = new ServiceType((String) slenum.nextElement());
-				IServiceID sid = (IServiceID) getConnectNamespace().createInstance(new Object[] {st, ""}); //$NON-NLS-1$
-				result.add(sid.getServiceTypeID());
+			List aList = Activator.getDefault().getLocator().getServiceURLs((String) null, null);
+			for (Iterator itr = aList.iterator(); itr.hasNext();) {
+				ServiceURL serviceURL = (ServiceURL) itr.next();
+				IServiceID serviceId = (IServiceID) getConnectNamespace().createInstance(new Object[] {serviceURL, "", new String[] {}}); //$NON-NLS-1$
+				result.add(serviceId.getServiceTypeID());
 			}
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServiceTypes(int)", e); //$NON-NLS-1$

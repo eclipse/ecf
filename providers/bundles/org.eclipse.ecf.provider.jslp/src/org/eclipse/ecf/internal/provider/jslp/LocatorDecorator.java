@@ -28,4 +28,12 @@ public interface LocatorDecorator extends Locator {
 	 * @throws ServiceLocationException 
 	 */
 	public Map getServiceURLs() throws ServiceLocationException;
+
+	/**
+	 * @param namingAuthority
+	 * @param scopes
+	 * @return A List of a ServiceURLs for the given namingAuthority and scopes
+	 * @throws ServiceLocationException
+	 */
+	public List getServiceURLs(final String namingAuthority, final List scopes) throws ServiceLocationException;
 }

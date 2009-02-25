@@ -90,4 +90,12 @@ public class NullPatternLocator implements LocatorDecorator {
 		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "getServiceURLs()", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
 		return new HashMap();
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.internal.provider.jslp.LocatorDecorator#getServiceURLs(java.lang.String, java.util.List)
+	 */
+	public List getServiceURLs(String namingAuthority, List scopes) {
+		Trace.trace(Activator.PLUGIN_ID, JSLPDebugOptions.METHODS_TRACING, getClass(), "getServiceURLs()", Locator.class + " not present"); //$NON-NLS-1$//$NON-NLS-2$
+		return new ArrayList();
+	}
 }
