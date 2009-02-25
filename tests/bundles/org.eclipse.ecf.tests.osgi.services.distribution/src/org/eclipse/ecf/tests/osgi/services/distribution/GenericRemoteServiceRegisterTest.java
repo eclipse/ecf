@@ -13,7 +13,7 @@ import java.util.Properties;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
-import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
+import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -23,7 +23,7 @@ import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
 
 
-public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest implements ServiceConstants, ECFServicePublication {
+public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest implements ECFServiceConstants, ECFServicePublication {
 
 	/*
 	 * (non-Javadoc)

@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
+import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 import org.eclipse.ecf.tests.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
@@ -55,7 +55,7 @@ public class ServicePublicationTest extends ECFAbstractTestCase {
 
 		// register a service with the marker property set
 		final Dictionary props = new Hashtable();
-		props.put(ServiceConstants.OSGI_REMOTE_INTERFACES, ifaces);
+		props.put(ECFServiceConstants.OSGI_REMOTE_INTERFACES, ifaces);
 		// prepare a service tracker
 		final ServiceTracker tracker = new ServiceTracker(context,
 				TestServiceInterface1.class.getName(), null);
