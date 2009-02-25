@@ -17,6 +17,8 @@ import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescriptionImpl;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.equinox.concurrent.future.IFuture;
@@ -33,8 +35,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		this.distributionProvider = dp;
 	}
 
-	// IRemoteServiceReference -> ServiceRegistration
-	Map serviceRegistrationMap = Collections.synchronizedMap(new HashMap());
+	// Map<ID(discovery container)><
+	Map discoveredRemoteServiceRegistrations = Collections
+			.synchronizedMap(new HashMap());
 
 	public void serviceChanged(DiscoveredServiceNotification notification) {
 		if (notification == null) {
@@ -84,13 +87,63 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private void handleDiscoveredServiceUnavailable(
-			ServiceEndpointDescription description) {
-		// TODO Auto-generated method stub
+			ServiceEndpointDescription sed) {
+		// If the service endpoint description is not ECF's then we
+		// don't process it
+		if (!(sed instanceof ServiceEndpointDescriptionImpl)) {
+			return;
+		}
+		ServiceEndpointDescriptionImpl description = (ServiceEndpointDescriptionImpl) sed;
+
+		// Get ECF discovery container ID...if not found there is a problem
+		ID discoveryContainerID = description.getDiscoveryContainerID();
+		if (discoveryContainerID == null) {
+			logError("ServiceEndpointDescription discoveryContainerID is null",
+					null);
+			return;
+		}
+		// Get serviceName from description
+		IServiceID serviceID = description.getServiceID();
+		if (serviceID == null) {
+			logError("ServiceEndpointDescription serviceID is null", null);
+			return;
+		}
+		String serviceName = serviceID.getName();
+		if (serviceName == null) {
+			logError("ServiceEndpointDescription serviceName is null", null);
+			return;
+		}
 
 	}
 
-	private void handleDiscoveredServiceAvailable(
-			ServiceEndpointDescription description) {
+	private void handleDiscoveredServiceAvailable(ServiceEndpointDescription sed) {
+
+		// If the service endpoint description is not ECF's then we
+		// don't process it
+		if (!(sed instanceof ServiceEndpointDescriptionImpl)) {
+			return;
+		}
+		ServiceEndpointDescriptionImpl description = (ServiceEndpointDescriptionImpl) sed;
+
+		// Get ECF discovery container ID...if not found there is a problem
+		ID discoveryContainerID = description.getDiscoveryContainerID();
+		if (discoveryContainerID == null) {
+			logError("ServiceEndpointDescription discoveryContainerID is null",
+					null);
+			return;
+		}
+		// Get serviceName from description
+		IServiceID serviceID = description.getServiceID();
+		if (serviceID == null) {
+			logError("ServiceEndpointDescription serviceID is null", null);
+			return;
+		}
+		String serviceName = serviceID.getName();
+		if (serviceName == null) {
+			logError("ServiceEndpointDescription serviceName is null", null);
+			return;
+		}
+		// Check that the description exposes a collection of interfaces
 		Collection providedInterfaces = description.getProvidedInterfaces();
 		if (providedInterfaces == null) {
 			logError("ServiceEndpointDescription providedInterfaces is null",
@@ -104,6 +157,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					+ description, null);
 			return;
 		}
+		// Create endpointID
 		ID endpointID = null;
 		try {
 			endpointID = createEndpointID(description);
@@ -111,6 +165,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			logError("No endpoint ID created for description " + description, e);
 			return;
 		}
+		// For all remote service container adapters
+		// Get futureRemoteReferences...then create a thread
+		// to process the future
 		for (int i = 0; i < rscas.length; i++) {
 			for (Iterator j = providedInterfaces.iterator(); j.hasNext();) {
 				String providedInterface = (String) j.next();
@@ -123,8 +180,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 								new ID[] { endpointID }, providedInterface,
 								null);
 				// And process the future returned in separate thread
-				processFutureForRemoteServiceReferences(futureRemoteReferences,
-						rscas[i], description, getTimeout(description));
+				processFutureForRemoteServiceReferences(discoveryContainerID,
+						serviceName, futureRemoteReferences, rscas[i],
+						description, getTimeout(description));
 			}
 		}
 	}
@@ -135,6 +193,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private void processFutureForRemoteServiceReferences(
+			final ID discoveryContainerID, final String serviceName,
 			final IFuture futureRemoteReferences,
 			final IRemoteServiceContainerAdapter rsca,
 			final ServiceEndpointDescription description, final long timeout) {
@@ -153,7 +212,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							+ Arrays.asList(remoteReferences));
 					if (futureStatus.isOK() && remoteReferences != null
 							&& remoteReferences.length > 0) {
-						registerRemoteServiceReferences(rsca, remoteReferences,
+						registerRemoteServiceReferences(discoveryContainerID,
+								serviceName, rsca, remoteReferences,
 								description);
 					} else {
 						logFutureError(futureStatus);
@@ -177,26 +237,33 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private ServiceRegistration getRemoteServiceRegistration(
+			ID discoveryContainerID, String serviceName,
 			IRemoteServiceReference reference) {
 		// XXX TODO...consult serviceRegistrationMap
 		return null;
 	}
 
 	private ServiceRegistration addRemoteServiceRegistration(
+			ID discoveryContainerID, String serviceName,
 			IRemoteServiceReference ref, ServiceRegistration registration) {
 		// XXX TODO...add to serviceRegistrationMap
 		return null;
 	}
 
-	private void registerRemoteServiceReferences(
-			IRemoteServiceContainerAdapter rsca,
+	private void removeRemoteServiceRegistration(ID discoveryContainerID,
+			String serviceName, IRemoteServiceReference iRemoteServiceReference) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void registerRemoteServiceReferences(ID discoveryContainerID,
+			String serviceName, IRemoteServiceContainerAdapter rsca,
 			IRemoteServiceReference[] remoteReferences,
 			ServiceEndpointDescription description) {
-		// First, get IRemoteService instances for remote references
 		for (int i = 0; i < remoteReferences.length; i++) {
 			trace("registerRemoteServiceReference", "rsca=" + rsca
 					+ ", remoteReference=" + remoteReferences[i]);
-			// Otherwise we register it.
+			// Get IRemoteService, used to create the proxy below
 			IRemoteService remoteService = rsca
 					.getRemoteService(remoteReferences[i]);
 			if (remoteService == null) {
@@ -204,6 +271,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						+ remoteReferences[i], null);
 				continue;
 			}
+
+			// Get classes to register for remote service
 			String[] clazzes = (String[]) remoteReferences[i]
 					.getProperty(Constants.OBJECTCLASS);
 			if (clazzes == null) {
@@ -211,8 +280,12 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						+ remoteReferences[i], null);
 				continue;
 			}
+
+			// Get service properties for the proxy
 			Dictionary properties = getPropertiesForRemoteServiceReference(
 					remoteService, description);
+
+			// Create proxy
 			Object proxy = null;
 			try {
 				proxy = remoteService.getProxy();
@@ -222,12 +295,15 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 								+ remoteReferences[i], e);
 				continue;
 			}
+
+			// Get bundle context
 			BundleContext bundleContext = Activator.getDefault().getContext();
 			// Has to be synchronized on map so that additions do not occur
 			// while this is going on
-			synchronized (serviceRegistrationMap) {
+			synchronized (discoveredRemoteServiceRegistrations) {
 				// First check to see if remote reference is already registered
-				ServiceRegistration reg = getRemoteServiceRegistration(remoteReferences[i]);
+				ServiceRegistration reg = getRemoteServiceRegistration(
+						discoveryContainerID, serviceName, remoteReferences[i]);
 				if (reg != null) {
 					// log the fact that it's already registered
 					logError("remote reference " + remoteReferences
@@ -242,22 +318,17 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 									+ ",properties=" + properties);
 					registration = bundleContext.registerService(clazzes,
 							proxy, properties);
-					addRemoteServiceRegistration(remoteReferences[i],
-							registration);
+					addRemoteServiceRegistration(discoveryContainerID,
+							serviceName, remoteReferences[i], registration);
 				} catch (Exception e) {
 					logError("Error registering for remote reference "
 							+ remoteReferences[i], e);
-					removeRemoteServiceRegistration(remoteReferences[i]);
+					removeRemoteServiceRegistration(discoveryContainerID,
+							serviceName, remoteReferences[i]);
 					continue;
 				}
 			}
 		}
-	}
-
-	private void removeRemoteServiceRegistration(
-			IRemoteServiceReference iRemoteServiceReference) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private Dictionary getPropertiesForRemoteServiceReference(
