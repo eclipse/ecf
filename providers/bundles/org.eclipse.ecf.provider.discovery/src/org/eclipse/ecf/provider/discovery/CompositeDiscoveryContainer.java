@@ -97,7 +97,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 					// TODO ccstl doesn't have to be a listener for a non
 					// matching (namespace) container, but it doesn't hurt
 					// either
-					final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+					final IDiscoveryLocator idca = (IDiscoveryLocator) itr.next();
 					idca.addServiceListener(istid, ccsl);
 				}
 			}
@@ -146,7 +146,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 				if (container.getConnectedID() == null) {
 					container.connect(targetID, connectContext);
 				}
-				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) container;
+				final IDiscoveryLocator idca = (IDiscoveryLocator) container;
 				idca.addServiceListener(ccsl);
 				idca.addServiceTypeListener(ccstl);
 			}
@@ -195,7 +195,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		return targetID;
 	}
 
-	private IServiceID getServiceIDForDiscoveryContainer(final IServiceID service, final IDiscoveryContainerAdapter dca) {
+	private IServiceID getServiceIDForDiscoveryContainer(final IServiceID service, final IDiscoveryLocator dca) {
 		final Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(service.getNamespace())) {
 			return ServiceIDFactory.getDefault().createServiceID(connectNamespace, service.getServiceTypeID().getName(), service.getServiceName());
@@ -210,7 +210,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		Assert.isNotNull(aService);
 		synchronized (containers) {
 			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
-				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+				final IDiscoveryLocator idca = (IDiscoveryLocator) itr.next();
 				final IServiceID isi = getServiceIDForDiscoveryContainer(aService, idca);
 				final IServiceInfo service = idca.getServiceInfo(isi);
 				if (service != null) {
@@ -221,7 +221,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		return null;
 	}
 
-	private IServiceInfo getServiceInfoForDiscoveryContainer(final IServiceInfo aSi, final IDiscoveryContainerAdapter idca) {
+	private IServiceInfo getServiceInfoForDiscoveryContainer(final IServiceInfo aSi, final IDiscoveryLocator idca) {
 		final IServiceID serviceID = getServiceIDForDiscoveryContainer(aSi.getServiceID(), idca);
 		return new ServiceInfo(aSi.getLocation(), serviceID, aSi.getPriority(), aSi.getWeight(), aSi.getServiceProperties());
 	}
@@ -233,7 +233,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		final Set set = new HashSet();
 		synchronized (containers) {
 			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
-				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+				final IDiscoveryLocator idca = (IDiscoveryLocator) itr.next();
 				final IServiceInfo[] services = idca.getServices();
 				set.addAll(Arrays.asList(services));
 			}
@@ -249,7 +249,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		final Set set = new HashSet();
 		synchronized (containers) {
 			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
-				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+				final IDiscoveryLocator idca = (IDiscoveryLocator) itr.next();
 				final IServiceTypeID isti = getServiceTypeIDForDiscoveryContainer(type, idca);
 				final IServiceInfo[] services = idca.getServices(isti);
 				set.addAll(Arrays.asList(services));
@@ -258,7 +258,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		return (IServiceInfo[]) set.toArray(new IServiceInfo[set.size()]);
 	}
 
-	private IServiceTypeID getServiceTypeIDForDiscoveryContainer(final IServiceTypeID type, final IDiscoveryContainerAdapter dca) {
+	private IServiceTypeID getServiceTypeIDForDiscoveryContainer(final IServiceTypeID type, final IDiscoveryLocator dca) {
 		final Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(type.getNamespace())) {
 			final IServiceID serviceID = (IServiceID) connectNamespace.createInstance(new Object[] {type, null});
@@ -274,7 +274,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		final Set set = new HashSet();
 		synchronized (containers) {
 			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
-				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
+				final IDiscoveryLocator idca = (IDiscoveryLocator) itr.next();
 				final IServiceTypeID[] services = idca.getServiceTypes();
 				set.addAll(Arrays.asList(services));
 			}
@@ -292,8 +292,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		}
 		synchronized (containers) {
 			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
-				final IDiscoveryContainerAdapter dca = (IDiscoveryContainerAdapter) itr.next();
-				final IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, dca);
+				final IDiscoveryAdvertiser dca = (IDiscoveryAdvertiser) itr.next();
+				final IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, (IDiscoveryLocator) dca);
 				dca.registerService(isi);
 				Trace.trace(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "registerService", "registeredService " //$NON-NLS-1$ //$NON-NLS-2$
 						+ serviceInfo.toString());
@@ -312,8 +312,8 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		}
 		synchronized (containers) {
 			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
-				final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) itr.next();
-				final IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, idca);
+				final IDiscoveryAdvertiser idca = (IDiscoveryAdvertiser) itr.next();
+				final IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, (IDiscoveryLocator) idca);
 				idca.unregisterService(isi);
 			}
 		}
@@ -350,15 +350,16 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 				Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "addContainer(Object)", e); //$NON-NLS-1$
 			}
 		}
-		final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) object;
+		final IDiscoveryLocator idca = (IDiscoveryLocator) object;
 		idca.addServiceListener(ccsl);
 		idca.addServiceTypeListener(ccstl);
 		// register previously registered with the new IDS
 		synchronized (registeredServices) {
+			final IDiscoveryAdvertiser ida = (IDiscoveryAdvertiser) object;
 			for (final Iterator itr = registeredServices.iterator(); itr.hasNext();) {
 				final IServiceInfo serviceInfo = (IServiceInfo) itr.next();
 				try {
-					idca.registerService(serviceInfo);
+					ida.registerService(serviceInfo);
 				} catch (final ECFRuntimeException e) {
 					// we eat the exception here since the original registerService call is long done
 					Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "addContainer(Object)", e); //$NON-NLS-1$
@@ -378,7 +379,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @see java.util.List#remove(java.lang.Object)
 	 */
 	public boolean removeContainer(final Object object) {
-		final IDiscoveryContainerAdapter idca = (IDiscoveryContainerAdapter) object;
+		final IDiscoveryLocator idca = (IDiscoveryLocator) object;
 		idca.removeServiceListener(ccsl);
 		idca.removeServiceTypeListener(ccstl);
 		synchronized (containers) {

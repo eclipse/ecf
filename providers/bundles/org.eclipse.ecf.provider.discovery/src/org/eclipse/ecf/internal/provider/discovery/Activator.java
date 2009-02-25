@@ -14,6 +14,8 @@ import java.util.*;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
 import org.osgi.framework.*;
@@ -49,7 +51,8 @@ public class Activator implements BundleActivator {
 		props.put(IDiscoveryService.CONTAINER_ID, IDFactory.getDefault().createStringID("org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer")); //$NON-NLS-1$
 		props.put(IDiscoveryService.CONTAINER_NAME, CompositeDiscoveryContainer.NAME);
 		props.put(Constants.SERVICE_RANKING, Integer.toString(1000));
-		context.registerService(IDiscoveryService.class.getName(), new ServiceFactory() {
+		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
+		context.registerService(clazzes, new ServiceFactory() {
 
 			/* (non-Javadoc)
 			 * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration)

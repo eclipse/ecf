@@ -15,6 +15,16 @@
             name="ecf.singleton.discovery"
             server="true">
       </containerFactory>
+      <containerFactory
+            class="org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainerInstantiator"
+            description="Composite Discovery Container Locator"
+            name="ecf.discovery.composite.locator">
+      </containerFactory>
+      <containerFactory
+            class="org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainerInstantiator"
+            description="Composite Discovery Container Advertiser"
+            name="ecf.discovery.composite.advertiser">
+      </containerFactory>
    </extension>
    <extension
          point="org.eclipse.ecf.identity.namespace">

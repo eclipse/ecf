@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.equinox.concurrent.future.IFuture;
 
 /**
  * 
@@ -201,5 +202,47 @@ public class SingletonDiscoveryContainer implements IDiscoveryContainerAdapter, 
 	 */
 	public void removeServiceListener(final IServiceListener listener) {
 		discovery.removeServiceListener(listener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryLocator#purgeCache()
+	 */
+	public IServiceInfo[] purgeCache() {
+		return discovery.purgeCache();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAsyncLocator#getAsyncServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID)
+	 */
+	public IFuture getAsyncServiceInfo(IServiceID aServiceID) {
+		return discovery.getAsyncServiceInfo(aServiceID);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAsyncLocator#getAsyncServiceTypes()
+	 */
+	public IFuture getAsyncServiceTypes() {
+		return discovery.getAsyncServiceTypes();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAsyncLocator#getAsyncServices()
+	 */
+	public IFuture getAsyncServices() {
+		return discovery.getAsyncServices();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAsyncLocator#getAsyncServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)
+	 */
+	public IFuture getAsyncServices(IServiceTypeID aServiceTypeID) {
+		return discovery.getAsyncServices(aServiceTypeID);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAdvertiser#unregisterAllServices()
+	 */
+	public void unregisterAllServices() {
+		discovery.unregisterAllServices();
 	}
 }
