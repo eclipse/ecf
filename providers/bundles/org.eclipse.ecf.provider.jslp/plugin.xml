@@ -8,6 +8,16 @@
             description="Discovery Container"
             name="ecf.discovery.jslp"
             server="true"/>
+      <containerFactory
+            class="org.eclipse.ecf.provider.jslp.container.ContainerInstantiator"
+            description="Discovery Locator Container "
+            name="ecf.discovery.jslp.locator">
+      </containerFactory>
+      <containerFactory
+            class="org.eclipse.ecf.provider.jslp.container.ContainerInstantiator"
+            description="Discovery Advertiser Container"
+            name="ecf.discovery.jslp.advertiser">
+      </containerFactory>
    </extension>
    <extension
          point="org.eclipse.ecf.identity.namespace">

@@ -16,6 +16,8 @@ import java.util.Properties;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
 import org.osgi.framework.*;
@@ -91,7 +93,8 @@ public class Activator implements BundleActivator {
 		props.put(IDiscoveryService.CONTAINER_NAME, JSLPDiscoveryContainer.NAME);
 		props.put(Constants.SERVICE_RANKING, new Integer(500));
 
-		context.registerService(IDiscoveryService.class.getName(), new ServiceFactory() {
+		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
+		context.registerService(clazzes, new ServiceFactory() {
 			private volatile JSLPDiscoveryContainer jdc;
 
 			/* (non-Javadoc)
