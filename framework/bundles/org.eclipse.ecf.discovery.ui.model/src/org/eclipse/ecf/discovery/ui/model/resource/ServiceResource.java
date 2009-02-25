@@ -39,7 +39,7 @@ public class ServiceResource extends ResourceImpl implements Resource {
 
 		private IContainer container;
 
-		private IDiscoveryContainerAdapter discovery;
+		private IDiscoveryLocator discovery;
 		private Comparator aComparator = new ECFServiceInfoComparator();
 
 		private ServiceDiscoveryListener() {
@@ -55,9 +55,9 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				lock.acquire();
 				container = ContainerFactory.getDefault()
 						.createContainer(DISCOVERY_CONTAINER,
-								new Object[] { "ecf.discovery.*" });
-				discovery = (IDiscoveryContainerAdapter) container
-						.getAdapter(IDiscoveryContainerAdapter.class);
+								new Object[] { "ecf.discovery.composite.locator" });
+				discovery = (IDiscoveryLocator) container
+						.getAdapter(IDiscoveryLocator.class);
 				if (discovery != null) {
 					discovery.addServiceListener(this);
 					container.connect(null, null);
