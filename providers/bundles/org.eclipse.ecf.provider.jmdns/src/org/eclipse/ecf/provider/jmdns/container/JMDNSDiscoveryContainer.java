@@ -10,8 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.jmdns.container;
 
-import org.eclipse.ecf.core.util.ECFRuntimeException;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.URI;
@@ -23,13 +21,13 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.provider.jmdns.*;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
-import org.eclipse.osgi.util.NLS;
 
 public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IDiscoveryService, ServiceListener, ServiceTypeListener {
 
@@ -48,7 +46,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	List serviceTypes = null;
 
 	boolean disposed = false;
-	Object lock = new Object();
+	final Object lock = new Object();
 
 	SimpleFIFOQueue queue = null;
 	Thread notificationThread = null;
@@ -252,48 +250,11 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		queue.enqueue(runnable);
 	}
 
-	private void logError(final String errorString) {
-		JMDNSPlugin.getDefault().logError(errorString);
-	}
-
 	/* (non-Javadoc)
 	 * @see javax.jmdns.ServiceTypeListener#serviceTypeAdded(javax.jmdns.ServiceEvent)
 	 */
 	public void serviceTypeAdded(final ServiceEvent arg0) {
-		final String st = arg0.getType();
-		if (st == null) {
-			logError(NLS.bind(Messages.JMDNSDiscoveryContainer_NO_JMDNS_SERVICE_TYPE, arg0));
-			return;
-		}
-		final IServiceTypeID serviceType = createServiceTypeID(st);
-		if (serviceType == null) {
-			logError(NLS.bind(Messages.JMDNSDiscoveryContainer_NO_SERVICE_TYPE, arg0, st));
-			return;
-		}
-		// Else run in thread
-		runInThread(new Runnable() {
-			public void run() {
-				if (getConnectedID() == null || disposed) {
-					return;
-				}
-				boolean added = false;
-				// No accesses to serviceTypes while we're adding a discovered service type
-				synchronized (lock) {
-					serviceTypes.add(serviceType);
-					jmdns.addServiceListener(st, JMDNSDiscoveryContainer.this);
-					added = true;
-				}
-				// Fire notification outside synchronized block
-				if (added) {
-					try {
-						fireTypeDiscovered(serviceType);
-					} catch (final Exception e) {
-						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceTypeAdded", e); //$NON-NLS-1$
-					}
-				}
-			}
-		});
-
+		arg0.getDNS().addServiceListener(arg0.getType(), JMDNSDiscoveryContainer.this);
 	}
 
 	void fireTypeDiscovered(final IServiceTypeID serviceType) {
@@ -314,21 +275,20 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 					if (getConnectedID() == null || disposed) {
 						return;
 					}
+
 					// explicitly get the service to determine the naming authority (part of the service properties)
 					final ServiceInfo info = jmdns.getServiceInfo(serviceType, serviceName);
 					try {
 						aServiceInfo = createIServiceInfoFromServiceInfo(info);
+						serviceTypes.add(aServiceInfo.getServiceID().getServiceTypeID());
 					} catch (final Exception e) {
 						return;
 					}
 				}
+				fireTypeDiscovered(aServiceInfo.getServiceID().getServiceTypeID());
 				fireDiscovered(aServiceInfo);
 			}
 		});
-	}
-
-	Collection getAllListeners(final IServiceTypeID serviceTypeID) {
-		return super.getListeners(serviceTypeID);
 	}
 
 	/* (non-Javadoc)
@@ -370,13 +330,6 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final String serviceName = serviceInfo.getName();
 		if (serviceName == null)
 			throw new ECFRuntimeException(Messages.JMDNSDiscoveryContainer_SERVICE_NAME_NOT_NULL);
-	}
-
-	private IServiceTypeID createServiceTypeID(final String type) {
-		final IServiceID serviceID = createServiceID(type, null);
-		if (serviceID == null)
-			return null;
-		return serviceID.getServiceTypeID();
 	}
 
 	IServiceInfo createIServiceInfoFromServiceEvent(final ServiceEvent event) throws Exception {
@@ -478,15 +431,11 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final URI location = serviceInfo.getLocation();
 		if (location != null) {
 			props.put(SCHEME_PROPERTY, location.getScheme());
-			final String path = location.getPath();
-			if (path != null)
-				props.put(URI_PATH_PROPERTY, path);
+			props.put(URI_PATH_PROPERTY, location.getPath());
 		}
 		props.put(NAMING_AUTHORITY_PROPERTY, serviceInfo.getServiceID().getServiceTypeID().getNamingAuthority());
-		final int priority = (serviceInfo.getPriority() == -1) ? 0 : serviceInfo.getPriority();
-		final int weight = (serviceInfo.getWeight() == -1) ? 0 : serviceInfo.getWeight();
 		final String serviceName = sID.getServiceName() == null ? location.getHost() : sID.getServiceName();
-		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), serviceName, (location.getPort() == -1) ? 65535 : location.getPort(), weight, priority, props);
+		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), serviceName, location.getPort(), serviceInfo.getWeight(), serviceInfo.getPriority(), props);
 		return si;
 	}
 
