@@ -463,33 +463,35 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				getMethod.setRequestHeader(GzipGetMethod.ACCEPT_ENCODING, GzipGetMethod.CONTENT_ENCODING_ACCEPTED);
 
 			fireConnectStartEvent();
-			if (isDone()) {
+			if (isCanceled()) {
 				return;
 			}
-			IStatus status = null;
+			if (isDone()) {
+				if (getException() != null) {
+					throw getException();
+				}
+				return;
+			}
 
 			connectingSockets.clear();
 			// Actually execute get and get response code (since redirect is set to true, then
 			// redirect response code handled internally
 			if (connectJob == null) {
-				status = performConnect(new NullProgressMonitor());
+				performConnect(new NullProgressMonitor());
 			} else {
 				connectJob.schedule();
 				connectJob.join();
-				status = connectJob.getResult();
 				connectJob = null;
 			}
+			if (isCanceled()) {
+				return;
+			}
 			if (isDone()) {
-				return;
-			}
-			if (status.matches(IStatus.CANCEL)) {
-				exception = (Exception) status.getException();
-				cancel();
-				return;
-			}
-			//TODO: should this be an event? 
-			if (status.matches(IStatus.ERROR)) {
-				throw (Exception) status.getException();
+				Exception e = getException();
+				if (e != null) {
+					throw e;
+				}
+				return; // not expected
 			}
 
 			code = responseCode;
@@ -855,7 +857,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		} finally {
 			monitor.done();
 		}
-		return getFinalStatus(exception);
+		return Status.OK_STATUS;
 
 	}
 
