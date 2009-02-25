@@ -17,6 +17,8 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.provider.jmdns.container.JMDNSDiscoveryContainer;
 import org.osgi.framework.*;
@@ -79,7 +81,8 @@ public class JMDNSPlugin implements BundleActivator {
 		props.put(IDiscoveryService.CONTAINER_ID, IDFactory.getDefault().createStringID("org.eclipse.ecf.provider.jmdns.container.JMDNSDiscoveryContainer")); //$NON-NLS-1$
 		props.put(IDiscoveryService.CONTAINER_NAME, NAME);
 		props.put(Constants.SERVICE_RANKING, Integer.toString(750));
-		context.registerService(IDiscoveryService.class.getName(), new ServiceFactory() {
+		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
+		context.registerService(clazzes, new ServiceFactory() {
 			private volatile JMDNSDiscoveryContainer jdc;
 
 			/* (non-Javadoc)

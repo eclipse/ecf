@@ -9,6 +9,16 @@
             name="ecf.discovery.jmdns"
             server="true">
        </containerFactory>
+      <containerFactory
+            class="org.eclipse.ecf.provider.jmdns.container.ContainerInstantiator"
+            description="Discovery Container Locator"
+            name="ecf.discovery.jmdns.locator">
+      </containerFactory>
+      <containerFactory
+            class="org.eclipse.ecf.provider.jmdns.container.ContainerInstantiator"
+            description="Discovery Container Advertiser"
+            name="ecf.discovery.jmdns.advertiser">
+      </containerFactory>
    </extension>
    <extension
          point="org.eclipse.ecf.identity.namespace">
