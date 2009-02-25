@@ -232,6 +232,4 @@ public interface Constants {
 	 */
 	public static final String SERVICE_NAMESPACE = "ecf.rsvc.ns"; //$NON-NLS-1$
 
-	public static final String SERVICE_CONTAINER_CLASSNAME = "ecf.rsvc.cclass"; //$NON-NLS-1$
-
 }
