@@ -15,12 +15,12 @@ import org.eclipse.ecf.internal.provider.jslp.NullPatternAdvertiser;
 import org.eclipse.ecf.internal.provider.jslp.NullPatternLocator;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
 import org.eclipse.ecf.tests.discovery.Activator;
-import org.eclipse.ecf.tests.discovery.DiscoveryTest;
+import org.eclipse.ecf.tests.discovery.DiscoveryContainerTest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
-public class JSLPDiscoveryTest extends DiscoveryTest {
+public class JSLPDiscoveryTest extends DiscoveryContainerTest {
 
 	static {
 		// tests need root privileges to bind to slp port 427 in SA mode
@@ -66,7 +66,7 @@ public class JSLPDiscoveryTest extends DiscoveryTest {
 			assertTrue(bundle.getState() == Bundle.ACTIVE);
 			bundle.stop();
 			assertTrue(bundle.getState() == Bundle.RESOLVED);
-			assertEquals("No service should have been found since NullPatternLocator is active", discoveryContainer.getServices().length, 0);
+			assertEquals("No service should have been found since NullPatternLocator is active", discoveryLocator.getServices().length, 0);
 		} finally {
 			if(bundle != null) {
 				bundle.start();
