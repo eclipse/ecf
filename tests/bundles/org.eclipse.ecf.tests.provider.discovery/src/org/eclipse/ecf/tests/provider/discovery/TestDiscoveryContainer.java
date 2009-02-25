@@ -15,14 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.equinox.concurrent.future.IFuture;
 
-public class TestDiscoveryContainer implements IDiscoveryContainerAdapter {
+public class TestDiscoveryContainer implements IDiscoveryLocator, IDiscoveryAdvertiser {
 
 	private List services = new ArrayList();
 
@@ -38,14 +40,14 @@ public class TestDiscoveryContainer implements IDiscoveryContainerAdapter {
 	 */
 	public void addServiceListener(IServiceTypeID type,
 			IServiceListener listener) {
-		throw new UnsupportedOperationException();
+		// nop
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)
 	 */
 	public void addServiceTypeListener(IServiceTypeListener listener) {
-		throw new UnsupportedOperationException();
+		// nop
 	}
 
 	/* (non-Javadoc)
@@ -94,7 +96,7 @@ public class TestDiscoveryContainer implements IDiscoveryContainerAdapter {
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(org.eclipse.ecf.discovery.IServiceListener)
 	 */
 	public void removeServiceListener(IServiceListener listener) {
-		throw new UnsupportedOperationException();
+		// nop
 	}
 
 	/* (non-Javadoc)
@@ -109,7 +111,7 @@ public class TestDiscoveryContainer implements IDiscoveryContainerAdapter {
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)
 	 */
 	public void removeServiceTypeListener(IServiceTypeListener listener) {
-		throw new UnsupportedOperationException();
+		// nop
 	}
 
 	/* (non-Javadoc)
@@ -128,5 +130,47 @@ public class TestDiscoveryContainer implements IDiscoveryContainerAdapter {
 	
 	public List getRegisteredServices() {
 		return services;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryLocator#purgeCache()
+	 */
+	public IServiceInfo[] purgeCache() {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAsyncLocator#getAsyncServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID)
+	 */
+	public IFuture getAsyncServiceInfo(IServiceID aServiceId) {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAsyncLocator#getAsyncServiceTypes()
+	 */
+	public IFuture getAsyncServiceTypes() {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAsyncLocator#getAsyncServices()
+	 */
+	public IFuture getAsyncServices() {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAsyncLocator#getAsyncServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)
+	 */
+	public IFuture getAsyncServices(IServiceTypeID aServiceTypeId) {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAdvertiser#unregisterAllServices()
+	 */
+	public void unregisterAllServices() {
+		throw new UnsupportedOperationException();
 	}
 }

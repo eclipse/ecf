@@ -10,7 +10,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.discovery;
 
+import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
 import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 
 public class CompositeDiscoveryServiceContainerTest extends
@@ -24,6 +26,15 @@ public class CompositeDiscoveryServiceContainerTest extends
 		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=218308
 		setScope(IServiceTypeID.DEFAULT_SCOPE[0]);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryServiceTest#setUp()
+	 */
+	protected void setUp() throws Exception {
+		super.setUp();
+		eventsToExpect = ((CompositeDiscoveryContainer) discoveryLocator).getDiscoveryContainers().size();
+	}
+	
 //
 //	protected void addServiceListener(TestServiceListener serviceListener) {
 //		discoveryContainer.addServiceListener(serviceListener);

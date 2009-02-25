@@ -16,9 +16,9 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
-import org.eclipse.ecf.tests.discovery.DiscoveryTest;
+import org.eclipse.ecf.tests.discovery.DiscoveryContainerTest;
 
-public class CompositeDiscoveryContainerTest extends DiscoveryTest {
+public class CompositeDiscoveryContainerTest extends DiscoveryContainerTest {
 
 	private TestDiscoveryContainer testDiscoveryContainer;
 
@@ -36,7 +36,7 @@ public class CompositeDiscoveryContainerTest extends DiscoveryTest {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		eventsToExpect = ((CompositeDiscoveryContainer) discoveryContainer).getDiscoveryContainers().size();
+		eventsToExpect = ((CompositeDiscoveryContainer) discoveryLocator).getDiscoveryContainers().size();
 	}
 
 	/**
@@ -45,47 +45,45 @@ public class CompositeDiscoveryContainerTest extends DiscoveryTest {
 	 */
 	public void testAddContainerWithRegisteredServices() throws ContainerConnectException {
 		try {
-			container.connect(null, null);
 			try {
-				discoveryContainer.registerService(serviceInfo);
+				discoveryAdvertiser.registerService(serviceInfo);
 			} catch (ECFRuntimeException e) {
 				fail("Registering a service failed on a new IDCA");
 			}
-			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryContainer;
+			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryLocator;
 			testDiscoveryContainer = new TestDiscoveryContainer();
 			assertTrue(cdc.addContainer(testDiscoveryContainer));
 			List registeredServices = testDiscoveryContainer.getRegisteredServices();
 			assertEquals("registerService(aService) wasn't called on TestDiscoveryContainer", serviceInfo, registeredServices.get(0));
 		} finally {
-			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryContainer;
+			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryLocator;
 			assertTrue(cdc.removeContainer(testDiscoveryContainer));
 		}
 	}
 
 	public void testAddContainerWithoutRegisteredServices() throws ContainerConnectException {
 		try {
-			container.connect(null, null);
 			try {
-				discoveryContainer.registerService(serviceInfo);
-				discoveryContainer.unregisterService(serviceInfo);
+				discoveryAdvertiser.registerService(serviceInfo);
+				discoveryAdvertiser.unregisterService(serviceInfo);
 			} catch (ECFRuntimeException e) {
 				fail("Re-/Unregistering a service failed on a new IDCA");
 			}
-			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryContainer;
+			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryLocator;
 			testDiscoveryContainer = new TestDiscoveryContainer();
 			assertTrue(cdc.addContainer(testDiscoveryContainer));
 			List registeredServices = testDiscoveryContainer.getRegisteredServices();
 			assertTrue(registeredServices.isEmpty());
 		} finally {
-			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryContainer;
+			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryLocator;
 			assertTrue(cdc.removeContainer(testDiscoveryContainer));
 		}
 	}
 
 //	protected void addServiceListener(TestServiceListener serviceListener) {
-//		discoveryContainer.addServiceListener(serviceListener);
+//		discoveryLocator.addServiceListener(serviceListener);
 //		addListenerRegisterAndWait(serviceListener, serviceInfo);
-//		discoveryContainer.removeServiceListener(serviceListener);
+//		discoveryLocator.removeServiceListener(serviceListener);
 //		IContainerEvent[] events = serviceListener.getEvent();
 //		assertNotNull("Test listener didn't receive discovery", events);
 //		assertEquals("Test listener received more than expected discovery event", eventsToExpect, events.length);
