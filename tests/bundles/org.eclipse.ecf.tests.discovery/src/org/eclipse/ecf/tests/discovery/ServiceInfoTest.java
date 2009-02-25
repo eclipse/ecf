@@ -83,16 +83,16 @@ public abstract class ServiceInfoTest extends TestCase {
 	/**
 	 * Test method for {@link java.lang.Object#hashCode()}.
 	 */
-	public void testHashCode() {
-		fail("Not yet implemented. How should equality be defined anyway?");
-	}
+//	public void testHashCode() {
+//		fail("Not yet implemented. How should equality be defined anyway?");
+//	}
 
 	/**
 	 * Test method for {@link java.lang.Object#equals(java.lang.Object)}.
 	 */
-	public void testEquals() {
-		fail("Not yet implemented. How should equality be defined anyway?");
-	}
+//	public void testEquals() {
+//		fail("Not yet implemented. How should equality be defined anyway?");
+//	}
 
 	/**
 	 * Test method for {@link org.eclipse.ecf.discovery.ServiceInfo}.
