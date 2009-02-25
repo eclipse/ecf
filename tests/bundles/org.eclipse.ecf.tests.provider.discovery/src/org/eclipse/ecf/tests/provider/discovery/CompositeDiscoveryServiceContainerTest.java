@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.discovery;
 
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
 import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
