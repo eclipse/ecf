@@ -18,6 +18,8 @@ import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
  * OSGI discovery service interface.  This interface should be registered
  * by providers when they wish to expose discovery services to OSGI
  * service clients.
+ * 
+ * @deprecated use IDiscoveryLocator and IDiscoveryContainer instead
  */
 public interface IDiscoveryService extends IDiscoveryContainerAdapter {
 	// All methods provided by superclass

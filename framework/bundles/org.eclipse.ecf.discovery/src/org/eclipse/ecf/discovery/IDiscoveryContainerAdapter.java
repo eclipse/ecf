@@ -9,10 +9,6 @@
 
 package org.eclipse.ecf.discovery;
 
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.discovery.identity.*;
-
 /**
  * Entry point discovery container adapter. This interface exposes the ability
  * to add/remove listeners for newly discovered services and service types,
@@ -26,137 +22,9 @@ import org.eclipse.ecf.discovery.identity.*;
  * proceed to use this interface to interact with the given discovery
  * implementation.
  * 
+ * @deprecated Use IDisocveryLocator and IDisocveryAdvertiser instead
  */
-public interface IDiscoveryContainerAdapter extends IAdaptable {
+public interface IDiscoveryContainerAdapter extends IDiscoveryLocator,
+		IDiscoveryAdvertiser {
 
-	/**
-	 * Add a service listener. The given listener will have its method called
-	 * when a service is discovered.
-	 * 
-	 * @param listener
-	 *            IServiceListener to be notified. Must not be <code>null</code>.
-	 */
-	public void addServiceListener(IServiceListener listener);
-
-	/**
-	 * Add a service listener. The given listener will have its method called
-	 * when a service with a type matching that specified by the first parameter
-	 * is discovered.
-	 * 
-	 * @param type
-	 *            String type to listen for. Must not be <code>null</code>.
-	 *            Must be formatted according to this specific IDiscoveryContainer
-	 * @param listener
-	 *            IServiceListener to be notified. Must not be <code>null</code>.
-	 */
-	public void addServiceListener(IServiceTypeID type, IServiceListener listener);
-
-	/**
-	 * Add a service type listener. The given listener will have its method
-	 * called when a service type is discovered.
-	 * 
-	 * @param listener
-	 *            the listener to be notified. Must not be <code>null</code>.
-	 */
-	public void addServiceTypeListener(IServiceTypeListener listener);
-
-	/**
-	 * Synchronously retrieve info about the service
-	 * 
-	 * @param service
-	 *            IServiceID of the service to get info about. Must not be
-	 *            <code>null</code>.
-	 * @return IServiceInfo the service info retrieved. <code>null</code> if
-	 *         no information retrievable.
-	 */
-	public IServiceInfo getServiceInfo(IServiceID service);
-
-	/**
-	 * Synchronously get service info about all known services
-	 * 
-	 * @return IServiceInfo[] the resulting array of service info instances.
-	 *         Will not be <code>null</code>. May be of length 0.
-	 */
-	public IServiceInfo[] getServices();
-
-	/**
-	 * Synchronously get service info about all known services of given service type
-	 * 
-	 * @param type
-	 *            IServiceTypeID defining the type of service we are interested in
-	 *            getting service info about. Must not be <code>null</code>
-	 * @return IServiceInfo[] the resulting array of service info instances.
-	 *         Will not be <code>null</code>. May be of length 0.
-	 */
-	public IServiceInfo[] getServices(IServiceTypeID type);
-
-	/**
-	 * Get a Namespace for services associated with this discovery container adapter.  The given Namespace
-	 * may be used via {@link ServiceIDFactory} to create IServiceIDs rather than simple IDs.  For example:
-	 * <pre>
-	 * IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(container.getServicesNamespace(),serviceType,serviceName);
-	 * </pre>
-	 * 
-	 * @return Namespace for creating service IDs.  Will not be <code>null</code>.
-	 */
-	public Namespace getServicesNamespace();
-
-	/**
-	 * Synchronously get service info about all known services of given service type
-	 * 
-	 * @return IServiceTypeID[] the resulting array of service type IDs.
-	 *         Will not be <code>null</code>. May be of length 0.
-	 */
-	public IServiceTypeID[] getServiceTypes();
-
-	/**
-	 * Register the given service. This publishes the service defined by the
-	 * first parameter to the underlying publishing mechanism
-	 * 
-	 * @param serviceInfo
-	 *            IServiceInfo of the service to be published. Must not be
-	 *            <code>null</code>.
-	 */
-	public void registerService(IServiceInfo serviceInfo);
-
-	/**
-	 * Remove a service listener. Remove the listener from this container
-	 * 
-	 * @param listener
-	 *            IServiceListener listener to be removed. Must not be
-	 *            <code>null</code>.
-	 */
-	public void removeServiceListener(IServiceListener listener);
-
-	/**
-	 * Remove a service listener. Remove the listener associated with the type
-	 * specified by the first parameter.
-	 * 
-	 * @param type
-	 *            String of the desired type to remove the listener. Must not be
-	 *            <code>null</code>.
-	 *            Must be formatted according to this specific IDiscoveryContainer
-	 * @param listener
-	 *            IServiceListener listener to be removed. Must not be
-	 *            <code>null</code>.
-	 */
-	public void removeServiceListener(IServiceTypeID type, IServiceListener listener);
-
-	/**
-	 * Remove a service type listener. Remove the type listener.
-	 * 
-	 * @param listener
-	 *            IServiceTypeListener to be removed. Must not be
-	 *            <code>null</code>.
-	 */
-	public void removeServiceTypeListener(IServiceTypeListener listener);
-
-	/**
-	 * Unregister a previously registered service defined by serviceInfo.
-	 * 
-	 * @param serviceInfo
-	 *            IServiceInfo defining the service to unregister. Must not be
-	 *            <code>null</code>.
-	 */
-	public void unregisterService(IServiceInfo serviceInfo);
 }

@@ -12,14 +12,18 @@ package org.eclipse.ecf.discovery;
 
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.discovery.DiscoveryDebugOption;
 import org.eclipse.ecf.internal.discovery.DiscoveryPlugin;
+import org.eclipse.equinox.concurrent.future.*;
 
-public abstract class AbstractDiscoveryContainerAdapter extends AbstractContainer implements IDiscoveryContainerAdapter {
+public abstract class AbstractDiscoveryContainerAdapter extends
+		AbstractContainer implements IDiscoveryLocator, IDiscoveryAdvertiser {
 
 	/**
 	 * Collection of service listeners i.e. Collection<IServiceListener>.
@@ -234,5 +238,73 @@ public abstract class AbstractDiscoveryContainerAdapter extends AbstractContaine
 	public void removeServiceTypeListener(IServiceTypeListener aListener) {
 		Assert.isNotNull(aListener);
 		serviceTypeListeners.remove(aListener);
+	}
+
+	/**
+	 * @see org.eclipse.ecf.discovery.IDiscoveryAdvertiser#unregisterAllServices()
+	 * @since 3.0
+	 */
+	public void unregisterAllServices() {
+		throw new UnsupportedOperationException("Not yet implemeted"); //$NON-NLS-1$
+	}
+
+	/**
+	 * @see org.eclipse.ecf.discovery.IDiscoveryLocator#purgeCache()
+	 * @since 3.0
+	 */
+	public IServiceInfo[] purgeCache() {
+		return new IServiceInfo[] {};
+	}
+
+	/**
+	 * @see org.eclipse.ecf.discovery.IDiscoveryLocator#getAsyncServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID)
+	 * @since 3.0
+	 */
+	public IFuture getAsyncServiceInfo(final IServiceID service) {
+		IExecutor executor = new ThreadsExecutor();
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getServiceInfo(service);
+			}
+		}, null);
+	}
+
+	/**
+	 * @see org.eclipse.ecf.discovery.IDiscoveryLocator#getAsyncServiceTypes()
+	 * @since 3.0
+	 */
+	public IFuture getAsyncServiceTypes() {
+		IExecutor executor = new ThreadsExecutor();
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getServiceTypes();
+			}
+		}, null);
+	}
+
+	/**
+	 * @see org.eclipse.ecf.discovery.IDiscoveryLocator#getAsyncServices()
+	 * @since 3.0
+	 */
+	public IFuture getAsyncServices() {
+		IExecutor executor = new ThreadsExecutor();
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getServices();
+			}
+		}, null);
+	}
+
+	/**
+	 * @see org.eclipse.ecf.discovery.IDiscoveryLocator#getAsyncServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)
+	 * @since 3.0
+	 */
+	public IFuture getAsyncServices(final IServiceTypeID type) {
+		IExecutor executor = new ThreadsExecutor();
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getServices(type);
+			}
+		}, null);
 	}
 }
