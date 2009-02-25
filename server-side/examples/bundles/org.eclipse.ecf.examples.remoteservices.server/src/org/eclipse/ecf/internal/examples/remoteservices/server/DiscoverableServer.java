@@ -18,7 +18,6 @@ import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
@@ -51,7 +50,7 @@ public class DiscoverableServer implements IApplication {
 
 	private IServiceInfo serviceInfo;
 
-	private IDiscoveryService discoveryService;
+	private IDiscoveryAdvertiser discoveryService;
 
 	private boolean done = false;
 

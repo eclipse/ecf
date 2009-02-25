@@ -11,7 +11,7 @@
 
 package org.eclipse.ecf.internal.examples.remoteservices.server;
 
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
@@ -49,12 +49,12 @@ public class Activator implements BundleActivator {
 		return (EnvironmentInfo) environmentInfoTracker.getService();
 	}
 
-	public IDiscoveryService getDiscoveryService(int waittime) throws InterruptedException {
+	public IDiscoveryAdvertiser getDiscoveryService(int waittime) throws InterruptedException {
 		if (discoveryTracker == null) {
 			discoveryTracker = new ServiceTracker(context, filter, null);
 			discoveryTracker.open();
 		}
-		return (IDiscoveryService) discoveryTracker.waitForService(waittime);
+		return (IDiscoveryAdvertiser) discoveryTracker.waitForService(waittime);
 	}
 
 	/*
@@ -64,7 +64,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
-		filter = context.createFilter("(&(" + Constants.OBJECTCLASS + "=" + IDiscoveryService.class.getName() + ")(" + IDiscoveryService.CONTAINER_NAME + "=ecf.discovery.composite))"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		filter = context.createFilter("(&(" + Constants.OBJECTCLASS + "=" + IDiscoveryAdvertiser.class.getName() + ")(" + IDiscoveryAdvertiser.CONTAINER_NAME + "=ecf.discovery.composite))"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 		// create and start discoverable server
 		//discoverableServer = new DiscoverableServer();
