@@ -13,6 +13,7 @@
 package org.eclipse.ecf.tests.discovery;
 
 
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.discovery.IServiceEvent;
@@ -20,23 +21,31 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.tests.discovery.listener.TestServiceListener;
 import org.eclipse.ecf.tests.discovery.listener.TestServiceTypeListener;
+import org.eclipse.equinox.concurrent.future.IFuture;
 
 public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 
+	protected long waitTimeForProvider = 1000;
+	protected int eventsToExpect = 1;
+	
 	public DiscoveryTest(String name) {
 		super(name);
 	}
 	
+	protected void setWaitTimeForProvider(long aWaitTimeForProvider) {
+		this.waitTimeForProvider = aWaitTimeForProvider + (aWaitTimeForProvider * 1 / 2);
+	}
+
 	protected void registerService(IServiceInfo serviceInfo) throws Exception {
 		assertNotNull(serviceInfo);
-		assertNotNull(discoveryContainer);
-		discoveryContainer.registerService(serviceInfo);
+		assertNotNull(discoveryAdvertiser);
+		discoveryAdvertiser.registerService(serviceInfo);
 	}
 
 	protected void unregisterService(IServiceInfo serviceInfo) throws Exception {
 		assertNotNull(serviceInfo);
-		assertNotNull(discoveryContainer);
-		discoveryContainer.unregisterService(serviceInfo);
+		assertNotNull(discoveryAdvertiser);
+		discoveryAdvertiser.unregisterService(serviceInfo);
 	}
 
 	/*
@@ -44,15 +53,13 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	protected void tearDown() throws Exception {
-		discoveryContainer.unregisterService(serviceInfo);
-		container.disconnect();
-		container.dispose();
+		discoveryAdvertiser.unregisterService(serviceInfo);
 		super.tearDown();
 	}
 
 	protected void registerService() {
 		try {
-			discoveryContainer.registerService(serviceInfo);
+			discoveryAdvertiser.registerService(serviceInfo);
 		} catch (final ECFRuntimeException e) {
 			fail("IServiceInfo may be valid with this IDCA");
 		}
@@ -60,7 +67,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 
 	protected void unregisterService() {
 		try {
-			discoveryContainer.unregisterService(serviceInfo);
+			discoveryAdvertiser.unregisterService(serviceInfo);
 		} catch (final ECFRuntimeException e) {
 			fail("unregistering of " + serviceInfo + " should just work");
 		}
@@ -80,12 +87,11 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	}
 
 	protected void addServiceListener(TestServiceListener serviceListener) {
-		discoveryContainer.addServiceListener(serviceListener);
+		discoveryLocator.addServiceListener(serviceListener);
 		addListenerRegisterAndWait(serviceListener, serviceInfo);
-		discoveryContainer.removeServiceListener(serviceListener);
+		discoveryLocator.removeServiceListener(serviceListener);
 		assertNotNull("Test listener didn't receive discovery", serviceListener.getEvent());
 		assertEquals("Test listener received more than expected discovery event", eventsToExpect, serviceListener.getEvent().length);
-		assertTrue("Container mismatch", serviceListener.getEvent()[eventsToExpect - 1].getLocalContainerID().equals(container.getConnectedID()));
 		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) serviceListener.getEvent()[eventsToExpect - 1]).getServiceInfo(), serviceInfo) == 0);
 	}
 
@@ -95,9 +101,8 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testGetServiceInfo() throws ContainerConnectException {
-		container.connect(null, null);
 		registerService();
-		final IServiceInfo info = discoveryContainer.getServiceInfo(serviceInfo.getServiceID());
+		final IServiceInfo info = discoveryLocator.getServiceInfo(serviceInfo.getServiceID());
 		assertTrue("IServiceInfo should match, expected:\n" + serviceInfo + " but:\n" + info, comparator.compare(info, serviceInfo) == 0);
 	}
 
@@ -107,10 +112,16 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testGetServiceTypes() throws ContainerConnectException {
-		container.connect(null, null);
 		registerService();
-		final IServiceTypeID[] serviceTypeIDs = discoveryContainer.getServiceTypes();
-		assertTrue(serviceTypeIDs.length > 0);
+		final IServiceTypeID[] serviceTypeIDs = discoveryLocator.getServiceTypes();
+		assertTrue(serviceTypeIDs.length >= 1);
+		for (int i = 0; i < serviceTypeIDs.length; i++) {
+			IServiceTypeID iServiceTypeId = serviceTypeIDs[i];
+			if(serviceInfo.getServiceID().getServiceTypeID().equals(iServiceTypeId)) {
+				return;
+			}
+		}
+		fail("Self registered service not found");
 	}
 
 	/**
@@ -119,10 +130,16 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testGetServices() throws ContainerConnectException {
-		container.connect(null, null);
 		registerService();
-		final IServiceInfo[] services = discoveryContainer.getServices();
+		final IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue(services.length >= 1);
+		for (int i = 0; i < services.length; i++) {
+			IServiceInfo iServiceInfo = services[i];
+			if(comparator.compare(iServiceInfo, serviceInfo) == 0) {
+				return;
+			}
+		}
+		fail("Self registered service not found");
 	}
 
 	/**
@@ -131,10 +148,16 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testGetServicesIServiceTypeID() throws ContainerConnectException {
-		container.connect(null, null);
 		registerService();
-		final IServiceInfo serviceInfos[] = discoveryContainer.getServices(serviceInfo.getServiceID().getServiceTypeID());
-		assertTrue(serviceInfos.length > 0);
+		final IServiceInfo serviceInfos[] = discoveryLocator.getServices(serviceInfo.getServiceID().getServiceTypeID());
+		assertTrue(serviceInfos.length >= 1);
+		for (int i = 0; i < serviceInfos.length; i++) {
+			IServiceInfo iServiceInfo = serviceInfos[i];
+			if(comparator.compare(iServiceInfo, serviceInfo) == 0) {
+				return;
+			}
+		}
+		fail("Self registered service not found");
 	}
 
 	/**
@@ -143,9 +166,8 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testRegisterService() throws ContainerConnectException {
-		container.connect(null, null);
 		registerService();
-		final IServiceInfo[] services = discoveryContainer.getServices();
+		final IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue(services.length >= 1);
 		for (int i = 0; i < services.length; i++) {
 			final IServiceInfo service = services[i];
@@ -164,7 +186,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	public void testUnregisterService() throws ContainerConnectException {
 		testRegisterService();
 		unregisterService();
-		final IServiceInfo[] services = discoveryContainer.getServices();
+		final IServiceInfo[] services = discoveryLocator.getServices();
 		for (int i = 0; i < services.length; i++) {
 			final IServiceInfo service = services[i];
 			if (comparator.compare(service, serviceInfo) == 0) {
@@ -179,8 +201,9 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testAddServiceListenerIServiceListener() throws ContainerConnectException {
-		container.connect(null, null);
-		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
+		IServiceInfo[] services = discoveryLocator.getServices();
+		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
+
 		final TestServiceListener tsl = new TestServiceListener(eventsToExpect);
 		addServiceListener(tsl);
 	}
@@ -191,17 +214,16 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testAddServiceListenerIServiceTypeIDIServiceListener() throws ContainerConnectException {
-		container.connect(null, null);
-		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
+		IServiceInfo[] services = discoveryLocator.getServices();
+		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
 		final TestServiceListener tsl = new TestServiceListener(eventsToExpect);
-		discoveryContainer.addServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
+		discoveryLocator.addServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		addListenerRegisterAndWait(tsl, serviceInfo);
-		discoveryContainer.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
+		discoveryLocator.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		
 		assertNotNull("Test listener didn't receive discovery", tsl.getEvent());
 		assertEquals("Test listener received more than expected discovery event", eventsToExpect, tsl.getEvent().length);
-		assertTrue("Container mismatch", tsl.getEvent()[eventsToExpect - 1].getLocalContainerID().equals(container.getConnectedID()));
 		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) tsl.getEvent()[eventsToExpect - 1]).getServiceInfo(), serviceInfo) == 0);
 	}
 
@@ -211,11 +233,11 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testAddServiceTypeListener() throws ContainerConnectException {
-		container.connect(null, null);
-		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
+		IServiceInfo[] services = discoveryLocator.getServices();
+		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
 		final TestServiceTypeListener testTypeListener = new TestServiceTypeListener(eventsToExpect);
-		discoveryContainer.addServiceTypeListener(testTypeListener);
+		discoveryLocator.addServiceTypeListener(testTypeListener);
 
 		synchronized (testTypeListener) {
 			// register a service which we expect the test listener to get notified of
@@ -228,11 +250,10 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 			}
 		}
 		
-		discoveryContainer.removeServiceTypeListener(testTypeListener);
+		discoveryLocator.removeServiceTypeListener(testTypeListener);
 		
 		assertNotNull("Test listener didn't receive discovery", testTypeListener.getEvent());
 		assertEquals("Test listener received more than expected discovery event", eventsToExpect, testTypeListener.getEvent().length);
-		assertTrue("Container mismatch", testTypeListener.getEvent()[eventsToExpect - 1].getLocalContainerID().equals(container.getConnectedID()));
 	}
 	
 
@@ -242,7 +263,6 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testRemoveServiceListenerIServiceListener() throws ContainerConnectException {
-		container.connect(null, null);
 		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect);
 		addServiceListener(serviceListener);
 		//TODO reregister and verify the listener doesn't receive any events any longer.
@@ -254,7 +274,6 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testRemoveServiceListenerIServiceTypeIDIServiceListener() throws ContainerConnectException {
-		container.connect(null, null);
 		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect);
 		addServiceListener(serviceListener);
 		//TODO reregister and verify the listener doesn't receive any events any longer.
@@ -266,11 +285,10 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testRemoveServiceTypeListener() throws ContainerConnectException {
-		container.connect(null, null);
-		assertTrue("No Services must be registerd at this point", discoveryContainer.getServices().length == 0);
+		assertTrue("No Services must be registerd at this point", discoveryLocator.getServices().length == 0);
 
 		final TestServiceTypeListener testTypeListener = new TestServiceTypeListener(eventsToExpect);
-		discoveryContainer.addServiceTypeListener(testTypeListener);
+		discoveryLocator.addServiceTypeListener(testTypeListener);
 
 		synchronized (testTypeListener) {
 			// register a service which we expect the test listener to get notified of
@@ -283,13 +301,96 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 			}
 		}
 		
-		discoveryContainer.removeServiceTypeListener(testTypeListener);
+		discoveryLocator.removeServiceTypeListener(testTypeListener);
 		
 		assertNotNull("Test listener didn't receive discovery", testTypeListener.getEvent());
 		assertEquals("Test listener received more than expected discovery event", eventsToExpect, testTypeListener.getEvent().length);
-		assertTrue("Container mismatch", testTypeListener.getEvent()[eventsToExpect - 1].getLocalContainerID().equals(container.getConnectedID()));
 		
 		//TODO reregister and verify the listener doesn't receive any events any longer.
 	}
 
+	/**
+	 * Test method for
+	 * {@link org.eclipse.ecf.discovery.IDiscoveryLocator#getAsyncServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID)}.
+	 * @throws InterruptedException 
+	 * @throws OperationCanceledException 
+	 * @throws ContainerConnectException 
+	 */
+	public void testGetAsyncServiceInfo() throws OperationCanceledException, InterruptedException, ContainerConnectException {
+		registerService();
+		final IFuture aFuture = discoveryLocator.getAsyncServiceInfo(serviceInfo.getServiceID());
+		final Object object = aFuture.get();
+		assertTrue(object instanceof IServiceInfo);
+		final IServiceInfo info = (IServiceInfo) object;
+		assertTrue("IServiceInfo should match, expected:\n" + serviceInfo + " but:\n" + info, comparator.compare(info, serviceInfo) == 0);
+	}
+	
+	/**
+	 * Test method for
+	 * {@link org.eclipse.ecf.discovery.IDiscoveryLocator#getAsyncServices()}.
+	 * @throws ContainerConnectException 
+	 * @throws InterruptedException 
+	 * @throws OperationCanceledException 
+	 */
+	public void testGetAsyncServices() throws ContainerConnectException, OperationCanceledException, InterruptedException {
+		registerService();
+		final IFuture aFuture = discoveryLocator.getAsyncServices();
+		final Object object = aFuture.get();
+		assertTrue(object instanceof IServiceInfo[]);
+		final IServiceInfo[] services = (IServiceInfo[]) object;
+		assertTrue("Found: " + services.length, services.length == eventsToExpect);
+		for (int i = 0; i < services.length; i++) {
+			IServiceInfo iServiceInfo = services[i];
+			if(comparator.compare(iServiceInfo, serviceInfo) == 0) {
+				return;
+			}
+		}
+		fail("Self registered service not found");
+	}
+	
+	/**
+	 * Test method for
+	 * {@link org.eclipse.ecf.discovery.IDiscoveryLocator#getAsyncServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)}.
+	 * @throws ContainerConnectException 
+	 * @throws InterruptedException 
+	 * @throws OperationCanceledException 
+	 */
+	public void testGetAsyncServicesIServiceTypeID() throws ContainerConnectException, OperationCanceledException, InterruptedException {
+		registerService();
+		final IFuture aFuture = discoveryLocator.getAsyncServices(serviceInfo.getServiceID().getServiceTypeID());
+		final Object object = aFuture.get();
+		assertTrue(object instanceof IServiceInfo[]);
+		final IServiceInfo[] services = (IServiceInfo[]) object;
+		assertTrue("Found: " + services.length, services.length == eventsToExpect);
+		for (int i = 0; i < services.length; i++) {
+			IServiceInfo iServiceInfo = services[i];
+			if(comparator.compare(iServiceInfo, serviceInfo) == 0) {
+				return;
+			}
+		}
+		fail("Self registered service not found");
+	}
+	
+	/**
+	 * Test method for
+	 * {@link org.eclipse.ecf.discovery.IDiscoveryLocator#getAsyncServiceTypes()}.
+	 * @throws ContainerConnectException 
+	 * @throws InterruptedException 
+	 * @throws OperationCanceledException 
+	 */
+	public void testGetAsyncServiceTypes() throws ContainerConnectException, OperationCanceledException, InterruptedException {
+		registerService();
+		final IFuture aFuture = discoveryLocator.getAsyncServiceTypes();
+		final Object object = aFuture.get();
+		assertTrue(object instanceof IServiceTypeID[]);
+		final IServiceTypeID[] services = (IServiceTypeID[]) object;
+		assertTrue("Found: " + services.length, services.length == eventsToExpect);
+		for (int i = 0; i < services.length; i++) {
+			IServiceTypeID iServiceTypeId = services[i];
+			if(serviceInfo.getServiceID().getServiceTypeID().equals(iServiceTypeId)) {
+				return;
+			}
+		}
+		fail("Self registered service not found");
+	}
 }

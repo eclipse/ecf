@@ -11,58 +11,34 @@
 
 package org.eclipse.ecf.tests.discovery;
 
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
-import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 
 public abstract class DiscoveryServiceTest extends DiscoveryTest {
 
-	private static final String NO_PROVIDER_REGISTERED = "No discovery provider by that name seems to be registered";
-
-	/**
-	 * @param name
-	 */
 	public DiscoveryServiceTest(String name) {
 		super(name);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#getAdapter(java.lang.Class)
+	 * @see org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest#setUp()
 	 */
-	protected IDiscoveryContainerAdapter getAdapter(Class notNeeded) {
-		final ServiceTracker serviceTracker = Activator.getDefault().getDiscoveryServiceTracker();
-		assertNotNull(NO_PROVIDER_REGISTERED, serviceTracker);
-		final ServiceReference[] serviceReferences = serviceTracker.getServiceReferences();
-		assertNotNull(NO_PROVIDER_REGISTERED, serviceReferences);
-		for(int i = 0; i < serviceReferences.length; i++) {
-			ServiceReference sr = serviceReferences[i];
-			if(containerUnderTest.equals(sr.getProperty(IDiscoveryService.CONTAINER_NAME))) {
-				return (IDiscoveryContainerAdapter) serviceTracker.getService(sr);
-			}
-		}
-		fail(NO_PROVIDER_REGISTERED);
-		return null;
+	protected void setUp() throws Exception {
+		super.setUp();
+		discoveryLocator.purgeCache();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#getContainer(java.lang.String)
+	 * @see org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest#getDiscoveryLocator()
 	 */
-	protected IContainer getContainer(String containerUnderTest)
-			throws ContainerCreateException {
-		IContainer container = (IContainer) getAdapter(null);
-		// we might get a pre used container but the tests expect a fresh instance
-		container.disconnect();
-		return container;
+	protected IDiscoveryLocator getDiscoveryLocator() {
+		return Activator.getDefault().getDiscoveryLocator(containerUnderTest);
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest#getDiscoveryLocator()
 	 */
-	protected void tearDown() throws Exception {
-		discoveryContainer.unregisterService(serviceInfo);
+	protected IDiscoveryAdvertiser getDiscoveryAdvertiser() {
+		return Activator.getDefault().getDiscoveryAdvertiser(containerUnderTest);
 	}
 }

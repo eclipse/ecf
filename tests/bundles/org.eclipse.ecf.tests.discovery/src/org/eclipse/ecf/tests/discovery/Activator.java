@@ -10,9 +10,12 @@
  *****************************************************************************/
 package org.eclipse.ecf.tests.discovery;
 
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -26,7 +29,8 @@ public class Activator implements BundleActivator {
 	// The shared instance
 	private static Activator plugin;
 
-	private ServiceTracker tracker;
+	private ServiceTracker locatorTracker;
+	private ServiceTracker advertiserTracker;
 
 	private BundleContext context;
 
@@ -37,8 +41,10 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext aContext) throws Exception {
 		plugin = this;
 		context = aContext;
-		tracker = new ServiceTracker(aContext, IDiscoveryService.class.getName(), null);
-		tracker.open();
+		locatorTracker = new ServiceTracker(aContext, IDiscoveryLocator.class.getName(), null);
+		locatorTracker.open();
+		advertiserTracker = new ServiceTracker(aContext, IDiscoveryAdvertiser.class.getName(), null);
+		advertiserTracker.open();
 	}
 
 	/*
@@ -46,9 +52,13 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		if (tracker != null) {
-			tracker.close();
-			tracker = null;
+		if (locatorTracker != null) {
+			locatorTracker.close();
+			locatorTracker = null;
+		}
+		if (advertiserTracker != null) {
+			advertiserTracker.close();
+			advertiserTracker = null;
 		}
 		plugin = null;
 	}
@@ -62,13 +72,28 @@ public class Activator implements BundleActivator {
 		return plugin;
 	}
 	
-	/**
-	 * @return Tracker for all IDiscoveryServices
-	 */
-	public ServiceTracker getDiscoveryServiceTracker() {
-		return tracker;
+	public IDiscoveryLocator getDiscoveryLocator(String containerUnderTest) {
+		final ServiceReference[] serviceReferences = locatorTracker.getServiceReferences();
+		for(int i = 0; i < serviceReferences.length; i++) {
+			ServiceReference sr = serviceReferences[i];
+			if(containerUnderTest.equals(sr.getProperty(IDiscoveryService.CONTAINER_NAME))) {
+				return (IDiscoveryLocator) locatorTracker.getService(sr);
+			}
+		}
+		return null;
 	}
 
+	public IDiscoveryAdvertiser getDiscoveryAdvertiser(String containerUnderTest) {
+		final ServiceReference[] serviceReferences = advertiserTracker.getServiceReferences();
+		for(int i = 0; i < serviceReferences.length; i++) {
+			ServiceReference sr = serviceReferences[i];
+			if(containerUnderTest.equals(sr.getProperty(IDiscoveryService.CONTAINER_NAME))) {
+				return (IDiscoveryAdvertiser) advertiserTracker.getService(sr);
+			}
+		}
+		return null;
+	}
+	
 	public BundleContext getContext() {
 		return context;
 	}

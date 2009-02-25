@@ -12,18 +12,49 @@ package org.eclipse.ecf.tests.discovery;
 
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
 
 public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTest {
-	
+	protected IContainer container = null;
+
 	public DiscoveryTestsWithoutRegister(String name) {
 		super(name);
 	}
 	
+	protected IDiscoveryLocator getDiscoveryLocator() {
+		final IDiscoveryLocator adapter = (IDiscoveryLocator) container.getAdapter(IDiscoveryLocator.class);
+		assertNotNull("Adapter must not be null", adapter);
+		return adapter;
+	}
+
+	protected IDiscoveryAdvertiser getDiscoveryAdvertiser() {
+		final IDiscoveryAdvertiser adapter = (IDiscoveryAdvertiser) container.getAdapter(IDiscoveryAdvertiser.class);
+		assertNotNull("Adapter must not be null", adapter);
+		return adapter;
+	}
+
+	protected IContainer getContainer(String containerUnderTest) throws ContainerCreateException {
+		return ContainerFactory.getDefault().createContainer(containerUnderTest);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest#setUp()
+	 */
+	protected void setUp() throws Exception {
+		container = getContainer(containerUnderTest);
+		assertNotNull(container);
+		super.setUp();
+	}
+
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#tearDown()
 	 */
@@ -70,7 +101,7 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 	 */
 	public void testGetServiceInfoWithNull() {
 		try {
-			discoveryContainer.getServiceInfo(null);
+			discoveryLocator.getServiceInfo(null);
 		} catch (final AssertionFailedException e) {
 			return;
 		}
@@ -79,11 +110,11 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#getServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)}.
 	 */
 	public void testGetServicesIServiceTypeIDWithNull() {
 		try {
-			discoveryContainer.getServices(null);
+			discoveryLocator.getServices(null);
 		} catch (final AssertionFailedException e) {
 			return;
 		}
@@ -92,12 +123,12 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)}.
 	 */
 	public void testUnregisterServiceWithNull() {
 		testConnect();
 		try {
-			discoveryContainer.unregisterService(null);
+			discoveryAdvertiser.unregisterService(null);
 		} catch (final ECFRuntimeException e) {
 			fail("null must cause AssertionFailedException");
 		} catch (final AssertionFailedException e) {
@@ -120,11 +151,11 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#addServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)}.
 	 */
 	public void testAddServiceTypeListenerWithNull() {
 		try {
-			discoveryContainer.addServiceTypeListener(null);
+			discoveryLocator.addServiceTypeListener(null);
 		} catch (final AssertionFailedException e) {
 			return;
 		}
@@ -151,11 +182,11 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServicesNamespace()}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#getServicesNamespace()}.
 	 */
 	public void testGetServicesNamespace() {
 		testConnect();
-		final Namespace namespace = discoveryContainer.getServicesNamespace();
+		final Namespace namespace = discoveryLocator.getServicesNamespace();
 		assertNotNull(namespace);
 		final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(namespace, serviceInfo.getServiceID().getServiceTypeID());
 		assertNotNull("It must be possible to obtain a IServiceID", serviceID);
@@ -163,11 +194,11 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#removeServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)}.
 	 */
 	public void testRemoveServiceTypeListenerWithNull() {
 		try {
-			discoveryContainer.removeServiceTypeListener(null);
+			discoveryLocator.removeServiceTypeListener(null);
 		} catch (final AssertionFailedException e) {
 			return;
 		}
@@ -177,12 +208,12 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)}.
 	 */
 	public void testRegisterServiceWithNull() {
 		testConnect();
 		try {
-			discoveryContainer.registerService(null);
+			discoveryAdvertiser.registerService(null);
 		} catch (final ECFRuntimeException e) {
 			fail("null must cause AssertionFailedException");
 		} catch (final AssertionFailedException e) {
@@ -193,11 +224,11 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.IServiceListener)}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#addServiceListener(org.eclipse.ecf.discovery.IServiceListener)}.
 	 */
 	public void testAddServiceListenerIServiceListenerWithNull() {
 		try {
-			discoveryContainer.addServiceListener(null);
+			discoveryLocator.addServiceListener(null);
 		} catch (final AssertionFailedException e) {
 			return;
 		}
@@ -206,11 +237,11 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#addServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)}.
 	 */
 	public void testAddServiceListenerIServiceTypeIDIServiceListenerWithNull() {
 		try {
-			discoveryContainer.addServiceListener(null, null);
+			discoveryLocator.addServiceListener(null, null);
 		} catch (final AssertionFailedException e) {
 			return;
 		}
@@ -219,11 +250,11 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(org.eclipse.ecf.discovery.IServiceListener)}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#removeServiceListener(org.eclipse.ecf.discovery.IServiceListener)}.
 	 */
 	public void testRemoveServiceListenerIServiceListenerWithNull() {
 		try {
-			discoveryContainer.removeServiceListener(null);
+			discoveryLocator.removeServiceListener(null);
 		} catch (final AssertionFailedException e) {
 			return;
 		}
@@ -232,11 +263,11 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)}.
+	 * {@link org.eclipse.ecf.discovery.IdiscoveryLocatorAdapter#removeServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)}.
 	 */
 	public void testRemoveServiceListenerIServiceTypeIDIServiceListenerWithNull() {
 		try {
-			discoveryContainer.removeServiceListener(null, null);
+			discoveryLocator.removeServiceListener(null, null);
 		} catch (final AssertionFailedException e) {
 			return;
 		}
