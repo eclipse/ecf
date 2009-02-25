@@ -320,6 +320,24 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	}
 
 	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#unregisterAllServices()
+	 */
+	public void unregisterAllServices() {
+		synchronized (registeredServices) {
+			synchronized (containers) {
+				for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+					final IDiscoveryAdvertiser idca = (IDiscoveryAdvertiser) itr.next();
+					for (Iterator itr2 = registeredServices.iterator(); itr2.hasNext();) {
+						final IServiceInfo serviceInfo = (IServiceInfo) itr2.next();
+						final IServiceInfo isi = getServiceInfoForDiscoveryContainer(serviceInfo, (IDiscoveryLocator) idca);
+						idca.unregisterService(isi);
+					}
+				}
+			}
+		}
+	}
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#purgeCache()
 	 */
 	public IServiceInfo[] purgeCache() {
