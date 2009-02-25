@@ -245,6 +245,13 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	}
 
 	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#unregisterAllServices()
+	 */
+	public void unregisterAllServices() {
+		jmdns.unregisterAllServices();
+	}
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#purgeCache()
 	 */
 	public IServiceInfo[] purgeCache() {
