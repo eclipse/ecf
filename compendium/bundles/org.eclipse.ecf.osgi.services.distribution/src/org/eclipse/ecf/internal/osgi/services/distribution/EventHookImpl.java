@@ -13,6 +13,7 @@ import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
@@ -105,10 +106,9 @@ public class EventHookImpl extends AbstractEventHookImpl {
 					.getContainerAdapter().registerRemoteService(
 							remoteInterfaces, getService(serviceReference),
 							getPropertiesForRemoteService(serviceReference));
-			trace("registerRemoteService",
-					"REGISTERED REMOTE SERVICE serviceReference="
-							+ serviceReference + " remoteRegistration="
-							+ remoteRegistration);
+			trace("registerRemoteService", "REGISTERED REMOTE SERVICE "
+					+ rscas[i] + " serviceReference=" + serviceReference
+					+ " remoteRegistration=" + remoteRegistration);
 			// Step 2
 			fireRemoteServiceRegistered(serviceReference, remoteRegistration);
 			// Step 3
@@ -168,11 +168,22 @@ public class EventHookImpl extends AbstractEventHookImpl {
 
 		// ECF remote service properties
 		// Specify container factory name
-		properties.put(Constants.SERVICE_CONTAINER_FACTORY_NAME, holder
-				.getContainerTypeDescription().getName());
-		properties.put(Constants.SERVICE_CONTAINER_CLASSNAME, holder
-				.getContainer().getClass().getName());
-		// Specify remote service id AS STRING
+		Namespace connectnamespace = holder.getContainer()
+				.getConnectNamespace();
+		if (connectnamespace != null)
+			properties.put(Constants.SERVICE_CONNECT_ID_NAMESPACE,
+					connectnamespace.getName());
+
+		Namespace idnamespace = holder.getContainer().getID().getNamespace();
+		if (idnamespace != null)
+			properties.put(Constants.SERVICE_IDFILTER_NAMESPACE, idnamespace
+					.getName());
+
+		Namespace rsnamespace = holder.getContainerAdapter()
+				.getRemoteServiceNamespace();
+		if (rsnamespace != null)
+			properties.put(Constants.SERVICE_NAMESPACE, rsnamespace.getName());
+
 		properties.put(Constants.SERVICE_ID, ((Long) remoteRegistration
 				.getProperty(Constants.SERVICE_ID)));
 
@@ -239,7 +250,9 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			ECFServiceConstants.OSGI_REMOTE_INTERFACES,
 			ECFServiceConstants.OSGI_REMOTE_REQUIRES_INTENTS,
 			ECFServiceConstants.OSGI_REMOTE,
-			ECFServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE });
+			ECFServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE,
+			// ECF constants
+			org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID, });
 
 	private boolean excludeRemoteServiceProperty(String string) {
 		if (excludedProperties.contains(string))

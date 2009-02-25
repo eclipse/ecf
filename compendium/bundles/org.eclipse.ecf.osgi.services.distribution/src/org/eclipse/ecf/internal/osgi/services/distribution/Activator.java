@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
+import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.distribution.DistributionProvider;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -25,13 +26,13 @@ public class Activator implements BundleActivator {
 	private static Activator plugin;
 	private BundleContext context;
 
-	private ServiceRegistration eventHookRegistration;
-	private ServiceRegistration distributionProviderRegistration;
-	private ServiceRegistration listenerHookRegistration;
+	private ServiceTracker containerManagerTracker;
 
 	private DistributionProviderImpl distributionProvider;
 
-	private ServiceTracker containerManagerTracker;
+	private ServiceRegistration eventHookRegistration;
+	private ServiceRegistration distributionProviderRegistration;
+	private ServiceRegistration discoveredServiceTrackerRegistration;
 
 	public static Activator getDefault() {
 		return plugin;
@@ -52,8 +53,16 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		this.context = ctxt;
 		this.distributionProvider = new DistributionProviderImpl();
+		addDiscoveredServiceTracker();
 		addServiceRegistryHooks();
 		addDistributionProvider();
+	}
+
+	private void addDiscoveredServiceTracker() {
+		this.discoveredServiceTrackerRegistration = this.context
+				.registerService(DiscoveredServiceTracker.class.getName(),
+						new DiscoveredServiceTrackerImpl(
+								this.distributionProvider), null);
 	}
 
 	private void addServiceRegistryHooks() {
@@ -64,9 +73,9 @@ public class Activator implements BundleActivator {
 
 		// register all existing services which have the marker property
 		try {
-			final ServiceReference[] refs = this.context
-					.getServiceReferences(null, "("
-							+ ECFServiceConstants.OSGI_REMOTE_INTERFACES + "=*)");
+			final ServiceReference[] refs = this.context.getServiceReferences(
+					null, "(" + ECFServiceConstants.OSGI_REMOTE_INTERFACES
+							+ "=*)");
 			if (refs != null) {
 				for (int i = 0; i < refs.length; i++) {
 					hook.handleRegisteredServiceEvent(refs[i], null);
@@ -97,16 +106,19 @@ public class Activator implements BundleActivator {
 			this.eventHookRegistration.unregister();
 			this.eventHookRegistration = null;
 		}
-		if (this.listenerHookRegistration != null) {
-			this.listenerHookRegistration.unregister();
-			this.listenerHookRegistration = null;
-		}
 	}
 
 	private void removeDistributionProvider() {
 		if (this.distributionProviderRegistration != null) {
 			this.distributionProviderRegistration.unregister();
 			this.distributionProviderRegistration = null;
+		}
+	}
+
+	private void removeDiscoveredServiceTracker() {
+		if (this.discoveredServiceTrackerRegistration != null) {
+			this.discoveredServiceTrackerRegistration.unregister();
+			this.discoveredServiceTrackerRegistration = null;
 		}
 	}
 
@@ -117,6 +129,7 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
+		removeDiscoveredServiceTracker();
 		removeDistributionProvider();
 		removeServiceRegistryHooks();
 		if (containerManagerTracker != null) {
