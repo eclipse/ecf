@@ -29,7 +29,7 @@ public class ServiceEndpointDescriptionImpl implements
 		this.serviceInfo = serviceInfo;
 		// add localContainerID to set of service properties exposed by this
 		this.serviceInfo.getServiceProperties().setProperty(
-				ECFServicePublication.CONTAINER_ID_PROP, localContainerID);
+				ECFServicePublication.DISCOVERY_CONTAINER_ID_PROP, localContainerID);
 	}
 
 	public String getEndpointID() {
