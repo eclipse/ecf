@@ -12,7 +12,7 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.osgi.services.distribution.ServiceConstants;
+import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.distribution.DistributionProvider;
@@ -66,7 +66,7 @@ public class Activator implements BundleActivator {
 		try {
 			final ServiceReference[] refs = this.context
 					.getServiceReferences(null, "("
-							+ ServiceConstants.OSGI_REMOTE_INTERFACES + "=*)");
+							+ ECFServiceConstants.OSGI_REMOTE_INTERFACES + "=*)");
 			if (refs != null) {
 				for (int i = 0; i < refs.length; i++) {
 					hook.handleRegisteredServiceEvent(refs[i], null);

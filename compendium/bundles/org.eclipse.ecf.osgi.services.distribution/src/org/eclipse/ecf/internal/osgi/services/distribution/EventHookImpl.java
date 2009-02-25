@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.*;
@@ -66,10 +67,29 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		RSCAHolder[] rscas = findRSCAHolders(serviceReference, ecfConfiguration);
 		// If there are relevant ones then actually register a remote service
 		// with them.
-		if (rscas == null) {
+		if (rscas == null || rscas.length == 0) {
 			trace("registerRemoteService",
 					"No remote service container adapters found for serviceReference="
 							+ serviceReference + " and configuration="
+							+ ecfConfiguration);
+			return;
+		}
+		// Get osgi.remote.requires.intents, and if it is set, verify that the
+		// selected container adapters support all required intents (i.e. via
+		// findRSCAHoldersSatisfyingRequiredIntents
+		String[] remoteRequiresIntents = (String[]) serviceReference
+				.getProperty(ECFServiceConstants.OSGI_REMOTE_REQUIRES_INTENTS);
+		if (remoteRequiresIntents != null) {
+			rscas = findRSCAHoldersSatisfyingRequiredIntents(rscas,
+					remoteRequiresIntents);
+		}
+		// We may not have any remaining, so we need to check again
+		if (rscas == null || rscas.length == 0) {
+			trace(
+					"registerRemoteService",
+					"No remote service container adapters found satisfying required intents for serviceReference="
+							+ serviceReference
+							+ " and configuration="
 							+ ecfConfiguration);
 			return;
 		}
@@ -83,10 +103,8 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			// Step 1
 			IRemoteServiceRegistration remoteRegistration = rscas[i]
 					.getContainerAdapter().registerRemoteService(
-							remoteInterfaces,
-							getService(serviceReference),
-							createPropertiesForRemoteService(rscas[i],
-									remoteInterfaces, serviceReference));
+							remoteInterfaces, getService(serviceReference),
+							getPropertiesForRemoteService(serviceReference));
 			trace("registerRemoteService",
 					"REGISTERED REMOTE SERVICE serviceReference="
 							+ serviceReference + " remoteRegistration="
@@ -99,12 +117,37 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		}
 	}
 
-	private void publishRemoteService(RSCAHolder holder, ServiceReference ref,
-			String[] remoteInterfaces,
+	private RSCAHolder[] findRSCAHoldersSatisfyingRequiredIntents(
+			RSCAHolder[] rscas, String[] remoteRequiresIntents) {
+		List results = new ArrayList();
+		for (int i = 0; i < rscas.length; i++) {
+			boolean include = true;
+			List supportedIntents = Arrays.asList(rscas[i]
+					.getContainerTypeDescription().getSupportedIntents());
+			for (int j = 0; j < remoteRequiresIntents.length; j++) {
+				if (!supportedIntents.contains(remoteRequiresIntents[j])) {
+					include = false;
+				}
+			}
+			if (include) {
+				trace("findRSCAHoldersSatisfyingRequiredIntents",
+						"INCLUDING container=" + rscas[i].getContainer()
+								+ " satisfying intents.  supported intents="
+								+ supportedIntents);
+				results.add(rscas[i]);
+			} else {
+				trace("findRSCAHoldersSatisfyingRequiredIntents",
+						"EXCLUDING container=" + rscas[i].getContainer()
+								+ " supported intents=" + supportedIntents);
+			}
+		}
+		return (RSCAHolder[]) results.toArray(new RSCAHolder[] {});
+	}
+
+	Dictionary getServicePublicationProperties(RSCAHolder holder,
+			ServiceReference ref, String[] remoteInterfaces,
 			IRemoteServiceRegistration remoteRegistration) {
-		// First create properties for new ServicePublication
-		final Dictionary properties = new Hashtable();
-		final BundleContext context = Activator.getDefault().getContext();
+		final Dictionary properties = new Properties();
 		// Set mandatory ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME
 		properties.put(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
 				getAsCollection(remoteInterfaces));
@@ -116,21 +159,33 @@ public class EventHookImpl extends AbstractEventHookImpl {
 
 		// Set optional ServicePublication.PROP_KEY_SERVICE_PROPERTIES
 		properties.put(ServicePublication.PROP_KEY_SERVICE_PROPERTIES,
-				getServiceProperties(ref));
+				getServicePropertiesForRemotePublication(ref));
 		// Set optional ServicePublication.PROP_KEY_ENDPOINT_ID to
 		// container.getID().toExternalForm()
 		IContainer container = holder.getContainer();
 		properties.put(ServicePublication.PROP_KEY_ENDPOINT_ID, container
 				.getID().toExternalForm());
 
-		// ECF remote service property
+		// ECF remote service properties
 		// Specify container factory name
 		properties.put(Constants.SERVICE_CONTAINER_FACTORY_NAME, holder
 				.getContainerTypeDescription().getName());
+		properties.put(Constants.SERVICE_CONTAINER_CLASSNAME, holder
+				.getContainer().getClass().getName());
 		// Specify remote service id AS STRING
 		properties.put(Constants.SERVICE_ID, ((Long) remoteRegistration
-				.getProperty(Constants.SERVICE_ID)).toString());
+				.getProperty(Constants.SERVICE_ID)));
 
+		return properties;
+	}
+
+	private void publishRemoteService(RSCAHolder holder, ServiceReference ref,
+			String[] remoteInterfaces,
+			IRemoteServiceRegistration remoteRegistration) {
+		// First create properties for new ServicePublication
+		final Dictionary properties = getServicePublicationProperties(holder,
+				ref, remoteInterfaces, remoteRegistration);
+		final BundleContext context = Activator.getDefault().getContext();
 		// Now, at long last, register the ServicePublication.
 		// The RFC 119 discovery should/will pick this up and send it out
 		ServiceRegistration reg = context.registerService(
@@ -152,47 +207,44 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		return result;
 	}
 
-	private Map getServiceProperties(final ServiceReference ref) {
-		Map map = (Map) ref
-				.getProperty(ServicePublication.PROP_KEY_SERVICE_PROPERTIES);
-		if (map == null)
-			map = new HashMap();
-		return map;
-	}
-
 	private Map parseECFConfigurationType(String[] remoteConfigurationType) {
 		Map results = new HashMap();
 		// TODO parse ecf configuration from remoteConfigurationType
 		return results;
 	}
 
-	protected Collection /* <? extends String> */registerRemoteService(
-			RSCAHolder[] rscas, String[] remoteInterfaces, ServiceReference sr) {
-		final ArrayList result = new ArrayList();
-		for (int i = 0; i < rscas.length; i++) {
-			IRemoteServiceRegistration remoteRegistration = rscas[i]
-					.getContainerAdapter().registerRemoteService(
-							remoteInterfaces,
-							getService(sr),
-							createPropertiesForRemoteService(rscas[i],
-									remoteInterfaces, sr));
-			trace("registerRemoteService",
-					"REGISTERED REMOTE SERVICE serviceReference=" + sr
-							+ " remoteRegistration=" + remoteRegistration);
-			result.add(remoteRegistration.getContainerID().toString());
-			fireRemoteServiceRegistered(sr, remoteRegistration);
-		}
-		return result;
-	}
-
-	protected Dictionary createPropertiesForRemoteService(RSCAHolder holder,
-			String[] remotes, ServiceReference sr) {
+	protected Dictionary getPropertiesForRemoteService(ServiceReference sr) {
 		String[] propKeys = sr.getPropertyKeys();
 		Properties newProps = new Properties();
 		for (int i = 0; i < propKeys.length; i++) {
-			newProps.put(propKeys[i], sr.getProperty(propKeys[i]));
+			if (!excludeRemoteServiceProperty(propKeys[i]))
+				newProps.put(propKeys[i], sr.getProperty(propKeys[i]));
 		}
 		return newProps;
+	}
+
+	protected Map getServicePropertiesForRemotePublication(ServiceReference sr) {
+		String[] propKeys = sr.getPropertyKeys();
+		Properties newProps = new Properties();
+		for (int i = 0; i < propKeys.length; i++) {
+			if (!excludeRemoteServiceProperty(propKeys[i]))
+				newProps.put(propKeys[i], sr.getProperty(propKeys[i]));
+		}
+		return newProps;
+	}
+
+	private static final List excludedProperties = Arrays.asList(new String[] {
+			org.osgi.framework.Constants.SERVICE_ID,
+			org.osgi.framework.Constants.OBJECTCLASS,
+			ECFServiceConstants.OSGI_REMOTE_INTERFACES,
+			ECFServiceConstants.OSGI_REMOTE_REQUIRES_INTENTS,
+			ECFServiceConstants.OSGI_REMOTE,
+			ECFServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE });
+
+	private boolean excludeRemoteServiceProperty(String string) {
+		if (excludedProperties.contains(string))
+			return true;
+		return false;
 	}
 
 	protected RSCAHolder[] findRSCAHolders(ServiceReference serviceReference,
