@@ -206,6 +206,17 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#purgeCache()
+	 */
+	public IServiceInfo[] purgeCache() {
+		if (discoveryJob != null) {
+			Collection oldCache = discoveryJob.purgeCache();
+			oldCache.toArray(new IServiceInfo[oldCache.size()]);
+		}
+		return super.purgeCache();
+	}
+
 	private IServiceInfo[] convertToIServiceInfo(Map serviceURLs) {
 		return convertToIServiceInfo(serviceURLs, new String[0]);
 	}

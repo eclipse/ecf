@@ -91,4 +91,10 @@ public final class JSLPDiscoveryJob extends Job {
 		}
 		return false;
 	}
+
+	public Collection purgeCache() {
+		Set unmodifiableSet = Collections.unmodifiableSet(services.entrySet());
+		services.clear();
+		return unmodifiableSet;
+	}
 }
