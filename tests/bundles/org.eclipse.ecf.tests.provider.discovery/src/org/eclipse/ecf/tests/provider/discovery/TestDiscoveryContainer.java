@@ -14,7 +14,13 @@ package org.eclipse.ecf.tests.provider.discovery;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerListener;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -24,7 +30,7 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
-public class TestDiscoveryContainer implements IDiscoveryLocator, IDiscoveryAdvertiser {
+public class TestDiscoveryContainer implements IDiscoveryLocator, IDiscoveryAdvertiser, IContainer {
 
 	private List services = new ArrayList();
 
@@ -32,7 +38,7 @@ public class TestDiscoveryContainer implements IDiscoveryLocator, IDiscoveryAdve
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.IServiceListener)
 	 */
 	public void addServiceListener(IServiceListener listener) {
-		throw new UnsupportedOperationException();
+		// nop
 	}
 
 	/* (non-Javadoc)
@@ -171,6 +177,60 @@ public class TestDiscoveryContainer implements IDiscoveryLocator, IDiscoveryAdve
 	 * @see org.eclipse.ecf.discovery.IDiscoveryAdvertiser#unregisterAllServices()
 	 */
 	public void unregisterAllServices() {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainer#addListener(org.eclipse.ecf.core.IContainerListener)
+	 */
+	public void addListener(IContainerListener listener) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void connect(ID targetId, IConnectContext connectContext)
+			throws ContainerConnectException {
+		// nop
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainer#disconnect()
+	 */
+	public void disconnect() {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainer#dispose()
+	 */
+	public void dispose() {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainer#getConnectNamespace()
+	 */
+	public Namespace getConnectNamespace() {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainer#getConnectedID()
+	 */
+	public ID getConnectedID() {
+		return IDFactory.getDefault().createStringID(getClass().getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainer#removeListener(org.eclipse.ecf.core.IContainerListener)
+	 */
+	public void removeListener(IContainerListener listener) {
+		throw new UnsupportedOperationException();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
+	 */
+	public ID getID() {
 		throw new UnsupportedOperationException();
 	}
 }

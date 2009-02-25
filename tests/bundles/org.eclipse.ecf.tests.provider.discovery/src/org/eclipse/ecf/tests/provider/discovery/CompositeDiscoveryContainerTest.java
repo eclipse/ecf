@@ -23,7 +23,7 @@ public class CompositeDiscoveryContainerTest extends DiscoveryContainerTest {
 	private TestDiscoveryContainer testDiscoveryContainer;
 
 	public CompositeDiscoveryContainerTest() {
-		super("ecf.discovery.*");
+		super(CompositeDiscoveryContainer.NAME);
 		setComparator(new CompositeServiceInfoComporator());
 		//TODO  jSLP currently has the longer rediscovery interval
 		setWaitTimeForProvider(Long.parseLong(System.getProperty("net.slp.rediscover", new Long(60L * 1000L).toString()))); //$NON-NLS-1$);
@@ -57,7 +57,7 @@ public class CompositeDiscoveryContainerTest extends DiscoveryContainerTest {
 			assertEquals("registerService(aService) wasn't called on TestDiscoveryContainer", serviceInfo, registeredServices.get(0));
 		} finally {
 			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryLocator;
-			assertTrue(cdc.removeContainer(testDiscoveryContainer));
+			cdc.removeContainer(testDiscoveryContainer);
 		}
 	}
 
@@ -76,7 +76,7 @@ public class CompositeDiscoveryContainerTest extends DiscoveryContainerTest {
 			assertTrue(registeredServices.isEmpty());
 		} finally {
 			CompositeDiscoveryContainer cdc = (CompositeDiscoveryContainer) discoveryLocator;
-			assertTrue(cdc.removeContainer(testDiscoveryContainer));
+			cdc.removeContainer(testDiscoveryContainer);
 		}
 	}
 

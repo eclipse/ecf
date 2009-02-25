@@ -10,13 +10,14 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.discovery;
 
+import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
 import org.eclipse.ecf.tests.discovery.DiscoveryTestsWithoutRegister;
 
 public class CompositeDiscoveryContainerWithoutRegTest extends
 		DiscoveryTestsWithoutRegister {
 
 	public CompositeDiscoveryContainerWithoutRegTest() {
-		super("ecf.discovery.*");
+		super(CompositeDiscoveryContainer.NAME);
 	}
 
 }
