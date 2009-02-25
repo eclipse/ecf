@@ -12,7 +12,6 @@ package org.eclipse.ecf.tests.discovery;
 
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -76,7 +75,7 @@ public class Activator implements BundleActivator {
 		final ServiceReference[] serviceReferences = locatorTracker.getServiceReferences();
 		for(int i = 0; i < serviceReferences.length; i++) {
 			ServiceReference sr = serviceReferences[i];
-			if(containerUnderTest.equals(sr.getProperty(IDiscoveryService.CONTAINER_NAME))) {
+			if(containerUnderTest.equals(sr.getProperty(IDiscoveryLocator.CONTAINER_NAME))) {
 				return (IDiscoveryLocator) locatorTracker.getService(sr);
 			}
 		}
@@ -87,7 +86,7 @@ public class Activator implements BundleActivator {
 		final ServiceReference[] serviceReferences = advertiserTracker.getServiceReferences();
 		for(int i = 0; i < serviceReferences.length; i++) {
 			ServiceReference sr = serviceReferences[i];
-			if(containerUnderTest.equals(sr.getProperty(IDiscoveryService.CONTAINER_NAME))) {
+			if(containerUnderTest.equals(sr.getProperty(IDiscoveryAdvertiser.CONTAINER_NAME))) {
 				return (IDiscoveryAdvertiser) advertiserTracker.getService(sr);
 			}
 		}
