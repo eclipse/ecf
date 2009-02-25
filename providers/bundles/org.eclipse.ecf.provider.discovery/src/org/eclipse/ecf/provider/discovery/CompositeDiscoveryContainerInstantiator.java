@@ -11,18 +11,12 @@
 
 package org.eclipse.ecf.provider.discovery;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerFactory;
+import java.util.*;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.internal.provider.discovery.Messages;
 
 public class CompositeDiscoveryContainerInstantiator implements IContainerInstantiator {
@@ -66,7 +60,7 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
 	public String[] getSupportedAdapterTypes(final ContainerTypeDescription description) {
-		return new String[] {IDiscoveryContainerAdapter.class.getName()};
+		return new String[] {IDiscoveryAdvertiser.class.getName(), IDiscoveryLocator.class.getName()};
 	}
 
 	/*

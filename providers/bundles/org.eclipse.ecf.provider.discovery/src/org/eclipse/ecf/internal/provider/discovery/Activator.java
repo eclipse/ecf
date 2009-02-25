@@ -49,7 +49,7 @@ public class Activator implements BundleActivator {
 	public void start(final BundleContext context) throws Exception {
 		final Properties props = new Properties();
 		props.put(IDiscoveryService.CONTAINER_ID, IDFactory.getDefault().createStringID("org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer")); //$NON-NLS-1$
-		props.put(IDiscoveryService.CONTAINER_NAME, CompositeDiscoveryContainer.NAME);
+		props.put(IDiscoveryLocator.CONTAINER_NAME, CompositeDiscoveryContainer.NAME);
 		props.put(Constants.SERVICE_RANKING, Integer.toString(1000));
 		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
 		context.registerService(clazzes, new ServiceFactory() {
@@ -62,7 +62,7 @@ public class Activator implements BundleActivator {
 				// get all previously registered IDS from OSGi (but not this one)
 				Filter filter = null;
 				try {
-					final String filter2 = "(&(" + Constants.OBJECTCLASS + "=" + IDiscoveryService.class.getName() + ")(!(" + IDiscoveryService.CONTAINER_NAME + "=" + CompositeDiscoveryContainer.NAME + ")))"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					final String filter2 = "(&(" + Constants.OBJECTCLASS + "=" + IDiscoveryService.class.getName() + ")(!(" + IDiscoveryLocator.CONTAINER_NAME + "=" + CompositeDiscoveryContainer.NAME + ")))"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 					filter = context.createFilter(filter2);
 				} catch (final InvalidSyntaxException e2) {
 					Trace.catching(Activator.PLUGIN_ID, Activator.PLUGIN_ID + "/debug/methods/catching", this.getClass(), "getService(Bundle, ServiceRegistration)", e2); //$NON-NLS-1$ //$NON-NLS-2$
