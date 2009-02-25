@@ -35,7 +35,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		this.distributionProvider = dp;
 	}
 
-	// Map<ID(discovery container)><
+	// Map<ID(discovery
+	// container)><Map<serviceName><RemoteServiceRegistration(IRemoteServiceRegistration,ServiceRegistration)>
+
 	Map discoveredRemoteServiceRegistrations = Collections
 			.synchronizedMap(new HashMap());
 
@@ -44,7 +46,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			logError("DiscoveredServiceNotification is null", null);
 			return;
 		}
-		trace("serviceChanged", "notification=");
 		int notificationType = notification.getType();
 		switch (notificationType) {
 		case DiscoveredServiceNotification.AVAILABLE:
@@ -114,6 +115,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			return;
 		}
 
+		removeRemoteServiceRegistration(discoveryContainerID, serviceName);
 	}
 
 	private void handleDiscoveredServiceAvailable(ServiceEndpointDescription sed) {
@@ -245,15 +247,61 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 	private ServiceRegistration addRemoteServiceRegistration(
 			ID discoveryContainerID, String serviceName,
+			IRemoteServiceContainerAdapter containerAdapter,
 			IRemoteServiceReference ref, ServiceRegistration registration) {
-		// XXX TODO...add to serviceRegistrationMap
+
+		synchronized (discoveredRemoteServiceRegistrations) {
+			// Get Map for discoveryContainerID
+			Map m = (Map) discoveredRemoteServiceRegistrations
+					.get(discoveryContainerID);
+			if (m == null) {
+				m = new HashMap();
+				discoveredRemoteServiceRegistrations.put(discoveryContainerID,
+						m);
+			}
+			// Now look up serviceName
+			RemoteServiceRegistration rsr = (RemoteServiceRegistration) m
+					.get(serviceName);
+			if (rsr == null) {
+				rsr = new RemoteServiceRegistration(containerAdapter, ref,
+						registration);
+				m.put(serviceName, rsr);
+				trace("addRemoteServiceRegistration", "adding discoveryID="
+						+ discoveryContainerID + ",serviceName=" + serviceName);
+				// And add to distribution provider
+				distributionProvider.addRemoteService(registration
+						.getReference());
+				return registration;
+			}
+		}
 		return null;
 	}
 
-	private void removeRemoteServiceRegistration(ID discoveryContainerID,
-			String serviceName, IRemoteServiceReference iRemoteServiceReference) {
-		// TODO Auto-generated method stub
-
+	private RemoteServiceRegistration removeRemoteServiceRegistration(
+			ID discoveryContainerID, String serviceName) {
+		synchronized (discoveredRemoteServiceRegistrations) {
+			// Get Map for discoveryContainerID
+			Map m = (Map) discoveredRemoteServiceRegistrations
+					.get(discoveryContainerID);
+			if (m == null)
+				return null;
+			RemoteServiceRegistration rsr = (RemoteServiceRegistration) m
+					.remove(serviceName);
+			if (rsr == null)
+				return null;
+			ServiceRegistration serviceRegistration = rsr
+					.getServiceRegistration();
+			IRemoteServiceReference remoteReference = rsr.getRemoteReference();
+			if (rsr.getContainerAdapter().ungetRemoteService(remoteReference)) {
+				trace("removeRemoteServiceRegistration", "remove discoveryID="
+						+ discoveryContainerID + ",serviceName=" + serviceName);
+				distributionProvider.removeExposedService(serviceRegistration
+						.getReference());
+				serviceRegistration.unregister();
+				return rsr;
+			}
+		}
+		return null;
 	}
 
 	private void registerRemoteServiceReferences(ID discoveryContainerID,
@@ -319,12 +367,13 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					registration = bundleContext.registerService(clazzes,
 							proxy, properties);
 					addRemoteServiceRegistration(discoveryContainerID,
-							serviceName, remoteReferences[i], registration);
+							serviceName, rsca, remoteReferences[i],
+							registration);
 				} catch (Exception e) {
 					logError("Error registering for remote reference "
 							+ remoteReferences[i], e);
 					removeRemoteServiceRegistration(discoveryContainerID,
-							serviceName, remoteReferences[i]);
+							serviceName);
 					continue;
 				}
 			}
