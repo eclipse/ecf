@@ -319,6 +319,21 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#purgeCache()
+	 */
+	public IServiceInfo[] purgeCache() {
+		final Set set = new HashSet();
+		synchronized (containers) {
+			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
+				final IDiscoveryLocator idca = (IDiscoveryLocator) itr.next();
+				final IServiceInfo[] services = idca.purgeCache();
+				set.addAll(Arrays.asList(services));
+			}
+		}
+		return (IServiceInfo[]) set.toArray(new IServiceInfo[set.size()]);
+	}
+
 	/**
 	 * @param object
 	 * @return true on success
