@@ -182,6 +182,9 @@ public class RemoteServiceRegistryImpl implements Serializable {
 		return null;
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected RemoteServiceRegistrationImpl findRegistrationForRemoteServiceId(IRemoteServiceID remoteServiceID) {
 		for (final Iterator i = allPublishedServices.iterator(); i.hasNext();) {
 			final RemoteServiceRegistrationImpl reg = (RemoteServiceRegistrationImpl) i.next();
