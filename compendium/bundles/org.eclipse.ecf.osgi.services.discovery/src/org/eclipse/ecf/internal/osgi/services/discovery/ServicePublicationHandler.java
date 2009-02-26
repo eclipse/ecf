@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import java.io.Serializable;
 import java.net.*;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
@@ -311,6 +312,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 			} else if (val instanceof byte[]) {
 				discoveryServiceProperties.setPropertyBytes(keyStr,
 						(byte[]) val);
+			} else if (val instanceof Serializable) {
+				discoveryServiceProperties.setProperty(keyStr, val);
 			}
 		}
 	}
