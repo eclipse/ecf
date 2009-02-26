@@ -14,10 +14,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescriptionImpl;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
@@ -75,18 +76,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		return Activator.getDefault().getContainerManager();
 	}
 
-	private void handleDiscoveredServiceModifiedEndmatch(
-			ServiceEndpointDescription description) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void handleDiscoveredServiceModified(
-			ServiceEndpointDescription description) {
-		// TODO Auto-generated method stub
-
-	}
-
 	private void handleDiscoveredServiceUnavailable(
 			ServiceEndpointDescription sed) {
 		// If the service endpoint description is not ECF's then we
@@ -94,28 +83,16 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		if (!(sed instanceof ServiceEndpointDescriptionImpl)) {
 			return;
 		}
-		ServiceEndpointDescriptionImpl description = (ServiceEndpointDescriptionImpl) sed;
-
-		// Get ECF discovery container ID...if not found there is a problem
-		ID discoveryContainerID = description.getDiscoveryContainerID();
-		if (discoveryContainerID == null) {
-			logError("ServiceEndpointDescription discoveryContainerID is null",
-					null);
+		ServiceEndpointDescriptionHelper sedh = null;
+		// Now create a ServiceEndpointDescriptionHelper from sed
+		try {
+			sedh = new ServiceEndpointDescriptionHelper(
+					(ServiceEndpointDescriptionImpl) sed);
+		} catch (NullPointerException e) {
+			logError("Error getting data from ServiceEndpointDescription", e);
 			return;
 		}
-		// Get serviceName from description
-		IServiceID serviceID = description.getServiceID();
-		if (serviceID == null) {
-			logError("ServiceEndpointDescription serviceID is null", null);
-			return;
-		}
-		String serviceName = serviceID.getName();
-		if (serviceName == null) {
-			logError("ServiceEndpointDescription serviceName is null", null);
-			return;
-		}
-
-		removeRemoteServiceRegistration(discoveryContainerID, serviceName);
+		removeRemoteServiceRegistration(sedh);
 	}
 
 	private void handleDiscoveredServiceAvailable(ServiceEndpointDescription sed) {
@@ -125,46 +102,25 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		if (!(sed instanceof ServiceEndpointDescriptionImpl)) {
 			return;
 		}
-		ServiceEndpointDescriptionImpl description = (ServiceEndpointDescriptionImpl) sed;
-
-		// Get ECF discovery container ID...if not found there is a problem
-		ID discoveryContainerID = description.getDiscoveryContainerID();
-		if (discoveryContainerID == null) {
-			logError("ServiceEndpointDescription discoveryContainerID is null",
-					null);
-			return;
-		}
-		// Get serviceName from description
-		IServiceID serviceID = description.getServiceID();
-		if (serviceID == null) {
-			logError("ServiceEndpointDescription serviceID is null", null);
-			return;
-		}
-		String serviceName = serviceID.getName();
-		if (serviceName == null) {
-			logError("ServiceEndpointDescription serviceName is null", null);
-			return;
-		}
-		// Check that the description exposes a collection of interfaces
-		Collection providedInterfaces = description.getProvidedInterfaces();
-		if (providedInterfaces == null) {
-			logError("ServiceEndpointDescription providedInterfaces is null",
-					null);
-			return;
-		}
-		// Find RSCAs for the given description
-		IRemoteServiceContainerAdapter[] rscas = findRSCAs(description);
-		if (rscas == null || rscas.length == 0) {
-			logError("No RemoteServiceContainerAdapters found for description "
-					+ description, null);
-			return;
-		}
-		// Create endpointID
+		ServiceEndpointDescriptionHelper sedh = null;
+		// Now create a ServiceEndpointDescriptionHelper from sed
+		Collection providedInterfaces = null;
 		ID endpointID = null;
 		try {
-			endpointID = createEndpointID(description);
-		} catch (IDCreateException e) {
-			logError("No endpoint ID created for description " + description, e);
+			sedh = new ServiceEndpointDescriptionHelper(
+					(ServiceEndpointDescriptionImpl) sed);
+			providedInterfaces = sedh.getProvidedInterfaces();
+			endpointID = sedh.getEndpointID();
+		} catch (Exception e) {
+			logError("Error getting data from ServiceEndpointDescription", e);
+			return;
+		}
+
+		// Find RSCAs for the given description
+		IRemoteServiceContainerAdapter[] rscas = findRSCAs(sedh);
+		if (rscas == null || rscas.length == 0) {
+			logError("No RemoteServiceContainerAdapters found for description "
+					+ sedh.getDescription(), null);
 			return;
 		}
 		// For all remote service container adapters
@@ -182,23 +138,16 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 								new ID[] { endpointID }, providedInterface,
 								null);
 				// And process the future returned in separate thread
-				processFutureForRemoteServiceReferences(discoveryContainerID,
-						serviceName, futureRemoteReferences, rscas[i],
-						description, getTimeout(description));
+				processFutureForRemoteServiceReferences(sedh,
+						futureRemoteReferences, rscas[i]);
 			}
 		}
 	}
 
-	long getTimeout(ServiceEndpointDescription description) {
-		// for now return constant of 30s
-		return 30000;
-	}
-
 	private void processFutureForRemoteServiceReferences(
-			final ID discoveryContainerID, final String serviceName,
+			final ServiceEndpointDescriptionHelper sedh,
 			final IFuture futureRemoteReferences,
-			final IRemoteServiceContainerAdapter rsca,
-			final ServiceEndpointDescription description, final long timeout) {
+			final IRemoteServiceContainerAdapter rsca) {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -206,7 +155,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					trace("processFutureForRemoteServiceReferences", "future="
 							+ futureRemoteReferences + " calling future.get");
 					IRemoteServiceReference[] remoteReferences = (IRemoteServiceReference[]) futureRemoteReferences
-							.get(timeout);
+							.get(sedh.getFutureTimeout());
 					IStatus futureStatus = futureRemoteReferences.getStatus();
 					trace("processFutureForRemoteServiceReferences", "future="
 							+ futureRemoteReferences + " status="
@@ -214,9 +163,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							+ Arrays.asList(remoteReferences));
 					if (futureStatus.isOK() && remoteReferences != null
 							&& remoteReferences.length > 0) {
-						registerRemoteServiceReferences(discoveryContainerID,
-								serviceName, rsca, remoteReferences,
-								description);
+						registerRemoteServiceReferences(sedh, rsca,
+								remoteReferences);
 					} else {
 						logFutureError(futureStatus);
 					}
@@ -239,17 +187,29 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private ServiceRegistration getRemoteServiceRegistration(
-			ID discoveryContainerID, String serviceName,
+			ServiceEndpointDescriptionHelper sedh,
 			IRemoteServiceReference reference) {
-		// XXX TODO...consult serviceRegistrationMap
-		return null;
+		ID discoveryContainerID = sedh.getDiscoveryContainerID();
+		String serviceName = sedh.getServiceName();
+		synchronized (discoveredRemoteServiceRegistrations) {
+			Map m = (Map) discoveredRemoteServiceRegistrations
+					.get(discoveryContainerID);
+			if (m == null)
+				return null;
+			// Now look up serviceName
+			RemoteServiceRegistration rsr = (RemoteServiceRegistration) m
+					.get(serviceName);
+			return (rsr == null) ? null : rsr.getServiceRegistration();
+		}
 	}
 
 	private ServiceRegistration addRemoteServiceRegistration(
-			ID discoveryContainerID, String serviceName,
+			ServiceEndpointDescriptionHelper sedh,
 			IRemoteServiceContainerAdapter containerAdapter,
 			IRemoteServiceReference ref, ServiceRegistration registration) {
 
+		ID discoveryContainerID = sedh.getDiscoveryContainerID();
+		String serviceName = sedh.getServiceName();
 		synchronized (discoveredRemoteServiceRegistrations) {
 			// Get Map for discoveryContainerID
 			Map m = (Map) discoveredRemoteServiceRegistrations
@@ -278,15 +238,15 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private RemoteServiceRegistration removeRemoteServiceRegistration(
-			ID discoveryContainerID, String serviceName) {
+			ServiceEndpointDescriptionHelper sedh) {
 		synchronized (discoveredRemoteServiceRegistrations) {
 			// Get Map for discoveryContainerID
-			Map m = (Map) discoveredRemoteServiceRegistrations
-					.get(discoveryContainerID);
+			Map m = (Map) discoveredRemoteServiceRegistrations.get(sedh
+					.getDiscoveryContainerID());
 			if (m == null)
 				return null;
 			RemoteServiceRegistration rsr = (RemoteServiceRegistration) m
-					.remove(serviceName);
+					.remove(sedh.getServiceName());
 			if (rsr == null)
 				return null;
 			ServiceRegistration serviceRegistration = rsr
@@ -294,7 +254,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteServiceReference remoteReference = rsr.getRemoteReference();
 			if (rsr.getContainerAdapter().ungetRemoteService(remoteReference)) {
 				trace("removeRemoteServiceRegistration", "remove discoveryID="
-						+ discoveryContainerID + ",serviceName=" + serviceName);
+						+ sedh.getDiscoveryContainerID() + ",serviceName="
+						+ sedh.getServiceName());
 				distributionProvider.removeExposedService(serviceRegistration
 						.getReference());
 				serviceRegistration.unregister();
@@ -304,10 +265,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		return null;
 	}
 
-	private void registerRemoteServiceReferences(ID discoveryContainerID,
-			String serviceName, IRemoteServiceContainerAdapter rsca,
-			IRemoteServiceReference[] remoteReferences,
-			ServiceEndpointDescription description) {
+	private void registerRemoteServiceReferences(
+			ServiceEndpointDescriptionHelper sedh,
+			IRemoteServiceContainerAdapter rsca,
+			IRemoteServiceReference[] remoteReferences) {
 		for (int i = 0; i < remoteReferences.length; i++) {
 			trace("registerRemoteServiceReference", "rsca=" + rsca
 					+ ", remoteReference=" + remoteReferences[i]);
@@ -315,7 +276,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteService remoteService = rsca
 					.getRemoteService(remoteReferences[i]);
 			if (remoteService == null) {
-				logError("remote service is null for remote reference "
+				logError("Remote service is null for remote reference "
 						+ remoteReferences[i], null);
 				continue;
 			}
@@ -324,16 +285,16 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			String[] clazzes = (String[]) remoteReferences[i]
 					.getProperty(Constants.OBJECTCLASS);
 			if (clazzes == null) {
-				logError("no classes specified for remote service reference "
+				logError("No classes specified for remote service reference "
 						+ remoteReferences[i], null);
 				continue;
 			}
 
 			// Get service properties for the proxy
-			Dictionary properties = getPropertiesForRemoteServiceReference(
-					remoteService, description);
+			Dictionary properties = getPropertiesForRemoteService(sedh, rsca,
+					remoteReferences[i], remoteService);
 
-			// Create proxy
+			// Create proxy right here
 			Object proxy = null;
 			try {
 				proxy = remoteService.getProxy();
@@ -350,11 +311,11 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			// while this is going on
 			synchronized (discoveredRemoteServiceRegistrations) {
 				// First check to see if remote reference is already registered
-				ServiceRegistration reg = getRemoteServiceRegistration(
-						discoveryContainerID, serviceName, remoteReferences[i]);
+				ServiceRegistration reg = getRemoteServiceRegistration(sedh,
+						remoteReferences[i]);
 				if (reg != null) {
 					// log the fact that it's already registered
-					logError("remote reference " + remoteReferences
+					logError("remote reference " + remoteReferences[i]
 							+ " already registered locally", null);
 					continue;
 				}
@@ -366,62 +327,67 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 									+ ",properties=" + properties);
 					registration = bundleContext.registerService(clazzes,
 							proxy, properties);
-					addRemoteServiceRegistration(discoveryContainerID,
-							serviceName, rsca, remoteReferences[i],
-							registration);
+					addRemoteServiceRegistration(sedh, rsca,
+							remoteReferences[i], registration);
 				} catch (Exception e) {
 					logError("Error registering for remote reference "
 							+ remoteReferences[i], e);
-					removeRemoteServiceRegistration(discoveryContainerID,
-							serviceName);
+					removeRemoteServiceRegistration(sedh);
 					continue;
 				}
 			}
 		}
 	}
 
-	private Dictionary getPropertiesForRemoteServiceReference(
-			IRemoteService remoteService, ServiceEndpointDescription description) {
-		// TODO Auto-generated method stub
+	List ecfRemoteServiceProperties = Arrays.asList(new String[] {
+			Constants.SERVICE_ID, Constants.OBJECTCLASS,
+			ECFServicePublication.PROP_KEY_ENDPOINT_ID,
+			ECFServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME,
+			ECFServicePublication.PROP_KEY_ENDPOINT_LOCATION,
+			ECFServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
+			ECFServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION,
+			ECFServicePublication.PROP_KEY_SERVICE_PROPERTIES });
+
+	private boolean isRemoteServiceProperty(String propertyKey) {
+		return ecfRemoteServiceProperties.contains(propertyKey);
+	}
+
+	private Dictionary getPropertiesForRemoteService(
+			ServiceEndpointDescriptionHelper description,
+			IRemoteServiceContainerAdapter containerAdapter,
+			IRemoteServiceReference remoteReference,
+			IRemoteService remoteService) {
 		Properties results = new Properties();
-		// XXX Fill in properties from ECF
+		String[] propKeys = remoteReference.getPropertyKeys();
+		for (int i = 0; i < propKeys.length; i++) {
+			if (!isRemoteServiceProperty(propKeys[i])) {
+				results.put(propKeys[i], remoteReference
+						.getProperty(propKeys[i]));
+			}
+		}
 		results.put(ECFServiceConstants.OSGI_REMOTE, remoteService);
+		System.out.println("properties for remote service proxy=" + results);
 		return results;
 	}
 
-	private ID createEndpointID(ServiceEndpointDescription description)
-			throws IDCreateException {
-		String endpointID = description.getEndpointID();
-		if (endpointID == null)
-			return null;
-		// Get idfilter namespace name
-		String idfilterNamespaceName = (String) description
-				.getProperty(Constants.SERVICE_IDFILTER_NAMESPACE);
-		if (idfilterNamespaceName == null)
-			throw new IDCreateException(
-					"IDfilter Namespace name is not set in description "
-							+ description);
-		return IDFactory.getDefault().createID(idfilterNamespaceName,
-				endpointID);
-	}
-
 	private IRemoteServiceContainerAdapter[] findRSCAs(
-			ServiceEndpointDescription description) {
+			ServiceEndpointDescriptionHelper sedh) {
 		IContainerManager containerManager = getContainerManager();
 		if (containerManager == null)
 			return null;
 		IContainer[] containers = containerManager.getAllContainers();
 		if (containers == null) {
 			// log this?
-			return null;
+			logWarning("findRSCAs", "No containers found for container manager");
+			return new IRemoteServiceContainerAdapter[0];
 		}
 		List results = new ArrayList();
 		for (int i = 0; i < containers.length; i++) {
 			IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) containers[i]
 					.getAdapter(IRemoteServiceContainerAdapter.class);
 			if (adapter != null
-					&& includeRCSAForDescription(containers[i], adapter,
-							description)) {
+					&& includeRCSAForDescription(containers[i], adapter, sedh
+							.getDescription())) {
 				results.add(adapter);
 			}
 		}
@@ -443,21 +409,30 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		return true;
 	}
 
-	private void logError(String string, Throwable t) {
-		// XXX TODO
-		System.err.println(string);
-		if (t != null)
-			t.printStackTrace(System.err);
+	private void handleDiscoveredServiceModifiedEndmatch(
+			ServiceEndpointDescription description) {
+		// TODO Auto-generated method stub
 	}
 
-	protected void trace(String methodName, String message) {
+	private void handleDiscoveredServiceModified(
+			ServiceEndpointDescription description) {
+		// TODO Auto-generated method stub
+	}
+
+	private void trace(String methodName, String message) {
 		Trace.trace(Activator.PLUGIN_ID, DebugOptions.DISCOVEREDSERVICETRACKER,
 				this.getClass(), methodName, message);
 	}
 
-	protected void traceException(String string, Throwable e) {
-		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
-				this.getClass(), string, e);
+	private void logWarning(String method, String message) {
+		// XXX TODO log proper warning
+	}
+
+	private void logError(String string, Throwable t) {
+		// XXX TODO log proper error
+		System.err.println(string);
+		if (t != null)
+			t.printStackTrace(System.err);
 	}
 
 }
