@@ -439,11 +439,12 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				ifaces.add("org/osgi/framework/BundleActivator"); //$NON-NLS-1$
 				ifaces.addAll(Arrays.asList(serviceInterfaces));
 				// V1_1
-				writer.visit(
-						(version >= V1_5 && RemoteOSGiServiceImpl.IS_JAVA5) ? V1_5
-								: V1_2, ACC_PUBLIC + ACC_SUPER, implName, null,
-						superName, (String[]) ifaces.toArray(new String[ifaces
-								.size()]));
+				writer
+						.visit(
+								(version >= V1_5 && RemoteOSGiServiceImpl.IS_JAVA5) ? V1_5
+										: V1_2, ACC_PUBLIC + ACC_SUPER,
+								implName, null, superName, (String[]) ifaces
+										.toArray(new String[ifaces.size()]));
 
 				if (java.util.Arrays.asList(interfaces).contains(
 						"ch/ethz/iks/r_osgi/SmartProxy")) { //$NON-NLS-1$
@@ -453,10 +454,12 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			} else {
 
 				// we have an interface
-				writer.visit(
-						(version >= V1_5 && RemoteOSGiServiceImpl.IS_JAVA5) ? V1_5
-								: V1_2, ACC_PUBLIC + ACC_SUPER, implName, null,
-						"java/lang/Object", serviceInterfaces); //$NON-NLS-1$
+				writer
+						.visit(
+								(version >= V1_5 && RemoteOSGiServiceImpl.IS_JAVA5) ? V1_5
+										: V1_2, ACC_PUBLIC + ACC_SUPER,
+								implName, null,
+								"java/lang/Object", serviceInterfaces); //$NON-NLS-1$
 				if (RemoteOSGiServiceImpl.PROXY_DEBUG) {
 					RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
 							"Creating Proxy Bundle from Interfaces " //$NON-NLS-1$
@@ -863,23 +866,13 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				method.visitInsn(returnType.getOpcode(IRETURN));
 				break;
 			case Type.ARRAY:
-
 				final StringBuffer a = new StringBuffer();
 
-				final int esort = returnType.getElementType().getSort();
-				if (esort < Type.ARRAY) {
-					for (int i = 0; i < returnType.getDimensions(); i++) {
-						a.append("["); //$NON-NLS-1$
-					}
-					// primitive array
-					method.visitTypeInsn(CHECKCAST, a.toString()
-							+ returnType.getElementType().toString());
-				} else {
-					// object array
+				for (int i = 0; i < returnType.getDimensions(); i++) {
 					a.append("["); //$NON-NLS-1$
-					method.visitTypeInsn(CHECKCAST, a.toString()
-							+ returnType.getInternalName() + ";"); //$NON-NLS-1$
 				}
+				method.visitTypeInsn(CHECKCAST, a.toString()
+						+ returnType.getElementType().toString());
 				method.visitInsn(ARETURN);
 				break;
 			default:
