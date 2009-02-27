@@ -1133,17 +1133,20 @@ public class JmDNSImpl extends JmDNS
 
     public void startAnnouncer()
     {
-        new Announcer(this).start(timer);
+    	if(getState() != DNSState.CANCELED)
+    		new Announcer(this).start(timer);
     }
 
     public void startRenewer()
     {
-        new Renewer(this).start(timer);
+    	if(getState() != DNSState.CANCELED)
+    		new Renewer(this).start(timer);
     }
 
     public void schedule(TimerTask task, int delay)
     {
-        timer.schedule(task, delay);
+    	if(getState() != DNSState.CANCELED)
+    		timer.schedule(task, delay);
     }
 
     // REMIND: Why is this not an anonymous inner class?
@@ -1222,14 +1225,14 @@ public class JmDNSImpl extends JmDNS
                 setState(DNSState.CANCELED); // This protects against recursive
                 // calls
 
+                // Stop the timer
+                timer.cancel();
+
                 unregisterAllServices();
                 disposeServiceCollectors();
 
                 // close socket
                 closeMulticastSocket();
-
-                // Stop the timer
-                timer.cancel();
 
                 // remove the shutdown hook
                 if (shutdown != null)

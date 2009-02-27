@@ -111,6 +111,11 @@ public class Canceler extends TimerTask
         catch (Throwable e)
         {
 //            logger.log(Level.WARNING, "run() exception ", e);
+            synchronized (lock)
+            {
+                lock.notifyAll();
+            }
+            this.cancel();
             this.jmDNSImpl.recover();
         }
     }
