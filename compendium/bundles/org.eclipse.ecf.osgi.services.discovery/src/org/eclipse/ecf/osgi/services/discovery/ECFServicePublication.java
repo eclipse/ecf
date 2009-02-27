@@ -20,4 +20,8 @@ public interface ECFServicePublication extends ServicePublication {
 	public static final String NAMING_AUTHORITY_PROP = "ecf.sp.namingauth";
 	public static final String SCOPE_PROP = "ecf.sp.scope";
 	public static final String SERVICE_PROTOCOL_PROP = "ecf.sp.protocol";
+
+	public static final String PROP_KEY_ENDPOINT_CONTAINERID = "ecf.sp.cid";
+	public static final String PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE = "ecf.sp.cns";
+
 }

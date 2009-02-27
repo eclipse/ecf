@@ -9,7 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import java.io.Serializable;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
@@ -134,107 +134,90 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	 * @param reference
 	 */
 	private void handleServicePublication(ServiceReference reference) {
-		// Get required service property "service.interface", which should be a
+
+		// Get required service RFC 119 property "service.interface", which
+		// should be a
 		// Collection of Strings
 		Collection svcInterfaces = ServicePropertyUtils.getCollectionProperty(
 				reference, ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
 		// If it's not there, then we ignore this ServicePublication and return
 		if (svcInterfaces == null) {
-			trace(
+			logError(
 					"handleServicePublication",
 					"ignoring "
 							+ reference
-							+ ". ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME not set");
+							+ ". ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME not set",
+					null);
 			return;
 		}
 		IServiceProperties discoveryServiceProperties = new ServiceProperties();
-
 		discoveryServiceProperties.setPropertyString(
 				ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
 				ServicePropertyUtils.createStringFromCollection(svcInterfaces));
 
-		// Get optional service.interface.version
-		// Currently, in
-		// org.eclipse.ecf.internal.osgi.services.distribution.EventHookImpl.getServicePublicationProperties(RSCAHolder,
-		// ServiceReference, String[], IRemoteServiceRegistration)
-		// we do not set these ServicePublication properties, so there's no use
-		// in processing them
-		// Collection interfaceVersions = ServicePropertyUtils
-		// .getCollectionProperty(reference,
-		// ServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION);
-		// // Get osgi.remote.endpoint.interface
-		// Collection endpointInterfaces = ServicePropertyUtils
-		// .getCollectionProperty(reference,
-		// ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME);
-		// Get service properties
+		// We also use the optional RFC 119 property PROP_KEY_SERVICE_PROPERTIES
 		Map servicePublicationServiceProperties = ServicePropertyUtils
 				.getMapProperty(reference,
 						ServicePublication.PROP_KEY_SERVICE_PROPERTIES);
 		if (servicePublicationServiceProperties == null) {
-			trace(
+			logError(
 					"handleServicePublication",
 					"ignoring "
 							+ reference
-							+ ". ServicePublication.PROP_KEY_SERVICE_PROPERTIES not set");
+							+ ". ServicePublication.PROP_KEY_SERVICE_PROPERTIES not set",
+					null);
 			return;
 		}
-
 		// Add them
+
 		addPropertiesToDiscoveryServiceProperties(discoveryServiceProperties,
 				servicePublicationServiceProperties);
 
-		// Get endpoint ID
-		String servicePublicationEndpointID = ServicePropertyUtils
-				.getStringProperty(reference,
-						ServicePublication.PROP_KEY_ENDPOINT_ID);
-		if (servicePublicationEndpointID == null) {
-			trace("handleServicePublication", "ignoring " + reference
-					+ ". ServicePublication.PROP_KEY_ENDPOINT_ID not set");
+		// See EventHookImpl.getServicePublicationProperties()
+		// Get and then serialize and set
+		// ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID
+		ID endpointContainerID = (ID) reference
+				.getProperty(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
+		if (endpointContainerID == null) {
+			logError(
+					"handleServicePublication",
+					"ignoring "
+							+ reference
+							+ ". ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID not set",
+					null);
 			return;
 		}
-		discoveryServiceProperties.setPropertyString(
-				ServicePublication.PROP_KEY_ENDPOINT_ID,
-				servicePublicationEndpointID);
+		// Add endpoint container id.toExternalForm().getBytes...so AS byte []
+		discoveryServiceProperties.setPropertyBytes(
+				ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID,
+				endpointContainerID.toExternalForm().getBytes());
 
-		// Get ECF properties
-		String connectNamespaceName = ServicePropertyUtils.getStringProperty(
-				reference, Constants.SERVICE_CONNECT_ID_NAMESPACE);
-		if (connectNamespaceName == null) {
-			trace("handleServicePublication", "ignoring " + reference
-					+ ". Constants.SERVICE_CONNECT_ID_NAMESPACE not set");
-			return;
-		}
+		// Add container id namespace name
+		String namespace = endpointContainerID.getNamespace().getName();
 		discoveryServiceProperties.setPropertyString(
-				Constants.SERVICE_CONNECT_ID_NAMESPACE, connectNamespaceName);
+				ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE,
+				namespace);
 
-		String idnamespace = ServicePropertyUtils.getStringProperty(reference,
-				Constants.SERVICE_IDFILTER_NAMESPACE);
-		if (idnamespace == null) {
-			trace("handleServicePublication", "ignoring " + reference
-					+ ". Constants.SERVICE_IDFILTER_NAMESPACE not set");
-			return;
-		}
-		discoveryServiceProperties.setPropertyString(
-				Constants.SERVICE_IDFILTER_NAMESPACE, idnamespace);
-
+		// remote service namespace
 		String rsnamespace = ServicePropertyUtils.getStringProperty(reference,
 				Constants.SERVICE_NAMESPACE);
 		if (rsnamespace == null) {
-			trace("handleServicePublication", "ignoring " + reference
-					+ ". Constants.SERVICE_NAMESPACE not set");
+			logError("handleServicePublication", "ignoring " + reference
+					+ ". Constants.SERVICE_NAMESPACE not set", null);
 			return;
 		}
 		discoveryServiceProperties.setPropertyString(
 				Constants.SERVICE_NAMESPACE, rsnamespace);
 
+		// remote service id
+
 		Long remoteServiceID = (Long) reference
 				.getProperty(Constants.SERVICE_ID);
 		if (remoteServiceID == null) {
-			trace("handleServicePublication", "ignoring " + reference
-					+ ". Constants.SERVICE_ID not set");
+			logError("handleServicePublication", "ignoring " + reference
+					+ ". Constants.SERVICE_ID not set", null);
 			return;
 		}
-
 		discoveryServiceProperties.setProperty(Constants.SERVICE_ID,
 				remoteServiceID);
 
@@ -242,7 +225,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		try {
 			IServiceID serviceID = createServiceID(
 					servicePublicationServiceProperties, remoteServiceID);
-			URI uri = createURI(servicePublicationEndpointID);
+			URI uri = createURI(endpointContainerID);
 
 			svcInfo = new ServiceInfo(uri, serviceID,
 					discoveryServiceProperties);
@@ -260,11 +243,25 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		publishService(reference, svcInfo);
 	}
 
-	private URI createURI(String servicePublicationEndpointID)
-			throws URISyntaxException {
+	private void logError(String method, String message, Throwable t) {
+		// TODO log exception
+
+		traceException(method + ":" + message, t);
+	}
+
+	private byte[] serializeEndpointContainerID(ID endpointContainerID)
+			throws IOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(bos);
+		oos.writeObject(endpointContainerID);
+		oos.close();
+		return bos.toByteArray();
+	}
+
+	private URI createURI(ID endpointContainerID) throws URISyntaxException {
 		boolean done = false;
 		URI uri = null;
-		String str = servicePublicationEndpointID;
+		String str = endpointContainerID.getName();
 		while (!done) {
 			try {
 				uri = new URI(str);
@@ -348,8 +345,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				IServiceTypeID.DEFAULT_NA);
 		String scope = getPropertyWithDefault(servicePublicationProperties,
 				ECFServicePublication.SCOPE_PROP,
-				// IServiceTypeID.DEFAULT_SCOPE[0]);
-				"local");
+				IServiceTypeID.DEFAULT_SCOPE[0]);
 		String protocol = getPropertyWithDefault(servicePublicationProperties,
 				ECFServicePublication.SERVICE_PROTOCOL_PROP,
 				IServiceTypeID.DEFAULT_PROTO[0]);

@@ -111,6 +111,14 @@ public class ServiceEndpointDescriptionImpl implements
 		return serviceProperties.getProperty(key);
 	}
 
+	public byte[] getPropertyBytes(String key) {
+		IServiceProperties serviceProperties = serviceInfo
+				.getServiceProperties();
+		if (key == null)
+			return null;
+		return serviceProperties.getPropertyBytes(key);
+	}
+
 	public Collection getPropertyKeys() {
 		IServiceProperties serviceProperties = serviceInfo
 				.getServiceProperties();
@@ -164,4 +172,8 @@ public class ServiceEndpointDescriptionImpl implements
 		return sb.toString();
 	}
 
+	public String getPropertyString(String propKeyEndpointContainerid) {
+		return ServicePropertyUtils.getStringProperty(serviceInfo
+				.getServiceProperties(), propKeyEndpointContainerid);
+	}
 }
