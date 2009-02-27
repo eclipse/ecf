@@ -159,10 +159,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					IStatus futureStatus = futureRemoteReferences.getStatus();
 					if (futureStatus.isOK() && remoteReferences != null
 							&& remoteReferences.length > 0) {
-						trace("processFutureForRemoteServiceReferences",
-								"future=" + futureRemoteReferences + " status="
-										+ futureStatus + " remoteReferences="
-										+ Arrays.asList(remoteReferences));
 						registerRemoteServiceReferences(sedh, rsca,
 								remoteReferences);
 					} else {
@@ -270,8 +266,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteServiceContainerAdapter rsca,
 			IRemoteServiceReference[] remoteReferences) {
 		for (int i = 0; i < remoteReferences.length; i++) {
-			trace("registerRemoteServiceReference", "rsca=" + rsca
-					+ ", remoteReference=" + remoteReferences[i]);
 			// Get IRemoteService, used to create the proxy below
 			IRemoteService remoteService = rsca
 					.getRemoteService(remoteReferences[i]);
@@ -332,7 +326,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				} catch (Exception e) {
 					logError("Error registering for remote reference "
 							+ remoteReferences[i], e);
-					removeRemoteServiceRegistration(sedh);
 					continue;
 				}
 			}
