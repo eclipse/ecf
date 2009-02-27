@@ -51,8 +51,8 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		props.put("foo", "bar");
-		ServiceRegistration reg = registerDefaultService(props);
-		Thread.sleep(3000);
+		registerDefaultService(props);
+		Thread.sleep(10000);
 	}
 	public void testRegisterServerContainer() throws Exception {
 		Properties props = new Properties();
@@ -60,7 +60,7 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		registerDefaultService(props);
-		Thread.sleep(3000);
+		Thread.sleep(10000);
 	}
 	
 	public void testRegisterServicePublication() throws Exception {
@@ -74,7 +74,7 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		ServiceRegistration reg = registerDefaultService(props);
 
-		Thread.sleep(3000);
+		Thread.sleep(10000);
 		
 		// Now get ServicePublications from tracker
 		ServiceReference [] servicePublicationSRs = servicePublicationTracker.getServiceReferences();
@@ -119,14 +119,14 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		ServiceRegistration svcReg = getContext().registerService(getDefaultServiceClasses(), getDefaultService(), props);
 
-		Thread.sleep(3000);
+		Thread.sleep(10000);
 		
 		assertNotNull(dsNotification);
 		// unregister service
 		
 		svcReg.unregister();
 		
-		Thread.sleep(3000);
+		Thread.sleep(10000);
 		
 		assertNull(dsNotification);
 		
