@@ -30,6 +30,7 @@ public class JMDNSServiceInfoTest extends ServiceInfoTest {
 		weight = DiscoveryTestHelper.WEIGHT;
 		serviceProperties = new ServiceProperties();
 		serviceProperties.setProperty("foobar", new String("foobar"));
+		serviceProperties.setPropertyBytes("foobar1", new byte[] { 1, 2, 3 });
 		Namespace namespace = IDFactory.getDefault().getNamespaceByName(
 				JMDNSNamespace.NAME);
 		try {
