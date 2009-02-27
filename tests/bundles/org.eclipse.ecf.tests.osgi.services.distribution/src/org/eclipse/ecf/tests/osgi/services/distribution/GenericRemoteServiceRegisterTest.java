@@ -47,6 +47,7 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 	protected String getClientContainerName() {
 		return "ecf.generic.client";
 	}
+	/*
 	public void testRegisterAllContainers() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
@@ -54,15 +55,17 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		registerDefaultService(props);
 		Thread.sleep(10000);
 	}
+	*/
 	public void testRegisterServerContainer() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		props.put("foo", "bar");
 		registerDefaultService(props);
 		Thread.sleep(10000);
 	}
-	
+	/*
 	public void testRegisterServicePublication() throws Exception {
 		// First set up service tracker for ServicePublication
 		ServiceTracker servicePublicationTracker = new ServiceTracker(getContext(), ServicePublication.class.getName(), null);
@@ -132,5 +135,5 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 		
 		dstReg.unregister();
 	}
-	
+*/	
 }
