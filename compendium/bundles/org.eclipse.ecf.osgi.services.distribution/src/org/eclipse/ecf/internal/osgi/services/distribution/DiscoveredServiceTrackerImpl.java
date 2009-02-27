@@ -157,12 +157,12 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					IRemoteServiceReference[] remoteReferences = (IRemoteServiceReference[]) futureRemoteReferences
 							.get(sedh.getFutureTimeout());
 					IStatus futureStatus = futureRemoteReferences.getStatus();
-					trace("processFutureForRemoteServiceReferences", "future="
-							+ futureRemoteReferences + " status="
-							+ futureStatus + " remoteReferences="
-							+ Arrays.asList(remoteReferences));
 					if (futureStatus.isOK() && remoteReferences != null
 							&& remoteReferences.length > 0) {
+						trace("processFutureForRemoteServiceReferences",
+								"future=" + futureRemoteReferences + " status="
+										+ futureStatus + " remoteReferences="
+										+ Arrays.asList(remoteReferences));
 						registerRemoteServiceReferences(sedh, rsca,
 								remoteReferences);
 					} else {
@@ -366,7 +366,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			}
 		}
 		results.put(ECFServiceConstants.OSGI_REMOTE, remoteService);
-		System.out.println("properties for remote service proxy=" + results);
 		return results;
 	}
 

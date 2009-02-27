@@ -1,12 +1,12 @@
 /*******************************************************************************
-* Copyright (c) 2009 EclipseSource and others. All rights reserved. This
-* program and the accompanying materials are made available under the terms of
-* the Eclipse Public License v1.0 which accompanies this distribution, and is
-* available at http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*   EclipseSource - initial API and implementation
-******************************************************************************/
+ * Copyright (c) 2009 EclipseSource and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   EclipseSource - initial API and implementation
+ ******************************************************************************/
 /**
  * 
  */
@@ -15,8 +15,8 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 import java.util.Collection;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescriptionImpl;
-import org.eclipse.ecf.remoteservice.Constants;
 
 class ServiceEndpointDescriptionHelper {
 	private static final long DEFAULT_FUTURE_TIMEOUT = 30000;
@@ -69,20 +69,29 @@ class ServiceEndpointDescriptionHelper {
 		return c;
 	}
 
+	public Long getRemoteServiceID() throws NullPointerException {
+		String longStr = (String) description
+				.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		if (longStr == null)
+			throw new NullPointerException(
+					"ServiceEndpointDescriptoin remote service ID cannot be null");
+		return new Long(longStr);
+	}
+
 	public ID getEndpointID() throws IDCreateException {
-		String endpointID = description.getEndpointID();
-		if (endpointID == null)
+		byte[] endpointBytes = description
+				.getPropertyBytes(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
+		if (endpointBytes == null)
 			throw new IDCreateException(
-					"ServiceEndpointDescription endpointID cannot be null");
-		// Get idfilter namespace name
-		String idfilterNamespaceName = (String) description
-				.getProperty(Constants.SERVICE_IDFILTER_NAMESPACE);
-		if (idfilterNamespaceName == null)
+					"ServiceEndpointDescription endpointBytes cannot be null");
+		String endpointStr = new String(endpointBytes);
+		String namespaceStr = description
+				.getPropertyString(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE);
+		if (namespaceStr == null)
 			throw new IDCreateException(
-					"IDfilter Namespace name is not set in description "
-							+ description);
-		return IDFactory.getDefault().createID(idfilterNamespaceName,
-				endpointID);
+					"ServiceEndpointDescription namespaceStr cannot be null");
+
+		return IDFactory.getDefault().createID(namespaceStr, endpointStr);
 	}
 
 	public long getFutureTimeout() {

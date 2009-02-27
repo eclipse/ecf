@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.Constants;
@@ -152,38 +153,23 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		properties.put(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
 				getAsCollection(remoteInterfaces));
 
-		// XXX TODO set optional
-		// ServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION
-		// XXX TODO set optional
-		// ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME
-
 		// Set optional ServicePublication.PROP_KEY_SERVICE_PROPERTIES
 		properties.put(ServicePublication.PROP_KEY_SERVICE_PROPERTIES,
 				getServicePropertiesForRemotePublication(ref));
-		// Set optional ServicePublication.PROP_KEY_ENDPOINT_ID to
-		// container.getID().toExternalForm()
+
 		IContainer container = holder.getContainer();
-		properties.put(ServicePublication.PROP_KEY_ENDPOINT_ID, container
-				.getID().toExternalForm());
-
-		// ECF remote service properties
-		// Specify container factory name
-		Namespace connectnamespace = holder.getContainer()
-				.getConnectNamespace();
-		if (connectnamespace != null)
-			properties.put(Constants.SERVICE_CONNECT_ID_NAMESPACE,
-					connectnamespace.getName());
-
-		Namespace idnamespace = holder.getContainer().getID().getNamespace();
-		if (idnamespace != null)
-			properties.put(Constants.SERVICE_IDFILTER_NAMESPACE, idnamespace
-					.getName());
-
+		// Due to slp bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=216944
+		// We are not going to use the RFC 119
+		// ServicePublication.PROP_KEY_ENDPOINT_ID...since
+		// it won't handle some Strings with (e.g. slp) provider
+		properties.put(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID,
+				container.getID());
+		// Set remote service namespace (String)
 		Namespace rsnamespace = holder.getContainerAdapter()
 				.getRemoteServiceNamespace();
 		if (rsnamespace != null)
 			properties.put(Constants.SERVICE_NAMESPACE, rsnamespace.getName());
-
+		// Set the actual remote service id (Long)
 		properties.put(Constants.SERVICE_ID, ((Long) remoteRegistration
 				.getProperty(Constants.SERVICE_ID)));
 
