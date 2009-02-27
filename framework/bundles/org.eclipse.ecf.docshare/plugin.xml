@@ -29,5 +29,52 @@
       </menuContribution>
    </extension>
 
-   
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+            name="org.eclipse.ecf.docshare.annotations.RemoteSelection">
+      </type>
+      <type
+            name="org.eclipse.ecf.docshare.annotations.RemoteCursor"
+            super="org.eclipse.ecf.docshare.annotations.RemoteSelection">
+      </type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationType="org.eclipse.ecf.docshare.annotations.RemoteSelection"
+            colorPreferenceKey="remoteSelectionColor"
+            colorPreferenceValue="231,223,143"
+            contributesToHeader="false"
+            highlightPreferenceKey="remoteSelectionHighlighting"
+            highlightPreferenceValue="true"
+            includeOnPreferencePage="true"
+            label="%label.annotation.remote.selection"
+            overviewRulerPreferenceKey="remoteSelectionIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            presentationLayer="5"
+            textPreferenceKey="remoteSelectionTextIndication"
+            textPreferenceValue="false"
+            textStylePreferenceKey="remoteSelectionTextIndicationStyle"
+            textStylePreferenceValue="NONE">
+      </specification>
+      <specification
+            annotationType="org.eclipse.ecf.docshare.annotations.RemoteCursor"
+            colorPreferenceKey="remoteCursorColor"
+            colorPreferenceValue="166,138,60"
+            contributesToHeader="false"
+            highlightPreferenceKey="remoteCursorHighlighting"
+            highlightPreferenceValue="false"
+            includeOnPreferencePage="true"
+            label="%label.annotation.remote.cursor"
+            overviewRulerPreferenceKey="remoteCursorIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            presentationLayer="5"
+            textPreferenceKey="remoteCursorTextIndication"
+            textPreferenceValue="true"
+            textStylePreferenceKey="remoteCursorTextIndicationStyle"
+            textStylePreferenceValue="IBEAM">
+      </specification>
+   </extension>
+
 </plugin>

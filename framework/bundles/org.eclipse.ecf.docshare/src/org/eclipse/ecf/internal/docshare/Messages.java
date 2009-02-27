@@ -29,6 +29,7 @@ public class Messages extends NLS {
 	public static String DocShare_EXCEPTION_RECEIVING_MESSAGE_TITLE;
 	public static String DocShare_EXCEPTION_SEND_MESSAGE;
 	public static String DocShare_REMOTE_USER_STOPPED;
+	public static String DocShare_RemoteSelection;
 	public static String DocShare_STOP_SHARED_EDITOR_REMOTE;
 	public static String DocShare_STOP_SHARED_EDITOR_TITLE;
 	public static String DocShare_STOP_SHARED_EDITOR_US;

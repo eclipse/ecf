@@ -14,7 +14,11 @@
 
 package org.eclipse.ecf.docshare;
 
+import org.eclipse.ecf.internal.docshare.Messages;
+
 import java.io.*;
+import java.util.Collections;
+import java.util.Map;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.*;
@@ -36,6 +40,8 @@ import org.eclipse.ecf.sync.doc.DocumentChangeMessage;
 import org.eclipse.ecf.sync.doc.IDocumentSynchronizationStrategyFactory;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.*;
+import org.eclipse.jface.text.source.*;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.*;
@@ -49,6 +55,97 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * @since 2.1
  */
 public class DocShare extends AbstractShare {
+
+	public static class SelectionReceiver {
+
+		private static final String SELECTION_ANNOTATION_ID = "org.eclipse.ecf.docshare.annotations.RemoteSelection"; //$NON-NLS-1$
+		private static final String CURSOR_ANNOTATION_ID = "org.eclipse.ecf.docshare.annotations.RemoteCursor"; //$NON-NLS-1$
+
+		/**
+		 * Annotation model of current document
+		 */
+		private IAnnotationModel annotationModel;
+
+		/**
+		 * Object to use as lock for changing in annotation model,
+		 * <code>null</code> if no model is provided.
+		 */
+		private Object annotationModelLock;
+
+		/**
+		 * Annotation for remote selection in annotationModel
+		 */
+		private Annotation currentAnnotation;
+
+		public SelectionReceiver(ITextEditor editor) {
+			if (editor == null) {
+				return;
+			}
+			IDocumentProvider documentProvider = editor.getDocumentProvider();
+			if (documentProvider != null) {
+				this.annotationModel = documentProvider.getAnnotationModel(editor.getEditorInput());
+				if (this.annotationModel != null) {
+					if (this.annotationModel instanceof ISynchronizable) {
+						this.annotationModelLock = ((ISynchronizable) this.annotationModel).getLockObject();
+					}
+					if (this.annotationModelLock == null) {
+						this.annotationModelLock = this;
+					}
+				}
+			}
+		}
+
+		public void handleMessage(final SelectionMessage remoteMsg) {
+			if (this.annotationModelLock == null) {
+				return;
+			}
+			final Position newPosition = new Position(remoteMsg.getOffset(), remoteMsg.getLength());
+			final Annotation newAnnotation = new Annotation(newPosition.getLength() > 0 ? SELECTION_ANNOTATION_ID : CURSOR_ANNOTATION_ID, false, Messages.DocShare_RemoteSelection);
+			synchronized (this.annotationModelLock) {
+				if (this.annotationModel != null) {
+					// initial selection, create new
+					if (this.currentAnnotation == null) {
+						this.currentAnnotation = newAnnotation;
+						this.annotationModel.addAnnotation(newAnnotation, newPosition);
+						return;
+					}
+					// selection not changed, skip
+					if (this.currentAnnotation.getType() == newAnnotation.getType()) {
+						Position oldPosition = this.annotationModel.getPosition(this.currentAnnotation);
+						if (oldPosition == null || newPosition.equals(oldPosition)) {
+							return;
+						}
+					}
+					// selection changed, replace annotation
+					if (this.annotationModel instanceof IAnnotationModelExtension) {
+						Annotation[] oldAnnotations = new Annotation[] {this.currentAnnotation};
+						this.currentAnnotation = newAnnotation;
+						Map newAnnotations = Collections.singletonMap(newAnnotation, newPosition);
+						((IAnnotationModelExtension) this.annotationModel).replaceAnnotations(oldAnnotations, newAnnotations);
+					} else {
+						this.annotationModel.removeAnnotation(this.currentAnnotation);
+						this.annotationModel.addAnnotation(newAnnotation, newPosition);
+					}
+				}
+			}
+		}
+
+		public void dispose() {
+			if (this.annotationModelLock == null) {
+				return;
+			}
+			synchronized (this.annotationModelLock) {
+				if (this.annotationModel != null) {
+					if (this.currentAnnotation != null) {
+						this.annotationModel.removeAnnotation(this.currentAnnotation);
+						this.currentAnnotation = null;
+					}
+					this.annotationModel = null;
+				}
+			}
+		}
+
+	}
 
 	/**
 	 * The ID of the initiator 
@@ -89,6 +186,11 @@ public class DocShare extends AbstractShare {
 	 * Factory to returns the possible strategies
 	 */
 	IDocumentSynchronizationStrategyFactory factory;
+
+	/**
+	 * Handler for SelectionMessage (painting remote selection)
+	 */
+	SelectionReceiver selectionReceiver;
 
 	/**
 	 * Create a document sharing session instance.
@@ -210,6 +312,37 @@ public class DocShare extends AbstractShare {
 		}
 	};
 
+	ISelectionChangedListener selectionListener = new ISelectionChangedListener() {
+
+		public void selectionChanged(final SelectionChangedEvent event) {
+			// If the channel is gone, then no reason to handle this.
+			if (getChannel() == null || !Activator.getDefault().isListenerActive()) {
+				return;
+			}
+			// If the listener is not active, ignore input
+			if (!Activator.getDefault().isListenerActive()) {
+				// The local editor is being updated by a remote peer, so we do
+				// not
+				// wish to echo this change.
+				return;
+			}
+			Trace.trace(Activator.PLUGIN_ID, NLS.bind("{0}.selectionChanged[{1}]", DocShare.this, event)); //$NON-NLS-1$
+
+			if (!(event.getSelection() instanceof ITextSelection)) {
+				return;
+			}
+			final ITextSelection textSelection = (ITextSelection) event.getSelection();
+			final SelectionMessage msg = new SelectionMessage(textSelection.getOffset(), textSelection.getLength());
+
+			try {
+				sendMessage(getOtherID(), msg.serialize());
+			} catch (final Exception e) {
+				logError(Messages.DocShare_EXCEPTION_SEND_MESSAGE, e);
+			}
+		}
+
+	};
+
 	/**
 	 * Start sharing an editor's contents between two participants. This will
 	 * send a request to start sharing with the target identified by the
@@ -283,6 +416,11 @@ public class DocShare extends AbstractShare {
 
 			if (message instanceof DocumentChangeMessage) {
 				handleUpdateMessage((DocumentChangeMessage) message);
+			} else if (message instanceof SelectionMessage) {
+				SelectionReceiver receiver = selectionReceiver;
+				if (receiver != null) {
+					receiver.handleMessage((SelectionMessage) message);
+				}
 			} else if (message instanceof StartMessage) {
 				handleStartMessage((StartMessage) message);
 			} else if (message instanceof StopMessage) {
@@ -590,11 +728,19 @@ public class DocShare extends AbstractShare {
 			final IDocument doc = getDocumentFromEditor();
 			if (doc != null)
 				doc.addDocumentListener(documentListener);
+			if (this.editor != null) {
+				ISelectionProvider selectionProvider = this.editor.getSelectionProvider();
+				if (selectionProvider instanceof IPostSelectionProvider) {
+					((IPostSelectionProvider) selectionProvider).addPostSelectionChangedListener(selectionListener);
+				}
+				selectionReceiver = new SelectionReceiver(this.editor);
+			}
 		}
 
 	}
 
 	void localStopShare() {
+		SelectionReceiver oldSelectionReceiver;
 		synchronized (stateLock) {
 			if (rosterManager != null)
 				rosterManager.removeRosterListener(rosterListener);
@@ -606,12 +752,23 @@ public class DocShare extends AbstractShare {
 			final IDocument doc = getDocumentFromEditor();
 			if (doc != null)
 				doc.removeDocumentListener(documentListener);
-			if (editor != null) {
-				editor.getSite().getPage().removePartListener(partListener);
+			if (this.editor != null) {
+				this.editor.getSite().getPage().removePartListener(partListener);
+
+				ISelectionProvider selectionProvider = this.editor.getSelectionProvider();
+				if (selectionProvider instanceof IPostSelectionProvider) {
+					((IPostSelectionProvider) selectionProvider).removePostSelectionChangedListener(selectionListener);
+				}
 			}
+			oldSelectionReceiver = this.selectionReceiver;
+			this.selectionReceiver = null;
+
 			this.editor = null;
 		}
 
+		if (oldSelectionReceiver != null) {
+			oldSelectionReceiver.dispose();
+		}
 	}
 
 	void sendStopMessage() {
