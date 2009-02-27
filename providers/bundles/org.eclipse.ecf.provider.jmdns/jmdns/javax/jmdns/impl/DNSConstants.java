@@ -17,7 +17,7 @@ public final class DNSConstants
     // changed to final class - jeffs
     public final static String MDNS_GROUP = "224.0.0.251";
     public final static String MDNS_GROUP_IPV6 = "FF02::FB";
-    public final static int MDNS_PORT = 5353;
+    public final static int MDNS_PORT = Integer.parseInt(System.getProperty("net.mdns.port", "5353"));
     public final static int DNS_PORT = 53;
     public final static int DNS_TTL = 60 * 60;	// default one hour TTL
     // public final static int DNS_TTL		    = 120 * 60;	// two hour TTL (draft-cheshire-dnsext-multicastdns.txt ch 13)
@@ -122,4 +122,6 @@ public final class DNSConstants
     public final static int RECORD_REAPER_INTERVAL = 10000;         //milliseconds between cache cleanups.
     public final static int KNOWN_ANSWER_TTL = 120;
     public final static int ANNOUNCED_RENEWAL_TTL_INTERVAL = DNS_TTL * 500; // 50% of the TTL in milliseconds
+    
+    public final static String DNS_META_QUERY = "._dns-sd._udp."; // PTR records, where the rdata of each PTR record is the two-label name of a service type, e.g. "_http._tcp.
 }

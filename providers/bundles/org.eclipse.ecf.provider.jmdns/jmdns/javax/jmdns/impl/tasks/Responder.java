@@ -203,11 +203,11 @@ public class Responder extends TimerTask
                                                 }
                                             }
                                         }
-                                        if (q.getName().equalsIgnoreCase("_services._mdns._udp.local."))
+                                        if (q.getName().equalsIgnoreCase("_services" + DNSConstants.DNS_META_QUERY + "local."))
                                         {
                                             for (Iterator serviceTypeIterator = this.jmDNSImpl.getServiceTypes().values().iterator(); serviceTypeIterator.hasNext();)
                                             {
-                                                answers.add(new DNSRecord.Pointer("_services._mdns._udp.local.", DNSConstants.TYPE_PTR, DNSConstants.CLASS_IN, DNSConstants.DNS_TTL, (String) serviceTypeIterator.next()));
+                                                answers.add(new DNSRecord.Pointer("_services" + DNSConstants.DNS_META_QUERY + "local.", DNSConstants.TYPE_PTR, DNSConstants.CLASS_IN, DNSConstants.DNS_TTL, (String) serviceTypeIterator.next()));
                                             }
                                         }
                                         break;
