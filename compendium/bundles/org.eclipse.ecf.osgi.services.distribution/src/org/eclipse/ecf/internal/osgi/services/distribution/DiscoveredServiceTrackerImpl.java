@@ -223,7 +223,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						registration);
 				m.put(serviceName, rsr);
 				trace("addRemoteServiceRegistration", "adding discoveryID="
-						+ discoveryContainerID + ",serviceName=" + serviceName);
+						+ discoveryContainerID + ",serviceName=" + serviceName
+						+ ",serviceReference=" + registration.getReference());
 				// And add to distribution provider
 				distributionProvider.addRemoteService(registration
 						.getReference());
