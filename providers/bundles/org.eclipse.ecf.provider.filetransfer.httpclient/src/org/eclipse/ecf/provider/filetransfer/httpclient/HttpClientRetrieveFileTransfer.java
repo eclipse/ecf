@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
@@ -540,7 +539,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	protected static String getHostFromURL(String url) {
 		String result = url;
 		final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
-
+		if (colonSlashSlash < 0)
+			return ""; //$NON-NLS-1$
 		if (colonSlashSlash >= 0) {
 			result = url.substring(colonSlashSlash + 3);
 		}
@@ -565,6 +565,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected static int getPortFromURL(String url) {
 		final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
+		if (colonSlashSlash < 0)
+			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
 		final int colonPort = url.indexOf(':', colonSlashSlash + 1);
 		if (colonPort < 0)
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
@@ -582,6 +584,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected static String getPathFromURL(String url) {
 		final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
+		if (colonSlashSlash < 0)
+			return "/"; //$NON-NLS-1$
 		final int requestPath = url.indexOf('/', colonSlashSlash + 3);
 		if (requestPath < 0)
 			return "/"; //$NON-NLS-1$
