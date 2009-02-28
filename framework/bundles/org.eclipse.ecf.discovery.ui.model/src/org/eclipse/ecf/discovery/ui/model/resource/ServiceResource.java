@@ -11,8 +11,7 @@
 package org.eclipse.ecf.discovery.ui.model.resource;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.*;
@@ -30,6 +29,7 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.URIConverterImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.osgi.util.NLS;
 
 public class ServiceResource extends ResourceImpl implements Resource {
 
@@ -53,9 +53,9 @@ public class ServiceResource extends ResourceImpl implements Resource {
 		public void connect() {
 			try {
 				lock.acquire();
-				container = ContainerFactory.getDefault()
-						.createContainer(DISCOVERY_CONTAINER,
-								new Object[] { "ecf.discovery.composite.locator" });
+				container = ContainerFactory.getDefault().createContainer(
+						DISCOVERY_CONTAINER,
+						new Object[] { "ecf.discovery.composite.locator" }); //$NON-NLS-1$
 				discovery = (IDiscoveryLocator) container
 						.getAdapter(IDiscoveryLocator.class);
 				if (discovery != null) {
@@ -66,9 +66,9 @@ public class ServiceResource extends ResourceImpl implements Resource {
 					for (int i = 0; i < services.length; i++) {
 						serviceDiscovered(services[i]);
 						Trace.trace(ModelPlugin.PLUGIN_ID,
-								ModelPlugin.PLUGIN_ID + "/methods/tracing",
-								ServiceResource.class, "connect",
-								"serviceResolved: " + services[i].toString());
+								ModelPlugin.PLUGIN_ID + "/methods/tracing", //$NON-NLS-1$
+								ServiceResource.class, "connect", //$NON-NLS-1$
+								"serviceResolved: " + services[i].toString()); //$NON-NLS-1$
 					}
 				} else {
 					ModelPlugin
@@ -154,23 +154,37 @@ public class ServiceResource extends ResourceImpl implements Resource {
 		private IServiceInfo getIServiceInfo(
 				org.eclipse.ecf.discovery.IServiceInfo ecfServiceInfo) {
 			Trace.entering(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-					+ "/methods/entering", ServiceResource.class,
-					"getIServiceInfo", ecfServiceInfo);
+					+ "/methods/entering", ServiceResource.class, //$NON-NLS-1$
+					"getIServiceInfo", ecfServiceInfo); //$NON-NLS-1$
 			IServiceInfo emfIServiceInfo;
+			URI anUri = null;
 			try {
-				emfIServiceInfo = (IServiceInfo) resourceSet.getEObject(
-						convertToURI(ecfServiceInfo), true);
+				anUri = convertToURI(ecfServiceInfo);
+				emfIServiceInfo = (IServiceInfo) resourceSet.getEObject(anUri,
+						true);
 				createEMFIServiceInfo(ecfServiceInfo, emfIServiceInfo);
+				return emfIServiceInfo;
 			} catch (RuntimeException e) {
-				ModelPlugin.getDefault().getLog().log(
-						new Status(IStatus.INFO, ModelPlugin.PLUGIN_ID, e
-								.getMessage()));
-				emfIServiceInfo = ModelFactory.eINSTANCE.createIServiceInfo();
-				createEMFIServiceInfo(ecfServiceInfo, emfIServiceInfo);
+				if (e.getCause() instanceof MalformedURLException) {
+					ModelPlugin
+							.getDefault()
+							.getLog()
+							.log(
+									new Status(
+											IStatus.INFO,
+											ModelPlugin.PLUGIN_ID,
+											NLS
+													.bind(
+															Messages.ServiceResource_NoEMFServiceModel,
+															anUri)));
+				} else {
+					ModelPlugin.getDefault().getLog().log(
+							new Status(IStatus.INFO, ModelPlugin.PLUGIN_ID, e
+									.getMessage()));
+				}
 			}
-			Trace.exiting(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-					+ "/methods/exiting", ServiceResource.class,
-					"getIServiceInfo", ecfServiceInfo);
+			emfIServiceInfo = ModelFactory.eINSTANCE.createIServiceInfo();
+			createEMFIServiceInfo(ecfServiceInfo, emfIServiceInfo);
 			return emfIServiceInfo;
 		}
 
@@ -200,7 +214,7 @@ public class ServiceResource extends ResourceImpl implements Resource {
 			// set Authority to host and port of the service
 			uri = URI.createHierarchicalURI(uri.scheme(), anIServiceInfo
 					.getLocation().getHost()
-					+ ":" + anIServiceInfo.getLocation().getPort(), null, uri
+					+ ":" + anIServiceInfo.getLocation().getPort(), null, uri //$NON-NLS-1$
 					.segments(), null, null); //$NON-NLS-1$ 
 
 			return uri;
@@ -253,8 +267,8 @@ public class ServiceResource extends ResourceImpl implements Resource {
 			try {
 				lock.acquire();
 				Trace.entering(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-						+ "/methods/entering", ServiceResource.class,
-						"serviceRemoved", ecfEvent);
+						+ "/methods/entering", ServiceResource.class, //$NON-NLS-1$
+						"serviceRemoved", ecfEvent); //$NON-NLS-1$
 				org.eclipse.ecf.discovery.IServiceInfo ecfServiceInfo = ecfEvent
 						.getServiceInfo();
 
@@ -275,8 +289,8 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				getResourceSet().getResources().removeAll(resources);
 
 				Trace.trace(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-						+ "/methods/tracing", ServiceResource.class,
-						"serviceRemoved", "Removed service " + emfIServiceInfo);
+						+ "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
+						"serviceRemoved", "Removed service " + emfIServiceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 
 				// remove the host if no services left for this particular host
 				IHost host = findIHost(getInetAddress(ecfServiceInfo
@@ -284,12 +298,12 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				if (host != null && host.getServices().size() < 1) {
 					EcoreUtil.remove(host);
 					Trace.trace(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-							+ "/methods/tracing", ServiceResource.class,
-							"serviceRemoved", "Removed host " + host);
+							+ "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
+							"serviceRemoved", "Removed host " + host); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				Trace.exiting(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-						+ "/methods/exiting", ServiceResource.class,
-						"serviceRemoved", ecfEvent);
+						+ "/methods/exiting", ServiceResource.class, //$NON-NLS-1$
+						"serviceRemoved", ecfEvent); //$NON-NLS-1$
 			} finally {
 				lock.release();
 			}
@@ -314,8 +328,8 @@ public class ServiceResource extends ResourceImpl implements Resource {
 		private void serviceDiscovered(
 				org.eclipse.ecf.discovery.IServiceInfo ecfServiceInfo) {
 			Trace.entering(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-					+ "/methods/entering", ServiceResource.class,
-					"serviceResolved", ecfServiceInfo);
+					+ "/methods/entering", ServiceResource.class, //$NON-NLS-1$
+					"serviceResolved", ecfServiceInfo); //$NON-NLS-1$
 			String hostname = ecfServiceInfo.getLocation().getHost();
 			if (hostname != null && findIServiceInfo(ecfServiceInfo) == null) { // so
 				// far
@@ -328,11 +342,10 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				// a
 				// host
 				IServiceInfo emfIServiceInfo = getIServiceInfo(ecfServiceInfo);
-				Trace
-						.trace(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-								+ "/methods/tracing", ServiceResource.class,
-								"serviceResolved", "Service created "
-										+ emfIServiceInfo);
+				Trace.trace(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
+						+ "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
+						"serviceResolved", "Service created " //$NON-NLS-1$ //$NON-NLS-2$
+								+ emfIServiceInfo);
 				InetAddress inetAddress = getInetAddress(ecfServiceInfo
 						.getLocation());
 				IHost host = findIHost(inetAddress);
@@ -342,15 +355,15 @@ public class ServiceResource extends ResourceImpl implements Resource {
 							.getContents().get(0);
 					network.getHosts().add(host);
 					Trace.trace(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-							+ "/methods/tracing", ServiceResource.class,
-							"serviceResolved", "Host created "
+							+ "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
+							"serviceResolved", "Host created " //$NON-NLS-1$ //$NON-NLS-2$
 									+ emfIServiceInfo);
 				}
 				host.getServices().add(emfIServiceInfo);
 			}
 			Trace.exiting(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-					+ "/methods/exiting", ServiceResource.class,
-					"serviceResolved", ecfServiceInfo);
+					+ "/methods/exiting", ServiceResource.class, //$NON-NLS-1$
+					"serviceResolved", ecfServiceInfo); //$NON-NLS-1$
 		}
 
 		private InetAddress getInetAddress(java.net.URI anURI) {
@@ -360,8 +373,8 @@ public class ServiceResource extends ResourceImpl implements Resource {
 					return InetAddress.getByName(host);
 				} catch (UnknownHostException e) {
 					Trace.catching(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-							+ "/methods/catching", ServiceResource.class,
-							"getInetAddress", e);
+							+ "/methods/catching", ServiceResource.class, //$NON-NLS-1$
+							"getInetAddress", e); //$NON-NLS-1$
 				}
 			}
 			return null;
@@ -427,7 +440,7 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				this.getContents().add(network);
 				setModified(true);
 
-				Job job = new Job("ServiceDiscoveryListener") {
+				Job job = new Job("ServiceDiscoveryListener") { //$NON-NLS-1$
 
 					/*
 					 * (non-Javadoc)

@@ -13,8 +13,9 @@ package org.eclipse.ecf.discovery.ui.model.resource;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "org.eclipse.ecf.discovery.model.resource.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.ecf.discovery.ui.model.resource.messages"; //$NON-NLS-1$
 	public static String ServiceResource_NO_DISCOVERY_CONTAINER_AVAILABLE;
+	public static String ServiceResource_NoEMFServiceModel;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
