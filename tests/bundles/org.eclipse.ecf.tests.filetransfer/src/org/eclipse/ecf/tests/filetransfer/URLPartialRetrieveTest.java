@@ -120,6 +120,7 @@ public class URLPartialRetrieveTest extends ContainerAbstractTestCase {
 						isDone = true;
 						notify.notify();
 					}
+					session = ((IIncomingFileTransferReceiveDoneEvent) event).getSource();
 				}
 			}
 		};

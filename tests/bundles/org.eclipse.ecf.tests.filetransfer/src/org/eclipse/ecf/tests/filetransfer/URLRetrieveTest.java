@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004 Composent, Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,6 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
@@ -100,6 +99,24 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		assertTrue(tmpFile.length() > 0);
 	}
 
+	protected void testReceiveFails(String url) throws Exception {
+		assertNotNull(retrieveAdapter);
+		final IFileTransferListener listener = createFileTransferListener();
+		try {
+			final IFileID fileID = createFileID(new URL(url));
+			retrieveAdapter.sendRetrieveRequest(fileID, listener, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.toString());
+		}
+
+		waitForDone(10000);
+
+		assertHasNoEvent(startEvents, IIncomingFileTransferReceiveStartEvent.class);
+		assertHasNoEvent(dataEvents, IIncomingFileTransferReceiveDataEvent.class);
+		assertHasEvent(doneEvents, IIncomingFileTransferReceiveDoneEvent.class);
+	}
+
 	public void testReceiveFile() throws Exception {
 		//addProxy("composent.com",3129,"foo\\bar","password");
 		testReceive(HTTP_RETRIEVE);
@@ -115,10 +132,10 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	public void testFailedReceive() throws Exception {
 		try {
-			testReceive(HTTP_404_FAIL_RETRIEVE);
-			fail();
+			testReceiveFails(HTTP_404_FAIL_RETRIEVE);
 		} catch (final Exception e) {
-			assertTrue(e instanceof IncomingFileTransferException);
+			e.printStackTrace();
+			fail(e.toString());
 		}
 	}
 	

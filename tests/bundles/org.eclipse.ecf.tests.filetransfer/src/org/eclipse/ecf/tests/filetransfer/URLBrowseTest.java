@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2008 Composent, Inc. and others.
+ * Copyright (c) 2008, 2009 Composent, Inc., IBM and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,14 +7,16 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    
  *****************************************************************************/
 
 package org.eclipse.ecf.tests.filetransfer;
 
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileAttributes;
@@ -28,7 +30,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 public class URLBrowseTest extends AbstractBrowseTestCase {
 
 	public URL[] testURLs = null;
-	private Collection events;
+	private List events;
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.filetransfer.AbstractBrowseTestCase#setUp()
@@ -76,6 +78,18 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 			}
 		}
 		
+	}
+	
+	public void testBrowseUnknownHost() throws Exception {
+		testBrowse(new URL(URLRetrieveTestUnknownHost.HTTP_UNKNOWN_HOST_URL));
+		Thread.sleep(3000);
+		assertHasEventCount(events, IRemoteFileSystemBrowseEvent.class, 1);
+		IRemoteFileSystemBrowseEvent event = (IRemoteFileSystemBrowseEvent) events.get(0);
+		assertNotNull(event);
+		final IRemoteFile[] remoteFiles = event.getRemoteFiles();
+		assertNull(remoteFiles);
+		assertNotNull(event.getException());
+		assertTrue(event.getException() instanceof UnknownHostException);
 	}
 	
 	protected void verifyRemoteFilesWithoutLastModifiedAndContentLength(final IRemoteFile[] remoteFiles) {
