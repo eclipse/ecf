@@ -30,7 +30,8 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
 	public static final String HTTPS_RETRIEVE = "https://www.verisign.com";
 	public static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
-
+	public static final String HTTP_BAD_URL = "http:fubar";
+	
 	private static final String FTP_RETRIEVE = "ftp://ftp.osuosl.org/pub/eclipse/rt/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
 	
 	// See bug 237936
@@ -139,6 +140,18 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		}
 	}
 	
+	public void testRetrieveBadURL() throws Exception {
+		try {
+			testReceiveFails(HTTP_BAD_URL);
+			IIncomingFileTransferReceiveDoneEvent event = (IIncomingFileTransferReceiveDoneEvent) doneEvents.get(0);
+			Exception except = event.getException();
+			assertTrue(except != null);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			fail(e.toString());
+		}
+	}
+
 	public void testReceiveGzip() throws Exception {
 		testReceive(BUG_237936_URL);
 	}
