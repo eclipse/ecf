@@ -160,6 +160,17 @@ public class JMDNSPlugin implements BundleActivator {
 		}
 	}
 
+	/**
+	 * @param string
+	 * @param t
+	 */
+	public void logInfo(final String string, final Throwable t) {
+		getLogService();
+		if (logService != null) {
+			logService.log(LogService.LOG_INFO, string, t);
+		}
+	}
+
 	protected LogService getLogService() {
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);

@@ -28,6 +28,7 @@ import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.provider.jmdns.*;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
+import org.eclipse.osgi.util.NLS;
 
 public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IDiscoveryService, ServiceListener, ServiceTypeListener {
 
@@ -299,6 +300,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 						aServiceInfo = createIServiceInfoFromServiceInfo(info);
 						serviceTypes.add(aServiceInfo.getServiceID().getServiceTypeID());
 					} catch (final Exception e) {
+						JMDNSPlugin.getDefault().logInfo(NLS.bind(Messages.JMDNSDiscoveryContainer_ServiceCannotBeResolved, serviceName, serviceType), e);
 						return;
 					}
 				}
@@ -391,10 +393,12 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 					props.put(key, object);
 				} catch (final StreamCorruptedException ioe) {
 					props.put(key, serviceInfo.getPropertyString(key));
+				} catch (final EOFException eofe) { // not all byte[] are serialized objs (e.g. a native service)
+					props.put(key, serviceInfo.getPropertyString(key));
 				}
 			}
 		}
-		final URI uri = URI.create(((uriProtocol == null) ? "unknown" : uriProtocol) + "://" + addr.getHostAddress() + ":" + port + ((uriPath == null) ? "" : uriPath)); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		final URI uri = URI.create(((uriProtocol == null) ? org.eclipse.ecf.discovery.ServiceInfo.UNKNOWN_PROTOCOL : uriProtocol) + "://" + addr.getHostAddress() + ":" + port + ((uriPath == null) ? "" : uriPath)); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		final ServiceID sID = createServiceID(serviceInfo.getType() + "_" + namingAuthority, serviceInfo.getName()); //$NON-NLS-1$
 		if (sID == null) {
 			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);

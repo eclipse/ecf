@@ -31,6 +31,7 @@ public final class Messages extends NLS {
 	public static String JMDNSDiscoveryContainer_NO_JMDNS_SERVICE_TYPE;
 	public static String JMDNSDiscoveryContainer_NO_SERVICE_TYPE;
 	public static String JMDNSDiscoveryContainer_SERVICE_NAME_NOT_NULL;
+	public static String JMDNSDiscoveryContainer_ServiceCannotBeResolved;
 	public static String JMDNSNamespace_EXCEPTION_ID_CREATE_SERVICE_TYPE_CANNOT_BE_EMPTY;
 	public static String JMDNSNamespace_EXCEPTION_ID_PARAM_2_WRONG_TYPE;
 	public static String JMDNSNamespace_EXCEPTION_ID_WRONG_PARAM_COUNT;
