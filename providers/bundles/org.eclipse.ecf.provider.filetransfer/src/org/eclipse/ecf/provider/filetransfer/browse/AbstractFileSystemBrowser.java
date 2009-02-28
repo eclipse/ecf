@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Composent, Inc. and others.
+ * Copyright (c) 2007, 2009 Composent, Inc., IBM and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,12 +7,14 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Henrich Kraemer - bug 263613, [transport] Update site contacting / downloading is not cancelable
  *****************************************************************************/
 
 package org.eclipse.ecf.provider.filetransfer.browse;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.*;
@@ -175,7 +177,8 @@ public abstract class AbstractFileSystemBrowser {
 			public String toString() {
 				StringBuffer buf = new StringBuffer("RemoteFileSystemBrowseEvent["); //$NON-NLS-1$
 				buf.append("fileID=").append(fileID).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-				buf.append("files=" + Arrays.asList(remoteFiles)).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+				List list = (remoteFiles != null) ? Arrays.asList(remoteFiles) : null;
+				buf.append("files=").append(list).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 				return buf.toString();
 			}
 

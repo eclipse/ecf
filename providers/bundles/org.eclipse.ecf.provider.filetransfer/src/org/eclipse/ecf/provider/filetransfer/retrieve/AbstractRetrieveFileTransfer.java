@@ -462,8 +462,9 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 * implementation of this method.
 	 * 
 	 * @throws IncomingFileTransferException
+	 * @throws Exception 
 	 */
-	protected abstract void openStreams() throws IncomingFileTransferException;
+	protected abstract void openStreams() throws IncomingFileTransferException, Exception;
 
 	/*
 	 * (non-Javadoc)
@@ -767,12 +768,17 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		this.rangeSpecification = rangeSpec;
 
 		try {
-			this.remoteFileURL = rFileID.getURL();
-		} catch (final MalformedURLException e) {
-			throw new IncomingFileTransferException(NLS.bind(Messages.AbstractRetrieveFileTransfer_MalformedURLException, rFileID), e);
+			try {
+				this.remoteFileURL = rFileID.getURL();
+			} catch (final MalformedURLException e) {
+				throw new IncomingFileTransferException(NLS.bind(Messages.AbstractRetrieveFileTransfer_MalformedURLException, rFileID), e);
+			}
+			setupProxies();
+			openStreams();
+		} catch (final Exception e) {
+			setDoneException(e);
+			fireTransferReceiveDoneEvent();
 		}
-		setupProxies();
-		openStreams();
 	}
 
 	/**
