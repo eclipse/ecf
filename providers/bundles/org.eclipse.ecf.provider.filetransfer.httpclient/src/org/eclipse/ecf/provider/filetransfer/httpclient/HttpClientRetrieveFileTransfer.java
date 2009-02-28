@@ -8,6 +8,7 @@
  *  Composent, Inc. - initial API and implementation
  *  Maarten Meijer - bug 237936, added gzip encoded transfer default
  *  Henrich Kraemer - bug 263869, testHttpsReceiveFile fails using HTTP proxy
+ *  Henrich Kraemer - bug 263613, [transport] Update site contacting / downloading is not cancelable
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
@@ -180,6 +181,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	private String password;
 
 	private int responseCode = -1;
+	private volatile boolean doneFired = false;
 
 	private String remoteFileName;
 
@@ -435,10 +437,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
-	protected void openStreams() throws IncomingFileTransferException {
+	protected void openStreams() throws Exception {
 
 		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "openStreams"); //$NON-NLS-1$
 		final String urlString = getRemoteFileURL().toString();
+		this.doneFired = false;
 
 		int code = -1;
 
@@ -463,13 +466,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				getMethod.setRequestHeader(GzipGetMethod.ACCEPT_ENCODING, GzipGetMethod.CONTENT_ENCODING_ACCEPTED);
 
 			fireConnectStartEvent();
-			if (isCanceled()) {
-				return;
-			}
-			if (isDone()) {
-				if (getException() != null) {
-					throw getException();
-				}
+			if (checkAndHandleDone()) {
 				return;
 			}
 
@@ -483,15 +480,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				connectJob.join();
 				connectJob = null;
 			}
-			if (isCanceled()) {
+			if (checkAndHandleDone()) {
 				return;
-			}
-			if (isDone()) {
-				Exception e = getException();
-				if (e != null) {
-					throw e;
-				}
-				return; // not expected
 			}
 
 			code = responseCode;
@@ -518,11 +508,22 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
 			}
 		} catch (final Exception e) {
-			IncomingFileTransferException ex = new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code);
-			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreams", ex); //$NON-NLS-1$
-			throw ex;
+			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreams", e); //$NON-NLS-1$
+			throw e;
+
 		}
 		Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreams"); //$NON-NLS-1$
+	}
+
+	private boolean checkAndHandleDone() {
+		if (isDone()) {
+			// for cancel the done event should have been fired always.
+			if (!doneFired) {
+				fireTransferReceiveDoneEvent();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -873,6 +874,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected void fireTransferReceiveDoneEvent() {
 		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "fireTransferReceiveDoneEvent len=" + fileLength + ";rcvd=" + bytesReceived); //$NON-NLS-1$ //$NON-NLS-2$
+		this.doneFired = true;
 		super.fireTransferReceiveDoneEvent();
 	}
 
