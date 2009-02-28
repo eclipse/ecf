@@ -72,7 +72,14 @@ public interface IRetrieveFileTransferContainerAdapter extends IAdaptable {
 	 * parameter). File transfer events are asynchronously delivered a file
 	 * transfer listener (second parameter). The given remoteFileID and
 	 * transferListener must not be null.
-	 * 
+	 * <p>
+	 * <b>NOTE</b>: if this method completes successfully, the given transferListener 
+	 * will be asynchronously notified via an IIncomingFileTransferReceiveDoneEvent 
+	 * (along with other possible events).  All implementations are required to 
+	 * issue this event whether successful or failed.  Listeners
+	 * can consult {@link IIncomingFileTransferReceiveDoneEvent#getClass()} to 
+	 * determine whether the transfer operation completed successfully.
+	 * </p>
 	 * @param remoteFileID
 	 *            reference to the remote target file (e.g.
 	 *            http://www.eclipse.org/index.html) or a reference to a
@@ -92,7 +99,7 @@ public interface IRetrieveFileTransferContainerAdapter extends IAdaptable {
 	 * 
 	 * Must not be <code>null</code>.
 	 * @param transferListener
-	 *            a listener for file transfer events. Must not be null
+	 *            a listener for file transfer events. Must not be null.  Must not be null.  See <b>Note</b> above.
 	 * @param options
 	 *            a Map of options associated with sendRetrieveRequest. The
 	 *            particular name/value pairs will be unique to the individual
@@ -109,7 +116,14 @@ public interface IRetrieveFileTransferContainerAdapter extends IAdaptable {
 	 * parameter). File transfer events are asynchronously delivered a file
 	 * transfer listener (third parameter). The given remoteFileID and
 	 * transferListener must not be null.
-	 * 
+	 * <p>
+	 * <b>NOTE</b>: if this method completes successfully, the given transferListener 
+	 * will be asynchronously notified via an IIncomingFileTransferReceiveDoneEvent 
+	 * (along with other possible events).  All implementations are required to 
+	 * issue this event whether successful or failed.  Listeners
+	 * can consult {@link IIncomingFileTransferReceiveDoneEvent#getClass()} to 
+	 * determine whether the transfer operation completed successfully.
+	 * </p>
 	 * @param remoteFileID
 	 *            reference to the remote target file (e.g.
 	 *            http://www.eclipse.org/index.html) or a reference to a
@@ -134,7 +148,7 @@ public interface IRetrieveFileTransferContainerAdapter extends IAdaptable {
 	 * rangeSpecification has a start value of 1 and end value of 3, and the total length of the file is
 	 * 5 bytes with content [a, b, c, d, e], a successful retrieve request would transfer bytes 'b', 'c', and 'd', but not 'a', and 'e'.
 	 * @param transferListener
-	 *            a listener for file transfer events. Must not be null
+	 *            a listener for file transfer events. Must not be null.  See <b>Note</b> above.
 	 * @param options
 	 *            a Map of options associated with sendRetrieveRequest. The
 	 *            particular name/value pairs will be unique to the individual
