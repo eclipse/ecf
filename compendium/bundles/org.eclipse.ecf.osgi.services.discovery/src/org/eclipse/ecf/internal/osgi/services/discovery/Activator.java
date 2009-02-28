@@ -9,7 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.osgi.framework.*;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.discovery.ServicePublication;
@@ -22,7 +23,8 @@ public class Activator implements BundleActivator {
 	private static final long DISCOVERY_TIMEOUT = 5000;
 
 	private ServiceTracker servicePublicationTracker;
-	private ServiceTracker discoveryServiceTracker;
+	private ServiceTracker locatorTracker;
+	private ServiceTracker advertiserTracker;
 	private ServiceTracker discoveredServiceTrackerTracker;
 
 	private BundleContext context;
@@ -57,13 +59,23 @@ public class Activator implements BundleActivator {
 		return servicePublicationHandler;
 	}
 
-	public IDiscoveryService getDiscoveryService() throws InterruptedException {
-		if (discoveryServiceTracker == null) {
-			discoveryServiceTracker = new ServiceTracker(this.context,
-					IDiscoveryService.class.getName(), null);
-			discoveryServiceTracker.open();
+	public IDiscoveryLocator getLocator() throws InterruptedException {
+		if (locatorTracker == null) {
+			locatorTracker = new ServiceTracker(this.context,
+					IDiscoveryLocator.class.getName(), null);
+			locatorTracker.open();
 		}
-		return (IDiscoveryService) discoveryServiceTracker
+		return (IDiscoveryLocator) locatorTracker
+				.waitForService(DISCOVERY_TIMEOUT);
+	}
+
+	public IDiscoveryAdvertiser getAdvertiser() throws InterruptedException {
+		if (advertiserTracker == null) {
+			advertiserTracker = new ServiceTracker(this.context,
+					IDiscoveryAdvertiser.class.getName(), null);
+			advertiserTracker.open();
+		}
+		return (IDiscoveryAdvertiser) advertiserTracker
 				.waitForService(DISCOVERY_TIMEOUT);
 	}
 
@@ -87,9 +99,13 @@ public class Activator implements BundleActivator {
 			discoveredServiceTrackerTracker.close();
 			discoveredServiceTrackerTracker = null;
 		}
-		if (discoveryServiceTracker != null) {
-			discoveryServiceTracker.close();
-			discoveryServiceTracker = null;
+		if (locatorTracker != null) {
+			locatorTracker.close();
+			locatorTracker = null;
+		}
+		if (advertiserTracker != null) {
+			advertiserTracker.close();
+			advertiserTracker = null;
 		}
 		if (servicePublicationTracker != null) {
 			servicePublicationTracker.close();

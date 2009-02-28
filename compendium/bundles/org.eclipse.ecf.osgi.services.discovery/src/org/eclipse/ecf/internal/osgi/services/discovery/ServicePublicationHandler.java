@@ -9,7 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import java.io.*;
+import java.io.Serializable;
 import java.net.*;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
@@ -18,7 +18,6 @@ import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
@@ -249,15 +248,6 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		traceException(method + ":" + message, t);
 	}
 
-	private byte[] serializeEndpointContainerID(ID endpointContainerID)
-			throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(bos);
-		oos.writeObject(endpointContainerID);
-		oos.close();
-		return bos.toByteArray();
-	}
-
 	private URI createURI(ID endpointContainerID) throws URISyntaxException {
 		boolean done = false;
 		URI uri = null;
@@ -315,18 +305,30 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		}
 	}
 
-	private IDiscoveryService discovery;
+	private IDiscoveryLocator locator;
+	private IDiscoveryAdvertiser advertiser;
 
-	private synchronized IDiscoveryService getDiscovery() {
+	private synchronized IDiscoveryLocator getLocator() {
 		try {
-			if (discovery == null) {
-				discovery = Activator.getDefault().getDiscoveryService();
-				discovery.addServiceListener(serviceListener);
+			if (locator == null) {
+				locator = Activator.getDefault().getLocator();
+				locator.addServiceListener(serviceListener);
 			}
 		} catch (InterruptedException e) {
-			traceException("getDiscovery", e);
+			traceException("getLocator", e);
 		}
-		return discovery;
+		return locator;
+	}
+
+	private synchronized IDiscoveryAdvertiser getAdvertiser() {
+		try {
+			if (advertiser == null) {
+				advertiser = Activator.getDefault().getAdvertiser();
+			}
+		} catch (InterruptedException e) {
+			traceException("getAdvertiser", e);
+		}
+		return advertiser;
 	}
 
 	String getPropertyWithDefault(Map properties, String key, String def) {
@@ -336,8 +338,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 
 	protected IServiceID createServiceID(Map servicePublicationProperties,
 			Long rsvcid) throws IDCreateException {
-		IDiscoveryService d = getDiscovery();
-		if (d == null)
+		IDiscoveryLocator l = getLocator();
+		if (l == null)
 			return null;
 		String namingAuthority = getPropertyWithDefault(
 				servicePublicationProperties,
@@ -357,7 +359,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		String serviceType = "_" + ECFServicePublication.SERVICE_TYPE + "._"
 				+ protocol + "." + scope + "._" + namingAuthority;
 		return ServiceIDFactory.getDefault().createServiceID(
-				discovery.getServicesNamespace(), serviceType, serviceName);
+				l.getServicesNamespace(), serviceType, serviceName);
 	}
 
 	private void publishService(ServiceReference reference, IServiceInfo svcInfo) {
@@ -366,7 +368,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				addServiceInfo(reference, svcInfo);
 				trace("publishService", "publishing serviceReference="
 						+ reference + ", svcInfo=" + svcInfo);
-				discovery.registerService(svcInfo);
+				getAdvertiser().registerService(svcInfo);
 			} catch (ECFRuntimeException e) {
 				traceException("publishService", e);
 				removeServiceInfo(reference);
@@ -388,7 +390,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 			try {
 				IServiceInfo svcInfo = removeServiceInfo(reference);
 				if (svcInfo != null)
-					discovery.unregisterService(svcInfo);
+					getAdvertiser().unregisterService(svcInfo);
 			} catch (ECFRuntimeException e) {
 				traceException("publishService", e);
 			}
@@ -406,14 +408,17 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	}
 
 	public void dispose() {
-		if (discovery != null) {
-			discovery.removeServiceListener(serviceListener);
+		if (locator != null) {
+			locator.removeServiceListener(serviceListener);
 			for (Iterator i = serviceInfos.keySet().iterator(); i.hasNext();) {
 				ServiceReference sr = (ServiceReference) i.next();
 				unpublishService(sr);
 			}
 			serviceInfos.clear();
-			discovery = null;
+			locator = null;
+		}
+		if (locator != null) {
+			locator = null;
 		}
 	}
 }
