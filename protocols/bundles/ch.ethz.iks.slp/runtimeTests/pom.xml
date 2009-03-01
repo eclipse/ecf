@@ -20,7 +20,7 @@
 				<Bundle-Name>jslp-test</Bundle-Name>
 				<Bundle-SymbolicName>ch.ethz.iks.slp.test</Bundle-SymbolicName>
 				<Bundle-Vendor>Jan S. Rellermeyer, IKS, ETH Zurich</Bundle-Vendor>
-            	<Import-Package>org.osgi.framework, ch.ethz.iks.slp, junit.framework, junit.textui</Import-Package>
+            	<Import-Package>org.osgi.framework, ch.ethz.iks.slp;version="1.0.0", junit.framework, junit.textui</Import-Package>
             	<Private-Package>*</Private-Package>
             	<Bundle-Activator>ch.ethz.iks.slp.impl.TestActivator</Bundle-Activator>
             	<!-- BND just produces Bundle-ManifestVersion: 2 headers which we don't want -->

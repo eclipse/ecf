@@ -220,7 +220,7 @@ public class OSGiPlatformAbstraction implements PlatformAbstraction,
 		}
 
 		public void log(int level, String message, Throwable exception) {
-			log(level, message + exception.getMessage());
+			log(level, message + " " + exception.toString());
 		}
 
 		public void log(ServiceReference sr, int level, String message) {

@@ -399,6 +399,7 @@ public abstract class SLPCore {
 			try {
 				daemon = (SLPDaemon) daemonConstr.newInstance(null);
 			} catch (Exception e) {
+				platform.logWarning("jSLP has not created a SLPDaemon", e);
 				daemon = null;
 			}
 		}
@@ -698,7 +699,7 @@ public abstract class SLPCore {
 		if (msg.xid == 0) {
 			msg.xid = nextXid();
 		}
-		if (msg.getSize() > CONFIG.getMTU() || TCP_ONLY) {
+		if (msg.getSize() > CONFIG.getMTU() || TCP_ONLY || (daemon == null && isMulticastSocketInitialized)) {
 			return sendMessageTCP(msg);
 		}
 

@@ -1,6 +1,0 @@
--Dorg.osgi.framework.system.packages=junit.framework,junit.textui
-
--init
-
--istart file:target/jslp-osgi-1.1.0.RC1.jar
--istart file:runtimeTests/target/jslp-test-1.1.0.RC1.jar

@@ -65,6 +65,9 @@
             <phase>integration-test</phase>
             <configuration>
               <tasks>
+              	<property name="debug.suspend" value="n" />
+              	<property name="debug.port" value="10044" />
+              	<property name="jslp.port" value="10427" />
 				<echo message="Compiling the unit test environment..."/>
 				<mkdir dir="runtimeTests/target"/>
 				<condition property="maven.executable" value="mvn.bat">
@@ -75,15 +78,96 @@
 					<arg line="package"/>
 				</exec>
 				<delete dir="test/storage" quiet="true"/>
+				<echo file="target/init.xargs" append="false">
+					-Dorg.osgi.framework.system.packages=junit.framework,junit.textui
+					-init
+					-istart file:target/jslp-osgi-${pom.version}.jar
+					-istart file:runtimeTests/target/jslp-test-${pom.version}.jar
+				</echo>
 				<java fork="true" classname="ch.ethz.iks.concierge.framework.Framework" failonerror="true" resultproperty="testresult">
 					<classpath>
 						<pathelement location="${maven.dependency.ch.ethz.iks.concierge.concierge.jar.path}"/>
 						<pathelement location="${maven.dependency.junit.junit.jar.path}"/> 
 					</classpath>
-					<jvmarg value="-Dxargs=test/init.xargs"/>
-					<jvmarg value="-Dnet.slp.port=10427"/>
+					<jvmarg value="-Dxargs=target/init.xargs"/>
+					<jvmarg value="-Dnet.slp.port=${jslp.port}"/>
+					<jvmarg value="-Dch.ethz.iks.concierge.log.level=4"/> <!-- LOG_DEBUG -->
+					<jvmarg value="-Dch.ethz.iks.concierge.log.enabled=true"/>
+					<jvmarg value="-Dch.ethz.iks.slp.debug=true" />
+					<jvmarg value="-Dnet.slp.traceDATraffic=true" />
+					<jvmarg value="-Dnet.slp.traceMsg=true" />
+					<jvmarg value="-Dnet.slp.traceDrop=true" />
+					<jvmarg value="-Dnet.slp.traceReg=true" />
+					<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${debug.port},server=y,suspend=${debug.suspend}" />
+					<jvmarg value="-Xdebug" />
+					<jvmarg value="-Dnet.slp.versionUnderTest=${pom.version}" />
 				</java>
 				<delete dir="test/storage" quiet="true"/>
+				
+				<!-- run integration tests with two instances running -->
+				<get src="http://ecf2.osuosl.org/ch.ethz.iks.slp_1.1.0.v20090227-1900.jar" dest="target/ch.ethz.iks.slp_1.1.0.v20090227-1900.jar"/>
+
+				<mkdir dir="target/configuration" />
+				<echo file="target/configuration/config.ini" append="false">
+					eclipse.ignoreApp=true
+					eclipse.consoleLog=true
+					osgi.bundles=file:${maven.dependency.org.eclipse.osgi.services.jar.path}@2:start, \
+								 file:${maven.dependency.org.junit.jar.path}@start, \
+								 file:${basedir}/target/ch.ethz.iks.slp_1.1.0.v20090227-1900.jar@start, \
+								 file:${basedir}/target/jslp-osgi-${pom.version}.jar@start, \
+								 file:${basedir}/runtimeTests/target/jslp-test-${pom.version}.jar@start
+				</echo>
+				<java fork="true" classname="org.eclipse.core.runtime.adaptor.EclipseStarter" failonerror="true" resultproperty="testresult2">
+					<classpath>
+						<pathelement location="${maven.dependency.org.eclipse.osgi.jar.path}"/>
+					</classpath>
+					<!-- osgi locations -->
+					<jvmarg value="-Dosgi.configuration.area=target/configuration" />
+					<!-- jSLP options -->
+					<jvmarg value="-Dnet.slp.port=${jslp.port}"/>
+					<jvmarg value="-Dch.ethz.iks.slp.debug=true" />
+					<jvmarg value="-Dnet.slp.traceDATraffic=true" />
+					<jvmarg value="-Dnet.slp.traceMsg=true" />
+					<jvmarg value="-Dnet.slp.traceDrop=true" />
+					<jvmarg value="-Dnet.slp.traceReg=true" />
+					<jvmarg value="-Dnet.slp.versionUnderTest=${pom.version}" />
+					<!-- enable remote debug mode -->
+					<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${debug.port},server=y,suspend=${debug.suspend}" />
+					<jvmarg value="-Xdebug" />
+					<jvmarg value="-noverify"/>
+				</java>
+				
+				<!-- run integration tests with openslp running on 427 -->
+			<!--
+				<condition property="openslp.running">
+				  <socket server="localhost" port="427"/>
+				</condition>
+				<fail message="An OpenSLP instance must be running on port 427" unless="openslp.running"/>
+				<echo file="target/configuration/config.ini" append="false">
+					eclipse.ignoreApp=true
+					eclipse.consoleLog=true
+					osgi.bundles=file:${maven.dependency.org.eclipse.osgi.services.jar.path}@2:start, \
+								 file:${maven.dependency.org.junit.jar.path}@start, \
+								 file:${basedir}/target/jslp-osgi-${pom.version}.jar@start, \
+								 file:${basedir}/runtimeTests/target/jslp-test-${pom.version}.jar@start
+				</echo>
+				<java fork="true" classname="org.eclipse.core.runtime.adaptor.EclipseStarter" failonerror="true" resultproperty="testresult3">
+					<classpath>
+						<pathelement location="${maven.dependency.org.eclipse.osgi.jar.path}"/>
+					</classpath>
+					<jvmarg value="-Dosgi.configuration.area=target/configuration" />
+					<jvmarg value="-Dnet.slp.port=427"/>
+					<jvmarg value="-Dch.ethz.iks.slp.debug=true" />
+					<jvmarg value="-Dnet.slp.traceDATraffic=true" />
+					<jvmarg value="-Dnet.slp.traceMsg=true" />
+					<jvmarg value="-Dnet.slp.traceDrop=true" />
+					<jvmarg value="-Dnet.slp.traceReg=true" />
+					<jvmarg value="-Dnet.slp.versionUnderTest=${pom.version}" />
+					<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${debug.port},server=y,suspend=${debug.suspend}" />
+					<jvmarg value="-Xdebug" />
+					<jvmarg value="-noverify"/>
+				</java>
+			-->
               </tasks>
             </configuration>
             <goals>
@@ -113,6 +197,7 @@
 				<Bundle-Version>${pom.version}</Bundle-Version>
 				<Bundle-Name>jslp-osgi</Bundle-Name>
 				<Bundle-SymbolicName>ch.ethz.iks.slp</Bundle-SymbolicName>
+				<Export-Package>ch.ethz.iks.slp;version=1.0.0</Export-Package>
 				<_include>~META-INF/MANIFEST.MF</_include>
 				<!-- BND just produces Bundle-ManifestVersion: 2 headers which we don't want -->
 				<_removeheaders>Bundle-ManifestVersion</_removeheaders> 
@@ -170,6 +255,36 @@
 			<version>1.0_RC2</version>
 			<scope>test</scope>
 		</dependency>		
+      	<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>osgi</artifactId>
+			<version>3.3.0-v20070530</version>
+			<scope>test</scope>
+		</dependency>		
+      	<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>services</artifactId>
+			<version>3.1.200-v20070605</version>
+			<scope>test</scope>
+		</dependency>		
+      	<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>osgi</artifactId>
+			<version>3.3.0-v20070530</version>
+			<scope>test</scope>
+		</dependency>		
+      	<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>services</artifactId>
+			<version>3.1.200-v20070605</version>
+			<scope>test</scope>
+		</dependency>		
+      	<dependency>
+			<groupId>org</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.2-v200706111738</version>
+			<scope>test</scope>
+		</dependency>
    </dependencies>
    
   <repositories>
@@ -177,6 +292,11 @@
       <id>iks-repository</id>
       <name>ETH Zurich IKS Repository</name>
       <url>http://www.flowsgi.inf.ethz.ch/repository/maven2/</url>
+    </repository>
+    <repository>
+      <id>Maven eclipse</id>
+      <name>Eclipse Maven</name>
+      <url>http://repo2.maven.org/eclipse/</url>
     </repository>
   </repositories> 
   <pluginRepositories>
