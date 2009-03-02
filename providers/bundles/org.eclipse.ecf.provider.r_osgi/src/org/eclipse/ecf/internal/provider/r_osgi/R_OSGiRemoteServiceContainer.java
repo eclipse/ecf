@@ -137,7 +137,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 							IRemoteServiceReference reference = new RemoteServiceReferenceImpl(createRemoteServiceID(event.getRemoteReference()), event.getRemoteReference());
 
 							public String[] getClazzes() {
-								return (String[]) event.getRemoteReference().getProperty(Constants.OBJECTCLASS);
+								return event.getRemoteReference().getServiceInterfaces();
 							}
 
 							public ID getContainerID() {
@@ -158,7 +158,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 							IRemoteServiceReference reference = new RemoteServiceReferenceImpl(createRemoteServiceID(event.getRemoteReference()), event.getRemoteReference());
 
 							public String[] getClazzes() {
-								return (String[]) event.getRemoteReference().getProperty(Constants.OBJECTCLASS);
+								return event.getRemoteReference().getServiceInterfaces();
 							}
 
 							public ID getContainerID() {
@@ -217,7 +217,37 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	public IRemoteServiceReference[] getRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) throws InvalidSyntaxException {
 		Assert.isNotNull(clazz);
 
-		final RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, filter == null ? null : createRemoteFilter(filter));
+		synchronized (this) {
+			ID cID = getConnectedID();
+			if (cID == null) {
+				if (idFilter == null || idFilter.length == 0)
+					return null;
+				// XXX this should include all idFilter entries...not just first
+				return getRemoteServiceReferencesForTarget(idFilter[0], clazz, filter == null ? null : createRemoteFilter(filter));
+			}
+			return getRemoteServiceReferencesConnected(clazz, filter == null ? null : createRemoteFilter(filter));
+		}
+	}
+
+	private void logException(String message, Throwable e) {
+		// XXX todo
+	}
+
+	private IRemoteServiceReference[] getRemoteServiceReferencesForTarget(ID targetID, String clazz, IRemoteFilter filter) {
+		// If targetID is null, or targetID not in our namespace, return null 
+		if (targetID == null || !targetID.getNamespace().equals(getConnectNamespace()))
+			return null;
+		try {
+			this.connect(targetID, null);
+		} catch (ContainerConnectException e) {
+			logException("getRemoteServiceReferencesForTarget. targetID=" + targetID, e); //$NON-NLS-1$
+			return null;
+		}
+		return getRemoteServiceReferencesConnected(clazz, filter);
+	}
+
+	private IRemoteServiceReference[] getRemoteServiceReferencesConnected(final String clazz, IRemoteFilter filter) {
+		final RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, filter);
 		if (refs == null) {
 			return null;
 		}
@@ -261,7 +291,16 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		props.put(RemoteOSGiService.R_OSGi_REGISTRATION, Boolean.TRUE);
 		// remove the RFC 119 hint, if present, to avoid loops
 		props.remove("osgi.remote.interfaces"); //$NON-NLS-1$
+		// ECF remote service properties
+		// container ID (ID)
 		props.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID, containerID);
+		// Object classes (String [])
+		props.put(org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS, clazzes);
+		// service ranking (Integer).  Allow this to be set by user
+		Integer serviceRanking = (Integer) properties.get(org.eclipse.ecf.remoteservice.Constants.SERVICE_RANKING);
+		serviceRanking = (serviceRanking == null) ? new Integer(0) : serviceRanking;
+		props.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_RANKING, serviceRanking);
+
 		// register the service with the local framework
 		final ServiceRegistration reg = context.registerService(clazzes, service, props);
 		// Set ECF remote service id property based upon local service property
@@ -357,12 +396,12 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(final ID targetID, final IConnectContext connectContext) throws ContainerConnectException {
+	public synchronized void connect(final ID targetID, final IConnectContext connectContext) throws ContainerConnectException {
 		Assert.isNotNull(targetID);
 		//Assert.isNotNull(connectContext);
 
-		if (containerID != null) {
-			throw new ContainerConnectException("Container is already connected to " + containerID); //$NON-NLS-1$
+		if (connectedID != null) {
+			throw new ContainerConnectException("Container is already connected to " + connectedID); //$NON-NLS-1$
 		}
 
 		final R_OSGiID target;
@@ -404,11 +443,12 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#disconnect()
 	 */
-	public void disconnect() {
+	public synchronized void disconnect() {
 		if (connectedID != null) {
 			fireListeners(new ContainerDisconnectingEvent(containerID, connectedID));
 			remoteService.disconnect(connectedID.getURI());
 			connectedID = null;
+			remoteService = null;
 			fireListeners(new ContainerDisconnectedEvent(containerID, connectedID));
 		}
 
@@ -420,8 +460,6 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 * @see org.eclipse.ecf.core.IContainer#dispose()
 	 */
 	public void dispose() {
-		remoteService = null;
-
 		// unregister remote services
 		if (remoteServicesTracker != null) {
 			final ServiceReference[] refs = remoteServicesTracker.getServiceReferences();
@@ -472,7 +510,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 * @return the ID or null.
 	 * @see org.eclipse.ecf.core.IContainer#getConnectedID()
 	 */
-	public ID getConnectedID() {
+	public synchronized ID getConnectedID() {
 		return connectedID;
 	}
 
