@@ -200,10 +200,11 @@ public class IServiceInfoItemProvider
 	 */
 	public String getText(Object object) {
 		IServiceInfo serviceInfo = ((IServiceInfo)object);
-		String serviceAuthority = serviceInfo.getServiceID().getServiceTypeID().getEcfNamingAuthority();
+		String namingAuthority = serviceInfo.getServiceID().getServiceTypeID().getEcfNamingAuthority();
 		List services = serviceInfo.getServiceID().getServiceTypeID().getEcfServices();
 		List protocols = serviceInfo.getServiceID().getServiceTypeID().getEcfProtocols();
-		return getString("_UI_IServiceInfo_type") + " " + serviceAuthority + ":" + services + protocols;
+		return ((services.size() == 1) ? ((String) services.get(0))
+				: services.toString()) + " " + protocols + ":" + namingAuthority;
 	}
 
 	/**

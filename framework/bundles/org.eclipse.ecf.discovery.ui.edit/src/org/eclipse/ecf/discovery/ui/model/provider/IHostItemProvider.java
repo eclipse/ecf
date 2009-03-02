@@ -163,7 +163,7 @@ public class IHostItemProvider
 		String label = ((IHost)object).getName();
 		return label == null || label.length() == 0 ?
 			getString("_UI_IHost_type") : //$NON-NLS-1$
-			getString("_UI_IHost_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+			label;
 	}
 
 	/**
