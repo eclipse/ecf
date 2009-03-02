@@ -57,13 +57,14 @@ public class GenericRemoteServiceRegisterTest extends AbstractDistributionTest i
 	}
 	*/
 	public void testRegisterServerContainer() throws Exception {
+		Thread.sleep(5000);
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		props.put("foo", "bar");
 		registerDefaultService(props);
-		Thread.sleep(10000);
+		Thread.sleep(60000);
 	}
 	/*
 	public void testRegisterServicePublication() throws Exception {
