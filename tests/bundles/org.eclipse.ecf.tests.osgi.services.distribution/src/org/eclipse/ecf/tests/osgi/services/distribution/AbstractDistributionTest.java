@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
+import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
@@ -23,13 +25,14 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
+import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.eclipse.ecf.tests.remoteservice.IConcatService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 
 public abstract class AbstractDistributionTest extends
-		ContainerAbstractTestCase {
+		ContainerAbstractTestCase implements ECFServiceConstants, ECFServicePublication {
 
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 

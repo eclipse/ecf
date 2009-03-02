@@ -8,12 +8,10 @@
  * Contributors:
  *    Jan S. Rellermeyer - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.tests.osgi.services.distribution.impl;
+package org.eclipse.ecf.tests.osgi.services.distribution;
 
-public interface TestServiceInterface1 {
+public interface TestServiceInterface2 {
 
-	final static String TEST_SERVICE_STRING1 = "TestService1";
-	
-	String doStuff1();
+	void doStuff2();
 	
 }

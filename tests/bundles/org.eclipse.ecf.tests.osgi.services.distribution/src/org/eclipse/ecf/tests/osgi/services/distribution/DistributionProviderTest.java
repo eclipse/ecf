@@ -8,10 +8,10 @@
  * Contributors:
  *    Jan S. Rellermeyer - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.tests.osgi.services.distribution.impl;
+package org.eclipse.ecf.tests.osgi.services.distribution;
 
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
-import org.eclipse.ecf.tests.osgi.services.distribution.Activator;
+import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.distribution.DistributionProvider;

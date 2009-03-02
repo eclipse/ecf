@@ -1,4 +1,4 @@
-package org.eclipse.ecf.tests.osgi.services.distribution;
+package org.eclipse.ecf.tests.internal.osgi.services.distribution;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
