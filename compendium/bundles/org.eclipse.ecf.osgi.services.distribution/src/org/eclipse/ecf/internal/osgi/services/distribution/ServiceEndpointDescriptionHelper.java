@@ -22,18 +22,25 @@ class ServiceEndpointDescriptionHelper {
 	private static final long DEFAULT_FUTURE_TIMEOUT = 30000;
 
 	private final ServiceEndpointDescriptionImpl description;
-	private final ID discoveryContainerID;
+	private final ID localDiscoveryContainerID;
+	private final ID originalLocalDiscoveryContainerID;
 	private final IServiceID serviceID;
 	private final String serviceName;
+	private ID endpointID;
 
 	public ServiceEndpointDescriptionHelper(ServiceEndpointDescriptionImpl d)
 			throws NullPointerException {
 		description = d;
 		// Get ECF discovery container ID...if not found there is a problem
-		discoveryContainerID = description.getDiscoveryContainerID();
-		if (discoveryContainerID == null)
+		localDiscoveryContainerID = description.getLocalDiscoveryContainerID();
+		if (localDiscoveryContainerID == null)
 			throw new NullPointerException(
-					"ServiceEndpointDescription discoveryContainerID cannot be null");
+					"ServiceEndpointDescription localDiscoveryContainerID cannot be null");
+		originalLocalDiscoveryContainerID = description
+				.getOriginalLocalDiscoveryContainerID();
+		if (originalLocalDiscoveryContainerID == null)
+			throw new NullPointerException(
+					"ServiceEndpointDescription originalLocalDiscoveryContainerID cannot be null");
 		// Get serviceName from description
 		serviceID = description.getServiceID();
 		if (serviceID == null)
@@ -49,8 +56,8 @@ class ServiceEndpointDescriptionHelper {
 		return description;
 	}
 
-	public ID getDiscoveryContainerID() {
-		return discoveryContainerID;
+	public ID getLocalDiscoveryContainerID() {
+		return localDiscoveryContainerID;
 	}
 
 	public IServiceID getServiceID() {
@@ -78,20 +85,23 @@ class ServiceEndpointDescriptionHelper {
 		return new Long(longStr);
 	}
 
-	public ID getEndpointID() throws IDCreateException {
-		byte[] endpointBytes = description
-				.getPropertyBytes(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
-		if (endpointBytes == null)
-			throw new IDCreateException(
-					"ServiceEndpointDescription endpointBytes cannot be null");
-		String endpointStr = new String(endpointBytes);
-		String namespaceStr = description
-				.getPropertyString(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE);
-		if (namespaceStr == null)
-			throw new IDCreateException(
-					"ServiceEndpointDescription namespaceStr cannot be null");
-
-		return IDFactory.getDefault().createID(namespaceStr, endpointStr);
+	public synchronized ID getEndpointID() throws IDCreateException {
+		if (endpointID == null) {
+			byte[] endpointBytes = description
+					.getPropertyBytes(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
+			if (endpointBytes == null)
+				throw new IDCreateException(
+						"ServiceEndpointDescription endpointBytes cannot be null");
+			String endpointStr = new String(endpointBytes);
+			String namespaceStr = description
+					.getPropertyString(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE);
+			if (namespaceStr == null)
+				throw new IDCreateException(
+						"ServiceEndpointDescription namespaceStr cannot be null");
+			endpointID = IDFactory.getDefault().createID(namespaceStr,
+					endpointStr);
+		}
+		return endpointID;
 	}
 
 	public long getFutureTimeout() {

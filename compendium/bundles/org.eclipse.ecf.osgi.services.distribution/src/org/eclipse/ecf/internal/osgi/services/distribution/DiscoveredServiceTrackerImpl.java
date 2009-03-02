@@ -185,7 +185,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	private ServiceRegistration getRemoteServiceRegistration(
 			ServiceEndpointDescriptionHelper sedh,
 			IRemoteServiceReference reference) {
-		ID discoveryContainerID = sedh.getDiscoveryContainerID();
+		ID discoveryContainerID = sedh.getLocalDiscoveryContainerID();
 		String serviceName = sedh.getServiceName();
 		synchronized (discoveredRemoteServiceRegistrations) {
 			Map m = (Map) discoveredRemoteServiceRegistrations
@@ -204,7 +204,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteServiceContainerAdapter containerAdapter,
 			IRemoteServiceReference ref, ServiceRegistration registration) {
 
-		ID discoveryContainerID = sedh.getDiscoveryContainerID();
+		ID discoveryContainerID = sedh.getLocalDiscoveryContainerID();
 		String serviceName = sedh.getServiceName();
 		synchronized (discoveredRemoteServiceRegistrations) {
 			// Get Map for discoveryContainerID
@@ -239,7 +239,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		synchronized (discoveredRemoteServiceRegistrations) {
 			// Get Map for discoveryContainerID
 			Map m = (Map) discoveredRemoteServiceRegistrations.get(sedh
-					.getDiscoveryContainerID());
+					.getLocalDiscoveryContainerID());
 			if (m == null)
 				return null;
 			RemoteServiceRegistration rsr = (RemoteServiceRegistration) m
@@ -251,7 +251,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteServiceReference remoteReference = rsr.getRemoteReference();
 			if (rsr.getContainerAdapter().ungetRemoteService(remoteReference)) {
 				trace("removeRemoteServiceRegistration", "remove discoveryID="
-						+ sedh.getDiscoveryContainerID() + ",serviceName="
+						+ sedh.getLocalDiscoveryContainerID() + ",serviceName="
 						+ sedh.getServiceName());
 				distributionProvider.removeExposedService(serviceRegistration
 						.getReference());
