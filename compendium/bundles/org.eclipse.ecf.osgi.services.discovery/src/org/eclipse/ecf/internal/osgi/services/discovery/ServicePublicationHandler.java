@@ -19,6 +19,7 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
+import org.eclipse.ecf.provider.discovery.CompositeServiceContainerEvent;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.*;
@@ -30,26 +31,39 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 
 	private final IServiceListener serviceListener = new IServiceListener() {
 		public void serviceDiscovered(IServiceEvent anEvent) {
-			handleServiceDiscovered(anEvent.getLocalContainerID(), anEvent
-					.getServiceInfo());
+			handleServiceDiscovered(anEvent);
 		}
 
 		public void serviceUndiscovered(IServiceEvent anEvent) {
-			handleServiceUndiscovered(anEvent.getLocalContainerID(), anEvent
-					.getServiceInfo());
+			handleServiceUndiscovered(anEvent);
 		}
 	};
 
-	void handleServiceDiscovered(ID localContainerID, IServiceInfo serviceInfo) {
+	void handleServiceDiscovered(IServiceEvent event) {
+		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
+		ID localContainerID = event.getLocalContainerID();
+		// Set the original container ID to the re
+		ID originalLocalContainerID = localContainerID;
+		// If it's a composite container, then there is also the original
+		// container ID
+		if (event instanceof CompositeServiceContainerEvent) {
+			originalLocalContainerID = ((CompositeServiceContainerEvent) event)
+					.getOriginalLocalContainerID();
+		}
+		trace("handleOSGIServiceDiscovered", "localContainerID="
+				+ localContainerID + ",originalLocalContainerID="
+				+ originalLocalContainerID + " serviceInfo=" + serviceInfo);
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceDiscovered", "serviceInfo=" + serviceInfo);
+			trace("handleOSGIServiceDiscovered matched", "localContainerID="
+					+ localContainerID + ",originalLocalContainerID="
+					+ originalLocalContainerID + " serviceInfo=" + serviceInfo);
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
 					discoveredTrackers[i]
 							.serviceChanged(new DiscoveredServiceNotificationImpl(
-									localContainerID,
+									localContainerID, originalLocalContainerID,
 									DiscoveredServiceNotification.AVAILABLE,
 									serviceInfo));
 				}
@@ -57,16 +71,28 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		}
 	}
 
-	void handleServiceUndiscovered(ID localContainerID, IServiceInfo serviceInfo) {
+	void handleServiceUndiscovered(IServiceEvent event) {
+		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
+		ID localContainerID = event.getLocalContainerID();
+		// Set the original container ID to the re
+		ID originalLocalContainerID = localContainerID;
+		// If it's a composite container, then there is also the original
+		// container ID
+		if (event instanceof CompositeServiceContainerEvent) {
+			originalLocalContainerID = ((CompositeServiceContainerEvent) event)
+					.getOriginalLocalContainerID();
+		}
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceUndiscovered", "serviceInfo=" + serviceInfo);
+			trace("handleOSGIServiceUndiscovered", "localContainerID="
+					+ localContainerID + ",originalLocalContainerID="
+					+ originalLocalContainerID + " serviceInfo=" + serviceInfo);
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
 					discoveredTrackers[i]
 							.serviceChanged(new DiscoveredServiceNotificationImpl(
-									localContainerID,
+									localContainerID, originalLocalContainerID,
 									DiscoveredServiceNotification.UNAVAILABLE,
 									serviceInfo));
 				}

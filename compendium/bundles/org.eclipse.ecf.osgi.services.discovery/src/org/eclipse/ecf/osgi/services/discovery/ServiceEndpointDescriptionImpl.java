@@ -24,16 +24,22 @@ public class ServiceEndpointDescriptionImpl implements
 		ServiceEndpointDescription {
 
 	private final ID discoveryContainerID;
+	private final ID originalDiscoveryContainerID;
 	private final IServiceInfo serviceInfo;
 
 	public ServiceEndpointDescriptionImpl(ID localContainerID,
-			IServiceInfo serviceInfo) {
+			ID originalLocalContainerID, IServiceInfo serviceInfo) {
 		this.discoveryContainerID = localContainerID;
+		this.originalDiscoveryContainerID = originalLocalContainerID;
 		this.serviceInfo = serviceInfo;
 	}
 
-	public ID getDiscoveryContainerID() {
+	public ID getLocalDiscoveryContainerID() {
 		return discoveryContainerID;
+	}
+
+	public ID getOriginalLocalDiscoveryContainerID() {
+		return originalDiscoveryContainerID;
 	}
 
 	public IServiceID getServiceID() {
@@ -166,7 +172,10 @@ public class ServiceEndpointDescriptionImpl implements
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl[");
-		sb.append("providedinterfaces=").append(getProvidedInterfaces());
+		sb.append("localContainerID=" + getLocalDiscoveryContainerID());
+		sb.append(";originalLocalContainerID="
+				+ getOriginalLocalDiscoveryContainerID());
+		sb.append(";providedinterfaces=").append(getProvidedInterfaces());
 		sb.append(";location=").append(getLocation());
 		sb.append(";props=").append(getProperties()).append("]");
 		return sb.toString();
