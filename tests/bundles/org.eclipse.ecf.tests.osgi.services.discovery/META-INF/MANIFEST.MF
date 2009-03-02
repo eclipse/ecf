@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OSGi RFC119 Discovery tests
 Bundle-SymbolicName: org.eclipse.ecf.tests.osgi.services.discovery
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.eclipse.ecf.tests.osgi.services.discovery.Activator
+Bundle-Activator: org.eclipse.ecf.tests.internal.osgi.discovery.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Import-Package: org.eclipse.ecf.core,

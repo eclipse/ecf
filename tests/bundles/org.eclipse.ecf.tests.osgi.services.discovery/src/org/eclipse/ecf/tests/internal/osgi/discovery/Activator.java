@@ -1,4 +1,4 @@
-package org.eclipse.ecf.tests.osgi.services.discovery;
+package org.eclipse.ecf.tests.internal.osgi.discovery;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

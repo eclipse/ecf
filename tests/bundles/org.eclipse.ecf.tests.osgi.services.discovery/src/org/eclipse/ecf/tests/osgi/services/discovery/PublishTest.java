@@ -17,6 +17,7 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
+import org.eclipse.ecf.tests.internal.osgi.discovery.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.DiscoveredServiceNotification;
