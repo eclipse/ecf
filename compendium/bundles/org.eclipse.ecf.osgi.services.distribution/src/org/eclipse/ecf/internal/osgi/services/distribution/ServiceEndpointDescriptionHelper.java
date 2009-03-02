@@ -46,7 +46,7 @@ class ServiceEndpointDescriptionHelper {
 		if (serviceID == null)
 			throw new NullPointerException(
 					"ServiceEndpointDescription serviceID cannot be null");
-		serviceName = serviceID.getName();
+		serviceName = serviceID.getServiceName();
 		if (serviceName == null)
 			throw new NullPointerException(
 					"ServiceEndpointDescription serviceName is null");

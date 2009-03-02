@@ -157,12 +157,13 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					IRemoteServiceReference[] remoteReferences = (IRemoteServiceReference[]) futureRemoteReferences
 							.get(sedh.getFutureTimeout());
 					IStatus futureStatus = futureRemoteReferences.getStatus();
-					if (futureStatus.isOK() && remoteReferences != null
-							&& remoteReferences.length > 0) {
-						registerRemoteServiceReferences(sedh, rsca,
-								remoteReferences);
+					if (futureStatus.isOK()) {
+						if (remoteReferences != null)
+							registerRemoteServiceReferences(sedh, rsca,
+									remoteReferences);
 					} else {
-						logFutureError(futureStatus);
+						logError("Future error: " + futureStatus.getMessage(),
+								futureStatus.getException());
 					}
 				} catch (InterruptedException e) {
 					logError("Retrieval of remote references interrupted", e);
@@ -175,11 +176,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			}
 		});
 		t.start();
-	}
-
-	void logFutureError(IStatus futureStatus) {
-		logError("Future error: " + futureStatus.getMessage(), futureStatus
-				.getException());
 	}
 
 	private ServiceRegistration getRemoteServiceRegistration(
