@@ -22,6 +22,8 @@ import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescriptionImpl;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.eclipse.equinox.concurrent.future.TimeoutException;
 import org.osgi.framework.BundleContext;
@@ -89,7 +91,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			sedh = new ServiceEndpointDescriptionHelper(
 					(ServiceEndpointDescriptionImpl) sed);
 		} catch (NullPointerException e) {
-			logError("Error getting data from ServiceEndpointDescription", e);
+			logError("Error getting data from ServiceEndpointDescription="
+					+ sedh, e);
 			return;
 		}
 		removeRemoteServiceRegistration(sedh);
@@ -112,14 +115,15 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			providedInterfaces = sedh.getProvidedInterfaces();
 			endpointID = sedh.getEndpointID();
 		} catch (Exception e) {
-			logError("Error getting data from ServiceEndpointDescription", e);
+			logError("Error getting data from ServiceEndpointDescription="
+					+ sedh, e);
 			return;
 		}
 
 		// Find RSCAs for the given description
 		IRemoteServiceContainerAdapter[] rscas = findRSCAs(sedh);
 		if (rscas == null || rscas.length == 0) {
-			logError("No RemoteServiceContainerAdapters found for description "
+			logError("No RemoteServiceContainerAdapters found for description="
 					+ sedh.getDescription(), null);
 			return;
 		}
@@ -151,9 +155,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					// First get remote service references
-					trace("processFutureForRemoteServiceReferences", "future="
-							+ futureRemoteReferences + " calling future.get");
 					IRemoteServiceReference[] remoteReferences = (IRemoteServiceReference[]) futureRemoteReferences
 							.get(sedh.getFutureTimeout());
 					IStatus futureStatus = futureRemoteReferences.getStatus();
@@ -162,8 +163,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							registerRemoteServiceReferences(sedh, rsca,
 									remoteReferences);
 					} else {
-						logError("Future error: " + futureStatus.getMessage(),
-								futureStatus.getException());
+						logError("Future status not ok: "
+								+ futureStatus.getMessage(), futureStatus
+								.getException());
 					}
 				} catch (InterruptedException e) {
 					logError("Retrieval of remote references interrupted", e);
@@ -215,10 +217,15 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			RemoteServiceRegistration rsr = (RemoteServiceRegistration) m
 					.get(serviceName);
 			if (rsr == null) {
+				// Add listener to containerAdapter
+				containerAdapter
+						.addRemoteServiceListener(new RemoteServiceReferenceUnregisteredListener());
+				// Create remote service registration
 				rsr = new RemoteServiceRegistration(containerAdapter, ref,
 						registration);
+				// Put in map
 				m.put(serviceName, rsr);
-				trace("addRemoteServiceRegistration", "adding discoveryID="
+				trace("addRemoteServiceRegistration", "discoveryContainerID="
 						+ discoveryContainerID + ",serviceName=" + serviceName
 						+ ",serviceReference=" + registration.getReference());
 				// And add to distribution provider
@@ -242,17 +249,84 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					.remove(sedh.getServiceName());
 			if (rsr == null)
 				return null;
-			ServiceRegistration serviceRegistration = rsr
-					.getServiceRegistration();
-			IRemoteServiceReference remoteReference = rsr.getRemoteReference();
-			if (rsr.getContainerAdapter().ungetRemoteService(remoteReference)) {
-				trace("removeRemoteServiceRegistration", "remove discoveryID="
-						+ sedh.getLocalDiscoveryContainerID() + ",serviceName="
-						+ sedh.getServiceName());
-				distributionProvider.removeExposedService(serviceRegistration
-						.getReference());
-				serviceRegistration.unregister();
-				return rsr;
+			trace("removeRemoteServiceRegistration", "discoveryID="
+					+ sedh.getLocalDiscoveryContainerID() + ",serviceName="
+					+ sedh.getServiceName());
+			return removeRemoteServiceRegistration(rsr);
+		}
+	}
+
+	private RemoteServiceRegistration removeRemoteServiceRegistration(
+			RemoteServiceRegistration rsr) {
+		ServiceRegistration serviceRegistration = rsr.getServiceRegistration();
+		IRemoteServiceReference remoteReference = rsr.getRemoteReference();
+		if (rsr.getContainerAdapter().ungetRemoteService(remoteReference)) {
+			trace("removeRemoteServiceRegistration", "rsr=" + rsr);
+			distributionProvider.removeExposedService(serviceRegistration
+					.getReference());
+			serviceRegistration.unregister();
+			return rsr;
+		}
+		return null;
+	}
+
+	class RemoteServiceReferenceUnregisteredListener implements
+			IRemoteServiceListener {
+		public void handleServiceEvent(IRemoteServiceEvent event) {
+			if (event instanceof IRemoteServiceUnregisteredEvent) {
+				try {
+					// Synchronize on the map so no other changes happen while
+					// this is going on...as it can be invoked by an arbitrary
+					// thread
+					synchronized (discoveredRemoteServiceRegistrations) {
+						RemoteServiceRegistration reg = remoteServiceUnregistered((IRemoteServiceUnregisteredEvent) event);
+						if (reg != null) {
+							IRemoteServiceContainerAdapter ca = reg
+									.getContainerAdapter();
+							// remove this listener
+							trace(
+									"RemoteServiceReferenceUnregisteredListener.handleServiceEvent",
+									" removing listener for adapter=" + ca);
+							ca
+									.removeRemoteServiceListener(RemoteServiceReferenceUnregisteredListener.this);
+						}
+					}
+				} catch (Exception e) {
+					logError(
+							"RemoteServiceReferenceUnregisteredListener.handleServiceEvent",
+							e);
+					return;
+				}
+			}
+		}
+	}
+
+	RemoteServiceRegistration[] findAllRemoteServiceRegistrations() {
+		List results = new ArrayList();
+		synchronized (discoveredRemoteServiceRegistrations) {
+			for (Iterator i = discoveredRemoteServiceRegistrations.entrySet()
+					.iterator(); i.hasNext();) {
+				Map serviceNameMap = (Map) i.next();
+				for (Iterator j = serviceNameMap.entrySet().iterator(); j
+						.hasNext();) {
+					results.add(i.next());
+				}
+			}
+		}
+		return (RemoteServiceRegistration[]) results
+				.toArray(new RemoteServiceRegistration[] {});
+	}
+
+	RemoteServiceRegistration remoteServiceUnregistered(
+			IRemoteServiceUnregisteredEvent event) {
+		synchronized (discoveredRemoteServiceRegistrations) {
+			// First find
+			RemoteServiceRegistration[] regs = findAllRemoteServiceRegistrations();
+			for (int i = 0; i < regs.length; i++) {
+				if (regs[i].getRemoteReference().getID().equals(
+						event.getReference().getID())) {
+					return removeRemoteServiceRegistration(regs[i]);
+				}
 			}
 		}
 		return null;
