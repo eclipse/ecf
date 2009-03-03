@@ -14,7 +14,7 @@ import org.osgi.service.discovery.ServicePublication;
 public interface ECFServicePublication extends ServicePublication {
 
 	public static final String SERVICE_TYPE = "osgiservices";
-	public static final String DEFAULT_SERVICE_NAME_PREFIX = "service.";
+	public static final String DEFAULT_SERVICE_NAME_PREFIX = "service ";
 
 	public static final String SERVICE_NAME_PROP = "ecf.sp.svcname";
 	public static final String NAMING_AUTHORITY_PROP = "ecf.sp.namingauth";
