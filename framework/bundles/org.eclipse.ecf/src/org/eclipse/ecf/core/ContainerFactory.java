@@ -440,6 +440,11 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		ID containerID = container.getID();
 		if (containerID == null)
 			return null;
+		return removeContainer(containerID);
+	}
+
+	public IContainer removeContainer(ID containerID) {
+		Assert.isNotNull(containerID);
 		ContainerEntry result = null;
 		synchronized (containers) {
 			result = (ContainerEntry) containers.remove(containerID);
@@ -479,5 +484,16 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 
 	public IContainerFactory getContainerFactory() {
 		return this;
+	}
+
+	public void removeAllContainers() {
+		synchronized (containers) {
+			for (Iterator i = containers.keySet().iterator(); i.hasNext();) {
+				ID key = (ID) i.next();
+				ContainerEntry entry = (ContainerEntry) containers.get(key);
+				i.remove();
+				fireContainerRemoved(entry.getContainer());
+			}
+		}
 	}
 }

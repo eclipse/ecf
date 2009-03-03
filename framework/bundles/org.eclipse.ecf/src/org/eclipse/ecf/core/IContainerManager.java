@@ -94,6 +94,17 @@ public interface IContainerManager {
 	public IContainer removeContainer(IContainer container);
 
 	/**
+	 * Remove given container from manager.
+	 * @param containerID the ID of the container to remove.  Must not be <code>null</code>. 
+	 * 
+	 * @return IContainer instance removed.  If no instance with same ID is found
+	 * then <code>null</code> will be returned.
+	 * 
+	 * @since 3.0
+	 */
+	public IContainer removeContainer(ID containerID);
+
+	/**
 	 * Add listener to this {@link IContainerManager}.
 	 * 
 	 * @param listener the listener to add.  Must not be <code>null</code>.
@@ -108,4 +119,11 @@ public interface IContainerManager {
 	 * @return true if listener successfully removed
 	 */
 	public boolean removeListener(IContainerManagerListener listener);
+
+	/**
+	 * Remove all containers from this manager
+	 * 
+	 * @since 3.0
+	 */
+	public void removeAllContainers();
 }
