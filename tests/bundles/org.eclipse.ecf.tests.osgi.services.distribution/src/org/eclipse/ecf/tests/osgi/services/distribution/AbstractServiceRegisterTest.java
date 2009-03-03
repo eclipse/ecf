@@ -23,12 +23,14 @@ import org.osgi.util.tracker.ServiceTracker;
 public abstract class AbstractServiceRegisterTest extends
 		AbstractDistributionTest {
 
+	private static final int REGISTER_WAIT = 60000;
+
 	public void testRegisterAllContainers() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		props.put("foo", "bar");
 		registerDefaultService(props);
-		Thread.sleep(60000);
+		Thread.sleep(REGISTER_WAIT);
 	}
 
 	public void testRegisterServerContainer() throws Exception {
@@ -38,7 +40,7 @@ public abstract class AbstractServiceRegisterTest extends
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		props.put("foo", "bar");
 		registerDefaultService(props);
-		Thread.sleep(60000);
+		Thread.sleep(REGISTER_WAIT);
 	}
 
 	public void testRegisterServicePublication() throws Exception {
@@ -52,7 +54,7 @@ public abstract class AbstractServiceRegisterTest extends
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		ServiceRegistration reg = registerDefaultService(props);
 
-		Thread.sleep(10000);
+		Thread.sleep(REGISTER_WAIT);
 		
 		// Now get ServicePublications from tracker
 		ServiceReference [] servicePublicationSRs = servicePublicationTracker.getServiceReferences();
@@ -97,7 +99,7 @@ public abstract class AbstractServiceRegisterTest extends
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		ServiceRegistration svcReg = getContext().registerService(getDefaultServiceClasses(), getDefaultService(), props);
 
-		Thread.sleep(10000);
+		Thread.sleep(REGISTER_WAIT);
 		
 		assertNotNull(dsNotification);
 		// unregister service
@@ -111,4 +113,29 @@ public abstract class AbstractServiceRegisterTest extends
 		dstReg.unregister();
 	}
 
+	public void testFindRemoteProxy() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(" + OSGI_REMOTE + "=*)"),null);
+		st.open();
+		Properties props = new Properties();
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		IContainer serverContainer = getServer();
+		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		// Put property foo with value bar into published properties
+		String testPropKey = "foo";
+		String testPropVal = "bar";
+		props.put(testPropKey, testPropVal);
+		registerService(classname, new TestService1(),props);
+		Thread.sleep(REGISTER_WAIT);
+		ServiceReference [] remoteReferences = st.getServiceReferences();
+		assertTrue(remoteReferences != null);
+		assertTrue(remoteReferences.length > 0);
+		// Get OBJECTCLASS property from first remote reference
+		String[] classes = (String []) remoteReferences[0].getProperty(org.osgi.framework.Constants.OBJECTCLASS);
+		assertTrue(classes != null);
+		assertTrue(classname.equals(classes[0]));
+		String prop = (String) remoteReferences[0].getProperty(testPropKey);
+		assertTrue(prop != null);
+		assertTrue(prop.equals(testPropVal));
+	}
 }
