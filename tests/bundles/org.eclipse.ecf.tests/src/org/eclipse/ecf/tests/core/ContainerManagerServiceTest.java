@@ -176,5 +176,14 @@ public class ContainerManagerServiceTest extends ContainerFactoryServiceAbstract
 		}
 	}
 	
+	public void testClearContainers() throws Exception {
+		IContainer [] c = createContainers(10);
+		assertNotNull(c);
+		containerManager.removeAllContainers();
+		IContainer [] cs = containerManager.getAllContainers();
+		assertTrue(cs != null);
+		assertTrue(cs.length == 0);
+	}
+	
 
 }

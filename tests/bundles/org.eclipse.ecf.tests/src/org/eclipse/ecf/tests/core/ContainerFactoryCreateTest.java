@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.tests.core;
 
+import java.util.Arrays;
+
 import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
@@ -200,8 +202,8 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 	public void testContainerTypeDescriptionGetSupportedAdapterTypes() {
 		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
 		final String[] adapterTypes = desc.getSupportedAdapterTypes();
-		assertTrue(adapterTypes.length == 1);
-		assertTrue(adapterTypes[0] == "one");
+		assertTrue(adapterTypes.length > 0);
+		assertTrue(Arrays.asList(adapterTypes).contains("one"));
 	}
 
 	public void testContainerTypeDescriptionGetSupportedParemeterTypes() {
