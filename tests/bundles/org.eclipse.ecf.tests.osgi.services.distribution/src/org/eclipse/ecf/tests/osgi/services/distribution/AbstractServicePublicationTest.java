@@ -97,7 +97,7 @@ public abstract class AbstractServicePublicationTest extends ECFAbstractTestCase
 		assertTrue(o instanceof Collection);
 		final Collection refIfaces = (Collection) o;
 		assertStringsEqual(getInterfaces(), (String []) refIfaces.toArray(new String[] {}));
-		Thread.sleep(50000);
+		Thread.sleep(10000);
 	}
 	public void setInterfaces(String [] interfaces) {
 		this.ifaces = interfaces;

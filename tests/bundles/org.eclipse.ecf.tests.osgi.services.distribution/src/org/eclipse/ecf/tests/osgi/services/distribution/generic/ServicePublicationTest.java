@@ -8,23 +8,18 @@
  * Contributors:
  *    Jan S. Rellermeyer - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.tests.osgi.services.distribution.impl;
+package org.eclipse.ecf.tests.osgi.services.distribution.generic;
 
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractServicePublicationTest;
 import org.eclipse.ecf.tests.osgi.services.distribution.TestServiceInterface1;
 
 public class ServicePublicationTest extends AbstractServicePublicationTest {
 
 	protected IContainer createContainer() throws Exception {
-		final ID containerID = IDFactory.getDefault().createStringID(
-				"r-osgi://localhost:9278");
-		return ContainerFactory.getDefault().createContainer("ecf.r_osgi.peer",
-				new Object[] { containerID });
+		return ContainerFactory.getDefault().createContainer("ecf.generic.client");
 	}
 
 	protected String[] createInterfaces() throws Exception {
