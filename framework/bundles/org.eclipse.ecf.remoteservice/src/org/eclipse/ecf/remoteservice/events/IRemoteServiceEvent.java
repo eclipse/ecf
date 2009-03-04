@@ -18,7 +18,14 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
  * Super interface for remote service events (registration and unregistration).
  */
 public interface IRemoteServiceEvent {
-	
+	/**
+	 * The ID of the local container.
+	 * @return ID of local container.  Will not be <code>null</code>.
+	 * 
+	 * @since 3.0
+	 */
+	public ID getLocalContainerID();
+
 	/**
 	 * The ID of the container that registered the service.
 	 * 
