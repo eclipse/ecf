@@ -144,14 +144,14 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							.get(sedh.getFutureTimeout());
 					IStatus futureStatus = futureRemoteReferences.getStatus();
 					if (futureStatus.isOK()) {
-						trace(
-								"processFutureForRemoteServiceReferences.run",
+						trace("processFutureForRemoteServiceReferences.run",
 								"containerHelper="
 										+ ch
 										+ "remoteReferences="
 										+ ((remoteReferences == null) ? "null"
-												: Arrays
-														.asList(remoteReferences)));
+												: Arrays.asList(
+														remoteReferences)
+														.toString()));
 						if (remoteReferences != null) {
 							registerRemoteServiceReferences(sedh, ch,
 									remoteReferences);
