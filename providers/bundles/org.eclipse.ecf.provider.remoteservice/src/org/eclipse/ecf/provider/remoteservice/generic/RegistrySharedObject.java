@@ -267,18 +267,24 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	protected void handleContainerDisconnectedEvent(IContainerDisconnectedEvent event) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleContainerDisconnectedEvent", event); //$NON-NLS-1$
 		final ID targetID = event.getTargetID();
+		RemoteServiceRegistrationImpl registrations[] = null;
 		synchronized (remoteRegistrys) {
 			final RemoteServiceRegistryImpl registry = getRemoteRegistry(targetID);
 			if (registry != null) {
 				removeRemoteRegistry(targetID);
-				final RemoteServiceRegistrationImpl registrations[] = registry.getRegistrations();
+				registrations = registry.getRegistrations();
 				if (registrations != null) {
 					for (int i = 0; i < registrations.length; i++) {
 						registry.unpublishService(registrations[i]);
 						unregisterServiceRegistrationsForContainer(registrations[i].getContainerID());
-						fireRemoteServiceListeners(createUnregisteredEvent(registrations[i]));
 					}
 				}
+			}
+		}
+		// Do notification outside synchronized block
+		if (registrations != null) {
+			for (int i = 0; i < registrations.length; i++) {
+				fireRemoteServiceListeners(createUnregisteredEvent(registrations[i]));
 			}
 		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleContainerDisconnectedEvent"); //$NON-NLS-1$
@@ -865,6 +871,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				log(UNREGISTER_ERROR_CODE, UNREGISTER_ERROR_MESSAGE, e);
 			}
 		}
+		fireRemoteServiceListeners(createUnregisteredEvent(serviceRegistration));
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendUnregister"); //$NON-NLS-1$
 	}
 
@@ -895,18 +902,21 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected void handleUnregister(ID containerID, Long serviceId) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleUnregister", new Object[] {containerID, serviceId}); //$NON-NLS-1$
+		RemoteServiceRegistrationImpl registration = null;
 		synchronized (remoteRegistrys) {
 			// get registry for given containerID
 			final RemoteServiceRegistryImpl serviceRegistry = (RemoteServiceRegistryImpl) remoteRegistrys.get(containerID);
 			if (serviceRegistry != null) {
-				final RemoteServiceRegistrationImpl registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
+				registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
 				if (registration != null) {
 					serviceRegistry.unpublishService(registration);
 					unregisterServiceRegistrationsForContainer(registration.getContainerID());
-					fireRemoteServiceListeners(createUnregisteredEvent(registration));
 				}
 			}
 		}
+		if (registration != null)
+			fireRemoteServiceListeners(createUnregisteredEvent(registration));
+
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleUnregister"); //$NON-NLS-1$
 	}
 
@@ -915,6 +925,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 			public String[] getClazzes() {
 				return registration.getClasses();
+			}
+
+			public ID getLocalContainerID() {
+				return RegistrySharedObject.this.getLocalContainerID();
 			}
 
 			public ID getContainerID() {
@@ -927,7 +941,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 			public String toString() {
 				final StringBuffer buf = new StringBuffer("RemoteServiceUnregisteredEvent["); //$NON-NLS-1$
-				buf.append("containerID=").append(registration.getContainerID()); //$NON-NLS-1$
+				buf.append("localContainerID=").append(getLocalContainerID()); //$NON-NLS-1$
+				buf.append(";containerID=").append(registration.getContainerID()); //$NON-NLS-1$
 				buf.append(";clazzes=").append(Arrays.asList(registration.getClasses())); //$NON-NLS-1$
 				buf.append(";reference=").append(registration.getReference()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 				return buf.toString();
@@ -937,6 +952,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected IRemoteServiceRegisteredEvent createRegisteredEvent(final RemoteServiceRegistrationImpl registration) {
 		return new IRemoteServiceRegisteredEvent() {
+
+			public ID getLocalContainerID() {
+				return RegistrySharedObject.this.getLocalContainerID();
+			}
 
 			public String[] getClazzes() {
 				return registration.getClasses();
@@ -952,7 +971,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 			public String toString() {
 				final StringBuffer buf = new StringBuffer("RemoteServiceRegisteredEvent["); //$NON-NLS-1$
-				buf.append("containerID=").append(registration.getContainerID()); //$NON-NLS-1$
+				buf.append("localContainerID=").append(getLocalContainerID()); //$NON-NLS-1$
+				buf.append(";containerID=").append(registration.getContainerID()); //$NON-NLS-1$
 				buf.append(";clazzes=").append(Arrays.asList(registration.getClasses())); //$NON-NLS-1$
 				buf.append(";reference=").append(registration.getReference()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 				return buf.toString();
