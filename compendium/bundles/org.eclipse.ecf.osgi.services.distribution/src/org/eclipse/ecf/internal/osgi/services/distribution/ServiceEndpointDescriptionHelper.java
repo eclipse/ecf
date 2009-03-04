@@ -23,7 +23,6 @@ class ServiceEndpointDescriptionHelper {
 
 	private final ServiceEndpointDescriptionImpl description;
 	private final ID localDiscoveryContainerID;
-	private final ID originalLocalDiscoveryContainerID;
 	private final IServiceID serviceID;
 	private final String serviceName;
 	private ID endpointID;
@@ -36,11 +35,6 @@ class ServiceEndpointDescriptionHelper {
 		if (localDiscoveryContainerID == null)
 			throw new NullPointerException(
 					"ServiceEndpointDescription localDiscoveryContainerID cannot be null");
-		originalLocalDiscoveryContainerID = description
-				.getOriginalLocalDiscoveryContainerID();
-		if (originalLocalDiscoveryContainerID == null)
-			throw new NullPointerException(
-					"ServiceEndpointDescription originalLocalDiscoveryContainerID cannot be null");
 		// Get serviceName from description
 		serviceID = description.getServiceID();
 		if (serviceID == null)

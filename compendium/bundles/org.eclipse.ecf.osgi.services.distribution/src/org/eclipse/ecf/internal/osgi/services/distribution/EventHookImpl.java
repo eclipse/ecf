@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
@@ -107,9 +106,10 @@ public class EventHookImpl extends AbstractEventHookImpl {
 					.getContainerAdapter().registerRemoteService(
 							remoteInterfaces, getService(serviceReference),
 							getPropertiesForRemoteService(serviceReference));
-			trace("registerRemoteService", "REGISTERED REMOTE SERVICE "
-					+ rscas[i] + " serviceReference=" + serviceReference
-					+ " remoteRegistration=" + remoteRegistration);
+			trace("registerRemoteService", "containerID="
+					+ rscas[i].getContainer().getID() + " serviceReference="
+					+ serviceReference + " remoteRegistration="
+					+ remoteRegistration);
 			// Step 2
 			fireRemoteServiceRegistered(serviceReference, remoteRegistration);
 			// Step 3
@@ -131,14 +131,14 @@ public class EventHookImpl extends AbstractEventHookImpl {
 				}
 			}
 			if (include) {
-				trace("findRSCAHoldersSatisfyingRequiredIntents",
-						"INCLUDING container=" + rscas[i].getContainer()
+				trace("findRSCAHoldersSatisfyingRequiredIntents.include",
+						"containerID=" + rscas[i].getContainer().getID()
 								+ " satisfying intents.  supported intents="
 								+ supportedIntents);
 				results.add(rscas[i]);
 			} else {
-				trace("findRSCAHoldersSatisfyingRequiredIntents",
-						"EXCLUDING container=" + rscas[i].getContainer()
+				trace("findRSCAHoldersSatisfyingRequiredIntents.exclude",
+						"containerID=" + rscas[i].getContainer().getID()
 								+ " supported intents=" + supportedIntents);
 			}
 		}
@@ -190,9 +190,10 @@ public class EventHookImpl extends AbstractEventHookImpl {
 				}, properties);
 		fireRemoteServicePublished(ref, reg);
 		// And it's done
-		trace("publishRemoteService",
-				"PUBLISH REMOTE SERVICE serviceReference=" + ref
-						+ " properties=" + properties);
+		trace("publishRemoteService", "containerID="
+				+ holder.getContainer().getID() + ",serviceReference=" + ref
+				+ " properties=" + properties + ",remoteRegistration="
+				+ remoteRegistration);
 
 	}
 
@@ -266,32 +267,23 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			IRemoteServiceContainerAdapter rsca = (IRemoteServiceContainerAdapter) containers[i]
 					.getAdapter(IRemoteServiceContainerAdapter.class);
 			if (rsca == null) {
-				Trace
-						.trace(
-								Activator.PLUGIN_ID,
-								DebugOptions.DEBUG,
-								this.getClass(),
-								"getRSCAHoldersFromContainers",
-								"Container="
-										+ containers[i]
-										+ " not an IRemoteServiceContainerAdapter. Excluding rsca="
-										+ rsca + " from remote registration");
+				trace(
+						"getRSCAHoldersFromContainers",
+						"Container="
+								+ containers[i].getID()
+								+ " not an IRemoteServiceContainerAdapter. Excluding rsca="
+								+ rsca + " from remote registration");
 				continue;
 			} else {
 				ContainerTypeDescription desc = containerManager
 						.getContainerTypeDescription(containers[i].getID());
 				if (desc == null) {
-					Trace
-							.trace(
-									Activator.PLUGIN_ID,
-									DebugOptions.DEBUG,
-									this.getClass(),
-									"getRSCAHoldersFromContainers",
-									"Container="
-											+ containers[i]
-											+ " has null container type description. Excluding rsca="
-											+ rsca
-											+ " from remote registration");
+					trace(
+							"getRSCAHoldersFromContainers",
+							"Container="
+									+ containers[i].getID()
+									+ " has null ContainerTypeDescription. Excluding rsca="
+									+ rsca + " from remote registration");
 				} else if (includeContainer(containers[i], rsca, desc,
 						serviceReference, ecfConfiguration))
 					rscas.add(new RSCAHolder(containers[i], rsca, desc));
@@ -308,17 +300,12 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// If the SERVICE_CONTAINER_ID property is not set, then we'll include
 		// it by default
 		if (cID == null || !(cID instanceof ID)) {
-			Trace
-					.trace(
-							Activator.PLUGIN_ID,
-							DebugOptions.DEBUG,
-							this.getClass(),
-							"includeContainer",
-							"serviceReference="
-									+ serviceReference
-									+ " does not set remote service container id service property.  INCLUDING containerID="
-									+ container.getID()
-									+ " in remote registration");
+			trace(
+					"includeContainer",
+					"serviceReference="
+							+ serviceReference
+							+ " does not set remote service container id service property.  INCLUDING containerID="
+							+ container.getID() + " in remote registration");
 			return true;
 		}
 		// Or if the id is specified and it's the same as the containerID under
@@ -326,18 +313,15 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// then it's included
 		ID containerID = (ID) cID;
 		if (container.getID().equals(containerID)) {
-			Trace.trace(Activator.PLUGIN_ID, DebugOptions.DEBUG, this
-					.getClass(), "includeContainer", "serviceReference="
-					+ serviceReference + " has MATCHING container id="
-					+ containerID + ".  INCLUDING rsca=" + container.getID()
+			trace("includeContainer", "serviceReference=" + serviceReference
+					+ " has MATCHING container id=" + containerID
+					+ ".  INCLUDING rsca=" + container.getID()
 					+ " in remote registration");
 			return true;
 		}
-		Trace.trace(Activator.PLUGIN_ID, DebugOptions.DEBUG, this.getClass(),
-				"includeContainer", "serviceReference=" + serviceReference
-						+ " has non-matching id=" + containerID
-						+ ".  EXCLUDING id=" + container.getID()
-						+ " in remote registration");
+		trace("includeContainer", "serviceReference=" + serviceReference
+				+ " has non-matching id=" + containerID + ".  EXCLUDING id="
+				+ container.getID() + " in remote registration");
 		return false;
 	}
 

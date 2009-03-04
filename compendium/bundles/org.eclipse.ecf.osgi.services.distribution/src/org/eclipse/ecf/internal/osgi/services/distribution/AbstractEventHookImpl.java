@@ -143,11 +143,9 @@ public abstract class AbstractEventHookImpl implements EventHook {
 				for (Iterator i = l.iterator(); i.hasNext();) {
 					IRemoteServiceRegistration reg = (IRemoteServiceRegistration) i
 							.next();
-					if (reg != null) {
-						trace("fireRemoteServiceUnregistered", "sr="
-								+ reference + "; reg=" + reg);
-						reg.unregister();
-					}
+					trace("fireRemoteServiceUnregistered", "sr=" + reference
+							+ "; reg=" + reg);
+					reg.unregister();
 				}
 				l.clear();
 			}
@@ -195,7 +193,8 @@ public abstract class AbstractEventHookImpl implements EventHook {
 				.getProperty(Constants.OBJECTCLASS));
 		for (int i = 0; i < remoteInterfaces.length; i++) {
 			String intf = remoteInterfaces[i];
-			if (ECFServiceConstants.OSGI_REMOTE_INTERFACES_WILDCARD.equals(intf))
+			if (ECFServiceConstants.OSGI_REMOTE_INTERFACES_WILDCARD
+					.equals(intf))
 				return (String[]) interfaces.toArray(new String[] {});
 			if (intf != null && interfaces.contains(intf))
 				results.add(intf);
