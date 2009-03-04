@@ -151,6 +151,10 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 							public String toString() {
 								return "RemoteServiceRegisteredEvent(" + containerID + "," + getReference(); //$NON-NLS-1$ //$NON-NLS-2$
 							}
+
+							public ID getLocalContainerID() {
+								return getID();
+							}
 						});
 						return;
 					case RemoteServiceEvent.UNREGISTERING :
@@ -171,6 +175,10 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 
 							public String toString() {
 								return "RemoteServiceUnregisteredEvent(" + containerID + "," + getReference(); //$NON-NLS-1$ //$NON-NLS-2$
+							}
+
+							public ID getLocalContainerID() {
+								return getID();
 							}
 						});
 						return;
