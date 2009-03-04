@@ -19,7 +19,6 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
-import org.eclipse.ecf.provider.discovery.CompositeServiceContainerEvent;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.*;
@@ -43,27 +42,17 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
 		ID localContainerID = event.getLocalContainerID();
-		// Set the original container ID to the re
-		ID originalLocalContainerID = localContainerID;
-		// If it's a composite container, then there is also the original
-		// container ID
-		if (event instanceof CompositeServiceContainerEvent) {
-			originalLocalContainerID = ((CompositeServiceContainerEvent) event)
-					.getOriginalLocalContainerID();
-		}
 		trace("handleOSGIServiceDiscovered", "localContainerID="
-				+ localContainerID + ",originalLocalContainerID="
-				+ originalLocalContainerID + " serviceInfo=" + serviceInfo);
+				+ localContainerID + " serviceInfo=" + serviceInfo);
 		if (matchServiceID(serviceID)) {
 			trace("handleOSGIServiceDiscovered matched", "localContainerID="
-					+ localContainerID + ",originalLocalContainerID="
-					+ originalLocalContainerID + " serviceInfo=" + serviceInfo);
+					+ localContainerID + " serviceInfo=" + serviceInfo);
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
 					discoveredTrackers[i]
 							.serviceChanged(new DiscoveredServiceNotificationImpl(
-									localContainerID, originalLocalContainerID,
+									localContainerID,
 									DiscoveredServiceNotification.AVAILABLE,
 									serviceInfo));
 				}
@@ -75,24 +64,15 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
 		ID localContainerID = event.getLocalContainerID();
-		// Set the original container ID to the re
-		ID originalLocalContainerID = localContainerID;
-		// If it's a composite container, then there is also the original
-		// container ID
-		if (event instanceof CompositeServiceContainerEvent) {
-			originalLocalContainerID = ((CompositeServiceContainerEvent) event)
-					.getOriginalLocalContainerID();
-		}
 		if (matchServiceID(serviceID)) {
 			trace("handleOSGIServiceUndiscovered", "localContainerID="
-					+ localContainerID + ",originalLocalContainerID="
-					+ originalLocalContainerID + " serviceInfo=" + serviceInfo);
+					+ localContainerID + " serviceInfo=" + serviceInfo);
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
 					discoveredTrackers[i]
 							.serviceChanged(new DiscoveredServiceNotificationImpl(
-									localContainerID, originalLocalContainerID,
+									localContainerID,
 									DiscoveredServiceNotification.UNAVAILABLE,
 									serviceInfo));
 				}
