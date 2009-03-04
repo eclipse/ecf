@@ -37,8 +37,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		this.distributionProvider = dp;
 	}
 
-	// Map<ID(discovery
-	// container)><Map<serviceName><RemoteServiceRegistrations(IRemoteServiceRegistration,ServiceRegistration)>
+	// <Map<containerID><RemoteServiceRegistration>
 
 	Map discoveredRemoteServiceRegistrations = Collections
 			.synchronizedMap(new HashMap());
@@ -84,17 +83,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		if (!(sed instanceof ServiceEndpointDescriptionImpl)) {
 			return;
 		}
-		ServiceEndpointDescriptionHelper sedh = null;
-		// Now create a ServiceEndpointDescriptionHelper from sed
-		try {
-			sedh = new ServiceEndpointDescriptionHelper(
-					(ServiceEndpointDescriptionImpl) sed);
-		} catch (NullPointerException e) {
-			logError("Error getting data from ServiceEndpointDescription="
-					+ sedh, e);
-			return;
-		}
-		// removeRemoteServiceRegistration(sedh);
 	}
 
 	private void handleDiscoveredServiceAvailable(ServiceEndpointDescription sed) {
