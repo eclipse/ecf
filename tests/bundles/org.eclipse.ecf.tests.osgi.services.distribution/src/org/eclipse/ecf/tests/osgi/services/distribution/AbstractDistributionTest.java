@@ -9,11 +9,8 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
@@ -36,8 +33,6 @@ public abstract class AbstractDistributionTest extends
 
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 
-	protected List /* ServiceRegistration */ registrations = new ArrayList();
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -48,11 +43,6 @@ public abstract class AbstractDistributionTest extends
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		for(Iterator i=registrations.iterator(); i.hasNext(); ) {
-			ServiceRegistration reg = (ServiceRegistration) i.next();
-			reg.unregister();
-		}
-		registrations.clear();
 		if (adapters != null) {
 			for(int i=0;i < adapters.length; i++) {
 				adapters[i] = null;
@@ -159,9 +149,7 @@ public abstract class AbstractDistributionTest extends
 	}
 
 	protected ServiceRegistration registerService(String[] clazzes, Object service, Properties props) throws Exception {
-		ServiceRegistration reg = getContext().registerService(clazzes, service, props);
-		registrations.add(reg);
-		return reg;
+		return getContext().registerService(clazzes, service, props);
 	}
 
 	protected ServiceRegistration registerService(String clazz, Object service, Properties props) throws Exception {

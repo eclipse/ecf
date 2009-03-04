@@ -30,8 +30,8 @@ public class ServiceRegisterTest extends AbstractServiceRegisterTest {
 
 	
 	protected void tearDown() throws Exception {
-		super.tearDown();
 		cleanUpServerAndClients();
+		super.tearDown();
 	}
 
 	protected String getClientContainerName() {

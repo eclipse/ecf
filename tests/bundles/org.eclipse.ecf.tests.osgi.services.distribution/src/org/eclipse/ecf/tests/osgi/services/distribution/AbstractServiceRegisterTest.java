@@ -13,110 +13,62 @@ import java.util.Properties;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.remoteservice.Constants;
+import org.eclipse.ecf.remoteservice.IRemoteCall;
+import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.discovery.DiscoveredServiceNotification;
-import org.osgi.service.discovery.DiscoveredServiceTracker;
-import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public abstract class AbstractServiceRegisterTest extends
 		AbstractDistributionTest {
 
-	private static final int REGISTER_WAIT = 60000;
+	private static final int REGISTER_WAIT = 10000;
 
-	public void testRegisterAllContainers() throws Exception {
+	public void testRegisterAll() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		props.put("foo", "bar");
-		registerDefaultService(props);
+		ServiceRegistration registration = registerDefaultService(props);
+		Thread.sleep(REGISTER_WAIT);
+		registration.unregister();
 		Thread.sleep(REGISTER_WAIT);
 	}
 
-	public void testRegisterServerContainer() throws Exception {
+	public void testRegisterServer() throws Exception {
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		props.put("foo", "bar");
-		registerDefaultService(props);
+		ServiceRegistration registration = registerDefaultService(props);
+		Thread.sleep(REGISTER_WAIT);
+		registration.unregister();
 		Thread.sleep(REGISTER_WAIT);
 	}
 
-	public void testRegisterServicePublication() throws Exception {
-		// First set up service tracker for ServicePublication
-		ServiceTracker servicePublicationTracker = new ServiceTracker(getContext(), ServicePublication.class.getName(), null);
-		servicePublicationTracker.open();
-		
-		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
-		IContainer serverContainer = getServer();
-		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
-		ServiceRegistration reg = registerDefaultService(props);
-
-		Thread.sleep(REGISTER_WAIT);
-		
-		// Now get ServicePublications from tracker
-		ServiceReference [] servicePublicationSRs = servicePublicationTracker.getServiceReferences();
-		assertTrue(servicePublicationSRs != null);
-		assertTrue(servicePublicationSRs.length > 0);
-		
-		// Now unregister
-		registrations.remove(reg);
-		reg.unregister();
-		
-		// Now get new service references again.
-		ServiceReference[] servicePublicationSRsNew = servicePublicationTracker.getServiceReferences();
-		if (servicePublicationSRsNew != null) {
-			assertTrue(servicePublicationSRsNew.length < servicePublicationSRs.length);
-		}
-	}
-	
-	DiscoveredServiceNotification dsNotification = null;
-	
-	DiscoveredServiceTracker createDiscoveredServiceTracker() {
-		return new DiscoveredServiceTracker() {
-			public void serviceChanged(
-					DiscoveredServiceNotification notification) {
-				if (notification.getType()==DiscoveredServiceNotification.AVAILABLE) {
-					System.out.println("serviceAvailable("+notification.getServiceEndpointDescription()+")");
-					if (dsNotification == null) dsNotification = notification;
-				} else {
-					System.out.println("serviceUnavailable("+notification.getServiceEndpointDescription()+")");
-					dsNotification = null;
-				}
-			}
-		};
-	}
-	
-	public void testLocalDiscoveredServiceTracker() throws Exception {
-		// First set up discovered service tracker
-		ServiceRegistration dstReg = getContext().registerService(DiscoveredServiceTracker.class.getName(), createDiscoveredServiceTracker(), null);
-		
-		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
-		IContainer serverContainer = getServer();
-		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
-		ServiceRegistration svcReg = getContext().registerService(getDefaultServiceClasses(), getDefaultService(), props);
-
-		Thread.sleep(REGISTER_WAIT);
-		
-		assertNotNull(dsNotification);
-		// unregister service
-		
-		svcReg.unregister();
-		
-		Thread.sleep(10000);
-		
-		assertNull(dsNotification);
-		
-		dstReg.unregister();
-	}
-
-	public void testFindRemoteProxy() throws Exception {
+	public void testGetProxy() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
-		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(" + OSGI_REMOTE + "=*)"),null);
+		// Setup service tracker
+		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + classname +")(" + OSGI_REMOTE + "=*))"),new ServiceTrackerCustomizer() {
+
+			public Object addingService(ServiceReference reference) {
+				System.out.println("addingService="+reference);
+				return getContext().getService(reference);
+			}
+
+			public void modifiedService(ServiceReference reference,
+					Object service) {
+				System.out.println("modifiedService="+reference);
+				
+			}
+
+			public void removedService(ServiceReference reference,
+					Object service) {
+				System.out.println("removedService="+reference+",svc="+service);
+			}});
 		st.open();
+		
 		Properties props = new Properties();
 		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		IContainer serverContainer = getServer();
@@ -125,17 +77,122 @@ public abstract class AbstractServiceRegisterTest extends
 		String testPropKey = "foo";
 		String testPropVal = "bar";
 		props.put(testPropKey, testPropVal);
-		registerService(classname, new TestService1(),props);
+		ServiceRegistration registration = registerService(classname, new TestService1(),props);
 		Thread.sleep(REGISTER_WAIT);
+		// Get service references that are proxies
 		ServiceReference [] remoteReferences = st.getServiceReferences();
 		assertTrue(remoteReferences != null);
 		assertTrue(remoteReferences.length > 0);
-		// Get OBJECTCLASS property from first remote reference
-		String[] classes = (String []) remoteReferences[0].getProperty(org.osgi.framework.Constants.OBJECTCLASS);
-		assertTrue(classes != null);
-		assertTrue(classname.equals(classes[0]));
-		String prop = (String) remoteReferences[0].getProperty(testPropKey);
-		assertTrue(prop != null);
-		assertTrue(prop.equals(testPropVal));
+		for(int i=0; i < remoteReferences.length; i++) {
+			// Get OBJECTCLASS property from first remote reference
+			String[] classes = (String []) remoteReferences[i].getProperty(org.osgi.framework.Constants.OBJECTCLASS);
+			assertTrue(classes != null);
+			// Check object class
+			assertTrue(classname.equals(classes[0]));
+			// Check the prop
+			String prop = (String) remoteReferences[i].getProperty(testPropKey);
+			assertTrue(prop != null);
+			assertTrue(prop.equals(testPropVal));
+		}
+		// Now unregister original registration
+		registration.unregister();
+		Thread.sleep(REGISTER_WAIT);
+	}
+	
+	public void testGetAndUseProxy() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker
+		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + classname +")(" + OSGI_REMOTE + "=*))"),null);
+		st.open();
+		
+		// Register service on server
+		Properties props = new Properties();
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		IContainer serverContainer = getServer();
+		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		ServiceRegistration registration = registerService(classname, new TestService1(),props);
+		Thread.sleep(REGISTER_WAIT);
+		
+		// Get service references from service tracker
+		ServiceReference [] remoteReferences = st.getServiceReferences();
+		assertTrue(remoteReferences != null);
+		assertTrue(remoteReferences.length > 0);
+		
+		for(int i=0; i < remoteReferences.length; i++) {
+			// Get proxy/service
+			TestServiceInterface1 proxy = (TestServiceInterface1) getContext().getService(remoteReferences[0]);
+			assertNotNull(proxy);
+			// Now use proxy
+			String result = proxy.doStuff1();
+			System.out.println("proxy.doStuff1 result="+result);
+			assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
+		}
+		
+		// Unregister on server
+		registration.unregister();
+		
+		Thread.sleep(REGISTER_WAIT);
+	}
+
+	public void testGetAndUseIRemoteService() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker
+		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + classname +")(" + OSGI_REMOTE + "=*))"),null);
+		st.open();
+		
+		// Register service on server
+		Properties props = new Properties();
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		IContainer serverContainer = getServer();
+		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		ServiceRegistration registration = registerService(classname, new TestService1(),props);
+		Thread.sleep(REGISTER_WAIT);
+		
+		// Get service references from service tracker
+		ServiceReference [] remoteReferences = st.getServiceReferences();
+		assertTrue(remoteReferences != null);
+		assertTrue(remoteReferences.length > 0);
+		
+		for(int i=0; i < remoteReferences.length; i++) {
+			Object o = remoteReferences[i].getProperty(OSGI_REMOTE);
+			assertNotNull(o);
+			assertTrue(o instanceof IRemoteService);
+			IRemoteService rs = (IRemoteService) o;
+			// Now call rs methods
+			IRemoteCall call = createRemoteCall(TestServiceInterface1.class);
+			if (call != null) {
+				// Call synchronously
+				Object result = rs.callSync(call);
+				System.out.println("callSync.doStuff1 result="+result);
+				assertNotNull(result);
+				assertTrue(result instanceof String);
+				assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
+			}
+		}
+		
+		// Unregister on server
+		registration.unregister();
+		Thread.sleep(REGISTER_WAIT);
+	}
+
+	protected IRemoteCall createRemoteCall(Class clazz) {
+		if (clazz.equals(TestServiceInterface1.class)) {
+			return new IRemoteCall() {
+
+				public String getMethod() {
+					return "doStuff1";
+				}
+
+				public Object[] getParameters() {
+					return null;
+				}
+
+				public long getTimeout() {
+					return 30000;
+				}
+				
+			};
+		}
+		return null;
 	}
 }

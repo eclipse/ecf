@@ -14,12 +14,14 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -35,7 +37,8 @@ public abstract class AbstractServicePublicationTest extends ECFAbstractTestCase
 	// Member variables that should be set by subclasses
 	protected IContainer container;
 	protected String[] ifaces;
-
+	protected ServiceRegistration registration;
+	
 	protected abstract IContainer createContainer() throws Exception;
 	protected abstract String[] createInterfaces() throws Exception;
 
@@ -46,14 +49,33 @@ public abstract class AbstractServicePublicationTest extends ECFAbstractTestCase
 		setInterfaces(createInterfaces());
 	}
 	
+	void removeFromContainerManager(IContainer container) {
+		ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(),IContainerManager.class.getName(),null);
+		st.open();
+		IContainerManager containerManager = (IContainerManager) st.getService();
+		if (containerManager != null) {
+			containerManager.removeContainer(container);
+		}
+		st.close();
+	}
+	
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		if (container != null) {
 			container.dispose();
+			removeFromContainerManager(container);
 			container = null;
 		}
 		if (ifaces != null) {
 			ifaces = null;
+		}
+		if (registration != null) {
+			try {
+			  registration.unregister();
+			  registration = null;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -81,7 +103,7 @@ public abstract class AbstractServicePublicationTest extends ECFAbstractTestCase
 		tracker.open();
 	
 		// register the (remote-enabled) service
-		context.registerService(TestServiceInterface1.class.getName(),
+		registration = context.registerService(TestServiceInterface1.class.getName(),
 				new TestService1(), props);
 	
 		// wait for service to become registered
