@@ -12,6 +12,8 @@ package org.eclipse.ecf.internal.osgi.services.discovery;
 import java.io.Serializable;
 import java.net.*;
 import java.util.*;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
@@ -42,11 +44,11 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
 		ID localContainerID = event.getLocalContainerID();
-		trace("handleOSGIServiceDiscovered", "localContainerID="
-				+ localContainerID + " serviceInfo=" + serviceInfo);
+		trace("handleOSGIServiceDiscovered", "localContainerID=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ localContainerID + " serviceInfo=" + serviceInfo); //$NON-NLS-1$
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceDiscovered matched", "localContainerID="
-					+ localContainerID + " serviceInfo=" + serviceInfo);
+			trace("handleOSGIServiceDiscovered matched", "localContainerID=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ localContainerID + " serviceInfo=" + serviceInfo); //$NON-NLS-1$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
@@ -65,8 +67,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		IServiceID serviceID = serviceInfo.getServiceID();
 		ID localContainerID = event.getLocalContainerID();
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceUndiscovered", "localContainerID="
-					+ localContainerID + " serviceInfo=" + serviceInfo);
+			trace("handleOSGIServiceUndiscovered", "localContainerID=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ localContainerID + " serviceInfo=" + serviceInfo); //$NON-NLS-1$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
@@ -110,14 +112,6 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		return false;
 	}
 
-	public ServicePublicationHandler() {
-	}
-
-	public ServiceReference[] getPublishedServices() {
-		return (ServiceReference[]) serviceInfos.keySet().toArray(
-				new ServiceReference[] {});
-	}
-
 	IServiceInfo addServiceInfo(ServiceReference sr, IServiceInfo si) {
 		return (IServiceInfo) serviceInfos.put(sr, si);
 	}
@@ -148,10 +142,10 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		// If it's not there, then we ignore this ServicePublication and return
 		if (svcInterfaces == null) {
 			logError(
-					"handleServicePublication",
-					"ignoring "
+					"handleServicePublication", //$NON-NLS-1$
+					"ignoring " //$NON-NLS-1$
 							+ reference
-							+ ". ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME not set",
+							+ ". ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME not set", //$NON-NLS-1$
 					null);
 			return;
 		}
@@ -166,10 +160,10 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 						ServicePublication.PROP_KEY_SERVICE_PROPERTIES);
 		if (servicePublicationServiceProperties == null) {
 			logError(
-					"handleServicePublication",
-					"ignoring "
+					"handleServicePublication", //$NON-NLS-1$
+					"ignoring " //$NON-NLS-1$
 							+ reference
-							+ ". ServicePublication.PROP_KEY_SERVICE_PROPERTIES not set",
+							+ ". ServicePublication.PROP_KEY_SERVICE_PROPERTIES not set", //$NON-NLS-1$
 					null);
 			return;
 		}
@@ -185,10 +179,10 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				.getProperty(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
 		if (endpointContainerID == null) {
 			logError(
-					"handleServicePublication",
-					"ignoring "
+					"handleServicePublication", //$NON-NLS-1$
+					"ignoring " //$NON-NLS-1$
 							+ reference
-							+ ". ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID not set",
+							+ ". ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID not set", //$NON-NLS-1$
 					null);
 			return;
 		}
@@ -207,8 +201,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		String rsnamespace = ServicePropertyUtils.getStringProperty(reference,
 				Constants.SERVICE_NAMESPACE);
 		if (rsnamespace == null) {
-			logError("handleServicePublication", "ignoring " + reference
-					+ ". Constants.SERVICE_NAMESPACE not set", null);
+			logError("handleServicePublication", "ignoring " + reference //$NON-NLS-1$ //$NON-NLS-2$
+					+ ". Constants.SERVICE_NAMESPACE not set", null); //$NON-NLS-1$
 			return;
 		}
 		discoveryServiceProperties.setPropertyString(
@@ -219,8 +213,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		Long remoteServiceID = (Long) reference
 				.getProperty(Constants.SERVICE_ID);
 		if (remoteServiceID == null) {
-			logError("handleServicePublication", "ignoring " + reference
-					+ ". Constants.SERVICE_ID not set", null);
+			logError("handleServicePublication", "ignoring " + reference //$NON-NLS-1$ //$NON-NLS-2$
+					+ ". Constants.SERVICE_ID not set", null); //$NON-NLS-1$
 			return;
 		}
 		discoveryServiceProperties.setProperty(Constants.SERVICE_ID,
@@ -236,22 +230,31 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 					discoveryServiceProperties);
 
 		} catch (IDCreateException e) {
-			traceException("handleServicePublication", e);
+			logError("handleServicePublication", //$NON-NLS-1$
+					"Exception creating serviceID", e); //$NON-NLS-1$
+			return;
 		} catch (URISyntaxException e) {
-			traceException("handleServicePublication", e);
-		}
-		if (svcInfo == null) {
-			trace("addServicePublication",
-					"svcInfo is null, so no service published");
+			logError("handleServicePublication", "Exception creating URI", e); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
-		publishService(reference, svcInfo);
+		synchronized (serviceInfos) {
+			try {
+				trace("publishService", "publishing serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
+						+ reference + ", svcInfo=" + svcInfo); //$NON-NLS-1$
+				getAdvertiser().registerService(svcInfo);
+				addServiceInfo(reference, svcInfo);
+			} catch (ECFRuntimeException e) {
+				logError("publishService", "cannot register service", e); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
 	}
 
 	private void logError(String method, String message, Throwable t) {
-		// TODO log exception
-
-		traceException(method + ":" + message, t);
+		Activator.getDefault().log(
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
+						method + ":" + message, t)); //$NON-NLS-1$
+		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
+				this.getClass(), method + ":" + message, t); //$NON-NLS-1$
 	}
 
 	private URI createURI(ID endpointContainerID) throws URISyntaxException {
@@ -281,7 +284,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		try {
 			host = InetAddress.getLocalHost().getHostAddress();
 		} catch (Exception e) {
-			host = "localhost";
+			host = "localhost"; //$NON-NLS-1$
 		}
 		return new URI(scheme, null, host, port, null, null, null);
 	}
@@ -293,8 +296,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				.iterator(); i.hasNext();) {
 			Object key = i.next();
 			if (!(key instanceof String)) {
-				trace("addPropertiesToDiscoveryServiceProperties",
-						"skipping non-string key " + key);
+				trace("addPropertiesToDiscoveryServiceProperties", //$NON-NLS-1$
+						"skipping non-string key " + key); //$NON-NLS-1$
 				continue;
 			}
 			String keyStr = (String) key;
@@ -321,7 +324,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				locator.addServiceListener(serviceListener);
 			}
 		} catch (InterruptedException e) {
-			traceException("getLocator", e);
+			logError("getLocator", "Cannot get IDiscoveryLocator service", e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return locator;
 	}
@@ -332,7 +335,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				advertiser = Activator.getDefault().getAdvertiser();
 			}
 		} catch (InterruptedException e) {
-			traceException("getAdvertiser", e);
+			logError("getAdvertiser", "Cannot get IDiscoveryAdvertiser", e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return advertiser;
 	}
@@ -362,24 +365,10 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				servicePublicationProperties,
 				ECFServicePublication.SERVICE_NAME_PROP,
 				(ECFServicePublication.DEFAULT_SERVICE_NAME_PREFIX + rsvcid));
-		String serviceType = "_" + ECFServicePublication.SERVICE_TYPE + "._"
-				+ protocol + "." + scope + "._" + namingAuthority;
+		String serviceType = "_" + ECFServicePublication.SERVICE_TYPE + "._" //$NON-NLS-1$ //$NON-NLS-2$
+				+ protocol + "." + scope + "._" + namingAuthority; //$NON-NLS-1$ //$NON-NLS-2$
 		return ServiceIDFactory.getDefault().createServiceID(
 				l.getServicesNamespace(), serviceType, serviceName);
-	}
-
-	private void publishService(ServiceReference reference, IServiceInfo svcInfo) {
-		synchronized (serviceInfos) {
-			try {
-				addServiceInfo(reference, svcInfo);
-				trace("publishService", "publishing serviceReference="
-						+ reference + ", svcInfo=" + svcInfo);
-				getAdvertiser().registerService(svcInfo);
-			} catch (ECFRuntimeException e) {
-				traceException("publishService", e);
-				removeServiceInfo(reference);
-			}
-		}
 	}
 
 	public void modifiedService(ServiceReference reference, Object service) {
@@ -392,13 +381,15 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	}
 
 	private void unpublishService(ServiceReference reference) {
+		IServiceInfo svcInfo = null;
 		synchronized (serviceInfos) {
 			try {
-				IServiceInfo svcInfo = removeServiceInfo(reference);
+				svcInfo = removeServiceInfo(reference);
 				if (svcInfo != null)
 					getAdvertiser().unregisterService(svcInfo);
 			} catch (ECFRuntimeException e) {
-				traceException("publishService", e);
+				logError("publishService", "Cannot unregister serviceInfo=" //$NON-NLS-1$ //$NON-NLS-2$
+						+ svcInfo, e);
 			}
 		}
 	}
@@ -408,11 +399,11 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				.getClass(), methodName, message);
 	}
 
-	protected void traceException(String string, Throwable e) {
-		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
-				this.getClass(), string, e);
-	}
-
+	/*
+	 * protected void traceException(String string, Throwable e) {
+	 * Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
+	 * this.getClass(), string, e); }
+	 */
 	public void dispose() {
 		if (locator != null) {
 			locator.removeServiceListener(serviceListener);
@@ -423,8 +414,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 			serviceInfos.clear();
 			locator = null;
 		}
-		if (locator != null) {
-			locator = null;
+		if (advertiser != null) {
+			advertiser = null;
 		}
 	}
 }

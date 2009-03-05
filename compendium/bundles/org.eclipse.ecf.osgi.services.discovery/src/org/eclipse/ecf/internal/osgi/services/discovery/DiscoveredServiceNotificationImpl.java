@@ -37,9 +37,9 @@ public class DiscoveredServiceNotificationImpl implements
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("DiscoveredServiceNotificationImpl[");
-		sb.append("type=").append(getType()).append(";sed=").append(
-				getServiceEndpointDescription()).append("]");
+		StringBuffer sb = new StringBuffer("DiscoveredServiceNotificationImpl["); //$NON-NLS-1$
+		sb.append("type=").append(getType()).append(";sed=").append( //$NON-NLS-1$ //$NON-NLS-2$
+				getServiceEndpointDescription()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

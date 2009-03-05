@@ -9,16 +9,20 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.osgi.framework.*;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.discovery.ServicePublication;
+import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 
-	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.discovery";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.discovery"; //$NON-NLS-1$
 
 	private static final long DISCOVERY_TIMEOUT = 5000;
 
@@ -26,6 +30,9 @@ public class Activator implements BundleActivator {
 	private ServiceTracker locatorTracker;
 	private ServiceTracker advertiserTracker;
 	private ServiceTracker discoveredServiceTrackerTracker;
+
+	private ServiceTracker logServiceTracker = null;
+	private LogService logService = null;
 
 	private BundleContext context;
 	private static Activator plugin;
@@ -49,6 +56,38 @@ public class Activator implements BundleActivator {
 		servicePublicationTracker = new ServiceTracker(context,
 				ServicePublication.class.getName(), servicePublicationHandler);
 		servicePublicationTracker.open();
+	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		logService = (LogService) logServiceTracker.getService();
+		if (logService == null)
+			logService = new SystemLogService(PLUGIN_ID);
+		return logService;
+	}
+
+	public void log(IStatus status) {
+		if (logService == null)
+			logService = getLogService();
+		if (logService != null)
+			logService.log(null, LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
+	}
+
+	public void log(ServiceReference sr, IStatus status) {
+		log(sr, LogHelper.getLogCode(status), LogHelper.getLogMessage(status),
+				status.getException());
+	}
+
+	public void log(ServiceReference sr, int level, String message, Throwable t) {
+		if (logService == null)
+			logService = getLogService();
+		if (logService != null)
+			logService.log(sr, level, message, t);
 	}
 
 	BundleContext getContext() {
@@ -114,6 +153,11 @@ public class Activator implements BundleActivator {
 		if (servicePublicationHandler != null) {
 			servicePublicationHandler.dispose();
 			servicePublicationHandler = null;
+		}
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+			logService = null;
 		}
 		this.context = null;
 		plugin = null;

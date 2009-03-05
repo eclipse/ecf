@@ -165,11 +165,11 @@ public class ServiceEndpointDescriptionImpl implements
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl[");
-		sb.append("localContainerID=" + getLocalDiscoveryContainerID());
-		sb.append(";providedinterfaces=").append(getProvidedInterfaces());
-		sb.append(";location=").append(getLocation());
-		sb.append(";props=").append(getProperties()).append("]");
+		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
+		sb.append("localContainerID=" + getLocalDiscoveryContainerID()); //$NON-NLS-1$
+		sb.append(";providedinterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
+		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
+		sb.append(";props=").append(getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 

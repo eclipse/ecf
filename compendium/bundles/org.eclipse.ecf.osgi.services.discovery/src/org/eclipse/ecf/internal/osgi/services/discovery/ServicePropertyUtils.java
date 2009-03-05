@@ -16,11 +16,11 @@ import org.osgi.framework.ServiceReference;
 
 public class ServicePropertyUtils {
 
-	public static final String PROTOCOL_SEPARATOR = ":";
+	public static final String PROTOCOL_SEPARATOR = ":"; //$NON-NLS-1$
 	public static final String ENDPOINT_INTERFACE_NAME_SEPARATOR = PROTOCOL_SEPARATOR;
 	public static final String INTERFACE_VERSION_SEPARATOR = PROTOCOL_SEPARATOR;
 
-	private static final String COLLECTION_SEPARATOR = ",";
+	private static final String COLLECTION_SEPARATOR = ","; //$NON-NLS-1$
 
 	public static Collection getCollectionProperty(ServiceReference sr,
 			String propName) {
