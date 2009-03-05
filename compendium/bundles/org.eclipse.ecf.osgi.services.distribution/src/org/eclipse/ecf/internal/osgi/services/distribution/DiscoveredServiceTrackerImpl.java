@@ -225,6 +225,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				if (registrations != null) {
 					for (int i = 0; i < registrations.length; i++) {
 						try {
+							distributionProvider
+									.removeRemoteService(registrations[i]
+											.getReference());
 							trace(
 									"handleRemoteServiceUnregisteredEvent.unregister",
 									"localContainerID="
