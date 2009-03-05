@@ -391,7 +391,13 @@ public final class ServiceURL extends ch.ethz.iks.slp.impl.AuthenticatedURL
 		surl.lifetime = input.readShort();
 		surl.url = input.readUTF();
 		surl.authBlocks = parseAuthBlock(input);
-		surl.parse();
+		try {
+			surl.parse();
+		} catch (Exception ex) {
+			throw new ServiceLocationException(
+					ServiceLocationException.PARSE_ERROR,
+					"service url is malformed: [" + surl + "]. ");
+		}
 		return surl;
 	}
 }
