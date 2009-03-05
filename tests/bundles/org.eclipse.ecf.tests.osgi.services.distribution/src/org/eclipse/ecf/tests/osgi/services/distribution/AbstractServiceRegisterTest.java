@@ -17,6 +17,7 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.distribution.DistributionProvider;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -24,16 +25,6 @@ public abstract class AbstractServiceRegisterTest extends
 		AbstractDistributionTest {
 
 	private static final int REGISTER_WAIT = 10000;
-
-	public void testRegisterAll() throws Exception {
-		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
-		props.put("foo", "bar");
-		ServiceRegistration registration = registerDefaultService(props);
-		Thread.sleep(REGISTER_WAIT);
-		registration.unregister();
-		Thread.sleep(REGISTER_WAIT);
-	}
 
 	public void testRegisterServer() throws Exception {
 		Properties props = new Properties();
@@ -173,6 +164,81 @@ public abstract class AbstractServiceRegisterTest extends
 		// Unregister on server
 		registration.unregister();
 		Thread.sleep(REGISTER_WAIT);
+	}
+
+	public void testGetExposedServicesFromDistributionProvider() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker for distribution provider
+		ServiceTracker st = new ServiceTracker(getContext(),DistributionProvider.class.getName(),null);
+		st.open();
+		DistributionProvider distributionProvider = (DistributionProvider) st.getService();
+		assertNotNull(distributionProvider);
+		
+		ServiceReference[] exposedServices = distributionProvider.getExposedServices();
+		assertNotNull(exposedServices);
+
+		// Register service on server
+		Properties props = new Properties();
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		IContainer serverContainer = getServer();
+		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		ServiceRegistration registration = registerService(classname, new TestService1(),props);
+		Thread.sleep(REGISTER_WAIT);
+		
+		exposedServices = distributionProvider.getExposedServices();
+		assertNotNull(exposedServices);
+		int exposedLength = exposedServices.length;
+		assertTrue(exposedServices.length > 0);
+		for(int i=0; i < exposedServices.length; i++) {
+			Object o = exposedServices[i].getProperty(OSGI_REMOTE_INTERFACES);
+			assertTrue(o != null);
+		}
+
+		// Unregister on server
+		registration.unregister();
+		Thread.sleep(REGISTER_WAIT);
+		
+		exposedServices= distributionProvider.getExposedServices();
+		assertNotNull(exposedServices);
+		assertTrue(exposedServices.length == (exposedLength - 1));
+
+	}
+
+	public void testGetRemoteServicesFromDistributionProvider() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker for distribution provider
+		ServiceTracker st = new ServiceTracker(getContext(),DistributionProvider.class.getName(),null);
+		st.open();
+		DistributionProvider distributionProvider = (DistributionProvider) st.getService();
+		assertNotNull(distributionProvider);
+		
+		ServiceReference[] remoteServices = distributionProvider.getRemoteServices();
+		assertNotNull(remoteServices);
+
+		// Register service on server
+		Properties props = new Properties();
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		IContainer serverContainer = getServer();
+		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		ServiceRegistration registration = registerService(classname, new TestService1(),props);
+		Thread.sleep(REGISTER_WAIT);
+		
+		remoteServices = distributionProvider.getRemoteServices();
+		assertNotNull(remoteServices);
+		int remotesLength = remoteServices.length;
+		assertTrue(remoteServices.length > 0);
+		for(int i=0; i < remoteServices.length; i++) {
+			Object o = remoteServices[i].getProperty(OSGI_REMOTE);
+			assertTrue(o != null);
+		}
+		// Unregister on server
+		registration.unregister();
+		Thread.sleep(REGISTER_WAIT);
+		
+		remoteServices= distributionProvider.getRemoteServices();
+		assertNotNull(remoteServices);
+		assertTrue(remoteServices.length == (remotesLength - 1));
+
 	}
 
 	protected IRemoteCall createRemoteCall(Class clazz) {
