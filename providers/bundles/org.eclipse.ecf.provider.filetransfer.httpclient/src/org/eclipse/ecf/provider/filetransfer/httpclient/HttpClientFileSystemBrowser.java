@@ -24,7 +24,6 @@ import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -41,7 +40,8 @@ import org.eclipse.osgi.util.NLS;
  */
 public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
-	protected static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
+	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
+	protected static final int DEFAULT_CONNECTION_TIMEOUT = 120000;
 
 	private static final String USERNAME_PREFIX = "Username:"; //$NON-NLS-1$
 

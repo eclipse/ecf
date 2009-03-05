@@ -153,9 +153,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	private static final String USERNAME_PREFIX = Messages.HttpClientRetrieveFileTransfer_Username_Prefix;
 
-	protected static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
-
-	protected static final int DEFAULT_READ_TIMEOUT = 30000;
+	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
+	protected static final int DEFAULT_CONNECTION_TIMEOUT = 120000;
+	// changing to 1 minutes (60000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
+	protected static final int DEFAULT_READ_TIMEOUT = 60000;
 
 	protected static final int HTTP_PORT = 80;
 
