@@ -10,6 +10,8 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.*;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
@@ -64,33 +66,32 @@ public abstract class AbstractEventHookImpl implements EventHook {
 	void handleRegisteredServiceEvent(ServiceReference serviceReference,
 			Collection contexts) {
 		// This checks to see if the serviceReference has any remote interfaces
-		// declared via
-		// osgi.remote.interfaces
+		// declared via osgi.remote.interfaces property
 		Object osgiRemotes = serviceReference
 				.getProperty(ECFServiceConstants.OSGI_REMOTE_INTERFACES);
 		// If osgi.remote.interfaces required property is non-null then we
-		// handle further, if null then ignore
+		// handle further, if null then ignore the service registration event
 		if (osgiRemotes != null) {
 			// The osgiRemotes should be of type String [] according to
 			// RFC119...if it's not String [] we ignore
 			String[] remoteInterfacesArr = (String[]) ((osgiRemotes instanceof String[]) ? osgiRemotes
 					: null);
 			if (remoteInterfacesArr == null) {
-				trace("handleRegisteredServiceEvent",
+				logError("handleRegisteredServiceEvent",
 						"remoteInterfaces not of String [] type as required by RFC 119");
 				return;
 			}
 			trace("handleRegisteredServiceEvent", "serviceReference="
-					+ serviceReference + " has remoteInterfaces="
+					+ serviceReference + ",remoteInterfaces="
 					+ Arrays.asList(remoteInterfacesArr));
 			// We compare the osgi.remote.interfaces with those exposed by the
-			// service reference and
-			// make sure that expose some common interfaces
+			// service reference and make sure that expose some common
+			// interfaces
 			String[] remoteInterfaces = (remoteInterfacesArr != null) ? getInterfacesForServiceReference(
 					remoteInterfacesArr, serviceReference)
 					: null;
 			if (remoteInterfaces == null) {
-				trace("handleRegisteredServiceEvent",
+				logError("handleRegisteredServiceEvent",
 						"No exposed remoteInterfaces found for serviceReference="
 								+ serviceReference);
 				return;
@@ -104,7 +105,7 @@ public abstract class AbstractEventHookImpl implements EventHook {
 			String[] remoteConfigurationType = null;
 			if (osgiRemoteConfigurationType != null) {
 				if (!(osgiRemoteConfigurationType instanceof String[])) {
-					trace("handleRegisteredServiceEvent",
+					logError("handleRegisteredServiceEvent",
 							"osgi.remote.configuration.type is not String[] as required by RFC 119");
 					return;
 				}
@@ -135,19 +136,25 @@ public abstract class AbstractEventHookImpl implements EventHook {
 	}
 
 	protected void fireRemoteServiceUnregistered(ServiceReference reference) {
-
+		IRemoteServiceRegistration[] registrations = null;
 		synchronized (srvRefToRemoteSrvRegistration) {
 			distributionProvider.removeExposedService(reference);
 			List l = (List) srvRefToRemoteSrvRegistration.remove(reference);
 			if (l != null) {
-				for (Iterator i = l.iterator(); i.hasNext();) {
-					IRemoteServiceRegistration reg = (IRemoteServiceRegistration) i
-							.next();
-					trace("fireRemoteServiceUnregistered", "sr=" + reference
-							+ "; reg=" + reg);
-					reg.unregister();
-				}
+				registrations = (IRemoteServiceRegistration[]) l
+						.toArray(new IRemoteServiceRegistration[] {});
 				l.clear();
+			}
+		}
+		if (registrations != null) {
+			for (int i = 0; i < registrations.length; i++) {
+				try {
+					registrations[i].unregister();
+				} catch (Exception e) {
+					logError("fireRemoteServiceUnregistered",
+							"Exception unregistering remote registration="
+									+ registrations[i], e);
+				}
 			}
 		}
 	}
@@ -167,19 +174,25 @@ public abstract class AbstractEventHookImpl implements EventHook {
 	}
 
 	protected void fireRemoteServiceUnpublished(ServiceReference reference) {
+		ServiceRegistration[] registrations = null;
 		synchronized (srvRefToServicePublicationRegistration) {
 			List l = (List) srvRefToServicePublicationRegistration
 					.remove(reference);
 			if (l != null) {
-				for (Iterator i = l.iterator(); i.hasNext();) {
-					ServiceRegistration reg = (ServiceRegistration) i.next();
-					if (reg != null) {
-						trace("fireRemoteServiceUnpublished", "sr=" + reference
-								+ "; reg=" + reg);
-						reg.unregister();
-					}
-				}
+				registrations = (ServiceRegistration[]) l
+						.toArray(new ServiceRegistration[] {});
 				l.clear();
+			}
+		}
+		if (registrations != null) {
+			for (int i = 0; i < registrations.length; i++) {
+				try {
+					registrations[i].unregister();
+				} catch (Exception e) {
+					logError("fireRemoteServiceUnpublished",
+							"Exception unregistering service publication registrations="
+									+ registrations[i], e);
+				}
 			}
 		}
 	}
@@ -205,6 +218,25 @@ public abstract class AbstractEventHookImpl implements EventHook {
 	protected void trace(String methodName, String message) {
 		Trace.trace(Activator.PLUGIN_ID, DebugOptions.EVENTHOOKDEBUG, this
 				.getClass(), methodName, message);
+	}
+
+	protected void traceException(String methodName, String message, Throwable t) {
+		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
+				this.getClass(), methodName + ":" + message, t);
+	}
+
+	protected void logError(String methodName, String message, Throwable t) {
+		Activator.getDefault().log(
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
+						methodName + ":" + message, t));
+		traceException(methodName, message, t);
+	}
+
+	protected void logError(String methodName, String message) {
+		Activator.getDefault().log(
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
+						methodName + ":" + message, null));
+		traceException(methodName, message, null);
 	}
 
 	protected void handleUnregisteringServiceEvent(

@@ -25,8 +25,6 @@ public interface DebugOptions {
 
 	public static final String EVENTHOOKDEBUG = DEBUG + "/eventhook";
 
-	public static final String FINDHOOKDEBUG = DEBUG + "/findhook";
-
 	public static final String DISCOVEREDSERVICETRACKER = DEBUG
 			+ "/discoveredservicetracker";
 

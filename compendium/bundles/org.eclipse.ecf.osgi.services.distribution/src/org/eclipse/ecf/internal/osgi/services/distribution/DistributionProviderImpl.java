@@ -13,82 +13,45 @@ import java.util.*;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.distribution.DistributionProvider;
 
 public class DistributionProviderImpl implements DistributionProvider {
 
 	public static Object VENDOR_NAME = "Eclipse Foundation";
-	public static Object PRODUCT_NAME = "Eclipse ECF";
-	public static Object PRODUCT_VERSION = "1.0.0";
+	public static Object PRODUCT_NAME = "Eclipse Communication Framework (ECF)";
+	public static Object PRODUCT_VERSION = "3.0";
 
-	Map exposedServices = Collections.synchronizedMap(new HashMap());
-	Map remoteServices = Collections.synchronizedMap(new HashMap());
+	List exposedServices = Collections.synchronizedList(new ArrayList());
+	List remoteServices = Collections.synchronizedList(new ArrayList());
 
-	Long getServiceId(ServiceReference sr) {
-		return (Long) sr.getProperty(Constants.SERVICE_ID);
-	}
-
-	ServiceReference addExposedService(ServiceReference sr) {
+	boolean addExposedService(ServiceReference sr) {
 		if (sr == null)
-			return null;
-		return (ServiceReference) exposedServices.put(getServiceId(sr), sr);
+			return false;
+		return exposedServices.add(sr);
 	}
 
-	ServiceReference addRemoteService(ServiceReference sr) {
+	boolean addRemoteService(ServiceReference sr) {
 		if (sr == null)
-			return null;
-		return (ServiceReference) remoteServices.put(getServiceId(sr), sr);
-	}
-
-	ServiceReference removeExposedService(Long sid) {
-		if (sid == null)
-			return null;
-		return (ServiceReference) exposedServices.remove(sid);
-	}
-
-	ServiceReference removeExposedService(ServiceReference sr) {
-		return removeExposedService(getServiceId(sr));
-	}
-
-	ServiceReference removeRemoteService(Long sid) {
-		if (sid == null)
-			return null;
-		return (ServiceReference) remoteServices.remove(sid);
-	}
-
-	ServiceReference removeRemoteService(ServiceReference sr) {
-		return removeRemoteService(getServiceId(sr));
-	}
-
-	boolean containsExposedService(Long sid) {
-		if (sid == null)
 			return false;
-		return exposedServices.containsKey(sid);
+		return remoteServices.add(sr);
 	}
 
-	boolean containsRemoteService(Long sid) {
-		if (sid == null)
+	boolean removeExposedService(ServiceReference sr) {
+		if (sr == null)
 			return false;
-		return remoteServices.containsKey(sid);
+		return exposedServices.remove(sr);
 	}
 
-	ServiceReference getExposedService(Long sid) {
-		if (sid == null)
-			return null;
-		return (ServiceReference) exposedServices.get(sid);
-	}
-
-	ServiceReference getRemoteService(Long sid) {
-		if (sid == null)
-			return null;
-		return (ServiceReference) remoteServices.get(sid);
+	boolean removeRemoteService(ServiceReference sr) {
+		if (sr == null)
+			return false;
+		return remoteServices.remove(sr);
 	}
 
 	public ServiceReference[] getExposedServices() {
-		return (ServiceReference[]) exposedServices.entrySet().toArray(
-				new ServiceReference[] {});
+		return (ServiceReference[]) exposedServices
+				.toArray(new ServiceReference[] {});
 	}
 
 	public Map getPublicationProperties(ServiceReference sr) {
@@ -121,14 +84,19 @@ public class DistributionProviderImpl implements DistributionProvider {
 		return result;
 	}
 
+	public void dispose() {
+		exposedServices.clear();
+		remoteServices.clear();
+	}
+
 	// XXX word on the street is that this is being removed from spec
 	public ServiceReference[] getPublishedServices() {
 		return null;
 	}
 
 	public ServiceReference[] getRemoteServices() {
-		return (ServiceReference[]) remoteServices.entrySet().toArray(
-				new ServiceReference[] {});
+		return (ServiceReference[]) remoteServices
+				.toArray(new ServiceReference[] {});
 	}
 
 	public Collection /* String */getSupportedIntents() {

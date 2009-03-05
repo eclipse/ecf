@@ -11,12 +11,16 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.distribution.DistributionProvider;
+import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
@@ -34,12 +38,47 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration distributionProviderRegistration;
 	private ServiceRegistration discoveredServiceTrackerRegistration;
 
+	private ServiceTracker logServiceTracker = null;
+	private LogService logService = null;
+
 	public static Activator getDefault() {
 		return plugin;
 	}
 
 	public BundleContext getContext() {
 		return context;
+	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		logService = (LogService) logServiceTracker.getService();
+		if (logService == null)
+			logService = new SystemLogService(PLUGIN_ID);
+		return logService;
+	}
+
+	public void log(IStatus status) {
+		if (logService == null)
+			logService = getLogService();
+		if (logService != null)
+			logService.log(null, LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
+	}
+
+	public void log(ServiceReference sr, IStatus status) {
+		log(sr, LogHelper.getLogCode(status), LogHelper.getLogMessage(status),
+				status.getException());
+	}
+
+	public void log(ServiceReference sr, int level, String message, Throwable t) {
+		if (logService == null)
+			logService = getLogService();
+		if (logService != null)
+			logService.log(sr, level, message, t);
 	}
 
 	/*
@@ -136,7 +175,15 @@ public class Activator implements BundleActivator {
 			containerManagerTracker.close();
 			containerManagerTracker = null;
 		}
-		this.distributionProvider = null;
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+			logService = null;
+		}
+		if (distributionProvider != null) {
+			distributionProvider.dispose();
+			distributionProvider = null;
+		}
 		this.context = null;
 		plugin = null;
 	}
