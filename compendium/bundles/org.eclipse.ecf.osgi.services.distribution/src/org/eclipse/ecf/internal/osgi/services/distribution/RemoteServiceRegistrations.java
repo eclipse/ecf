@@ -11,22 +11,29 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.*;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.remoteservice.*;
 import org.osgi.framework.ServiceRegistration;
 
 public class RemoteServiceRegistrations {
 
+	private final IServiceID serviceID;
 	private final IContainer container;
 	private final IRemoteServiceContainerAdapter containerAdapter;
 	private IRemoteServiceListener listener;
 	private Map serviceRegistrations = new HashMap();
 
-	public RemoteServiceRegistrations(IContainer c,
+	public RemoteServiceRegistrations(IServiceID serviceID, IContainer c,
 			IRemoteServiceContainerAdapter adapter, IRemoteServiceListener l) {
+		this.serviceID = serviceID;
 		this.container = c;
 		this.containerAdapter = adapter;
 		this.listener = l;
 		this.containerAdapter.addRemoteServiceListener(this.listener);
+	}
+
+	public IServiceID getServiceID() {
+		return serviceID;
 	}
 
 	public IContainer getContainer() {
@@ -68,6 +75,17 @@ public class RemoteServiceRegistrations {
 			}
 		}
 		return null;
+	}
+
+	public List removeAllServiceRegistrations() {
+		List results = new ArrayList();
+		for (Iterator i = serviceRegistrations.keySet().iterator(); i.hasNext();) {
+			List l = (List) serviceRegistrations.get(i.next());
+			if (l != null) {
+				results.addAll(l);
+			}
+		}
+		return results;
 	}
 
 	public boolean isEmpty() {
