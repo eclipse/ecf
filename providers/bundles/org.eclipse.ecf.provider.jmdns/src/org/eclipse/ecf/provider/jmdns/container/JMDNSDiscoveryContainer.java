@@ -44,7 +44,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	private ID targetID = null;
 
 	List serviceTypes = null;
-	
+
 	/**
 	 * Map of IServiceInfos (maps to SRV type records) discovered by mDNS.
 	 * mDNS defines a two stage process where a client first discovers the PTR (announced by the advertiser) and then upon 
@@ -330,8 +330,8 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				}
 				final String serviceType = arg0.getType();
 				final String serviceName = arg0.getName();
-				IServiceInfo aServiceInfo = (IServiceInfo) services.get(serviceType + serviceName);
-				if(aServiceInfo == null) {
+				IServiceInfo aServiceInfo = (IServiceInfo) services.remove(serviceType + serviceName);
+				if (aServiceInfo == null) {
 					Trace.trace(JMDNSPlugin.PLUGIN_ID, "Failed to resolve in serviceRemoved(" + arg0.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 					return;
 				}
