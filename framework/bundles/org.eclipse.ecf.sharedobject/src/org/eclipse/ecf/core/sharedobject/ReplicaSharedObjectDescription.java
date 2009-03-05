@@ -16,8 +16,7 @@ import org.eclipse.ecf.core.identity.ID;
  * Description of a remote ISharedObject instance.
  * 
  */
-public class ReplicaSharedObjectDescription extends SharedObjectDescription
-		implements Serializable {
+public class ReplicaSharedObjectDescription extends SharedObjectDescription implements Serializable {
 	private static final long serialVersionUID = 2764430278848370713L;
 
 	protected static long staticID = 0;
@@ -30,41 +29,33 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 
 	protected long identifier;
 
-	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type,
-			ID objectID, ID homeID, Map props, long ident) {
+	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID objectID, ID homeID, Map props, long ident) {
 		super(type, objectID, props);
 		this.homeID = homeID;
 		this.identifier = ident;
 	}
 
-	public ReplicaSharedObjectDescription(String typeName, ID objectID,
-			ID homeID, Map props, long ident) {
-		super(new SharedObjectTypeDescription(typeName, null, null, null),
-				objectID, props);
+	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID, Map props, long ident) {
+		super(new SharedObjectTypeDescription(typeName, null, null, null), objectID, props);
 		this.homeID = homeID;
 		this.identifier = ident;
 	}
 
-	public ReplicaSharedObjectDescription(String typeName, ID objectID,
-			ID homeID, Map props) {
+	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID, Map props) {
 		this(typeName, objectID, homeID, props, getNextUniqueIdentifier());
 	}
 
-	public ReplicaSharedObjectDescription(String typeName, ID objectID,
-			ID homeID) {
+	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID) {
 		this(typeName, objectID, homeID, null);
 	}
 
-	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID,
-			Map props, long ident) {
-		super(new SharedObjectTypeDescription(clazz.getName(), null), objectID,
-				props);
+	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID, Map props, long ident) {
+		super(new SharedObjectTypeDescription(clazz.getName(), null), objectID, props);
 		this.homeID = homeID;
 		this.identifier = ident;
 	}
 
-	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID,
-			Map props) {
+	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID, Map props) {
 		this(clazz, objectID, homeID, props, getNextUniqueIdentifier());
 	}
 
@@ -84,20 +75,8 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 		return identifier;
 	}
 
-	public void setHomeID(ID theID) {
-		this.homeID = theID;
-	}
-
 	public void setID(ID theID) {
 		this.id = theID;
-	}
-
-	public void setIdentifier(long identifier) {
-		this.identifier = identifier;
-	}
-
-	public void setProperties(Map props) {
-		this.properties = props;
 	}
 
 	public String toString() {
@@ -105,7 +84,6 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 		sb.append("type=").append(typeDescription).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		sb.append("id=").append(id).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		sb.append("homeID=").append(homeID).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-		sb.append("props=").append(properties).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		sb.append("ident=").append(identifier).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
