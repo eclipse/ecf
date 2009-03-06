@@ -94,9 +94,9 @@ public class JMDNSPlugin implements BundleActivator {
 						jdc = new JMDNSDiscoveryContainer(LOCALHOST);
 						jdc.connect(null, null);
 					} catch (final IDCreateException e) {
-						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSPlugin.PLUGIN_ID + "/debug/methods/catching", this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
+						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSPlugin.PLUGIN_ID + JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
 					} catch (final ContainerConnectException e) {
-						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSPlugin.PLUGIN_ID + "/debug/methods/catching", this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
+						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSPlugin.PLUGIN_ID + JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
 						jdc = null;
 					}
 				}

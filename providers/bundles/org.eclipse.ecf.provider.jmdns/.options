@@ -1,5 +1,19 @@
-org.eclipse.ecf.provider.jmdns/debug = false
+# Debugging options for the org.eclipse.ecf.provider.jmdns plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.provider.jmdns plug-in
+org.eclipse.ecf.provider.jmdns/debug=false
 org.eclipse.ecf.provider.jmdns/debug/filter = *
 org.eclipse.ecf.provider.jmdns/debug/flag = false
-org.eclipse.ecf.provider.jmdns/debug/jmdns = false
-org.eclipse.ecf.provider.jmdns/debug/container = false
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider.jmdns/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider.jmdns/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.provider.jmdns/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.provider.jmdns/debug/methods/exiting=false
+
+org.eclipse.ecf.provider.jmdns/debug/methods/tracing=false
+org.eclipse.ecf.provider.jmdns/debug/methods/changing=false
