@@ -57,6 +57,7 @@ public class DistributionProviderImpl implements DistributionProvider {
 		Map result = new HashMap();
 		if (sr == null)
 			return result;
+		// XXX todo... this is still left to implement
 		return result;
 	}
 
