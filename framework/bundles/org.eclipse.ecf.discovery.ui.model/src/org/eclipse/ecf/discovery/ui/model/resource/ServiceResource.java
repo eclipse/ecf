@@ -268,7 +268,7 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				lock.acquire();
 				Trace.entering(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
 						+ "/methods/entering", ServiceResource.class, //$NON-NLS-1$
-						"serviceRemoved", ecfEvent); //$NON-NLS-1$
+						"serviceUndiscovered", ecfEvent); //$NON-NLS-1$
 				org.eclipse.ecf.discovery.IServiceInfo ecfServiceInfo = ecfEvent
 						.getServiceInfo();
 
@@ -290,7 +290,7 @@ public class ServiceResource extends ResourceImpl implements Resource {
 
 				Trace.trace(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
 						+ "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
-						"serviceRemoved", "Removed service " + emfIServiceInfo); //$NON-NLS-1$ //$NON-NLS-2$
+						"serviceUndiscovered", "Removed service " + emfIServiceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 
 				// remove the host if no services left for this particular host
 				IHost host = findIHost(getInetAddress(ecfServiceInfo
@@ -299,11 +299,15 @@ public class ServiceResource extends ResourceImpl implements Resource {
 					EcoreUtil.remove(host);
 					Trace.trace(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
 							+ "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
-							"serviceRemoved", "Removed host " + host); //$NON-NLS-1$ //$NON-NLS-2$
+							"serviceUndiscovered", "Removed host " + host); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				Trace.exiting(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
 						+ "/methods/exiting", ServiceResource.class, //$NON-NLS-1$
-						"serviceRemoved", ecfEvent); //$NON-NLS-1$
+						"serviceUndiscovered", ecfEvent); //$NON-NLS-1$
+			} catch(AssertionFailedException e) {
+				Trace.catching(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
+						+ "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
+						"serviceUndiscovered", e); //$NON-NLS-1$
 			} finally {
 				lock.release();
 			}
