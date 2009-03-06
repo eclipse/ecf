@@ -49,38 +49,14 @@ public class DistributionProviderImpl implements DistributionProvider {
 		return remoteServices.remove(sr);
 	}
 
-	public ServiceReference[] getExposedServices() {
-		return (ServiceReference[]) exposedServices
-				.toArray(new ServiceReference[] {});
+	public Collection getExposedServices() {
+		return exposedServices;
 	}
 
-	public Map getPublicationProperties(ServiceReference sr) {
-		// the spec or javadocs don't say what should happen if given sr is null
-		// or
-		// the given sr is not found in those published...
+	public Map getExposedProperties(ServiceReference sr) {
 		Map result = new HashMap();
 		if (sr == null)
 			return result;
-		ServiceReference publishedService = getPublishedService(sr);
-		if (publishedService == null)
-			return result;
-		return getPropertyMap(result, publishedService);
-	}
-
-	private ServiceReference getPublishedService(ServiceReference sr) {
-		List l = Arrays.asList(getPublishedServices());
-		if (l.contains(sr))
-			return sr;
-		return null;
-	}
-
-	private Map getPropertyMap(Map result, ServiceReference sr) {
-		String[] propKeys = sr.getPropertyKeys();
-		if (propKeys != null) {
-			for (int i = 0; i < propKeys.length; i++) {
-				result.put(propKeys[i], sr.getProperty(propKeys[i]));
-			}
-		}
 		return result;
 	}
 
@@ -89,17 +65,11 @@ public class DistributionProviderImpl implements DistributionProvider {
 		remoteServices.clear();
 	}
 
-	// XXX word on the street is that this is being removed from spec
-	public ServiceReference[] getPublishedServices() {
-		return null;
+	public Collection getRemoteServices() {
+		return remoteServices;
 	}
 
-	public ServiceReference[] getRemoteServices() {
-		return (ServiceReference[]) remoteServices
-				.toArray(new ServiceReference[] {});
-	}
-
-	public Collection /* String */getSupportedIntents() {
+	public Collection getSupportedIntents() {
 		List result = new ArrayList();
 		IContainerFactory containerFactory = Activator.getDefault()
 				.getContainerManager().getContainerFactory();
