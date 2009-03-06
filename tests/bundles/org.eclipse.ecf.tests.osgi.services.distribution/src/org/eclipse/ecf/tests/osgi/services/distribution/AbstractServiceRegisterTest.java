@@ -9,6 +9,8 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.IContainer;
@@ -174,7 +176,7 @@ public abstract class AbstractServiceRegisterTest extends
 		DistributionProvider distributionProvider = (DistributionProvider) st.getService();
 		assertNotNull(distributionProvider);
 		
-		ServiceReference[] exposedServices = distributionProvider.getExposedServices();
+		Collection exposedServices = distributionProvider.getExposedServices();
 		assertNotNull(exposedServices);
 
 		// Register service on server
@@ -187,10 +189,10 @@ public abstract class AbstractServiceRegisterTest extends
 		
 		exposedServices = distributionProvider.getExposedServices();
 		assertNotNull(exposedServices);
-		int exposedLength = exposedServices.length;
-		assertTrue(exposedServices.length > 0);
-		for(int i=0; i < exposedServices.length; i++) {
-			Object o = exposedServices[i].getProperty(OSGI_REMOTE_INTERFACES);
+		int exposedLength = exposedServices.size();
+		assertTrue(exposedLength > 0);
+		for(Iterator i=exposedServices.iterator(); i.hasNext(); ) {
+			Object o = ((ServiceReference) i.next()).getProperty(OSGI_REMOTE_INTERFACES);
 			assertTrue(o != null);
 		}
 
@@ -200,7 +202,7 @@ public abstract class AbstractServiceRegisterTest extends
 		
 		exposedServices= distributionProvider.getExposedServices();
 		assertNotNull(exposedServices);
-		assertTrue(exposedServices.length == (exposedLength - 1));
+		assertTrue(exposedServices.size() == (exposedLength - 1));
 
 	}
 
@@ -212,7 +214,7 @@ public abstract class AbstractServiceRegisterTest extends
 		DistributionProvider distributionProvider = (DistributionProvider) st.getService();
 		assertNotNull(distributionProvider);
 		
-		ServiceReference[] remoteServices = distributionProvider.getRemoteServices();
+		Collection remoteServices = distributionProvider.getRemoteServices();
 		assertNotNull(remoteServices);
 
 		// Register service on server
@@ -225,10 +227,10 @@ public abstract class AbstractServiceRegisterTest extends
 		
 		remoteServices = distributionProvider.getRemoteServices();
 		assertNotNull(remoteServices);
-		int remotesLength = remoteServices.length;
-		assertTrue(remoteServices.length > 0);
-		for(int i=0; i < remoteServices.length; i++) {
-			Object o = remoteServices[i].getProperty(OSGI_REMOTE);
+		int remotesLength = remoteServices.size();
+		assertTrue(remotesLength > 0);
+		for(Iterator i=remoteServices.iterator(); i.hasNext(); ) {
+			Object o = ((ServiceReference) i.next()).getProperty(OSGI_REMOTE);
 			assertTrue(o != null);
 		}
 		// Unregister on server
@@ -237,7 +239,7 @@ public abstract class AbstractServiceRegisterTest extends
 		
 		remoteServices= distributionProvider.getRemoteServices();
 		assertNotNull(remoteServices);
-		assertTrue(remoteServices.length == (remotesLength - 1));
+		assertTrue(remoteServices.size() == (remotesLength - 1));
 
 	}
 
