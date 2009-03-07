@@ -16,7 +16,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractServicePublicationTest;
 import org.eclipse.ecf.tests.osgi.services.distribution.TestServiceInterface1;
 
-public class ServicePublicationTest extends AbstractServicePublicationTest {
+public class GenericServicePublicationTest extends AbstractServicePublicationTest {
 
 	protected IContainer createContainer() throws Exception {
 		return ContainerFactory.getDefault().createContainer("ecf.generic.client");

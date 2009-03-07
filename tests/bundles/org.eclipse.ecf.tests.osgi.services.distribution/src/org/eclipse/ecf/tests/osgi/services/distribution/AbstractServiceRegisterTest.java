@@ -215,6 +215,7 @@ public abstract class AbstractServiceRegisterTest extends
 		assertNotNull(distributionProvider);
 		
 		Collection remoteServices = distributionProvider.getRemoteServices();
+
 		assertNotNull(remoteServices);
 
 		// Register service on server
@@ -252,7 +253,7 @@ public abstract class AbstractServiceRegisterTest extends
 				}
 
 				public Object[] getParameters() {
-					return null;
+					return new Object[] {};
 				}
 
 				public long getTimeout() {

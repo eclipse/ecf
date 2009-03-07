@@ -7,13 +7,16 @@
 * Contributors:
 *   EclipseSource - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.tests.osgi.services.distribution.generic;
+package org.eclipse.ecf.tests.osgi.services.distribution.r_osgi;
 
 
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractServiceRegisterTest;
 
 
-public class ServiceRegisterTest extends AbstractServiceRegisterTest {
+public class R_OSGiServiceRegisterTest extends AbstractServiceRegisterTest {
 
 	/*
 	 * (non-Javadoc)
@@ -24,7 +27,6 @@ public class ServiceRegisterTest extends AbstractServiceRegisterTest {
 		super.setUp();
 		setClientCount(1);
 		createServerAndClients();
-		connectClients();
 		setupRemoteServiceAdapters();
 	}
 
@@ -34,7 +36,21 @@ public class ServiceRegisterTest extends AbstractServiceRegisterTest {
 		super.tearDown();
 	}
 
-	protected String getClientContainerName() {
-		return "ecf.generic.client";
+	protected IContainer createClient(int index) throws Exception {
+		return ContainerFactory.getDefault().createContainer("ecf.r_osgi.peer",
+				new Object[] { IDFactory.getDefault().createStringID(
+				"r-osgi://localhost:"+(9279+index)) });
 	}
+	
+	protected IContainer createServer() throws Exception {
+		return ContainerFactory.getDefault().createContainer("ecf.r_osgi.peer",
+				new Object[] { IDFactory.getDefault().createStringID(
+				"r-osgi://localhost:9278") });
+	}
+
+
+	protected String getClientContainerName() {
+		return "ecf.r_osgi.peer";
+	}
+	
 }

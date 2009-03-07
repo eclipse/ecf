@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractServicePublicationTest;
 import org.eclipse.ecf.tests.osgi.services.distribution.TestServiceInterface1;
 
-public class ServicePublicationTest extends AbstractServicePublicationTest {
+public class R_OSGiServicePublicationTest extends AbstractServicePublicationTest {
 
 	protected IContainer createContainer() throws Exception {
 		final ID containerID = IDFactory.getDefault().createStringID(
