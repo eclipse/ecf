@@ -2,7 +2,7 @@ package org.eclipse.ecf.internal.server.generic;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.server.generic.ServerManager;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
@@ -40,8 +40,8 @@ public class Activator implements BundleActivator {
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
-	public IDiscoveryService getDiscovery() {
-		return (IDiscoveryService) discoveryTracker.getService();
+	public IDiscoveryAdvertiser getDiscovery() {
+		return (IDiscoveryAdvertiser) discoveryTracker.getService();
 	}
 
 	public Bundle getBundle() {
@@ -74,7 +74,7 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		this.extensionRegistryTracker = new ServiceTracker(ctxt, IExtensionRegistry.class.getName(), null);
 		this.extensionRegistryTracker.open();
-		this.discoveryTracker = new ServiceTracker(ctxt, IDiscoveryService.class.getName(), null);
+		this.discoveryTracker = new ServiceTracker(ctxt, IDiscoveryAdvertiser.class.getName(), null);
 		this.discoveryTracker.open();
 		serverManager = new ServerManager();
 	}

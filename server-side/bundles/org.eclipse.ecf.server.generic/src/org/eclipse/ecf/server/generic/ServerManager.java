@@ -19,10 +19,8 @@ import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
-import org.eclipse.ecf.discovery.ServiceInfo;
-import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.server.generic.Activator;
 import org.eclipse.ecf.internal.server.generic.Messages;
 import org.eclipse.ecf.provider.generic.*;
@@ -180,7 +178,7 @@ public class ServerManager {
 	}
 
 	private void registerServerForDiscovery(NamedGroup group, boolean pwrequired) {
-		final IDiscoveryService discovery = Activator.getDefault().getDiscovery();
+		final IDiscoveryAdvertiser discovery = Activator.getDefault().getDiscovery();
 		if (discovery != null) {
 			try {
 				final String rawGroupName = group.getRawName();
