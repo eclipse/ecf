@@ -310,6 +310,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		try {
 			distributionProvider.removeRemoteService(reg.getReference());
 			reg.unregister();
+		} catch (IllegalStateException e) {
+			// Ignore
 		} catch (Exception e) {
 			logError("Exception unregistering service registration=" + reg, e);
 		}
@@ -356,6 +358,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				Object proxy = null;
 				try {
 					proxy = remoteService.getProxy();
+					if (proxy == null) {
+						logError("Remote service proxy is null", null);
+						continue;
+					}
 					// Finally register
 					trace("registerRemoteServiceReferences", "rsca=" + ch
 							+ ",remoteReference=" + remoteReferences[i]);

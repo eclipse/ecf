@@ -19,7 +19,9 @@ import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescriptionImpl;
 
 class ServiceEndpointDescriptionHelper {
-	private static final long DEFAULT_FUTURE_TIMEOUT = 30000;
+	private static final long DEFAULT_FUTURE_TIMEOUT = new Long(System
+			.getProperty("ecf.rs.lookup.timeout", new Long(30000).toString()))
+			.longValue();
 
 	private final ServiceEndpointDescriptionImpl description;
 	private final ID localDiscoveryContainerID;

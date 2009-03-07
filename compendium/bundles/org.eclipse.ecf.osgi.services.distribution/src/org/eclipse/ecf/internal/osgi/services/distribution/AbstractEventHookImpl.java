@@ -150,6 +150,8 @@ public abstract class AbstractEventHookImpl implements EventHook {
 			for (int i = 0; i < registrations.length; i++) {
 				try {
 					registrations[i].unregister();
+				} catch (IllegalStateException e) {
+					// ignore
 				} catch (Exception e) {
 					logError("fireRemoteServiceUnregistered",
 							"Exception unregistering remote registration="
