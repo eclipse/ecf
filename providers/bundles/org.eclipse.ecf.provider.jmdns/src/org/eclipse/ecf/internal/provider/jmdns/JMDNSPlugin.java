@@ -93,8 +93,6 @@ public class JMDNSPlugin implements BundleActivator {
 					try {
 						jdc = new JMDNSDiscoveryContainer(LOCALHOST);
 						jdc.connect(null, null);
-						//	XXX removing so jmdns provider works 
-						// throw new ContainerConnectException();
 					} catch (final IDCreateException e) {
 						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
 					} catch (final ContainerConnectException e) {
