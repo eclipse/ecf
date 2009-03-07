@@ -101,6 +101,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				this.jmdns = JmDNS.create(intf);
 				jmdns.addServiceTypeListener(this);
 			} catch (final IOException e) {
+				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "connect", e); //$NON-NLS-1$
 				if (this.jmdns != null) {
 					jmdns.close();
 					jmdns = null;
