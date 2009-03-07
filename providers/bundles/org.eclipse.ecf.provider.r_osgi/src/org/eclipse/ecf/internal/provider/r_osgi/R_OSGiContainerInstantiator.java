@@ -42,10 +42,8 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	 */
 	public IContainer createInstance(final ContainerTypeDescription description, final Object[] parameters) throws ContainerCreateException {
 		try {
-			if (parameters == null || parameters.length == 0) {
-				return new R_OSGiRemoteServiceContainer();
-			} else if (parameters.length == 1 && parameters[0] instanceof ID) {
-				return new R_OSGiRemoteServiceContainer((ID) parameters[0]);
+			if (parameters.length == 1 && parameters[0] instanceof ID) {
+				return new R_OSGiRemoteServiceContainer(Activator.getDefault().getRemoteOSGiService(), (ID) parameters[0]);
 			}
 			throw new ContainerCreateException("Unsupported arguments " //$NON-NLS-1$
 					+ Arrays.asList(parameters));

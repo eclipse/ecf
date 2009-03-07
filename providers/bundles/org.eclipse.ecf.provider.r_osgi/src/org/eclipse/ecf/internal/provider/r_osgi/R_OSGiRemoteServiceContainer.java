@@ -12,7 +12,6 @@
 package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.*;
-import ch.ethz.iks.r_osgi.channels.ChannelEndpointManager;
 import java.io.IOException;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
@@ -45,9 +44,6 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	// the R-OSGi remote service instance.
 	private RemoteOSGiService remoteService;
 
-	// the EndpointManager for the endpoint.
-	private ChannelEndpointManager endpointMgr;
-
 	// the list of subscribed container listeners.
 	private final List containerListeners = new ArrayList(0);
 
@@ -68,19 +64,14 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	// registration of the internal R-OSGi remote service listener service.
 	private Map remoteServiceListeners = new HashMap(0);
 
-	/**
-	 * @throws IDCreateException
-	 */
-	public R_OSGiRemoteServiceContainer() throws IDCreateException {
-		context = Activator.getDefault().getContext();
-		remoteService = Activator.getDefault().getRemoteOSGiService();
-		if (remoteService == null) {
-			throw new IDCreateException("R-OSGi not running. Cannot create local container ID"); //$NON-NLS-1$
-		}
-	}
+	// Connect context to use for connect calls
+	private IConnectContext connectContext;
 
-	public R_OSGiRemoteServiceContainer(final ID containerID) throws IDCreateException {
-		this();
+	public R_OSGiRemoteServiceContainer(RemoteOSGiService service, final ID containerID) throws IDCreateException {
+		Assert.isNotNull(service);
+		Assert.isNotNull(containerID);
+		context = Activator.getDefault().getContext();
+		remoteService = service;
 		if (containerID instanceof StringID) {
 			this.containerID = new R_OSGiID(((StringID) containerID).getName());
 		} else if (containerID instanceof R_OSGiID) {
@@ -88,7 +79,6 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		} else {
 			throw new IDCreateException("Incompatible ID " + containerID); //$NON-NLS-1$
 		}
-
 		startRegTracker();
 	}
 
@@ -202,6 +192,8 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 */
 	public IRemoteService getRemoteService(final IRemoteServiceReference reference) {
 		Assert.isNotNull(reference);
+		if (!(reference instanceof RemoteServiceReferenceImpl))
+			return null;
 		final RemoteServiceReferenceImpl impl = (RemoteServiceReferenceImpl) reference;
 		return new RemoteServiceImpl(impl, remoteService.getRemoteService(impl.getR_OSGiServiceReference()));
 	}
@@ -224,46 +216,69 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) throws InvalidSyntaxException {
 		Assert.isNotNull(clazz);
-
+		IRemoteFilter remoteFilter = (filter == null) ? null : createRemoteFilter(filter);
+		if (idFilter == null)
+			return (IRemoteServiceReference[]) getRemoteServiceReferencesConnected(clazz, remoteFilter).toArray(new IRemoteServiceReference[] {});
 		synchronized (this) {
-			ID cID = getConnectedID();
-			if (cID == null) {
-				if (idFilter == null || idFilter.length == 0)
-					return null;
-				// XXX this should include all idFilter entries...not just first
-				return getRemoteServiceReferencesForTarget(idFilter[0], clazz, filter == null ? null : createRemoteFilter(filter));
+			List results = new ArrayList();
+			for (int i = 0; i < idFilter.length; i++) {
+				results.addAll(connectAndGetRemoteServiceReferencesForTarget(getConnectedID(), idFilter[i], clazz, remoteFilter));
 			}
-			return getRemoteServiceReferencesConnected(clazz, filter == null ? null : createRemoteFilter(filter));
+			return (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
 		}
+	}
+
+	private List /*IRemoteServiceReference*/connectAndGetRemoteServiceReferencesForTarget(ID currentlyConnectedID, ID targetID, String clazz, IRemoteFilter remoteFilter) {
+		List results = new ArrayList();
+		if (currentlyConnectedID != null) {
+			if (targetID.equals(currentlyConnectedID))
+				results.addAll(getRemoteServiceReferencesConnected(clazz, remoteFilter));
+			else {
+				disconnect();
+				results.addAll(connectAndGetRemoteServiceReferencesForTarget(targetID, clazz, remoteFilter, true));
+				// try to reconnect to original
+				try {
+					connect(currentlyConnectedID, connectContext);
+				} catch (ContainerConnectException e) {
+					logException("connectAndGetRemoteServiceReferencesForTarget.  Could not reconnect to " + currentlyConnectedID, e); //$NON-NLS-1$
+				}
+			}
+		} else {
+			results.addAll(connectAndGetRemoteServiceReferencesForTarget(targetID, clazz, remoteFilter, false));
+		}
+		return results;
+	}
+
+	private List /*IRemoteServiceReference[]*/connectAndGetRemoteServiceReferencesForTarget(ID targetID, String clazz, IRemoteFilter remoteFilter, boolean doDisconnect) {
+		List results = new ArrayList();
+		try {
+			// we first connect
+			connect(targetID, connectContext);
+			// get remote services references...assuming we're connected
+			results.addAll(getRemoteServiceReferencesConnected(clazz, remoteFilter));
+			// then disconnect
+			if (doDisconnect)
+				disconnect();
+		} catch (ContainerConnectException e) {
+			logException("connectAndGetRemoteServiceReferencesForTarget=" + targetID + ",class=" + clazz + ",remoteFilter=" + remoteFilter, e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+		return results;
 	}
 
 	private void logException(String message, Throwable e) {
-		// XXX todo
+		System.err.println(message);
+		if (e != null)
+			e.printStackTrace(System.err);
 	}
 
-	private IRemoteServiceReference[] getRemoteServiceReferencesForTarget(ID targetID, String clazz, IRemoteFilter filter) {
-		// If targetID is null, or targetID not in our namespace, return null 
-		if (targetID == null || !targetID.getNamespace().equals(getConnectNamespace()))
-			return null;
-		try {
-			this.connect(targetID, null);
-		} catch (ContainerConnectException e) {
-			logException("getRemoteServiceReferencesForTarget. targetID=" + targetID, e); //$NON-NLS-1$
-			return null;
-		}
-		return getRemoteServiceReferencesConnected(clazz, filter);
-	}
-
-	private IRemoteServiceReference[] getRemoteServiceReferencesConnected(final String clazz, IRemoteFilter filter) {
+	private synchronized List getRemoteServiceReferencesConnected(final String clazz, IRemoteFilter filter) {
+		List results = new ArrayList();
 		final RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, filter);
-		if (refs == null) {
-			return null;
-		}
-		final IRemoteServiceReference[] result = new IRemoteServiceReference[refs.length];
-		for (int i = 0; i < refs.length; i++) {
-			result[i] = new RemoteServiceReferenceImpl(createRemoteServiceID(refs[i]), refs[i]);
-		}
-		return result;
+		if (refs == null)
+			return results;
+		for (int i = 0; i < refs.length; i++)
+			results.add(new RemoteServiceReferenceImpl(createRemoteServiceID(refs[i]), refs[i]));
+		return results;
 	}
 
 	IRemoteServiceID createRemoteServiceID(R_OSGiID cID, Long l) {
@@ -341,13 +356,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#removeRemoteServiceListener(org.eclipse.ecf.remoteservice.IRemoteServiceListener)
 	 */
 	public void removeRemoteServiceListener(final IRemoteServiceListener listener) {
-
-		final ServiceRegistration reg = (ServiceRegistration) remoteServiceListeners.remove(listener);
-		if (reg == null) {
-			return;
-		}
-
-		reg.unregister();
+		remoteServiceListeners.remove(listener);
 	}
 
 	/**
@@ -355,7 +364,13 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#ungetRemoteService(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
 	 */
 	public boolean ungetRemoteService(IRemoteServiceReference reference) {
-		remoteService.ungetRemoteService(((RemoteServiceReferenceImpl) reference).getR_OSGiServiceReference());
+		if (!(reference instanceof RemoteServiceReferenceImpl))
+			return false;
+		RemoteServiceReferenceImpl impl = (RemoteServiceReferenceImpl) reference;
+		RemoteServiceReference rsr = impl.getR_OSGiServiceReference();
+		if (!rsr.isActive())
+			return false;
+		remoteService.ungetRemoteService(rsr);
 		return true;
 	}
 
@@ -404,13 +419,18 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public synchronized void connect(final ID targetID, final IConnectContext connectContext) throws ContainerConnectException {
-		Assert.isNotNull(targetID);
-		//Assert.isNotNull(connectContext);
+	public synchronized void connect(final ID targetID, final IConnectContext cc) throws ContainerConnectException {
+		if (targetID == null)
+			throw new ContainerConnectException("targetID may not be null"); //$NON-NLS-1$
+
+		if (!(targetID instanceof R_OSGiID))
+			throw new ContainerConnectException("targetID is of incorrect type for this container"); //$NON-NLS-1$
 
 		if (connectedID != null) {
 			throw new ContainerConnectException("Container is already connected to " + connectedID); //$NON-NLS-1$
 		}
+
+		this.connectContext = cc;
 
 		final R_OSGiID target;
 		try {
@@ -424,17 +444,13 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 
 			fireListeners(new ContainerConnectingEvent(containerID, connectedID));
 
-			final RemoteServiceReference[] refs = remoteService.connect(target.getURI());
+			final RemoteServiceReference[] refs = doConnect(target);
 			if (refs != null) {
 				for (int i = 0; i < refs.length; i++) {
 					checkImport(refs[i]);
 				}
 			}
 			connectedID = target;
-
-			endpointMgr = remoteService.getEndpointManager(target.getURI());
-
-			containerID = (R_OSGiID) IDFactory.getDefault().createID(R_OSGiNamespace.NAME, endpointMgr.getLocalAddress().toString());
 
 			startRegTracker();
 
@@ -446,6 +462,14 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		fireListeners(new ContainerConnectedEvent(containerID, connectedID));
 	}
 
+	private RemoteServiceReference[] doConnect(R_OSGiID targetID) throws IOException {
+		return remoteService.connect(targetID.getURI());
+	}
+
+	private void doDisconnect(R_OSGiID targetID) {
+		remoteService.disconnect(targetID.getURI());
+	}
+
 	/**
 	 * disconnect from the remote container.
 	 * 
@@ -454,7 +478,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	public synchronized void disconnect() {
 		if (connectedID != null) {
 			fireListeners(new ContainerDisconnectingEvent(containerID, connectedID));
-			remoteService.disconnect(connectedID.getURI());
+			doDisconnect(connectedID);
 			connectedID = null;
 			remoteService = null;
 			fireListeners(new ContainerDisconnectedEvent(containerID, connectedID));
