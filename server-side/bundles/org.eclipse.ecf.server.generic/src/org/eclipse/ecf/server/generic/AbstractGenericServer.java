@@ -27,6 +27,9 @@ public abstract class AbstractGenericServer {
 		return result;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public GenericServerContainer getFirstServerContainer() {
 		return (GenericServerContainer) getServerContainers().get(0);
 	}
@@ -79,6 +82,9 @@ public abstract class AbstractGenericServer {
 		return null;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected IConnectHandlerPolicy createConnectHandlerPolicy(GenericServerContainer s, String path) {
 		return new IConnectHandlerPolicy() {
 			public PermissionCollection checkConnect(Object address, ID fromID, ID targetID, String targetGroup, Object connectData) throws Exception {
