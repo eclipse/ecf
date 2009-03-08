@@ -21,6 +21,7 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.discovery.ui,org.eclipse.ecf.discovery.ui"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.discovery.ui.edit,org.eclipse.ecf.discovery.ui.edit"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.discovery.ui.model,org.eclipse.ecf.discovery.ui.model"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.discovery.ui.browser,org.eclipse.ecf.discovery.ui.browser"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.discovery.ui.properties,org.eclipse.ecf.discovery.ui.properties"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.discovery.ui.properties.tabbed,org.eclipse.ecf.discovery.ui.properties.tabbed"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.docshare,org.eclipse.ecf.docshare"/>
