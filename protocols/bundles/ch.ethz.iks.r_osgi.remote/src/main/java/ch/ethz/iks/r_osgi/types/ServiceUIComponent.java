@@ -28,7 +28,7 @@
  */
 package ch.ethz.iks.r_osgi.types;
 
-import java.awt.Panel;
+//import java.awt.Panel;
 
 import org.osgi.framework.BundleContext;
 
@@ -69,6 +69,6 @@ public interface ServiceUIComponent {
 	 * @return the panel.
 	 * @since 0.5
 	 */
-	Panel getPanel();
+//	Panel getPanel();
 
 }
