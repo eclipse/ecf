@@ -43,6 +43,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected List requests = Collections.synchronizedList(new ArrayList());
 
+	/**
+	 * @since 3.0
+	 */
 	protected IConnectContext connectContext;
 
 	public RegistrySharedObject() {
@@ -1117,6 +1120,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return null;
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		this.connectContext = connectContext;
 	}

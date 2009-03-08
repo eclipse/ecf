@@ -95,6 +95,9 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements IRem
 		return registry.getRemoteServiceID(containerID, containerRelativeID);
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		registry.setConnectContextForAuthentication(connectContext);
 	}
