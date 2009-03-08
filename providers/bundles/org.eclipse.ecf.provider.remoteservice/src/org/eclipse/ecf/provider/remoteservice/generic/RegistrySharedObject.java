@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.jobs.JobsExecutor;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.util.*;
@@ -41,6 +42,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	protected Map addRegistrationRequests = new Hashtable();
 
 	protected List requests = Collections.synchronizedList(new ArrayList());
+
+	protected IConnectContext connectContext;
 
 	public RegistrySharedObject() {
 		//
@@ -1112,5 +1115,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			}
 		}
 		return null;
+	}
+
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+		this.connectContext = connectContext;
 	}
 }

@@ -11,6 +11,7 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 import java.util.Dictionary;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 import org.eclipse.ecf.remoteservice.*;
@@ -92,5 +93,9 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements IRem
 	 */
 	public IRemoteServiceID getRemoteServiceID(ID containerID, long containerRelativeID) {
 		return registry.getRemoteServiceID(containerID, containerRelativeID);
+	}
+
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+		registry.setConnectContextForAuthentication(connectContext);
 	}
 }
