@@ -679,4 +679,8 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		}
 		return null;
 	}
+
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+		this.connectContext = connectContext;
+	}
 }
