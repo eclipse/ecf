@@ -15,6 +15,7 @@ import java.util.Dictionary;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.osgi.framework.*;
 
@@ -250,4 +251,20 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * @see FrameworkUtil#createFilter(String)
 	 */
 	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException;
+
+	/**
+	 * Set connect context for authentication upon subsequent calls to
+	 * {@link #getRemoteServiceReferences(ID[], String, String)} or {@link #asyncGetRemoteServiceReferences(ID[], String, String)}. This
+	 * method should be called with a non-null connectContext in order to allow
+	 * authentication to occur during.
+	 * 
+	 * @param connectContext
+	 *            the connect context to use for authenticating.
+	 *            If <code>null</code>, then no authentication will be
+	 *            attempted.
+	 *            
+	 * @since 3.0
+	 */
+	public void setConnectContextForAuthentication(IConnectContext connectContext);
+
 }
