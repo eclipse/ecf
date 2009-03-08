@@ -46,13 +46,67 @@ public class ServiceInfo implements IServiceInfo, Serializable,
 
 	public ServiceInfo(URI anURI, IServiceID serviceID, int priority,
 			int weight, IServiceProperties props) {
-		this.uri = anURI;
-		Assert.isNotNull(this.uri);
-		this.serviceID = serviceID;
+		Assert.isNotNull(anURI);
+		// Assert.isLegal(anURI.isOpaque(), "Opaque uri is not supported");
+		// Assert.isLegal(!anURI.isAbsolute(),
+		// "Non absolut uri is not supported");
+
+		// [scheme:][//authority][path][?query][#fragment]
+
+		// Scheme -> Protocol
+		String scheme = anURI.getScheme();
+		if (scheme == null) {
+			scheme = UNKNOWN_PROTOCOL;
+		}
+
+		// UserInfo
+		String userInfo = anURI.getUserInfo();
+		if (userInfo == null) {
+			userInfo = "";
+		} else {
+			userInfo += "@";
+		}
+
+		// Host
+		String host = anURI.getHost();
+		Assert.isNotNull(host);
+
+		// Port
+		int port = anURI.getPort();
+		if (port == -1) {
+			port = 0;
+		}
+
+		// Path
+		String path = anURI.getPath();
+		if (path == null) {
+			path = "/";
+		}
+
+		// query
+		String query = anURI.getQuery();
+		if (query == null) {
+			query = "";
+		} else {
+			query = "?" + query;
+		}
+
+		// fragment
+		String fragment = anURI.getFragment();
+		if (fragment == null) {
+			fragment = "";
+		} else {
+			fragment = "#" + fragment;
+		}
+
+		this.uri = URI.create(scheme + "://" + userInfo + host + ":" + port
+				+ path + query + fragment);
+
 		Assert.isNotNull(serviceID);
-		this.priority = priority;
+		this.serviceID = serviceID;
 		this.weight = weight;
-		this.properties = (props == null) ? new ServiceProperties() : props;
+		this.priority = priority;
+		properties = (props == null) ? new ServiceProperties() : props;
 	}
 
 	public ServiceInfo(String protocol, String host, int port,
@@ -62,7 +116,7 @@ public class ServiceInfo implements IServiceInfo, Serializable,
 			if (host == null)
 				host = InetAddress.getLocalHost().getHostAddress();
 			uri = new URI((protocol == null) ? UNKNOWN_PROTOCOL : protocol,
-					null, host, port, null, null, null);
+					null, host, port, "/", null, null);
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(
 					Messages.ServiceInfo_EXCEPTION_INVALID_HOST_ARG);
