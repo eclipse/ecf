@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.distribution.DistributionProvider;
@@ -30,20 +31,25 @@ public abstract class AbstractServiceRegisterTest extends
 
 	public void testRegisterServer() throws Exception {
 		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// *For testing purposes only* -- Set the server container id property, so that the service is not
+		// distributed by both the client and server (which are both running in the same process
+		// for junit plugin tests)
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
-		props.put("foo", "bar");
+		
+		// Set OSGI property that identifies this service as a service to be remoted
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// Actually register with default service (IConcatService)
 		ServiceRegistration registration = registerDefaultService(props);
+		// Wait a while
 		Thread.sleep(REGISTER_WAIT);
+		// Then unregister
 		registration.unregister();
 		Thread.sleep(REGISTER_WAIT);
 	}
 
-	public void testGetProxy() throws Exception {
-		String classname = TestServiceInterface1.class.getName();
-		// Setup service tracker
-		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + classname +")(" + OSGI_REMOTE + "=*))"),new ServiceTrackerCustomizer() {
+	protected ServiceTracker createProxyServiceTracker(String clazz) throws InvalidSyntaxException {
+		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + clazz +")(" + OSGI_REMOTE + "=*))"),new ServiceTrackerCustomizer() {
 
 			public Object addingService(ServiceReference reference) {
 				System.out.println("addingService="+reference);
@@ -61,18 +67,32 @@ public abstract class AbstractServiceRegisterTest extends
 				System.out.println("removedService="+reference+",svc="+service);
 			}});
 		st.open();
+		return st;
+	}
+	
+	public void testGetProxy() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker for client
+		ServiceTracker st = createProxyServiceTracker(classname);
 		
+		// Server - register service with required OSGI property and some test properties
 		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// *For testing purposes only* -- Set the server container id property, so that the service is not
+		// distributed by both the client and server (which are both running in the same process
+		// for junit plugin tests)
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		// Set required OSGI property that identifies this service as a service to be remoted
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
 		// Put property foo with value bar into published properties
 		String testPropKey = "foo";
 		String testPropVal = "bar";
 		props.put(testPropKey, testPropVal);
+		// Actually register and wait a while
 		ServiceRegistration registration = registerService(classname, new TestService1(),props);
 		Thread.sleep(REGISTER_WAIT);
-		// Get service references that are proxies
+		
+		// Client - Get service references that are proxies
 		ServiceReference [] remoteReferences = st.getServiceReferences();
 		assertTrue(remoteReferences != null);
 		assertTrue(remoteReferences.length > 0);
@@ -87,26 +107,30 @@ public abstract class AbstractServiceRegisterTest extends
 			assertTrue(prop != null);
 			assertTrue(prop.equals(testPropVal));
 		}
-		// Now unregister original registration
+		// Now unregister original registration and wait
 		registration.unregister();
 		Thread.sleep(REGISTER_WAIT);
 	}
 	
 	public void testGetAndUseProxy() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
-		// Setup service tracker
-		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + classname +")(" + OSGI_REMOTE + "=*))"),null);
-		st.open();
+		// Setup service tracker for client
+		ServiceTracker st = createProxyServiceTracker(classname);
 		
-		// Register service on server
+		// Server - register service with required OSGI property and some test properties
 		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// *For testing purposes only* -- Set the server container id property, so that the service is not
+		// distributed by both the client and server (which are both running in the same process
+		// for junit plugin tests)
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		// Set required OSGI property that identifies this service as a service to be remoted
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// Actually register and wait a while
 		ServiceRegistration registration = registerService(classname, new TestService1(),props);
 		Thread.sleep(REGISTER_WAIT);
 		
-		// Get service references from service tracker
+		// Client - Get service references from service tracker
 		ServiceReference [] remoteReferences = st.getServiceReferences();
 		assertTrue(remoteReferences != null);
 		assertTrue(remoteReferences.length > 0);
@@ -121,27 +145,30 @@ public abstract class AbstractServiceRegisterTest extends
 			assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
 		}
 		
-		// Unregister on server
+		// Unregister on server and wait
 		registration.unregister();
-		
 		Thread.sleep(REGISTER_WAIT);
 	}
 
 	public void testGetAndUseIRemoteService() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
-		// Setup service tracker
-		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + classname +")(" + OSGI_REMOTE + "=*))"),null);
-		st.open();
+		// Setup service tracker for client
+		ServiceTracker st = createProxyServiceTracker(classname);
 		
-		// Register service on server
+		// Server - register service with required OSGI property and some test properties
 		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// *For testing purposes only* -- Set the server container id property, so that the service is not
+		// distributed by both the client and server (which are both running in the same process
+		// for junit plugin tests)
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		// Set required OSGI property that identifies this service as a service to be remoted
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// Actually register and wait a while
 		ServiceRegistration registration = registerService(classname, new TestService1(),props);
 		Thread.sleep(REGISTER_WAIT);
 		
-		// Get service references from service tracker
+		// Client - Get service references from service tracker
 		ServiceReference [] remoteReferences = st.getServiceReferences();
 		assertTrue(remoteReferences != null);
 		assertTrue(remoteReferences.length > 0);
@@ -176,17 +203,24 @@ public abstract class AbstractServiceRegisterTest extends
 		DistributionProvider distributionProvider = (DistributionProvider) st.getService();
 		assertNotNull(distributionProvider);
 		
+		// The returned collection should not be null
 		Collection exposedServices = distributionProvider.getExposedServices();
 		assertNotNull(exposedServices);
 
-		// Register service on server
+		// Server - register service with required OSGI property and some test properties
 		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// *For testing purposes only* -- Set the server container id property, so that the service is not
+		// distributed by both the client and server (which are both running in the same process
+		// for junit plugin tests)
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		// Set required OSGI property that identifies this service as a service to be remoted
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// Actually register and wait a while
 		ServiceRegistration registration = registerService(classname, new TestService1(),props);
 		Thread.sleep(REGISTER_WAIT);
-		
+
+		// Client
 		exposedServices = distributionProvider.getExposedServices();
 		assertNotNull(exposedServices);
 		int exposedLength = exposedServices.size();
@@ -200,6 +234,7 @@ public abstract class AbstractServiceRegisterTest extends
 		registration.unregister();
 		Thread.sleep(REGISTER_WAIT);
 		
+		// Check to see that the exposed service went away
 		exposedServices= distributionProvider.getExposedServices();
 		assertNotNull(exposedServices);
 		assertTrue(exposedServices.size() == (exposedLength - 1));
@@ -214,18 +249,24 @@ public abstract class AbstractServiceRegisterTest extends
 		DistributionProvider distributionProvider = (DistributionProvider) st.getService();
 		assertNotNull(distributionProvider);
 		
+		// The returned collection should not be null
 		Collection remoteServices = distributionProvider.getRemoteServices();
-
 		assertNotNull(remoteServices);
 
-		// Register service on server
+		// Server - register service with required OSGI property and some test properties
 		Properties props = new Properties();
-		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// *For testing purposes only* -- Set the server container id property, so that the service is not
+		// distributed by both the client and server (which are both running in the same process
+		// for junit plugin tests)
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
+		// Set required OSGI property that identifies this service as a service to be remoted
+		props.put(OSGI_REMOTE_INTERFACES, new String[] {OSGI_REMOTE_INTERFACES_WILDCARD});
+		// Actually register and wait a while
 		ServiceRegistration registration = registerService(classname, new TestService1(),props);
 		Thread.sleep(REGISTER_WAIT);
 		
+		// Check that distribution provider (client) has remote services now
 		remoteServices = distributionProvider.getRemoteServices();
 		assertNotNull(remoteServices);
 		int remotesLength = remoteServices.size();
@@ -238,6 +279,7 @@ public abstract class AbstractServiceRegisterTest extends
 		registration.unregister();
 		Thread.sleep(REGISTER_WAIT);
 		
+		// Remote services should have gone down by one (because of unregister
 		remoteServices= distributionProvider.getRemoteServices();
 		assertNotNull(remoteServices);
 		assertTrue(remoteServices.size() == (remotesLength - 1));
