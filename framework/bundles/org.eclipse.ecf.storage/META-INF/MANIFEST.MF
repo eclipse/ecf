@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Storage Plug-in
 Bundle-SymbolicName: org.eclipse.ecf.storage;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.storage.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
