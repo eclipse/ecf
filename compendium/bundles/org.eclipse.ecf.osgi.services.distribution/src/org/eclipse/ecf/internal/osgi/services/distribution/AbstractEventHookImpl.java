@@ -224,20 +224,27 @@ public abstract class AbstractEventHookImpl implements EventHook {
 
 	protected void traceException(String methodName, String message, Throwable t) {
 		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
-				this.getClass(), methodName + ":" + message, t);
+				this.getClass(), ((methodName == null) ? "<unknown>"
+						: methodName)
+						+ ":" + ((message == null) ? "<empty>" : message), t);
 	}
 
 	protected void logError(String methodName, String message, Throwable t) {
-		Activator.getDefault().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-						methodName + ":" + message, t));
 		traceException(methodName, message, t);
+		Activator.getDefault()
+				.log(
+						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+								IStatus.ERROR, this.getClass().getName()
+										+ ":"
+										+ ((methodName == null) ? "<unknown>"
+												: methodName)
+										+ ":"
+										+ ((message == null) ? "<empty>"
+												: message), t));
 	}
 
 	protected void logError(String methodName, String message) {
-		Activator.getDefault().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-						methodName + ":" + message, null));
+		logError(methodName, message, null);
 		traceException(methodName, message, null);
 	}
 

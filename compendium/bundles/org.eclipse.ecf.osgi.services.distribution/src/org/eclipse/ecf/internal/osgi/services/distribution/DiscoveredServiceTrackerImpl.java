@@ -52,7 +52,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 	public void serviceChanged(DiscoveredServiceNotification notification) {
 		if (notification == null) {
-			logError("DiscoveredServiceNotification is null", null);
+			logWarning("serviceChanged",
+					"DiscoveredServiceNotification is null.  Ignoring");
 			return;
 		}
 		int notificationType = notification.getType();
@@ -72,8 +73,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			// Do nothing for now
 			break;
 		default:
-			logError("DiscoveredServiceNotification type=" + notificationType
-					+ " not found", null);
+			logWarning("serviceChanged", "DiscoveredServiceNotification type="
+					+ notificationType + " not found.  Ignoring");
 			break;
 		}
 	}
@@ -91,8 +92,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			sedh = new ServiceEndpointDescriptionHelper(
 					(ServiceEndpointDescriptionImpl) sed);
 		} catch (Exception e) {
-			logError("Error getting data from ServiceEndpointDescription="
-					+ sed, e);
+			logError(
+					"handleDiscoveredServiceUnavailable",
+					"Error getting data from ServiceEndpointDescription=" + sed,
+					e);
 			return;
 		}
 		// Remove existing proxy service registrations that correspond to the
@@ -127,16 +130,19 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			providedInterfaces = sedh.getProvidedInterfaces();
 			endpointID = sedh.getEndpointID();
 		} catch (Exception e) {
-			logError("Error getting data from ServiceEndpointDescription="
-					+ sed, e);
+			logError(
+					"handleDiscoveredServiceAvailable",
+					"Error getting data from ServiceEndpointDescription=" + sed,
+					e);
 			return;
 		}
 
 		// Find RSCAs for the given description
 		ContainerAdapterHelper[] cahs = findRSCAs(endpointID, sedh);
 		if (cahs == null || cahs.length == 0) {
-			logError("No RemoteServiceContainerAdapters found for description="
-					+ sedh.getDescription(), null);
+			logError("handleDiscoveredServiceAvailable",
+					"No RemoteServiceContainerAdapters found for description="
+							+ sedh.getDescription(), null);
 			return;
 		}
 		// For all remote service container adapters
@@ -183,22 +189,37 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 												: Arrays.asList(
 														remoteReferences)
 														.toString()));
-						if (remoteReferences != null) {
+						if (remoteReferences != null
+								&& remoteReferences.length > 0) {
 							registerRemoteServiceReferences(sedh, ch,
 									remoteReferences);
+						} else {
+							logError(
+									"processFutureForRemoteServiceReferences",
+									"getRemoteServiceReferences result is empty. "
+											+ "containerHelper="
+											+ ch
+											+ "remoteReferences="
+											+ ((remoteReferences == null) ? "null"
+													: Arrays.asList(
+															remoteReferences)
+															.toString()), null);
 						}
 					} else {
-						logError("Future status not ok: "
-								+ futureStatus.getMessage(), futureStatus
-								.getException());
+						logError("processFutureForRemoteServiceReferences",
+								"Future status NOT ok message="
+										+ futureStatus.getMessage(),
+								futureStatus.getException());
 					}
 				} catch (InterruptedException e) {
-					logError("Retrieval of remote references interrupted", e);
+					logError("processFutureForRemoteServiceReferences",
+							"Retrieval interrupted", e);
 				} catch (OperationCanceledException e) {
-					logError("Retrieval of remote references cancelled", e);
+					logError("processFutureForRemoteServiceReferences",
+							"Retrieval cancelled", e);
 				} catch (TimeoutException e) {
-					logError("Retrieval of remote references timedout after "
-							+ e.getDuration(), e);
+					logError("processFutureForRemoteServiceReferences",
+							"Retrieval timedout after " + e.getDuration(), e);
 				}
 			}
 		});
@@ -312,8 +333,11 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			reg.unregister();
 		} catch (IllegalStateException e) {
 			// Ignore
+			logWarning("unregisterProxyServiceRegistration",
+					"Exception unregistering serviceRegistration=" + reg);
 		} catch (Exception e) {
-			logError("Exception unregistering service registration=" + reg, e);
+			logError("unregisterProxyServiceRegistration",
+					"Exception unregistering serviceRegistration=" + reg, e);
 		}
 	}
 
@@ -323,7 +347,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 		synchronized (discoveredRemoteServiceRegistrations) {
 			if (findProxyServiceRegistration(sedh.getServiceID())) {
-				logError("registerRemoteServiceReferences serviceID="
+				logError("registerRemoteServiceReferences", "serviceID="
 						+ sedh.getServiceID()
 						+ " previously registered locally...ignoring", null);
 				return;
@@ -335,8 +359,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						remoteReferences[i]);
 				// If no remote service then give up
 				if (remoteService == null) {
-					logError("Remote service is null for remote reference "
-							+ remoteReferences[i], null);
+					logError("registerRemoteServiceReferences",
+							"Remote service is null for remote reference "
+									+ remoteReferences[i], null);
 					continue;
 				}
 
@@ -344,7 +369,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				String[] clazzes = (String[]) remoteReferences[i]
 						.getProperty(Constants.OBJECTCLASS);
 				if (clazzes == null || clazzes.length == 0) {
-					logError(
+					logError("registerRemoteServiceReferences",
 							"No classes specified for remote service reference "
 									+ remoteReferences[i], null);
 					continue;
@@ -359,7 +384,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				try {
 					proxy = remoteService.getProxy();
 					if (proxy == null) {
-						logError("Remote service proxy is null", null);
+						logError("registerRemoteServiceReferences",
+								"Remote service proxy is null", null);
 						continue;
 					}
 					// Finally register
@@ -371,7 +397,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					addProxyServiceRegistration(sedh.getServiceID(), ch,
 							remoteReferences[i], registration);
 				} catch (Exception e) {
-					logError(
+					logError("registerRemoteServiceReferences",
 							"Exception creating or registering remote reference "
 									+ remoteReferences[i], e);
 					continue;
@@ -447,21 +473,49 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		return true;
 	}
 
-	private void trace(String methodName, String message) {
+	protected void trace(String methodName, String message) {
 		Trace.trace(Activator.PLUGIN_ID, DebugOptions.DISCOVEREDSERVICETRACKER,
 				this.getClass(), methodName, message);
 	}
 
-	private void logWarning(String method, String message) {
-		Activator.getDefault().log(
-				new Status(IStatus.WARNING, Activator.PLUGIN_ID,
-						IStatus.WARNING, method + ":" + message, null));
+	protected void traceException(String methodName, String message, Throwable t) {
+		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
+				this.getClass(), ((methodName == null) ? "<unknown>"
+						: methodName)
+						+ ":" + ((message == null) ? "<empty>" : message), t);
 	}
 
-	private void logError(String string, Throwable t) {
+	protected void logError(String methodName, String message, Throwable t) {
+		traceException(methodName, message, t);
+		Activator.getDefault()
+				.log(
+						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+								IStatus.ERROR, this.getClass().getName()
+										+ ":"
+										+ ((methodName == null) ? "<unknown>"
+												: methodName)
+										+ ":"
+										+ ((message == null) ? "<empty>"
+												: message), t));
+	}
+
+	protected void logError(String methodName, String message) {
+		logError(methodName, message, null);
+		traceException(methodName, message, null);
+	}
+
+	private void logWarning(String methodName, String message) {
+		trace(methodName, "WARNING:" + message);
 		Activator.getDefault().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-						string, t));
+				new Status(IStatus.WARNING, Activator.PLUGIN_ID,
+						IStatus.WARNING, DiscoveredServiceTrackerImpl.class
+								.getName()
+								+ ":"
+								+ ((methodName == null) ? "<unknown>"
+										: methodName)
+								+ ":"
+								+ ((message == null) ? "<empty>" : message),
+						null));
 	}
 
 }
