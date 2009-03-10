@@ -11,6 +11,10 @@
 
 package org.eclipse.ecf.discovery.identity;
 
+import org.eclipse.ecf.discovery.IServiceInfo;
+
+import java.net.URI;
+
 import org.eclipse.ecf.core.identity.ID;
 
 /**
@@ -28,6 +32,12 @@ public interface IServiceID extends ID {
 	 * Get service name for this ID.  
 	 * 
 	 * @return String service name.  May be <code>null</code>.
+	 * @deprecated Use {@link IServiceInfo#getServiceName()} instead
 	 */
 	public String getServiceName();
+	
+	/**
+	 * @since 3.0
+	 */
+	public URI getLocation();
 }

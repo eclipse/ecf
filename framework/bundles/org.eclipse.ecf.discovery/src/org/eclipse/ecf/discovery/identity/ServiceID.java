@@ -8,6 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.discovery.identity;
 
+import org.eclipse.ecf.discovery.IServiceInfo;
+
+import java.net.URI;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -15,27 +19,36 @@ import org.eclipse.ecf.core.identity.Namespace;
 /**
  * Service identity type.  ServiceIDs are IDs that uniquely identify
  * a remote service.  Subclasses may be created as appropriate.
- * 
  */
 public class ServiceID extends BaseID implements IServiceID {
 
 	private static final long serialVersionUID = 4362768703249025783L;
 
+	/**
+	 * @since 3.0
+	 */
+	protected IServiceInfo serviceInfo;
+	
 	protected IServiceTypeID type;
 
-	protected String name;
+	/**
+	 * @since 3.0
+	 */
+	protected URI location;
 
-	protected ServiceID(Namespace namespace, IServiceTypeID type, String name) {
+	/**
+	 * @since 3.0
+	 */
+	protected ServiceID(Namespace namespace, IServiceTypeID type, URI anURI) {
 		super(namespace);
 		Assert.isNotNull(type);
+		Assert.isNotNull(anURI);
 		this.type = type;
-		this.name = name;
+		this.location = anURI;
 	}
 
 	protected String getFullyQualifiedName() {
-		if (name == null)
-			return type.getName();
-		return type.getName() + "@" + name; //$NON-NLS-1$
+		return type.getName() + "@" + location; //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -100,7 +113,7 @@ public class ServiceID extends BaseID implements IServiceID {
 	 * @return String service name.  May be <code>null</code>.
 	 */
 	public String getServiceName() {
-		return name;
+		return serviceInfo.getServiceName();
 	}
 
 	/* (non-Javadoc)
@@ -108,8 +121,68 @@ public class ServiceID extends BaseID implements IServiceID {
 	 */
 	public String toString() {
 		final StringBuffer buf = new StringBuffer("ServiceID["); //$NON-NLS-1$
-		buf.append("type=").append(type).append(";name=").append(name).append( //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("type=").append(type).append(";location=").append(getLocation()).append( //$NON-NLS-1$ //$NON-NLS-2$
 				";full=" + getFullyQualifiedName()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
+	}
+
+	/** (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.identity.IServiceID#getLocation()
+	 * @since 3.0
+	 */
+	public URI getLocation() {
+		return location;
+	}
+
+	/**
+	 * @return the serviceInfo
+	 * @since 3.0
+	 */
+	public IServiceInfo getServiceInfo() {
+		return serviceInfo;
+	}
+
+	/**
+	 * @param serviceInfo the serviceInfo to set
+	 * @since 3.0
+	 */
+	public void setServiceInfo(IServiceInfo serviceInfo) {
+		this.serviceInfo = serviceInfo;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((location == null) ? 0 : location.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ServiceID other = (ServiceID) obj;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
 	}
 }

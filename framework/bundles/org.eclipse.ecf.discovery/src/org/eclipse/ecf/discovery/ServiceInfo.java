@@ -9,28 +9,33 @@
 
 package org.eclipse.ecf.discovery;
 
+import org.eclipse.ecf.discovery.identity.ServiceID;
+
 import java.io.Serializable;
-import java.net.*;
+import java.net.URI;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.discovery.DiscoveryPlugin;
-import org.eclipse.ecf.internal.discovery.Messages;
 
 /**
  * Base implementation of {@link IServiceInfo}. Subclasses may be created as
  * appropriate.
  */
-public class ServiceInfo implements IServiceInfo, Serializable,
-		IContainerServiceInfoAdapter {
+public class ServiceInfo implements IServiceInfo, Serializable {
 
 	private static final long serialVersionUID = -5651115550295457142L;
 
-	public static final int DEFAULT_PRIORITY = -1;
-	public static final int DEFAULT_WEIGHT = -1;
+	public static final int DEFAULT_PRIORITY = 0;
+	public static final int DEFAULT_WEIGHT = 0;
 	public static final String UNKNOWN_PROTOCOL = "unknown"; //$NON-NLS-1$
 
-	protected URI uri = null;
+	/**
+	 * @since 3.0
+	 */
+	protected String serviceName;
 
 	protected IServiceID serviceID;
 
@@ -44,12 +49,46 @@ public class ServiceInfo implements IServiceInfo, Serializable,
 		// null constructor for subclasses
 	}
 
-	public ServiceInfo(URI anURI, IServiceID serviceID, int priority,
+	/**
+	 * @since 3.0
+	 * @see ServiceInfo#ServiceInfo(URI, String, IServiceTypeID, int, int, IServiceProperties)
+	 */
+	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID) {
+		this(anURI, aServiceName, aServiceTypeID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, null);
+	}
+	
+	/**
+	 * @since 3.0
+	 * @see ServiceInfo#ServiceInfo(URI, String, IServiceTypeID, int, int, IServiceProperties)
+	 */
+	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID, IServiceProperties props) {
+		this(anURI, aServiceName, aServiceTypeID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
+	}
+	
+	/**
+	 * Create an IServiceInfo instance.
+	 * @param anURI The (absolute) location of the service.
+	 * @param aServiceName a user chosen service name. Only ASCII characters are allowed.
+	 * @param aServiceTypeID the service type identifier.
+	 * @param priority the service priority. The priority of this target host. A client MUST attempt to contact the target host with the lowest-numbered priority it can reach; 
+	 * target hosts with the same priority SHOULD be tried in an order defined by the weight field.
+	 *
+	 * @param weight the service weight. A server selection mechanism. The weight field specifies a relative weight for entries with the same priority. 
+	 * Larger weights SHOULD be given a proportionately higher probability of being selected. 
+	 *  Domain administrators SHOULD use Weight 0 when there isn't any server selection to do.
+	 *  In the presence of records containing weights greater than 0, records with weight 0 should have a very small chance of being selected.
+	 * @param props generic service properties.
+	 * 
+	 * @since 3.0
+	 */
+	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID, int priority,
 			int weight, IServiceProperties props) {
 		Assert.isNotNull(anURI);
-		// Assert.isLegal(anURI.isOpaque(), "Opaque uri is not supported");
+		Assert.isNotNull(aServiceName);
+		Assert.isNotNull(aServiceTypeID);
+		// Assert.isLegal(anURI.isOpaque(), "Opaque URI is not supported");
 		// Assert.isLegal(!anURI.isAbsolute(),
-		// "Non absolut uri is not supported");
+		// "Non absolute URI is not supported");
 
 		// [scheme:][//authority][path][?query][#fragment]
 
@@ -98,57 +137,19 @@ public class ServiceInfo implements IServiceInfo, Serializable,
 		} else {
 			fragment = "#" + fragment;
 		}
-
-		this.uri = URI.create(scheme + "://" + userInfo + host + ":" + port
-				+ path + query + fragment);
-
-		Assert.isNotNull(serviceID);
-		this.serviceID = serviceID;
+		URI uri = URI.create(scheme + "://" + userInfo + host + ":" + port + path + query + fragment);
+		
+		// service id
+		Namespace ns = aServiceTypeID.getNamespace();
+		this.serviceID = (IServiceID) ns.createInstance(new Object[]{aServiceTypeID, uri});
+		((ServiceID) serviceID).setServiceInfo(this);
+		
+		this.serviceName = aServiceName;
+		
 		this.weight = weight;
 		this.priority = priority;
+		
 		properties = (props == null) ? new ServiceProperties() : props;
-	}
-
-	public ServiceInfo(String protocol, String host, int port,
-			IServiceID serviceID, int priority, int weight,
-			IServiceProperties props) {
-		try {
-			if (host == null)
-				host = InetAddress.getLocalHost().getHostAddress();
-			uri = new URI((protocol == null) ? UNKNOWN_PROTOCOL : protocol,
-					null, host, port, "/", null, null);
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException(
-					Messages.ServiceInfo_EXCEPTION_INVALID_HOST_ARG);
-		} catch (UnknownHostException e) {
-			throw new IllegalArgumentException(
-					Messages.ServiceInfo_EXCEPTION_NO_LOCALHOST);
-		}
-		this.serviceID = serviceID;
-		Assert.isNotNull(serviceID);
-		this.priority = priority;
-		this.weight = weight;
-		this.properties = (props == null) ? new ServiceProperties() : props;
-	}
-
-	public ServiceInfo(String protocol, String host, int port,
-			IServiceID serviceID, IServiceProperties props) {
-		this(protocol, host, port, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT,
-				props);
-	}
-
-	public ServiceInfo(String protocol, String host, int port,
-			IServiceID serviceID) {
-		this(protocol, host, port, serviceID, new ServiceProperties());
-	}
-
-	public ServiceInfo(URI anURI, IServiceID serviceID, IServiceProperties props) {
-		this(anURI, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
-	}
-
-	public ServiceInfo(URI anURI, IServiceID serviceID) {
-		this(anURI, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT,
-				new ServiceProperties());
 	}
 
 	/*
@@ -157,11 +158,7 @@ public class ServiceInfo implements IServiceInfo, Serializable,
 	 * @see org.eclipse.ecf.discovery.IServiceInfo#getAddress()
 	 */
 	public URI getLocation() {
-		return uri;
-	}
-
-	protected void setLocation(URI address) {
-		this.uri = address;
+		return serviceID.getLocation();
 	}
 
 	/*
@@ -203,20 +200,11 @@ public class ServiceInfo implements IServiceInfo, Serializable,
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.discovery.IServiceInfo#isResolved()
-	 */
-	public boolean isResolved() {
-		return (uri != null);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		final StringBuffer buf = new StringBuffer("ServiceInfo["); //$NON-NLS-1$
-		buf.append("uri=").append(uri).append(";id=").append(serviceID) //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("uri=").append(getLocation()).append(";id=").append(serviceID) //$NON-NLS-1$ //$NON-NLS-2$
 				.append(";priority=").append( //$NON-NLS-1$
 						priority).append(";weight=").append(weight).append( //$NON-NLS-1$
 						";props=").append(properties).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -239,108 +227,12 @@ public class ServiceInfo implements IServiceInfo, Serializable,
 		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
-	 * 
-	 * @seeorg.eclipse.ecf.discovery.IContainerServiceInfoAdapter#
-	 * getContainerFactoryName()
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#getServiceName()	 
+	 * @since 3.0
 	 */
-	public String getContainerFactoryName() {
-		return (properties == null) ? null
-				: properties
-						.getPropertyString(IContainerServiceInfoAdapter.CONTAINER_FACTORY_NAME_PROPERTY);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.discovery.IContainerServiceInfoAdapter#getTarget()
-	 */
-	public String getConnectTarget() {
-		if (uri == null || properties == null)
-			return null;
-		String connectTarget = properties
-				.getPropertyString(IContainerServiceInfoAdapter.CONTAINER_CONNECT_TARGET);
-		if (connectTarget != null)
-			return connectTarget;
-		String t = properties
-				.getPropertyString(IContainerServiceInfoAdapter.CONTAINER_CONNECT_TARGET_PROTOCOL);
-		if (t == null)
-			return null;
-		StringBuffer target = new StringBuffer(t);
-		String auth = uri.getAuthority();
-		String path = properties
-				.getPropertyString(IContainerServiceInfoAdapter.CONTAINER_CONNECT_TARGET_PATH);
-		if (path == null)
-			path = "/"; //$NON-NLS-1$
-		target.append("://").append(auth).append("/").append(path); //$NON-NLS-1$ //$NON-NLS-2$
-		return target.toString();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ecf.discovery.IContainerServiceInfoAdapter#setContainerProperties
-	 * (java.lang.String, java.lang.String, java.lang.String, java.lang.Boolean)
-	 */
-	public void setContainerProperties(String containerFactoryName,
-			String connectProtocol, String connectPath,
-			Boolean connectRequiresPassword) {
-		Assert.isNotNull(containerFactoryName);
-		properties.setPropertyString(
-				IContainerServiceInfoAdapter.CONTAINER_FACTORY_NAME_PROPERTY,
-				containerFactoryName);
-		Assert.isNotNull(connectProtocol);
-		properties.setPropertyString(
-				IContainerServiceInfoAdapter.CONTAINER_CONNECT_TARGET_PROTOCOL,
-				connectProtocol);
-		if (connectPath != null)
-			properties.setPropertyString(
-					IContainerServiceInfoAdapter.CONTAINER_CONNECT_TARGET_PATH,
-					connectPath);
-		if (connectRequiresPassword != null)
-			properties
-					.setPropertyString(
-							IContainerServiceInfoAdapter.CONTAINER_CONNECT_REQUIRES_PASSWORD,
-							connectRequiresPassword.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.eclipse.ecf.discovery.IContainerServiceInfoAdapter#
-	 * connectRequiresPassword()
-	 */
-	public Boolean connectRequiresPassword() {
-		String b = properties
-				.getPropertyString(IContainerServiceInfoAdapter.CONTAINER_CONNECT_REQUIRES_PASSWORD);
-		if (b == null)
-			return null;
-		return Boolean.valueOf(b);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ecf.discovery.IContainerServiceInfoAdapter#setContainerProperties
-	 * (java.lang.String, java.lang.String, java.lang.Boolean)
-	 */
-	public void setContainerProperties(String containerFactoryName,
-			String connectTarget, Boolean connectRequiresPassword) {
-		Assert.isNotNull(containerFactoryName);
-		properties.setPropertyString(
-				IContainerServiceInfoAdapter.CONTAINER_FACTORY_NAME_PROPERTY,
-				containerFactoryName);
-		Assert.isNotNull(connectTarget);
-		properties.setPropertyString(
-				IContainerServiceInfoAdapter.CONTAINER_CONNECT_TARGET,
-				connectTarget);
-		if (connectRequiresPassword != null)
-			properties
-					.setPropertyString(
-							IContainerServiceInfoAdapter.CONTAINER_CONNECT_REQUIRES_PASSWORD,
-							connectRequiresPassword.toString());
+	public String getServiceName() {
+		return serviceName;
 	}
 }

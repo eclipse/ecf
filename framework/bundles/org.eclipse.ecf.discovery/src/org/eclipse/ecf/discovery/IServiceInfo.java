@@ -25,8 +25,7 @@ public interface IServiceInfo extends IAdaptable {
 	/**
 	 * Get URI for service
 	 * 
-	 * @return {@link java.net.URI} the location for the service. May be <code>null</code> if location
-	 *         is not known.
+	 * @return {@link java.net.URI} the location for the service.
 	 */
 	public URI getLocation();
 
@@ -43,12 +42,12 @@ public interface IServiceInfo extends IAdaptable {
 	 * Priority: The priority of this target host. A client MUST attempt to contact the target host with the lowest-numbered priority it can reach; 
 	 * target hosts with the same priority SHOULD be tried in an order defined by the weight field.
 	 * 
-	 * @return int the priority. -1 if no priority information for service.
+	 * @return int the priority. 0 if no priority information for service.
 	 */
 	public int getPriority();
 
 	/**
-	 * The weight for the service. -1 if no weight information for service.
+	 * The weight for the service. 0 if no weight information for service.
 	 * 
 	 * Weight: A server selection mechanism. The weight field specifies a relative weight for entries with the same priority. 
 	 * Larger weights SHOULD be given a proportionately higher probability of being selected. 
@@ -66,4 +65,12 @@ public interface IServiceInfo extends IAdaptable {
 	 * @return Map the properties associated with this service.  Will not be <code>null</code>.
 	 */
 	public IServiceProperties getServiceProperties();
+	
+	/**
+	 * A user choose label used for pretty printing this service.
+	 * 
+	 * @return A human readable service name. Not used for uniqueness!
+	 * @since 3.0
+	 */
+	public String getServiceName();
 }

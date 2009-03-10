@@ -54,6 +54,12 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 		this(ns, id.getServices(), id.getScopes(), id.getProtocols(), id.getNamingAuthority());
 	}
 
+	/**
+	 * Clients should not call this method directly. Use the {@link Namespace} and/or {@link ServiceIDFactory} instead.
+	 * @param namespace
+	 * @param aType
+	 * @throws IDCreateException
+	 */
 	public ServiceTypeID(Namespace namespace, String aType) throws IDCreateException {
 		this(namespace);
 		if (aType != null) {
