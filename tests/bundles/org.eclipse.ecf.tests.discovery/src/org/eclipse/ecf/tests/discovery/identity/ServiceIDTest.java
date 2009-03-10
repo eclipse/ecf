@@ -17,7 +17,6 @@ import junit.framework.TestCase;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.discovery.identity.ServiceTypeID;
@@ -31,6 +30,11 @@ public abstract class ServiceIDTest extends TestCase {
 	private String[] scopes;
 	private String[] services;
 
+//	protected IServiceID createServiceID(String serviceType, String serviceName)
+//			throws Exception {
+//				return ServiceIDFactory.getDefault().createServiceTypeID(discoveryLocator.getServicesNamespace(), serviceType., serviceName);
+//			}
+
 	public ServiceIDTest(String string, String[] services, String[] scopes, String[] protocols, String namingAuthority) {
 		namespace = string;
 		this.services = services;
@@ -43,7 +47,7 @@ public abstract class ServiceIDTest extends TestCase {
 		this(namespace, DiscoveryTestHelper.SERVICES, new String[]{DiscoveryTestHelper.SCOPE}, new String[]{DiscoveryTestHelper.PROTOCOL}, DiscoveryTestHelper.NAMINGAUTHORITY);
 	}
 
-	protected IServiceID createIDFromString(String serviceType) {
+	protected IServiceTypeID createIDFromString(String serviceType) {
 		try {
 			return createIDFromStringWithEx(serviceType);
 		} catch (final ClassCastException e) {
@@ -52,11 +56,13 @@ public abstract class ServiceIDTest extends TestCase {
 		return null;
 	}
 
-	protected IServiceID createIDFromStringWithEx(String serviceType) {
-		return ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(namespace), serviceType);
+	protected IServiceTypeID createIDFromStringWithEx(String serviceType) {
+		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
+		ServiceTypeID serviceTypeID = new ServiceTypeID(namespaceByName, serviceType);
+		return ServiceIDFactory.getDefault().createServiceTypeID(namespaceByName, serviceTypeID);
 	}
 
-	protected IServiceID createIDFromServiceTypeID(IServiceTypeID serviceType) {
+	protected IServiceTypeID createIDFromServiceTypeID(IServiceTypeID serviceType) {
 		try {
 			return createIDFromServiceTypeIDWithEx(serviceType);
 		} catch (final ClassCastException e) {
@@ -65,8 +71,8 @@ public abstract class ServiceIDTest extends TestCase {
 		return null;
 	}
 
-	protected IServiceID createIDFromServiceTypeIDWithEx(IServiceTypeID serviceType) {
-		return ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(namespace), serviceType);
+	protected IServiceTypeID createIDFromServiceTypeIDWithEx(IServiceTypeID serviceType) {
+		return ServiceIDFactory.getDefault().createServiceTypeID(IDFactory.getDefault().getNamespaceByName(namespace), serviceType);
 	}
 
 	public void testServiceTypeIDWithNullString() {
@@ -91,8 +97,7 @@ public abstract class ServiceIDTest extends TestCase {
 	 * use case: consumer instantiates a IServiceTypeID with the generic (ECF) String
 	 */
 	public void testServiceTypeIDWithECFGenericString() {
-		final IServiceID sid = createIDFromString(DiscoveryTestHelper.SERVICE_TYPE);
-		final IServiceTypeID stid = sid.getServiceTypeID();
+		final IServiceTypeID stid = createIDFromString(DiscoveryTestHelper.SERVICE_TYPE);
 		assertEquals(stid.getName(), DiscoveryTestHelper.SERVICE_TYPE);
 		assertEquals(stid.getNamingAuthority(), DiscoveryTestHelper.NAMINGAUTHORITY);
 		assertTrue(Arrays.equals(stid.getProtocols(), new String[] {DiscoveryTestHelper.PROTOCOL}));
@@ -105,8 +110,7 @@ public abstract class ServiceIDTest extends TestCase {
 	 */
 	public void testServiceTypeIDWithECFGenericString2() {
 		final String serviceType = "_service._dns-srv._udp.ecf.eclipse.org._IANA";
-		final IServiceID sid = createIDFromString(serviceType);
-		final IServiceTypeID stid = sid.getServiceTypeID();
+		final IServiceTypeID stid = createIDFromString(serviceType);
 		assertTrue(serviceType.equalsIgnoreCase(stid.getName()));
 		assertTrue("IANA".equalsIgnoreCase(stid.getNamingAuthority()));
 		assertTrue(Arrays.equals(stid.getProtocols(), new String[] {"udp"}));
@@ -119,8 +123,7 @@ public abstract class ServiceIDTest extends TestCase {
 	 */
 	public void testServiceTypeIDWithECFGenericString3() {
 		final String serviceType = "_service._dns-srv._udp.ecf.eclipse.org._ECLIPSE";
-		final IServiceID sid = createIDFromString(serviceType);
-		final IServiceTypeID stid = sid.getServiceTypeID();
+		final IServiceTypeID stid = createIDFromString(serviceType);
 		assertEquals(stid.getName(), serviceType);
 		assertEquals(stid.getNamingAuthority(), "ECLIPSE");
 		assertTrue(Arrays.equals(stid.getProtocols(), new String[] {"udp"}));
@@ -132,10 +135,8 @@ public abstract class ServiceIDTest extends TestCase {
 	 * use case: conversion from one IServiceTypeID to another (provider A -> provider B)
 	 */
 	public void testServiceTypeIDWithServiceTypeID() {
-		final Namespace ns = IDFactory.getDefault().getNamespaceByName(namespace);
-		final IServiceTypeID aServiceTypeID = ServiceIDFactory.getDefault().createServiceID(ns, "_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA").getServiceTypeID();
-		final IServiceID sid = createIDFromServiceTypeID(aServiceTypeID);
-		final IServiceTypeID stid = sid.getServiceTypeID();
+		final IServiceTypeID aServiceTypeID = createIDFromStringWithEx("_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA");
+		final IServiceTypeID stid = createIDFromServiceTypeID(aServiceTypeID);
 
 		// this is the only differences
 		assertNotSame(aServiceTypeID.getInternal(), stid.getInternal());
@@ -155,28 +156,14 @@ public abstract class ServiceIDTest extends TestCase {
 		createFromAnother(aServiceTypeID, stid);
 		createFromAnother(stid, aServiceTypeID);
 	}
-	
-	/*
-	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String, String)
-	 */
-	public void testServiceIDFactory1() {
-		String expected = "some Name";
-		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-		IServiceID createServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, "_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA", expected);
-		assertNotNull(createServiceID);
-	}
 
 	/*
 	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String, String)
 	 */
 	public void testServiceIDFactory() {
-		String expected = "some Name";
-		
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, scopes, protocols, namingAuthority, expected);
-		assertNotNull(aServiceID);
-
-		IServiceTypeID serviceType = aServiceID.getServiceTypeID();
+		IServiceTypeID serviceType = ServiceIDFactory.getDefault().createServiceTypeID(namespaceByName, services, scopes, protocols, namingAuthority);
+		assertNotNull(serviceType);
 		assertEquals(namingAuthority, serviceType.getNamingAuthority());
 		assertTrue(Arrays.equals(services, serviceType.getServices()));
 		assertTrue(Arrays.equals(scopes, serviceType.getScopes()));
@@ -187,11 +174,9 @@ public abstract class ServiceIDTest extends TestCase {
 	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String[], String[], String, String)
 	 */
 	public void testServiceIDFactoryNullNA() {
-		String expected = "some Name";
-		
 		try {
 			Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-			ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, scopes, protocols, null, expected);
+			ServiceIDFactory.getDefault().createServiceTypeID(namespaceByName, services, scopes, protocols, null);
 		} catch(IDCreateException e) {
 			return;
 		}
@@ -202,11 +187,9 @@ public abstract class ServiceIDTest extends TestCase {
 	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String[], String[], String, String)
 	 */
 	public void testServiceIDFactoryNullProto() {
-		String expected = "some Name";
-		
 		try {
 			Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-			ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, scopes, null, namingAuthority, expected);
+			ServiceIDFactory.getDefault().createServiceTypeID(namespaceByName, services, scopes, null, namingAuthority);
 		} catch(IDCreateException e) {
 			return;
 		}
@@ -217,11 +200,9 @@ public abstract class ServiceIDTest extends TestCase {
 	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String[], String[], String, String)
 	 */
 	public void testServiceIDFactoryNullServices() {
-		String expected = "some Name";
-		
 		try {
 			Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-			ServiceIDFactory.getDefault().createServiceID(namespaceByName, null, scopes, protocols, namingAuthority, expected);
+			ServiceIDFactory.getDefault().createServiceTypeID(namespaceByName, null, scopes, protocols, namingAuthority);
 		} catch(IDCreateException e) {
 			return;
 		}
@@ -232,11 +213,9 @@ public abstract class ServiceIDTest extends TestCase {
 	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String[], String[], String, String)
 	 */
 	public void testServiceIDFactoryNullScope() {
-		String expected = "some Name";
-		
 		try {
 			Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-			ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, null, protocols, namingAuthority, expected);
+			ServiceIDFactory.getDefault().createServiceTypeID(namespaceByName, services, null, protocols, namingAuthority);
 		} catch(IDCreateException e) {
 			return;
 		}
@@ -247,13 +226,9 @@ public abstract class ServiceIDTest extends TestCase {
 	 * org.eclipse.ecf.discovery.identity.IServiceIDFactory.createServiceID(Namespace, String[], String)
 	 */
 	public void testServiceIDFactoryDefaults() {
-		String expected = "some Name";
-		
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
-		IServiceID aServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, services, protocols, expected);
-		assertNotNull(aServiceID);
-
-		IServiceTypeID serviceType = aServiceID.getServiceTypeID();
+		IServiceTypeID serviceType = ServiceIDFactory.getDefault().createServiceTypeID(namespaceByName, services, protocols);
+		assertNotNull(serviceType);
 		assertTrue(Arrays.equals(services, serviceType.getServices()));
 		assertEquals(IServiceTypeID.DEFAULT_NA, serviceType.getNamingAuthority());
 		assertTrue(Arrays.equals(IServiceTypeID.DEFAULT_SCOPE, serviceType.getScopes()));
@@ -266,17 +241,16 @@ public abstract class ServiceIDTest extends TestCase {
 	public void testServiceIDFactory2() {
 		Namespace namespaceByName = IDFactory.getDefault().getNamespaceByName(namespace);
 		ServiceTypeID serviceTypeID = new ServiceTypeID(new TestNamespace(), "_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA");
-		IServiceID createServiceID = ServiceIDFactory.getDefault().createServiceID(namespaceByName, serviceTypeID, "some Name");
-		assertNotNull(createServiceID);
+		IServiceTypeID aServiceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(namespaceByName, serviceTypeID);
+		assertNotNull(aServiceTypeID);
 		
 		// members should be the same
-		IServiceTypeID aServiceTypeID = createServiceID.getServiceTypeID();
 		assertEquals(aServiceTypeID.getNamingAuthority(), serviceTypeID.getNamingAuthority());
 		assertTrue(Arrays.equals(aServiceTypeID.getServices(), serviceTypeID.getServices()));
 		assertTrue(Arrays.equals(aServiceTypeID.getScopes(), serviceTypeID.getScopes()));
 		assertTrue(Arrays.equals(aServiceTypeID.getProtocols(), serviceTypeID.getProtocols()));
 		
-		assertSame(namespaceByName, createServiceID.getNamespace());
+		assertSame(namespaceByName, aServiceTypeID.getNamespace());
 	}
 
 	/**
@@ -285,12 +259,10 @@ public abstract class ServiceIDTest extends TestCase {
 	 * @param stid Namespace to use
 	 */
 	private void createFromAnother(IServiceTypeID aServiceTypeID, IServiceTypeID stid) {
-		final String name = aServiceTypeID.getName();
 		final Namespace namespace2 = stid.getNamespace();
-		IServiceID sid = null;
-		sid = (IServiceID) namespace2.createInstance(new Object[] {name, null});
-		assertNotNull("it should have been possible to create a new instance of ", sid);
-		IServiceTypeID instance = sid.getServiceTypeID();
+		IServiceTypeID instance = null;
+		instance = ServiceIDFactory.getDefault().createServiceTypeID(namespace2, aServiceTypeID);
+		assertNotNull("it should have been possible to create a new instance of ", instance);
 		assertTrue(instance.hashCode() == stid.hashCode());
 		//TODO-mkuppe decide if equality should be handled by the namespace for IServiceTypeIDs?
 		assertEquals(instance, stid);

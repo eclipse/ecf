@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.discovery.identity;
 
+import java.net.URI;
+
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
@@ -22,7 +24,7 @@ public class TestNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
 	public ID createInstance(Object[] parameters) {
-		return new TestServiceID(this, (IServiceTypeID) parameters[0], (String) parameters[1]);
+		return new TestServiceID(this, (IServiceTypeID) parameters[0], (URI) parameters[1]);
 	}
 
 	/* (non-Javadoc)

@@ -17,13 +17,12 @@ import java.util.Random;
 
 import junit.framework.TestCase;
 
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
-import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
 public abstract class AbstractDiscoveryTest extends TestCase {
@@ -49,11 +48,6 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 
 	protected abstract IDiscoveryAdvertiser getDiscoveryAdvertiser();
 
-	protected IServiceID createServiceID(String serviceType, String serviceName)
-			throws Exception {
-				return ServiceIDFactory.getDefault().createServiceID(discoveryLocator.getServicesNamespace(), serviceType, serviceName);
-			}
-
 	protected void setComparator(Comparator comparator) {
 		this.comparator = comparator;
 	}
@@ -70,10 +64,6 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		this.namingAuthority = namingAuthority;
 	}
 
-	protected String getServiceType() {
-		return "_" + DiscoveryTestHelper.SERVICES[0] + "._" + DiscoveryTestHelper.SERVICES[1] + "._" + DiscoveryTestHelper.SERVICES[2] + "._" + protocol + "." + scope + "._" + namingAuthority;
-	}
-
 	protected void setUp() throws Exception {
 		super.setUp();
 		assertNotNull(containerUnderTest);
@@ -87,8 +77,8 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		final Properties props = new Properties();
 		final URI uri = DiscoveryTestHelper.createDefaultURI();
 	
-		IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryLocator.getServicesNamespace(), new Object[] {getServiceType(), DiscoveryTestHelper.getHost()});
-		assertNotNull(serviceID);
+		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(discoveryLocator.getServicesNamespace(), DiscoveryTestHelper.SERVICES, new String[]{protocol});
+		assertNotNull(serviceTypeID);
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
 		serviceProperties.setPropertyString(getClass() + "testIdentifier", Long.toString(random.nextLong()));
 		serviceProperties.setPropertyString(getName() + "servicePropertiesString", "serviceProperties");
@@ -96,7 +86,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMin", new Integer(Integer.MAX_VALUE));
 		serviceProperties.setProperty(getName() + "servicePropertiesBoolean", new Boolean(false));
 		serviceProperties.setPropertyBytes(getName() + "servicePropertiesByte", new byte[]{-127, -126, -125, 0, 1, 2, 3, 'a', 'b', 'c', 'd', 126, 127});
-		serviceInfo = new ServiceInfo(uri, serviceID, 1, 1, serviceProperties);
+		serviceInfo = new ServiceInfo(uri, DiscoveryTestHelper.SERVICENAME, serviceTypeID, 1, 1, serviceProperties);
 		assertNotNull(serviceInfo);
 	}
 

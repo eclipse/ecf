@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.discovery.identity;
 
+import java.net.URI;
+
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
@@ -17,7 +19,7 @@ public class TestServiceID extends ServiceID {
 
 	private static final long serialVersionUID = 2115324301690822446L;
 
-	public TestServiceID(TestNamespace aNamespace, IServiceTypeID aServiceTypeID, String aName) {
-		super(aNamespace, aServiceTypeID, aName);
+	public TestServiceID(TestNamespace aNamespace, IServiceTypeID aServiceTypeID, URI anURI) {
+		super(aNamespace, aServiceTypeID, anURI);
 	}
 }

@@ -19,7 +19,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
-import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
 
@@ -188,8 +188,8 @@ public abstract class DiscoveryTestsWithoutRegister extends AbstractDiscoveryTes
 		testConnect();
 		final Namespace namespace = discoveryLocator.getServicesNamespace();
 		assertNotNull(namespace);
-		final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(namespace, serviceInfo.getServiceID().getServiceTypeID());
-		assertNotNull("It must be possible to obtain a IServiceID", serviceID);
+		final IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(namespace, serviceInfo.getServiceID().getServiceTypeID());
+		assertNotNull("It must be possible to obtain a IServiceTypeID", serviceTypeID);
 	}
 
 	/**

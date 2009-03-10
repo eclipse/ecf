@@ -13,6 +13,8 @@
 package org.eclipse.ecf.tests.discovery;
 
 
+import java.util.Arrays;
+
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
@@ -61,7 +63,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		try {
 			discoveryAdvertiser.registerService(serviceInfo);
 		} catch (final ECFRuntimeException e) {
-			fail("IServiceInfo may be valid with this IDCA");
+			fail("IServiceInfo may be valid with this IDCA " + e.getMessage());
 		}
 	}
 
@@ -92,7 +94,8 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		discoveryLocator.removeServiceListener(serviceListener);
 		assertNotNull("Test listener didn't receive discovery", serviceListener.getEvent());
 		assertEquals("Test listener received more than expected discovery event", eventsToExpect, serviceListener.getEvent().length);
-		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) serviceListener.getEvent()[eventsToExpect - 1]).getServiceInfo(), serviceInfo) == 0);
+		IServiceInfo serviceInfo2 = ((IServiceEvent) serviceListener.getEvent()[eventsToExpect - 1]).getServiceInfo();
+		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
 	}
 
 	/**
@@ -103,7 +106,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	public void testGetServiceInfo() throws ContainerConnectException {
 		registerService();
 		final IServiceInfo info = discoveryLocator.getServiceInfo(serviceInfo.getServiceID());
-		assertTrue("IServiceInfo should match, expected:\n" + serviceInfo + " but:\n" + info, comparator.compare(info, serviceInfo) == 0);
+		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but:\n\t" + info, comparator.compare(info, serviceInfo) == 0);
 	}
 
 	/**
@@ -224,7 +227,8 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		
 		assertNotNull("Test listener didn't receive discovery", tsl.getEvent());
 		assertEquals("Test listener received more than expected discovery event", eventsToExpect, tsl.getEvent().length);
-		assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) tsl.getEvent()[eventsToExpect - 1]).getServiceInfo(), serviceInfo) == 0);
+		IServiceInfo serviceInfo2 = ((IServiceEvent) tsl.getEvent()[eventsToExpect - 1]).getServiceInfo();
+		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but:\n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
 	}
 
 	/**
@@ -322,7 +326,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		final Object object = aFuture.get();
 		assertTrue(object instanceof IServiceInfo);
 		final IServiceInfo info = (IServiceInfo) object;
-		assertTrue("IServiceInfo should match, expected:\n" + serviceInfo + " but:\n" + info, comparator.compare(info, serviceInfo) == 0);
+		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but:\n\t" + info, comparator.compare(info, serviceInfo) == 0);
 	}
 	
 	/**
@@ -338,7 +342,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		final Object object = aFuture.get();
 		assertTrue(object instanceof IServiceInfo[]);
 		final IServiceInfo[] services = (IServiceInfo[]) object;
-		assertTrue("Found: " + services.length, services.length == eventsToExpect);
+		assertTrue("Found: " + services.length + Arrays.asList(services), services.length == eventsToExpect);
 		for (int i = 0; i < services.length; i++) {
 			IServiceInfo iServiceInfo = services[i];
 			if(comparator.compare(iServiceInfo, serviceInfo) == 0) {
@@ -361,7 +365,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		final Object object = aFuture.get();
 		assertTrue(object instanceof IServiceInfo[]);
 		final IServiceInfo[] services = (IServiceInfo[]) object;
-		assertTrue("Found: " + services.length, services.length == eventsToExpect);
+		assertTrue("Found: " + services.length + Arrays.asList(services), services.length == eventsToExpect);
 		for (int i = 0; i < services.length; i++) {
 			IServiceInfo iServiceInfo = services[i];
 			if(comparator.compare(iServiceInfo, serviceInfo) == 0) {
@@ -384,7 +388,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		final Object object = aFuture.get();
 		assertTrue(object instanceof IServiceTypeID[]);
 		final IServiceTypeID[] services = (IServiceTypeID[]) object;
-		assertTrue("Found: " + services.length, services.length == eventsToExpect);
+		assertTrue("Found: " + services.length + Arrays.asList(services), services.length == eventsToExpect);
 		for (int i = 0; i < services.length; i++) {
 			IServiceTypeID iServiceTypeId = services[i];
 			if(serviceInfo.getServiceID().getServiceTypeID().equals(iServiceTypeId)) {

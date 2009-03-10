@@ -10,12 +10,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.discovery;
 
-import java.net.URI;
 import java.util.Comparator;
 import java.util.Enumeration;
 
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 
 /**
  * Used for testing equality 
@@ -57,9 +57,13 @@ public class ServiceInfoComparator implements Comparator {
 		if (arg0 instanceof IServiceInfo && arg1 instanceof IServiceInfo) {
 			final IServiceInfo first = (IServiceInfo) arg0;
 			final IServiceInfo second = (IServiceInfo) arg1;
-			final URI uri1 = first.getLocation();
-			final URI uri2 = second.getLocation();
-			final boolean result = (first.getServiceID().equals(second.getServiceID()) && uri1.getHost().equals(uri2.getHost()) && uri1.getPort() == uri2.getPort() && first.getPriority() == second.getPriority() && first.getWeight() == second.getWeight() && compareServiceProperties(first.getServiceProperties(), second.getServiceProperties()));
+			final IServiceID firstServiceId = first.getServiceID();
+			final IServiceID secondServiceId = second.getServiceID();
+			boolean idsSame = firstServiceId.equals(secondServiceId);
+			boolean prioSame = first.getPriority() == second.getPriority();
+			boolean weightSame = first.getWeight() == second.getWeight();
+			boolean servicePropertiesSame = compareServiceProperties(first.getServiceProperties(), second.getServiceProperties());
+			final boolean result = (idsSame && prioSame && weightSame && servicePropertiesSame);
 			if (result == true) {
 				return 0;
 			}

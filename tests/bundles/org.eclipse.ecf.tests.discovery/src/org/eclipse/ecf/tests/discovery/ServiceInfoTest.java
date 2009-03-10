@@ -15,9 +15,14 @@ import java.util.Comparator;
 
 import junit.framework.TestCase;
 
+import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.ServiceInfo;
+import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
 /**
  * 
@@ -25,12 +30,29 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 public abstract class ServiceInfoTest extends TestCase {
 
 	protected URI uri;
-	protected IServiceID serviceID;
+	protected IServiceTypeID serviceTypeID;
 	protected int priority;
 	protected int weight;
 	protected IServiceProperties serviceProperties;
 	protected IServiceInfo serviceInfo;
 	protected Comparator serviceInfoComparator = new ServiceInfoComparator();
+
+	public ServiceInfoTest(Namespace namespace) {
+		uri = DiscoveryTestHelper.createDefaultURI();
+		priority = DiscoveryTestHelper.PRIORITY;
+		weight = DiscoveryTestHelper.WEIGHT;
+		serviceProperties = new ServiceProperties();
+		serviceProperties.setProperty("foobar", new String("foobar"));
+		serviceProperties.setPropertyBytes("foobar1", new byte[] { 1, 2, 3 });
+		try {
+			serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(namespace, DiscoveryTestHelper.SERVICES, DiscoveryTestHelper.PROTOCOLS);
+		} catch (IDCreateException e) {
+			fail(e.getMessage());
+		}
+
+		serviceInfo = new ServiceInfo(uri, DiscoveryTestHelper.SERVICENAME, serviceTypeID, priority, weight,
+				serviceProperties);
+	}
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -38,7 +60,7 @@ public abstract class ServiceInfoTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		assertNotNull(uri);
-		assertNotNull(serviceID);
+		assertNotNull(serviceTypeID);
 		assertNotNull(serviceProperties);
 		assertNotNull(serviceInfo);
 		assertNotNull(serviceInfoComparator);
@@ -48,14 +70,15 @@ public abstract class ServiceInfoTest extends TestCase {
 	 * Test method for {@link org.eclipse.ecf.discovery.ServiceInfo#getLocation()}.
 	 */
 	public void testGetLocation() {
-		assertEquals(serviceInfo.getLocation(), uri);
+		assertEquals(serviceInfo.getServiceID().getLocation(), uri);
 	}
 
 	/**
 	 * Test method for {@link org.eclipse.ecf.discovery.ServiceInfo#getServiceID()}.
 	 */
 	public void testGetServiceID() {
-		assertEquals(serviceInfo.getServiceID(), serviceID);
+		assertNotNull(serviceInfo.getServiceID());
+		assertEquals(serviceInfo.getServiceID().getServiceTypeID(), serviceTypeID);
 	}
 
 	/**
@@ -107,5 +130,7 @@ public abstract class ServiceInfoTest extends TestCase {
 		assertTrue(serviceInfoComparator.compare(si, serviceInfo) == 0);
 	}
 
-	protected abstract IServiceInfo getServiceInfo(IServiceInfo aServiceInfo);
+	protected IServiceInfo getServiceInfo(IServiceInfo aServiceInfo) {
+		return serviceInfo;
+	}
 }
