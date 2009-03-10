@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.jslp.identity;
 
+import java.net.URI;
+
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
@@ -17,7 +19,7 @@ import org.eclipse.ecf.discovery.identity.ServiceID;
 public class JSLPServiceID extends ServiceID {
 	private static final long serialVersionUID = -8211896244921087422L;
 
-	JSLPServiceID(Namespace namespace, IServiceTypeID type, String name) {
-		super(namespace, type, name);
+	JSLPServiceID(Namespace namespace, IServiceTypeID type, URI anURI) {
+		super(namespace, type, anURI);
 	}
 }

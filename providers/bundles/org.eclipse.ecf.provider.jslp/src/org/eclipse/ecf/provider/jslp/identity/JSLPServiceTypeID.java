@@ -81,7 +81,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 		for (int i = 0; i < services.length; i++) {
 			buf.append(services[i]);
 			// #228876
-			if (!namingAuthority.equalsIgnoreCase(JSLP_DEFAULT_NA) && i == 1) {
+			if (!namingAuthority.equalsIgnoreCase(JSLP_DEFAULT_NA) && i == 0) {
 				buf.append('.');
 				buf.append(namingAuthority);
 			}

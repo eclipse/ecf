@@ -22,8 +22,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
-import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.provider.jslp.*;
 import org.eclipse.ecf.provider.jslp.identity.*;
@@ -138,8 +137,8 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 			List aList = Activator.getDefault().getLocator().getServiceURLs((String) null, null);
 			for (Iterator itr = aList.iterator(); itr.hasNext();) {
 				ServiceURL serviceURL = (ServiceURL) itr.next();
-				IServiceID serviceId = (IServiceID) getConnectNamespace().createInstance(new Object[] {serviceURL, "", new String[] {}}); //$NON-NLS-1$
-				result.add(serviceId.getServiceTypeID());
+				IServiceTypeID serviceTypeId = (IServiceTypeID) getConnectNamespace().createInstance(new Object[] {serviceURL, new String[] {}});
+				result.add(serviceTypeId);
 			}
 		} catch (ServiceLocationException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServiceTypes(int)", e); //$NON-NLS-1$
@@ -167,8 +166,7 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	public IServiceInfo[] getServices(IServiceTypeID type) {
 		Assert.isNotNull(type);
 		try {
-			JSLPServiceID sid = (JSLPServiceID) IDFactory.getDefault().createID(getConnectNamespace(), new Object[] {type, null});
-			JSLPServiceTypeID stid = (JSLPServiceTypeID) sid.getServiceTypeID();
+			JSLPServiceTypeID stid = (JSLPServiceTypeID) ServiceIDFactory.getDefault().createServiceTypeID(getConnectNamespace(), type);
 			return convertToIServiceInfo(Activator.getDefault().getLocator().getServiceURLs(stid.getServiceType(), Arrays.asList(stid.getScopes())), type.getScopes());
 		} catch (IDCreateException e) {
 			Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServices(IServiceTypeID)", e); //$NON-NLS-1$
@@ -227,7 +225,8 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 			Map.Entry entry = (Entry) itr.next();
 			ServiceURL url = (ServiceURL) entry.getKey();
 			ServicePropertiesAdapter spa = new ServicePropertiesAdapter((List) entry.getValue());
-			IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, spa.getServiceName(), scopes), spa.getPriority(), spa.getWeight(), spa);
+			String serviceName = spa.getServiceName() == null ? url.toString() : spa.getServiceName();
+			IServiceInfo serviceInfo = new JSLPServiceInfo(serviceName, new ServiceURLAdapter(url, scopes), spa.getPriority(), spa.getWeight(), spa);
 			tmp.add(serviceInfo);
 		}
 		return (IServiceInfo[]) tmp.toArray(new IServiceInfo[tmp.size()]);

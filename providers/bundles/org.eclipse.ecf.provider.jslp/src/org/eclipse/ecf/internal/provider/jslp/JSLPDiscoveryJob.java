@@ -50,7 +50,8 @@ public final class JSLPDiscoveryJob extends Job {
 					removedServices.remove(url);
 				} else { // we don't know the service, so we need to create the
 					final ServicePropertiesAdapter spa = new ServicePropertiesAdapter((List) entry.getValue());
-					final IServiceInfo serviceInfo = new JSLPServiceInfo(new ServiceURLAdapter(url, spa.getServiceName()), spa.getPriority(), spa.getWeight(), spa);
+					final String serviceName = spa.getServiceName() == null ? url.toString() : spa.getServiceName();
+					final IServiceInfo serviceInfo = new JSLPServiceInfo(serviceName, new ServiceURLAdapter(url), spa.getPriority(), spa.getWeight(), spa);
 					services.put(url, serviceInfo);
 					discoveryContainer.fireServiceTypeDiscovered(serviceInfo.getServiceID().getServiceTypeID());
 					discoveryContainer.fireServiceDiscovered(serviceInfo);

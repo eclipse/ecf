@@ -15,7 +15,7 @@ import java.net.URI;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
 
 /**
@@ -24,16 +24,16 @@ import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
 public class ServiceURLAdapter {
 
 	private URI uri;
-	private IServiceID serviceID;
+	private IServiceTypeID serviceID;
 
-	public ServiceURLAdapter(final ServiceURL aServiceURL, final String aServiceName) {
-		this(aServiceURL, aServiceName, new String[0]);
+	public ServiceURLAdapter(final ServiceURL aServiceURL) {
+		this(aServiceURL, new String[0]);
 	}
 
-	public ServiceURLAdapter(final ServiceURL aServiceURL, final String aServiceName, final String[] scopes) {
+	public ServiceURLAdapter(final ServiceURL aServiceURL, final String[] scopes) {
 		Assert.isNotNull(aServiceURL);
 		Assert.isNotNull(scopes);
-		setIServiceID(aServiceURL, aServiceName, scopes);
+		setIServiceTypeID(aServiceURL, scopes);
 		setURI(aServiceURL);
 	}
 
@@ -57,9 +57,9 @@ public class ServiceURLAdapter {
 		uri = URI.create(buf.toString());
 	}
 
-	private void setIServiceID(final ServiceURL aServiceURL, final String aServiceName, final String[] scopes) {
+	private void setIServiceTypeID(final ServiceURL aServiceURL, final String[] scopes) {
 		final Namespace namespace = IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME);
-		serviceID = (IServiceID) namespace.createInstance(new Object[] {aServiceURL, aServiceName, scopes});
+		serviceID = (IServiceTypeID) namespace.createInstance(new Object[] {aServiceURL, scopes});
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class ServiceURLAdapter {
 	/**
 	 * @return IServiceID
 	 */
-	public IServiceID getIServiceID() {
+	public IServiceTypeID getIServiceTypeID() {
 		return serviceID;
 	}
 }

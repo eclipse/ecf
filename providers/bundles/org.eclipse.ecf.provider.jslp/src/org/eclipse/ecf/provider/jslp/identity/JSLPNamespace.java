@@ -12,6 +12,7 @@ package org.eclipse.ecf.provider.jslp.identity;
 
 import ch.ethz.iks.slp.ServiceType;
 import ch.ethz.iks.slp.ServiceURL;
+import java.net.URI;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.internal.provider.jslp.Messages;
@@ -28,7 +29,7 @@ public class JSLPNamespace extends Namespace {
 	 */
 	public ID createInstance(Object[] parameters) {
 		// error case
-		if (parameters == null || parameters.length < 1 || parameters.length > 3) {
+		if (parameters == null || parameters.length < 1 || parameters.length > 2) {
 			throw new IDCreateException(Messages.JSLPNamespace_2);
 
 			// error case
@@ -36,18 +37,19 @@ public class JSLPNamespace extends Namespace {
 			throw new IDCreateException(Messages.JSLPNamespace_3);
 
 			// create by jSLP ServiceURL
-		} else if (parameters[0] instanceof ServiceURL) {
+		} else if (parameters.length == 2 && parameters[0] instanceof ServiceURL) {
 			final ServiceURL anURL = (ServiceURL) parameters[0];
-			final IServiceTypeID stid = new JSLPServiceTypeID(this, anURL, (String[]) parameters[2]);
-			final String serviceName = (String) (parameters[1] != null ? parameters[1] : anURL.getHost());
-			return new JSLPServiceID(this, stid, serviceName);
+			final String[] scopes = (String[]) parameters[1];
+			return new JSLPServiceTypeID(this, anURL, scopes);
+			//			final String serviceName = (String) (parameters[1] != null ? parameters[1] : anURL.getHost());
+			//			return null /*new JSLPServiceID(this, stid, serviceName)*/;
 
 			// conversion call where conversion isn't necessary
-		} else if (parameters[0] instanceof JSLPServiceID) {
+		} else if (parameters.length == 1 && parameters[0] instanceof JSLPServiceID) {
 			return (ID) parameters[0];
 
 			// convert from IServiceID to IServiceTypeID, String
-		} else if (parameters[0] instanceof IServiceID && parameters.length == 1) {
+		} else if (parameters.length == 1 && parameters[0] instanceof IServiceID) {
 			final IServiceID anId = (IServiceID) parameters[0];
 			final Object[] newParams = new Object[2];
 			newParams[0] = anId.getServiceTypeID();
@@ -61,28 +63,26 @@ public class JSLPNamespace extends Namespace {
 			return createInstance(parameters);
 
 			// create by jSLP ServiceType
-		} else if (parameters[0] instanceof ServiceType) {
-			IServiceTypeID stid = new JSLPServiceTypeID(this, (ServiceType) parameters[0]);
-			return new JSLPServiceID(this, stid, (String) parameters[1]);
+		} else if (parameters.length == 1 && parameters[0] instanceof ServiceType) {
+			return new JSLPServiceTypeID(this, (ServiceType) parameters[0]);
+			//return new JSLPServiceID(this, stid, (String) parameters[1]);
 
 			// create by jSLP ServiceType String representation (from external)
 		} else if (parameters[0] instanceof String && ((String) parameters[0]).startsWith("service:")) { //$NON-NLS-1$
 			parameters[0] = new ServiceType((String) parameters[0]);
 			return createInstance(parameters);
 
-			// create by ECF discovery generic String representation
-		} else if (parameters[0] instanceof String && ((String) parameters[0]).startsWith("_")) { //$NON-NLS-1$
+			// create IServiceID by ECF discovery generic String representation
+		} else if (parameters.length == 2 && parameters[0] instanceof String && ((String) parameters[0]).startsWith("_")) { //$NON-NLS-1$
 			final String type = (String) parameters[0];
-			final String name = (String) parameters[1];
-			final IServiceTypeID stid = new JSLPServiceTypeID(this, new ServiceTypeID(this, type));
-			return new JSLPServiceID(this, stid, name);
+			final URI anURI = (URI) parameters[1];
+			final JSLPServiceTypeID serviceType = new JSLPServiceTypeID(this, new ServiceTypeID(this, type));
+			return new JSLPServiceID(this, serviceType, anURI);
 
-			// create by "jslp:..."
-		} else if (parameters[0] instanceof String && ((String) parameters[0]).startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
-			final String str = (String) parameters[0];
-			final int index = str.indexOf(Namespace.SCHEME_SEPARATOR);
-			parameters[0] = str.substring(index + 1);
-			return createInstance(parameters);
+			// create IServiceTypeID by ECF discovery generic ServiceType
+		} else if (parameters.length == 1 && parameters[0] instanceof String && ((String) parameters[0]).startsWith("_")) { //$NON-NLS-1$
+			final String type = (String) parameters[0];
+			return new JSLPServiceTypeID(this, new ServiceTypeID(this, type));
 
 			// error case second parameter not a String
 		} else if (parameters.length == 2 && parameters[1] != null && !(parameters[1] instanceof String)) {

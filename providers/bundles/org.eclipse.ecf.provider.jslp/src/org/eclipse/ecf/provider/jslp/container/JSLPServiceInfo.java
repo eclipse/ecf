@@ -25,24 +25,32 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 
 	private static final long serialVersionUID = 6828789192986625259L;
 
-	public JSLPServiceInfo(final URI anURI, final IServiceID serviceID, final int priority, final int weight, final IServiceProperties props) {
-		super(anURI, serviceID, priority, weight, props);
+//	public JSLPServiceInfo(final URI anURI, final IServiceID serviceID, final int priority, final int weight, final IServiceProperties props) {
+//		super(anURI, serviceID, priority, weight, props);
+//	}
+//
+//	/**
+//	 * @param serviceID
+//	 * @deprecated
+//	 */
+//	public JSLPServiceInfo(final IServiceID serviceID) {
+//		super(null, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
+//	}
+//
+	public JSLPServiceInfo(final IServiceInfo aSI) throws IDCreateException {
+		super(aSI.getServiceID().getLocation(), aSI.getServiceName(), ServiceIDFactory.getDefault().createServiceTypeID(IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME), aSI.getServiceID().getServiceTypeID()), aSI.getPriority(), aSI.getWeight(), aSI.getServiceProperties());
 	}
 
 	/**
-	 * @param serviceID
-	 * @deprecated
+	 * @param aServiceName 
+	 * @param anAdapter 
+	 * @param priority 
+	 * @param weight 
+	 * @param aServicePropertiesAdapter 
+	 * @since 3.0
 	 */
-	public JSLPServiceInfo(final IServiceID serviceID) {
-		super(null, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
-	}
-
-	public JSLPServiceInfo(final IServiceInfo aSI) throws IDCreateException {
-		this(aSI.getLocation(), ServiceIDFactory.getDefault().createServiceID(IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME), aSI.getServiceID().getServiceTypeID(), aSI.getServiceID().getServiceName()), aSI.getPriority(), aSI.getWeight(), aSI.getServiceProperties());
-	}
-
-	public JSLPServiceInfo(final ServiceURLAdapter anAdapter, final int priority, final int weight, final ServicePropertiesAdapter aServicePropertiesAdapter) {
-		this(anAdapter.getURI(), anAdapter.getIServiceID(), priority, weight, aServicePropertiesAdapter.toServiceProperties());
+	public JSLPServiceInfo(final String aServiceName, final ServiceURLAdapter anAdapter, final int priority, final int weight, final ServicePropertiesAdapter aServicePropertiesAdapter) {
+		super(anAdapter.getURI(), aServiceName, anAdapter.getIServiceTypeID(), priority, weight, aServicePropertiesAdapter.toServiceProperties());
 	}
 
 	public ServiceURL getServiceURL() throws ServiceLocationException {
