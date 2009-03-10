@@ -222,11 +222,15 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 
 		IServiceInfo svcInfo = null;
 		try {
-			IServiceID serviceID = createServiceID(
-					servicePublicationServiceProperties, remoteServiceID);
+			IServiceTypeID serviceTypeID = createServiceTypeID(servicePublicationServiceProperties);
 			URI uri = createURI(endpointContainerID);
 
-			svcInfo = new ServiceInfo(uri, serviceID,
+			String serviceName = getPropertyWithDefault(
+					servicePublicationServiceProperties,
+					ECFServicePublication.SERVICE_NAME_PROP,
+					(ECFServicePublication.DEFAULT_SERVICE_NAME_PREFIX + remoteServiceID));
+
+			svcInfo = new ServiceInfo(uri, serviceName, serviceTypeID,
 					discoveryServiceProperties);
 
 		} catch (IDCreateException e) {
@@ -345,8 +349,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		return (val == null) ? def : val;
 	}
 
-	protected IServiceID createServiceID(Map servicePublicationProperties,
-			Long rsvcid) throws IDCreateException {
+	protected IServiceTypeID createServiceTypeID(
+			Map servicePublicationProperties) throws IDCreateException {
 		IDiscoveryLocator l = getLocator();
 		if (l == null)
 			return null;
@@ -361,14 +365,11 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				ECFServicePublication.SERVICE_PROTOCOL_PROP,
 				IServiceTypeID.DEFAULT_PROTO[0]);
 
-		String serviceName = getPropertyWithDefault(
-				servicePublicationProperties,
-				ECFServicePublication.SERVICE_NAME_PROP,
-				(ECFServicePublication.DEFAULT_SERVICE_NAME_PREFIX + rsvcid));
-		String serviceType = "_" + ECFServicePublication.SERVICE_TYPE + "._" //$NON-NLS-1$ //$NON-NLS-2$
-				+ protocol + "." + scope + "._" + namingAuthority; //$NON-NLS-1$ //$NON-NLS-2$
-		return ServiceIDFactory.getDefault().createServiceID(
-				l.getServicesNamespace(), serviceType, serviceName);
+		return ServiceIDFactory.getDefault().createServiceTypeID(
+				l.getServicesNamespace(),
+				new String[] { ECFServicePublication.SERVICE_TYPE },
+				new String[] { scope }, new String[] { protocol },
+				namingAuthority);
 	}
 
 	public void modifiedService(ServiceReference reference, Object service) {
