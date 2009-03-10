@@ -20,7 +20,7 @@ import org.eclipse.ecf.discovery.identity.IServiceTypeID;
  */
 public class ServiceTypeListener implements IServiceTypeListener {
 
-	private final IDiscoveryContainerAdapter discovery;
+	private final IDiscoveryLocator discovery;
 	private final IServiceTypeID[] serviceTypeIDs;
 	final IServiceListener serviceListener;
 	private final String[] requiredProperties;
@@ -53,8 +53,9 @@ public class ServiceTypeListener implements IServiceTypeListener {
 	 * @param serviceTypeIDs service type IDs to setup service listeners for.  May be <code>null</code>.  If <code>null</code>, then
 	 * all service types will notify the given serviceListener.
 	 * @param requiredProperties properties required of the service info
+	 * @since 3.0
 	 */
-	public ServiceTypeListener(IDiscoveryContainerAdapter discovery, IServiceListener serviceListener, IServiceTypeID[] serviceTypeIDs, String[] requiredProperties) {
+	public ServiceTypeListener(IDiscoveryLocator discovery, IServiceListener serviceListener, IServiceTypeID[] serviceTypeIDs, String[] requiredProperties) {
 		this.discovery = discovery;
 		Assert.isNotNull(this.discovery);
 		this.serviceListener = serviceListener;
@@ -70,8 +71,9 @@ public class ServiceTypeListener implements IServiceTypeListener {
 	 * @param serviceTypeID service type IDs to setup service listeners for.  May be <code>null</code>.  If <code>null</code>, then
 	 * all service types will notify the given serviceListener.
 	 * @param requiredProperties properties required of the service info
+	 * @since 3.0
 	 */
-	public ServiceTypeListener(IDiscoveryContainerAdapter discovery, IServiceListener serviceListener, IServiceTypeID serviceTypeID, String[] requiredProperties) {
+	public ServiceTypeListener(IDiscoveryLocator discovery, IServiceListener serviceListener, IServiceTypeID serviceTypeID, String[] requiredProperties) {
 		this(discovery, serviceListener, new IServiceTypeID[] {serviceTypeID}, requiredProperties);
 	}
 
@@ -81,12 +83,18 @@ public class ServiceTypeListener implements IServiceTypeListener {
 	 * @param serviceListener service listener to receive notifications of service added/removed and resolved notifications.  Must not be <code>null</code>.
 	 * @param serviceTypeID service type IDs to setup service listeners for.  May be <code>null</code>.  If <code>null</code>, then
 	 * all service types will notify the given serviceListener.
+	 * @since 3.0
 	 */
-	public ServiceTypeListener(IDiscoveryContainerAdapter discovery, IServiceListener serviceListener, IServiceTypeID serviceTypeID) {
+	public ServiceTypeListener(IDiscoveryLocator discovery, IServiceListener serviceListener, IServiceTypeID serviceTypeID) {
 		this(discovery, serviceListener, new IServiceTypeID[] {serviceTypeID}, null);
 	}
 
-	public ServiceTypeListener(IDiscoveryContainerAdapter discovery, IServiceListener serviceListener) {
+	/**
+	 * @param discovery discovery adapter instance to set up.  Must not be <code>null</code>.
+	 * @param serviceListener service listener to receive notifications of service added/removed and resolved notifications.  Must not be <code>null</code>.
+	 * @since 3.0
+	 */
+	public ServiceTypeListener(IDiscoveryLocator discovery, IServiceListener serviceListener) {
 		this(discovery, serviceListener, (IServiceTypeID[]) null, null);
 	}
 
