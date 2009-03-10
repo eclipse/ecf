@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.util.Properties;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.*;
@@ -82,7 +83,7 @@ public class JMDNSPlugin implements BundleActivator {
 		props.put(IDiscoveryService.CONTAINER_NAME, NAME);
 		props.put(Constants.SERVICE_RANKING, new Integer(750));
 		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
-		context.registerService(clazzes, new ServiceFactory() {
+		serviceRegistration = context.registerService(clazzes, new ServiceFactory() {
 			private volatile JMDNSDiscoveryContainer jdc;
 
 			/* (non-Javadoc)
@@ -126,7 +127,15 @@ public class JMDNSPlugin implements BundleActivator {
 	 */
 	public void stop(final BundleContext ctxt) throws Exception {
 		if (serviceRegistration != null) {
+			ServiceReference reference = serviceRegistration.getReference();
+			IDiscoveryLocator aLocator = (IDiscoveryLocator) ctxt.getService(reference);
+
 			serviceRegistration.unregister();
+
+			IContainer container = (IContainer) aLocator.getAdapter(IContainer.class);
+			container.disconnect();
+			container.dispose();
+
 			serviceRegistration = null;
 		}
 		if (adapterManagerTracker != null) {

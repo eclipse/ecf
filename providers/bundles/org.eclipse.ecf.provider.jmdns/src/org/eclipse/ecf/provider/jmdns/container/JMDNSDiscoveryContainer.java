@@ -116,7 +116,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		queue = new SimpleFIFOQueue();
 		notificationThread = new Thread(new Runnable() {
 			public void run() {
-				for (;;) {
+				while (!disposed || queue.isStopped()) {
 					if (Thread.currentThread().isInterrupted())
 						break;
 					final Runnable runnable = (Runnable) queue.dequeue();
@@ -149,6 +149,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			final ID connectedID = getConnectedID();
 			fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), connectedID));
 			queue.close();
+			notificationThread.interrupt();
 			notificationThread = null;
 			this.targetID = null;
 			serviceTypes.clear();
