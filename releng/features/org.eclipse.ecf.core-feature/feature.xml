@@ -577,8 +577,8 @@ Contributors: Composent, Inc. - initial API and implementation
          version="0.0.0"
          unpack="false"/>
          
-<!--  <includes id="org.eclipse.ecf.core.source"  version="0.0.0"/>     -->  
-<plugin id="org.eclipse.ecf.core.source"  version="0.0.0"/>
+  <includes id="org.eclipse.ecf.core.source"  version="0.0.0"/>      
+<!-- <plugin id="org.eclipse.ecf.core.source"  version="0.0.0"/> -->
 
 </feature>
 
