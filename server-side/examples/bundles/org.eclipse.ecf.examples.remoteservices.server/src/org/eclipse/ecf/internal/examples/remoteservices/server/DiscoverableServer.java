@@ -11,12 +11,13 @@
 
 package org.eclipse.ecf.internal.examples.remoteservices.server;
 
+import java.net.URI;
 import java.util.Properties;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.*;
-import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.Constants;
@@ -39,11 +40,12 @@ public class DiscoverableServer implements IApplication {
 	public static final String serviceTypeArg = "-serviceType"; //$NON-NLS-1$
 
 	// Argument variables
+	private String protocol = "ecftcp"; //$NON-NLS-1$
 	private String serviceHostContainerType = "ecf.generic.server"; //$NON-NLS-1$
 	private String serviceHostNamespace = StringID.class.getName();
-	private String serviceHostID = "ecftcp://localhost:3285/server"; //$NON-NLS-1$
+	private String serviceHostID = protocol + "://localhost:3285/server"; //$NON-NLS-1$
 	private String clientContainerType = "ecf.generic.client"; //$NON-NLS-1$
-	private String clientConnectTarget = "ecftcp://localhost:3285/server"; //$NON-NLS-1$
+	private String clientConnectTarget = protocol + "://localhost:3285/server"; //$NON-NLS-1$
 	private String serviceType = "remotesvcs"; //$NON-NLS-1$
 
 	private IContainer serviceHostContainer;
@@ -53,10 +55,6 @@ public class DiscoverableServer implements IApplication {
 	private IDiscoveryAdvertiser discoveryService;
 
 	private boolean done = false;
-
-	private String getCompleteServiceType() {
-		return "_" + serviceType + "._tcp.local."; //$NON-NLS-1$ //$NON-NLS-2$ 
-	}
 
 	protected IContainer createServiceHostContainer() throws IDCreateException, ContainerCreateException {
 		return ContainerFactory.getDefault().createContainer(serviceHostContainerType, IDFactory.getDefault().createID(serviceHostNamespace, serviceHostID));
@@ -90,12 +88,13 @@ public class DiscoverableServer implements IApplication {
 		Assert.isNotNull(discoveryService);
 
 		final String serviceName = System.getProperty("user.name") + System.currentTimeMillis(); //$NON-NLS-1$
-		final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discoveryService.getServicesNamespace(), getCompleteServiceType(), serviceName);
+		final IServiceTypeID serviceID = ServiceIDFactory.getDefault().createServiceTypeID(discoveryService.getServicesNamespace(), new String[] {serviceType}, new String[] {protocol});
 		final Properties serviceProperties = createServicePropertiesForDiscovery(serviceClassName);
-		serviceInfo = new ServiceInfo(serviceType, null, 80, serviceID, new ServiceProperties(serviceProperties));
+		URI uri = new URI(serviceHostID);
+		serviceInfo = new ServiceInfo(uri, serviceName, serviceID, 0, 0, new ServiceProperties(serviceProperties));
 		// register discovery here
 		discoveryService.registerService(serviceInfo);
-		System.out.println("service published for discovery\n\tserviceName=" + serviceID.getServiceName() + "\n\tserviceTypeID=" + serviceID.getServiceTypeID()); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("service published for discovery\n\tserviceName=" + serviceName + "\n\tserviceTypeID=" + serviceID); //$NON-NLS-1$ //$NON-NLS-2$
 		System.out.println("\tserviceProperties=" + serviceProperties); //$NON-NLS-1$
 
 	}
