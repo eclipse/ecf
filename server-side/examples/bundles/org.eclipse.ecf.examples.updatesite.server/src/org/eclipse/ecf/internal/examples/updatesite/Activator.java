@@ -11,7 +11,7 @@
 
 package org.eclipse.ecf.internal.examples.updatesite;
 
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
@@ -63,12 +63,12 @@ public class Activator implements BundleActivator {
 		return (HttpService) httpServiceTracker.waitForService(waittime);
 	}
 
-	public IDiscoveryService waitForDiscoveryService(int waittime) throws InterruptedException {
+	public IDiscoveryAdvertiser waitForDiscoveryService(int waittime) throws InterruptedException {
 		if (discoveryTracker == null) {
-			discoveryTracker = new ServiceTracker(context, IDiscoveryService.class.getName(), null);
+			discoveryTracker = new ServiceTracker(context, IDiscoveryAdvertiser.class.getName(), null);
 			discoveryTracker.open();
 		}
-		return (IDiscoveryService) discoveryTracker.waitForService(waittime);
+		return (IDiscoveryAdvertiser) discoveryTracker.waitForService(waittime);
 	}
 
 }

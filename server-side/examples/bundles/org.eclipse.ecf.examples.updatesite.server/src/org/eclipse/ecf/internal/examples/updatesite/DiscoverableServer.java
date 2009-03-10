@@ -16,7 +16,7 @@ import java.security.InvalidParameterException;
 import java.util.Map;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.discovery.*;
-import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -26,6 +26,8 @@ import org.osgi.service.http.HttpService;
  *
  */
 public class DiscoverableServer implements IApplication {
+
+	private static final String PROTO = "http"; //$NON-NLS-1$
 
 	static final String DEFAULT_UPDATE_SITE_SERVICE_TYPE = "updatesite"; //$NON-NLS-1$
 
@@ -37,14 +39,10 @@ public class DiscoverableServer implements IApplication {
 	private String updateSiteName;
 	private URL updateSiteLocation;
 
-	private IDiscoveryContainerAdapter discovery;
+	private IDiscoveryAdvertiser discovery;
 	private IServiceInfo serviceInfo;
 
 	private boolean done = false;
-
-	private String getCompleteServiceType() {
-		return "_" + serviceType + "._http._tcp.local."; //$NON-NLS-1$ //$NON-NLS-2$ 
-	}
 
 	public DiscoverableServer() {
 		// nothing to do
@@ -64,21 +62,21 @@ public class DiscoverableServer implements IApplication {
 		discovery = Activator.getDefault().waitForDiscoveryService(5000);
 
 		// Create service id
-		IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), getCompleteServiceType(), serviceName);
+		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(discovery.getServicesNamespace(), new String[] {PROTO}, IServiceTypeID.DEFAULT_PROTO);
 		// create service info
-		URI uri = URI.create("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + getServicePort() + servicePath); //$NON-NLS-1$ //$NON-NLS-2$
-		serviceInfo = new ServiceInfo(uri, serviceID, new ServiceProperties(new UpdateSiteProperties(serviceName).toProperties()));
+		URI uri = URI.create(PROTO + "://" + InetAddress.getLocalHost().getHostAddress() + ":" + getServicePort() + servicePath); //$NON-NLS-1$ //$NON-NLS-2$
+		serviceInfo = new ServiceInfo(uri, serviceName, serviceTypeID, 0, 0, new ServiceProperties(new UpdateSiteProperties(serviceName).toProperties()));
 
 		// get http service
 		final HttpService httpService = Activator.getDefault().waitForHttpService(2000);
 
 		// start http service
 		httpService.registerResources(servicePath, "/", new UpdateSiteContext(httpService.createDefaultHttpContext(), updateSiteLocation)); //$NON-NLS-1$
-		System.out.println("http server\n\tupdateSiteLocation=" + updateSiteLocation + "\n\turl=" + serviceInfo.getLocation()); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("http server\n\tupdateSiteLocation=" + updateSiteLocation + "\n\turl=" + serviceInfo.getServiceID().getLocation()); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// setup discovery
 		discovery.registerService(serviceInfo);
-		System.out.println("discovery publish\n\tserviceName=" + serviceID.getServiceName() + "\n\tserviceTypeID=" + serviceID.getServiceTypeID()); //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("discovery publish\n\tserviceName=" + serviceName + "\n\tserviceTypeID=" + serviceTypeID); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// wait until done
 		synchronized (this) {
