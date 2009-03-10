@@ -24,6 +24,7 @@ import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
 import org.eclipse.ecf.filetransfer.identity.IFileID;

@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
