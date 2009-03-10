@@ -576,5 +576,6 @@ Contributors: Composent, Inc. - initial API and implementation
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+  <plugin id="org.eclipse.ecf.core.source"  version="0.0.0"/>       
 
 </feature>
