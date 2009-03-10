@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.discovery;
 
+import java.net.URI;
+
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
@@ -20,9 +22,9 @@ public class CompositeServiceID extends ServiceID {
 	/**
 	 * @param compositeNamespace
 	 * @param serviceTypeID
-	 * @param string
+	 * @param anURI
 	 */
-	public CompositeServiceID(final CompositeNamespace compositeNamespace, final IServiceTypeID serviceTypeID, final String string) {
-		super(compositeNamespace, serviceTypeID, string);
+	public CompositeServiceID(final CompositeNamespace compositeNamespace, final IServiceTypeID serviceTypeID, final URI anURI) {
+		super(compositeNamespace, serviceTypeID, anURI);
 	}
 }

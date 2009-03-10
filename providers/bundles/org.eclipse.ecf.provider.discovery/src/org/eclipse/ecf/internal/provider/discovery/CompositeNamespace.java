@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.discovery;
 
+import java.net.URI;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceTypeID;
@@ -25,10 +26,13 @@ public class CompositeNamespace extends Namespace {
 	public ID createInstance(final Object[] parameters) {
 		if (parameters == null || parameters.length < 1 || parameters.length > 2) {
 			throw new IDCreateException(Messages.CompositeNamespace_WrongParameterCount);
-		} else if (parameters[0] instanceof String) {
-			return new CompositeServiceID(this, new ServiceTypeID(this, (String) parameters[0]), (String) parameters[1]);
-		} else if (parameters[0] instanceof IServiceTypeID) {
-			return new CompositeServiceID(this, (IServiceTypeID) parameters[0], (String) parameters[1]);
+		} else if (parameters.length == 2 && parameters[0] instanceof String && parameters[1] instanceof URI) {
+			return new CompositeServiceID(this, new ServiceTypeID(this, (String) parameters[0]), (URI) parameters[1]);
+		} else if (parameters.length == 2 && parameters[0] instanceof IServiceTypeID && parameters[1] instanceof URI) {
+			return new CompositeServiceID(this, (IServiceTypeID) parameters[0], (URI) parameters[1]);
+		} else if (parameters.length == 1 && parameters[0] instanceof IServiceTypeID) {
+			final IServiceTypeID iServiceTypeID = (IServiceTypeID) parameters[0];
+			return new ServiceTypeID(this, iServiceTypeID.getName());
 		} else {
 			throw new IDCreateException(Messages.CompositeNamespace_WrongParameters);
 		}

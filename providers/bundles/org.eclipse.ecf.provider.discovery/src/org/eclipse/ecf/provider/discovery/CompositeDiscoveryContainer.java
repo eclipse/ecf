@@ -198,7 +198,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	private IServiceID getServiceIDForDiscoveryContainer(final IServiceID service, final IDiscoveryLocator dca) {
 		final Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(service.getNamespace())) {
-			return ServiceIDFactory.getDefault().createServiceID(connectNamespace, service.getServiceTypeID().getName(), service.getServiceName());
+			return (IServiceID) connectNamespace.createInstance(new Object[] {service.getServiceTypeID().getName(), service.getLocation()});
 		}
 		return service;
 	}
@@ -222,8 +222,10 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	}
 
 	private IServiceInfo getServiceInfoForDiscoveryContainer(final IServiceInfo aSi, final IDiscoveryLocator idca) {
-		final IServiceID serviceID = getServiceIDForDiscoveryContainer(aSi.getServiceID(), idca);
-		return new ServiceInfo(aSi.getLocation(), serviceID, aSi.getPriority(), aSi.getWeight(), aSi.getServiceProperties());
+		final IServiceID serviceId = aSi.getServiceID();
+		final IServiceID sid = getServiceIDForDiscoveryContainer(serviceId, idca);
+		final IServiceTypeID serviceTypeID = sid.getServiceTypeID();
+		return new ServiceInfo(serviceId.getLocation(), aSi.getServiceName(), serviceTypeID, aSi.getPriority(), aSi.getWeight(), aSi.getServiceProperties());
 	}
 
 	/* (non-Javadoc)
@@ -261,8 +263,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	private IServiceTypeID getServiceTypeIDForDiscoveryContainer(final IServiceTypeID type, final IDiscoveryLocator dca) {
 		final Namespace connectNamespace = dca.getServicesNamespace();
 		if (!connectNamespace.equals(type.getNamespace())) {
-			final IServiceID serviceID = (IServiceID) connectNamespace.createInstance(new Object[] {type, null});
-			return serviceID.getServiceTypeID();
+			return ServiceIDFactory.getDefault().createServiceTypeID(connectNamespace, type);
 		}
 		return type;
 	}
