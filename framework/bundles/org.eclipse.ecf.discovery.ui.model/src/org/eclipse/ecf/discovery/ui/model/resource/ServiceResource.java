@@ -398,21 +398,9 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				}
 				org.eclipse.ecf.discovery.IServiceInfo si1 = (org.eclipse.ecf.discovery.IServiceInfo) anObj1;
 				org.eclipse.ecf.discovery.IServiceInfo si2 = (org.eclipse.ecf.discovery.IServiceInfo) anObj2;
-				org.eclipse.ecf.discovery.identity.IServiceTypeID stId1 = si1
-						.getServiceID().getServiceTypeID();
-				org.eclipse.ecf.discovery.identity.IServiceTypeID stId2 = si2
-						.getServiceID().getServiceTypeID();
-				java.net.URI uri1 = si1.getLocation();
-				java.net.URI uri2 = si2.getLocation();
-				String scheme1 = uri1.getScheme();
-				String scheme2 = uri2.getScheme();
-				InetAddress address1 = ServiceDiscoveryListener.this
-						.getInetAddress(uri1);
-				InetAddress address2 = ServiceDiscoveryListener.this
-						.getInetAddress(uri2);
-				if (scheme1.equals(scheme2) && uri1.getPort() == uri2.getPort()
-						&& address1 != null && address1.equals(address2)
-						&& stId1.equals(stId2)) {
+				org.eclipse.ecf.discovery.identity.IServiceID sId1 = si1.getServiceID();
+				org.eclipse.ecf.discovery.identity.IServiceID sId2 = si2.getServiceID();
+				if (sId1.equals(sId2)) {
 					return 0;
 				}
 				return -1;
