@@ -10,6 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.jmdns.identity;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.provider.jmdns.Messages;
@@ -22,13 +24,6 @@ public class JMDNSNamespace extends Namespace {
 	public static final String JMDNS_SCHEME = "jmdns"; //$NON-NLS-1$
 
 	public static final String NAME = "ecf.namespace.jmdns"; //$NON-NLS-1$
-
-	/**
-	 * 
-	 */
-	public JMDNSNamespace() {
-		super();
-	}
 
 	private String getInitFromExternalForm(final Object[] args) {
 		if (args == null || args.length < 1 || args[0] == null)
@@ -69,16 +64,20 @@ public class JMDNSNamespace extends Namespace {
 			throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
 		}
 		final JMDNSServiceTypeID stid = new JMDNSServiceTypeID(this, type);
-
-		String name = null;
-		if (parameters.length > 1) {
+		if (parameters.length == 1) {
+			return stid;
+		} else if (parameters[1] instanceof String) {
 			try {
-				name = (String) parameters[1];
-			} catch (final ClassCastException e) {
+				final URI uri = new URI((String) parameters[1]);
+				return new JMDNSServiceID(this, stid, uri);
+			} catch (URISyntaxException e) {
 				throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_PARAM_2_WRONG_TYPE);
 			}
+		} else if (parameters[1] instanceof URI) {
+			return new JMDNSServiceID(this, stid, (URI) parameters[1]);
+		} else {
+			throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_PARAM_2_WRONG_TYPE);
 		}
-		return new JMDNSServiceID(this, stid, name);
 	}
 
 	/* (non-Javadoc)

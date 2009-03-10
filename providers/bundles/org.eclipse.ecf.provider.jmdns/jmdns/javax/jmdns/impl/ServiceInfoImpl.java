@@ -665,4 +665,19 @@ public class ServiceInfoImpl extends ServiceInfo implements DNSListener
     {
         return dns;
     }
+
+	public String getDomain()
+	{
+		String protocol = getProtocol();
+		int start = type.indexOf(protocol) + protocol.length() + 1;
+		int end = type.length() - 1;
+		return type.substring(start, end);
+	}
+
+	public String getProtocol()
+	{
+		int start = type.lastIndexOf("._") + 2;
+		int end = type.indexOf('.', start);
+		return type.substring(start, end);
+	}
 }

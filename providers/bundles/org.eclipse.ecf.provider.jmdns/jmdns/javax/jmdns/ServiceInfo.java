@@ -164,5 +164,8 @@ public abstract class ServiceInfo
     public abstract Enumeration getPropertyNames();
 
     public abstract String getNiceTextString();
+    
+    public abstract String getProtocol();
 
+    public abstract String getDomain();
 }

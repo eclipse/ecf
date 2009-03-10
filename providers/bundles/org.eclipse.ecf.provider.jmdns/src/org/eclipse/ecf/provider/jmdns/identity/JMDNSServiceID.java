@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.jmdns.identity;
 
+import java.net.URI;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
@@ -18,7 +19,10 @@ public class JMDNSServiceID extends ServiceID {
 
 	private static final long serialVersionUID = 8389531866888790264L;
 
-	public JMDNSServiceID(final Namespace namespace, final IServiceTypeID type, final String name) {
-		super(namespace, type, name);
+	/**
+	 * @since 3.0
+	 */
+	public JMDNSServiceID(final Namespace namespace, final IServiceTypeID type, final URI anURI) {
+		super(namespace, type, anURI);
 	}
 }

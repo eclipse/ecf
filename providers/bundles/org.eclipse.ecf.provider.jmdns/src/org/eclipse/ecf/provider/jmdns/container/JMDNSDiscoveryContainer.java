@@ -19,10 +19,10 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
-import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.ECFRuntimeException;
-import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
@@ -32,7 +32,7 @@ import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IDiscoveryService, ServiceListener, ServiceTypeListener {
 
 	private static final String SCHEME_PROPERTY = "jmdns.ptcl"; //$NON-NLS-1$
-	private static final String URI_PATH_PROPERTY = "jmdns.uripath"; //$NON-NLS-1$
+	private static final String URI_PATH_PROPERTY = "path"; //$NON-NLS-1$
 	private static final String NAMING_AUTHORITY_PROPERTY = "jmdns.namingauthority"; //$NON-NLS-1$
 
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
@@ -125,17 +125,15 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 					try {
 						runnable.run();
 					} catch (final Throwable t) {
-						handleRuntimeException(t);
+						JMDNSPlugin plugin = JMDNSPlugin.getDefault();
+						if (plugin != null) {
+							plugin.logException("handleRuntimeException", t); //$NON-NLS-1$
+						}
 					}
 				}
 			}
 		}, "JMDNS Discovery Thread"); //$NON-NLS-1$
 		notificationThread.start();
-	}
-
-	protected void handleRuntimeException(final Throwable t) {
-		// Nothing to do except log
-		JMDNSPlugin.getDefault().logException("handleRuntimeException", t); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -168,8 +166,19 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Assert.isNotNull(service);
 		synchronized (lock) {
 			try {
-				final ServiceInfo serviceInfo = jmdns.getServiceInfo(service.getServiceTypeID().getInternal(), service.getServiceName());
-				return (serviceInfo == null) ? null : createIServiceInfoFromServiceInfo(serviceInfo);
+				// ECF discovery API defines identity to be the service type and the URI (location)
+				// see https://bugs.eclipse.org/266723
+				final ServiceInfo[] serviceInfos = jmdns.list(service.getServiceTypeID().getInternal());
+				for (int i = 0; i < serviceInfos.length; i++) {
+					ServiceInfo serviceInfo = serviceInfos[i];
+					IServiceInfo iServiceInfo = createIServiceInfoFromServiceInfo(serviceInfo);
+					Assert.isNotNull(iServiceInfo);
+					Assert.isNotNull(iServiceInfo.getServiceID());
+					if (iServiceInfo.getServiceID().equals(service)) {
+						return iServiceInfo;
+					}
+				}
+				return null;
 			} catch (final Exception e) {
 				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServiceInfo", e); //$NON-NLS-1$
 				return null;
@@ -366,26 +375,19 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 
 	IServiceInfo createIServiceInfoFromServiceInfo(final ServiceInfo serviceInfo) throws Exception {
 		Assert.isNotNull(serviceInfo);
-		final String st = serviceInfo.getType();
-		final String n = serviceInfo.getName();
-		if (st == null || n == null)
-			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);
-		final InetAddress addr = serviceInfo.getAddress();
-		final int port = serviceInfo.getPort();
 		final int priority = serviceInfo.getPriority();
 		final int weight = serviceInfo.getWeight();
 		final Properties props = new Properties();
 		String uriProtocol = null;
-		String uriPath = ""; //$NON-NLS-1$
 		String namingAuthority = IServiceTypeID.DEFAULT_NA;
 		for (final Enumeration e = serviceInfo.getPropertyNames(); e.hasMoreElements();) {
 			final String key = (String) e.nextElement();
 			if (SCHEME_PROPERTY.equals(key)) {
 				uriProtocol = serviceInfo.getPropertyString(key);
-			} else if (URI_PATH_PROPERTY.equals(key)) {
-				uriPath = serviceInfo.getPropertyString(key);
 			} else if (NAMING_AUTHORITY_PROPERTY.equals(key)) {
 				namingAuthority = serviceInfo.getPropertyString(key);
+			} else if (URI_PATH_PROPERTY.equals(key)) {
+				// nop (ServiceInfo already takes care)
 			} else {
 				final byte[] bytes = serviceInfo.getPropertyBytes(key);
 				try {
@@ -400,23 +402,26 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				}
 			}
 		}
-		final URI uri = URI.create(((uriProtocol == null) ? org.eclipse.ecf.discovery.ServiceInfo.UNKNOWN_PROTOCOL : uriProtocol) + "://" + addr.getHostAddress() + ":" + port + ((uriPath == null) ? "" : uriPath)); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		final ServiceID sID = createServiceID(serviceInfo.getType() + "_" + namingAuthority, serviceInfo.getName()); //$NON-NLS-1$
-		if (sID == null) {
-			throw new InvalidObjectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_SERVICEINFO_INVALID);
-		}
-		return new org.eclipse.ecf.discovery.ServiceInfo(uri, sID, priority, weight, new ServiceProperties(props));
-	}
 
-	ServiceID createServiceID(final String type, final String name) {
-		ServiceID id = null;
-		try {
-			id = (ServiceID) ServiceIDFactory.getDefault().createServiceID(getServicesNamespace(), type, name);
-		} catch (final IDCreateException e) {
-			// Should never happen
-			Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "createServiceID", e); //$NON-NLS-1$
-		}
-		return id;
+		// proto
+		final String proto = (uriProtocol == null) ? serviceInfo.getProtocol() : uriProtocol;
+		// scopes
+		final String domain = serviceInfo.getDomain();
+		final String[] scopes = new String[] {domain};
+
+		// uri
+		final URI uri = new URI(serviceInfo.getURL(proto));
+
+		// service type
+		String st = serviceInfo.getType();
+		final int end = st.indexOf(proto);
+		String[] types = StringUtils.split(st.substring(1, end), "._");
+		final IServiceTypeID sID = ServiceIDFactory.getDefault().createServiceTypeID(getServicesNamespace(), types, scopes, new String[] {proto}, namingAuthority);
+
+		// service name
+		final String name = serviceInfo.getName();
+
+		return new org.eclipse.ecf.discovery.ServiceInfo(uri, name, sID, priority, weight, new ServiceProperties(props));
 	}
 
 	private ServiceInfo createServiceInfoFromIServiceInfo(final IServiceInfo serviceInfo) {
@@ -451,14 +456,13 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			}
 		}
 		// Add URI scheme to props
-		final URI location = serviceInfo.getLocation();
+		final URI location = serviceInfo.getServiceID().getLocation();
 		if (location != null) {
 			props.put(SCHEME_PROPERTY, location.getScheme());
 			props.put(URI_PATH_PROPERTY, location.getPath());
 		}
 		props.put(NAMING_AUTHORITY_PROPERTY, serviceInfo.getServiceID().getServiceTypeID().getNamingAuthority());
-		final String serviceName = sID.getServiceName() == null ? location.getHost() : sID.getServiceName();
-		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), serviceName, location.getPort(), serviceInfo.getWeight(), serviceInfo.getPriority(), props);
+		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), serviceInfo.getServiceName(), location.getPort(), serviceInfo.getWeight(), serviceInfo.getPriority(), props);
 		return si;
 	}
 
