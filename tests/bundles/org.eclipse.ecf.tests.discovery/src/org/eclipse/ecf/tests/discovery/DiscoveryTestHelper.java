@@ -36,7 +36,7 @@ public abstract class DiscoveryTestHelper {
 	public static URI createDefaultURI() {
 //TODO-mkuppe https://bugs.eclipse.org/216944
 //		return URI.create(PROTOCOL + "://" + USERNAME + ":" + PASSWORD + "@" + getHost() + ":" + PORT + "/" + PATH + "?" + QUERY + "#" + FRAGMENT);
-		return URI.create(PROTOCOLS[0] + "://" + USERNAME + "@" + getHost() + ":" + PORT + PATH);
+		return URI.create(PROTOCOLS[0] + "://"/* + USERNAME + "@" */+ getHost() + ":" + PORT + PATH);
 	}
 	
 	public static String getHost() {
