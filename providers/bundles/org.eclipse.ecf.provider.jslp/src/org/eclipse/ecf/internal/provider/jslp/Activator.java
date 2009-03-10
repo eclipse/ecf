@@ -14,6 +14,7 @@ import ch.ethz.iks.slp.Advertiser;
 import ch.ethz.iks.slp.Locator;
 import java.util.Properties;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
@@ -43,6 +44,7 @@ public class Activator implements BundleActivator {
 
 	private volatile ServiceTracker locatorSt;
 	private volatile ServiceTracker advertiserSt;
+	private volatile ServiceRegistration serviceRegistration;
 
 	/**
 	 * The constructor
@@ -94,7 +96,7 @@ public class Activator implements BundleActivator {
 		props.put(Constants.SERVICE_RANKING, new Integer(500));
 
 		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
-		context.registerService(clazzes, new ServiceFactory() {
+		serviceRegistration = context.registerService(clazzes, new ServiceFactory() {
 			private volatile JSLPDiscoveryContainer jdc;
 
 			/* (non-Javadoc)
@@ -130,6 +132,18 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(final BundleContext context) throws Exception {
 		//TODO-mkuppe here we should do something like a deregisterAll(), but see ungetService(...);
+		if (serviceRegistration != null) {
+			ServiceReference reference = serviceRegistration.getReference();
+			IDiscoveryLocator aLocator = (IDiscoveryLocator) context.getService(reference);
+
+			serviceRegistration.unregister();
+
+			IContainer container = (IContainer) aLocator.getAdapter(IContainer.class);
+			container.disconnect();
+			container.dispose();
+
+			serviceRegistration = null;
+		}
 		plugin = null;
 		bundleContext = null;
 		if (advertiserSt != null) {
