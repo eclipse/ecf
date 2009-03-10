@@ -13,10 +13,7 @@ package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import java.net.*;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.provider.comm.IConnectRequestHandler;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
@@ -31,8 +28,6 @@ public class TCPServerSOContainer extends ServerSOContainer implements IConnectR
 	public static final String DEFAULT_NAME = "/server"; //$NON-NLS-1$
 
 	public static final String DEFAULT_HOST = "localhost"; //$NON-NLS-1$
-
-	public static final String SERVICE_TYPE = "_" + DEFAULT_PROTOCOL + "._tcp.local."; //$NON-NLS-1$ //$NON-NLS-2$
 
 	// Keep alive value
 	protected int keepAlive;
