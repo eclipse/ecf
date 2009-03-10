@@ -20,7 +20,8 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.*;
-import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.internal.server.generic.Activator;
 import org.eclipse.ecf.internal.server.generic.Messages;
 import org.eclipse.ecf.provider.generic.*;
@@ -40,7 +41,7 @@ public class ServerManager {
 
 	private static final String PROTOCOL_PROPERTY_NAME = "protocol"; //$NON-NLS-1$
 
-	private static final String SERVICE_TYPE = Messages.ServerManager_SERVICE_TYPE;
+	private static final String SERVICE_TYPE = "ecfgeneric"; //$NON-NLS-1$
 
 	static TCPServerSOContainerGroup serverGroups[] = null;
 
@@ -188,10 +189,10 @@ public class ServerManager {
 				props.put(PWREQUIRED_PROPERTY_NAME, new Boolean(pwrequired).toString());
 				props.put(GROUP_PROPERTY_NAME, rawGroupName);
 				final Namespace ns = IDFactory.getDefault().getNamespaceByName(ECF_NAMESPACE_JMDNS);
-				final IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(ns, new Object[] {SERVICE_TYPE, rawGroupName});
+				final IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(ns, new String[] {SERVICE_TYPE}, IServiceTypeID.DEFAULT_PROTO);
 				final InetAddress host = InetAddress.getByName(connector.getHostname());
 				URI uri = new URI(TCPServerSOContainer.DEFAULT_PROTOCOL, null, host.getHostAddress(), connector.getPort(), null, null, null);
-				final ServiceInfo svcInfo = new ServiceInfo(uri, serviceID, 0, 0, new ServiceProperties(props));
+				final ServiceInfo svcInfo = new ServiceInfo(uri, rawGroupName, serviceTypeID, 0, 0, new ServiceProperties(props));
 				discovery.registerService(svcInfo);
 			} catch (final Exception e) {
 				Activator.log(Messages.ServerManager_EXCEPTION_DISCOVERY_REGISTRATION, e);

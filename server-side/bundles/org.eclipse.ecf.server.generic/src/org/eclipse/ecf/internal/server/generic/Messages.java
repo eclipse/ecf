@@ -20,7 +20,6 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.server.generic.messages"; //$NON-NLS-1$
 	public static String Activator_SERVER_XML;
 	public static String ServerManager_EXCEPTION_DISCOVERY_REGISTRATION;
-	public static String ServerManager_SERVICE_TYPE;
 
 	public static String ServerStarter_EXCEPTION_CREATING_SERVER;
 	public static String ServerStarter_EXCEPTION_DISPOSING_SERVER;
