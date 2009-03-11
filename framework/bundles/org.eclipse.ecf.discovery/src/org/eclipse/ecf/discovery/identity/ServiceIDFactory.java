@@ -31,6 +31,27 @@ public class ServiceIDFactory implements IServiceIDFactory {
 
 	/**
 	 * @since 3.0
+	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace,
+	 *      java.lang.String[], java.lang.String[], java.lang.String[],
+	 *      java.lang.String)
+	 */
+	public IServiceTypeID createServiceTypeID(Namespace namespace, String serviceType) {
+		return createServiceTypeID(namespace, new String[] { serviceType });
+	}
+
+	/**
+	 * @since 3.0
+	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace,
+	 *      java.lang.String[], java.lang.String[], java.lang.String[],
+	 *      java.lang.String)
+	 */
+	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] serviceType) {
+		return createServiceTypeID(namespace, serviceType, IServiceTypeID.DEFAULT_SCOPE, IServiceTypeID.DEFAULT_PROTO,
+				IServiceTypeID.DEFAULT_NA);
+	}
+	
+	/**
+	 * @since 3.0
 	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, java.lang.String[], java.lang.String[], java.lang.String[], java.lang.String)
 	 */
 	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] serviceType, String[] scopes, String[] protocols, String namingAuthority) throws IDCreateException {

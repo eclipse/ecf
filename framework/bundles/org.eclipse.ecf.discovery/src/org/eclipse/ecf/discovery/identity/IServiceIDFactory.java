@@ -25,6 +25,30 @@ public interface IServiceIDFactory {
 	 * Create an IServiceTypeID.  Creates an immutable IServiceTypeID.
 	 * 
 	 * @param namespace the Namespace instance to create the service ID with.  Must not be <code>null</code>.
+	 * @param service The service type. Must not be <code>null</code>.
+	 * @since 3.0
+	 *
+	 * @return IServiceTypeID created.  Will not be <code>null</code>.
+	 * @throws IDCreateException if some problem creating the new IServiceTypeID.
+	 */
+	public IServiceTypeID createServiceTypeID(Namespace namespace, String serviceType);
+		
+	/**
+	 * Create an IServiceTypeID.  Creates an immutable IServiceTypeID.
+	 * 
+	 * @param namespace the Namespace instance to create the service ID with.  Must not be <code>null</code>.
+	 * @param services Array containing the ordered naming hierarchy from 0...n. Must not be <code>null</code>.
+	 * @since 3.0
+	 *
+	 * @return IServiceTypeID created.  Will not be <code>null</code>.
+	 * @throws IDCreateException if some problem creating the new IServiceTypeID.
+	 */
+	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] serviceType);
+	
+	/**
+	 * Create an IServiceTypeID.  Creates an immutable IServiceTypeID.
+	 * 
+	 * @param namespace the Namespace instance to create the service ID with.  Must not be <code>null</code>.
 	 * @param services Array containing the ordered naming hierarchy from 0...n. Must not be <code>null</code>.
 	 * @param scopes Array containing all scopes or {@link IServiceTypeID#DEFAULT_SCOPE} for default. Must not be <code>null</code>.
 	 * @param protocols Array containing all protocols or {@link IServiceTypeID#DEFAULT_PROTO} for default. Must not be <code>null</code>.
