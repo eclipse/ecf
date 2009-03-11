@@ -17,6 +17,7 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -92,9 +93,10 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		discoveryLocator.addServiceListener(serviceListener);
 		addListenerRegisterAndWait(serviceListener, serviceInfo);
 		discoveryLocator.removeServiceListener(serviceListener);
-		assertNotNull("Test listener didn't receive discovery", serviceListener.getEvent());
-		assertEquals("Test listener received more than expected discovery event", eventsToExpect, serviceListener.getEvent().length);
-		IServiceInfo serviceInfo2 = ((IServiceEvent) serviceListener.getEvent()[eventsToExpect - 1]).getServiceInfo();
+		IContainerEvent[] event = serviceListener.getEvent();
+		assertNotNull("Test listener didn't receive any discovery event", event);
+		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
+		IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
 		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
 	}
 
@@ -225,9 +227,10 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		addListenerRegisterAndWait(tsl, serviceInfo);
 		discoveryLocator.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		
-		assertNotNull("Test listener didn't receive discovery", tsl.getEvent());
-		assertEquals("Test listener received more than expected discovery event", eventsToExpect, tsl.getEvent().length);
-		IServiceInfo serviceInfo2 = ((IServiceEvent) tsl.getEvent()[eventsToExpect - 1]).getServiceInfo();
+		IContainerEvent[] event = tsl.getEvent();
+		assertNotNull("Test listener didn't receive discovery", event);
+		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
+		IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
 		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but:\n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
 	}
 
@@ -256,8 +259,9 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		
 		discoveryLocator.removeServiceTypeListener(testTypeListener);
 		
-		assertNotNull("Test listener didn't receive discovery", testTypeListener.getEvent());
-		assertEquals("Test listener received more than expected discovery event", eventsToExpect, testTypeListener.getEvent().length);
+		IContainerEvent[] event = testTypeListener.getEvent();
+		assertNotNull("Test listener didn't receive discovery", event);
+		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
 	}
 	
 
@@ -307,8 +311,9 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		
 		discoveryLocator.removeServiceTypeListener(testTypeListener);
 		
-		assertNotNull("Test listener didn't receive discovery", testTypeListener.getEvent());
-		assertEquals("Test listener received more than expected discovery event", eventsToExpect, testTypeListener.getEvent().length);
+		IContainerEvent[] event = testTypeListener.getEvent();
+		assertNotNull("Test listener didn't receive any discovery event", event);
+		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
 		
 		//TODO reregister and verify the listener doesn't receive any events any longer.
 	}
