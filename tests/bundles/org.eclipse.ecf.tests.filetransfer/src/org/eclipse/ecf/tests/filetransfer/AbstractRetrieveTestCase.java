@@ -24,6 +24,8 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
+import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
@@ -146,6 +148,61 @@ public abstract class AbstractRetrieveTestCase extends AbstractFileTransferTestC
 			if (!done)
 				throw new TimeoutException(timeout);
 		}
+	}
+	
+	protected IIncomingFileTransferReceiveDoneEvent getDoneEvent() {
+		assertHasEvent(doneEvents, IIncomingFileTransferReceiveDoneEvent.class);
+		IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) doneEvents.get(0);
+		assertNotNull(doneEvent);
+		assertTrue(doneEvent.getSource().isDone());
+		assertSame(doneEvent.getException(), doneEvent.getSource()
+				.getException());
+
+		return doneEvent;
+	}
+	
+	protected void assertDoneOK() {
+		IIncomingFileTransferReceiveDoneEvent doneEvent = getDoneEvent();
+		assertNull(doneEvent.getException());
+	}
+	
+	protected void assertDoneCancelled() {
+		IIncomingFileTransferReceiveDoneEvent doneEvent = getDoneEvent();
+		assertTrue(doneEvent.getException().getClass().getName(), doneEvent.getException() instanceof UserCancelledException);
+	}
+
+	protected void assertHasDoneEvent() {
+		assertHasEvent(doneEvents, IIncomingFileTransferReceiveDoneEvent.class);
+	}
+	
+	
+	protected Exception checkGetDoneException(Class cls) {
+		IIncomingFileTransferReceiveDoneEvent doneEvent = getDoneEvent();
+		Exception e = doneEvent.getException();
+		assertNotNull(e);
+		//assertTrue(e.getClass().getName(), cls.isInstance(e));
+		return e;
+	}
+	
+	protected IncomingFileTransferException checkGetDoneIncomimgFileTransferException() {
+		IncomingFileTransferException e = (IncomingFileTransferException) checkGetDoneException(IncomingFileTransferException.class);
+		assertNotNull(e);
+		return e;
+	}
+	
+	protected void assertIncomingFileExceptionWithCause(Class expectedCause) {
+		IncomingFileTransferException e = checkGetDoneIncomimgFileTransferException();
+		Throwable cause = e.getCause();
+		assertNotNull(cause);
+		assertTrue(cause.getClass().getName(), expectedCause.isInstance(cause));
+	}
+	
+	protected void assertDoneExceptionBeforeServerResponse(Class expectedCause) {
+		checkGetDoneException(expectedCause);
+	}
+	
+	protected void assertDoneExceptionAfterServerResponse(Class expectedCause) {
+		assertIncomingFileExceptionWithCause(expectedCause);
 	}
 
 	protected void assertHasEvent(Collection collection, Class eventType) {

@@ -122,14 +122,7 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 				IIncomingFileTransferReceiveStartEvent.class);
 		assertHasNoEvent(dataEvents,
 				IIncomingFileTransferReceiveDataEvent.class);
-		assertHasEvent(doneEvents, IIncomingFileTransferReceiveDoneEvent.class);
-		IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) doneEvents
-				.get(0);
-		assertTrue(doneEvent.getException().toString(), doneEvent
-				.getException() instanceof UserCancelledException);
-		assertTrue(doneEvent.getSource().isDone());
-		assertSame(doneEvent.getException(), doneEvent.getSource()
-				.getException());
+		assertDoneCancelled();
 
 		assertNull(tmpFile);
 		
@@ -189,10 +182,7 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 					IIncomingFileTransferReceiveStartEvent.class);
 			assertHasNoEvent(dataEvents,
 					IIncomingFileTransferReceiveDataEvent.class);
-			assertHasEvent(doneEvents,
-					IIncomingFileTransferReceiveDoneEvent.class);
-			IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) doneEvents
-					.get(0);
+			IIncomingFileTransferReceiveDoneEvent doneEvent = getDoneEvent();
 			assertTrue(doneEvent.getException().toString(), doneEvent
 					.getException() instanceof UserCancelledException);
 			assertTrue(doneEvent.getSource().isDone());
@@ -285,15 +275,7 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 					IFileTransferConnectStartEvent.class);
 			assertHasEvent(startEvents,
 					IIncomingFileTransferReceiveStartEvent.class);
-			assertHasEvent(doneEvents,
-					IIncomingFileTransferReceiveDoneEvent.class);
-			IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) doneEvents
-					.get(0);
-			assertTrue(doneEvent.getException().toString(), doneEvent
-					.getException() instanceof UserCancelledException);
-			assertTrue(doneEvent.getSource().isDone());
-			assertSame(doneEvent.getException(), doneEvent.getSource()
-					.getException());
+			assertDoneCancelled();
 
 			assertNotNull(tmpFile);
 			assertTrue(tmpFile.exists());
@@ -400,15 +382,7 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 					IIncomingFileTransferReceiveStartEvent.class);
 			assertHasMoreThanEventCount(dataEvents,
 					IIncomingFileTransferReceiveDataEvent.class, 0);
-			assertHasEvent(doneEvents,
-					IIncomingFileTransferReceiveDoneEvent.class);
-			IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) doneEvents
-					.get(0);
-			assertTrue(doneEvent.getException().toString(), doneEvent
-					.getException() instanceof UserCancelledException);
-			assertTrue(doneEvent.getSource().isDone());
-			assertSame(doneEvent.getException(), doneEvent.getSource()
-					.getException());
+			assertDoneCancelled();
 
 			assertNotNull(tmpFile);
 			assertTrue(tmpFile.exists());

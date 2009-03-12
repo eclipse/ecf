@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.filetransfer.FileTransferJob;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
@@ -85,7 +84,7 @@ public class URLRetrieveTestWithCustomJob extends AbstractRetrieveTestCase {
 		assertTrue(result != null);
 		assertHasEvent(startEvents, IIncomingFileTransferReceiveStartEvent.class);
 		assertHasMoreThanEventCount(dataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);
-		assertHasEvent(doneEvents, IIncomingFileTransferReceiveDoneEvent.class);
+		assertDoneOK();
 
 		assertTrue(tmpFile.exists());
 		assertTrue(tmpFile.length() > 0);

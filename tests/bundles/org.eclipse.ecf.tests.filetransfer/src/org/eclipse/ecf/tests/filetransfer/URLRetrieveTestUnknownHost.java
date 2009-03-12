@@ -63,13 +63,7 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 					IIncomingFileTransferReceiveDataEvent.class);
 			assertHasEvent(doneEvents,
 					IIncomingFileTransferReceiveDoneEvent.class);
-			IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) doneEvents
-					.get(0);
-			assertTrue(doneEvent.getException().toString(), doneEvent
-					.getException() instanceof UnknownHostException);
-			assertTrue(doneEvent.getSource().isDone());
-			assertSame(doneEvent.getException(), doneEvent.getSource()
-					.getException());
+			assertDoneExceptionBeforeServerResponse(UnknownHostException.class);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,15 +96,7 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 					IIncomingFileTransferReceiveStartEvent.class);
 			assertHasNoEvent(dataEvents,
 					IIncomingFileTransferReceiveDataEvent.class);
-			assertHasEvent(doneEvents,
-					IIncomingFileTransferReceiveDoneEvent.class);
-			IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) doneEvents
-					.get(0);
-			assertTrue(doneEvent.getException().toString(), doneEvent
-					.getException() instanceof UnknownHostException);
-			assertTrue(doneEvent.getSource().isDone());
-			assertSame(doneEvent.getException(), doneEvent.getSource()
-					.getException());
+			assertDoneExceptionBeforeServerResponse(UnknownHostException.class);
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -12,15 +12,16 @@
 package org.eclipse.ecf.tests.filetransfer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.equinox.internal.p2.artifact.repository.ECFTransport;
@@ -30,7 +31,8 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
 	public static final String HTTPS_RETRIEVE = "https://www.verisign.com";
 	public static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
-	public static final String HTTP_BAD_URL = "http:fubar";
+	public static final String HTTP_BAD_URL = "http:ddasdf12121212";
+	public static final String HTTP_MALFORMED_URL = "http://malformed:-1";
 	
 	private static final String FTP_RETRIEVE = "ftp://ftp.osuosl.org/pub/eclipse/rt/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
 	
@@ -94,7 +96,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 		assertHasEvent(startEvents, IIncomingFileTransferReceiveStartEvent.class);
 		assertHasMoreThanEventCount(dataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);
-		assertHasEvent(doneEvents, IIncomingFileTransferReceiveDoneEvent.class);
+		assertDoneOK();
 
 		assertTrue(tmpFile.exists());
 		assertTrue(tmpFile.length() > 0);
@@ -115,7 +117,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 		assertHasNoEvent(startEvents, IIncomingFileTransferReceiveStartEvent.class);
 		assertHasNoEvent(dataEvents, IIncomingFileTransferReceiveDataEvent.class);
-		assertHasEvent(doneEvents, IIncomingFileTransferReceiveDoneEvent.class);
+		assertHasDoneEvent();
 	}
 
 	public void testReceiveFile() throws Exception {
@@ -134,6 +136,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public void testFailedReceive() throws Exception {
 		try {
 			testReceiveFails(HTTP_404_FAIL_RETRIEVE);
+			assertDoneExceptionAfterServerResponse(FileNotFoundException.class);
 		} catch (final Exception e) {
 			e.printStackTrace();
 			fail(e.toString());
@@ -143,9 +146,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public void testRetrieveBadURL() throws Exception {
 		try {
 			testReceiveFails(HTTP_BAD_URL);
-			IIncomingFileTransferReceiveDoneEvent event = (IIncomingFileTransferReceiveDoneEvent) doneEvents.get(0);
-			Exception except = event.getException();
-			assertTrue(except != null);
+			assertDoneExceptionBeforeServerResponse(ConnectException.class);
 		} catch (final Exception e) {
 			e.printStackTrace();
 			fail(e.toString());
