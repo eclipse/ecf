@@ -1,6 +1,5 @@
 !****************  ECF CORE CONTRIBUTION  ******************************************************** 
 
-
 feature@org.eclipse.ecf.core=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.core-feature
 
 plugin@org.eclipse.ecf=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf
@@ -67,6 +66,7 @@ plugin@org.eclipse.ecf.osgi.services.discovery=@CVSTag@,:pserver:anonymous@dev.e
 plugin@org.eclipse.ecf.osgi.services.distribution=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.distribution
 
 plugin@org.eclipse.equinox.concurrent,1.0.0=GET,http://download.eclipse.org/equinox/drops/S-3.5M5-200902021535/org.eclipse.equinox.concurrent_1.0.0.v20090125-0800.jar
+plugin@org.eclipse.equinox.concurrent,1.0.0=GET,http://download.eclipse.org/equinox/drops/S-3.5M5-200902021535/org.eclipse.equinox.concurrent.source_1.0.0.v20090125-0800.jar
 
 plugin@org.eclipse.ecf.example.clients=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.clients
 plugin@org.eclipse.ecf.example.collab=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.collab 
@@ -77,8 +77,7 @@ plugin@org.eclipse.ecf.examples.remoteservices.server=@CVSTag@,:pserver:anonymou
 plugin@org.eclipse.ecf.examples.updatesite.server=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/server-side/examples/bundles/org.eclipse.ecf.examples.updatesite.server
 plugin@org.eclipse.ecf.examples.updatesite.client=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/server-side/examples/bundles/org.eclipse.ecf.examples.updatesite.client
 
-plugin@com.jcraft.jsch,0.1.31=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/com.jcraft.jsch_0.1.31.jar
-plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/org.apache.commons.codec_1.2.0.v20080530-1550.jar
-plugin@org.apache.commons.httpclient,3.0.1=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/org.apache.commons.httpclient_3.0.1.v20080605-1930.jar
-plugin@org.apache.commons.logging,1.0.4=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R20080611105805/bundles/org.apache.commons.logging_1.0.4.v20080605-1930.jar
-
+plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20090307012903/bundles/org.apache.commons.codec_1.2.0.v20080530-1550.jar
+plugin@org.apache.commons.codec.source,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20090307012903/bundles/org.apache.commons.codec.source_1.2.0.v20080530-1550.jar
+plugin@org.apache.commons.httpclient,3.0.1=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20090307012903/bundles/org.apache.commons.httpclient_3.0.1.v20080605-1930.jar
+plugin@org.apache.commons.httpclient.source,3.0.1=GET,http://download.eclipse.org/tools/orbit/downloads/drops/S20090307012903/bundles/org.apache.commons.httpclient.source_3.0.1.v20080605-1930.jar
