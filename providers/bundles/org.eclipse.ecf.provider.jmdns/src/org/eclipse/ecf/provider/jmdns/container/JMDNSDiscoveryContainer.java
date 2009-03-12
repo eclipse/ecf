@@ -404,7 +404,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		}
 
 		// proto
-		final String proto = (uriProtocol == null) ? serviceInfo.getProtocol() : uriProtocol;
+		final String proto = serviceInfo.getProtocol();
 		// scopes
 		final String domain = serviceInfo.getDomain();
 		final String[] scopes = new String[] {domain};
