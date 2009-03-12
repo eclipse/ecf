@@ -410,7 +410,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final String[] scopes = new String[] {domain};
 
 		// uri
-		final URI uri = new URI(serviceInfo.getURL(proto));
+		final URI uri = new URI(serviceInfo.getURL(uriProtocol == null ? proto : uriProtocol));
 
 		// service type
 		String st = serviceInfo.getType();
