@@ -14,7 +14,9 @@ package org.eclipse.ecf.provider.filetransfer.httpclient;
 
 import java.io.IOException;
 import java.net.Socket;
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import org.eclipse.ecf.filetransfer.events.socketfactory.INonconnectedSocketFactory;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.ISSLSocketFactoryModifier;
 
