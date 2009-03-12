@@ -145,6 +145,12 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							+ sedh.getDescription(), null);
 			return;
 		}
+		// Give warning if more than one ContainerAdapterHelper found
+		if (cahs.length > 1) {
+			logWarning("handleDiscoveredServiceAvailable",
+					"Multiple remote service containers=" + Arrays.asList(cahs)
+							+ " found for service endpoint description=" + sedh);
+		}
 		// For all remote service container adapters
 		// Get futureRemoteReferences...then create a thread
 		// to process the future
