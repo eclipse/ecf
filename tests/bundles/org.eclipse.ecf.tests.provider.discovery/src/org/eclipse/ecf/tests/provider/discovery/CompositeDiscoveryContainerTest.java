@@ -10,13 +10,22 @@
  *******************************************************************************/
 package org.eclipse.ecf.tests.provider.discovery;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
+import org.eclipse.ecf.discovery.IServiceEvent;
+import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
+import org.eclipse.ecf.provider.discovery.CompositeServiceContainerEvent;
 import org.eclipse.ecf.tests.discovery.DiscoveryContainerTest;
+import org.eclipse.ecf.tests.discovery.listener.TestServiceListener;
 
 public class CompositeDiscoveryContainerTest extends DiscoveryContainerTest {
 
@@ -80,20 +89,23 @@ public class CompositeDiscoveryContainerTest extends DiscoveryContainerTest {
 		}
 	}
 
-//	protected void addServiceListener(TestServiceListener serviceListener) {
-//		discoveryLocator.addServiceListener(serviceListener);
-//		addListenerRegisterAndWait(serviceListener, serviceInfo);
-//		discoveryLocator.removeServiceListener(serviceListener);
-//		IContainerEvent[] events = serviceListener.getEvent();
-//		assertNotNull("Test listener didn't receive discovery", events);
-//		assertEquals("Test listener received more than expected discovery event", eventsToExpect, events.length);
-//		Set origContainers = new HashSet();
-//		for (int i = 0; i < events.length; i++) {
-//			CompositeServiceContainerEvent event = (CompositeServiceContainerEvent) events[i];
-//			assertTrue("Container mismatch", event.getLocalContainerID().equals(container.getConnectedID()));
-//			assertTrue("IServiceInfo mismatch", comparator.compare(((IServiceEvent) event).getServiceInfo(), serviceInfo) == 0);
-//			origContainers.add(event.getOriginalLocalContainerID());
-//		}
-//		assertEquals("A nested container didn't send an event, but another multiple", eventsToExpect, origContainers.size());
-//	}
+	protected void addServiceListener(TestServiceListener serviceListener) {
+		discoveryLocator.addServiceListener(serviceListener);
+		addListenerRegisterAndWait(serviceListener, serviceInfo);
+		discoveryLocator.removeServiceListener(serviceListener);
+		IContainerEvent[] events = serviceListener.getEvent();
+		assertNotNull("Test listener didn't receive any discovery events.", events);
+		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(events), eventsToExpect, events.length);
+		Set origContainers = new HashSet();
+		for (int i = 0; i < events.length; i++) {
+			CompositeServiceContainerEvent event = (CompositeServiceContainerEvent) events[i];
+			ID localContainerId = event.getLocalContainerID();
+			ID connectedId = container.getConnectedID();
+			assertTrue("Container mismatch, excepted:\n\t" + localContainerId + " but was:\n\t" + connectedId, localContainerId.equals(connectedId));
+			IServiceInfo serviceInfo2 = ((IServiceEvent) event).getServiceInfo();
+			assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
+			origContainers.add(event.getOriginalLocalContainerID());
+		}
+		assertEquals("A nested container didn't send an event, but another multiple", eventsToExpect, origContainers.size());
+	}
 }
