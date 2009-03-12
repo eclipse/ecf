@@ -27,7 +27,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public abstract class AbstractServiceRegisterTest extends
 		AbstractDistributionTest {
 
-	private static final int REGISTER_WAIT = 10000;
+	private static final int REGISTER_WAIT = 60000;
 
 	public void testRegisterServer() throws Exception {
 		Properties props = new Properties();
@@ -109,6 +109,7 @@ public abstract class AbstractServiceRegisterTest extends
 		}
 		// Now unregister original registration and wait
 		registration.unregister();
+		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
 	
@@ -147,6 +148,7 @@ public abstract class AbstractServiceRegisterTest extends
 		
 		// Unregister on server and wait
 		registration.unregister();
+		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
 
@@ -192,6 +194,7 @@ public abstract class AbstractServiceRegisterTest extends
 		
 		// Unregister on server
 		registration.unregister();
+		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
 
@@ -232,6 +235,7 @@ public abstract class AbstractServiceRegisterTest extends
 
 		// Unregister on server
 		registration.unregister();
+		st.close();
 		Thread.sleep(REGISTER_WAIT);
 		
 		// Check to see that the exposed service went away
@@ -277,6 +281,7 @@ public abstract class AbstractServiceRegisterTest extends
 		}
 		// Unregister on server
 		registration.unregister();
+		st.close();
 		Thread.sleep(REGISTER_WAIT);
 		
 		// Remote services should have gone down by one (because of unregister
