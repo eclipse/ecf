@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
+
 import java.io.*;
 import java.net.*;
 import java.util.Iterator;
@@ -26,7 +28,6 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
@@ -438,7 +439,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
-	protected void openStreams() throws Exception {
+	protected void openStreams() throws IncomingFileTransferException {
 
 		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "openStreams"); //$NON-NLS-1$
 		final String urlString = getRemoteFileURL().toString();
@@ -510,8 +511,15 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			}
 		} catch (final Exception e) {
 			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreams", e); //$NON-NLS-1$
-			throw e;
-
+			if (code == -1) {
+				if (!isDone()) {
+					setDoneException(e);
+				}
+				fireTransferReceiveDoneEvent();
+			} else {
+				IncomingFileTransferException ex = new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code);
+				throw ex;
+			}
 		}
 		Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreams"); //$NON-NLS-1$
 	}
@@ -823,7 +831,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	protected String createConnectJobName() {
-		return getRemoteFileURL().toString() + createRangeName() + ": connecting.";
+		return getRemoteFileURL().toString() + createRangeName() + Messages.HttpClientRetrieveFileTransfer_CONNECTING_JOB_NAME;
 	}
 
 	protected FileTransferJob prepareConnectJob(FileTransferJob cjob) {
@@ -851,7 +859,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		// there might be more ticks in the future perhaps for 
 		// connect socket, certificate validation, send request, authenticate,
 		int ticks = 1;
-		monitor.beginTask(getRemoteFileURL().toString() + " Connecting", ticks);
+		monitor.beginTask(getRemoteFileURL().toString() + Messages.HttpClientRetrieveFileTransfer_CONNECTING_TASK_NAME, ticks);
 		try {
 			if (monitor.isCanceled())
 				throw newUserCancelledException();
