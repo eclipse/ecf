@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
@@ -79,7 +78,6 @@ public class JMDNSPlugin implements BundleActivator {
 		LOCALHOST = InetAddress.getLocalHost();
 
 		final Properties props = new Properties();
-		props.put(IDiscoveryService.CONTAINER_ID, IDFactory.getDefault().createStringID("org.eclipse.ecf.provider.jmdns.container.JMDNSDiscoveryContainer")); //$NON-NLS-1$
 		props.put(IDiscoveryService.CONTAINER_NAME, NAME);
 		props.put(Constants.SERVICE_RANKING, new Integer(750));
 		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
