@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.core.variants.IResourceVariant;
 import org.eclipse.team.internal.ecf.core.messages.*;
@@ -60,7 +61,7 @@ public class RemoteShare extends AbstractShare {
 			return new IResourceVariant[0];
 		}
 
-		monitor.subTask("Fetching " + variant.getName()); //$NON-NLS-1$
+		monitor.subTask(NLS.bind(Messages.RemoteShare_FetchingVariant, variant.getName()));
 
 		sendMessage(remoteId, new FetchVariantsRequest(ownId, remoteVariant.getPath(), remoteVariant.getType()));
 
@@ -84,7 +85,7 @@ public class RemoteShare extends AbstractShare {
 	}
 
 	public synchronized IResourceVariant fetchVariant(ID ownId, ID remoteId, IResource resource, IProgressMonitor monitor) throws TeamException {
-		monitor.subTask("Fetching " + resource.getFullPath().toString().substring(1)); //$NON-NLS-1$
+		monitor.subTask(NLS.bind(Messages.RemoteShare_FetchingVariant, resource.getFullPath().toString().substring(1)));
 
 		sendMessage(remoteId, new FetchVariantRequest(ownId, resource.getFullPath().toString(), resource.getType()));
 
