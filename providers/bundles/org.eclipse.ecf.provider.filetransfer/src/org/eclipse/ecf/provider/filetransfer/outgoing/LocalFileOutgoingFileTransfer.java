@@ -12,7 +12,11 @@
 
 package org.eclipse.ecf.provider.filetransfer.outgoing;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.util.Proxy;

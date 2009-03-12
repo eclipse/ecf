@@ -13,13 +13,23 @@ package org.eclipse.ecf.provider.filetransfer.browse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
-import org.eclipse.ecf.core.security.*;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.net.URLConnection;
+import org.eclipse.ecf.core.security.Callback;
+import org.eclipse.ecf.core.security.CallbackHandler;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.security.NameCallback;
+import org.eclipse.ecf.core.security.ObjectCallback;
+import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.internal.provider.filetransfer.*;
+import org.eclipse.ecf.internal.provider.filetransfer.Activator;
+import org.eclipse.ecf.internal.provider.filetransfer.IURLConnectionModifier;
+import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 
 /**

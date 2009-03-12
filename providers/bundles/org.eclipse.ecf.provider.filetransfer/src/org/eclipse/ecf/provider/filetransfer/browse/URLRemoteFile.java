@@ -15,7 +15,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.ecf.filetransfer.*;
+import org.eclipse.ecf.filetransfer.IRemoteFile;
+import org.eclipse.ecf.filetransfer.IRemoteFileAttributes;
+import org.eclipse.ecf.filetransfer.IRemoteFileInfo;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 

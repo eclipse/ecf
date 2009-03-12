@@ -11,8 +11,12 @@
 
 package org.eclipse.ecf.provider.filetransfer.events.socket;
 
-import java.util.*;
-import org.eclipse.ecf.filetransfer.events.socket.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketListener;
 
 public abstract class SocketEventSource implements ISocketEventSource {
 

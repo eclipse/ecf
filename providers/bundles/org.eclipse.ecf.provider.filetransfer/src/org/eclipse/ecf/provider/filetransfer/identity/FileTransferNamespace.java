@@ -11,7 +11,9 @@ package org.eclipse.ecf.provider.filetransfer.identity;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 

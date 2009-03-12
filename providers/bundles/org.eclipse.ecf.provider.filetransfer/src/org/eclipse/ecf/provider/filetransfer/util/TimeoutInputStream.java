@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.util;
 
-import java.io.*;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
 
 /**
  * Wraps an input stream that blocks indefinitely to simulate timeouts on

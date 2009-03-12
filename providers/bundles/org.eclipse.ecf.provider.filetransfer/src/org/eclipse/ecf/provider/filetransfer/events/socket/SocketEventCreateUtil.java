@@ -14,7 +14,9 @@ package org.eclipse.ecf.provider.filetransfer.events.socket;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import org.eclipse.ecf.filetransfer.events.socket.*;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketListener;
 import org.eclipse.ecf.filetransfer.events.socketfactory.INonconnectedSocketFactory;
 
 public class SocketEventCreateUtil {

@@ -9,7 +9,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.outgoing;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.URLConnection;
 import org.eclipse.ecf.core.util.Proxy;

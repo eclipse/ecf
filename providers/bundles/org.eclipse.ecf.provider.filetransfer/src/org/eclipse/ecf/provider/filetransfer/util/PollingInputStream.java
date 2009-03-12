@@ -11,8 +11,14 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.util;
 
-import java.io.*;
-import org.eclipse.core.runtime.*;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 
 /**
