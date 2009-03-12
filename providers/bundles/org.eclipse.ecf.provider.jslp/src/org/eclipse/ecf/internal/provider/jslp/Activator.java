@@ -15,7 +15,6 @@ import ch.ethz.iks.slp.Locator;
 import java.util.Properties;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
@@ -91,7 +90,6 @@ public class Activator implements BundleActivator {
 
 		// register ourself as an OSGi service
 		final Properties props = new Properties();
-		props.put(IDiscoveryService.CONTAINER_ID, IDFactory.getDefault().createStringID("org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer")); //$NON-NLS-1$
 		props.put(IDiscoveryService.CONTAINER_NAME, JSLPDiscoveryContainer.NAME);
 		props.put(Constants.SERVICE_RANKING, new Integer(500));
 
