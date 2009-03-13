@@ -8,10 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.remoteservice.generic;
 
-import org.eclipse.ecf.core.jobs.JobsExecutor;
-
 import java.lang.reflect.*;
+import java.util.Arrays;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.*;
@@ -85,6 +85,22 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	}
 
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
+		// methods declared by Object
+		if (method.getName().equals("toString")) { //$NON-NLS-1$
+			final String[] clazzes = registration.getClasses();
+			String proxyClass = (clazzes.length == 1) ? clazzes[0] : Arrays.asList(clazzes).toString();
+			return proxyClass + ".proxy@" + registration.getID(); //$NON-NLS-1$
+		} else if (method.getName().equals("hashCode")) { //$NON-NLS-1$
+			return new Integer(hashCode());
+		} else if (method.getName().equals("equals")) { //$NON-NLS-1$
+			if (args == null || args.length == 0)
+				return Boolean.FALSE;
+			try {
+				return new Boolean(Proxy.getInvocationHandler(args[0]).equals(this));
+			} catch (IllegalArgumentException e) {
+				return Boolean.FALSE;
+			}
+		}
 		return this.callSync(new IRemoteCall() {
 
 			public String getMethod() {
