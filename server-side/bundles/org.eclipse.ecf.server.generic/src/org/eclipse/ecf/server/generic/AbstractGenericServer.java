@@ -9,17 +9,20 @@ import org.eclipse.ecf.provider.generic.*;
 
 public abstract class AbstractGenericServer {
 
-	protected void handleDisconnect(ID targetID) {
-		// nothing to do
-	}
-
-	protected void handleEject(ID targetID) {
-		// nothing to do
-	}
-
 	protected TCPServerSOContainerGroup serverGroup;
 
-	public List getServerContainers() {
+	public AbstractGenericServer(String host, int port) {
+		this.serverGroup = new TCPServerSOContainerGroup(host, port);
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	public GenericServerContainer getFirstServerContainer() {
+		return getServerContainer(0);
+	}
+
+	public List /* GenericServerContainer */getServerContainers() {
 		List result = new ArrayList();
 		for (Iterator i = serverGroup.elements(); i.hasNext();) {
 			result.add(i.next());
@@ -30,12 +33,8 @@ public abstract class AbstractGenericServer {
 	/**
 	 * @since 2.0
 	 */
-	public GenericServerContainer getFirstServerContainer() {
-		return (GenericServerContainer) getServerContainers().get(0);
-	}
-
-	public AbstractGenericServer(String host, int port) {
-		this.serverGroup = new TCPServerSOContainerGroup(host, port);
+	public GenericServerContainer getServerContainer(int index) {
+		return (GenericServerContainer) getServerContainers().get(index);
 	}
 
 	protected void putOnTheAir() throws IOException {
@@ -81,6 +80,10 @@ public abstract class AbstractGenericServer {
 	protected PermissionCollection checkConnect(Object address, ID fromID, ID targetID, String targetGroup, Object connectData) throws Exception {
 		return null;
 	}
+
+	protected abstract void handleDisconnect(ID targetID);
+
+	protected abstract void handleEject(ID targetID);
 
 	/**
 	 * @since 2.0
