@@ -31,16 +31,22 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	private Map serviceInfos = Collections.synchronizedMap(new HashMap());
 
 	private final IServiceListener serviceListener = new IServiceListener() {
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+		 */
 		public void serviceDiscovered(IServiceEvent anEvent) {
 			handleServiceDiscovered(anEvent);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceUndiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+		 */
 		public void serviceUndiscovered(IServiceEvent anEvent) {
 			handleServiceUndiscovered(anEvent);
 		}
 	};
 
-	void handleServiceDiscovered(IServiceEvent event) {
+	private void handleServiceDiscovered(IServiceEvent event) {
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
 		ID localContainerID = event.getLocalContainerID();
@@ -62,7 +68,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		}
 	}
 
-	void handleServiceUndiscovered(IServiceEvent event) {
+	private void handleServiceUndiscovered(IServiceEvent event) {
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
 		ID localContainerID = event.getLocalContainerID();
@@ -112,18 +118,17 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		return false;
 	}
 
-	IServiceInfo addServiceInfo(ServiceReference sr, IServiceInfo si) {
+	private IServiceInfo addServiceInfo(ServiceReference sr, IServiceInfo si) {
 		return (IServiceInfo) serviceInfos.put(sr, si);
 	}
 
-	IServiceInfo removeServiceInfo(ServiceReference sr) {
+	private IServiceInfo removeServiceInfo(ServiceReference sr) {
 		return (IServiceInfo) serviceInfos.remove(sr);
 	}
 
-	IServiceInfo getServiceInfo(ServiceReference sr) {
-		return (IServiceInfo) serviceInfos.get(sr);
-	}
-
+	/* (non-Javadoc)
+	 * @see org.osgi.util.tracker.ServiceTrackerCustomizer#addingService(org.osgi.framework.ServiceReference)
+	 */
 	public Object addingService(ServiceReference reference) {
 		handleServicePublication(reference);
 		return Activator.getDefault().getContext().getService(reference);
@@ -344,7 +349,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 		return advertiser;
 	}
 
-	String getPropertyWithDefault(Map properties, String key, String def) {
+	private String getPropertyWithDefault(Map properties, String key, String def) {
 		String val = (String) properties.get(key);
 		return (val == null) ? def : val;
 	}
@@ -372,11 +377,17 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 				namingAuthority);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.util.tracker.ServiceTrackerCustomizer#modifiedService(org.osgi.framework.ServiceReference, java.lang.Object)
+	 */
 	public void modifiedService(ServiceReference reference, Object service) {
 		unpublishService(reference);
 		handleServicePublication(reference);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.util.tracker.ServiceTrackerCustomizer#removedService(org.osgi.framework.ServiceReference, java.lang.Object)
+	 */
 	public void removedService(ServiceReference reference, Object service) {
 		unpublishService(reference);
 	}

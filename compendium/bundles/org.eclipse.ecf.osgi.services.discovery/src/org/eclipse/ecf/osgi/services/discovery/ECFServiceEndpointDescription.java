@@ -13,52 +13,48 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.osgi.services.discovery.ServicePropertyUtils;
 import org.osgi.service.discovery.ServiceEndpointDescription;
 import org.osgi.service.discovery.ServicePublication;
 
-public class ServiceEndpointDescriptionImpl implements
+public abstract class ECFServiceEndpointDescription implements
 		ServiceEndpointDescription {
-
 	private final ID discoveryContainerID;
-	private final IServiceInfo serviceInfo;
-
-	public ServiceEndpointDescriptionImpl(ID localContainerID,
-			IServiceInfo serviceInfo) {
+	private final Map serviceProperties;
+	
+	public ECFServiceEndpointDescription(ID localContainerID,
+			Map properties) {
 		this.discoveryContainerID = localContainerID;
-		this.serviceInfo = serviceInfo;
+		this.serviceProperties = properties;
 	}
 
-	public ID getLocalDiscoveryContainerID() {
-		return discoveryContainerID;
-	}
-
-	public IServiceID getServiceID() {
-		return this.serviceInfo.getServiceID();
-	}
-
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getEndpointID()
+	 */
 	public String getEndpointID() {
-		return ServicePropertyUtils.getStringProperty(serviceInfo
-				.getServiceProperties(),
+		Object o = serviceProperties.get(
 				ServicePublication.PROP_KEY_ENDPOINT_ID);
+		if (o instanceof String) {
+			return (String) o;
+		}
+		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getEndpointInterfaceName(java.lang.String)
+	 */
 	public String getEndpointInterfaceName(String interfaceName) {
 		if (interfaceName == null)
 			return null;
-		String intfNames = serviceInfo.getServiceProperties()
-				.getPropertyString(
+		Object o = serviceProperties.get(
 						ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME);
-		if (intfNames == null)
+		if (o == null || !(o instanceof String)) {
 			return null;
-		Collection c = ServicePropertyUtils
-				.createCollectionFromString(intfNames);
+		}
+		String intfNames = (String) o;
+		Collection c = ServicePropertyUtils.createCollectionFromString(intfNames);
 		if (c == null)
 			return null;
-		// 
 		for (Iterator i = c.iterator(); i.hasNext();) {
 			String intfName = (String) i.next();
 			if (intfName != null && intfName.startsWith(interfaceName)) {
@@ -73,12 +69,16 @@ public class ServiceEndpointDescriptionImpl implements
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getLocation()
+	 */
 	public URL getLocation() {
-		String urlExternalForm = ServicePropertyUtils.getStringProperty(
-				serviceInfo.getServiceProperties(),
+		Object o = serviceProperties.get(
 				ServicePublication.PROP_KEY_ENDPOINT_LOCATION);
-		if (urlExternalForm == null)
+		if (o == null || !(o instanceof String)) {
 			return null;
+		}
+		String urlExternalForm = (String) o;
 		URL url = null;
 		try {
 			url = new URL(urlExternalForm);
@@ -88,68 +88,49 @@ public class ServiceEndpointDescriptionImpl implements
 		return url;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getProperties()
+	 */
 	public Map getProperties() {
-		Map result = new HashMap();
-		IServiceProperties serviceProperties = serviceInfo
-				.getServiceProperties();
-		if (serviceProperties != null) {
-			for (Enumeration e = serviceProperties.getPropertyNames(); e
-					.hasMoreElements();) {
-				String propName = (String) e.nextElement();
-				Object val = serviceProperties.getProperty(propName);
-				result.put(propName, val);
-			}
-		}
-		return result;
+		return serviceProperties;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getProperty(java.lang.String)
+	 */
 	public Object getProperty(String key) {
-		IServiceProperties serviceProperties = serviceInfo
-				.getServiceProperties();
-		if (key == null)
-			return null;
-		return serviceProperties.getProperty(key);
+		return serviceProperties.get(key);
 	}
 
-	public byte[] getPropertyBytes(String key) {
-		IServiceProperties serviceProperties = serviceInfo
-				.getServiceProperties();
-		if (key == null)
-			return null;
-		return serviceProperties.getPropertyBytes(key);
-	}
-
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getPropertyKeys()
+	 */
 	public Collection getPropertyKeys() {
-		IServiceProperties serviceProperties = serviceInfo
-				.getServiceProperties();
-		List result = new ArrayList();
-		for (Enumeration e = serviceProperties.getPropertyNames(); e
-				.hasMoreElements();) {
-			String name = (String) e.nextElement();
-			result.add(name);
-		}
-		return result;
+		return serviceProperties.keySet();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getProvidedInterfaces()
+	 */
 	public Collection getProvidedInterfaces() {
-		String providedInterfacesStr = serviceInfo.getServiceProperties()
-				.getPropertyString(
+		Object o = serviceProperties
+				.get(
 						ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
-		return ServicePropertyUtils
-				.createCollectionFromString(providedInterfacesStr);
+		if(o == null || !(o instanceof String)) {
+			return null;
+		}
+		String providedInterfacesStr = (String) o;
+		return ServicePropertyUtils.createCollectionFromString(providedInterfacesStr);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getVersion(java.lang.String)
+	 */
 	public String getVersion(String interfaceName) {
-		String intfNames = serviceInfo.getServiceProperties()
-				.getPropertyString(
-						ServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION);
-		if (intfNames == null)
+		Collection c = getProvidedInterfaces();
+		if (c == null)  {
 			return null;
-		Collection c = ServicePropertyUtils
-				.createCollectionFromString(intfNames);
-		if (c == null)
-			return null;
-		// 
+		}
 		for (Iterator i = c.iterator(); i.hasNext();) {
 			String intfName = (String) i.next();
 			if (intfName != null && intfName.startsWith(interfaceName)) {
@@ -164,17 +145,19 @@ public class ServiceEndpointDescriptionImpl implements
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
-		sb.append("localContainerID=" + getLocalDiscoveryContainerID()); //$NON-NLS-1$
+		sb.append("localContainerID=" + discoveryContainerID); //$NON-NLS-1$
 		sb.append(";providedinterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
 		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
 		sb.append(";props=").append(getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 
-	public String getPropertyString(String propKeyEndpointContainerid) {
-		return ServicePropertyUtils.getStringProperty(serviceInfo
-				.getServiceProperties(), propKeyEndpointContainerid);
-	}
+	public abstract ID getECFEndpointID();
+
+	public abstract long getFutureTimeout();
 }

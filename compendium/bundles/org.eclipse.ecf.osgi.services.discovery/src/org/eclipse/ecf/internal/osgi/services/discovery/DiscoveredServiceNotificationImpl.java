@@ -11,7 +11,6 @@ package org.eclipse.ecf.internal.osgi.services.discovery;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescriptionImpl;
 import org.osgi.service.discovery.DiscoveredServiceNotification;
 import org.osgi.service.discovery.ServiceEndpointDescription;
 
@@ -24,14 +23,20 @@ public class DiscoveredServiceNotificationImpl implements
 	public DiscoveredServiceNotificationImpl(ID localContainerID, int type,
 			IServiceInfo serviceInfo) {
 		this.type = type;
-		this.serviceEndpointDescription = new ServiceEndpointDescriptionImpl(
+		this.serviceEndpointDescription = new ECFServiceEndpointDescriptionImpl(
 				localContainerID, serviceInfo);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.DiscoveredServiceNotification#getServiceEndpointDescription()
+	 */
 	public ServiceEndpointDescription getServiceEndpointDescription() {
 		return serviceEndpointDescription;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.service.discovery.DiscoveredServiceNotification#getType()
+	 */
 	public int getType() {
 		return type;
 	}
