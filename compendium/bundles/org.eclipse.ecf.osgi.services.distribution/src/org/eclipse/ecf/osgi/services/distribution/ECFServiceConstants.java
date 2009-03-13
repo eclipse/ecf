@@ -12,9 +12,9 @@ package org.eclipse.ecf.osgi.services.distribution;
 public interface ECFServiceConstants {
 
 	/*
-	 * osgi.intents – an optional list of intents provided by the service. The
-	 * property advertises capabilities of the service and can be used by the
-	 * service consumer in the lookup filter to only select a service that
+	 * service.intents – an optional list of intents provided by the service.
+	 * The property advertises capabilities of the service and can be used by
+	 * the service consumer in the lookup filter to only select a service that
 	 * provides certain qualities of service. The value of this property is of
 	 * type String[] and has to be provided by the service as part of the
 	 * registration, regardless whether it’s a local service or a proxy. The
@@ -25,7 +25,7 @@ public interface ECFServiceConstants {
 	 * Distribution being mechanism. Therefore the value of this property can
 	 * vary between the client side proxy and the server side.
 	 */
-	public static final String OSGI_INTENTS = "osgi.intents";
+	public static final String SERVICE_INTENTS = "service.intents";
 
 	/*
 	 * osgi.remote.interfaces – [ “*” | interface_name [, interface_name]* ]: A
