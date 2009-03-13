@@ -32,6 +32,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected String protocol = DiscoveryTestHelper.PROTOCOL;
 	protected String scope = DiscoveryTestHelper.SCOPE;
 	protected String namingAuthority = DiscoveryTestHelper.NAMINGAUTHORITY;
+	protected String[] services = DiscoveryTestHelper.SERVICES;
 	protected Comparator comparator = new ServiceInfoComparator();
 
 	protected String containerUnderTest;
@@ -64,6 +65,10 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		this.namingAuthority = namingAuthority;
 	}
 
+	protected void setServices(String[] aServices) {
+		this.services = aServices;
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		assertNotNull(containerUnderTest);
@@ -77,7 +82,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		final Properties props = new Properties();
 		final URI uri = DiscoveryTestHelper.createDefaultURI();
 	
-		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(discoveryLocator.getServicesNamespace(), DiscoveryTestHelper.SERVICES, new String[]{protocol});
+		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(discoveryLocator.getServicesNamespace(), services, new String[]{scope}, new String[]{protocol}, namingAuthority);
 		assertNotNull(serviceTypeID);
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
 		serviceProperties.setPropertyString(getClass() + "testIdentifier", Long.toString(random.nextLong()));
