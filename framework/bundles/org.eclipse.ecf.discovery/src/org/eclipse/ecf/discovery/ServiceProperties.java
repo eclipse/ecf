@@ -144,6 +144,26 @@ public class ServiceProperties implements IServiceProperties {
 		return props.size();
 	}
 
+	/**
+	 * @return
+	 * @since 3.0
+	 */
+	public Properties asProperties() {
+		Properties result = new Properties();
+		Set keySet = props.keySet();
+		for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+			Object key = (Object) iterator.next();
+			Object value = props.get(key);
+			if(value instanceof ByteArrayWrapper) {
+				ByteArrayWrapper baw = (ByteArrayWrapper) value;
+				result.put(key, baw.getByte());
+			} else {
+				result.put(key, value);
+			}
+		}
+		return result;
+	}
+	
 	// proper equals/hashcode for byte[]
 	private static class ByteArrayWrapper implements Serializable {
 
