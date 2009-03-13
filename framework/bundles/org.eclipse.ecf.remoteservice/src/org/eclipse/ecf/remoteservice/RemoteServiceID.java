@@ -30,7 +30,7 @@ public class RemoteServiceID extends BaseID implements IRemoteServiceID {
 		this.containerRelative = containerRelative;
 		this.hash = 7;
 		this.hash = 31 * hash + containerID.hashCode();
-		this.hash = 31 * hash * (int) (containerRelative ^ (containerRelative >>> 32));
+		this.hash = 31 * hash + (int) (containerRelative ^ (containerRelative >>> 32));
 	}
 
 	protected int namespaceCompareTo(BaseID o) {
@@ -71,7 +71,7 @@ public class RemoteServiceID extends BaseID implements IRemoteServiceID {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("RemoteServiceID["); //$NON-NLS-1$
+		StringBuffer buf = new StringBuffer("org.eclipse.ecf.remoteservice.RemoteServiceID["); //$NON-NLS-1$
 		buf.append("containerID=").append(getContainerID()); //$NON-NLS-1$
 		buf.append(";containerRelativeID=").append(getContainerRelativeID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
