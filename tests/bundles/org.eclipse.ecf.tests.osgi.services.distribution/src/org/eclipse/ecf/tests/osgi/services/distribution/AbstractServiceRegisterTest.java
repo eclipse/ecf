@@ -14,9 +14,11 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -52,19 +54,18 @@ public abstract class AbstractServiceRegisterTest extends
 		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + clazz +")(" + OSGI_REMOTE + "=*))"),new ServiceTrackerCustomizer() {
 
 			public Object addingService(ServiceReference reference) {
-				System.out.println("addingService="+reference);
+				Trace.trace(Activator.PLUGIN_ID, "addingService="+reference);
 				return getContext().getService(reference);
 			}
 
 			public void modifiedService(ServiceReference reference,
 					Object service) {
-				System.out.println("modifiedService="+reference);
-				
+				Trace.trace(Activator.PLUGIN_ID, "modifiedService="+reference);
 			}
 
 			public void removedService(ServiceReference reference,
 					Object service) {
-				System.out.println("removedService="+reference+",svc="+service);
+				Trace.trace(Activator.PLUGIN_ID, "removedService="+reference+",svc="+service);
 			}});
 		st.open();
 		return st;
@@ -142,7 +143,7 @@ public abstract class AbstractServiceRegisterTest extends
 			assertNotNull(proxy);
 			// Now use proxy
 			String result = proxy.doStuff1();
-			System.out.println("proxy.doStuff1 result="+result);
+			Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result="+result);
 			assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
 		}
 		
@@ -185,7 +186,7 @@ public abstract class AbstractServiceRegisterTest extends
 			if (call != null) {
 				// Call synchronously
 				Object result = rs.callSync(call);
-				System.out.println("callSync.doStuff1 result="+result);
+				Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result="+result);
 				assertNotNull(result);
 				assertTrue(result instanceof String);
 				assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
