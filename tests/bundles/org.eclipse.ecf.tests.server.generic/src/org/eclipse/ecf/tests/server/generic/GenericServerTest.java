@@ -13,6 +13,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.server.generic.SimpleGenericServer;
 
 public class GenericServerTest extends TestCase {
 
@@ -20,11 +21,11 @@ public class GenericServerTest extends TestCase {
 	private static final String SERVER_PATH = "/server";
 	private static final int SERVER_KEEPALIVE = 30000;
 	
-	TestGenericServer server;
+	SimpleGenericServer server;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		server = new TestGenericServer("localhost",SERVER_PORT);
+		server = new SimpleGenericServer("localhost",SERVER_PORT);
 		server.start(SERVER_PATH, SERVER_KEEPALIVE);
 	}
 	
