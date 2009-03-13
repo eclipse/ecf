@@ -17,4 +17,5 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.equinox.common;bundle-version="3.5.0",
  org.junit;bundle-version="3.8.2"
 Bundle-Localization: plugin
+Export-Package: org.eclipse.ecf.tests.osgi.services.discovery;version="1.0.0"
 
