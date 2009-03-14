@@ -19,12 +19,9 @@ import org.osgi.service.discovery.ServicePublication;
 
 public abstract class ECFServiceEndpointDescription implements
 		ServiceEndpointDescription {
-	private final ID discoveryContainerID;
 	private final Map serviceProperties;
 	
-	public ECFServiceEndpointDescription(ID localContainerID,
-			Map properties) {
-		this.discoveryContainerID = localContainerID;
+	public ECFServiceEndpointDescription(Map properties) {
 		this.serviceProperties = properties;
 	}
 
@@ -150,7 +147,6 @@ public abstract class ECFServiceEndpointDescription implements
 	 */
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
-		sb.append("localContainerID=" + discoveryContainerID); //$NON-NLS-1$
 		sb.append(";providedinterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
 		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
 		sb.append(";props=").append(getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -159,5 +155,7 @@ public abstract class ECFServiceEndpointDescription implements
 
 	public abstract ID getECFEndpointID();
 
-	public abstract long getFutureTimeout();
+	public long getFutureTimeout() {
+		return 30000L;
+	}
 }

@@ -9,7 +9,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.osgi.service.discovery.DiscoveredServiceNotification;
 import org.osgi.service.discovery.ServiceEndpointDescription;
@@ -20,11 +19,11 @@ public class DiscoveredServiceNotificationImpl implements
 	private final int type;
 	private ServiceEndpointDescription serviceEndpointDescription;
 
-	public DiscoveredServiceNotificationImpl(ID localContainerID, int type,
+	public DiscoveredServiceNotificationImpl(int type,
 			IServiceInfo serviceInfo) {
 		this.type = type;
 		this.serviceEndpointDescription = new ECFServiceEndpointDescriptionImpl(
-				localContainerID, serviceInfo);
+				serviceInfo);
 	}
 
 	/* (non-Javadoc)
@@ -41,6 +40,9 @@ public class DiscoveredServiceNotificationImpl implements
 		return type;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer sb = new StringBuffer("DiscoveredServiceNotificationImpl["); //$NON-NLS-1$
 		sb.append("type=").append(getType()).append(";sed=").append( //$NON-NLS-1$ //$NON-NLS-2$

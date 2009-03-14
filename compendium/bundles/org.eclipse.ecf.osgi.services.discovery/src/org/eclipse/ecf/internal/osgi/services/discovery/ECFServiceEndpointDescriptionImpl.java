@@ -34,9 +34,8 @@ public class ECFServiceEndpointDescriptionImpl extends
 	private final ID endpointId;
 	private final IServiceID serviceId;
 	
-	public ECFServiceEndpointDescriptionImpl(ID localContainerID,
-			IServiceInfo serviceInfo) {
-		super(localContainerID, ((ServiceProperties)serviceInfo.getServiceProperties()).asProperties());
+	public ECFServiceEndpointDescriptionImpl(IServiceInfo serviceInfo) {
+		super(((ServiceProperties)serviceInfo.getServiceProperties()).asProperties());
 		this.serviceId = serviceInfo.getServiceID();
 
 		// create the endpoint id

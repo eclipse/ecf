@@ -49,18 +49,14 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	private void handleServiceDiscovered(IServiceEvent event) {
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
-		ID localContainerID = event.getLocalContainerID();
-		trace("handleOSGIServiceDiscovered", "localContainerID=" //$NON-NLS-1$ //$NON-NLS-2$
-				+ localContainerID + " serviceInfo=" + serviceInfo); //$NON-NLS-1$
+		trace("handleOSGIServiceDiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceDiscovered matched", "localContainerID=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ localContainerID + " serviceInfo=" + serviceInfo); //$NON-NLS-1$
+			trace("handleOSGIServiceDiscovered matched", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
 					discoveredTrackers[i]
 							.serviceChanged(new DiscoveredServiceNotificationImpl(
-									localContainerID,
 									DiscoveredServiceNotification.AVAILABLE,
 									serviceInfo));
 				}
@@ -71,16 +67,13 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer {
 	private void handleServiceUndiscovered(IServiceEvent event) {
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
-		ID localContainerID = event.getLocalContainerID();
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceUndiscovered", "localContainerID=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ localContainerID + " serviceInfo=" + serviceInfo); //$NON-NLS-1$
+			trace("handleOSGIServiceUndiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
 					discoveredTrackers[i]
 							.serviceChanged(new DiscoveredServiceNotificationImpl(
-									localContainerID,
 									DiscoveredServiceNotification.UNAVAILABLE,
 									serviceInfo));
 				}
