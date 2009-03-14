@@ -5,6 +5,8 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 
+	public static final String BUNDLE_NAME = "org.eclipse.ecf.tests.osgi.services.discovery"; //$NON-NLS-1$
+	
 	private BundleContext context;
 	private static Activator plugin;
 

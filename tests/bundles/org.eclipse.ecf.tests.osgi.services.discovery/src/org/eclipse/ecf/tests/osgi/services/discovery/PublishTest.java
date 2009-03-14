@@ -16,6 +16,7 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.tests.internal.osgi.discovery.Activator;
 import org.osgi.framework.BundleContext;
@@ -50,7 +51,7 @@ public class PublishTest extends TestCase {
 	class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 		public void serviceChanged(DiscoveredServiceNotification notification) {
-			System.out.println("DiscoveredServiceTrackerImpl.serviceChanged("+notification+")");
+			Trace.trace(Activator.BUNDLE_NAME, "DiscoveredServiceTrackerImpl.serviceChanged("+notification+")");
 		}
 		
 	}
