@@ -49,8 +49,12 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			ECFServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION,
 			ECFServicePublication.PROP_KEY_SERVICE_PROPERTIES });
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.discovery.DiscoveredServiceTracker#serviceChanged(org.osgi.service.discovery.DiscoveredServiceNotification)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.discovery.DiscoveredServiceTracker#serviceChanged(org
+	 * .osgi.service.discovery.DiscoveredServiceNotification)
 	 */
 	public void serviceChanged(DiscoveredServiceNotification notification) {
 		if (notification == null) {
@@ -85,10 +89,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			ServiceEndpointDescription sed) {
 		// If the service endpoint description is not ECF's then we
 		// don't process it
-		if (!(sed instanceof ECFServiceEndpointDescription)) {
+		ECFServiceEndpointDescription ecfSED = getECFserviceEndpointDescription(sed);
+		if (ecfSED == null) {
 			return;
 		}
-		ECFServiceEndpointDescription ecfSED = (ECFServiceEndpointDescription) sed;
 		// Remove existing proxy service registrations that correspond to the
 		// given serviceID
 		ServiceRegistration[] proxyServiceRegistrations = removeProxyServiceRegistrations(ecfSED);
@@ -97,8 +101,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			for (int i = 0; i < proxyServiceRegistrations.length; i++) {
 				trace("handleDiscoveredServiceUnavailable",
 						"proxyServiceRegistrations="
-								+ proxyServiceRegistrations[i] + ",serviceEndpointDesc="
-								+ ecfSED);
+								+ proxyServiceRegistrations[i]
+								+ ",serviceEndpointDesc=" + ecfSED);
 				unregisterProxyServiceRegistration(proxyServiceRegistrations[i]);
 			}
 		}
@@ -107,10 +111,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	private void handleDiscoveredServiceAvailable(ServiceEndpointDescription sed) {
 		// If the service endpoint description is not ECF's then we
 		// don't process it
-		if (!(sed instanceof ECFServiceEndpointDescription)) {
+		ECFServiceEndpointDescription ecfSED = getECFserviceEndpointDescription(sed);
+		if (ecfSED == null) {
 			return;
 		}
-		ECFServiceEndpointDescription ecfSED = (ECFServiceEndpointDescription) sed;
 
 		ID endpointID = ecfSED.getECFEndpointID();
 		// Find RSCAs for the given description
@@ -125,7 +129,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		if (cahs.length > 1) {
 			logWarning("handleDiscoveredServiceAvailable",
 					"Multiple remote service containers=" + Arrays.asList(cahs)
-							+ " found for service endpoint description=" + ecfSED);
+							+ " found for service endpoint description="
+							+ ecfSED);
 		}
 		// For all remote service container adapters
 		// Get futureRemoteReferences...then create a thread
@@ -146,6 +151,21 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						futureRemoteReferences, cahs[i]);
 			}
 		}
+	}
+
+	private ECFServiceEndpointDescription getECFserviceEndpointDescription(
+			ServiceEndpointDescription aServiceEndpointDesc) {
+		ECFServiceEndpointDescription ecfSED;
+		if (!(aServiceEndpointDesc instanceof ECFServiceEndpointDescription)) {
+			IAdapterManager adapterManager = Activator.getDefault()
+					.getAdapterManager();
+			ecfSED = (ECFServiceEndpointDescription) adapterManager.getAdapter(
+					aServiceEndpointDesc, ECFServiceEndpointDescription.class
+							.getName());
+		} else {
+			ecfSED = (ECFServiceEndpointDescription) aServiceEndpointDesc;
+		}
+		return ecfSED;
 	}
 
 	private void processFutureForRemoteServiceReferences(
@@ -216,8 +236,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		RemoteServiceRegistrations reg = (RemoteServiceRegistrations) discoveredRemoteServiceRegistrations
 				.get(containerID);
 		if (reg == null) {
-			reg = new RemoteServiceRegistrations(sed, ch.getContainer(),
-					ch.getRSCA(),
+			reg = new RemoteServiceRegistrations(sed, ch.getContainer(), ch
+					.getRSCA(),
 					new RemoteServiceReferenceUnregisteredListener());
 			discoveredRemoteServiceRegistrations.put(containerID, reg);
 		}
@@ -330,9 +350,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 		synchronized (discoveredRemoteServiceRegistrations) {
 			if (findProxyServiceRegistration(sed)) {
-				logError("registerRemoteServiceReferences", "serviceEndpointDesc="
-						+ sed
-						+ " previously registered locally...ignoring", null);
+				logError("registerRemoteServiceReferences",
+						"serviceEndpointDesc=" + sed
+								+ " previously registered locally...ignoring",
+						null);
 				return;
 			}
 
@@ -377,8 +398,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					ServiceRegistration registration = Activator.getDefault()
 							.getContext().registerService(clazzes, proxy,
 									properties);
-					addProxyServiceRegistration(sed, ch,
-							remoteReferences[i], registration);
+					addProxyServiceRegistration(sed, ch, remoteReferences[i],
+							registration);
 				} catch (Exception e) {
 					logError("registerRemoteServiceReferences",
 							"Exception creating or registering remote reference "

@@ -11,10 +11,10 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.SystemLogService;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
 import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
@@ -40,6 +40,8 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker logServiceTracker = null;
 	private LogService logService = null;
+
+	private ServiceTracker adapterManagerTracker;
 
 	public static Activator getDefault() {
 		return plugin;
@@ -180,6 +182,10 @@ public class Activator implements BundleActivator {
 			logServiceTracker = null;
 			logService = null;
 		}
+		if (adapterManagerTracker != null) {
+			adapterManagerTracker.close();
+			adapterManagerTracker = null;
+		}
 		if (distributionProvider != null) {
 			distributionProvider.dispose();
 			distributionProvider = null;
@@ -197,4 +203,19 @@ public class Activator implements BundleActivator {
 		return (IContainerManager) containerManagerTracker.getService();
 	}
 
+	public IAdapterManager getAdapterManager() {
+		// First, try to get the adapter manager via
+		if (adapterManagerTracker == null) {
+			adapterManagerTracker = new ServiceTracker(this.context,
+					IAdapterManager.class.getName(), null);
+			adapterManagerTracker.open();
+		}
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
+				.getService();
+		// Then, if the service isn't there, try to get from Platform class via
+		// PlatformHelper class
+		if (adapterManager == null)
+			adapterManager = PlatformHelper.getPlatformAdapterManager();
+		return adapterManager;
+	}
 }
