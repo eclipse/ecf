@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2009 Markus Alexander Kuppe.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Markus Alexander Kuppe (ecf-dev_eclipse.org <at> lemmster <dot> de) - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.tests.discovery.remote_extender;
 
 import java.util.Collection;
@@ -5,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -34,6 +46,14 @@ public class Activator implements BundleActivator, EventHook {
 				"(" + Constants.OBJECTCLASS + "=" + SERVICE + ")" +
 				"(!(osgi.remote.interfaces=" + SERVICE + "))" +
 						")");
+		
+		// for the moment we have to manually create a container
+		//TODO move into ecf specific configuration
+		ContainerFactory.getDefault().createContainer("ecf.r_osgi.peer",
+				new Object[] { IDFactory.getDefault().createStringID(
+				"r-osgi://localhost:9278") });
+
+		
 		context.registerService(EventHook.class.getName(), this, null);
 		
 		ServiceReference[] serviceReferences = context.getAllServiceReferences(SERVICE, null);
@@ -88,7 +108,7 @@ public class Activator implements BundleActivator, EventHook {
 				props.put(key, aServiceReference.getProperty(key));
 			}
 		}
-		props.put("osgi.remote.interfaces", SERVICE);
+		props.put("osgi.remote.interfaces", new String[]{SERVICE});
 		Object service = this.context.getService(aServiceReference);
 		// keep in mind that this removes all other interfaces the service was originally registered for
 		ServiceRegistration serviceRegistration = context.registerService(SERVICE, service, props);
