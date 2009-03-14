@@ -114,9 +114,9 @@ public abstract class ECFServiceEndpointDescription implements
 				.get(
 						ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
 		if(o == null || !(o instanceof String)) {
-			return null;
+			throw new NullPointerException();
 		}
-		String providedInterfacesStr = (String) o;
+		final String providedInterfacesStr = (String) o;
 		return ServicePropertyUtils.createCollectionFromString(providedInterfacesStr);
 	}
 
