@@ -9,6 +9,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import org.osgi.service.discovery.Discovery;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
@@ -53,9 +58,18 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		this.context = ctxt;
 		servicePublicationHandler = new ServicePublicationHandler();
+		
 		servicePublicationTracker = new ServiceTracker(context,
-				ServicePublication.class.getName(), servicePublicationHandler);
+				ServicePublication.class.getName(), servicePublicationTracker);
 		servicePublicationTracker.open();
+		
+		// register the discovery service which is provided by SPH
+		Dictionary props = new Hashtable();
+		props.put(Discovery.PROP_KEY_VENDOR_NAME, "Eclipse.org");
+		props.put(Discovery.PROP_KEY_PRODUCT_NAME, "ECF Discovery");
+		props.put(Discovery.PROP_KEY_PRODUCT_VERSION, "1.0.0");
+		props.put(Discovery.PROP_KEY_SUPPORTED_PROTOCOLS, "SLP|mDNS|DNS-SRV");
+		ctxt.registerService(Discovery.class.getName(), servicePublicationHandler, props);
 	}
 
 	protected LogService getLogService() {

@@ -26,7 +26,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.*;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-public class ServicePublicationHandler implements ServiceTrackerCustomizer {
+public class ServicePublicationHandler implements ServiceTrackerCustomizer, Discovery {
 
 	private Map serviceInfos = Collections.synchronizedMap(new HashMap());
 
