@@ -256,6 +256,9 @@ public abstract class AbstractEventHookImpl implements EventHook {
 
 	protected void handleModifiedServiceEvent(
 			ServiceReference serviceReference, Collection contexts) {
+		trace(
+				"org.eclipse.ecf.internal.osgi.services.distribution.AbstractEventHookImpl.handleModifiedServiceEvent(ServiceReference, Collection)",
+				"implement!");
 		// TODO
 	}
 
