@@ -9,96 +9,76 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import java.net.URL;
+import org.osgi.service.discovery.ServicePublication;
+
 import java.util.*;
-import org.eclipse.ecf.discovery.IServiceProperties;
 import org.osgi.framework.ServiceReference;
 
 public class ServicePropertyUtils {
 
 	public static final String PROTOCOL_SEPARATOR = ":"; //$NON-NLS-1$
 	public static final String ENDPOINT_INTERFACE_NAME_SEPARATOR = PROTOCOL_SEPARATOR;
-	public static final String INTERFACE_VERSION_SEPARATOR = PROTOCOL_SEPARATOR;
+	public static final String INTERFACE_VERSION_SEPARATOR = ServicePublication.SEPARATOR;
 
 	private static final String COLLECTION_SEPARATOR = ","; //$NON-NLS-1$
 
 	public static Collection getCollectionProperty(ServiceReference sr,
 			String propName) {
-		if (sr == null || propName == null)
+		if (sr == null || propName == null) {
 			return null;
-		Object val = sr.getProperty(propName);
-		if (val == null || !(val instanceof Collection))
+		}
+		final Object val = sr.getProperty(propName);
+		if (val == null || !(val instanceof Collection)) {
 			return null;
+		}
 		return (Collection) val;
 	}
 
 	public static String getStringProperty(ServiceReference reference,
 			String propKey) {
-		if (reference == null || propKey == null)
+		if (reference == null || propKey == null) {
 			return null;
-		Object val = reference.getProperty(propKey);
-		if (val == null || !(val instanceof String))
+		}
+		final Object val = reference.getProperty(propKey);
+		if (val == null || !(val instanceof String)) {
 			return null;
+		}
 		return (String) val;
-	}
-
-	public static String getStringProperty(ServiceReference reference,
-			String propKey, String defaultValue) {
-		if (reference == null || propKey == null)
-			return null;
-		Object val = reference.getProperty(propKey);
-		if (val == null || !(val instanceof String))
-			return defaultValue;
-		return (String) val;
-	}
-
-	public static String getStringProperty(IServiceProperties svcProps,
-			String propKey) {
-		if (svcProps == null || propKey == null)
-			return null;
-		Object val = svcProps.getProperty(propKey);
-		if (val == null || !(val instanceof String))
-			return null;
-		return (String) val;
-	}
-
-	public static URL getURLProperty(ServiceReference reference, String propKey) {
-		if (reference == null || propKey == null)
-			return null;
-		Object val = reference.getProperty(propKey);
-		if (val == null || !(val instanceof URL))
-			return null;
-		return (URL) val;
 	}
 
 	public static Map getMapProperty(ServiceReference reference,
 			String propKeyServiceProperties) {
-		if (reference == null || propKeyServiceProperties == null)
+		if (reference == null || propKeyServiceProperties == null) {
 			return null;
-		Object val = reference.getProperty(propKeyServiceProperties);
-		if (val == null || !(val instanceof Map))
+		}
+		final Object val = reference.getProperty(propKeyServiceProperties);
+		if (val == null || !(val instanceof Map)) {
 			return null;
+		}
 		return (Map) val;
 	}
 
 	public static String createStringFromCollection(Collection svcInterfaces) {
-		if (svcInterfaces == null)
+		if (svcInterfaces == null) {
 			return null;
-		StringBuffer result = new StringBuffer();
-		for (Iterator i = svcInterfaces.iterator(); i.hasNext();) {
-			String item = (String) i.next();
+		}
+		final StringBuffer result = new StringBuffer();
+		for (final Iterator i = svcInterfaces.iterator(); i.hasNext();) {
+			final String item = (String) i.next();
 			result.append(item);
-			if (i.hasNext())
+			if (i.hasNext()) {
 				result.append(COLLECTION_SEPARATOR);
+			}
 		}
 		return result.toString();
 	}
 
 	public static Collection createCollectionFromString(String value) {
-		if (value == null)
+		if (value == null) {
 			return null;
-		StringTokenizer t = new StringTokenizer(value, COLLECTION_SEPARATOR);
-		List result = new ArrayList();
+		}
+		final StringTokenizer t = new StringTokenizer(value, COLLECTION_SEPARATOR);
+		final List result = new ArrayList();
 		while (t.hasMoreTokens()) {
 			result.add(t.nextToken());
 		}
