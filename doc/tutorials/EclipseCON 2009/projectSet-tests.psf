@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<psf version="2.0">
+<provider id="org.eclipse.team.cvs.core.cvsnature">
+	<!-- tests -->
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests,org.eclipse.ecf.tests"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.discovery,org.eclipse.ecf.tests.discovery"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.discovery.all,org.eclipse.ecf.tests.discovery.all"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.discovery.remote-extender,org.eclipse.ecf.tests.discovery.remote-extender"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.osgi.services.discovery,org.eclipse.ecf.tests.osgi.services.discovery"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution,org.eclipse.ecf.tests.osgi.services.distribution"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.discovery,org.eclipse.ecf.tests.provider.discovery"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.jmdns,org.eclipse.ecf.tests.provider.jmdns"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.jslp,org.eclipse.ecf.tests.provider.jslp"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.remoteservice,org.eclipse.ecf.tests.remoteservice"/>
+
+	<!-- OSU -->
+	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,tests/org.eclipse.ecf.tests.osgi.services.discovery.local,org.eclipse.ecf.tests.osgi.services.discovery.local"/>
+	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,tests/org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted,org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted"/>
+	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,tests/org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted2,org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted2"/>
+	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,tests/org.eclipse.ecf.tests.provider.dnssrv,org.eclipse.ecf.tests.provider.dnssrv"/>
+</provider>
+</psf>
