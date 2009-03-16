@@ -287,7 +287,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 	protected void setupProxy(Proxy proxy) {
 		if (proxy.getType().equals(Proxy.Type.HTTP)) {
 			final ProxyAddress address = proxy.getAddress();
-			getHostConfiguration().setProxy(HttpClientRetrieveFileTransfer.getHostFromURL(address.getHostName()), address.getPort());
+			getHostConfiguration().setProxy(address.getHostName(), address.getPort());
 			final String proxyUsername = proxy.getUsername();
 			final String proxyPassword = proxy.getPassword();
 			if (proxyUsername != null) {

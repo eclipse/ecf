@@ -792,7 +792,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	protected void setupProxy(Proxy proxy) {
 		if (proxy.getType().equals(Proxy.Type.HTTP)) {
 			final ProxyAddress address = proxy.getAddress();
-			getHostConfiguration().setProxy(getHostFromURL(address.getHostName()), address.getPort());
+			getHostConfiguration().setProxy(address.getHostName(), address.getPort());
 			final String proxyUsername = proxy.getUsername();
 			final String proxyPassword = proxy.getPassword();
 			if (proxyUsername != null) {
