@@ -12,6 +12,7 @@
 
 package org.eclipse.ecf.provider.filetransfer.browse;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -240,9 +241,9 @@ public abstract class AbstractFileSystemBrowser {
 				// Only do this if platform service exists
 				if (proxyService != null && proxyService.isProxiesEnabled()) {
 					// Setup via proxyService entry
-					URL target = directoryOrFile;
-					final IProxyData[] proxies = proxyService.getProxyDataForHost(target.getHost());
-					IProxyData selectedProxy = selectProxyFromProxies(target.getProtocol(), proxies);
+					URI target = new URI(directoryOrFile.toExternalForm());
+					final IProxyData[] proxies = proxyService.select(target);
+					IProxyData selectedProxy = selectProxyFromProxies(target.getScheme(), proxies);
 					if (selectedProxy != null) {
 						proxy = new Proxy(((selectedProxy.getType().equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(selectedProxy.getHost(), selectedProxy.getPort()), selectedProxy.getUserId(), selectedProxy.getPassword());
 					}

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -871,9 +872,9 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 				// Only do this if platform service exists
 				if (proxyService != null && proxyService.isProxiesEnabled()) {
 					// Setup via proxyService entry
-					URL target = getRemoteFileURL();
-					final IProxyData[] proxies = proxyService.getProxyDataForHost(target.getHost());
-					IProxyData selectedProxy = selectProxyFromProxies(target.getProtocol(), proxies);
+					URI target = new URI(getRemoteFileURL().toExternalForm());
+					final IProxyData[] proxies = proxyService.select(target);
+					IProxyData selectedProxy = selectProxyFromProxies(target.getScheme(), proxies);
 					if (selectedProxy != null) {
 						proxy = new Proxy(((selectedProxy.getType().equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(selectedProxy.getHost(), selectedProxy.getPort()), selectedProxy.getUserId(), selectedProxy.getPassword());
 					}

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import org.eclipse.core.net.proxy.IProxyData;
@@ -368,14 +369,15 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 				// Only do this if platform service exists
 				if (proxyService != null && proxyService.isProxiesEnabled()) {
 					// Setup via proxyService entry
-					URL target = getRemoteFileURL();
+					URI target = new URI(getRemoteFileURL().toExternalForm());
 					String type = IProxyData.SOCKS_PROXY_TYPE;
-					if (target.getProtocol().equalsIgnoreCase(IProxyData.HTTP_PROXY_TYPE)) {
+					if (target.getScheme().equalsIgnoreCase(IProxyData.HTTP_PROXY_TYPE)) {
 						type = IProxyData.HTTP_PROXY_TYPE;
-					} else if (target.getProtocol().equalsIgnoreCase(IProxyData.HTTPS_PROXY_TYPE)) {
+					} else if (target.getScheme().equalsIgnoreCase(IProxyData.HTTPS_PROXY_TYPE)) {
 						type = IProxyData.HTTPS_PROXY_TYPE;
 					}
-					final IProxyData proxyData = proxyService.getProxyDataForHost(target.getHost(), type);
+					final IProxyData[] proxyDatas = proxyService.select(target);
+					final IProxyData proxyData = selectProxyFromProxies(target.getScheme(), proxyDatas);
 					if (proxyData != null) {
 						proxy = new Proxy(((type.equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(proxyData.getHost(), proxyData.getPort()), proxyData.getUserId(), proxyData.getPassword());
 					}
@@ -391,6 +393,42 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 		if (proxy != null)
 			setupProxy(proxy);
 
+	}
+
+	/**
+	 * Select a single proxy from a set of proxies available for the given host.  This implementation
+	 * selects in the following manner:  1) If proxies provided is null or array of 0 length, null 
+	 * is returned.  If only one proxy is available (array of length 1) then the entry is returned.
+	 * If proxies provided is length > 1, then if the type of a proxy in the array matches the given
+	 * protocol (e.g. http, https), then the first matching proxy is returned.  If the protocol does
+	 * not match any of the proxies, then the *first* proxy (i.e. proxies[0]) is returned.  Subclasses may
+	 * override if desired.
+	 * 
+	 * @param protocol the target protocol (e.g. http, https, scp, etc).  Will not be <code>null</code>.
+	 * @param proxies the proxies to select from.  May be <code>null</code> or array of length 0.
+	 * @return proxy data selected from the proxies provided.  
+	 */
+	protected IProxyData selectProxyFromProxies(String protocol, IProxyData[] proxies) {
+		if (proxies == null || proxies.length == 0)
+			return null;
+		// If only one proxy is available, then use that
+		if (proxies.length == 1)
+			return proxies[0];
+		// If more than one proxy is available, then if http/https protocol then look for that
+		// one...if not found then use first
+		if (protocol.equalsIgnoreCase("http")) { //$NON-NLS-1$
+			for (int i = 0; i < proxies.length; i++) {
+				if (proxies[i].getType().equals(IProxyData.HTTP_PROXY_TYPE))
+					return proxies[i];
+			}
+		} else if (protocol.equalsIgnoreCase("https")) { //$NON-NLS-1$
+			for (int i = 0; i < proxies.length; i++) {
+				if (proxies[i].getType().equals(IProxyData.HTTPS_PROXY_TYPE))
+					return proxies[i];
+			}
+		}
+		// If we haven't found it yet, then return the first one.
+		return proxies[0];
 	}
 
 	/* (non-Javadoc)
