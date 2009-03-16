@@ -26,7 +26,7 @@ import org.osgi.framework.ServiceRegistration;
 public class Activator implements BundleActivator {
 
 	private ServiceRegistration serviceRegistration;
-	private static final String NAME = "ecf.discovery.dnssrv";
+	private static final String NAME = "ecf.discovery.dnssd";
 
 	/*
 	 * (non-Javadoc)
