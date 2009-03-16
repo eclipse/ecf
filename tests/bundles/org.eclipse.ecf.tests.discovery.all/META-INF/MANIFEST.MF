@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.ecf.tests.provider.discovery;bundle-version="2.1.0",
  org.eclipse.ecf.tests.osgi.services.discovery.local;bundle-version="1.0.0",
  org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted;bundle-version="1.0.0",
  org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted2;bundle-version="1.0.0",
- org.eclipse.ecf.tests.provider.dnssrv;bundle-version="1.0.0",
+ org.eclipse.ecf.tests.provider.dnssd;bundle-version="1.0.0",
  org.junit;bundle-version="3.8.2"
 Bundle-Vendor: Eclipse.org
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
