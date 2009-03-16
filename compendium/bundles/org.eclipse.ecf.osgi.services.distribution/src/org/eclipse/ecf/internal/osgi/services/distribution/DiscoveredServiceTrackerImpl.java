@@ -159,9 +159,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		if (!(aServiceEndpointDesc instanceof ECFServiceEndpointDescription)) {
 			IAdapterManager adapterManager = Activator.getDefault()
 					.getAdapterManager();
-			ecfSED = (ECFServiceEndpointDescription) adapterManager.getAdapter(
-					aServiceEndpointDesc, ECFServiceEndpointDescription.class
-							.getName());
+			ecfSED = (ECFServiceEndpointDescription) adapterManager
+					.loadAdapter(aServiceEndpointDesc,
+							ECFServiceEndpointDescription.class.getName());
 		} else {
 			ecfSED = (ECFServiceEndpointDescription) aServiceEndpointDesc;
 		}
