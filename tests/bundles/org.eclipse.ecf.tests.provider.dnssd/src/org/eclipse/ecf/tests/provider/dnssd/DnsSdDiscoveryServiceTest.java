@@ -26,12 +26,12 @@ import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 
 	public DnsSdDiscoveryServiceTest() {
-		this("ecf.discovery.dnssrv", "kuppe.org", "http", "tcp");
+		this("ecf.discovery.dnssd", "kuppe.org", "http", "tcp");
 	}
 
 	public DnsSdDiscoveryServiceTest(String string, String scopes,
 			String service, String protocol) {
-		super("ecf.discovery.dnssrv");
+		super("ecf.discovery.dnssd");
 		setNamingAuthority("iana");
 		setScope(scopes);
 		setServices(new String[]{service});
