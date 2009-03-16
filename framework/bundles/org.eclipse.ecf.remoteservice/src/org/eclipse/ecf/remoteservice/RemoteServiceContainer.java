@@ -9,6 +9,7 @@
 ******************************************************************************/
 package org.eclipse.ecf.remoteservice;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.IContainer;
 
 /**
@@ -20,6 +21,8 @@ public class RemoteServiceContainer implements IRemoteServiceContainer {
 	private final IRemoteServiceContainerAdapter containerAdapter;
 
 	public RemoteServiceContainer(IContainer container, IRemoteServiceContainerAdapter containerAdapter) {
+		Assert.isNotNull(container);
+		Assert.isNotNull(containerAdapter);
 		this.container = container;
 		this.containerAdapter = containerAdapter;
 	}
