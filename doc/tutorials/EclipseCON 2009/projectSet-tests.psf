@@ -17,6 +17,6 @@
 	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,tests/org.eclipse.ecf.tests.osgi.services.discovery.local,org.eclipse.ecf.tests.osgi.services.discovery.local"/>
 	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,tests/org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted,org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted"/>
 	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,tests/org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted2,org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted2"/>
-	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,tests/org.eclipse.ecf.tests.provider.dnssrv,org.eclipse.ecf.tests.provider.dnssrv"/>
+	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,tests/org.eclipse.ecf.tests.provider.dnssd,org.eclipse.ecf.tests.provider.dnssd"/>
 </provider>
 </psf>

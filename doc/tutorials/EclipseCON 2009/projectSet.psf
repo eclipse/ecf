@@ -49,7 +49,7 @@
 
 	<!-- OSU -->
 	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,plugins/org.eclipse.ecf.osgi.services.discovery.local,org.eclipse.ecf.osgi.services.discovery.local"/>
-	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,plugins/org.eclipse.ecf.provider.dnssrv,org.eclipse.ecf.provider.dnssrv"/>
+	<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,plugins/org.eclipse.ecf.provider.dnssd,org.eclipse.ecf.provider.dnssd"/>
 	
 	<!-- Others -->
 
