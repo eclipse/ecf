@@ -498,7 +498,7 @@ public final class Client implements ISynchAsynchConnection {
 	}
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, getLocalID() + "." + msg); //$NON-NLS-1$
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.CONNECTION, getLocalID() + "." + msg); //$NON-NLS-1$
 	}
 
 	protected void traceStack(String msg, Throwable e) {

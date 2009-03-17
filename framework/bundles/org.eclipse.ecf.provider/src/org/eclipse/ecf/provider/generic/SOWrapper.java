@@ -215,7 +215,7 @@ public class SOWrapper {
 	}
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, "SOWrapper:oID=" + sharedObjectID + ":" + msg + ":cID=" + container.getID()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.SHAREDOBJECTWRAPPER, msg + ":oID=" + sharedObjectID + ":cID=" + container.getID()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	protected void traceStack(String msg, Throwable e) {

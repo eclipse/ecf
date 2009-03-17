@@ -48,7 +48,7 @@ public class SOManager implements ISharedObjectManager {
 	}
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg + ":" + container.getID()); //$NON-NLS-1$
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.SHAREDOBJECTMANAGER, msg + ":" + container.getID()); //$NON-NLS-1$
 	}
 
 	protected void traceStack(String msg, Throwable e) {
