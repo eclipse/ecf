@@ -36,7 +36,7 @@ public class AddTest extends ContainerAbstractTestCase {
 	 * @see org.eclipse.ecf.tests.ContainerAbstractTestCase#getClientCount()
 	 */
 	protected int getClientCount() {
-		return 2;
+		return 1;
 	}
 
 	/*
@@ -76,17 +76,6 @@ public class AddTest extends ContainerAbstractTestCase {
 		final ISharedObject sharedObject = manager.getSharedObject(id);
 		assertNotNull(sharedObject);
 		sleep(3000);
-		for (int clientIndex = 0; clientIndex < getClientCount(); clientIndex++) {
-			socontainer = (ISharedObjectContainer) getClient(clientIndex)
-					.getAdapter(ISharedObjectContainer.class);
-			ISharedObject sharedObj = socontainer.getSharedObjectManager()
-					.getSharedObject(
-							IDFactory.getDefault().createStringID("foo"));
-			if (sharedObj != null) {
-				System.out.println("foo instance=" + sharedObj.toString());
-			}
-		}
-
 	}
 
 	public void testAddTwoSharedObjects() throws Exception {
@@ -110,21 +99,6 @@ public class AddTest extends ContainerAbstractTestCase {
 		final ISharedObject sharedObject1 = manager.getSharedObject(id1);
 		assertNotNull(sharedObject1);
 		sleep(3000);
-		for (int clientIndex = 0; clientIndex < getClientCount(); clientIndex++) {
-			socontainer = (ISharedObjectContainer) getClient(clientIndex)
-					.getAdapter(ISharedObjectContainer.class);
-			ISharedObject sharedObj = socontainer.getSharedObjectManager()
-					.getSharedObject(
-							IDFactory.getDefault().createStringID("foo0"));
-			if (sharedObj != null) {
-				System.out.println("foo0 instance=" + sharedObj.toString());
-			}
-			sharedObj = socontainer.getSharedObjectManager().getSharedObject(
-					IDFactory.getDefault().createStringID("foo1"));
-			if (sharedObj != null) {
-				System.out.println("foo1 instance=" + sharedObj.toString());
-			}
-		}
 	}
 
 }

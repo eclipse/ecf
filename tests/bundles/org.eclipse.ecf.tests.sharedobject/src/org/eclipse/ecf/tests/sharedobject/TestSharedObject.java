@@ -59,10 +59,8 @@ public class TestSharedObject extends BaseSharedObject {
 			addEventProcessor(new IEventProcessor() {
 				public boolean processEvent(Event event) {
 					if (event instanceof ISharedObjectActivatedEvent) {
-						// If we've been activated, are primary and are connected
-						// then replicate to all remotes
-						// This calls the getReplicaDescription method below
-						if (isPrimary() && isConnected()) {
+						ISharedObjectActivatedEvent ae = (ISharedObjectActivatedEvent) event;
+						if (ae.getActivatedID().equals(getID()) && isConnected()) {
 							TestSharedObject.this.replicateToRemoteContainers(null);
 						}
 					}
