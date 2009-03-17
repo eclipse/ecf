@@ -558,7 +558,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		// If this method returns null, the create message is ignored. If this
 		// method
 		// returns a non-null object, the creation is allowed to proceed
-		debug("handleCreateMessage(from=" + fromID + ",to=" + toID + "," + desc + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		debug("handleCreateMessage(from=" + fromID + ",to=" + toID + ",this=" + getID() + ",desc=" + desc + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		try {
 			checkCreateResult = checkRemoteCreate(fromID, toID, desc);
 		} catch (final Exception e) {
