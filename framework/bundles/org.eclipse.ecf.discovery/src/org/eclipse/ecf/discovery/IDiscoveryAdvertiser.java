@@ -31,8 +31,6 @@ public interface IDiscoveryAdvertiser extends IAdaptable {
 	 * @param serviceInfo
 	 *            IServiceInfo of the service to be published. Must not be
 	 *            <code>null</code>.
-	 * @return IFuture indicates whether service registration has been
-	 *         successfully
 	 */
 	public void registerService(IServiceInfo serviceInfo);
 
@@ -42,16 +40,11 @@ public interface IDiscoveryAdvertiser extends IAdaptable {
 	 * @param serviceInfo
 	 *            IServiceInfo defining the service to unregister. Must not be
 	 *            <code>null</code>.
-	 * @return IFuture indicates whether service deregistration has been
-	 *         successfully
 	 */
 	public void unregisterService(IServiceInfo serviceInfo);
 
 	/**
 	 * Unregister all previously registered service.
-	 * 
-	 * @return IFuture indicates whether service deregistration has been
-	 *         successfully
 	 */
 	public void unregisterAllServices();
 
