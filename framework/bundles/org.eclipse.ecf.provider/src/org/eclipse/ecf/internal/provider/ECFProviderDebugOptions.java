@@ -31,5 +31,4 @@ public interface ECFProviderDebugOptions {
 	public static final String SHAREDOBJECTCONTEXT = DEBUG + "/sharedobjectcontext"; //$NON-NLS-1$
 	public static final String SHAREDOBJECTMANAGER = DEBUG + "/sharedobjectmanager"; //$NON-NLS-1$
 	public static final String CONTAINERFACTORY = DEBUG + "/containerfactory"; //$NON-NLS-1$
-	public static final String TRANSACTIONEVENTPROCESSOR = DEBUG + "/transactioneventprocessor"; //$NON-NLS-1$
 }

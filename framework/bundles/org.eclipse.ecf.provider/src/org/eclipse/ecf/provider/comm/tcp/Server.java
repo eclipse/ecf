@@ -28,7 +28,7 @@ public class Server extends ServerSocket {
 	ThreadGroup threadGroup;
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg);
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.CONNECTION, msg);
 	}
 
 	protected void traceStack(String msg, Throwable e) {
