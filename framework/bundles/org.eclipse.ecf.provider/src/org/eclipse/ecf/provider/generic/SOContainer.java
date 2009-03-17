@@ -370,7 +370,6 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 *             failed
 	 */
 	protected Object checkRemoteCreate(ID fromID, ID toID, ReplicaSharedObjectDescription desc) throws Exception {
-		debug("checkRemoteCreate(" + fromID + "," + toID + "," + desc + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		if (policy != null) {
 			return policy.checkAddSharedObject(fromID, toID, getID(), desc);
 		}
@@ -559,6 +558,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		// If this method returns null, the create message is ignored. If this
 		// method
 		// returns a non-null object, the creation is allowed to proceed
+		debug("handleCreateMessage(from=" + fromID + ",to=" + toID + "," + desc + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		try {
 			checkCreateResult = checkRemoteCreate(fromID, toID, desc);
 		} catch (final Exception e) {
@@ -602,6 +602,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			final ID sharedObjectID = resp.getSharedObjectID();
 			final SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
 			if (sow != null) {
+				debug("handleCreateResponseMessage(from=" + fromID + ",to=" + toID + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				sow.deliverCreateResponse(fromID, resp);
 			} else {
 				debug("handleCreateResponseMessage...wrapper not found for " //$NON-NLS-1$
@@ -622,6 +623,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ID toID = mess.getToContainerID();
 		final ContainerMessage.SharedObjectDisposeMessage resp = (ContainerMessage.SharedObjectDisposeMessage) mess.getData();
 		final ID sharedObjectID = resp.getSharedObjectID();
+		debug("handleSharedObjectDisposeMessage(from=" + fromID + ",to=" + toID + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		synchronized (getGroupMembershipLock()) {
 			if (groupManager.isLoading(sharedObjectID)) {
 				groupManager.removeSharedObjectFromLoading(sharedObjectID);
@@ -645,6 +647,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ID sharedObjectID = resp.getFromSharedObjectID();
 		SOWrapper sow = null;
 		Serializable obj = null;
+		debug("handleSharedObjectMessage(from=" + fromID + ",to=" + toID + ",sharedObject=" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		synchronized (getGroupMembershipLock()) {
 			sow = getSharedObjectWrapper(sharedObjectID);
 			if (sow != null) {
