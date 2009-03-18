@@ -57,6 +57,7 @@
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.equinox/compendium/bundles/org.eclipse.equinox.event,org.eclipse.equinox.event"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.equinox/compendium/bundles/org.eclipse.equinox.cm,org.eclipse.equinox.cm"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.equinox/compendium/bundles/org.eclipse.equinox.log,org.eclipse.equinox.log"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.equinox/components/bundles/org.eclipse.equinox.concurrent,org.eclipse.equinox.concurrent"/>
 	
 	<!-- Orbit bundles -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/javax.mail,javax.mail,v1_4_0"/>
