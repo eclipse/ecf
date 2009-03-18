@@ -463,18 +463,18 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		// First we exclude the container where the discovered service is from
 		if (endpointID.equals(container.getID()))
 			return false;
-		// Then we check the connect ID namespace. If it's the same as the
-		// container's namespace
-		// then we've found one
+		// Then we check the namespace of the endpoint container ID. If it's the
+		// same as the
+		// container/adapter under test then we've found a compatible one
 		String connectNamespaceName = (String) description
-				.getProperty(Constants.SERVICE_CONNECT_ID_NAMESPACE);
+				.getProperty(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE);
 		if (connectNamespaceName != null) {
 			Namespace namespace = container.getConnectNamespace();
 			if (namespace != null
 					&& namespace.getName().equals(connectNamespaceName))
 				return true;
 		}
-		return true;
+		return false;
 	}
 
 	protected void trace(String methodName, String message) {
