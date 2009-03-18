@@ -908,4 +908,12 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		return null;
 	}
 
+	protected boolean targetHasGzSuffix(String target) {
+		if (target == null)
+			return false;
+		if (target.endsWith(".gz")) //$NON-NLS-1$
+			return true;
+		return false;
+	}
+
 }

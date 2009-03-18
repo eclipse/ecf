@@ -430,10 +430,9 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 		if (null == encoding) {
 			return Compression.NONE;
-		} else if (encoding.equalsIgnoreCase(CONTENT_ENCODING_GZIP)) {
+			// see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=269018
+		} else if (encoding.equalsIgnoreCase(CONTENT_ENCODING_GZIP) && !targetHasGzSuffix(remoteFileName)) {
 			return Compression.GZIP;
-			// } else if (encoding.equalsIgnoreCase(CONTENT_ENCODING_DEFLATE)) {
-			// return Compression.DEFLATE;
 		}
 		return Compression.NONE;
 	}
