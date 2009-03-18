@@ -152,7 +152,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		private ISocketEventSource source;
 		private ISocketListener socketListener;
 		private String targetURL;
-		private String targetPath;
+		private String targetRelativePath;
 
 		private HostConfiguration hostConfiguration;
 
@@ -167,9 +167,17 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			return hostConfiguration;
 		}
 
+		// drops the scheme including the colon (e.g http://server/a/b.html -> //server/a/b.html
+		private static String getTargetRelativePathFromURL(String url) {
+			final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
+			if (colonSlashSlash < 0)
+				return "/"; //$NON-NLS-1$
+			return url.substring(colonSlashSlash + 1);
+		}
+
 		public void setTargetHostByURL(String url) {
 			this.targetURL = url;
-			this.targetPath = getPathFromURL(targetURL);
+			this.targetRelativePath = getTargetRelativePathFromURL(targetURL);
 			String host = getHostFromURL(targetURL);
 			int port = getPortFromURL(targetURL);
 
@@ -192,7 +200,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		}
 
 		public String getTargetRelativePath() {
-			return targetPath;
+			return targetRelativePath;
 		}
 
 	}
@@ -643,35 +651,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			end = requestPath;
 
 		return Integer.parseInt(url.substring(colonPort + 1, end));
-	}
-
-	protected static String getPathFromURL(String url) {
-		final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
-		if (colonSlashSlash < 0)
-			return "/"; //$NON-NLS-1$
-		final int requestPath = url.indexOf('/', colonSlashSlash + 3);
-		if (requestPath < 0)
-			return "/"; //$NON-NLS-1$
-
-		return cleanExtraSlashesFromPath(url.substring(requestPath));
-	}
-
-	protected static String cleanExtraSlashesFromPath(String path) {
-		if (path == null)
-			return path;
-		int queryStart = path.indexOf('?');
-		int end = (queryStart == -1) ? path.length() : queryStart;
-		StringBuffer result = new StringBuffer(path.length());
-		for (int i = 0; i < end; i++) {
-			char c = path.charAt(i);
-			result.append(c);
-			if (c == '/' && i < (end - 1) && (path.charAt(i + 1) == '/'))
-				++i;
-		}
-		if (queryStart != -1)
-			result.append(path.substring(queryStart));
-		String resultStr = result.toString();
-		return resultStr;
 	}
 
 	protected static boolean urlUsesHttps(String url) {
