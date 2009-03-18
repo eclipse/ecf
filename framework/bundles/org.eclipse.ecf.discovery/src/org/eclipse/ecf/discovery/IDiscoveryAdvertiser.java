@@ -15,6 +15,15 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
+ * Entry point discovery advertiser. This interface exposes the ability to
+ * register and unregister locally provided services.
+ * <p>
+ * This interface can be used by container provider implementations as an
+ * adapter so that calls to IContainer.getAdapter(IDiscoveryLocator.class) will
+ * return a non-null instance of a class that implements this interface. Clients
+ * can then proceed to use this interface to interact with the given discovery
+ * implementation.
+ * 
  * @since 3.0
  */
 public interface IDiscoveryAdvertiser extends IAdaptable {
@@ -26,7 +35,7 @@ public interface IDiscoveryAdvertiser extends IAdaptable {
 
 	/**
 	 * Register the given service. This publishes the service defined by the
-	 * first parameter to the underlying publishing mechanism
+	 * serviceInfo to the underlying publishing mechanism
 	 * 
 	 * @param serviceInfo
 	 *            IServiceInfo of the service to be published. Must not be

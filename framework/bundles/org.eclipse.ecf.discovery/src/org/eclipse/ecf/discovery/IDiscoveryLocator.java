@@ -18,6 +18,17 @@ import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
 /**
+ * Entry point discovery locator. This interface exposes the ability to
+ * add/remove listeners for newly discovered services and service types, and get
+ * (synch) and request (asynchronous) service info from a remote service
+ * provider.
+ * <p>
+ * This interface can be used by container provider implementations as an
+ * adapter so that calls to IContainer.getAdapter(IDiscoveryLocator.class) will
+ * return a non-null instance of a class that implements this interface. Clients
+ * can then proceed to use this interface to interact with the given discovery
+ * implementation.
+ * 
  * @since 3.0
  */
 public interface IDiscoveryLocator extends IAdaptable {
