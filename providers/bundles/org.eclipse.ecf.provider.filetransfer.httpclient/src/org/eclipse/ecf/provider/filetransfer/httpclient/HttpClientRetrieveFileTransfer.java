@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
-import java.net.URL;
 import java.util.Iterator;
 import javax.net.SocketFactory;
 import javax.security.auth.login.LoginException;
@@ -103,8 +102,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		}
 
 		private boolean isZippedResponse() {
-			boolean zipped = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_GZIP));
-			return zipped;
+			// see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=269018
+			boolean contentEncodingGzip = (null != this.getResponseHeader(CONTENT_ENCODING) && this.getResponseHeader(CONTENT_ENCODING).getValue().equals(CONTENT_ENCODING_GZIP));
+			Trace.trace(Activator.PLUGIN_ID, "Content-Encoding: gzip header " + (contentEncodingGzip ? "PRESENT" : "ABSENT")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			boolean hasGzSuffix = targetHasGzSuffix(remoteFileName);
+			return contentEncodingGzip && !hasGzSuffix;
 		}
 
 		public int execute(HttpState state, HttpConnection conn) throws HttpException, IOException {
@@ -132,10 +134,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			InputStream input = super.getResponseBodyAsStream();
 			try {
 				if (gzipReceived) {
-					Trace.trace(Activator.PLUGIN_ID, "retrieve content-encoding: gzip"); //$NON-NLS-1$
+					Trace.trace(Activator.PLUGIN_ID, "Using gzip input stream to decode"); //$NON-NLS-1$
 					// extract on the fly
 					return new java.util.zip.GZIPInputStream(input);
 				}
+				Trace.trace(Activator.PLUGIN_ID, "Not using gzip input stream"); //$NON-NLS-1$
 			} catch (IOException e) {
 				Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, "Exception creating gzip input stream", e)); //$NON-NLS-1$ 
 				throw e;
@@ -505,8 +508,12 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			Trace.trace(Activator.PLUGIN_ID, "retrieve=" + urlString); //$NON-NLS-1$
 			// Set request header for possible gzip encoding
-			if (getFileRangeSpecification() == null)
+			if (getFileRangeSpecification() == null) { //$NON-NLS-1$
+				Trace.trace(Activator.PLUGIN_ID, "Accept-Encoding: gzip added to request header"); //$NON-NLS-1$
 				getMethod.setRequestHeader(GzipGetMethod.ACCEPT_ENCODING, GzipGetMethod.CONTENT_ENCODING_ACCEPTED);
+			} else {
+				Trace.trace(Activator.PLUGIN_ID, "Accept-Encoding NOT added to header"); //$NON-NLS-1$
+			}
 
 			fireConnectStartEvent();
 			if (checkAndHandleDone()) {
@@ -618,8 +625,13 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
 		if (colonSlashSlash < 0)
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
+		// This is wrong as if the url has no colonPort before '?' then it should return the default
+
 		final int colonPort = url.indexOf(':', colonSlashSlash + 1);
 		if (colonPort < 0)
+			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
+		// Make sure that the colonPort is not from some part of the rest of the URL
+		if (colonPort > url.indexOf('/', colonSlashSlash + 3))
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
 
 		final int requestPath = url.indexOf('/', colonPort + 1);
@@ -641,8 +653,25 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		if (requestPath < 0)
 			return "/"; //$NON-NLS-1$
 
-		int end = url.length();
-		return url.substring(requestPath, end);
+		return cleanExtraSlashesFromPath(url.substring(requestPath));
+	}
+
+	protected static String cleanExtraSlashesFromPath(String path) {
+		if (path == null)
+			return path;
+		int queryStart = path.indexOf('?');
+		int end = (queryStart == -1) ? path.length() : queryStart;
+		StringBuffer result = new StringBuffer(path.length());
+		for (int i = 0; i < end; i++) {
+			char c = path.charAt(i);
+			result.append(c);
+			if (c == '/' && i < (end - 1) && (path.charAt(i + 1) == '/'))
+				++i;
+		}
+		if (queryStart != -1)
+			result.append(path.substring(queryStart));
+		String resultStr = result.toString();
+		return resultStr;
 	}
 
 	protected static boolean urlUsesHttps(String url) {
@@ -697,15 +726,14 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	private boolean openStreamsForResume() {
+
 		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "openStreamsForResume"); //$NON-NLS-1$
-		final URL theURL = getRemoteFileURL();
+		final String urlString = getRemoteFileURL().toString();
+		this.doneFired = false;
 
 		int code = -1;
 
 		try {
-			remoteFileURL = new URL(theURL.toString());
-			final String urlString = getRemoteFileURL().toString();
-
 			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_READ_TIMEOUT);
 			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
 
@@ -713,18 +741,37 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			setupHostAndPort(urlString);
 
-			String path = hostConfigHelper.getTargetRelativePath();
-
-			getMethod = new GzipGetMethod(path);
+			getMethod = new GzipGetMethod(hostConfigHelper.getTargetRelativePath());
 			getMethod.setFollowRedirects(true);
-
+			// Define a CredentialsProvider - found that possibility while debugging in org.apache.commons.httpclient.HttpMethodDirector.processProxyAuthChallenge(HttpMethod)
+			// Seems to be another way to select the credentials.
+			getMethod.getParams().setParameter(CredentialsProvider.PROVIDER, new ECFCredentialsProvider());
 			setResumeRequestHeaderValues();
 
-			Trace.trace(Activator.PLUGIN_ID, "resume get " + urlString); //$NON-NLS-1$
+			Trace.trace(Activator.PLUGIN_ID, "resume=" + urlString); //$NON-NLS-1$
 
-			code = httpClient.executeMethod(getHostConfiguration(), getMethod);
+			// Gzip encoding is not an option for resume
+			fireConnectStartEvent();
+			if (checkAndHandleDone()) {
+				return false;
+			}
 
-			Trace.trace(Activator.PLUGIN_ID, "resume get resp=" + code); //$NON-NLS-1$
+			connectingSockets.clear();
+			// Actually execute get and get response code (since redirect is set to true, then
+			// redirect response code handled internally
+			if (connectJob == null) {
+				performConnect(new NullProgressMonitor());
+			} else {
+				connectJob.schedule();
+				connectJob.join();
+				connectJob = null;
+			}
+			if (checkAndHandleDone()) {
+				return false;
+			}
+
+			code = responseCode;
+			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + code); //$NON-NLS-1$
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResumeResponseHeaderValues();
@@ -734,10 +781,12 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 				getMethod.releaseConnection();
 				throw new FileNotFoundException(urlString);
-			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
-				getMethod.getResponseBody();
+			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
+				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
+			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
+				getMethod.releaseConnection();
+				throw new LoginException("Forbidden"); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				getMethod.releaseConnection();
 				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
@@ -748,11 +797,16 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreamsForResume", Boolean.TRUE); //$NON-NLS-1$
 			return true;
 		} catch (final Exception e) {
-			setDoneException(e);
-			Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreamsForResume", e); //$NON-NLS-1$
-			hardClose();
+			Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "openStreamsForResume", e); //$NON-NLS-1$
+			if (code == -1) {
+				if (!isDone()) {
+					setDoneException(e);
+				}
+			} else {
+				setDoneException(new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code));
+			}
 			fireTransferReceiveDoneEvent();
-			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreamsForResume", Boolean.FALSE); //$NON-NLS-1$
+			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreamsForResume", Boolean.FALSE); //$NON-NLS-1$
 			return false;
 		}
 	}
