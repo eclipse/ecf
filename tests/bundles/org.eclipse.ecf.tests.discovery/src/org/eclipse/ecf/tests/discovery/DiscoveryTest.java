@@ -119,7 +119,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	public void testGetServiceTypes() throws ContainerConnectException {
 		registerService();
 		final IServiceTypeID[] serviceTypeIDs = discoveryLocator.getServiceTypes();
-		assertTrue(serviceTypeIDs.length >= 1);
+		assertTrue("IServiceInfo[] is empty", serviceTypeIDs.length >= 1);
 		for (int i = 0; i < serviceTypeIDs.length; i++) {
 			IServiceTypeID iServiceTypeId = serviceTypeIDs[i];
 			if(serviceInfo.getServiceID().getServiceTypeID().equals(iServiceTypeId)) {
@@ -137,7 +137,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	public void testGetServices() throws ContainerConnectException {
 		registerService();
 		final IServiceInfo[] services = discoveryLocator.getServices();
-		assertTrue(services.length >= 1);
+		assertTrue("IServiceInfo[] is empty", services.length >= 1);
 		for (int i = 0; i < services.length; i++) {
 			IServiceInfo iServiceInfo = services[i];
 			if(comparator.compare(iServiceInfo, serviceInfo) == 0) {
@@ -155,7 +155,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	public void testGetServicesIServiceTypeID() throws ContainerConnectException {
 		registerService();
 		final IServiceInfo serviceInfos[] = discoveryLocator.getServices(serviceInfo.getServiceID().getServiceTypeID());
-		assertTrue(serviceInfos.length >= 1);
+		assertTrue("IServiceInfo[] is empty", serviceInfos.length >= 1);
 		for (int i = 0; i < serviceInfos.length; i++) {
 			IServiceInfo iServiceInfo = serviceInfos[i];
 			if(comparator.compare(iServiceInfo, serviceInfo) == 0) {
@@ -173,7 +173,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	public void testRegisterService() throws ContainerConnectException {
 		registerService();
 		final IServiceInfo[] services = discoveryLocator.getServices();
-		assertTrue(services.length >= 1);
+		assertTrue("IServiceInfo[] is empty", services.length >= 1);
 		for (int i = 0; i < services.length; i++) {
 			final IServiceInfo service = services[i];
 			if (comparator.compare(service, serviceInfo) == 0) {
