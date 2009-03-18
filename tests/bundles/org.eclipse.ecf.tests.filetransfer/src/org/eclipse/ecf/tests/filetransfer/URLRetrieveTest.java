@@ -29,10 +29,13 @@ import org.eclipse.equinox.internal.p2.artifact.repository.ECFTransport;
 public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	public static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
+	public static final String HTTP_RETRIEVE1 = "http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&url=http://ftp.osuosl.org/pub/eclipse/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&mirror_id=272";
+
 	public static final String HTTPS_RETRIEVE = "https://www.verisign.com";
 	public static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
 	public static final String HTTP_BAD_URL = "http:ddasdf12121212";
 	public static final String HTTP_MALFORMED_URL = "http://malformed:-1";
+	public static final String HTTP_RETRIEVE_NON_CANONICAL_URL = "http://eclipse.saplabs.bg//eclipse/updates/3.4/plugins/org.eclipse.equinox.p2.exemplarysetup.source_1.0.0.v20080427-2136.jar.pack.gz";
 	
 	private static final String FTP_RETRIEVE = "ftp://ftp.osuosl.org/pub/eclipse/rt/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
 	
@@ -124,7 +127,17 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		//addProxy("composent.com",3129,"foo\\bar","password");
 		testReceive(HTTP_RETRIEVE);
 	}
-	
+
+	public void testReceiveFile1() throws Exception {
+		//addProxy("composent.com",3129,"foo\\bar","password");
+		testReceive(HTTP_RETRIEVE1);
+	}
+
+	public void testReceiveNonCanonicalFile() throws Exception {
+		//addProxy("composent.com",3129,"foo\\bar","password");
+		testReceive(HTTP_RETRIEVE_NON_CANONICAL_URL);
+	}
+
 	public void testFTPReceiveFile() throws Exception {
 		testReceive(FTP_RETRIEVE);
 	}
@@ -157,14 +170,16 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		testReceive(BUG_237936_URL);
 	}
 
+	public static final String HTTP_RETRIEVE_GZFILE = "http://download.eclipse.org/eclipse/updates/3.4/plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz";
+	public static final String HTTP_RETRIEVE_GZFILE_MIRROR = "http://mirrors.xmission.com/eclipse/eclipse/updates/3.4//plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz";
+
 	public void testReceiveGzipWithGZFile() throws Exception {
-		File f = File.createTempFile("foo", "pascal.pack.gz");
+		File f = File.createTempFile("foo", "something.pack.gz");
 		FileOutputStream fos = new FileOutputStream(f);
 		System.out.println(f);
 		ECFTransport
 				.getInstance()
-				.download(
-						"http://download.eclipse.org/eclipse/updates/3.4/plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz",
+				.download(HTTP_RETRIEVE_GZFILE,
 						fos, new NullProgressMonitor());
 		fos.close();
 		if (f != null) {
@@ -172,4 +187,21 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 			assertTrue("4.0", f.length() < 50000);
 		}
 	}
+	
+	public void testReceiveGzipWithGZFileFromMirror() throws Exception {
+		File f = File.createTempFile("foo2", "something.pack.gz");
+		FileOutputStream fos = new FileOutputStream(f);
+		System.out.println(f);
+		ECFTransport
+				.getInstance()
+				.download(
+						"http://mirrors.xmission.com/eclipse/eclipse/updates/3.4//plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz",
+						fos, new NullProgressMonitor());
+		fos.close();
+		if (f != null) {
+			System.out.println(f.length());
+			assertTrue("4.0", f.length() < 50000);
+		}
+	}
+	
  }
