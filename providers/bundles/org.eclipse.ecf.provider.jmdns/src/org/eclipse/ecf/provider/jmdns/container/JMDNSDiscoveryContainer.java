@@ -290,6 +290,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 * @see javax.jmdns.ServiceTypeListener#serviceTypeAdded(javax.jmdns.ServiceEvent)
 	 */
 	public void serviceTypeAdded(final ServiceEvent arg0) {
+		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceTypeAdded(" + arg0.getType() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		arg0.getDNS().addServiceListener(arg0.getType(), JMDNSDiscoveryContainer.this);
 	}
 
