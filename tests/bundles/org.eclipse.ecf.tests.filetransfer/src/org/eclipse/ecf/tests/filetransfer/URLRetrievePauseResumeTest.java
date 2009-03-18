@@ -125,7 +125,7 @@ public class URLRetrievePauseResumeTest extends ContainerAbstractTestCase {
 
 		// Now if we can do pausing, then pause, wait a while and resume
 		if (pausable != null) {
-			Thread.sleep(1000);
+			Thread.sleep(500);
 			System.out.println("pausable.pause()=" + pausable.pause());
 			System.out.println("Pausing " + PAUSE_TIME / 1000 + " seconds");
 			Thread.sleep(PAUSE_TIME);
