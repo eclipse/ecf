@@ -35,7 +35,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
 	public static final String HTTP_BAD_URL = "http:ddasdf12121212";
 	public static final String HTTP_MALFORMED_URL = "http://malformed:-1";
-	public static final String HTTP_RETRIEVE_NON_CANONICAL_URL = "http://eclipse.saplabs.bg//eclipse/updates/3.4/plugins/org.eclipse.equinox.p2.exemplarysetup.source_1.0.0.v20080427-2136.jar.pack.gz";
+	public static final String HTTP_RETRIEVE_NON_CANONICAL_URL = "http://eclipse.saplabs.bg//eclipse///updates/3.4/plugins/org.eclipse.equinox.p2.exemplarysetup.source_1.0.0.v20080427-2136.jar.pack.gz";
 	
 	private static final String FTP_RETRIEVE = "ftp://ftp.osuosl.org/pub/eclipse/rt/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
 	
@@ -133,7 +133,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		testReceive(HTTP_RETRIEVE1);
 	}
 
-	public void testReceiveNonCanonicalFile() throws Exception {
+	public void testReceiveNonCanonicalURLPath() throws Exception {
 		//addProxy("composent.com",3129,"foo\\bar","password");
 		testReceive(HTTP_RETRIEVE_NON_CANONICAL_URL);
 	}
