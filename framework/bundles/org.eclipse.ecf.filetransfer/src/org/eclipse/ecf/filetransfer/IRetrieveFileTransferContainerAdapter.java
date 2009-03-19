@@ -77,7 +77,7 @@ public interface IRetrieveFileTransferContainerAdapter extends IAdaptable {
 	 * will be asynchronously notified via an IIncomingFileTransferReceiveDoneEvent 
 	 * (along with other possible events).  All implementations are required to 
 	 * issue this event whether successful or failed.  Listeners
-	 * can consult {@link IIncomingFileTransferReceiveDoneEvent#getClass()} to 
+	 * can consult {@link IIncomingFileTransferReceiveDoneEvent#getException()} to 
 	 * determine whether the transfer operation completed successfully.
 	 * </p>
 	 * @param remoteFileID
@@ -121,7 +121,7 @@ public interface IRetrieveFileTransferContainerAdapter extends IAdaptable {
 	 * will be asynchronously notified via an IIncomingFileTransferReceiveDoneEvent 
 	 * (along with other possible events).  All implementations are required to 
 	 * issue this event whether successful or failed.  Listeners
-	 * can consult {@link IIncomingFileTransferReceiveDoneEvent#getClass()} to 
+	 * can consult {@link IIncomingFileTransferReceiveDoneEvent#getException()} to 
 	 * determine whether the transfer operation completed successfully.
 	 * </p>
 	 * @param remoteFileID
