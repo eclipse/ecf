@@ -31,9 +31,10 @@ public class SCPOutgoingTest extends ContainerAbstractTestCase {
 	private static final String TESTSRCFILE = "test.txt"; //$NON-NLS-1$
 
 	// URL (example:  scp://slewis@ecf1.osuosl.org/test.txt 
-	private static final String TESTTARGETURL = System.getProperty("url"); //$NON-NLS-1$
+	String username = System.getProperty("username", "nobody"); //$NON-NLS-1$ //$NON-NLS-2$
+	String password = System.getProperty("password", "password"); //$NON-NLS-1$ //$NON-NLS-2$
 
-	String password = System.getProperty("password"); //$NON-NLS-1$
+	String host = System.getProperty("host", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected ISendFileTransferContainerAdapter adapter = null;
 	protected IFileTransferListener senderTransferListener = null;
@@ -60,7 +61,9 @@ public class SCPOutgoingTest extends ContainerAbstractTestCase {
 	}
 
 	public void testSend() throws Exception {
-		final IFileID targetID = FileIDFactory.getDefault().createFileID(adapter.getOutgoingNamespace(), new URL(TESTTARGETURL));
+		String targetURL = "scp://" + username + "@" + host + "/" + TESTSRCFILE; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		System.out.println("Sending to " + targetURL); //$NON-NLS-1$
+		final IFileID targetID = FileIDFactory.getDefault().createFileID(adapter.getOutgoingNamespace(), new URL(targetURL));
 		adapter.setConnectContextForAuthentication(ConnectContextFactory.createPasswordConnectContext(password));
 		adapter.sendOutgoingRequest(targetID, new File(TESTSRCFILE), senderTransferListener, null);
 

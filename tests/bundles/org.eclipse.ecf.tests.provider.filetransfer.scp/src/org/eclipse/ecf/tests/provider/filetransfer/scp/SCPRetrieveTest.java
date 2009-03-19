@@ -25,7 +25,13 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 public class SCPRetrieveTest extends ContainerAbstractTestCase {
 
-	private static final String TESTTARGETURL = System.getProperty("url"); //$NON-NLS-1$
+	private static final String TESTSRCFILE = "test.txt"; //$NON-NLS-1$
+
+	// URL (example:  scp://slewis@ecf1.osuosl.org/test.txt 
+	String username = System.getProperty("username", "nobody"); //$NON-NLS-1$ //$NON-NLS-2$
+	String password = System.getProperty("password", "password"); //$NON-NLS-1$ //$NON-NLS-2$
+
+	String host = System.getProperty("host", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	IRetrieveFileTransferContainerAdapter adapter = null;
 
@@ -38,6 +44,9 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 		super.setUp();
 		final IContainer container = ContainerFactory.getDefault().createContainer();
 		adapter = (IRetrieveFileTransferContainerAdapter) container.getAdapter(IRetrieveFileTransferContainerAdapter.class);
+		receiveStartEvents = new ArrayList();
+		receiveDataEvents = new ArrayList();
+		receiveDoneEvents = new ArrayList();
 	}
 
 	/*
@@ -47,16 +56,20 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		receiveStartEvents.clear();
+		receiveDataEvents.clear();
+		receiveDoneEvents.clear();
 		adapter = null;
 	}
 
-	List receiveStartEvents = new ArrayList();
+	List receiveStartEvents;
 
-	List receiveDataEvents = new ArrayList();
+	List receiveDataEvents;
 
-	List receiveDoneEvents = new ArrayList();
+	List receiveDoneEvents;
 
 	public void testReceive() throws Exception {
+		final Object lock = new Object();
 		assertNotNull(adapter);
 		final IFileTransferListener listener = new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
@@ -74,14 +87,21 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 					receiveDataEvents.add(event);
 				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 					receiveDoneEvents.add(event);
+					synchronized (lock) {
+						lock.notify();
+					}
 				}
 			}
 		};
 
-		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(System.getProperty("username"), System.getProperty("password"))); //$NON-NLS-1$ //$NON-NLS-2$
-		adapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(adapter.getRetrieveNamespace(), TESTTARGETURL), listener, null);
-		// Wait for 5 seconds
-		sleep(5000, "Starting 5 second wait", "Ending 5 second wait"); //$NON-NLS-1$ //$NON-NLS-2$
+		String targetURL = "scp://" + host + "/" + TESTSRCFILE; //$NON-NLS-1$ //$NON-NLS-2$
+		System.out.println("Retrieving from " + targetURL + " with username=" + username); //$NON-NLS-1$ //$NON-NLS-2$
+		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(username, password));
+		adapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(adapter.getRetrieveNamespace(), targetURL), listener, null);
+
+		synchronized (lock) {
+			lock.wait(30000);
+		}
 
 		assertHasEvent(receiveStartEvents, IIncomingFileTransferReceiveStartEvent.class);
 		assertHasMoreThanEventCount(receiveDataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);
