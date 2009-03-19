@@ -86,12 +86,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 	 */
 	public ServicePublicationHandler() {
 		//TODO tutorial "implement listener registration with ECF discovery"
-		//throw new UnsupportedOperationException("ServicePublicationHandler()");
-
-		IDiscoveryLocator locator = Activator.getDefault().getLocator();
-		if(locator != null) {
-			locator.addServiceListener(serviceListener);
-		}
+		throw new UnsupportedOperationException("ServicePublicationHandler()");
 	}
 	
 	/*---------------- RFC 119 --> ECF Discovery ----------------*/
@@ -133,74 +128,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 	 */
 	private void publishService(ServiceReference reference) {
 		//TODO tutorial "implement servicePublicationProperties to IServiceType conversion"
-		//throw new UnsupportedOperationException("publishService(ServiceReference reference)");
-		
-		// Get required service RFC 119 property "service.interface", which
-		// should be a Collection of Strings
-		Collection svcInterfaces = ServicePropertyUtils.getCollectionProperty(reference,
-				ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
-
-		IServiceProperties discoveryServiceProperties = new ServiceProperties();
-		discoveryServiceProperties.setPropertyString(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
-				ServicePropertyUtils.createStringFromCollection(svcInterfaces));
-
-		// We also use the optional RFC 119 property PROP_KEY_SERVICE_PROPERTIES
-		Map servicePublicationServiceProperties = ServicePropertyUtils.getMapProperty(reference,
-				ServicePublication.PROP_KEY_SERVICE_PROPERTIES);
-		addPropertiesToDiscoveryServiceProperties(discoveryServiceProperties, servicePublicationServiceProperties);
-
-		// container id
-		ID endpointContainerID = (ID) reference.getProperty(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
-		// Add endpoint container id.toExternalForm().getBytes...so AS byte []
-		discoveryServiceProperties.setPropertyBytes(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID,
-				endpointContainerID.toExternalForm().getBytes());
-
-		// container id namespace name
-		String namespace = endpointContainerID.getNamespace().getName();
-		discoveryServiceProperties.setPropertyString(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE,
-				namespace);
-
-		// remote service namespace
-		String rsnamespace = ServicePropertyUtils.getStringProperty(reference, Constants.SERVICE_NAMESPACE);
-		discoveryServiceProperties.setPropertyString(Constants.SERVICE_NAMESPACE, rsnamespace);
-
-		// remote service id
-		Long remoteServiceID = (Long) reference.getProperty(Constants.SERVICE_ID);
-		discoveryServiceProperties.setProperty(Constants.SERVICE_ID, remoteServiceID);
-
-		// remote service name
-		String serviceName = getPropertyWithDefault(servicePublicationServiceProperties,
-				ECFServicePublication.SERVICE_NAME_PROP,
-				(ECFServicePublication.DEFAULT_SERVICE_NAME_PREFIX + remoteServiceID));
-
-		// Get Discovery Advertiser and Namespace
-		IDiscoveryAdvertiser advertiser = Activator.getDefault().getAdvertiser();
-		Namespace advertiserNamespace = advertiser.getServicesNamespace();
-
-		// Create IServiceTypeID and IServiceInfo
-		IServiceInfo svcInfo = null;
-		try {
-			IServiceTypeID serviceTypeID = createServiceTypeID(servicePublicationServiceProperties, advertiserNamespace);
-			URI uri = createURI(endpointContainerID);
-			svcInfo = new ServiceInfo(uri, serviceName, serviceTypeID, discoveryServiceProperties);
-		} catch (IDCreateException e) {
-			logError("handleServicePublication", //$NON-NLS-1$
-					"Exception creating serviceID", e); //$NON-NLS-1$
-			return;
-		} catch (URISyntaxException e) {
-			logError("handleServicePublication", "Exception creating URI", e); //$NON-NLS-1$ //$NON-NLS-2$
-			return;
-		}
-		
-		// Register IServiceInfo with ECF discovery and associate ServiceReference with IServiceInfo
-		try {
-			trace("publishService", "publishing serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ reference + ", svcInfo=" + svcInfo); //$NON-NLS-1$
-			advertiser.registerService(svcInfo);
-			serviceRefToServiceInfo.put(reference, svcInfo);
-		} catch (ECFRuntimeException e) {
-			logError("publishService", "cannot register service", e); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		throw new UnsupportedOperationException("publishService(ServiceReference reference)");
 	}
 
 	/**
@@ -398,18 +326,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 	 */
 	private IServiceTypeID createServiceTypeID(Map servicePublicationProperties, Namespace aNamespace) throws IDCreateException {
 		//TODO tutorial "implement servicePublicationProperties to IServiceType conversion"
-		//throw new UnsupportedOperationException("createServiceTypeID(Map servicePublicationProperties, Namespace aNamespace)");
-		
-		String namingAuthority = getPropertyWithDefault(servicePublicationProperties,
-				ECFServicePublication.NAMING_AUTHORITY_PROP, IServiceTypeID.DEFAULT_NA);
-		String scope = getPropertyWithDefault(servicePublicationProperties, ECFServicePublication.SCOPE_PROP,
-				IServiceTypeID.DEFAULT_SCOPE[0]);
-		String protocol = getPropertyWithDefault(servicePublicationProperties,
-				ECFServicePublication.SERVICE_PROTOCOL_PROP, IServiceTypeID.DEFAULT_PROTO[0]);
-
-		return ServiceIDFactory.getDefault().createServiceTypeID(aNamespace,
-				new String[] { ECFServicePublication.SERVICE_TYPE }, new String[] { scope }, new String[] { protocol },
-				namingAuthority);
+		throw new UnsupportedOperationException("createServiceTypeID(Map servicePublicationProperties, Namespace aNamespace)");
 	}
 	
 	/*----------- Utility methods -----------*/
