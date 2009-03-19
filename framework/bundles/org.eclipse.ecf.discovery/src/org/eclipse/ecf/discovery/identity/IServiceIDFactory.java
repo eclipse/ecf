@@ -15,73 +15,114 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
- * ServiceID factory contract.  
+ * ServiceID factory contract.
  * 
  * @see ServiceIDFactory
  */
 public interface IServiceIDFactory {
 
 	/**
-	 * Create an IServiceTypeID.  Creates an immutable IServiceTypeID.
+	 * Create an IServiceTypeID. Creates an immutable IServiceTypeID.
 	 * 
-	 * @param namespace the Namespace instance to create the service ID with.  Must not be <code>null</code>.
-	 * @param service The service type. Must not be <code>null</code>.
+	 * @param namespace
+	 *            the Namespace instance to create the service ID with. Must not
+	 *            be <code>null</code>.
+	 * @param serviceType
+	 *            The service type. Must not be <code>null</code>.
 	 * @since 3.0
-	 *
-	 * @return IServiceTypeID created.  Will not be <code>null</code>.
-	 * @throws IDCreateException if some problem creating the new IServiceTypeID.
-	 */
-	public IServiceTypeID createServiceTypeID(Namespace namespace, String serviceType);
-		
-	/**
-	 * Create an IServiceTypeID.  Creates an immutable IServiceTypeID.
 	 * 
-	 * @param namespace the Namespace instance to create the service ID with.  Must not be <code>null</code>.
-	 * @param services Array containing the ordered naming hierarchy from 0...n. Must not be <code>null</code>.
-	 * @since 3.0
-	 *
-	 * @return IServiceTypeID created.  Will not be <code>null</code>.
-	 * @throws IDCreateException if some problem creating the new IServiceTypeID.
+	 * @return IServiceTypeID created. Will not be <code>null</code>.
+	 * @throws IDCreateException
+	 *             if some problem creating the new IServiceTypeID.
 	 */
-	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] serviceType);
-	
-	/**
-	 * Create an IServiceTypeID.  Creates an immutable IServiceTypeID.
-	 * 
-	 * @param namespace the Namespace instance to create the service ID with.  Must not be <code>null</code>.
-	 * @param services Array containing the ordered naming hierarchy from 0...n. Must not be <code>null</code>.
-	 * @param scopes Array containing all scopes or {@link IServiceTypeID#DEFAULT_SCOPE} for default. Must not be <code>null</code>.
-	 * @param protocols Array containing all protocols or {@link IServiceTypeID#DEFAULT_PROTO} for default. Must not be <code>null</code>.
-	 * @param namingAuthority the NamingAuthority or {@link IServiceTypeID#DEFAULT_NA} for default. Must not be <code>null</code>.
-	 * @since 3.0
-	 *
-	 * @return IServiceTypeID created.  Will not be <code>null</code>.
-	 * @throws IDCreateException if some problem creating the new IServiceTypeID.
-	 */
-	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] services, String[] scopes, String[] protocols, String namingAuthority) throws IDCreateException;
+	public IServiceTypeID createServiceTypeID(Namespace namespace,
+			String serviceType);
 
 	/**
-	 * Create an IServiceTypeID.  Creates an immutable IServiceTypeID. NamingAuthority will be set to
-	 * {@link IServiceTypeID#DEFAULT_NA}
-	 * @param namespace the Namespace instance to create the service ID with.  Must not be <code>null</code>.
-	 * @param serviceType Array containing the ordered naming hierarchy from 0...n. Must not be <code>null</code>.
-	 * @param protocols Array containing the protocols. Must not be <code>null</code>.
+	 * Create an IServiceTypeID. Creates an immutable IServiceTypeID.
+	 * 
+	 * @param namespace
+	 *            the Namespace instance to create the service ID with. Must not
+	 *            be <code>null</code>.
+	 * @param serviceType
+	 *            Array containing the ordered naming hierarchy from 0...n. Must
+	 *            not be <code>null</code>.
 	 * @since 3.0
-	 *
-	 * @return IServiceTypeID created.  Will not be <code>null</code>.
-	 * @throws IDCreateException if some problem creating the new IServiceTypeID.
+	 * 
+	 * @return IServiceTypeID created. Will not be <code>null</code>.
+	 * @throws IDCreateException
+	 *             if some problem creating the new IServiceTypeID.
 	 */
-	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] serviceType, String[] protocols) throws IDCreateException;
+	public IServiceTypeID createServiceTypeID(Namespace namespace,
+			String[] serviceType);
 
 	/**
-	 * Create an IServiceTypeID.  Creates an immutable IServiceTypeID from a non-<code>null</code> {@link IServiceTypeID}
-	 * with a different {@link Namespace}.
-	 * @param namespace the Namespace instance to create the service type ID with.  Must not be <code>null</code>.
-	 * @param aServiceTypeID service type id. Must not be <code>null</code>.
+	 * Create an IServiceTypeID. Creates an immutable IServiceTypeID.
+	 * 
+	 * @param namespace
+	 *            the Namespace instance to create the service ID with. Must not
+	 *            be <code>null</code>.
+	 * @param services
+	 *            Array containing the ordered naming hierarchy from 0...n. Must
+	 *            not be <code>null</code>.
+	 * @param scopes
+	 *            Array containing all scopes or
+	 *            {@link IServiceTypeID#DEFAULT_SCOPE} for default. Must not be
+	 *            <code>null</code>.
+	 * @param protocols
+	 *            Array containing all protocols or
+	 *            {@link IServiceTypeID#DEFAULT_PROTO} for default. Must not be
+	 *            <code>null</code>.
+	 * @param namingAuthority
+	 *            the NamingAuthority or {@link IServiceTypeID#DEFAULT_NA} for
+	 *            default. Must not be <code>null</code>.
 	 * @since 3.0
-	 *
-	 * @return IServiceTypeID created.  Will not be <code>null</code>.
-	 * @throws IDCreateException if some problem creating the new IServiceTypeID.
+	 * 
+	 * @return IServiceTypeID created. Will not be <code>null</code>.
+	 * @throws IDCreateException
+	 *             if some problem creating the new IServiceTypeID.
 	 */
-	public IServiceTypeID createServiceTypeID(Namespace namespace, IServiceTypeID aServiceTypeID) throws IDCreateException;
+	public IServiceTypeID createServiceTypeID(Namespace namespace,
+			String[] services, String[] scopes, String[] protocols,
+			String namingAuthority) throws IDCreateException;
+
+	/**
+	 * Create an IServiceTypeID. Creates an immutable IServiceTypeID.
+	 * NamingAuthority will be set to {@link IServiceTypeID#DEFAULT_NA}
+	 * 
+	 * @param namespace
+	 *            the Namespace instance to create the service ID with. Must not
+	 *            be <code>null</code>.
+	 * @param serviceType
+	 *            Array containing the ordered naming hierarchy from 0...n. Must
+	 *            not be <code>null</code>.
+	 * @param protocols
+	 *            Array containing the protocols. Must not be <code>null</code>.
+	 * @since 3.0
+	 * 
+	 * @return IServiceTypeID created. Will not be <code>null</code>.
+	 * @throws IDCreateException
+	 *             if some problem creating the new IServiceTypeID.
+	 */
+	public IServiceTypeID createServiceTypeID(Namespace namespace,
+			String[] serviceType, String[] protocols) throws IDCreateException;
+
+	/**
+	 * Create an IServiceTypeID. Creates an immutable IServiceTypeID from a non-
+	 * <code>null</code> {@link IServiceTypeID} with a different
+	 * {@link Namespace}.
+	 * 
+	 * @param namespace
+	 *            the Namespace instance to create the service type ID with.
+	 *            Must not be <code>null</code>.
+	 * @param aServiceTypeID
+	 *            service type id. Must not be <code>null</code>.
+	 * @since 3.0
+	 * 
+	 * @return IServiceTypeID created. Will not be <code>null</code>.
+	 * @throws IDCreateException
+	 *             if some problem creating the new IServiceTypeID.
+	 */
+	public IServiceTypeID createServiceTypeID(Namespace namespace,
+			IServiceTypeID aServiceTypeID) throws IDCreateException;
 }

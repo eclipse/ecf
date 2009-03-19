@@ -12,8 +12,8 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * Service properties implementation class for {@link IServiceProperties}.  Subclasses
- * may be created as appropriate.
+ * Service properties implementation class for {@link IServiceProperties}.
+ * Subclasses may be created as appropriate.
  */
 public class ServiceProperties implements IServiceProperties {
 
@@ -31,6 +31,7 @@ public class ServiceProperties implements IServiceProperties {
 
 	/**
 	 * Creates a copy of the given {@link IServiceProperties}
+	 * 
 	 * @param sp
 	 * @since 2.1
 	 */
@@ -56,7 +57,9 @@ public class ServiceProperties implements IServiceProperties {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.discovery.IServiceProperties#getPropertyString(java.lang.String)
+	 * @see
+	 * org.eclipse.ecf.discovery.IServiceProperties#getPropertyString(java.lang
+	 * .String)
 	 */
 	public String getPropertyString(String name) {
 		final Object val = props.get(name);
@@ -69,7 +72,9 @@ public class ServiceProperties implements IServiceProperties {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.discovery.IServiceProperties#getPropertyBytes(java.lang.String)
+	 * @see
+	 * org.eclipse.ecf.discovery.IServiceProperties#getPropertyBytes(java.lang
+	 * .String)
 	 */
 	public byte[] getPropertyBytes(String name) {
 		final Object val = props.get(name);
@@ -83,34 +88,50 @@ public class ServiceProperties implements IServiceProperties {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.discovery.IServiceProperties#getProperty(java.lang.String)
+	 * @see
+	 * org.eclipse.ecf.discovery.IServiceProperties#getProperty(java.lang.String
+	 * )
 	 */
 	public Object getProperty(String name) {
 		return props.get(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceProperties#setProperty(java.lang.String, java.lang.Object)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.discovery.IServiceProperties#setProperty(java.lang.String
+	 * , java.lang.Object)
 	 */
 	public Object setProperty(String name, Object value) {
 		return props.put(name, value);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceProperties#setPropertyBytes(java.lang.String, byte[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.discovery.IServiceProperties#setPropertyBytes(java.lang
+	 * .String, byte[])
 	 */
 	public Object setPropertyBytes(String name, byte[] value) {
 		return props.put(name, new ByteArrayWrapper(value));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceProperties#setPropertyString(java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.discovery.IServiceProperties#setPropertyString(java.lang
+	 * .String, java.lang.String)
 	 */
 	public Object setPropertyString(String name, String value) {
 		return props.put(name, value);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
@@ -121,14 +142,18 @@ public class ServiceProperties implements IServiceProperties {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
 		return props.hashCode();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -137,7 +162,9 @@ public class ServiceProperties implements IServiceProperties {
 		return buf.toString();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.discovery.IServiceProperties#size()
 	 */
 	public int size() {
@@ -145,7 +172,7 @@ public class ServiceProperties implements IServiceProperties {
 	}
 
 	/**
-	 * @return
+	 * @return Properties
 	 * @since 3.0
 	 */
 	public Properties asProperties() {
@@ -154,7 +181,7 @@ public class ServiceProperties implements IServiceProperties {
 		for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
 			Object key = (Object) iterator.next();
 			Object value = props.get(key);
-			if(value instanceof ByteArrayWrapper) {
+			if (value instanceof ByteArrayWrapper) {
 				ByteArrayWrapper baw = (ByteArrayWrapper) value;
 				result.put(key, baw.getByte());
 			} else {
@@ -163,7 +190,7 @@ public class ServiceProperties implements IServiceProperties {
 		}
 		return result;
 	}
-	
+
 	// proper equals/hashcode for byte[]
 	private static class ByteArrayWrapper implements Serializable {
 
@@ -178,7 +205,9 @@ public class ServiceProperties implements IServiceProperties {
 			return value;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.lang.Object#equals(java.lang.Object)
 		 */
 		public boolean equals(Object obj) {
@@ -189,7 +218,9 @@ public class ServiceProperties implements IServiceProperties {
 			return false;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.lang.Object#hashCode()
 		 */
 		public int hashCode() {
