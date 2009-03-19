@@ -1,8 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Team Plug-in
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.team.ecf.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: %plugin.provider
 Bundle-Activator: org.eclipse.team.internal.ecf.core.TeamSynchronization
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -16,3 +17,4 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Export-Package: org.eclipse.team.internal.ecf.core;x-friends:="org.eclipse.team.ecf.ui",
  org.eclipse.team.internal.ecf.core.messages;x-friends:="org.eclipse.team.ecf.ui",
  org.eclipse.team.internal.ecf.core.variants;x-friends:="org.eclipse.team.ecf.ui"
+Bundle-Localization: plugin
