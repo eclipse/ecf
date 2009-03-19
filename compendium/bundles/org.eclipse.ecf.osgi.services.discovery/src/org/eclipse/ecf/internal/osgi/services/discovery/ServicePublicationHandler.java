@@ -46,6 +46,10 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 		}
 	};
 
+	public ServicePublicationHandler() {
+		getLocator();
+	}
+	
 	private void handleServiceDiscovered(IServiceEvent event) {
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
