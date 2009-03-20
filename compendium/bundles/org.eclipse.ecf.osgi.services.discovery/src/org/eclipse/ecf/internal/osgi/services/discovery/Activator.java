@@ -20,6 +20,7 @@ import org.osgi.framework.*;
 import org.osgi.service.discovery.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class Activator implements BundleActivator {
 
@@ -67,6 +68,16 @@ public class Activator implements BundleActivator {
 		props.put(Discovery.PROP_KEY_SUPPORTED_PROTOCOLS, "SLP|mDNS|DNS-SRV");
 		ctxt.registerService(Discovery.class.getName(),
 				servicePublicationHandler, props);
+
+		locatorTracker = new ServiceTracker(this.context,
+				IDiscoveryLocator.class.getName(),
+				new LocatorTrackerCustomizer());
+		locatorTracker.open();
+		IDiscoveryLocator locator = (IDiscoveryLocator) locatorTracker
+				.getService();
+		if (locator != null) {
+			locator.addServiceListener(servicePublicationHandler);
+		}
 	}
 
 	protected LogService getLogService() {
@@ -107,16 +118,6 @@ public class Activator implements BundleActivator {
 
 	public ServicePublicationHandler getServicePublicationHandler() {
 		return servicePublicationHandler;
-	}
-
-	public IDiscoveryLocator getLocator() throws InterruptedException {
-		if (locatorTracker == null) {
-			locatorTracker = new ServiceTracker(this.context,
-					IDiscoveryLocator.class.getName(), null);
-			locatorTracker.open();
-		}
-		return (IDiscoveryLocator) locatorTracker
-				.waitForService(DISCOVERY_TIMEOUT);
 	}
 
 	public IDiscoveryAdvertiser getAdvertiser() throws InterruptedException {
@@ -174,4 +175,26 @@ public class Activator implements BundleActivator {
 		plugin = null;
 	}
 
+	private class LocatorTrackerCustomizer implements ServiceTrackerCustomizer {
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.osgi.util.tracker.ServiceTrackerCustomizer#addingService(org.
+		 * osgi.framework.ServiceReference)
+		 */
+		public Object addingService(ServiceReference reference) {
+			IDiscoveryLocator locator = (IDiscoveryLocator) context
+					.getService(reference);
+			locator.addServiceListener(servicePublicationHandler);
+			return locator;
+		}
+
+		public void modifiedService(ServiceReference reference, Object service) {
+		}
+
+		public void removedService(ServiceReference reference, Object service) {
+		}
+	}
 }

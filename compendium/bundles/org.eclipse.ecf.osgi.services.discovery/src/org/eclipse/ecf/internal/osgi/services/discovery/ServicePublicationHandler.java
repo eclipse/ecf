@@ -14,8 +14,7 @@ import java.net.*;
 import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
@@ -26,36 +25,33 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.*;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-public class ServicePublicationHandler implements ServiceTrackerCustomizer, Discovery {
+public class ServicePublicationHandler implements ServiceTrackerCustomizer,
+		Discovery, IServiceListener {
 
+	private IDiscoveryAdvertiser advertiser;
 	private Map serviceInfos = Collections.synchronizedMap(new HashMap());
 
-	private final IServiceListener serviceListener = new IServiceListener() {
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
-		 */
-		public void serviceDiscovered(IServiceEvent anEvent) {
-			handleServiceDiscovered(anEvent);
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceUndiscovered(org.eclipse.ecf.discovery.IServiceEvent)
-		 */
-		public void serviceUndiscovered(IServiceEvent anEvent) {
-			handleServiceUndiscovered(anEvent);
-		}
-	};
-
-	public ServicePublicationHandler() {
-		getLocator();
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+	 */
+	public void serviceDiscovered(IServiceEvent anEvent) {
+		handleServiceDiscovered(anEvent);
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceListener#serviceUndiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+	 */
+	public void serviceUndiscovered(IServiceEvent anEvent) {
+		handleServiceUndiscovered(anEvent);
+	}
+
 	private void handleServiceDiscovered(IServiceEvent event) {
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
 		trace("handleOSGIServiceDiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceDiscovered matched", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
+			trace(
+					"handleOSGIServiceDiscovered matched", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
@@ -72,7 +68,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 		IServiceInfo serviceInfo = event.getServiceInfo();
 		IServiceID serviceID = serviceInfo.getServiceID();
 		if (matchServiceID(serviceID)) {
-			trace("handleOSGIServiceUndiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
+			trace(
+					"handleOSGIServiceUndiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			if (discoveredTrackers != null) {
 				for (int i = 0; i < discoveredTrackers.length; i++) {
@@ -222,9 +219,10 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 		discoveryServiceProperties.setProperty(Constants.SERVICE_ID,
 				remoteServiceID);
 
+		Namespace advertiserNamespace = getAdvertiser().getServicesNamespace();
 		IServiceInfo svcInfo = null;
 		try {
-			IServiceTypeID serviceTypeID = createServiceTypeID(servicePublicationServiceProperties);
+			IServiceTypeID serviceTypeID = createServiceTypeID(servicePublicationServiceProperties, advertiserNamespace);
 			URI uri = createURI(endpointContainerID);
 
 			String serviceName = getPropertyWithDefault(
@@ -320,21 +318,6 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 		}
 	}
 
-	private IDiscoveryLocator locator;
-	private IDiscoveryAdvertiser advertiser;
-
-	private synchronized IDiscoveryLocator getLocator() {
-		try {
-			if (locator == null) {
-				locator = Activator.getDefault().getLocator();
-				locator.addServiceListener(serviceListener);
-			}
-		} catch (InterruptedException e) {
-			logError("getLocator", "Cannot get IDiscoveryLocator service", e); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		return locator;
-	}
-
 	private synchronized IDiscoveryAdvertiser getAdvertiser() {
 		try {
 			if (advertiser == null) {
@@ -352,10 +335,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 	}
 
 	protected IServiceTypeID createServiceTypeID(
-			Map servicePublicationProperties) throws IDCreateException {
-		IDiscoveryLocator l = getLocator();
-		if (l == null)
-			return null;
+			Map servicePublicationProperties, Namespace aNamespace)
+			throws IDCreateException {
 		String namingAuthority = getPropertyWithDefault(
 				servicePublicationProperties,
 				ECFServicePublication.NAMING_AUTHORITY_PROP,
@@ -367,8 +348,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 				ECFServicePublication.SERVICE_PROTOCOL_PROP,
 				IServiceTypeID.DEFAULT_PROTO[0]);
 
-		return ServiceIDFactory.getDefault().createServiceTypeID(
-				l.getServicesNamespace(),
+		return ServiceIDFactory.getDefault().createServiceTypeID(aNamespace,
 				new String[] { ECFServicePublication.SERVICE_TYPE },
 				new String[] { scope }, new String[] { protocol },
 				namingAuthority);
@@ -408,22 +388,13 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer, Disc
 				.getClass(), methodName, message);
 	}
 
-	/*
-	 * protected void traceException(String string, Throwable e) {
-	 * Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
-	 * this.getClass(), string, e); }
-	 */
 	public void dispose() {
-		if (locator != null) {
-			locator.removeServiceListener(serviceListener);
+		if (advertiser != null) {
 			for (Iterator i = serviceInfos.keySet().iterator(); i.hasNext();) {
 				ServiceReference sr = (ServiceReference) i.next();
 				unpublishService(sr);
 			}
 			serviceInfos.clear();
-			locator = null;
-		}
-		if (advertiser != null) {
 			advertiser = null;
 		}
 	}
