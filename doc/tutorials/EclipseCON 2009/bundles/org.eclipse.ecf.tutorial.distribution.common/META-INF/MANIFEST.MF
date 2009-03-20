@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF EclipseCon 2009 Tutorial Common
+Bundle-SymbolicName: org.eclipse.ecf.tutorial.distribution.common
+Bundle-Version: 1.0.0
+Bundle-Vendor: Eclipse.org
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.eclipse.osgi.service.environment,
+ org.osgi.framework,
+ org.osgi.util.tracker
+Export-Package: org.eclipse.ecf.tutorial.distribution.common.complextypes,
+ org.eclipse.ecf.tutorial.distribution.common.environmentinfo,
+ org.eclipse.ecf.tutorial.distribution.common.hello,
+ org.eclipse.ecf.tutorial.internal.distribution.common;x-internal:=true
