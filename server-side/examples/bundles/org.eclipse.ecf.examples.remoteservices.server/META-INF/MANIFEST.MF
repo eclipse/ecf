@@ -14,5 +14,5 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
 Eclipse-LazyStart: true
-Export-Package: org.eclipse.ecf.internal.examples.remoteservices.server;x-internal:=true
+Export-Package: org.eclipse.ecf.internal.examples.remoteservices.server;x-friends:="org.eclipse.ecf.examples.remoteservices.server.transparent"
 Bundle-ActivationPolicy: lazy
