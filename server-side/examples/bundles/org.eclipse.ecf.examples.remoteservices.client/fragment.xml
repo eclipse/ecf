@@ -15,7 +15,7 @@
                         ifEmpty="false"
                         operator="and">
                      <test
-                           args="remotesvcs, IRemoteEnvironmentInfo"
+                           args="remotesvcs"
                            property="org.eclipse.ecf.discovery.isServiceType"
                            value="true">
                      </test>
