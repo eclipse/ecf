@@ -40,12 +40,11 @@ public class DiscoverableServer implements IApplication {
 	public static final String serviceTypeArg = "-serviceType"; //$NON-NLS-1$
 
 	// Argument variables
-	private String protocol = "ecftcp"; //$NON-NLS-1$
 	private String serviceHostContainerType = "ecf.generic.server"; //$NON-NLS-1$
 	private String serviceHostNamespace = StringID.class.getName();
-	private String serviceHostID = protocol + "://localhost:3285/server"; //$NON-NLS-1$
+	private String serviceHostID = "ecftcp://localhost:3285/server"; //$NON-NLS-1$
 	private String clientContainerType = "ecf.generic.client"; //$NON-NLS-1$
-	private String clientConnectTarget = protocol + "://localhost:3285/server"; //$NON-NLS-1$
+	private String clientConnectTarget = "ecftcp://localhost:3285/server"; //$NON-NLS-1$
 	private String serviceType = "remotesvcs"; //$NON-NLS-1$
 
 	private IContainer serviceHostContainer;
@@ -88,7 +87,7 @@ public class DiscoverableServer implements IApplication {
 		Assert.isNotNull(discoveryService);
 
 		final String serviceName = System.getProperty("user.name") + System.currentTimeMillis(); //$NON-NLS-1$
-		final IServiceTypeID serviceID = ServiceIDFactory.getDefault().createServiceTypeID(discoveryService.getServicesNamespace(), new String[] {serviceType}, new String[] {protocol});
+		final IServiceTypeID serviceID = ServiceIDFactory.getDefault().createServiceTypeID(discoveryService.getServicesNamespace(), new String[] {serviceType});
 		final Properties serviceProperties = createServicePropertiesForDiscovery(serviceClassName);
 		URI uri = new URI(serviceHostID);
 		serviceInfo = new ServiceInfo(uri, serviceName, serviceID, 0, 0, new ServiceProperties(serviceProperties));
