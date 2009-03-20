@@ -31,15 +31,30 @@ public class RemoteServiceHandlerUtil {
 
 	public static IRemoteServiceContainerAdapter getActiveIRemoteServiceContainerAdapterChecked(ExecutionEvent event) throws ExecutionException {
 		final ID activeConnectId = getActiveConnectIDChecked(event);
-		final IContainerManager containerManager = Activator.getDefault().getContainerManager();
-		final IContainer container = containerManager.getContainer(activeConnectId);
+		final IContainer container = getContainerWithConnectId(activeConnectId);
+		if (container == null) return null;
 		final IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class);
 		return adapter;
 	}
 
+	public static IContainer getContainerWithConnectId(ID connectID) {
+		
+		final IContainerManager containerManager = Activator.getDefault().getContainerManager();
+		final IContainer[] containers = containerManager.getAllContainers();
+		if (containers == null || containers.length == 0) return null;
+		for(int i=0; i < containers.length; i++) {
+			ID connectedId = containers[i].getConnectedID();
+			if (connectedId != null && connectedId.equals(connectID)) {
+				return containers[i];
+			}
+		}
+		return null;
+	}
+	
 	public static IRemoteServiceReference[] getActiveIRemoteServiceReferencesChecked(ExecutionEvent event) throws ExecutionException {
 		IServiceInfo serviceInfo = DiscoveryHandlerUtil.getActiveIServiceInfoChecked(event);
 		IRemoteServiceContainerAdapter adapter = getActiveIRemoteServiceContainerAdapterChecked(event);
+		if (adapter == null) return null;
 		try {
 			return getRemoteServiceReferencesForRemoteServiceAdapter(adapter, serviceInfo);
 		} catch (IDCreateException e) {
@@ -63,9 +78,12 @@ public class RemoteServiceHandlerUtil {
 	public static IContainer getActiveIRemoteServiceContainerChecked(ExecutionEvent event) throws ExecutionException {
 		final IServiceInfo serviceInfo = DiscoveryHandlerUtil.getActiveIServiceInfoChecked(event);
 		final ID createConnectId = getActiveConnectIDChecked(event);
+		IContainer container = getContainerWithConnectId(createConnectId);
+		if (container != null) return container;
 		//TODO remove parameters once https://bugs.eclipse.org/bugs/show_bug.cgi?id=256586 is fixed
-		final Object[] parameters = new Object[]{createConnectId};
+		Object[] parameters = new Object[] { createConnectId };
 		try {
+		// If it's not there and already connected then create and return new one
 			return ContainerFactory.getDefault().createContainer(getContainerFactory(serviceInfo), parameters);
 		} catch (ContainerCreateException e) {
 			throw new ExecutionException(e.getMessage(), e);

@@ -26,16 +26,13 @@ public class ConnectRemoteServicehandler extends ConnectionHandler {
 
 	protected Job getJob(final ExecutionEvent event) throws ExecutionException {
 		final ID createConnectId = RemoteServiceHandlerUtil.getActiveConnectIDChecked(event);
+		final IContainer container = RemoteServiceHandlerUtil.getActiveIRemoteServiceContainerChecked(event);
 		// decouple the long running connect call from the ui thread
 		return new Job(NLS.bind("Connecting {0}", createConnectId.getName())) {
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					final IContainer container = RemoteServiceHandlerUtil.getActiveIRemoteServiceContainerChecked(event);
-					container.connect(createConnectId, null);
+					if (container != null) container.connect(createConnectId, null);
 				} catch (ContainerConnectException e) {
-					showException(e);
-					return Status.CANCEL_STATUS;
-				} catch (ExecutionException e) {
 					showException(e);
 					return Status.CANCEL_STATUS;
 				}

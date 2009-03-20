@@ -12,22 +12,17 @@ package org.eclipse.ecf.internal.remoteservices.ui.property;
 
 
 import org.eclipse.core.expressions.PropertyTester;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.ui.DiscoveryPropertyTesterUtil;
-import org.eclipse.ecf.internal.remoteservices.ui.Activator;
+import org.eclipse.ecf.internal.remoteservices.ui.RemoteServiceHandlerUtil;
 import org.eclipse.ecf.remoteservice.Constants;
 
 public class ConnectedTester extends PropertyTester {
 	
-	private IContainerManager containerManager;
-
 	public ConnectedTester() {
-		containerManager = Activator.getDefault().getContainerManager();
 	}
 	
 	/* (non-Javadoc)
@@ -60,13 +55,7 @@ public class ConnectedTester extends PropertyTester {
 		final String connectId = getConnectID(serviceInfo);
 		try {
 			ID createConnectId = IDFactory.getDefault().createID(connectNamespace, connectId);
-			IContainer container = containerManager.getContainer(createConnectId);
-			if(container == null) {
-				//Trace.trace(...);
-				return false;
-			}
-			ID connectedId = container.getConnectedID();
-			return (connectedId == null ? false : true);
+			return (RemoteServiceHandlerUtil.getContainerWithConnectId(createConnectId) != null);
 		} catch (IDCreateException e) {
 			//Trace.trace(...);
 			return false;
