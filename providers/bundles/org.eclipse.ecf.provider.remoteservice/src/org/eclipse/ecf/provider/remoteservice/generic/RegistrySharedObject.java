@@ -41,6 +41,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected Map addRegistrationRequests = new Hashtable();
 
+	/**
+	 * @since 3.0
+	 */
+	protected int addRegistrationRequestTimeout = ADD_REGISTRATION_REQUEST_TIMEOUT;
+
 	protected List requests = Collections.synchronizedList(new ArrayList());
 
 	/**
@@ -97,6 +102,33 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return remoteService;
 	}
 
+	private void addReferencesFromRemoteRegistrys(ID[] idFilter, String clazz, IRemoteFilter remoteFilter, List referencesFound) {
+		synchronized (remoteRegistrys) {
+			if (idFilter == null) {
+				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
+				for (final Iterator i = registrys.iterator(); i.hasNext();) {
+					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
+					// Add IRemoteServiceReferences from each remote registry
+					addReferencesFromRegistry(clazz, remoteFilter, registry, referencesFound);
+				}
+			} else {
+				for (int i = 0; i < idFilter.length; i++) {
+					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(idFilter[i]);
+					if (registry != null) {
+						addReferencesFromRegistry(clazz, remoteFilter, registry, referencesFound);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	protected int getAddRegistrationRequestTimeout() {
+		return addRegistrationRequestTimeout;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#getRemoteServiceReferences(org.eclipse.ecf.core.identity.ID[], java.lang.String, java.lang.String)
 	 */
@@ -106,61 +138,42 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			return null;
 		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
 		final List references = new ArrayList();
-		synchronized (remoteRegistrys) {
-			if (idFilter == null) {
-				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
-				for (final Iterator i = registrys.iterator(); i.hasNext();) {
-					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
-					// Add IRemoteServiceReferences from each remote registry
-					addReferencesFromRegistry(clazz, remoteFilter, registry, references);
-				}
-			} else {
-				for (int i = 0; i < idFilter.length; i++) {
-					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(idFilter[i]);
-					if (registry != null) {
-						addReferencesFromRegistry(clazz, remoteFilter, registry, references);
-					}
-				}
-			}
-		}
+		// Lookup from remote registrys...add to given references List
+		addReferencesFromRemoteRegistrys(idFilter, clazz, remoteFilter, references);
+		// Add any from local registry
 		synchronized (localRegistry) {
 			addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
 		}
+		// If none found the first time we send a registration request and wait
 		if (references.size() == 0) {
-			// It's not already here...so send out AddRegistrationRequests
-			if (idFilter == null)
-				return null;
 			AddRegistrationRequest first = null;
 			List ourAddRegistrationRequests = new ArrayList();
-			for (int i = 0; i < idFilter.length; i++) {
-				ID target = idFilter[i];
-				if (target != null) {
-					AddRegistrationRequest request = new AddRegistrationRequest(clazz, filter, first);
-					if (i == 0)
-						first = request;
-					// Add to list of all know
-					ourAddRegistrationRequests.add(request);
-					addRegistrationRequests.put(request.getId(), request);
-					sendAddRegistrationRequest(target, request, getAddRegistrationRequestCredentials(request));
-				}
-			}
-			if (first != null) {
-				// Wait here for timeout or response
-				first.waitForResponse(ADD_REGISTRATION_REQUEST_TIMEOUT);
-				// Now...if we got a response, and there was no exception then we look again
-				if (first.isDone()) {
-					for (int i = 0; i < idFilter.length; i++) {
-						final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(idFilter[i]);
-						if (registry != null) {
-							addReferencesFromRegistry(clazz, remoteFilter, registry, references);
-						}
+			// It's not already here...so send out AddRegistrationRequests
+			if (idFilter == null) {
+				first = new AddRegistrationRequest(null, clazz, filter, first);
+				ourAddRegistrationRequests.add(first);
+			} else {
+				for (int i = 0; i < idFilter.length; i++) {
+					ID target = idFilter[i];
+					if (target != null) {
+						AddRegistrationRequest request = new AddRegistrationRequest(target, clazz, filter, first);
+						if (i == 0)
+							first = request;
+						// Add to list of all know
+						ourAddRegistrationRequests.add(request);
+						addRegistrationRequests.put(request.getId(), request);
+						sendAddRegistrationRequest(target, request, getAddRegistrationRequestCredentials(request));
 					}
 				}
-				// In either case, remove all the addRegistrationRequests
-				for (Iterator i = ourAddRegistrationRequests.iterator(); i.hasNext();) {
-					AddRegistrationRequest request = (AddRegistrationRequest) i.next();
-					addRegistrationRequests.remove(request.getId());
-				}
+			}
+			// Wait here for timeout or response
+			first.waitForResponse(ADD_REGISTRATION_REQUEST_TIMEOUT);
+			// Now look again
+			addReferencesFromRemoteRegistrys(idFilter, clazz, remoteFilter, references);
+			// In either case, remove all the addRegistrationRequests
+			for (Iterator i = ourAddRegistrationRequests.iterator(); i.hasNext();) {
+				AddRegistrationRequest request = (AddRegistrationRequest) i.next();
+				addRegistrationRequests.remove(request.getId());
 			}
 
 		}
@@ -565,7 +578,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static final String REGISTRY_UPDATE_REQUEST = "handleRegistryUpdateRequest"; //$NON-NLS-1$
 
-	private static final int ADD_REGISTRATION_REQUEST_TIMEOUT = 10000;
+	private static final int ADD_REGISTRATION_REQUEST_TIMEOUT = 5000;
 
 	protected void sendRegistryUpdateRequest() {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendRegistryUpdateRequest"); //$NON-NLS-1$
@@ -669,7 +682,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (remoteContainerID == null || requestId == null)
 			return;
 		// else lookup AddRegistrationRequest and notify
-		notifyAddRegistrationResponse(requestId, e);
+		notifyAddRegistrationResponse(remoteContainerID, requestId, e);
 	}
 
 	protected void handleAddRegistration(ID remoteContainerID, final RemoteServiceRegistrationImpl registration) {
@@ -698,7 +711,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				registry.publishService(registration);
 				localRegisterService(registration);
 			}
-			notifyAddRegistrationResponse(requestId, null);
+			notifyAddRegistrationResponse(remoteContainerID, requestId, null);
 		}
 		// notify IRemoteServiceListeners
 		if (added)
@@ -709,12 +722,26 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @param requestId
 	 */
-	private void notifyAddRegistrationResponse(Integer requestId, AccessControlException exception) {
-		if (requestId == null)
+	private void notifyAddRegistrationResponse(ID remoteContainerID, Integer requestId, AccessControlException exception) {
+		if (remoteContainerID == null)
 			return;
-		AddRegistrationRequest request = (AddRegistrationRequest) addRegistrationRequests.remove(requestId);
-		if (request != null) {
-			request.notifyResponse(exception);
+		List pendingRequests = new ArrayList();
+		// If the requestId is null, this isn't in response to any particular request,
+		// So we get all AddRegistrationRequests
+		synchronized (addRegistrationRequests) {
+			if (requestId == null) {
+				for (Iterator i = addRegistrationRequests.keySet().iterator(); i.hasNext();) {
+					Integer key = (Integer) i.next();
+					pendingRequests.add(addRegistrationRequests.get(key));
+				}
+			} else
+				pendingRequests.add(addRegistrationRequests.get(requestId));
+		}
+		// Then notify each one of the response from given remoteContainerID
+		for (Iterator i = pendingRequests.iterator(); i.hasNext();) {
+			AddRegistrationRequest request = (AddRegistrationRequest) i.next();
+			if (request != null)
+				request.notifyResponse(remoteContainerID, exception);
 		}
 	}
 

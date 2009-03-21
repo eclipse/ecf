@@ -14,9 +14,11 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 import java.io.Serializable;
 import java.security.AccessControlException;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.identity.ID;
 
 public class AddRegistrationRequest implements Serializable {
 	private static final long serialVersionUID = -2671778516104780091L;
+	ID targetID;
 	String service;
 	String filter;
 	AccessControlException acc;
@@ -24,7 +26,11 @@ public class AddRegistrationRequest implements Serializable {
 
 	private boolean done = false;
 
-	public AddRegistrationRequest(String service, String filter, AddRegistrationRequest parent) {
+	/**
+	 * @since 3.0
+	 */
+	public AddRegistrationRequest(ID targetID, String service, String filter, AddRegistrationRequest parent) {
+		this.targetID = null;
 		Assert.isNotNull(service);
 		this.service = service;
 		this.filter = filter;
@@ -66,17 +72,23 @@ public class AddRegistrationRequest implements Serializable {
 		return acc;
 	}
 
-	public void notifyResponse(AccessControlException exception) {
-		this.acc = exception;
-		synchronized (this) {
-			done = true;
-			if (parent != null) {
-				parent.notifyResponse(exception);
-			} else {
-				synchronized (this) {
-					this.notify();
+	/**
+	 * @since 3.0
+	 */
+	public void notifyResponse(ID from, AccessControlException exception) {
+		if (targetID == null || targetID.equals(from)) {
+			this.acc = exception;
+			synchronized (this) {
+				done = true;
+				if (parent != null) {
+					parent.notifyResponse(from, exception);
+				} else {
+					synchronized (this) {
+						this.notify();
+					}
 				}
 			}
 		}
 	}
+
 }
