@@ -15,14 +15,21 @@
                         ifEmpty="false"
                         operator="and">
                      <test
-                           args="remotesvcs"
-                           property="org.eclipse.ecf.discovery.isServiceType"
-                           value="true">
-                     </test>
-                     <test
                            property="org.eclipse.ecf.remoteservices.isConnected"
                            value="true">
                      </test>
+                     <or>
+                        <test
+                              args="remotesvcs"
+                              property="org.eclipse.ecf.discovery.isServiceType"
+                              value="true">
+                        </test>
+                        <test
+                              args="osgiservices"
+                              property="org.eclipse.ecf.discovery.isServiceType"
+                              value="true">
+                        </test>
+                     </or>
                   </iterate>
                </with>
             </visibleWhen>
