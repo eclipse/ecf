@@ -217,13 +217,12 @@ public abstract class AbstractRemoteServiceTest extends
 	public void testGetServiceReferences() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		registerService(adapters[0], IConcatService.class.getName(),
-				createService(), null, 3000);
+				createService(), null, 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
 				adapters[1], IConcatService.class.getName(), null);
 
-		if (refs == null)
-			return;
+		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
 	}
 
@@ -233,16 +232,13 @@ public abstract class AbstractRemoteServiceTest extends
 		props.put("foo", "bar");
 		props.put("foo1", "bar");
 		registerService(adapters[0], IConcatService.class.getName(),
-				createService(), props, 3000);
+				createService(), props, 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
 				adapters[1], IConcatService.class.getName(),
 				getFilterFromServiceProperties(props));
 
-		if (refs == null)
-			return;
-
-		assertNotNull(refs);
+		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
 	}
 
@@ -252,7 +248,7 @@ public abstract class AbstractRemoteServiceTest extends
 		props.put("foo", "bar");
 		props.put("foo1", "bar");
 		registerService(adapters[0], IConcatService.class.getName(),
-				createService(), props, 3000);
+				createService(), props, 0);
 
 		// Create dictionary that is *not* the same as props, so the filter
 		// should miss
@@ -263,7 +259,7 @@ public abstract class AbstractRemoteServiceTest extends
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
 				adapters[1], IConcatService.class.getName(), missFilter);
 
-		assertNull(refs);
+		assertTrue(refs == null);
 	}
 
 	public void testGetService() throws Exception {
@@ -281,7 +277,7 @@ public abstract class AbstractRemoteServiceTest extends
 	protected IRemoteService registerAndGetRemoteService() {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		return registerAndGetRemoteService(adapters[0], adapters[1],
-				IConcatService.class.getName(), null, 1500);
+				IConcatService.class.getName(), null, 0);
 
 	}
 

@@ -24,8 +24,8 @@ public class RemoteServiceTest extends AbstractRemoteServiceTest {
 		super.setUp();
 		setClientCount(2);
 		createServerAndClients();
-		connectClients();
 		setupRemoteServiceAdapters();
+		connectClients();
 		addRemoteServiceListeners();
 	}
 
