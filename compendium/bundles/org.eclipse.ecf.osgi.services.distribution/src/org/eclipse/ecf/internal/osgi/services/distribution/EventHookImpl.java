@@ -10,7 +10,7 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.*;
-import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -22,6 +22,10 @@ import org.osgi.framework.*;
 import org.osgi.service.discovery.ServicePublication;
 
 public class EventHookImpl extends AbstractEventHookImpl {
+
+	private static final String CONTAINER_DEFAULT_TYPE = System.getProperty(
+			"ecf.osgi.services.distribution.container.default.type", //$NON-NLS-1$
+			"ecf.r_osgi.peer"); //$NON-NLS-1$
 
 	/**
 	 * 
@@ -260,8 +264,10 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			IContainerManager containerManager,
 			ServiceReference serviceReference, Map ecfConfiguration) {
 		IContainer[] containers = containerManager.getAllContainers();
-		if (containers == null)
-			return null;
+		if (containers == null || containers.length == 0) {
+			containers = createDefaultContainer(containerManager
+					.getContainerFactory());
+		}
 		List rscas = new ArrayList();
 		for (int i = 0; i < containers.length; i++) {
 			IRemoteServiceContainerAdapter rsca = (IRemoteServiceContainerAdapter) containers[i]
@@ -323,6 +329,29 @@ public class EventHookImpl extends AbstractEventHookImpl {
 				+ " has non-matching id=" + containerID + ".  EXCLUDING id="
 				+ container.getID() + " in remote registration");
 		return false;
+	}
+
+	/**
+	 * Creates a default container if none is currently running
+	 * 
+	 * @param iContainerFactory
+	 */
+	private IContainer[] createDefaultContainer(
+			IContainerFactory iContainerFactory) {
+		try {
+			IContainer[] containers = new IContainer[1];
+			containers[0] = iContainerFactory
+					.createContainer(CONTAINER_DEFAULT_TYPE);
+			return containers;
+		} catch (ContainerCreateException e) {
+			trace("createDefaultContainer",
+					"Failed to create default container"
+							+ e.getLocalizedMessage());
+			Activator.getDefault().log(
+					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							"Failed to create default container", e));
+			return new IContainer[0];
+		}
 	}
 
 }
