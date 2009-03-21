@@ -33,7 +33,7 @@
                class="org.eclipse.ecf.internal.discovery.ui.ServicePropertySection"
                id="discovery.service.id.section.1"
                tab="discovery.service.name">
-            <input type="java.lang.Object"/>
+            <input type="org.eclipse.ecf.discovery.ui.model.IServiceInfo"/>
          </propertySection>
          <propertySection
                afterSection="discovery.service.id.section.1"
