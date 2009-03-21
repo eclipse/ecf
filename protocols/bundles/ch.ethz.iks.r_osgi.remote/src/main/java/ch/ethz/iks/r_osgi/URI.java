@@ -138,8 +138,12 @@ public final class URI implements Serializable {
 				fragment = uriString.substring(p2 + 1);
 				ce = p2;
 			}
+			final int p4 = uriString.indexOf("/", cs); //$NON-NLS-1$
 			final int p3 = uriString.indexOf(":", cs); //$NON-NLS-1$
-			if (p3 > -1) {
+			if (p3 > -1 && p4 > p3) {
+				port = Integer.parseInt(uriString.substring(p3 + 1, p4));
+				ce = p3;
+			} else if (p3 > -1) {
 				port = Integer.parseInt(uriString.substring(p3 + 1, ce));
 				ce = p3;
 			} else {
