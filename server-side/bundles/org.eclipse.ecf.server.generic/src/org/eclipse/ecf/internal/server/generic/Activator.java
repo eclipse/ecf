@@ -1,6 +1,7 @@
 package org.eclipse.ecf.internal.server.generic;
 
 import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.server.generic.ServerManager;
@@ -29,6 +30,8 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker logServiceTracker = null;
 
+	private ServiceTracker containerManagerTracker = null;
+
 	/**
 	 * The constructor
 	 */
@@ -42,6 +45,14 @@ public class Activator implements BundleActivator {
 
 	public IDiscoveryAdvertiser getDiscovery() {
 		return (IDiscoveryAdvertiser) discoveryTracker.getService();
+	}
+
+	public IContainerManager getContainerManager() {
+		if (containerManagerTracker == null) {
+			containerManagerTracker = new ServiceTracker(this.context, IContainerManager.class.getName(), null);
+			containerManagerTracker.open();
+		}
+		return (IContainerManager) containerManagerTracker.getService();
 	}
 
 	public Bundle getBundle() {
