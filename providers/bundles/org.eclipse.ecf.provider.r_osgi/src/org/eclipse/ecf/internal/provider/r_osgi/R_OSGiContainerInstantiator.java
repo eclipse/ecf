@@ -11,11 +11,15 @@
 
 package org.eclipse.ecf.internal.provider.r_osgi;
 
+import ch.ethz.iks.r_osgi.RemoteOSGiService;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 
 /**
@@ -42,12 +46,23 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	 */
 	public IContainer createInstance(final ContainerTypeDescription description, final Object[] parameters) throws ContainerCreateException {
 		try {
-			if (parameters.length == 1 && parameters[0] instanceof ID) {
-				return new R_OSGiRemoteServiceContainer(Activator.getDefault().getRemoteOSGiService(), (ID) parameters[0]);
+			final RemoteOSGiService remoteOsGiService = Activator.getDefault().getRemoteOSGiService();
+			if (parameters == null) {
+				//TODO factor localHost and protocol out?
+				final String localHost = InetAddress.getLocalHost().getHostName();
+				final String protocol = "r-osgi"; //$NON-NLS-1$
+
+				final int port = remoteOsGiService.getListeningPort(protocol);
+				final ID containerID = new R_OSGiID(protocol + "://" + localHost + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
+				return new R_OSGiRemoteServiceContainer(remoteOsGiService, containerID);
+			} else if (parameters.length == 1 && parameters[0] instanceof ID) {
+				return new R_OSGiRemoteServiceContainer(remoteOsGiService, (ID) parameters[0]);
 			}
 			throw new ContainerCreateException("Unsupported arguments " //$NON-NLS-1$
 					+ Arrays.asList(parameters));
 		} catch (IDCreateException e) {
+			throw new ContainerCreateException(e);
+		} catch (UnknownHostException e) {
 			throw new ContainerCreateException(e);
 		}
 	}
