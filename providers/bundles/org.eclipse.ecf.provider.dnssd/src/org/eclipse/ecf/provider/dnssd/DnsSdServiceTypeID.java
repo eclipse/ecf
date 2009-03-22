@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.dnssd;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +24,7 @@ import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
-public class DnsSdServiceTypeID extends ServiceTypeID implements
-		IServiceTypeID {
+public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID {
 
 	private static final long serialVersionUID = 1247933069737880365L;
 
@@ -43,26 +44,43 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements
 
 	public DnsSdServiceTypeID(Namespace namespace) {
 		super(namespace);
+		try {
+			final InetAddress localHost = InetAddress.getLocalHost();
+			final String fqdn = localHost.getCanonicalHostName();
+			int idx = fqdn.indexOf(".");
+			if(idx > -1) {
+				scopes = new String[]{fqdn.substring(idx +1)};
+			} else {
+				scopes = new String[]{fqdn};
+			}
+		} catch (UnknownHostException e) {
+			scopes = null;
+		}
+	}
+	
+	DnsSdServiceTypeID() {
+		super(new DnsSdNamespace());
 	}
 
-	public DnsSdServiceTypeID(Namespace namespace, SRVRecord srvRecord) {
+	DnsSdServiceTypeID(Namespace namespace, SRVRecord srvRecord) {
 		super(namespace, srvRecord.getName().toString());
 	}
 
-	public Lookup[] getInternalQueries() {
+	Lookup[] getInternalQueries() {
 		String[] protos = protocols;
 		int type = Type.SRV;
-		
+
 		String service = null;
-		if (services == null || services.length == 0 || (services.length == 1 && services[0].equals(""))) {
+		if (services == null || services.length == 0
+				|| (services.length == 1 && services[0].equals(""))) {
 			// if no service is set, create a non service specific query
 			service = "_services._dns-sd._";
-			
+
 			// and set proto to "udp" irregardless what has been set
-			protos = new String[]{"udp"};
-			
+			protos = new String[] { "udp" };
+
 			// and query for PTR records
-			type  = Type.PTR;
+			type = Type.PTR;
 		} else {
 			service = "_";
 			for (int i = 0; i < services.length; i++) {
@@ -77,7 +95,8 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements
 			for (int j = 0; j < protos.length; j++) {
 				Lookup query;
 				try {
-					query = new Lookup(service + protos[j] + "." + scope + ".", type);
+					query = new Lookup(service + protos[j] + "." + scope + ".",
+							type);
 				} catch (TextParseException e) {
 					continue;
 				}
@@ -85,6 +104,11 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements
 			}
 		}
 		return (Lookup[]) result.toArray(new Lookup[result.size()]);
+	}
+
+	//TODO hack until we get real configuration admin support
+	public void setScope(String string) {
+		scopes = new String[]{string};
 	}
 
 }

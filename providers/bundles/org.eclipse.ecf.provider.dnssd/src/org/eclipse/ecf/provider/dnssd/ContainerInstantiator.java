@@ -22,8 +22,7 @@ public class ContainerInstantiator implements IContainerInstantiator {
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] parameters) throws ContainerCreateException {
-		// TODO Auto-generated method stub
-		return null;
+		return new DnsSdDisocoveryLocator();
 	}
 
 	/* (non-Javadoc)

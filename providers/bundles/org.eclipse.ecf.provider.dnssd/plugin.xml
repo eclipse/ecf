@@ -6,15 +6,15 @@
       <containerFactory
             class="org.eclipse.ecf.provider.dnssd.ContainerInstantiator"
             description="Discovery Locator Container "
-            name="ecf.discovery.jslp.locator">
+            name="ecf.discovery.dnssd.locator">
       </containerFactory>
    </extension>
    <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.provider.dnssd.DnsSdNamespace"
-            description="Dns Srv Namespace"
-            name="ecf.namespace.dnssrv"/>
+            description="Dns SD Namespace"
+            name="ecf.namespace.dnssd"/>
    </extension>
 
 </plugin>

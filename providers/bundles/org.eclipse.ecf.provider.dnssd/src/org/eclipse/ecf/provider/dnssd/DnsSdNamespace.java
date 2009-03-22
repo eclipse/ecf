@@ -21,8 +21,8 @@ public class DnsSdNamespace extends Namespace {
 
 	private static final long serialVersionUID = 7902507535188221743L;
 
-	public static final String SCHEME = "dnssrv"; //$NON-NLS-1$
-	public static final String NAME = "ecf.namespace.dnssrv"; //$NON-NLS-1$
+	public static final String SCHEME = "dnssd"; //$NON-NLS-1$
+	public static final String NAME = "ecf.namespace.dnssd"; //$NON-NLS-1$
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])

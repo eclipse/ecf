@@ -44,7 +44,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 
 	private static final String DNS_SD_PATH = "path";
 	private static final String DNS_SD_PTCL = "dns-sd.ptcl";
-	private ID targetID;
+	private DnsSdServiceTypeID targetID;
 
 	public DnsSdDisocoveryLocator() {
 		super(DnsSdNamespace.NAME, new DiscoveryContainerConfig(IDFactory
@@ -62,7 +62,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	public IServiceInfo getServiceInfo(IServiceID aServiceId) {
 		IServiceInfo[] services = getServices(aServiceId.getServiceTypeID());
 		for (int i = 0; i < services.length; i++) {
-			//TODO This can be much faster if done directly instead of via org.eclipse.ecf.provider.dnssrv.DnsSrvDisocoveryLocator.getServices(IServiceTypeID)
+			//TODO This can be a lot faster if done directly instead of via org.eclipse.ecf.provider.dnssrv.DnsSrvDisocoveryLocator.getServices(IServiceTypeID)
 			IServiceInfo iServiceInfo = services[i];
 			if(iServiceInfo.getServiceID().equals(aServiceId)) {
 				return iServiceInfo;
@@ -79,7 +79,26 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 */
 	public IServiceTypeID[] getServiceTypes() {
 		// technically can't do anything without a scope (domain) -> falling back to local domain (mDNS?)
-		return new IServiceTypeID[0];
+		List result = new ArrayList();
+		DnsSdServiceTypeID serviceTypeId = (DnsSdServiceTypeID) targetID;
+		Lookup[] queries = serviceTypeId.getInternalQueries();
+		for (int i = 0; i < queries.length; i++) {
+			Lookup query = queries[i];
+			Record[] queryResult = query.run();
+			for (int j = 0; j < queryResult.length; j++) {
+				Record record = queryResult[j];
+				if(record instanceof PTRRecord) {
+					PTRRecord ptrRecord = (PTRRecord) record;
+					//TODO ptr to dnssdservicetype conversion
+					String str = ptrRecord.getTarget().toString();
+					result.add(new DnsSdServiceTypeID(getServicesNamespace(), str));
+				} else if (record instanceof SRVRecord) {
+					SRVRecord srvRecord = (SRVRecord) record;
+					result.add(new DnsSdServiceTypeID(getServicesNamespace(), srvRecord));
+				}
+			}
+		}
+		return (IServiceTypeID[]) result.toArray(new IServiceTypeID[result.size()]);
 	}
 
 	/*
@@ -89,7 +108,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 */
 	public IServiceInfo[] getServices() {
 		// technically can't do anything without a scope (domain) -> falling back to local domain (mDNS?)
-		return new IServiceInfo[0];
+		return getServices(targetID);
 	}
 
 	/*
@@ -204,8 +223,14 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 		if (targetID != null || getConfig() == null) {
 			throw new ContainerConnectException("Already connected");
 		}
-		targetID = (aTargetID == null) ? getConfig().getID() : aTargetID;
-		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
+		if(aTargetID == null || !(aTargetID instanceof DnsSdServiceTypeID)) {
+			targetID = new DnsSdServiceTypeID();
+			//TODO remove after tutorial
+			targetID.setScope("kuppe.org");
+		} else {
+			targetID = (DnsSdServiceTypeID) aTargetID;
+		}
+ 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
 				connectContext));
 		fireContainerEvent(new ContainerConnectedEvent(this.getID(), targetID));
 	}
