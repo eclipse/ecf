@@ -118,14 +118,14 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 */
 	protected Set registeredServices;
 
-	protected final List containers;
+	protected final Collection containers;
 
 	private ID targetID;
 
 	/**
 	 * @param containers
 	 */
-	public CompositeDiscoveryContainer(final List containers) {
+	public CompositeDiscoveryContainer(final Collection containers) {
 		super(CompositeNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(CompositeDiscoveryContainer.class.getName())));
 		this.containers = containers;
 		this.registeredServices = new HashSet();
@@ -412,7 +412,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 * @return The List of currently registered containers.
 	 * @since 2.1
 	 */
-	public List getDiscoveryContainers() {
-		return Collections.unmodifiableList(containers);
+	public Collection getDiscoveryContainers() {
+		return Collections.unmodifiableCollection(containers);
 	}
 }

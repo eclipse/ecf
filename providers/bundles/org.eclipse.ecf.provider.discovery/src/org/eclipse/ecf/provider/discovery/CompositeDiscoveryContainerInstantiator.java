@@ -31,7 +31,7 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 
 		try {
 			final IContainerFactory factory = ContainerFactory.getDefault();
-			final List containers = new ArrayList();
+			final Set containers = new HashSet();
 			final List list = factory.getDescriptions();
 			for (final Iterator itr = list.iterator(); itr.hasNext();) {
 				final ContainerTypeDescription ctd = (ContainerTypeDescription) itr.next();
@@ -40,7 +40,7 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 				if (name.startsWith(CompositeDiscoveryContainer.NAME)) {
 					continue;
 				}
-				if (name.startsWith("ecf.discovery.") && !(name.endsWith(".locator") || name.endsWith(".advertiser"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				if (name.startsWith("ecf.discovery.") && (name.endsWith(".locator") || name.endsWith(".advertiser"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					final IContainer container = factory.createContainer(ctd.getName());
 					containers.add(container);
 				}
