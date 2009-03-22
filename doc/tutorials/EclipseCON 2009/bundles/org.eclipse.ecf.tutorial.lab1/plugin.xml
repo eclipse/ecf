@@ -5,23 +5,23 @@
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
-            label="Sample Action Set"
+            label="ECF Tutorial Lab1 Action Set"
             visible="true"
             id="org.eclipse.ecf.tutorial.lab1.actionSet">
          <menu
-               label="Sample &amp;Menu"
-               id="sampleMenu">
+               label="Lab 1 &amp;Menu"
+               id="lab1Menu">
             <separator
-                  name="sampleGroup">
+                  name="lab1Group">
             </separator>
          </menu>
          <action
-               label="&amp;Sample Action"
+               label="&amp;Lab 1 RS Client"
                icon="icons/sample.gif"
-               class="org.eclipse.ecf.tutorial.lab1.actions.SampleAction"
-               tooltip="Hello, Eclipse world"
-               menubarPath="sampleMenu/sampleGroup"
-               toolbarPath="sampleGroup"
+               class="org.eclipse.ecf.tutorial.lab1.actions.Lab1Action"
+               tooltip="Lab 1 RS Client"
+               menubarPath="lab1Menu/lab1Group"
+               toolbarPath="lab1Group"
                id="org.eclipse.ecf.tutorial.lab1.actions.SampleAction">
          </action>
       </actionSet>
