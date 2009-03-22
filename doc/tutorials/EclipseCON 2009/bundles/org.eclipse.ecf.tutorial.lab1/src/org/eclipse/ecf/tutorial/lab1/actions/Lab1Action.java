@@ -1,13 +1,9 @@
 package org.eclipse.ecf.tutorial.lab1.actions;
 
-import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
@@ -18,7 +14,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
-import org.osgi.framework.InvalidSyntaxException;
 
 /**
  * Our sample action implements workbench action delegate.
@@ -31,8 +26,11 @@ import org.osgi.framework.InvalidSyntaxException;
 public class Lab1Action implements IWorkbenchWindowActionDelegate {
 	private IWorkbenchWindow window;
 	
-	public static final String R_OSGI_TYPE = "ecf.r_osgi.peer";
-	public static final String GENERIC_TYPE = "ecf.generic.client";
+	private static final String CONTAINER_TYPE = System.getProperty("ecf.type","ecf.r_osgi.peer");
+	private static final String TARGET = System.getProperty("ecf.target","r-osgi://localhost:9278");
+
+	private IContainer container;
+	private IRemoteServiceContainerAdapter adapter;
 	
 	/**
 	 * The constructor.
@@ -40,17 +38,25 @@ public class Lab1Action implements IWorkbenchWindowActionDelegate {
 	public Lab1Action() {
 	}
 
-	protected IContainer createContainer(String type) throws ContainerCreateException {
-		return Activator.getDefault().getContainerFactory().createContainer(type);
-	}
-	
-	protected IRemoteServiceContainerAdapter getRemoteServiceContainerAdapter(IContainer container) {
-		return (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class);
-	}
-
 	protected ID createTargetID(IContainer container, String target) {
 		return IDFactory.getDefault().createID(container.getConnectNamespace(),target);
 	}
+	
+	private IContainer getContainer() throws ContainerCreateException {
+		if (container == null) {
+			container = Activator.getDefault().getContainerFactory().createContainer(CONTAINER_TYPE);
+		}
+		return container;
+	}
+	
+	private IRemoteServiceContainerAdapter getContainerAdapter() throws ContainerCreateException {
+		if (adapter == null) {
+			IContainer c = getContainer();
+			adapter = (IRemoteServiceContainerAdapter) c.getAdapter(IRemoteServiceContainerAdapter.class);
+		}
+		return adapter;
+	}
+	
 	/**
 	 * The action has been activated. The argument of the
 	 * method represents the 'real' action sitting
@@ -59,11 +65,9 @@ public class Lab1Action implements IWorkbenchWindowActionDelegate {
 	 */
 	public void run(IAction action) {
 		try {
-			
-			IContainer container = createContainer(R_OSGI_TYPE);
-			IRemoteServiceContainerAdapter adapter = getRemoteServiceContainerAdapter(container);
+			IRemoteServiceContainerAdapter adapter = getContainerAdapter();
 			// Create target ID
-			String target = "r-osgi://localhost:9278";
+			String target = TARGET;
 			ID targetID = createTargetID(container,target);
 			// Get and resolve remote service reference
 			IRemoteServiceReference[] ref = adapter.getRemoteServiceReferences(targetID, org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo.class.getName(), null);
