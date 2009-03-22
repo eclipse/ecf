@@ -12,6 +12,7 @@ Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.eclipse.ecf.core.events,
  org.eclipse.ecf.core.identity;version="3.0.0",
+ org.eclipse.ecf.examples.remoteservices.common,
  org.eclipse.ecf.remoteservice,
  org.eclipse.ecf.remoteservice.events,
  org.eclipse.ecf.remoteservice.util,

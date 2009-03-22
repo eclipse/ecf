@@ -1,5 +1,6 @@
 package org.eclipse.ecf.tutorial.internal.lab1;
 
+import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -21,12 +22,20 @@ public class Activator extends AbstractUIPlugin {
 	
 	private BundleContext context;
 	
+	public BundleContext getContext() {
+		return context;
+	}
+	
 	/**
 	 * The constructor
 	 */
 	public Activator() {
 	}
 
+	public IContainerFactory getContainerFactory() {
+		return getContainerManager().getContainerFactory();
+	}
+	
 	public IContainerManager getContainerManager() {
 		if (containerManagerTracker == null) {
 			containerManagerTracker = new ServiceTracker(context,IContainerManager.class.getName(),null);

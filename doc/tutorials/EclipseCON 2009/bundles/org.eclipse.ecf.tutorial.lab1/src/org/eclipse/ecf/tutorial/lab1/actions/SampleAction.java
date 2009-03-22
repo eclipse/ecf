@@ -31,12 +31,8 @@ public class SampleAction implements IWorkbenchWindowActionDelegate {
 	public SampleAction() {
 	}
 
-	protected IContainerFactory getContainerFactory() {
-		return Activator.getDefault().getContainerManager().getContainerFactory();
-	}
-	
 	protected IContainer createContainer(String type) throws ContainerCreateException {
-		return getContainerFactory().createContainer(type);
+		return Activator.getDefault().getContainerFactory().createContainer(type);
 	}
 	
 	protected IRemoteServiceContainerAdapter getRemoteServicesContainerAdapter(IContainer container) {
