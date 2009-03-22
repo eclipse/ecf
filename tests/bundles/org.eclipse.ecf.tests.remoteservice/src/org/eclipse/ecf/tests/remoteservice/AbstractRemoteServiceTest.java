@@ -15,6 +15,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
@@ -102,7 +103,7 @@ public abstract class AbstractRemoteServiceTest extends
 	protected IRemoteServiceReference[] getRemoteServiceReferences(
 			IRemoteServiceContainerAdapter adapter, String clazz, String filter) {
 		try {
-			return adapter.getRemoteServiceReferences(null, clazz, filter);
+			return adapter.getRemoteServiceReferences((ID[])null, clazz, filter);
 		} catch (final InvalidSyntaxException e) {
 			fail("should not happen");
 		}

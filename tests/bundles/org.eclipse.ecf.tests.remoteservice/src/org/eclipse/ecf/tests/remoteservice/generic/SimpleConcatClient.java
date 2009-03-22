@@ -62,7 +62,7 @@ public class SimpleConcatClient {
 
 		// Get remote service reference
 		IRemoteServiceReference[] refs = adapter.getRemoteServiceReferences(
-				null, IConcatService.class.getName(), null);
+				(ID[]) null, IConcatService.class.getName(), null);
 		
 		rsReference = refs[0];
 		
