@@ -13,6 +13,7 @@ package org.eclipse.ecf.remoteservice;
 
 import java.util.Dictionary;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -69,6 +70,13 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * returned array of <code>IRemoteServiceReference</code> objects contains
 	 * services that were registered under the specified class and match the
 	 * specified idFilter, and filter criteria.
+	 * </p>
+	 * <p>
+	 * Note this method assumes that the enclosing container has previously
+	 * been connected, and uses the idFilter to filter among targets within the
+	 * previously connected set of container IDs.  To request connection as 
+	 * part of reference lookup, see {@link #getRemoteServiceReferences(ID, String, String)}.
+	 * </p>
 	 * 
 	 * <p>
 	 * The list is valid at the time of the call to this method, however since
@@ -114,10 +122,56 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException;
 
 	/**
+	 * <p>
+	 * Returns an array of <code>IRemoteServiceReference</code> objects. The
+	 * returned array of <code>IRemoteServiceReference</code> objects contains
+	 * services that were registered under the specified class and match the
+	 * specified idFilter, and filter criteria.
+	 * </p>
+	 * <p>
+	 * The list is valid at the time of the call to this method, however since
+	 * the Framework is a very dynamic environment, services can be modified or
+	 * unregistered at anytime.
+	 * </p>
+	 * <p>target is a remote container to connect to.</p>
+	 * <p>
+	 * <code>filter</code> is used to select the registered service whose
+	 * properties objects contain keys and values which satisfy the filter. See
+	 * {@link Filter} for a description of the filter string syntax.
+	 * 
+	 * <p>
+	 * If <code>filter</code> is <code>null</code>, all registered services
+	 * are considered to match the filter. If <code>filter</code> cannot be
+	 * parsed, an {@link InvalidSyntaxException} will be thrown with a human
+	 * readable message where the filter became unparsable.
+	 * 
+	 * @param target
+	 *            an target to connect to if enclosing container is not already 
+	 *            connected.  Must not be <code>null</code>.
+	 * @param clazz
+	 *            the fully qualified name of the interface class that describes
+	 *            the desired service. Must not be <code>null</code>.
+	 * @param filter
+	 *            The filter criteria. May be <code>null</code>.
+	 * @return Array of IRemoteServiceReferences matching given search criteria or 
+	 *            <code>null</code> if no services are found that match the search.
+	 * 
+	 * @throws InvalidSyntaxException If filter contains an invalid filter string that cannot be parsed.
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException;
+
+	/**
 	 * Asynchronously returns an array of <code>IRemoteServiceReference</code> objects. The
 	 * returned array of <code>IRemoteServiceReference</code> objects contains
 	 * services that were registered under the specified class and match the
 	 * specified idFilter, and filter criteria.
+	 * <p>
+	 * Note this method assumes that the enclosing container has previously
+	 * been connected, and uses the idFilter to filter among targets within the
+	 * previously connected set of container IDs.  To request connection as 
+	 * part of reference lookup, see {@link #getRemoteServiceReferences(ID, String, String)}.
+	 * </p>
 	 * <p>
 	 * The IFuture is returned immediately, and subsequent calls to {@link IFuture#get()}
 	 * or {@link IFuture#get(long)} will return the actual results received.  The type of
@@ -160,6 +214,50 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * @since 3.0
 	 */
 	public IFuture asyncGetRemoteServiceReferences(ID[] idFilter, String clazz, String filter);
+
+	/**
+	 * Asynchronously returns an array of <code>IRemoteServiceReference</code> objects. The
+	 * returned array of <code>IRemoteServiceReference</code> objects contains
+	 * services that were registered under the specified class and match the
+	 * specified idFilter, and filter criteria.
+	 * <p>
+	 * The IFuture is returned immediately, and subsequent calls to {@link IFuture#get()}
+	 * or {@link IFuture#get(long)} will return the actual results received.  The type of
+	 * the Object returned from {@link IFuture#get()} will be IRemoteServiceReference [].
+	 * 
+	 * <p>
+	 * The list is valid at the time of the call to this method, however since
+	 * the Framework is a very dynamic environment, services can be modified or
+	 * unregistered at anytime.
+	 * 
+	 * <p>
+	 * <code>idFilter</code> is used to select a registered services that were
+	 * registered by a given set of containers with id in idFilter. Only
+	 * services exposed by a container with id in idFilter will be returned.
+	 * 
+	 * <p>target is a remote container to connect to.</p>
+	 * 
+	 * <p>
+	 * <code>filter</code> is used to select the registered service whose
+	 * properties objects contain keys and values which satisfy the filter. See
+	 * {@link Filter} for a description of the filter string syntax.
+	 * 
+	 * @param target
+	 *            an target to connect to if enclosing container is not already 
+	 *            connected.  Must not be <code>null</code>.
+	 * 
+	 * @param clazz
+	 *            the fully qualified name of the interface class that describes
+	 *            the desired service. Must not be <code>null</code>.
+	 * @param filter
+	 *            The filter criteria. May be <code>null</code>.
+	 * @return IFuture that through subsequent calls to IFuture#get() will return
+	 *         IRemoteServiceReference [] with IRemoteServiceReferences matching given search criteria. 
+	 *         Will not return <code>null</code>.
+	 * 
+	 * @since 3.0
+	 */
+	public IFuture asyncGetRemoteServiceReferences(ID target, String clazz, String filter);
 
 	/**
 	 * Get namespace to use for this remote service provider.
