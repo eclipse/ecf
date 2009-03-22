@@ -228,6 +228,17 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		}
 	}
 
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		Assert.isNotNull(clazz);
+		IRemoteFilter remoteFilter = (filter == null) ? null : createRemoteFilter(filter);
+		synchronized (this) {
+			List results = new ArrayList();
+			connect(targetID, connectContext);
+			results = getRemoteServiceReferencesConnected(clazz, remoteFilter);
+			return (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
+		}
+	}
+
 	private List /*IRemoteServiceReference*/connectAndGetRemoteServiceReferencesForTarget(ID currentlyConnectedID, ID targetID, String clazz, IRemoteFilter remoteFilter) {
 		List results = new ArrayList();
 		if (currentlyConnectedID != null) {
@@ -643,6 +654,15 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		}, null);
 	}
 
+	public IFuture asyncGetRemoteServiceReferences(final ID target, final String clazz, final String filter) {
+		IExecutor executor = new ThreadsExecutor();
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getRemoteServiceReferences(target, clazz, filter);
+			}
+		}, null);
+	}
+
 	public Namespace getRemoteServiceNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(R_OSGiRemoteServiceNamespace.NAME);
 	}
@@ -683,4 +703,5 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		this.connectContext = connectContext;
 	}
+
 }
