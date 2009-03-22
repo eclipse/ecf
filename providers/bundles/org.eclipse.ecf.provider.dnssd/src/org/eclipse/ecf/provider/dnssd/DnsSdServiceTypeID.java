@@ -20,7 +20,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceTypeID;
 import org.xbill.DNS.Lookup;
-import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.Name;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
@@ -62,8 +62,8 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID 
 		super(new DnsSdNamespace());
 	}
 
-	DnsSdServiceTypeID(Namespace namespace, SRVRecord srvRecord) {
-		super(namespace, srvRecord.getName().toString());
+	DnsSdServiceTypeID(Namespace namespace, Name aName) {
+		super(namespace, aName.toString());
 	}
 
 	Lookup[] getInternalQueries() {

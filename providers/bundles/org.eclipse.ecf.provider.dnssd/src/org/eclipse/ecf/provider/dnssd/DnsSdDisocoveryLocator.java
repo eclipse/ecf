@@ -89,12 +89,10 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 				Record record = queryResult[j];
 				if(record instanceof PTRRecord) {
 					PTRRecord ptrRecord = (PTRRecord) record;
-					//TODO ptr to dnssdservicetype conversion
-					String str = ptrRecord.getTarget().toString();
-					result.add(new DnsSdServiceTypeID(getServicesNamespace(), str));
+					result.add(new DnsSdServiceTypeID(getServicesNamespace(), ptrRecord.getTarget()));
 				} else if (record instanceof SRVRecord) {
 					SRVRecord srvRecord = (SRVRecord) record;
-					result.add(new DnsSdServiceTypeID(getServicesNamespace(), srvRecord));
+					result.add(new DnsSdServiceTypeID(getServicesNamespace(), srvRecord.getName()));
 				}
 			}
 		}
@@ -158,7 +156,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 			String host = target.toString();
 			host = host.substring(0, host.length() - 1);
 			
-			IServiceTypeID aServiceTypeID = new DnsSdServiceTypeID(getConnectNamespace(), srvRecord);
+			IServiceTypeID aServiceTypeID = new DnsSdServiceTypeID(getConnectNamespace(), srvRecord.getName());
 			
 			// query for txt records (attributes)
 			Properties props = new Properties();
