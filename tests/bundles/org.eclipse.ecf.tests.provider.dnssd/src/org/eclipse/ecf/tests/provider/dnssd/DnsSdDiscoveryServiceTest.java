@@ -13,6 +13,7 @@ package org.eclipse.ecf.tests.provider.dnssd;
 import java.net.URI;
 import java.util.Properties;
 
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -53,11 +54,72 @@ public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 		assertNotNull(serviceTypeID);
 		
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
-		serviceProperties.setPropertyString("path", "/");
+		serviceProperties.setPropertyString("path", "/blog");
 		serviceProperties.setPropertyString("dns-sd.ptcl", "http");
 
 		serviceInfo = new ServiceInfo(uri, "www.kuppe.org", serviceTypeID, 10, 0, serviceProperties);
 		assertNotNull(serviceInfo);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testAddServiceListenerIServiceListener()
+	 */
+	public void testAddServiceListenerIServiceListener()
+			throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testAddServiceListenerIServiceTypeIDIServiceListener()
+	 */
+	public void testAddServiceListenerIServiceTypeIDIServiceListener()
+			throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testAddServiceTypeListener()
+	 */
+	public void testAddServiceTypeListener() throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testRegisterService()
+	 */
+	public void testRegisterService() throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testRemoveServiceListenerIServiceListener()
+	 */
+	public void testRemoveServiceListenerIServiceListener()
+			throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testRemoveServiceListenerIServiceTypeIDIServiceListener()
+	 */
+	public void testRemoveServiceListenerIServiceTypeIDIServiceListener()
+			throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testRemoveServiceTypeListener()
+	 */
+	public void testRemoveServiceTypeListener()
+			throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testUnregisterService()
+	 */
+	public void testUnregisterService() throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
 	}
 
 	/* (non-Javadoc)

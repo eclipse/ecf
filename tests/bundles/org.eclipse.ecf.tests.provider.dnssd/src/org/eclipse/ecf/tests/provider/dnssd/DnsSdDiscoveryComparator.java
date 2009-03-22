@@ -25,7 +25,7 @@ public class DnsSdDiscoveryComparator extends ServiceInfoComparator {
 			final IServiceInfo second = (IServiceInfo) arg1;
 			final IServiceID firstServiceId = first.getServiceID();
 			final IServiceID secondServiceId = second.getServiceID();
-			boolean idsSame = true;// firstServiceId.equals(secondServiceId);
+			boolean idsSame = firstServiceId.equals(secondServiceId);
 			boolean prioSame = first.getPriority() == second.getPriority();
 			boolean weightSame = first.getWeight() == second.getWeight();
 			boolean servicePropertiesSame = compareServiceProperties(first.getServiceProperties(), second.getServiceProperties());
