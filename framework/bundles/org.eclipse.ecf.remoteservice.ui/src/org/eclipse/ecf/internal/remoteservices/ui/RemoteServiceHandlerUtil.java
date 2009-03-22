@@ -31,30 +31,17 @@ public class RemoteServiceHandlerUtil {
 
 	public static IRemoteServiceContainerAdapter getActiveIRemoteServiceContainerAdapterChecked(ExecutionEvent event) throws ExecutionException {
 		final ID activeConnectId = getActiveConnectIDChecked(event);
-		final IContainer container = getContainerWithConnectId(activeConnectId);
-		if (container == null) return null;
+		final IContainer container = getContainerWithConnectID(activeConnectId);
+		if (container == null) {
+			return null;
+		}
 		final IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class);
 		return adapter;
 	}
-
-	public static IContainer getContainerWithConnectId(ID connectID) {
-		
-		final IContainerManager containerManager = Activator.getDefault().getContainerManager();
-		final IContainer[] containers = containerManager.getAllContainers();
-		if (containers == null || containers.length == 0) return null;
-		for(int i=0; i < containers.length; i++) {
-			ID connectedId = containers[i].getConnectedID();
-			if (connectedId != null && connectedId.equals(connectID)) {
-				return containers[i];
-			}
-		}
-		return null;
-	}
 	
 	public static IRemoteServiceReference[] getActiveIRemoteServiceReferencesChecked(ExecutionEvent event) throws ExecutionException {
-		IServiceInfo serviceInfo = DiscoveryHandlerUtil.getActiveIServiceInfoChecked(event);
-		IRemoteServiceContainerAdapter adapter = getActiveIRemoteServiceContainerAdapterChecked(event);
-		if (adapter == null) return null;
+		final IServiceInfo serviceInfo = DiscoveryHandlerUtil.getActiveIServiceInfoChecked(event);
+		final IRemoteServiceContainerAdapter adapter = getActiveIRemoteServiceContainerAdapterChecked(event);
 		try {
 			return getRemoteServiceReferencesForRemoteServiceAdapter(adapter, serviceInfo);
 		} catch (IDCreateException e) {
@@ -65,7 +52,7 @@ public class RemoteServiceHandlerUtil {
 	}
 
 	public static ID getActiveConnectIDChecked(ExecutionEvent event) throws ExecutionException {
-		IServiceInfo serviceInfo = DiscoveryHandlerUtil.getActiveIServiceInfoChecked(event);
+		final IServiceInfo serviceInfo = DiscoveryHandlerUtil.getActiveIServiceInfoChecked(event);
 		final String connectNamespace = getConnectNamespace(serviceInfo);
 		final String connectId = getConnectID(serviceInfo);
 		try {
@@ -78,10 +65,12 @@ public class RemoteServiceHandlerUtil {
 	public static IContainer getActiveIRemoteServiceContainerChecked(ExecutionEvent event) throws ExecutionException {
 		final IServiceInfo serviceInfo = DiscoveryHandlerUtil.getActiveIServiceInfoChecked(event);
 		final ID createConnectId = getActiveConnectIDChecked(event);
-		IContainer container = getContainerWithConnectId(createConnectId);
-		if (container != null) return container;
+		final IContainer container = getContainerWithConnectID(createConnectId);
+		if (container != null) {
+			return container;
+		}
 		//TODO remove parameters once https://bugs.eclipse.org/bugs/show_bug.cgi?id=256586 is fixed
-		Object[] parameters = new Object[] { createConnectId };
+		final Object[] parameters = new Object[] { createConnectId };
 		try {
 		// If it's not there and already connected then create and return new one
 			return ContainerFactory.getDefault().createContainer(getContainerFactory(serviceInfo), parameters);
@@ -89,15 +78,34 @@ public class RemoteServiceHandlerUtil {
 			throw new ExecutionException(e.getMessage(), e);
 		}
 	}
+	
+	//TODO push this functionality down into the ContainerManager
+	private static IContainer getContainerWithConnectID(ID aConnectedID) {
+		final IContainerManager containerManager = Activator.getDefault().getContainerManager();
+		final IContainer[] containers = containerManager.getAllContainers();
+		if (containers == null) {
+			return null;
+		}
+		for(int i=0; i < containers.length; i++) {
+			ID connectedId = containers[i].getConnectedID();
+			if (connectedId != null && connectedId.equals(aConnectedID)) {
+				return containers[i];
+			}
+		}
+		return null;
+	}
 
 	private static IRemoteServiceReference[] getRemoteServiceReferencesForRemoteServiceAdapter(IRemoteServiceContainerAdapter adapter, IServiceInfo serviceInfo) throws InvalidSyntaxException, IDCreateException {
+		if(adapter == null) {
+			return null;
+		}
 		ID serviceID = null;
-		String serviceNamespace = getServiceNamespace(serviceInfo);
-		String serviceid = getServiceID(serviceInfo);
+		final String serviceNamespace = getServiceNamespace(serviceInfo);
+		final String serviceid = getServiceID(serviceInfo);
 		if (serviceNamespace != null && serviceid != null) {
 			serviceID = IDFactory.getDefault().createID(serviceNamespace, serviceid);
 		}
-		ID[] targets = (serviceID == null) ? null : new ID[] {serviceID};
+		final ID[] targets = (serviceID == null) ? null : new ID[] {serviceID};
 		return adapter.getRemoteServiceReferences(targets, getRemoteServiceClass(serviceInfo), getFilter(serviceInfo));
 	}
 	
