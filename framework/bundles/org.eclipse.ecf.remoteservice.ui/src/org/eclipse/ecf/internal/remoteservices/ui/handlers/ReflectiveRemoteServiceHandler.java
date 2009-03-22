@@ -46,19 +46,32 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 	 * .ExecutionEvent)
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		final String clazz = event.getParameter("org.eclipse.ecf.remoteservices.ui.commands.reflectiveMethodDialogParameter");
+		final String clazz = event.getParameter("org.eclipse.ecf.remoteservices.ui.commands.reflectiveMethodDialogParameter"); //$NON-NLS-1$
+
 		final IRemoteServiceContainerAdapter adapter = RemoteServiceHandlerUtil.getActiveIRemoteServiceContainerAdapterChecked(event);
-		// If something's happened to the adapter before this gets called we just return
-		if (adapter == null) return null;
+		if (adapter == null) {
+			MessageDialog.openError(null, "Handler invocation failed", "No container found");
+			return null;
+		}
+
 		final IRemoteServiceReference[] references = RemoteServiceHandlerUtil.getActiveIRemoteServiceReferencesChecked(event);
-		// If references not yet available then we just return
-		if (references == null || references.length == 0) return null;
+		if (references == null || references.length == 0) {
+			MessageDialog.openError(null, "Handler invocation failed", "No remote service reference found");
+			return null;
+		}
+
 		final IRemoteService remoteService = adapter.getRemoteService(references[0]);
+		if(remoteService == null) {
+			MessageDialog.openError(null, "Handler invocation failed", "No remote service found");
+			return null;
+		}
+		
 		try {
 			executeMethodInvocationDialog(Class.forName(clazz), remoteService);
 		} catch (ClassNotFoundException e) {
+			MessageDialog.openError(null, "Handler invocation failed", e.getLocalizedMessage());
 			throw new ExecutionException(e.getMessage(), e);
-		}
+		} 
 		return null;
 	}
 
