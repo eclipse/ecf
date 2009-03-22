@@ -9,6 +9,7 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.util.Dictionary;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -100,5 +101,19 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements IRem
 	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		registry.setConnectContextForAuthentication(connectContext);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		return registry.getRemoteServiceReferences(target, clazz, filter);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IFuture asyncGetRemoteServiceReferences(ID target, String clazz, String filter) {
+		return registry.asyncGetRemoteServiceReferences(target, clazz, filter);
 	}
 }

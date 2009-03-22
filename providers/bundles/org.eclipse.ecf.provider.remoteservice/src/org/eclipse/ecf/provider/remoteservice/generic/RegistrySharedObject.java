@@ -14,6 +14,7 @@ import java.security.*;
 import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.*;
@@ -127,6 +128,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	protected int getAddRegistrationRequestTimeout() {
 		return addRegistrationRequestTimeout;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		if (!isConnected()) {
+			getContext().connect(targetID, connectContext);
+		}
+		return getRemoteServiceReferences(new ID[] {targetID}, clazz, filter);
 	}
 
 	/* (non-Javadoc)
@@ -1087,6 +1098,18 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.0
 	 */
+	public IFuture asyncGetRemoteServiceReferences(final ID target, final String clazz, final String filter) {
+		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getRemoteServiceReferences(target, clazz, filter);
+			}
+		}, null);
+	}
+
+	/**
+	 * @since 3.0
+	 */
 	public Namespace getRemoteServiceNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(RemoteServiceNamespace.NAME);
 	}
@@ -1153,4 +1176,5 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		this.connectContext = connectContext;
 	}
+
 }
