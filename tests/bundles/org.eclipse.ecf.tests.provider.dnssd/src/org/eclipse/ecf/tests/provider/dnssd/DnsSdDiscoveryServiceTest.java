@@ -38,6 +38,7 @@ public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 		setServices(new String[]{service});
 		setProtocol(protocol);
 		setComparator(new DnsSdDiscoveryComparator());
+		eventsToExpect = 7;
 	}
 
 	/* (non-Javadoc)
