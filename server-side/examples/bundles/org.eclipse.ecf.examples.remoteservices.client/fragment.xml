@@ -25,7 +25,7 @@
                               value="true">
                         </test>
                         <test
-                              args="osgiservices"
+                              args="osgiservicesoff"
                               property="org.eclipse.ecf.discovery.isServiceType"
                               value="true">
                         </test>
