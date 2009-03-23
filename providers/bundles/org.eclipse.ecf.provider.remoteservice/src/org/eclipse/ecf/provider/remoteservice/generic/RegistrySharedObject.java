@@ -589,7 +589,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static final String REGISTRY_UPDATE_REQUEST = "handleRegistryUpdateRequest"; //$NON-NLS-1$
 
-	private static final int ADD_REGISTRATION_REQUEST_TIMEOUT = 5000;
+	private static final int ADD_REGISTRATION_REQUEST_TIMEOUT = new Integer(System.getProperty("ecf.addregistrationrequest.timeout", "5000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected void sendRegistryUpdateRequest() {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendRegistryUpdateRequest"); //$NON-NLS-1$
