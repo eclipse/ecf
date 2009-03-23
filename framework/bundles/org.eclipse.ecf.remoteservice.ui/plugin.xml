@@ -49,7 +49,7 @@
                               value="true">
                         </test>
                         <test
-                              args="osgiservices"
+                              args="osgiservices.off"
                               property="org.eclipse.ecf.discovery.isServiceType"
                               value="true">
                         </test>
@@ -81,7 +81,7 @@
                               value="true">
                         </test>
                         <test
-                              args="osgiservices"
+                              args="osgiservices.off"
                               property="org.eclipse.ecf.discovery.isServiceType"
                               value="true">
                         </test>
