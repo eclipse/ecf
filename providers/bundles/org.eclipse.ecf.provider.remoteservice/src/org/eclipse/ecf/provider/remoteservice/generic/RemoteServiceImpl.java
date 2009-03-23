@@ -21,7 +21,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
-	protected static final long DEFAULT_TIMEOUT = 30000;
+	protected static final long DEFAULT_TIMEOUT = new Long(System.getProperty("ecf.remotecall.timeout", "30000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected RemoteServiceRegistrationImpl registration = null;
 

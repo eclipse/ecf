@@ -10,37 +10,30 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.Serializable;
 import java.util.Arrays;
-
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 
-public class RemoteCallImpl extends SharedObjectMsg implements IRemoteCall,
-		Serializable {
+public class RemoteCallImpl extends SharedObjectMsg implements IRemoteCall, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final long DEFAULT_REMOTE_CALL_TIMEOUT = 30000;
+	private static final long DEFAULT_REMOTE_CALL_TIMEOUT = new Long(System.getProperty("ecf.remotecall.timeout", "30000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
 	long timeout = DEFAULT_REMOTE_CALL_TIMEOUT;
 
-	public static RemoteCallImpl createRemoteCall(String clazz, String method,
-			Object[] parameters, long timeout) {
+	public static RemoteCallImpl createRemoteCall(String clazz, String method, Object[] parameters, long timeout) {
 		return new RemoteCallImpl(clazz, method, parameters, timeout);
 	}
 
-	public static RemoteCallImpl createRemoteCall(String clazz, String method,
-			Object[] parameters) {
-		return RemoteCallImpl.createRemoteCall(clazz, method, parameters,
-				DEFAULT_REMOTE_CALL_TIMEOUT);
+	public static RemoteCallImpl createRemoteCall(String clazz, String method, Object[] parameters) {
+		return RemoteCallImpl.createRemoteCall(clazz, method, parameters, DEFAULT_REMOTE_CALL_TIMEOUT);
 	}
 
 	public static RemoteCallImpl createRemoteCall(String clazz, String method) {
-		return RemoteCallImpl.createRemoteCall(clazz, method, null,
-				DEFAULT_REMOTE_CALL_TIMEOUT);
+		return RemoteCallImpl.createRemoteCall(clazz, method, null, DEFAULT_REMOTE_CALL_TIMEOUT);
 	}
 
-	protected RemoteCallImpl(String clazz, String method, Object[] parameters,
-			long timeout) {
+	protected RemoteCallImpl(String clazz, String method, Object[] parameters, long timeout) {
 		super(clazz, method, parameters);
 		this.timeout = timeout;
 	}
