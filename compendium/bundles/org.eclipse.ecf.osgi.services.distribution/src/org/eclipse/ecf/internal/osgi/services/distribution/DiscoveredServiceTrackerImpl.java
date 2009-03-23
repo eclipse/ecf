@@ -460,9 +460,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	private boolean includeRCSAForDescription(IContainer container,
 			IRemoteServiceContainerAdapter adapter, ID endpointID,
 			ServiceEndpointDescription description) {
-		// First we exclude the container where the discovered service is from
-		if (endpointID.equals(container.getID()))
-			return false;
 		// Then we check the namespace of the endpoint container ID. If it's the
 		// same as the
 		// container/adapter under test then we've found a compatible one
