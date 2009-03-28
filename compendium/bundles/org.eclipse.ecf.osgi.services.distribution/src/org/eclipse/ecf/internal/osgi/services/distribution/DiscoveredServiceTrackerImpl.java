@@ -180,7 +180,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					// This will block, but since we're in our own thread we're
 					// OK
 					IRemoteServiceReference[] remoteReferences = (IRemoteServiceReference[]) futureRemoteReferences
-							.get(sed.getFutureTimeout());
+							.get(sed.getLookupTimeout());
 					// Get the status
 					IStatus futureStatus = futureRemoteReferences.getStatus();
 					if (futureStatus.isOK()) {
