@@ -66,7 +66,7 @@ public class ECFServiceEndpointDescriptionImpl extends
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription#getFutureTimeout()
 	 */
-	public long getFutureTimeout() {
+	public long getLookupTimeout() {
 		//TODO get from service properties?
 		return DEFAULT_FUTURE_TIMEOUT;
 	}

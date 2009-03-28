@@ -12,44 +12,58 @@ package org.eclipse.ecf.osgi.services.discovery;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.internal.osgi.services.discovery.Activator;
 import org.eclipse.ecf.internal.osgi.services.discovery.ServicePropertyUtils;
 import org.osgi.service.discovery.ServiceEndpointDescription;
 import org.osgi.service.discovery.ServicePublication;
 
 public abstract class ECFServiceEndpointDescription implements
 		ServiceEndpointDescription {
+
+	private final long timeout = new Long(System.getProperty(
+			"ecf.osgi.distribution.lookup.timeout", "30000")).longValue();
+
 	private final Map serviceProperties;
-	
+
 	public ECFServiceEndpointDescription(Map properties) {
 		this.serviceProperties = properties;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getEndpointID()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.discovery.ServiceEndpointDescription#getEndpointID()
 	 */
 	public String getEndpointID() {
-		Object o = serviceProperties.get(
-				ServicePublication.PROP_KEY_ENDPOINT_ID);
+		Object o = serviceProperties
+				.get(ServicePublication.PROP_KEY_ENDPOINT_ID);
 		if (o instanceof String) {
 			return (String) o;
 		}
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getEndpointInterfaceName(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.osgi.service.discovery.ServiceEndpointDescription#
+	 * getEndpointInterfaceName(java.lang.String)
 	 */
 	public String getEndpointInterfaceName(String interfaceName) {
 		if (interfaceName == null)
 			return null;
-		Object o = serviceProperties.get(
-						ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME);
+		Object o = serviceProperties
+				.get(ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME);
 		if (o == null || !(o instanceof String)) {
 			return null;
 		}
 		String intfNames = (String) o;
-		Collection c = ServicePropertyUtils.createCollectionFromString(intfNames);
+		Collection c = ServicePropertyUtils
+				.createCollectionFromString(intfNames);
 		if (c == null)
 			return null;
 		for (Iterator i = c.iterator(); i.hasNext();) {
@@ -66,12 +80,14 @@ public abstract class ECFServiceEndpointDescription implements
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getLocation()
 	 */
 	public URL getLocation() {
-		Object o = serviceProperties.get(
-				ServicePublication.PROP_KEY_ENDPOINT_LOCATION);
+		Object o = serviceProperties
+				.get(ServicePublication.PROP_KEY_ENDPOINT_LOCATION);
 		if (o == null || !(o instanceof String)) {
 			return null;
 		}
@@ -80,52 +96,74 @@ public abstract class ECFServiceEndpointDescription implements
 		try {
 			url = new URL(urlExternalForm);
 		} catch (MalformedURLException e) {
-			// XXX log to error
+			Activator.getDefault()
+					.log(
+							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+									IStatus.ERROR,
+									"Exception getting location URL", e));//$NON-NLS-1$
 		}
 		return url;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getProperties()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.discovery.ServiceEndpointDescription#getProperties()
 	 */
 	public Map getProperties() {
 		return serviceProperties;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getProperty(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.discovery.ServiceEndpointDescription#getProperty(java
+	 * .lang.String)
 	 */
 	public Object getProperty(String key) {
 		return serviceProperties.get(key);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getPropertyKeys()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.discovery.ServiceEndpointDescription#getPropertyKeys()
 	 */
 	public Collection getPropertyKeys() {
 		return serviceProperties.keySet();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getProvidedInterfaces()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.discovery.ServiceEndpointDescription#getProvidedInterfaces
+	 * ()
 	 */
 	public Collection getProvidedInterfaces() {
 		Object o = serviceProperties
-				.get(
-						ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
-		if(o == null || !(o instanceof String)) {
+				.get(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
+		if (o == null || !(o instanceof String)) {
 			throw new NullPointerException();
 		}
 		final String providedInterfacesStr = (String) o;
-		return ServicePropertyUtils.createCollectionFromString(providedInterfacesStr);
+		return ServicePropertyUtils
+				.createCollectionFromString(providedInterfacesStr);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getVersion(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.discovery.ServiceEndpointDescription#getVersion(java
+	 * .lang.String)
 	 */
 	public String getVersion(String interfaceName) {
 		Collection c = getProvidedInterfaces();
-		if (c == null)  {
+		if (c == null) {
 			return null;
 		}
 		for (Iterator i = c.iterator(); i.hasNext();) {
@@ -142,20 +180,23 @@ public abstract class ECFServiceEndpointDescription implements
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
 		sb.append(";providedinterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
 		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
+		sb.append(";lookup timeout=" + getLookupTimeout());//$NON-NLS-1$
 		sb.append(";props=").append(getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 
 	public abstract ID getECFEndpointID();
 
-	public long getFutureTimeout() {
-		return 30000L;
+	public long getLookupTimeout() {
+		return timeout;
 	}
 }
