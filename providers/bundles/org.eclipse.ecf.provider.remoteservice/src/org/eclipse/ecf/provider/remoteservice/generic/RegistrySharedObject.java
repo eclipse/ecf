@@ -142,7 +142,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (!isConnected()) {
 			getContext().connect(targetID, connectContext);
 		}
-		// Now we're connected (or already were connected, so we look for remote service references for target
+		// Now we're connected (or already were connected), so we look for remote service references for target
 		return getRemoteServiceReferences(new ID[] {targetID}, clazz, filter);
 	}
 
