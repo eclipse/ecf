@@ -20,6 +20,11 @@ public interface IRemoteFileInfo {
 
 	public static final int NO_LENGTH = -1;
 
+	/**
+	 * @deprecated
+	 */
+	public static final int NONE = NO_LENGTH;
+
 	public static final int NO_LAST_MODIFIED = 0;
 
 	/**
