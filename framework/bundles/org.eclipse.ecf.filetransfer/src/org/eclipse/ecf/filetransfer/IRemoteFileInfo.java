@@ -18,25 +18,28 @@ package org.eclipse.ecf.filetransfer;
  */
 public interface IRemoteFileInfo {
 
-	public static final int NONE = -1;
+	public static final int NO_LENGTH = -1;
+
+	public static final int NO_LAST_MODIFIED = 0;
 
 	/**
-	 * Returns the last modified time for this file, or {@link #NONE}
+	 * Returns the last modified time for this file, or {@link #NO_LAST_MODIFIED }
 	 * if the file does not exist or the last modified time could not be computed.
 	 * <p>
 	 * The time is represented as the number of Universal Time (UT) 
 	 * milliseconds since the epoch (00:00:00 GMT, January 1, 1970).
 	 * </p>
 	 * 
-	 * @return the last modified time for this file, or {@link #NONE}
+	 * @return the last modified time for this file, or {@link #NO_LAST_MODIFIED } if file 
+	 * does not exist or last modified not known or could not be computed.
 	 */
 	public long getLastModified();
 
 	/**
-	 * Returns the length of this file, or {@link #NONE}
+	 * Returns the length of this file, or {@link #NO_LENGTH}
 	 * if the file does not exist, is a directory, or the length could not be computed.
 	 * 
-	 * @return the length of this file, or {@link #NONE}
+	 * @return the length of this file, or {@link #NO_LENGTH}
 	 */
 	public long getLength();
 
