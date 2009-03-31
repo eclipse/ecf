@@ -134,9 +134,15 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 * @since 3.0
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		// If no target specified, just search for all available references
+		if (targetID == null)
+			return getRemoteServiceReferences((ID[]) null, clazz, filter);
+		// If we're not already connected, then connect to targetID
+		// If we *are* already connected, then we do *not* connect to target, but rather just search for targetID/endpoint
 		if (!isConnected()) {
 			getContext().connect(targetID, connectContext);
 		}
+		// Now we're connected (or already were connected, so we look for remote service references for target
 		return getRemoteServiceReferences(new ID[] {targetID}, clazz, filter);
 	}
 
