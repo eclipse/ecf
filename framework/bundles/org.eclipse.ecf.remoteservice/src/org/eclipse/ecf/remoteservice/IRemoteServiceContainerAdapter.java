@@ -147,7 +147,7 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param target
 	 *            an target to connect to if enclosing container is not already 
-	 *            connected.  Must not be <code>null</code>.
+	 *            connected.  May be <code>null</code>.
 	 * @param clazz
 	 *            the fully qualified name of the interface class that describes
 	 *            the desired service. Must not be <code>null</code>.
@@ -244,7 +244,7 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param target
 	 *            an target to connect to if enclosing container is not already 
-	 *            connected.  Must not be <code>null</code>.
+	 *            connected.  May be <code>null</code>.
 	 * 
 	 * @param clazz
 	 *            the fully qualified name of the interface class that describes
