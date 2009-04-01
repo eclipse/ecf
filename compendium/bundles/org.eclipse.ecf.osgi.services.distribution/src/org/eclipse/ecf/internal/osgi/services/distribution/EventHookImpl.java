@@ -180,8 +180,8 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		return properties;
 	}
 
-	private void publishRemoteService(RSCAHolder holder, ServiceReference ref,
-			String[] remoteInterfaces,
+	private void publishRemoteService(RSCAHolder holder,
+			final ServiceReference ref, String[] remoteInterfaces,
 			IRemoteServiceRegistration remoteRegistration) {
 		// First create properties for new ServicePublication
 		final Dictionary properties = getServicePublicationProperties(holder,
@@ -191,6 +191,9 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// The RFC 119 discovery should/will pick this up and send it out
 		ServiceRegistration reg = context.registerService(
 				ServicePublication.class.getName(), new ServicePublication() {
+					public ServiceReference getReference() {
+						return ref;
+					}
 				}, properties);
 		fireRemoteServicePublished(ref, reg);
 		// And it's done

@@ -52,12 +52,6 @@ public interface ECFServiceConstants {
 	public static final String OSGI_REMOTE_REQUIRES_INTENTS = "osgi.remote.requires.intents";
 
 	/*
-	 * osgi.remote – this property is set on client side service proxies
-	 * registered in the OSGi Service Registry.
-	 */
-	public static final String OSGI_REMOTE = "osgi.remote";
-
-	/*
 	 * osgi.remote.configuration.type – service providing side property that
 	 * identifies the metadata type of additional metadata, if any, that was
 	 * provided with the service, e.g. “sca”. Multiple types and thus sets of
@@ -65,6 +59,12 @@ public interface ECFServiceConstants {
 	 * type String[].
 	 */
 	public static final String OSGI_REMOTE_CONFIGURATION_TYPE = "osgi.remote.configuration.type";
+
+	/*
+	 * osgi.remote – this property is set on client side service proxies
+	 * registered in the OSGi Service Registry.
+	 */
+	public static final String OSGI_REMOTE = "osgi.remote";
 
 	public static final String OSGI_REMOTE_INTERFACES_WILDCARD = "*";
 
