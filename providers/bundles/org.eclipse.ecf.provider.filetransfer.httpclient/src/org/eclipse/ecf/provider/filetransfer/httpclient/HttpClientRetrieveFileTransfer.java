@@ -167,11 +167,18 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			return hostConfiguration;
 		}
 
-		// drops the scheme including the colon (e.g http://server/a/b.html -> //server/a/b.html
+		// drops the scheme and port including the colon (e.g http://server:8080/a/b.html -> //server/a/b.html
 		private static String getTargetRelativePathFromURL(String url) {
 			final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
 			if (colonSlashSlash < 0)
 				return "/"; //$NON-NLS-1$
+			final int colon = url.indexOf(':', colonSlashSlash + 4);
+			if (colon >= 0) {
+				final int nextSlash = url.indexOf('/', colonSlashSlash + 4);
+				if (nextSlash > colon)
+					return url.substring(colonSlashSlash + 1, colon) + url.substring(nextSlash);
+			}
+
 			return url.substring(colonSlashSlash + 1);
 		}
 
