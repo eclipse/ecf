@@ -20,6 +20,7 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
 import org.eclipse.ecf.tests.internal.osgi.discovery.Activator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.DiscoveredServiceNotification;
 import org.osgi.service.discovery.ServicePublication;
@@ -45,6 +46,11 @@ public class PublishTest extends TestCase {
 	}
 	
 	class TestServicePublication implements ECFServicePublication {
+
+		public ServiceReference getReference() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 	}
 	
