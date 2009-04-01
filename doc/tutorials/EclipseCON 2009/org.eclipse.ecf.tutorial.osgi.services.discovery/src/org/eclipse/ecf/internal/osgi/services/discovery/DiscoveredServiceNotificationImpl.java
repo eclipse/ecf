@@ -9,6 +9,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import java.util.Collections;
+
+import java.util.Collection;
+
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.osgi.service.discovery.DiscoveredServiceNotification;
 import org.osgi.service.discovery.ServiceEndpointDescription;
@@ -48,5 +52,13 @@ public class DiscoveredServiceNotificationImpl implements
 		sb.append("type=").append(getType()).append(";sed=").append( //$NON-NLS-1$ //$NON-NLS-2$
 				getServiceEndpointDescription()).append("]"); //$NON-NLS-1$
 		return sb.toString();
+	}
+
+	public Collection getFilters() {
+		return Collections.EMPTY_LIST;
+	}
+
+	public Collection getInterfaces() {
+		return Collections.EMPTY_LIST;
 	}
 }
