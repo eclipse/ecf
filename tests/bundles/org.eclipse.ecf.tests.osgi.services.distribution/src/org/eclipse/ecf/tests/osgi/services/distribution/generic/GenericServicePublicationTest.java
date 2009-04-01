@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractServicePublicationTest;
 import org.eclipse.ecf.tests.osgi.services.distribution.TestServiceInterface1;
+import org.osgi.framework.ServiceReference;
 
 public class GenericServicePublicationTest extends AbstractServicePublicationTest {
 
@@ -24,6 +25,11 @@ public class GenericServicePublicationTest extends AbstractServicePublicationTes
 
 	protected String[] createInterfaces() throws Exception {
 		return new String[] { TestServiceInterface1.class.getName() };
+	}
+
+	public ServiceReference getReference() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

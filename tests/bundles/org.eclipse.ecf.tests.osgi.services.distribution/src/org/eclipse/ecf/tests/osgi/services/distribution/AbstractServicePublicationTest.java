@@ -42,6 +42,11 @@ public abstract class AbstractServicePublicationTest extends ECFAbstractTestCase
 	protected abstract IContainer createContainer() throws Exception;
 	protected abstract String[] createInterfaces() throws Exception;
 
+	private ServiceReference reference;
+	
+	public ServiceReference getReference() {
+		return reference;
+	}
 
 	protected void setUp() throws Exception {
 		super.setUp();
