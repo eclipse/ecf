@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import java.util.Collection;
+import java.util.Collections;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.osgi.service.discovery.DiscoveredServiceNotification;
 import org.osgi.service.discovery.ServiceEndpointDescription;
@@ -19,28 +21,34 @@ public class DiscoveredServiceNotificationImpl implements
 	private final int type;
 	private ServiceEndpointDescription serviceEndpointDescription;
 
-	public DiscoveredServiceNotificationImpl(int type,
-			IServiceInfo serviceInfo) {
+	public DiscoveredServiceNotificationImpl(int type, IServiceInfo serviceInfo) {
 		this.type = type;
 		this.serviceEndpointDescription = new ECFServiceEndpointDescriptionImpl(
 				serviceInfo);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.discovery.DiscoveredServiceNotification#getServiceEndpointDescription()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.osgi.service.discovery.DiscoveredServiceNotification#
+	 * getServiceEndpointDescription()
 	 */
 	public ServiceEndpointDescription getServiceEndpointDescription() {
 		return serviceEndpointDescription;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.osgi.service.discovery.DiscoveredServiceNotification#getType()
 	 */
 	public int getType() {
 		return type;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -48,5 +56,15 @@ public class DiscoveredServiceNotificationImpl implements
 		sb.append("type=").append(getType()).append(";sed=").append( //$NON-NLS-1$ //$NON-NLS-2$
 				getServiceEndpointDescription()).append("]"); //$NON-NLS-1$
 		return sb.toString();
+	}
+
+	public Collection getFilters() {
+		// XXX TODO
+		return Collections.EMPTY_LIST;
+	}
+
+	public Collection getInterfaces() {
+		// XXX TODO
+		return Collections.EMPTY_LIST;
 	}
 }
