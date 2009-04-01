@@ -1,0 +1,14 @@
+# Debugging options for the org.eclipse.ecf.provider.filetransfer plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.provider.filetransfer plug-in
+org.eclipse.ecf.provider.filetransfer/debug=true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider.filetransfer/debug/exceptions/catching=true
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider.filetransfer/debug/exceptions/throwing=true
+
+# Trace when methods are entered
+org.eclipse.ecf.provider.filetransfer/debug/methods/entering=true
+# Trace when methods are exited
+org.eclipse.ecf.provider.filetransfer/debug/methods/exiting=true
