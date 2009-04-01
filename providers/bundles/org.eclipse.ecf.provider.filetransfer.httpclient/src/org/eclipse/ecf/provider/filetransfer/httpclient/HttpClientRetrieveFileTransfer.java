@@ -173,7 +173,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			if (colonSlashSlash < 0)
 				return "/"; //$NON-NLS-1$
 			final int colon = url.indexOf(':', colonSlashSlash + 4);
-			if (colon >= 0) {
+			// Get query start location, so that colon is not found from query
+			final int question = url.indexOf('?', colonSlashSlash + 4);
+			// Only consider colon that is before query
+			if (colon >= 0 && ((question < 0) || (colon < question))) {
 				final int nextSlash = url.indexOf('/', colonSlashSlash + 4);
 				if (nextSlash > colon)
 					return url.substring(colonSlashSlash + 1, colon) + url.substring(nextSlash);
