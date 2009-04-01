@@ -180,6 +180,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				final int nextSlash = url.indexOf('/', colonSlashSlash + 4);
 				if (nextSlash > colon)
 					return url.substring(colonSlashSlash + 1, colon) + url.substring(nextSlash);
+				else if (nextSlash < 0)
+					return url.substring(colonSlashSlash + 1, colon);
 			}
 
 			return url.substring(colonSlashSlash + 1);
