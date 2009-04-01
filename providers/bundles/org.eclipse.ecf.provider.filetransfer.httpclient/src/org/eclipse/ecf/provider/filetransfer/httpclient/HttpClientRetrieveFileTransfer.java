@@ -291,23 +291,27 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	public synchronized void cancel() {
+		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "cancel"); //$NON-NLS-1$
 		if (isCanceled()) {
 			return; // break job cancel recursion
 		}
 		setDoneCanceled(exception);
 		boolean fireDoneEvent = true;
 		if (connectJob != null) {
+			Trace.trace(Activator.PLUGIN_ID, "calling connectJob.cancel()"); //$NON-NLS-1$
 			connectJob.cancel();
 		}
 		synchronized (jobLock) {
 			if (job != null) {
 				// Its the transfer jobs responsibility to throw the event.
 				fireDoneEvent = false;
+				Trace.trace(Activator.PLUGIN_ID, "calling transfer job.cancel()"); //$NON-NLS-1$
 				job.cancel();
 			}
 		}
 		if (getMethod != null) {
 			if (!getMethod.isAborted()) {
+				Trace.trace(Activator.PLUGIN_ID, "calling getMethod.abort()"); //$NON-NLS-1$
 				getMethod.abort();
 			}
 		}
@@ -316,6 +320,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			for (Iterator iterator = connectingSockets.getConnectingSockets().iterator(); iterator.hasNext();) {
 				Socket socket = (Socket) iterator.next();
 				try {
+					Trace.trace(Activator.PLUGIN_ID, "Call socket.close() for socket=" + socket.toString()); //$NON-NLS-1$
 					socket.close();
 				} catch (IOException e) {
 					Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "cancel", e); //$NON-NLS-1$
@@ -326,6 +331,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		if (fireDoneEvent) {
 			fireTransferReceiveDoneEvent();
 		}
+		Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "cancel");//$NON-NLS-1$
+
 	}
 
 	/*
@@ -514,6 +521,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		try {
 			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_READ_TIMEOUT);
 			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
+			httpClient.getParams().setConnectionManagerTimeout(DEFAULT_CONNECTION_TIMEOUT);
 
 			setupAuthentication(urlString);
 
@@ -727,6 +735,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		try {
 			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_READ_TIMEOUT);
 			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
+			httpClient.getParams().setConnectionManagerTimeout(DEFAULT_CONNECTION_TIMEOUT);
 
 			setupAuthentication(urlString);
 
@@ -952,6 +961,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			responseCode = httpClient.executeMethod(getHostConfiguration(), getMethod);
 			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + responseCode); //$NON-NLS-1$
 		} catch (final Exception e) {
+			Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "performConnect", e); //$NON-NLS-1$
 			if (!isDone()) {
 				setDoneException(e);
 			}

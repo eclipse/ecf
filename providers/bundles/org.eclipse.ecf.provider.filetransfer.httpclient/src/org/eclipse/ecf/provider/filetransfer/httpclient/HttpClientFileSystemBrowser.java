@@ -163,6 +163,8 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		// set timeout
 		httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_CONNECTION_TIMEOUT);
 		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
+		httpClient.getParams().setConnectionManagerTimeout(DEFAULT_CONNECTION_TIMEOUT);
+
 		String urlString = directoryOrFile.toString();
 		// setup authentication
 		setupAuthentication(urlString);
