@@ -38,9 +38,10 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		events = new ArrayList();
-		testURLs = new URL[2];
+		testURLs = new URL[3];
 		testURLs[0] = new URL("https://www.verisign.com/index.html");
 		testURLs[1] = new URL("http://www.eclipse.org/ecf/ip_log.html");
+		testURLs[2] = new URL("http://google.com:80");
 	}
 
 	/* (non-Javadoc)
@@ -62,16 +63,18 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 	public void testBrowseURLs() throws Exception {
 		for (int i = 0; i < testURLs.length; i++) {
 			testBrowse(testURLs[i]);
-			Thread.sleep(3000);
+			Thread.sleep(10000);
 		}
-		assertHasEventCount(events, IRemoteFileSystemBrowseEvent.class, 2);
+		assertHasEventCount(events, IRemoteFileSystemBrowseEvent.class, 3);
 		for (Iterator iterator = events.iterator(); iterator.hasNext();) {
 			IRemoteFileSystemBrowseEvent event = (IRemoteFileSystemBrowseEvent) iterator.next();
 			assertNotNull(event);
 			final IRemoteFile[] remoteFiles = event.getRemoteFiles();
 			assertNotNull(remoteFiles);
 			assertEquals(1, remoteFiles.length);
-			if (event.getFileID().getName().equals("https://www.verisign.com/index.html")) {
+			if (event.getFileID().getName().equals("https://www.verisign.com/index.html") ||
+			    event.getFileID().getName().equals("http://google.com:80")
+					) {
 				verifyRemoteFilesWithoutLastModifiedAndContentLength(remoteFiles);
 			} else {
 				verifyRemoteFiles(remoteFiles);

@@ -16,20 +16,29 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.URI;
 import java.net.URL;
 
+import org.apache.commons.httpclient.server.HttpRequestHandler;
+import org.apache.commons.httpclient.server.ResponseWriter;
+import org.apache.commons.httpclient.server.SimpleHttpServer;
+import org.apache.commons.httpclient.server.SimpleHttpServerConnection;
+import org.apache.commons.httpclient.server.SimpleRequest;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.equinox.internal.p2.artifact.repository.ECFTransport;
+import org.eclipse.ecf.internal.tests.filetransfer.httpserver.SimpleServer;
+import org.eclipse.equinox.internal.p2.repository.RepositoryTransport;
 
 public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	public static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
 	public static final String HTTP_RETRIEVE1 = "http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&url=http://ftp.osuosl.org/pub/eclipse/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&mirror_id=272";
+	public static final String HTTP_RETRIEVE_PORT = "http://www.eclipse.org:80/ecf/ip_log.html";
+	private static final String HTTP_RETRIEVE_HOST_ONLY = "http://www.google.com";
 
 	public static final String HTTPS_RETRIEVE = "https://www.verisign.com";
 	public static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
@@ -43,6 +52,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	private static final String BUG_237936_URL = "http://www.eclipse.org/downloads/download.php?file=/webtools/updates/site.xml&format=xml&countryCode=us&timeZone=-5&responseType=xml";
 
 	File tmpFile = null;
+	private SimpleServer server;
 
 	/*
 	 * (non-Javadoc)
@@ -52,6 +62,28 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		tmpFile = File.createTempFile("ECFTest", "");
+		server = new SimpleServer(getName());
+		SimpleHttpServer simple = server.getSimpleHttpServer();
+		simple.setRequestHandler(new HttpRequestHandler() {
+
+			public boolean processRequest(SimpleHttpServerConnection conn,
+					SimpleRequest request) throws IOException {
+				trace("Responding to request "
+						+ request.getRequestLine());
+				ResponseWriter w = conn.getWriter();
+				writeLines(w, new String[] { "HTTP/1.0 200 OK",
+						"Content-Length: 2",
+						"Content-Type: text/plain; charset=UTF-8", "" });
+				w.flush();
+				for (int i = 0; i < 2; i++) {
+					w.write("x");
+				}
+				w.flush();
+				conn.setKeepAlive(true);
+				return true;
+			}
+
+		});
 	}
 
 	/*
@@ -61,6 +93,10 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		if (server != null) {
+			server.shutdown();
+		} 
+		server = null;
 		if (tmpFile != null)
 			tmpFile.delete();
 		tmpFile = null;
@@ -133,6 +169,41 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		testReceive(HTTP_RETRIEVE1);
 	}
 
+	public void testReceiveHostOnly() throws Exception {
+		//addProxy("composent.com",3129,"foo\\bar","password");
+		testReceive(HTTP_RETRIEVE_HOST_ONLY);
+	}
+	
+	public void testReceiveFilePort() throws Exception {
+		testReceive(HTTP_RETRIEVE_PORT);
+	}
+	
+	private static void writeLines(ResponseWriter w, String[] lines)
+			throws IOException {
+		for (int i = 0; i < lines.length; i++) {
+			w.println(lines[i]);
+		}
+	}
+	
+
+	public void testReceiveFilePort2() throws Exception {
+		String url = server.getServerURL();
+		assertTrue(url, url.matches("\\Ahttp://localhost:[0-9]+\\Z"));
+		testReceive(url);
+	}
+
+	public void testReceiveFilePort3() throws Exception {
+		String url = server.getServerURL() + "/";
+		assertTrue(url, url.matches("\\Ahttp://localhost:[0-9]+/\\Z"));
+		testReceive(url);
+	}
+	
+	public void testReceiveFilePort4() throws Exception {
+		String url = server.getServerURL() + "/index.html";
+		assertTrue(url, url.matches("\\Ahttp://localhost:[0-9]+/index.html\\Z"));
+		testReceive(url);
+	}
+
 	public void testReceiveNonCanonicalURLPath() throws Exception {
 		//addProxy("composent.com",3129,"foo\\bar","password");
 		testReceive(HTTP_RETRIEVE_NON_CANONICAL_URL);
@@ -177,10 +248,8 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		File f = File.createTempFile("foo", "something.pack.gz");
 		FileOutputStream fos = new FileOutputStream(f);
 		System.out.println(f);
-		ECFTransport
-				.getInstance()
-				.download(HTTP_RETRIEVE_GZFILE,
-						fos, new NullProgressMonitor());
+		RepositoryTransport.getInstance().download(
+				new URI(HTTP_RETRIEVE_GZFILE), fos, new NullProgressMonitor());
 		fos.close();
 		if (f != null) {
 			System.out.println(f.length());
@@ -192,10 +261,11 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		File f = File.createTempFile("foo2", "something.pack.gz");
 		FileOutputStream fos = new FileOutputStream(f);
 		System.out.println(f);
-		ECFTransport
+		RepositoryTransport
 				.getInstance()
 				.download(
-						"http://mirrors.xmission.com/eclipse/eclipse/updates/3.4//plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz",
+						new URI(
+								"http://mirrors.xmission.com/eclipse/eclipse/updates/3.4//plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz"),
 						fos, new NullProgressMonitor());
 		fos.close();
 		if (f != null) {
