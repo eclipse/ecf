@@ -169,22 +169,57 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 		// drops the scheme and port including the colon (e.g http://server:8080/a/b.html -> //server/a/b.html
 		private static String getTargetRelativePathFromURL(String url) {
+			// RFC 3986
+			/* 
+			 *      
+			 *     URI    = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+
+			      hier-part =  "//" authority path-abempty
+			                 / path-absolute
+			                 / path-rootless
+			                 / path-empty     
+			 *      
+			 *      path  = path-abempty    ; begins with "/" or is empty
+			              / path-absolute   ; begins with "/" but not "//"
+			              / path-noscheme   ; begins with a non-colon segment
+			              / path-rootless   ; begins with a segment
+			              / path-empty      ; zero characters
+
+			 * 
+			 */
+			// This routine is supposed to remove authority information from the url
+			// to make this a 'relative path' for
+			// HttpClients method constructor (for example GetMethod(String uri))
+			// 
+			// host (not sure this is proper terminology)
 			final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
 			if (colonSlashSlash < 0)
-				return "/"; //$NON-NLS-1$
-			final int colon = url.indexOf(':', colonSlashSlash + 4);
-			// Get query start location, so that colon is not found from query
-			final int question = url.indexOf('?', colonSlashSlash + 4);
-			// Only consider colon that is before query
-			if (colon >= 0 && ((question < 0) || (colon < question))) {
-				final int nextSlash = url.indexOf('/', colonSlashSlash + 4);
-				if (nextSlash > colon)
-					return url.substring(colonSlashSlash + 1, colon) + url.substring(nextSlash);
-				else if (nextSlash < 0)
-					return url.substring(colonSlashSlash + 1, colon);
-			}
+				return url;
 
-			return url.substring(colonSlashSlash + 1);
+			// '://' indicates there must be an authority.
+			// the authority must not contain a '/' character.
+			final int nextSlash = url.indexOf('/', colonSlashSlash + 3);
+			if (nextSlash == -1) {
+				// try root? or should it be empty?
+				return ""; //$NON-NLS-1$ 
+			}
+			String relativeURL = url.substring(nextSlash); // include the slash
+			// For multiple consecutive slashes after the authority
+			// HttpClient is not working correctly (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=269091)
+			/* For example:
+			     http://eclipse.saplabs.bg//eclipse///updates...
+			   results in 
+			     //eclipse///updates...
+			   but HttpClient removes the host in this case:
+			     ///updates ...
+			*/
+			if (relativeURL.startsWith("//")) { //$NON-NLS-1$
+				// In anticipation a host is added back in:
+				final String host = "example.com"; //$NON-NLS-1$
+				relativeURL = "//" + host + relativeURL; //$NON-NLS-1$
+
+			}
+			return relativeURL;
 		}
 
 		public void setTargetHostByURL(String url) {
@@ -536,7 +571,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			Trace.trace(Activator.PLUGIN_ID, "retrieve=" + urlString); //$NON-NLS-1$
 			// Set request header for possible gzip encoding
-			if (getFileRangeSpecification() == null) { //$NON-NLS-1$
+			if (getFileRangeSpecification() == null) {
 				Trace.trace(Activator.PLUGIN_ID, "Accept-Encoding: gzip added to request header"); //$NON-NLS-1$
 				getMethod.setRequestHeader(GzipGetMethod.ACCEPT_ENCODING, GzipGetMethod.CONTENT_ENCODING_ACCEPTED);
 			} else {
@@ -659,7 +694,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		if (colonPort < 0)
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
 		// Make sure that the colonPort is not from some part of the rest of the URL
-		if (colonPort > url.indexOf('/', colonSlashSlash + 3))
+		int nextSlash = url.indexOf('/', colonSlashSlash + 3);
+		if (nextSlash != -1 && colonPort > nextSlash)
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
 
 		final int requestPath = url.indexOf('/', colonPort + 1);
