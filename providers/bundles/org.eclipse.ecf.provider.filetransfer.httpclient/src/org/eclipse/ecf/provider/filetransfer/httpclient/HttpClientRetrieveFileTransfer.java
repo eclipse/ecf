@@ -167,7 +167,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			return hostConfiguration;
 		}
 
-		// drops the scheme and port including the colon (e.g http://server:8080/a/b.html -> //server/a/b.html
+		// drops the scheme server and port (e.g http://server:8080/a/b.html -> /a/b.html
 		private static String getTargetRelativePathFromURL(String url) {
 			// RFC 3986
 			/* 
@@ -189,9 +189,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			 */
 			// This routine is supposed to remove authority information from the url
 			// to make this a 'relative path' for
-			// HttpClients method constructor (for example GetMethod(String uri))
-			// 
-			// host (not sure this is proper terminology)
+			// HttpClients method constructor (for example GetMethod(String uri)) as
+			// ECF executes methods passing in a HostConfiguration which represents the
+			// authority.
 			final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
 			if (colonSlashSlash < 0)
 				return url;
@@ -204,17 +204,13 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				return ""; //$NON-NLS-1$ 
 			}
 			String relativeURL = url.substring(nextSlash); // include the slash
-			// For multiple consecutive slashes after the authority
-			// HttpClient is not working correctly (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=269091)
-			/* For example:
-			     http://eclipse.saplabs.bg//eclipse///updates...
-			   results in 
-			     //eclipse///updates...
-			   but HttpClient removes the host in this case:
-			     ///updates ...
-			*/
+			// This is a workaround for multiple consecutive slashes after the authority.
+			// HttpClient will parse this as another authority instead of using 
+			// it as a path. In anticipation we add "//example.com" so that this will
+			// be removed instead of the first path segment. 
+			// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=270749#c28 
+			// for a full explanation
 			if (relativeURL.startsWith("//")) { //$NON-NLS-1$
-				// In anticipation a host is added back in:
 				final String host = "example.com"; //$NON-NLS-1$
 				relativeURL = "//" + host + relativeURL; //$NON-NLS-1$
 
