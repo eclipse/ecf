@@ -85,7 +85,7 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 		stopped = true;
 	}
 
-	public synchronized boolean isStopped() {
+	public boolean isStopped() {
 		return stopped;
 	}
 
