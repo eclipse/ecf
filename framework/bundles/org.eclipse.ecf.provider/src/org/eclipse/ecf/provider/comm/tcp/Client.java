@@ -265,7 +265,7 @@ public final class Client implements ISynchAsynchConnection {
 	}
 
 	void send(Serializable snd) throws IOException {
-		debug("send(" + snd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		//		debug("send(" + snd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		outputStream.writeObject(snd);
 		outputStream.flush();
 	}
@@ -324,7 +324,7 @@ public final class Client implements ISynchAsynchConnection {
 	// private int rcvCount = 0;
 	void handleRcv(Serializable rcv) throws IOException {
 		try {
-			debug("recv(" + rcv + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+			//			debug("recv(" + rcv + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 			// Handle all messages
 			if (rcv instanceof SynchMessage) {
 				// Handle synch message. The only valid synch message is
@@ -450,25 +450,21 @@ public final class Client implements ISynchAsynchConnection {
 	public synchronized void queueObject(ID recipient, Serializable obj) throws IOException {
 		if (queue.isStopped() || isClosing)
 			throw new ConnectException(Messages.Client_Exception_Not_Connected);
-		debug("queueObject(" + recipient + "," + obj + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		queue.enqueue(new AsynchMessage(obj));
 	}
 
 	public synchronized Serializable sendObject(ID recipient, Serializable obj) throws IOException {
 		if (queue.isStopped() || isClosing)
 			throw new ConnectException(Messages.Client_Exception_Not_Connected);
-		debug("sendObject(" + recipient + "," + obj + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		sendClose(new SynchMessage(obj));
 		return null;
 	}
 
 	public Object sendSynch(ID rec, Object obj) throws IOException {
-		debug("sendSynch(" + rec + "," + obj + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return sendObject(rec, (Serializable) obj);
 	}
 
 	public Object sendSynch(ID rec, byte[] obj) throws IOException {
-		debug("sendSynch(" + rec + "," + obj + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return sendObject(rec, obj);
 	}
 

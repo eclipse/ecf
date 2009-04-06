@@ -225,11 +225,8 @@ public class SOContext implements ISharedObjectContext {
 	 *      java.lang.Object)
 	 */
 	public void sendMessage(ID toContainerID, Object data) throws IOException {
-		if (isInactive()) {
-			trace("sendMessage(" + toContainerID + "," + data + ") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		if (isInactive())
 			return;
-		}
-		trace("sendMessage(" + toContainerID + "," + data + ") CONTEXT ACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		container.sendMessage(toContainerID, sharedObjectID, data);
 	}
 
