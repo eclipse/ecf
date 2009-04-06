@@ -209,6 +209,12 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		testReceive(HTTP_RETRIEVE_NON_CANONICAL_URL);
 	}
 
+	public void testReceiveNonCanonicalURLPathLocalHost() throws Exception {
+		String url = server.getServerURL() + "//foo";
+		assertTrue(url, url.matches("\\Ahttp://localhost:[0-9]+//foo\\Z"));
+		testReceive(url);
+	}
+
 	public void testFTPReceiveFile() throws Exception {
 		testReceive(FTP_RETRIEVE);
 	}
