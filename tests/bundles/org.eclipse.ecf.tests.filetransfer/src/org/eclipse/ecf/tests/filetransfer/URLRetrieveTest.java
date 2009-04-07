@@ -26,12 +26,13 @@ import org.apache.commons.httpclient.server.SimpleHttpServerConnection;
 import org.apache.commons.httpclient.server.SimpleRequest;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
+import org.eclipse.ecf.filetransfer.SendFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.tests.filetransfer.httpserver.SimpleServer;
-import org.eclipse.equinox.internal.p2.repository.RepositoryTransport;
+//import org.eclipse.equinox.internal.p2.repository.RepositoryTransport;
 
 public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
@@ -251,32 +252,20 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public static final String HTTP_RETRIEVE_GZFILE_MIRROR = "http://mirrors.xmission.com/eclipse/eclipse/updates/3.4//plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz";
 
 	public void testReceiveGzipWithGZFile() throws Exception {
-		File f = File.createTempFile("foo", "something.pack.gz");
-		FileOutputStream fos = new FileOutputStream(f);
-		System.out.println(f);
-		RepositoryTransport.getInstance().download(
-				new URI(HTTP_RETRIEVE_GZFILE), fos, new NullProgressMonitor());
-		fos.close();
-		if (f != null) {
-			System.out.println(f.length());
-			assertTrue("4.0", f.length() < 50000);
+		tmpFile = File.createTempFile("foo", "something.pack.gz");
+		testReceive(HTTP_RETRIEVE_GZFILE);
+		if (tmpFile != null) {
+			System.out.println(tmpFile.length());
+			assertTrue("4.0", tmpFile.length() < 50000);
 		}
 	}
 	
 	public void testReceiveGzipWithGZFileFromMirror() throws Exception {
-		File f = File.createTempFile("foo2", "something.pack.gz");
-		FileOutputStream fos = new FileOutputStream(f);
-		System.out.println(f);
-		RepositoryTransport
-				.getInstance()
-				.download(
-						new URI(
-								"http://mirrors.xmission.com/eclipse/eclipse/updates/3.4//plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz"),
-						fos, new NullProgressMonitor());
-		fos.close();
-		if (f != null) {
-			System.out.println(f.length());
-			assertTrue("4.0", f.length() < 50000);
+		tmpFile = File.createTempFile("foo", "something.pack.gz");
+		testReceive(HTTP_RETRIEVE_GZFILE_MIRROR);
+		if (tmpFile != null) {
+			System.out.println(tmpFile.length());
+			assertTrue("4.0", tmpFile.length() < 50000);
 		}
 	}
 	
