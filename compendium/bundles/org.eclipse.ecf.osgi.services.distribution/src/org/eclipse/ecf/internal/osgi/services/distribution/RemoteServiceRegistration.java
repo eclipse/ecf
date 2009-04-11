@@ -11,47 +11,45 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.*;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription;
 import org.eclipse.ecf.remoteservice.*;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.discovery.ServiceEndpointDescription;
 
-public class RemoteServiceRegistrations {
+public class RemoteServiceRegistration {
 
-	private final ServiceEndpointDescription serviceEndpointDescription;
-	private final IContainer container;
-	private final IRemoteServiceContainerAdapter containerAdapter;
+	private final ECFServiceEndpointDescription serviceEndpointDescription;
+	private final IRemoteServiceContainer rsContainer;
 	private IRemoteServiceListener listener;
 	private Map serviceRegistrations = new HashMap();
 
-	public RemoteServiceRegistrations(ServiceEndpointDescription sed, IContainer c,
-			IRemoteServiceContainerAdapter adapter, IRemoteServiceListener l) {
+	public RemoteServiceRegistration(ECFServiceEndpointDescription sed,
+			IRemoteServiceContainer rsContainer, IRemoteServiceListener l) {
 		this.serviceEndpointDescription = sed;
-		this.container = c;
-		this.containerAdapter = adapter;
+		this.rsContainer = rsContainer;
 		this.listener = l;
-		this.containerAdapter.addRemoteServiceListener(this.listener);
+		getContainerAdapter().addRemoteServiceListener(this.listener);
 	}
 
-	public ServiceEndpointDescription getServiceEndpointDescription() {
+	public ECFServiceEndpointDescription getServiceEndpointDescription() {
 		return serviceEndpointDescription;
 	}
 
 	public IContainer getContainer() {
-		return container;
+		return rsContainer.getContainer();
 	}
 
 	public IRemoteServiceContainerAdapter getContainerAdapter() {
-		return containerAdapter;
+		return rsContainer.getContainerAdapter();
 	}
 
 	public void dispose() {
-		this.containerAdapter.removeRemoteServiceListener(this.listener);
+		getContainerAdapter().removeRemoteServiceListener(this.listener);
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("RemoteServiceRegistrations[");
-		buf.append("containerID=").append(getContainer().getID());
-		buf.append(";rsca=").append(getContainerAdapter()).append("]");
+		StringBuffer buf = new StringBuffer("RemoteServiceRegistration[");
+		buf.append("sed=").append(getServiceEndpointDescription());
+		buf.append(";containerID=").append(getContainer().getID()).append("]");
 		return buf.toString();
 	}
 
