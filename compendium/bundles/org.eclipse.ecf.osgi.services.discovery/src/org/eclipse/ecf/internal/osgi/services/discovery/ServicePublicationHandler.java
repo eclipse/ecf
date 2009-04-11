@@ -12,8 +12,6 @@ package org.eclipse.ecf.internal.osgi.services.discovery;
 import java.io.Serializable;
 import java.net.*;
 import java.util.*;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
@@ -285,12 +283,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		}
 	}
 
-	private void logError(String method, String message, Throwable t) {
-		Activator.getDefault().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-						method + ":" + message, t)); //$NON-NLS-1$
-		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
-				this.getClass(), method + ":" + message, t); //$NON-NLS-1$
+	private void logError(String method, String message, Throwable exception) {
+		LogUtility.logError(method, message, this.getClass(), exception);
 	}
 
 	private URI createURI(ID endpointContainerID) throws URISyntaxException {
