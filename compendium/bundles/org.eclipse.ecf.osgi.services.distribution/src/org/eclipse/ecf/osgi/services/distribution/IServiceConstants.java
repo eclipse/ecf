@@ -9,7 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
-public interface ECFServiceConstants {
+public interface IServiceConstants {
 
 	/*
 	 * service.intents – an optional list of intents provided by the service.

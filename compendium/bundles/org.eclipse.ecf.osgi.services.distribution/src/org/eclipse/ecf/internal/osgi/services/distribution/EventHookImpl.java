@@ -14,8 +14,8 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
-import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
+import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
+import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.*;
@@ -83,7 +83,7 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// selected container adapters support all required intents (i.e. via
 		// findRSCAHoldersSatisfyingRequiredIntents
 		String[] remoteRequiresIntents = (String[]) serviceReference
-				.getProperty(ECFServiceConstants.OSGI_REMOTE_REQUIRES_INTENTS);
+				.getProperty(IServiceConstants.OSGI_REMOTE_REQUIRES_INTENTS);
 		if (remoteRequiresIntents != null) {
 			rscas = findRSCAHoldersSatisfyingRequiredIntents(rscas,
 					remoteRequiresIntents);
@@ -162,12 +162,26 @@ public class EventHookImpl extends AbstractEventHookImpl {
 				getServicePropertiesForRemotePublication(ref));
 
 		IContainer container = holder.getContainer();
+
 		// Due to slp bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=216944
 		// We are not going to use the RFC 119
 		// ServicePublication.PROP_KEY_ENDPOINT_ID...since
 		// it won't handle some Strings with (e.g. slp) provider
-		properties.put(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID,
+		ID endpointID = container.getID();
+		properties.put(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID,
 				container.getID());
+
+		// Also put the target ID in the service properties...*only*
+		// if the target ID is non-null and it's *not* the same as the
+		// endpointID, then include it in the set of properties delivered
+		// for publication
+		ID targetID = container.getConnectedID();
+		if (targetID != null && !targetID.equals(endpointID)) {
+			// put the target ID into the properties
+			properties.put(IServicePublication.PROP_KEY_TARGET_CONTAINERID,
+					targetID);
+		}
+
 		// Set remote service namespace (String)
 		Namespace rsnamespace = holder.getContainerAdapter()
 				.getRemoteServiceNamespace();
@@ -241,10 +255,10 @@ public class EventHookImpl extends AbstractEventHookImpl {
 	private static final List excludedProperties = Arrays.asList(new String[] {
 			org.osgi.framework.Constants.SERVICE_ID,
 			org.osgi.framework.Constants.OBJECTCLASS,
-			ECFServiceConstants.OSGI_REMOTE_INTERFACES,
-			ECFServiceConstants.OSGI_REMOTE_REQUIRES_INTENTS,
-			ECFServiceConstants.OSGI_REMOTE,
-			ECFServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE,
+			IServiceConstants.OSGI_REMOTE_INTERFACES,
+			IServiceConstants.OSGI_REMOTE_REQUIRES_INTENTS,
+			IServiceConstants.OSGI_REMOTE,
+			IServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE,
 			// ECF constants
 			org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID, });
 

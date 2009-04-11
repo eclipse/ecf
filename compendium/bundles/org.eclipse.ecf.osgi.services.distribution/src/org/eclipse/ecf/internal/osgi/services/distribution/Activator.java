@@ -9,13 +9,14 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.*;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
+import org.eclipse.ecf.osgi.services.distribution.IRemoteServiceContainerFinder;
+import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
+import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
 import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
@@ -37,11 +38,14 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration eventHookRegistration;
 	private ServiceRegistration distributionProviderRegistration;
 	private ServiceRegistration discoveredServiceTrackerRegistration;
+	private ServiceRegistration rsContainerFinderRegistration;
 
 	private ServiceTracker logServiceTracker = null;
 	private LogService logService = null;
 
 	private ServiceTracker adapterManagerTracker;
+
+	private ServiceTracker rsContainerFinderTracker;
 
 	public static Activator getDefault() {
 		return plugin;
@@ -100,10 +104,13 @@ public class Activator implements BundleActivator {
 	}
 
 	private void addDiscoveredServiceTracker() {
+		DiscoveredServiceTrackerImpl dstImpl = new DiscoveredServiceTrackerImpl(
+				this.distributionProvider, new ThreadsExecutor());
 		this.discoveredServiceTrackerRegistration = this.context
 				.registerService(DiscoveredServiceTracker.class.getName(),
-						new DiscoveredServiceTrackerImpl(
-								this.distributionProvider), null);
+						dstImpl, null);
+		this.rsContainerFinderRegistration = this.context.registerService(
+				IRemoteServiceContainerFinder.class.getName(), dstImpl, null);
 	}
 
 	private void addServiceRegistryHooks() {
@@ -115,7 +122,7 @@ public class Activator implements BundleActivator {
 		// register all existing services which have the marker property
 		try {
 			final ServiceReference[] refs = this.context.getServiceReferences(
-					null, "(" + ECFServiceConstants.OSGI_REMOTE_INTERFACES
+					null, "(" + IServiceConstants.OSGI_REMOTE_INTERFACES
 							+ "=*)");
 			if (refs != null) {
 				for (int i = 0; i < refs.length; i++) {
@@ -161,6 +168,10 @@ public class Activator implements BundleActivator {
 			this.discoveredServiceTrackerRegistration.unregister();
 			this.discoveredServiceTrackerRegistration = null;
 		}
+		if (this.rsContainerFinderRegistration != null) {
+			this.rsContainerFinderRegistration.unregister();
+			this.rsContainerFinderRegistration = null;
+		}
 	}
 
 	/*
@@ -190,6 +201,10 @@ public class Activator implements BundleActivator {
 			distributionProvider.dispose();
 			distributionProvider = null;
 		}
+		if (rsContainerFinderTracker != null) {
+			rsContainerFinderTracker.close();
+			rsContainerFinderTracker = null;
+		}
 		this.context = null;
 		plugin = null;
 	}
@@ -201,6 +216,17 @@ public class Activator implements BundleActivator {
 			containerManagerTracker.open();
 		}
 		return (IContainerManager) containerManagerTracker.getService();
+	}
+
+	public synchronized IRemoteServiceContainerFinder[] getRemoteServiceContainerFinders() {
+		if (rsContainerFinderTracker == null) {
+			rsContainerFinderTracker = new ServiceTracker(this.context,
+					IRemoteServiceContainerFinder.class.getName(), null);
+			rsContainerFinderTracker.open();
+		}
+		Object[] svcs = (Object[]) rsContainerFinderTracker.getServices();
+		return (IRemoteServiceContainerFinder[]) Arrays.asList(svcs).toArray(
+				new IRemoteServiceContainerFinder[] {});
 	}
 
 	public IAdapterManager getAdapterManager() {

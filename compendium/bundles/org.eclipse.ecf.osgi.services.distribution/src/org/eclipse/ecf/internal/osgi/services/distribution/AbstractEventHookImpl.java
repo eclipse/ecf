@@ -13,7 +13,7 @@ import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
+import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
@@ -68,7 +68,7 @@ public abstract class AbstractEventHookImpl implements EventHook {
 		// This checks to see if the serviceReference has any remote interfaces
 		// declared via osgi.remote.interfaces property
 		Object osgiRemotes = serviceReference
-				.getProperty(ECFServiceConstants.OSGI_REMOTE_INTERFACES);
+				.getProperty(IServiceConstants.OSGI_REMOTE_INTERFACES);
 		// If osgi.remote.interfaces required property is non-null then we
 		// handle further, if null then ignore the service registration event
 		if (osgiRemotes != null) {
@@ -98,7 +98,7 @@ public abstract class AbstractEventHookImpl implements EventHook {
 			}
 			// Now get optional service property osgi.remote.configuration.type
 			Object osgiRemoteConfigurationType = serviceReference
-					.getProperty(ECFServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE);
+					.getProperty(IServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE);
 			// The osgiRemoteConfigurationType is optional and can be null. If
 			// non-null, it should be of type String [] according to RFC119...if
 			// it's non-null and not String [] we ignore
@@ -208,7 +208,7 @@ public abstract class AbstractEventHookImpl implements EventHook {
 				.getProperty(Constants.OBJECTCLASS));
 		for (int i = 0; i < remoteInterfaces.length; i++) {
 			String intf = remoteInterfaces[i];
-			if (ECFServiceConstants.OSGI_REMOTE_INTERFACES_WILDCARD
+			if (IServiceConstants.OSGI_REMOTE_INTERFACES_WILDCARD
 					.equals(intf))
 				return (String[]) interfaces.toArray(new String[] {});
 			if (intf != null && interfaces.contains(intf))
