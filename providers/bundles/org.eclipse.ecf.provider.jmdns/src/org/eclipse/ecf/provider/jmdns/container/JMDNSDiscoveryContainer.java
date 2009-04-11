@@ -380,6 +380,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final int weight = serviceInfo.getWeight();
 		final Properties props = new Properties();
 		String uriProtocol = null;
+		String uriPath = null;
 		String namingAuthority = IServiceTypeID.DEFAULT_NA;
 		for (final Enumeration e = serviceInfo.getPropertyNames(); e.hasMoreElements();) {
 			final String key = (String) e.nextElement();
@@ -388,7 +389,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			} else if (NAMING_AUTHORITY_PROPERTY.equals(key)) {
 				namingAuthority = serviceInfo.getPropertyString(key);
 			} else if (URI_PATH_PROPERTY.equals(key)) {
-				// nop (ServiceInfo already takes care)
+				uriPath = serviceInfo.getPropertyString(key);
 			} else {
 				final byte[] bytes = serviceInfo.getPropertyBytes(key);
 				try {
@@ -411,8 +412,8 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final String[] scopes = new String[] {domain};
 
 		// uri
-		final URI uri = new URI(serviceInfo.getURL(uriProtocol == null ? proto : uriProtocol));
-
+		String authority = serviceInfo.getHostAddress() + ":" + serviceInfo.getPort();
+		final URI uri = new URI(uriProtocol == null ? proto : uriProtocol, authority, uriPath, null, null);
 		// service type
 		String st = serviceInfo.getType();
 		final int end = st.indexOf(proto);
