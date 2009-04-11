@@ -10,13 +10,14 @@
  *****************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
+import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.distribution.DistributionProvider;
 
-public class DistributionProviderTest extends ECFAbstractTestCase {
+public class DistributionProviderTest extends ECFAbstractTestCase implements IServiceConstants {
 
 	public void testDistributionProvider() throws Exception {
 		final BundleContext context = Activator.getDefault().getContext();

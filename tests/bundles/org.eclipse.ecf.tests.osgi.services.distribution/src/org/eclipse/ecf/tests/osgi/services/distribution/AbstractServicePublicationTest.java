@@ -13,11 +13,12 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import junit.framework.TestCase;
+
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
-import org.eclipse.ecf.osgi.services.distribution.ECFServiceConstants;
-import org.eclipse.ecf.tests.ECFAbstractTestCase;
+import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
+import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -25,7 +26,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
 
-public abstract class AbstractServicePublicationTest extends ECFAbstractTestCase implements ECFServiceConstants, ECFServicePublication {
+public abstract class AbstractServicePublicationTest extends TestCase implements IServiceConstants, IServicePublication {
 
 	protected static void assertStringsEqual(final String[] s1, final String[] s2) {
 		assertEquals(s1.length, s2.length);
@@ -42,7 +43,7 @@ public abstract class AbstractServicePublicationTest extends ECFAbstractTestCase
 	protected abstract IContainer createContainer() throws Exception;
 	protected abstract String[] createInterfaces() throws Exception;
 
-	private ServiceReference reference;
+	protected ServiceReference reference;
 	
 	public ServiceReference getReference() {
 		return reference;
@@ -101,7 +102,7 @@ public abstract class AbstractServicePublicationTest extends ECFAbstractTestCase
 	
 		// register a service with the marker property set
 		final Dictionary props = new Hashtable();
-		props.put(ECFServiceConstants.OSGI_REMOTE_INTERFACES, getInterfaces());
+		props.put(IServiceConstants.OSGI_REMOTE_INTERFACES, getInterfaces());
 		// prepare a service tracker
 		final ServiceTracker tracker = new ServiceTracker(context,
 				TestServiceInterface1.class.getName(), null);
@@ -112,7 +113,7 @@ public abstract class AbstractServicePublicationTest extends ECFAbstractTestCase
 				new TestService1(), props);
 	
 		// wait for service to become registered
-		tracker.waitForService(1000);
+		tracker.waitForService(10000);
 	
 		// expected behavior: an endpoint is published
 		final ServiceReference ref = context

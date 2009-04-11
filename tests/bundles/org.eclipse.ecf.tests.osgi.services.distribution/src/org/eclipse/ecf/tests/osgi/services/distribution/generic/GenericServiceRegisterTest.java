@@ -11,7 +11,6 @@ package org.eclipse.ecf.tests.osgi.services.distribution.generic;
 
 
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractServiceRegisterTest;
-import org.osgi.framework.ServiceReference;
 
 
 public class GenericServiceRegisterTest extends AbstractServiceRegisterTest {
@@ -39,11 +38,6 @@ public class GenericServiceRegisterTest extends AbstractServiceRegisterTest {
 		return "ecf.generic.client";
 	}
 
-
-	public ServiceReference getReference() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 }
