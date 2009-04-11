@@ -19,7 +19,7 @@ import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
-import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.*;
@@ -31,15 +31,23 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 	private IDiscoveryAdvertiser advertiser;
 	private Map serviceInfos = Collections.synchronizedMap(new HashMap());
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse
+	 * .ecf.discovery.IServiceEvent)
 	 */
 	public void serviceDiscovered(IServiceEvent anEvent) {
 		handleServiceDiscovered(anEvent);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceListener#serviceUndiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.discovery.IServiceListener#serviceUndiscovered(org.eclipse
+	 * .ecf.discovery.IServiceEvent)
 	 */
 	public void serviceUndiscovered(IServiceEvent anEvent) {
 		handleServiceUndiscovered(anEvent);
@@ -107,7 +115,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 	private boolean matchServiceID(IServiceID serviceId) {
 		if (Arrays.asList(serviceId.getServiceTypeID().getServices()).contains(
-				ECFServicePublication.SERVICE_TYPE))
+				IServicePublication.SERVICE_TYPE))
 			return true;
 		return false;
 	}
@@ -120,8 +128,12 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		return (IServiceInfo) serviceInfos.remove(sr);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.util.tracker.ServiceTrackerCustomizer#addingService(org.osgi.framework.ServiceReference)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.util.tracker.ServiceTrackerCustomizer#addingService(org.osgi
+	 * .framework.ServiceReference)
 	 */
 	public Object addingService(ServiceReference reference) {
 		handleServicePublication(reference);
@@ -173,30 +185,50 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 		// See EventHookImpl.getServicePublicationProperties()
 		// Get and then serialize and set
-		// ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID
+		// IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID
 		ID endpointContainerID = (ID) reference
-				.getProperty(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
+				.getProperty(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
+		// This is required for ecf endpoints so if it's not found then it's an
+		// error
 		if (endpointContainerID == null) {
 			logError(
 					"handleServicePublication", //$NON-NLS-1$
 					"ignoring " //$NON-NLS-1$
 							+ reference
-							+ ". ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID not set", //$NON-NLS-1$
+							+ ". IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID not set", //$NON-NLS-1$
 					null);
 			return;
 		}
 		// Add endpoint container id.toExternalForm().getBytes...so AS byte []
 		discoveryServiceProperties.setPropertyBytes(
-				ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID,
+				IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID,
 				endpointContainerID.toExternalForm().getBytes());
-
-		// Add container id namespace name
-		String namespace = endpointContainerID.getNamespace().getName();
+		// Add endpoint container id namespace name
+		String endpointNamespace = endpointContainerID.getNamespace().getName();
 		discoveryServiceProperties.setPropertyString(
-				ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE,
-				namespace);
+				IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE,
+				endpointNamespace);
 
-		// remote service namespace
+		// See EventHookImpl.getServicePublicationProperties()
+		// Get and then serialize and set
+		// IServicePublication.PROP_KEY_TARGET_CONTAINERID
+		ID targetContainerID = (ID) reference
+				.getProperty(IServicePublication.PROP_KEY_TARGET_CONTAINERID);
+		// the target ID is optional, so only add it if it's been added
+		// via the EventHookImpl
+		if (targetContainerID != null) {
+			// Add endpoint container id.toExternalForm().getBytes...so AS byte
+			// []
+			discoveryServiceProperties.setPropertyBytes(
+					IServicePublication.PROP_KEY_TARGET_CONTAINERID,
+					targetContainerID.toExternalForm().getBytes());
+			String targetNamespace = targetContainerID.getNamespace().getName();
+			discoveryServiceProperties.setPropertyString(
+					IServicePublication.PROP_KEY_TARGET_CONTAINERID_NAMESPACE,
+					targetNamespace);
+		}
+
+		// add remote service namespace
 		String rsnamespace = ServicePropertyUtils.getStringProperty(reference,
 				Constants.SERVICE_NAMESPACE);
 		if (rsnamespace == null) {
@@ -207,8 +239,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		discoveryServiceProperties.setPropertyString(
 				Constants.SERVICE_NAMESPACE, rsnamespace);
 
-		// remote service id
-
+		// and remote service id
 		Long remoteServiceID = (Long) reference
 				.getProperty(Constants.SERVICE_ID);
 		if (remoteServiceID == null) {
@@ -222,13 +253,14 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		Namespace advertiserNamespace = getAdvertiser().getServicesNamespace();
 		IServiceInfo svcInfo = null;
 		try {
-			IServiceTypeID serviceTypeID = createServiceTypeID(servicePublicationServiceProperties, advertiserNamespace);
+			IServiceTypeID serviceTypeID = createServiceTypeID(
+					servicePublicationServiceProperties, advertiserNamespace);
 			URI uri = createURI(endpointContainerID);
 
 			String serviceName = getPropertyWithDefault(
 					servicePublicationServiceProperties,
-					ECFServicePublication.SERVICE_NAME_PROP,
-					(ECFServicePublication.DEFAULT_SERVICE_NAME_PREFIX + remoteServiceID));
+					IServicePublication.SERVICE_NAME_PROP,
+					(IServicePublication.DEFAULT_SERVICE_NAME_PREFIX + remoteServiceID));
 
 			svcInfo = new ServiceInfo(uri, serviceName, serviceTypeID,
 					discoveryServiceProperties);
@@ -277,7 +309,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 				done = true;
 			}
 		}
-		String scheme = ECFServicePublication.SERVICE_TYPE;
+		String scheme = IServicePublication.SERVICE_TYPE;
 		int port = 32565;
 		if (uri != null) {
 			port = uri.getPort();
@@ -339,31 +371,38 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 			throws IDCreateException {
 		String namingAuthority = getPropertyWithDefault(
 				servicePublicationProperties,
-				ECFServicePublication.NAMING_AUTHORITY_PROP,
+				IServicePublication.NAMING_AUTHORITY_PROP,
 				IServiceTypeID.DEFAULT_NA);
 		String scope = getPropertyWithDefault(servicePublicationProperties,
-				ECFServicePublication.SCOPE_PROP,
-				IServiceTypeID.DEFAULT_SCOPE[0]);
+				IServicePublication.SCOPE_PROP, IServiceTypeID.DEFAULT_SCOPE[0]);
 		String protocol = getPropertyWithDefault(servicePublicationProperties,
-				ECFServicePublication.SERVICE_PROTOCOL_PROP,
+				IServicePublication.SERVICE_PROTOCOL_PROP,
 				IServiceTypeID.DEFAULT_PROTO[0]);
 
 		return ServiceIDFactory.getDefault().createServiceTypeID(aNamespace,
-				new String[] { ECFServicePublication.SERVICE_TYPE },
+				new String[] { IServicePublication.SERVICE_TYPE },
 				new String[] { scope }, new String[] { protocol },
 				namingAuthority);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.util.tracker.ServiceTrackerCustomizer#modifiedService(org.osgi.framework.ServiceReference, java.lang.Object)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.util.tracker.ServiceTrackerCustomizer#modifiedService(org.osgi
+	 * .framework.ServiceReference, java.lang.Object)
 	 */
 	public void modifiedService(ServiceReference reference, Object service) {
 		unpublishService(reference);
 		handleServicePublication(reference);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.util.tracker.ServiceTrackerCustomizer#removedService(org.osgi.framework.ServiceReference, java.lang.Object)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.util.tracker.ServiceTrackerCustomizer#removedService(org.osgi
+	 * .framework.ServiceReference, java.lang.Object)
 	 */
 	public void removedService(ServiceReference reference, Object service) {
 		unpublishService(reference);

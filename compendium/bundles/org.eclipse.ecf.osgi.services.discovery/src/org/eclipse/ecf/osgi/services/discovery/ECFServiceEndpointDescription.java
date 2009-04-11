@@ -15,18 +15,15 @@ import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.osgi.services.discovery.Activator;
 import org.eclipse.ecf.internal.osgi.services.discovery.ServicePropertyUtils;
-import org.osgi.service.discovery.ServiceEndpointDescription;
 import org.osgi.service.discovery.ServicePublication;
 
 public abstract class ECFServiceEndpointDescription implements
-		ServiceEndpointDescription {
+		IServiceEndpointDescription {
 
-	private final long timeout = new Long(System.getProperty(
-			"ecf.osgi.distribution.lookup.timeout", "30000")).longValue();
-
-	private final Map serviceProperties;
+	protected Map serviceProperties;
 
 	public ECFServiceEndpointDescription(Map properties) {
 		this.serviceProperties = properties;
@@ -180,23 +177,23 @@ public abstract class ECFServiceEndpointDescription implements
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
-		sb.append(";providedinterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
-		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
-		sb.append(";lookup timeout=" + getLookupTimeout());//$NON-NLS-1$
-		sb.append(";props=").append(getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
-		return sb.toString();
-	}
-
 	public abstract ID getECFEndpointID();
 
-	public long getLookupTimeout() {
-		return timeout;
+	public abstract ID getECFTargetID();
+
+	public abstract IServiceID getServiceID();
+
+	public String getECFRemoteServicesFilter() {
+		Object o = serviceProperties
+				.get(IServicePublication.PROP_KEY_REMOTE_SERVICE_FILTER);
+		if (o instanceof String)
+			return (String) o;
+		return null;
 	}
+
+	public void setProperties(Map props) {
+		if (props != null)
+			this.serviceProperties = props;
+	}
+
 }

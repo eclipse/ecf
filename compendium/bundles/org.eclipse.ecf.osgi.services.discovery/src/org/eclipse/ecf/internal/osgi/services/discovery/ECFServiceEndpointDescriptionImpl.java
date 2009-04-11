@@ -10,70 +10,78 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import org.eclipse.ecf.discovery.ServiceProperties;
-
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.discovery.IServiceProperties;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.osgi.services.discovery.ECFServicePublication;
-
-import org.eclipse.ecf.core.identity.IDCreateException;
-
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.discovery.IServiceInfo;
-
 import org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
 
 public class ECFServiceEndpointDescriptionImpl extends
 		ECFServiceEndpointDescription {
 
-	private static final long DEFAULT_FUTURE_TIMEOUT = new Long(System
-			.getProperty("ecf.rs.lookup.timeout", new Long(30000).toString()))
-			.longValue();
-
 	private final ID endpointId;
 	private final IServiceID serviceId;
-	
+	private ID targetId = null;
+
 	public ECFServiceEndpointDescriptionImpl(IServiceInfo serviceInfo) {
-		super(((ServiceProperties)serviceInfo.getServiceProperties()).asProperties());
+		super(((ServiceProperties) serviceInfo.getServiceProperties())
+				.asProperties());
 		this.serviceId = serviceInfo.getServiceID();
 
 		// create the endpoint id
-		IServiceProperties serviceProperties = serviceInfo.getServiceProperties();
-		final byte[] endpointBytes = 
-			serviceProperties.getPropertyBytes(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
+		IServiceProperties serviceProperties = serviceInfo
+				.getServiceProperties();
+		final byte[] endpointBytes = serviceProperties
+				.getPropertyBytes(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
 		if (endpointBytes == null)
 			throw new IDCreateException(
 					"ServiceEndpointDescription endpointBytes cannot be null");
 		final String endpointStr = new String(endpointBytes);
-		final String namespaceStr = 
-			serviceProperties.getPropertyString(ECFServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE);
+		final String namespaceStr = serviceProperties
+				.getPropertyString(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE);
 		if (namespaceStr == null) {
 			throw new IDCreateException(
-			"ServiceEndpointDescription namespaceStr cannot be null");
+					"ServiceEndpointDescription namespaceStr cannot be null");
 		}
-		endpointId = IDFactory.getDefault().createID(namespaceStr,
-				endpointStr);
+		endpointId = IDFactory.getDefault().createID(namespaceStr, endpointStr);
+
+		// create the target id, if it's there
+		final byte[] targetBytes = serviceProperties
+				.getPropertyBytes(IServicePublication.PROP_KEY_TARGET_CONTAINERID);
+		// If this is null, we're ok with it
+		if (targetBytes != null) {
+			final String targetStr = new String(endpointBytes);
+			String targetNamespaceStr = serviceProperties
+					.getPropertyString(IServicePublication.PROP_KEY_TARGET_CONTAINERID_NAMESPACE);
+			if (targetNamespaceStr == null)
+				targetNamespaceStr = namespaceStr;
+			targetId = IDFactory.getDefault().createID(targetNamespaceStr,
+					targetStr);
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription#getECFEndpointID()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription
+	 * #getECFEndpointID()
 	 */
 	public ID getECFEndpointID() throws IDCreateException {
 		return endpointId;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription#getFutureTimeout()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription
+	 * #getECFTargetID()
 	 */
-	public long getLookupTimeout() {
-		//TODO get from service properties?
-		return DEFAULT_FUTURE_TIMEOUT;
+	public ID getECFTargetID() {
+		return targetId;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -82,9 +90,6 @@ public class ECFServiceEndpointDescriptionImpl extends
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -100,4 +105,22 @@ public class ECFServiceEndpointDescriptionImpl extends
 			return false;
 		return true;
 	}
+
+	public IServiceID getServiceID() {
+		return serviceId;
+	}
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
+		sb.append(";providedinterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
+		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
+		sb.append(";serviceid=").append(getServiceID()); //$NON-NLS-1$
+		sb.append(";osgiEndpointID=").append(getEndpointID()); //$NON-NLS-1$
+		sb.append(";ecfEndpointID=").append(getECFEndpointID()); //$NON-NLS-1$
+		sb.append(";ecfTargetID=").append(getECFTargetID()); //$NON-NLS-1$
+		sb.append(";ecfFilter=").append(getECFRemoteServicesFilter()); //$NON-NLS-1$
+		sb.append(";props=").append(getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		return sb.toString();
+	}
+
 }
