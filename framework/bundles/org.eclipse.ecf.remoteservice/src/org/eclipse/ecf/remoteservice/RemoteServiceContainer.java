@@ -106,4 +106,13 @@ public class RemoteServiceContainer implements IRemoteServiceContainer {
 		}
 	}
 
+	public IRemoteService getRemoteService(String serviceInterfaceClass) {
+		try {
+			return getRemoteService(null, serviceInterfaceClass);
+		} catch (ContainerConnectException e) {
+			// if targetLocation is null, cannot happen
+			return null;
+		}
+	}
+
 }

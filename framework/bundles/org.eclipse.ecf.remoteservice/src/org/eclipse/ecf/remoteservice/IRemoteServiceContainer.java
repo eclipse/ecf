@@ -55,4 +55,12 @@ public interface IRemoteServiceContainer {
 	 * @exception ContainerConnectException thrown if underlying container cannot connect to get remote service.
 	 */
 	public IRemoteService getRemoteService(String targetLocation, String serviceInterfaceClass) throws ContainerConnectException;
+
+	/**
+	 * Get the remote service for given serviceInterface class.
+	 * @param serviceInterfaceClass the service to find.  Must not be <code>null</code>.
+	 * @return IRemoteService the remote service.  May be <code>null</code> if the desired remote service is not available.
+	 */
+	public IRemoteService getRemoteService(String serviceInterfaceClass);
+
 }
