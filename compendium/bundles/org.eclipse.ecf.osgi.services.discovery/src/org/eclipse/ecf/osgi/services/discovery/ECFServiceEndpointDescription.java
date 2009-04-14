@@ -177,6 +177,14 @@ public abstract class ECFServiceEndpointDescription implements
 		return null;
 	}
 
+	public long getRemoteServiceId() {
+		Long rsId = (Long) getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		if (rsId == null)
+			return 0L;
+		else
+			return rsId.longValue();
+	}
+
 	public abstract ID getECFEndpointID();
 
 	public abstract ID getECFTargetID();

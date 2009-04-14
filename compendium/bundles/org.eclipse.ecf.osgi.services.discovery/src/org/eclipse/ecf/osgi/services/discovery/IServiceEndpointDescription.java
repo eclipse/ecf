@@ -58,4 +58,11 @@ public interface IServiceEndpointDescription extends ServiceEndpointDescription 
 	 */
 	public void setProperties(Map properties);
 
+	/**
+	 * Get the remote service id for this service endpoint description.
+	 * 
+	 * @return long remote service id for the remote service.
+	 */
+	public long getRemoteServiceId();
+
 }
