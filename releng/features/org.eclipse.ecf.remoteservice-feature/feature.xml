@@ -24,6 +24,22 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
+   <requires>
+      <import plugin="org.objectweb.asm"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.osgi.services"/>
+      <import plugin="org.eclipse.equinox.common"/>
+      <import plugin="org.eclipse.equinox.registry"/>
+      <import plugin="org.eclipse.core.jobs"/>
+      <import plugin="org.eclipse.equinox.concurrent"/>
+      <import plugin="org.eclipse.equinox.app"/>
+      <import plugin="org.eclipse.ecf.discovery" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ecf.identity" version="2.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ecf" version="2.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ecf.provider.remoteservice" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ecf.remoteservice" version="3.0.0" match="greaterOrEqual"/>
+   </requires>
+
    <plugin
          id="ch.ethz.iks.r_osgi.remote"
          download-size="0"
@@ -145,6 +161,13 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.identity"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.sharedobject"
          download-size="0"
          install-size="0"
          version="0.0.0"
