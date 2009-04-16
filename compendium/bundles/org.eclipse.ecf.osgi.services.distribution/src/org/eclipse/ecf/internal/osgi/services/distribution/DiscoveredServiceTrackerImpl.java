@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.*;
 import org.eclipse.ecf.osgi.services.distribution.IRemoteServiceContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
@@ -196,7 +197,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 	}
 
 	private IRemoteServiceContainer[] findRemoteServiceContainersViaService(
-			IServiceEndpointDescription description, IProgressMonitor monitor) {
+			IServiceID serviceID, IServiceEndpointDescription description,
+			IProgressMonitor monitor) {
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return new IRemoteServiceContainer[0];
@@ -210,7 +212,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		List result = new ArrayList();
 		for (int i = 0; i < finders.length; i++) {
 			IRemoteServiceContainer[] foundRSContainers = finders[i]
-					.findRemoteServiceContainers(description, monitor);
+					.findRemoteServiceContainers(serviceID, description,
+							monitor);
 			if (foundRSContainers != null && foundRSContainers.length > 0) {
 				trace("findRemoteServiceContainersViaService",
 						"findRemoteServiceContainers finder=" + finders[i]
@@ -230,7 +233,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		// Find IRemoteServiceContainers for the given
 		// ECFServiceEndpointDescription via registered services
 		IRemoteServiceContainer[] rsContainers = findRemoteServiceContainersViaService(
-				ecfSED, monitor);
+				ecfSED.getServiceID(), ecfSED, monitor);
 		if (rsContainers == null || rsContainers.length == 0) {
 			logError("handleDiscoveredServiceAvailable",
 					"No RemoteServiceContainerAdapters found for description="
@@ -258,12 +261,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		for (int i = 0; i < rsContainers.length; i++) {
 			for (Iterator j = providedInterfaces.iterator(); j.hasNext();) {
 				String providedInterface = (String) j.next();
-				// Use async call to prevent blocking here
-				trace("handleDiscoveredServiceAvailable", "rsca="
-						+ rsContainers[i] + ",endpointId=" + ecfEndpointID
-						+ ",intf=" + providedInterface + ",rsFilter="
-						+ remoteServiceFilter
-						+ ".  Calling getRemoteServiceReferences");
 				IRemoteServiceReference[] remoteReferences = null;
 				try {
 					remoteReferences = rsContainers[i].getContainerAdapter()
@@ -313,29 +310,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 			ecfSED = (ECFServiceEndpointDescription) Activator.getDefault()
 					.getAdapterManager().loadAdapter(aServiceEndpointDesc,
 							ECFServiceEndpointDescription.class.getName());
-		} else {
+		} else
 			ecfSED = (ECFServiceEndpointDescription) aServiceEndpointDesc;
-		}
 		return ecfSED;
-	}
-
-	private void addProxyServiceRegistration(ECFServiceEndpointDescription sed,
-			IRemoteServiceContainer ch, IRemoteServiceReference ref,
-			ServiceRegistration registration) {
-		ID containerID = ch.getContainer().getID();
-		RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
-				.get(containerID);
-		if (reg == null) {
-			reg = new RemoteServiceRegistration(sed, ch,
-					new RemoteServiceReferenceUnregisteredListener());
-			discoveredRemoteServiceRegistrations.put(containerID, reg);
-		}
-		reg.addServiceRegistration(ref, registration);
-		trace("addLocalServiceRegistration", "containerHelper=" + ch
-				+ ",remoteServiceReference=" + ref
-				+ ",localServiceRegistration=" + registration);
-		// And add to distribution provider
-		distributionProvider.addRemoteService(registration.getReference());
 	}
 
 	private boolean findProxyServiceRegistration(ServiceEndpointDescription sed) {
@@ -497,8 +474,27 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 					ServiceRegistration registration = Activator.getDefault()
 							.getContext().registerService(clazzes, proxy,
 									properties);
-					addProxyServiceRegistration(sed, ch, remoteReferences[i],
-							registration);
+					IRemoteServiceReference ref = remoteReferences[i];
+					ID containerID = ch.getContainer().getID();
+					RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
+							.get(containerID);
+					if (reg == null) {
+						reg = new RemoteServiceRegistration(
+								sed,
+								ch,
+								new RemoteServiceReferenceUnregisteredListener());
+						discoveredRemoteServiceRegistrations.put(containerID,
+								reg);
+					}
+					reg.addServiceRegistration(ref, registration);
+					// And add to distribution provider
+					distributionProvider.addRemoteService(registration
+							.getReference());
+					trace("addLocalServiceRegistration.COMPLETE",
+							"containerHelper=" + ch
+									+ ",remoteServiceReference=" + ref
+									+ ",localServiceRegistration="
+									+ registration);
 				} catch (Exception e) {
 					logError("registerRemoteServiceReferences",
 							"Exception creating or registering remote reference "
@@ -580,6 +576,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 
 	// Impl of IRemoteServiceContainerFinder
 	public IRemoteServiceContainer[] findRemoteServiceContainers(
+			IServiceID serviceID,
 			IServiceEndpointDescription endpointDescription,
 			IProgressMonitor monitor) {
 		IContainerManager containerManager = Activator.getDefault()

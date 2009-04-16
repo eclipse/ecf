@@ -10,6 +10,7 @@
 package org.eclipse.ecf.osgi.services.distribution;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.IServiceEndpointDescription;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
@@ -19,6 +20,9 @@ public interface IRemoteServiceContainerFinder {
 	 * 
 	 * Find remote service containers.
 	 * 
+	 * @param serviceID
+	 *            the service ID exposed by the discovery provider. Will not be
+	 *            <code>null</code>.
 	 * @param endpointDescription
 	 *            the endpoint description created from the discovered remote
 	 *            service meta data. This endpointDescription may be used to
@@ -38,6 +42,7 @@ public interface IRemoteServiceContainerFinder {
 	 *         <code>null</code>.
 	 */
 	public IRemoteServiceContainer[] findRemoteServiceContainers(
+			IServiceID serviceID,
 			IServiceEndpointDescription endpointDescription,
 			IProgressMonitor monitor);
 
