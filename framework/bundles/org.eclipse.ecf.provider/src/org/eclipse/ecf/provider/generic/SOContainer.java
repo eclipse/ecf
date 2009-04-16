@@ -23,6 +23,7 @@ import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.*;
 import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.ISharedObjectMessageSerializer;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.provider.*;
 import org.eclipse.ecf.internal.provider.Messages;
@@ -143,6 +144,37 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	protected ISharedObjectPolicy policy = null;
 
 	protected ThreadGroup sharedObjectThreadGroup = null;
+
+	/**
+	 * @since 2.0
+	 */
+	protected ISharedObjectMessageSerializer sharedObjectMessageSerializer = new ISharedObjectMessageSerializer() {
+
+		public Object deserializeMessage(byte[] data) throws IOException, ClassNotFoundException {
+			return defaultDeserializeSharedObjectMessage(data);
+		}
+
+		public byte[] serializeMessage(ID sharedObjectId, Object message) throws IOException {
+			return defaultSerializeSharedObjectMessage(sharedObjectId, message);
+		}
+
+	};
+
+	/**
+	 * @since 2.0
+	 */
+	public void setSharedObjectMessageSerializer(ISharedObjectMessageSerializer serializer) {
+		if (serializer == null)
+			return;
+		this.sharedObjectMessageSerializer = serializer;
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	protected ISharedObjectMessageSerializer getSharedObjectMessageSerializer() {
+		return this.sharedObjectMessageSerializer;
+	}
 
 	protected ISynchAsynchEventHandler receiver = new ISynchAsynchEventHandler() {
 		public Object handleSynchEvent(SynchEvent event) throws IOException {
@@ -907,6 +939,14 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	protected byte[] serializeSharedObjectMessage(ID sharedObjectID, Object message) throws IOException {
+		// If there is a serializer set, use it
+		return getSharedObjectMessageSerializer().serializeMessage(sharedObjectID, message);
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	protected byte[] defaultSerializeSharedObjectMessage(ID sharedObjectID, Object message) throws IOException {
 		if (!(message instanceof Serializable))
 			throw new NotSerializableException(Messages.SOContainer_Shared_Object_Message + message + Messages.SOContainer_Not_Serializable);
 		final ByteArrayOutputStream bouts = new ByteArrayOutputStream();
@@ -915,7 +955,10 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		return bouts.toByteArray();
 	}
 
-	protected Object deserializeSharedObjectMessage(byte[] bytes) throws IOException, ClassNotFoundException {
+	/**
+	 * @since 2.0
+	 */
+	protected Object defaultDeserializeSharedObjectMessage(byte[] bytes) throws IOException, ClassNotFoundException {
 		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
 		Object obj = null;
 		try {
@@ -951,6 +994,10 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			obj = iins.readObject();
 		}
 		return obj;
+	}
+
+	protected Object deserializeSharedObjectMessage(byte[] bytes) throws IOException, ClassNotFoundException {
+		return getSharedObjectMessageSerializer().deserializeMessage(bytes);
 	}
 
 	protected void sendMessage(ID toContainerID, ID sharedObjectID, Object message) throws IOException {
