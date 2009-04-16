@@ -9,14 +9,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.net.URI;
 import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.*;
 import org.eclipse.ecf.osgi.services.distribution.IRemoteServiceContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
@@ -38,27 +36,31 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 
 	List serviceLocations = new ArrayList();
 
-	private boolean addServiceURI(URI serviceLocation) {
-		if (serviceLocation == null)
+	private boolean addDiscoveredServiceID(ECFServiceEndpointDescription desc) {
+		if (desc == null)
 			return false;
-		synchronized (serviceLocation) {
-			return serviceLocations.add(serviceLocation);
+		synchronized (serviceLocations) {
+			return serviceLocations.add(new DiscoveredServiceID(desc
+					.getServiceID().getLocation(), desc.getRemoteServiceId()));
 		}
 	}
 
-	private boolean removeServiceURI(URI serviceLocation) {
-		if (serviceLocation == null)
+	private boolean removeDiscoveredServiceID(ECFServiceEndpointDescription desc) {
+		if (desc == null)
 			return false;
 		synchronized (serviceLocations) {
-			return serviceLocations.remove(serviceLocation);
+			return serviceLocations.remove(new DiscoveredServiceID(desc
+					.getServiceID().getLocation(), desc.getRemoteServiceId()));
 		}
 	}
 
-	private boolean containsServiceURI(URI serviceLocation) {
-		if (serviceLocation == null)
+	private boolean containsDiscoveredServiceID(
+			ECFServiceEndpointDescription desc) {
+		if (desc == null)
 			return false;
 		synchronized (serviceLocations) {
-			return serviceLocations.contains(serviceLocation);
+			return serviceLocations.contains(new DiscoveredServiceID(desc
+					.getServiceID().getLocation(), desc.getRemoteServiceId()));
 		}
 	}
 
@@ -118,12 +120,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 			if (adesc == null)
 				return;
 
-			IServiceID serviceID = adesc.getServiceID();
-			URI serviceLocation = serviceID.getLocation();
-			if (!isValidService(serviceLocation)) {
+			if (!isValidService(adesc)) {
 				logWarning("serviceChanged.AVAILABLE",
-						"Duplicate or invalid serviceLocation="
-								+ serviceLocation);
+						"Duplicate or invalid description=" + adesc);
 				return;
 			}
 			final ECFServiceEndpointDescription ecfASED = adesc;
@@ -163,7 +162,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 											+ ",serviceEndpointDesc=" + udesc);
 							unregisterProxyServiceRegistration(proxyServiceRegistrations[i]);
 						}
-						removeServiceURI(udesc.getServiceID().getLocation());
+						removeDiscoveredServiceID(udesc);
 					}
 				}
 			} catch (Exception e) {
@@ -183,14 +182,14 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		}
 	}
 
-	private boolean isValidService(URI location) {
-		if (location == null)
+	private boolean isValidService(ECFServiceEndpointDescription desc) {
+		if (desc == null)
 			return false;
 		synchronized (serviceLocations) {
-			if (containsServiceURI(location)) {
+			if (containsDiscoveredServiceID(desc)) {
 				return false;
 			} else {
-				addServiceURI(location);
+				addDiscoveredServiceID(desc);
 				return true;
 			}
 		}
@@ -439,12 +438,11 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 			IRemoteServiceReference[] remoteReferences) {
 
 		synchronized (serviceLocations) {
-			URI serviceLocation = sed.getServiceID().getLocation();
 			// check to make sure that this serviceLocation
 			// is still present
-			if (!containsServiceURI(serviceLocation)) {
+			if (!containsDiscoveredServiceID(sed)) {
 				logError("registerRemoteServiceReferences", "serviceLocation="
-						+ serviceLocation + " no longer present", null);
+						+ sed + " no longer present", null);
 				return;
 			}
 			// check to make sure that the proxy service registry is not
