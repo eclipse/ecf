@@ -260,6 +260,42 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	public IFuture asyncGetRemoteServiceReferences(ID target, String clazz, String filter);
 
 	/**
+	 * <p>
+	 * Returns an array of <code>IRemoteServiceReference</code> objects. The
+	 * returned array of <code>IRemoteServiceReference</code> objects contains
+	 * services that were registered under the specified class, or if the clazz
+	 * parameter is <code>null</code> all services registered.
+	 * </p>
+	 * <p>
+	 * The list is valid at the time of the call to this method, however since
+	 * the remote service container is a very dynamic environment, services can be modified or
+	 * unregistered at anytime.
+	 * </p>
+	 * <p>
+	 * <code>filter</code> is used to select the registered service whose
+	 * properties objects contain keys and values which satisfy the filter. See
+	 * {@link Filter} for a description of the filter string syntax.
+	 * </p>
+	 * <p>
+	 * If <code>filter</code> is <code>null</code>, all registered services
+	 * are considered to match the filter. If <code>filter</code> cannot be
+	 * parsed, an {@link InvalidSyntaxException} will be thrown with a human
+	 * readable message where the filter became unparsable.
+	 * </p>
+	 * @param clazz
+	 *            the fully qualified name of the interface class that describes
+	 *            the desired service. May be <code>null</code>.
+	 * @param filter
+	 *            The filter criteria. May be <code>null</code>.
+	 * @return Array of IRemoteServiceReferences matching given search criteria or 
+	 *            <code>null</code> if no services are found that match the search.
+	 * 
+	 * @throws InvalidSyntaxException If filter contains an invalid filter string that cannot be parsed.
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference[] getAllRemoteServiceReferences(String clazz, String filter) throws InvalidSyntaxException;
+
+	/**
 	 * Get namespace to use for this remote service provider.
 	 * @return Namespace to use for creating IRemoteServiceID for this remote service provider.  Will
 	 * not return <code>null</code>.
