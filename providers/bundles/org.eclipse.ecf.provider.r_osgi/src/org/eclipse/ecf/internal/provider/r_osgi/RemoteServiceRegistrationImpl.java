@@ -25,9 +25,9 @@ import org.osgi.framework.ServiceRegistration;
 final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration {
 
 	private IRemoteServiceID remoteServiceID;
-
 	// the service registration.
 	private ServiceRegistration reg;
+	private IRemoteServiceReference remoteReference;
 
 	/**
 	 * constructor.
@@ -42,6 +42,7 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 		Assert.isNotNull(reg);
 		this.remoteServiceID = remoteServiceID;
 		this.reg = reg;
+		this.remoteReference = new LocalRemoteServiceReferenceImpl(remoteServiceID, reg.getReference());
 	}
 
 	/**
@@ -84,7 +85,7 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceRegistration#getReference()
 	 */
 	public IRemoteServiceReference getReference() {
-		throw new UnsupportedOperationException("The R-OSGi provider does not provide remote service references for local registrations"); //$NON-NLS-1$
+		return remoteReference;
 	}
 
 	/**

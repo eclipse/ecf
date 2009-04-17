@@ -215,7 +215,8 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 *      java.lang.String, java.lang.String)
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) throws InvalidSyntaxException {
-		Assert.isNotNull(clazz);
+		if (clazz == null)
+			return null;
 		IRemoteFilter remoteFilter = (filter == null) ? null : createRemoteFilter(filter);
 		if (idFilter == null)
 			return (IRemoteServiceReference[]) getRemoteServiceReferencesConnected(clazz, remoteFilter).toArray(new IRemoteServiceReference[] {});
@@ -229,7 +230,8 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	}
 
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
-		Assert.isNotNull(clazz);
+		if (clazz == null)
+			return null;
 		IRemoteFilter remoteFilter = (filter == null) ? null : createRemoteFilter(filter);
 		synchronized (this) {
 			List results = new ArrayList();
@@ -237,6 +239,40 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 			results = getRemoteServiceReferencesConnected(clazz, remoteFilter);
 			return (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
 		}
+	}
+
+	public IRemoteServiceReference[] getAllRemoteServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+		List results = new ArrayList();
+		// Get remote service references from locally registered services first
+		synchronized (remoteServicesRegs) {
+			for (Iterator i1 = remoteServicesRegs.keySet().iterator(); i1.hasNext();) {
+				ServiceReference ref = (ServiceReference) i1.next();
+				Dictionary refProperties = prepareProperties(ref);
+				if (clazz == null) {
+					results.add(createLocalRemoteServiceReference(ref));
+				} else {
+					IRemoteFilter rf = createRemoteFilter(filter != null ? "(&" + filter + "(" //$NON-NLS-1$ //$NON-NLS-2$
+							+ Constants.OBJECTCLASS + "=" + clazz + "))" : "(" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							+ Constants.OBJECTCLASS + "=" + clazz + ")"); //$NON-NLS-1$//$NON-NLS-2$
+					if (rf.match(refProperties)) {
+						results.add(createLocalRemoteServiceReference(ref));
+					}
+				}
+
+			}
+		}
+		IRemoteFilter remoteFilter = (filter == null) ? null : createRemoteFilter(filter);
+		if (getConnectedID() != null) {
+			final RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, remoteFilter);
+			if (refs != null)
+				for (int i = 0; i < refs.length; i++)
+					results.add(new RemoteServiceReferenceImpl(createRemoteServiceID(refs[i]), refs[i]));
+		}
+		return (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
+	}
+
+	private IRemoteServiceReference createLocalRemoteServiceReference(ServiceReference ref) {
+		return new LocalRemoteServiceReferenceImpl(createRemoteServiceID(containerID, (Long) ref.getProperty(Constants.SERVICE_ID)), ref);
 	}
 
 	private List /*IRemoteServiceReference*/connectAndGetRemoteServiceReferencesForTarget(ID currentlyConnectedID, ID targetID, String clazz, IRemoteFilter remoteFilter) {
@@ -340,7 +376,9 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		// Set ECF remote service id property based upon local service property
 		reg.setProperties(prepareProperties(reg.getReference()));
 
-		remoteServicesRegs.put(reg.getReference(), reg);
+		synchronized (remoteServicesRegs) {
+			remoteServicesRegs.put(reg.getReference(), reg);
+		}
 		// Construct a IRemoteServiceID, and provide to new registration impl instance
 		return new RemoteServiceRegistrationImpl(createRemoteServiceID(containerID, (Long) reg.getReference().getProperty(Constants.SERVICE_ID)), reg);
 	}
