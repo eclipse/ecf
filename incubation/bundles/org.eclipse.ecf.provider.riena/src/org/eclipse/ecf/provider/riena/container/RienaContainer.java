@@ -210,4 +210,10 @@ public class RienaContainer extends BaseContainer implements IContainer,
 		}, null);
 	}
 
+	public IRemoteServiceReference[] getAllRemoteServiceReferences(
+			String clazz, String filter) throws InvalidSyntaxException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
