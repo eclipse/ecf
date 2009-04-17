@@ -133,6 +133,24 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.0
 	 */
+	public IRemoteServiceReference[] getAllRemoteServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getAllRemoteServiceReferences", new Object[] {clazz, filter}); //$NON-NLS-1$
+		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
+		final List references = new ArrayList();
+		// Add any from local registry
+		synchronized (localRegistry) {
+			addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
+		}
+		// Lookup from remote registrys...add to given references List
+		addReferencesFromRemoteRegistrys(null, clazz, remoteFilter, references);
+		final IRemoteServiceReference[] result = (IRemoteServiceReference[]) references.toArray(new IRemoteServiceReference[references.size()]);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getAllRemoteServiceReferences", result); //$NON-NLS-1$
+		return (result.length == 0) ? null : result;
+	}
+
+	/**
+	 * @since 3.0
+	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
 		// If no target specified, just search for all available references
 		if (targetID == null)
