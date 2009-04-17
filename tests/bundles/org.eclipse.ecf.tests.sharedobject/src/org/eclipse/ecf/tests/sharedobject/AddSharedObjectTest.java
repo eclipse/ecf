@@ -22,7 +22,7 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 /**
  *
  */
-public class AddTest extends ContainerAbstractTestCase {
+public class AddSharedObjectTest extends AbstractSharedObjectTest {
 
 	public static final String SERVER_NAME = "ecftcp://localhost:5888/server";
 
@@ -61,13 +61,7 @@ public class AddTest extends ContainerAbstractTestCase {
 	}
 
 	public void testAddSharedObject() throws Exception {
-		final IContainer client0Container = getClient(0);
-		assertNotNull(client0Container);
-		// 
-		ISharedObjectContainer socontainer = (ISharedObjectContainer) client0Container
-				.getAdapter(ISharedObjectContainer.class);
-		final ISharedObjectManager manager = socontainer
-				.getSharedObjectManager();
+		final ISharedObjectManager manager = getClientSOManager(0);
 		assertNotNull(manager);
 		final ID id = manager.addSharedObject(IDFactory.getDefault()
 				.createStringID("foo"), new TestSharedObject(TEST_USERNAME0),
@@ -75,16 +69,11 @@ public class AddTest extends ContainerAbstractTestCase {
 		assertNotNull(id);
 		final ISharedObject sharedObject = manager.getSharedObject(id);
 		assertNotNull(sharedObject);
-		sleep(3000);
+		sleep(1000);
 	}
 
 	public void testAddTwoSharedObjects() throws Exception {
-		final IContainer client0Container = getClient(0);
-		assertNotNull(client0Container);
-		ISharedObjectContainer socontainer = (ISharedObjectContainer) client0Container
-				.getAdapter(ISharedObjectContainer.class);
-		final ISharedObjectManager manager = socontainer
-				.getSharedObjectManager();
+		final ISharedObjectManager manager = getClientSOManager(0);
 		assertNotNull(manager);
 		final ID id0 = manager.addSharedObject(IDFactory.getDefault()
 				.createStringID("foo0"), new TestSharedObject(TEST_USERNAME0),
@@ -98,7 +87,7 @@ public class AddTest extends ContainerAbstractTestCase {
 		assertNotNull(sharedObject0);
 		final ISharedObject sharedObject1 = manager.getSharedObject(id1);
 		assertNotNull(sharedObject1);
-		sleep(3000);
+		sleep(1000);
 	}
 
 }
