@@ -111,7 +111,7 @@ public class Activator implements BundleActivator {
 				.registerService(DiscoveredServiceTracker.class.getName(),
 						dstImpl, null);
 		this.proxyrsContainerFinderRegistration = this.context.registerService(
-				IProxyRemoteServiceContainerFinder.class.getName(), dstImpl,
+				IProxyContainerFinder.class.getName(), dstImpl,
 				null);
 	}
 
@@ -121,7 +121,7 @@ public class Activator implements BundleActivator {
 		this.eventHookRegistration = this.context.registerService(
 				EventHook.class.getName(), hook, null);
 		this.hostrsContainerFinderRegistration = this.context.registerService(
-				IHostRemoteServiceContainerFinder.class.getName(), hook, null);
+				IHostContainerFinder.class.getName(), hook, null);
 
 		// register all existing services which have the marker property
 		try {
@@ -226,26 +226,26 @@ public class Activator implements BundleActivator {
 		return (IContainerManager) containerManagerTracker.getService();
 	}
 
-	public synchronized IProxyRemoteServiceContainerFinder[] getProxyRemoteServiceContainerFinders() {
+	public synchronized IProxyContainerFinder[] getProxyRemoteServiceContainerFinders() {
 		if (proxyrsContainerFinder == null) {
 			proxyrsContainerFinder = new ServiceTracker(this.context,
-					IProxyRemoteServiceContainerFinder.class.getName(), null);
+					IProxyContainerFinder.class.getName(), null);
 			proxyrsContainerFinder.open();
 		}
 		Object[] svcs = (Object[]) proxyrsContainerFinder.getServices();
-		return (IProxyRemoteServiceContainerFinder[]) Arrays.asList(svcs)
-				.toArray(new IProxyRemoteServiceContainerFinder[] {});
+		return (IProxyContainerFinder[]) Arrays.asList(svcs)
+				.toArray(new IProxyContainerFinder[] {});
 	}
 
-	public synchronized IHostRemoteServiceContainerFinder[] getHostRemoteServiceContainerFinders() {
+	public synchronized IHostContainerFinder[] getHostRemoteServiceContainerFinders() {
 		if (hostrsContainerFinder == null) {
 			hostrsContainerFinder = new ServiceTracker(this.context,
-					IHostRemoteServiceContainerFinder.class.getName(), null);
+					IHostContainerFinder.class.getName(), null);
 			hostrsContainerFinder.open();
 		}
 		Object[] svcs = (Object[]) hostrsContainerFinder.getServices();
-		return (IHostRemoteServiceContainerFinder[]) Arrays.asList(svcs)
-				.toArray(new IHostRemoteServiceContainerFinder[] {});
+		return (IHostContainerFinder[]) Arrays.asList(svcs)
+				.toArray(new IHostContainerFinder[] {});
 	}
 
 	public IAdapterManager getAdapterManager() {

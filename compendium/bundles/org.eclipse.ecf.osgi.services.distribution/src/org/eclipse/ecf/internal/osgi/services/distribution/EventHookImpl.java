@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
-import org.eclipse.ecf.osgi.services.distribution.IHostRemoteServiceContainerFinder;
+import org.eclipse.ecf.osgi.services.distribution.IHostContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.Constants;
@@ -23,7 +23,7 @@ import org.osgi.framework.*;
 import org.osgi.service.discovery.ServicePublication;
 
 public class EventHookImpl extends AbstractEventHookImpl implements
-		IHostRemoteServiceContainerFinder {
+		IHostContainerFinder {
 
 	public EventHookImpl(DistributionProviderImpl distributionProvider) {
 		super(distributionProvider);
@@ -100,7 +100,7 @@ public class EventHookImpl extends AbstractEventHookImpl implements
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return null;
-		IHostRemoteServiceContainerFinder[] finders = activator
+		IHostContainerFinder[] finders = activator
 				.getHostRemoteServiceContainerFinders();
 		if (finders == null || finders.length == 0) {
 			logError("findRemoteServiceContainers",
@@ -110,7 +110,7 @@ public class EventHookImpl extends AbstractEventHookImpl implements
 		List result = new ArrayList();
 		for (int i = 0; i < finders.length; i++) {
 			IRemoteServiceContainer[] foundRSContainers = finders[i]
-					.findHostRemoteServiceContainers(serviceReference,
+					.findHostContainers(serviceReference,
 							remoteInterfaces, remoteConfigurationType,
 							remoteRequiresIntents);
 			if (foundRSContainers != null && foundRSContainers.length > 0) {
@@ -126,7 +126,7 @@ public class EventHookImpl extends AbstractEventHookImpl implements
 				.toArray(new IRemoteServiceContainer[] {});
 	}
 
-	public IRemoteServiceContainer[] findHostRemoteServiceContainers(
+	public IRemoteServiceContainer[] findHostContainers(
 			ServiceReference serviceReference, String[] remoteInterfaces,
 			String[] remoteConfigurationType, String[] remoteRequiresIntents) {
 		Collection rsContainers = findRemoteContainersSatisfyingRequiredIntents(remoteRequiresIntents);

@@ -14,11 +14,20 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.IServiceEndpointDescription;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
-public interface IProxyRemoteServiceContainerFinder {
+/**
+ * Service interface for customizing the finding of proxy remote service
+ * containers. Services registered with this interfaces will be consulted when a
+ * remote proxy is discovered, in order to select and/or connect
+ * IRemoteServiceContainer instances to use to create proxies.
+ */
+public interface IProxyContainerFinder {
 
 	/**
 	 * 
-	 * Find remote service containers.
+	 * Find remote service containers. Implementers of this service will be
+	 * consulted when a remote proxy is discovered, so that they may provide
+	 * access to zero or more {@link IRemoteServiceContainer} instances to use
+	 * for proxy creation and local publication in the service registry.
 	 * 
 	 * @param serviceID
 	 *            the service ID exposed by the discovery provider. Will not be
@@ -41,8 +50,7 @@ public interface IProxyRemoteServiceContainerFinder {
 	 *         are relevant, then an empty array should be returned rather than
 	 *         <code>null</code>.
 	 */
-	public IRemoteServiceContainer[] findProxyRemoteServiceContainers(
-			IServiceID serviceID,
+	public IRemoteServiceContainer[] findProxyContainers(IServiceID serviceID,
 			IServiceEndpointDescription endpointDescription,
 			IProgressMonitor monitor);
 

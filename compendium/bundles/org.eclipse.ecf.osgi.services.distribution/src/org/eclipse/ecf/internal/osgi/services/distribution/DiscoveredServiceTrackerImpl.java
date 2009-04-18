@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.*;
-import org.eclipse.ecf.osgi.services.distribution.IProxyRemoteServiceContainerFinder;
+import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
@@ -29,7 +29,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.*;
 
 public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
-		IProxyRemoteServiceContainerFinder {
+		IProxyContainerFinder {
 
 	DistributionProviderImpl distributionProvider;
 	IExecutor executor;
@@ -202,7 +202,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return new IRemoteServiceContainer[0];
-		IProxyRemoteServiceContainerFinder[] finders = activator
+		IProxyContainerFinder[] finders = activator
 				.getProxyRemoteServiceContainerFinders();
 		if (finders == null || finders.length == 0) {
 			logError("findRemoteServiceContainersViaService",
@@ -212,7 +212,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		List result = new ArrayList();
 		for (int i = 0; i < finders.length; i++) {
 			IRemoteServiceContainer[] foundRSContainers = finders[i]
-					.findProxyRemoteServiceContainers(serviceID, description,
+					.findProxyContainers(serviceID, description,
 							monitor);
 			if (foundRSContainers != null && foundRSContainers.length > 0) {
 				trace("findRemoteServiceContainersViaService",
@@ -574,8 +574,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 						null));
 	}
 
-	// Impl of IProxyRemoteServiceContainerFinder
-	public IRemoteServiceContainer[] findProxyRemoteServiceContainers(
+	// Impl of IProxyContainerFinder
+	public IRemoteServiceContainer[] findProxyContainers(
 			IServiceID serviceID,
 			IServiceEndpointDescription endpointDescription,
 			IProgressMonitor monitor) {
