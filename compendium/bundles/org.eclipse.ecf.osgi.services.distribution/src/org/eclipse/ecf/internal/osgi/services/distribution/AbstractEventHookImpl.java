@@ -96,30 +96,13 @@ public abstract class AbstractEventHookImpl implements EventHook {
 								+ serviceReference);
 				return;
 			}
-			// Now get optional service property osgi.remote.configuration.type
-			Object osgiRemoteConfigurationType = serviceReference
-					.getProperty(IServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE);
-			// The osgiRemoteConfigurationType is optional and can be null. If
-			// non-null, it should be of type String [] according to RFC119...if
-			// it's non-null and not String [] we ignore
-			String[] remoteConfigurationType = null;
-			if (osgiRemoteConfigurationType != null) {
-				if (!(osgiRemoteConfigurationType instanceof String[])) {
-					logError("handleRegisteredServiceEvent",
-							"osgi.remote.configuration.type is not String[] as required by RFC 119");
-					return;
-				}
-				remoteConfigurationType = (String[]) osgiRemoteConfigurationType;
-			}
 			// Now call registerRemoteService
-			registerRemoteService(serviceReference, remoteInterfaces,
-					remoteConfigurationType);
+			findContainersAndRegisterRemoteService(serviceReference, remoteInterfaces);
 		}
 	}
 
-	protected abstract void registerRemoteService(
-			ServiceReference serviceReference, String[] remoteInterfaces,
-			String[] remoteConfigurationType);
+	protected abstract void findContainersAndRegisterRemoteService(
+			ServiceReference serviceReference, String[] remoteInterfaces);
 
 	protected void fireRemoteServiceRegistered(
 			ServiceReference serviceReference,
@@ -208,8 +191,7 @@ public abstract class AbstractEventHookImpl implements EventHook {
 				.getProperty(Constants.OBJECTCLASS));
 		for (int i = 0; i < remoteInterfaces.length; i++) {
 			String intf = remoteInterfaces[i];
-			if (IServiceConstants.OSGI_REMOTE_INTERFACES_WILDCARD
-					.equals(intf))
+			if (IServiceConstants.OSGI_REMOTE_INTERFACES_WILDCARD.equals(intf))
 				return (String[]) interfaces.toArray(new String[] {});
 			if (intf != null && interfaces.contains(intf))
 				results.add(intf);

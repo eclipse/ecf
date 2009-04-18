@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.*;
-import org.eclipse.ecf.osgi.services.distribution.IRemoteServiceContainerFinder;
+import org.eclipse.ecf.osgi.services.distribution.IProxyRemoteServiceContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
@@ -29,7 +29,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.*;
 
 public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
-		IRemoteServiceContainerFinder {
+		IProxyRemoteServiceContainerFinder {
 
 	DistributionProviderImpl distributionProvider;
 	IExecutor executor;
@@ -202,8 +202,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return new IRemoteServiceContainer[0];
-		IRemoteServiceContainerFinder[] finders = activator
-				.getRemoteServiceContainerFinders();
+		IProxyRemoteServiceContainerFinder[] finders = activator
+				.getProxyRemoteServiceContainerFinders();
 		if (finders == null || finders.length == 0) {
 			logError("findRemoteServiceContainersViaService",
 					"No container finders available");
@@ -212,7 +212,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		List result = new ArrayList();
 		for (int i = 0; i < finders.length; i++) {
 			IRemoteServiceContainer[] foundRSContainers = finders[i]
-					.findRemoteServiceContainers(serviceID, description,
+					.findProxyRemoteServiceContainers(serviceID, description,
 							monitor);
 			if (foundRSContainers != null && foundRSContainers.length > 0) {
 				trace("findRemoteServiceContainersViaService",
@@ -574,8 +574,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 						null));
 	}
 
-	// Impl of IRemoteServiceContainerFinder
-	public IRemoteServiceContainer[] findRemoteServiceContainers(
+	// Impl of IProxyRemoteServiceContainerFinder
+	public IRemoteServiceContainer[] findProxyRemoteServiceContainers(
 			IServiceID serviceID,
 			IServiceEndpointDescription endpointDescription,
 			IProgressMonitor monitor) {

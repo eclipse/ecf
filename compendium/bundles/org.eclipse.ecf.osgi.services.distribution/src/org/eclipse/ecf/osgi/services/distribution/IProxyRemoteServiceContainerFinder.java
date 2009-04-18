@@ -14,7 +14,7 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.IServiceEndpointDescription;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
-public interface IRemoteServiceContainerFinder {
+public interface IProxyRemoteServiceContainerFinder {
 
 	/**
 	 * 
@@ -41,7 +41,7 @@ public interface IRemoteServiceContainerFinder {
 	 *         are relevant, then an empty array should be returned rather than
 	 *         <code>null</code>.
 	 */
-	public IRemoteServiceContainer[] findRemoteServiceContainers(
+	public IRemoteServiceContainer[] findProxyRemoteServiceContainers(
 			IServiceID serviceID,
 			IServiceEndpointDescription endpointDescription,
 			IProgressMonitor monitor);
