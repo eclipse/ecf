@@ -11,13 +11,10 @@
 
 package org.eclipse.ecf.tests.sharedobject;
 
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
-import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 /**
  *
