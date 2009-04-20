@@ -8,17 +8,15 @@
  ******************************************************************************/
 package org.eclipse.ecf.discovery.identity;
 
-import org.eclipse.ecf.discovery.IServiceInfo;
-
 import java.net.URI;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.discovery.IServiceInfo;
 
 /**
- * Service identity type.  ServiceIDs are IDs that uniquely identify
- * a remote service.  Subclasses may be created as appropriate.
+ * Service identity type. ServiceIDs are IDs that uniquely identify a remote
+ * service. Subclasses may be created as appropriate.
  */
 public class ServiceID extends BaseID implements IServiceID {
 
@@ -28,7 +26,7 @@ public class ServiceID extends BaseID implements IServiceID {
 	 * @since 3.0
 	 */
 	protected IServiceInfo serviceInfo;
-	
+
 	protected IServiceTypeID type;
 
 	/**
@@ -51,8 +49,12 @@ public class ServiceID extends BaseID implements IServiceID {
 		return type.getName() + "@" + location; //$NON-NLS-1$
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceCompareTo(org.eclipse.ecf.core.identity.BaseID)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.core.identity.BaseID#namespaceCompareTo(org.eclipse.ecf
+	 * .core.identity.BaseID)
 	 */
 	protected int namespaceCompareTo(BaseID o) {
 		if (o instanceof ServiceID) {
@@ -63,8 +65,12 @@ public class ServiceID extends BaseID implements IServiceID {
 		return 1;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceEquals(org.eclipse.ecf.core.identity.BaseID)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.core.identity.BaseID#namespaceEquals(org.eclipse.ecf.
+	 * core.identity.BaseID)
 	 */
 	protected boolean namespaceEquals(BaseID o) {
 		if (o == null)
@@ -78,14 +84,18 @@ public class ServiceID extends BaseID implements IServiceID {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceGetName()
 	 */
 	protected String namespaceGetName() {
 		return getFullyQualifiedName();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceHashCode()
 	 */
 	protected int namespaceHashCode() {
@@ -94,13 +104,16 @@ public class ServiceID extends BaseID implements IServiceID {
 
 	/**
 	 * Get service type for this ID.
-	 * @return String service type.  Will not be <code>null</code>.
+	 * 
+	 * @return String service type. Will not be <code>null</code>.
 	 */
 	public String getServiceType() {
 		return type.getName();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.discovery.identity.IServiceID#getServiceTypeID()
 	 */
 	public IServiceTypeID getServiceTypeID() {
@@ -108,25 +121,30 @@ public class ServiceID extends BaseID implements IServiceID {
 	}
 
 	/**
-	 * Get service name for this ID.  
+	 * Get service name for this ID.
 	 * 
-	 * @return String service name.  May be <code>null</code>.
+	 * @return String service name. May be <code>null</code>.
 	 */
 	public String getServiceName() {
 		return serviceInfo.getServiceName();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		final StringBuffer buf = new StringBuffer("ServiceID["); //$NON-NLS-1$
-		buf.append("type=").append(type).append(";location=").append(getLocation()).append( //$NON-NLS-1$ //$NON-NLS-2$
-				";full=" + getFullyQualifiedName()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf
+				.append("type=").append(type).append(";location=").append(getLocation()).append( //$NON-NLS-1$ //$NON-NLS-2$
+						";full=" + getFullyQualifiedName()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 
-	/** (non-Javadoc)
+	/**
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.discovery.identity.IServiceID#getLocation()
 	 * @since 3.0
 	 */
@@ -143,15 +161,18 @@ public class ServiceID extends BaseID implements IServiceID {
 	}
 
 	/**
-	 * @param serviceInfo the serviceInfo to set
+	 * @param serviceInfo
+	 *            the serviceInfo to set
 	 * @since 3.0
 	 */
 	public void setServiceInfo(IServiceInfo serviceInfo) {
 		this.serviceInfo = serviceInfo;
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see java.lang.Object#hashCode()
+	 * 
+	 * @since 3.0
 	 */
 	public int hashCode() {
 		final int prime = 31;
@@ -162,8 +183,10 @@ public class ServiceID extends BaseID implements IServiceID {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
+	 * 
+	 * @since 3.0
 	 */
 	public boolean equals(Object obj) {
 		if (this == obj)
