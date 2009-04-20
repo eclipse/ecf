@@ -212,10 +212,11 @@ public class ServiceResource extends ResourceImpl implements Resource {
 			URI uri = uriConverter.normalize(URI.createURI(name));
 
 			// set Authority to host and port of the service
-			uri = URI.createHierarchicalURI(uri.scheme(), anIServiceInfo
-					.getLocation().getHost()
-					+ ":" + anIServiceInfo.getLocation().getPort(), null, uri //$NON-NLS-1$
-					.segments(), null, null); //$NON-NLS-1$ 
+			final java.net.URI location = anIServiceInfo.getLocation();
+			final String authority = location.getAuthority();
+			uri = URI.createHierarchicalURI(uri.scheme(), authority, uri
+					.device(), uri.segments(), location.getQuery(), location
+					.getFragment());
 
 			return uri;
 		}
@@ -288,9 +289,11 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				}
 				getResourceSet().getResources().removeAll(resources);
 
-				Trace.trace(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
-						+ "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
-						"serviceUndiscovered", "Removed service " + emfIServiceInfo); //$NON-NLS-1$ //$NON-NLS-2$
+				Trace
+						.trace(
+								ModelPlugin.PLUGIN_ID,
+								ModelPlugin.PLUGIN_ID + "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
+								"serviceUndiscovered", "Removed service " + emfIServiceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 
 				// remove the host if no services left for this particular host
 				IHost host = findIHost(getInetAddress(ecfServiceInfo
@@ -304,7 +307,7 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				Trace.exiting(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
 						+ "/methods/exiting", ServiceResource.class, //$NON-NLS-1$
 						"serviceUndiscovered", ecfEvent); //$NON-NLS-1$
-			} catch(AssertionFailedException e) {
+			} catch (AssertionFailedException e) {
 				Trace.catching(ModelPlugin.PLUGIN_ID, ModelPlugin.PLUGIN_ID
 						+ "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
 						"serviceUndiscovered", e); //$NON-NLS-1$
@@ -398,8 +401,10 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				}
 				org.eclipse.ecf.discovery.IServiceInfo si1 = (org.eclipse.ecf.discovery.IServiceInfo) anObj1;
 				org.eclipse.ecf.discovery.IServiceInfo si2 = (org.eclipse.ecf.discovery.IServiceInfo) anObj2;
-				org.eclipse.ecf.discovery.identity.IServiceID sId1 = si1.getServiceID();
-				org.eclipse.ecf.discovery.identity.IServiceID sId2 = si2.getServiceID();
+				org.eclipse.ecf.discovery.identity.IServiceID sId1 = si1
+						.getServiceID();
+				org.eclipse.ecf.discovery.identity.IServiceID sId2 = si2
+						.getServiceID();
 				if (sId1.equals(sId2)) {
 					return 0;
 				}
