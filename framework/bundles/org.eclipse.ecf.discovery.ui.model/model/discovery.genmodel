@@ -11,7 +11,7 @@
     importerID="org.eclipse.emf.importer.ecore" containmentProxies="true" providerRootExtendsClass="org.eclipse.ecf.discovery.ui.edit.ItemProviderWithStatusLineAdapter"
     language="">
   <foreignModel>discovery.ecore</foreignModel>
-  <genPackages prefix="Model" basePackage="org.eclipse.ecf.discovery" disposableProviderFactory="true"
+  <genPackages prefix="Model" basePackage="org.eclipse.ecf.discovery.ui" disposableProviderFactory="true"
       presentationPackageSuffix="ui" generateModelWizard="false" ecorePackage="discovery.ecore#/">
     <genDataTypes ecoreDataType="discovery.ecore#//ECFIServiceInfo"/>
     <genDataTypes ecoreDataType="discovery.ecore#//InetAddress"/>
