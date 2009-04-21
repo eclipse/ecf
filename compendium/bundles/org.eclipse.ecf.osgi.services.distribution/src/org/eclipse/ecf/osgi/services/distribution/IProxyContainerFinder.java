@@ -38,7 +38,7 @@ public interface IProxyContainerFinder {
 	 *            decide what IRemoteServiceContainer[] to return, as well as
 	 *            whether or not to connect the IContainer to the targetID
 	 *            (provided by
-	 *            {@link IServiceEndpointDescription#getECFTargetID()}. Will not
+	 *            {@link IServiceEndpointDescription#getConnectTargetID()}. Will not
 	 *            be <code>null</code>.
 	 * 
 	 * @param monitor

@@ -253,7 +253,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		ID ecfEndpointID = ecfSED.getECFEndpointID();
 		// Get remote service filter from the service endpoint description
 		// if it exists.
-		String remoteServiceFilter = ecfSED.getECFRemoteServicesFilter();
+		String remoteServiceFilter = ecfSED.getRemoteServicesFilter();
 		// For all remote service container adapters
 		// Get futureRemoteReferences...then create a thread
 		// to process the future
