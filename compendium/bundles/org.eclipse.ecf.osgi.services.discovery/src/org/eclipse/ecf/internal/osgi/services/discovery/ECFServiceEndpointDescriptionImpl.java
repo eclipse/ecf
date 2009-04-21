@@ -78,7 +78,7 @@ public class ECFServiceEndpointDescriptionImpl extends
 	 * org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription
 	 * #getECFTargetID()
 	 */
-	public ID getECFTargetID() {
+	public ID getConnectTargetID() {
 		return targetId;
 	}
 
@@ -117,8 +117,8 @@ public class ECFServiceEndpointDescriptionImpl extends
 		sb.append(";serviceid=").append(getServiceID()); //$NON-NLS-1$
 		sb.append(";osgiEndpointID=").append(getEndpointID()); //$NON-NLS-1$
 		sb.append(";ecfEndpointID=").append(getECFEndpointID()); //$NON-NLS-1$
-		sb.append(";ecfTargetID=").append(getECFTargetID()); //$NON-NLS-1$
-		sb.append(";ecfFilter=").append(getECFRemoteServicesFilter()); //$NON-NLS-1$
+		sb.append(";ecfTargetID=").append(getConnectTargetID()); //$NON-NLS-1$
+		sb.append(";ecfFilter=").append(getRemoteServicesFilter()); //$NON-NLS-1$
 		sb.append(";props=").append(getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}

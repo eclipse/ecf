@@ -187,11 +187,11 @@ public abstract class ECFServiceEndpointDescription implements
 
 	public abstract ID getECFEndpointID();
 
-	public abstract ID getECFTargetID();
+	public abstract ID getConnectTargetID();
 
 	public abstract IServiceID getServiceID();
 
-	public String getECFRemoteServicesFilter() {
+	public String getRemoteServicesFilter() {
 		Object o = serviceProperties
 				.get(IServicePublication.PROP_KEY_REMOTE_SERVICE_FILTER);
 		if (o instanceof String)

@@ -36,7 +36,7 @@ public interface IServiceEndpointDescription extends ServiceEndpointDescription 
 	 * @return ID that may be used by local IContainer to connect to remote
 	 *         target.
 	 */
-	public ID getECFTargetID();
+	public ID getConnectTargetID();
 
 	/**
 	 * Get the ECF remote services filter string. May return <code>null</code>.
@@ -44,7 +44,7 @@ public interface IServiceEndpointDescription extends ServiceEndpointDescription 
 	 * @return String that is to be used as the filter for the call to
 	 *         getRemoteServicesReferences(ID,interface,filter);
 	 */
-	public String getECFRemoteServicesFilter();
+	public String getRemoteServicesFilter();
 
 	/**
 	 * Set the properties for this endpoint description. This allows clients to
