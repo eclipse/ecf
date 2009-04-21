@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Composent, Inc. and others.
+ * Copyright (c) 2007, 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -55,10 +55,10 @@ public class SystemLogService implements LogService {
 			buf.append(pluginName).append(";"); //$NON-NLS-1$
 		buf.append(message).append("]"); //$NON-NLS-1$
 		if (t != null) {
-			System.err.println(message);
+			System.err.println(buf.toString());
 			t.printStackTrace(System.err);
 		} else
-			System.out.println(message);
+			System.out.println(buf.toString());
 	}
 
 	/* (non-Javadoc)
