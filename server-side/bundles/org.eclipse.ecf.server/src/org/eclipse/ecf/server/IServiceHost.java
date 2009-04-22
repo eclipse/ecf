@@ -23,6 +23,13 @@ import org.osgi.framework.ServiceRegistration;
 public interface IServiceHost {
 
 	/**
+	 * Get the connect target location for this service host.   Will not be <code>null</code>.
+	 * @return String that provides an connect target location for IServiceClients to use
+	 * to connect to this service host.
+	 */
+	public String getConnectTargetLocation();
+
+	/**
 	 * Start the service host.  This will make the service host active, and available on the network.
 	 * @throws Exception if something goes wrong with initialization or starting.
 	 */
