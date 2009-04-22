@@ -112,8 +112,8 @@ public class Activator implements BundleActivator {
 		// Set service ranking to Integer.MIN_VALUE so that other impls
 		// will be prefered over the default one
 		final Properties proxyContainerFinderProps = new Properties();
-		proxyContainerFinderProps.put(Constants.SERVICE_RANKING,
-				Integer.MIN_VALUE);
+		proxyContainerFinderProps.put(Constants.SERVICE_RANKING, new Integer(
+				Integer.MIN_VALUE));
 		// Register default proxy container finder
 		this.proxyrsContainerFinderRegistration = this.context.registerService(
 				IProxyContainerFinder.class.getName(),
@@ -126,8 +126,8 @@ public class Activator implements BundleActivator {
 
 		// register the default host container finder
 		final Properties hostContainerFinderProps = new Properties();
-		hostContainerFinderProps.put(Constants.SERVICE_RANKING,
-				Integer.MIN_VALUE);
+		hostContainerFinderProps.put(Constants.SERVICE_RANKING, new Integer(
+				Integer.MIN_VALUE));
 		this.hostrsContainerFinderRegistration = this.context.registerService(
 				IHostContainerFinder.class.getName(),
 				new DefaultHostContainerFinder(), hostContainerFinderProps);
