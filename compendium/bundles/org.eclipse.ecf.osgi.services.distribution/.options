@@ -19,3 +19,4 @@ org.eclipse.ecf.osgi.services.distribution/debug/eventhook=true
 
 org.eclipse.ecf.osgi.services.distribution/debug/discoveredservicetracker=true
 
+org.eclipse.ecf.osgi.services.distribution/debug/containerfinder=true

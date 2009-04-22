@@ -28,4 +28,6 @@ public interface DebugOptions {
 	public static final String DISCOVEREDSERVICETRACKER = DEBUG
 			+ "/discoveredservicetracker";
 
+	public static final String CONTAINERFINDER = DEBUG + "/containerfinder";
+
 }

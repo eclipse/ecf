@@ -98,30 +98,39 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
-		this.distributionProvider = new DistributionProviderImpl();
-		addDiscoveredServiceTracker();
-		addServiceRegistryHooks();
-		addDistributionProvider();
-	}
 
-	private void addDiscoveredServiceTracker() {
+		// Create distribution provider impl
+		this.distributionProvider = new DistributionProviderImpl();
+		// Create discovered service tracker impl
 		DiscoveredServiceTrackerImpl dstImpl = new DiscoveredServiceTrackerImpl(
 				this.distributionProvider, new ThreadsExecutor());
+		// Register discovered service tracker
 		this.discoveredServiceTrackerRegistration = this.context
 				.registerService(DiscoveredServiceTracker.class.getName(),
 						dstImpl, null);
-		this.proxyrsContainerFinderRegistration = this.context.registerService(
-				IProxyContainerFinder.class.getName(), dstImpl,
-				null);
-	}
 
-	private void addServiceRegistryHooks() {
+		// Set service ranking to Integer.MIN_VALUE so that other impls
+		// will be prefered over the default one
+		final Properties proxyContainerFinderProps = new Properties();
+		proxyContainerFinderProps.put(Constants.SERVICE_RANKING,
+				Integer.MIN_VALUE);
+		// Register default proxy container finder
+		this.proxyrsContainerFinderRegistration = this.context.registerService(
+				IProxyContainerFinder.class.getName(),
+				new DefaultProxyContainerFinder(), proxyContainerFinderProps);
+
 		// register the event hook to get informed when new services appear
 		final EventHookImpl hook = new EventHookImpl(distributionProvider);
 		this.eventHookRegistration = this.context.registerService(
 				EventHook.class.getName(), hook, null);
+
+		// register the default host container finder
+		final Properties hostContainerFinderProps = new Properties();
+		hostContainerFinderProps.put(Constants.SERVICE_RANKING,
+				Integer.MIN_VALUE);
 		this.hostrsContainerFinderRegistration = this.context.registerService(
-				IHostContainerFinder.class.getName(), hook, null);
+				IHostContainerFinder.class.getName(),
+				new DefaultHostContainerFinder(), hostContainerFinderProps);
 
 		// register all existing services which have the marker property
 		try {
@@ -134,11 +143,10 @@ public class Activator implements BundleActivator {
 				}
 			}
 		} catch (InvalidSyntaxException e) {
-			e.printStackTrace();
+			// not possible
 		}
-	}
 
-	private void addDistributionProvider() {
+		// Setup properties for the distribution provider
 		final Dictionary properties = new Hashtable();
 		properties.put(DistributionProvider.PROP_KEY_VENDOR_NAME,
 				DistributionProviderImpl.VENDOR_NAME);
@@ -148,38 +156,10 @@ public class Activator implements BundleActivator {
 				DistributionProviderImpl.PRODUCT_VERSION);
 		properties.put(DistributionProvider.PROP_KEY_SUPPORTED_INTENTS,
 				distributionProvider.getSupportedIntents());
+		// Register distribution provider
 		this.distributionProviderRegistration = this.context.registerService(
 				DistributionProvider.class.getName(), distributionProvider,
 				properties);
-	}
-
-	private void removeServiceRegistryHooks() {
-		if (this.eventHookRegistration != null) {
-			this.eventHookRegistration.unregister();
-			this.eventHookRegistration = null;
-		}
-		if (this.hostrsContainerFinderRegistration != null) {
-			this.hostrsContainerFinderRegistration.unregister();
-			this.hostrsContainerFinderRegistration = null;
-		}
-	}
-
-	private void removeDistributionProvider() {
-		if (this.distributionProviderRegistration != null) {
-			this.distributionProviderRegistration.unregister();
-			this.distributionProviderRegistration = null;
-		}
-	}
-
-	private void removeDiscoveredServiceTracker() {
-		if (this.discoveredServiceTrackerRegistration != null) {
-			this.discoveredServiceTrackerRegistration.unregister();
-			this.discoveredServiceTrackerRegistration = null;
-		}
-		if (this.proxyrsContainerFinderRegistration != null) {
-			this.proxyrsContainerFinderRegistration.unregister();
-			this.proxyrsContainerFinderRegistration = null;
-		}
 	}
 
 	/*
@@ -189,9 +169,26 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
-		removeDiscoveredServiceTracker();
-		removeDistributionProvider();
-		removeServiceRegistryHooks();
+		if (this.discoveredServiceTrackerRegistration != null) {
+			this.discoveredServiceTrackerRegistration.unregister();
+			this.discoveredServiceTrackerRegistration = null;
+		}
+		if (this.proxyrsContainerFinderRegistration != null) {
+			this.proxyrsContainerFinderRegistration.unregister();
+			this.proxyrsContainerFinderRegistration = null;
+		}
+		if (this.distributionProviderRegistration != null) {
+			this.distributionProviderRegistration.unregister();
+			this.distributionProviderRegistration = null;
+		}
+		if (this.eventHookRegistration != null) {
+			this.eventHookRegistration.unregister();
+			this.eventHookRegistration = null;
+		}
+		if (this.hostrsContainerFinderRegistration != null) {
+			this.hostrsContainerFinderRegistration.unregister();
+			this.hostrsContainerFinderRegistration = null;
+		}
 		if (containerManagerTracker != null) {
 			containerManagerTracker.close();
 			containerManagerTracker = null;
@@ -226,26 +223,22 @@ public class Activator implements BundleActivator {
 		return (IContainerManager) containerManagerTracker.getService();
 	}
 
-	public synchronized IProxyContainerFinder[] getProxyRemoteServiceContainerFinders() {
+	public synchronized IProxyContainerFinder getProxyRemoteServiceContainerFinder() {
 		if (proxyrsContainerFinder == null) {
 			proxyrsContainerFinder = new ServiceTracker(this.context,
 					IProxyContainerFinder.class.getName(), null);
 			proxyrsContainerFinder.open();
 		}
-		Object[] svcs = (Object[]) proxyrsContainerFinder.getServices();
-		return (IProxyContainerFinder[]) Arrays.asList(svcs)
-				.toArray(new IProxyContainerFinder[] {});
+		return (IProxyContainerFinder) proxyrsContainerFinder.getService();
 	}
 
-	public synchronized IHostContainerFinder[] getHostRemoteServiceContainerFinders() {
+	public synchronized IHostContainerFinder getHostRemoteServiceContainerFinder() {
 		if (hostrsContainerFinder == null) {
 			hostrsContainerFinder = new ServiceTracker(this.context,
 					IHostContainerFinder.class.getName(), null);
 			hostrsContainerFinder.open();
 		}
-		Object[] svcs = (Object[]) hostrsContainerFinder.getServices();
-		return (IHostContainerFinder[]) Arrays.asList(svcs)
-				.toArray(new IHostContainerFinder[] {});
+		return (IHostContainerFinder) hostrsContainerFinder.getService();
 	}
 
 	public IAdapterManager getAdapterManager() {

@@ -42,4 +42,5 @@ public interface IHostContainerFinder {
 	public IRemoteServiceContainer[] findHostContainers(
 			ServiceReference serviceReference, String[] remoteInterfaces,
 			String[] remoteConfigurationType, String[] remoteRequiresIntents);
+
 }

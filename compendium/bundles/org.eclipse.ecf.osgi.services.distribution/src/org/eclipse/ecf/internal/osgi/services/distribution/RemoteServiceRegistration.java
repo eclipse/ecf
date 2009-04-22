@@ -19,7 +19,7 @@ public class RemoteServiceRegistration {
 
 	private final ECFServiceEndpointDescription serviceEndpointDescription;
 	private final IRemoteServiceContainer rsContainer;
-	private IRemoteServiceListener listener;
+	private final IRemoteServiceListener listener;
 	private Map serviceRegistrations = new HashMap();
 
 	public RemoteServiceRegistration(ECFServiceEndpointDescription sed,
@@ -67,10 +67,9 @@ public class RemoteServiceRegistration {
 			IRemoteServiceReference reference) {
 		if (getContainerAdapter().ungetRemoteService(reference)) {
 			List l = (List) serviceRegistrations.remove(reference.getID());
-			if (l != null) {
+			if (l != null)
 				return (ServiceRegistration[]) l
 						.toArray(new ServiceRegistration[] {});
-			}
 		}
 		return null;
 	}
@@ -79,9 +78,8 @@ public class RemoteServiceRegistration {
 		List results = new ArrayList();
 		for (Iterator i = serviceRegistrations.keySet().iterator(); i.hasNext();) {
 			List l = (List) serviceRegistrations.get(i.next());
-			if (l != null) {
+			if (l != null)
 				results.addAll(l);
-			}
 		}
 		return results;
 	}

@@ -10,11 +10,10 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.*;
-import org.eclipse.core.runtime.*;
-import org.eclipse.ecf.core.*;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.*;
 import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
@@ -28,55 +27,15 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.*;
 
-public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
-		IProxyContainerFinder {
+public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
-	DistributionProviderImpl distributionProvider;
-	IExecutor executor;
-	IProgressMonitor executorProgressMonitor;
-
-	List serviceLocations = new ArrayList();
-
-	private boolean addDiscoveredServiceID(ECFServiceEndpointDescription desc) {
-		if (desc == null)
-			return false;
-		synchronized (serviceLocations) {
-			return serviceLocations.add(new DiscoveredServiceID(desc
-					.getServiceID().getLocation(), desc.getRemoteServiceId()));
-		}
-	}
-
-	private boolean removeDiscoveredServiceID(ECFServiceEndpointDescription desc) {
-		if (desc == null)
-			return false;
-		synchronized (serviceLocations) {
-			return serviceLocations.remove(new DiscoveredServiceID(desc
-					.getServiceID().getLocation(), desc.getRemoteServiceId()));
-		}
-	}
-
-	private boolean containsDiscoveredServiceID(
-			ECFServiceEndpointDescription desc) {
-		if (desc == null)
-			return false;
-		synchronized (serviceLocations) {
-			return serviceLocations.contains(new DiscoveredServiceID(desc
-					.getServiceID().getLocation(), desc.getRemoteServiceId()));
-		}
-	}
-
-	public DiscoveredServiceTrackerImpl(DistributionProviderImpl dp,
-			IExecutor executor) {
-		this.distributionProvider = dp;
-		this.executor = executor;
-	}
-
+	private DistributionProviderImpl distributionProvider;
+	private IExecutor executor;
+	private List serviceLocations = new ArrayList();
 	// <Map<containerID><RemoteServiceRegistration>
-
-	Map discoveredRemoteServiceRegistrations = Collections
+	private Map discoveredRemoteServiceRegistrations = Collections
 			.synchronizedMap(new HashMap());
-
-	List ecfRemoteServiceProperties = Arrays.asList(new String[] {
+	private List ecfRemoteServiceProperties = Arrays.asList(new String[] {
 			Constants.SERVICE_ID, Constants.OBJECTCLASS,
 			IServicePublication.PROP_KEY_ENDPOINT_ID,
 			IServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME,
@@ -84,6 +43,12 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 			IServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
 			IServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION,
 			IServicePublication.PROP_KEY_SERVICE_PROPERTIES });
+
+	public DiscoveredServiceTrackerImpl(DistributionProviderImpl dp,
+			IExecutor executor) {
+		this.distributionProvider = dp;
+		this.executor = executor;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -99,19 +64,14 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 			return;
 		}
 		int notificationType = notification.getType();
-		ServiceEndpointDescription notificationDescription = notification
-				.getServiceEndpointDescription();
-
-		trace("serviceChanged", "type=" + notificationType
-				+ ",notificationDescription=" + notificationDescription);
-
 		switch (notificationType) {
 		case DiscoveredServiceNotification.AVAILABLE:
 			ECFServiceEndpointDescription adesc = null;
 			try {
 				// If the service endpoint description is not ECF's then we
 				// don't process it
-				adesc = getECFserviceEndpointDescription(notificationDescription);
+				adesc = getECFserviceEndpointDescription(notification
+						.getServiceEndpointDescription());
 			} catch (Exception e) {
 				logError("serviceChanged.AVAILABLE",
 						"Error creating ECF endpoint description", e);
@@ -144,7 +104,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 			break;
 		case DiscoveredServiceNotification.UNAVAILABLE:
 			try {
-				ECFServiceEndpointDescription udesc = getECFserviceEndpointDescription(notificationDescription);
+				ECFServiceEndpointDescription udesc = getECFserviceEndpointDescription(notification
+						.getServiceEndpointDescription());
 				// If it's not for us then return
 				if (udesc == null)
 					return;
@@ -196,43 +157,27 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		}
 	}
 
-	private IRemoteServiceContainer[] findRemoteServiceContainersViaService(
+	private IRemoteServiceContainer[] findRemoteServiceContainers(
 			IServiceID serviceID, IServiceEndpointDescription description,
 			IProgressMonitor monitor) {
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return new IRemoteServiceContainer[0];
-		IProxyContainerFinder[] finders = activator
-				.getProxyRemoteServiceContainerFinders();
-		if (finders == null || finders.length == 0) {
+		IProxyContainerFinder finder = activator
+				.getProxyRemoteServiceContainerFinder();
+		if (finder == null) {
 			logError("findRemoteServiceContainersViaService",
 					"No container finders available");
 			return new IRemoteServiceContainer[0];
 		}
-		List result = new ArrayList();
-		for (int i = 0; i < finders.length; i++) {
-			IRemoteServiceContainer[] foundRSContainers = finders[i]
-					.findProxyContainers(serviceID, description,
-							monitor);
-			if (foundRSContainers != null && foundRSContainers.length > 0) {
-				trace("findRemoteServiceContainersViaService",
-						"findRemoteServiceContainers finder=" + finders[i]
-								+ " ecfSED=" + description
-								+ " foundRSContainers="
-								+ Arrays.asList(foundRSContainers));
-				for (int j = 0; j < foundRSContainers.length; j++)
-					result.add(foundRSContainers[j]);
-			}
-		}
-		return (IRemoteServiceContainer[]) result
-				.toArray(new IRemoteServiceContainer[] {});
+		return finder.findProxyContainers(serviceID, description, monitor);
 	}
 
 	private void handleDiscoveredServiceAvailable(
 			ECFServiceEndpointDescription ecfSED, IProgressMonitor monitor) {
 		// Find IRemoteServiceContainers for the given
 		// ECFServiceEndpointDescription via registered services
-		IRemoteServiceContainer[] rsContainers = findRemoteServiceContainersViaService(
+		IRemoteServiceContainer[] rsContainers = findRemoteServiceContainers(
 				ecfSED.getServiceID(), ecfSED, monitor);
 		if (rsContainers == null || rsContainers.length == 0) {
 			logError("handleDiscoveredServiceAvailable",
@@ -526,107 +471,52 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker,
 		return results;
 	}
 
+	private boolean addDiscoveredServiceID(ECFServiceEndpointDescription desc) {
+		synchronized (serviceLocations) {
+			return serviceLocations.add(new DiscoveredServiceID(desc
+					.getServiceID().getLocation(), desc.getRemoteServiceId()));
+		}
+	}
+
+	private boolean removeDiscoveredServiceID(ECFServiceEndpointDescription desc) {
+		synchronized (serviceLocations) {
+			return serviceLocations.remove(new DiscoveredServiceID(desc
+					.getServiceID().getLocation(), desc.getRemoteServiceId()));
+		}
+	}
+
+	private boolean containsDiscoveredServiceID(
+			ECFServiceEndpointDescription desc) {
+		synchronized (serviceLocations) {
+			return serviceLocations.contains(new DiscoveredServiceID(desc
+					.getServiceID().getLocation(), desc.getRemoteServiceId()));
+		}
+	}
+
 	protected void trace(String methodName, String message) {
-		Trace.trace(Activator.PLUGIN_ID, DebugOptions.DISCOVEREDSERVICETRACKER,
-				this.getClass(), methodName, message);
+		LogUtility.trace(methodName, DebugOptions.DISCOVEREDSERVICETRACKER,
+				this.getClass(), message);
 	}
 
 	protected void traceException(String methodName, String message, Throwable t) {
-		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
-				this.getClass(), ((methodName == null) ? "<unknown>"
-						: methodName)
-						+ ":" + ((message == null) ? "<empty>" : message), t);
+		LogUtility.traceException(methodName, DebugOptions.EXCEPTIONS_CATCHING,
+				this.getClass(), message, t);
 	}
 
 	protected void logError(String methodName, String message, Throwable t) {
-		if (t != null)
-			traceException(methodName, message, t);
-		else
-			trace(methodName, message);
-		Activator.getDefault()
-				.log(
-						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-								IStatus.ERROR, this.getClass().getName()
-										+ ":"
-										+ ((methodName == null) ? "<unknown>"
-												: methodName)
-										+ ":"
-										+ ((message == null) ? "<empty>"
-												: message), t));
+		LogUtility.logError(methodName, DebugOptions.DISCOVEREDSERVICETRACKER,
+				this.getClass(), message, t);
 	}
 
 	protected void logError(String methodName, String message) {
-		logError(methodName, message, null);
-		traceException(methodName, message, null);
+		LogUtility.logError(methodName, DebugOptions.DISCOVEREDSERVICETRACKER,
+				this.getClass(), message);
 	}
 
-	private void logWarning(String methodName, String message) {
-		trace(methodName, "WARNING:" + message);
-		Activator.getDefault().log(
-				new Status(IStatus.WARNING, Activator.PLUGIN_ID,
-						IStatus.WARNING, DiscoveredServiceTrackerImpl.class
-								.getName()
-								+ ":"
-								+ ((methodName == null) ? "<unknown>"
-										: methodName)
-								+ ":"
-								+ ((message == null) ? "<empty>" : message),
-						null));
-	}
-
-	// Impl of IProxyContainerFinder
-	public IRemoteServiceContainer[] findProxyContainers(
-			IServiceID serviceID,
-			IServiceEndpointDescription endpointDescription,
-			IProgressMonitor monitor) {
-		IContainerManager containerManager = Activator.getDefault()
-				.getContainerManager();
-		if (containerManager == null)
-			return null;
-		IContainer[] containers = containerManager.getAllContainers();
-		if (containers == null) {
-			// log this?
-			logWarning("findRSCAs", "No containers found for container manager");
-			return new IRemoteServiceContainer[0];
-		}
-		// If the container id is equal to the endpointID, then we don't want to
-		// include it
-		List results = new ArrayList();
-		for (int i = 0; i < containers.length; i++) {
-			// If the container under consideration has the same id
-			// as the endpoint id, then we don't want to consider it
-			ID containerID = containers[i].getID();
-			if (containerID != null
-					&& containerID.equals(endpointDescription
-							.getECFEndpointID())) {
-				continue;
-			}
-			IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) containers[i]
-					.getAdapter(IRemoteServiceContainerAdapter.class);
-			if (adapter != null
-					&& includeRCSAForDescription(containers[i],
-							endpointDescription)) {
-				results.add(new RemoteServiceContainer(containers[i], adapter));
-			}
-		}
-		return (IRemoteServiceContainer[]) results
-				.toArray(new IRemoteServiceContainer[] {});
-	}
-
-	private boolean includeRCSAForDescription(IContainer container,
-			ServiceEndpointDescription description) {
-		// Then we check the namespace of the endpoint container ID. If it's the
-		// same as the
-		// container/adapter under test then we've found a compatible one
-		String connectNamespaceName = (String) description
-				.getProperty(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE);
-		if (connectNamespaceName != null) {
-			Namespace namespace = container.getConnectNamespace();
-			if (namespace != null
-					&& namespace.getName().equals(connectNamespaceName))
-				return true;
-		}
-		return false;
+	protected void logWarning(String methodName, String message) {
+		LogUtility
+				.logWarning(methodName, DebugOptions.DISCOVEREDSERVICETRACKER,
+						this.getClass(), message);
 	}
 
 }
