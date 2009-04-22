@@ -34,10 +34,11 @@ public interface IAbstractChannel extends IAdaptable, IIdentifiable {
 	 *         then channel had no previous listener
 	 */
 	public IChannelListener setListener(IChannelListener listener);
-	
+
 	/**
-	 * Dispose this channel.
+	 * Dispose this channel.  This method will typically be called
+	 * by the enclosing container during {@link IChannelContainerAdapter#removeChannel(org.eclipse.ecf.core.identity.ID)}.
 	 */
 	public void dispose();
-	
+
 }
