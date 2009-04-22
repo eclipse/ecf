@@ -53,7 +53,9 @@ public interface IAbstractChannelContainerAdapter extends IAdaptable {
 	public IChannel getChannel(ID channelID);
 
 	/**
-	 * Remove channel with given ID
+	 * Remove channel with given ID.  If the channel is found in the container, the 
+	 * enclosing should also call {@link IChannel#dispose()} on the channel before
+	 * returning from this method.
 	 * 
 	 * @param channelID
 	 *            the ID of the channel to remove within this container. Must
