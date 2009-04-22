@@ -111,8 +111,10 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 				if (c.getConnectedID() == null) {
 					connectContainer(c, connectTargetID, getConnectContext(
 							rsContainers[i], connectTargetID));
-					results.add(rsContainers[i]);
 				}
+				// If it's connected (either was already connected or was
+				// connected via lines above...then add it to result set
+				results.add(rsContainers[i]);
 			} catch (ContainerConnectException e) {
 				logError("connectRemoteServiceContainers",
 						"Exception connecting container=" + c.getID()
