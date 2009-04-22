@@ -174,13 +174,17 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject impl
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#disposeChannel(org.eclipse.ecf.core.identity.ID)
+	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#removeChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public boolean removeChannel(ID channelID) {
 		if (channelID == null || channelID.equals(getID()))
 			return false;
 		ISharedObject o = getContext().getSharedObjectManager().removeSharedObject(channelID);
-		return (o != null);
+		if (o != null && o instanceof IChannel) {
+			((IChannel) o).dispose();
+			return true;
+		}
+		return false;
 	}
 
 	/*
