@@ -54,8 +54,8 @@ public interface IAbstractChannelContainerAdapter extends IAdaptable {
 
 	/**
 	 * Remove channel with given ID.  If the channel is found in the container, the 
-	 * enclosing should also call {@link IChannel#dispose()} on the channel before
-	 * returning from this method.
+	 * enclosing container will call {@link IChannel#dispose()} to dispose the channel 
+	 * before returning from this method.
 	 * 
 	 * @param channelID
 	 *            the ID of the channel to remove within this container. Must
