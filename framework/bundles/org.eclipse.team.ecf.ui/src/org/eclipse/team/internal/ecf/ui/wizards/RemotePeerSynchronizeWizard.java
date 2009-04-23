@@ -15,8 +15,10 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.team.internal.ecf.core.RemoteShare;
 import org.eclipse.team.internal.ecf.core.TeamSynchronization;
+import org.eclipse.team.internal.ecf.ui.Messages;
 import org.eclipse.team.internal.ecf.ui.subscriber.RemoteSubscriberParticipant;
 import org.eclipse.team.ui.TeamUI;
 import org.eclipse.team.ui.synchronize.ISynchronizeParticipant;
@@ -26,7 +28,7 @@ public class RemotePeerSynchronizeWizard extends Wizard {
 	private RemotePeerSynchronizeWizardPage page;
 
 	public RemotePeerSynchronizeWizard() {
-		setWindowTitle("Synchronize");
+		setWindowTitle(Messages.RemotePeerSynchronizeWizard_WindowTitle);
 	}
 
 	public void addPages() {
@@ -47,7 +49,11 @@ public class RemotePeerSynchronizeWizard extends Wizard {
 
 		TeamUI.getSynchronizeManager().addSynchronizeParticipants(new ISynchronizeParticipant[] {participant});
 
-		participant.refresh(resources, "Remote synchronization with " + remoteUser.getNickname(), "Remote synchronization of " + " with " + remoteUser.getNickname(), null);
+		if (resources.length == 1) {
+			participant.refresh(resources, NLS.bind(Messages.SynchronizeWithHandler_RemoteSynchronizationTaskName, remoteUser.getNickname()), NLS.bind(Messages.SynchronizeWithHandler_RemoteSynchronizationResourceDescription, resources[0].getName(), remoteUser.getNickname()), null);
+		} else {
+			participant.refresh(resources, NLS.bind(Messages.SynchronizeWithHandler_RemoteSynchronizationTaskName, remoteUser.getNickname()), NLS.bind(Messages.SynchronizeWithHandler_RemoteSynchronizationResourcesDescription, remoteUser.getNickname()), null);
+		}
 		return true;
 	}
 

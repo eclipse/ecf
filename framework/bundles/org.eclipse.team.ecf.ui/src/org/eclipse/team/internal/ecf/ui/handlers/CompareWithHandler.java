@@ -26,11 +26,13 @@ import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.core.synchronize.SyncInfo;
 import org.eclipse.team.internal.ecf.core.RemoteShare;
 import org.eclipse.team.internal.ecf.core.TeamSynchronization;
 import org.eclipse.team.internal.ecf.core.variants.RemoteResourceVariantTreeSubscriber;
+import org.eclipse.team.internal.ecf.ui.Messages;
 import org.eclipse.team.ui.synchronize.SyncInfoCompareInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -52,14 +54,14 @@ class CompareWithHandler extends AbstractRosterMenuHandler {
 
 		final IResource resource = getResource(event);
 		if (resource == null) {
-			MessageDialog.openInformation(HandlerUtil.getActiveShell(event), null, "A file must be selected for comparison.");
+			MessageDialog.openInformation(HandlerUtil.getActiveShell(event), null, Messages.CompareWithHandler_FileNotSelectedError);
 			return null;
 		}
 
 		RemoteShare share = TeamSynchronization.getShare(container.getID());
 		final RemoteResourceVariantTreeSubscriber subscriber = new RemoteResourceVariantTreeSubscriber(share, localId, remoteId);
 
-		Job job = new Job("Resource Compare with Remote Peer") {
+		Job job = new Job(Messages.CompareWithHandler_ResourceComparisonJobTitle) {
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					openCompareEditor(subscriber.getSyncInfo(resource, monitor), remoteUser);
@@ -75,8 +77,8 @@ class CompareWithHandler extends AbstractRosterMenuHandler {
 	}
 
 	void openCompareEditor(SyncInfo syncInfo, IUser user) {
-		final SyncInfoCompareInput input = new SyncInfoCompareInput("Remote Peer (" + user.getNickname() + ")", syncInfo);
-		WorkbenchJob job = new WorkbenchJob("Compare Editor Renderer") {
+		final SyncInfoCompareInput input = new SyncInfoCompareInput(NLS.bind(Messages.CompareWithHandler_CompareInputDescription, user.getNickname()), syncInfo);
+		WorkbenchJob job = new WorkbenchJob(Messages.CompareWithHandler_CompareEditorWorkbenchJobTitle) {
 			public IStatus runInUIThread(IProgressMonitor monitor) {
 				CompareUI.openCompareEditor(input, true);
 				return Status.OK_STATUS;

@@ -25,6 +25,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.team.internal.ecf.ui.Messages;
 import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
@@ -37,8 +38,8 @@ class RemotePeerSynchronizeWizardPage extends WizardPage {
 
 	RemotePeerSynchronizeWizardPage() {
 		super(RemotePeerSynchronizeWizardPage.class.getName());
-		setTitle("Synchronize with Remote Peer");
-		setDescription("Select the resources to be synchronized.");
+		setTitle(Messages.RemotePeerSynchronizeWizardPage_Title);
+		setDescription(Messages.RemotePeerSynchronizeWizardPage_Description);
 	}
 
 	public void createControl(Composite parent) {
@@ -188,7 +189,7 @@ class RemotePeerSynchronizeWizardPage extends WizardPage {
 
 		IStructuredSelection selection = (IStructuredSelection) peersViewer.getSelection();
 		if (!(selection.getFirstElement() instanceof IRosterEntry)) {
-			setErrorMessage("A remote peer must be selected to synchronize with.");
+			setErrorMessage(Messages.RemotePeerSynchronizeWizardPage_NoRemotePeerSelectedError);
 			setPageComplete(false);
 			return;
 		}

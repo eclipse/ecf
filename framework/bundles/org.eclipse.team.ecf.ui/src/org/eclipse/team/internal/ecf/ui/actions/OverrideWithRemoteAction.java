@@ -11,14 +11,13 @@
 package org.eclipse.team.internal.ecf.ui.actions;
 
 import org.eclipse.compare.structuremergeviewer.IDiffElement;
-import org.eclipse.team.ui.synchronize.ISynchronizePageConfiguration;
-import org.eclipse.team.ui.synchronize.SynchronizeModelAction;
-import org.eclipse.team.ui.synchronize.SynchronizeModelOperation;
+import org.eclipse.team.internal.ecf.ui.Messages;
+import org.eclipse.team.ui.synchronize.*;
 
 public class OverrideWithRemoteAction extends SynchronizeModelAction {
 
 	public OverrideWithRemoteAction(ISynchronizePageConfiguration configuration) {
-		super("Override with Remote", configuration);
+		super(Messages.OverrideWithRemoteAction_ActionLabel, configuration);
 	}
 
 	//	protected boolean updateSelection(IStructuredSelection selection) {

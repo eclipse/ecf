@@ -30,9 +30,11 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.team.internal.ecf.core.RemoteShare;
 import org.eclipse.team.internal.ecf.core.TeamSynchronization;
+import org.eclipse.team.internal.ecf.ui.Messages;
 import org.eclipse.team.internal.ecf.ui.subscriber.RemoteSubscriberParticipant;
 import org.eclipse.team.internal.ecf.ui.wizards.RemotePeerSynchronizeWizard;
 import org.eclipse.team.ui.TeamUI;
@@ -68,9 +70,9 @@ class SynchronizeWithHandler extends AbstractRosterMenuHandler {
 		IRunnableWithProgress runnable = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 				if (resources.length == 1) {
-					monitor.beginTask("Contacting remote peer to synchronize " + resources[0].getName() + "...", IProgressMonitor.UNKNOWN);
+					monitor.beginTask(NLS.bind(Messages.SynchronizeWithHandler_SynchronizeResourceTaskName, resources[0].getName()), IProgressMonitor.UNKNOWN);
 				} else {
-					monitor.beginTask("Contacting remote peer to synchronize resources...", IProgressMonitor.UNKNOWN);
+					monitor.beginTask(Messages.SynchronizeWithHandler_SynchronizeResourcesTaskName, IProgressMonitor.UNKNOWN);
 				}
 
 				try {
@@ -95,18 +97,18 @@ class SynchronizeWithHandler extends AbstractRosterMenuHandler {
 			dialog.run(true, true, runnable);
 
 			if (!response[0]) {
-				MessageDialog.openInformation(shell, null, "Synchronization request has been denied.");
+				MessageDialog.openInformation(shell, null, Messages.SynchronizeWithHandler_SynchronizeRequestDenial);
 			}
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getCause();
 			if (cause instanceof ECFException) {
-				MessageDialog.openError(shell, null, "An error has occurred while sending the synchronization request to the remote peer");
+				MessageDialog.openError(shell, null, Messages.SynchronizeWithHandler_SynchronizeRequestError);
 			}
-			TeamSynchronization.log("Failed to contact remote peer", cause);
+			TeamSynchronization.log("Failed to contact remote peer", cause); //$NON-NLS-1$
 		} catch (InterruptedException e) {
 			Thread.interrupted();
-			MessageDialog.openError(shell, null, "Synchronization request operation was interrupted");
-			TeamSynchronization.log("Synchronization request operation was interrupted", e);
+			MessageDialog.openError(shell, null, Messages.SynchronizeWithHandler_SynchronizeRequestInterrupted);
+			TeamSynchronization.log("Synchronization request operation was interrupted", e); //$NON-NLS-1$
 		}
 
 		return null;
@@ -118,7 +120,11 @@ class SynchronizeWithHandler extends AbstractRosterMenuHandler {
 
 		TeamUI.getSynchronizeManager().addSynchronizeParticipants(new ISynchronizeParticipant[] {participant});
 
-		participant.refresh(resources, "Remote synchronization with " + remoteUser.getNickname(), "Remote synchronization of " + " with " + remoteUser.getNickname(), site);
+		if (resources.length == 1) {
+			participant.refresh(resources, NLS.bind(Messages.SynchronizeWithHandler_RemoteSynchronizationTaskName, remoteUser.getNickname()), NLS.bind(Messages.SynchronizeWithHandler_RemoteSynchronizationResourceDescription, resources[0].getName(), remoteUser.getNickname()), site);
+		} else {
+			participant.refresh(resources, NLS.bind(Messages.SynchronizeWithHandler_RemoteSynchronizationTaskName, remoteUser.getNickname()), NLS.bind(Messages.SynchronizeWithHandler_RemoteSynchronizationResourcesDescription, remoteUser.getNickname()), site);
+		}
 	}
 
 	public IResource[] getResources(ExecutionEvent event) throws ExecutionException {

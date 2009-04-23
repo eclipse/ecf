@@ -13,11 +13,12 @@ package org.eclipse.team.internal.ecf.ui.handlers;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuContributionItem;
 import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler;
+import org.eclipse.team.internal.ecf.ui.Messages;
 
 public class SynchronizeWithMenuContributionItem extends AbstractRosterMenuContributionItem {
 
 	public SynchronizeWithMenuContributionItem() {
-		setTopMenuName("Synchronize With");
+		setTopMenuName(Messages.SynchronizeWithMenuContributionItem_MenuTitle);
 	}
 
 	protected AbstractRosterMenuHandler createRosterEntryHandler(IRosterEntry rosterEntry) {

@@ -14,10 +14,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.team.internal.ecf.core.RemoteShare;
 import org.eclipse.team.internal.ecf.core.variants.RemoteResourceVariantTreeSubscriber;
+import org.eclipse.team.internal.ecf.ui.Messages;
 import org.eclipse.team.internal.ecf.ui.actions.OverrideWithRemoteAction;
-import org.eclipse.team.ui.synchronize.ISynchronizePageConfiguration;
-import org.eclipse.team.ui.synchronize.SubscriberParticipant;
-import org.eclipse.team.ui.synchronize.SynchronizePageActionGroup;
+import org.eclipse.team.ui.synchronize.*;
 
 public class RemoteSubscriberParticipant extends SubscriberParticipant {
 
@@ -32,12 +31,12 @@ public class RemoteSubscriberParticipant extends SubscriberParticipant {
 
 	protected void initializeConfiguration(final ISynchronizePageConfiguration configuration) {
 		super.initializeConfiguration(configuration);
-		configuration.setProperty(ISynchronizePageConfiguration.P_PAGE_DESCRIPTION, "Remote Peer");
+		configuration.setProperty(ISynchronizePageConfiguration.P_PAGE_DESCRIPTION, Messages.RemoteSubscriberParticipant_PageDescription);
 
 		configuration.addActionContribution(new SynchronizePageActionGroup() {
-			public void initialize(ISynchronizePageConfiguration configuration) {
-				super.initialize(configuration);
-				appendToGroup(ISynchronizePageConfiguration.P_CONTEXT_MENU, ISynchronizePageConfiguration.SYNCHRONIZE_GROUP, new OverrideWithRemoteAction(configuration));
+			public void initialize(ISynchronizePageConfiguration pageConfiguration) {
+				super.initialize(pageConfiguration);
+				appendToGroup(ISynchronizePageConfiguration.P_CONTEXT_MENU, ISynchronizePageConfiguration.SYNCHRONIZE_GROUP, new OverrideWithRemoteAction(pageConfiguration));
 			}
 		});
 
@@ -46,12 +45,12 @@ public class RemoteSubscriberParticipant extends SubscriberParticipant {
 	}
 
 	public String getName() {
-		return "Remote Peer";
+		return Messages.RemoteSubscriberParticipant_PageDescription;
 	}
 
 	public String getId() {
 		// note, this value needs to match the value in the plugin.xml
-		return "org.eclipse.ecf.sync.team.participant";
+		return "org.eclipse.ecf.sync.team.participant"; //$NON-NLS-1$
 	}
 
 	public String getSecondaryId() {

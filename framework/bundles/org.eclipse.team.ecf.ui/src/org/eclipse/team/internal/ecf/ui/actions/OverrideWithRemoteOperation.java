@@ -17,9 +17,11 @@ import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.MultiRule;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.team.core.synchronize.SyncInfo;
 import org.eclipse.team.core.synchronize.SyncInfoSet;
 import org.eclipse.team.core.variants.IResourceVariant;
+import org.eclipse.team.internal.ecf.ui.Messages;
 import org.eclipse.team.ui.synchronize.ISynchronizePageConfiguration;
 import org.eclipse.team.ui.synchronize.SynchronizeModelOperation;
 
@@ -62,7 +64,7 @@ class OverrideWithRemoteOperation extends SynchronizeModelOperation {
 
 		public void run(IProgressMonitor monitor) throws CoreException {
 			monitor.beginTask("", syncInfos.length); //$NON-NLS-1$
-			monitor.subTask("Overriding resources with remote copy...");
+			monitor.subTask(Messages.OverrideWithRemoteOperation_SubTaskName);
 
 			for (int i = 0; i < syncInfos.length; i++) {
 				if (monitor.isCanceled()) {
@@ -74,7 +76,7 @@ class OverrideWithRemoteOperation extends SynchronizeModelOperation {
 
 				switch (syncInfos[i].getKind() & SyncInfo.CHANGE_MASK) {
 					case SyncInfo.ADDITION :
-						monitor.subTask("Creating " + resource.getName() + "...");
+						monitor.subTask(NLS.bind(Messages.OverrideWithRemoteOperation_CreatingResource, resource.getName()));
 						switch (resource.getType()) {
 							case IResource.FILE :
 								IStorage storage = remoteVariant.getStorage(null);
@@ -101,7 +103,7 @@ class OverrideWithRemoteOperation extends SynchronizeModelOperation {
 					case SyncInfo.CHANGE :
 						switch (resource.getType()) {
 							case IResource.FILE :
-								monitor.subTask("Replacing " + resource.getName() + " with remote content...");
+								monitor.subTask(NLS.bind(Messages.OverrideWithRemoteOperation_ReplacingResource, resource.getName()));
 								IStorage storage = remoteVariant.getStorage(null);
 								((IFile) resource).setContents(storage.getContents(), true, true, new SubProgressMonitor(monitor, 1));
 								break;
@@ -112,7 +114,7 @@ class OverrideWithRemoteOperation extends SynchronizeModelOperation {
 						break;
 					case SyncInfo.DELETION :
 						if (resource.exists()) {
-							monitor.subTask("Deleting " + resource.getName() + "...");
+							monitor.subTask(NLS.bind(Messages.OverrideWithRemoteOperation_DeletingResource, resource.getName()));
 						}
 						resource.delete(true, new SubProgressMonitor(monitor, 1));
 						break;

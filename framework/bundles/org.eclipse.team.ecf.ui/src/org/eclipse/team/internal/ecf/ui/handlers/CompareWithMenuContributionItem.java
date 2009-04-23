@@ -16,6 +16,7 @@ import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.team.internal.ecf.ui.Messages;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.menus.IWorkbenchContribution;
 import org.eclipse.ui.services.IServiceLocator;
@@ -25,7 +26,7 @@ public class CompareWithMenuContributionItem extends AbstractRosterMenuContribut
 	private ISelectionService selectionService;
 
 	public CompareWithMenuContributionItem() {
-		setTopMenuName("Compare With");
+		setTopMenuName(Messages.CompareWithMenuContributionItem_MenuTitle);
 	}
 
 	public void initialize(IServiceLocator serviceLocator) {
