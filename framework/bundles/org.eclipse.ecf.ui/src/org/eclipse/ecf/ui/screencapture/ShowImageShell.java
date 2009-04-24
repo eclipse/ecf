@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Composent, Inc. and others.
+ * Copyright (c) 2007, 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,7 @@ public class ShowImageShell {
 	Shell shell;
 	ID senderID;
 	ImageWrapper imageWrapper;
+	Image image;
 	List imageData;
 
 	public ShowImageShell(Display display, ID senderID, final DisposeListener disposeListener) {
@@ -40,6 +41,11 @@ public class ShowImageShell {
 				ShowImageShell.this.senderID = null;
 				ShowImageShell.this.imageWrapper = null;
 				ShowImageShell.this.imageData = null;
+
+				if (ShowImageShell.this.image != null) {
+					ShowImageShell.this.image.dispose();
+					ShowImageShell.this.image = null;
+				}
 			}
 		});
 	}
@@ -105,7 +111,7 @@ public class ShowImageShell {
 		final byte[] uncompressedData = ScreenCaptureUtil.uncompress(bos.toByteArray());
 		shell.getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				final Image image = new Image(shell.getDisplay(), imageWrapper.createImageData(uncompressedData));
+				image = new Image(shell.getDisplay(), imageWrapper.createImageData(uncompressedData));
 				ShowImageShell.this.shell.addPaintListener(new PaintListener() {
 					public void paintControl(PaintEvent e) {
 						e.gc.drawImage(image, 0, 0);
