@@ -7,7 +7,7 @@
             class="org.eclipse.ecf.internal.irc.ui.wizards.IRCConnectWizard"
             containerFactoryName="ecf.irc.irclib"
             id="org.eclipse.ecf.provider.ui.irc.connectWizard"
-            name="IRC"/>
+            name="%connectWizards.name.IRC"/>
    </extension>
 
    <extension
@@ -15,7 +15,7 @@
       <wizard
             class="org.eclipse.ecf.internal.irc.ui.wizards.IRCConnectWizard"
             id="org.eclipse.ecf.provider.ui.irc.connectWizard"
-            name="IRC"
+            name="%newWizards.name.IRC"
             icon="icons/new_connection.gif"
             category="org.eclipse.ecf.ui.newConnection.category"
             finalPerspective="org.eclipse.ecf.ui.perspective.communications">
@@ -42,7 +42,7 @@
             activate="true"
             class="org.eclipse.ecf.internal.irc.ui.hyperlink.IRCChannelHyperlinkDetector"
             id="org.eclipse.ecf.internal.irc.hyperlink.IRCChannelHyperlinkDetector"
-            name="IRC Channel"
+            name="%hyperlinkDetector.name.IRC_Channel"
             targetId="org.eclipse.ecf.internal.provider.irc.container">
       </hyperlinkDetector>
    </extension>
@@ -128,7 +128,7 @@
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
       <target
             id="org.eclipse.ecf.internal.provider.irc.container"
-            name="IRC Chatroom container">
+            name="%target.name.IRC_Chatroom_container">
       </target>
    </extension>
 
