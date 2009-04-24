@@ -137,7 +137,7 @@
       <command
             categoryId="org.eclipse.ecf.ui.commands.category"
             id="org.eclipse.ecf.presence.ui.commands.browse"
-            name="Open Contact">
+            name="%command.name.Open_Contact">
       </command>
    </extension>
    <extension
