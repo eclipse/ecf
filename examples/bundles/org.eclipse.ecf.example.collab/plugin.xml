@@ -8,7 +8,7 @@
             icon="icons/collaboration.gif"
             class="org.eclipse.ecf.internal.example.collab.ui.LineChatView"
             category="org.eclipse.ecf.ui.viewcategory"
-            name="Collaboration"
+            name="%view.name.Collaboration"
             id="org.eclipse.ecf.internal.example.collab.ui.LineChatView"/>
    </extension>
    <extension
@@ -17,7 +17,7 @@
             category="org.eclipse.ecf.ui.category"
             class="org.eclipse.ecf.internal.example.collab.ui.ClientPreferencePage"
             id="org.eclipse.ecf.example.collab.ui.preferences"
-            name="Collaboration">
+            name="%page.name.Collaboration">
          <keywordReference
                id="org.eclipse.ecf.example.collab.ui.keywords">
          </keywordReference>
@@ -27,7 +27,7 @@
          point="org.eclipse.ui.keywords">
       <keyword
             id="org.eclipse.ecf.example.collab.ui.keywords"
-            label="collab chat ecf">
+            label="%keyword.label.collab_chat_ecf">
       </keyword>
    </extension>
    <!--
@@ -53,9 +53,9 @@
             targetID="#TextRulerContext"
             id="org.eclipse.ecf.texteditor.ruler.context.actions">
          <action
-               label="Share Selection"
+               label="%texteditor.action.label.Share_Selection"
                class="org.eclipse.ecf.internal.example.collab.actions.SetSharedEditorSelectionAction"
-               tooltip="Share Selection to Remotes"
+               tooltip="%texteditor.action.tooltip.Share_Selection"
                menubarPath="additions"
                id="org.eclipse.ecf.example.collab.ui.text.SetSharedEditorSelectionAction">
          </action>
@@ -64,8 +64,8 @@
             targetID="#CompilationUnitRulerContext"
             id="org.eclipse.ecf.javaeditor.ruler.context.actions">
          <action
-               label="Share Selection"
-               tooltip="Share Selection to Remotes"
+               label="%javaeditor.action.label.Share_Selection"
+               tooltip="%javaeditor.action.tooltip.Share_Selection"
                class="org.eclipse.ecf.internal.example.collab.actions.SetSharedEditorSelectionAction"
                menubarPath="add"
                id="org.eclipse.ecf.example.collab.ui.java.SetSharedEditorSelectionAction">
@@ -76,16 +76,16 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="org.eclipse.ecf.example.collab.ui.actionSet"
-            label="Communications"
+            label="%actionSet.label.Communications"
             visible="false">
          <action
                class="org.eclipse.ecf.internal.example.collab.actions.JoinGroupWizardAction"
                icon="icons/collaboration.gif"
                id="org.eclipse.ecf.example.collab.action2"
-               label="Connect Workspace to Collaboration Group..."
+               label="%action.label.Connect_Workspace_to_Collaboration_Group"
                style="push"
                toolbarPath="org.eclipse.ecf.ui.collaboration"
-               tooltip="Connect Workspace to Collaboration Group">
+               tooltip="%action.tooltip.Connect_Workspace_to_Collaboration_Group">
          </action>
          <action
                class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
@@ -132,7 +132,7 @@
             activate="true"
             class="org.eclipse.ecf.internal.example.collab.ui.hyperlink.ECFGenericHyperlinkDetector"
             id="org.eclipse.ecf.example.collab.ui.hyperlink.ECFGenericHyperlinkDetector"
-            name="ECF Generic"
+            name="%hyperlinkDetector.name.ECF_Generic"
             targetId="org.eclipse.ui.DefaultTextEditor">
       </hyperlinkDetector>
    </extension>
