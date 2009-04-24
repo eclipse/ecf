@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2008 Remy Suen, Composent Inc., and others.
+ * Copyright (c) 2006, 2009 Remy Suen, Composent Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Matthew Jucius <matthew@jucius.com> - Bug 265174
  ******************************************************************************/
 package org.eclipse.ecf.protocol.bittorrent.internal.encode;
 
@@ -48,10 +49,10 @@ public final class Encode {
 	 */
 	public static void putIntegerAsFourBytes(byte[] haveArray, int number,
 			int index) {
-		haveArray[index] = number > 16777215 ? (byte) (number / 16777216) : 0;
-		haveArray[index + 1] = number > 65536 ? (byte) (number / 65536) : 0;
-		haveArray[index + 2] = number > 255 ? (byte) (number / 256) : 0;
-		haveArray[index + 3] = (byte) (number % 256);
+		haveArray[index] = (byte) (number >>> 24);
+		haveArray[index + 1] = (byte) (number >>> 16);
+		haveArray[index + 2] = (byte) (number >>> 8);
+		haveArray[index + 3] = (byte) number;
 	}
 
 	/**
