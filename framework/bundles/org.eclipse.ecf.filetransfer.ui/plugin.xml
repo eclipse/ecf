@@ -8,24 +8,24 @@
             class="org.eclipse.ecf.filetransfer.ui.FileTransfersView"
             icon="icons/transf_view.gif"
             id="org.eclipse.ecf.filetransfer.ui.FileTransfersView"
-            name="File Transfers">
+            name="%view.name.File_Transfers">
       </view>
       <category
             id="org.eclipse.ecf.filetransfer.ui"
-            name="File Transfer"/>
+            name="%views.category.name.File_Transfer"/>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
       <category
             id="org.eclipse.ecf.filetransfer.ui.category"
-            name="File Transfer">
+            name="%commands.category.name.File_Transfer">
       </category>
       <command
             categoryId="org.eclipse.ecf.filetransfer.ui.category"
             defaultHandler="org.eclipse.ecf.internal.filetransfer.ui.GetFileHandler"
-            description="Use the URL specified to retrieve a file"
+            description="%command.description.Use_the_URL_specified_to_retrieve_a_file"
             id="org.eclipse.ecf.filetransfer.ui.getFile"
-            name="Start New File Download">
+            name="%command.name.Start_New_File_Download">
       </command>
    </extension>
    <extension
@@ -53,7 +53,7 @@
             category="org.eclipse.ecf.ui.category"
             class="org.eclipse.ecf.internal.filetransfer.ui.preferences.TransferPreferencePage"
             id="org.eclipse.ecf.filetransfer.ui.preferences"
-            name="File Transfer">
+            name="%page.name.File_Transfer">
       </page>
    </extension>
    
