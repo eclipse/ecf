@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2008 Remy Suen, Composent Inc., and others.
+ * Copyright (c) 2006, 2009 Remy Suen, Composent Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -95,7 +95,8 @@ public final class Decode {
 					string = string.substring(2);
 				} else {
 					String value = getString(string);
-					string = string.substring(string.indexOf(value)
+					string = string.substring(string.indexOf(value, string
+							.indexOf(':'))
 							+ value.length());
 					list.add(value);
 				}
@@ -128,7 +129,8 @@ public final class Decode {
 				string = string.substring(2);
 			} else {
 				String value = getString(string);
-				string = string.substring(string.indexOf(value)
+				string = string.substring(string.indexOf(value, string
+						.indexOf(':'))
 						+ value.length());
 				dictionary.put(key, value);
 			}
