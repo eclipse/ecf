@@ -10,7 +10,7 @@
             containerFactoryName="ecf.generic.client"
             icon="icons/contact_enabled.gif"
             id="org.eclipse.ecf.provider.ui.generic.client"
-            name="ECF Generic Client">
+            name="%wizard.name.ECF_Generic_Client">
       </wizard>
    </extension>
 
