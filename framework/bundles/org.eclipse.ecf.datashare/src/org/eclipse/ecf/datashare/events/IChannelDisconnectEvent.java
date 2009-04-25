@@ -11,8 +11,7 @@ package org.eclipse.ecf.datashare.events;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Event delivered to IChannelListener when a container for disconnects.
- * 
+ * Event delivered to the IChannelListener when the parent container of a channel disconnects.
  */
 public interface IChannelDisconnectEvent extends IChannelEvent {
 	/**
