@@ -8,9 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.datashare.events;
 
+import org.eclipse.ecf.datashare.IAbstractChannel;
+
 /**
- * Event delivered to channel container when channel deactivated
- * 
+ * Event delivered to channel container when channel deactivated. This should be the last event that the channel sends prior to being {@link IAbstractChannel#dispose() disposed}.
  */
 public interface IChannelContainerChannelDeactivatedEvent extends IChannelContainerEvent {
 	//
