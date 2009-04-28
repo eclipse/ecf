@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NIO Datashare Implementation
+Bundle-SymbolicName: org.eclipse.ecf.provider.datashare.nio
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Export-Package: org.eclipse.ecf.provider.datashare.nio;x-friends:="org.eclipse.ecf.provider.irc"
+Import-Package: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.ecf,
+ org.eclipse.ecf.datashare
+Eclipse-BuddyPolicy: global
