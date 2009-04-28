@@ -59,6 +59,7 @@ args[0] is C:\Documents and Settings\slewis\workspace.ecf.rt\org.eclipse.ecf.doc
 <topic label="org.eclipse.ecf.presence.im" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/im/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.roster" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/roster/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.search" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/search/package-summary.html"/>
+<topic label="org.eclipse.ecf.presence.search.message" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/search/message/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.service" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/service/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.ui" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/ui/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.ui.chatroom" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/ui/chatroom/package-summary.html"/>
