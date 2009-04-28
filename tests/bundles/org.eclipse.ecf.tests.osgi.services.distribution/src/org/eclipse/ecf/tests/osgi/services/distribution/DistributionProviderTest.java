@@ -10,14 +10,14 @@
  *****************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
-import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.distribution.DistributionProvider;
 
-public class DistributionProviderTest extends ECFAbstractTestCase implements IServiceConstants {
+public class DistributionProviderTest extends ECFAbstractTestCase implements IDistributionConstants {
 
 	public void testDistributionProvider() throws Exception {
 		final BundleContext context = Activator.getDefault().getContext();
@@ -26,9 +26,9 @@ public class DistributionProviderTest extends ECFAbstractTestCase implements ISe
 		final ServiceReference ref = context
 				.getServiceReference(DistributionProvider.class.getName());
 		assertTrue(ref != null);
-		assertTrue(ref.getProperty(DistributionProvider.PROP_KEY_PRODUCT_NAME) != null);
-		assertTrue(ref.getProperty(DistributionProvider.PROP_KEY_PRODUCT_VERSION) != null);
-		assertTrue(ref.getProperty(DistributionProvider.PROP_KEY_VENDOR_NAME) != null);
+		assertTrue(ref.getProperty(DistributionProvider.PRODUCT_NAME) != null);
+		assertTrue(ref.getProperty(DistributionProvider.PRODUCT_VERSION) != null);
+		assertTrue(ref.getProperty(DistributionProvider.VENDOR_NAME) != null);
 	}
 
 }

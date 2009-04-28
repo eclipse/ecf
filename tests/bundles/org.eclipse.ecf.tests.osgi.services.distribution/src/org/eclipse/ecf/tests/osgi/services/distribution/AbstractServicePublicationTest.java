@@ -18,7 +18,7 @@ import junit.framework.TestCase;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
-import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -26,7 +26,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
 
-public abstract class AbstractServicePublicationTest extends TestCase implements IServiceConstants, IServicePublication {
+public abstract class AbstractServicePublicationTest extends TestCase implements IDistributionConstants, IServicePublication {
 
 	protected static void assertStringsEqual(final String[] s1, final String[] s2) {
 		assertEquals(s1.length, s2.length);
@@ -102,7 +102,7 @@ public abstract class AbstractServicePublicationTest extends TestCase implements
 	
 		// register a service with the marker property set
 		final Dictionary props = new Hashtable();
-		props.put(IServiceConstants.OSGI_REMOTE_INTERFACES, getInterfaces());
+		props.put(IDistributionConstants.REMOTE_INTERFACES, getInterfaces());
 		// prepare a service tracker
 		final ServiceTracker tracker = new ServiceTracker(context,
 				TestServiceInterface1.class.getName(), null);
@@ -121,7 +121,7 @@ public abstract class AbstractServicePublicationTest extends TestCase implements
 		assertTrue(ref != null);
 		// check the service publication properties
 		final Object o = ref
-				.getProperty(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
+				.getProperty(ServicePublication.SERVICE_INTERFACE_NAME);
 		assertTrue(o instanceof Collection);
 		final Collection refIfaces = (Collection) o;
 		assertStringsEqual(getInterfaces(), (String []) refIfaces.toArray(new String[] {}));
