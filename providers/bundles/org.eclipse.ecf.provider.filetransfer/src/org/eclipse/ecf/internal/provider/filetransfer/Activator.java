@@ -204,6 +204,8 @@ public class Activator implements BundleActivator {
 	}
 
 	public void log(IStatus status) {
+		if (this.context == null)
+			return;
 		final LogService logService = getLogService();
 		if (logService != null) {
 			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
