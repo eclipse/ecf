@@ -135,7 +135,7 @@ public class Activator implements BundleActivator {
 		// register all existing services which have the marker property
 		try {
 			final ServiceReference[] refs = this.context.getServiceReferences(
-					null, "(" + IServiceConstants.OSGI_REMOTE_INTERFACES
+					null, "(" + IDistributionConstants.REMOTE_INTERFACES
 							+ "=*)");
 			if (refs != null) {
 				for (int i = 0; i < refs.length; i++) {
@@ -148,13 +148,13 @@ public class Activator implements BundleActivator {
 
 		// Setup properties for the distribution provider
 		final Dictionary properties = new Hashtable();
-		properties.put(DistributionProvider.PROP_KEY_VENDOR_NAME,
+		properties.put(DistributionProvider.VENDOR_NAME,
 				DistributionProviderImpl.VENDOR_NAME);
-		properties.put(DistributionProvider.PROP_KEY_PRODUCT_NAME,
+		properties.put(DistributionProvider.PRODUCT_NAME,
 				DistributionProviderImpl.PRODUCT_NAME);
-		properties.put(DistributionProvider.PROP_KEY_PRODUCT_VERSION,
+		properties.put(DistributionProvider.PRODUCT_VERSION,
 				DistributionProviderImpl.PRODUCT_VERSION);
-		properties.put(DistributionProvider.PROP_KEY_SUPPORTED_INTENTS,
+		properties.put(DistributionProvider.SUPPORTED_INTENTS,
 				distributionProvider.getSupportedIntents());
 		// Register distribution provider
 		this.distributionProviderRegistration = this.context.registerService(

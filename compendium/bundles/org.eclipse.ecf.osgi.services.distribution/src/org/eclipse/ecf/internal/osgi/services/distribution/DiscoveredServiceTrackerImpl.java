@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.*;
 import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
-import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
@@ -37,12 +37,12 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			.synchronizedMap(new HashMap());
 	private List ecfRemoteServiceProperties = Arrays.asList(new String[] {
 			Constants.SERVICE_ID, Constants.OBJECTCLASS,
-			IServicePublication.PROP_KEY_ENDPOINT_ID,
-			IServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME,
-			IServicePublication.PROP_KEY_ENDPOINT_LOCATION,
-			IServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
-			IServicePublication.PROP_KEY_SERVICE_INTERFACE_VERSION,
-			IServicePublication.PROP_KEY_SERVICE_PROPERTIES });
+			IServicePublication.ENDPOINT_ID,
+			IServicePublication.ENDPOINT_INTERFACE_NAME,
+			IServicePublication.ENDPOINT_LOCATION,
+			IServicePublication.SERVICE_INTERFACE_NAME,
+			IServicePublication.SERVICE_INTERFACE_VERSION,
+			IServicePublication.SERVICE_PROPERTIES });
 
 	public DiscoveredServiceTrackerImpl(DistributionProviderImpl dp,
 			IExecutor executor) {
@@ -467,7 +467,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						.getProperty(propKeys[i]));
 			}
 		}
-		results.put(IServiceConstants.OSGI_REMOTE, remoteService);
+		results.put(IDistributionConstants.REMOTE, remoteService);
 		return results;
 	}
 

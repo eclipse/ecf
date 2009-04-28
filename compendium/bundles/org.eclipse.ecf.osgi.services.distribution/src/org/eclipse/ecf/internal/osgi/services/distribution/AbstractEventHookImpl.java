@@ -13,7 +13,7 @@ import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.*;
 import org.osgi.framework.hooks.service.EventHook;
@@ -63,19 +63,29 @@ public abstract class AbstractEventHookImpl implements EventHook {
 		}
 	}
 
+	String[] getStringArrayFromPropertyValue(Object value) {
+		if (value == null)
+			return null;
+		else if (value instanceof String)
+			return new String[] { (String) value };
+		else if (value instanceof String[])
+			return (String[]) value;
+		else if (value instanceof Collection)
+			return (String[]) ((Collection) value).toArray(new String[] {});
+		else
+			return null;
+	}
+
 	void handleRegisteredServiceEvent(ServiceReference serviceReference,
 			Collection contexts) {
 		// This checks to see if the serviceReference has any remote interfaces
 		// declared via osgi.remote.interfaces property
 		Object osgiRemotes = serviceReference
-				.getProperty(IServiceConstants.OSGI_REMOTE_INTERFACES);
+				.getProperty(IDistributionConstants.REMOTE_INTERFACES);
 		// If osgi.remote.interfaces required property is non-null then we
 		// handle further, if null then ignore the service registration event
 		if (osgiRemotes != null) {
-			// The osgiRemotes should be of type String [] according to
-			// RFC119...if it's not String [] we ignore
-			String[] remoteInterfacesArr = (String[]) ((osgiRemotes instanceof String[]) ? osgiRemotes
-					: null);
+			String[] remoteInterfacesArr = getStringArrayFromPropertyValue(osgiRemotes);
 			if (remoteInterfacesArr == null) {
 				logError("handleRegisteredServiceEvent",
 						"remoteInterfaces not of String [] type as required by RFC 119");
@@ -97,7 +107,8 @@ public abstract class AbstractEventHookImpl implements EventHook {
 				return;
 			}
 			// Now call registerRemoteService
-			findContainersAndRegisterRemoteService(serviceReference, remoteInterfaces);
+			findContainersAndRegisterRemoteService(serviceReference,
+					remoteInterfaces);
 		}
 	}
 
@@ -191,7 +202,7 @@ public abstract class AbstractEventHookImpl implements EventHook {
 				.getProperty(Constants.OBJECTCLASS));
 		for (int i = 0; i < remoteInterfaces.length; i++) {
 			String intf = remoteInterfaces[i];
-			if (IServiceConstants.OSGI_REMOTE_INTERFACES_WILDCARD.equals(intf))
+			if (IDistributionConstants.REMOTE_INTERFACES_WILDCARD.equals(intf))
 				return (String[]) interfaces.toArray(new String[] {});
 			if (intf != null && interfaces.contains(intf))
 				results.add(intf);

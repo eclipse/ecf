@@ -49,7 +49,7 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 			if (includeContainerWithConnectNamespace(
 					allContainers[i],
 					(String) endpointDescription
-							.getProperty(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE)))
+							.getProperty(IServicePublication.ENDPOINT_CONTAINERID_NAMESPACE)))
 				results.add(allContainers[i]);
 		}
 		return (IContainer[]) results.toArray(new IContainer[] {});

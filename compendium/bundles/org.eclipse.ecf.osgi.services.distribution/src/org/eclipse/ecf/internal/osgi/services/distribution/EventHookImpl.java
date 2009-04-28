@@ -14,8 +14,8 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.osgi.services.distribution.IHostContainerFinder;
-import org.eclipse.ecf.osgi.services.distribution.IServiceConstants;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.*;
@@ -31,32 +31,11 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			ServiceReference serviceReference, String[] remoteInterfaces) {
 
 		// Get optional service property osgi.remote.configuration.type
-		Object osgiRemoteConfigurationType = serviceReference
-				.getProperty(IServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE);
-		// The osgiRemoteConfigurationType is optional and can be null. If
-		// non-null, it should be of type String [] according to RFC119...if
-		// it's non-null and not String [] we ignore
-		String[] remoteConfigurationType = null;
-		if (osgiRemoteConfigurationType != null) {
-			if (!(osgiRemoteConfigurationType instanceof String[])) {
-				logError("handleRegisteredServiceEvent",
-						"osgi.remote.configuration.type is not String[] as required by RFC 119");
-				return;
-			}
-			remoteConfigurationType = (String[]) osgiRemoteConfigurationType;
-		}
+		String[] remoteConfigurationType = getStringArrayFromPropertyValue(serviceReference
+				.getProperty(IDistributionConstants.REMOTE_CONFIGURATION_TYPE));
 		// Get optional service property service.intents
-		Object osgiRemoteRequiresIntents = serviceReference
-				.getProperty(IServiceConstants.OSGI_REMOTE_REQUIRES_INTENTS);
-		String[] remoteRequiresIntents = null;
-		if (osgiRemoteRequiresIntents != null) {
-			if (!(osgiRemoteRequiresIntents instanceof String[])) {
-				logError("handleRegisteredServiceEvent",
-						"service.intents is not String[] as required by RFC 119");
-				return;
-			}
-			osgiRemoteRequiresIntents = (String[]) osgiRemoteRequiresIntents;
-		}
+		String[] remoteRequiresIntents = getStringArrayFromPropertyValue(serviceReference
+				.getProperty(IDistributionConstants.REMOTE_REQUIRES_INTENTS));
 		// Now call out to find host remote service containers
 		IRemoteServiceContainer[] rsContainers = findRemoteServiceContainers(
 				serviceReference, remoteInterfaces, remoteConfigurationType,
@@ -115,11 +94,11 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			IRemoteServiceRegistration remoteRegistration) {
 		final Dictionary properties = new Properties();
 		// Set mandatory ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME
-		properties.put(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
+		properties.put(ServicePublication.SERVICE_INTERFACE_NAME,
 				getAsCollection(remoteInterfaces));
 
 		// Set optional ServicePublication.PROP_KEY_SERVICE_PROPERTIES
-		properties.put(ServicePublication.PROP_KEY_SERVICE_PROPERTIES,
+		properties.put(ServicePublication.SERVICE_PROPERTIES,
 				getServicePropertiesForRemotePublication(ref));
 
 		IContainer container = rsContainer.getContainer();
@@ -129,8 +108,7 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// ServicePublication.PROP_KEY_ENDPOINT_ID...since
 		// it won't handle some Strings with (e.g. slp) provider
 		ID endpointID = container.getID();
-		properties.put(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID,
-				container.getID());
+		properties.put(IServicePublication.ENDPOINT_CONTAINERID, endpointID);
 
 		// Also put the target ID in the service properties...*only*
 		// if the target ID is non-null and it's *not* the same as the
@@ -139,8 +117,7 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		ID targetID = container.getConnectedID();
 		if (targetID != null && !targetID.equals(endpointID)) {
 			// put the target ID into the properties
-			properties.put(IServicePublication.PROP_KEY_TARGET_CONTAINERID,
-					targetID);
+			properties.put(IServicePublication.TARGET_CONTAINERID, targetID);
 		}
 
 		// Set remote service namespace (String)
@@ -210,10 +187,10 @@ public class EventHookImpl extends AbstractEventHookImpl {
 	private static final List excludedProperties = Arrays.asList(new String[] {
 			org.osgi.framework.Constants.SERVICE_ID,
 			org.osgi.framework.Constants.OBJECTCLASS,
-			IServiceConstants.OSGI_REMOTE_INTERFACES,
-			IServiceConstants.OSGI_REMOTE_REQUIRES_INTENTS,
-			IServiceConstants.OSGI_REMOTE,
-			IServiceConstants.OSGI_REMOTE_CONFIGURATION_TYPE,
+			IDistributionConstants.REMOTE_INTERFACES,
+			IDistributionConstants.REMOTE_REQUIRES_INTENTS,
+			IDistributionConstants.REMOTE,
+			IDistributionConstants.REMOTE_CONFIGURATION_TYPE,
 			// ECF constants
 			org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID, });
 
