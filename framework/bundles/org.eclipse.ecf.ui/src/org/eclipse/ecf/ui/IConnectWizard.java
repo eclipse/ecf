@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,4 +32,15 @@ public interface IConnectWizard extends IWizard {
 	 *            the container that is to be connected. Will not be null.
 	 */
 	public void init(IWorkbench workbench, IContainer container);
+
+	/**
+	 * Performs actions in response to the user canceling the wizard and returns
+	 * <code>true</code> if it was allowed, <code>false</code> if refused.
+	 * Implementations should dispose of the container provided via
+	 * {@link #init(IWorkbench, IContainer)} in this method if the cancelation
+	 * is allowed.
+	 *
+	 * @return <code>true</code> if the cancel request was allowed, <code>false</code> otherwise
+	 */
+	public boolean performCancel();
 }
