@@ -13,6 +13,7 @@ Export-Package: org.eclipse.ecf.internal.presence;x-internal:=true,
  org.eclipse.ecf.presence.im,
  org.eclipse.ecf.presence.roster,
  org.eclipse.ecf.presence.search,
+ org.eclipse.ecf.presence.search.message,
  org.eclipse.ecf.presence.service
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: CDC-1.0/Foundation-1.0,
