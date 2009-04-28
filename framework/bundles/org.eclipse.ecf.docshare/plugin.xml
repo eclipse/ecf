@@ -53,7 +53,6 @@
       </menuContribution>
    </extension>
 
-
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
