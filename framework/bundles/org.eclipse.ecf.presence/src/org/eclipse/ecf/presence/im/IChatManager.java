@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.history.IHistoryManager;
+import org.eclipse.ecf.presence.search.message.IMessageSearchManager;
 
 /**
  * Chat manager access entry interface. The chat manager supports the sending
@@ -67,6 +68,14 @@ public interface IChatManager {
 	public IHistoryManager getHistoryManager();
 
 	/**
+	 * Get the message search manager for this chat manager.
+	 * 
+	 * @return {@link IMessageSearchManager} the message search manager instance. Will be
+	 *         <code>null</code> in case not available.
+	 */
+	public IMessageSearchManager getMessageSearchManager();
+
+	/**
 	 * Create chat instance for given target user.
 	 * 
 	 * @param targetUser
@@ -85,6 +94,5 @@ public interface IChatManager {
 	 *         <code>null</code> if the underlying implementation does not
 	 *         support threads/specific chat instances.
 	 */
-	public IChat createChat(ID targetUser, IIMMessageListener messageListener)
-			throws ECFException;
+	public IChat createChat(ID targetUser, IIMMessageListener messageListener) throws ECFException;
 }
