@@ -71,6 +71,7 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.bittorrent,org.eclipse.ecf.provider.bittorrent"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.bittorrent.ui,org.eclipse.ecf.provider.bittorrent.ui"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.datashare,org.eclipse.ecf.provider.datashare"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.datashare.nio,org.eclipse.ecf.provider.datashare.nio"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.discovery,org.eclipse.ecf.provider.discovery"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer,org.eclipse.ecf.provider.filetransfer"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer.efs,org.eclipse.ecf.provider.filetransfer.efs"/>
@@ -128,6 +129,7 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.filetransfer,org.eclipse.ecf.tests.filetransfer"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.presence,org.eclipse.ecf.tests.presence"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.protocol.msn,org.eclipse.ecf.tests.protocol.msn"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.datshare.nio,org.eclipse.ecf.tests.provider.datashare.nio"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.efs,org.eclipse.ecf.tests.provider.filetransfer.efs"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.scp,org.eclipse.ecf.tests.provider.filetransfer.scp"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.xmpp,org.eclipse.ecf.tests.provider.filetransfer.xmpp"/>
