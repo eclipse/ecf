@@ -24,6 +24,7 @@ import org.eclipse.ecf.presence.im.*;
 import org.eclipse.ecf.presence.im.IChatMessage.Type;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.search.IUserSearchManager;
+import org.eclipse.ecf.presence.search.message.IMessageSearchManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -116,6 +117,14 @@ public class PresenceContainer extends AbstractPresenceContainer implements ICha
 
 	public IUserSearchManager getUserSearchManager() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.im.IChatManager#getMessageSearchManager()
+	 */
+	public IMessageSearchManager getMessageSearchManager() {
 		return null;
 	}
 
