@@ -24,6 +24,7 @@ plugin@org.eclipse.ecf.presence.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/
 plugin@org.eclipse.ecf.presence.collab.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.presence.collab.ui
 plugin@org.eclipse.ecf.provider=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.provider
 plugin@org.eclipse.ecf.provider.datashare=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.datashare
+plugin@org.eclipse.ecf.provider.datashare.nio=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.datashare.nio
 plugin@org.eclipse.ecf.provider.discovery=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.discovery
 plugin@org.eclipse.ecf.provider.filetransfer=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer
 fragment@org.eclipse.ecf.provider.filetransfer.ssl=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer.ssl
