@@ -29,6 +29,31 @@
       </menuContribution>
    </extension>
 
+<!-- WTP Editors Support HTML, XML, JSP, CSS, XSL, XSD, and DTD editors-->
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.wst.sse.ui.StructuredTextEditor.EditorContext?after=additions">
+         <dynamic
+               class="org.eclipse.ecf.docshare.menu.DocShareRosterMenuContributionItem"
+               id="org.eclipse.ecf.editorshare.wtp.dynamic1">
+         </dynamic>
+      </menuContribution>
+   </extension>
+
+<!-- WTP Editors Support JavaScript -->
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.wst.jsdt.ui.CompilationUnitEditor.EditorContext?after=additions">
+         <dynamic
+               class="org.eclipse.ecf.docshare.menu.DocShareRosterMenuContributionItem"
+               id="org.eclipse.ecf.editorshare.wtp.dynamic2">
+         </dynamic>
+      </menuContribution>
+   </extension>
+
+
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
