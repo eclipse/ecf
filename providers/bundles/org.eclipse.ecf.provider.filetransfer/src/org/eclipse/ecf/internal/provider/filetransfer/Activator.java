@@ -176,14 +176,16 @@ public class Activator implements BundleActivator {
 		//
 	}
 
-	protected synchronized LogService getLogService() {
-		if (this.context == null)
-			return null;
-		if (logServiceTracker == null) {
-			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
-			logServiceTracker.open();
+	protected LogService getLogService() {
+		synchronized (this) {
+			if (this.context == null)
+				return null;
+			if (logServiceTracker == null) {
+				logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
+				logServiceTracker.open();
+			}
+			return (LogService) logServiceTracker.getService();
 		}
-		return (LogService) logServiceTracker.getService();
 	}
 
 	public IProxyService getProxyService() {
@@ -262,8 +264,6 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
-		plugin = null;
-		this.context = null;
 		final IExtensionRegistry registry = getExtensionRegistry();
 		if (registry != null) {
 			registry.removeRegistryChangeListener(registryChangeListener);
@@ -289,7 +289,6 @@ public class Activator implements BundleActivator {
 			proxyServiceTracker.close();
 			proxyServiceTracker = null;
 		}
-		this.context = null;
 		if (this.retrieveFileTransferProtocolMap != null) {
 			this.retrieveFileTransferProtocolMap.clear();
 			this.retrieveFileTransferProtocolMap = null;
@@ -302,6 +301,10 @@ public class Activator implements BundleActivator {
 			this.browseFileTransferProtocolMap.clear();
 			this.browseFileTransferProtocolMap = null;
 		}
+		synchronized (this) {
+			this.context = null;
+		}
+		plugin = null;
 	}
 
 	/**
