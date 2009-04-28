@@ -69,6 +69,7 @@ import org.eclipse.ecf.presence.search.IRestriction;
 import org.eclipse.ecf.presence.search.IUserSearchListener;
 import org.eclipse.ecf.presence.search.IUserSearchManager;
 import org.eclipse.ecf.presence.search.UserSearchException;
+import org.eclipse.ecf.presence.search.message.IMessageSearchManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ecf.protocol.msn.ChatSession;
 import org.eclipse.ecf.protocol.msn.Contact;
@@ -806,6 +807,11 @@ final class MSNContainer implements IContainer, IChatManager,
 			}
 			
 		};
+	}
+
+	public IMessageSearchManager getMessageSearchManager() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
