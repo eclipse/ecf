@@ -72,6 +72,7 @@ public interface IChatManager {
 	 * 
 	 * @return {@link IMessageSearchManager} the message search manager instance. Will be
 	 *         <code>null</code> in case not available.
+	 * @since 2.0
 	 */
 	public IMessageSearchManager getMessageSearchManager();
 
