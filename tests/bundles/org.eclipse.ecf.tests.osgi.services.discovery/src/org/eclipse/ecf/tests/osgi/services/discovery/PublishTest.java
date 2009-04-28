@@ -64,7 +64,7 @@ public class PublishTest extends TestCase {
 	
 	protected Properties createServicePublicationProperties(List interfaces) {
 		Properties props = new Properties();
-		props.put(IServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME, interfaces);
+		props.put(IServicePublication.SERVICE_INTERFACE_NAME, interfaces);
 		return props;
 	}
 	
