@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Remy Suen, Composent Inc., and others.
+ * Copyright (c) 2007, 2009 Remy Suen, Composent Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,38 +10,19 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerListener;
+import java.io.*;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.filetransfer.IFileTransferInfo;
-import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
-import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
-import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
-import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.filetransfer.*;
+import org.eclipse.ecf.filetransfer.events.*;
+import org.eclipse.ecf.internal.provider.xmpp.ui.Activator;
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
-import org.eclipse.ecf.presence.IIMMessageEvent;
-import org.eclipse.ecf.presence.IIMMessageListener;
-import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.im.IChatManager;
-import org.eclipse.ecf.presence.im.IChatMessage;
-import org.eclipse.ecf.presence.im.IChatMessageEvent;
-import org.eclipse.ecf.presence.im.IChatMessageSender;
-import org.eclipse.ecf.presence.im.ITypingMessageEvent;
-import org.eclipse.ecf.presence.im.ITypingMessageSender;
+import org.eclipse.ecf.presence.*;
+import org.eclipse.ecf.presence.im.*;
 import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.IConnectWizard;
@@ -53,13 +34,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class XMPPConnectWizard extends Wizard implements IConnectWizard, INewWizard {
@@ -216,6 +192,20 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard, INewWiz
 					view.displayTypingNotification(e);
 			}
 		});
+	}
+
+	public boolean performCancel() {
+		if (container != null) {
+			container.dispose();
+
+			IContainerManager containerManager = Activator.getDefault()
+					.getContainerManager();
+			if (containerManager != null) {
+				containerManager.removeContainer(container);
+			}
+		}
+
+		return super.performCancel();
 	}
 
 	public boolean performFinish() {
