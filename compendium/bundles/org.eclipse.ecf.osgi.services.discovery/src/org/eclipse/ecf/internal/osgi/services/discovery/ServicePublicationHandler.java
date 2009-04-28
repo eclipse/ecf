@@ -147,7 +147,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		// should be a
 		// Collection of Strings
 		Collection svcInterfaces = ServicePropertyUtils.getCollectionProperty(
-				reference, ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
+				reference, ServicePublication.SERVICE_INTERFACE_NAME);
 		// If it's not there, then we ignore this ServicePublication and return
 		if (svcInterfaces == null) {
 			logError(
@@ -160,13 +160,13 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		}
 		IServiceProperties discoveryServiceProperties = new ServiceProperties();
 		discoveryServiceProperties.setPropertyString(
-				ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME,
-				ServicePropertyUtils.createStringFromCollection(svcInterfaces));
+				ServicePublication.SERVICE_INTERFACE_NAME, ServicePropertyUtils
+						.createStringFromCollection(svcInterfaces));
 
 		// We also use the optional RFC 119 property PROP_KEY_SERVICE_PROPERTIES
 		Map servicePublicationServiceProperties = ServicePropertyUtils
 				.getMapProperty(reference,
-						ServicePublication.PROP_KEY_SERVICE_PROPERTIES);
+						ServicePublication.SERVICE_PROPERTIES);
 		if (servicePublicationServiceProperties == null) {
 			logError(
 					"handleServicePublication", //$NON-NLS-1$
@@ -183,9 +183,9 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 		// See EventHookImpl.getServicePublicationProperties()
 		// Get and then serialize and set
-		// IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID
+		// IServicePublication.ENDPOINT_CONTAINERID
 		ID endpointContainerID = (ID) reference
-				.getProperty(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
+				.getProperty(IServicePublication.ENDPOINT_CONTAINERID);
 		// This is required for ecf endpoints so if it's not found then it's an
 		// error
 		if (endpointContainerID == null) {
@@ -193,36 +193,36 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 					"handleServicePublication", //$NON-NLS-1$
 					"ignoring " //$NON-NLS-1$
 							+ reference
-							+ ". IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID not set", //$NON-NLS-1$
+							+ ". IServicePublication.ENDPOINT_CONTAINERID not set", //$NON-NLS-1$
 					null);
 			return;
 		}
 		// Add endpoint container id.toExternalForm().getBytes...so AS byte []
 		discoveryServiceProperties.setPropertyBytes(
-				IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID,
+				IServicePublication.ENDPOINT_CONTAINERID,
 				endpointContainerID.toExternalForm().getBytes());
 		// Add endpoint container id namespace name
 		String endpointNamespace = endpointContainerID.getNamespace().getName();
 		discoveryServiceProperties.setPropertyString(
-				IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE,
+				IServicePublication.ENDPOINT_CONTAINERID_NAMESPACE,
 				endpointNamespace);
 
 		// See EventHookImpl.getServicePublicationProperties()
 		// Get and then serialize and set
-		// IServicePublication.PROP_KEY_TARGET_CONTAINERID
+		// IServicePublication.TARGET_CONTAINERID
 		ID targetContainerID = (ID) reference
-				.getProperty(IServicePublication.PROP_KEY_TARGET_CONTAINERID);
+				.getProperty(IServicePublication.TARGET_CONTAINERID);
 		// the target ID is optional, so only add it if it's been added
 		// via the EventHookImpl
 		if (targetContainerID != null) {
 			// Add endpoint container id.toExternalForm().getBytes...so AS byte
 			// []
 			discoveryServiceProperties.setPropertyBytes(
-					IServicePublication.PROP_KEY_TARGET_CONTAINERID,
+					IServicePublication.TARGET_CONTAINERID,
 					targetContainerID.toExternalForm().getBytes());
 			String targetNamespace = targetContainerID.getNamespace().getName();
 			discoveryServiceProperties.setPropertyString(
-					IServicePublication.PROP_KEY_TARGET_CONTAINERID_NAMESPACE,
+					IServicePublication.TARGET_CONTAINERID_NAMESPACE,
 					targetNamespace);
 		}
 
@@ -257,7 +257,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 			String serviceName = getPropertyWithDefault(
 					servicePublicationServiceProperties,
-					IServicePublication.SERVICE_NAME_PROP,
+					IServicePublication.SERVICE_NAME,
 					(IServicePublication.DEFAULT_SERVICE_NAME_PREFIX + remoteServiceID));
 
 			svcInfo = new ServiceInfo(uri, serviceName, serviceTypeID,
@@ -365,12 +365,12 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 			throws IDCreateException {
 		String namingAuthority = getPropertyWithDefault(
 				servicePublicationProperties,
-				IServicePublication.NAMING_AUTHORITY_PROP,
+				IServicePublication.NAMING_AUTHORITY,
 				IServiceTypeID.DEFAULT_NA);
 		String scope = getPropertyWithDefault(servicePublicationProperties,
-				IServicePublication.SCOPE_PROP, IServiceTypeID.DEFAULT_SCOPE[0]);
+				IServicePublication.SCOPE, IServiceTypeID.DEFAULT_SCOPE[0]);
 		String protocol = getPropertyWithDefault(servicePublicationProperties,
-				IServicePublication.SERVICE_PROTOCOL_PROP,
+				IServicePublication.SERVICE_PROTOCOL,
 				IServiceTypeID.DEFAULT_PROTO[0]);
 
 		return ServiceIDFactory.getDefault().createServiceTypeID(aNamespace,

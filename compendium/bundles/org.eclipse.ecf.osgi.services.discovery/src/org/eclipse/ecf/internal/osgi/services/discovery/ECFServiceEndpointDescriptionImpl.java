@@ -32,13 +32,13 @@ public class ECFServiceEndpointDescriptionImpl extends
 		IServiceProperties serviceProperties = serviceInfo
 				.getServiceProperties();
 		final byte[] endpointBytes = serviceProperties
-				.getPropertyBytes(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID);
+				.getPropertyBytes(IServicePublication.ENDPOINT_CONTAINERID);
 		if (endpointBytes == null)
 			throw new IDCreateException(
 					"ServiceEndpointDescription endpointBytes cannot be null");
 		final String endpointStr = new String(endpointBytes);
 		final String namespaceStr = serviceProperties
-				.getPropertyString(IServicePublication.PROP_KEY_ENDPOINT_CONTAINERID_NAMESPACE);
+				.getPropertyString(IServicePublication.ENDPOINT_CONTAINERID_NAMESPACE);
 		if (namespaceStr == null) {
 			throw new IDCreateException(
 					"ServiceEndpointDescription namespaceStr cannot be null");
@@ -47,12 +47,12 @@ public class ECFServiceEndpointDescriptionImpl extends
 
 		// create the target id, if it's there
 		final byte[] targetBytes = serviceProperties
-				.getPropertyBytes(IServicePublication.PROP_KEY_TARGET_CONTAINERID);
+				.getPropertyBytes(IServicePublication.TARGET_CONTAINERID);
 		// If this is null, we're ok with it
 		if (targetBytes != null) {
 			final String targetStr = new String(endpointBytes);
 			String targetNamespaceStr = serviceProperties
-					.getPropertyString(IServicePublication.PROP_KEY_TARGET_CONTAINERID_NAMESPACE);
+					.getPropertyString(IServicePublication.TARGET_CONTAINERID_NAMESPACE);
 			if (targetNamespaceStr == null)
 				targetNamespaceStr = namespaceStr;
 			targetId = IDFactory.getDefault().createID(targetNamespaceStr,

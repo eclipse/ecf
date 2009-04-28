@@ -9,8 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.discovery;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -36,8 +36,7 @@ public abstract class ECFServiceEndpointDescription implements
 	 * org.osgi.service.discovery.ServiceEndpointDescription#getEndpointID()
 	 */
 	public String getEndpointID() {
-		Object o = serviceProperties
-				.get(ServicePublication.PROP_KEY_ENDPOINT_ID);
+		Object o = serviceProperties.get(ServicePublication.ENDPOINT_ID);
 		if (o instanceof String) {
 			return (String) o;
 		}
@@ -54,7 +53,7 @@ public abstract class ECFServiceEndpointDescription implements
 		if (interfaceName == null)
 			return null;
 		Object o = serviceProperties
-				.get(ServicePublication.PROP_KEY_ENDPOINT_INTERFACE_NAME);
+				.get(ServicePublication.ENDPOINT_INTERFACE_NAME);
 		if (o == null || !(o instanceof String)) {
 			return null;
 		}
@@ -82,24 +81,23 @@ public abstract class ECFServiceEndpointDescription implements
 	 * 
 	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getLocation()
 	 */
-	public URL getLocation() {
-		Object o = serviceProperties
-				.get(ServicePublication.PROP_KEY_ENDPOINT_LOCATION);
+	public URI getLocation() {
+		Object o = serviceProperties.get(ServicePublication.ENDPOINT_LOCATION);
 		if (o == null || !(o instanceof String)) {
 			return null;
 		}
-		String urlExternalForm = (String) o;
-		URL url = null;
+		String uriExternalForm = (String) o;
+		URI uri = null;
 		try {
-			url = new URL(urlExternalForm);
-		} catch (MalformedURLException e) {
+			uri = new URI(uriExternalForm);
+		} catch (URISyntaxException e) {
 			Activator.getDefault()
 					.log(
 							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 									IStatus.ERROR,
-									"Exception getting location URL", e));//$NON-NLS-1$
+									"Exception getting location URI", e));//$NON-NLS-1$
 		}
-		return url;
+		return uri;
 	}
 
 	/*
@@ -142,7 +140,7 @@ public abstract class ECFServiceEndpointDescription implements
 	 */
 	public Collection getProvidedInterfaces() {
 		Object o = serviceProperties
-				.get(ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME);
+				.get(ServicePublication.SERVICE_INTERFACE_NAME);
 		if (o == null || !(o instanceof String)) {
 			throw new NullPointerException();
 		}
@@ -193,7 +191,7 @@ public abstract class ECFServiceEndpointDescription implements
 
 	public String getRemoteServicesFilter() {
 		Object o = serviceProperties
-				.get(IServicePublication.PROP_KEY_REMOTE_SERVICE_FILTER);
+				.get(IServicePublication.REMOTE_SERVICE_FILTER);
 		if (o instanceof String)
 			return (String) o;
 		return null;

@@ -62,10 +62,10 @@ public class Activator implements BundleActivator {
 
 		// register the discovery service which is provided by SPH
 		Dictionary props = new Hashtable();
-		props.put(Discovery.PROP_KEY_VENDOR_NAME, "Eclipse.org");
-		props.put(Discovery.PROP_KEY_PRODUCT_NAME, "ECF Discovery");
-		props.put(Discovery.PROP_KEY_PRODUCT_VERSION, "1.0.0");
-		props.put(Discovery.PROP_KEY_SUPPORTED_PROTOCOLS, "SLP|mDNS|DNS-SRV");
+		props.put(Discovery.VENDOR_NAME, "Eclipse.org");
+		props.put(Discovery.PRODUCT_NAME, "ECF Discovery");
+		props.put(Discovery.PRODUCT_VERSION, "1.0.0");
+		props.put(Discovery.SUPPORTED_PROTOCOLS, "SLP|mDNS|DNS-SRV");
 		ctxt.registerService(Discovery.class.getName(),
 				servicePublicationHandler, props);
 
