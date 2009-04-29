@@ -25,6 +25,10 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
+   <includes
+         id="org.eclipse.ecf.core.source"
+         version="0.0.0"/>
+
    <requires>
       <import plugin="org.eclipse.equinox.common"/>
       <import plugin="org.eclipse.equinox.registry"/>
@@ -571,24 +575,10 @@ Contributors: Composent, Inc. - initial API and implementation
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.equinox.concurrent"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.discovery.ui.browser"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
-  <includes id="org.eclipse.ecf.core.source"  version="0.0.0"/>      
-<!-- <plugin id="org.eclipse.ecf.core.source"  version="0.0.0"/> -->
 
 </feature>
-
-
-
-
