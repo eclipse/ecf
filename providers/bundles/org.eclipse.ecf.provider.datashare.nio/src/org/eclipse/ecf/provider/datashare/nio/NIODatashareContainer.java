@@ -82,8 +82,7 @@ import org.eclipse.ecf.datashare.events.IChannelContainerEvent;
  * API will almost certainly be broken (repeatedly) as the API evolves.
  * </p>
  */
-public abstract class NIODatashareContainer implements
-		IChannelContainerAdapter {
+public abstract class NIODatashareContainer implements IChannelContainerAdapter {
 
 	/**
 	 * A thread for establishing a connection to remote clients.
@@ -152,15 +151,31 @@ public abstract class NIODatashareContainer implements
 		listenerList = new ListenerList();
 	}
 
-	private void fireChannelConnectedEvent(ID id) {
+	/**
+	 * Fires a channel connected event to all of this channel container's
+	 * channels notifying that the parent container has connected to the
+	 * specified target id.
+	 * 
+	 * @param containerTargetId
+	 *            the target id that the parent container has connected to
+	 */
+	private void fireChannelConnectedEvent(ID containerTargetId) {
 		synchronized (channels) {
 			for (Iterator it = channels.values().iterator(); it.hasNext();) {
 				NIOChannel channel = (NIOChannel) it.next();
-				channel.fireChannelConnectEvent(id);
+				channel.fireChannelConnectEvent(containerTargetId);
 			}
 		}
 	}
 
+	/**
+	 * Fires a channel disconnected event to all of this channel container's
+	 * channels notifying that the parent container has disconnected from the
+	 * specified target id.
+	 * 
+	 * @param containerTargetId
+	 *            the target id that the parent container has disconnected from
+	 */
 	private void fireChannelDisconnectedEvent(ID id) {
 		synchronized (channels) {
 			for (Iterator it = channels.values().iterator(); it.hasNext();) {
@@ -292,24 +307,37 @@ public abstract class NIODatashareContainer implements
 		}
 	}
 
+	/**
+	 * Attempts to connect to a remote address that has been enqueued to this
+	 * channel container for processing via the {@link #enqueue(SocketAddress)}
+	 * method.
+	 * 
+	 * @param buffer
+	 *            the buffer to use for reading and writing data
+	 * @throws IOException
+	 *             if an IO error occurs while attempting to contact the peer
+	 */
 	private void connect(ByteBuffer buffer) throws IOException {
-		// retrieve an IP address to connect to
-		SocketAddress remote = (SocketAddress) pendingConnections.removeFirst();
+		while (!pendingConnections.isEmpty()) {
+			// retrieve an IP address to connect to
+			SocketAddress remote = (SocketAddress) pendingConnections
+					.removeFirst();
 
-		// open a socket channel to the remote address
-		SocketChannel socketChannel = SocketChannel.open(remote);
+			// open a socket channel to the remote address
+			SocketChannel socketChannel = SocketChannel.open(remote);
 
-		byte[] bytes = Util.serialize(container.getConnectedID());
-		if (bytes == null) {
-			// serialization failed, close the socket
-			Util.closeChannel(socketChannel);
-			return;
+			byte[] bytes = Util.serialize(container.getConnectedID());
+			if (bytes == null) {
+				// serialization failed, close the socket
+				Util.closeChannel(socketChannel);
+				return;
+			}
+
+			socketChannel.configureBlocking(false);
+			Util.write(socketChannel, buffer, bytes);
+
+			pendingSockets.add(socketChannel);
 		}
-
-		socketChannel.configureBlocking(false);
-		Util.write(socketChannel, buffer, bytes);
-
-		pendingSockets.add(socketChannel);
 	}
 
 	/**
@@ -333,7 +361,19 @@ public abstract class NIODatashareContainer implements
 		pendingConnections.add(address);
 	}
 
-	private void processHandshake(SocketChannel socketChannel, ChannelData data)
+	/**
+	 * Performs a handshake operation with the remote peer.
+	 * 
+	 * @param socketChannel
+	 *            the socket channel to handshake with
+	 * @param data
+	 *            the data sent from the channel thus far
+	 * @throws ClassNotFoundException
+	 *             if a deserialization error occurs
+	 * @throws IOException
+	 *             if an IO error occurs while reading or writing data
+	 */
+	private void handshake(SocketChannel socketChannel, ChannelData data)
 			throws ClassNotFoundException, IOException {
 		// retrieve the data that was sent
 		byte[] message = data.getData();
@@ -381,6 +421,19 @@ public abstract class NIODatashareContainer implements
 		}
 	}
 
+	/**
+	 * Processes any pending sockets that are currently queued up in this
+	 * channel container and is waiting to initiate the handshake process with
+	 * the remote peer.
+	 * 
+	 * @param buffer
+	 *            the buffer to use for reading and writing data
+	 * @throws ClassNotFoundException
+	 *             if a serialization or deserialization operation encountered
+	 *             errors
+	 * @throws IOException
+	 *             if an IO error occurs while reading or writing data
+	 */
 	private void processPendingSockets(ByteBuffer buffer)
 			throws ClassNotFoundException, IOException {
 		for (int i = 0; i < pendingSockets.size(); i++) {
@@ -397,7 +450,7 @@ public abstract class NIODatashareContainer implements
 				i--;
 			} else if (data.getData() != null) {
 				try {
-					processHandshake(socketChannel, data);
+					handshake(socketChannel, data);
 				} finally {
 					// this socket has been processed, remove it
 					pendingSockets.remove(i);

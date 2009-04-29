@@ -47,6 +47,28 @@ import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
  * An abstract implementation of <code>IChannel</code> that uses Java 1.4 NIO
  * APIs for sending and retrieving data.
  * <p>
+ * This channel will inherently spawn multiple socket connections as messages
+ * are sent to different remote clients via {@link #sendMessage(ID, byte[])}.
+ * Please note that the current implementation does not handle repeated
+ * invocations to that method well. Please refer to its javadoc for further
+ * information.
+ * </p>
+ * <p>
+ * Subclasses must implement the following:
+ * <ul>
+ * <li>For communicating local information for establishing a socket connection:
+ * <ul>
+ * <li>{@link #sendRequest(ID)}</li>
+ * </ul>
+ * </li>
+ * <li>To facilitate the logging of statuses:
+ * <ul>
+ * <li>{@link #log(IStatus)}</li>
+ * </ul>
+ * </li>
+ * </ul>
+ * </p>
+ * <p>
  * <b>Note:</b> This class/interface is part of an interim API that is still
  * under development and expected to change significantly before reaching
  * stability. It is being made available at this early stage to solicit feedback
@@ -147,8 +169,8 @@ public abstract class NIOChannel implements IChannel {
 			serverSocketChannel = ServerSocketChannel.open();
 			serverSocketChannel.configureBlocking(false);
 		} catch (IOException e) {
-			log(new Status(IStatus.ERROR, Util.PLUGIN_ID,
-					"Could not create server socket", e)); //$NON-NLS-1$
+			throw new ECFException(new Status(IStatus.ERROR, Util.PLUGIN_ID,
+					Messages.NIOChannel_CouldNotCreateServerSocket, e));
 		}
 
 		try {
@@ -156,8 +178,8 @@ public abstract class NIOChannel implements IChannel {
 			ServerSocket socket = serverSocketChannel.socket();
 			socket.bind(getBindAddress(), getBackLog());
 		} catch (IOException e) {
-			log(new Status(IStatus.ERROR, Util.PLUGIN_ID,
-					"Bind operation failed for the server socket", e)); //$NON-NLS-1$
+			throw new ECFException(new Status(IStatus.ERROR, Util.PLUGIN_ID,
+					Messages.NIOChannel_BindOperationFailed, e));
 		}
 
 		localPort = serverSocketChannel.socket().getLocalPort();
@@ -172,6 +194,13 @@ public abstract class NIOChannel implements IChannel {
 		processingThread.start();
 	}
 
+	/**
+	 * Fires a channel connected event to this channel's listener if there is
+	 * one attached.
+	 * 
+	 * @param containerId
+	 *            the target ID of the container has connected to
+	 */
 	void fireChannelConnectEvent(final ID containerId) {
 		IChannelListener listener = getListener();
 		if (listener != null) {
@@ -195,6 +224,13 @@ public abstract class NIOChannel implements IChannel {
 		}
 	}
 
+	/**
+	 * Fires a channel disconnected event to this channel's listener if there is
+	 * one attached.
+	 * 
+	 * @param containerId
+	 *            the target ID of the container has disconnected from
+	 */
 	void fireChannelDisconnectEvent(final ID containerId) {
 		IChannelListener listener = getListener();
 		if (listener != null) {
@@ -243,11 +279,8 @@ public abstract class NIOChannel implements IChannel {
 
 	/**
 	 * Sends any pending messages we may have queued up.
-	 * 
-	 * @throws IOException
-	 *             if an error occurs while trying to send a message
 	 */
-	private void sendPendingMessages() throws IOException {
+	private void sendPendingMessages() {
 		Collection deadSockets = null;
 		Collection processedMessages = null;
 
@@ -368,6 +401,14 @@ public abstract class NIOChannel implements IChannel {
 		return channelData.isOpen();
 	}
 
+	/**
+	 * Processes the message that has been received from the specified channel.
+	 * 
+	 * @param socketChannel
+	 *            the channel that the message was from
+	 * @param message
+	 *            the message that was received
+	 */
 	void processIncomingMessage(SocketChannel socketChannel, byte[] message) {
 		// we read something, need to notify
 		IChannelListener listener = getListener();
@@ -420,10 +461,21 @@ public abstract class NIOChannel implements IChannel {
 		}
 	}
 
-	private void fireMessageEvents(IChannelListener listener, SocketChannel so,
-			byte[][] messages) {
+	/**
+	 * Fires message events to the specified listener for each of the message
+	 * that was received.
+	 * 
+	 * @param listener
+	 *            the listener to notify
+	 * @param socketChannel
+	 *            the socket that the message was read from
+	 * @param messages
+	 *            the messages that have been received
+	 */
+	private void fireMessageEvents(IChannelListener listener,
+			SocketChannel socketChannel, byte[][] messages) {
 		for (int i = 0; i < messages.length; i++) {
-			IChannelEvent event = createMessageEvent(so, messages[i]);
+			IChannelEvent event = createMessageEvent(socketChannel, messages[i]);
 			if (event != null) {
 				fireChannelEvent(listener, event);
 			}
@@ -456,6 +508,17 @@ public abstract class NIOChannel implements IChannel {
 		});
 	}
 
+	/**
+	 * Creates and returns a message event corresponding to the specified
+	 * channel and the data that was read.
+	 * 
+	 * @param channel
+	 *            the socket channel that the message was from
+	 * @param data
+	 *            the message from the remote peer
+	 * @return a message event describing the received message, may be
+	 *         <code>null</code> if the channel could not be identified
+	 */
 	private IChannelEvent createMessageEvent(SocketChannel channel,
 			final byte[] data) {
 		// search for the id of the corresponding channel
@@ -632,10 +695,30 @@ public abstract class NIOChannel implements IChannel {
 	protected abstract void sendRequest(ID receiver) throws ECFException;
 
 	public void sendMessage(byte[] message) throws ECFException {
-		throw new ECFException(
-				"A receiver must be specified, see sendMessage(ID, byte[])"); //$NON-NLS-1$
+		throw new ECFException(new Status(IStatus.ERROR, Util.PLUGIN_ID,
+				Messages.NIOChannel_ReceiverUnspecified));
 	}
 
+	/**
+	 * Sends a message to a remote instance of this channel of the target peer.
+	 * <p>
+	 * <b>Note:</b> The current implementation does not handle repeated
+	 * invocations of this method in succession prior to a socket connection
+	 * established. For optimal performance and some assurance of success, there
+	 * needs to be a time lag between the first message that is sent and the
+	 * ones that follow it. This lag should hopefully allow the provider
+	 * sufficient time for establishing a socket connection with the remote
+	 * peer. Otherwise, there may be multiple invocations of
+	 * {@link #sendRequest(ID)} and clients are responsible for handling this
+	 * individually.
+	 * </p>
+	 * 
+	 * @param receiver
+	 *            the receiver to send the message to, must not be
+	 *            <code>null</code>
+	 * @param message
+	 *            the message to send, must not be <code>null</code>
+	 */
 	public void sendMessage(ID receiver, byte[] message) throws ECFException {
 		Assert.isNotNull(receiver, "A receiver must be specified"); //$NON-NLS-1$
 		Assert.isNotNull(message, "Message cannot be null"); //$NON-NLS-1$
@@ -778,8 +861,6 @@ public abstract class NIOChannel implements IChannel {
 				oos.writeObject(data);
 				return baos.toByteArray();
 			} catch (IOException e) {
-				log(new Status(IStatus.ERROR, Util.PLUGIN_ID,
-						"Could not serialize data", e)); //$NON-NLS-1$
 				throw new ECFException(e);
 			}
 		}
