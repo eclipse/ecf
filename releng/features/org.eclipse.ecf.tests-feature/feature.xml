@@ -423,6 +423,14 @@ limitations under the License.
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.ecf.tests.provider.datashare.nio"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.ecf.tests.provider.filetransfer.efs"
          download-size="0"
          install-size="0"
