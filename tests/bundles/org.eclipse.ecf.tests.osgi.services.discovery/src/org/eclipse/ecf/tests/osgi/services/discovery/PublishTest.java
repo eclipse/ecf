@@ -17,7 +17,7 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.tests.internal.osgi.discovery.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -45,7 +45,7 @@ public class PublishTest extends TestCase {
 		context = null;
 	}
 	
-	class TestServicePublication implements IServicePublication {
+	class TestServicePublication implements RemoteServicePublication {
 
 		public ServiceReference getReference() {
 			// TODO Auto-generated method stub
@@ -64,7 +64,7 @@ public class PublishTest extends TestCase {
 	
 	protected Properties createServicePublicationProperties(List interfaces) {
 		Properties props = new Properties();
-		props.put(IServicePublication.SERVICE_INTERFACE_NAME, interfaces);
+		props.put(RemoteServicePublication.SERVICE_INTERFACE_NAME, interfaces);
 		return props;
 	}
 	
