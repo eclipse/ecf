@@ -13,7 +13,7 @@ import java.util.*;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.osgi.services.distribution.IHostContainerFinder;
 import org.eclipse.ecf.remoteservice.*;
@@ -108,7 +108,7 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// ServicePublication.PROP_KEY_ENDPOINT_ID...since
 		// it won't handle some Strings with (e.g. slp) provider
 		ID endpointID = container.getID();
-		properties.put(IServicePublication.ENDPOINT_CONTAINERID, endpointID);
+		properties.put(RemoteServicePublication.ENDPOINT_CONTAINERID, endpointID);
 
 		// Also put the target ID in the service properties...*only*
 		// if the target ID is non-null and it's *not* the same as the
@@ -117,7 +117,7 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		ID targetID = container.getConnectedID();
 		if (targetID != null && !targetID.equals(endpointID)) {
 			// put the target ID into the properties
-			properties.put(IServicePublication.TARGET_CONTAINERID, targetID);
+			properties.put(RemoteServicePublication.TARGET_CONTAINERID, targetID);
 		}
 
 		// Set remote service namespace (String)

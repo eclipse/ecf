@@ -37,12 +37,12 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			.synchronizedMap(new HashMap());
 	private List ecfRemoteServiceProperties = Arrays.asList(new String[] {
 			Constants.SERVICE_ID, Constants.OBJECTCLASS,
-			IServicePublication.ENDPOINT_ID,
-			IServicePublication.ENDPOINT_INTERFACE_NAME,
-			IServicePublication.ENDPOINT_LOCATION,
-			IServicePublication.SERVICE_INTERFACE_NAME,
-			IServicePublication.SERVICE_INTERFACE_VERSION,
-			IServicePublication.SERVICE_PROPERTIES });
+			RemoteServicePublication.ENDPOINT_ID,
+			RemoteServicePublication.ENDPOINT_INTERFACE_NAME,
+			RemoteServicePublication.ENDPOINT_LOCATION,
+			RemoteServicePublication.SERVICE_INTERFACE_NAME,
+			RemoteServicePublication.SERVICE_INTERFACE_VERSION,
+			RemoteServicePublication.SERVICE_PROPERTIES });
 
 	public DiscoveredServiceTrackerImpl(DistributionProviderImpl dp,
 			IExecutor executor) {
@@ -66,7 +66,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		int notificationType = notification.getType();
 		switch (notificationType) {
 		case DiscoveredServiceNotification.AVAILABLE:
-			ECFServiceEndpointDescription adesc = null;
+			RemoteServiceEndpointDescription adesc = null;
 			try {
 				// If the service endpoint description is not ECF's then we
 				// don't process it
@@ -86,7 +86,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						"Duplicate or invalid description=" + adesc);
 				return;
 			}
-			final ECFServiceEndpointDescription ecfASED = adesc;
+			final RemoteServiceEndpointDescription ecfASED = adesc;
 			// Otherwise execute with executor
 			this.executor.execute(new IProgressRunnable() {
 				public Object run(IProgressMonitor monitor) throws Exception {
@@ -104,7 +104,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			break;
 		case DiscoveredServiceNotification.UNAVAILABLE:
 			try {
-				ECFServiceEndpointDescription udesc = getECFserviceEndpointDescription(notification
+				RemoteServiceEndpointDescription udesc = getECFserviceEndpointDescription(notification
 						.getServiceEndpointDescription());
 				// If it's not for us then return
 				if (udesc == null)
@@ -144,7 +144,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		}
 	}
 
-	private boolean isValidService(ECFServiceEndpointDescription desc) {
+	private boolean isValidService(RemoteServiceEndpointDescription desc) {
 		if (desc == null)
 			return false;
 		synchronized (serviceLocations) {
@@ -158,7 +158,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private IRemoteServiceContainer[] findRemoteServiceContainers(
-			IServiceID serviceID, IServiceEndpointDescription description,
+			IServiceID serviceID, IRemoteServiceEndpointDescription description,
 			IProgressMonitor monitor) {
 		Activator activator = Activator.getDefault();
 		if (activator == null)
@@ -174,9 +174,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private void handleDiscoveredServiceAvailable(
-			ECFServiceEndpointDescription ecfSED, IProgressMonitor monitor) {
+			RemoteServiceEndpointDescription ecfSED, IProgressMonitor monitor) {
 		// Find IRemoteServiceContainers for the given
-		// ECFServiceEndpointDescription via registered services
+		// RemoteServiceEndpointDescription via registered services
 		IRemoteServiceContainer[] rsContainers = findRemoteServiceContainers(
 				ecfSED.getServiceID(), ecfSED, monitor);
 		if (rsContainers == null || rsContainers.length == 0) {
@@ -195,7 +195,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		}
 
 		// Get endpoint ID
-		ID ecfEndpointID = ecfSED.getECFEndpointID();
+		ID ecfEndpointID = ecfSED.getEndpointAsID();
 		// Get remote service filter from the service endpoint description
 		// if it exists.
 		String remoteServiceFilter = ecfSED.getRemoteServicesFilter();
@@ -248,15 +248,15 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		}
 	}
 
-	private ECFServiceEndpointDescription getECFserviceEndpointDescription(
+	private RemoteServiceEndpointDescription getECFserviceEndpointDescription(
 			ServiceEndpointDescription aServiceEndpointDesc) {
-		ECFServiceEndpointDescription ecfSED;
-		if (!(aServiceEndpointDesc instanceof ECFServiceEndpointDescription)) {
-			ecfSED = (ECFServiceEndpointDescription) Activator.getDefault()
+		RemoteServiceEndpointDescription ecfSED;
+		if (!(aServiceEndpointDesc instanceof RemoteServiceEndpointDescription)) {
+			ecfSED = (RemoteServiceEndpointDescription) Activator.getDefault()
 					.getAdapterManager().loadAdapter(aServiceEndpointDesc,
-							ECFServiceEndpointDescription.class.getName());
+							RemoteServiceEndpointDescription.class.getName());
 		} else
-			ecfSED = (ECFServiceEndpointDescription) aServiceEndpointDesc;
+			ecfSED = (RemoteServiceEndpointDescription) aServiceEndpointDesc;
 		return ecfSED;
 	}
 
@@ -356,7 +356,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private void registerRemoteServiceReferences(
-			ECFServiceEndpointDescription sed, IRemoteServiceContainer ch,
+			RemoteServiceEndpointDescription sed, IRemoteServiceContainer ch,
 			IRemoteServiceReference[] remoteReferences) {
 
 		synchronized (serviceLocations) {
@@ -471,14 +471,14 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		return results;
 	}
 
-	private boolean addDiscoveredServiceID(ECFServiceEndpointDescription desc) {
+	private boolean addDiscoveredServiceID(RemoteServiceEndpointDescription desc) {
 		synchronized (serviceLocations) {
 			return serviceLocations.add(new DiscoveredServiceID(desc
 					.getServiceID().getLocation(), desc.getRemoteServiceId()));
 		}
 	}
 
-	private boolean removeDiscoveredServiceID(ECFServiceEndpointDescription desc) {
+	private boolean removeDiscoveredServiceID(RemoteServiceEndpointDescription desc) {
 		synchronized (serviceLocations) {
 			return serviceLocations.remove(new DiscoveredServiceID(desc
 					.getServiceID().getLocation(), desc.getRemoteServiceId()));
@@ -486,7 +486,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private boolean containsDiscoveredServiceID(
-			ECFServiceEndpointDescription desc) {
+			RemoteServiceEndpointDescription desc) {
 		synchronized (serviceLocations) {
 			return serviceLocations.contains(new DiscoveredServiceID(desc
 					.getServiceID().getLocation(), desc.getRemoteServiceId()));

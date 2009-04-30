@@ -11,7 +11,7 @@ package org.eclipse.ecf.osgi.services.distribution;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.osgi.services.discovery.IServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.IRemoteServiceEndpointDescription;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
 /**
@@ -38,7 +38,7 @@ public interface IProxyContainerFinder {
 	 *            decide what IRemoteServiceContainer[] to return, as well as
 	 *            whether or not to connect the IContainer to the targetID
 	 *            (provided by
-	 *            {@link IServiceEndpointDescription#getConnectTargetID()}. Will not
+	 *            {@link IRemoteServiceEndpointDescription#getConnectTargetID()}. Will not
 	 *            be <code>null</code>.
 	 * 
 	 * @param monitor
@@ -51,7 +51,7 @@ public interface IProxyContainerFinder {
 	 *         <code>null</code>.
 	 */
 	public IRemoteServiceContainer[] findProxyContainers(IServiceID serviceID,
-			IServiceEndpointDescription endpointDescription,
+			IRemoteServiceEndpointDescription endpointDescription,
 			IProgressMonitor monitor);
 
 }

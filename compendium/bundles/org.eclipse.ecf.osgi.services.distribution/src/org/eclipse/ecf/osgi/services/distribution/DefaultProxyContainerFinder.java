@@ -17,8 +17,8 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.osgi.services.discovery.IServiceEndpointDescription;
-import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.IRemoteServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
 /**
@@ -29,7 +29,7 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 		implements IProxyContainerFinder {
 
 	protected IContainer[] getContainers(IServiceID serviceID,
-			IServiceEndpointDescription endpointDescription) {
+			IRemoteServiceEndpointDescription endpointDescription) {
 
 		// Get all containers available
 		IContainer[] allContainers = getAllContainers();
@@ -43,13 +43,13 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 			ID containerID = allContainers[i].getID();
 			if (containerID == null
 					|| containerID.equals(endpointDescription
-							.getECFEndpointID()))
+							.getEndpointAsID()))
 				continue;
 			// And make sure that the namespaces match
 			if (includeContainerWithConnectNamespace(
 					allContainers[i],
 					(String) endpointDescription
-							.getProperty(IServicePublication.ENDPOINT_CONTAINERID_NAMESPACE)))
+							.getProperty(RemoteServicePublication.ENDPOINT_CONTAINERID_NAMESPACE)))
 				results.add(allContainers[i]);
 		}
 		return (IContainer[]) results.toArray(new IContainer[] {});
@@ -57,7 +57,7 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 
 	protected IRemoteServiceContainer[] getRemoteServiceContainers(
 			IServiceID serviceID,
-			IServiceEndpointDescription endpointDescription) {
+			IRemoteServiceEndpointDescription endpointDescription) {
 		IContainer[] containers = getContainers(serviceID, endpointDescription);
 		if (containers == null)
 			return null;
@@ -66,7 +66,7 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 	}
 
 	public IRemoteServiceContainer[] findProxyContainers(IServiceID serviceID,
-			IServiceEndpointDescription endpointDescription,
+			IRemoteServiceEndpointDescription endpointDescription,
 			IProgressMonitor monitor) {
 		trace("findProxyContainers", "serviceID=" + serviceID
 				+ " endpointDescription=" + endpointDescription);

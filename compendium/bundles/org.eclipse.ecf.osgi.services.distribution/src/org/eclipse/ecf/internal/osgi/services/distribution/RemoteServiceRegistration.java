@@ -11,18 +11,18 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.*;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription;
 import org.eclipse.ecf.remoteservice.*;
 import org.osgi.framework.ServiceRegistration;
 
 public class RemoteServiceRegistration {
 
-	private final ECFServiceEndpointDescription serviceEndpointDescription;
+	private final RemoteServiceEndpointDescription serviceEndpointDescription;
 	private final IRemoteServiceContainer rsContainer;
 	private final IRemoteServiceListener listener;
 	private Map serviceRegistrations = new HashMap();
 
-	public RemoteServiceRegistration(ECFServiceEndpointDescription sed,
+	public RemoteServiceRegistration(RemoteServiceEndpointDescription sed,
 			IRemoteServiceContainer rsContainer, IRemoteServiceListener l) {
 		this.serviceEndpointDescription = sed;
 		this.rsContainer = rsContainer;
@@ -30,7 +30,7 @@ public class RemoteServiceRegistration {
 		getContainerAdapter().addRemoteServiceListener(this.listener);
 	}
 
-	public ECFServiceEndpointDescription getServiceEndpointDescription() {
+	public RemoteServiceEndpointDescription getServiceEndpointDescription() {
 		return serviceEndpointDescription;
 	}
 
