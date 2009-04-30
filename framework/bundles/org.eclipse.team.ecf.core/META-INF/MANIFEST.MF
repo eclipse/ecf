@@ -18,3 +18,4 @@ Export-Package: org.eclipse.team.internal.ecf.core;x-friends:="org.eclipse.team.
  org.eclipse.team.internal.ecf.core.messages;x-friends:="org.eclipse.team.ecf.ui",
  org.eclipse.team.internal.ecf.core.variants;x-friends:="org.eclipse.team.ecf.ui"
 Bundle-Localization: plugin
+Eclipse-BuddyPolicy: global
