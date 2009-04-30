@@ -11,7 +11,7 @@ package org.eclipse.ecf.osgi.services.discovery;
 
 import org.osgi.service.discovery.ServicePublication;
 
-public interface IServicePublication extends ServicePublication {
+public interface RemoteServicePublication extends ServicePublication {
 
 	/**
 	 * Discovery OSGi Service Type for publishing/discovering osgiservices

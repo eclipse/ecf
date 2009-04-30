@@ -13,7 +13,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.osgi.service.discovery.ServiceEndpointDescription;
 
-public interface IServiceEndpointDescription extends ServiceEndpointDescription {
+public interface IRemoteServiceEndpointDescription extends ServiceEndpointDescription {
 
 	/**
 	 * Get the ECF endpoint ID (the ID of the endpoint that exposes the given
@@ -22,13 +22,13 @@ public interface IServiceEndpointDescription extends ServiceEndpointDescription 
 	 * @return ID that is the ECF endpoint ID that exposes the service described
 	 *         by this description.
 	 */
-	public ID getECFEndpointID();
+	public ID getEndpointAsID();
 
 	/**
 	 * Get the ECF container target ID (the ID of the container that is the
 	 * target to connect to). This may return
 	 * <code>null<code>, meaning that no target
-	 * ID is available, and that the endpoint ID returned from {@link #getECFEndpointID()}
+	 * ID is available, and that the endpoint ID returned from {@link #getEndpointAsID()}
 	 * is also the target container ID.  If not <code>null</code>, the ID
 	 * returned from this method may be used to connect to an intermediate
 	 * target via IContainer connect.

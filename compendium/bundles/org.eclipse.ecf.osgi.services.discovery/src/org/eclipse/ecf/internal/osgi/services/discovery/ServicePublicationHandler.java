@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
-import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.*;
@@ -113,7 +113,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 	private boolean matchServiceID(IServiceID serviceId) {
 		if (Arrays.asList(serviceId.getServiceTypeID().getServices()).contains(
-				IServicePublication.SERVICE_TYPE))
+				RemoteServicePublication.SERVICE_TYPE))
 			return true;
 		return false;
 	}
@@ -183,9 +183,9 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 		// See EventHookImpl.getServicePublicationProperties()
 		// Get and then serialize and set
-		// IServicePublication.ENDPOINT_CONTAINERID
+		// RemoteServicePublication.ENDPOINT_CONTAINERID
 		ID endpointContainerID = (ID) reference
-				.getProperty(IServicePublication.ENDPOINT_CONTAINERID);
+				.getProperty(RemoteServicePublication.ENDPOINT_CONTAINERID);
 		// This is required for ecf endpoints so if it's not found then it's an
 		// error
 		if (endpointContainerID == null) {
@@ -193,36 +193,36 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 					"handleServicePublication", //$NON-NLS-1$
 					"ignoring " //$NON-NLS-1$
 							+ reference
-							+ ". IServicePublication.ENDPOINT_CONTAINERID not set", //$NON-NLS-1$
+							+ ". RemoteServicePublication.ENDPOINT_CONTAINERID not set", //$NON-NLS-1$
 					null);
 			return;
 		}
 		// Add endpoint container id.toExternalForm().getBytes...so AS byte []
 		discoveryServiceProperties.setPropertyBytes(
-				IServicePublication.ENDPOINT_CONTAINERID,
+				RemoteServicePublication.ENDPOINT_CONTAINERID,
 				endpointContainerID.toExternalForm().getBytes());
 		// Add endpoint container id namespace name
 		String endpointNamespace = endpointContainerID.getNamespace().getName();
 		discoveryServiceProperties.setPropertyString(
-				IServicePublication.ENDPOINT_CONTAINERID_NAMESPACE,
+				RemoteServicePublication.ENDPOINT_CONTAINERID_NAMESPACE,
 				endpointNamespace);
 
 		// See EventHookImpl.getServicePublicationProperties()
 		// Get and then serialize and set
-		// IServicePublication.TARGET_CONTAINERID
+		// RemoteServicePublication.TARGET_CONTAINERID
 		ID targetContainerID = (ID) reference
-				.getProperty(IServicePublication.TARGET_CONTAINERID);
+				.getProperty(RemoteServicePublication.TARGET_CONTAINERID);
 		// the target ID is optional, so only add it if it's been added
 		// via the EventHookImpl
 		if (targetContainerID != null) {
 			// Add endpoint container id.toExternalForm().getBytes...so AS byte
 			// []
 			discoveryServiceProperties.setPropertyBytes(
-					IServicePublication.TARGET_CONTAINERID,
+					RemoteServicePublication.TARGET_CONTAINERID,
 					targetContainerID.toExternalForm().getBytes());
 			String targetNamespace = targetContainerID.getNamespace().getName();
 			discoveryServiceProperties.setPropertyString(
-					IServicePublication.TARGET_CONTAINERID_NAMESPACE,
+					RemoteServicePublication.TARGET_CONTAINERID_NAMESPACE,
 					targetNamespace);
 		}
 
@@ -257,8 +257,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 			String serviceName = getPropertyWithDefault(
 					servicePublicationServiceProperties,
-					IServicePublication.SERVICE_NAME,
-					(IServicePublication.DEFAULT_SERVICE_NAME_PREFIX + remoteServiceID));
+					RemoteServicePublication.SERVICE_NAME,
+					(RemoteServicePublication.DEFAULT_SERVICE_NAME_PREFIX + remoteServiceID));
 
 			svcInfo = new ServiceInfo(uri, serviceName, serviceTypeID,
 					discoveryServiceProperties);
@@ -303,7 +303,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 				done = true;
 			}
 		}
-		String scheme = IServicePublication.SERVICE_TYPE;
+		String scheme = RemoteServicePublication.SERVICE_TYPE;
 		int port = 32565;
 		if (uri != null) {
 			port = uri.getPort();
@@ -365,16 +365,16 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 			throws IDCreateException {
 		String namingAuthority = getPropertyWithDefault(
 				servicePublicationProperties,
-				IServicePublication.NAMING_AUTHORITY,
+				RemoteServicePublication.NAMING_AUTHORITY,
 				IServiceTypeID.DEFAULT_NA);
 		String scope = getPropertyWithDefault(servicePublicationProperties,
-				IServicePublication.SCOPE, IServiceTypeID.DEFAULT_SCOPE[0]);
+				RemoteServicePublication.SCOPE, IServiceTypeID.DEFAULT_SCOPE[0]);
 		String protocol = getPropertyWithDefault(servicePublicationProperties,
-				IServicePublication.SERVICE_PROTOCOL,
+				RemoteServicePublication.SERVICE_PROTOCOL,
 				IServiceTypeID.DEFAULT_PROTO[0]);
 
 		return ServiceIDFactory.getDefault().createServiceTypeID(aNamespace,
-				new String[] { IServicePublication.SERVICE_TYPE },
+				new String[] { RemoteServicePublication.SERVICE_TYPE },
 				new String[] { scope }, new String[] { protocol },
 				namingAuthority);
 	}

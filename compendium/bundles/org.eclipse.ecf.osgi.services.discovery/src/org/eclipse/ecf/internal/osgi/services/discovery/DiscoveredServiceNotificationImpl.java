@@ -23,7 +23,7 @@ public class DiscoveredServiceNotificationImpl implements
 
 	public DiscoveredServiceNotificationImpl(int type, IServiceInfo serviceInfo) {
 		this.type = type;
-		this.serviceEndpointDescription = new ECFServiceEndpointDescriptionImpl(
+		this.serviceEndpointDescription = new RemoteServiceEndpointDescriptionImpl(
 				serviceInfo);
 	}
 

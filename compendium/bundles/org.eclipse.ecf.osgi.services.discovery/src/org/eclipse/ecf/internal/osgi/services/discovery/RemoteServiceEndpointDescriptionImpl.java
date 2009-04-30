@@ -13,17 +13,17 @@ package org.eclipse.ecf.internal.osgi.services.discovery;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription;
-import org.eclipse.ecf.osgi.services.discovery.IServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 
-public class ECFServiceEndpointDescriptionImpl extends
-		ECFServiceEndpointDescription {
+public class RemoteServiceEndpointDescriptionImpl extends
+		RemoteServiceEndpointDescription {
 
 	private final ID endpointId;
 	private final IServiceID serviceId;
 	private ID targetId = null;
 
-	public ECFServiceEndpointDescriptionImpl(IServiceInfo serviceInfo) {
+	public RemoteServiceEndpointDescriptionImpl(IServiceInfo serviceInfo) {
 		super(((ServiceProperties) serviceInfo.getServiceProperties())
 				.asProperties());
 		this.serviceId = serviceInfo.getServiceID();
@@ -32,13 +32,13 @@ public class ECFServiceEndpointDescriptionImpl extends
 		IServiceProperties serviceProperties = serviceInfo
 				.getServiceProperties();
 		final byte[] endpointBytes = serviceProperties
-				.getPropertyBytes(IServicePublication.ENDPOINT_CONTAINERID);
+				.getPropertyBytes(RemoteServicePublication.ENDPOINT_CONTAINERID);
 		if (endpointBytes == null)
 			throw new IDCreateException(
 					"ServiceEndpointDescription endpointBytes cannot be null");
 		final String endpointStr = new String(endpointBytes);
 		final String namespaceStr = serviceProperties
-				.getPropertyString(IServicePublication.ENDPOINT_CONTAINERID_NAMESPACE);
+				.getPropertyString(RemoteServicePublication.ENDPOINT_CONTAINERID_NAMESPACE);
 		if (namespaceStr == null) {
 			throw new IDCreateException(
 					"ServiceEndpointDescription namespaceStr cannot be null");
@@ -47,12 +47,12 @@ public class ECFServiceEndpointDescriptionImpl extends
 
 		// create the target id, if it's there
 		final byte[] targetBytes = serviceProperties
-				.getPropertyBytes(IServicePublication.TARGET_CONTAINERID);
+				.getPropertyBytes(RemoteServicePublication.TARGET_CONTAINERID);
 		// If this is null, we're ok with it
 		if (targetBytes != null) {
 			final String targetStr = new String(endpointBytes);
 			String targetNamespaceStr = serviceProperties
-					.getPropertyString(IServicePublication.TARGET_CONTAINERID_NAMESPACE);
+					.getPropertyString(RemoteServicePublication.TARGET_CONTAINERID_NAMESPACE);
 			if (targetNamespaceStr == null)
 				targetNamespaceStr = namespaceStr;
 			targetId = IDFactory.getDefault().createID(targetNamespaceStr,
@@ -64,10 +64,10 @@ public class ECFServiceEndpointDescriptionImpl extends
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription
+	 * org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription
 	 * #getECFEndpointID()
 	 */
-	public ID getECFEndpointID() throws IDCreateException {
+	public ID getEndpointAsID() throws IDCreateException {
 		return endpointId;
 	}
 
@@ -75,7 +75,7 @@ public class ECFServiceEndpointDescriptionImpl extends
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.eclipse.ecf.osgi.services.discovery.ECFServiceEndpointDescription
+	 * org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription
 	 * #getECFTargetID()
 	 */
 	public ID getConnectTargetID() {
@@ -97,7 +97,7 @@ public class ECFServiceEndpointDescriptionImpl extends
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ECFServiceEndpointDescriptionImpl other = (ECFServiceEndpointDescriptionImpl) obj;
+		RemoteServiceEndpointDescriptionImpl other = (RemoteServiceEndpointDescriptionImpl) obj;
 		if (serviceId == null) {
 			if (other.serviceId != null)
 				return false;
@@ -116,7 +116,7 @@ public class ECFServiceEndpointDescriptionImpl extends
 		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
 		sb.append(";serviceid=").append(getServiceID()); //$NON-NLS-1$
 		sb.append(";osgiEndpointID=").append(getEndpointID()); //$NON-NLS-1$
-		sb.append(";ecfEndpointID=").append(getECFEndpointID()); //$NON-NLS-1$
+		sb.append(";ecfEndpointID=").append(getEndpointAsID()); //$NON-NLS-1$
 		sb.append(";ecfTargetID=").append(getConnectTargetID()); //$NON-NLS-1$
 		sb.append(";ecfFilter=").append(getRemoteServicesFilter()); //$NON-NLS-1$
 		sb.append(";props=").append(getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$

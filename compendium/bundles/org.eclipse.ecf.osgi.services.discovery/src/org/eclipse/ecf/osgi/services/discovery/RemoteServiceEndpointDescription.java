@@ -20,12 +20,12 @@ import org.eclipse.ecf.internal.osgi.services.discovery.Activator;
 import org.eclipse.ecf.internal.osgi.services.discovery.ServicePropertyUtils;
 import org.osgi.service.discovery.ServicePublication;
 
-public abstract class ECFServiceEndpointDescription implements
-		IServiceEndpointDescription {
+public abstract class RemoteServiceEndpointDescription implements
+		IRemoteServiceEndpointDescription {
 
 	protected Map serviceProperties;
 
-	public ECFServiceEndpointDescription(Map properties) {
+	public RemoteServiceEndpointDescription(Map properties) {
 		this.serviceProperties = properties;
 	}
 
@@ -183,7 +183,7 @@ public abstract class ECFServiceEndpointDescription implements
 			return rsId.longValue();
 	}
 
-	public abstract ID getECFEndpointID();
+	public abstract ID getEndpointAsID();
 
 	public abstract ID getConnectTargetID();
 
@@ -191,7 +191,7 @@ public abstract class ECFServiceEndpointDescription implements
 
 	public String getRemoteServicesFilter() {
 		Object o = serviceProperties
-				.get(IServicePublication.REMOTE_SERVICE_FILTER);
+				.get(RemoteServicePublication.REMOTE_SERVICE_FILTER);
 		if (o instanceof String)
 			return (String) o;
 		return null;
