@@ -1,52 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.ecf.ui" version="2">
-<resource path="src/org/eclipse/ecf/internal/ui/wizards/WorkbenchWizardElement.java" type="org.eclipse.ecf.internal.ui.wizards.WorkbenchWizardElement">
-<filter id="574619656">
-<message_arguments>
-<message_argument value="IWizardDescriptor"/>
-<message_argument value="WorkbenchWizardElement"/>
-</message_arguments>
-</filter>
-</resource>
-<resource path="src/org/eclipse/ecf/ui/wizards/ConfigurationWizardSelectionPage.java" type="org.eclipse.ecf.ui.wizards.ConfigurationWizardSelectionPage">
-<filter id="643846161">
-<message_arguments>
-<message_argument value="WorkbenchWizardElement"/>
-<message_argument value="ConfigurationWizardSelectionPage"/>
-<message_argument value="updateSelectedNode(WorkbenchWizardElement)"/>
-</message_arguments>
-</filter>
-</resource>
-<resource path="src/org/eclipse/ecf/internal/ui/wizards/WizardCollectionElement.java" type="org.eclipse.ecf.internal.ui.wizards.WizardCollectionElement">
-<filter id="571473929">
-<message_arguments>
-<message_argument value="AdaptableList"/>
-<message_argument value="WizardCollectionElement"/>
-</message_arguments>
-</filter>
-<filter id="574619656">
-<message_arguments>
-<message_argument value="IWizardCategory"/>
-<message_argument value="WizardCollectionElement"/>
-</message_arguments>
-</filter>
-</resource>
-<resource path="src/org/eclipse/ecf/ui/IConnectWizard.java" type="org.eclipse.ecf.ui.IConnectWizard">
-<filter id="403984517">
-<message_arguments>
-<message_argument value="org.eclipse.ecf.ui.IConnectWizard"/>
-<message_argument value="org.eclipse.jface.wizard.IWizard"/>
-<message_argument value="addPages()"/>
-</message_arguments>
-</filter>
-</resource>
-<resource path="src/org/eclipse/ecf/ui/IConfigurationWizard.java" type="org.eclipse.ecf.ui.IConfigurationWizard">
-<filter id="403984517">
-<message_arguments>
-<message_argument value="org.eclipse.ecf.ui.IConfigurationWizard"/>
-<message_argument value="org.eclipse.jface.wizard.IWizard"/>
-<message_argument value="addPages()"/>
-</message_arguments>
-</filter>
-</resource>
+    <resource path="src/org/eclipse/ecf/internal/ui/wizards/WizardCollectionElement.java" type="org.eclipse.ecf.internal.ui.wizards.WizardCollectionElement">
+        <filter id="571473929">
+            <message_arguments>
+                <message_argument value="AdaptableList"/>
+                <message_argument value="WizardCollectionElement"/>
+            </message_arguments>
+        </filter>
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="IWizardCategory"/>
+                <message_argument value="WizardCollectionElement"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/internal/ui/wizards/WorkbenchWizardElement.java" type="org.eclipse.ecf.internal.ui.wizards.WorkbenchWizardElement">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="IWizardDescriptor"/>
+                <message_argument value="WorkbenchWizardElement"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/ui/wizards/ConfigurationWizardSelectionPage.java" type="org.eclipse.ecf.ui.wizards.ConfigurationWizardSelectionPage">
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="WorkbenchWizardElement"/>
+                <message_argument value="ConfigurationWizardSelectionPage"/>
+                <message_argument value="updateSelectedNode(WorkbenchWizardElement)"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
