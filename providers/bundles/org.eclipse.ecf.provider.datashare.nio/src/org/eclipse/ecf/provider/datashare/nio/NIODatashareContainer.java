@@ -279,11 +279,22 @@ public abstract class NIODatashareContainer implements IChannelContainerAdapter 
 	}
 
 	private void disconnect() {
-		pendingConnections.clear();
-
 		if (connectionThread != null) {
 			connectionThread.interrupt();
 			connectionThread = null;
+		}
+		
+		synchronized (pendingConnections) {
+			pendingConnections.clear();
+		}
+		
+		synchronized (pendingSockets) {
+			for (int i = 0; i < pendingSockets.size(); i++) {
+				SocketChannel channel = (SocketChannel) pendingSockets.get(i);
+				Util.closeChannel(channel);
+			}
+			
+			pendingSockets.clear();
 		}
 
 		synchronized (channels) {
@@ -555,6 +566,12 @@ public abstract class NIODatashareContainer implements IChannelContainerAdapter 
 			return null;
 		}
 	}
+	
+	public String toString() {
+		StringBuffer buffer = new StringBuffer(getClass().getName());
+		buffer.append("[parentContainer=").append(container).append(']'); //$NON-NLS-1$
+		return buffer.toString();
+	}
 
 	private class ConnectionRunnable implements Runnable {
 
@@ -568,8 +585,10 @@ public abstract class NIODatashareContainer implements IChannelContainerAdapter 
 						return;
 					}
 
-					if (!pendingConnections.isEmpty()) {
-						connect(buffer);
+					synchronized (pendingConnections) {
+						if (!pendingConnections.isEmpty()) {
+							connect(buffer);
+						}	
 					}
 
 					processPendingSockets(buffer);
