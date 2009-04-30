@@ -62,6 +62,9 @@ public class IDFactory implements IIDFactory {
 		return instance;
 	}
 
+	private IDFactory() {
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
