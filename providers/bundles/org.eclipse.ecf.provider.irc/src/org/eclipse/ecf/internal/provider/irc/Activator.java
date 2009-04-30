@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2004, 2007 Composent, Inc. and others.
+* Copyright (c) 2004, 2009 Composent, Inc. and others.
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
@@ -13,9 +13,11 @@ package org.eclipse.ecf.internal.provider.irc;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.SystemLogService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
+import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -31,6 +33,10 @@ public class Activator implements BundleActivator {
 	private BundleContext bundleContext = null;
 
 	private ServiceTracker logServiceTracker = null;
+	private ServiceTracker packageServiceTracker = null;
+
+	private LogService logService;
+	private PackageAdmin packageService;
 
 	public static void log(String message) {
 		getDefault().log(new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
@@ -41,11 +47,19 @@ public class Activator implements BundleActivator {
 	}
 
 	protected LogService getLogService() {
-		if (logServiceTracker == null) {
-			logServiceTracker = new ServiceTracker(this.bundleContext, LogService.class.getName(), null);
-			logServiceTracker.open();
+		if (logService == null) {
+			if (logServiceTracker == null) {
+				logServiceTracker = new ServiceTracker(this.bundleContext,
+						LogService.class.getName(), null);
+				logServiceTracker.open();
+			}
+
+			logService = (LogService) logServiceTracker.getService();
+			if (logService == null) {
+				logService = new SystemLogService(PLUGIN_ID);
+			}
 		}
-		return (LogService) logServiceTracker.getService();
+		return logService;
 	}
 
 	public void log(IStatus status) {
@@ -79,6 +93,20 @@ public class Activator implements BundleActivator {
 		}
 		this.bundleContext = null;
 		plugin = null;
+	}
+
+	public PackageAdmin getPackageAdmin() {
+		if (packageServiceTracker == null) {
+			packageServiceTracker = new ServiceTracker(bundleContext,
+					PackageAdmin.class.getName(), null);
+			packageServiceTracker.open();
+		}
+
+		if (packageService == null) {
+			packageService = (PackageAdmin) packageServiceTracker.getService();
+		}
+
+		return packageService;
 	}
 
 	/**

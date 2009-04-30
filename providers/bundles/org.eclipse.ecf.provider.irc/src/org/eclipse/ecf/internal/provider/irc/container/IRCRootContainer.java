@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * Copyright (c) 2004, 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.container;
 
+import java.util.StringTokenizer;
+
+import java.net.InetSocketAddress;
 import java.util.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.events.*;
@@ -19,6 +22,8 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.internal.provider.irc.Messages;
+import org.eclipse.ecf.internal.provider.irc.datashare.IIRCDatashareContainer;
+import org.eclipse.ecf.internal.provider.irc.datashare.IRCDatashareContainer;
 import org.eclipse.ecf.internal.provider.irc.identity.IRCID;
 import org.eclipse.ecf.internal.provider.irc.identity.IRCNamespace;
 import org.eclipse.ecf.presence.chatroom.*;
@@ -28,6 +33,8 @@ import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.IChatMessage.Type;
 import org.eclipse.equinox.concurrent.future.TimeoutException;
 import org.eclipse.osgi.util.NLS;
+import org.osgi.framework.Bundle;
+import org.osgi.service.packageadmin.PackageAdmin;
 import org.schwering.irc.lib.*;
 import org.schwering.irc.lib.ssl.SSLIRCConnection;
 
@@ -60,12 +67,58 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	protected boolean connectWaiting = false;
 	protected Exception connectException = null;
 
+	/**
+	 * The datashare container implementation owned by this container.
+	 */
+	private IIRCDatashareContainer datashareContainer;
+
+	/**
+	 * Used for determining whether the USERHOST reply should be hijacked or not.
+	 */
+	private boolean retrieveUserhost;
+
 	public IRCRootContainer(ID localID) throws IDCreateException {
 		this.localID = localID;
 		this.unknownID = IDFactory.getDefault().createStringID(
 				Messages.IRCRootContainer_0);
 		this.replyHandler = new ReplyHandler();
 		invitationListeners = new ArrayList();
+		datashareContainer = createDatashareContainer();
+	}
+
+	/**
+	 * Creates and returns a datashare container implementation.
+	 * 
+	 * @return a datashare container implementation for this container, or <code>null</code> if it could not be created
+	 */
+	private IIRCDatashareContainer createDatashareContainer() {
+		if (hasDatashare() && hasNIO()) {
+			return new IRCDatashareContainer(this);
+		}
+		return null;
+	}
+
+	/**
+	 * Checks and returns whether the datashare NIO APIs are available in the current OSGi environment.
+	 * @return <code>true</code> if the datashare NIO APIs are available, <code>false</code> otherwise
+	 */
+	private boolean hasDatashare() {
+		PackageAdmin admin = Activator.getDefault().getPackageAdmin();
+		Bundle[] bundles = admin.getBundles("org.eclipse.ecf.provider.datashare.nio", null); //$NON-NLS-1$
+		return bundles != null && bundles.length != 0;
+	}
+
+	/**
+	 * Checks and returns there is Java 1.4 NIO support in the current Java runtime environment.
+	 * @return <code>true</code> if the Java 1.4 NIO APIs are available, <code>false</code> otherwise
+	 */
+	private boolean hasNIO() {
+		try {
+			Class.forName("java.nio.channels.SocketChannel"); //$NON-NLS-1$
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
 	}
 
 	/*
@@ -137,6 +190,14 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				this.targetID = tID;
 				fireContainerEvent(new ContainerConnectedEvent(getID(),
 						this.targetID));
+
+				if (datashareContainer != null) {
+					// now that we've connected successfully, we send a USERHOST
+					// message to the server so that we can attempt to retrieve
+					// our current IP
+					retrieveUserhost = true;
+					connection.doUserhost(nick);	
+				}
 			} catch (Exception e) {
 				this.targetID = null;
 				throw new ContainerConnectException(NLS.bind(
@@ -295,6 +356,16 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					showMessage(null, NLS.bind(
 							Messages.IRCRootContainer_CTCP_VERSION_Request,
 							arg1.toString()));
+				} else if (arg2.startsWith("\01ECF ") && arg2.endsWith("\01")) { //$NON-NLS-1$ //$NON-NLS-2$
+					if (datashareContainer != null) {
+						// special ECF message, retrieve the ip address of the
+						// remote peer and initiate a socket connection
+						String identifier = arg2
+								.substring(5, arg2.length() - 1);
+						StringTokenizer tokenizer = new StringTokenizer(identifier, ":"); //$NON-NLS-1$
+						datashareContainer.enqueue(new InetSocketAddress(tokenizer.nextToken(),
+								Integer.parseInt(tokenizer.nextToken())));
+					}
 				} else {
 					showMessage(arg0, arg1.toString(), arg2);
 				}
@@ -345,6 +416,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			connection.close();
 			connection = null;
 			targetID = null;
+			retrieveUserhost = false;
 		}
 	}
 
@@ -354,8 +426,12 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 * @see org.eclipse.ecf.core.IContainer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class serviceType) {
-		if (serviceType != null && serviceType.isInstance(this)) {
+		if (serviceType == null) {
+			return null;
+		} else if (serviceType.isInstance(this)) {
 			return this;
+		} else if (datashareContainer != null && serviceType.isInstance(datashareContainer)) {
+			return datashareContainer;
 		}
 		return null;
 	}
@@ -848,6 +924,17 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						: ((args.length == 1) ? args[0] : null);
 				handleSetSubject(channel, null, arg2);
 				break;
+			case 302:
+				if (retrieveUserhost) {
+					if (datashareContainer != null) {
+						// set the retrieved ip address from the 
+						arg2 = arg2.trim();
+						String ip = arg2.substring(arg2.lastIndexOf('@') + 1);
+						datashareContainer.setIP(ip);
+					}
+					retrieveUserhost = false;
+					break;
+				}
 			default:
 				// first user always expected to be us
 				if (users.length < 2)
