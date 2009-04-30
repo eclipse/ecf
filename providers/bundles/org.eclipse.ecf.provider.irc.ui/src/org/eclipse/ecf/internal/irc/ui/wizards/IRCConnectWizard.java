@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Remy Suen, Composent Inc., and others.
+ * Copyright (c) 2007, 2009 Remy Suen, Composent Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,16 +11,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.wizards;
 
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.internal.irc.ui.IRCUI;
-import org.eclipse.ecf.internal.irc.ui.Messages;
+import org.eclipse.ecf.internal.irc.ui.*;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
@@ -74,6 +69,18 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard, IN
 		}
 
 		setWindowTitle(Messages.IRCConnectWizard_WIZARD_TITLE);
+	}
+
+	public boolean performCancel() {
+		container.dispose();
+
+		IContainerManager containerManager = Activator.getDefault()
+				.getContainerManager();
+		if (containerManager != null) {
+			containerManager.removeContainer(container);
+		}
+
+		return super.performCancel();
 	}
 
 	public boolean performFinish() {
