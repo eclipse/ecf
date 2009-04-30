@@ -58,7 +58,9 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker adapterManagerTracker = null;
 
-	public IAdapterManager getAdapterManager() {
+	public synchronized IAdapterManager getAdapterManager() {
+		if (this.context == null)
+			return null;
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
 			adapterManagerTracker = new ServiceTracker(this.context,
@@ -85,7 +87,9 @@ public class Activator implements BundleActivator {
 		// public null constructor
 	}
 
-	public IExtensionRegistry getExtensionRegistry() {
+	public synchronized IExtensionRegistry getExtensionRegistry() {
+		if (this.context == null)
+			return null;
 		if (extensionRegistryTracker == null) {
 			extensionRegistryTracker = new ServiceTracker(context,
 					IExtensionRegistry.class.getName(), null);
@@ -94,7 +98,7 @@ public class Activator implements BundleActivator {
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
-	public DebugOptions getDebugOptions() {
+	public synchronized DebugOptions getDebugOptions() {
 		if (context == null)
 			return null;
 		if (debugOptionsTracker == null) {
@@ -200,7 +204,9 @@ public class Activator implements BundleActivator {
 		return context.getBundle();
 	}
 
-	protected LogService getLogService() {
+	protected synchronized LogService getLogService() {
+		if (this.context == null)
+			return null;
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context,
 					LogService.class.getName(), null);
