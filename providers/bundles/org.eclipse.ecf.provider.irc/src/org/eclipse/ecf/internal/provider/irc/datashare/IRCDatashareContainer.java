@@ -63,8 +63,8 @@ public class IRCDatashareContainer extends NIODatashareContainer implements
 			IChannelListener listener, Map properties) throws ECFException {
 		Assert.isNotNull(channelId, "Channel id cannot be null"); //$NON-NLS-1$
 		NIOChannel channel = new IRCDatashareChannel(this, container
-				.getConnectedID(), container.getChatRoomMessageSender(),
-				channelId, listener);
+				.getConnectNamespace(), container.getConnectedID(), container
+				.getChatRoomMessageSender(), channelId, listener);
 		channels.add(channel);
 		return channel;
 	}

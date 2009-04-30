@@ -13,24 +13,33 @@ package org.eclipse.ecf.internal.provider.irc.datashare;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.internal.provider.irc.identity.IRCID;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
+import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.provider.datashare.nio.NIOChannel;
 import org.eclipse.ecf.provider.datashare.nio.NIODatashareContainer;
 
 class IRCDatashareChannel extends NIOChannel {
 
-	private String ip;
+	private Namespace receiverNamespace;
+
+	private IRCID userId;
 
 	private IChatRoomMessageSender sender;
 
-	IRCDatashareChannel(NIODatashareContainer datashareContainer, ID userId,
+	private String ip;
+
+	IRCDatashareChannel(NIODatashareContainer datashareContainer,
+			Namespace receiverNamespace, ID userId,
 			IChatRoomMessageSender sender, ID id, IChannelListener listener)
 			throws ECFException {
 		super(datashareContainer, userId, id, listener);
+		this.receiverNamespace = receiverNamespace;
+		this.userId = (IRCID) userId;
 		this.sender = sender;
 	}
 
@@ -50,11 +59,11 @@ class IRCDatashareChannel extends NIOChannel {
 	}
 
 	protected void sendRequest(ID receiver) throws ECFException {
-		// if we don't, we need to send a request and then connect
-		IRCID id = (IRCID) receiver;
+		String name = receiver instanceof IChatID ? ((IChatID) receiver)
+				.getUsername() : receiver.getName();
 
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("/msg ").append(id.getUsername()); //$NON-NLS-1$
+		buffer.append("/msg ").append(name); //$NON-NLS-1$
 		buffer.append(" \01ECF "); //$NON-NLS-1$
 		buffer.append(ip).append(':').append(getLocalPort());
 		buffer.append('\01');
@@ -64,8 +73,13 @@ class IRCDatashareChannel extends NIOChannel {
 
 	public void sendMessage(ID receiver, byte[] message) throws ECFException {
 		Assert.isNotNull(receiver, "A receiver must be specified"); //$NON-NLS-1$
-		Assert.isLegal(receiver instanceof IRCID,
-				"Receiver id must be an IRCID"); //$NON-NLS-1$
+		String name = receiver instanceof IChatID ? ((IChatID) receiver)
+				.getUsername() : receiver.getName();
+		StringBuffer buffer = new StringBuffer(name);
+		buffer.append('@').append(userId.getHost());
+		buffer.append(':').append(userId.getPort());
+		receiver = receiverNamespace.createInstance(new Object[] { buffer
+				.toString() });
 		super.sendMessage(receiver, message);
 	}
 
