@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2008 Remy Suen, Composent Inc., and others.
+ * Copyright (c) 2006, 2009 Remy Suen, Composent Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,8 +29,16 @@ public final class BitTorrentProviderPlugin implements BundleActivator {
 	static final String CONTAINER_ID = "ecf.filetransfer.bittorrent"; //$NON-NLS-1$
 
 	static final String NAMESPACE_ID = "ecf.namespace.bittorrent"; //$NON-NLS-1$
+	
+	private static BitTorrentProviderPlugin instance;
 
 	private BundleContext context = null;
+	
+	private boolean pathSet = false;
+	
+	public BitTorrentProviderPlugin() {
+		instance = this;
+	}
 
 	private File getConfigurationPath() {
 		Filter filter = null;
@@ -53,7 +61,16 @@ public final class BitTorrentProviderPlugin implements BundleActivator {
 
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
-		TorrentConfiguration.setConfigurationPath(getConfigurationPath());
+	}
+	
+	void setConfigurationPath() {
+		if (!pathSet) {
+			File path = getConfigurationPath();
+			if (path != null) {
+				TorrentConfiguration.setConfigurationPath(path);
+				pathSet = true;
+			}	
+		}
 	}
 
 	/*
@@ -62,7 +79,12 @@ public final class BitTorrentProviderPlugin implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		instance = null;
 		this.context = null;
+	}
+	
+	public static BitTorrentProviderPlugin getDefault() {
+		return instance;
 	}
 
 }

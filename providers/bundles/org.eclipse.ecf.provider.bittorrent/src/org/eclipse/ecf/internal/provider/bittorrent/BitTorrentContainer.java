@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2008 Remy Suen, Composent Inc., and others.
+ * Copyright (c) 2006, 2009 Remy Suen, Composent Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,7 +40,6 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.ecf.protocol.bittorrent.Torrent;
-import org.eclipse.ecf.protocol.bittorrent.TorrentConfiguration;
 import org.eclipse.ecf.protocol.bittorrent.TorrentFactory;
 import org.eclipse.ecf.protocol.bittorrent.TorrentFile;
 import org.eclipse.osgi.util.NLS;
@@ -54,7 +53,7 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 	public BitTorrentContainer() throws IDCreateException {
 		id = IDFactory.getDefault().createGUID();
 		containerListeners = new ArrayList();
-		TorrentConfiguration.setConfigurationPath(new File(System.getProperty("user.home"), ".eclipsebt")); //$NON-NLS-1$ //$NON-NLS-2$
+		BitTorrentProviderPlugin.getDefault().setConfigurationPath();
 	}
 
 	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException {
