@@ -162,27 +162,6 @@ final class RemoteServiceImpl implements IRemoteService {
 		}
 
 		/**
-		 * clear the effects of the last remote call.
-		 * 
-		 * @see org.eclipse.ecf.core.util.IAsyncResult#clear()
-		 */
-		public synchronized void clear() {
-			result = null;
-			exception = null;
-		}
-
-		/**
-		 * get the result, block until available.
-		 * 
-		 * @return the result.
-		 * 
-		 * @see org.eclipse.ecf.core.util.IAsyncResult#get()
-		 */
-		public Object get() throws InterruptedException, InvocationTargetException {
-			return get(0);
-		}
-
-		/**
 		 * get the result. If not yet available, wait at most <code>msecs</code>
 		 * milliseconds.
 		 * 
@@ -210,26 +189,6 @@ final class RemoteServiceImpl implements IRemoteService {
 		 */
 		public synchronized InvocationTargetException getException() {
 			return exception == null ? null : new InvocationTargetException(exception);
-		}
-
-		/**
-		 * tests, if the result is ready and available.
-		 * 
-		 * @return <code>true</code>, if the result is available.
-		 * @see org.eclipse.ecf.core.util.IAsyncResult#isReady()
-		 */
-		public synchronized boolean isReady() {
-			return result != null || exception != null;
-		}
-
-		/**
-		 * peek, if the result is already available.
-		 * 
-		 * @return the result, or <code>null</code>, if not yet available.
-		 * @see org.eclipse.ecf.core.util.IAsyncResult#peek()
-		 */
-		public synchronized Object peek() {
-			return result;
 		}
 
 		// the call happens here.
