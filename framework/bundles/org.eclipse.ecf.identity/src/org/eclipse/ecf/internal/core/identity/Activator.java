@@ -262,12 +262,14 @@ public class Activator implements BundleActivator {
 				if (IDFactory.containsNamespace0(ns))
 					throw new CoreException(
 							new Status(
-									IStatus.ERROR,
+									IStatus.WARNING,
 									bundleName,
 									FACTORY_NAME_COLLISION_ERRORCODE,
-									"name=" //$NON-NLS-1$
+									"Namespace collision=" //$NON-NLS-1$
 											+ nsName
-											+ ";extension point id=" //$NON-NLS-1$
+											+ ";contributor=" //$NON-NLS-1$
+											+ member.getContributor().getName()
+											+ ";extensionPoint="
 											+ extension
 													.getExtensionPointUniqueIdentifier(),
 									null));
