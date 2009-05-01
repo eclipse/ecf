@@ -37,10 +37,8 @@ public class IRCDatashareContainer extends NIODatashareContainer implements
 
 		container.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent event) {
-				if (event instanceof IContainerDisconnectedEvent) {
-					setIP(null);
-					channels.clear();
-				} else if (event instanceof IContainerDisposeEvent) {
+				if (event instanceof IContainerDisconnectedEvent
+						|| event instanceof IContainerDisposeEvent) {
 					setIP(null);
 					channels.clear();
 				}
