@@ -10,8 +10,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.discovery.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceProperties;
+import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;

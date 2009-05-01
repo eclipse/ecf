@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import org.eclipse.core.runtime.IStatus;
@@ -16,8 +17,14 @@ import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
-import org.osgi.framework.*;
-import org.osgi.service.discovery.*;
+import org.eclipse.ecf.osgi.services.discovery.IHostDiscoveryListener;
+import org.eclipse.ecf.osgi.services.discovery.IProxyDiscoveryListener;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.discovery.DiscoveredServiceTracker;
+import org.osgi.service.discovery.Discovery;
+import org.osgi.service.discovery.ServicePublication;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -43,6 +50,9 @@ public class Activator implements BundleActivator {
 	public static final Activator getDefault() {
 		return plugin;
 	}
+
+	private ServiceTracker hostPublicationListenerTracker;
+	private ServiceTracker proxyDiscoveredListenerTracker;
 
 	/*
 	 * (non-Javadoc)
@@ -80,7 +90,9 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	protected LogService getLogService() {
+	protected synchronized LogService getLogService() {
+		if (this.context == null)
+			return null;
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context,
 					LogService.class.getName(), null);
@@ -120,7 +132,10 @@ public class Activator implements BundleActivator {
 		return servicePublicationHandler;
 	}
 
-	public IDiscoveryAdvertiser getAdvertiser() throws InterruptedException {
+	public synchronized IDiscoveryAdvertiser getAdvertiser()
+			throws InterruptedException {
+		if (this.context == null)
+			return null;
 		if (advertiserTracker == null) {
 			advertiserTracker = new ServiceTracker(this.context,
 					IDiscoveryAdvertiser.class.getName(), null);
@@ -137,6 +152,36 @@ public class Activator implements BundleActivator {
 			discoveredServiceTrackerTracker.open();
 		}
 		return discoveredServiceTrackerTracker.getServiceReferences();
+	}
+
+	public synchronized IHostDiscoveryListener[] getHostPublicationListeners() {
+		if (this.context == null)
+			return null;
+		if (hostPublicationListenerTracker == null) {
+			hostPublicationListenerTracker = new ServiceTracker(this.context,
+					IHostDiscoveryListener.class.getName(), null);
+			hostPublicationListenerTracker.open();
+		}
+		Object[] objs = hostPublicationListenerTracker.getServices();
+		if (objs == null)
+			return null;
+		return (IHostDiscoveryListener[]) Arrays.asList(objs).toArray(
+				new IHostDiscoveryListener[] {});
+	}
+
+	public synchronized IProxyDiscoveryListener[] getProxyDiscoveredListeners() {
+		if (this.context == null)
+			return null;
+		if (proxyDiscoveredListenerTracker == null) {
+			proxyDiscoveredListenerTracker = new ServiceTracker(this.context,
+					IProxyDiscoveryListener.class.getName(), null);
+			proxyDiscoveredListenerTracker.open();
+		}
+		Object[] objs = proxyDiscoveredListenerTracker.getServices();
+		if (objs == null)
+			return null;
+		return (IProxyDiscoveryListener[]) Arrays.asList(objs).toArray(
+				new IProxyDiscoveryListener[] {});
 	}
 
 	/*
@@ -170,6 +215,14 @@ public class Activator implements BundleActivator {
 			logServiceTracker.close();
 			logServiceTracker = null;
 			logService = null;
+		}
+		if (hostPublicationListenerTracker != null) {
+			hostPublicationListenerTracker.close();
+			hostPublicationListenerTracker = null;
+		}
+		if (proxyDiscoveredListenerTracker != null) {
+			proxyDiscoveredListenerTracker.close();
+			proxyDiscoveredListenerTracker = null;
 		}
 		this.context = null;
 		plugin = null;

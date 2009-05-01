@@ -9,10 +9,14 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
-import org.osgi.service.discovery.ServicePublication;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.discovery.ServicePublication;
 
 public class ServicePropertyUtils {
 
@@ -77,7 +81,8 @@ public class ServicePropertyUtils {
 		if (value == null) {
 			return null;
 		}
-		final StringTokenizer t = new StringTokenizer(value, COLLECTION_SEPARATOR);
+		final StringTokenizer t = new StringTokenizer(value,
+				COLLECTION_SEPARATOR);
 		final List result = new ArrayList();
 		while (t.hasMoreTokens()) {
 			result.add(t.nextToken());

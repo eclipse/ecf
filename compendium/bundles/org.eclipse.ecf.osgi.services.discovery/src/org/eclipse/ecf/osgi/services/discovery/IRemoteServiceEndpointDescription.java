@@ -13,7 +13,8 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.osgi.service.discovery.ServiceEndpointDescription;
 
-public interface IRemoteServiceEndpointDescription extends ServiceEndpointDescription {
+public interface IRemoteServiceEndpointDescription extends
+		ServiceEndpointDescription {
 
 	/**
 	 * Get the ECF endpoint ID (the ID of the endpoint that exposes the given
