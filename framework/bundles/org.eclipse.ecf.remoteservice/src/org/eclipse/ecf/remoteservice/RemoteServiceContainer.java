@@ -115,4 +115,16 @@ public class RemoteServiceContainer implements IRemoteServiceContainer {
 		}
 	}
 
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("RemoteServiceContainer [containerID="); //$NON-NLS-1$
+		buffer.append(container.getID());
+		buffer.append(", container="); //$NON-NLS-1$
+		buffer.append(container);
+		buffer.append(", containerAdapter="); //$NON-NLS-1$
+		buffer.append(containerAdapter);
+		buffer.append("]"); //$NON-NLS-1$
+		return buffer.toString();
+	}
+
 }
