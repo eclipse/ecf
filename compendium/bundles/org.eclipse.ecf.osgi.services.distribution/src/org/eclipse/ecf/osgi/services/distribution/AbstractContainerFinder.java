@@ -11,12 +11,18 @@ package org.eclipse.ecf.osgi.services.distribution;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.internal.osgi.services.distribution.*;
-import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.ecf.internal.osgi.services.distribution.Activator;
+import org.eclipse.ecf.internal.osgi.services.distribution.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.distribution.LogUtility;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
 
 /**
  * Abstract superclass for IHostContainerFinders and IProxyContainerFinders.

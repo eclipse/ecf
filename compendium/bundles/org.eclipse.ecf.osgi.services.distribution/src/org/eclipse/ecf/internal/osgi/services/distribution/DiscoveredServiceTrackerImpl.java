@@ -9,23 +9,44 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.osgi.services.discovery.*;
-import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
+import org.eclipse.ecf.osgi.services.discovery.IRemoteServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
-import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
+import org.eclipse.ecf.osgi.services.distribution.IProxyDistributionListener;
+import org.eclipse.ecf.remoteservice.Constants;
+import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
+import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 import org.eclipse.equinox.concurrent.future.IExecutor;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.discovery.*;
+import org.osgi.service.discovery.DiscoveredServiceNotification;
+import org.osgi.service.discovery.DiscoveredServiceTracker;
+import org.osgi.service.discovery.ServiceEndpointDescription;
 
 public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
@@ -58,11 +79,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	 * .osgi.service.discovery.DiscoveredServiceNotification)
 	 */
 	public void serviceChanged(final DiscoveredServiceNotification notification) {
-		if (notification == null) {
-			logWarning("serviceChanged",
-					"DiscoveredServiceNotification is null.  Ignoring");
+		if (notification == null)
 			return;
-		}
 		int notificationType = notification.getType();
 		switch (notificationType) {
 		case DiscoveredServiceNotification.AVAILABLE:
@@ -82,7 +100,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				return;
 
 			if (!isValidService(adesc)) {
-				logWarning("serviceChanged.AVAILABLE",
+				trace("serviceChanged.AVAILABLE",
 						"Duplicate or invalid description=" + adesc);
 				return;
 			}
@@ -122,7 +140,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 									"proxyServiceRegistrations="
 											+ proxyServiceRegistrations[i]
 											+ ",serviceEndpointDesc=" + udesc);
-							unregisterProxyServiceRegistration(proxyServiceRegistrations[i]);
+							unregisterProxyServiceRegistration(udesc,
+									proxyServiceRegistrations[i]);
 						}
 						removeDiscoveredServiceID(udesc);
 					}
@@ -158,7 +177,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private IRemoteServiceContainer[] findRemoteServiceContainers(
-			IServiceID serviceID, IRemoteServiceEndpointDescription description,
+			IServiceID serviceID,
+			IRemoteServiceEndpointDescription description,
 			IProgressMonitor monitor) {
 		Activator activator = Activator.getDefault();
 		if (activator == null)
@@ -185,15 +205,6 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							+ ecfSED, null);
 			return;
 		}
-		// Give warning if more than one ContainerAdapterHelper found
-		if (rsContainers.length > 1) {
-			logWarning("handleDiscoveredServiceAvailable",
-					"Multiple remote service containers="
-							+ Arrays.asList(rsContainers)
-							+ " found for service endpoint description="
-							+ ecfSED);
-		}
-
 		// Get endpoint ID
 		ID ecfEndpointID = ecfSED.getEndpointAsID();
 		// Get remote service filter from the service endpoint description
@@ -207,6 +218,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			for (Iterator j = providedInterfaces.iterator(); j.hasNext();) {
 				String providedInterface = (String) j.next();
 				IRemoteServiceReference[] remoteReferences = null;
+				firePreGetRemoteServiceReferences(ecfSED, rsContainers[i]);
 				try {
 					remoteReferences = rsContainers[i].getContainerAdapter()
 							.getRemoteServiceReferences(ecfEndpointID,
@@ -244,6 +256,126 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				} else
 					registerRemoteServiceReferences(ecfSED, rsContainers[i],
 							remoteReferences);
+			}
+		}
+	}
+
+	private void firePreGetRemoteServiceReferences(
+			final IRemoteServiceEndpointDescription endpointDescription,
+			final IRemoteServiceContainer remoteServiceContainer) {
+		Activator activator = Activator.getDefault();
+		if (activator != null) {
+			IProxyDistributionListener[] listeners = activator
+					.getProxyDistributionListeners();
+			if (listeners != null) {
+				for (int i = 0; i < listeners.length; i++) {
+					final IProxyDistributionListener l = listeners[i];
+					SafeRunner.run(new ISafeRunnable() {
+						public void handleException(Throwable exception) {
+							logError(
+									"firePreGetRemoteServiceReferences",
+									"Exception calling proxy distribution listener",
+									exception);
+						}
+
+						public void run() throws Exception {
+							l
+									.retrievingRemoteServiceReferences(
+											endpointDescription,
+											remoteServiceContainer);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	private void firePreRegister(
+			final IRemoteServiceEndpointDescription endpointDescription,
+			final IRemoteServiceContainer remoteServiceContainer,
+			final IRemoteServiceReference remoteServiceReference) {
+		Activator activator = Activator.getDefault();
+		if (activator != null) {
+			IProxyDistributionListener[] listeners = activator
+					.getProxyDistributionListeners();
+			if (listeners != null) {
+				for (int i = 0; i < listeners.length; i++) {
+					final IProxyDistributionListener l = listeners[i];
+					SafeRunner.run(new ISafeRunnable() {
+						public void handleException(Throwable exception) {
+							logError(
+									"firePreRegister",
+									"Exception calling proxy distribution listener",
+									exception);
+						}
+
+						public void run() throws Exception {
+							l.registering(endpointDescription,
+									remoteServiceContainer,
+									remoteServiceReference);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	private void firePostRegister(
+			final IRemoteServiceEndpointDescription endpointDescription,
+			final IRemoteServiceContainer remoteServiceContainer,
+			final IRemoteServiceReference remoteServiceReference,
+			final ServiceRegistration serviceRegistration) {
+		Activator activator = Activator.getDefault();
+		if (activator != null) {
+			IProxyDistributionListener[] listeners = activator
+					.getProxyDistributionListeners();
+			if (listeners != null) {
+				for (int i = 0; i < listeners.length; i++) {
+					final IProxyDistributionListener l = listeners[i];
+					SafeRunner.run(new ISafeRunnable() {
+						public void handleException(Throwable exception) {
+							logError(
+									"firePreRegister",
+									"Exception calling proxy distribution listener",
+									exception);
+						}
+
+						public void run() throws Exception {
+							l
+									.registered(endpointDescription,
+											remoteServiceContainer,
+											remoteServiceReference,
+											serviceRegistration);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	private void fireUnregister(
+			final IRemoteServiceEndpointDescription endpointDescription,
+			final ServiceRegistration registration) {
+		Activator activator = Activator.getDefault();
+		if (activator != null) {
+			IProxyDistributionListener[] listeners = activator
+					.getProxyDistributionListeners();
+			if (listeners != null) {
+				for (int i = 0; i < listeners.length; i++) {
+					final IProxyDistributionListener l = listeners[i];
+					SafeRunner.run(new ISafeRunnable() {
+						public void handleException(Throwable exception) {
+							logError(
+									"fireUnregister",
+									"Exception calling proxy distribution listener",
+									exception);
+						}
+
+						public void run() throws Exception {
+							l.unregistered(endpointDescription, registration);
+						}
+					});
+				}
 			}
 		}
 	}
@@ -334,14 +466,17 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 										+ event.getReference()
 										+ ",proxyServiceRegistrations="
 										+ proxyServiceRegistrations[i]);
-						unregisterProxyServiceRegistration(proxyServiceRegistrations[i]);
+						unregisterProxyServiceRegistration(null,
+								proxyServiceRegistrations[i]);
 					}
 				}
 			}
 		}
 	}
 
-	private void unregisterProxyServiceRegistration(ServiceRegistration reg) {
+	private void unregisterProxyServiceRegistration(
+			IRemoteServiceEndpointDescription endpointDescription,
+			ServiceRegistration reg) {
 		try {
 			distributionProvider.removeRemoteService(reg.getReference());
 			reg.unregister();
@@ -353,6 +488,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			logError("unregisterProxyServiceRegistration",
 					"Exception unregistering serviceRegistration=" + reg, e);
 		}
+		fireUnregister(endpointDescription, reg);
 	}
 
 	private void registerRemoteServiceReferences(
@@ -413,6 +549,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 								"Remote service proxy is null", null);
 						continue;
 					}
+					firePreRegister(sed, ch, remoteReferences[i]);
 					// Finally register
 					trace("registerRemoteServiceReferences", "rsca=" + ch
 							+ ",remoteReference=" + remoteReferences[i]);
@@ -440,6 +577,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 									+ ",remoteServiceReference=" + ref
 									+ ",localServiceRegistration="
 									+ registration);
+					firePostRegister(sed, ch, remoteReferences[i], registration);
 				} catch (Exception e) {
 					logError("registerRemoteServiceReferences",
 							"Exception creating or registering remote reference "
@@ -478,7 +616,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		}
 	}
 
-	private boolean removeDiscoveredServiceID(RemoteServiceEndpointDescription desc) {
+	private boolean removeDiscoveredServiceID(
+			RemoteServiceEndpointDescription desc) {
 		synchronized (serviceLocations) {
 			return serviceLocations.remove(new DiscoveredServiceID(desc
 					.getServiceID().getLocation(), desc.getRemoteServiceId()));

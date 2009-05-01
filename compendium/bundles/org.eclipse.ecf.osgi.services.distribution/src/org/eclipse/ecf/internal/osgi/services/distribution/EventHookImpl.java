@@ -9,25 +9,49 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.osgi.services.distribution.IHostContainerFinder;
-import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.ecf.osgi.services.distribution.IHostDistributionListener;
 import org.eclipse.ecf.remoteservice.Constants;
-import org.osgi.framework.*;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.discovery.ServicePublication;
 
-public class EventHookImpl extends AbstractEventHookImpl {
+public class EventHookImpl implements EventHook {
+
+	private final static String[] EMPTY_STRING_ARRAY = new String[0];
+
+	private final DistributionProviderImpl distributionProvider;
+	private final Map srvRefToRemoteSrvRegistration = new HashMap();
+	private final Map srvRefToServicePublicationRegistration = new HashMap();
 
 	public EventHookImpl(DistributionProviderImpl distributionProvider) {
-		super(distributionProvider);
+		this.distributionProvider = distributionProvider;
 	}
 
-	protected void findContainersAndRegisterRemoteService(
+	private void findContainersAndRegisterRemoteService(
 			ServiceReference serviceReference, String[] remoteInterfaces) {
 
 		// Get optional service property osgi.remote.configuration.type
@@ -68,6 +92,9 @@ public class EventHookImpl extends AbstractEventHookImpl {
 			// Step 3
 			publishRemoteService(rsContainers[i], serviceReference,
 					remoteInterfaces, remoteRegistration);
+			// Now notify any listeners
+			fireHostRegisteredUnregistered(serviceReference, rsContainers[i],
+					remoteRegistration, true);
 		}
 	}
 
@@ -108,7 +135,8 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// ServicePublication.PROP_KEY_ENDPOINT_ID...since
 		// it won't handle some Strings with (e.g. slp) provider
 		ID endpointID = container.getID();
-		properties.put(RemoteServicePublication.ENDPOINT_CONTAINERID, endpointID);
+		properties.put(RemoteServicePublication.ENDPOINT_CONTAINERID,
+				endpointID);
 
 		// Also put the target ID in the service properties...*only*
 		// if the target ID is non-null and it's *not* the same as the
@@ -117,7 +145,8 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		ID targetID = container.getConnectedID();
 		if (targetID != null && !targetID.equals(endpointID)) {
 			// put the target ID into the properties
-			properties.put(RemoteServicePublication.TARGET_CONTAINERID, targetID);
+			properties.put(RemoteServicePublication.TARGET_CONTAINERID,
+					targetID);
 		}
 
 		// Set remote service namespace (String)
@@ -138,22 +167,27 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		// First create properties for new ServicePublication
 		final Dictionary properties = getServicePublicationProperties(
 				rsContainer, ref, remoteInterfaces, remoteRegistration);
-		final BundleContext context = Activator.getDefault().getContext();
-		// Now, at long last, register the ServicePublication.
-		// The RFC 119 discovery should/will pick this up and send it out
-		ServiceRegistration reg = context.registerService(
-				ServicePublication.class.getName(), new ServicePublication() {
-					public ServiceReference getReference() {
-						return ref;
-					}
-				}, properties);
-		fireRemoteServicePublished(ref, reg);
-		// And it's done
-		trace("publishRemoteService", "containerID="
-				+ rsContainer.getContainer().getID() + ",serviceReference="
-				+ ref + " properties=" + properties + ",remoteRegistration="
-				+ remoteRegistration);
-
+		// Just prior to registering the ServicePublication, notify
+		// the IHostRegistrationListeners
+		Activator activator = Activator.getDefault();
+		if (activator != null) {
+			final BundleContext context = activator.getContext();
+			// Now, at long last, register the ServicePublication.
+			// The RFC 119 discovery should/will pick this up and send it out
+			ServiceRegistration reg = context.registerService(
+					ServicePublication.class.getName(),
+					new ServicePublication() {
+						public ServiceReference getReference() {
+							return ref;
+						}
+					}, properties);
+			fireRemoteServicePublished(ref, reg);
+			// And it's done
+			trace("publishRemoteService", "containerID="
+					+ rsContainer.getContainer().getID() + ",serviceReference="
+					+ ref + " properties=" + properties
+					+ ",remoteRegistration=" + remoteRegistration);
+		}
 	}
 
 	private Collection getAsCollection(String[] remoteInterfaces) {
@@ -198,6 +232,253 @@ public class EventHookImpl extends AbstractEventHookImpl {
 		if (excludedProperties.contains(string))
 			return true;
 		return false;
+	}
+
+	public void event(ServiceEvent event, Collection contexts) {
+		switch (event.getType()) {
+		case ServiceEvent.MODIFIED:
+			handleModifiedServiceEvent(event.getServiceReference(), contexts);
+			break;
+		case ServiceEvent.MODIFIED_ENDMATCH:
+			break;
+		case ServiceEvent.REGISTERED:
+			handleRegisteredServiceEvent(event.getServiceReference(), contexts);
+			break;
+		case ServiceEvent.UNREGISTERING:
+			handleUnregisteringServiceEvent(event.getServiceReference(),
+					contexts);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private String[] getStringArrayFromPropertyValue(Object value) {
+		if (value == null)
+			return null;
+		else if (value instanceof String)
+			return new String[] { (String) value };
+		else if (value instanceof String[])
+			return (String[]) value;
+		else if (value instanceof Collection)
+			return (String[]) ((Collection) value).toArray(new String[] {});
+		else
+			return null;
+	}
+
+	void handleRegisteredServiceEvent(ServiceReference serviceReference,
+			Collection contexts) {
+		// This checks to see if the serviceReference has any remote interfaces
+		// declared via osgi.remote.interfaces property
+		Object osgiRemotes = serviceReference
+				.getProperty(IDistributionConstants.REMOTE_INTERFACES);
+		// If osgi.remote.interfaces required property is non-null then we
+		// handle further, if null then ignore the service registration event
+		if (osgiRemotes != null) {
+			String[] remoteInterfacesArr = getStringArrayFromPropertyValue(osgiRemotes);
+			if (remoteInterfacesArr == null) {
+				logError("handleRegisteredServiceEvent",
+						"remoteInterfaces not of String [] type as required by RFC 119");
+				return;
+			}
+			trace("handleRegisteredServiceEvent", "serviceReference="
+					+ serviceReference + ",remoteInterfaces="
+					+ Arrays.asList(remoteInterfacesArr));
+			// We compare the osgi.remote.interfaces with those exposed by the
+			// service reference and make sure that expose some common
+			// interfaces
+			String[] remoteInterfaces = (remoteInterfacesArr != null) ? getInterfacesForServiceReference(
+					remoteInterfacesArr, serviceReference)
+					: null;
+			if (remoteInterfaces == null) {
+				logError("handleRegisteredServiceEvent",
+						"No exposed remoteInterfaces found for serviceReference="
+								+ serviceReference);
+				return;
+			}
+			// Now call registerRemoteService
+			findContainersAndRegisterRemoteService(serviceReference,
+					remoteInterfaces);
+		}
+	}
+
+	private void fireRemoteServiceRegistered(ServiceReference serviceReference,
+			IRemoteServiceRegistration remoteServiceRegistration) {
+		synchronized (srvRefToRemoteSrvRegistration) {
+			List l = (List) srvRefToRemoteSrvRegistration.get(serviceReference);
+			if (l == null) {
+				l = new ArrayList();
+				srvRefToRemoteSrvRegistration.put(serviceReference, l);
+			}
+			l.add(remoteServiceRegistration);
+			distributionProvider.addExposedService(serviceReference);
+		}
+	}
+
+	private void fireHostRegisteredUnregistered(
+			final ServiceReference reference,
+			final IRemoteServiceContainer container,
+			final IRemoteServiceRegistration remoteRegistration,
+			final boolean registered) {
+		Activator activator = Activator.getDefault();
+		if (activator != null) {
+			IHostDistributionListener[] listeners = activator
+					.getHostRegistrationListeners();
+			if (listeners != null) {
+				for (int i = 0; i < listeners.length; i++) {
+					final IHostDistributionListener l = listeners[i];
+					SafeRunner.run(new ISafeRunnable() {
+						public void handleException(Throwable exception) {
+							logError(
+									"fireHostRegisteredUnregistered",
+									"Exception calling host distribution listener",
+									exception);
+						}
+
+						public void run() throws Exception {
+							if (registered)
+								l.registered(reference, container,
+										remoteRegistration);
+							else
+								l.unregistered(reference, remoteRegistration);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	private void fireRemoteServiceUnregistered(ServiceReference reference) {
+		IRemoteServiceRegistration[] registrations = null;
+		synchronized (srvRefToRemoteSrvRegistration) {
+			distributionProvider.removeExposedService(reference);
+			List l = (List) srvRefToRemoteSrvRegistration.remove(reference);
+			if (l != null) {
+				registrations = (IRemoteServiceRegistration[]) l
+						.toArray(new IRemoteServiceRegistration[] {});
+				l.clear();
+			}
+		}
+		if (registrations != null) {
+			for (int i = 0; i < registrations.length; i++) {
+				try {
+					registrations[i].unregister();
+				} catch (IllegalStateException e) {
+					// ignore
+				} catch (Exception e) {
+					logError("fireRemoteServiceUnregistered",
+							"Exception unregistering remote registration="
+									+ registrations[i], e);
+				}
+				// Now notify any listeners that this servicereference has been
+				// unregistered
+				fireHostRegisteredUnregistered(reference, null,
+						registrations[i], false);
+			}
+		}
+	}
+
+	private void fireRemoteServicePublished(ServiceReference serviceReference,
+			ServiceRegistration servicePublicationRegistration) {
+		synchronized (srvRefToServicePublicationRegistration) {
+			List l = (List) srvRefToServicePublicationRegistration
+					.get(serviceReference);
+			if (l == null) {
+				l = new ArrayList();
+				srvRefToServicePublicationRegistration.put(serviceReference, l);
+			}
+			l.add(servicePublicationRegistration);
+		}
+	}
+
+	private void fireRemoteServiceUnpublished(ServiceReference reference) {
+		ServiceRegistration[] registrations = null;
+		synchronized (srvRefToServicePublicationRegistration) {
+			List l = (List) srvRefToServicePublicationRegistration
+					.remove(reference);
+			if (l != null) {
+				registrations = (ServiceRegistration[]) l
+						.toArray(new ServiceRegistration[] {});
+				l.clear();
+			}
+		}
+		if (registrations != null) {
+			for (int i = 0; i < registrations.length; i++) {
+				try {
+					registrations[i].unregister();
+				} catch (Exception e) {
+					logError("fireRemoteServiceUnpublished",
+							"Exception unregistering service publication registrations="
+									+ registrations[i], e);
+				}
+			}
+		}
+	}
+
+	private String[] getInterfacesForServiceReference(
+			String[] remoteInterfaces, ServiceReference serviceReference) {
+		if (remoteInterfaces == null || remoteInterfaces.length == 0)
+			return EMPTY_STRING_ARRAY;
+		List results = new ArrayList();
+		List interfaces = Arrays.asList((String[]) serviceReference
+				.getProperty(org.osgi.framework.Constants.OBJECTCLASS));
+		for (int i = 0; i < remoteInterfaces.length; i++) {
+			String intf = remoteInterfaces[i];
+			if (IDistributionConstants.REMOTE_INTERFACES_WILDCARD.equals(intf))
+				return (String[]) interfaces.toArray(new String[] {});
+			if (intf != null && interfaces.contains(intf))
+				results.add(intf);
+		}
+		return (String[]) results.toArray(new String[] {});
+	}
+
+	private void trace(String methodName, String message) {
+		Trace.trace(Activator.PLUGIN_ID, DebugOptions.EVENTHOOKDEBUG, this
+				.getClass(), methodName, message);
+	}
+
+	private void traceException(String methodName, String message, Throwable t) {
+		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
+				this.getClass(), ((methodName == null) ? "<unknown>"
+						: methodName)
+						+ ":" + ((message == null) ? "<empty>" : message), t);
+	}
+
+	private void logError(String methodName, String message, Throwable t) {
+		traceException(methodName, message, t);
+		Activator.getDefault()
+				.log(
+						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+								IStatus.ERROR, this.getClass().getName()
+										+ ":"
+										+ ((methodName == null) ? "<unknown>"
+												: methodName)
+										+ ":"
+										+ ((message == null) ? "<empty>"
+												: message), t));
+	}
+
+	private void logError(String methodName, String message) {
+		logError(methodName, message, null);
+		traceException(methodName, message, null);
+	}
+
+	private void handleUnregisteringServiceEvent(
+			ServiceReference serviceReference, Collection contexts) {
+		fireRemoteServiceUnregistered(serviceReference);
+		fireRemoteServiceUnpublished(serviceReference);
+	}
+
+	private void handleModifiedServiceEvent(ServiceReference serviceReference,
+			Collection contexts) {
+		trace(
+				"org.eclipse.ecf.internal.osgi.services.distribution.AbstractEventHookImpl.handleModifiedServiceEvent(ServiceReference, Collection)",
+				"implement!");
+		// XXX we currently don't handle the modified service event
+	}
+
+	private Object getService(ServiceReference sr) {
+		return Activator.getDefault().getContext().getService(sr);
 	}
 
 }

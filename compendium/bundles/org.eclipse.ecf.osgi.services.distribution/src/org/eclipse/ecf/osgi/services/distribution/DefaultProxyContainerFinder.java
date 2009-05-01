@@ -42,8 +42,8 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 			// Do *not* include containers with same ID as endpoint ID
 			ID containerID = allContainers[i].getID();
 			if (containerID == null
-					|| containerID.equals(endpointDescription
-							.getEndpointAsID()))
+					|| containerID
+							.equals(endpointDescription.getEndpointAsID()))
 				continue;
 			// And make sure that the namespaces match
 			if (includeContainerWithConnectNamespace(

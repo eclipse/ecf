@@ -9,10 +9,17 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription;
-import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
+import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 public class RemoteServiceRegistration {

@@ -38,8 +38,8 @@ public interface IProxyContainerFinder {
 	 *            decide what IRemoteServiceContainer[] to return, as well as
 	 *            whether or not to connect the IContainer to the targetID
 	 *            (provided by
-	 *            {@link IRemoteServiceEndpointDescription#getConnectTargetID()}. Will not
-	 *            be <code>null</code>.
+	 *            {@link IRemoteServiceEndpointDescription#getConnectTargetID()}
+	 *            . Will not be <code>null</code>.
 	 * 
 	 * @param monitor
 	 *            a progress monitor to report progress or cancel operation from

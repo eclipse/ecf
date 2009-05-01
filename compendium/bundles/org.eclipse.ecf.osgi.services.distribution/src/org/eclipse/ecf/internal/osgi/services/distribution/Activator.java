@@ -9,14 +9,30 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Properties;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.osgi.services.distribution.*;
+import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.PlatformHelper;
+import org.eclipse.ecf.core.util.SystemLogService;
+import org.eclipse.ecf.osgi.services.distribution.DefaultHostContainerFinder;
+import org.eclipse.ecf.osgi.services.distribution.DefaultProxyContainerFinder;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
+import org.eclipse.ecf.osgi.services.distribution.IHostContainerFinder;
+import org.eclipse.ecf.osgi.services.distribution.IHostDistributionListener;
+import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
+import org.eclipse.ecf.osgi.services.distribution.IProxyDistributionListener;
 import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
-import org.osgi.framework.*;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.distribution.DistributionProvider;
@@ -48,6 +64,9 @@ public class Activator implements BundleActivator {
 	private ServiceTracker proxyrsContainerFinder;
 	private ServiceTracker hostrsContainerFinder;
 
+	private ServiceTracker hostRegistrationListenerServiceTracker;
+	private ServiceTracker proxyDistributionListenerServiceTracker;
+
 	public static Activator getDefault() {
 		return plugin;
 	}
@@ -56,7 +75,9 @@ public class Activator implements BundleActivator {
 		return context;
 	}
 
-	protected LogService getLogService() {
+	protected synchronized LogService getLogService() {
+		if (this.context == null)
+			return null;
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context,
 					LogService.class.getName(), null);
@@ -210,11 +231,23 @@ public class Activator implements BundleActivator {
 			proxyrsContainerFinder.close();
 			proxyrsContainerFinder = null;
 		}
-		this.context = null;
+		if (hostRegistrationListenerServiceTracker != null) {
+			hostRegistrationListenerServiceTracker.close();
+			hostRegistrationListenerServiceTracker = null;
+		}
+		if (proxyDistributionListenerServiceTracker != null) {
+			proxyDistributionListenerServiceTracker.close();
+			proxyDistributionListenerServiceTracker = null;
+		}
+		synchronized (this) {
+			this.context = null;
+		}
 		plugin = null;
 	}
 
-	public IContainerManager getContainerManager() {
+	public synchronized IContainerManager getContainerManager() {
+		if (this.context == null)
+			return null;
 		if (containerManagerTracker == null) {
 			containerManagerTracker = new ServiceTracker(this.context,
 					IContainerManager.class.getName(), null);
@@ -224,6 +257,8 @@ public class Activator implements BundleActivator {
 	}
 
 	public synchronized IProxyContainerFinder getProxyRemoteServiceContainerFinder() {
+		if (this.context == null)
+			return null;
 		if (proxyrsContainerFinder == null) {
 			proxyrsContainerFinder = new ServiceTracker(this.context,
 					IProxyContainerFinder.class.getName(), null);
@@ -233,6 +268,8 @@ public class Activator implements BundleActivator {
 	}
 
 	public synchronized IHostContainerFinder getHostRemoteServiceContainerFinder() {
+		if (this.context == null)
+			return null;
 		if (hostrsContainerFinder == null) {
 			hostrsContainerFinder = new ServiceTracker(this.context,
 					IHostContainerFinder.class.getName(), null);
@@ -241,7 +278,41 @@ public class Activator implements BundleActivator {
 		return (IHostContainerFinder) hostrsContainerFinder.getService();
 	}
 
-	public IAdapterManager getAdapterManager() {
+	public synchronized IHostDistributionListener[] getHostRegistrationListeners() {
+		if (this.context == null)
+			return null;
+		if (hostRegistrationListenerServiceTracker == null) {
+			hostRegistrationListenerServiceTracker = new ServiceTracker(
+					this.context, IHostDistributionListener.class.getName(),
+					null);
+			hostRegistrationListenerServiceTracker.open();
+		}
+		Object[] objs = hostRegistrationListenerServiceTracker.getServices();
+		if (objs == null)
+			return null;
+		return (IHostDistributionListener[]) Arrays.asList(objs).toArray(
+				new IHostDistributionListener[] {});
+	}
+
+	public synchronized IProxyDistributionListener[] getProxyDistributionListeners() {
+		if (this.context == null)
+			return null;
+		if (proxyDistributionListenerServiceTracker == null) {
+			proxyDistributionListenerServiceTracker = new ServiceTracker(
+					this.context, IProxyDistributionListener.class.getName(),
+					null);
+			proxyDistributionListenerServiceTracker.open();
+		}
+		Object[] objs = proxyDistributionListenerServiceTracker.getServices();
+		if (objs == null)
+			return null;
+		return (IProxyDistributionListener[]) Arrays.asList(objs).toArray(
+				new IProxyDistributionListener[] {});
+	}
+
+	public synchronized IAdapterManager getAdapterManager() {
+		if (this.context == null)
+			return null;
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
 			adapterManagerTracker = new ServiceTracker(this.context,
