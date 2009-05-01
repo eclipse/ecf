@@ -16,6 +16,7 @@ import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.internal.irc.ui.*;
+import org.eclipse.ecf.internal.provider.irc.identity.IRCID;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
@@ -106,7 +107,18 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard, IN
 		// If it's not already connected, then we connect this new container
 		if (!ui.isContainerConnected()) {
 			page.saveComboItems();
-			new AsynchContainerConnectAction(container, targetID, connectContext, null, new Runnable() {
+			
+			// bug 274613, we need to remove the extra autojoin channel bits
+			IRCID id = (IRCID) targetID;
+			// start with user, then host, then port, abc@irc.freenode.net:6667
+			StringBuffer buffer = new StringBuffer(id.getUsername());
+			buffer.append('@').append(id.getHost());
+			buffer.append(':').append(id.getPort());
+			// create a truncated ID instance for the container to connect to
+			id = (IRCID) container.getConnectNamespace().createInstance(
+					new Object[] { buffer.toString() });
+					
+			new AsynchContainerConnectAction(container, id, connectContext, null, new Runnable() {
 				public void run() {
 					cachePassword(page.getPasswordKeyFromUserName(connectID), password);
 				}
