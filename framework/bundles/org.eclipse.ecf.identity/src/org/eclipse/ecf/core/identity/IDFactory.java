@@ -59,7 +59,6 @@ public class IDFactory implements IIDFactory {
 	private static boolean initialized = false;
 
 	public synchronized static IIDFactory getDefault() {
-		initialize();
 		return instance;
 	}
 
