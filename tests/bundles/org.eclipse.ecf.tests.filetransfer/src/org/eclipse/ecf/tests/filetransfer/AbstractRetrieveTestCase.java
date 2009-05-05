@@ -190,19 +190,19 @@ public abstract class AbstractRetrieveTestCase extends AbstractFileTransferTestC
 		return e;
 	}
 	
-	protected void assertIncomingFileExceptionWithCause(Class expectedCause) {
+	protected void assertIncomingFileExceptionWithCause(int expectedCode) {
 		IncomingFileTransferException e = checkGetDoneIncomimgFileTransferException();
-		Throwable cause = e.getCause();
-		assertNotNull(cause);
-		assertTrue(cause.getClass().getName(), expectedCause.isInstance(cause));
+		int code = e.getErrorCode();
+		assertTrue(code != -1);
+		assertTrue(code == expectedCode);
 	}
 	
 	protected void assertDoneExceptionBeforeServerResponse(Class expectedCause) {
 		checkGetDoneException(expectedCause);
 	}
 	
-	protected void assertDoneExceptionAfterServerResponse(Class expectedCause) {
-		assertIncomingFileExceptionWithCause(expectedCause);
+	protected void assertDoneExceptionAfterServerResponse(int expectedErrorCode) {
+		assertIncomingFileExceptionWithCause(expectedErrorCode);
 	}
 
 	protected void assertHasEvent(Collection collection, Class eventType) {

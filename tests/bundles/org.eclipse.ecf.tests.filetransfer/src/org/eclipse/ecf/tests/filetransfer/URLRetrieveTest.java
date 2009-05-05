@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
@@ -26,6 +27,7 @@ import org.apache.commons.httpclient.server.SimpleHttpServerConnection;
 import org.apache.commons.httpclient.server.SimpleRequest;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
+import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.SendFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
@@ -227,7 +229,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public void testFailedReceive() throws Exception {
 		try {
 			testReceiveFails(HTTP_404_FAIL_RETRIEVE);
-			assertDoneExceptionAfterServerResponse(FileNotFoundException.class);
+			assertDoneExceptionAfterServerResponse(HttpURLConnection.HTTP_NOT_FOUND);
 		} catch (final Exception e) {
 			e.printStackTrace();
 			fail(e.toString());
