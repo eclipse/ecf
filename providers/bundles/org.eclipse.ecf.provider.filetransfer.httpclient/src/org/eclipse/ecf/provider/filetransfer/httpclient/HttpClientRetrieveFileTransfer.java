@@ -19,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.util.Iterator;
 import javax.net.SocketFactory;
-import javax.security.auth.login.LoginException;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -605,13 +604,13 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new FileNotFoundException(urlString);
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				getMethod.releaseConnection();
-				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
 			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.releaseConnection();
-				throw new LoginException("Forbidden"); //$NON-NLS-1$
+				throw new IncomingFileTransferException("Forbidden", code); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				getMethod.releaseConnection();
-				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
 			} else {
 				getMethod.releaseConnection();
 				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
@@ -624,7 +623,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				}
 				fireTransferReceiveDoneEvent();
 			} else {
-				IncomingFileTransferException ex = new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code);
+				IncomingFileTransferException ex = (IncomingFileTransferException) ((e instanceof IncomingFileTransferException) ? e : new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code));
 				throw ex;
 			}
 		}
@@ -706,7 +705,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	protected static boolean urlUsesHttps(String url) {
-		return url.matches(HTTPS + ".*"); //$NON-NLS-1$
+		url = url.trim();
+		return url.startsWith(HTTPS);
 	}
 
 	/*
@@ -815,13 +815,13 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new FileNotFoundException(urlString);
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				getMethod.releaseConnection();
-				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
 			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.releaseConnection();
-				throw new LoginException("Forbidden"); //$NON-NLS-1$
+				throw new IncomingFileTransferException("Forbidden", code); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				getMethod.releaseConnection();
-				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
 			} else {
 				getMethod.releaseConnection();
 				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
@@ -835,7 +835,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 					setDoneException(e);
 				}
 			} else {
-				setDoneException(new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code));
+				setDoneException((e instanceof IncomingFileTransferException) ? e : new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code));
 			}
 			fireTransferReceiveDoneEvent();
 			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreamsForResume", Boolean.FALSE); //$NON-NLS-1$

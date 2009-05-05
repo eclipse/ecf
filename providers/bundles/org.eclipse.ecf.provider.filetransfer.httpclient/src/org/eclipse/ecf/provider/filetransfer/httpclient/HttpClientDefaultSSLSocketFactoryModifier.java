@@ -17,6 +17,7 @@ import java.net.Socket;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.filetransfer.events.socketfactory.INonconnectedSocketFactory;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.ISSLSocketFactoryModifier;
 
@@ -48,7 +49,7 @@ public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFact
 		SSLContext rtvContext = null;
 
 		if (protocols != null) {
-			String protocolNames[] = protocols.split(","); //$NON-NLS-1$
+			String protocolNames[] = StringUtils.split(protocols, ","); //$NON-NLS-1$
 			for (int i = 0; i < protocolNames.length; i++) {
 				try {
 					rtvContext = SSLContext.getInstance(protocolNames[i]);

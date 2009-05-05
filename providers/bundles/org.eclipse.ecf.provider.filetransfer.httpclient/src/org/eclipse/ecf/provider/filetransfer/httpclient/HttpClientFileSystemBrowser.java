@@ -18,7 +18,6 @@ import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
 import java.util.Iterator;
-import javax.security.auth.login.LoginException;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -40,6 +39,7 @@ import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.filetransfer.BrowseFileTransferException;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemRequest;
@@ -182,10 +182,11 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		long lastModified = 0;
 		long fileLength = -1;
 		connectingSockets.clear();
+		int code = -1;
 		try {
 			Trace.trace(Activator.PLUGIN_ID, "browse=" + urlString); //$NON-NLS-1$
 
-			int code = httpClient.executeMethod(getHostConfiguration(), headMethod);
+			code = httpClient.executeMethod(getHostConfiguration(), headMethod);
 
 			Trace.trace(Activator.PLUGIN_ID, "browse resp=" + code); //$NON-NLS-1$
 
@@ -195,11 +196,11 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 				throw new FileNotFoundException(urlString);
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
+				throw new BrowseFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
 			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
-				throw new LoginException("Forbidden"); //$NON-NLS-1$
+				throw new BrowseFileTransferException("Forbidden", code); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
-				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
+				throw new BrowseFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
 			} else {
 				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
 			}
@@ -207,7 +208,8 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			remoteFiles[0] = new URLRemoteFile(lastModified, fileLength, fileID);
 		} catch (Exception e) {
 			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "runRequest", e); //$NON-NLS-1$
-			throw e;
+			BrowseFileTransferException ex = (BrowseFileTransferException) ((e instanceof BrowseFileTransferException) ? e : new BrowseFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code));
+			throw ex;
 		} finally {
 			headMethod.releaseConnection();
 		}
