@@ -286,19 +286,22 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			setCompressionRequestHeader();
 			setInputStream(getDecompressedStream());
 			code = getResponseCode();
-			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
-				getResponseHeaderValues();
-				fireReceiveStartEvent();
-			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
-				throw new IncomingFileTransferException(NLS.bind("File not found: {0}", getRemoteFileURL().toString()), code); //$NON-NLS-1$
-			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-				throw new IncomingFileTransferException("Unauthorized", code); //$NON-NLS-1$
-			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
-				throw new IncomingFileTransferException("Forbidden", code); //$NON-NLS-1$
-			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
-				throw new IncomingFileTransferException("Proxy authentication required", code); //$NON-NLS-1$
+			if (isHTTP()) {
+				if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
+					fireReceiveStartEvent();
+				} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+					throw new IncomingFileTransferException(NLS.bind("File not found: {0}", getRemoteFileURL().toString()), code); //$NON-NLS-1$
+				} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+					throw new IncomingFileTransferException("Unauthorized", code); //$NON-NLS-1$
+				} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
+					throw new IncomingFileTransferException("Forbidden", code); //$NON-NLS-1$
+				} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
+					throw new IncomingFileTransferException("Proxy authentication required", code); //$NON-NLS-1$
+				} else {
+					throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code); //$NON-NLS-1$
+				}
 			} else {
-				throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code); //$NON-NLS-1$
+				fireReceiveStartEvent();
 			}
 		} catch (final Exception e) {
 			IncomingFileTransferException except = (e instanceof IncomingFileTransferException) ? (IncomingFileTransferException) e : new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, code);

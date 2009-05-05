@@ -104,24 +104,32 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 			InputStream ins = urlConnection.getInputStream();
 			code = getResponseCode(urlConnection);
 			ins.close();
-			if (code == HttpURLConnection.HTTP_OK) {
-				remoteFiles = new IRemoteFile[1];
-				remoteFiles[0] = new URLRemoteFile(urlConnection.getLastModified(), urlConnection.getContentLength(), fileID);
-			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
-				throw new BrowseFileTransferException(NLS.bind("File not found: {0}", directoryOrFile.toString()), code); //$NON-NLS-1$
-			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-				throw new BrowseFileTransferException("Unauthorized", code); //$NON-NLS-1$
-			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
-				throw new BrowseFileTransferException("Forbidden", code); //$NON-NLS-1$
-			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
-				throw new BrowseFileTransferException("Proxy auth required", code); //$NON-NLS-1$
-			} else {
-				throw new BrowseFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code); //$NON-NLS-1$
+			if (isHTTP()) {
+				if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+					throw new BrowseFileTransferException(NLS.bind("File not found: {0}", directoryOrFile.toString()), code); //$NON-NLS-1$
+				} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+					throw new BrowseFileTransferException("Unauthorized", code); //$NON-NLS-1$
+				} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
+					throw new BrowseFileTransferException("Forbidden", code); //$NON-NLS-1$
+				} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
+					throw new BrowseFileTransferException("Proxy auth required", code); //$NON-NLS-1$
+				} else {
+					throw new BrowseFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code); //$NON-NLS-1$
+				}
 			}
+			remoteFiles = new IRemoteFile[1];
+			remoteFiles[0] = new URLRemoteFile(urlConnection.getLastModified(), urlConnection.getContentLength(), fileID);
 		} catch (Exception e) {
 			Exception except = (e instanceof BrowseFileTransferException) ? e : new BrowseFileTransferException(NLS.bind("Could not connect to {0}", directoryOrFile), e, code); //$NON-NLS-1$
 			throw except;
 		}
+	}
+
+	private boolean isHTTP() {
+		final String protocol = directoryOrFile.getProtocol();
+		if (protocol.equalsIgnoreCase("http") || protocol.equalsIgnoreCase("https")) //$NON-NLS-1$ //$NON-NLS-2$
+			return true;
+		return false;
 	}
 
 	private int getResponseCode(URLConnection urlConnection) {
