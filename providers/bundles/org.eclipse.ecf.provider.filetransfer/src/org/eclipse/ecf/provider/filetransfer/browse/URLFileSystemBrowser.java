@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.security.NameCallback;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.filetransfer.BrowseFileTransferException;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -31,6 +32,7 @@ import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.IURLConnectionModifier;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
+import org.eclipse.osgi.util.NLS;
 
 /**
  *
@@ -77,29 +79,56 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 	 * @see org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser#runRequest()
 	 */
 	protected void runRequest() throws Exception {
-		setupProxies();
-		setupAuthentication();
-		setupTimeouts();
-		URLConnection urlConnection = directoryOrFile.openConnection();
-		// set cache to off if using jar protocol
-		// this is for addressing bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=235933
-		if (directoryOrFile.getProtocol().equalsIgnoreCase("jar")) { //$NON-NLS-1$
-			urlConnection.setUseCaches(false);
-		}
-		// Add http 1.1 'Connection: close' header in order to potentially avoid
-		// server issue described here https://bugs.eclipse.org/bugs/show_bug.cgi?id=234916#c13
-		// See bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=247197
-		// also see http 1.1 rfc section 14-10 in http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-		urlConnection.setRequestProperty("Connection", "close"); //$NON-NLS-1$ //$NON-NLS-2$
+		int code = -1;
+		try {
+			setupProxies();
+			setupAuthentication();
+			setupTimeouts();
+			URLConnection urlConnection = directoryOrFile.openConnection();
+			// set cache to off if using jar protocol
+			// this is for addressing bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=235933
+			if (directoryOrFile.getProtocol().equalsIgnoreCase("jar")) { //$NON-NLS-1$
+				urlConnection.setUseCaches(false);
+			}
+			// Add http 1.1 'Connection: close' header in order to potentially avoid
+			// server issue described here https://bugs.eclipse.org/bugs/show_bug.cgi?id=234916#c13
+			// See bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=247197
+			// also see http 1.1 rfc section 14-10 in http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+			urlConnection.setRequestProperty("Connection", "close"); //$NON-NLS-1$ //$NON-NLS-2$
 
-		IURLConnectionModifier connectionModifier = Activator.getDefault().getURLConnectionModifier();
-		if (connectionModifier != null) {
-			connectionModifier.setSocketFactoryForConnection(urlConnection);
+			IURLConnectionModifier connectionModifier = Activator.getDefault().getURLConnectionModifier();
+			if (connectionModifier != null) {
+				connectionModifier.setSocketFactoryForConnection(urlConnection);
+			}
+			InputStream ins = urlConnection.getInputStream();
+			code = getResponseCode(urlConnection);
+			ins.close();
+			remoteFiles = new IRemoteFile[1];
+			remoteFiles[0] = new URLRemoteFile(urlConnection.getLastModified(), urlConnection.getContentLength(), fileID);
+		} catch (Exception e) {
+			throw new BrowseFileTransferException(NLS.bind("Could not connect to {0}", directoryOrFile), e, code); //$NON-NLS-1$
 		}
-		InputStream ins = urlConnection.getInputStream();
-		ins.close();
-		remoteFiles = new IRemoteFile[1];
-		remoteFiles[0] = new URLRemoteFile(urlConnection.getLastModified(), urlConnection.getContentLength(), fileID);
+	}
+
+	private int getResponseCode(URLConnection urlConnection) {
+		int responseCode = -1;
+		String response = urlConnection.getHeaderField(0);
+		if (response == null) {
+			responseCode = -1;
+			return responseCode;
+		}
+		if (!response.startsWith("HTTP/")) //$NON-NLS-1$
+			return -1;
+		response = response.trim();
+		final int mark = response.indexOf(" ") + 1; //$NON-NLS-1$
+		if (mark == 0)
+			return -1;
+		int last = mark + 3;
+		if (last > response.length())
+			last = response.length();
+		responseCode = Integer.parseInt(response.substring(mark, last));
+		return responseCode;
+
 	}
 
 	protected void setupAuthentication() throws IOException, UnsupportedCallbackException {

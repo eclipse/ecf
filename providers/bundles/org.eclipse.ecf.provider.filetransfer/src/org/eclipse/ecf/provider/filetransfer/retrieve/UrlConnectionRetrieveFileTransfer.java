@@ -9,10 +9,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Authenticator;
 import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
@@ -275,6 +277,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	 * #openStreams()
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
+		int code = -1;
 		try {
 			setupAuthentication();
 			connect();
@@ -283,10 +286,23 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			// need to get response header about encoding before setting stream
 			setCompressionRequestHeader();
 			setInputStream(getDecompressedStream());
-			getResponseHeaderValues();
-			fireReceiveStartEvent();
+			code = getResponseCode();
+			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
+				getResponseHeaderValues();
+				fireReceiveStartEvent();
+			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+				throw new FileNotFoundException(getRemoteFileName());
+			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+				throw new IncomingFileTransferException("Unauthorized", code); //$NON-NLS-1$
+			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
+				throw new IncomingFileTransferException("Forbidden", code); //$NON-NLS-1$
+			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
+				throw new IncomingFileTransferException("Proxy authentication required", code); //$NON-NLS-1$
+			} else {
+				throw new IOException(NLS.bind("General connection error with response code={0}", new Integer(code))); //$NON-NLS-1$
+			}
 		} catch (final Exception e) {
-			IncomingFileTransferException except = new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e);
+			IncomingFileTransferException except = new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, code);
 			hardClose();
 			throw except;
 		}
@@ -368,6 +384,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	 */
 	private boolean openStreamsForResume() {
 		final URL theURL = getRemoteFileURL();
+		int code = -1;
 		try {
 			remoteFileURL = new URL(theURL.toString());
 			setupAuthentication();
@@ -375,12 +392,25 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			setResumeRequestHeaderValues();
 			// Make actual GET request
 			setInputStream(urlConnection.getInputStream());
-			getResumeResponseHeaderValues();
-			this.paused = false;
-			fireReceiveResumedEvent();
-			return true;
+			code = getResponseCode();
+			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
+				getResumeResponseHeaderValues();
+				this.paused = false;
+				fireReceiveResumedEvent();
+				return true;
+			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+				throw new FileNotFoundException(getRemoteFileName());
+			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+				throw new IncomingFileTransferException("Unauthorized", code); //$NON-NLS-1$
+			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
+				throw new IncomingFileTransferException("Forbidden", code); //$NON-NLS-1$
+			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
+				throw new IncomingFileTransferException("Proxy authentication required", code); //$NON-NLS-1$
+			} else {
+				throw new IOException(NLS.bind("General connection error with response code={0}", new Integer(code))); //$NON-NLS-1$
+			}
 		} catch (final Exception e) {
-			this.exception = e;
+			this.exception = new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, code);
 			this.done = true;
 			hardClose();
 			fireTransferReceiveDoneEvent();
@@ -388,18 +418,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		}
 	}
 
-	//	private static final String APPLICATION_X_GZIP = "application/x-gzip"; //$NON-NLS-1$
-	//	private static final String CONTENT_TYPE = "Content-Type"; //$NON-NLS-1$
-	//	private static final String CONTENT_ENCODING = "Content-Encoding"; //$NON-NLS-1$
 	private static final String ACCEPT_ENCODING = "Accept-encoding"; //$NON-NLS-1$
 	private static final String CONTENT_ENCODING_GZIP = "gzip"; //$NON-NLS-1$
-	//	private static final String CONTENT_ENCODING_DEFLATE = "deflate"; //$NON-NLS-1$
 
 	private static final String CONTENT_ENCODING_ACCEPTED = CONTENT_ENCODING_GZIP; // +
-
-	// ","
-	// +
-	// CONTENT_ENCODING_DEFLATE;
 
 	private static class Compression {
 
@@ -413,8 +435,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 		static Compression GZIP = new Compression("gzip"); //$NON-NLS-1$
 
-		//		static Compression DEFLATE = new Compression("deflate"); //$NON-NLS-1$
-
 		public String toString() {
 			return type;
 		}
@@ -427,7 +447,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	private Compression getCompressionResponseHeader() {
 		String encoding = urlConnection.getContentEncoding();
-
 		if (null == encoding) {
 			return Compression.NONE;
 			// see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=269018
@@ -439,6 +458,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	private InputStream getDecompressedStream() throws IOException {
 		InputStream input = urlConnection.getInputStream();
+		getResponseHeaderValues();
 		Compression type = getCompressionResponseHeader();
 
 		if (Compression.GZIP == type) {
