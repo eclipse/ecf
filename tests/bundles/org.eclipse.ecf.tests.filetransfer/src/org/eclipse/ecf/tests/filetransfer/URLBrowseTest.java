@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.ecf.filetransfer.BrowseFileTransferException;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileAttributes;
 import org.eclipse.ecf.filetransfer.IRemoteFileInfo;
+import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
@@ -91,8 +93,12 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 		assertNotNull(event);
 		final IRemoteFile[] remoteFiles = event.getRemoteFiles();
 		assertNull(remoteFiles);
-		assertNotNull(event.getException());
-		assertTrue(event.getException() instanceof UnknownHostException);
+		Exception e = event.getException();
+		assertNotNull(e);
+		if (e instanceof BrowseFileTransferException) {
+			BrowseFileTransferException ifte = (BrowseFileTransferException) e;
+			assertTrue(ifte.getCause() instanceof UnknownHostException);
+		} else fail("Event exception is not instance of BrowseFileTransferException");
 	}
 	
 	protected void verifyRemoteFilesWithoutLastModifiedAndContentLength(final IRemoteFile[] remoteFiles) {

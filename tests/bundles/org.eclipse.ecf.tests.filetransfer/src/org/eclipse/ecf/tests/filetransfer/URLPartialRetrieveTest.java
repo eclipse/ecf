@@ -14,11 +14,13 @@ package org.eclipse.ecf.tests.filetransfer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 
 import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
+import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
@@ -28,16 +30,14 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveResumedEv
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
-import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
-public class URLPartialRetrieveTest extends ContainerAbstractTestCase {
+public class URLPartialRetrieveTest extends AbstractRetrieveTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/rt/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
 
 	private static final String FILENAME = "foo.zip";
 
-	private IRetrieveFileTransfer transferInstance;
+	private IRetrieveFileTransferContainerAdapter transferInstance;
 
 	File incomingFile = null;
 
@@ -48,7 +48,7 @@ public class URLPartialRetrieveTest extends ContainerAbstractTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		transferInstance = Activator.getDefault().getRetrieveFileTransferFactory().newInstance();
+		transferInstance = getRetrieveAdapter();
 	}
 
 	/*
@@ -166,17 +166,15 @@ public class URLPartialRetrieveTest extends ContainerAbstractTestCase {
 		}
 	}
 
-	/*
 		public void testReceiveWholeFile() throws Exception {
-			testReceiveHttp(-1, -1, HTTP_RETRIEVE);
+			testRetrieve(new URL(HTTP_RETRIEVE));
 		}
 
 		public void testReceivePartialFile1() throws Exception {
-			testReceiveHttp(0, -1, HTTP_RETRIEVE);
+			testReceiveHttp(0, 150, HTTP_RETRIEVE);
 		}
-	*/
 	public void testReceivePartialFile2() throws Exception {
-		testReceiveHttp(10, -1, HTTP_RETRIEVE);
+		testReceiveHttp(10, 100, HTTP_RETRIEVE);
 	}
 
 	public void testReceivePartialFile3() throws Exception {
