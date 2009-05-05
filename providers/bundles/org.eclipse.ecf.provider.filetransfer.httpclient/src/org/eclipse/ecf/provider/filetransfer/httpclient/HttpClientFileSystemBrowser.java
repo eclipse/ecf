@@ -12,7 +12,6 @@
 
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Socket;
@@ -194,7 +193,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 				fileLength = headMethod.getResponseContentLength();
 				lastModified = getLastModifiedTimeFromHeader();
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
-				throw new FileNotFoundException(urlString);
+				throw new BrowseFileTransferException(NLS.bind("File not found: {0}", urlString), code); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				throw new BrowseFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
 			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
@@ -202,7 +201,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				throw new BrowseFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
 			} else {
-				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
+				throw new BrowseFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)), code);
 			}
 			remoteFiles = new IRemoteFile[1];
 			remoteFiles[0] = new URLRemoteFile(lastModified, fileLength, fileID);

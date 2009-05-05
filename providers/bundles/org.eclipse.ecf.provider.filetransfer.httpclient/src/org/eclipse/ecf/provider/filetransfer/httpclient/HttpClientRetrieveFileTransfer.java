@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -251,8 +250,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
 	protected static final int DEFAULT_CONNECTION_TIMEOUT = 120000;
-	// changing to 1 minutes (60000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
-	protected static final int DEFAULT_READ_TIMEOUT = 60000;
+	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
+	protected static final int DEFAULT_READ_TIMEOUT = 120000;
 
 	protected static final int HTTP_PORT = 80;
 
@@ -601,7 +600,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				fireReceiveStartEvent();
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 				getMethod.releaseConnection();
-				throw new FileNotFoundException(urlString);
+				throw new IncomingFileTransferException(NLS.bind("File not found: {0}", urlString), code); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				getMethod.releaseConnection();
 				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
@@ -613,7 +612,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
 			} else {
 				getMethod.releaseConnection();
-				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
+				throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)), code);
 			}
 		} catch (final Exception e) {
 			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreams", e); //$NON-NLS-1$
@@ -812,7 +811,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				fireReceiveResumedEvent();
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 				getMethod.releaseConnection();
-				throw new FileNotFoundException(urlString);
+				throw new IncomingFileTransferException(NLS.bind("File not found: {0}", urlString), code); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				getMethod.releaseConnection();
 				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
@@ -824,7 +823,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
 			} else {
 				getMethod.releaseConnection();
-				throw new IOException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)));
+				throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)), code);
 			}
 			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreamsForResume", Boolean.TRUE); //$NON-NLS-1$
 			return true;
