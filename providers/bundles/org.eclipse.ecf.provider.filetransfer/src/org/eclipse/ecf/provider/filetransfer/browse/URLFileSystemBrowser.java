@@ -14,6 +14,7 @@ package org.eclipse.ecf.provider.filetransfer.browse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Authenticator;
+import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
@@ -103,10 +104,23 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 			InputStream ins = urlConnection.getInputStream();
 			code = getResponseCode(urlConnection);
 			ins.close();
-			remoteFiles = new IRemoteFile[1];
-			remoteFiles[0] = new URLRemoteFile(urlConnection.getLastModified(), urlConnection.getContentLength(), fileID);
+			if (code == HttpURLConnection.HTTP_OK) {
+				remoteFiles = new IRemoteFile[1];
+				remoteFiles[0] = new URLRemoteFile(urlConnection.getLastModified(), urlConnection.getContentLength(), fileID);
+			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+				throw new BrowseFileTransferException(NLS.bind("File not found: {0}", directoryOrFile.toString()), code); //$NON-NLS-1$
+			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+				throw new BrowseFileTransferException("Unauthorized", code); //$NON-NLS-1$
+			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
+				throw new BrowseFileTransferException("Forbidden", code); //$NON-NLS-1$
+			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
+				throw new BrowseFileTransferException("Proxy auth required", code); //$NON-NLS-1$
+			} else {
+				throw new BrowseFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code); //$NON-NLS-1$
+			}
 		} catch (Exception e) {
-			throw new BrowseFileTransferException(NLS.bind("Could not connect to {0}", directoryOrFile), e, code); //$NON-NLS-1$
+			Exception except = (e instanceof BrowseFileTransferException) ? e : new BrowseFileTransferException(NLS.bind("Could not connect to {0}", directoryOrFile), e, code); //$NON-NLS-1$
+			throw except;
 		}
 	}
 
