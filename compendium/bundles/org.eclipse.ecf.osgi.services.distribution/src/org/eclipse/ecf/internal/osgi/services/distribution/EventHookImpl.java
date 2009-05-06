@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -104,15 +105,38 @@ public class EventHookImpl implements EventHook {
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return null;
-		IHostContainerFinder finder = activator
-				.getHostRemoteServiceContainerFinder();
-		if (finder == null) {
+		IHostContainerFinder[] finders = activator
+				.getHostRemoteServiceContainerFinders();
+		if (finders == null) {
 			logError("findRemoteServiceContainers",
 					"No container finders available");
 			return null;
 		}
-		return finder.findHostContainers(serviceReference, remoteInterfaces,
-				remoteConfigurationType, remoteRequiresIntents);
+		Map rsContainers = new HashMap();
+		// For each container finder
+		for (int i = 0; i < finders.length; i++) {
+			// call out to the container finder to get candidates for that
+			// container finder
+			IRemoteServiceContainer[] candidates = finders[i]
+					.findHostContainers(serviceReference, remoteInterfaces,
+							remoteConfigurationType, remoteRequiresIntents);
+
+			if (candidates != null) {
+				// Then for all candidates make sure that they are not already
+				// present in results. This makes sure that
+				for (int j = 0; j < candidates.length; j++) {
+					ID containerID = candidates[i].getContainer().getID();
+					if (containerID != null)
+						rsContainers.put(containerID, candidates[i]);
+				}
+			}
+		}
+		// Then move to results list
+		List results = new ArrayList();
+		for (Iterator i = rsContainers.keySet().iterator(); i.hasNext();)
+			results.add(rsContainers.get(i.next()));
+		return (IRemoteServiceContainer[]) results
+				.toArray(new IRemoteServiceContainer[] {});
 	}
 
 	private Dictionary getServicePublicationProperties(

@@ -177,20 +177,43 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	}
 
 	private IRemoteServiceContainer[] findRemoteServiceContainers(
-			IServiceID serviceID,
-			IRemoteServiceEndpointDescription description,
-			IProgressMonitor monitor) {
+			final IServiceID serviceID,
+			final IRemoteServiceEndpointDescription description,
+			final IProgressMonitor monitor) {
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return new IRemoteServiceContainer[0];
-		IProxyContainerFinder finder = activator
-				.getProxyRemoteServiceContainerFinder();
-		if (finder == null) {
+		IProxyContainerFinder[] finders = activator
+				.getProxyRemoteServiceContainerFinders();
+		if (finders == null) {
 			logError("findRemoteServiceContainersViaService",
 					"No container finders available");
 			return new IRemoteServiceContainer[0];
 		}
-		return finder.findProxyContainers(serviceID, description, monitor);
+		Map rsContainers = new HashMap();
+		// For each container finder
+		for (int i = 0; i < finders.length; i++) {
+			// call out to the container finder to get candidates for that
+			// container finder
+			IRemoteServiceContainer[] candidates = finders[i]
+					.findProxyContainers(serviceID, description, monitor);
+
+			if (candidates != null) {
+				// Then for all candidates make sure that they are not already
+				// present in results. This makes sure that
+				for (int j = 0; j < candidates.length; j++) {
+					ID containerID = candidates[i].getContainer().getID();
+					if (containerID != null)
+						rsContainers.put(containerID, candidates[i]);
+				}
+			}
+		}
+		// Then move to results list
+		List results = new ArrayList();
+		for (Iterator i = rsContainers.keySet().iterator(); i.hasNext();)
+			results.add(rsContainers.get(i.next()));
+		return (IRemoteServiceContainer[]) results
+				.toArray(new IRemoteServiceContainer[] {});
 	}
 
 	private void handleDiscoveredServiceAvailable(
