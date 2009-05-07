@@ -15,6 +15,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
@@ -101,19 +102,21 @@ public abstract class AbstractRemoteServiceTest extends
 	}
 
 	protected IRemoteServiceReference[] getRemoteServiceReferences(
-			IRemoteServiceContainerAdapter adapter, String clazz, String filter) {
+			IRemoteServiceContainerAdapter adapter, ID target, String clazz, String filter) {
 		try {
-			return adapter.getRemoteServiceReferences((ID[])null, clazz, filter);
+			return adapter.getRemoteServiceReferences(target, clazz, filter);
 		} catch (final InvalidSyntaxException e) {
 			fail("should not happen");
+		} catch (final ContainerConnectException e) {
+			fail("connect problem");
 		}
 		return null;
 	}
 
 	protected IRemoteService getRemoteService(
-			IRemoteServiceContainerAdapter adapter, String clazz, String filter) {
+			IRemoteServiceContainerAdapter adapter, ID target, String clazz, String filter) {
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapter, clazz, filter);
+				adapter, target, clazz, filter);
 		if (refs == null || refs.length == 0)
 			return null;
 		return adapter.getRemoteService(refs[0]);
@@ -139,11 +142,11 @@ public abstract class AbstractRemoteServiceTest extends
 
 	protected IRemoteService registerAndGetRemoteService(
 			IRemoteServiceContainerAdapter server,
-			IRemoteServiceContainerAdapter client, String serviceName,
+			IRemoteServiceContainerAdapter client, ID target, String serviceName,
 			Dictionary serviceProperties, int sleepTime) {
 		registerService(server, serviceName, createService(),
 				serviceProperties, sleepTime);
-		return getRemoteService(client, serviceName,
+		return getRemoteService(client, target, serviceName,
 				getFilterFromServiceProperties(serviceProperties));
 	}
 
@@ -200,7 +203,6 @@ public abstract class AbstractRemoteServiceTest extends
 		IRemoteServiceID remoteServiceID = reg.getID();
 		assertNotNull(remoteServiceID);
 		assertNotNull(remoteServiceID.getContainerID());
-		assertTrue(ids[0].equals(remoteServiceID));
 	}
 
 	public void testUnregisterService() throws Exception {
@@ -221,7 +223,7 @@ public abstract class AbstractRemoteServiceTest extends
 				createService(), null, 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], IConcatService.class.getName(), null);
+				adapters[1], getClient(0).getID(), IConcatService.class.getName(), null);
 
 		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
@@ -236,7 +238,7 @@ public abstract class AbstractRemoteServiceTest extends
 				createService(), props, 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], IConcatService.class.getName(),
+				adapters[1], getClient(0).getID(), IConcatService.class.getName(),
 				getFilterFromServiceProperties(props));
 
 		assertTrue(refs != null);
@@ -258,7 +260,7 @@ public abstract class AbstractRemoteServiceTest extends
 		final String missFilter = getFilterFromServiceProperties(missProps);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], IConcatService.class.getName(), missFilter);
+				adapters[1], getClient(0).getID(), IConcatService.class.getName(), missFilter);
 
 		assertTrue(refs == null);
 	}
@@ -278,7 +280,7 @@ public abstract class AbstractRemoteServiceTest extends
 	protected IRemoteService registerAndGetRemoteService() {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		return registerAndGetRemoteService(adapters[0], adapters[1],
-				IConcatService.class.getName(), null, 0);
+				getClient(0).getID(), IConcatService.class.getName(), null, 0);
 
 	}
 

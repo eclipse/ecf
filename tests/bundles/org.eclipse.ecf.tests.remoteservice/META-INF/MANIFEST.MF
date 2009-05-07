@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
-Bundle-SymbolicName: org.eclipse.ecf.tests.remoteservice
+Bundle-SymbolicName: org.eclipse.ecf.tests.remoteservice;singleton:=true
 Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.tests.remoteservice.Activator
 Bundle-Vendor: %plugin.provider
@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf,
  org.eclipse.ecf.tests,
  org.eclipse.ecf.remoteservice,
- org.junit
+ org.junit,
+ org.eclipse.equinox.app;bundle-version="1.2.0"
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.tests.remoteservice
 Import-Package: org.eclipse.ecf.provider.generic,
@@ -20,5 +21,4 @@ Import-Package: org.eclipse.ecf.provider.generic,
  org.osgi.framework;version="1.4.0",
  org.osgi.util.tracker;version="1.3.3"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: CDC-1.0/Foundation-1.0,
- J2SE-1.3
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
