@@ -261,8 +261,7 @@ public class Parser
     this.text = text;
 
     Rule rule = null;
-    if (true == false) ;
-    else if (rulename.equalsIgnoreCase("attr-list")) rule = decode_attr_list();
+    if (rulename.equalsIgnoreCase("attr-list")) rule = decode_attr_list();
     else if (rulename.equalsIgnoreCase("attribute")) rule = decode_attribute();
     else if (rulename.equalsIgnoreCase("attr-val-list")) rule = decode_attr_val_list();
     else if (rulename.equalsIgnoreCase("attr-tag")) rule = decode_attr_tag();
