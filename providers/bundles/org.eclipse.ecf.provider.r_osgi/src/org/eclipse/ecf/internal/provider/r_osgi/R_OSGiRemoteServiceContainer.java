@@ -195,7 +195,10 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		if (!(reference instanceof RemoteServiceReferenceImpl))
 			return null;
 		final RemoteServiceReferenceImpl impl = (RemoteServiceReferenceImpl) reference;
-		return new RemoteServiceImpl(impl, remoteService.getRemoteService(impl.getR_OSGiServiceReference()));
+		Object rs = remoteService.getRemoteService(impl.getR_OSGiServiceReference());
+		if (rs == null)
+			return null;
+		return new RemoteServiceImpl(impl, rs);
 	}
 
 	/**
@@ -218,14 +221,17 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		if (clazz == null)
 			return null;
 		IRemoteFilter remoteFilter = (filter == null) ? null : createRemoteFilter(filter);
-		if (idFilter == null)
-			return (IRemoteServiceReference[]) getRemoteServiceReferencesConnected(clazz, remoteFilter).toArray(new IRemoteServiceReference[] {});
+		if (idFilter == null) {
+			IRemoteServiceReference[] refs = (IRemoteServiceReference[]) getRemoteServiceReferencesConnected(clazz, remoteFilter).toArray(new IRemoteServiceReference[] {});
+			return (refs.length == 0) ? null : refs;
+		}
 		synchronized (this) {
 			List results = new ArrayList();
 			for (int i = 0; i < idFilter.length; i++) {
 				results.addAll(connectAndGetRemoteServiceReferencesForTarget(getConnectedID(), idFilter[i], clazz, remoteFilter));
 			}
-			return (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
+			IRemoteServiceReference[] refs = (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
+			return (refs.length == 0) ? null : refs;
 		}
 	}
 
@@ -237,6 +243,8 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 			List results = new ArrayList();
 			connect(targetID, connectContext);
 			results = getRemoteServiceReferencesConnected(clazz, remoteFilter);
+			if (results == null || results.size() == 0)
+				return null;
 			return (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
 		}
 	}

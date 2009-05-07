@@ -12,7 +12,6 @@
 package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.RemoteOSGiException;
-import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.*;
@@ -159,36 +158,6 @@ final class RemoteServiceImpl implements IRemoteService {
 		AsyncResult(final IRemoteCall call, final IRemoteCallListener listener) {
 			this.call = call;
 			this.listener = listener;
-		}
-
-		/**
-		 * get the result. If not yet available, wait at most <code>msecs</code>
-		 * milliseconds.
-		 * 
-		 * @param msecs
-		 *            the maximum amount of milliseconds to wait.
-		 * @return the result.
-		 * @see org.eclipse.ecf.core.util.IAsyncResult#get(long)
-		 */
-		public synchronized Object get(final long msecs) throws InterruptedException, InvocationTargetException {
-			if (exception != null) {
-				throw getException();
-			}
-			if (result != null) {
-				return result;
-			}
-			wait(msecs);
-			return result;
-		}
-
-		/**
-		 * get the exception of the last call, if any happened.
-		 * 
-		 * @return the exception, or <code>null</code>.
-		 * @see org.eclipse.ecf.core.util.IAsyncResult#getException()
-		 */
-		public synchronized InvocationTargetException getException() {
-			return exception == null ? null : new InvocationTargetException(exception);
 		}
 
 		// the call happens here.
