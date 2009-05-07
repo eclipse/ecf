@@ -35,6 +35,7 @@ import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.*;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -1054,9 +1055,9 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			if (p != null) {
 				ID id = p.getID();
 				if (id != null) {
-					Preferences prefs = Activator.getDefault().getPluginPreferences();
+					IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE))
+					if (store.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE))
 						appendText(chatRoomTab, getOutputText(), new ChatLine(NLS.bind(Messages.ChatRoomManagerView_ENTERED_MESSAGE, getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.add(p);
 					chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomContainer.getChatRoomParticipants().length)));
@@ -1086,9 +1087,9 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			if (p != null) {
 				ID id = p.getID();
 				if (id != null) {
-					Preferences prefs = Activator.getDefault().getPluginPreferences();
+					IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE))
+					if (store.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE))
 						appendText(chatRoomTab, getOutputText(), new ChatLine(NLS.bind(Messages.ChatRoomManagerView_LEFT_MESSAGE, getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.remove(p);
 					chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomContainer.getChatRoomParticipants().length)));
