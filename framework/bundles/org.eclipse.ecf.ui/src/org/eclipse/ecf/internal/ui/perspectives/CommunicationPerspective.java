@@ -10,9 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.ui.perspectives;
 
-import org.eclipse.ui.IFolderLayout;
-import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipse.ui.*;
 
 public class CommunicationPerspective implements IPerspectiveFactory {
 
@@ -27,7 +25,7 @@ public class CommunicationPerspective implements IPerspectiveFactory {
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");//$NON-NLS-1$
 
 		// Add "show views".
-		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
+		layout.addShowViewShortcut(IPageLayout.ID_PROJECT_EXPLORER);
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
@@ -42,7 +40,7 @@ public class CommunicationPerspective implements IPerspectiveFactory {
 
 		// Top left.
 		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.26f, editorArea); //$NON-NLS-1$
-		topLeft.addView(IPageLayout.ID_RES_NAV);
+		topLeft.addView(IPageLayout.ID_PROJECT_EXPLORER);
 
 		// Bottom left.
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", //$NON-NLS-1$

@@ -37,6 +37,7 @@ import org.eclipse.ui.activities.WorkbenchActivityHelper;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.model.AdaptableList;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.wizards.IWizardCategory;
 
 /**
@@ -125,7 +126,7 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 		 */
 		private void createFilteredTree(Composite parent) {
 			// Create a FilteredTree for the categories and wizards
-			FilteredTree filteredTree = new FilteredTree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, new WizardPatternFilter());
+			FilteredTree filteredTree = new FilteredTree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, new WizardPatternFilter(), false);
 			viewer = filteredTree.getViewer();
 			filteredTree.setFont(parent.getFont());
 
