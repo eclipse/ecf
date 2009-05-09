@@ -1,7 +1,9 @@
 package org.eclipse.ecf.tests.remoteservice;
 
+import org.eclipse.ecf.core.IContainerManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -16,6 +18,8 @@ public class Activator implements BundleActivator {
 
 	private BundleContext context;
 
+	private ServiceTracker containerManagerServiceTracker;
+	
 	/**
 	 * The constructor
 	 */
@@ -36,6 +40,10 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		if (containerManagerServiceTracker != null) {
+			containerManagerServiceTracker.close();
+			containerManagerServiceTracker = null;
+		}
 		plugin = null;
 		this.context = null;
 	}
@@ -55,6 +63,14 @@ public class Activator implements BundleActivator {
 	 */
 	public BundleContext getContext() {
 		return context;
+	}
+
+	public IContainerManager getContainerManager() {
+		if (containerManagerServiceTracker == null) {
+			containerManagerServiceTracker = new ServiceTracker(this.context,IContainerManager.class.getName(),null);
+			containerManagerServiceTracker.open();
+		}
+		return (IContainerManager) containerManagerServiceTracker.getService();
 	}
 
 }
