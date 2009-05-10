@@ -28,7 +28,7 @@ public class TransparentProxyTest extends AbstractRemoteServiceTest {
 	 * @see org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest#getClientContainerName()
 	 */
 	protected String getClientContainerName() {
-		return Generic.CLIENT_CONTAINER_NAME;
+		return Generic.CONSUMER_CONTAINER_TYPE;
 	}
 
 	/*

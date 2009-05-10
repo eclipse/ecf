@@ -10,13 +10,13 @@
 package org.eclipse.ecf.tests.remoteservice.r_osgi;
 
 
-import org.eclipse.ecf.tests.remoteservice.AbstractConcatServerApplication;
+import org.eclipse.ecf.tests.remoteservice.AbstractConcatHostApplication;
 
-public class ROsgiConcatServerApplication extends
-		AbstractConcatServerApplication {
+public class ROsgiConcatHostApplication extends
+		AbstractConcatHostApplication {
 
 	public String getContainerType() {
-		return R_OSGi.CLIENT_CONTAINER_NAME;
+		return R_OSGi.HOST_CONTAINER_TYPE;
 	}
 
 }

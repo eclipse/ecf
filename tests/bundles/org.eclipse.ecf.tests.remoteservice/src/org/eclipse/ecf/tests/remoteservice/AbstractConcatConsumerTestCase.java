@@ -31,11 +31,10 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
-import org.eclipse.ecf.tests.remoteservice.r_osgi.R_OSGi;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.osgi.framework.InvalidSyntaxException;
 
-public abstract class AbstractConcatClientTestCase extends TestCase {
+public abstract class AbstractConcatConsumerTestCase extends TestCase {
 
 	protected IRemoteServiceContainer rsContainer;
 	protected ID targetID;
@@ -70,13 +69,6 @@ public abstract class AbstractConcatClientTestCase extends TestCase {
 		return new RemoteServiceContainer(container,
 				(IRemoteServiceContainerAdapter) container
 						.getAdapter(IRemoteServiceContainerAdapter.class));
-	}
-
-	protected void setUp() throws Exception {
-		super.setUp();
-		IContainer container = createContainer("r-osgi://localhost:9279");
-		rsContainer = createRemoteServiceContainer(container);
-		targetID = createID(container, R_OSGi.SERVER_IDENTITY);
 	}
 
 	protected void tearDown() throws Exception {
@@ -142,7 +134,7 @@ public abstract class AbstractConcatClientTestCase extends TestCase {
 			IRemoteServiceID rsid = refs[i].getID();
 			Long sid = (Long) refs[i].getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
 			assertNotNull(sid);
-			assertTrue(sid.longValue() > 0);
+			assertTrue(sid.longValue() > -1);
 			assertTrue(sid.longValue() == rsid.getContainerRelativeID());
 		}
 	}

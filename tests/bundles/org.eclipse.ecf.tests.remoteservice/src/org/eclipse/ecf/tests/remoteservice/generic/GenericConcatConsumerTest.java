@@ -7,14 +7,23 @@
 * Contributors:
 *   EclipseSource - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.tests.remoteservice.r_osgi;
+package org.eclipse.ecf.tests.remoteservice.generic;
 
-import org.eclipse.ecf.tests.remoteservice.AbstractConcatClientTestCase;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.tests.remoteservice.AbstractConcatConsumerTestCase;
 
-public class ROsgiConcatServiceTest extends AbstractConcatClientTestCase {
+public class GenericConcatConsumerTest extends AbstractConcatConsumerTestCase {
+
+	protected void setUp() throws Exception {
+		super.setUp();
+		IContainer container = createContainer();
+		rsContainer = createRemoteServiceContainer(container);
+		targetID = createID(container, Generic.HOST_CONTAINER_ENDPOINT_ID);
+	}
+
 
 	protected String getContainerType() {
-		return R_OSGi.CLIENT_CONTAINER_NAME;
+		return Generic.CONSUMER_CONTAINER_TYPE;
 	}
 
 }

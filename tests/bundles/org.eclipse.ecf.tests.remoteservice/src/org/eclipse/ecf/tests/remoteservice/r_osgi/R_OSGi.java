@@ -18,16 +18,9 @@ package org.eclipse.ecf.tests.remoteservice.r_osgi;
  */
 public interface R_OSGi {
 
-	/**
-	 * Client containers equal servers, they are both peers in R-OSGi. The
-	 * container name for R-OSGi peers in ECF is:
-	 */
-	public static final String CLIENT_CONTAINER_NAME = "ecf.r_osgi.peer";
+	public static final String CONSUMER_CONTAINER_TYPE = "ecf.r_osgi.peer";
+	public static final String HOST_CONTAINER_TYPE = "ecf.r_osgi.peer";
 
-	/**
-	 * The server container is the one bound to the listener address. By
-	 * default, this is port 9278 on the local host.
-	 */
-	public static final String SERVER_IDENTITY = "r-osgi://localhost:9278";
+	public static final String HOST_CONTAINER_ENDPOINT_ID = "r-osgi://localhost:9278";
 
 }

@@ -23,7 +23,7 @@ import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
-public abstract class AbstractConcatServerApplication implements IApplication {
+public abstract class AbstractConcatHostApplication implements IApplication {
 
 	protected IRemoteServiceContainer rsContainer;
 	protected boolean done = false;
@@ -66,7 +66,7 @@ public abstract class AbstractConcatServerApplication implements IApplication {
 	}
 
 	protected void printStarted() {
-		System.out.println("STARTED Concat Server\n\tContainerType="+getContainerType()+"\n\tID="+rsContainer.getContainer().getID());
+		System.out.println("STARTED: Test Concat Server\n\tcontainerType="+getContainerType()+"\n\tID="+rsContainer.getContainer().getID());
 	}
 	
 	protected Class getRemoteServiceClass() {

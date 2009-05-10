@@ -15,6 +15,7 @@ package org.eclipse.ecf.tests.remoteservice.generic;
  *
  */
 public interface Generic {
-	public static final String CLIENT_CONTAINER_NAME = "ecf.generic.client";
-
+	public static final String CONSUMER_CONTAINER_TYPE = "ecf.generic.client";
+	public static final String HOST_CONTAINER_TYPE = "ecf.generic.server";
+	public static final String HOST_CONTAINER_ENDPOINT_ID = "ecftcp://localhost:3555/server";
 }
