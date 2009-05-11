@@ -386,6 +386,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences() {
 		Tracked t = this.tracked;
+
 		/*
 		 * use local var since we are not
 		 * synchronized
