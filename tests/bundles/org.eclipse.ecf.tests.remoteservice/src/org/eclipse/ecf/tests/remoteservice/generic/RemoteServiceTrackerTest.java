@@ -11,10 +11,14 @@
 
 package org.eclipse.ecf.tests.remoteservice.generic;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.util.tracker.RemoteServiceTracker;
 import org.eclipse.ecf.tests.remoteservice.AbstractServiceTrackerTest;
+import org.eclipse.ecf.tests.remoteservice.IConcatService;
 
 /**
  *
@@ -64,7 +68,7 @@ public class RemoteServiceTrackerTest extends AbstractServiceTrackerTest {
 		return remoteServiceTracker.getRemoteService();
 	}
 
-/*
+
 	public void testRemoteServiceTracker() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// client [0]/adapter[0] is the service 'server'
@@ -88,5 +92,5 @@ public class RemoteServiceTrackerTest extends AbstractServiceTrackerTest {
 		st.close();
 		sleep(3000);
 	}
-*/
+
 }
