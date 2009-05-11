@@ -28,7 +28,7 @@ import org.osgi.framework.ServiceEvent;
 public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/* set this to true to compile in debug messages */
-	static final boolean DEBUG = true;
+	static final boolean DEBUG = Boolean.getBoolean("org.eclipse.ecf.remoteservice.util.tracker.RemoteServiceTracker.debug"); //$NON-NLS-1$
 
 	/**
 	 * IRemoteServiceContainerAdapter containerAdapter against which 
