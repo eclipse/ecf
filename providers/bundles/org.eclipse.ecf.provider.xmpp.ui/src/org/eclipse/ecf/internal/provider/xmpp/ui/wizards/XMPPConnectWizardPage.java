@@ -177,10 +177,10 @@ public class XMPPConnectWizardPage extends WizardPage {
 			// Now, did they add the port number part?
 			int colonIdx = userID.lastIndexOf(':');
 			if (colonIdx > 0) // Yep, move the port to the end
-				return userID.substring(0, colonIdx) + "@" + server
+				return userID.substring(0, colonIdx) + ";" + server
 						+ userID.substring(colonIdx);
 			else
-				return userID + "@" + server; // Nah, nothing to move
+				return userID + ";" + server; // Nah, nothing to move
 		}
 	}
 

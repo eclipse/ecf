@@ -10,28 +10,23 @@
 package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
 import java.util.regex.Matcher;
-
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 
 final class EclipseXMPPSConnectWizardPage extends XMPPConnectWizardPage {
 
-	private static final String ECLIPSE_XMPP_HOST = "xmpp.eclipse.org";
+	private static final String ECLIPSE_XMPP_HOST = (String) System
+			.getProperty("org.eclipse.ecf.provider.xmpp.ui.eclipseXMPPServer",
+					"xmpp.eclipse.org");
 
 	EclipseXMPPSConnectWizardPage() {
 		super();
 		setTitle("Eclipse IM Connection Wizard");
-		setDescription("Specify Eclipse Bugzilla Account Information");
+		setDescription("Eclipse Bugzilla Account - Please login using your Eclipse Bugzilla username and password");
 		setPageComplete(false);
 	}
 
@@ -60,8 +55,10 @@ final class EclipseXMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		parent = new Composite(parent, SWT.NONE);
 
 		parent.setLayout(new GridLayout());
-		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+		final GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true,
+				false);
+		final GridData endData = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText("Bugzilla Username:");
