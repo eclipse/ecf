@@ -142,14 +142,14 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 		final XMPPID jabberURI = getXMPPID(remote);
 
-		String username = jabberURI.getUsername();
+		String username = jabberURI.getNodename();
 		String hostname = jabberURI.getHostname();
 		String hostnameOverride = null;
 
-		// Check for the URI form of "joe@bloggs.org@talk.google.com", which
+		// Check for the URI form of "joe@bloggs.org;talk.google.com", which
 		// would at this point would have
-		// - username = "joe@bloggs.org"
-		// - hostname = "talk.google.com"
+		// - username = "joe"
+		// - hostname = "blogs.org;talk.google.com"
 		// - hostnameOverride = null
 		//
 		// We need to turn this into:
@@ -157,11 +157,10 @@ public class ECFConnection implements ISynchAsynchConnection {
 		// - hostname = "bloggs.org"
 		// - hostnameOverride = "talk.google.com"
 
-		int atSignIdx = username.lastIndexOf('@');
-		if (atSignIdx != -1) {
-			hostnameOverride = hostname;
-			hostname = username.substring(atSignIdx + 1);
-			username = username.substring(0, atSignIdx);
+		int semiColonIdx = hostname.lastIndexOf(';');
+		if (semiColonIdx != -1) {
+			hostnameOverride = hostname.substring(semiColonIdx + 1);
+			hostname = hostname.substring(0, semiColonIdx);
 		}
 
 		if (google && hostnameOverride == null) {

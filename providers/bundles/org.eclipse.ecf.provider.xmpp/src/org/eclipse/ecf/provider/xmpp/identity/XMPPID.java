@@ -200,12 +200,14 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	}
 
 	public String getUsernameAtHost() {
-		// if we use the full "user@domain@server" format, detect that here
-		if (getUsername().indexOf(USER_HOST_DELIMITER) != -1)
-			return getUsername();
-		else
-			return getUsername() + USER_HOST_DELIMITER + getHostname()
-					+ ((getPort() == -1) ? "" : ":" + getPort());
+		String username = getUsername();
+		String hostname = getHostname();
+		int semiColonIdx = hostname.indexOf(';');
+		if (semiColonIdx != -1) {
+			hostname = hostname.substring(0, semiColonIdx);
+		}
+		return username + USER_HOST_DELIMITER + hostname
+				+ ((getPort() == -1) ? "" : ":" + getPort());
 	}
 
 	public String getFQName() {
