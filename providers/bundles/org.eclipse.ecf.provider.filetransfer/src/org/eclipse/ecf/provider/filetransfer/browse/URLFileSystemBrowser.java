@@ -105,7 +105,9 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 			code = getResponseCode(urlConnection);
 			ins.close();
 			if (isHTTP()) {
-				if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+				if (code == HttpURLConnection.HTTP_OK) {
+					// do nothing
+				} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 					throw new BrowseFileTransferException(NLS.bind("File not found: {0}", directoryOrFile.toString()), code); //$NON-NLS-1$
 				} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 					throw new BrowseFileTransferException("Unauthorized", code); //$NON-NLS-1$
