@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2008 Composent, Inc. and others.
+ * Copyright (c) 2008, 2009 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,8 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Remy Chi Jian Suen - Bug 270332 put() is called twice for DocShares due to ECF Generic group handling
+ *    IBM Corporation - Bug 270332 put() is called twice for DocShares due to ECF Generic group handling
  *****************************************************************************/
 package org.eclipse.ecf.internal.docshare;
 
@@ -47,7 +49,10 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public DocShare addDocShare(ID containerID, IChannelContainerAdapter channelAdapter) throws ECFException {
-		return (DocShare) docsharechannels.put(containerID, new DocShare(channelAdapter));
+		DocShare docShare = (DocShare) docsharechannels.get(containerID);
+		if (docShare == null)
+			docShare = (DocShare) docsharechannels.put(containerID, new DocShare(channelAdapter));
+		return docShare;
 	}
 
 	public DocShare removeDocShare(ID containerID) {
