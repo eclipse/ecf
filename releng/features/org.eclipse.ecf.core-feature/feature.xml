@@ -29,9 +29,6 @@ Contributors: Composent, Inc. - initial API and implementation
          id="org.eclipse.ecf.core.source"
          version="0.0.0"/>
 
-   <requires>
-   </requires>
-
    <plugin
          id="org.jivesoftware.smack"
          download-size="0"
