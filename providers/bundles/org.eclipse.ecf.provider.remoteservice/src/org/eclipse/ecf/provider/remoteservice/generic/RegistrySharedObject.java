@@ -175,10 +175,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		final List references = new ArrayList();
 		// Lookup from remote registrys...add to given references List
 		addReferencesFromRemoteRegistrys(idFilter, clazz, remoteFilter, references);
-		// Add any from local registry
-		synchronized (localRegistry) {
-			addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
-		}
 		// If none found the first time we send a registration request and wait
 		if (references.size() == 0) {
 			AddRegistrationRequest first = null;
@@ -211,6 +207,15 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				addRegistrationRequests.remove(request.getId());
 			}
 
+		}
+		ID localContainerID = getLocalContainerID();
+		// Only look in local remote service registry if idFilter is null OR the idFilter 
+		// contains the local container ID
+		if (idFilter == null || Arrays.asList(idFilter).contains(localContainerID)) {
+			synchronized (localRegistry) {
+				// Add any from local registry
+				addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
+			}
 		}
 		final IRemoteServiceReference[] result = (IRemoteServiceReference[]) references.toArray(new IRemoteServiceReference[references.size()]);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
