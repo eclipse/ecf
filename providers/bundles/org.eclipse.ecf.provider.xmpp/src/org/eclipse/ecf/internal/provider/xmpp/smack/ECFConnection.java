@@ -318,8 +318,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 				else if (receiver instanceof XMPPID) {
 					final XMPPID rcvr = (XMPPID) receiver;
 					aMsg.setType(Message.Type.CHAT);
-					final String userAtHost = rcvr.getUsernameAtHost();
-					final Chat localChat = connection.createChat(userAtHost);
+					final String receiverName = rcvr.getFQName();
+					final Chat localChat = connection.createChat(receiverName);
 					localChat.sendMessage(aMsg);
 				} else if (receiver instanceof XMPPRoomID) {
 					final XMPPRoomID roomID = (XMPPRoomID) receiver;
