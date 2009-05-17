@@ -8,6 +8,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.start.IECFStart;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.provider.twitter.container.TwitterInstantiator;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -53,13 +54,7 @@ public class Application implements IApplication, IECFStart, IStartApp {
 		try {
 			setContainer(this.createClient());
 		} catch (ContainerCreateException e) {
-			// TODO Auto-generated catch block
-			try {
-				throw new Exception();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				
-			}
+			Trace.trace( Activator.PLUGIN_ID, "ContainerCreateException" );
 		}
 		
 		return MultiStatus.OK_STATUS;

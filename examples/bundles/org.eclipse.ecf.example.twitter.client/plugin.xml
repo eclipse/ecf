@@ -29,6 +29,7 @@
             label="Twitter actions"
             visible="true">
          <action
+               class="connectaction"
                definitionId="org.eclipse.ecf.discovery.ui.browser.command.open"
                id="org.eclipse.ecf.twitter.client.action.HelloTwitter"
                label="Hello Twitter !"
