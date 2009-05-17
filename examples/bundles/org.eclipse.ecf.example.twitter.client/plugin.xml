@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="org.eclipse.ecf.twitter.client.id1"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.eclipse.ecf.twitter.client.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="ecf.twitter.client"
+         name="TwitterClient"
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.generic.GenericContainerInstantiator"
+            name="TwitterClientContainerInstantiator">
+      </containerFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="org.eclipse.ecf.twitter.client.actionSet1"
+            label="Twitter actions"
+            visible="true">
+         <action
+               definitionId="org.eclipse.ecf.discovery.ui.browser.command.open"
+               id="org.eclipse.ecf.twitter.client.action.HelloTwitter"
+               label="Hello Twitter !"
+               style="push">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.ui.connectWizards">
+      <wizard
+            class="org.eclipse.ecf.internal.provider.twitter.ui.wizards.TwitterConnectWizard"
+            containerFactoryName="org.eclipse.ecf.twitter.client.wizard1"
+            id="org.eclipse.ecf.twitter.client.TwitterClient"
+            name="TwitterClient">
+      </wizard>
+   </extension>
+
+</plugin>
