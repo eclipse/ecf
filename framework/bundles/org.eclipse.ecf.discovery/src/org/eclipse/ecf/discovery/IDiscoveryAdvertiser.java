@@ -19,10 +19,10 @@ import org.eclipse.ecf.core.identity.Namespace;
  * register and unregister locally provided services.
  * <p>
  * This interface can be used by container provider implementations as an
- * adapter so that calls to IContainer.getAdapter(IDiscoveryLocator.class) will
- * return a non-null instance of a class that implements this interface. Clients
- * can then proceed to use this interface to interact with the given discovery
- * implementation.
+ * adapter so that calls to IContainer.getAdapter(IDiscoveryAdvertiser.class)
+ * will return a non-null instance of a class that implements this interface.
+ * Clients can then proceed to use this interface to interact with the given
+ * discovery implementation.
  * 
  * @since 3.0
  */
