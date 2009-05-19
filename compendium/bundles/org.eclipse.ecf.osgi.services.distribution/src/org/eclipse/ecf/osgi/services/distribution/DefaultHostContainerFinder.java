@@ -51,7 +51,7 @@ public class DefaultHostContainerFinder extends AbstractContainerFinder
 		IContainer[] containers = Activator.getDefault().getContainerManager()
 				.getAllContainers();
 		if (containers == null || containers.length == 0)
-			return null;
+			return results;
 		for (int i = 0; i < containers.length; i++) {
 			// Check to make sure it's a rs container adapter. If it's not go
 			// onto next one
