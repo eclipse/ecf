@@ -125,9 +125,9 @@ public class EventHookImpl implements EventHook {
 				// Then for all candidates make sure that they are not already
 				// present in results. This makes sure that
 				for (int j = 0; j < candidates.length; j++) {
-					ID containerID = candidates[i].getContainer().getID();
+					ID containerID = candidates[j].getContainer().getID();
 					if (containerID != null)
-						rsContainers.put(containerID, candidates[i]);
+						rsContainers.put(containerID, candidates[j]);
 				}
 			}
 		}
