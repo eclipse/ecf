@@ -108,6 +108,8 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 		for (int i = 0; i < rsContainers.length; i++) {
 			IContainer c = rsContainers[i].getContainer();
 			try {
+				// If the container is not already connected,
+				// then connect it to the connectTargetID
 				if (c.getConnectedID() == null) {
 					connectContainer(c, connectTargetID, getConnectContext(
 							rsContainers[i], connectTargetID));
