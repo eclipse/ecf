@@ -178,11 +178,14 @@ public abstract class RemoteServiceEndpointDescription implements
 	}
 
 	public long getRemoteServiceId() {
-		Long rsId = (Long) getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-		if (rsId == null)
-			return 0L;
-		else
-			return rsId.longValue();
+		byte[] remoteServiceIdAsBytes = (byte[]) serviceProperties
+				.get(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		if (remoteServiceIdAsBytes == null)
+			return 0;
+		else {
+			Long remoteServiceId = new Long(new String(remoteServiceIdAsBytes));
+			return remoteServiceId.longValue();
+		}
 	}
 
 	public abstract ID getEndpointAsID();

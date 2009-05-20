@@ -248,11 +248,11 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 					Constants.SERVICE_NAMESPACE, rsnamespace);
 
 		// and remote service id
-		Long remoteServiceID = (Long) reference
+		byte[] remoteServiceIDAsBytes = (byte[]) reference
 				.getProperty(Constants.SERVICE_ID);
-		if (remoteServiceID != null)
-			discoveryServiceProperties.setProperty(Constants.SERVICE_ID,
-					remoteServiceID);
+		if (remoteServiceIDAsBytes != null)
+			discoveryServiceProperties.setPropertyBytes(Constants.SERVICE_ID,
+					remoteServiceIDAsBytes);
 
 		Namespace advertiserNamespace = getAdvertiser().getServicesNamespace();
 		IServiceInfo svcInfo = null;
@@ -264,7 +264,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 			String serviceName = getPropertyWithDefault(
 					servicePublicationServiceProperties,
 					RemoteServicePublication.SERVICE_NAME,
-					(RemoteServicePublication.DEFAULT_SERVICE_NAME_PREFIX + remoteServiceID));
+					(RemoteServicePublication.DEFAULT_SERVICE_NAME_PREFIX + new String(
+							remoteServiceIDAsBytes)));
 
 			svcInfo = new ServiceInfo(uri, serviceName, serviceTypeID,
 					discoveryServiceProperties);
