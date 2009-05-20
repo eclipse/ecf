@@ -179,8 +179,22 @@ public class EventHookImpl implements EventHook {
 		if (rsnamespace != null)
 			properties.put(Constants.SERVICE_NAMESPACE, rsnamespace.getName());
 		// Set the actual remote service id (Long)
-		properties.put(Constants.SERVICE_ID, ((Long) remoteRegistration
-				.getProperty(Constants.SERVICE_ID)));
+		Long serviceId = (Long) remoteRegistration
+				.getProperty(Constants.SERVICE_ID);
+		byte[] serviceIdAsBytes = null;
+		if (serviceId != null) {
+			// this should always be true, as every remote service should have a
+			// non-null remote serviceID
+			serviceIdAsBytes = serviceId.toString().getBytes();
+		} else {
+			logError(
+					"getServicePublicationProperties",
+					"RemoteRegistration property remote.service.id is not set in remoteRegistration="
+							+ remoteRegistration);
+			serviceIdAsBytes = "0".getBytes();
+		}
+
+		properties.put(Constants.SERVICE_ID, serviceIdAsBytes);
 
 		return properties;
 	}
