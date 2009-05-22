@@ -16,6 +16,8 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.team.internal.ecf.ui.messages"; //$NON-NLS-1$
 
+	public static String WorkbenchAwareRemoteShare_PromptMessage;
+
 	public static String OverrideWithRemoteAction_ActionLabel;
 	public static String OverrideWithRemoteOperation_SubTaskName;
 	public static String OverrideWithRemoteOperation_CreatingResource;
