@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 Versant Corporation and others.
+ * Copyright (c) 2008, 2009 Versant Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,15 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -38,10 +32,12 @@ public class TeamSynchronization extends Plugin {
 
 	private static Map channels = new HashMap();
 
-	public static void addShare(ID containerId, IChannelContainerAdapter channelContainer) throws ECFException {
-		if (!channels.containsKey(containerId)) {
-			channels.put(containerId, new RemoteShare(channelContainer));
-		}
+	public static void put(ID containerId, RemoteShare share) {
+		channels.put(containerId, share);
+	}
+
+	public static boolean contains(ID containerId) {
+		return channels.containsKey(containerId);
 	}
 
 	public static RemoteShare getShare(ID containerId) {
@@ -49,7 +45,10 @@ public class TeamSynchronization extends Plugin {
 	}
 
 	public static void removeShare(ID containerId) {
-		channels.remove(containerId);
+		RemoteShare share = (RemoteShare) channels.remove(containerId);
+		if (share != null) {
+			share.dispose();
+		}
 	}
 
 	/*

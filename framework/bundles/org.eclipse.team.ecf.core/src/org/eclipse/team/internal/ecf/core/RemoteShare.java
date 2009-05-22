@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2008 Versant Corporation and others.
+ * Copyright (c) 2008, 2009 Versant Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,7 @@ public class RemoteShare extends AbstractShare {
 
 	private Object returnValue;
 
-	RemoteShare(IChannelContainerAdapter adapter) throws ECFException {
+	public RemoteShare(IChannelContainerAdapter adapter) throws ECFException {
 		super(adapter);
 	}
 
@@ -187,31 +187,36 @@ public class RemoteShare extends AbstractShare {
 			sendFetchVariantResponse(msg.getFromId(), resource);
 		} else if (message instanceof ShareRequest) {
 			ShareRequest request = (ShareRequest) message;
-			String[] paths = request.getPaths();
-			int[] types = request.getTypes();
-			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-			boolean response = false;
+			boolean response = prompt(request.getFromId(), request.getPaths());
 
-			resourceLoop: for (int i = 0; i < paths.length; i++) {
-				switch (types[i]) {
-					case IResource.PROJECT :
-						if (workspaceRoot.getProject(new Path(paths[i]).lastSegment()).exists()) {
-							response = true;
-							break resourceLoop;
-						}
-						break;
-					case IResource.FOLDER :
-						if (workspaceRoot.getFolder(new Path(paths[i])).exists()) {
-							response = true;
-							break resourceLoop;
-						}
-						break;
-					case IResource.FILE :
-						if (workspaceRoot.getFile(new Path(paths[i])).exists()) {
-							response = true;
-							break resourceLoop;
-						}
-						break;
+			if (response) {
+				response = false;
+
+				String[] paths = request.getPaths();
+				int[] types = request.getTypes();
+				IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+
+				resourceLoop: for (int i = 0; i < paths.length; i++) {
+					switch (types[i]) {
+						case IResource.PROJECT :
+							if (workspaceRoot.getProject(new Path(paths[i]).lastSegment()).exists()) {
+								response = true;
+								break resourceLoop;
+							}
+							break;
+						case IResource.FOLDER :
+							if (workspaceRoot.getFolder(new Path(paths[i])).exists()) {
+								response = true;
+								break resourceLoop;
+							}
+							break;
+						case IResource.FILE :
+							if (workspaceRoot.getFile(new Path(paths[i])).exists()) {
+								response = true;
+								break resourceLoop;
+							}
+							break;
+					}
 				}
 			}
 
@@ -219,6 +224,10 @@ public class RemoteShare extends AbstractShare {
 		} else if (message instanceof IResponse) {
 			returnValue = ((IResponse) message).getResponse();
 		}
+	}
+
+	protected boolean prompt(ID fromId, String[] paths) {
+		return false;
 	}
 
 	private void sendFetchVariantsResponse(ID fromId, IContainer container) {
