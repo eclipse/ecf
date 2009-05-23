@@ -221,6 +221,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 		attr.putValue("Created-By", "R-OSGi Proxy Generator"); //$NON-NLS-1$ //$NON-NLS-2$
 		attr.putValue("Bundle-Activator", className); //$NON-NLS-1$
 		attr.putValue("Bundle-Classpath", "."); //$NON-NLS-1$ //$NON-NLS-2$
+		attr.putValue("Bundle-SymbolicName", "R-OSGi Proxy Bundle generated for Endpoint " + uri.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 		attr
 				.putValue(
 						"Import-Package", //$NON-NLS-1$
