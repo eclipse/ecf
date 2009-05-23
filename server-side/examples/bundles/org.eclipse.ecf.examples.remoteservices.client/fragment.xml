@@ -18,18 +18,11 @@
                            property="org.eclipse.ecf.remoteservices.isConnected"
                            value="true">
                      </test>
-                     <or>
                         <test
                               args="remotesvcs"
                               property="org.eclipse.ecf.discovery.isServiceType"
                               value="true">
                         </test>
-                        <test
-                              args="osgiservicesoff"
-                              property="org.eclipse.ecf.discovery.isServiceType"
-                              value="true">
-                        </test>
-                     </or>
                   </iterate>
                </with>
             </visibleWhen>
