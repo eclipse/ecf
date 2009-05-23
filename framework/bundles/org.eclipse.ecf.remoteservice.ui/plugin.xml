@@ -42,18 +42,11 @@
                            property="org.eclipse.ecf.remoteservices.isConnected"
                            value="false">
                      </test>
-                     <or>
-                        <test
-                              args="remotesvcs"
-                              property="org.eclipse.ecf.discovery.isServiceType"
-                              value="true">
-                        </test>
-                        <test
-                              args="osgiservices.off"
-                              property="org.eclipse.ecf.discovery.isServiceType"
-                              value="true">
-                        </test>
-                     </or>
+                     <test
+                           args="remotesvcs"
+                           property="org.eclipse.ecf.discovery.isServiceType"
+                           value="true">
+                     </test>
                   </iterate>
                </with>
             </visibleWhen>
@@ -74,18 +67,29 @@
                            property="org.eclipse.ecf.remoteservices.isConnected"
                            value="true">
                      </test>
-                     <or>
+                     <test
+                           args="remotesvcs"
+                           property="org.eclipse.ecf.discovery.isServiceType"
+                           value="true">
+                     </test></iterate>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="org.eclipse.ecf.remoteservices.ui.commands.dosgiReflectiveMethodDialogHandler"
+               mnemonic="S">
+            <visibleWhen>
+               <with
+                     variable="activeMenuSelection">
+                  <iterate
+                        ifEmpty="false"
+                        operator="and">
                         <test
-                              args="remotesvcs"
+                              args="osgiservices"
                               property="org.eclipse.ecf.discovery.isServiceType"
                               value="true">
                         </test>
-                        <test
-                              args="osgiservices.off"
-                              property="org.eclipse.ecf.discovery.isServiceType"
-                              value="true">
-                        </test>
-                     </or></iterate>
+                  </iterate>
                </with>
             </visibleWhen>
          </command>

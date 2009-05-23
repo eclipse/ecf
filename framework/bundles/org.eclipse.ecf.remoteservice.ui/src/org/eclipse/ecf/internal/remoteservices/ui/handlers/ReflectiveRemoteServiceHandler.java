@@ -20,6 +20,7 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.remoteservices.ui.RemoteServiceHandlerUtil;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
@@ -75,7 +76,7 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 		return null;
 	}
 
-	private void executeMethodInvocationDialog(final Class cls, final IRemoteService remoteService) {
+	protected void executeMethodInvocationDialog(final Class cls, final IRemoteService remoteService) {
 		final MethodInvocationDialog mid = new MethodInvocationDialog(
 				(Shell) null, cls);
 		if (mid.open() == Window.OK) {
@@ -117,9 +118,8 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 					// invokeProxy(interfaceClass, remoteService, remoteCall);
 					// break;
 				case MethodInvocationDialog.SYNCHRONOUS:
-					throw new UnsupportedOperationException();
-					// invokeSync(cls, remoteService, remoteCall);
-					// break;
+					invokeSync(cls, remoteService, remoteCall);
+					break;
 				default:
 					break;
 				}
@@ -168,6 +168,16 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 				}
 			}
 		});
+	}
+
+	private void invokeSync(final Class interfaceClass, final IRemoteService remoteService,
+			final IRemoteCall remoteCall) {
+		try {
+			Object callSync = remoteService.callSync(remoteCall);
+			showResult(interfaceClass.getName(), remoteCall, callSync);
+		} catch (ECFException e) {
+			showException(e);
+		}
 	}
 
 	protected void showException(final Throwable t) {
