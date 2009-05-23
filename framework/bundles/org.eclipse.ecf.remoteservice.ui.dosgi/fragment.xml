@@ -6,7 +6,7 @@
       <command
             defaultHandler="org.eclipse.ecf.remoteservice.ui.dosgi.handlers.DOSGiReflectiveRemoteServiceHandler"
             id="org.eclipse.ecf.remoteservice.ui.dosgi.commands.dosgiReflectiveMethodDialogHandler"
-            name="%command.name">
+            name="Reflective Method Invocation Command">
       </command>
    </extension>
    <extension
