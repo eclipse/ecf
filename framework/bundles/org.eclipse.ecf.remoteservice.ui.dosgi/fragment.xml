@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.eclipse.ecf.remoteservice.ui.dosgi.handlers.DOSGiReflectiveRemoteServiceHandler"
+            id="org.eclipse.ecf.remoteservice.ui.dosgi.commands.dosgiReflectiveMethodDialogHandler"
+            name="%command.name">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ecf.discovery.ui.DiscoveryView?after=additions">
+        <command
+               commandId="org.eclipse.ecf.remoteservice.ui.dosgi.commands.dosgiReflectiveMethodDialogHandler"
+               mnemonic="S">
+            <visibleWhen>
+               <with
+                     variable="activeMenuSelection">
+                  <iterate
+                        ifEmpty="false"
+                        operator="and">
+                        <test
+                              args="osgiservices"
+                              property="org.eclipse.ecf.discovery.isServiceType"
+                              value="true">
+                        </test>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+</plugin>
