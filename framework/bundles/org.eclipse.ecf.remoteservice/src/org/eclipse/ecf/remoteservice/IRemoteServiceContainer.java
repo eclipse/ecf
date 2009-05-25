@@ -14,6 +14,8 @@ import org.eclipse.ecf.core.IContainer;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
+ * 
+ * Remote service container that provides access to underlying IContainer and remote service container adapter.
  * @since 3.0
  */
 public interface IRemoteServiceContainer {

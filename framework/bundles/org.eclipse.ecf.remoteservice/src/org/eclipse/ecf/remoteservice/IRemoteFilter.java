@@ -13,6 +13,10 @@ package org.eclipse.ecf.remoteservice;
 
 import org.osgi.framework.Filter;
 
+/**
+ * Filter for remote service references.
+ *
+ */
 public interface IRemoteFilter extends Filter {
 
 	/**
