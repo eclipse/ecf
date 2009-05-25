@@ -18,7 +18,7 @@
          name="TwitterClient"
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.generic.GenericContainerInstantiator"
+            class="org.eclipse.ecf.provider.twitter.container.TwitterInstantiator"
             name="TwitterClientContainerInstantiator">
       </containerFactory>
    </extension>
