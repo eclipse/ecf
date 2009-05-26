@@ -254,7 +254,17 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 			discoveryServiceProperties.setPropertyBytes(Constants.SERVICE_ID,
 					remoteServiceIDAsBytes);
 
-		Namespace advertiserNamespace = getAdvertiser().getServicesNamespace();
+		IDiscoveryAdvertiser advertiser2 = getAdvertiser();
+		if (advertiser2 == null) {
+			logError(
+					"handleServicePublication", //$NON-NLS-1$
+					"ignoring " //$NON-NLS-1$
+							+ reference
+							+ ". No IDiscoveryAdvertiser available to handle this publication", //$NON-NLS-1$
+					null);
+			return;
+		}
+		Namespace advertiserNamespace = advertiser2.getServicesNamespace();
 		IServiceInfo svcInfo = null;
 		try {
 			IServiceTypeID serviceTypeID = createServiceTypeID(
@@ -285,7 +295,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 			try {
 				trace("publishService", "publishing serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ reference + ", svcInfo=" + svcInfo); //$NON-NLS-1$
-				getAdvertiser().registerService(svcInfo);
+				advertiser2.registerService(svcInfo);
 				addServiceInfo(reference, svcInfo);
 			} catch (ECFRuntimeException e) {
 				logError("publishService", "cannot register service", e); //$NON-NLS-1$ //$NON-NLS-2$
