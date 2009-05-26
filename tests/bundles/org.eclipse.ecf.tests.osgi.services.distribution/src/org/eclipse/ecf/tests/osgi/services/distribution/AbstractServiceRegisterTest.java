@@ -29,7 +29,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public abstract class AbstractServiceRegisterTest extends
 		AbstractDistributionTest {
 
-	private static final int REGISTER_WAIT = 60000;
+	protected static final int REGISTER_WAIT = 60000;
 
 	public void testRegisterServer() throws Exception {
 		Properties props = new Properties();
