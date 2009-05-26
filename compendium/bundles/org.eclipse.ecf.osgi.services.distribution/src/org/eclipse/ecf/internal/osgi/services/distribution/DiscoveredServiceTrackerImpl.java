@@ -47,6 +47,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.discovery.DiscoveredServiceNotification;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.discovery.ServiceEndpointDescription;
+import org.osgi.service.discovery.ServicePublication;
 
 public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
@@ -58,12 +59,18 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			.synchronizedMap(new HashMap());
 	private List ecfRemoteServiceProperties = Arrays.asList(new String[] {
 			Constants.SERVICE_ID, Constants.OBJECTCLASS,
+			org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+			org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID,
+			org.eclipse.ecf.remoteservice.Constants.SERVICE_RANKING,
 			RemoteServicePublication.ENDPOINT_ID,
 			RemoteServicePublication.ENDPOINT_INTERFACE_NAME,
 			RemoteServicePublication.ENDPOINT_LOCATION,
 			RemoteServicePublication.SERVICE_INTERFACE_NAME,
 			RemoteServicePublication.SERVICE_INTERFACE_VERSION,
-			RemoteServicePublication.SERVICE_PROPERTIES });
+			RemoteServicePublication.SERVICE_PROPERTIES, "service.uri" }); // set
+
+	// by
+	// r-osgi
 
 	public DiscoveredServiceTrackerImpl(DistributionProviderImpl dp,
 			IExecutor executor) {
@@ -628,6 +635,14 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						.getProperty(propKeys[i]));
 			}
 		}
+		results
+				.put(
+						ServicePublication.ENDPOINT_ID,
+						remoteReference
+								.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID)
+								+ "#"
+								+ remoteReference
+										.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID));
 		results.put(IDistributionConstants.REMOTE, remoteService);
 		return results;
 	}
