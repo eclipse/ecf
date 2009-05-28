@@ -48,6 +48,10 @@ public class Activator implements BundleActivator, IDistributionConstants, Servi
 	public void stop(BundleContext context) throws Exception {
 		helloServiceTracker.close();
 		helloServiceTracker = null;
+		if (containerManagerServiceTracker != null) {
+			containerManagerServiceTracker.close();
+			containerManagerServiceTracker = null;
+		}
 		this.context = null;
 	}
 
