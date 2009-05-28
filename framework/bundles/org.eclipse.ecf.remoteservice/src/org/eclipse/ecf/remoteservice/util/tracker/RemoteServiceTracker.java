@@ -20,7 +20,9 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 
 /**
- * Remote service tracker
+ * Remote service tracker.  Implementation of ServiceTracker
+ * for the ECF remoteservices API.  The getRemoteService() method
+ * returns instances of {@link IRemoteService}.
  * 
  * @since 3.0
  *
