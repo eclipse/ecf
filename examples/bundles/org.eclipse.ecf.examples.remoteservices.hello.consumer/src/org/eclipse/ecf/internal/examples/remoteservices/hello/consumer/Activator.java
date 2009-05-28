@@ -70,7 +70,7 @@ public class Activator implements BundleActivator, IDistributionConstants, Servi
 		try {
 			// This method blocks until a return 
 			future.get();
-			System.out.println("Called futureExec successfully");
+			System.out.println("Called future.get() successfully");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
