@@ -17,6 +17,10 @@ import java.lang.reflect.Method;
 import org.eclipse.ecf.internal.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 
+/**
+ * Implementation of IRemoteCall based upon Method.
+ * 
+ */
 public class RemoteCallMethod implements IRemoteCall {
 
 	public static final int DEFAULT_TIMEOUT = 30000;
