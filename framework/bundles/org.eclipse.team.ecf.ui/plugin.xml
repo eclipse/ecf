@@ -56,6 +56,7 @@
                     </or>
                   </visibleWhen>
             </dynamic>
+            <!--
             <dynamic
                   class="org.eclipse.team.internal.ecf.ui.handlers.CompareWithMenuContributionItem"
                   id="org.ecf.sync.team.menuContribution2">
@@ -70,6 +71,7 @@
                     </or>
                   </visibleWhen>
             </dynamic>
+            -->
       </menuContribution>
    </extension>
 </plugin>
