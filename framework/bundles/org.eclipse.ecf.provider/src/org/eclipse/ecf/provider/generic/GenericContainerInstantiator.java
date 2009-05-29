@@ -39,18 +39,22 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 	protected ID getIDFromArg(Object arg) throws IDCreateException {
 		if (arg == null)
 			throw new IDCreateException(Messages.getString("GenericContainerInstantiator.ID_Cannot_Be_Null")); //$NON-NLS-1$
-		if (arg instanceof ID)
+		String val = null;
+		if (arg instanceof StringID)
 			return (ID) arg;
-		if (arg instanceof String) {
-			String val = (String) arg;
-			if (val.equals("")) { //$NON-NLS-1$
-				return IDFactory.getDefault().createGUID();
-			}
-			return IDFactory.getDefault().createStringID(val);
-		} else if (arg instanceof Integer) {
-			return IDFactory.getDefault().createGUID(((Integer) arg).intValue());
-		} else
-			return IDFactory.getDefault().createGUID();
+		else if (arg instanceof GUID)
+			val = ((GUID) arg).getName();
+		else if (arg instanceof URIID)
+			val = ((URIID) arg).toURI().toString();
+		else if (arg instanceof LongID)
+			val = ((LongID) arg).getName();
+		if (arg instanceof String)
+			val = (String) arg;
+		if (arg instanceof Integer)
+			val = IDFactory.getDefault().createGUID(((Integer) arg).intValue()).getName();
+		if (val == null)
+			val = IDFactory.getDefault().createGUID().getName();
+		return IDFactory.getDefault().createStringID(val);
 	}
 
 	protected Integer getIntegerFromArg(Object arg) {
@@ -101,7 +105,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 				ka = getIntegerFromArg(args[0]);
 		}
 		if (newID == null)
-			newID = IDFactory.getDefault().createGUID();
+			newID = IDFactory.getDefault().createStringID(IDFactory.getDefault().createGUID().getName());
 		if (ka == null)
 			ka = new Integer(0);
 		return new GenericContainerArgs(newID, ka);
@@ -131,7 +135,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 				newID = getIDFromArg(args[0]);
 		}
 		if (newID == null)
-			newID = IDFactory.getDefault().createGUID();
+			newID = IDFactory.getDefault().createStringID(IDFactory.getDefault().createGUID().getName());
 		if (ka == null)
 			ka = new Integer(0);
 		return new GenericContainerArgs(newID, ka);
