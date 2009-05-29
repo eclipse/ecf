@@ -230,9 +230,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		IRemoteServiceContainer[] rsContainers = findRemoteServiceContainers(
 				ecfSED.getServiceID(), ecfSED, monitor);
 		if (rsContainers == null || rsContainers.length == 0) {
-			logError("handleDiscoveredServiceAvailable",
-					"No RemoteServiceContainerAdapters found for description="
-							+ ecfSED, null);
+			logWarning("handleDiscoveredServiceAvailable",
+					"No RemoteServiceContainers found for description="
+							+ ecfSED);
 			return;
 		}
 		// Get endpoint ID
