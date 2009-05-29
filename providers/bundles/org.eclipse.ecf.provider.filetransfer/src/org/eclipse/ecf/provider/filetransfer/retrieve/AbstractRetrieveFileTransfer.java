@@ -152,7 +152,9 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 					if (readInputStream != null)
 						readInputStream.close();
 				} catch (final IOException e) {
-					Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+					Activator a = Activator.getDefault();
+					if (a != null)
+						a.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
 				}
 				hardClose();
 				monitor.done();
@@ -163,7 +165,9 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 						fireTransferReceiveDoneEvent();
 				} catch (Exception e) {
 					// simply log
-					Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.AbstractRetrieveFileTransfer_EXCEPTION_IN_FINALLY, e));
+					Activator a = Activator.getDefault();
+					if (a != null)
+						a.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.AbstractRetrieveFileTransfer_EXCEPTION_IN_FINALLY, e));
 				}
 			}
 			return getFinalStatus(exception);
@@ -244,7 +248,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected IStatus getFinalStatus(Throwable exception1) {
 		if (exception1 == null)
-			return new Status(IStatus.OK, Activator.getDefault().getBundle().getSymbolicName(), 0, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK, null);
+			return new Status(IStatus.OK, Activator.PLUGIN_ID, 0, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK, null);
 		else if (exception1 instanceof UserCancelledException)
 			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled, exception1);
 		else
