@@ -251,7 +251,14 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String)
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName) throws ContainerCreateException {
-		return createContainer(getDescriptionByName(containerTypeDescriptionName), (Object[]) null);
+		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), (Object[]) null);
+	}
+
+	private ContainerTypeDescription getDescriptionByNameWithException(String containerTypeDescriptionName) throws ContainerCreateException {
+		ContainerTypeDescription typeDescription = getDescriptionByName(containerTypeDescriptionName);
+		if (typeDescription == null)
+			throw new ContainerCreateException("Container type description with name=" + containerTypeDescriptionName + " not found.  This may indicate that the desired provider is not available or not startable within runtime."); //$NON-NLS-1$ //$NON-NLS-2$
+		return typeDescription;
 	}
 
 	/*
@@ -296,7 +303,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 *      java.lang.Object[])
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, Object[] parameters) throws ContainerCreateException {
-		return createContainer(getDescriptionByName(containerTypeDescriptionName), parameters);
+		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), parameters);
 	}
 
 	/* (non-Javadoc)
@@ -318,7 +325,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	public IContainer createContainer(String containerTypeDescriptionName, ID containerID, Object[] parameters) throws ContainerCreateException {
 		if (containerID == null)
 			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
-		return createContainer(getDescriptionByName(containerTypeDescriptionName), containerID, parameters);
+		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerID, parameters);
 	}
 
 	/* (non-Javadoc)
@@ -334,7 +341,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String, org.eclipse.ecf.core.identity.ID)
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, ID containerID) throws ContainerCreateException {
-		return createContainer(getDescriptionByName(containerTypeDescriptionName), new Object[] {containerID});
+		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), new Object[] {containerID});
 	}
 
 	/*
