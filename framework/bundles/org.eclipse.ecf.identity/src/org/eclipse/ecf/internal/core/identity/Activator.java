@@ -259,26 +259,22 @@ public class Activator implements BundleActivator {
 						IdentityDebugOptions.DEBUG,
 						"addNamespaceExtensions.createdNamespace(" + ns + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 				// Check to see if we have a namespace name collision
-				if (IDFactory.containsNamespace0(ns))
-					throw new CoreException(
-							new Status(
+				if (!IDFactory.containsNamespace0(ns)) {
+					// Now add to known namespaces
+					IDFactory.addNamespace0(ns);
+					org.eclipse.ecf.core.util.Trace
+							.trace(
+									Activator.PLUGIN_ID,
+									IdentityDebugOptions.DEBUG,
+									"addNamespaceExtensions.addedNamespaceToFactory(" + ns //$NON-NLS-1$
+											+ ")"); //$NON-NLS-1$
+				} else {
+					getDefault().log(
+							new Status(IStatus.WARNING, Activator.PLUGIN_ID,
 									IStatus.WARNING,
-									bundleName,
-									FACTORY_NAME_COLLISION_ERRORCODE,
-									"Namespace collision=" //$NON-NLS-1$
-											+ nsName
-											+ ";contributor=" //$NON-NLS-1$
-											+ member.getContributor().getName()
-											+ ";extensionPoint="
-											+ extension
-													.getExtensionPointUniqueIdentifier(),
+									"Namespace collision for name=" + nsName,
 									null));
-				// Now add to known namespaces
-				IDFactory.addNamespace0(ns);
-				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID,
-						IdentityDebugOptions.DEBUG,
-						"addNamespaceExtensions.addedNamespaceToFactory(" + ns //$NON-NLS-1$
-								+ ")"); //$NON-NLS-1$
+				}
 			} catch (final CoreException e) {
 				getDefault().log(e.getStatus());
 				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
