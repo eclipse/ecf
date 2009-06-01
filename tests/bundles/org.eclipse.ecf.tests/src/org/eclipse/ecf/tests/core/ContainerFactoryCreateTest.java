@@ -148,6 +148,15 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 		assertNotNull(container);
 	}
 
+	public void testCreateBadContainer() throws Exception { 
+		try {
+			ContainerFactory.getDefault().createContainer("asdfasdfasdfsadfsadf");
+			fail();
+		} catch (ContainerCreateException e) {
+			// It should throw
+			e.printStackTrace();
+		}
+	}
 	public void testCreateBaseContainer0() throws Exception {
 		final IContainer base = ContainerFactory.getDefault().createContainer();
 		assertNotNull(base);
