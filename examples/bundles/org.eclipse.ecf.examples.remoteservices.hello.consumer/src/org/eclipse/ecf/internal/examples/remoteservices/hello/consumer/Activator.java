@@ -64,18 +64,19 @@ public class Activator implements BundleActivator, IDistributionConstants, Servi
 		IHello hello = (IHello) context.getService(reference);
 		// Call it
 		hello.hello(CONSUMER_NAME);
-		System.out.println("Called hello("+CONSUMER_NAME+") on proxy successfully");
+		System.out.println("Called hello using proxy");
 		
 		// Now get remote service reference and use asynchronous 
 		// remote invocation
 		IRemoteService remoteService = (IRemoteService) reference.getProperty(REMOTE);
+		
 		// This futureExec returns immediately
-		IFuture future = RemoteServiceHelper.futureExec(remoteService, "hello", new Object[] { CONSUMER_NAME });
+		IFuture future = RemoteServiceHelper.futureExec(remoteService, "hello", new Object[] { CONSUMER_NAME + " future" });
 		
 		try {
 			// This method blocks until a return 
 			future.get();
-			System.out.println("Called future.get() successfully");
+			System.out.println("Called hello using future");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

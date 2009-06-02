@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <programArgs>-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -console</programArgs>
+      <vmArgs>-Declipse.ignoreApp=true -Dosgi.noShutdown=true</vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+   </launcherArgs>
+
+   <plugins>
+      <plugin id="ch.ethz.iks.r_osgi.remote"/>
+      <plugin id="ch.ethz.iks.slp"/>
+      <plugin id="javax.servlet"/>
+      <plugin id="org.eclipse.core.contenttype"/>
+      <plugin id="org.eclipse.core.jobs"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
+      <plugin id="org.eclipse.ecf"/>
+      <plugin id="org.eclipse.ecf.discovery"/>
+      <plugin id="org.eclipse.ecf.examples.remoteservices.hello"/>
+      <plugin id="org.eclipse.ecf.examples.remoteservices.hello.consumer"/>
+      <plugin id="org.eclipse.ecf.identity"/>
+      <plugin id="org.eclipse.ecf.osgi.services"/>
+      <plugin id="org.eclipse.ecf.osgi.services.discovery"/>
+      <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
+      <plugin id="org.eclipse.ecf.provider"/>
+      <plugin id="org.eclipse.ecf.provider.jmdns"/>
+      <plugin id="org.eclipse.ecf.provider.jslp"/>
+      <plugin id="org.eclipse.ecf.provider.r_osgi"/>
+      <plugin id="org.eclipse.ecf.remoteservice"/>
+      <plugin id="org.eclipse.ecf.sharedobject"/>
+      <plugin id="org.eclipse.ecf.ssl" fragment="true"/>
+      <plugin id="org.eclipse.equinox.app"/>
+      <plugin id="org.eclipse.equinox.common"/>
+      <plugin id="org.eclipse.equinox.concurrent"/>
+      <plugin id="org.eclipse.equinox.preferences"/>
+      <plugin id="org.eclipse.equinox.registry"/>
+      <plugin id="org.eclipse.osgi"/>
+      <plugin id="org.eclipse.osgi.services"/>
+      <plugin id="org.objectweb.asm"/>
+   </plugins>
+
+   <configurations>
+      <plugin id="org.eclipse.ecf.examples.remoteservices.hello.consumer" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
+   </configurations>
+
+</product>
