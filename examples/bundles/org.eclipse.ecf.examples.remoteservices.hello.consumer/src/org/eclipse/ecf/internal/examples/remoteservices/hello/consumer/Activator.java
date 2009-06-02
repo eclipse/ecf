@@ -3,7 +3,6 @@ package org.eclipse.ecf.internal.examples.remoteservices.hello.consumer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
-import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.RemoteServiceHelper;
 import org.eclipse.equinox.concurrent.future.IFuture;
@@ -17,6 +16,8 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class Activator implements BundleActivator, IDistributionConstants, ServiceTrackerCustomizer {
 
+	public static final String CONSUMER_NAME = "org.eclipse.ecf.examples.remoteservices.hello.consumer";
+	
 	private BundleContext context;
 	private ServiceTracker containerManagerServiceTracker;
 	private ServiceTracker helloServiceTracker;
@@ -62,14 +63,14 @@ public class Activator implements BundleActivator, IDistributionConstants, Servi
 		System.out.println("IHello service proxy being added");
 		IHello hello = (IHello) context.getService(reference);
 		// Call it
-		hello.hello();
-		System.out.println("Called hello() on proxy successfully");
+		hello.hello(CONSUMER_NAME);
+		System.out.println("Called hello("+CONSUMER_NAME+") on proxy successfully");
 		
 		// Now get remote service reference and use asynchronous 
 		// remote invocation
 		IRemoteService remoteService = (IRemoteService) reference.getProperty(REMOTE);
 		// This futureExec returns immediately
-		IFuture future = RemoteServiceHelper.futureExec(remoteService, "hello", null);
+		IFuture future = RemoteServiceHelper.futureExec(remoteService, "hello", new Object[] { CONSUMER_NAME });
 		
 		try {
 			// This method blocks until a return 
