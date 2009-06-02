@@ -14,7 +14,7 @@ import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 public class Hello implements IHello {
 
 	public void hello(String from) {
-		System.out.println(this.getClass().getName()+".hello from="+from);
+		System.out.println("hello from="+from);
 	}
 
 }
