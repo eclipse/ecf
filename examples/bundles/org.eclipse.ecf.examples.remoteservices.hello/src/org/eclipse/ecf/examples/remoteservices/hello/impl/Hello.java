@@ -13,8 +13,8 @@ import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 
 public class Hello implements IHello {
 
-	public void hello() {
-		System.out.println("Got hello() from unknown");
+	public void hello(String from) {
+		System.out.println("Got hello() from "+from);
 	}
 
 }
