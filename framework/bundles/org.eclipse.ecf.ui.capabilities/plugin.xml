@@ -12,5 +12,12 @@
           activityId="org.eclipse.ecf.ui.activity"
           pattern="org.eclipse.ecf.ui/.*">
     </activityPatternBinding>
+    
+	<categoryActivityBinding activityId="org.eclipse.ecf.ui.activity"
+    	categoryId="org.eclipse.categories.developmentCategory">
+	</categoryActivityBinding>
+	<defaultEnablement
+		id="org.eclipse.ecf.ui.activity">
+	</defaultEnablement>
   </extension>
 </plugin>
