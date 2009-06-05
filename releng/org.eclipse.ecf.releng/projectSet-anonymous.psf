@@ -129,7 +129,7 @@
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.filetransfer,org.eclipse.ecf.tests.filetransfer"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.presence,org.eclipse.ecf.tests.presence"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.protocol.msn,org.eclipse.ecf.tests.protocol.msn"/>
-	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.datshare.nio,org.eclipse.ecf.tests.provider.datshare.nio"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.datashare.nio,org.eclipse.ecf.tests.provider.datshare.nio"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.efs,org.eclipse.ecf.tests.provider.filetransfer.efs"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.scp,org.eclipse.ecf.tests.provider.filetransfer.scp"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.provider.filetransfer.xmpp,org.eclipse.ecf.tests.provider.filetransfer.xmpp"/>
