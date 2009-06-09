@@ -103,10 +103,10 @@ public class EventAdminImpl implements EventAdmin {
 		for (int i = 0; i < refs.length; i++) {
 			IRemoteService remoteService = getRemoteServiceForServiceReference(refs[i]);
 			// If this is a remote service, then fire the EventHandler
-			// asynchronously
+			// asynchronously via IRemoteService.fireAsync
 			if (remoteService != null)
 				fireAsync(refs[i], remoteService, createRemoteCall(event));
-			// Else call the EventHandler asynchronously
+			// Else call the EventHandler asynchronously by using Equinox concurrent API
 			else
 				fireAsync(refs[i], (EventHandler) context.getService(refs[i]),
 						event);
