@@ -47,7 +47,7 @@ public class EventAdminImpl implements EventAdmin {
 		this.defaultTimeout = defaultTimeout;
 	}
 
-	private IRemoteService getRemoteServiceForServiceReference(
+	protected IRemoteService getRemoteServiceForServiceReference(
 			ServiceReference ref) {
 		if (ref == null)
 			return null;
@@ -73,13 +73,17 @@ public class EventAdminImpl implements EventAdmin {
 				String eventFilter = (String) refs[i]
 						.getProperty(EventConstants.EVENT_FILTER);
 				Filter filter = null;
-				try {
-					filter = context.createFilter(eventFilter);
-				} catch (InvalidSyntaxException e) {
-					logError("getEventHandlers eventFilter=" + eventFilter, e);
-					continue;
-				}
-				if (event.matches(filter))
+				if (eventFilter != null) {
+					try {
+						filter = context.createFilter(eventFilter);
+						if (event.matches(filter))
+							results.add(refs[i]);
+					} catch (InvalidSyntaxException e) {
+						logError("getEventHandlers eventFilter=" + eventFilter,
+								e);
+						continue;
+					}
+				} else
 					results.add(refs[i]);
 			}
 			return (ServiceReference[]) results
@@ -87,7 +91,7 @@ public class EventAdminImpl implements EventAdmin {
 		}
 	}
 
-	private void logError(String string, Throwable e) {
+	protected void logError(String string, Throwable e) {
 		System.err.println(string);
 		if (e != null)
 			e.printStackTrace(System.err);
@@ -106,18 +110,19 @@ public class EventAdminImpl implements EventAdmin {
 			// asynchronously via IRemoteService.fireAsync
 			if (remoteService != null)
 				fireAsync(refs[i], remoteService, createRemoteCall(event));
-			// Else call the EventHandler asynchronously by using Equinox concurrent API
+			// Else call the EventHandler asynchronously by using Equinox
+			// concurrent API
 			else
 				fireAsync(refs[i], (EventHandler) context.getService(refs[i]),
 						event);
 		}
 	}
 
-	private void logWarning(String string) {
+	protected void logWarning(String string) {
 		System.out.println(string);
 	}
 
-	private IRemoteCall createRemoteCall(final Event event) {
+	protected IRemoteCall createRemoteCall(final Event event) {
 		return new IRemoteCall() {
 
 			public String getMethod() {
@@ -147,7 +152,7 @@ public class EventAdminImpl implements EventAdmin {
 					.getService(eventHandlerRefs[i]), event);
 	}
 
-	private void callSync(final ServiceReference serviceReference,
+	protected void callSync(final ServiceReference serviceReference,
 			final EventHandler eventHandler, final Event event) {
 		SafeRunner.run(new ISafeRunnable() {
 			public void handleException(Throwable exception) {
@@ -164,7 +169,7 @@ public class EventAdminImpl implements EventAdmin {
 		});
 	}
 
-	private void fireAsync(final ServiceReference serviceReference,
+	protected void fireAsync(final ServiceReference serviceReference,
 			final EventHandler eventHandler, final Event event) {
 		getExecutor().execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor arg0) throws Exception {
@@ -174,7 +179,7 @@ public class EventAdminImpl implements EventAdmin {
 		}, null);
 	}
 
-	private IExecutor getExecutor() {
+	protected IExecutor getExecutor() {
 		synchronized (executorLock) {
 			if (executor == null) {
 				executor = new ThreadsExecutor();
@@ -183,7 +188,7 @@ public class EventAdminImpl implements EventAdmin {
 		}
 	}
 
-	private void fireAsync(final ServiceReference serviceReference,
+	protected void fireAsync(final ServiceReference serviceReference,
 			final IRemoteService remoteService, final IRemoteCall call) {
 		SafeRunner.run(new ISafeRunnable() {
 			public void handleException(Throwable exception) {
@@ -200,7 +205,7 @@ public class EventAdminImpl implements EventAdmin {
 		});
 	}
 
-	private void logCallException(String string, Throwable t) {
+	protected void logCallException(String string, Throwable t) {
 		System.err.println(string);
 		if (t != null)
 			t.printStackTrace(System.err);

@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Eventadmin Example
+Bundle-Name: %bundleName
 Bundle-SymbolicName: org.eclipse.ecf.examples.remoteservices.eventadmin
 Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %bundleProvider
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
 Import-Package: org.eclipse.ecf.core.util,
@@ -15,3 +15,4 @@ Import-Package: org.eclipse.ecf.core.util,
  org.osgi.util.tracker;version="1.4.2"
 Require-Bundle: org.eclipse.equinox.common;bundle-version="3.5.0"
 Export-Package: org.eclipse.ecf.examples.remoteservices.eventadmin
+Bundle-Localization: bundle
