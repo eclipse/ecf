@@ -9,7 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.examples.internal.eventadmin.app;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -31,12 +32,15 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractEventAdminApplication implements IApplication {
 
+	public static final String DEFAULT_TOPIC = "defaultTopic";
+
 	protected BundleContext bundleContext;
+
 	// The following must be set in processArgs
 	protected String containerType;
 	protected String containerId;
 	protected String targetId;
-	protected String topic;
+	protected String topic = DEFAULT_TOPIC;
 
 	protected ServiceTracker containerManagerTracker;
 	private final Object appLock = new Object();
@@ -45,21 +49,77 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	protected ServiceRegistration eventAdminRegistration;
 	protected IContainer container;
 
-	public Object start(IApplicationContext context) throws Exception {
+	protected Object startup(IApplicationContext context) throws Exception {
 		// Get BundleContext
 		bundleContext = Activator.getContext();
+		
 		// Process Arguments
-		processArgs(context.getArguments());
+		final String[] args = mungeArguments((String[]) context.getArguments()
+				.get("application.args")); //$NON-NLS-1$
+		processArgs(args);
+		
 		// Create event admin impl
 		eventAdminImpl = new EventAdminImpl(bundleContext);
+		
 		// Create, configure, and connect container
 		createConfigureAndConnectContainer();
+		
 		// registerEventAdmin
 		registerEventAdmin();
-		return new Integer(0);
+		
+		return IApplication.EXIT_OK;
+	}
+	
+	protected void shutdown() {
+		if (eventAdminRegistration != null) {
+			eventAdminRegistration.unregister();
+			eventAdminRegistration = null;
+		}
+		if (container != null) {
+			container.dispose();
+			getContainerManager().removeAllContainers();
+			container = null;
+		}
+		if (containerManagerTracker != null) {
+			containerManagerTracker.close();
+			containerManagerTracker = null;
+		}
+		synchronized (appLock) {
+			done = true;
+			appLock.notifyAll();
+		}
+		bundleContext = null;
+	}
+	
+	protected Object run() {
+		waitForDone();
+		return IApplication.EXIT_OK;
+	}
+	
+	public Object start(IApplicationContext context) throws Exception {
+		Object startupResult = startup(context);
+		if (!startupResult.equals(IApplication.EXIT_OK)) return startupResult;
+		return run();
 	}
 
-	protected abstract void processArgs(Map args);
+	private String[] mungeArguments(String originalArgs[]) {
+		if (originalArgs == null)
+			return new String[0];
+		final List l = new ArrayList();
+		for (int i = 0; i < originalArgs.length; i++)
+			if (!originalArgs[i].equals("-pdelaunch")) //$NON-NLS-1$
+				l.add(originalArgs[i]);
+		return (String[]) l.toArray(new String[] {});
+	}
+
+	protected void usage() {
+		System.out.println("Usage: eclipse.exe -application "+usageApplicationId()+" "+usageParameters());
+	}
+	
+	protected abstract String usageApplicationId();
+	protected abstract String usageParameters();
+	
+	protected abstract void processArgs(String[] args);
 
 	protected void registerEventAdmin() {
 		// Create properties for event admin
@@ -84,24 +144,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	}
 
 	public void stop() {
-		if (eventAdminRegistration != null) {
-			eventAdminRegistration.unregister();
-			eventAdminRegistration = null;
-		}
-		if (container != null) {
-			container.dispose();
-			getContainerManager().removeAllContainers();
-			container = null;
-		}
-		if (containerManagerTracker != null) {
-			containerManagerTracker.close();
-			containerManagerTracker = null;
-		}
-		synchronized (appLock) {
-			done = true;
-			appLock.notifyAll();
-		}
-		bundleContext = null;
+		shutdown();
 	}
 
 	protected void connectContainer(IContainer container, String target)

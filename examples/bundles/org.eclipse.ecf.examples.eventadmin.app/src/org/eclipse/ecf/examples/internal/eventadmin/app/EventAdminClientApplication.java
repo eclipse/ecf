@@ -9,9 +9,7 @@
 ******************************************************************************/
 package org.eclipse.ecf.examples.internal.eventadmin.app;
 
-import java.util.Map;
-
-import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.equinox.app.IApplication;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.EventHandler;
 
@@ -24,10 +22,8 @@ public class EventAdminClientApplication extends AbstractEventAdminApplication {
 	private TestSender testSender;
 	private ServiceRegistration testEventHandlerRegistration;
 	
-	public Object start(IApplicationContext context) throws Exception {
-		// Do setup in abstract super class
-		super.start(context);
-		
+	protected Object run() {
+
 		// XXX for testing, setup an event handler
 		testEventHandlerRegistration = bundleContext.registerService(
 				EventHandler.class.getName(), new TestEventHandler(), null);
@@ -39,10 +35,10 @@ public class EventAdminClientApplication extends AbstractEventAdminApplication {
 		// Now just wait until we're stopped
 		waitForDone();
 		
-		return new Integer(0);
+		return IApplication.EXIT_OK;
 	}
 
-	public void stop() {
+	protected void shutdown() {
 		if (testSender != null) {
 			testSender.stop();
 			testSender = null;
@@ -51,14 +47,37 @@ public class EventAdminClientApplication extends AbstractEventAdminApplication {
 			testEventHandlerRegistration.unregister();
 			testEventHandlerRegistration = null;
 		}
-		super.stop();
+		super.shutdown();
 	}
 
-	protected void processArgs(Map args) {
+	protected String usageApplicationId() {
+		return "org.eclipse.ecf.examples.eventadmin.app.EventAdminClient";
+	}
+
+	protected String usageParameters() {
+		StringBuffer buf = new StringBuffer("\n\t-containerType <default:"+DEFAULT_CONTAINER_TYPE+">");
+		buf.append("\n\t-targetId <default:"+DEFAULT_CONTAINER_TARGET+">");
+		buf.append("\n\t-topic <default:"+DEFAULT_TOPIC+">");
+		return buf.toString();
+	}
+
+	protected void processArgs(String[] args) {
 		containerType = DEFAULT_CONTAINER_TYPE;
 		containerId = null;
 		targetId = DEFAULT_CONTAINER_TARGET;
 		topic = DEFAULT_TOPIC;
-	}
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-containerType")) {
+				containerType = args[i + 1];
+				i++;
+			} else if (args[i].equals("-targetId")) {
+				targetId = args[i + 1];
+				i++;
+			} else if (args[i].equals("-topic")) {
+				topic = args[i + 1];
+				i++;
+			}
+		}
 
+	}
 }

@@ -9,10 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.examples.internal.eventadmin.app;
 
-import java.util.Map;
-
 import org.eclipse.equinox.app.IApplication;
-import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.EventHandler;
 
@@ -21,30 +18,26 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 
 	private static final String DEFAULT_CONTAINER_TYPE = "ecf.jms.activemq.tcp.manager";
 	public static final String DEFAULT_CONTAINER_ID = "tcp://localhost:61616/exampleTopic";
-	public static final String DEFAULT_TOPIC = "defaultTopic";
 
 	private TestSender testSender;
 	private ServiceRegistration testEventHandlerRegistration;
 
-	public Object start(IApplicationContext context) throws Exception {
-		// Do setup in abstract super class
-		super.start(context);
-		
+	protected Object run() {
 		// XXX for testing, setup an event handler
 		testEventHandlerRegistration = bundleContext.registerService(
 				EventHandler.class.getName(), new TestEventHandler(), null);
-		
+
 		// XXX for testing, setup a test sender
-		testSender = new TestSender(eventAdminImpl, topic, container.getID().getName());
+		testSender = new TestSender(eventAdminImpl, topic, container.getID()
+				.getName());
 		new Thread(testSender).start();
-		
-		// Now just wait until we're stopped
+
 		waitForDone();
 		
-		return new Integer(0);
+		return IApplication.EXIT_OK;
 	}
-
-	public void stop() {
+	
+	protected void shutdown() {
 		if (testSender != null) {
 			testSender.stop();
 			testSender = null;
@@ -53,14 +46,38 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 			testEventHandlerRegistration.unregister();
 			testEventHandlerRegistration = null;
 		}
-		super.stop();
+		super.shutdown();
 	}
 
-	protected void processArgs(Map args) {
+	protected String usageApplicationId() {
+		return "org.eclipse.ecf.examples.eventadmin.app.EventAdminManager";
+	}
+
+	protected String usageParameters() {
+		StringBuffer buf = new StringBuffer("\n\t-containerType <default:"+DEFAULT_CONTAINER_TYPE+">");
+		buf.append("\n\t-containerId <default:"+DEFAULT_CONTAINER_ID+">");
+		buf.append("\n\t-topic <default:"+DEFAULT_TOPIC+">");
+		return buf.toString();
+	}
+
+	protected void processArgs(String[] args) {
 		containerType = DEFAULT_CONTAINER_TYPE;
 		containerId = DEFAULT_CONTAINER_ID;
 		targetId = null;
 		topic = DEFAULT_TOPIC;
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-containerType")) {
+				containerType = args[i + 1];
+				i++;
+			} else if (args[i].equals("-containerId")) {
+				containerId = args[i + 1];
+				i++;
+			} else if (args[i].equals("-topic")) {
+				topic = args[i + 1];
+				i++;
+			}
+		}
+
 	}
 
 }
