@@ -437,7 +437,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				}
 			}
 			if (!doneWaiting)
-				throw new ECFException(Messages.RegistrySharedObject_19 + call.getTimeout() + Messages.RegistrySharedObject_20);
+				throw new ECFException(NLS.bind(Messages.RegistrySharedObject_19, Long.toString(call.getTimeout())), new TimeoutException(call.getTimeout()));
 		} catch (final IOException e) {
 			log(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
 			throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_SENDING_REQUEST, e);
