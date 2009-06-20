@@ -14,6 +14,8 @@ public class Activator extends Plugin {
 	// The shared instance
 	private static Activator plugin;
 
+	private BundleContext context;
+	
 	/**
 	 * The constructor
 	 */
@@ -26,6 +28,7 @@ public class Activator extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		this.context = context;
 		plugin = this;
 	}
 
@@ -36,6 +39,7 @@ public class Activator extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+		this.context = null;
 	}
 
 	/**
@@ -47,4 +51,7 @@ public class Activator extends Plugin {
 		return plugin;
 	}
 
+	public BundleContext getContext() {
+		return context;
+	}
 }
