@@ -303,7 +303,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		 */
 		public void removePresenceListener(IPresenceListener listener) {
 			synchronized (presenceListeners) {
-				presenceListeners.add(listener);
+				presenceListeners.remove(listener);
 			}
 		}
 
