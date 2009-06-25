@@ -17,7 +17,7 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class Activator implements BundleActivator {
 
-	public static final String RSGI_SERVICE_HOST = "r-osgi://localhost:9278";
+	public static final String ROSGI_SERVICE_HOST = "r-osgi://localhost:9278";
 
 	private BundleContext context;
 	private ServiceTracker containerManagerServiceTracker;
@@ -41,7 +41,7 @@ public class Activator implements BundleActivator {
 		// Lookup IRemoteServiceReference
 		IRemoteServiceReference[] helloReferences = containerAdapter
 				.getRemoteServiceReferences(IDFactory.getDefault().createID(
-						container.getConnectNamespace(), RSGI_SERVICE_HOST),
+						container.getConnectNamespace(), ROSGI_SERVICE_HOST),
 						IHello.class.getName(), null);
 		Assert.isNotNull(helloReferences);
 		Assert.isTrue(helloReferences.length > 0);
