@@ -16,26 +16,34 @@ public class Activator implements BundleActivator {
 	private ServiceTracker containerManagerServiceTracker;
 	private IContainer container;
 	private IRemoteServiceRegistration serviceRegistration;
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+	 * 
+	 * @see
+	 * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext
+	 * )
 	 */
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
 		// Create R-OSGi Container
 		IContainerManager containerManager = getContainerManagerService();
-		container = containerManager.getContainerFactory().createContainer("ecf.r_osgi.peer");
+		container = containerManager.getContainerFactory().createContainer(
+				"ecf.r_osgi.peer");
 		// Get remote service container adapter
-		IRemoteServiceContainerAdapter containerAdapter = (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class);
+		IRemoteServiceContainerAdapter containerAdapter = (IRemoteServiceContainerAdapter) container
+				.getAdapter(IRemoteServiceContainerAdapter.class);
 		// Register remote service
-		serviceRegistration = containerAdapter.registerRemoteService(new String[] { IHello.class.getName() }, new Hello(), null);
+		serviceRegistration = containerAdapter.registerRemoteService(
+				new String[] { IHello.class.getName() }, new Hello(), null);
 		System.out.println("IHello RemoteService registered");
-}
+	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+	 * 
+	 * @see
+	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
 		if (serviceRegistration != null) {
@@ -55,7 +63,8 @@ public class Activator implements BundleActivator {
 
 	private IContainerManager getContainerManagerService() {
 		if (containerManagerServiceTracker == null) {
-			containerManagerServiceTracker = new ServiceTracker(context, IContainerManager.class.getName(),null);
+			containerManagerServiceTracker = new ServiceTracker(context,
+					IContainerManager.class.getName(), null);
 			containerManagerServiceTracker.open();
 		}
 		return (IContainerManager) containerManagerServiceTracker.getService();
