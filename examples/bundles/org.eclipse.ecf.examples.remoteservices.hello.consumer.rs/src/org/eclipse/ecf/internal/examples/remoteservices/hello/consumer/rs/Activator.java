@@ -18,38 +18,48 @@ import org.osgi.util.tracker.ServiceTracker;
 public class Activator implements BundleActivator {
 
 	public static final String RSGI_SERVICE_HOST = "r-osgi://localhost:9278";
-	
+
 	private BundleContext context;
 	private ServiceTracker containerManagerServiceTracker;
 	private IContainer container;
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
+	 * 
+	 * @see
+	 * org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
 		// Create R-OSGi Container
 		IContainerManager containerManager = getContainerManagerService();
-		container = containerManager.getContainerFactory().createContainer("ecf.r_osgi.peer");
+		container = containerManager.getContainerFactory().createContainer(
+				"ecf.r_osgi.peer");
 		// Get remote service container adapter
-		IRemoteServiceContainerAdapter containerAdapter = (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class);
+		IRemoteServiceContainerAdapter containerAdapter = (IRemoteServiceContainerAdapter) container
+				.getAdapter(IRemoteServiceContainerAdapter.class);
 		// Lookup IRemoteServiceReference
-		IRemoteServiceReference[] helloReferences = containerAdapter.getRemoteServiceReferences(IDFactory.getDefault().createID(container.getConnectNamespace(),RSGI_SERVICE_HOST), IHello.class.getName(), null);
+		IRemoteServiceReference[] helloReferences = containerAdapter
+				.getRemoteServiceReferences(IDFactory.getDefault().createID(
+						container.getConnectNamespace(), RSGI_SERVICE_HOST),
+						IHello.class.getName(), null);
 		Assert.isNotNull(helloReferences);
 		Assert.isTrue(helloReferences.length > 0);
 		// Get remote service for reference
-		IRemoteService remoteService = containerAdapter.getRemoteService(helloReferences[0]);
+		IRemoteService remoteService = containerAdapter
+				.getRemoteService(helloReferences[0]);
 		// Get the proxy
 		IHello proxy = (IHello) remoteService.getProxy();
 		// Finally...call the proxy
 		proxy.hello("RemoteService Consumer");
-		
+
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
+	 * 
+	 * @see
+	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
 		if (container != null) {
@@ -59,13 +69,14 @@ public class Activator implements BundleActivator {
 		if (containerManagerServiceTracker != null) {
 			containerManagerServiceTracker.close();
 			containerManagerServiceTracker = null;
-		}		
+		}
 		this.context = null;
 	}
 
 	private IContainerManager getContainerManagerService() {
 		if (containerManagerServiceTracker == null) {
-			containerManagerServiceTracker = new ServiceTracker(context, IContainerManager.class.getName(),null);
+			containerManagerServiceTracker = new ServiceTracker(context,
+					IContainerManager.class.getName(), null);
 			containerManagerServiceTracker.open();
 		}
 		return (IContainerManager) containerManagerServiceTracker.getService();
