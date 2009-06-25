@@ -5,9 +5,13 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
+import org.eclipse.ecf.remoteservice.IRemoteCall;
+import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -31,28 +35,70 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
-		// Create R-OSGi Container
+		// 1. Create R-OSGi Container
 		IContainerManager containerManager = getContainerManagerService();
 		container = containerManager.getContainerFactory().createContainer(
 				"ecf.r_osgi.peer");
-		// Get remote service container adapter
+		// 2. Get remote service container adapter
 		IRemoteServiceContainerAdapter containerAdapter = (IRemoteServiceContainerAdapter) container
 				.getAdapter(IRemoteServiceContainerAdapter.class);
-		// Lookup IRemoteServiceReference
+		// 3. Lookup IRemoteServiceReference
 		IRemoteServiceReference[] helloReferences = containerAdapter
 				.getRemoteServiceReferences(IDFactory.getDefault().createID(
 						container.getConnectNamespace(), ROSGI_SERVICE_HOST),
 						IHello.class.getName(), null);
 		Assert.isNotNull(helloReferences);
 		Assert.isTrue(helloReferences.length > 0);
-		// Get remote service for reference
+		// 4. Get remote service for reference
 		IRemoteService remoteService = containerAdapter
 				.getRemoteService(helloReferences[0]);
-		// Get the proxy
+		// 5. Get the proxy
 		IHello proxy = (IHello) remoteService.getProxy();
-		// Finally...call the proxy
+		// 6. Finally...call the proxy
 		proxy.hello("RemoteService Consumer");
 
+		// Call asynchronously via listener
+		callViaListener(remoteService);
+	}
+
+	void callViaListener(IRemoteService remoteService) {
+		remoteService.callAsync(createRemoteCall(), createRemoteCallListener());
+		System.out.println("callAsync invoked");
+	}
+
+	IRemoteCall createRemoteCall() {
+		return new IRemoteCall() {
+
+			public String getMethod() {
+				return "hello";
+			}
+
+			public Object[] getParameters() {
+				return new Object[] { "Asynch RemoteService Consumer" };
+			}
+
+			public long getTimeout() {
+				return 0;
+			}
+		};
+	}
+
+	IRemoteCallListener createRemoteCallListener() {
+		return new IRemoteCallListener() {
+
+			public void handleEvent(IRemoteCallEvent event) {
+				if (event instanceof IRemoteCallCompleteEvent) {
+					IRemoteCallCompleteEvent cce = (IRemoteCallCompleteEvent) event;
+					if (!cce.hadException())
+						System.out
+								.println("Remote call completed successfully!");
+					else
+						System.out
+								.println("Remote call completed with exception: "
+										+ cce.getException());
+				}
+			}
+		};
 	}
 
 	/*
