@@ -20,6 +20,7 @@
    <vm>
    </vm>
 
+
    <plugins>
       <plugin id="ch.ethz.iks.r_osgi.remote"/>
       <plugin id="ch.ethz.iks.slp"/>
@@ -51,14 +52,10 @@
       <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient"/>
       <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient.ssl" fragment="true"/>
       <plugin id="org.eclipse.ecf.provider.filetransfer.scp"/>
-      <plugin id="org.eclipse.ecf.provider.filetransfer.sharedobject" fragment=""/>
       <plugin id="org.eclipse.ecf.provider.filetransfer.ssl" fragment="true"/>
       <plugin id="org.eclipse.ecf.provider.irc"/>
       <plugin id="org.eclipse.ecf.provider.irc.bot"/>
-      <plugin id="org.eclipse.ecf.provider.jgroups" fragment=""/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
-      <plugin id="org.eclipse.ecf.provider.jms" fragment=""/>
-      <plugin id="org.eclipse.ecf.provider.jms.activemq" fragment=""/>
       <plugin id="org.eclipse.ecf.provider.jslp"/>
       <plugin id="org.eclipse.ecf.provider.msn"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
@@ -74,8 +71,6 @@
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.security"/>
-      <plugin id="org.eclipse.equinox.security.macosx" fragment="true"/>
-      <plugin id="org.eclipse.equinox.security.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.junit"/>
