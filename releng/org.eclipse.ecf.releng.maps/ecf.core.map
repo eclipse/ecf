@@ -33,6 +33,7 @@ fragment@org.eclipse.ecf.provider.filetransfer.httpclient.ssl=@CVSTag@,:pserver:
 plugin@org.eclipse.ecf.provider.filetransfer.efs=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.filetransfer.efs
 plugin@org.eclipse.ecf.provider.irc=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.irc
 plugin@org.eclipse.ecf.provider.irc.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.irc.ui
+plugin@org.eclipse.ecf.provider.irc.bot=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.irc.bot
 plugin@org.eclipse.ecf.provider.jmdns=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.jmdns
 plugin@org.eclipse.ecf.provider.remoteservice=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.remoteservice
 plugin@org.eclipse.ecf.provider.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.ui
