@@ -10,7 +10,7 @@
 	<!-- org.eclipse -->
 	<searchPath name="org.eclipse">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.5milestones/S-3.5M5-200902021535/?importType=binary"/>
+			<uri format="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.5/R-3.5-200906111540/?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
@@ -53,13 +53,7 @@
 	<!-- default -->
 	<searchPath name="default">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
-			<matcher base="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20090202130207/updateSite/plugins/">
-			    <group name="MATCH">
-				<name prefix="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20090202130207/updateSite/plugins/" pattern="([a-zA-Z0-9]+\.)*[a-zA-Z0-9_]+" suffix="_"/>
-				<version pattern="([0-9]+\.){2}[0-9]+(\.[a-zA-Z0-9-_]+)*" suffix=".jar"/>
-			    </group>
-			</matcher>
-			<uri format="${MATCH}"/>
+			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20090529135407/updateSite/?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
