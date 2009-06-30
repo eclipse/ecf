@@ -264,7 +264,7 @@
    			<mkdir dir="${targetPlatformPath}" />
 			<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
 				<classpath>
-					<fileset dir="${BUCKMINSTER_BUILDER_REV10382}/plugins">
+					<fileset dir="${BUCKMINSTER_BUILDER_REV09937}/plugins">
 						<include name="**/org.eclipse.equinox.launcher*.jar"/>
 					</fileset>
 				</classpath>
@@ -273,7 +273,7 @@
 				<arg line="--scriptfile .settings.bmscript"/>
 				<!-- osgi locations -->
 				<jvmarg value="-Dosgi.configuration.cascade=true" />
-				<jvmarg value="-Dosgi.sharedConfiguration.area=${BUCKMINSTER_BUILDER_REV10382}/configuration" />
+				<jvmarg value="-Dosgi.sharedConfiguration.area=${BUCKMINSTER_BUILDER_REV09937}/configuration" />
 				<jvmarg value="-Dosgi.sharedConfiguration.area.readOnly=true" />
 				<jvmarg value="-Dosgi.configuration.area=${basedir}/.configuration" />
 				<jvmarg value="-Dosgi.user.area=@none" />
@@ -283,7 +283,7 @@
    			<mkdir dir="${output.dir}" />
 			<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
 				<classpath>
-					<fileset dir="${BUCKMINSTER_BUILDER_REV10382}/plugins">
+					<fileset dir="${BUCKMINSTER_BUILDER_REV09937}/plugins">
 						<include name="**/org.eclipse.equinox.launcher*.jar"/>
 					</fileset>
 				</classpath>
@@ -304,7 +304,7 @@
 				<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${pde.debug.port},server=y,suspend=${pde.debug.suspend}" />
 				<!-- osgi locations -->
 				<jvmarg value="-Dosgi.configuration.cascade=true" />
-				<jvmarg value="-Dosgi.sharedConfiguration.area=${BUCKMINSTER_BUILDER_REV10382}/configuration" />
+				<jvmarg value="-Dosgi.sharedConfiguration.area=${BUCKMINSTER_BUILDER_REV09937}/configuration" />
 				<jvmarg value="-Dosgi.sharedConfiguration.area.readOnly=true" />
 				<jvmarg value="-Dosgi.configuration.area=${basedir}/.configuration" />
 				<jvmarg value="-Dosgi.user.area=@none" />
@@ -344,7 +344,7 @@
 		<sequential>
 			<java classname="org.eclipse.core.launcher.Main" fork="yes" failonerror="true">
 				<classpath>
-					<fileset dir="${BUCKMINSTER_BUILDER_REV10382}/plugins">
+					<fileset dir="${BUCKMINSTER_BUILDER_REV09937}/plugins">
 						<include name="**/org.eclipse.equinox.launcher*.jar"/>
 					</fileset>
 				</classpath>
@@ -352,7 +352,7 @@
 				<arg value="-application" />
 				<arg value="org.eclipse.ant.core.antRunner" />
 				<arg value="-buildfile" />
-				<arg value="${BUCKMINSTER_BUILDER_REV10382}/plugins/org.eclipse.pde.build_3.5.0.v20090527-1800/scripts/@{buildFile}" />
+				<arg value="${BUCKMINSTER_BUILDER_REV09937}/plugins/org.eclipse.pde.build_3.5.0/scripts/@{buildFile}" />
 				<arg value="-clean" />
 				<arg value="-data" />
 				<arg value="${basedir}" />
@@ -363,7 +363,7 @@
 				<jvmarg value="-Xrunjdwp:transport=dt_socket,address=${pde.debug.port},server=y,suspend=${pde.debug.suspend}" />
 				<!-- osgi locations -->
 				<jvmarg value="-Dosgi.configuration.cascade=true" />
-				<jvmarg value="-Dosgi.sharedConfiguration.area=${BUCKMINSTER_BUILDER_REV10382}/configuration" />
+				<jvmarg value="-Dosgi.sharedConfiguration.area=${BUCKMINSTER_BUILDER_REV09937}/configuration" />
 				<jvmarg value="-Dosgi.sharedConfiguration.area.readOnly=true" />
 				<jvmarg value="-Dosgi.configuration.area=${basedir}/.configuration" />
 				<jvmarg value="-Dosgi.user.area=@none" />
