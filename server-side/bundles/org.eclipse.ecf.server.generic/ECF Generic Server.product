@@ -38,7 +38,6 @@
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services"/>
       <plugin id="org.eclipse.ecf.osgi.services.discovery"/>
-      <plugin id="org.eclipse.ecf.osgi.services.discovery.local"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
       <plugin id="org.eclipse.ecf.presence"/>
       <plugin id="org.eclipse.ecf.presence.bot"/>
@@ -52,16 +51,15 @@
       <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient"/>
       <plugin id="org.eclipse.ecf.provider.filetransfer.httpclient.ssl" fragment="true"/>
       <plugin id="org.eclipse.ecf.provider.filetransfer.scp"/>
-      <plugin id="org.eclipse.ecf.provider.filetransfer.sharedobject"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer.sharedobject" fragment=""/>
       <plugin id="org.eclipse.ecf.provider.filetransfer.ssl" fragment="true"/>
       <plugin id="org.eclipse.ecf.provider.irc"/>
       <plugin id="org.eclipse.ecf.provider.irc.bot"/>
-      <plugin id="org.eclipse.ecf.provider.jgroups"/>
+      <plugin id="org.eclipse.ecf.provider.jgroups" fragment=""/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
-      <plugin id="org.eclipse.ecf.provider.jms"/>
-      <plugin id="org.eclipse.ecf.provider.jms.activemq"/>
+      <plugin id="org.eclipse.ecf.provider.jms" fragment=""/>
+      <plugin id="org.eclipse.ecf.provider.jms.activemq" fragment=""/>
       <plugin id="org.eclipse.ecf.provider.jslp"/>
-      <plugin id="org.eclipse.ecf.provider.localdiscovery"/>
       <plugin id="org.eclipse.ecf.provider.msn"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
