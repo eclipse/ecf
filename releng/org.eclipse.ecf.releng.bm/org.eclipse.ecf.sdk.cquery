@@ -6,24 +6,14 @@
     <cq:property key="target.ws" value="*"/>
 
 	<!-- https://bugs.eclipse.org/244850 -->
-    <cq:advisorNode namePattern="org.eclipse.ecf.core.source" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.ecf.examples.source" skipComponent="true" useTargetPlatform="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.core\.source$" skipComponent="true" useTargetPlatform="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.examples\.source$" skipComponent="true" useTargetPlatform="false"/>
    
-	<!-- https://bugs.eclipse.org/213437 and we include features org.eclipse.platform -> org.eclipse.rcp -->
-    <cq:advisorNode namePattern="org.eclipse.equinox.launcher.win32.win32.ia64" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.swt.win32.win32.ia64" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.equinox.launcher.gtk.linux.s390.*" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.swt.gtk.linux.s390.*" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.equinox.launcher.gtk.solaris.x86" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.swt.gtk.solaris.x86" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.core.resources.win32.ia64" skipComponent="true" useTargetPlatform="false"/>
-    <cq:advisorNode namePattern="org.eclipse.core.filesystem.win32.ia64" skipComponent="true" useTargetPlatform="false"/>
-    
     <!-- this is us -->
-    <cq:advisorNode namePattern="ch.ethz.iks.*" useTargetPlatform="false" useWorkspace="false"/>
-    <cq:advisorNode namePattern="org.eclipse.ecf.*" useTargetPlatform="false" useWorkspace="false"/>
-    <cq:advisorNode namePattern="org.eclipse.team.ecf.*" useTargetPlatform="false" useWorkspace="false"/>
-    <cq:advisorNode namePattern="org.jivesoftware.smack" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^ch\.ethz\.iks(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.team\.ecf(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.jivesoftware\.smack$" useTargetPlatform="false" useWorkspace="false"/>
 
 	<!-- the rest we want binary only -->
     <cq:advisorNode namePattern=".*" useTargetPlatform="true" skipComponent="false" mutableLevel="REJECT" sourceLevel="REJECT"/>
