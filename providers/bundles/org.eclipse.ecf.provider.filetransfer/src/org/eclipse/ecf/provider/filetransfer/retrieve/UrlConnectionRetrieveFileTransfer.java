@@ -443,7 +443,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	}
 
 	private void setCompressionRequestHeader() {
-		if (rangeSpecification == null)
+		// Set request header for possible gzip encoding, but only if
+		// 1) The file range specification is null (we want the whole file)
+		// 2) The target remote file does *not* end in .gz (see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=280205)
+		if (getFileRangeSpecification() == null && !targetHasGzSuffix(super.getRemoteFileName()))
 			urlConnection.setRequestProperty(ACCEPT_ENCODING, CONTENT_ENCODING_ACCEPTED);
 	}
 
