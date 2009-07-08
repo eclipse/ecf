@@ -621,7 +621,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 					});
 					shells.put(id, showImageShell);
 				}
-				showImageShell.initialize(Messages.EclipseCollabSharedObject_SCREEN_CAPTURE_FROM + fromUser, imageWrapper);
+				showImageShell.initialize(Messages.bind(Messages.EclipseCollabSharedObject_SCREEN_CAPTURE_FROM, fromUser), imageWrapper);
 				showImageShell.open();
 			}
 		});

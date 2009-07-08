@@ -12,8 +12,6 @@
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
-import org.eclipse.ecf.example.collab.share.io.FileSenderUI;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -24,6 +22,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.StringUtils;
+import org.eclipse.ecf.example.collab.share.io.FileSenderUI;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
@@ -435,7 +434,9 @@ public class ChatComposite extends Composite {
 			// This is a menu to us
 			final Action sendMessageToUser = new Action() {
 				public void run() {
-					MessageDialog.openError(null, MessageLoader.getString("ChatComposite.MESSAGE_TO_TITLE") + user.getNickname(), MessageLoader.getString("ChatComposite.MESSAGE_TO_TEXT") + user.getNickname() + "\n\tID:  " + user.getID().getName()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					MessageDialog.openError(null, MessageLoader.getFormattedString("ChatComposite.MESSAGE_TO_TITLE", user.getNickname()), //$NON-NLS-1$ 
+							MessageLoader.getFormattedString("ChatComposite.MESSAGE_TO_TEXT", user.getNickname()) //$NON-NLS-1$ 
+									+ "\n\tID:  " + user.getID().getName()); //$NON-NLS-1$
 				}
 			};
 			sendMessageToUser.setText(MessageLoader.getString("ChatComposite.MENU_SEND_MESSAGE_TO_YOURSELF_TEXT")); //$NON-NLS-1$
@@ -974,7 +975,7 @@ public class ChatComposite extends Composite {
 		String res = null;
 		if (this.view.lch != null) {
 			if (data != null) {
-				res = getID(MessageLoader.getString("ChatComposite.RING_TITLE") + data.getNickname(), MessageLoader.getString("ChatComposite.RING_MESSAGE_TEXT"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				res = getID(MessageLoader.getFormattedString("ChatComposite.RING_TITLE", data.getNickname()), MessageLoader.getString("ChatComposite.RING_MESSAGE_TEXT"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			} else {
 				res = getID(MessageLoader.getString("ChatComposite.RING_GROUP_TITLE"), MessageLoader.getString("ChatComposite.RING_MESSAGE_TEXT"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
@@ -989,7 +990,7 @@ public class ChatComposite extends Composite {
 		if (ud == null) {
 			res = getID(MessageLoader.getString("ChatComposite.START_PROGRAM_GROUP_TITLE"), MessageLoader.getString("ChatComposite.START_PROGRAM_GROUP_TEXT"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		} else {
-			res = getID(MessageLoader.getString("ChatComposite.START_PROGRAM_TITLE") + ud.getNickname(), MessageLoader.getString("ChatComposite.START_PROGRAM_TEXT") + ud.getNickname() + ":", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			res = getID(MessageLoader.getFormattedString("ChatComposite.START_PROGRAM_TITLE", ud.getNickname()), MessageLoader.getFormattedString("ChatComposite.START_PROGRAM_TEXT", ud.getNickname()) + ":", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			receiver = ud.getID();
 		}
 		if (res != null)
