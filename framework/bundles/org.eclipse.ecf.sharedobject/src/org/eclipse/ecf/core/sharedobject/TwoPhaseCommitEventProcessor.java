@@ -319,7 +319,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor, ISharedObj
 					trace("waitForFinish waiting " + wait + "ms on " //$NON-NLS-1$ //$NON-NLS-2$
 							+ getSharedObject().getID());
 					if (wait <= 0L)
-						throw new SharedObjectAddAbortException(Messages.TwoPhaseCommitEventProcessor_Exception_Commit_Timeout + getSharedObject().getID() + Messages.TwoPhaseCommitEventProcessor_Exception_Timeout_Adding_To + getHomeID(), (Throwable) null, getTimeout());
+						throw new SharedObjectAddAbortException(Messages.bind(Messages.TwoPhaseCommitEventProcessor_Exception_Commit_Timeout, new Object[] {getSharedObject().getID(), getHomeID()}), (Throwable) null, getTimeout());
 					// Wait right here
 					lock.wait(wait);
 				}

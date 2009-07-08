@@ -24,11 +24,14 @@ public class Messages extends NLS {
 	public static String SharedObjectContainerFactory_Exception_Container_Wrong_Type;
 	public static String SharedObjectContainerFactory_Exception_Description_Not_Null;
 	public static String SharedObjectFactory_Description_Not_Null;
-	public static String SharedObjectFactory_Exception_Create_Instantiator;
-	public static String SharedObjectFactory_Exception_Create_Instantiator_Null;
-	public static String SharedObjectFactory_Exception_Create_Shared_Objec;
-	public static String SharedObjectFactory_Exception_Create_Shared_Object;
-	public static String SharedObjectFactory_Exception_Create_Shared_Object_Not_Found;
+	//public static String SharedObjectFactory_Exception_Create_Instantiator;
+	//public static String SharedObjectFactory_Exception_Create_Instantiator_Null;
+	public static String SharedObjectFactory_Exception_Create_Instantiator_X_Null;
+	//public static String SharedObjectFactory_Exception_Create_Shared_Objec;
+	//public static String SharedObjectFactory_Exception_Create_Shared_Object;
+	//public static String SharedObjectFactory_Exception_Create_Shared_Object_Not_Found;
+	public static String SharedObjectFactory_SharedObjectCreateException_X_Not_Found;
+	public static String SharedObjectFactory_SharedObjectDescription_X_Not_Found;
 	public static String SharedObjectFactory_Exception_Create_With_Description;
 	public static String SharedObjectMsg_Exception_Methodname_Not_Null;
 	public static String SharedObjectMsg_Exception_Not_Serializable;
@@ -37,7 +40,6 @@ public class Messages extends NLS {
 	public static String SharedObjectMsg_Excepton_Invalid_Shared_Object_Msg;
 	public static String TwoPhaseCommitEventProcessor_Exception_Commit_Timeout;
 	public static String TwoPhaseCommitEventProcessor_Exception_Shared_Object_Add_Abort;
-	public static String TwoPhaseCommitEventProcessor_Exception_Timeout_Adding_To;
 
 	static {
 		// initialize resource bundle

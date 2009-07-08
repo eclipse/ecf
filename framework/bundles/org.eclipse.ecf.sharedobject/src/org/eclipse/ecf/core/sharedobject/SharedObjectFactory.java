@@ -108,7 +108,8 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		trace("getDescriptionByName(" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		SharedObjectTypeDescription res = getDescription0(name);
 		if (res == null) {
-			throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Shared_Object + name + Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
+			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Shared_Object + name + Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
+			throw new SharedObjectCreateException(Messages.bind(Messages.SharedObjectFactory_SharedObjectCreateException_X_Not_Found, name));
 		}
 		return res;
 	}
@@ -126,7 +127,8 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 			throw new SharedObjectCreateException(Messages.SharedObjectFactory_Description_Not_Null);
 		SharedObjectTypeDescription cd = getDescription0(desc);
 		if (cd == null)
-			throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Shared_Objec + desc.getName() + Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
+			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Shared_Objec + desc.getName() + Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
+			throw new SharedObjectCreateException(Messages.bind(Messages.SharedObjectFactory_SharedObjectDescription_X_Not_Found, desc.getName()));
 		ISharedObjectInstantiator instantiator = null;
 		try {
 			instantiator = cd.getInstantiator();
@@ -137,7 +139,8 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 			throw newexcept;
 		}
 		if (instantiator == null)
-			throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Instantiator + cd.getName() + Messages.SharedObjectFactory_Exception_Create_Instantiator_Null);
+			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Instantiator + cd.getName() + Messages.SharedObjectFactory_Exception_Create_Instantiator_Null);
+			throw new SharedObjectCreateException(Messages.bind(Messages.SharedObjectFactory_Exception_Create_Instantiator_X_Null, cd.getName()));
 		// Ask instantiator to actually create instance
 		return instantiator.createInstance(desc, args);
 	}
