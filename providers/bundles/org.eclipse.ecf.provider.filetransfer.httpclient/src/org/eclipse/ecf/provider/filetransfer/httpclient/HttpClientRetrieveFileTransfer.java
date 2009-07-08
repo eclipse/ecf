@@ -564,8 +564,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			setRequestHeaderValues();
 
 			Trace.trace(Activator.PLUGIN_ID, "retrieve=" + urlString); //$NON-NLS-1$
-			// Set request header for possible gzip encoding
-			if (getFileRangeSpecification() == null) {
+			// Set request header for possible gzip encoding, but only if
+			// 1) The file range specification is null (we want the whole file)
+			// 2) The target remote file does *not* end in .gz (see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=280205)
+			if (getFileRangeSpecification() == null && !targetHasGzSuffix(super.getRemoteFileName())) {
 				Trace.trace(Activator.PLUGIN_ID, "Accept-Encoding: gzip added to request header"); //$NON-NLS-1$
 				getMethod.setRequestHeader(GzipGetMethod.ACCEPT_ENCODING, GzipGetMethod.CONTENT_ENCODING_ACCEPTED);
 			} else {
