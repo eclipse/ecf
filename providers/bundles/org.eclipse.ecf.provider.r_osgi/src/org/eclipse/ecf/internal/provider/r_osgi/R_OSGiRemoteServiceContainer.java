@@ -484,6 +484,9 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 			throw new ContainerConnectException("targetID is of incorrect type for this container: " + targetID.toString()); //$NON-NLS-1$
 		}
 		if (connectedID != null) {
+			if (connectedID.getName().equals(targetID.getName())) {
+				return;
+			}
 			throw new ContainerConnectException("Container is already connected to " + connectedID); //$NON-NLS-1$
 		}
 
