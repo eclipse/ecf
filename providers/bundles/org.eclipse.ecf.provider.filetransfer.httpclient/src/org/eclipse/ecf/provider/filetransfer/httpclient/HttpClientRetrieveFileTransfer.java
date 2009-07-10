@@ -144,6 +144,18 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			return input;
 		}
 
+		private Object releaseLock = new Object();
+
+		// This override is a workaround for 
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=279457
+		// This makes GetMethod.releaseConnection non-reentrant,
+		// as with reentrancy under some circumstances a NPE can be 
+		// thrown with multithreaded access
+		public void releaseConnection() {
+			synchronized (releaseLock) {
+				super.releaseConnection();
+			}
+		}
 	}
 
 	static final class HostConfigHelper {
