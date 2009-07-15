@@ -82,6 +82,10 @@
 	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.emf(\..+)?" />
 	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.net4j(\..+)?" />
 	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.xsd(\..+)?" />
+
+	<!-- SWTBot -->
+	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.eclipse\.swtbot(\..+)?" />
+	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.hamcrest(\..+)?" />
 	
 	<!-- Eclipse --> 
 	<locator searchPathRef="org.eclipse" pattern="^org\.eclipse(\..+)?" />
@@ -91,10 +95,6 @@
 
 	<!-- PluginBuilder -->
 	<locator searchPathRef="org.pluginbuilder" pattern="^org\.pluginbuilder(\..+)?" />
-
-	<!-- SWTBot -->
-	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.eclipse\.swtbot(\..+)?" />
-	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.hamcrest(\..+)?" />
 	
 	<!-- Eclipse other (Orbit atm) -->	
 	<locator searchPathRef="default" pattern=".*" />
