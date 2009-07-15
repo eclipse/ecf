@@ -86,6 +86,7 @@
 	<!-- SWTBot -->
 	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.eclipse\.swtbot(\..+)?" />
 	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.hamcrest(\..+)?" />
+	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.apache\.log4j$" />
 	
 	<!-- Eclipse --> 
 	<locator searchPathRef="org.eclipse" pattern="^org\.eclipse(\..+)?" />
