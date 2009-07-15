@@ -50,6 +50,13 @@
 		</provider>
 	</searchPath>
 
+	<!-- swtbot -->
+	<searchPath name="org.eclipse.swtbot">
+		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+			<uri format="http://rsync.osuosl.org/pub/eclipse/technology/swtbot/galileo/dev-build/update-site/?importType=binary"/>
+		</provider>
+	</searchPath>
+
 	<!-- default -->
 	<searchPath name="default">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
@@ -84,6 +91,10 @@
 
 	<!-- PluginBuilder -->
 	<locator searchPathRef="org.pluginbuilder" pattern="^org\.pluginbuilder(\..+)?" />
+
+	<!-- SWTBot -->
+	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.eclipse\.swtbot(\..+)?" />
+	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.hamcrest(\..+)?" />
 	
 	<!-- Eclipse other (Orbit atm) -->	
 	<locator searchPathRef="default" pattern=".*" />
