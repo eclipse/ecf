@@ -17,6 +17,8 @@ import java.util.*;
  */
 public class ServiceProperties implements IServiceProperties {
 
+	private static final long serialVersionUID = -1033681952881598670L;
+
 	private final Properties props;
 
 	public ServiceProperties() {

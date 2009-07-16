@@ -9,10 +9,12 @@
 
 package org.eclipse.ecf.discovery;
 
+import java.io.Serializable;
+
 import java.util.Dictionary;
 import java.util.Enumeration;
 
-public interface IServiceProperties {
+public interface IServiceProperties extends Serializable {
 	/**
 	 * Get property names. This should return an Enumeration of String objects
 	 * that identify all of the names in this IServiceProperties instance
