@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import java.net.URI;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -26,6 +27,7 @@ public class RemoteServiceEndpointDescriptionImpl extends
 	private final ID endpointId;
 	private final IServiceID serviceId;
 	private ID targetId = null;
+	private int hashCode = 7;
 
 	public RemoteServiceEndpointDescriptionImpl(IServiceInfo serviceInfo) {
 		super(((ServiceProperties) serviceInfo.getServiceProperties())
@@ -62,6 +64,11 @@ public class RemoteServiceEndpointDescriptionImpl extends
 			targetId = IDFactory.getDefault().createID(targetNamespaceStr,
 					targetStr);
 		}
+		// Get location and compute hashCode
+		URI serviceLocation = this.serviceId.getLocation();
+		long rsId = this.getRemoteServiceId();
+		hashCode = 31 * hashCode + (int) (rsId ^ (rsId >>> 32));
+		hashCode = 31 * hashCode + serviceLocation.hashCode();
 	}
 
 	/*
@@ -87,11 +94,7 @@ public class RemoteServiceEndpointDescriptionImpl extends
 	}
 
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((serviceId == null) ? 0 : serviceId.hashCode());
-		return result;
+		return hashCode;
 	}
 
 	public boolean equals(Object obj) {
@@ -102,12 +105,9 @@ public class RemoteServiceEndpointDescriptionImpl extends
 		if (getClass() != obj.getClass())
 			return false;
 		RemoteServiceEndpointDescriptionImpl other = (RemoteServiceEndpointDescriptionImpl) obj;
-		if (serviceId == null) {
-			if (other.serviceId != null)
-				return false;
-		} else if (!serviceId.equals(other.serviceId))
-			return false;
-		return true;
+		return this.serviceId.getLocation().equals(
+				other.serviceId.getLocation())
+				&& getRemoteServiceId() == other.getRemoteServiceId();
 	}
 
 	public IServiceID getServiceID() {
@@ -118,11 +118,12 @@ public class RemoteServiceEndpointDescriptionImpl extends
 		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
 		sb.append(";providedinterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
 		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
-		sb.append(";serviceid=").append(getServiceID()); //$NON-NLS-1$
-		sb.append(";osgiEndpointID=").append(getEndpointID()); //$NON-NLS-1$
-		sb.append(";ecfEndpointID=").append(getEndpointAsID()); //$NON-NLS-1$
-		sb.append(";ecfTargetID=").append(getConnectTargetID()); //$NON-NLS-1$
-		sb.append(";ecfFilter=").append(getRemoteServicesFilter()); //$NON-NLS-1$
+		sb.append(";remoteServiceId=").append(getRemoteServiceId()); //$NON-NLS-1$
+		sb.append(";discoveryServiceID=").append(getServiceID()); //$NON-NLS-1$
+		sb.append(";endpointID=").append(getEndpointID()); //$NON-NLS-1$
+		sb.append(";endpointAsID=").append(getEndpointAsID()); //$NON-NLS-1$
+		sb.append(";connectTargetID=").append(getConnectTargetID()); //$NON-NLS-1$
+		sb.append(";remoteServicesFilter=").append(getRemoteServicesFilter()); //$NON-NLS-1$
 		sb.append(";props=").append(getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
