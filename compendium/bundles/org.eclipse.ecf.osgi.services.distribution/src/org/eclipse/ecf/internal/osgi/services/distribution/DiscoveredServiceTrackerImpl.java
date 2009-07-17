@@ -422,7 +422,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		return ecfSED;
 	}
 
-	private boolean findProxyServiceRegistration(ServiceEndpointDescription sed) {
+	private boolean findProxyServiceRegistration(
+			RemoteServiceEndpointDescription sed) {
 		for (Iterator i = discoveredRemoteServiceRegistrations.keySet()
 				.iterator(); i.hasNext();) {
 			ID containerID = (ID) i.next();
@@ -649,24 +650,21 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 	private boolean addDiscoveredServiceID(RemoteServiceEndpointDescription desc) {
 		synchronized (serviceLocations) {
-			return serviceLocations.add(new DiscoveredServiceID(desc
-					.getServiceID().getLocation(), desc.getRemoteServiceId()));
+			return serviceLocations.add(desc);
 		}
 	}
 
 	private boolean removeDiscoveredServiceID(
 			RemoteServiceEndpointDescription desc) {
 		synchronized (serviceLocations) {
-			return serviceLocations.remove(new DiscoveredServiceID(desc
-					.getServiceID().getLocation(), desc.getRemoteServiceId()));
+			return serviceLocations.remove(desc);
 		}
 	}
 
 	private boolean containsDiscoveredServiceID(
 			RemoteServiceEndpointDescription desc) {
 		synchronized (serviceLocations) {
-			return serviceLocations.contains(new DiscoveredServiceID(desc
-					.getServiceID().getLocation(), desc.getRemoteServiceId()));
+			return serviceLocations.contains(desc);
 		}
 	}
 
