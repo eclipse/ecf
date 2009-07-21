@@ -346,7 +346,7 @@ limitations under the License.
    <includes
          id="org.eclipse.swtbot.eclipse"
          version="0.0.0"/>
-         
+
    <plugin
          id="org.pluginbuilder.ant.optional.junit"
          download-size="0"
@@ -382,7 +382,7 @@ limitations under the License.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.ecf.tests"
          download-size="0"
@@ -762,4 +762,12 @@ limitations under the License.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.concurrent"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
