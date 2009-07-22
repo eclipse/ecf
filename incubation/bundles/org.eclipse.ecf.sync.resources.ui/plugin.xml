@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.1"?>
+<plugin>
+	<extension point="org.eclipse.core.expressions.definitions">
+      <definition id="org.eclipse.ecf.ui.resourcesDefinition">
+         <iterate ifEmpty="false">
+        	<adapt type="org.eclipse.core.resources.IResource"/>
+         </iterate>
+      </definition>
+   </extension>
+	   
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <dynamic
+              class="org.eclipse.ecf.sync.ui.resources.ResourcesShareMenuContributionItem"
+              id="org.eclipse.ecf.sync.ui.resources.resourcesShareMenuContributionItem">
+          <visibleWhen checkEnabled="true">
+              <with variable="activeMenuSelection">
+                 <reference definitionId="org.eclipse.ecf.ui.resourcesDefinition"/>
+              </with>
+          </visibleWhen>
+        </dynamic>
+       </menuContribution>
+   </extension>
+      <extension
+            point="org.eclipse.ui.preferencePages">
+         <page
+               category="org.eclipse.ecf.example.collab.ui.preferences"
+               class="org.eclipse.ecf.sync.ui.resources.preferences.ResourcesSynchronizationPreferencePage"
+               id="org.eclipse.ecf.sync.ui.resources.preferences.ResourcesSynchronizationPreferencePage"
+               name="Resources">
+         </page>
+      </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.eclipse.ecf.sync.resources.core"
+            name="Sample Category">
+      </category>
+      <view
+            category="org.eclipse.ecf.sync.resources.core"
+            class="org.eclipse.ecf.sync.resources.views.RemoteResourcesView"
+            icon="icons/sample.gif"
+            id="org.eclipse.ecf.sync.resources.core.views.RemoteResourcesView"
+            name="Shared Resources">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.start">
+      <run
+            class="org.eclipse.ecf.internal.sync.ui.resources.ECFStart">
+      </run>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            adaptable="true"
+            class="org.eclipse.ecf.sync.ui.resources.decorators.RemotelyOpenedEditorsDecorator"
+            id="org.eclipse.ecf.sync.ui.resources.decorators.RemotelyOpenedEditorsDecorator"
+            label="Read-only Decorator"
+            lightweight="true"
+            state="true">
+         <enablement>
+            <and>
+               <objectClass
+                     name="org.eclipse.core.resources.IResource">
+               </objectClass>
+               <or>
+                  <objectClass
+                        name="org.eclipse.core.resources.IFolder">
+                  </objectClass>
+                  <objectClass
+                        name="org.eclipse.core.resources.IFile">
+                  </objectClass>
+               </or>
+            </and>
+         </enablement>
+      </decorator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+            name="org.eclipse.ecf.docshare2.annotations.RemoteSelection">
+      </type>
+      <type
+            name="org.eclipse.ecf.docshare2.annotations.RemoteCursor"
+            super="org.eclipse.ecf.docshare2.annotations.RemoteSelection">
+      </type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationType="org.eclipse.ecf.docshare2.annotations.RemoteSelection"
+            colorPreferenceKey="remoteSelectionColor"
+            colorPreferenceValue="231,223,143"
+            contributesToHeader="false"
+            highlightPreferenceKey="remoteSelectionHighlighting"
+            highlightPreferenceValue="true"
+            includeOnPreferencePage="true"
+            label="%label.annotation.remote.selection"
+            overviewRulerPreferenceKey="remoteSelectionIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            presentationLayer="5"
+            textPreferenceKey="remoteSelectionTextIndication"
+            textPreferenceValue="false"
+            textStylePreferenceKey="remoteSelectionTextIndicationStyle"
+            textStylePreferenceValue="NONE">
+      </specification>
+      <specification
+            annotationType="org.eclipse.ecf.docshare2.annotations.RemoteCursor"
+            colorPreferenceKey="remoteCursorColor"
+            colorPreferenceValue="166,138,60"
+            contributesToHeader="false"
+            highlightPreferenceKey="remoteCursorHighlighting"
+            highlightPreferenceValue="false"
+            includeOnPreferencePage="true"
+            label="%label.annotation.remote.cursor"
+            overviewRulerPreferenceKey="remoteCursorIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            presentationLayer="5"
+            textPreferenceKey="remoteCursorTextIndication"
+            textPreferenceValue="true"
+            textStylePreferenceKey="remoteCursorTextIndicationStyle"
+            textStylePreferenceValue="IBEAM">
+      </specification>
+   </extension>
+</plugin>
