@@ -1,0 +1,16 @@
+# Debugging options for the org.eclipse.ecf.sync plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.internal.provisional.docshare plug-in
+org.eclipse.ecf.sync/debug=true
+org.eclipse.ecf.sync/debug/filter = *
+org.eclipse.ecf.sync/debug/flag = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.sync/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.sync/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.sync/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.sync/debug/methods/exiting=false
