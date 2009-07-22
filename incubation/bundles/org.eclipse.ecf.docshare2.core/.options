@@ -1,0 +1,16 @@
+# Debugging options for the org.eclipse.ecf.internal.provisional.docshare plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.internal.provisional.docshare plug-in
+org.eclipse.ecf.internal.provisional.docshare/debug=true
+org.eclipse.ecf.internal.provisional.docshare/debug/filter = *
+org.eclipse.ecf.internal.provisional.docshare/debug/flag = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.internal.provisional.docshare/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.internal.provisional.docshare/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.internal.provisional.docshare/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.internal.provisional.docshare/debug/methods/exiting=false
