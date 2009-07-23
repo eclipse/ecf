@@ -201,10 +201,20 @@ public class DocShare extends AbstractShare {
 		}
 	}
 
+	/**
+	 * Method that will be called prior to a document being modified by the changes of a remote peer. This is used for performing any preparation work that needs to be invoked prior to the document being modified.
+	 * 
+	 * @param path the path of the document that will be modified
+	 */
 	protected void documentAboutToBeChanged(String path) {
 		// subclasses to override
 	}
 
+	/**
+	 * Method that will be called after a document has been modified by a remote peer's changes. Note that the document may not actually have changed.
+	 * 
+	 * @param path the path of the document that has been modified
+	 */
 	protected void documentChanged(String path) {
 		// subclasses to override
 	}
@@ -216,6 +226,7 @@ public class DocShare extends AbstractShare {
 			IPath path = new Path(message.getPath());
 			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 			IFile file = workspaceRoot.getFile(path);
+			// FIXME: if the file doesn't exist shouldn't we be creating it?
 			LocationKind kind = file.exists() ? LocationKind.IFILE : LocationKind.LOCATION;
 			IDocument document = connect(path, kind);
 			share = new DocumentShare(getChannel(), message.getPeerID(), message.getPath(), document);
@@ -243,9 +254,12 @@ public class DocShare extends AbstractShare {
 			// TODO: does this make sense?
 			revert(path, manager.getTextFileBuffer(new Path(path), LocationKind.IFILE));
 			if (share.isLocallyActive()) {
+				// if it's still active locally, just note that it's not remotely active
 				share.setRemotelyActive(false);
 			} else {
+				// not active anywhere, remove it completely
 				sharedDocuments.remove(path);
+				// perform clean-up
 				share.removeDocumentListener();
 				share.disconnect();
 				disconnect(path);
