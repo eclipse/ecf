@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Remy Suen, Composent, Inc., and others.
+ * Copyright (c) 2007, 2009 Remy Suen, Composent, Inc., and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Hiroyuki Inaba <hiroyuki.inaba@gmail.com> - Bug 259856 The error message when the chat message cannot be sent is not correct.
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui;
 
@@ -275,7 +276,19 @@ public class MessagesView extends ViewPart {
 									}
 									append(localID, text);
 								} catch (ECFException ex) {
-									setContentDescription(Messages.MessagesView_CouldNotSendMessage);
+									String message = ex.getMessage();
+									if (message == null || message.equals("")) { //$NON-NLS-1$
+										message = ex.getStatus().getMessage();
+										if (message == null || message.equals("")) { //$NON-NLS-1$
+											message = ex.getCause().getMessage();
+										}
+									}
+
+									if (message == null || message.equals("")) { //$NON-NLS-1$
+										setContentDescription(Messages.MessagesView_CouldNotSendMessage);
+									} else {
+										setContentDescription(NLS.bind(Messages.MessagesView_CouldNotSendMessageCauseKnown, message));
+									}
 								}
 								e.doit = false;
 								sendTyping = false;
