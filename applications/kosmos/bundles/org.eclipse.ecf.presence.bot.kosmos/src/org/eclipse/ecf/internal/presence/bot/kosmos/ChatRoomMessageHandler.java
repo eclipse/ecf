@@ -56,6 +56,7 @@ import org.eclipse.ecf.presence.bot.IChatRoomMessageHandler;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
+import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.im.IChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.osgi.util.NLS;
@@ -144,6 +145,11 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	private IContainer container;
 
 	private IChatMessageSender chatMessageSender;
+	
+	/**
+	 * The name of this bot. May be <code>null</code> if the name could not be retrieved from the container.
+	 */
+	private String botName;
 
 	private String password;
 
@@ -869,7 +875,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	public void handleRoomMessage(IChatRoomMessage message) {
 		ID fromID = message.getFromID();
 		String name = fromID.getName();
-		if (name.charAt(0) == '#' || name.equals("KOS-MOS")) { // skip messages
+		if (name.charAt(0) == '#' || name.equals(botName)) { // skip messages
 			// from the
 			// channel or
 			// self
@@ -933,6 +939,14 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	}
 
 	public void preChatRoomConnect(IChatRoomContainer roomContainer, ID roomID) {
+		// retrieve our name
+		ID connectedID = container.getConnectedID();
+		botName = connectedID.getName();
+		IChatID chatID = (IChatID) connectedID.getAdapter(IChatID.class);
+		if (chatID != null) {
+			botName = chatID.getUsername();
+		}
+		
 		messageSenders.put(roomID, roomContainer.getChatRoomMessageSender());
 		if (password != null) {
 			try {
