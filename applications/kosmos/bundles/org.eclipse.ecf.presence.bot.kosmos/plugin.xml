@@ -14,6 +14,9 @@
                name="#eclipse">
          </chatRooms>
          <chatRooms
+               name="#eclipse-birt">
+         </chatRooms>
+         <chatRooms
                name="#eclipse-bugs">
          </chatRooms>
          <chatRooms
@@ -21,6 +24,9 @@
          </chatRooms>
          <chatRooms
                name="#eclipse-dev">
+         </chatRooms>
+         <chatRooms
+               name="#eclipse-e4">
          </chatRooms>
          <chatRooms
                name="#eclipse-ecf">
@@ -35,10 +41,22 @@
                name="#eclipse-soc">
          </chatRooms>
          <chatRooms
+               name="#eclipse-spaces">
+         </chatRooms>
+         <chatRooms
+               name="#eclipse-stp">
+         </chatRooms>
+         <chatRooms
                name="#equinox-dev">
          </chatRooms>
          <chatRooms
                name="#higgins">
+         </chatRooms>
+         <chatRooms
+               name="#jetty">
+         </chatRooms>
+         <chatRooms
+               name="#pdt">
          </chatRooms>
          <chatRooms
                name="#osgi">
