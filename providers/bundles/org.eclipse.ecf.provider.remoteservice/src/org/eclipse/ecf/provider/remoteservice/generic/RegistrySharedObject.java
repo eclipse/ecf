@@ -418,6 +418,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		try {
 			// First send request
 			final Request request = sendCallRequest(registration, call);
+			long requestId = request.getRequestId();
+			Trace.trace(Activator.PLUGIN_ID, "callSync request sent with requestid=" + requestId); //$NON-NLS-1$
 			// Then get the specified timeout and calculate when we should
 			// timeout in real time
 			final long timeout = call.getTimeout() + System.currentTimeMillis();
@@ -425,13 +427,13 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			while ((timeout - System.currentTimeMillis()) > 0 && !doneWaiting) {
 				synchronized (request) {
 					if (request.isDone()) {
-						Trace.trace(Activator.PLUGIN_ID, Messages.RegistrySharedObject_15 + request);
+						Trace.trace(Activator.PLUGIN_ID, Messages.RegistrySharedObject_15 + requestId);
 						doneWaiting = true;
 						response = request.getResponse();
 						if (response == null)
 							throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_INVALID_RESPONSE);
 					} else {
-						Trace.trace(Activator.PLUGIN_ID, "Waiting " + RESPONSE_WAIT_INTERVAL + " for response to request: " + request); //$NON-NLS-1$ //$NON-NLS-2$
+						Trace.trace(Activator.PLUGIN_ID, "Waiting " + RESPONSE_WAIT_INTERVAL + " for response to request: " + requestId); //$NON-NLS-1$ //$NON-NLS-2$
 						request.wait(RESPONSE_WAIT_INTERVAL);
 					}
 				}
