@@ -58,6 +58,24 @@ public final class Client implements ISynchAsynchConnection {
 	boolean disconnectHandled = false;
 	private final Object disconnectLock = new Object();
 
+	private String getHostNameForAddressWithoutLookup(InetAddress inetAddress) {
+		// First get InetAddress.toString(), which returns
+		// the inet address in this form:  "hostName/address".
+		// If hostname is not resolved the result is: "/address"
+		// So first we detect the location of the "/" to determine
+		// whether the host name is there or not
+		String inetAddressStr = inetAddress.toString();
+		int slashPos = inetAddressStr.indexOf('/');
+		if (slashPos == 0)
+			// no hostname is available so we strip
+			// off '/' and return address as string
+			return inetAddressStr.substring(1);
+
+		// hostname is there/non-null, so we use it
+		return inetAddressStr.substring(0, slashPos);
+
+	}
+
 	/**
 	 * @param s
 	 * @throws SocketException not thrown by this implementation.
@@ -66,7 +84,7 @@ public final class Client implements ISynchAsynchConnection {
 		socket = s;
 		if (s != null)
 			addressPort = s.getLocalPort() + ":" //$NON-NLS-1$
-					+ s.getInetAddress().getHostName() + ":" + s.getPort(); //$NON-NLS-1$
+					+ getHostNameForAddressWithoutLookup(s.getInetAddress()) + ":" + s.getPort(); //$NON-NLS-1$
 		else
 			addressPort = "-1:<no endpoint>:-1"; //$NON-NLS-1$
 	}
@@ -105,7 +123,7 @@ public final class Client implements ISynchAsynchConnection {
 			return null;
 		ID retID = null;
 		try {
-			retID = IDFactory.getDefault().createStringID(PROTOCOL + "://" + socket.getLocalAddress().getHostName() //$NON-NLS-1$
+			retID = IDFactory.getDefault().createStringID(PROTOCOL + "://" + getHostNameForAddressWithoutLookup(socket.getLocalAddress()) //$NON-NLS-1$
 					+ ":" + socket.getLocalPort()); //$NON-NLS-1$
 		} catch (final Exception e) {
 			traceStack("Exception in getLocalID()", e); //$NON-NLS-1$
