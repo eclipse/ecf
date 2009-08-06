@@ -9,10 +9,7 @@
 package org.eclipse.ecf.server.generic.app;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.*;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
 
 public class Connector {
@@ -29,14 +26,13 @@ public class Connector {
 	boolean discovery = false;
 	List groups = new ArrayList();
 
-	public Connector(String protocol, String host, int port, int timeout,
-			boolean discovery) {
+	public Connector(String protocol, String host, int port, int timeout, boolean discovery) {
 		if (protocol != null && !protocol.equals(""))this.protocol = protocol; //$NON-NLS-1$
 		if (host != null && !host.equals(""))this.hostname = host; //$NON-NLS-1$
 		else {
 			try {
 				InetAddress addr = InetAddress.getLocalHost();
-				this.hostname = addr.getCanonicalHostName();
+				this.hostname = getHostNameForAddressWithoutLookup(addr);
 			} catch (Exception e) {
 				this.hostname = "localhost"; //$NON-NLS-1$
 			}
@@ -44,6 +40,24 @@ public class Connector {
 		this.port = port;
 		this.timeout = timeout;
 		this.discovery = discovery;
+	}
+
+	private String getHostNameForAddressWithoutLookup(InetAddress inetAddress) {
+		// First get InetAddress.toString(), which returns
+		// the inet address in this form:  "hostName/address".
+		// If hostname is not resolved the result is: "/address"
+		// So first we detect the location of the "/" to determine
+		// whether the host name is there or not
+		String inetAddressStr = inetAddress.toString();
+		int slashPos = inetAddressStr.indexOf('/');
+		if (slashPos == 0)
+			// no hostname is available so we strip
+			// off '/' and return address as string
+			return inetAddressStr.substring(1);
+
+		// hostname is there/non-null, so we use it
+		return inetAddressStr.substring(0, slashPos);
+
 	}
 
 	public Connector(String protocol, String host, int port, int timeout) {
