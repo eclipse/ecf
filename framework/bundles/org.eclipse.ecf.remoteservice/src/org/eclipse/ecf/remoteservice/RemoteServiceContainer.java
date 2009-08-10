@@ -31,6 +31,9 @@ public class RemoteServiceContainer implements IRemoteServiceContainer {
 		this.containerAdapter = containerAdapter;
 	}
 
+	/**
+	 * @since 3.1
+	 */
 	public RemoteServiceContainer(IContainer container) {
 		this(container, (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class));
 	}
