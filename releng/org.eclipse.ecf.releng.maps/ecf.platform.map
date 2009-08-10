@@ -1,0 +1,4 @@
+!****************  ECF PLATFORM CONTRIBUTION  ************************************************* 
+
+feature@org.eclipse.ecf.platform_feature=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.platform-feature
+
