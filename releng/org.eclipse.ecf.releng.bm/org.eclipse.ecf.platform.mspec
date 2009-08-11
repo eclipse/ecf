@@ -6,6 +6,6 @@
     
     <md:mspecNode namePattern="^org\.eclipse\.ecf(\..+)?" materializer="workspace"/>
 
-    <md:mspecNode namePattern=".*" installLocation="targetPlatformPath"/>
+    <md:mspecNode namePattern=".*" installLocation="${targetPlatformPath}"/>
 </md:mspec>
 	
