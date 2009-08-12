@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +41,7 @@ import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
 import org.eclipse.ecf.filetransfer.service.ISendFileTransfer;
 import org.eclipse.ecf.filetransfer.service.ISendFileTransferFactory;
+import org.eclipse.ecf.provider.filetransfer.IFileTransferProtocolToFactoryMapper;
 import org.eclipse.ecf.provider.filetransfer.retrieve.MultiProtocolRetrieveAdapter;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
@@ -56,7 +58,7 @@ import org.osgi.util.tracker.ServiceTracker;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator implements BundleActivator {
+public class Activator implements BundleActivator, IFileTransferProtocolToFactoryMapper {
 
 	// This is the name of a system property 'org.eclipse.ecf.provider.filetransfer.excludeContributors' 
 	// that allows people to defeat the priority system for the browse, send, and retrieve factory contributions.
@@ -102,11 +104,11 @@ public class Activator implements BundleActivator {
 	private ServiceTracker logServiceTracker = null;
 	private ServiceTracker extensionRegistryTracker = null;
 
-	private Map retrieveFileTransferProtocolMap = null;
+	private Map retrieveFileTransferProtocolMap;
 
-	private Map sendFileTransferProtocolMap = null;
+	private Map sendFileTransferProtocolMap;
 
-	private Map browseFileTransferProtocolMap = null;
+	private Map browseFileTransferProtocolMap;
 
 	private ServiceTracker adapterManagerTracker = null;
 
@@ -230,6 +232,9 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
+		this.retrieveFileTransferProtocolMap = new HashMap(3);
+		this.sendFileTransferProtocolMap = new HashMap(3);
+		this.browseFileTransferProtocolMap = new HashMap(3);
 
 		// initialize the default url connection modifier for ssl
 		try {
@@ -256,6 +261,8 @@ public class Activator implements BundleActivator {
 		// Can't be lazy about this, as schemes need to be registered with
 		// platform
 		loadProtocolHandlers();
+		// Finally, register this object as a IFileTransferProtocolToFactoryMapper service
+		context.registerService(IFileTransferProtocolToFactoryMapper.class.getName(), this, null);
 	}
 
 	/*
@@ -368,6 +375,10 @@ public class Activator implements BundleActivator {
 			return id;
 		}
 
+		public int getPriority() {
+			return priority;
+		}
+
 		/* (non-Javadoc)
 		 * @see java.lang.Comparable#compareTo(java.lang.Object)
 		 */
@@ -407,7 +418,6 @@ public class Activator implements BundleActivator {
 	}
 
 	void addRetrieveExtensions(IConfigurationElement[] configElements) {
-		String[] existingSchemes = getPlatformSupportedSchemes();
 		for (int i = 0; i < configElements.length; i++) {
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
@@ -418,36 +428,12 @@ public class Activator implements BundleActivator {
 				// Only add the factories if the contributor plugin has not been excluded
 				if (!pluginExcluded(pluginId)) {
 					// First create factory clazz 
-					final IRetrieveFileTransferFactory clazz = (IRetrieveFileTransferFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
+					final IRetrieveFileTransferFactory retrieveFactory = (IRetrieveFileTransferFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
 					// Get priority for new entry, if optional priority attribute specified
 					int priority = getPriority(configElements[i], CONTRIBUTION_WARNING, protocol);
 					String contributorName = configElements[i].getDeclaringExtension().getContributor().getName();
-					// Now create new ProtocolFactory
-					ProtocolFactory newProtocolFactory = new ProtocolFactory(clazz, priority, contributorName);
-					// Then look for any existing protocol factories under same protocol
-					synchronized (retrieveFileTransferProtocolMap) {
-						ProtocolFactory oldProtocolFactory = (ProtocolFactory) retrieveFileTransferProtocolMap.get(protocol);
-						// If found, choose between them based upon comparing their priority
-						if (oldProtocolFactory != null) {
-							// Now, compare priorities and pic winner
-							int result = oldProtocolFactory.compareTo(newProtocolFactory);
-							if (result < 0) {
-								// Existing one has higher priority, so we provide warning and return (leaving existing one as the handler)
-								Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be ignored.  Existing protocol factory has higher priority.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName}), null)); //$NON-NLS-1$
-								continue;
-							} else if (result == 0) {
-								// Warn that we are using new one because they have the same priority.
-								Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority)}), null)); //$NON-NLS-1$
-							} else if (result > 0) {
-								// Warn that we are using new one because it has higher priority.
-								Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
-							}
-						}
-						if (!isSchemeRegistered(protocol, existingSchemes))
-							registerScheme(protocol);
-						// Finally, put clazz in map with protocol as key
-						retrieveFileTransferProtocolMap.put(protocol, newProtocolFactory);
-					}
+					// Now add new ProtocolFactory
+					setRetrieveFileTransferFactory(protocol, contributorName, retrieveFactory, priority);
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing retrieve factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -462,20 +448,13 @@ public class Activator implements BundleActivator {
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
-			synchronized (retrieveFileTransferProtocolMap) {
-				ProtocolFactory protocolFactory = (ProtocolFactory) retrieveFileTransferProtocolMap.get(protocol);
-				if (protocolFactory != null) {
-					// If the contributor that is leaving is the one responsible for the protocol factory then remove
-					if (configElements[i].getContributor().getName().equals(protocolFactory.getID())) {
-						retrieveFileTransferProtocolMap.remove(protocol);
-					}
-				}
-			}
+			String id = getRetrieveFileTransferFactoryId(protocol);
+			if (id != null)
+				removeRetrieveFileTransferFactory(id);
 		}
 	}
 
 	void addSendExtensions(IConfigurationElement[] configElements) {
-		String[] existingSchemes = getPlatformSupportedSchemes();
 		for (int i = 0; i < configElements.length; i++) {
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
@@ -489,33 +468,7 @@ public class Activator implements BundleActivator {
 					final ISendFileTransferFactory clazz = (ISendFileTransferFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
 					// Get priority for new entry, if optional priority attribute specified
 					int priority = getPriority(configElements[i], CONTRIBUTION_WARNING, protocol);
-					String contributorName = configElements[i].getDeclaringExtension().getContributor().getName();
-					// Now create new ProtocolFactory
-					ProtocolFactory newProtocolFactory = new ProtocolFactory(clazz, priority, contributorName);
-					// Then look for any existing protocol factories under same protocol
-					synchronized (sendFileTransferProtocolMap) {
-						ProtocolFactory oldProtocolFactory = (ProtocolFactory) sendFileTransferProtocolMap.get(protocol);
-						// If found, choose between them based upon comparing their priority
-						if (oldProtocolFactory != null) {
-							// Now, compare priorities and pic winner
-							int result = oldProtocolFactory.compareTo(newProtocolFactory);
-							if (result < 0) {
-								// Existing one has higher priority, so we provide warning and return (leaving existing one as the handler)
-								Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be ignored.  Existing protocol factory has higher priority.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName}), null)); //$NON-NLS-1$
-								continue;
-							} else if (result == 0) {
-								// Warn that we are using new one because they have the same priority.
-								Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority)}), null)); //$NON-NLS-1$
-							} else if (result > 0) {
-								// Warn that we are using new one because it has higher priority.
-								Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
-							}
-						}
-						if (!isSchemeRegistered(protocol, existingSchemes))
-							registerScheme(protocol);
-						// Finally, put clazz in map with protocol as key
-						sendFileTransferProtocolMap.put(protocol, newProtocolFactory);
-					}
+					setSendFileTransferFactory(protocol, pluginId, clazz, priority);
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing send factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -530,20 +483,13 @@ public class Activator implements BundleActivator {
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
-			synchronized (sendFileTransferProtocolMap) {
-				ProtocolFactory protocolFactory = (ProtocolFactory) sendFileTransferProtocolMap.get(protocol);
-				if (protocolFactory != null) {
-					// If the contributor that is leaving is the one responsible for the protocol factory then remove
-					if (configElements[i].getContributor().getName().equals(protocolFactory.getID())) {
-						sendFileTransferProtocolMap.remove(protocol);
-					}
-				}
-			}
+			String id = getSendFileTransferFactoryId(protocol);
+			if (id != null)
+				removeSendFileTransferFactory(id);
 		}
 	}
 
 	void addBrowseExtensions(IConfigurationElement[] configElements) {
-		String[] existingSchemes = getPlatformSupportedSchemes();
 		for (int i = 0; i < configElements.length; i++) {
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
@@ -557,33 +503,7 @@ public class Activator implements BundleActivator {
 					final IRemoteFileSystemBrowserFactory clazz = (IRemoteFileSystemBrowserFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
 					// Get priority for new entry, if optional priority attribute specified
 					int priority = getPriority(configElements[i], CONTRIBUTION_WARNING, protocol);
-					String contributorName = configElements[i].getDeclaringExtension().getContributor().getName();
-					// Now create new ProtocolFactory
-					ProtocolFactory newProtocolFactory = new ProtocolFactory(clazz, priority, contributorName);
-					synchronized (browseFileTransferProtocolMap) {
-						// Then look for any existing protocol factories under same protocol
-						ProtocolFactory oldProtocolFactory = (ProtocolFactory) browseFileTransferProtocolMap.get(protocol);
-						// If found, choose between them based upon comparing their priority
-						if (oldProtocolFactory != null) {
-							// Now, compare priorities and pic winner
-							int result = oldProtocolFactory.compareTo(newProtocolFactory);
-							if (result < 0) {
-								// Existing one has higher priority, so we provide warning and return (leaving existing one as the handler)
-								Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be ignored.  Existing protocol factory has higher priority.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName}), null)); //$NON-NLS-1$
-								continue;
-							} else if (result == 0) {
-								// Warn that we are using new one because they have the same priority.
-								Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority)}), null)); //$NON-NLS-1$
-							} else if (result > 0) {
-								// Warn that we are using new one because it has higher priority.
-								Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, contributorName, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
-							}
-						}
-						if (!isSchemeRegistered(protocol, existingSchemes))
-							registerScheme(protocol);
-						// Finally, put clazz in map with protocol as key
-						browseFileTransferProtocolMap.put(protocol, newProtocolFactory);
-					}
+					setBrowseFileTransferFactory(protocol, pluginId, clazz, priority);
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing browse factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -598,22 +518,13 @@ public class Activator implements BundleActivator {
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
-			synchronized (browseFileTransferProtocolMap) {
-				ProtocolFactory protocolFactory = (ProtocolFactory) browseFileTransferProtocolMap.get(protocol);
-				if (protocolFactory != null) {
-					// If the contributor that is leaving is the one responsible for the protocol factory then remove
-					if (configElements[i].getContributor().getName().equals(protocolFactory.getID())) {
-						browseFileTransferProtocolMap.remove(protocol);
-					}
-				}
-			}
+			String id = getBrowseFileTransferFactoryId(protocol);
+			if (id != null)
+				removeBrowseFileTransferFactory(id);
 		}
 	}
 
 	private void loadProtocolHandlers() {
-		this.retrieveFileTransferProtocolMap = new HashMap(3);
-		this.sendFileTransferProtocolMap = new HashMap(3);
-		this.browseFileTransferProtocolMap = new HashMap(3);
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
 			final IExtensionPoint retrieveExtensionPoint = reg.getExtensionPoint(RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT);
@@ -714,6 +625,246 @@ public class Activator implements BundleActivator {
 
 	public IURLConnectionModifier getURLConnectionModifier() {
 		return urlConnectionModifier;
+	}
+
+	public boolean setRetrieveFileTransferFactory(String protocol, String id, IRetrieveFileTransferFactory factory, int priority) {
+		if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
+			return false;
+		if (id == null)
+			return false;
+		if (factory == null)
+			return false;
+		if (!pluginExcluded(id)) {
+			// Now create new ProtocolFactory
+			ProtocolFactory newProtocolFactory = new ProtocolFactory(factory, priority, id);
+			synchronized (retrieveFileTransferProtocolMap) {
+				ProtocolFactory oldProtocolFactory = (ProtocolFactory) retrieveFileTransferProtocolMap.get(protocol);
+				// If found, choose between them based upon comparing their priority
+				if (oldProtocolFactory != null) {
+					// Now, compare priorities and pick winner
+					String CONTRIBUTION_WARNING = "File retrieve contribution"; //$NON-NLS-1$
+					int result = oldProtocolFactory.compareTo(newProtocolFactory);
+					if (result < 0) {
+						// Existing one has higher priority, so we provide warning and return (leaving existing one as the handler)
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be ignored.  Existing protocol factory has higher priority.", new Object[] {CONTRIBUTION_WARNING, protocol, id}), null)); //$NON-NLS-1$
+						return false;
+					} else if (result == 0) {
+						// Warn that we are using new one because they have the same priority.
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority)}), null)); //$NON-NLS-1$
+					} else if (result > 0) {
+						// Warn that we are using new one because it has higher priority.
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
+					}
+				}
+				String[] existingSchemes = getPlatformSupportedSchemes();
+				if (!isSchemeRegistered(protocol, existingSchemes))
+					registerScheme(protocol);
+				// Finally, put clazz in map with protocol as key
+				retrieveFileTransferProtocolMap.put(protocol, newProtocolFactory);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getRetrieveFileTransferFactoryId(String protocol) {
+		if (protocol == null)
+			return null;
+		synchronized (retrieveFileTransferProtocolMap) {
+			ProtocolFactory oldProtocolFactory = (ProtocolFactory) retrieveFileTransferProtocolMap.get(protocol);
+			if (oldProtocolFactory == null)
+				return null;
+			return oldProtocolFactory.getID();
+		}
+	}
+
+	public int getRetrieveFileTransferPriority(String protocol) {
+		if (protocol == null)
+			return -1;
+		synchronized (retrieveFileTransferProtocolMap) {
+			ProtocolFactory oldProtocolFactory = (ProtocolFactory) retrieveFileTransferProtocolMap.get(protocol);
+			if (oldProtocolFactory == null)
+				return -1;
+			return oldProtocolFactory.getPriority();
+		}
+	}
+
+	public boolean removeRetrieveFileTransferFactory(String id) {
+		if (id == null)
+			return false;
+		boolean removed = false;
+		synchronized (retrieveFileTransferProtocolMap) {
+			for (Iterator i = retrieveFileTransferProtocolMap.keySet().iterator(); i.hasNext();) {
+				ProtocolFactory oldProtocolFactory = (ProtocolFactory) retrieveFileTransferProtocolMap.get(i.next());
+				if (oldProtocolFactory == null)
+					continue;
+				if (id.equals(oldProtocolFactory.getID())) {
+					i.remove();
+					removed = true;
+				}
+			}
+			return removed;
+		}
+	}
+
+	public boolean setBrowseFileTransferFactory(String protocol, String id, IRemoteFileSystemBrowserFactory factory, int priority) {
+		if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
+			return false;
+		if (id == null)
+			return false;
+		if (factory == null)
+			return false;
+		if (!pluginExcluded(id)) {
+			// Now create new ProtocolFactory
+			ProtocolFactory newProtocolFactory = new ProtocolFactory(factory, priority, id);
+			synchronized (browseFileTransferProtocolMap) {
+				ProtocolFactory oldProtocolFactory = (ProtocolFactory) browseFileTransferProtocolMap.get(protocol);
+				// If found, choose between them based upon comparing their priority
+				if (oldProtocolFactory != null) {
+					// Now, compare priorities and pick winner
+					String CONTRIBUTION_WARNING = "File browse contribution"; //$NON-NLS-1$
+					int result = oldProtocolFactory.compareTo(newProtocolFactory);
+					if (result < 0) {
+						// Existing one has higher priority, so we provide warning and return (leaving existing one as the handler)
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be ignored.  Existing protocol factory has higher priority.", new Object[] {CONTRIBUTION_WARNING, protocol, id}), null)); //$NON-NLS-1$
+						return false;
+					} else if (result == 0) {
+						// Warn that we are using new one because they have the same priority.
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority)}), null)); //$NON-NLS-1$
+					} else if (result > 0) {
+						// Warn that we are using new one because it has higher priority.
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
+					}
+				}
+				String[] existingSchemes = getPlatformSupportedSchemes();
+				if (!isSchemeRegistered(protocol, existingSchemes))
+					registerScheme(protocol);
+				// Finally, put clazz in map with protocol as key
+				browseFileTransferProtocolMap.put(protocol, newProtocolFactory);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getBrowseFileTransferFactoryId(String protocol) {
+		if (protocol == null)
+			return null;
+		synchronized (browseFileTransferProtocolMap) {
+			ProtocolFactory oldProtocolFactory = (ProtocolFactory) browseFileTransferProtocolMap.get(protocol);
+			if (oldProtocolFactory == null)
+				return null;
+			return oldProtocolFactory.getID();
+		}
+	}
+
+	public int getBrowseFileTransferPriority(String protocol) {
+		if (protocol == null)
+			return -1;
+		synchronized (browseFileTransferProtocolMap) {
+			ProtocolFactory oldProtocolFactory = (ProtocolFactory) browseFileTransferProtocolMap.get(protocol);
+			if (oldProtocolFactory == null)
+				return -1;
+			return oldProtocolFactory.getPriority();
+		}
+	}
+
+	public boolean removeBrowseFileTransferFactory(String id) {
+		if (id == null)
+			return false;
+		boolean removed = false;
+		synchronized (browseFileTransferProtocolMap) {
+			for (Iterator i = browseFileTransferProtocolMap.keySet().iterator(); i.hasNext();) {
+				ProtocolFactory oldProtocolFactory = (ProtocolFactory) browseFileTransferProtocolMap.get(i.next());
+				if (oldProtocolFactory == null)
+					continue;
+				if (id.equals(oldProtocolFactory.getID())) {
+					i.remove();
+					removed = true;
+				}
+			}
+			return removed;
+		}
+	}
+
+	public boolean setSendFileTransferFactory(String protocol, String id, ISendFileTransferFactory factory, int priority) {
+		if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
+			return false;
+		if (id == null)
+			return false;
+		if (factory == null)
+			return false;
+		if (!pluginExcluded(id)) {
+			// Now create new ProtocolFactory
+			ProtocolFactory newProtocolFactory = new ProtocolFactory(factory, priority, id);
+			synchronized (sendFileTransferProtocolMap) {
+				ProtocolFactory oldProtocolFactory = (ProtocolFactory) sendFileTransferProtocolMap.get(protocol);
+				// If found, choose between them based upon comparing their priority
+				if (oldProtocolFactory != null) {
+					// Now, compare priorities and pick winner
+					String CONTRIBUTION_WARNING = "File send contribution"; //$NON-NLS-1$
+					int result = oldProtocolFactory.compareTo(newProtocolFactory);
+					if (result < 0) {
+						// Existing one has higher priority, so we provide warning and return (leaving existing one as the handler)
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be ignored.  Existing protocol factory has higher priority.", new Object[] {CONTRIBUTION_WARNING, protocol, id}), null)); //$NON-NLS-1$
+						return false;
+					} else if (result == 0) {
+						// Warn that we are using new one because they have the same priority.
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority)}), null)); //$NON-NLS-1$
+					} else if (result > 0) {
+						// Warn that we are using new one because it has higher priority.
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
+					}
+				}
+				String[] existingSchemes = getPlatformSupportedSchemes();
+				if (!isSchemeRegistered(protocol, existingSchemes))
+					registerScheme(protocol);
+				// Finally, put clazz in map with protocol as key
+				sendFileTransferProtocolMap.put(protocol, newProtocolFactory);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getSendFileTransferFactoryId(String protocol) {
+		if (protocol == null)
+			return null;
+		synchronized (sendFileTransferProtocolMap) {
+			ProtocolFactory oldProtocolFactory = (ProtocolFactory) sendFileTransferProtocolMap.get(protocol);
+			if (oldProtocolFactory == null)
+				return null;
+			return oldProtocolFactory.getID();
+		}
+	}
+
+	public int getSendFileTransferPriority(String protocol) {
+		if (protocol == null)
+			return -1;
+		synchronized (sendFileTransferProtocolMap) {
+			ProtocolFactory oldProtocolFactory = (ProtocolFactory) sendFileTransferProtocolMap.get(protocol);
+			if (oldProtocolFactory == null)
+				return -1;
+			return oldProtocolFactory.getPriority();
+		}
+	}
+
+	public boolean removeSendFileTransferFactory(String id) {
+		if (id == null)
+			return false;
+		boolean removed = false;
+		synchronized (sendFileTransferProtocolMap) {
+			for (Iterator i = sendFileTransferProtocolMap.keySet().iterator(); i.hasNext();) {
+				ProtocolFactory oldProtocolFactory = (ProtocolFactory) sendFileTransferProtocolMap.get(i.next());
+				if (oldProtocolFactory == null)
+					continue;
+				if (id.equals(oldProtocolFactory.getID())) {
+					i.remove();
+					removed = true;
+				}
+			}
+			return removed;
+		}
 	}
 
 }
