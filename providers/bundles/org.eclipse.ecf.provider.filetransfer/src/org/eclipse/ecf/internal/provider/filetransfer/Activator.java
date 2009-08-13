@@ -118,6 +118,8 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 
 	private String[] excludedPlugins = null;
 
+	private ServiceRegistration protocolMapperRegistration;
+
 	private IRegistryChangeListener registryChangeListener = new IRegistryChangeListener() {
 
 		public void registryChanged(IRegistryChangeEvent event) {
@@ -262,7 +264,7 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 		// platform
 		loadProtocolHandlers();
 		// Finally, register this object as a IFileTransferProtocolToFactoryMapper service
-		context.registerService(IFileTransferProtocolToFactoryMapper.class.getName(), this, null);
+		protocolMapperRegistration = context.registerService(IFileTransferProtocolToFactoryMapper.class.getName(), this, null);
 	}
 
 	/*
@@ -308,6 +310,11 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 			this.browseFileTransferProtocolMap.clear();
 			this.browseFileTransferProtocolMap = null;
 		}
+		if (this.protocolMapperRegistration != null) {
+			this.protocolMapperRegistration.unregister();
+			this.protocolMapperRegistration = null;
+		}
+
 		synchronized (this) {
 			this.context = null;
 		}
