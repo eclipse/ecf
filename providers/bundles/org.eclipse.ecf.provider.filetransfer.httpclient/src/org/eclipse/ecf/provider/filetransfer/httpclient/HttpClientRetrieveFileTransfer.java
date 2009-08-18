@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.util.Iterator;
+import java.util.Map;
 import javax.net.SocketFactory;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
@@ -526,9 +527,17 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	final class ECFCredentialsProvider extends HttpClientProxyCredentialProvider {
+
 		protected Proxy getECFProxy() {
 			return getProxy();
 		}
+
+		protected Credentials getNTLMCredentials(Proxy lp) {
+			if (hasForceNTLMProxyOption())
+				return HttpClientRetrieveFileTransfer.createNTLMCredentials(lp);
+			return null;
+		}
+
 	}
 
 	Proxy getProxy() {
@@ -541,6 +550,13 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected InputStream wrapTransferReadInputStream(InputStream inputStream, IProgressMonitor monitor) {
 		return inputStream;
+	}
+
+	protected boolean hasForceNTLMProxyOption() {
+		Map localOptions = getOptions();
+		if (localOptions != null && localOptions.get(HttpClientOptions.FORCE_NTLM_PROP) != null)
+			return true;
+		return (System.getProperties().getProperty(HttpClientOptions.FORCE_NTLM_PROP) != null);
 	}
 
 	/* (non-Javadoc)
@@ -603,6 +619,12 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			code = responseCode;
 			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + code); //$NON-NLS-1$
+
+			// Check for NTLM proxy in response headers 
+			// This check is to deal with bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=252002
+			boolean ntlmProxyFound = NTLMProxyDetector.detectNTLMProxy(getMethod);
+			if (ntlmProxyFound && !hasForceNTLMProxyOption())
+				throw new IncomingFileTransferException("NTLM Proxy Not Supported by HttpClient Provider", HttpClientOptions.NTLM_PROXY_RESPONSE_CODE); //$NON-NLS-1$
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResponseHeaderValues();

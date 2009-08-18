@@ -9,40 +9,26 @@
 ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.auth.AuthScheme;
+import org.apache.commons.httpclient.auth.AuthState;
 
 public class NTLMProxyDetector {
 
-	private static final String PROXY_AUTHENTICATE = "Proxy-Authenticate"; //$NON-NLS-1$
-
-	private static final Object PROXY_NEGOTIATE_VALUE = "Negotiate"; //$NON-NLS-1$
-	private static final Object PROXY_KERBEROS_VALUE = "Kerberos"; //$NON-NLS-1$
-	private static final Object PROXY_NTLM_VALUE = "NTLM"; //$NON-NLS-1$
+	private static final String PROXY_NTLM_VALUE = "NTLM"; //$NON-NLS-1$
 
 	public static boolean detectNTLMProxy(HttpMethodBase method) {
 		if (method == null)
 			return false;
-		Header[] responseHeaders = method.getResponseHeaders(PROXY_AUTHENTICATE);
-		if (responseHeaders == null)
+		AuthState authState = method.getProxyAuthState();
+		if (authState == null)
 			return false;
-		boolean proxyNegotiateValue = false;
-		boolean proxyKerberosValue = false;
-		boolean proxyNTLMValue = false;
-		for (int i = 0; i < responseHeaders.length; i++) {
-			String val = responseHeaders[i].getValue();
-			if (val != null) {
-				val.trim();
-				if (val.equals(PROXY_NEGOTIATE_VALUE))
-					proxyNegotiateValue = true;
-				if (val.equals(PROXY_KERBEROS_VALUE))
-					proxyKerberosValue = true;
-				if (val.equals(PROXY_NTLM_VALUE))
-					proxyNTLMValue = true;
-			}
-		}
-		if (proxyNegotiateValue && proxyKerberosValue && proxyNTLMValue)
-			return true;
-		return false;
+		AuthScheme authScheme = authState.getAuthScheme();
+		if (authScheme == null)
+			return false;
+		String schemeName = authScheme.getSchemeName();
+		if (schemeName == null)
+			return false;
+		return schemeName.equalsIgnoreCase(PROXY_NTLM_VALUE);
 	}
 }

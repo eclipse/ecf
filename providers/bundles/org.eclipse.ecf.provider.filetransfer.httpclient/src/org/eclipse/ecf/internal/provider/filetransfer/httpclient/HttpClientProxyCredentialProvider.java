@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient;
 
-import org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransfer;
-
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
@@ -22,6 +20,8 @@ import org.eclipse.ecf.core.util.Proxy;
 public abstract class HttpClientProxyCredentialProvider implements CredentialsProvider {
 
 	abstract protected Proxy getECFProxy();
+
+	abstract protected Credentials getNTLMCredentials(Proxy proxy);
 
 	/**
 	 * @throws CredentialsNotAvailableException  
@@ -35,7 +35,7 @@ public abstract class HttpClientProxyCredentialProvider implements CredentialsPr
 			return null;
 		}
 		if ("ntlm".equalsIgnoreCase(scheme.getSchemeName())) { //$NON-NLS-1$
-			return HttpClientRetrieveFileTransfer.createNTLMCredentials(proxy);
+			return getNTLMCredentials(proxy);
 		} else if ("basic".equalsIgnoreCase(scheme.getSchemeName()) || //$NON-NLS-1$
 				"digest".equalsIgnoreCase(scheme.getSchemeName())) { //$NON-NLS-1$
 			final String proxyUsername = proxy.getUsername();

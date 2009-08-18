@@ -12,8 +12,6 @@
 
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
-import org.eclipse.ecf.internal.provider.filetransfer.httpclient.HttpClientProxyCredentialProvider;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Socket;
@@ -47,6 +45,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.ConnectingSocketMonitor;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.DebugOptions;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient.HttpClientProxyCredentialProvider;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
 import org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser;
 import org.eclipse.ecf.provider.filetransfer.browse.URLRemoteFile;
@@ -153,6 +152,10 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	}
 
+	protected boolean hasForceNTLMProxyOption() {
+		return (System.getProperties().getProperty(HttpClientOptions.FORCE_NTLM_PROP) != null);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser#runRequest()
 	 */
@@ -169,6 +172,12 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 			protected Proxy getECFProxy() {
 				return getProxy();
+			}
+
+			protected Credentials getNTLMCredentials(Proxy lp) {
+				if (hasForceNTLMProxyOption())
+					return HttpClientRetrieveFileTransfer.createNTLMCredentials(lp);
+				return null;
 			}
 
 		};
@@ -195,6 +204,12 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			code = httpClient.executeMethod(getHostConfiguration(), headMethod);
 
 			Trace.trace(Activator.PLUGIN_ID, "browse resp=" + code); //$NON-NLS-1$
+
+			// Check for NTLM proxy in response headers 
+			// This check is to deal with bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=252002
+			boolean ntlmProxyFound = NTLMProxyDetector.detectNTLMProxy(headMethod);
+			if (ntlmProxyFound && !hasForceNTLMProxyOption())
+				throw new BrowseFileTransferException("NTLM Proxy Not Supported by HttpClient Provider", HttpClientOptions.NTLM_PROXY_RESPONSE_CODE); //$NON-NLS-1$
 
 			if (code == HttpURLConnection.HTTP_OK) {
 				fileLength = headMethod.getResponseContentLength();
