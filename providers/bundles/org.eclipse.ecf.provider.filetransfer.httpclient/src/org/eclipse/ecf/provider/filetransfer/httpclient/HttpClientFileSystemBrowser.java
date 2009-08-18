@@ -12,6 +12,8 @@
 
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient.HttpClientProxyCredentialProvider;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Socket;
@@ -22,9 +24,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.util.DateUtil;
@@ -165,16 +165,23 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		httpClient.getParams().setConnectionManagerTimeout(DEFAULT_CONNECTION_TIMEOUT);
 
 		String urlString = directoryOrFile.toString();
+		CredentialsProvider credProvider = new HttpClientProxyCredentialProvider() {
+
+			protected Proxy getECFProxy() {
+				return getProxy();
+			}
+
+		};
 		// setup authentication
 		setupAuthentication(urlString);
 		// setup https host and port
-		setupHostAndPort(urlString);
+		setupHostAndPort(credProvider, urlString);
 
 		headMethod = new HeadMethod(hostConfigHelper.getTargetRelativePath());
 		headMethod.setFollowRedirects(true);
 		// Define a CredentialsProvider - found that possibility while debugging in org.apache.commons.httpclient.HttpMethodDirector.processProxyAuthChallenge(HttpMethod)
 		// Seems to be another way to select the credentials.
-		headMethod.getParams().setParameter(CredentialsProvider.PROVIDER, new ECFCredentialsProvider());
+		headMethod.getParams().setParameter(CredentialsProvider.PROVIDER, credProvider);
 		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		headMethod.addRequestHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
 
@@ -230,26 +237,13 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		return lastModified;
 	}
 
-	final class ECFCredentialsProvider implements CredentialsProvider {
-
-		/**
-		 * @throws CredentialsNotAvailableException  
-		 */
-		public Credentials getCredentials(AuthScheme scheme, String host, int port, boolean isProxyAuthenticating) throws CredentialsNotAvailableException {
-			if ("ntlm".equalsIgnoreCase(scheme.getSchemeName())) { //$NON-NLS-1$
-				return HttpClientRetrieveFileTransfer.createNTLMCredentials(getProxy());
-			}
-			return null;
-		}
-	}
-
 	Proxy getProxy() {
 		return proxy;
 	}
 
-	protected void setupHostAndPort(String urlString) {
+	protected void setupHostAndPort(CredentialsProvider credProvider, String urlString) {
 		getHostConfiguration(); // creates hostConfigHelper if needed
-		hostConfigHelper.setTargetHostByURL(urlString);
+		hostConfigHelper.setTargetHostByURL(credProvider, urlString);
 	}
 
 	protected Credentials getFileRequestCredentials() throws UnsupportedCallbackException, IOException {
@@ -291,14 +285,6 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		if (proxy.getType().equals(Proxy.Type.HTTP)) {
 			final ProxyAddress address = proxy.getAddress();
 			getHostConfiguration().setProxy(address.getHostName(), address.getPort());
-			final String proxyUsername = proxy.getUsername();
-			final String proxyPassword = proxy.getPassword();
-			if (proxyUsername != null) {
-				final Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
-				final AuthScope proxyAuthScope = new AuthScope(address.getHostName(), address.getPort(), AuthScope.ANY_REALM);
-				Trace.trace(Activator.PLUGIN_ID, "browse httpproxy=" + proxyAuthScope + ";credentials" + credentials); //$NON-NLS-1$ //$NON-NLS-2$
-				httpClient.getState().setProxyCredentials(proxyAuthScope, credentials);
-			}
 		} else if (proxy.getType().equals(Proxy.Type.SOCKS)) {
 			Trace.trace(Activator.PLUGIN_ID, "brows socksproxy=" + proxy.getAddress()); //$NON-NLS-1$
 			proxyHelper.setupProxy(proxy);

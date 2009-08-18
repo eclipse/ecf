@@ -29,9 +29,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.NTCredentials;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
@@ -70,6 +68,7 @@ import org.eclipse.ecf.internal.provider.filetransfer.httpclient.ConnectingSocke
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.DebugOptions;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.ECFHttpClientProtocolSocketFactory;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.ECFHttpClientSecureProtocolSocketFactory;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient.HttpClientProxyCredentialProvider;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.ISSLSocketFactoryModifier;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
 import org.eclipse.ecf.provider.filetransfer.events.socket.SocketEventSource;
@@ -228,7 +227,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			return relativeURL;
 		}
 
-		public void setTargetHostByURL(String url) {
+		public void setTargetHostByURL(CredentialsProvider credProvider, String url) {
 			this.targetURL = url;
 			this.targetRelativePath = getTargetRelativePathFromURL(targetURL);
 			String host = getHostFromURL(targetURL);
@@ -240,15 +239,18 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 					sslSocketFactoryModifier = new HttpClientDefaultSSLSocketFactoryModifier();
 				}
 				SecureProtocolSocketFactory psf = new ECFHttpClientSecureProtocolSocketFactory(sslSocketFactoryModifier, source, socketListener);
-				Protocol sslProtocol = new Protocol(HttpClientRetrieveFileTransfer.HTTPS, (ProtocolSocketFactory) psf, port);
+				Protocol sslProtocol = new Protocol(HttpClientRetrieveFileTransfer.HTTPS, (ProtocolSocketFactory) psf, HTTPS_PORT);
 
 				Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
 				hostConfiguration.setHost(host, port, sslProtocol);
+				hostConfiguration.getParams().setParameter(CredentialsProvider.PROVIDER, credProvider);
+
 			} else {
 				ProtocolSocketFactory psf = new ECFHttpClientProtocolSocketFactory(SocketFactory.getDefault(), source, socketListener);
-				Protocol protocol = new Protocol(HttpClientRetrieveFileTransfer.HTTP, psf, port);
+				Protocol protocol = new Protocol(HttpClientRetrieveFileTransfer.HTTP, psf, HTTP_PORT);
 				Trace.trace(Activator.PLUGIN_ID, "retrieve host=" + host + ";port=" + port); //$NON-NLS-1$ //$NON-NLS-2$
 				hostConfiguration.setHost(host, port, protocol);
+				hostConfiguration.getParams().setParameter(CredentialsProvider.PROVIDER, credProvider);
 			}
 		}
 
@@ -421,9 +423,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		}
 	}
 
-	protected void setupHostAndPort(String urlString) {
+	protected void setupHostAndPort(CredentialsProvider credProvider, String urlString) {
 		getHostConfiguration(); // creates hostConfigHelper if needed
-		hostConfigHelper.setTargetHostByURL(urlString);
+		hostConfigHelper.setTargetHostByURL(credProvider, urlString);
 	}
 
 	protected void setRequestHeaderValues() throws InvalidFileRangeSpecificationException {
@@ -523,16 +525,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		}
 	}
 
-	final class ECFCredentialsProvider implements CredentialsProvider {
-
-		/**
-		 * @throws CredentialsNotAvailableException  
-		 */
-		public Credentials getCredentials(AuthScheme scheme, String host, int port, boolean isProxyAuthenticating) throws CredentialsNotAvailableException {
-			if ("ntlm".equalsIgnoreCase(scheme.getSchemeName())) { //$NON-NLS-1$
-				return createNTLMCredentials(getProxy());
-			}
-			return null;
+	final class ECFCredentialsProvider extends HttpClientProxyCredentialProvider {
+		protected Proxy getECFProxy() {
+			return getProxy();
 		}
 	}
 
@@ -566,13 +561,14 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			setupAuthentication(urlString);
 
-			setupHostAndPort(urlString);
+			CredentialsProvider credProvider = new ECFCredentialsProvider();
+			setupHostAndPort(credProvider, urlString);
 
 			getMethod = new GzipGetMethod(hostConfigHelper.getTargetRelativePath());
 			getMethod.setFollowRedirects(true);
 			// Define a CredentialsProvider - found that possibility while debugging in org.apache.commons.httpclient.HttpMethodDirector.processProxyAuthChallenge(HttpMethod)
 			// Seems to be another way to select the credentials.
-			getMethod.getParams().setParameter(CredentialsProvider.PROVIDER, new ECFCredentialsProvider());
+			getMethod.getParams().setParameter(CredentialsProvider.PROVIDER, credProvider);
 			setRequestHeaderValues();
 
 			Trace.trace(Activator.PLUGIN_ID, "retrieve=" + urlString); //$NON-NLS-1$
@@ -782,15 +778,16 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
 			httpClient.getParams().setConnectionManagerTimeout(DEFAULT_CONNECTION_TIMEOUT);
 
+			CredentialsProvider credProvider = new ECFCredentialsProvider();
 			setupAuthentication(urlString);
 
-			setupHostAndPort(urlString);
+			setupHostAndPort(credProvider, urlString);
 
 			getMethod = new GzipGetMethod(hostConfigHelper.getTargetRelativePath());
 			getMethod.setFollowRedirects(true);
 			// Define a CredentialsProvider - found that possibility while debugging in org.apache.commons.httpclient.HttpMethodDirector.processProxyAuthChallenge(HttpMethod)
 			// Seems to be another way to select the credentials.
-			getMethod.getParams().setParameter(CredentialsProvider.PROVIDER, new ECFCredentialsProvider());
+			getMethod.getParams().setParameter(CredentialsProvider.PROVIDER, credProvider);
 			setResumeRequestHeaderValues();
 
 			Trace.trace(Activator.PLUGIN_ID, "resume=" + urlString); //$NON-NLS-1$
@@ -892,21 +889,13 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		if (proxy.getType().equals(Proxy.Type.HTTP)) {
 			final ProxyAddress address = proxy.getAddress();
 			getHostConfiguration().setProxy(address.getHostName(), address.getPort());
-			final String proxyUsername = proxy.getUsername();
-			final String proxyPassword = proxy.getPassword();
-			if (proxyUsername != null) {
-				final Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
-				final AuthScope proxyAuthScope = new AuthScope(address.getHostName(), address.getPort(), AuthScope.ANY_REALM);
-				Trace.trace(Activator.PLUGIN_ID, "retrieve httpproxy=" + proxyAuthScope + ";credentials" + credentials); //$NON-NLS-1$ //$NON-NLS-2$
-				httpClient.getState().setProxyCredentials(proxyAuthScope, credentials);
-			}
 		} else if (proxy.getType().equals(Proxy.Type.SOCKS)) {
 			Trace.trace(Activator.PLUGIN_ID, "retrieve socksproxy=" + proxy.getAddress()); //$NON-NLS-1$
 			proxyHelper.setupProxy(proxy);
 		}
 	}
 
-	protected static NTCredentials createNTLMCredentials(Proxy p) {
+	public static NTCredentials createNTLMCredentials(Proxy p) {
 		if (p == null) {
 			return null;
 		}
