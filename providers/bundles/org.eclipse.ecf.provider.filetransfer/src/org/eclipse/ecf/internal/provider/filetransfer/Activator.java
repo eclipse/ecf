@@ -267,6 +267,15 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 		protocolMapperRegistration = context.registerService(IFileTransferProtocolToFactoryMapper.class.getName(), this, null);
 	}
 
+	public boolean reinitialize() {
+		try {
+			loadProtocolHandlers();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

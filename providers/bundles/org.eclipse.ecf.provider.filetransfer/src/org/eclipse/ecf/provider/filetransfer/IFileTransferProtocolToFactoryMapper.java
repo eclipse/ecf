@@ -144,4 +144,10 @@ public interface IFileTransferProtocolToFactoryMapper {
 	 */
 	public boolean removeSendFileTransferFactory(String id);
 
+	/**
+	 * Reinitialized protocol to factory mapping defined via extension registry/extension points.
+	 * @return true if reinitialization succeeds, false if not
+	 */
+	public boolean reinitialize();
+
 }
