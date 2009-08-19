@@ -624,7 +624,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			// This check is to deal with bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=252002
 			boolean ntlmProxyFound = NTLMProxyDetector.detectNTLMProxy(getMethod);
 			if (ntlmProxyFound && !hasForceNTLMProxyOption())
-				throw new IncomingFileTransferException("NTLM Proxy Not Supported by HttpClient Provider", HttpClientOptions.NTLM_PROXY_RESPONSE_CODE); //$NON-NLS-1$
+				throw new IncomingFileTransferException("HttpClient Provider is not configured to support NTLM proxy authentication.", HttpClientOptions.NTLM_PROXY_RESPONSE_CODE); //$NON-NLS-1$
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResponseHeaderValues();
