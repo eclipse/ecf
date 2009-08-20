@@ -567,9 +567,14 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		IRosterEntry entry = null;
 		if (entrys.length > 0) {
 			for (int i = 0; i < entrys.length; i++) {
-				entry = new org.eclipse.ecf.presence.roster.RosterEntry(
-						entrys[i].parent, entrys[i].user, entrys[i].presence);
-				// roster.addItem(entry);
+				if (entrys[i].add) {
+					entry = new org.eclipse.ecf.presence.roster.RosterEntry(
+							entrys[i].parent, entrys[i].user,
+							entrys[i].presence);
+					// roster.addItem(entry);
+				} else {
+					removeItemFromRoster(rosterItems, fromID);
+				}
 			}
 			rosterManager.notifyRosterUpdate(roster);
 			fireSetRosterEntry(false, entry);
@@ -581,12 +586,74 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		IRosterItem parent;
 		IUser user;
 		IPresence presence;
+		boolean add;
 
 		public AdditionalClientRosterEntry(IRosterItem parent, IUser user,
 				IPresence presence) {
 			this.parent = parent;
 			this.user = user;
 			this.presence = presence;
+			this.add = true;
+		}
+
+		public AdditionalClientRosterEntry(IUser user) {
+			this.user = user;
+			this.add = false;
+		}
+	}
+
+	private int countClientsInRosterGroup(
+			org.eclipse.ecf.presence.roster.RosterGroup group, XMPPID oldID) {
+		Collection groupItems = group.getEntries();
+		int count = 0;
+		for (final Iterator i = groupItems.iterator(); i.hasNext();) {
+			final IRosterItem item = (IRosterItem) i.next();
+			if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
+				org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) item;
+				XMPPID entryID = (XMPPID) entry.getUser().getID();
+				if (entryID.getUsernameAtHost().equals(
+						oldID.getUsernameAtHost()))
+					count++;
+			}
+		}
+		return count;
+	}
+
+	private int countClientsInRoster(XMPPID oldID) {
+		Collection rosterItems = roster.getItems();
+		int count = 0;
+		synchronized (rosterItems) {
+			for (final Iterator i = rosterItems.iterator(); i.hasNext();) {
+				final IRosterItem item = (IRosterItem) i.next();
+				if (item instanceof org.eclipse.ecf.presence.roster.RosterGroup) {
+					final org.eclipse.ecf.presence.roster.RosterGroup group = (org.eclipse.ecf.presence.roster.RosterGroup) item;
+					count += countClientsInRosterGroup(group, oldID);
+				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
+					org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) item;
+					XMPPID entryID = (XMPPID) entry.getUser().getID();
+					if (entryID.getUsernameAtHost().equals(
+							oldID.getUsernameAtHost())) {
+						count++;
+					}
+				}
+			}
+		}
+		return count;
+	}
+
+	private AdditionalClientRosterEntry removeEntryFromRoster(XMPPID oldID,
+			org.eclipse.ecf.presence.roster.RosterEntry entry,
+			IPresence newPresence, IUser user) {
+		if (countClientsInRoster(oldID) > 1) {
+			// remove this client from roster
+			return new AdditionalClientRosterEntry(user);
+		} else {
+			// Last one, so we set resource to null and set presence to
+			// unavailable
+			oldID.setResourceName(null);
+			entry.setPresence(newPresence);
+			rosterManager.notifyRosterUpdate(entry);
+			return null;
 		}
 	}
 
@@ -598,10 +665,14 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		// If the username/host part matches that means we either have to update
 		// the resource, or create a new client
 		if (oldID.equals(fromID)) {
-			// set the new presence state
-			entry.setPresence(newPresence);
-			// and notify with roster update
-			rosterManager.notifyRosterUpdate(entry);
+			if (newPresence.getType() == IPresence.Type.UNAVAILABLE) {
+				return removeEntryFromRoster(oldID, entry, newPresence, user);
+			} else {
+				// set the new presence state
+				entry.setPresence(newPresence);
+				// and notify with roster update
+				rosterManager.notifyRosterUpdate(entry);
+			}
 		} else if (oldID.getUsernameAtHost().equals(fromID.getUsernameAtHost())) {
 			if (oldID.getResourceName() == null) {
 				oldID.setResourceName(fromID.getResourceName());
