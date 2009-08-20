@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.tests.sharedobject,
  org.eclipse.ecf.sharedobject,
  org.eclipse.ecf.presence,
- org.eclipse.ecf.remoteservice
+ org.eclipse.ecf.remoteservice,
+ org.eclipse.ecf.provider.xmpp
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
