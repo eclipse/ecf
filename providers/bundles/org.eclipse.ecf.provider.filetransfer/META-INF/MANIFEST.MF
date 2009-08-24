@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer;singleton:=true
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.0.1.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.filetransfer.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
@@ -28,5 +28,6 @@ Export-Package: org.eclipse.ecf.internal.provider.filetransfer;x-internal:=true,
  org.eclipse.ecf.provider.filetransfer.identity;x-internal:=false,
  org.eclipse.ecf.provider.filetransfer.outgoing,
  org.eclipse.ecf.provider.filetransfer.retrieve;x-internal:=false,
- org.eclipse.ecf.provider.filetransfer.util
+ org.eclipse.ecf.provider.filetransfer.util,
+ org.eclipse.ecf.provider.filetransfer;x-internal:=true
 Bundle-ActivationPolicy: lazy
