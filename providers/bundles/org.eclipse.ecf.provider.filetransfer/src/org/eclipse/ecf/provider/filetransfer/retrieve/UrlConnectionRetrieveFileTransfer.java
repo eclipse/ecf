@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Authenticator;
@@ -17,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import javax.microedition.io.HttpConnection;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.security.Callback;
@@ -303,6 +305,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			} else {
 				fireReceiveStartEvent();
 			}
+		} catch (final FileNotFoundException e) {
+			throw new IncomingFileTransferException(NLS.bind("File not found: {0}", getRemoteFileURL().toString()), HttpConnection.HTTP_NOT_FOUND); //$NON-NLS-1$
 		} catch (final Exception e) {
 			IncomingFileTransferException except = (e instanceof IncomingFileTransferException) ? (IncomingFileTransferException) e : new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, code);
 			hardClose();
