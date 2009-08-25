@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.provider.filetransfer.browse;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Authenticator;
@@ -18,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import javax.microedition.io.HttpConnection;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -28,6 +30,7 @@ import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.BrowseFileTransferException;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
+import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.IURLConnectionModifier;
@@ -85,7 +88,7 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 			setupProxies();
 			setupAuthentication();
 			setupTimeouts();
-			URLConnection urlConnection = directoryOrFile.openConnection();
+			URLConnection urlConnection = (URLConnection) directoryOrFile.openConnection();
 			// set cache to off if using jar protocol
 			// this is for addressing bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=235933
 			if (directoryOrFile.getProtocol().equalsIgnoreCase("jar")) { //$NON-NLS-1$
@@ -101,9 +104,15 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 			if (connectionModifier != null) {
 				connectionModifier.setSocketFactoryForConnection(urlConnection);
 			}
-			InputStream ins = urlConnection.getInputStream();
+			if (urlConnection instanceof HttpURLConnection) {
+				HttpURLConnection httpConnection = (HttpURLConnection) urlConnection;
+				httpConnection.setRequestMethod("HEAD"); //$NON-NLS-1$
+				httpConnection.connect();
+			} else {
+				InputStream ins = urlConnection.getInputStream();
+				ins.close();
+			}
 			code = getResponseCode(urlConnection);
-			ins.close();
 			if (isHTTP()) {
 				if (code == HttpURLConnection.HTTP_OK) {
 					// do nothing
@@ -121,6 +130,8 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 			}
 			remoteFiles = new IRemoteFile[1];
 			remoteFiles[0] = new URLRemoteFile(urlConnection.getLastModified(), urlConnection.getContentLength(), fileID);
+		} catch (final FileNotFoundException e) {
+			throw new IncomingFileTransferException(NLS.bind("File not found: {0}", directoryOrFile.toString()), HttpConnection.HTTP_NOT_FOUND); //$NON-NLS-1$
 		} catch (Exception e) {
 			Exception except = (e instanceof BrowseFileTransferException) ? e : new BrowseFileTransferException(NLS.bind("Could not connect to {0}", directoryOrFile), e, code); //$NON-NLS-1$
 			throw except;
