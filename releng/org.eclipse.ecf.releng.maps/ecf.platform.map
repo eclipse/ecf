@@ -1,4 +1,5 @@
 !****************  ECF PLATFORM CONTRIBUTION  ************************************************* 
 
 feature@org.eclipse.ecf.platform_feature=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.platform-feature
+feature@org.eclipse.ecf.tests_platform_feature=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.tests-platform-feature
 
