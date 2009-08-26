@@ -19,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
-import javax.microedition.io.HttpConnection;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -131,7 +130,7 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 			remoteFiles = new IRemoteFile[1];
 			remoteFiles[0] = new URLRemoteFile(urlConnection.getLastModified(), urlConnection.getContentLength(), fileID);
 		} catch (final FileNotFoundException e) {
-			throw new IncomingFileTransferException(NLS.bind("File not found: {0}", directoryOrFile.toString()), HttpConnection.HTTP_NOT_FOUND); //$NON-NLS-1$
+			throw new IncomingFileTransferException(NLS.bind("File not found: {0}", directoryOrFile.toString()), 404); //$NON-NLS-1$
 		} catch (Exception e) {
 			Exception except = (e instanceof BrowseFileTransferException) ? e : new BrowseFileTransferException(NLS.bind("Could not connect to {0}", directoryOrFile), e, code); //$NON-NLS-1$
 			throw except;
