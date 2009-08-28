@@ -32,9 +32,6 @@ Contributors: Composent, Inc. - initial API and implementation
       <import plugin="org.eclipse.osgi.services"/>
       <import plugin="org.eclipse.equinox.concurrent"/>
       <import plugin="org.eclipse.core.net"/>
-      <import plugin="org.apache.commons.httpclient"/>
-      <import plugin="org.apache.commons.codec"/>
-      <import plugin="org.apache.commons.logging"/>
    </requires>
 
    <plugin
@@ -94,6 +91,27 @@ Contributors: Composent, Inc. - initial API and implementation
          install-size="0"
          version="0.0.0"
          fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.codec"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.httpclient"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.logging"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
