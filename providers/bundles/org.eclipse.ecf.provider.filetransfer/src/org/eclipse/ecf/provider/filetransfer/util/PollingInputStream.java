@@ -31,6 +31,8 @@ import org.eclipse.ecf.internal.provider.filetransfer.Activator;
  * InterruptedIOException if the underlying stream does. Check the
  * bytesTransferred field to determine how much of the operation completed;
  * conversely, at what point to resume.
+ * 
+ * @since 3.0
  */
 public class PollingInputStream extends FilterInputStream {
 	private int numAttempts;

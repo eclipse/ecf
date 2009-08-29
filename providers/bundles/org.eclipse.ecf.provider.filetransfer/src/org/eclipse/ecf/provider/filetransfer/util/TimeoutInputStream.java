@@ -26,6 +26,8 @@ import java.io.InterruptedIOException;
  * which case it must also support resuming. Check the bytesTransferred field to
  * determine how much of the operation completed; conversely, at what point to
  * resume.
+ * 
+ * @since 3.0
  */
 public class TimeoutInputStream extends FilterInputStream {
 	// unsynchronized variables
