@@ -509,10 +509,16 @@ public class EventHookImpl implements EventHook {
 
 	private void handleModifiedServiceEvent(ServiceReference serviceReference,
 			Collection contexts) {
-		trace(
-				"org.eclipse.ecf.internal.osgi.services.distribution.AbstractEventHookImpl.handleModifiedServiceEvent(ServiceReference, Collection)",
-				"implement!");
-		// XXX we currently don't handle the modified service event
+		// This checks to see if the serviceReference has any remote interfaces
+		// declared via osgi.remote.interfaces property
+		Object osgiRemotes = serviceReference
+				.getProperty(IDistributionConstants.REMOTE_INTERFACES);
+		if (osgiRemotes != null) {
+			// XXX we currently don't handle the modified service event
+			trace(
+					"org.eclipse.ecf.internal.osgi.services.distribution.EventHookImpl.handleModifiedServiceEvent(ServiceReference, Collection)",
+					"implement!");
+		}
 	}
 
 	private Object getService(ServiceReference sr) {
