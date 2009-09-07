@@ -29,4 +29,18 @@ public class LogUtility {
 					DebugOptions.EXCEPTIONS_CATCHING, clazz, msg, t); //$NON-NLS-1$
 	}
 
+	public static void logInfo(String method, String message, Class clazz,
+			Throwable t) {
+		Activator.getDefault().log(
+				new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO,
+						method + ":" + message, t)); //$NON-NLS-1$
+		String msg = method + ":" + message;
+		if (t == null) {
+			Trace.trace(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
+					msg);
+		} else
+			Trace.catching(Activator.PLUGIN_ID,
+					DebugOptions.EXCEPTIONS_CATCHING, clazz, msg, t); //$NON-NLS-1$
+	}
+
 }

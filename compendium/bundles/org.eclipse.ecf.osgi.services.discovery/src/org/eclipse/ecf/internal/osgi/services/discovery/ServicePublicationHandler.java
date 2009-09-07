@@ -256,7 +256,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 		IDiscoveryAdvertiser advertiser2 = getAdvertiser();
 		if (advertiser2 == null) {
-			logError(
+			logInfo(
 					"handleServicePublication", //$NON-NLS-1$
 					"ignoring " //$NON-NLS-1$
 							+ reference
@@ -363,6 +363,10 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 	private void logError(String method, String message, Throwable exception) {
 		LogUtility.logError(method, message, this.getClass(), exception);
+	}
+
+	private void logInfo(String method, String message, Throwable exception) {
+		LogUtility.logInfo(method, message, this.getClass(), exception);
 	}
 
 	private URI createURI(ID endpointContainerID) throws URISyntaxException {
