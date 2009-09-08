@@ -74,9 +74,11 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		try {
 			// Get clazz from reference
 			final String[] clazzes = registration.getClasses();
-			final Class[] cs = new Class[clazzes.length];
+			final Class[] cs = new Class[clazzes.length + 1];
 			for (int i = 0; i < clazzes.length; i++)
 				cs[i] = Class.forName(clazzes[i]);
+			// add IRemoteServiceProxy interface to set of interfaces supported by this proxy
+			cs[clazzes.length] = IRemoteServiceProxy.class;
 			proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), cs, this);
 		} catch (final Exception e) {
 			throw new ECFException(Messages.RemoteServiceImpl_EXCEPTION_CREATING_PROXY, e);
@@ -100,6 +102,9 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 			} catch (IllegalArgumentException e) {
 				return Boolean.FALSE;
 			}
+			// This handles the use of IRemoteServiceProxy.getRemoteService method
+		} else if (method.getName().equals("getRemoteService")) { //$NON-NLS-1$
+			return this;
 		}
 		return this.callSync(new IRemoteCall() {
 
