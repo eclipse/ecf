@@ -919,12 +919,14 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 			c[i].dispose();
 		}
 		final Object[] factories = networkChannelFactoryTracker.getServices();
-		for (int i = 0; i < factories.length; i++) {
-			try {
-				((NetworkChannelFactory) factories[i]).deactivate(this);
-			} catch (final IOException ioe) {
-				if (log != null) {
-					log.log(LogService.LOG_ERROR, ioe.getMessage(), ioe);
+		if (factories != null) {
+			for (int i = 0; i < factories.length; i++) {
+				try {
+					((NetworkChannelFactory) factories[i]).deactivate(this);
+				} catch (final IOException ioe) {
+					if (log != null) {
+						log.log(LogService.LOG_ERROR, ioe.getMessage(), ioe);
+					}
 				}
 			}
 		}
