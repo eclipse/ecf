@@ -14,8 +14,7 @@ package org.eclipse.ecf.internal.provider.r_osgi;
 import ch.ethz.iks.r_osgi.RemoteOSGiException;
 import java.lang.reflect.*;
 import java.util.Arrays;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
@@ -113,6 +112,9 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		} catch (TimeoutException e) {
 			throw new ECFException(NLS.bind("callSync timed out after {0} ms", Long.toString(call.getTimeout())), new TimeoutException(call.getTimeout())); //$NON-NLS-1$
 		}
+		IStatus status = future.getStatus();
+		if (!status.isOK())
+			throw new ECFException("Exception during callSync", status.getException()); //$NON-NLS-1$
 		return result;
 	}
 
