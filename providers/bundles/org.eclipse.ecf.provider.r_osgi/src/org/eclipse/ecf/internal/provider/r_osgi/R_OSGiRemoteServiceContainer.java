@@ -341,7 +341,14 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	}
 
 	IRemoteServiceID createRemoteServiceID(RemoteServiceReference rref) {
-		return createRemoteServiceID(new R_OSGiID(rref.getURI().toString()), (Long) rref.getProperty(Constants.SERVICE_ID));
+		URI uri = rref.getURI();
+		String fragmentString = "#" + uri.getFragment(); //$NON-NLS-1$
+		String uriStr = uri.toString();
+		int fragmentLoc = uriStr.indexOf(fragmentString);
+		if (fragmentLoc != -1) {
+			uriStr = uriStr.substring(0, fragmentLoc);
+		}
+		return createRemoteServiceID(new R_OSGiID(uriStr), (Long) rref.getProperty(Constants.SERVICE_ID));
 	}
 
 	/**
@@ -540,7 +547,6 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 			fireListeners(new ContainerDisconnectingEvent(containerID, connectedID));
 			doDisconnect(connectedID);
 			connectedID = null;
-			remoteService = null;
 			fireListeners(new ContainerDisconnectedEvent(containerID, connectedID));
 		}
 

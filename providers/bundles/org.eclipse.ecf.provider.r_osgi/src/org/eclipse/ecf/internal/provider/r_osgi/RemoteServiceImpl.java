@@ -12,6 +12,8 @@
 package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.RemoteOSGiException;
+import java.lang.reflect.*;
+import java.util.Arrays;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.*;
@@ -24,7 +26,9 @@ import org.eclipse.equinox.concurrent.future.*;
  * 
  * @author Jan S. Rellermeyer, ETH Zurich
  */
-final class RemoteServiceImpl implements IRemoteService {
+final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
+
+	protected static final long DEFAULT_TIMEOUT = new Long(System.getProperty("ecf.remotecall.timeout", "30000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
 	// the ECF remote refImpl
 	RemoteServiceReferenceImpl refImpl;
@@ -93,7 +97,7 @@ final class RemoteServiceImpl implements IRemoteService {
 		try {
 			return service.getClass().getMethod(call.getMethod(), formalParams).invoke(service, call.getParameters());
 		} catch (Throwable t) {
-			throw new ECFException(t);
+			throw new ECFException("Exception invoking service method", t); //$NON-NLS-1$
 		}
 	}
 
@@ -124,7 +128,21 @@ final class RemoteServiceImpl implements IRemoteService {
 		if (!refImpl.getR_OSGiServiceReference().isActive()) {
 			throw new ECFException("Container currently not connected"); //$NON-NLS-1$
 		}
-		return service;
+		Object proxy;
+		try {
+			ClassLoader cl = this.getClass().getClassLoader();
+			// Get clazz from reference
+			final String[] clazzes = refImpl.getR_OSGiServiceReference().getServiceInterfaces();
+			final Class[] cs = new Class[clazzes.length + 1];
+			for (int i = 0; i < clazzes.length; i++)
+				cs[i] = Class.forName(clazzes[i], true, cl);
+			// add IRemoteServiceProxy interface to set of interfaces supported by this proxy
+			cs[clazzes.length] = IRemoteServiceProxy.class;
+			proxy = Proxy.newProxyInstance(cl, cs, this);
+		} catch (final Exception e) {
+			throw new ECFException("Exception creating proxy for remote service", e); //$NON-NLS-1$
+		}
+		return proxy;
 	}
 
 	/**
@@ -134,6 +152,43 @@ final class RemoteServiceImpl implements IRemoteService {
 	 */
 	synchronized long getNextID() {
 		return nextID++;
+	}
+
+	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
+		// methods declared by Object
+
+		if (method.getName().equals("toString")) { //$NON-NLS-1$
+			final String[] clazzes = refImpl.getR_OSGiServiceReference().getServiceInterfaces();
+			String proxyClass = (clazzes.length == 1) ? clazzes[0] : Arrays.asList(clazzes).toString();
+			return proxyClass + ".proxy@" + refImpl.getID(); //$NON-NLS-1$
+		} else if (method.getName().equals("hashCode")) { //$NON-NLS-1$
+			return new Integer(hashCode());
+		} else if (method.getName().equals("equals")) { //$NON-NLS-1$
+			if (args == null || args.length == 0)
+				return Boolean.FALSE;
+			try {
+				return new Boolean(Proxy.getInvocationHandler(args[0]).equals(this));
+			} catch (IllegalArgumentException e) {
+				return Boolean.FALSE;
+			}
+			// This handles the use of IRemoteServiceProxy.getRemoteService method
+		} else if (method.getName().equals("getRemoteService")) { //$NON-NLS-1$
+			return this;
+		}
+		return this.callSync(new IRemoteCall() {
+
+			public String getMethod() {
+				return method.getName();
+			}
+
+			public Object[] getParameters() {
+				return args;
+			}
+
+			public long getTimeout() {
+				return DEFAULT_TIMEOUT;
+			}
+		});
 	}
 
 	/**
