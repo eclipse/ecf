@@ -15,11 +15,13 @@ import ch.ethz.iks.r_osgi.RemoteOSGiException;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
 import org.eclipse.equinox.concurrent.future.*;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * The R-OSGi adapter implementation of the IRemoteService interface.
@@ -34,7 +36,7 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	RemoteServiceReferenceImpl refImpl;
 
 	// the service object.
-	private Object service;
+	Object service;
 
 	// the next free service ID.
 	private long nextID;
@@ -94,11 +96,24 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		for (int i = 0; i < formalParams.length; i++) {
 			formalParams[i] = call.getParameters()[i].getClass();
 		}
+		IExecutor executor = new ThreadsExecutor();
+		IFuture future = executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return service.getClass().getMethod(call.getMethod(), formalParams).invoke(service, call.getParameters());
+			}
+		}, null);
+		Object result = null;
 		try {
-			return service.getClass().getMethod(call.getMethod(), formalParams).invoke(service, call.getParameters());
-		} catch (Throwable t) {
-			throw new ECFException("Exception invoking service method", t); //$NON-NLS-1$
+			result = future.get(call.getTimeout());
+		} catch (OperationCanceledException e) {
+			throw new ECFException("callSync cancelled", e); //$NON-NLS-1$
+		} catch (InterruptedException e) {
+			// If thread interrupted, then just return null
+			return null;
+		} catch (TimeoutException e) {
+			throw new ECFException(NLS.bind("callSync timed out after {0} ms", Long.toString(call.getTimeout())), new TimeoutException(call.getTimeout())); //$NON-NLS-1$
 		}
+		return result;
 	}
 
 	/**
