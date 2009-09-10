@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
-import org.eclipse.ecf.examples.eventadmin.EventAdminImpl;
+import org.eclipse.ecf.remoteservice.eventadmin.DistributedEventAdmin;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.BundleContext;
@@ -45,7 +45,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	protected ServiceTracker containerManagerTracker;
 	private final Object appLock = new Object();
 	private boolean done = false;
-	protected EventAdminImpl eventAdminImpl;
+	protected DistributedEventAdmin eventAdminImpl;
 	protected ServiceRegistration eventAdminRegistration;
 	protected IContainer container;
 
@@ -59,7 +59,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		processArgs(args);
 		
 		// Create event admin impl
-		eventAdminImpl = new EventAdminImpl(bundleContext);
+		eventAdminImpl = new DistributedEventAdmin(bundleContext,topic);
 		
 		// Create, configure, and connect container
 		createConfigureAndConnectContainer();
@@ -181,7 +181,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	}
 
 	protected void addEventAdmin(IContainer container,
-			EventAdminImpl eventAdmin, String topic)
+			DistributedEventAdmin eventAdmin, String topic)
 			throws SharedObjectAddException {
 		ISharedObjectContainer soContainer = (ISharedObjectContainer) container
 				.getAdapter(ISharedObjectContainer.class);
