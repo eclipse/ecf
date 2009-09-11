@@ -108,6 +108,9 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/server-side/examples/bundles/org.eclipse.ecf.examples.updatesite.server,org.eclipse.ecf.examples.updatesite.server"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/server-side/bundles/org.eclipse.ecf.server,org.eclipse.ecf.server"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/server-side/bundles/org.eclipse.ecf.server.generic,org.eclipse.ecf.server.generic"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/server-side/bundles/org.eclipse.ecf.remoteservice.eventadmin,org.eclipse.ecf.remoteservice.eventadmin"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.eventadmin.app,org.eclipse.ecf.examples.eventadmin.app"/>
+	
 	
 	<!-- ECF help documentation -->
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/doc/bundles/org.eclipse.ecf.doc,org.eclipse.ecf.doc"/>
