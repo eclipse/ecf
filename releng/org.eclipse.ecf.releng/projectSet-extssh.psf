@@ -44,6 +44,7 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.sync,org.eclipse.ecf.sync"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.team.ecf.core,org.eclipse.team.ecf.core"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.team.ecf.ui,org.eclipse.team.ecf.ui"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.ui.capabilities,org.eclipse.ecf.ui.capabilities"/>
 
 	<!-- Compendium -->
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services,org.eclipse.ecf.osgi.services"/>
