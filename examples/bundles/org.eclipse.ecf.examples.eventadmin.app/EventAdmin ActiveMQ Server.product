@@ -28,7 +28,6 @@
       <plugin id="org.eclipse.ecf"/>
       <plugin id="org.eclipse.ecf.datashare"/>
       <plugin id="org.eclipse.ecf.discovery"/>
-      <plugin id="org.eclipse.ecf.examples.eventadmin"/>
       <plugin id="org.eclipse.ecf.examples.eventadmin.app"/>
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.provider"/>
@@ -37,6 +36,7 @@
       <plugin id="org.eclipse.ecf.provider.jms.activemq"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
+      <plugin id="org.eclipse.ecf.remoteservice.eventadmin"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.ecf.ssl" fragment="true"/>
       <plugin id="org.eclipse.equinox.app"/>

@@ -11,7 +11,6 @@ package org.eclipse.ecf.examples.internal.eventadmin.app;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
@@ -26,8 +25,6 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.event.EventAdmin;
-import org.osgi.service.event.EventConstants;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractEventAdminApplication implements IApplication {
@@ -65,7 +62,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		createConfigureAndConnectContainer();
 		
 		// registerEventAdmin
-		registerEventAdmin();
+		eventAdminImpl.register();
 		
 		return IApplication.EXIT_OK;
 	}
@@ -121,15 +118,6 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	
 	protected abstract void processArgs(String[] args);
 
-	protected void registerEventAdmin() {
-		// Create properties for event admin
-		Properties eventAdminProps = new Properties();
-		eventAdminProps.put(EventConstants.EVENT_TOPIC, topic);
-		// register event admin service
-		eventAdminRegistration = bundleContext.registerService(EventAdmin.class
-				.getName(), eventAdminImpl, eventAdminProps);
-	}
-
 	protected void waitForDone() {
 		// then just wait here
 		synchronized (appLock) {
@@ -147,19 +135,20 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		shutdown();
 	}
 
-	protected void connectContainer(IContainer container, String target)
-			throws ContainerConnectException {
-		if (target != null)
-			container.connect(IDFactory.getDefault().createID(
-					container.getConnectNamespace(), target), null);
-	}
-
 	protected void createConfigureAndConnectContainer()
 			throws ContainerCreateException, SharedObjectAddException,
 			ContainerConnectException {
-		container = createContainer(containerType, containerId);
-		addEventAdmin(container, eventAdminImpl, topic);
-		connectContainer(container, targetId);
+		// get container factory and create container
+		IContainerFactory containerFactory = getContainerManager()
+				.getContainerFactory();
+		container = (containerId == null) ? containerFactory
+		.createContainer(containerType) : containerFactory
+		.createContainer(containerType, new Object[] { containerId });
+		// Add eventAdmin to container
+		eventAdminImpl.addToContainer((ISharedObjectContainer) container.getAdapter(ISharedObjectContainer.class));
+		// connect to target Id
+		if (targetId != null) container.connect(IDFactory.getDefault().createID(
+					container.getConnectNamespace(), targetId), null);
 	}
 
 	protected IContainerManager getContainerManager() {
@@ -171,21 +160,4 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		return (IContainerManager) containerManagerTracker.getService();
 	}
 
-	protected IContainer createContainer(String containerType,
-			String containerId) throws ContainerCreateException {
-		IContainerFactory containerFactory = getContainerManager()
-				.getContainerFactory();
-		return (containerId == null) ? containerFactory
-				.createContainer(containerType) : containerFactory
-				.createContainer(containerType, new Object[] { containerId });
-	}
-
-	protected void addEventAdmin(IContainer container,
-			DistributedEventAdmin eventAdmin, String topic)
-			throws SharedObjectAddException {
-		ISharedObjectContainer soContainer = (ISharedObjectContainer) container
-				.getAdapter(ISharedObjectContainer.class);
-		soContainer.getSharedObjectManager().addSharedObject(
-				IDFactory.getDefault().createStringID(topic), eventAdmin, null);
-	}
 }
