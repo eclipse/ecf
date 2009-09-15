@@ -26,9 +26,8 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 	private ServiceRegistration testEventHandlerRegistration;
 
 	protected Object run() {
-		// XXX for testing, setup an event handler
 		Properties props = new Properties();
-		props.put(EventConstants.EVENT_FILTER, "("+EventConstants.EVENT_TOPIC+"="+topic+")");
+		props.put(EventConstants.EVENT_TOPIC, "*");
 		testEventHandlerRegistration = bundleContext.registerService(
 				EventHandler.class.getName(), new TestEventHandler(), props);
 
