@@ -9,8 +9,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.examples.internal.eventadmin.app;
 
+import java.util.Properties;
+
 import org.eclipse.equinox.app.IApplication;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
 public class EventAdminManagerApplication extends AbstractEventAdminApplication
@@ -24,8 +27,10 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 
 	protected Object run() {
 		// XXX for testing, setup an event handler
+		Properties props = new Properties();
+		props.put(EventConstants.EVENT_FILTER, "("+EventConstants.EVENT_TOPIC+"="+topic+")");
 		testEventHandlerRegistration = bundleContext.registerService(
-				EventHandler.class.getName(), new TestEventHandler(), null);
+				EventHandler.class.getName(), new TestEventHandler(), props);
 
 		// XXX for testing, setup a test sender
 		testSender = new TestSender(eventAdminImpl, topic, container.getID()
