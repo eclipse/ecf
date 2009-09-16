@@ -95,9 +95,6 @@ public class FileBasedDiscoveryImpl implements Discovery {
 	 */
 	public void init() {
 		log(LogService.LOG_DEBUG, "init");
-		// 36 stands for bundle states RESOLVED OR ACTIVE
-		bt = new BundleTracker(context, 36, new BundleTrackerImpl(this));
-		bt.open();
 		discoTrackerCustomizer = new DSTTracker(context);
 		discoTracker = new ServiceTracker(context,
 				DiscoveredServiceTracker.class.getName(),
@@ -106,7 +103,9 @@ public class FileBasedDiscoveryImpl implements Discovery {
 		spTracker = new ServiceTracker(context, ServicePublication.class
 				.getName(), new ServicePublicationTracker(context, this));
 		spTracker.open();
-
+		// 36 stands for bundle states RESOLVED OR ACTIVE
+		bt = new BundleTracker(context, 36, new BundleTrackerImpl(this));
+		bt.open();
 	}
 
 	/**
