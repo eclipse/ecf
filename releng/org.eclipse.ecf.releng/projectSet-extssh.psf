@@ -51,6 +51,8 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services,org.eclipse.ecf.osgi.services"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.discovery,org.eclipse.ecf.osgi.services.discovery"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.distribution,org.eclipse.ecf.osgi.services.distribution"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.discovery.local,org.eclipse.ecf.osgi.services.discovery.local"/>
+    <project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.localdiscovery,org.eclipse.ecf.provider.localdiscovery"/>
 
 	<!-- Orbit bundles -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.apache.commons.codec,org.apache.commons.codec,v1_2_0"/>
