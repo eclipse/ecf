@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <service-descriptions xmlns="http://www.osgi.org/xmlns/sd/v1.0.0">
+    <service-description>
+      <provide
+interface="org.eclipse.ecf.examples.remoteservices.declarative.common.IHello"/>
+      <property
+name="ecf.sp.cid">ecftcp://localhost:3282/server</property>
+      <property name="ecf.sp.cns">org.eclipse.ecf.core.identity.StringID</property>
+   </service-description>
+</service-descriptions>
