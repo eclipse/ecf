@@ -12,6 +12,7 @@ import java.util.*;
 import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.sharedobject.*;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * Factory for creating {@link ISharedObject} instances. This class provides ECF
@@ -109,7 +110,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		SharedObjectTypeDescription res = getDescription0(name);
 		if (res == null) {
 			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Shared_Object + name + Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
-			throw new SharedObjectCreateException(Messages.bind(Messages.SharedObjectFactory_SharedObjectCreateException_X_Not_Found, name));
+			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectFactory_SharedObjectCreateException_X_Not_Found, name));
 		}
 		return res;
 	}
@@ -128,7 +129,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		SharedObjectTypeDescription cd = getDescription0(desc);
 		if (cd == null)
 			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Shared_Objec + desc.getName() + Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
-			throw new SharedObjectCreateException(Messages.bind(Messages.SharedObjectFactory_SharedObjectDescription_X_Not_Found, desc.getName()));
+			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectFactory_SharedObjectDescription_X_Not_Found, desc.getName()));
 		ISharedObjectInstantiator instantiator = null;
 		try {
 			instantiator = cd.getInstantiator();
@@ -140,7 +141,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		}
 		if (instantiator == null)
 			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Instantiator + cd.getName() + Messages.SharedObjectFactory_Exception_Create_Instantiator_Null);
-			throw new SharedObjectCreateException(Messages.bind(Messages.SharedObjectFactory_Exception_Create_Instantiator_X_Null, cd.getName()));
+			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectFactory_Exception_Create_Instantiator_X_Null, cd.getName()));
 		// Ask instantiator to actually create instance
 		return instantiator.createInstance(desc, args);
 	}
