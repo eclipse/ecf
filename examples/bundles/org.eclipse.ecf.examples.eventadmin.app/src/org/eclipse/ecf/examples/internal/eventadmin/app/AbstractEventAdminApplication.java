@@ -58,7 +58,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		processArgs(args);
 		
 		// Create event admin impl
-		eventAdminImpl = new DistributedEventAdmin(bundleContext,topic);
+		eventAdminImpl = new DistributedEventAdmin(bundleContext);
 		
 		// Create, configure, and connect container
 		createConfigureAndConnectContainer();
