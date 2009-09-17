@@ -11,6 +11,7 @@ package org.eclipse.ecf.examples.internal.eventadmin.app;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
@@ -25,6 +26,7 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.event.EventConstants;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractEventAdminApplication implements IApplication {
@@ -61,8 +63,12 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		// Create, configure, and connect container
 		createConfigureAndConnectContainer();
 		
-		// registerEventAdmin
-		eventAdminImpl.register();
+		// start event admin
+		eventAdminImpl.start();
+		// register as EventAdmin service instance
+		Properties props = new Properties();
+		props.put(EventConstants.EVENT_TOPIC, topic);
+	    eventAdminRegistration = bundleContext.registerService("org.osgi.service.event.EventAdmin", eventAdminImpl,props);
 		
 		return IApplication.EXIT_OK;
 	}
@@ -144,9 +150,13 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		container = (containerId == null) ? containerFactory
 		.createContainer(containerType) : containerFactory
 		.createContainer(containerType, new Object[] { containerId });
-		// Add eventAdmin to container
-		eventAdminImpl.addToContainer((ISharedObjectContainer) container.getAdapter(ISharedObjectContainer.class));
-		// connect to target Id
+		
+		// Get socontainer
+		ISharedObjectContainer soContainer = (ISharedObjectContainer) container.getAdapter(ISharedObjectContainer.class);
+		// Add to soContainer, with topic as name
+		soContainer.getSharedObjectManager().addSharedObject(IDFactory.getDefault().createStringID(topic), eventAdminImpl, null);
+		
+		// then connect to target Id
 		if (targetId != null) container.connect(IDFactory.getDefault().createID(
 					container.getConnectNamespace(), targetId), null);
 	}
