@@ -38,9 +38,8 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	private EventHandlerTracker eventHandlerTracker;
 	private EventManager eventManager;
 	
-	public DistributedEventAdmin(BundleContext context, String topic) {
+	public DistributedEventAdmin(BundleContext context) {
 		Assert.isNotNull(context);
-		Assert.isNotNull(topic);
 		this.log = new LogTracker(context, System.out);
 		this.eventHandlerTracker = new EventHandlerTracker(context, log);
 	}
