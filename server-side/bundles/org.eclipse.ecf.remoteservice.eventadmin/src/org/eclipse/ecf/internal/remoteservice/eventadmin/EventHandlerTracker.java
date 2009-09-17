@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.internal.remoteservice.eventadmin;
 
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,13 +19,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.osgi.framework.eventmgr.EventDispatcher;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class EventHandlerTracker extends ServiceTracker {
+public class EventHandlerTracker extends ServiceTracker implements EventDispatcher{
 	private final LogService log;
 	// * List<EventHandlerWrapper> of all handlers with topic of "*"
 	private final List globalWildcard;
@@ -204,6 +207,10 @@ public class EventHandlerTracker extends ServiceTracker {
 		}
 
 		return handlers;
+	}
+
+	public void dispatchEvent(Object eventListener, Object listenerObject, int eventAction, Object eventObject) {
+		((EventHandlerWrapper) eventListener).handleEvent((Event) eventObject, (Permission) listenerObject);
 	}
 
 }
