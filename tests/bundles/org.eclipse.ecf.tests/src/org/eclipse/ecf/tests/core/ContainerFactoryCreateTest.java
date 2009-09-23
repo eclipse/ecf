@@ -198,6 +198,20 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 		assertNotNull(base);
 	}
 
+	public void testCreateDefaultClientContainer() throws Exception {
+		final IContainer client = ContainerFactory.getDefault().createContainer("ecf.generic.client");
+		assertNotNull(client);
+		// dispose
+		client.dispose();
+	}
+	
+	public void testCreateDefaultServerContainer() throws Exception {
+		final IContainer client = ContainerFactory.getDefault().createContainer("ecf.generic.server");
+		assertNotNull(client);
+		// dispose
+		client.dispose();
+	}
+
 	public void testContainerTypeDescriptionGetName() {
 		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
 		assertTrue(desc.getName().equals(CONTAINER_TYPE_NAME));
