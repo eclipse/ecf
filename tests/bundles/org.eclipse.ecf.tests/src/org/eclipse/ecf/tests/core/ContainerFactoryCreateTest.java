@@ -153,8 +153,6 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 			ContainerFactory.getDefault().createContainer("asdfasdfasdfsadfsadf");
 			fail();
 		} catch (ContainerCreateException e) {
-			// It should throw
-			e.printStackTrace();
 		}
 	}
 	public void testCreateBaseContainer0() throws Exception {
