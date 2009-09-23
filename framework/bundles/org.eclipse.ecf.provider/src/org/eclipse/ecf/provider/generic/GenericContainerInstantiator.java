@@ -135,9 +135,9 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 				newID = getIDFromArg(args[0]);
 		}
 		if (newID == null)
-			newID = IDFactory.getDefault().createStringID(IDFactory.getDefault().createGUID().getName());
+			newID = IDFactory.getDefault().createStringID(TCPServerSOContainer.DEFAULT_PROTOCOL + "://" + TCPServerSOContainer.DEFAULT_HOST + ":" + TCPServerSOContainer.DEFAULT_PORT + TCPServerSOContainer.DEFAULT_NAME); //$NON-NLS-1$ //$NON-NLS-2$
 		if (ka == null)
-			ka = new Integer(0);
+			ka = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
 		return new GenericContainerArgs(newID, ka);
 	}
 
