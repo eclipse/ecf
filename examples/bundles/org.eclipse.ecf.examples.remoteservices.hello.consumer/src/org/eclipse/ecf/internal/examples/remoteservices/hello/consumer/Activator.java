@@ -18,6 +18,7 @@ public class Activator implements BundleActivator, IDistributionConstants, Servi
 
 	public static final String CONSUMER_NAME = "org.eclipse.ecf.examples.remoteservices.hello.consumer";
 	
+	private String containerType = System.getProperty("containerType","ecf.r_osgi.peer");
 	private BundleContext context;
 	private ServiceTracker containerManagerServiceTracker;
 	private ServiceTracker helloServiceTracker;
@@ -30,7 +31,7 @@ public class Activator implements BundleActivator, IDistributionConstants, Servi
 		this.context = context;
 		// Create R-OSGi Container
 		IContainerManager containerManager = getContainerManagerService();
-		containerManager.getContainerFactory().createContainer("ecf.r_osgi.peer");
+		containerManager.getContainerFactory().createContainer(containerType);
 		// Create service tracker to track IHello instances that are REMOTE
 		helloServiceTracker = new ServiceTracker(context,createRemoteFilter(),this);
 		helloServiceTracker.open();
