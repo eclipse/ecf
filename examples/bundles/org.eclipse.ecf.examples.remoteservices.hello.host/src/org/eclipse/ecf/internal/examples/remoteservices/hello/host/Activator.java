@@ -14,6 +14,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator, IDistributionConstants {
 
+	private String containerType = System.getProperty("containerType","ecf.r_osgi.peer");
 	private BundleContext context;
 	private ServiceTracker containerManagerServiceTracker;
 	private ServiceRegistration helloRegistration;
@@ -26,7 +27,7 @@ public class Activator implements BundleActivator, IDistributionConstants {
 		this.context = context;
 		// Create R-OSGi Container
 		IContainerManager containerManager = getContainerManagerService();
-		containerManager.getContainerFactory().createContainer("ecf.r_osgi.peer");
+		containerManager.getContainerFactory().createContainer(containerType);
 		
 		Properties props = new Properties();
 		// add OSGi service property indicating this
