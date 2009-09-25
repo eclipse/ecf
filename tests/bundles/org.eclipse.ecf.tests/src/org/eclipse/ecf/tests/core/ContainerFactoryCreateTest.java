@@ -204,10 +204,24 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 	}
 	
 	public void testCreateDefaultServerContainer() throws Exception {
-		final IContainer client = ContainerFactory.getDefault().createContainer("ecf.generic.server");
-		assertNotNull(client);
+		final IContainer server = ContainerFactory.getDefault().createContainer("ecf.generic.server");
+		assertNotNull(server);
 		// dispose
-		client.dispose();
+		server.dispose();
+	}
+
+	public void testCreateDefaultServerContainer1() throws Exception {
+		final IContainer server = ContainerFactory.getDefault().createContainer("ecf.generic.server", IDFactory.getDefault().createStringID("ecftcp://localhost:3282/server"));
+		assertNotNull(server);
+		// dispose
+		server.dispose();
+	}
+
+	public void testCreateDefaultServerContainer2() throws Exception {
+		final IContainer server = ContainerFactory.getDefault().createContainer("ecf.generic.server", new Object[] {"ecftcp://localhost:3282/server" });
+		assertNotNull(server);
+		// dispose
+		server.dispose();
 	}
 
 	public void testContainerTypeDescriptionGetName() {
