@@ -42,7 +42,7 @@ import org.eclipse.ecf.core.security.NameCallback;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.internal.remoteservice.rest.ResourceRepresentationFactory;
+import org.eclipse.ecf.internal.remoteservice.rest.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -54,6 +54,8 @@ import org.eclipse.equinox.concurrent.future.AbstractExecutor;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * This class represents a REST service from the client side of view. So a RESTful
@@ -236,9 +238,8 @@ public class RestService implements IRemoteService {
 		try {
 			int responseCode = httpClient.executeMethod(httpMethod);
 			if(responseCode == HttpStatus.SC_OK) {
-				response = ResourceRepresentationFactory.getDefault()
-						.createResourceRepresentation(httpMethod, restCall);
-				if(proxy != null && proxy instanceof IRestResponseProcessor)
+				response = getResourceRepresentation(restCall, httpMethod);
+				if (proxy != null && proxy instanceof IRestResponseProcessor)
 					((IRestResponseProcessor) proxy).processResource(response);
 			} else 
 				throw new ECFException("Service returned status code: " + responseCode);
@@ -251,8 +252,46 @@ public class RestService implements IRemoteService {
 		}
 		return response;
 	}
-	
-	protected void handleRequestHeaders(HttpMethod httpMethod, Map requestHeaders) {
+
+	/**
+	 * Gets the resource representation for a given rest call and http method.
+	 * The resource representation is queried from the
+	 * IRestResourceRepresentationFactory service
+	 * 
+	 * @param restCall
+	 *            the rest call
+	 * @param httpMethod
+	 *            the http method
+	 * @param response
+	 *            the response
+	 * 
+	 * @return the resource representation
+	 * 
+	 * @throws ParseException
+	 *             the parse exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * 
+	 * @see IRestCall#getEstimatedResourceIdentifier()
+	 * @see IRestCall#getMethod()
+	 * @see IRestResourceRepresentationFactory
+	 */
+	private Object getResourceRepresentation(final IRestCall restCall, HttpMethod httpMethod) throws ParseException,
+			IOException {
+		Object response = null;
+		BundleContext context = Activator.getDefault().getContext();
+		ServiceReference serviceReference = context.getServiceReference(IRestResourceRepresentationFactory.class
+				.getName());
+		if (serviceReference != null) {
+			IRestResourceRepresentationFactory factory = (IRestResourceRepresentationFactory) context
+					.getService(serviceReference);
+			response = factory.createResourceRepresentation(httpMethod, restCall);
+		}
+		return response;
+	}
+
+	protected void handleRequestHeaders(HttpMethod httpMethod,
+			Map requestHeaders) {
 		if(requestHeaders != null) {
 			Set keySet = requestHeaders.keySet();
 			Object[] headers = keySet.toArray();
