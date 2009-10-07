@@ -18,6 +18,7 @@ import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.eclipse.osgi.util.NLS;
+import org.osgi.framework.ServiceException;
 
 public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
@@ -88,38 +89,43 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
 		// methods declared by Object
-		if (method.getName().equals("toString")) { //$NON-NLS-1$
-			final String[] clazzes = registration.getClasses();
-			String proxyClass = (clazzes.length == 1) ? clazzes[0] : Arrays.asList(clazzes).toString();
-			return proxyClass + ".proxy@" + registration.getID(); //$NON-NLS-1$
-		} else if (method.getName().equals("hashCode")) { //$NON-NLS-1$
-			return new Integer(hashCode());
-		} else if (method.getName().equals("equals")) { //$NON-NLS-1$
-			if (args == null || args.length == 0)
-				return Boolean.FALSE;
-			try {
-				return new Boolean(Proxy.getInvocationHandler(args[0]).equals(this));
-			} catch (IllegalArgumentException e) {
-				return Boolean.FALSE;
+		try {
+			if (method.getName().equals("toString")) { //$NON-NLS-1$
+				final String[] clazzes = registration.getClasses();
+				String proxyClass = (clazzes.length == 1) ? clazzes[0] : Arrays.asList(clazzes).toString();
+				return proxyClass + ".proxy@" + registration.getID(); //$NON-NLS-1$
+			} else if (method.getName().equals("hashCode")) { //$NON-NLS-1$
+				return new Integer(hashCode());
+			} else if (method.getName().equals("equals")) { //$NON-NLS-1$
+				if (args == null || args.length == 0)
+					return Boolean.FALSE;
+				try {
+					return new Boolean(Proxy.getInvocationHandler(args[0]).equals(this));
+				} catch (IllegalArgumentException e) {
+					return Boolean.FALSE;
+				}
+				// This handles the use of IRemoteServiceProxy.getRemoteService method
+			} else if (method.getName().equals("getRemoteService")) { //$NON-NLS-1$
+				return this;
 			}
-			// This handles the use of IRemoteServiceProxy.getRemoteService method
-		} else if (method.getName().equals("getRemoteService")) { //$NON-NLS-1$
-			return this;
+			return this.callSync(new IRemoteCall() {
+
+				public String getMethod() {
+					return method.getName();
+				}
+
+				public Object[] getParameters() {
+					return args;
+				}
+
+				public long getTimeout() {
+					return DEFAULT_TIMEOUT;
+				}
+			});
+		} catch (Throwable t) {
+			// rethrow as service exception
+			throw new ServiceException("Service exception on remote service proxy rsid=" + registration.getID(), ServiceException.REMOTE, t); //$NON-NLS-1$
 		}
-		return this.callSync(new IRemoteCall() {
-
-			public String getMethod() {
-				return method.getName();
-			}
-
-			public Object[] getParameters() {
-				return args;
-			}
-
-			public long getTimeout() {
-				return DEFAULT_TIMEOUT;
-			}
-		});
 	}
 
 }
