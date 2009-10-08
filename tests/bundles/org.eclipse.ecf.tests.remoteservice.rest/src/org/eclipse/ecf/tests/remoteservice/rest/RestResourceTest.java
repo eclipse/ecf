@@ -11,17 +11,19 @@
 package org.eclipse.ecf.tests.remoteservice.rest;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.remoteservice.rest.IRestResourceRepresentationFactory;
 import org.eclipse.ecf.remoteservice.rest.util.DSUtil;
 import org.eclipse.ecf.tests.remoteservice.Activator;
+import org.eclipse.equinox.concurrent.future.IExecutor;
+import org.eclipse.equinox.concurrent.future.IFuture;
+import org.eclipse.equinox.concurrent.future.IProgressRunnable;
+import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -70,8 +72,8 @@ public class RestResourceTest extends TestCase {
 	}
 
 	private void waitForBundleState(final Bundle bundle, final int bundleState) {
-		Runnable runnable = new Runnable() {
-			public void run() {
+		final IProgressRunnable runnable = new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) {
 				while (bundle.getState() != bundleState) {
 					System.err.println("waiting for state " + bundleState
 							+ ": current state = " + bundle.getState());
@@ -81,10 +83,11 @@ public class RestResourceTest extends TestCase {
 						e.printStackTrace();
 					}
 				}
+				return null;
 			}
 		};
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		Future future = executor.submit(Executors.callable(runnable));
+		IExecutor executor = new ThreadsExecutor();
+		IFuture future = executor.execute(runnable, null);
 		// wait for bundle state
 		try {
 			future.get();
