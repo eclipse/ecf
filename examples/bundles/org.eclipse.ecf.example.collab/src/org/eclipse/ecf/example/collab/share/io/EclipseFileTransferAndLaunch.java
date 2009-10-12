@@ -32,11 +32,8 @@ public class EclipseFileTransferAndLaunch extends EclipseFileTransfer {
 			senderUI.sendDone(transferParams.getRemoteFile(), e);
 		// Now launch file locally, if it's sucessful
 		if (e == null) {
-			String senderPath = ((EclipseCollabSharedObject) getContext()
-					.getSharedObjectManager().getSharedObject(sharedObjectID))
-					.getLocalFullDownloadPath();
-			launchFile(new File(new File(senderPath), transferParams
-					.getRemoteFile().getName()).getAbsolutePath());
+			String senderPath = ((EclipseCollabSharedObject) getContext().getSharedObjectManager().getSharedObject(sharedObjectID)).getLocalFullDownloadPath();
+			launchFile(new File(new File(senderPath), transferParams.getRemoteFile().getName()).getAbsolutePath());
 		}
 	}
 
@@ -47,18 +44,9 @@ public class EclipseFileTransferAndLaunch extends EclipseFileTransfer {
 			ClientPlugin.log(MessageLoader.getFormattedString("EclipseFileTransferAndLaunch.EXCEPTION_LAUNCHING", localFile), e1); //$NON-NLS-1$
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					MessageDialog
-							.openInformation(
-									null,
-									MessageLoader
-											.getString(MessageLoader.getString("EclipseFileTransferAndLaunch.PROGRAM_LAUNCH_MSGBOX_TITLE")), //$NON-NLS-1$
-									MessageLoader
-											.getString(NLS
-													.bind(
-															MessageLoader.getString("EclipseFileTransferAndLaunch.PROGRAM_LAUNCH_MSGBOX_TEXT"), //$NON-NLS-1$
-															localFile
-																	.getAbsolutePath(),
-															e1.getMessage())));
+					MessageDialog.openInformation(null, MessageLoader.getString("EclipseFileTransferAndLaunch.PROGRAM_LAUNCH_MSGBOX_TITLE"), //$NON-NLS-1$
+							NLS.bind(MessageLoader.getString("EclipseFileTransferAndLaunch.PROGRAM_LAUNCH_MSGBOX_TEXT"), //$NON-NLS-1$
+									localFile.getAbsolutePath(), e1.getMessage()));
 				}
 			});
 		}

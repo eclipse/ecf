@@ -33,17 +33,6 @@ public class Messages extends NLS {
 	public static String CollabClient_WORKSPACE_NAME;
 	public static String CollabStart_EXCEPTION_STARTING_CONNECTION;
 	public static String CollabStart_STATUS_OK_MESSAGE;
-	public static String ConnectionDialog_AUTOLOGIN_TEXT;
-	public static String ConnectionDialog_CHOOSE_PROVIDER_MESSAGE;
-	public static String ConnectionDialog_CONNECT_PAGE_TITLE;
-	public static String ConnectionDialog_CONNECT_TEXT;
-	public static String ConnectionDialog_CONNECTION_TITLE;
-	public static String ConnectionDialog_JOIN_GROUP_FIELD_TEXT;
-	public static String ConnectionDialog_NICKNAME_TEXT;
-	public static String ConnectionDialog_PASSWORD_TEXT;
-	public static String ConnectionDialog_PROTOCOL_TEXT;
-	public static String ConnectionDialog_SELECT_PROVIDER_DESCRIPTION;
-	public static String ConnectionDialog_TEMPLATE_URL;
 	public static String EclipseCollabHyperlink_EXCEPTION_OPEN_EDITOR;
 	public static String EclipseCollabHyperlink_EXCEPTION_OPEN_EDITOR_TITLE;
 	public static String EclipseCollabHyperlink_MESSAGE_EXCEPTION_OPEN_EDITOR;
@@ -95,10 +84,8 @@ public class Messages extends NLS {
 	public static String OpenSharedEditorAction_DIALOG_NOT_CONNECTED_TITLE;
 	public static String SetSharedEditorSelectionAction_DIALOG_NOT_CONNECTED_TEXT;
 	public static String SetSharedEditorSelectionAction_DIALOG_NOT_CONNECTED_TITLE;
-	public static String SharedObjectContainerUI_JAVA_VERSION_LABEL;
 	public static String SharedObjectContainerUI_LANGUAGE_LABEL;
 	public static String SharedObjectContainerUI_OS_LABEL;
-	public static String SharedObjectContainerUI_OSGI_VERSION_LABEL;
 	public static String SharedObjectContainerUI_PROJECT_LABEL;
 	public static String SharedObjectContainerUI_TIME_LABEL;
 	public static String SharedObjectContainerUI_TIME_ZONE_LABEL;
