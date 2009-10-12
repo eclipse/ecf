@@ -29,8 +29,6 @@ public class Messages extends NLS {
 
 	public static String AbstractConnectWizardPage_USERNAME_LABEL;
 
-	public static String AsynchContainerConnectAction_EXCEPTION_CONNECT;
-
 	public static String AsynchContainerConnectAction_JOB_NAME;
 
 	public static String AsynchContainerConnectAction_MONITOR_BEGIN_TASK;
@@ -60,32 +58,6 @@ public class Messages extends NLS {
 	public static String Select;
 
 	public static String ConfigurationWizard_title;
-
-	public static String ConnectWizard_title;
-
-	public static String RosterView_ReceiveFile_title;
-
-	public static String RosterView_ReceiveFile_message;
-
-	public static String RosterView_ReceiveFile_filesavetitle;
-
-	public static String RosterView_ReceiveFile_acceptexception_title;
-
-	public static String RosterView_ReceiveFile_acceptexception_message;
-
-	public static String RosterView_SendFile_title;
-
-	public static String RosterView_SendFile_response_title;
-
-	public static String RosterView_SendFile_response_message;
-
-	public static String RosterView_SendFile_requestexception_title;
-
-	public static String RosterView_SendFile_requestexception_message;
-
-	public static String RosterView_SendIM_menutext;
-
-	public static String RosterView_SendFile_menutext;
 
 	public static String AbstractURIHyperlink_EXCEPTION_HYPERLINK;
 
