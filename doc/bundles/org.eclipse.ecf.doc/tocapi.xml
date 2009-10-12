@@ -35,6 +35,7 @@ args[0] is C:\Documents and Settings\slewis\workspace.ecf.rt\org.eclipse.ecf.doc
 <topic label="org.eclipse.ecf.example.clients" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/example/clients/package-summary.html"/>
 <topic label="org.eclipse.ecf.example.clients.applications" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/example/clients/applications/package-summary.html"/>
 <topic label="org.eclipse.ecf.examples.provider.trivial" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/examples/provider/trivial/package-summary.html"/>
+<topic label="org.eclipse.ecf.examples.remoteservices.hello" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/examples/remoteservices/hello/package-summary.html"/>
 <topic label="org.eclipse.ecf.filetransfer" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/filetransfer/package-summary.html"/>
 <topic label="org.eclipse.ecf.filetransfer.events" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/filetransfer/events/package-summary.html"/>
 <topic label="org.eclipse.ecf.filetransfer.events.socket" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/filetransfer/events/socket/package-summary.html"/>
@@ -44,6 +45,7 @@ args[0] is C:\Documents and Settings\slewis\workspace.ecf.rt\org.eclipse.ecf.doc
 <topic label="org.eclipse.ecf.filetransfer.ui" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/filetransfer/ui/package-summary.html"/>
 <topic label="org.eclipse.ecf.filetransfer.ui.actions" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/filetransfer/ui/actions/package-summary.html"/>
 <topic label="org.eclipse.ecf.osgi.services.discovery" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/osgi/services/discovery/package-summary.html"/>
+<topic label="org.eclipse.ecf.osgi.services.discovery.local" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/osgi/services/discovery/local/package-summary.html"/>
 <topic label="org.eclipse.ecf.osgi.services.distribution" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/osgi/services/distribution/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.bot" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/bot/package-summary.html"/>
@@ -88,6 +90,7 @@ args[0] is C:\Documents and Settings\slewis\workspace.ecf.rt\org.eclipse.ecf.doc
 <topic label="org.eclipse.ecf.provider.jmdns.identity" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/jmdns/identity/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.jslp.container" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/jslp/container/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.jslp.identity" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/jslp/identity/package-summary.html"/>
+<topic label="org.eclipse.ecf.provider.localdiscovery" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/localdiscovery/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.r_osgi.identity" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/r_osgi/identity/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.remoteservice" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/remoteservice/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.remoteservice.generic" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/remoteservice/generic/package-summary.html"/>
@@ -96,7 +99,12 @@ args[0] is C:\Documents and Settings\slewis\workspace.ecf.rt\org.eclipse.ecf.doc
 <topic label="org.eclipse.ecf.provider.xmpp" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/xmpp/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.xmpp.identity" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/xmpp/identity/package-summary.html"/>
 <topic label="org.eclipse.ecf.remoteservice" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservice/package-summary.html"/>
+<topic label="org.eclipse.ecf.remoteservice.eventadmin" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservice/eventadmin/package-summary.html"/>
 <topic label="org.eclipse.ecf.remoteservice.events" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservice/events/package-summary.html"/>
+<topic label="org.eclipse.ecf.remoteservice.rest" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservice/rest/package-summary.html"/>
+<topic label="org.eclipse.ecf.remoteservice.rest.identity" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservice/rest/identity/package-summary.html"/>
+<topic label="org.eclipse.ecf.remoteservice.rest.resource" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservice/rest/resource/package-summary.html"/>
+<topic label="org.eclipse.ecf.remoteservice.rest.util" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservice/rest/util/package-summary.html"/>
 <topic label="org.eclipse.ecf.remoteservice.util" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservice/util/package-summary.html"/>
 <topic label="org.eclipse.ecf.remoteservice.util.tracker" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservice/util/tracker/package-summary.html"/>
 <topic label="org.eclipse.ecf.remoteservices.ui" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/remoteservices/ui/package-summary.html"/>
