@@ -29,7 +29,6 @@ public class Messages extends NLS {
 	public static String ClientSOContainer_Connect_Failed_Incorrect_State;
 	public static String ClientSOContainer_Container_Closing;
 	public static String ClientSOContainer_Currently_Connecting;
-	public static String ClientSOContainer_Exception_Connecting;
 	public static String ClientSOContainer_Exception_ID_Array_Null;
 	public static String ClientSOContainer_EXCEPTION_TARGETID_NOT_NULL;
 	public static String ClientSOContainer_Invalid_Server_Response;
