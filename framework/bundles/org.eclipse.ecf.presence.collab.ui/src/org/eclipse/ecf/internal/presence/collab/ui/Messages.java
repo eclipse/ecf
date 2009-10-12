@@ -31,7 +31,6 @@ public class Messages extends NLS {
 	public static String URLShare_EXCEPTION_LOG_BROWSER;
 	public static String Share_EXCEPTION_LOG_MESSAGE;
 	public static String Share_EXCEPTION_LOG_SEND;
-	public static String ShareReceiversECFStart_STATUS_CAPTURESHARE_NOT_CREATED;
 	public static String ShareReceiversECFStart_STATUS_SCREENCAPTURESHARE_NOT_CREATED;
 	public static String ShareReceiversECFStart_STATUS_VIEWSHARE_NOT_CREATED;
 	public static String URLShare_INPUT_URL_DIALOG_TITLE;
