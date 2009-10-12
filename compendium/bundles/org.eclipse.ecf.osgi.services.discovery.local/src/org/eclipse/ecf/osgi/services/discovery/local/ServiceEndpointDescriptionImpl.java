@@ -271,10 +271,6 @@ public class ServiceEndpointDescriptionImpl implements
 		}
 	}
 
-	/**
-	 * 
-	 * @see org.osgi.impl.service.discovery.ProtocolSpecificServiceDescription#getLocation()
-	 */
 	public URI getLocation() {
 		Object uriObject = getProperty(ServicePublication.ENDPOINT_LOCATION);
 		if (uriObject instanceof URI) {
@@ -296,7 +292,7 @@ public class ServiceEndpointDescriptionImpl implements
 
 	/**
 	 * 
-	 * @return
+	 * @return Collection
 	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getPropertyKeys()
 	 */
 	public Collection getPropertyKeys() {
@@ -331,7 +327,7 @@ public class ServiceEndpointDescriptionImpl implements
 	/**
 	 * 
 	 * @param javaInterfaceName
-	 * @return
+	 * @return String
 	 */
 	public static String convertJavaInterface2Path(
 			final String javaInterfaceName) {
@@ -342,7 +338,7 @@ public class ServiceEndpointDescriptionImpl implements
 	/**
 	 * 
 	 * @param interfaceNameEncodedAsPath
-	 * @return
+	 * @return String
 	 */
 	public static String convertPath2JavaInterface(
 			final String interfaceNameEncodedAsPath) {

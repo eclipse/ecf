@@ -79,9 +79,9 @@ public class FileBasedDiscoveryImpl implements Discovery {
 	/**
 	 * Constructor.
 	 * 
-	 * @param context
+	 * @param bc
 	 *            the BundleContext of the containing bundle.
-	 * @param logService
+	 * @param logger
 	 *            a LogService instance
 	 */
 	public FileBasedDiscoveryImpl(final BundleContext bc,
@@ -201,7 +201,7 @@ public class FileBasedDiscoveryImpl implements Discovery {
 	}
 
 	/**
-	 * @param logService
+	 * @param logger
 	 *            the reference to the LogService which get called for logging
 	 * 
 	 */

@@ -44,7 +44,6 @@ public class DSTTracker implements ServiceTrackerCustomizer {
 	/**
 	 * 
 	 * @param ctx
-	 * @param disco
 	 */
 	public DSTTracker(final BundleContext ctx) {
 		context = ctx;
