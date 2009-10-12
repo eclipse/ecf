@@ -18,10 +18,6 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.examples.updatesite.client.messages"; //$NON-NLS-1$
-	public static String UpdateSiteServiceAccessHandler_OPEN_BROWSER_MENU_TEXT;
-	public static String UpdateSiteServiceAccessHandler_OPEN_INSTALLER_MENU_TEXT;
-	public static String UpdateSiteServiceAccessHandler_UPDATESITE_INDEX_HTML;
-	public static String UpdateSiteServiceAccessHandler_UPDATESITE_SERVICE;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
