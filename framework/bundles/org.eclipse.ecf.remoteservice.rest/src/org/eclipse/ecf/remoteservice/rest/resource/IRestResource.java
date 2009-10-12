@@ -11,6 +11,8 @@ package org.eclipse.ecf.remoteservice.rest.resource;
 
 import java.text.ParseException;
 
+import org.eclipse.ecf.remoteservice.rest.IRestCall;
+
 /**
  * This interface can be used to register services for the resource representation creation process.
  * A sample implementation can be found on {@link XMLResource} for XML.
@@ -20,9 +22,9 @@ public interface IRestResource {
 	/**
 	 * Returns the identifier of this resource. This is used to check which resource
 	 * should be used to parse a response from a IRestCall. Therefore the result from
-	 * {@link IRestCall#getEstimatedIdentifier} will be compared with the result of this method.
+	 * {@link IRestCall#getEstimatedResourceIdentifier()} will be compared with the result of this method.
 	 * 
-	 * @return the identifier for this resource. Cannot be <code>null</code>
+	 * @return the identifier for this resource. Cannot be <code>null</code>.
 	 */
 	public String getIdentifier();
 	
@@ -31,7 +33,7 @@ public interface IRestResource {
 	 * can be registered with a normal OSGi service.
 	 * 
 	 * @param responseBody the string representation from the response.
-	 * @return the parsed response. Can be <code>null</code>
+	 * @return the parsed response. Can be <code>null</code>.
 	 */
 	public Object createRepresentation(String responseBody) throws ParseException;	
 
