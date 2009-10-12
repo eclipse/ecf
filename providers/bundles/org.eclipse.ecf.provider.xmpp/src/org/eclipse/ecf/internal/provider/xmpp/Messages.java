@@ -36,10 +36,6 @@ public class Messages extends NLS {
 	public static String XMPPContainer_UNEXPECTED_XMPP_MESSAGE;
 	public static String XMPPContainer_UNRECOGONIZED_CONTAINER_MESSAGE;
 	public static String XMPPContainer_UNRECOGONIZED_SEARCH_SERVICE;
-	public static String XMPPFileID_EXCEPTION_FILE_IDS_NOT_URLS;
-	public static String XMPPFileNamespace_EXCEPTION_FILEID_FILENAME_NOT_NULL;
-	public static String XMPPFileNamespace_EXCEPTION_FILEID_TARGETID_NOT_NULL;
-	public static String XMPPFileNamespace_EXCEPTION_INVALID_FILEID_PARAMETERS;
 	public static String XMPPID_EXCEPTION_HOST_PORT_NOT_VALID;
 	public static String XMPPID_EXCEPTION_INVALID_PORT;
 	public static String XMPPID_EXCEPTION_XMPPID_USERNAME_NOT_NULL;
