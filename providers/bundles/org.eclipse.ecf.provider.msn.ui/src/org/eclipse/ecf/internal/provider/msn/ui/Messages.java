@@ -16,8 +16,6 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.msn.ui.messages"; //$NON-NLS-1$
 
-	public static String MSNConnectWizard_CannotCreateTargetID;
-
 	public static String MSNConnectWizardPage_Title;
 	public static String MSNConnectWizardPage_EmailAddressRequired;
 	public static String MSNConnectWizardPage_EmailAddressInvalid;
