@@ -110,7 +110,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		SharedObjectTypeDescription res = getDescription0(name);
 		if (res == null) {
 			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Shared_Object + name + Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
-			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectFactory_SharedObjectCreateException_X_Not_Found, name));
+			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectFactory_SharedObjectDescription_X_Not_Found, name));
 		}
 		return res;
 	}

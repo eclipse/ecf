@@ -27,10 +27,6 @@ public class Messages extends NLS {
 	//public static String SharedObjectFactory_Exception_Create_Instantiator;
 	//public static String SharedObjectFactory_Exception_Create_Instantiator_Null;
 	public static String SharedObjectFactory_Exception_Create_Instantiator_X_Null;
-	//public static String SharedObjectFactory_Exception_Create_Shared_Objec;
-	//public static String SharedObjectFactory_Exception_Create_Shared_Object;
-	//public static String SharedObjectFactory_Exception_Create_Shared_Object_Not_Found;
-	public static String SharedObjectFactory_SharedObjectCreateException_X_Not_Found;
 	public static String SharedObjectFactory_SharedObjectDescription_X_Not_Found;
 	public static String SharedObjectFactory_Exception_Create_With_Description;
 	public static String SharedObjectMsg_Exception_Methodname_Not_Null;
