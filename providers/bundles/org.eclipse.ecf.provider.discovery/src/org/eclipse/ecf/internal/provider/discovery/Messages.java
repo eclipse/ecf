@@ -15,7 +15,6 @@ import org.eclipse.osgi.util.NLS;
 public final class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.discovery.messages"; //$NON-NLS-1$
 	public static String CompositeDiscoveryContainer_AlreadyConnected;
-	public static String CompositeDiscoveryContainer_DEPRECATED;
 	public static String CompositeDiscoveryContainerInstantiator;
 	public static String CompositeNamespace_WrongParameterCount;
 	public static String CompositeNamespace_WrongParameters;
