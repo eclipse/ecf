@@ -53,7 +53,6 @@ public class Messages extends NLS {
 	public static String UrlConnectionRetrieveFileTransfer_USERNAME_PROMPT;
 	public static String UrlConnectionOutgoingFileTransfer_EXCEPTION_COULD_NOT_CONNECT;
 	public static String FileSystemBrowser_EXCEPTION_DIRECTORY_DOES_NOT_EXIST;
-	public static String FileTransferNamespace_Exception_Args_Null;
 	public static String FileTransferNamespace_Exception_Create_Instance;
 	public static String FileTransferNamespace_Exception_Create_Instance_Failed;
 	public static String FileTransferNamespace_File_Protocol;
