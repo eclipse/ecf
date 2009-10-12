@@ -71,17 +71,11 @@ public class Messages extends NLS {
 
 	public static String ChatRoomManagerView_LEFT_MESSAGE;
 
-	public static String ChatRoomManagerView_JOIN_COMMAND;
-
 	public static String ChatRoomManagerView_MESSAGE;
 
 	public static String ChatRoomManagerView_NOT_CONNECTED_MESSAGE;
 
 	public static String ChatRoomManagerView_NOT_CONNECTED_TITLE;
-
-	public static String ChatRoomManagerView_QUIT_COMMAND;
-
-	public static String ChatRoomManagerView_PART_COMMAND;
 
 	public static String ChatRoomManagerView_SELECT_ALL_TEXT;
 
@@ -117,21 +111,7 @@ public class Messages extends NLS {
 
 	public static String ChatRoomSelectionDialog_TITLE;
 
-	public static String ChatRoomView_DATE_FORMAT;
-
-	public static String ChatRoomView_NOT_CONNECTED_MESSAGE;
-
-	public static String ChatRoomView_NOT_CONNECTED_TITLE;
-
-	public static String ChatRoomView_TIME_FORMAT;
-
-	public static String ChatRoomView_TITLE_TOOLTiP_PREFIX;
-
-	public static String ChatRoomView_VIEW_NAME_PREFIX;
-
 	public static String MessagesView_WARNING_HYPERLINKING_NOT_AVAILABLE;
-
-	public static String MultiRosterView_CHANGE_PASSWORD_EXCEPTION;
 
 	public static String MultiRosterView_CHANGE_PASSWORD_MENU;
 
@@ -158,10 +138,6 @@ public class Messages extends NLS {
 	public static String MultiRosterView_EXCEPTION_JOIN_ROOM_NOT_CONNECTED;
 
 	public static String MultiRosterView_EXCEPTION_LOG_JOIN_ROOM;
-
-	public static String MultiRosterView_EXCEPTION_USER_CANCELLED;
-
-	public static String MultiRosterView_NICKNAME_MESSAGE;
 
 	public static String MultiRosterView_NO_IDENTIFIER_FOR_ROOM_MESSAGE;
 
@@ -212,15 +188,10 @@ public class Messages extends NLS {
 	public static String AddContactDialog_Account;
 
 	public static String SearchContactDialog_DialogTitle;
-	public static String SearchContactDialog;
-	public static String SearchContactDialog_InfoSearching;
 	public static String SearchContactDialog_InfoSearchFields;
 	public static String SearchContactDialog_InfoContactFields;
 	public static String SearchContactDialog_ButtonSearch;
-	public static String SearchContactDialog_ButtonStop;
 	public static String SearchContactDialog_ButtonAddContact;
-
-	public static String SearchContactDialog_ContactInfo;
 
 	public static String SearchContactDialog_AddContactMessage;
 
@@ -241,8 +212,6 @@ public class Messages extends NLS {
 	public static String SearchContactDialog_UserSearchJobName;
 
 	public static String ReceiveAuthorizeRequestDialog_AUTH_REQUEST_FROM;
-
-	public static String ReceiveAuthorizeRequestDialog_BUTTON_AUTHORIZE_AND_ADD;
 
 	public static String ReceiveAuthorizeRequestDialog_BUTTON_AUTHORIZE_ONLY;
 
