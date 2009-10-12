@@ -27,7 +27,6 @@ public class Messages extends NLS {
 	public static String IRCConnectWizardPage_STATUS_MESSAGE_MALFORMED;
 	public static String IRCConnectWizardPage_WIZARD_PAGE_DESCRIPTION;
 	public static String IRCConnectWizardPage_WIZARD_PAGE_TITLE;
-	public static String IRCHyperlink_EXCEPTION_IRC_HYPERLINK;
 	public static String IRCUI_DEPART_CONFIRM_MESSAGE;
 	public static String IRCUI_DEPART_CONFIRM_TITLE;
 	public static String IRCUI_DISCONNECT_CONFIRM_MESSAGE;
