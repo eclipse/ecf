@@ -50,11 +50,9 @@ public class Messages extends NLS {
 	public static String XMPPHyperlink_SELECT_ACTION_DIALOG_TITLE;
 
 	public static String XMPPSConnectWizardPage_WIZARD_PAGE_TITLE;
-	public static String XMPPSConnectWizardPage_WIZARD_PAGE_USERID;
 	public static String XMPPSConnectWizardPage_WIZARD_PAGE_STATUS;
 	public static String XMPPConnectWizardPage_LABEL_USERID;
 	public static String XMPPConnectWizard_FILE_SAVE_TITLE;
-	public static String XMPPConnectWizard_SEE_DETAILS;
 	public static String XMPPConnectWizardPage_WIZARD_STATUS;
 	public static String XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE;
 	public static String XMPPConnectWizardPage_USERID_TEMPLATE;
