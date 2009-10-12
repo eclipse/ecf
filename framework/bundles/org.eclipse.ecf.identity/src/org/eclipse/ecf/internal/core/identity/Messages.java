@@ -18,8 +18,6 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.core.identity.messages"; //$NON-NLS-1$
-	public static String Base64_Input_Data_Not_Null;
-	public static String Base64_Invalid_Value;
 	public static String GUID_GUID_Creation_Failure;
 	public static String GUID_GUID_Namespace_Description_Default;
 	public static String GUID_IBM_SECURE_RANDOM;
