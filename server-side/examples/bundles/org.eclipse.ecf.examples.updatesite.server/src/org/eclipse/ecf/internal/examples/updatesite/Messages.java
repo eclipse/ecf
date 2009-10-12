@@ -18,7 +18,6 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.examples.updatesite.messages"; //$NON-NLS-1$
-	public static String Activator_UPDATE_SITE_SERVICE;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
