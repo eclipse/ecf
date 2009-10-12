@@ -2,6 +2,4 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Concepts" link_to="toc.xml#concepts">
-	<topic label="Introduction" href="html/concepts/intro.html"/>
-	<topic label="ECF Architecture" href="http://www.eclipse.org/ecf/documentation.php"/>
 </toc>

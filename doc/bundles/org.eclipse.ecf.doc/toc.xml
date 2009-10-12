@@ -8,9 +8,6 @@
    <topic label="Tips and Tricks" href="http://wiki.eclipse.org/ECF_Tips_Tricks"/>
    <topic label="What's New and Noteworthy" href="http://www.eclipse.org/ecf/NewAndNoteworthy.html"/>
    <topic label="Legal" href="notices.html"/>
-   <topic label="API Concepts">
-      <anchor id="concepts"/>
-   </topic>
    <topic label="Programmer's Reference">
       <anchor id="reference"/>
    </topic>
