@@ -18,9 +18,6 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.discovery.messages"; //$NON-NLS-1$
-	public static String ServiceInfo_EXCEPTION_INVALID_HOST_ARG;
-	public static String ServiceInfo_EXCEPTION_NO_LOCALHOST;
-	public static String ServiceTypeID_EXCEPTION_SERVICE_TYPE_ID_NOT_NULL;
 	public static String ServiceTypeID_EXCEPTION_SERVICE_TYPE_ID_NOT_PARSEABLE;
 	static {
 		// initialize resource bundle
