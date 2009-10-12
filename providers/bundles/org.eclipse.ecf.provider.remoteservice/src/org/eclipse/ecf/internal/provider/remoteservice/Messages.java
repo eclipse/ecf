@@ -18,7 +18,6 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.remoteservice.messages"; //$NON-NLS-1$
-	public static String RegistrySharedObject_14;
 	public static String RegistrySharedObject_15;
 	public static String RegistrySharedObject_19;
 	public static String RegistrySharedObject_7;
@@ -42,7 +41,6 @@ public class Messages extends NLS {
 	public static String RegistrySharedObject_EXCEPTION_SHARED_OBJECT_INVOKE;
 	public static String RegistrySharedObject_EXCEPTION_TIMEOUT_FOR_CALL_REQUEST;
 	public static String RegistrySharedObject_EXCEPTION_WAIT_INTERRUPTED;
-	public static String RegistrySharedObject_GET_REMOTE_REF_JOB_NAME;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
