@@ -22,6 +22,7 @@
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.datashare"/>
+      <plugin id="org.eclipse.ecf.provider.jgroups"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
