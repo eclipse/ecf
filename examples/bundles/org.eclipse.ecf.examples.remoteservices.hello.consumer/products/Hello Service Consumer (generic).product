@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="R-OSGI Hello Consumer" uid="org.eclipse.ecf.examples.remoteservices.generichelloconsumer" application="org.eclipse.ecf.examples.remoteservices.hello.consumer.HelloConsumer" version="1.0.0" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -console</programArgs>
-      <vmArgs>-Declipse.ignoreApp=true -Dosgi.noShutdown=true
--DcontainerType=ecf.generic.client</vmArgs>
+      <programArgs>-containerType ecf.generic.client</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
@@ -27,6 +25,7 @@
       <plugin id="javax.servlet"/>
       <plugin id="org.eclipse.core.contenttype"/>
       <plugin id="org.eclipse.core.jobs"/>
+      <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
       <plugin id="org.eclipse.ecf"/>
       <plugin id="org.eclipse.ecf.discovery"/>
@@ -51,10 +50,5 @@
       <plugin id="org.eclipse.osgi.services"/>
    </plugins>
 
-   <configurations>
-      <plugin id="org.eclipse.ecf.examples.remoteservices.hello.consumer" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
-   </configurations>
 
 </product>
