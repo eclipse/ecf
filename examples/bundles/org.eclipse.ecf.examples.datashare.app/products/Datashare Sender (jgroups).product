@@ -7,8 +7,20 @@
    </configIni>
 
    <launcherArgs>
+      <programArgs>-containerType ecf.jgroups.client
+-targetId jgroups:///exampleChannel</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
+
+   <launcher>
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
 
    <plugins>
       <plugin id="org.eclipse.core.contenttype"/>
