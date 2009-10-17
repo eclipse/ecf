@@ -344,6 +344,40 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), new Object[] {containerID});
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String, java.lang.String)
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, String containerId) throws ContainerCreateException {
+		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerId);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String, java.lang.String, java.lang.Object[])
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, String containerId, Object[] parameters) throws ContainerCreateException {
+		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerId, parameters);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.String)
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId) throws ContainerCreateException {
+		return createContainer(containerTypeDescription, containerId, null);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.String, java.lang.Object[])
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId, Object[] parameters) throws ContainerCreateException {
+		if (containerId == null)
+			throw new ContainerCreateException("containerId cannot be null"); //$NON-NLS-1$
+		Object[] params = (parameters == null || parameters.length == 0) ? new Object[1] : new Object[parameters.length + 1];
+		params[0] = containerId;
+		if (parameters != null && parameters.length != 0)
+			System.arraycopy(parameters, 0, params, 1, parameters.length);
+		return createContainer(containerTypeDescription, params);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -503,4 +537,5 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 			}
 		}
 	}
+
 }
