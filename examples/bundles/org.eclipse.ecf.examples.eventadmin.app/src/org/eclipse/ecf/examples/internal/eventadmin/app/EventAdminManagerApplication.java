@@ -38,10 +38,10 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 		new Thread(testSender).start();
 
 		waitForDone();
-		
+
 		return IApplication.EXIT_OK;
 	}
-	
+
 	protected void shutdown() {
 		if (testSender != null) {
 			testSender.stop();
@@ -59,9 +59,10 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 	}
 
 	protected String usageParameters() {
-		StringBuffer buf = new StringBuffer("\n\t-containerType <default:"+DEFAULT_CONTAINER_TYPE+">");
-		buf.append("\n\t-containerId <default:"+DEFAULT_CONTAINER_ID+">");
-		buf.append("\n\t-topic <default:"+DEFAULT_TOPIC+">");
+		StringBuffer buf = new StringBuffer("\n\t-containerType <default:"
+				+ DEFAULT_CONTAINER_TYPE + ">");
+		buf.append("\n\t-containerId <default:" + DEFAULT_CONTAINER_ID + ">");
+		buf.append("\n\t-topic <default:" + DEFAULT_TOPIC + ">");
 		return buf.toString();
 	}
 

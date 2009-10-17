@@ -40,8 +40,7 @@ public class TestSender implements Runnable {
 				try {
 					wait(waittime);
 					Map msgProps = new Properties();
-					msgProps.put("message", "message #"
-							+ messageCounter++);
+					msgProps.put("message", "message #" + messageCounter++);
 					msgProps.put("sender", sender);
 					eventAdmin.postEvent(new Event(topic, msgProps));
 				} catch (Exception e) {
@@ -50,7 +49,7 @@ public class TestSender implements Runnable {
 			}
 		}
 	}
-	
+
 	public void stop() {
 		synchronized (this) {
 			done = true;

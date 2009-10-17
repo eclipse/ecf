@@ -52,28 +52,29 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	protected Object startup(IApplicationContext context) throws Exception {
 		// Get BundleContext
 		bundleContext = Activator.getContext();
-		
+
 		// Process Arguments
 		final String[] args = mungeArguments((String[]) context.getArguments()
 				.get("application.args")); //$NON-NLS-1$
 		processArgs(args);
-		
+
 		// Create event admin impl
 		eventAdminImpl = new DistributedEventAdmin(bundleContext);
-		
+
 		// Create, configure, and connect container
 		createConfigureAndConnectContainer();
-		
+
 		// start event admin
 		eventAdminImpl.start();
 		// register as EventAdmin service instance
 		Properties props = new Properties();
 		props.put(EventConstants.EVENT_TOPIC, topic);
-	    eventAdminRegistration = bundleContext.registerService("org.osgi.service.event.EventAdmin", eventAdminImpl,props);
-		
+		eventAdminRegistration = bundleContext.registerService(
+				"org.osgi.service.event.EventAdmin", eventAdminImpl, props);
+
 		return IApplication.EXIT_OK;
 	}
-	
+
 	protected void shutdown() {
 		if (eventAdminRegistration != null) {
 			eventAdminRegistration.unregister();
@@ -94,15 +95,16 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		}
 		bundleContext = null;
 	}
-	
+
 	protected Object run() {
 		waitForDone();
 		return IApplication.EXIT_OK;
 	}
-	
+
 	public Object start(IApplicationContext context) throws Exception {
 		Object startupResult = startup(context);
-		if (!startupResult.equals(IApplication.EXIT_OK)) return startupResult;
+		if (!startupResult.equals(IApplication.EXIT_OK))
+			return startupResult;
 		return run();
 	}
 
@@ -117,12 +119,14 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	}
 
 	protected void usage() {
-		System.out.println("Usage: eclipse.exe -application "+usageApplicationId()+" "+usageParameters());
+		System.out.println("Usage: eclipse.exe -application "
+				+ usageApplicationId() + " " + usageParameters());
 	}
-	
+
 	protected abstract String usageApplicationId();
+
 	protected abstract String usageParameters();
-	
+
 	protected abstract void processArgs(String[] args);
 
 	protected void waitForDone() {
@@ -149,16 +153,20 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		IContainerFactory containerFactory = getContainerManager()
 				.getContainerFactory();
 		container = (containerId == null) ? containerFactory
-		.createContainer(containerType) : containerFactory
-		.createContainer(containerType, new Object[] { containerId });
-		
+				.createContainer(containerType) : containerFactory
+				.createContainer(containerType, new Object[] { containerId });
+
 		// Get socontainer
-		ISharedObjectContainer soContainer = (ISharedObjectContainer) container.getAdapter(ISharedObjectContainer.class);
+		ISharedObjectContainer soContainer = (ISharedObjectContainer) container
+				.getAdapter(ISharedObjectContainer.class);
 		// Add to soContainer, with topic as name
-		soContainer.getSharedObjectManager().addSharedObject(IDFactory.getDefault().createStringID(topic), eventAdminImpl, null);
-		
+		soContainer.getSharedObjectManager().addSharedObject(
+				IDFactory.getDefault().createStringID(topic), eventAdminImpl,
+				null);
+
 		// then connect to target Id
-		if (targetId != null) container.connect(IDFactory.getDefault().createID(
+		if (targetId != null)
+			container.connect(IDFactory.getDefault().createID(
 					container.getConnectNamespace(), targetId), null);
 	}
 

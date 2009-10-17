@@ -22,10 +22,10 @@ public class EventAdminClientApplication extends AbstractEventAdminApplication {
 	private static final String DEFAULT_CONTAINER_TYPE = "ecf.jms.activemq.tcp.client";
 	private static final String DEFAULT_TOPIC = EventAdminManagerApplication.DEFAULT_TOPIC;
 	private static final String DEFAULT_CONTAINER_TARGET = EventAdminManagerApplication.DEFAULT_CONTAINER_ID;
-	
+
 	private TestSender testSender;
 	private ServiceRegistration testEventHandlerRegistration;
-	
+
 	protected Object run() {
 
 		// XXX for testing, setup an event handler
@@ -33,14 +33,15 @@ public class EventAdminClientApplication extends AbstractEventAdminApplication {
 		props.put(EventConstants.EVENT_TOPIC, "*");
 		testEventHandlerRegistration = bundleContext.registerService(
 				EventHandler.class.getName(), new TestEventHandler(), props);
-		
+
 		// XXX for testing, setup a test sender
-		testSender = new TestSender(eventAdminImpl, topic, container.getID().getName());
+		testSender = new TestSender(eventAdminImpl, topic, container.getID()
+				.getName());
 		new Thread(testSender).start();
-		
+
 		// Now just wait until we're stopped
 		waitForDone();
-		
+
 		return IApplication.EXIT_OK;
 	}
 
@@ -61,9 +62,10 @@ public class EventAdminClientApplication extends AbstractEventAdminApplication {
 	}
 
 	protected String usageParameters() {
-		StringBuffer buf = new StringBuffer("\n\t-containerType <default:"+DEFAULT_CONTAINER_TYPE+">");
-		buf.append("\n\t-targetId <default:"+DEFAULT_CONTAINER_TARGET+">");
-		buf.append("\n\t-topic <default:"+DEFAULT_TOPIC+">");
+		StringBuffer buf = new StringBuffer("\n\t-containerType <default:"
+				+ DEFAULT_CONTAINER_TYPE + ">");
+		buf.append("\n\t-targetId <default:" + DEFAULT_CONTAINER_TARGET + ">");
+		buf.append("\n\t-topic <default:" + DEFAULT_TOPIC + ">");
 		return buf.toString();
 	}
 
