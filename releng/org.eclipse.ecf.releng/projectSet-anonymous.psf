@@ -123,6 +123,12 @@
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.clients,org.eclipse.ecf.example.clients"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.collab,org.eclipse.ecf.example.collab"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.example.collab.editor,org.eclipse.ecf.example.collab.editor"/>
+    <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.datashare.app,org.eclipse.ecf.examples.datashare.app"/>
+    <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.eventadmin.app,org.eclipse.ecf.examples.eventadmin.app"/>
+    <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.remoteservices.hello,org.eclipse.ecf.examples.remoteservices.hello"/>
+    <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.consumer,org.eclipse.ecf.examples.remoteservices.hello.consumer"/>
+    <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.host,org.eclipse.ecf.examples.remoteservices.hello.host"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.provider.trivial,org.eclipse.ecf.examples.provider.trivial"/>
 
 	<!-- tests -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests,org.eclipse.ecf.tests"/>
