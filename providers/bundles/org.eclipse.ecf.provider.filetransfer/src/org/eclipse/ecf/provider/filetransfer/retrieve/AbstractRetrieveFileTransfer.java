@@ -66,8 +66,6 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
-	private static final int FILETRANSFER_ERRORCODE = 1001;
-
 	protected static final int POLLING_RETRY_ATTEMPTS = 20;
 
 	protected static final int TIMEOUT_INPUTSTREAM_BUFFER_SIZE = 8192;
@@ -247,12 +245,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	}
 
 	protected IStatus getFinalStatus(Throwable exception1) {
-		if (exception1 == null)
-			return new Status(IStatus.OK, Activator.PLUGIN_ID, 0, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK, null);
-		else if (exception1 instanceof UserCancelledException)
-			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled, exception1);
-		else
-			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception, exception1);
+		return Status.OK_STATUS;
 	}
 
 	protected void hardClose() {

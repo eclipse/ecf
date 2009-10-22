@@ -57,8 +57,6 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
-	private static final int FILETRANSFER_ERRORCODE = 1001;
-
 	protected Job job;
 
 	protected URL remoteFileURL;
@@ -151,12 +149,7 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	}
 
 	protected IStatus getFinalStatus(Throwable exception1) {
-		if (exception1 == null)
-			return new Status(IStatus.OK, Activator.getDefault().getBundle().getSymbolicName(), 0, Messages.AbstractOutgoingFileTransfer_Status_Transfer_Completed_OK, null);
-		else if (exception1 instanceof UserCancelledException)
-			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractOutgoingFileTransfer_Exception_User_Cancelled, exception1);
-		else
-			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractOutgoingFileTransfer_Status_Transfer_Exception, exception1);
+		return Status.OK_STATUS;
 	}
 
 	protected void hardClose() {
