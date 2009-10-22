@@ -49,6 +49,7 @@ public class FileTransferJob extends Job {
 	 */
 	public FileTransferJob(String name) {
 		super(name);
+		setSystem(true);
 	}
 
 	public final void setFileTransferRunnable(IFileTransferRunnable fileTransferRunnable) {
