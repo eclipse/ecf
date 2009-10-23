@@ -17,6 +17,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.util.*;
 import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.*;
@@ -175,7 +177,11 @@ public class ServerManager {
 
 	private TCPServerSOContainer createServerContainer(String id, TCPServerSOContainerGroup group, String path, int keepAlive) throws IDCreateException {
 		final ID newServerID = IDFactory.getDefault().createStringID(id);
-		return new TCPServerSOContainer(new SOContainerConfig(newServerID), group, path, keepAlive);
+		TCPServerSOContainer container = new TCPServerSOContainer(new SOContainerConfig(newServerID), group, path, keepAlive);
+		IContainerManager containerManager = Activator.getDefault().getContainerManager();
+		ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.server"); //$NON-NLS-1$
+		containerManager.addContainer(container, ctd);
+		return container;
 	}
 
 	private void registerServerForDiscovery(NamedGroup group, boolean pwrequired) {

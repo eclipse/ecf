@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.PermissionCollection;
 import java.util.*;
 import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectHandlerPolicy;
 import org.eclipse.ecf.internal.server.generic.Activator;
@@ -74,7 +75,9 @@ public abstract class AbstractGenericServer {
 		if (path == null || path.equals("")) //$NON-NLS-1$
 			throw new NullPointerException("Cannot create ID with null or empty path"); //$NON-NLS-1$
 		GenericServerContainer s = new GenericServerContainer(this, createServerConfig(path), serverGroup, path, keepAlive);
-		Activator.getDefault().getContainerManager().addContainer(s, new ContainerTypeDescription("", "", "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		IContainerManager containerManager = Activator.getDefault().getContainerManager();
+		ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.server"); //$NON-NLS-1$
+		containerManager.addContainer(s, ctd);
 		IConnectHandlerPolicy policy = createConnectHandlerPolicy(s, path);
 		if (policy != null)
 			s.setConnectPolicy(policy);
