@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.generic.GenericContainerInstantiator"
-            description="Generic Server Container Instantiator"
+            description="ECF Generic Server"
             name="ecf.generic.server"
             server="true">
       </containerFactory>
@@ -14,7 +14,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.generic.GenericContainerInstantiator"
-            description="ECF Generic"
+            description="ECF Generic Client"
             hidden="true"
             name="ecf.generic.client">
       </containerFactory>
