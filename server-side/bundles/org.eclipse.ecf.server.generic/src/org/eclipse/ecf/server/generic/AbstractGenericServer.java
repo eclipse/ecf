@@ -76,8 +76,10 @@ public abstract class AbstractGenericServer {
 			throw new NullPointerException("Cannot create ID with null or empty path"); //$NON-NLS-1$
 		GenericServerContainer s = new GenericServerContainer(this, createServerConfig(path), serverGroup, path, keepAlive);
 		IContainerManager containerManager = Activator.getDefault().getContainerManager();
-		ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.server"); //$NON-NLS-1$
-		containerManager.addContainer(s, ctd);
+		if (containerManager != null) {
+			ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.server"); //$NON-NLS-1$
+			containerManager.addContainer(s, ctd);
+		}
 		IConnectHandlerPolicy policy = createConnectHandlerPolicy(s, path);
 		if (policy != null)
 			s.setConnectPolicy(policy);

@@ -179,8 +179,10 @@ public class ServerManager {
 		final ID newServerID = IDFactory.getDefault().createStringID(id);
 		TCPServerSOContainer container = new TCPServerSOContainer(new SOContainerConfig(newServerID), group, path, keepAlive);
 		IContainerManager containerManager = Activator.getDefault().getContainerManager();
-		ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.server"); //$NON-NLS-1$
-		containerManager.addContainer(container, ctd);
+		if (containerManager != null) {
+			ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.server"); //$NON-NLS-1$
+			containerManager.addContainer(container, ctd);
+		}
 		return container;
 	}
 
