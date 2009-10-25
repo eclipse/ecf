@@ -20,4 +20,12 @@ public interface IRemoteServiceProxy {
 	 * if no IRemoteService available for proxy.
 	 */
 	IRemoteService getRemoteService();
+
+	/**
+	 * Get IRemoteService reference associated with this proxy.
+	 *
+	 * @return IRemoteServiceReference for this proxy.  May be <code>null</code>
+	 * if no IRemoteServiceReference associated with this proxy.
+	 */
+	IRemoteServiceReference getRemoteServiceReference();
 }
