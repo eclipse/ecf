@@ -107,6 +107,8 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 				// This handles the use of IRemoteServiceProxy.getRemoteService method
 			} else if (method.getName().equals("getRemoteService")) { //$NON-NLS-1$
 				return this;
+			} else if (method.getName().equals("getRemoteServiceReference")) { //$NON-NLS-1$
+				return registration.getReference();
 			}
 			return this.callSync(new IRemoteCall() {
 
