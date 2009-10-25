@@ -17,6 +17,7 @@ import java.util.Hashtable;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceProxy;
+import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.RemoteServiceHelper;
 import org.eclipse.ecf.remoteservice.util.tracker.RemoteServiceTracker;
 import org.eclipse.ecf.tests.remoteservice.AbstractServiceTrackerTest;
@@ -91,6 +92,9 @@ public class RemoteServiceProxyTest extends AbstractServiceTrackerTest {
 		if (concatService instanceof IRemoteServiceProxy) {
 			IRemoteService remoteService = ((IRemoteServiceProxy) concatService).getRemoteService();
 			assertNotNull(remoteService);
+			IRemoteServiceReference remoteServiceReference = ((IRemoteServiceProxy) concatService).getRemoteServiceReference();
+			assertNotNull(remoteServiceReference);
+			System.out.println("remote service reference found from proxy="+remoteServiceReference);
 			System.out.println("remoteserviceproxy call start");
 			Object result = RemoteServiceHelper.syncExec(remoteService, "concat" , new Object[] { "IRemoteServiceProxy ","is very cool" }, 20000);
 			System.out.println("remoteserviceproxy call end. result=" + result);
