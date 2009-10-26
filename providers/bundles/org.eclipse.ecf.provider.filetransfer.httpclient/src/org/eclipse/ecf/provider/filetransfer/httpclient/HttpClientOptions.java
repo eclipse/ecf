@@ -17,4 +17,19 @@ public interface HttpClientOptions {
 	// The property key is:  org.eclipse.ecf.provider.filetransfer.httpclient.options.ForceNTLMProxy
 	// The value of the property must be non-null, but is not otherwise used.
 	public String FORCE_NTLM_PROP = "org.eclipse.ecf.provider.filetransfer.httpclient.options.ForceNTLMProxy"; //$NON-NLS-1$
+
+	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
+	// 10/26/2009:  Added being able to set with system property with name org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout
+	// for https://bugs.eclipse.org/bugs/show_bug.cgi?id=292995
+	public static final int RETRIEVE_DEFAULT_CONNECTION_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout", "120000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
+	// 10/26/2009:  Added being able to set with system property with name org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout
+	// for https://bugs.eclipse.org/bugs/show_bug.cgi?id=292995
+	public static final int RETRIEVE_DEFAULT_READ_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout", "120000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+
+	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
+	// 10/26/2009:  Added being able to set with system property with name org.eclipse.ecf.provider.filetransfer.httpclient.browse.connectTimeout
+	// for https://bugs.eclipse.org/bugs/show_bug.cgi?id=292995
+	public static final int BROWSE_DEFAULT_CONNECTION_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.browse.connectTimeout", "120000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$;
+
 }

@@ -62,7 +62,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
 	// 10/26/2009:  Added being able to set with system property with name org.eclipse.ecf.provider.filetransfer.httpclient.browse.connectTimeout
 	// for https://bugs.eclipse.org/bugs/show_bug.cgi?id=292995
-	protected static final int DEFAULT_CONNECTION_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.browse.connectTimeout", "120000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$;
+	protected static final int DEFAULT_CONNECTION_TIMEOUT = HttpClientOptions.BROWSE_DEFAULT_CONNECTION_TIMEOUT;
 
 	private static final String USERNAME_PREFIX = "Username:"; //$NON-NLS-1$
 

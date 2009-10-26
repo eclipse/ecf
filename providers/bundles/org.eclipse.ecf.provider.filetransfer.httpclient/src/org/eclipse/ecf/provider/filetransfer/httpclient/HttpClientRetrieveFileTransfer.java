@@ -266,11 +266,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
 	// 10/26/2009:  Added being able to set with system property with name org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout
 	// for https://bugs.eclipse.org/bugs/show_bug.cgi?id=292995
-	protected static final int DEFAULT_CONNECTION_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout", "120000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	protected static final int DEFAULT_CONNECTION_TIMEOUT = HttpClientOptions.RETRIEVE_DEFAULT_CONNECTION_TIMEOUT;
 	// changing to 2 minutes (120000) as per bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=266246
 	// 10/26/2009:  Added being able to set with system property with name org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout
 	// for https://bugs.eclipse.org/bugs/show_bug.cgi?id=292995
-	protected static final int DEFAULT_READ_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout", "120000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	protected static final int DEFAULT_READ_TIMEOUT = HttpClientOptions.RETRIEVE_DEFAULT_READ_TIMEOUT;
 
 	protected static final int HTTP_PORT = 80;
 
@@ -563,6 +563,40 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return (System.getProperties().getProperty(HttpClientOptions.FORCE_NTLM_PROP) != null);
 	}
 
+	protected int getSocketReadTimeout() {
+		int result = DEFAULT_READ_TIMEOUT;
+		Map localOptions = getOptions();
+		if (localOptions != null) {
+			// See if the property is present, if so set
+			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout"); //$NON-NLS-1$
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).intValue();
+				} else if (o instanceof String) {
+					result = new Integer(((String) o)).intValue();
+				}
+			}
+		}
+		return result;
+	}
+
+	protected int getConnectTimeout() {
+		int result = DEFAULT_CONNECTION_TIMEOUT;
+		Map localOptions = getOptions();
+		if (localOptions != null) {
+			// See if the property is present, if so set
+			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout"); //$NON-NLS-1$
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).intValue();
+				} else if (o instanceof String) {
+					result = new Integer(((String) o)).intValue();
+				}
+			}
+		}
+		return result;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
@@ -575,9 +609,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		int code = -1;
 
 		try {
-			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_READ_TIMEOUT);
-			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
-			httpClient.getParams().setConnectionManagerTimeout(DEFAULT_CONNECTION_TIMEOUT);
+			httpClient.getHttpConnectionManager().getParams().setSoTimeout(getSocketReadTimeout());
+			int connectTimeout = getConnectTimeout();
+			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(connectTimeout);
+			httpClient.getParams().setConnectionManagerTimeout(connectTimeout);
 
 			setupAuthentication(urlString);
 
@@ -800,9 +835,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		int code = -1;
 
 		try {
-			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_READ_TIMEOUT);
-			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
-			httpClient.getParams().setConnectionManagerTimeout(DEFAULT_CONNECTION_TIMEOUT);
+			httpClient.getHttpConnectionManager().getParams().setSoTimeout(getSocketReadTimeout());
+			int connectTimeout = getConnectTimeout();
+			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(connectTimeout);
+			httpClient.getParams().setConnectionManagerTimeout(connectTimeout);
 
 			CredentialsProvider credProvider = new ECFCredentialsProvider();
 			setupAuthentication(urlString);
