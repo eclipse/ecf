@@ -18,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.security.Callback;
@@ -52,10 +53,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	private static final String DEFAULT_CONNECT_TIMEOUT = System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.connectTimeout", "15000"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private static final String JRE_READ_TIMEOUT_PROPERTY = "sun.net.client.defaultReadTimeout"; //$NON-NLS-1$
-
-	// 10/26/2009:  Added being able to set with system property with name org.eclipse.ecf.provider.filetransfer.readTimeout
-	// for https://bugs.eclipse.org/bugs/show_bug.cgi?id=292995
-	private static final String DEFAULT_READ_TIMEOUT = System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.readTimeout", "1000"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected URLConnection urlConnection;
 
@@ -376,14 +373,29 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		return super.getAdapter(adapter);
 	}
 
+	protected String getConnectTimeout() {
+		String result = DEFAULT_CONNECT_TIMEOUT;
+		Map localOptions = getOptions();
+		if (localOptions != null) {
+			// See if the property is present, if so set
+			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.retrieve.connectTimeout"); //$NON-NLS-1$
+			if (o instanceof Integer) {
+				result = ((Integer) o).toString();
+			} else if (o instanceof String) {
+				result = (String) o;
+			}
+		}
+		return result;
+	}
+
 	private void setupTimeouts() {
 		String existingTimeout = System.getProperty(JRE_CONNECT_TIMEOUT_PROPERTY);
 		if (existingTimeout == null) {
-			System.setProperty(JRE_CONNECT_TIMEOUT_PROPERTY, DEFAULT_CONNECT_TIMEOUT);
+			System.setProperty(JRE_CONNECT_TIMEOUT_PROPERTY, getConnectTimeout());
 		}
 		existingTimeout = System.getProperty(JRE_READ_TIMEOUT_PROPERTY);
 		if (existingTimeout == null) {
-			System.setProperty(JRE_READ_TIMEOUT_PROPERTY, DEFAULT_READ_TIMEOUT);
+			System.setProperty(JRE_READ_TIMEOUT_PROPERTY, "" + getSocketReadTimeout()); //$NON-NLS-1$
 		}
 	}
 

@@ -120,7 +120,24 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	}
 
 	protected InputStream wrapTransferReadInputStream(InputStream inputStream, IProgressMonitor monitor) {
-		return new PollingInputStream(remoteFileContents, POLLING_RETRY_ATTEMPTS, monitor);
+		return new PollingInputStream(remoteFileContents, getRetryAttempts(), monitor);
+	}
+
+	private int getRetryAttempts() {
+		int result = POLLING_RETRY_ATTEMPTS;
+		Map localOptions = getOptions();
+		if (localOptions != null) {
+			// See if the property is present, if so set
+			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.retrieve.retryAttempts"); //$NON-NLS-1$
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).intValue();
+				} else if (o instanceof String) {
+					result = new Integer(((String) o)).intValue();
+				}
+			}
+		}
+		return result;
 	}
 
 	private IFileTransferRunnable fileTransferRunnable = new IFileTransferRunnable() {
@@ -177,8 +194,42 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		return remoteFileURL;
 	}
 
+	protected int getSocketReadTimeout() {
+		int result = READ_TIMEOUT;
+		Map localOptions = getOptions();
+		if (localOptions != null) {
+			// See if the property is present, if so set
+			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.retrieve.readTimeout"); //$NON-NLS-1$
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).intValue();
+				} else if (o instanceof String) {
+					result = new Integer(((String) o)).intValue();
+				}
+			}
+		}
+		return result;
+	}
+
+	protected int getSocketCloseTimeout() {
+		int result = CLOSE_TIMEOUT;
+		Map localOptions = getOptions();
+		if (localOptions != null) {
+			// See if the property is present, if so set
+			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.retrieve.closeTimeout"); //$NON-NLS-1$
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).intValue();
+				} else if (o instanceof String) {
+					result = new Integer(((String) o)).intValue();
+				}
+			}
+		}
+		return result;
+	}
+
 	protected void setInputStream(InputStream ins) {
-		remoteFileContents = new TimeoutInputStream(ins, TIMEOUT_INPUTSTREAM_BUFFER_SIZE, READ_TIMEOUT, CLOSE_TIMEOUT);
+		remoteFileContents = new TimeoutInputStream(ins, TIMEOUT_INPUTSTREAM_BUFFER_SIZE, getSocketReadTimeout(), getSocketCloseTimeout());
 	}
 
 	protected void setOutputStream(OutputStream outs) {
