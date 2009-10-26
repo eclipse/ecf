@@ -47,11 +47,15 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	private static final String JRE_CONNECT_TIMEOUT_PROPERTY = "sun.net.client.defaultConnectTimeout"; //$NON-NLS-1$
 
-	private static final String DEFAULT_CONNECT_TIMEOUT = "15000"; //$NON-NLS-1$
+	// 10/26/2009:  Added being able to set with system property with name org.eclipse.ecf.provider.filetransfer.connectTimeout
+	// for https://bugs.eclipse.org/bugs/show_bug.cgi?id=292995
+	private static final String DEFAULT_CONNECT_TIMEOUT = System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.connectTimeout", "15000"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private static final String JRE_READ_TIMEOUT_PROPERTY = "sun.net.client.defaultReadTimeout"; //$NON-NLS-1$
 
-	private static final String DEFAULT_READ_TIMEOUT = "1000"; //$NON-NLS-1$
+	// 10/26/2009:  Added being able to set with system property with name org.eclipse.ecf.provider.filetransfer.readTimeout
+	// for https://bugs.eclipse.org/bugs/show_bug.cgi?id=292995
+	private static final String DEFAULT_READ_TIMEOUT = System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.readTimeout", "1000"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected URLConnection urlConnection;
 

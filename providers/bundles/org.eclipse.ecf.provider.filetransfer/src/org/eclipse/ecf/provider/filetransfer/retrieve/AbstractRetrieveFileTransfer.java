@@ -66,13 +66,13 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
-	protected static final int POLLING_RETRY_ATTEMPTS = 20;
+	protected static final int POLLING_RETRY_ATTEMPTS = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.retryAttempts", "20")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$;;
 
 	protected static final int TIMEOUT_INPUTSTREAM_BUFFER_SIZE = 8192;
 
-	protected static final int READ_TIMEOUT = 1000;
+	protected static final int READ_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.readTimeout", "1000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$;
 
-	protected static final int CLOSE_TIMEOUT = 1000;
+	protected static final int CLOSE_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.closeTimeout", "1000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$;
 
 	protected Object jobLock = new Object();
 	protected Job job;
