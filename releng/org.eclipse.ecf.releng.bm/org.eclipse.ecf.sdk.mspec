@@ -9,6 +9,10 @@
     <md:mspecNode namePattern="^org\.eclipse\.ecf(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.jivesoftware\.smack$" materializer="workspace"/>
 
+    <!-- commented out for sdk when comparing to platform
     <md:mspecNode namePattern=".*" installLocation="${target.location}"/>
+    -->
+    
+    <md:mspecNode namePattern=".*" installLocation="${targetPlatformPath}"/>
 </md:mspec>
 	
