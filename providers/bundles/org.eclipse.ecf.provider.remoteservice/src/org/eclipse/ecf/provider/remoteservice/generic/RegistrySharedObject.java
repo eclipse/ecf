@@ -763,7 +763,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	/**
 	 * @param requestId
-	 * @since 3.1
+	 * @since 3.2
 	 */
 	protected void notifyAddRegistrationResponse(ID remoteContainerID, Integer requestId, AccessControlException exception) {
 		if (remoteContainerID == null)
@@ -789,7 +789,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.1
+	 * @since 3.2
 	 */
 	protected void localRegisterService(RemoteServiceRegistrationImpl registration) {
 		final Object localServiceRegistrationValue = registration.getProperty(org.eclipse.ecf.remoteservice.Constants.AUTOREGISTER_REMOTE_PROXY);
@@ -822,7 +822,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.1
+	 * @since 3.2
 	 */
 	protected void addLocalServiceRegistration(ID remoteContainerID, ServiceRegistration registration) {
 		List containerRegistrations = (List) localServiceRegistrations.get(remoteContainerID);
@@ -958,7 +958,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.1
+	 * @since 3.2
 	 */
 	protected void unregisterServiceRegistrationsForContainer(ID containerID) {
 		if (containerID == null)
@@ -978,7 +978,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.1
+	 * @since 3.2
 	 */
 	protected void unregisterAllServiceRegistrations() {
 		synchronized (remoteRegistrys) {
@@ -1086,7 +1086,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	/**
 	 * 
-	 * @since 3.1
+	 * @since 3.2
 	 */
 	protected RemoteServiceRegistrationImpl getLocalRegistrationForRequest(Request request) {
 		synchronized (localRegistry) {
@@ -1095,14 +1095,14 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.1
+	 * @since 3.2
 	 */
 	protected boolean addRequest(Request request) {
 		return requests.add(request);
 	}
 
 	/**
-	 * @since 3.1
+	 * @since 3.2
 	 */
 	protected Request getRequest(long requestId) {
 		synchronized (requests) {
@@ -1118,7 +1118,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.1
+	 * @since 3.2
 	 */
 	protected boolean removeRequest(Request request) {
 		return requests.remove(request);
