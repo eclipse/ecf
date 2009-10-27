@@ -25,9 +25,11 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
-   <includes
+   <!-- commented out for Hudson/Bucky
+    <includes
          id="org.eclipse.ecf.core.source"
          version="0.0.0"/>
+   -->
 
    <plugin
          id="org.jivesoftware.smack"
