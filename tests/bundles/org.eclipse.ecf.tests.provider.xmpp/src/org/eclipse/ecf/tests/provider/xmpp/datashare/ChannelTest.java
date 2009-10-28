@@ -26,12 +26,9 @@ import org.ecllpse.ecf.tests.provider.xmpp.XMPP;
 
 public class ChannelTest extends ContainerAbstractTestCase {
 
-	/**
-	 * 
-	 */
 	private static final String CHANNEL_NAME = "channel";
 
-	private static final int MESSAGE_COUNT = 5;
+	private static final int SEND_MESSAGE_COUNT = 5;
 
 	private ID channelID;
 	
@@ -46,8 +43,8 @@ public class ChannelTest extends ContainerAbstractTestCase {
 		super.setUp();
 		setClientCount(2);
 		clients = createClients();
-		connectClients();
 		channelID = IDFactory.getDefault().createStringID(CHANNEL_NAME);
+		connectClients();
 		for (int i = 0; i < clientCount; i++) {
 			final IChannelContainerAdapter channelContainer = getChannelContainer(i);
 			channelContainer.createChannel(channelID, getIChannelListener(getContainerID(i)), null);
@@ -55,11 +52,8 @@ public class ChannelTest extends ContainerAbstractTestCase {
 	}
 
 	protected ID getServerConnectID(int client) {
-		final IContainer container = getClient(client);
-		final Namespace connectNamespace = container.getConnectNamespace();
-		final String username = getUsername(client);
 		try {
-			return IDFactory.getDefault().createID(connectNamespace, username);
+			return IDFactory.getDefault().createID(getClient(client).getConnectNamespace(), getUsername(client));
 		} catch (final IDCreateException e) {
 			fail("Could not create server connect ID");
 			return null;
@@ -78,24 +72,29 @@ public class ChannelTest extends ContainerAbstractTestCase {
 
 	public void testSendMessage() throws Exception {
 		final IChannel ch0 = getChannelContainer(0).getChannel(channelID);
-		assertNotNull(ch0);
-		ch0.sendMessage(getClient(1).getConnectedID(), new String("hello").getBytes());
+		ID target1 = getServerConnectID(1);
+		ch0.sendMessage(target1, new String("hello").getBytes());
 		sleep(3000);
 	}
 
 	public void testBiSendMessage() throws Exception {
 		final IChannel ch0 = getChannelContainer(0).getChannel(channelID);
 		final IChannel ch1 = getChannelContainer(1).getChannel(channelID);
-		ch0.sendMessage(getClient(1).getConnectedID(), new String("hello").getBytes());
-		ch1.sendMessage(getClient(0).getConnectedID(), new String("hello").getBytes());
+		
+		ID target1 = getServerConnectID(1);
+		ID target0 = getServerConnectID(0);
+		
+		ch0.sendMessage(target1, new String("hello").getBytes());
+		ch1.sendMessage(target0, new String("hello").getBytes());
 		sleep(3000);
 	}
 
 
 	public void testSendMessages() throws Exception {
 		final IChannel ch0 = getChannelContainer(0).getChannel(channelID);
-		for(int i=0; i < MESSAGE_COUNT; i++) {
-			ch0.sendMessage(getClient(1).getConnectedID(), new String("hello.  msg#="+i).getBytes());
+		ID target1 = getServerConnectID(1);
+		for(int i=0; i < SEND_MESSAGE_COUNT; i++) {
+			ch0.sendMessage(target1, new String("hello.  msg#="+i).getBytes());
 			sleep(500);
 		}
 		sleep(3000);
@@ -104,10 +103,14 @@ public class ChannelTest extends ContainerAbstractTestCase {
 	public void testBiSendMessages() throws Exception {
 		final IChannel ch0 = getChannelContainer(0).getChannel(channelID);
 		final IChannel ch1 = getChannelContainer(1).getChannel(channelID);
-		for(int i=0; i < MESSAGE_COUNT; i++) {
-			ch0.sendMessage(getClient(1).getConnectedID(), new String("hello.  msg#="+i).getBytes());
+		
+		ID target1 = getServerConnectID(1);
+		ID target0 = getServerConnectID(0);
+				
+		for(int i=0; i < SEND_MESSAGE_COUNT; i++) {
+			ch0.sendMessage(target1, new String("hello.  msg#="+i).getBytes());
 			sleep(500);
-			ch1.sendMessage(getClient(0).getConnectedID(), new String("hello.  msg#="+i).getBytes());
+			ch1.sendMessage(target0, new String("hello.  msg#="+i).getBytes());
 		}
 		sleep(3000);
 	}
