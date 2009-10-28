@@ -15,12 +15,16 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.sharedobject,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.remoteservice,
- org.eclipse.ecf.provider.xmpp
+ org.eclipse.ecf.provider.xmpp,
+ org.eclipse.ecf.datashare;bundle-version="2.0.0"
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
 Eclipse-LazyStart: true
-Export-Package: org.eclipse.ecf.tests.provider.xmpp.remoteservice,
+Export-Package: org.eclipse.ecf.tests.provider.xmpp,
+ org.eclipse.ecf.tests.provider.xmpp.datashare,
+ org.eclipse.ecf.tests.provider.xmpp.remoteservice,
+ org.eclipse.ecf.tests.provider.xmpp.sharedobject,
  org.ecllpse.ecf.tests.provider.xmpp,
  org.ecllpse.ecf.tests.provider.xmpp.search
 Bundle-ActivationPolicy: lazy
