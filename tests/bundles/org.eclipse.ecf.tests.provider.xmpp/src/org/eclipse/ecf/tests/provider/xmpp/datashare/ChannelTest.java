@@ -11,11 +11,9 @@
 
 package org.eclipse.ecf.tests.provider.xmpp.datashare;
 
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelListener;
