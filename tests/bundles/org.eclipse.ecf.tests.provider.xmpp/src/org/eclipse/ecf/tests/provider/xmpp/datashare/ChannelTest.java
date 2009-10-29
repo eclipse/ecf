@@ -70,7 +70,7 @@ public class ChannelTest extends ContainerAbstractTestCase {
 
 	public void testSendMessage() throws Exception {
 		final IChannel ch0 = getChannelContainer(0).getChannel(channelID);
-		ID target1 = getServerConnectID(1);
+		ID target1 = getClient(1).getConnectedID();
 		ch0.sendMessage(target1, new String("hello").getBytes());
 		sleep(3000);
 	}
@@ -79,8 +79,8 @@ public class ChannelTest extends ContainerAbstractTestCase {
 		final IChannel ch0 = getChannelContainer(0).getChannel(channelID);
 		final IChannel ch1 = getChannelContainer(1).getChannel(channelID);
 		
-		ID target1 = getServerConnectID(1);
-		ID target0 = getServerConnectID(0);
+		ID target1 = getClient(1).getConnectedID();
+		ID target0 = getClient(0).getConnectedID();
 		
 		ch0.sendMessage(target1, new String("hello").getBytes());
 		ch1.sendMessage(target0, new String("hello").getBytes());
@@ -90,7 +90,7 @@ public class ChannelTest extends ContainerAbstractTestCase {
 
 	public void testSendMessages() throws Exception {
 		final IChannel ch0 = getChannelContainer(0).getChannel(channelID);
-		ID target1 = getServerConnectID(1);
+		ID target1 = getClient(1).getConnectedID();
 		for(int i=0; i < SEND_MESSAGE_COUNT; i++) {
 			ch0.sendMessage(target1, new String("hello.  msg#="+i).getBytes());
 			sleep(500);
@@ -102,8 +102,8 @@ public class ChannelTest extends ContainerAbstractTestCase {
 		final IChannel ch0 = getChannelContainer(0).getChannel(channelID);
 		final IChannel ch1 = getChannelContainer(1).getChannel(channelID);
 		
-		ID target1 = getServerConnectID(1);
-		ID target0 = getServerConnectID(0);
+		ID target1 = getClient(1).getConnectedID();
+		ID target0 = getClient(0).getConnectedID();
 				
 		for(int i=0; i < SEND_MESSAGE_COUNT; i++) {
 			ch0.sendMessage(target1, new String("hello.  msg#="+i).getBytes());
