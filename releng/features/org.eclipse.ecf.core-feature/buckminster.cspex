@@ -5,6 +5,10 @@
 	xmlns="http://www.eclipse.org/buckminster/CSpec-1.0">
 	<dependencies>
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
+		<dependency name="org.eclipse.equinox.concurrent" componentType="osgi.bundle"/>
+		<dependency name="org.apache.commons.httpclient" componentType="osgi.bundle"/>
+		<dependency name="org.apache.commons.logging" componentType="osgi.bundle"/>
+		<dependency name="org.apache.commons.codec" componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
