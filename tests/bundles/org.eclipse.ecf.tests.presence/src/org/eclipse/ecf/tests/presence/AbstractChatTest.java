@@ -58,6 +58,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 		chat1.addMessageListener(listener);
 		for (int i = 0; i < 2; i++) {
 			connectClient(i);
+			sleep(WAITTIME);
 		}
 	}
 
@@ -72,6 +73,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 	}
 
 	public void testSendIM() throws Exception {
+		sleep(WAITTIME);
 		chat0.getChatMessageSender().sendChatMessage(getClient(1).getConnectedID(), "abcdef");
 		sleep(WAITTIME);
 		assertHasEvent(receivedChatMessages, IChatMessage.class);
@@ -85,6 +87,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 	}
 
 	public void testSendIM2() throws Exception {
+		sleep(WAITTIME);
 		final Map sendprops = new HashMap();
 		sendprops.put("prop1", "this");
 		final ID sendthreadid = IDFactory.getDefault().createStringID("thread1");
@@ -108,6 +111,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 	}
 
 	public void testSendMessageProperties() throws Exception {
+		sleep(WAITTIME);
 		final Map sendprops = new HashMap();
 		sendprops.put("prop2", "that");
 		// Send the whole thing
