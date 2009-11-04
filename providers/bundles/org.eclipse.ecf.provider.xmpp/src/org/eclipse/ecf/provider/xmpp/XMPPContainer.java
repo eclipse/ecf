@@ -366,7 +366,7 @@ public class XMPPContainer extends ClientSOContainer implements
 	}
 
 	protected boolean handleAsExtension(Packet packet) {
-		final Iterator i = packet.getExtensions();
+		final Iterator i = packet.getExtensions().iterator();
 		for (; i.hasNext();) {
 			final Object extension = i.next();
 			if (extension instanceof XHTMLExtension) {

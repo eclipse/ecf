@@ -151,9 +151,12 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		// The resources are considered equal if either one is null (not known
 		// yet), or they are equal by
 		// string comparison
-		boolean resourceEquals = (thisResourceName == null && otherResourceName == null)
-				|| (thisResourceName != null && otherResourceName != null && thisResourceName
-						.equals(otherResourceName));
+		boolean resourceEquals = false;
+		if (thisResourceName == null) {
+			resourceEquals = (otherResourceName == null) ? true : false;
+		} else {
+			resourceEquals = thisResourceName.equals(otherResourceName);
+		}
 		return resourceEquals
 				&& getUsernameAtHost().equals(other.getUsernameAtHost());
 	}

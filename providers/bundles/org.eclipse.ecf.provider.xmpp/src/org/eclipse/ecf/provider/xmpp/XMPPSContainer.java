@@ -48,8 +48,7 @@ public class XMPPSContainer extends XMPPContainer {
 	protected ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionCreateException {
 		boolean google = isGoogle(remoteSpace);
-		return new ECFConnection(google, getConnectNamespace(), receiver,
-				true);
+		return new ECFConnection(google, getConnectNamespace(), receiver);
 	}
 
 }

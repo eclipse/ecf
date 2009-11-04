@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp;singleton:=true
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.xmpp.XmppPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.sharedobject,
  org.eclipse.ecf.datashare,
  org.eclipse.ecf.provider.datashare,
- org.jivesoftware.smack;bundle-version="[2.2.1,3.0.0)",
+ org.jivesoftware.smack;bundle-version="3.1.0",
  org.eclipse.ecf.remoteservice,
  org.eclipse.ecf.provider.remoteservice
 Eclipse-LazyStart: true
@@ -25,8 +25,7 @@ Export-Package: org.eclipse.ecf.internal.provider.xmpp;x-internal:=true,
  org.eclipse.ecf.provider.xmpp,
  org.eclipse.ecf.provider.xmpp.identity
 Eclipse-BuddyPolicy: global
-Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
- J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Eclipse-ExtensibleAPI: true
 Import-Package: org.eclipse.core.runtime.jobs,
  org.eclipse.equinox.concurrent.future;version="1.0.0",

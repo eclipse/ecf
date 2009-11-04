@@ -9,32 +9,57 @@
 package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.sharedobject.*;
-import org.eclipse.ecf.core.sharedobject.events.*;
+import org.eclipse.ecf.core.sharedobject.ISharedObject;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
+import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageListener;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.internal.provider.xmpp.events.*;
+import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
+import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
+import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
-import org.eclipse.ecf.presence.*;
-import org.eclipse.ecf.presence.im.*;
-import org.eclipse.ecf.presence.roster.*;
+import org.eclipse.ecf.presence.IPresence;
+import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.IPresenceSender;
+import org.eclipse.ecf.presence.im.IChatManager;
+import org.eclipse.ecf.presence.im.ITypingMessage;
+import org.eclipse.ecf.presence.im.TypingMessage;
+import org.eclipse.ecf.presence.roster.AbstractRosterManager;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterGroup;
+import org.eclipse.ecf.presence.roster.IRosterItem;
+import org.eclipse.ecf.presence.roster.IRosterManager;
+import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
+import org.eclipse.ecf.presence.roster.RosterGroup;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
-import org.eclipse.equinox.concurrent.future.*;
-import org.jivesoftware.smack.*;
+import org.eclipse.equinox.concurrent.future.IFuture;
+import org.eclipse.equinox.concurrent.future.IProgressRunnable;
+import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
-import org.jivesoftware.smack.RosterGroup;
-import org.jivesoftware.smack.packet.*;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.packet.Presence.Mode;
 import org.jivesoftware.smack.packet.Presence.Type;
 import org.jivesoftware.smackx.packet.VCard;
@@ -366,9 +391,13 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 	}
 
-	private void addToRoster(IRosterItem[] items) {
-		for (int i = 0; i < items.length; i++) {
-			roster.addItem(items[i]);
+	private void addUniqueToRoster(IRosterItem[] newItems) {
+		Collection existingItems = roster.getItems();
+		synchronized (existingItems) {
+			for (int i = 0; i < newItems.length; i++) {
+				if (!existingItems.contains(newItems[i]))
+					existingItems.add(newItems[i]);
+			}
 		}
 		rosterManager.notifyRosterUpdate(roster);
 	}
@@ -385,14 +414,14 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		final XMPPID xmppid = createIDFromName(entry.getUser());
 		final String name = (entry.getName() == null) ? xmppid.getUsername()
 				: XMPPID.unfixEscapeInNode(entry.getName());
-		return createRosterEntry(xmppid, name, entry.getGroups());
+		return createRosterEntry(xmppid, name, entry.getGroups().iterator());
 	}
 
 	protected IRosterEntry createRosterEntry(XMPPID xmppid,
 			RosterPacket.Item entry) {
 		final String name = (entry.getName() == null) ? xmppid.getUsername()
 				: XMPPID.unfixEscapeInNode(entry.getName());
-		return createRosterEntry(xmppid, name, entry.getGroupNames());
+		return createRosterEntry(xmppid, name, entry.getGroupNames().iterator());
 	}
 
 	protected void handleIQEvent(IQEvent evt) {
@@ -402,22 +431,22 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			final RosterPacket rosterPacket = (RosterPacket) iq;
 			if (rosterPacket.getType() == IQ.Type.SET
 					|| rosterPacket.getType() == IQ.Type.RESULT) {
-				for (final Iterator i = rosterPacket.getRosterItems(); i
-						.hasNext();) {
+				for (final Iterator i = rosterPacket.getRosterItems()
+						.iterator(); i.hasNext();) {
 					final RosterPacket.Item item = (RosterPacket.Item) i.next();
 					final RosterPacket.ItemType itemType = item.getItemType();
 					boolean remove = false;
 					XMPPID newID = createIDFromName(item.getUser());
 					final IRosterItem items[] = createRosterEntries(newID, item);
 					final IRosterEntry entry = createRosterEntry(newID, item);
-					if (itemType == RosterPacket.ItemType.NONE
-							|| itemType == RosterPacket.ItemType.REMOVE) {
+					if (itemType == RosterPacket.ItemType.none
+							|| itemType == RosterPacket.ItemType.remove) {
 						removeItemFromRoster(roster.getItems(),
 								createIDFromName(item.getUser()));
 						remove = true;
 					} else {
 						remove = false;
-						addToRoster(items);
+						addUniqueToRoster(items);
 					}
 					// In both cases fire set roster entry
 					fireSetRosterEntry(remove, entry);
@@ -564,20 +593,18 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 		AdditionalClientRosterEntry[] entrys = (AdditionalClientRosterEntry[]) newEntrys
 				.toArray(new AdditionalClientRosterEntry[] {});
-		IRosterEntry entry = null;
 		if (entrys.length > 0) {
 			for (int i = 0; i < entrys.length; i++) {
 				if (entrys[i].add) {
-					entry = new org.eclipse.ecf.presence.roster.RosterEntry(
+					IRosterEntry entry = new org.eclipse.ecf.presence.roster.RosterEntry(
 							entrys[i].parent, entrys[i].user,
 							entrys[i].presence);
-					// roster.addItem(entry);
+					addUniqueToRoster(new IRosterItem[] { entry });
+					fireSetRosterEntry(false, entry);
 				} else {
 					removeItemFromRoster(rosterItems, fromID);
 				}
 			}
-			rosterManager.notifyRosterUpdate(roster);
-			fireSetRosterEntry(false, entry);
 		}
 	}
 
@@ -708,7 +735,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected void handleRoster(Roster roster) {
-		for (final Iterator i = roster.getEntries(); i.hasNext();) {
+		for (final Iterator i = roster.getEntries().iterator(); i.hasNext();) {
 			final IRosterItem[] items = createRosterEntries((RosterEntry) i
 					.next());
 			for (int j = 0; j < items.length; j++) {
@@ -886,59 +913,61 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		if (xmppPresence == null)
 			return IPresence.Mode.AVAILABLE;
 		final Mode mode = xmppPresence.getMode();
-		if (mode == Presence.Mode.AVAILABLE) {
+		if (mode == Presence.Mode.available) {
 			return IPresence.Mode.AVAILABLE;
-		} else if (mode == Presence.Mode.AWAY) {
+		} else if (mode == Presence.Mode.away) {
 			return IPresence.Mode.AWAY;
-		} else if (mode == Presence.Mode.CHAT) {
+		} else if (mode == Presence.Mode.chat) {
 			return IPresence.Mode.CHAT;
-		} else if (mode == Presence.Mode.DO_NOT_DISTURB) {
+		} else if (mode == Presence.Mode.dnd) {
 			return IPresence.Mode.DND;
-		} else if (mode == Presence.Mode.EXTENDED_AWAY) {
+		} else if (mode == Presence.Mode.xa) {
 			return IPresence.Mode.EXTENDED_AWAY;
-		} else if (mode == Presence.Mode.INVISIBLE) {
-			return IPresence.Mode.INVISIBLE;
-		}
+		} /*
+		 * else if (mode == Presence.Mode.INVISIBLE) { return
+		 * IPresence.Mode.INVISIBLE; }
+		 */
 		return IPresence.Mode.AVAILABLE;
 	}
 
 	protected Presence.Mode createPresenceMode(IPresence ipresence) {
 		if (ipresence == null)
-			return Presence.Mode.AVAILABLE;
+			return Presence.Mode.available;
 		final IPresence.Mode mode = ipresence.getMode();
 		if (mode == IPresence.Mode.AVAILABLE) {
-			return Presence.Mode.AVAILABLE;
+			return Presence.Mode.available;
 		} else if (mode == IPresence.Mode.AWAY) {
-			return Presence.Mode.AWAY;
+			return Presence.Mode.away;
 		} else if (mode == IPresence.Mode.CHAT) {
-			return Presence.Mode.CHAT;
+			return Presence.Mode.chat;
 		} else if (mode == IPresence.Mode.DND) {
-			return Presence.Mode.DO_NOT_DISTURB;
+			return Presence.Mode.dnd;
 		} else if (mode == IPresence.Mode.EXTENDED_AWAY) {
-			return Presence.Mode.EXTENDED_AWAY;
-		} else if (mode == IPresence.Mode.INVISIBLE) {
-			return Presence.Mode.INVISIBLE;
-		}
-		return Presence.Mode.AVAILABLE;
+			return Presence.Mode.xa;
+		} /*
+		 * else if (mode == IPresence.Mode.INVISIBLE) { return
+		 * Presence.Mode.INVISIBLE; }
+		 */
+		return Presence.Mode.available;
 	}
 
 	protected IPresence.Type createIPresenceType(Presence xmppPresence) {
 		if (xmppPresence == null)
 			return IPresence.Type.AVAILABLE;
 		final Type type = xmppPresence.getType();
-		if (type == Presence.Type.AVAILABLE) {
+		if (type == Presence.Type.available) {
 			return IPresence.Type.AVAILABLE;
-		} else if (type == Presence.Type.ERROR) {
+		} else if (type == Presence.Type.error) {
 			return IPresence.Type.ERROR;
-		} else if (type == Presence.Type.SUBSCRIBE) {
+		} else if (type == Presence.Type.subscribe) {
 			return IPresence.Type.SUBSCRIBE;
-		} else if (type == Presence.Type.SUBSCRIBED) {
+		} else if (type == Presence.Type.subscribed) {
 			return IPresence.Type.SUBSCRIBED;
-		} else if (type == Presence.Type.UNSUBSCRIBE) {
+		} else if (type == Presence.Type.unsubscribe) {
 			return IPresence.Type.UNSUBSCRIBE;
-		} else if (type == Presence.Type.UNSUBSCRIBED) {
+		} else if (type == Presence.Type.unsubscribed) {
 			return IPresence.Type.UNSUBSCRIBED;
-		} else if (type == Presence.Type.UNAVAILABLE) {
+		} else if (type == Presence.Type.unavailable) {
 			return IPresence.Type.UNAVAILABLE;
 		}
 		return IPresence.Type.AVAILABLE;
@@ -946,24 +975,24 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	protected Presence.Type createPresenceType(IPresence ipresence) {
 		if (ipresence == null)
-			return Presence.Type.AVAILABLE;
+			return Presence.Type.available;
 		final IPresence.Type type = ipresence.getType();
 		if (type == IPresence.Type.AVAILABLE) {
-			return Presence.Type.AVAILABLE;
+			return Presence.Type.available;
 		} else if (type == IPresence.Type.ERROR) {
-			return Presence.Type.ERROR;
+			return Presence.Type.error;
 		} else if (type == IPresence.Type.SUBSCRIBE) {
-			return Presence.Type.SUBSCRIBE;
+			return Presence.Type.subscribe;
 		} else if (type == IPresence.Type.SUBSCRIBED) {
-			return Presence.Type.SUBSCRIBED;
+			return Presence.Type.subscribed;
 		} else if (type == IPresence.Type.UNSUBSCRIBE) {
-			return Presence.Type.UNSUBSCRIBE;
+			return Presence.Type.unsubscribe;
 		} else if (type == IPresence.Type.UNSUBSCRIBED) {
-			return Presence.Type.UNSUBSCRIBED;
+			return Presence.Type.unsubscribed;
 		} else if (type == IPresence.Type.UNAVAILABLE) {
-			return Presence.Type.UNAVAILABLE;
+			return Presence.Type.unavailable;
 		}
-		return Presence.Type.AVAILABLE;
+		return Presence.Type.available;
 	}
 
 	protected IRosterItem[] createRosterEntries(RosterEntry entry) {
@@ -972,7 +1001,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		final User newUser = (name == null) ? new User(xmppid, xmppid
 				.getUsername()) : new User(xmppid, XMPPID
 				.unfixEscapeInNode(name));
-		return createRosterEntries(entry.getGroups(), roster, newUser);
+		return createRosterEntries(entry.getGroups().iterator(), roster,
+				newUser);
 	}
 
 	private IRosterItem[] createRosterEntries(Iterator grps,
@@ -1031,7 +1061,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		IRosterEntry newEntry = null;
 		if (groups.size() == 0)
 			return new org.eclipse.ecf.presence.roster.RosterEntry(roster,
-					user, null);
+					user, new org.eclipse.ecf.presence.Presence(
+							IPresence.Type.UNAVAILABLE,
+							IPresence.Type.UNAVAILABLE.toString(),
+							IPresence.Mode.AWAY));
 		else
 			for (int i = 0; i < groups.size(); i++) {
 				final IRosterGroup grp = (IRosterGroup) groups.get(i);
@@ -1086,8 +1119,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		if (name == null)
 			name = id.getUsername();
 		name = XMPPID.unfixEscapeInNode(name);
-		return createRosterEntries(entry.getGroupNames(), roster, new User(id,
-				name));
+		return createRosterEntries(entry.getGroupNames().iterator(), roster,
+				new User(id, name));
 	}
 
 	protected org.eclipse.ecf.presence.roster.RosterGroup findRosterGroup(
@@ -1145,8 +1178,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 	}
 
-	protected Message.Type[] ALLOWED_MESSAGES = { Message.Type.CHAT,
-			Message.Type.ERROR, Message.Type.HEADLINE, Message.Type.NORMAL };
+	protected Message.Type[] ALLOWED_MESSAGES = { Message.Type.chat,
+			Message.Type.error, Message.Type.headline, Message.Type.normal };
 
 	protected Message filterMessageType(Message msg) {
 		for (int i = 0; i < ALLOWED_MESSAGES.length; i++) {

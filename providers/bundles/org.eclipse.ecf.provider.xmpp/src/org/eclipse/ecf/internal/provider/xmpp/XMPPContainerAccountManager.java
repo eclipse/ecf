@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.jivesoftware.smack.AccountManager;
@@ -87,7 +86,7 @@ public class XMPPContainerAccountManager implements IAccountManager {
 	public String[] getAccountAttributeNames() {
 		if (accountManager == null)
 			return new String[0];
-		Iterator i = accountManager.getAccountAttributes();
+		Iterator i = accountManager.getAccountAttributes().iterator();
 		List l = new ArrayList();
 		for (; i.hasNext();) {
 			l.add(i.next());

@@ -11,28 +11,17 @@
 package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.*;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.sharedobject.ISharedObject;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
-import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
+import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.internal.provider.xmpp.events.ChatMembershipEvent;
-import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
-import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
+import org.eclipse.ecf.internal.provider.xmpp.events.*;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chatroom.ChatRoomMessage;
-import org.eclipse.ecf.presence.chatroom.ChatRoomMessageEvent;
-import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.jivesoftware.smack.XMPPConnection;
@@ -51,25 +40,29 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	private final List participantListeners = new ArrayList();
 	private ID roomID = null;
 
-	private final List chatRoomContainerParticipants = Collections.synchronizedList(new ArrayList());
+	private final List chatRoomContainerParticipants = Collections
+			.synchronizedList(new ArrayList());
 
 	protected void trace(String message) {
 
 	}
 
-	protected void addChatParticipantListener(IChatRoomParticipantListener listener) {
+	protected void addChatParticipantListener(
+			IChatRoomParticipantListener listener) {
 		synchronized (participantListeners) {
 			participantListeners.add(listener);
 		}
 	}
 
-	protected void removeChatParticipantListener(IChatRoomParticipantListener listener) {
+	protected void removeChatParticipantListener(
+			IChatRoomParticipantListener listener) {
 		synchronized (participantListeners) {
 			participantListeners.remove(listener);
 		}
 	}
 
-	public XMPPChatRoomContainerHelper(Namespace usernamespace, XMPPConnection conn) {
+	public XMPPChatRoomContainerHelper(Namespace usernamespace,
+			XMPPConnection conn) {
 		super();
 		this.usernamespace = usernamespace;
 		this.connection = conn;
@@ -84,7 +77,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
 	 */
-	public void init(ISharedObjectConfig initData) throws SharedObjectInitException {
+	public void init(ISharedObjectConfig initData)
+			throws SharedObjectInitException {
 		this.config = initData;
 	}
 
@@ -98,7 +92,7 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		}
 	}
 
-	protected Message.Type[] ALLOWED_MESSAGES = {Message.Type.GROUP_CHAT};
+	protected Message.Type[] ALLOWED_MESSAGES = { Message.Type.groupchat };
 
 	protected Message filterMessageType(Message msg) {
 		for (int i = 0; i < ALLOWED_MESSAGES.length; i++) {
@@ -131,7 +125,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		}
 		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
 			final IIMMessageListener l = (IIMMessageListener) i.next();
-			l.handleMessageEvent(new ChatRoomMessageEvent(from, new ChatRoomMessage(from, roomID, body)));
+			l.handleMessageEvent(new ChatRoomMessageEvent(from,
+					new ChatRoomMessage(from, roomID, body)));
 		}
 	}
 
@@ -156,26 +151,27 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	protected void handleMessageEvent(MessageEvent evt) {
 		final Message msg = filterMessageType(evt.getMessage());
 		if (msg != null)
-			fireMessageListeners(createUserIDFromName(canonicalizeRoomFrom(msg.getFrom())), msg.getBody());
+			fireMessageListeners(createUserIDFromName(canonicalizeRoomFrom(msg
+					.getFrom())), msg.getBody());
 	}
 
 	protected IPresence.Type createIPresenceType(Presence xmppPresence) {
 		if (xmppPresence == null)
 			return IPresence.Type.AVAILABLE;
 		final Type type = xmppPresence.getType();
-		if (type == Presence.Type.AVAILABLE) {
+		if (type == Presence.Type.available) {
 			return IPresence.Type.AVAILABLE;
-		} else if (type == Presence.Type.ERROR) {
+		} else if (type == Presence.Type.error) {
 			return IPresence.Type.ERROR;
-		} else if (type == Presence.Type.SUBSCRIBE) {
+		} else if (type == Presence.Type.subscribe) {
 			return IPresence.Type.SUBSCRIBE;
-		} else if (type == Presence.Type.SUBSCRIBED) {
+		} else if (type == Presence.Type.subscribed) {
 			return IPresence.Type.SUBSCRIBED;
-		} else if (type == Presence.Type.UNSUBSCRIBE) {
+		} else if (type == Presence.Type.unsubscribe) {
 			return IPresence.Type.UNSUBSCRIBE;
-		} else if (type == Presence.Type.UNSUBSCRIBED) {
+		} else if (type == Presence.Type.unsubscribed) {
 			return IPresence.Type.UNSUBSCRIBED;
-		} else if (type == Presence.Type.UNAVAILABLE) {
+		} else if (type == Presence.Type.unavailable) {
 			return IPresence.Type.UNAVAILABLE;
 		}
 		return IPresence.Type.AVAILABLE;
@@ -185,25 +181,27 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		if (xmppPresence == null)
 			return IPresence.Mode.AVAILABLE;
 		final Mode mode = xmppPresence.getMode();
-		if (mode == Presence.Mode.AVAILABLE) {
+		if (mode == Presence.Mode.available) {
 			return IPresence.Mode.AVAILABLE;
-		} else if (mode == Presence.Mode.AWAY) {
+		} else if (mode == Presence.Mode.away) {
 			return IPresence.Mode.AWAY;
-		} else if (mode == Presence.Mode.CHAT) {
+		} else if (mode == Presence.Mode.chat) {
 			return IPresence.Mode.CHAT;
-		} else if (mode == Presence.Mode.DO_NOT_DISTURB) {
+		} else if (mode == Presence.Mode.dnd) {
 			return IPresence.Mode.DND;
-		} else if (mode == Presence.Mode.EXTENDED_AWAY) {
+		} else if (mode == Presence.Mode.xa) {
 			return IPresence.Mode.EXTENDED_AWAY;
-		} else if (mode == Presence.Mode.INVISIBLE) {
+		} /*else if (mode == Presence.Mode.invisible) {
 			return IPresence.Mode.INVISIBLE;
-		}
+			}*/
 		return IPresence.Mode.AVAILABLE;
 	}
 
 	protected IPresence createIPresence(Presence xmppPresence) {
 		final String status = xmppPresence.getStatus();
-		final IPresence newPresence = new org.eclipse.ecf.presence.Presence(createIPresenceType(xmppPresence), status, createIPresenceMode(xmppPresence));
+		final IPresence newPresence = new org.eclipse.ecf.presence.Presence(
+				createIPresenceType(xmppPresence), status,
+				createIPresenceMode(xmppPresence));
 		return newPresence;
 	}
 
@@ -237,7 +235,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 			toNotify = new ArrayList(participantListeners);
 		}
 		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
-			final IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
+			final IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
+					.next();
 			l.handlePresenceUpdated(fromID, presence);
 		}
 	}
@@ -248,7 +247,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 			toNotify = new ArrayList(participantListeners);
 		}
 		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
-			final IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
+			final IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
+					.next();
 			if (join) {
 				l.handleArrived(new User(fromID));
 			} else {
@@ -315,8 +315,10 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 			return null;
 		if (adapter.isInstance(this))
 			return this;
-		final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
-		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
+		final IAdapterManager adapterManager = XmppPlugin.getDefault()
+				.getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(
+				this, adapter.getName());
 	}
 
 	/**

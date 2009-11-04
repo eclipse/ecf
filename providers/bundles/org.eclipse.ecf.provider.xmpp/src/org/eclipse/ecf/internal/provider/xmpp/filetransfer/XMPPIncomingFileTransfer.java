@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
-
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -62,11 +61,14 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 		protected IStatus run(IProgressMonitor monitor) {
 			final byte[] buf = new byte[buff_length];
 			final int totalWork = ((fileLength == -1) ? 100 : (int) fileLength);
-			monitor.beginTask(getID().getName() + Messages.XMPPIncomingFileTransfer_Progress_Data, totalWork);
+			monitor.beginTask(getID().getName()
+					+ Messages.XMPPIncomingFileTransfer_Progress_Data,
+					totalWork);
 			try {
 				while (!isDone()) {
 					if (monitor.isCanceled())
-						throw new UserCancelledException(Messages.XMPPIncomingFileTransfer_Exception_User_Cancelled);
+						throw new UserCancelledException(
+								Messages.XMPPIncomingFileTransfer_Exception_User_Cancelled);
 					final int bytes = remoteFileContents.read(buf);
 					if (bytes != -1) {
 						bytesReceived += bytes;
@@ -91,7 +93,13 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 	}
 
 	protected IStatus getFinalStatus(Throwable exception) {
-		return (exception == null) ? new Status(IStatus.OK, XmppPlugin.PLUGIN_ID, 0, Messages.XMPPIncomingFileTransfer_Status_Transfer_Completed_OK, null) : new Status(IStatus.ERROR, XmppPlugin.PLUGIN_ID, IStatus.ERROR, Messages.XMPPIncomingFileTransfer_Status_Transfer_Exception, exception);
+		return (exception == null) ? new Status(IStatus.OK,
+				XmppPlugin.PLUGIN_ID, 0,
+				Messages.XMPPIncomingFileTransfer_Status_Transfer_Completed_OK,
+				null) : new Status(IStatus.ERROR, XmppPlugin.PLUGIN_ID,
+				IStatus.ERROR,
+				Messages.XMPPIncomingFileTransfer_Status_Transfer_Exception,
+				exception);
 	}
 
 	protected void hardClose() {
@@ -108,58 +116,64 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 
 	protected void fireTransferReceiveDoneEvent() {
 		if (listener != null)
-			listener.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
+			listener
+					.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
 
-				private static final long serialVersionUID = 6925524078226825710L;
+						private static final long serialVersionUID = 6925524078226825710L;
 
-				public IIncomingFileTransfer getSource() {
-					return XMPPIncomingFileTransfer.this;
-				}
+						public IIncomingFileTransfer getSource() {
+							return XMPPIncomingFileTransfer.this;
+						}
 
-				public Exception getException() {
-					return XMPPIncomingFileTransfer.this.getException();
-				}
+						public Exception getException() {
+							return XMPPIncomingFileTransfer.this.getException();
+						}
 
-				public String toString() {
-					final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
-					sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-					sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-							.append("]"); //$NON-NLS-1$
-					return sb.toString();
-				}
-			});
+						public String toString() {
+							final StringBuffer sb = new StringBuffer(
+									"IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
+							sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+							sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+									.append("]"); //$NON-NLS-1$
+							return sb.toString();
+						}
+					});
 	}
 
 	protected void fireTransferReceiveDataEvent() {
 		if (listener != null)
-			listener.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
-				private static final long serialVersionUID = -5656328374614130161L;
+			listener
+					.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
+						private static final long serialVersionUID = -5656328374614130161L;
 
-				public IIncomingFileTransfer getSource() {
-					return XMPPIncomingFileTransfer.this;
-				}
+						public IIncomingFileTransfer getSource() {
+							return XMPPIncomingFileTransfer.this;
+						}
 
-				public String toString() {
-					final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
-					sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-					sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-							.append(";"); //$NON-NLS-1$
-					sb.append("percentComplete=").append( //$NON-NLS-1$
-							getPercentComplete() * 100).append("]"); //$NON-NLS-1$
-					return sb.toString();
-				}
-			});
+						public String toString() {
+							final StringBuffer sb = new StringBuffer(
+									"IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
+							sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+							sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+									.append(";"); //$NON-NLS-1$
+							sb.append("percentComplete=").append( //$NON-NLS-1$
+									getPercentComplete() * 100).append("]"); //$NON-NLS-1$
+							return sb.toString();
+						}
+					});
 	}
 
 	/**
-	 * @param threadID 
-	 * @param fileName 
+	 * @param threadID
+	 * @param fileName
 	 * @param inputStream
 	 * @param outputStream
-	 * @param fileSize 
+	 * @param fileSize
 	 * @param listener
 	 */
-	public XMPPIncomingFileTransfer(ID threadID, String fileName, InputStream inputStream, OutputStream outputStream, long fileSize, IFileTransferListener listener) {
+	public XMPPIncomingFileTransfer(ID threadID, String fileName,
+			InputStream inputStream, OutputStream outputStream, long fileSize,
+			IFileTransferListener listener) {
 		this.threadID = threadID;
 		this.fileName = fileName;
 		this.remoteFileContents = inputStream;
@@ -235,8 +249,10 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 			return null;
 		if (adapter.isInstance(this))
 			return this;
-		final IAdapterManager adapterManager = XmppPlugin.getDefault().getAdapterManager();
-		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
+		final IAdapterManager adapterManager = XmppPlugin.getDefault()
+				.getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(
+				this, adapter.getName());
 	}
 
 	/*

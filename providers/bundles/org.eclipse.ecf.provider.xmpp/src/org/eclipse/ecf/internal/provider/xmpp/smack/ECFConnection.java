@@ -9,18 +9,36 @@
 package org.eclipse.ecf.internal.provider.xmpp.smack;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.ecf.core.ContainerAuthenticationException;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
-import org.eclipse.ecf.provider.comm.*;
+import org.eclipse.ecf.provider.comm.DisconnectEvent;
+import org.eclipse.ecf.provider.comm.IAsynchEventHandler;
+import org.eclipse.ecf.provider.comm.IConnectionListener;
+import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
-import org.jivesoftware.smack.*;
-import org.jivesoftware.smack.packet.*;
+import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.SASLAuthentication;
+import org.jivesoftware.smack.SmackConfiguration;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Message.Type;
 
 public class ECFConnection implements ISynchAsynchConnection {
@@ -50,8 +68,6 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	private boolean google = false;
 
-	private boolean secure = false;
-
 	private boolean disconnecting = false;
 
 	private final PacketListener packetListener = new PacketListener() {
@@ -67,6 +83,15 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 		public void connectionClosedOnError(Exception e) {
 			handleConnectionClosed(e);
+		}
+
+		public void reconnectingIn(int seconds) {
+		}
+
+		public void reconnectionFailed(Exception e) {
+		}
+
+		public void reconnectionSuccessful() {
 		}
 	};
 
@@ -98,18 +123,12 @@ public class ECFConnection implements ISynchAsynchConnection {
 		return connection;
 	}
 
-	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h,
-			boolean secure) {
+	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h) {
 		this.handler = h;
 		this.namespace = ns;
 		this.google = google;
-		this.secure = secure;
 		if (DEBUG)
 			XMPPConnection.DEBUG_ENABLED = true;
-	}
-
-	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h) {
-		this(google, ns, h, false);
 	}
 
 	protected String getPasswordForObject(Object data) {
@@ -138,7 +157,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 			throw new ECFException("already connected");
 		if (timeout > 0)
 			SmackConfiguration.setPacketReplyTimeout(timeout);
-		Roster.setDefaultSubscriptionMode(Roster.SUBSCRIPTION_MANUAL);
+		Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.manual);
 
 		final XMPPID jabberURI = getXMPPID(remote);
 
@@ -176,44 +195,34 @@ public class ECFConnection implements ISynchAsynchConnection {
 			jabberURI.setResourceName(serverResource);
 		}
 		try {
+			ConnectionConfiguration config;
 			if (hostnameOverride != null) {
-				if (secure) {
-					if (serverPort == -1) {
-						serverPort = XMPPS_DEFAULT_PORT;
-					}
-					connection = new SSLXMPPConnection(hostnameOverride,
-							serverPort, serviceName);
-				} else {
-					if (serverPort == -1) {
-						serverPort = XMPP_DEFAULT_PORT;
-					}
-					connection = new XMPPConnection(hostnameOverride,
-							serverPort, serviceName);
-				}
+				config = new ConnectionConfiguration(hostnameOverride,
+						XMPP_DEFAULT_PORT, serviceName);
 			} else if (serverPort == -1) {
-				if (secure) {
-					connection = new SSLXMPPConnection(serviceName);
-				} else {
-					connection = new XMPPConnection(serviceName);
-				}
+				config = new ConnectionConfiguration(serviceName);
 			} else {
-				if (secure) {
-					connection = new SSLXMPPConnection(serviceName, serverPort);
-				} else {
-					connection = new XMPPConnection(serviceName, serverPort);
-				}
+				config = new ConnectionConfiguration(serviceName, serverPort);
+			}
+			config.setSendPresence(true);
+			connection = new XMPPConnection(config);
+			connection.connect();
+
+			SASLAuthentication.supportSASLMechanism("PLAIN", 0);
+
+			if (google || GOOGLE_TALK_HOST.equals(hostnameOverride)) {
+				username = username + "@" + serviceName;
 			}
 
 			connection.addPacketListener(packetListener, null);
 			connection.addConnectionListener(connectionListener);
+
 			// Login
 			connection.login(username, (String) data, serverResource);
+
 			isConnected = true;
 		} catch (final XMPPException e) {
-			if (e.getMessage().equals("(401)"))
-				throw new ContainerAuthenticationException(
-						"Password incorrect", e);
-			throw new ContainerConnectException(e.getLocalizedMessage(), e);
+			throw new ContainerConnectException("Login attempt failed", e);
 		}
 		return null;
 	}
@@ -235,7 +244,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		if (connection != null) {
 			connection.removePacketListener(packetListener);
 			connection.removeConnectionListener(connectionListener);
-			connection.close();
+			connection.disconnect();
 			isConnected = false;
 			connection = null;
 		}
@@ -317,13 +326,18 @@ public class ECFConnection implements ISynchAsynchConnection {
 							"receiver cannot be null for xmpp instant messaging");
 				else if (receiver instanceof XMPPID) {
 					final XMPPID rcvr = (XMPPID) receiver;
-					aMsg.setType(Message.Type.CHAT);
+					aMsg.setType(Message.Type.chat);
 					final String receiverName = rcvr.getFQName();
-					final Chat localChat = connection.createChat(receiverName);
+					final Chat localChat = connection.getChatManager()
+							.createChat(receiverName, new MessageListener() {
+								public void processMessage(Chat chat,
+										Message message) {
+								}
+							});
 					localChat.sendMessage(aMsg);
 				} else if (receiver instanceof XMPPRoomID) {
 					final XMPPRoomID roomID = (XMPPRoomID) receiver;
-					aMsg.setType(Message.Type.GROUP_CHAT);
+					aMsg.setType(Message.Type.groupchat);
 					final String to = roomID.getMucString();
 					aMsg.setTo(to);
 					connection.sendPacket(aMsg);
@@ -368,7 +382,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	public static Map getPropertiesFromPacket(Packet packet) {
 		final Map result = new HashMap();
-		final Iterator i = packet.getPropertyNames();
+		final Iterator i = packet.getPropertyNames().iterator();
 		for (; i.hasNext();) {
 			final String name = (String) i.next();
 			result.put(name, packet.getProperty(name));
@@ -383,18 +397,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 				final Object val = properties.get(keyo);
 				final String key = (keyo instanceof String) ? (String) keyo
 						: keyo.toString();
-				if (val instanceof Boolean)
-					input.setProperty(key, ((Boolean) val).booleanValue());
-				else if (val instanceof Double)
-					input.setProperty(key, ((Double) val).doubleValue());
-				else if (val instanceof Float)
-					input.setProperty(key, ((Float) val).floatValue());
-				else if (val instanceof Integer)
-					input.setProperty(key, ((Integer) val).intValue());
-				else if (val instanceof Long)
-					input.setProperty(key, ((Long) val).floatValue());
-				else if (val instanceof Object)
-					input.setProperty(key, val);
+				input.setProperty(key, val);
 			}
 		}
 		return input;
