@@ -223,7 +223,7 @@ public abstract class AbstractRemoteServiceTest extends
 				createService(), null, 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], getClient(0).getID(), IConcatService.class.getName(), null);
+				adapters[1], getClient(0).getConnectedID(), IConcatService.class.getName(), null);
 
 		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
@@ -238,7 +238,7 @@ public abstract class AbstractRemoteServiceTest extends
 				createService(), props, 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], getClient(0).getID(), IConcatService.class.getName(),
+				adapters[1], getClient(0).getConnectedID(), IConcatService.class.getName(),
 				getFilterFromServiceProperties(props));
 
 		assertTrue(refs != null);
@@ -260,7 +260,7 @@ public abstract class AbstractRemoteServiceTest extends
 		final String missFilter = getFilterFromServiceProperties(missProps);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], getClient(0).getID(), IConcatService.class.getName(), missFilter);
+				adapters[1], getClient(0).getConnectedID(), IConcatService.class.getName(), missFilter);
 
 		assertTrue(refs == null);
 	}
@@ -280,7 +280,7 @@ public abstract class AbstractRemoteServiceTest extends
 	protected IRemoteService registerAndGetRemoteService() {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		return registerAndGetRemoteService(adapters[0], adapters[1],
-				getClient(0).getID(), IConcatService.class.getName(), null, 0);
+				getClient(0).getConnectedID(), IConcatService.class.getName(), null, 0);
 
 	}
 
