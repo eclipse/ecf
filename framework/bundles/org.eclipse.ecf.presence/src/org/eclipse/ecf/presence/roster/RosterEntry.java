@@ -11,11 +11,7 @@
 
 package org.eclipse.ecf.presence.roster;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IPresence;
@@ -53,25 +49,29 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 	public String getName() {
 		return user.getName();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (this == obj)
+			return true;
 		if (obj instanceof RosterEntry) {
 			RosterEntry re = (RosterEntry) obj;
 			return re.getUser().getID().equals(getUser().getID());
 		}
 		return false;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
 		return getUser().getID().hashCode();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
