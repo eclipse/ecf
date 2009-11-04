@@ -30,7 +30,7 @@ public class RosterTest extends AbstractPresenceTestCase {
 		// Note: This works even if the username configured for this test
 		// already contains a resource ID because '/' is a legal character
 		// in resource IDs.
-		return super.getUsername(client) + "/" + resourceId;
+		return super.getUsername(client) + "/ECF." + resourceId;
 	}
 	
 	public void testDisconnectedResourcesAreRemovedFromRoster() throws Exception {
@@ -59,13 +59,16 @@ public class RosterTest extends AbstractPresenceTestCase {
 		connectClient(1);
 		Thread.sleep(500);
 		assertEquals(1, countMatchingEntries(roster, client));
+		
+		clients[1].disconnect();
+		clients[0].disconnect();
 	}
 	
 	public void testClientConnectsTwiceWithOneUsername() throws Exception {
 		String client = ((XMPPID) getServerConnectID(1)).getUsernameAtHost();
 		
 		connectClient(0);
-		Thread.sleep(500);
+		Thread.sleep(3000);
 		IRoster roster = getPresenceAdapter(0).getRosterManager().getRoster();
 		assertEquals(1, countMatchingEntries(roster, client));
 		
@@ -79,7 +82,7 @@ public class RosterTest extends AbstractPresenceTestCase {
 		
 		connectClient(c0, connectID0, connectContext0);
 		connectClient(c1, connectID1, connectContext1);
-		Thread.sleep(500);
+		Thread.sleep(3000);
 		// Two clients are connected with the same username, so the user should
 		// be found twice in the roster.
 		assertEquals(2, countMatchingEntries(roster, client));

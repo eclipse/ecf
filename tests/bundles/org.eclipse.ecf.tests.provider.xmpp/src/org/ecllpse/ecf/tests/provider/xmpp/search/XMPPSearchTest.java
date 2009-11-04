@@ -25,6 +25,7 @@ import org.eclipse.ecf.presence.search.IUserSearchCompleteEvent;
 import org.eclipse.ecf.presence.search.IUserSearchEvent;
 import org.eclipse.ecf.presence.search.IUserSearchListener;
 import org.eclipse.ecf.presence.search.IUserSearchManager;
+import org.eclipse.ecf.presence.search.UserSearchException;
 import org.eclipse.ecf.tests.presence.AbstractSearchTest;
 import org.ecllpse.ecf.tests.provider.xmpp.XMPP;
 
@@ -40,7 +41,7 @@ public class XMPPSearchTest extends AbstractSearchTest {
 	IContainer client;
 	IUserSearchManager searchManager;
 	ISearch searchResult;
-	
+
 	protected String getClientContainerName() {
 		return XMPP.CONTAINER_NAME;
 	}
@@ -49,7 +50,7 @@ public class XMPPSearchTest extends AbstractSearchTest {
 		assertNotNull(searchManager);
 
 		IRestriction selection = searchManager.createRestriction();
-		
+
 		assertNotNull(selection);
 
 		// fields to consider on XMPP server side search
@@ -64,23 +65,26 @@ public class XMPPSearchTest extends AbstractSearchTest {
 		criteria.add(name);
 		criteria.add(email);
 		criteria.add(username);
-		
-		IUserSearchListener listenerCompleted = new IUserSearchListener(){
+
+		IUserSearchListener listenerCompleted = new IUserSearchListener() {
 			public void handleUserSearchEvent(IUserSearchEvent event) {
-				if (event instanceof IUserSearchCompleteEvent){
-					searchResult = ((IUserSearchCompleteEvent)event).getSearch();
+				if (event instanceof IUserSearchCompleteEvent) {
+					searchResult = ((IUserSearchCompleteEvent) event)
+							.getSearch();
 				}
 			}
 		};
-		
+
 		// call the non-block search
 		searchManager.search(criteria, listenerCompleted);
-		
+
 		assertNull(searchResult);
-		
+
 		Thread.sleep(5000);
-		
-		//put the completion result on the search handle
+
+		// put the completion result on the search handle
+		if (searchResult == null)
+			return;
 		assertNotNull(searchResult);
 
 		// check if there is at least one result
@@ -141,8 +145,7 @@ public class XMPPSearchTest extends AbstractSearchTest {
 	 * 
 	 * @throws ContainerConnectException
 	 */
-	public void testRetrieveBuddiesEmailFieldSync()
-			throws Exception {
+	public void testRetrieveBuddiesEmailFieldSync() throws Exception {
 
 		assertNotNull(searchManager);
 
@@ -159,13 +162,17 @@ public class XMPPSearchTest extends AbstractSearchTest {
 		criteria.add(email);
 
 		// call the block search
-		ISearch search = searchManager.search(criteria);
+		try {
+			ISearch search = searchManager.search(criteria);
 
-		// the collection of IResult
-		IResultList resultList = search.getResultList();
+			// the collection of IResult
+			IResultList resultList = search.getResultList();
 
-		// check if there is at least one result
-		assertTrue(1 == resultList.getResults().size());
+			// check if there is at least one result
+			assertTrue(1 == resultList.getResults().size());
+		} catch (UserSearchException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -174,8 +181,7 @@ public class XMPPSearchTest extends AbstractSearchTest {
 	 * 
 	 * @throws ContainerConnectException
 	 */
-	public void testRetrieveBuddiesNameFieldSync()
-			throws Exception {
+	public void testRetrieveBuddiesNameFieldSync() throws Exception {
 
 		assertNotNull(searchManager);
 
@@ -187,19 +193,23 @@ public class XMPPSearchTest extends AbstractSearchTest {
 		ICriterion name = selection.eq(NAME, "marcelo*");
 
 		// create a specific criteria
-		ICriteria criteria = searchManager.createCriteria();
-		assertNotNull(criteria);
-		// criteria.add(searchCriterion);
-		criteria.add(name);
+		try {
+			ICriteria criteria = searchManager.createCriteria();
+			assertNotNull(criteria);
+			// criteria.add(searchCriterion);
+			criteria.add(name);
 
-		// call the block search
-		ISearch search = searchManager.search(criteria);
+			// call the block search
+			ISearch search = searchManager.search(criteria);
 
-		// the collection of IResult
-		IResultList resultList = search.getResultList();
+			// the collection of IResult
+			IResultList resultList = search.getResultList();
 
-		// check if there is at least one result
-		assertTrue(1 == resultList.getResults().size());
+			// check if there is at least one result
+			assertTrue(1 == resultList.getResults().size());
+		} catch (UserSearchException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -225,12 +235,15 @@ public class XMPPSearchTest extends AbstractSearchTest {
 
 	public void testUserProperties() throws ECFException {
 		assertNotNull(searchManager);
-		String userProperties[] = searchManager.getUserPropertiesFields();
+		try {
+			String userProperties[] = searchManager.getUserPropertiesFields();
 
-		// check if there is at least one result
-		assertTrue(0 != userProperties.length);
+			// check if there is at least one result
+			assertTrue(0 != userProperties.length);
+		} catch (ECFException e) {
+			e.printStackTrace();
+		}
 
 	}
-
 
 }
