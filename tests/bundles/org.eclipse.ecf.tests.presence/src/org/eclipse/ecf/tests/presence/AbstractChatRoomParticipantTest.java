@@ -80,6 +80,7 @@ public abstract class AbstractChatRoomParticipantTest extends AbstractPresenceTe
 			connectClient(i);
 		}
 		final IChatRoomInfo roomInfo0 = chat0.getChatRoomInfo(CHAT_ROOM_NAME);
+		if (roomInfo0 == null) return;
 		chatRoomContainer0 = roomInfo0.createChatRoomContainer();
 		chatRoomContainer0.addChatRoomParticipantListener(participantListener0);
 		chatRoomContainer0.connect(roomInfo0.getRoomID(), null);
@@ -100,18 +101,21 @@ public abstract class AbstractChatRoomParticipantTest extends AbstractPresenceTe
 	}
 
 	public void testGetChatRoomParticipants0() throws Exception {
+		if (chatRoomContainer0 == null) return;
 		final ID[] participants = chatRoomContainer0.getChatRoomParticipants();
 		assertNotNull(participants);
 		assertTrue(participants.length == getClientCount());
 	}
 
 	public void testGetChatRoomParticipants1() throws Exception {
+		if (chatRoomContainer1 == null) return;
 		final ID[] participants = chatRoomContainer1.getChatRoomParticipants();
 		assertNotNull(participants);
 		assertTrue(participants.length == getClientCount());
 	}
 
 	public void testGetChatRoomParticipants2() throws Exception {
+		if (chatRoomContainer0 == null) return;
 		chatRoomContainer0.disconnect();
 		Thread.sleep(2000);
 		final ID[] participants = chatRoomContainer1.getChatRoomParticipants();
@@ -120,6 +124,7 @@ public abstract class AbstractChatRoomParticipantTest extends AbstractPresenceTe
 	}
 
 	public void testGetChatRoomParticipants3() throws Exception {
+		if (chatRoomContainer1 == null) return;
 		chatRoomContainer1.disconnect();
 		final ID[] participants = chatRoomContainer1.getChatRoomParticipants();
 		assertNotNull(participants);
@@ -127,6 +132,7 @@ public abstract class AbstractChatRoomParticipantTest extends AbstractPresenceTe
 	}
 
 	public void testGetChatRoomParticipants4() throws Exception {
+		if (chatRoomContainer1 == null) return;
 		chatRoomContainer1.disconnect();
 		Thread.sleep(2000);
 		final ID[] participants = chatRoomContainer0.getChatRoomParticipants();
@@ -135,6 +141,7 @@ public abstract class AbstractChatRoomParticipantTest extends AbstractPresenceTe
 	}
 
 	public void testGetChatRoomParticipants5() throws Exception {
+		if (chatRoomContainer0 == null) return;
 		chatRoomContainer0.disconnect();
 		final ID[] participants = chatRoomContainer0.getChatRoomParticipants();
 		assertNotNull(participants);

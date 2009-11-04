@@ -72,7 +72,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 	}
 
 	public void testSendIM() throws Exception {
-		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1), "abcdef");
+		chat0.getChatMessageSender().sendChatMessage(getClient(1).getConnectedID(), "abcdef");
 		sleep(WAITTIME);
 		assertHasEvent(receivedChatMessages, IChatMessage.class);
 		final IChatMessage message = (IChatMessage) receivedChatMessages.get(0);
@@ -89,7 +89,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 		sendprops.put("prop1", "this");
 		final ID sendthreadid = IDFactory.getDefault().createStringID("thread1");
 		// Send the whole thing
-		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1), sendthreadid, IChatMessage.Type.CHAT, "subject1", "uvwxyz", sendprops);
+		chat0.getChatMessageSender().sendChatMessage(getClient(1).getConnectedID(), sendthreadid, IChatMessage.Type.CHAT, "subject1", "uvwxyz", sendprops);
 		sleep(WAITTIME);
 
 		assertHasEvent(receivedChatMessages, IChatMessage.class);
@@ -111,7 +111,7 @@ public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 		final Map sendprops = new HashMap();
 		sendprops.put("prop2", "that");
 		// Send the whole thing
-		chat0.getChatMessageSender().sendChatMessage(getServerConnectID(1), null, IChatMessage.Type.CHAT, null, null, sendprops);
+		chat0.getChatMessageSender().sendChatMessage(getClient(1).getConnectedID(), null, IChatMessage.Type.CHAT, null, null, sendprops);
 		sleep(WAITTIME);
 
 		assertHasEvent(receivedChatMessages, IChatMessage.class);

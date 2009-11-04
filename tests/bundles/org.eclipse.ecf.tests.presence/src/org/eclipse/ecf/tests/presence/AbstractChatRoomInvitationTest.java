@@ -75,6 +75,7 @@ public abstract class AbstractChatRoomInvitationTest extends AbstractPresenceTes
 		final IChatRoomInvitationSender invitationSender = chat0.getInvitationSender();
 		assertNotNull(invitationSender);
 		final IChatRoomInfo roomInfo = chat0.getChatRoomInfo(CHAT_ROOM_NAME);
+		if (roomInfo == null) return;
 		final IChatRoomContainer chatRoomContainer = roomInfo.createChatRoomContainer();
 		chatRoomContainer.connect(roomInfo.getRoomID(), null);
 		invitationSender.sendInvitation(roomInfo.getRoomID(), getClient(1).getConnectedID(), null, "this is an invitation");
