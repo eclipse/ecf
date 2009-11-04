@@ -11,31 +11,94 @@
 
 package org.eclipse.ecf.internal.presence.ui.dialogs;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.internal.presence.ui.Messages;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
-import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.ui.MultiRosterAccount;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.deferred.DeferredContentProvider;
+import org.eclipse.jface.viewers.deferred.SetModel;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 
 public class ChatRoomSelectionDialog extends TitleAreaDialog {
+	private static final int X_INITIAL_SIZE = 640;
+	private static final int Y_INITIAL_SIZE = 400;
+
+	private Room loadingRoom = new Room();
+
 	MultiRosterAccount[] accounts = null;
 
 	private Room selectedRoom = null;
+	private Job roomRetrieveJob = null;
 
 	public class Room {
 		IChatRoomInfo info;
 
 		MultiRosterAccount account;
+
+		public Room() {
+			this.info = new IChatRoomInfo() {
+
+				/**
+				 * @throws ContainerCreateException  
+				 */
+				public IChatRoomContainer createChatRoomContainer() throws ContainerCreateException {
+					return null;
+				}
+
+				public ID getConnectedID() {
+					return null;
+				}
+
+				public String getDescription() {
+					return null;
+				}
+
+				public String getName() {
+					return "Retrieving chat room list from servers..."; //$NON-NLS-1$
+				}
+
+				public int getParticipantsCount() {
+					return 0;
+				}
+
+				public ID getRoomID() {
+					return null;
+				}
+
+				public String getSubject() {
+					return null;
+				}
+
+				public boolean isModerated() {
+					return false;
+				}
+
+				public boolean isPersistent() {
+					return false;
+				}
+
+				public boolean requiresPassword() {
+					return false;
+				}
+
+				public Object getAdapter(Class adapter) {
+					return null;
+				}
+			};
+		}
 
 		public Room(IChatRoomInfo info, MultiRosterAccount man) {
 			this.info = info;
@@ -51,10 +114,20 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		}
 	}
 
+	private SetModel rooms = new SetModel();
+
 	public ChatRoomSelectionDialog(Shell parentShell, MultiRosterAccount[] accounts) {
 		super(parentShell);
 		this.accounts = accounts;
 		setTitleImage(SharedImages.getImage(SharedImages.IMG_CHAT_WIZARD));
+	}
+
+	protected boolean isResizable() {
+		return true;
+	}
+
+	protected Point getInitialSize() {
+		return getShell().computeSize(X_INITIAL_SIZE, Y_INITIAL_SIZE, true);
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -62,7 +135,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		main.setLayout(new GridLayout());
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		TableViewer viewer = new TableViewer(main, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		TableViewer viewer = new TableViewer(main, SWT.VIRTUAL | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		Table table = viewer.getTable();
 
 		table.setHeaderVisible(true);
@@ -71,19 +144,20 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 		TableColumn tc = new TableColumn(table, SWT.NONE);
 		tc.setText(Messages.ChatRoomSelectionDialog_ROOM_NAME_COLUMN);
-		tc.pack();
-		int width = tc.getWidth();
-		tc.setWidth(width + (width / 4));
+		//		tc.pack();
+		//		int width = tc.getWidth();
+		tc.setWidth(X_INITIAL_SIZE / 3);
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText(Messages.ChatRoomSelectionDialog_SUBJECT_COLUMN);
 		tc.pack();
+		int width;
 		width = tc.getWidth();
 		tc.setWidth(width + (width / 4));
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText(Messages.ChatRoomSelectionDialog_DESCRIPTION_COLUMN);
 		tc.pack();
 		width = tc.getWidth();
-		tc.setWidth(width + (width / 3));
+		tc.setWidth(width + (width / 4));
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText(Messages.ChatRoomSelectionDialog_MEMBERS_COLUMN);
 		tc.pack();
@@ -96,37 +170,32 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText(Messages.ChatRoomSelectionDialog_ACCOUNT_COLUMN);
 		tc.pack();
-		width = tc.getWidth();
-		tc.setWidth(width * 3);
 
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
-				if (!event.getSelection().isEmpty()) {
+				ISelection selection = event.getSelection();
+				IStructuredSelection ss = (IStructuredSelection) ((selection instanceof IStructuredSelection) ? selection : null);
+				Object firstElement = (ss == null) ? null : ss.getFirstElement();
+				if (!event.getSelection().isEmpty() && !loadingRoom.equals(firstElement)) {
 					ChatRoomSelectionDialog.this.getButton(Window.OK).setEnabled(true);
 				}
 			}
 
 		});
 
-		viewer.setContentProvider(new ChatRoomContentProvider());
+		viewer.setContentProvider(new DeferredContentProvider(new Comparator() {
+			public int compare(Object r1, Object r2) {
+				Room room1 = (Room) r1;
+				Room room2 = (Room) r2;
+				return room1.getRoomInfo().getName().compareTo(room2.getRoomInfo().getName());
+			}
+		}));
 		viewer.setLabelProvider(new ChatRoomLabelProvider());
 
-		List all = new ArrayList();
-		for (int i = 0; i < accounts.length; i++) {
-			IChatRoomManager chatRoomManager = accounts[i].getPresenceContainerAdapter().getChatRoomManager();
-			if (chatRoomManager != null) {
-				IChatRoomInfo[] infos = chatRoomManager.getChatRoomInfos();
-				if (infos != null) {
-					for (int j = 0; j < infos.length; j++) {
-						if (infos[j] != null && accounts[i] != null) {
-							all.add(new Room(infos[j], accounts[i]));
-						}
-					}
-				}
-			}
-		}
-		viewer.setInput(all.toArray());
+		rooms.addAll(Arrays.asList(new Room[] {loadingRoom}));
+
+		viewer.setInput(rooms);
 
 		this.setTitle(Messages.ChatRoomSelectionDialog_TITLE);
 		this.setMessage(Messages.ChatRoomSelectionDialog_MESSAGE);
@@ -152,24 +221,41 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 		});
 
+		startRetrieveJob();
+
 		applyDialogFont(parent);
 		return parent;
 	}
 
-	private class ChatRoomContentProvider implements IStructuredContentProvider {
-
-		public Object[] getElements(Object inputElement) {
-			return (Object[]) inputElement;
-		}
-
-		public void dispose() {
-			// do nothing
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// do nothing
-		}
-
+	private void startRetrieveJob() {
+		roomRetrieveJob = new Job("Chat Room Retrieve") { //$NON-NLS-1$
+			protected IStatus run(IProgressMonitor monitor) {
+				ArrayList add = new ArrayList();
+				for (int i = 0; i < accounts.length; i++) {
+					IChatRoomManager chatRoomManager = accounts[i].getPresenceContainerAdapter().getChatRoomManager();
+					if (chatRoomManager != null) {
+						try {
+							IChatRoomInfo[] infos = chatRoomManager.getChatRoomInfos();
+							if (infos != null) {
+								for (int j = 0; j < infos.length; j++) {
+									if (infos[j] != null && accounts[i] != null) {
+										add.add(new Room(infos[j], accounts[i]));
+									}
+								}
+							}
+						} catch (Exception e) {
+							// Ignore
+						}
+					}
+				}
+				if (monitor.isCanceled())
+					return Status.CANCEL_STATUS;
+				rooms.removeAll(new Room[] {loadingRoom});
+				rooms.addAll(add);
+				return Status.OK_STATUS;
+			}
+		};
+		roomRetrieveJob.schedule();
 	}
 
 	private class ChatRoomLabelProvider implements ITableLabelProvider {
@@ -182,6 +268,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 			Room room = (Room) element;
 
 			IChatRoomInfo info = room.getRoomInfo();
+			MultiRosterAccount account = room.getAccount();
 			switch (columnIndex) {
 				case 0 :
 					return info.getName();
@@ -190,13 +277,13 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 				case 2 :
 					return info.getDescription();
 				case 3 :
-					return String.valueOf(info.getParticipantsCount());
+					return (account == null) ? null : String.valueOf(info.getParticipantsCount());
 				case 4 :
-					return String.valueOf(info.isModerated());
+					return (account == null) ? null : String.valueOf(info.isModerated());
 				case 5 :
-					return String.valueOf(info.isPersistent());
+					return (account == null) ? null : String.valueOf(info.isPersistent());
 				case 6 :
-					return room.getAccount().getContainer().getConnectedID().getName();
+					return (account == null) ? null : account.getContainer().getConnectedID().getName();
 				default :
 					return ""; //$NON-NLS-1$
 
@@ -231,5 +318,14 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 	public Room getSelectedRoom() {
 		return selectedRoom;
+	}
+
+	public boolean close() {
+		if (roomRetrieveJob != null) {
+			roomRetrieveJob.cancel();
+			roomRetrieveJob = null;
+			rooms.clear();
+		}
+		return super.close();
 	}
 }
