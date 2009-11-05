@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
 Bundle-Name: jslp-osgi
 Bundle-SymbolicName: ch.ethz.iks.slp
 Bundle-Version: 1.1.0.qualifier
