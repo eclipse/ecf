@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.sdk"
-      label="ECF SDK"
-      version="1.2.0.qualifier"
+      label="ECF Software Development Kit Feature"
+      version="3.2.0.qualifier"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
