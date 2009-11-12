@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.core"
       label="%featureName"
-      version="3.1.0.qualifier"
+      version="3.2.0.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.ecf">
 
@@ -24,12 +24,6 @@ Contributors: Composent, Inc. - initial API and implementation
    <license url="%licenseURL">
       %license
    </license>
-
-   <!-- commented out for Hudson/Bucky
-    <includes
-         id="org.eclipse.ecf.core.source"
-         version="0.0.0"/>
-   -->
 
    <plugin
          id="org.jivesoftware.smack"
