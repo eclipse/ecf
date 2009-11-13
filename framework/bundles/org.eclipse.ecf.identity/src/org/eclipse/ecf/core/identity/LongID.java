@@ -26,34 +26,22 @@ public class LongID extends BaseID {
 			super(LongID.class.getName(), "LongID Namespace"); //$NON-NLS-1$
 		}
 
-		private String getInitFromExternalForm(Object[] args) {
-			if (args == null || args.length < 1 || args[0] == null)
-				return null;
-			if (args[0] instanceof String) {
-				String arg = (String) args[0];
-				if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
-					int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
-					if (index >= arg.length())
-						return null;
-					return arg.substring(index + 1);
-				}
-			}
-			return null;
-		}
-
 		/**
-		 * @param args must not be <code>null></code>
-		 * @return ID created.  Will not be <code>null</code>.
-		 * @throws IDCreateException never thrown
+		 * @param args
+		 *            must not be <code>null></code>
+		 * @return ID created. Will not be <code>null</code>.
+		 * @throws IDCreateException
+		 *             never thrown
 		 */
 		public ID createInstance(Object[] args) throws IDCreateException {
 			try {
-				String init = getInitFromExternalForm(args);
+				String init = getInitStringFromExternalForm(args);
 				if (init != null)
 					return new LongID(this, Long.decode(init));
 				return new LongID(this, (Long) args[0]);
 			} catch (Exception e) {
-				throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
+				throw new IDCreateException(NLS.bind(
+						"{0} createInstance()", getName()), e); //$NON-NLS-1$
 			}
 		}
 
@@ -64,10 +52,11 @@ public class LongID extends BaseID {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
+		 * @seeorg.eclipse.ecf.core.identity.Namespace#
+		 * getSupportedParameterTypesForCreateInstance()
 		 */
 		public Class[][] getSupportedParameterTypes() {
-			return new Class[][] {{Long.class}};
+			return new Class[][] { { Long.class } };
 		}
 	}
 

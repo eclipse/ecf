@@ -26,27 +26,13 @@ public class GUID extends StringID {
 		private static final long serialVersionUID = -8546568877571886386L;
 
 		public GUIDNamespace() {
-			super(GUID.class.getName(), Messages.GUID_GUID_Namespace_Description_Default);
-		}
-
-		private String getInitFromExternalForm(Object[] args) {
-			if (args == null || args.length < 1 || args[0] == null)
-				return null;
-			if (args[0] instanceof String) {
-				String arg = (String) args[0];
-				if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
-					int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
-					if (index >= arg.length())
-						return null;
-					return arg.substring(index + 1);
-				}
-			}
-			return null;
+			super(GUID.class.getName(),
+					Messages.GUID_GUID_Namespace_Description_Default);
 		}
 
 		public ID createInstance(Object[] args) throws IDCreateException {
 			try {
-				String init = getInitFromExternalForm(args);
+				String init = getInitStringFromExternalForm(args);
 				if (init != null)
 					return new GUID(this, init);
 				if (args == null || args.length <= 0)
@@ -58,7 +44,8 @@ public class GUID extends StringID {
 				else
 					return new GUID(this);
 			} catch (Exception e) {
-				throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
+				throw new IDCreateException(NLS.bind(
+						"{0} createInstance()", getName()), e); //$NON-NLS-1$
 			}
 		}
 
@@ -69,10 +56,11 @@ public class GUID extends StringID {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
+		 * @seeorg.eclipse.ecf.core.identity.Namespace#
+		 * getSupportedParameterTypesForCreateInstance()
 		 */
 		public Class[][] getSupportedParameterTypes() {
-			return new Class[][] { {}, {Integer.class}};
+			return new Class[][] { {}, { Integer.class } };
 		}
 
 	}
@@ -96,13 +84,15 @@ public class GUID extends StringID {
 	 * @param byteLength
 	 *            the length of the target number (in bytes)
 	 */
-	protected GUID(Namespace n, String algo, String provider, int byteLength) throws IDCreateException {
+	protected GUID(Namespace n, String algo, String provider, int byteLength)
+			throws IDCreateException {
 		super(n, ""); //$NON-NLS-1$
 		// Get SecureRandom instance for class
 		try {
 			getRandom(algo, provider);
 		} catch (Exception e) {
-			throw new IDCreateException(Messages.GUID_GUID_Creation_Failure + e.getMessage());
+			throw new IDCreateException(Messages.GUID_GUID_Creation_Failure
+					+ e.getMessage());
 		}
 		// make sure we have reasonable byteLength
 		if (byteLength <= 0)
@@ -139,7 +129,8 @@ public class GUID extends StringID {
 	 * @exception Exception
 	 *                thrown if SecureRandom instance cannot be created/accessed
 	 */
-	protected static synchronized SecureRandom getRandom(String algo, String provider) throws Exception {
+	protected static synchronized SecureRandom getRandom(String algo,
+			String provider) throws Exception {
 		// Given algo and provider, get SecureRandom instance
 		if (random == null) {
 			initializeRandom(algo, provider);
@@ -147,11 +138,13 @@ public class GUID extends StringID {
 		return random;
 	}
 
-	protected static synchronized void initializeRandom(String algo, String provider) throws Exception {
+	protected static synchronized void initializeRandom(String algo,
+			String provider) throws Exception {
 		if (provider == null) {
 			if (algo == null) {
 				try {
-					random = SecureRandom.getInstance(Messages.GUID_IBM_SECURE_RANDOM);
+					random = SecureRandom
+							.getInstance(Messages.GUID_IBM_SECURE_RANDOM);
 				} catch (Exception e) {
 					random = SecureRandom.getInstance(Messages.GUID_SHA1);
 				}

@@ -88,9 +88,9 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	/**
-	 * Hashcode implementation.  Subclasses should not override.
+	 * Hashcode implementation. Subclasses should not override.
 	 * 
-	 * @return int hashCode for this Namespace.  Should be unique.
+	 * @return int hashCode for this Namespace. Should be unique.
 	 */
 	public int hashCode() {
 		return hashCode;
@@ -98,9 +98,13 @@ public abstract class Namespace implements Serializable, IAdaptable {
 
 	/**
 	 * Test whether two IDs are equal to one another.
-	 * @param first the first ID.  Must not be <code>null</code>.
-	 * @param second the second ID.  Must not be <code>null</code>.
-	 * @return <code>true</code> if this ID is equal to the given ID.  <code>false</code> otherwise.
+	 * 
+	 * @param first
+	 *            the first ID. Must not be <code>null</code>.
+	 * @param second
+	 *            the second ID. Must not be <code>null</code>.
+	 * @return <code>true</code> if this ID is equal to the given ID.
+	 *         <code>false</code> otherwise.
 	 */
 	protected boolean testIDEquals(BaseID first, BaseID second) {
 		// First check that namespaces are the same and non-null
@@ -111,22 +115,26 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	/**
-	 * The default implementation of this method is to call id.namespaceGetName().  Subclasses may
-	 * override.
+	 * The default implementation of this method is to call
+	 * id.namespaceGetName(). Subclasses may override.
 	 * 
-	 * @param id the ID to get the name for.  Must not be <code>null</code>.
-	 * @return String that is the unique name for the given id within this Namespace.
+	 * @param id
+	 *            the ID to get the name for. Must not be <code>null</code>.
+	 * @return String that is the unique name for the given id within this
+	 *         Namespace.
 	 */
 	protected String getNameForID(BaseID id) {
 		return id.namespaceGetName();
 	}
 
 	/**
-	 * The default implementation of this method is to call first.namespaceCompareTo(second).  Subclasses may
-	 * override.
+	 * The default implementation of this method is to call
+	 * first.namespaceCompareTo(second). Subclasses may override.
 	 * 
-	 * @param first the first id to compare.  Must not be <code>null</code>.
-	 * @param second the second id to compare. Must not be <code>null</code>.
+	 * @param first
+	 *            the first id to compare. Must not be <code>null</code>.
+	 * @param second
+	 *            the second id to compare. Must not be <code>null</code>.
 	 * @return int as specified by {@link Comparable}.
 	 */
 	protected int getCompareToForObject(BaseID first, BaseID second) {
@@ -134,24 +142,30 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	/**
-	 * The default implementation of this method is to call id.namespaceHashCode().  Subclasses may
-	 * override.
+	 * The default implementation of this method is to call
+	 * id.namespaceHashCode(). Subclasses may override.
 	 * 
-	 * @param id the id in this Namespace to get the hashcode for. Must not be <code>null</code>.
-	 * @return the hashcode for the given id.  Returned value must be unique within this process.
+	 * @param id
+	 *            the id in this Namespace to get the hashcode for. Must not be
+	 *            <code>null</code>.
+	 * @return the hashcode for the given id. Returned value must be unique
+	 *         within this process.
 	 */
 	protected int getHashCodeForID(BaseID id) {
 		return id.namespaceHashCode();
 	}
 
 	/**
-	 * The default implementation of this method is to call id.namespaceToExternalForm().  Subclasses may
-	 * override.
+	 * The default implementation of this method is to call
+	 * id.namespaceToExternalForm(). Subclasses may override.
 	 * 
-	 * @param id the id in this Namespace to convert to external form.
-	 * @return String that represents the given id in an external form.  Note that
-	 * this external form may at some later time be passed to {@link #createInstance(Object[])} as a single
-	 * String parameter, and should result in a valid ID instance of the appropriate Namespace.
+	 * @param id
+	 *            the id in this Namespace to convert to external form.
+	 * @return String that represents the given id in an external form. Note
+	 *         that this external form may at some later time be passed to
+	 *         {@link #createInstance(Object[])} as a single String parameter,
+	 *         and should result in a valid ID instance of the appropriate
+	 *         Namespace.
 	 */
 	protected String toExternalForm(BaseID id) {
 		return id.namespaceToExternalForm();
@@ -160,8 +174,9 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	/**
 	 * Get the name of this namespace. Must not return <code>null</code>.
 	 * 
-	 * @return String name of Namespace instance.  Must not return <code>null</code>, and
-	 * the returned value should be a globally unique name for this Namespace subclass.
+	 * @return String name of Namespace instance. Must not return
+	 *         <code>null</code>, and the returned value should be a globally
+	 *         unique name for this Namespace subclass.
 	 * 
 	 */
 	public String getName() {
@@ -172,7 +187,8 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * Get the description, associated with this Namespace. The returned value
 	 * may be <code>null</code>.
 	 * 
-	 * @return the description associated with this Namespace.  May be <code>null</code>.
+	 * @return the description associated with this Namespace. May be
+	 *         <code>null</code>.
 	 */
 	public String getDescription() {
 		return description;
@@ -198,13 +214,14 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * @throws IDCreateException
 	 *             if construction fails
 	 */
-	public abstract ID createInstance(Object[] parameters) throws IDCreateException;
+	public abstract ID createInstance(Object[] parameters)
+			throws IDCreateException;
 
 	/**
 	 * Get the primary scheme associated with this namespace. Subclasses must
 	 * provide an implementation that returns a non-<code>null</code> scheme
-	 * identifier.  Note that the returned scheme should <b>not</b> contain the
-	 * Namespace.SCHEME_SEPARATOR (\":\").  
+	 * identifier. Note that the returned scheme should <b>not</b> contain the
+	 * Namespace.SCHEME_SEPARATOR (\":\").
 	 * 
 	 * @return a String scheme identifier. Must not be <code>null</code>.
 	 */
@@ -250,8 +267,8 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * </pre>
 	 * 
 	 * The above means that there are two acceptable values for the Object []
-	 * passed into {@link #createInstance(Object[])}: 1) a single String, and
-	 * 2) two Strings. These would therefore be acceptable as input to
+	 * passed into {@link #createInstance(Object[])}: 1) a single String, and 2)
+	 * two Strings. These would therefore be acceptable as input to
 	 * createInstance:
 	 * 
 	 * <pre>
@@ -266,10 +283,12 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 *         parameters to {@link #createInstance(Object[])} will be ignored.
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] {{}};
+		return new Class[][] { {} };
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
@@ -280,6 +299,21 @@ public abstract class Namespace implements Serializable, IAdaptable {
 		if (manager == null)
 			return null;
 		return manager.loadAdapter(this, adapter.getName());
+	}
+
+	protected String getInitStringFromExternalForm(Object[] args) {
+		if (args == null || args.length < 1 || args[0] == null)
+			return null;
+		if (args[0] instanceof String) {
+			final String arg = (String) args[0];
+			if (arg.startsWith(getScheme() + SCHEME_SEPARATOR)) {
+				final int index = arg.indexOf(SCHEME_SEPARATOR);
+				if (index >= arg.length())
+					return null;
+				return arg.substring(index + 1);
+			}
+		}
+		return null;
 	}
 
 	public String toString() {
