@@ -39,6 +39,7 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.telephony.call,org.eclipse.ecf.telephony.call"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.telephony.call.ui,org.eclipse.ecf.telephony.call.ui"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.remoteservice,org.eclipse.ecf.remoteservice"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/server-side/bundles/org.eclipse.ecf.remoteservice.eventadmin,org.eclipse.ecf.remoteservice.eventadmin"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.remoteservice.ui,org.eclipse.ecf.remoteservice.ui"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.ui,org.eclipse.ecf.ui"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.sync,org.eclipse.ecf.sync"/>
