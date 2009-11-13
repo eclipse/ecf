@@ -23,6 +23,9 @@ import org.eclipse.ecf.internal.tests.Activator;
  */
 public abstract class ECFAbstractTestCase extends TestCase {
 
+	private Object sync = new Object();
+	private boolean notified = false;
+	
 	/**
 	 * Sleep the current thread for given amount of time (in ms).  Optionally print messages before starting
 	 * sleeping and after completing sleeping.
@@ -37,6 +40,33 @@ public abstract class ECFAbstractTestCase extends TestCase {
 		} catch (InterruptedException e) {
 		}
 		if (endMessage != null) Trace.trace(Activator.PLUGIN_ID, endMessage);
+	}
+	
+	protected void syncWaitForNotify() throws Exception {
+		syncWaitForNotify(0);
+	}
+	
+	protected void syncWaitForNotify(long timeout) throws Exception {
+		synchronized (sync) {
+			notified = false;
+			try {
+				sync.wait(timeout);
+			} catch (InterruptedException e) {}
+			if (!notified) throw new Exception("syncWaitNotifyTimeout after "+timeout);
+		}
+	}
+	
+	protected void syncNotify() {
+		synchronized (sync) {
+			notified = true;
+			sync.notify();
+		}
+	}
+	
+	protected void syncNotifyAll() {
+		synchronized (sync) {
+			sync.notifyAll();
+		}
 	}
 	
 	/**
