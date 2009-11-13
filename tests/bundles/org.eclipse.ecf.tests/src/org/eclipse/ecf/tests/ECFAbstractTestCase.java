@@ -12,6 +12,9 @@ package org.eclipse.ecf.tests;
 
 import junit.framework.TestCase;
 
+import org.eclipse.ecf.core.IContainerFactory;
+import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.tests.Activator;
 
@@ -42,5 +45,17 @@ public abstract class ECFAbstractTestCase extends TestCase {
 	 */
 	protected void sleep(long sleepTime) {
 		sleep(sleepTime, null, null);
+	}
+	
+	protected IContainerManager getContainerManager() {
+		return Activator.getDefault().getContainerManager();
+	}
+	
+	protected IContainerFactory getContainerFactory() {
+		return Activator.getDefault().getContainerFactory();
+	}
+	
+	protected IIDFactory getIDFactory() {
+		return Activator.getDefault().getIDFactory();
 	}
 }
