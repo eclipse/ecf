@@ -311,8 +311,10 @@ limitations under the License.
          id="org.eclipse.ecf.core"
          version="0.0.0"/>
 
-   <includes
+  <!-- 
+  <includes
          id="org.eclipse.ecf.examples"
          version="0.0.0"/>
+  -->
 
 </feature>
