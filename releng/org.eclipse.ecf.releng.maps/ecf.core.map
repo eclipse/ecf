@@ -64,6 +64,7 @@ plugin@org.eclipse.team.ecf.core=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cv
 plugin@org.eclipse.team.ecf.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.team.ecf.ui
 plugin@org.eclipse.ecf.ui.capabilities=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.ui.capabilities
 plugin@org.eclipse.ecf.remoteservice.rest=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.remoteservice.rest
+plugin@org.json=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/incubation/bundles/org.json
 
 plugin@org.eclipse.ecf.osgi.services=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services
 plugin@org.eclipse.ecf.osgi.services.discovery=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.discovery
