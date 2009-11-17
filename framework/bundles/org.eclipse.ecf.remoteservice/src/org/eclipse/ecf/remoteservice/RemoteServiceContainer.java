@@ -32,7 +32,7 @@ public class RemoteServiceContainer implements IRemoteServiceContainer {
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 3.3
 	 */
 	public RemoteServiceContainer(IContainer container) {
 		this(container, (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class));

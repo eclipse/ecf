@@ -10,7 +10,7 @@
 package org.eclipse.ecf.remoteservice;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public interface IRemoteServiceProxy {
 

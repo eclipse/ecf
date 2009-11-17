@@ -232,4 +232,10 @@ public interface Constants {
 	 */
 	public static final String SERVICE_NAMESPACE = "ecf.rsvc.ns"; //$NON-NLS-1$
 
+	/**
+	 * Service property used on service registration to indicate that a service proxy 
+	 * should be created rather than using the given service object (which may be null).
+	 * @since 3.3
+	 */
+	public static final String SERVICE_REGISTER_PROXY = "ecf.rsvc.proxy"; //$NON-NLS-1$
 }
