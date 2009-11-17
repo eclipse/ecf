@@ -9,75 +9,81 @@
 *******************************************************************************/ 
 package org.eclipse.ecf.tests.remoteservice.rest;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-
-import junit.framework.TestCase;
-
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
-import org.eclipse.ecf.remoteservice.rest.RestContainer;
-import org.eclipse.ecf.remoteservice.rest.RestService;
-import org.eclipse.ecf.remoteservice.rest.RestServiceRegistration;
+import org.eclipse.ecf.remoteservice.rest.IRestCallable;
+import org.eclipse.ecf.remoteservice.rest.RestCallable;
+import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
 import org.osgi.framework.InvalidSyntaxException;
 
-public class RestRemoteServiceAdapterTest extends TestCase {
+public class RestRemoteServiceAdapterTest extends AbstractRestTestCase {
 	
-	private IRemoteServiceRegistration registration;
-	private RestContainer container;
-
+	IContainer container;
+	
 	protected void setUp() throws Exception {
-		registration = getServiceRegistration();
+		super.setUp();
+		container = createRestContainer(RestConstants.TEST_TWITTER_TARGET);
+	}
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		container.disconnect();
+		container.dispose();
+		getContainerManager().removeAllContainers();
 	}
 	
-	protected void tearDown() throws Exception {
-		registration = null;
+	IRestClientContainerAdapter getRestClientContainerAdapter() {
+		return super.getRestClientContainerAdapter(container);
+	}
+	
+	IRemoteServiceRegistration createRestRegistration(String resourcePath) {
+		IRestCallable callable = new RestCallable(resourcePath,resourcePath,null,IRestCallable.RequestType.GET);
+		return registerCallable(container, callable, null);
 	}
 	
 	public void testGetRemoteService() {
+		IRemoteServiceRegistration registration = createRestRegistration("resourcePath");
 		IRemoteServiceReference reference = registration.getReference();
-		IRemoteService remoteService = ((IRemoteServiceContainerAdapter)container).getRemoteService(reference);
-		RestServiceRegistration reg = (RestServiceRegistration)registration;
-		assertEquals(reg.getService(), remoteService);
+		assertNotNull(reference);
+		IRemoteService remoteService = getRestClientContainerAdapter().getRemoteService(reference);
+		assertNotNull(remoteService);
 	}
 	
 	public void testGetRemoteServiceReference() {
-		IRemoteServiceReference remoteServiceReference = container.getRemoteServiceReference(registration.getID());
+		IRemoteServiceRegistration registration = createRestRegistration("resourcePath");
+		IRemoteServiceReference remoteServiceReference = getRestClientContainerAdapter().getRemoteServiceReference(registration.getID());
 		assertEquals(registration.getReference(), remoteServiceReference);
 	}
 	
 	public void testUngetRemoteService() {
-		container.getRemoteService(registration.getReference());
-		assertTrue(container.ungetRemoteService(registration.getReference()));
+		IRemoteServiceRegistration registration = createRestRegistration("resourcePath");
+		IRemoteServiceReference reference = registration.getReference();
+		getRestClientContainerAdapter().getRemoteService(reference);
+		assertTrue(getRestClientContainerAdapter().ungetRemoteService(reference));
 	}
-	
+
 	public void testRemoteServiceRegisteredEvent() {
-		container.addRemoteServiceListener(new IRemoteServiceListener() {
-			
+		IRestClientContainerAdapter adapter = getRestClientContainerAdapter();
+		adapter.addRemoteServiceListener(new IRemoteServiceListener() {
 			public void handleServiceEvent(IRemoteServiceEvent event) {
 				assertTrue(event instanceof IRemoteServiceRegisteredEvent);
 			}
 		});
-		String[] clazzes = new String[] {IRemoteService.class.getName()};
-		RestService service = new RestService();
-		Dictionary properties = new Hashtable();
-		properties.put("user", "null");
-		container.registerRemoteService(clazzes, service, properties);	
-		
+		createRestRegistration("resourcePath");
 	}
 	
 	public void testCreateRemoteFilter() {
 		String filter = "(" + Constants.OBJECTCLASS + "=" + IRemoteService.class.getName() + ")";
 		try {
-			IRemoteFilter remoteFilter = container.createRemoteFilter(filter);
+			IRemoteFilter remoteFilter = getRestClientContainerAdapter().createRemoteFilter(filter);
 			assertNotNull(remoteFilter);
 		} catch (InvalidSyntaxException e) {
 			fail();
@@ -85,22 +91,10 @@ public class RestRemoteServiceAdapterTest extends TestCase {
 	}
 	
 	public void testGetRemoteServiceID() {
+		IRemoteServiceRegistration registration = createRestRegistration("resourcePath");
 		long containerRelativeID = registration.getID().getContainerRelativeID();
-		IRemoteServiceID remoteServiceID = container.getRemoteServiceID(container.getID(), containerRelativeID);
+		IRemoteServiceID remoteServiceID = getRestClientContainerAdapter().getRemoteServiceID(container.getID(), containerRelativeID);
 		assertEquals(registration.getID(), remoteServiceID);
 	}
 	
-	
-	
-
-	private IRemoteServiceRegistration getServiceRegistration() {
-		container = (RestContainer)RestContainerTest.createRestContainer();
-		IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container;
-		String[] clazzes = new String[] {IRemoteService.class.getName()};
-		RestService service = new RestService();
-		Dictionary properties = new Hashtable();
-		properties.put("user", "null");
-		return adapter.registerRemoteService(clazzes, service, properties);		
-	}
-
 }

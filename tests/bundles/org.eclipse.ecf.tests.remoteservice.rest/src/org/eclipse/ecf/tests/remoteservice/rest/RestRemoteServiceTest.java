@@ -9,46 +9,41 @@
  *******************************************************************************/
 package org.eclipse.ecf.tests.remoteservice.rest;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import junit.framework.TestCase;
-
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
+import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.rest.IRestCall;
-import org.eclipse.ecf.remoteservice.rest.RestService;
-import org.eclipse.ecf.remoteservice.rest.util.RestCallFactory;
-import org.eclipse.ecf.tests.remoteservice.rest.service.SimpleRestService;
+import org.eclipse.ecf.remoteservice.rest.IRestCallable;
+import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
+import org.eclipse.ecf.remoteservice.rest.RestCallable;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.w3c.dom.Document;
 
-public class RestRemoteServiceTest extends TestCase {
+public class RestRemoteServiceTest extends AbstractRestTestCase {
 
-	private SimpleRestService service;
-
+	IContainer container;
+	IRemoteServiceRegistration registration;
+	
 	protected void setUp() throws Exception {
-		if (service == null) {
-			service = new SimpleRestService();
-		}
+		container = createRestContainer(RestConstants.TEST_TWITTER_TARGET);
+		IRestCallable callable = new RestCallable(RestConstants.TEST_TWITTER_RESOURCEPATH,RestConstants.TEST_TWITTER_RESOURCEPATH,null,IRestCallable.RequestType.GET);
+		registration = registerCallable(container, callable, null);
 	}
 
 	protected void tearDown() throws Exception {
-		service.shutdown();
-	}
-
-	public void testServiceCreation() {
-		RestService restService = new RestService();
-		assertNotNull(restService);
+		registration.unregister();
+		container.disconnect();
 	}
 
 	public void testSyncCall() {
-		RestService restService = new RestService();
+		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
 		try {
-			Object result = restService.callSync(getRestXMLCall());
+			Object result = restClientService.callSync(getRestXMLCall());
 			assertNotNull(result);
 		} catch (ECFException e) {
 			fail("Could not contact the service");
@@ -56,8 +51,8 @@ public class RestRemoteServiceTest extends TestCase {
 	}
 
 	public void testAsynCall() {
-		RestService restService = new RestService();
-		IFuture future = restService.callAsync(getRestXMLCall());
+		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IFuture future = restClientService.callAsync(getRestXMLCall());
 		try {
 			Object response = future.get();
 			assertTrue(response instanceof Document);
@@ -68,29 +63,23 @@ public class RestRemoteServiceTest extends TestCase {
 		}
 	}
 
-	public void testAsyncCallWithListener() {
-		RestService restService = new RestService();
-		restService.callAsync(getRestXMLCall(), new IRemoteCallListener() {
+	public void testAsyncCallWithListener() throws Exception {
+		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		restClientService.callAsync(getRestXMLCall(), new IRemoteCallListener() {
 			public void handleEvent(IRemoteCallEvent event) {
 				if (event instanceof IRemoteCallCompleteEvent) {
-					// TODO: test async
-					// assertEquals(SimpleRestService.XML_RESPONSE,
-					// completeEvent.getResponse());
+					IRemoteCallCompleteEvent cce = (IRemoteCallCompleteEvent) event;
+					Object response = cce.getResponse();
+					assertTrue(response instanceof Document);
+					syncNotify();
 				}
 			}
 		});
-
+		syncWaitForNotify(10000);
 	}
 
 	private IRestCall getRestXMLCall() {
-		try {
-			return RestCallFactory.createRestCall(IRestCall.HTTP_GET, new URI(
-					service.getServerUrl() + "/test.xml"),
-					"ecf.rest.resource.xml", null, 10000);
-		} catch (URISyntaxException e) {
-			fail();
-		}
-		return null;
+		return RestCallFactory.createRestCall(RestConstants.TEST_TWITTER_RESOURCEPATH);
 	}
 
 }

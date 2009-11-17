@@ -9,49 +9,37 @@
 *******************************************************************************/ 
 package org.eclipse.ecf.tests.remoteservice.rest;
 
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
-import junit.framework.TestCase;
-
-import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.remoteservice.rest.RestContainer;
-import org.eclipse.ecf.remoteservice.rest.RestContainerInstantiatior;
+import org.eclipse.ecf.core.IContainerFactory;
+import org.eclipse.ecf.tests.ECFAbstractTestCase;
 
-public class RestContainerInstantiatorTest extends TestCase {
-	private RestContainerInstantiatior instantiator;
+public class RestContainerInstantiatorTest extends ECFAbstractTestCase {
+	
+	private IContainerFactory containerFactory;
+	
 	private ContainerTypeDescription description;
 
 	protected void setUp() throws Exception {
-		instantiator = new RestContainerInstantiatior();
-		description = new ContainerTypeDescription(RestContainer.NAME, instantiator, null);
+		containerFactory = getContainerFactory();
+		description = containerFactory.getDescriptionByName(RestConstants.REST_CONTAINER_TYPE);
 	}
 	
-	public void testSupportedParameterTypes() {						
-		Class[][] types = instantiator.getSupportedParameterTypes(description);
-		assertEquals(types.length, 1);
-		assertEquals(types[0].length, 1);
-		Class supportedType = types[0][0];
-		assertEquals(URL.class, supportedType);
-	}
-	
-	public void testCreateInstance() {
-		try {
-			IContainer container = instantiator.createInstance(description, new Object[]{new URL("http://test.de")});
-			assertTrue(container instanceof RestContainer);
-			ID connectedID = container.getConnectedID();
-			assertNull(connectedID);
-			URL baseUrl = new URL("http://www.twitter.com");
-			container = instantiator.createInstance(description, new Object[]{baseUrl});
-			assertTrue(container instanceof RestContainer);
-		} catch (ContainerCreateException e) {
-			fail();
-		} catch (MalformedURLException e) {
-			fail();
+	public void testSupportedParameterTypes() {		
+		Class[][] types = description.getSupportedParameterTypes();
+		boolean foundString = false;
+		boolean foundURL = false;
+		boolean foundURI = false;
+		for(int i=0; i < types.length; i++) {
+			for(int j=0; j < types[i].length; j++) {
+				if (types[i][j].equals(String.class)) foundString = true;
+				if (types[i][j].equals(URL.class)) foundURL = true;
+				if (types[i][j].equals(URI.class)) foundURI = true;
+			}
 		}
+		assertTrue(foundString && foundURL && foundURI);
 	}
-
+	
 }

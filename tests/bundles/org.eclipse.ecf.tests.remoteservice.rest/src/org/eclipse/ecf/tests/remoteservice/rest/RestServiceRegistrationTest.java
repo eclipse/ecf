@@ -12,23 +12,23 @@ package org.eclipse.ecf.tests.remoteservice.rest;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import junit.framework.TestCase;
-
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.remoteservice.IRemoteService;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.eclipse.ecf.remoteservice.rest.RestService;
-import org.eclipse.ecf.remoteservice.rest.identity.RestID;
+import org.eclipse.ecf.remoteservice.rest.IRestCallable;
+import org.eclipse.ecf.remoteservice.rest.RestCallable;
 
-public class RestServiceRegistrationTest extends TestCase {
+public class RestServiceRegistrationTest extends AbstractRestTestCase {
 	
 	private IRemoteServiceRegistration registration;
 	private IContainer container;
 
 	protected void setUp() throws Exception {
-		registration = getServiceRegistration();
+		container = createRestContainer(RestConstants.TEST_TWITTER_TARGET);
+		Dictionary properties = new Hashtable();
+		properties.put("user", "null");
+		IRestCallable callable = new RestCallable("resourcePath","resourcePath",null,IRestCallable.RequestType.GET);
+		registration = registerCallable(container, callable, properties);
 	}
 	
 	protected void tearDown() throws Exception {
@@ -65,7 +65,8 @@ public class RestServiceRegistrationTest extends TestCase {
 	
 	public void testGetId() {
 		IRemoteServiceID id = registration.getID();
-		assertTrue(id instanceof RestID);
+		assertNotNull(id);
+		assertTrue(id instanceof IRemoteServiceID);
 		assertEquals(container.getID(), id.getContainerID());
 	}
 	
@@ -73,18 +74,4 @@ public class RestServiceRegistrationTest extends TestCase {
 		assertEquals(container.getID(), registration.getContainerID());
 	}
 	
-	
-	
-	
-
-	private IRemoteServiceRegistration getServiceRegistration() {
-		container = RestContainerTest.createRestContainer();
-		IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container;
-		String[] clazzes = new String[] {IRemoteService.class.getName()};
-		RestService service = new RestService();
-		Dictionary properties = new Hashtable();
-		properties.put("user", "null");
-		return adapter.registerRemoteService(clazzes, service, properties);		
-	}
-
 }

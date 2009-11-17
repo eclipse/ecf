@@ -44,13 +44,4 @@ public class RestNamespaceTest extends TestCase {
 		assertEquals(RestNamespace.SCHEME, namespace.getScheme());
 	}
 	
-	public void testGetSupportedParameterTypes() {
-		RestNamespace namespace = new RestNamespace(RestNamespace.NAME, null);
-		Class[][] types = namespace.getSupportedParameterTypes();
-		assertEquals(types.length, 1);
-		assertEquals(types[0].length, 1);
-		Class supportedType = types[0][0];
-		assertEquals(URL.class, supportedType);
-	}
-
 }
