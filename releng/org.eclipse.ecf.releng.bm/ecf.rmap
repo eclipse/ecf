@@ -77,6 +77,7 @@
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.team\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.jivesoftware\.smack$" />
+	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.json$" />
 	
 	<!-- EMF -->
 	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.emf(\..+)?" />
