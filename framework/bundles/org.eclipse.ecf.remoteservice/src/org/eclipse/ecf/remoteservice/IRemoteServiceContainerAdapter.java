@@ -56,8 +56,15 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 *            clients. Must not be <code>null</code> and must not be an
 	 *            empty array.
 	 * @param service
-	 *            the service object itself. This object must implement all of
-	 *            the classes specified by the first parameter
+	 *            the service object.  Under normal conditions this object must
+	 *            <ul><li>not be <code>null</code></li>
+	 *            <li>implement all of the classes specified by the first parameter</li>
+	 *            </ul>
+	 *            The only situation when the service object may be <code>null</code> is if
+	 *            the service property {@link Constants#SERVICE_REGISTER_PROXY} is set
+	 *            in the properties.  If {@link Constants#SERVICE_REGISTER_PROXY} is set
+	 *            in the properties parameter (to an arbitrary value), then the service
+	 *            object may then be <code>null</code>.
 	 * @param properties
 	 *            to be associated with service
 	 * @return IRemoteServiceRegistration the service registration. Will not
