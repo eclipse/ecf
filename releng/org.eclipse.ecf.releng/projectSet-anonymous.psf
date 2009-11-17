@@ -114,6 +114,9 @@
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/server-side/bundles/org.eclipse.ecf.server,org.eclipse.ecf.server"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/server-side/bundles/org.eclipse.ecf.server.generic,org.eclipse.ecf.server.generic"/>
 	
+	<!-- json parser -->
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/incubation/bundles/org.json,org.json"/>
+	
 	<!-- ECF help documentation -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/doc/bundles/org.eclipse.ecf.doc,org.eclipse.ecf.doc"/>
 

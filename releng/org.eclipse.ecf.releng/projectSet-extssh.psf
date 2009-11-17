@@ -116,6 +116,8 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/server-side/bundles/org.eclipse.ecf.remoteservice.eventadmin,org.eclipse.ecf.remoteservice.eventadmin"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.eventadmin.app,org.eclipse.ecf.examples.eventadmin.app"/>
 	
+	<!-- json parser -->
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/incubation/bundles/org.json,org.json"/>
 	
 	<!-- ECF help documentation -->
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/doc/bundles/org.eclipse.ecf.doc,org.eclipse.ecf.doc"/>
