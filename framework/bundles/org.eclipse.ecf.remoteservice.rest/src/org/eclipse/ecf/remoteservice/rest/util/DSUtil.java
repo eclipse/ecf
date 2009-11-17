@@ -9,9 +9,7 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.util;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.*;
 
 public class DSUtil {
 	/**

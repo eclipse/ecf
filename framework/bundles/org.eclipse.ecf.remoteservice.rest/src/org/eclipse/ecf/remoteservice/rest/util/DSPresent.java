@@ -5,12 +5,14 @@ package org.eclipse.ecf.remoteservice.rest.util;
  */
 public class DSPresent implements IDSPresent {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.remoteservice.rest.util.IDSPresent#isPresent()
 	 */
 	public boolean isPresent() {
 		// if registered, it is present!
 		return true;
 	}
-	
+
 }

@@ -9,97 +9,23 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
-import java.net.URI;
 import java.util.Map;
-
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.eclipse.ecf.remoteservice.rest.util.RestCallFactory;
+import org.eclipse.ecf.remoteservice.IRemoteCall;
+import org.eclipse.ecf.remoteservice.IRemoteService;
 
 /**
  * This class acts as a container for a specific REST service call. It can be
- * implemented from scratch or created via {@link RestCallFactory}.
+ * implemented from scratch or created via {@link RestCallFactory}.  Instances 
+ * typically will be passed to one of the call methods on {@link IRemoteService}.
  */
-public interface IRestCall {
+public interface IRestCall extends IRemoteCall {
 
 	/**
-	 * Http GET method.
-	 */
-	public static final String HTTP_GET = "GET";
-	/**
-	 * Http POST method.
-	 */
-	public static final String HTTP_POST = "POST";
-	/**
-	 * Http PUT method.
-	 */
-	public static final String HTTP_PUT = "PUT";
-	/**
-	 * Htpp DELETE method.
-	 */
-	public static final String HTTP_DELETE = "DELETE";
-
-	/**
-	 * Every rest web service returns a resource representation. I.e a
-	 * representation as a xml file from a xml resource.
+	 * Provides any call-specific request headers.
 	 * 
-	 * @return the identifier for a estimated resource, i.e.
-	 *         ecf.rest.resource.xml. Will not be <code>null</code>.
-	 */
-	public String getEstimatedResourceIdentifier();
-
-	/**
-	 * Defines the URI for the rest service. This should be a unique URI which
-	 * belongs to a rest service i.e on the web.
-	 * 
-	 * @return the URI of a rest service. Will not be <code>null</code>.
-	 */
-	public URI getURI();
-
-	/**
-	 * Defines the HTTP method for this type of rest call. For example a GET or
-	 * POST method.
-	 * 
-	 * @return the HTTP Method as one of the IRestCall HTTP_* constants. Will
-	 *         not be <code>null</code>.
-	 */
-	public String getMethod();
-
-	/**
-	 * Defines the call specific request headers.
-	 * 
-	 * @return a {@link Map} object which contains the header parameters. May be
-	 *         <code>null</code>.
+	 * @return a {@link Map} object which contains and additional header parameters
+	 *         (String->String). May be <code>null</code>.
 	 */
 	public Map getRequestHeaders();
-
-	/**
-	 * Defines the key-value pairs parameter for this call. A Rest Call may
-	 * either have parameters or a RequestEntity (mutual exclusive).
-	 * 
-	 * @return an array containing key-value pairs in the format: key=value. May
-	 *         be <code>null</code>.
-	 * 
-	 * @see #getRequestEntity()
-	 */
-	public Object[] getParameters();
-
-	/**
-	 * Get timeout (in ms) for the rest call.
-	 * 
-	 * @return long timeout in ms
-	 */
-	public long getTimeout();
-
-	/**
-	 * Gets the request entity. The RequestEntity is typically used to transmit
-	 * data by HTTP_POST and HTTP_PUT calls. HTTP_GET calls may not use a
-	 * request entity A. Rest Call may either have parameters or a RequestEntity
-	 * (mutual exclusive)
-	 * 
-	 * @return the request entity
-	 * 
-	 * @see RequestEntity
-	 */
-	public RequestEntity getRequestEntity();
 
 }

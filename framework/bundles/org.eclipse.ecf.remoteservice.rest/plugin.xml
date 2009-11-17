@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.remoteservice.rest.RestContainerInstantiatior"
+            class="org.eclipse.ecf.internal.remoteservice.rest.RestClientContainerInstantiator"
             description="Client Container for the REST style"
             name="ecf.rest.client">
       </containerFactory>

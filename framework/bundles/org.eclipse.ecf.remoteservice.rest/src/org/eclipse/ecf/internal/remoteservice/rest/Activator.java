@@ -9,12 +9,8 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.remoteservice.rest;
 
-import org.eclipse.ecf.remoteservice.rest.IRestResourceRepresentationFactory;
-import org.eclipse.ecf.remoteservice.rest.resource.IRestResource;
-import org.eclipse.ecf.remoteservice.rest.resource.XMLResource;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -22,16 +18,12 @@ import org.osgi.framework.ServiceRegistration;
 public class Activator implements BundleActivator {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.remoteservice.rest";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.remoteservice.rest"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
 
 	private BundleContext context;
-
-	private ServiceRegistration factoryRegistration;
-
-	private ServiceRegistration resourceRegistration;
 
 	/*
 	 * (non-Javadoc)
@@ -39,21 +31,9 @@ public class Activator implements BundleActivator {
 	 * @see
 	 * org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(BundleContext context1) throws Exception {
 		plugin = this;
-		this.context = context;
-		this.factoryRegistration = registerResourceRepresentationFactory(context);
-		this.resourceRegistration = registerXMLService(context);
-	}
-
-	private ServiceRegistration registerResourceRepresentationFactory(BundleContext context) {
-		IRestResourceRepresentationFactory factory = new ResourceRepresentationFactory();
-		return context.registerService(IRestResourceRepresentationFactory.class.getName(), factory, null);
-	}
-
-	private ServiceRegistration registerXMLService(BundleContext context) {
-		IRestResource xmlResource = new XMLResource();
-		return context.registerService(IRestResource.class.getName(), xmlResource, null);
+		this.context = context1;
 	}
 
 	/*
@@ -62,16 +42,10 @@ public class Activator implements BundleActivator {
 	 * @see
 	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context1) throws Exception {
 		plugin = null;
-		unregister(factoryRegistration);
-		unregister(resourceRegistration);
-	}
+		this.context = null;
 
-	private void unregister(ServiceRegistration registration) {
-		if (registration != null) {
-			registration.unregister();
-		}
 	}
 
 	/**

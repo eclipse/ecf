@@ -3,12 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.rest;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.remoteservice.rest.Activator
 Bundle-ActivationPolicy: lazy
+Eclipse-BuddyPolicy: global
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Export-Package: org.eclipse.ecf.internal.remoteservice.rest;x-internal:=true,
  org.eclipse.ecf.remoteservice.rest,
+ org.eclipse.ecf.remoteservice.rest.client,
  org.eclipse.ecf.remoteservice.rest.identity,
  org.eclipse.ecf.remoteservice.rest.resource,
  org.eclipse.ecf.remoteservice.rest.util
@@ -17,18 +19,13 @@ Import-Package: org.apache.commons.httpclient;version="3.0.1",
  org.apache.commons.httpclient.methods;version="3.0.1",
  org.apache.commons.httpclient.params;version="3.0.1",
  org.eclipse.core.runtime;version="3.4.0",
- org.eclipse.ecf.core.sharedobject,
- org.eclipse.ecf.provider.generic,
- org.eclipse.ecf.provider.remoteservice.generic,
  org.eclipse.ecf.remoteservice,
  org.eclipse.ecf.remoteservice.events,
  org.eclipse.ecf.remoteservice.util,
- org.eclipse.ecf.remoteservice.util.tracker,
  org.eclipse.equinox.concurrent.future;version="1.0.0",
+ org.eclipse.osgi.util;version="1.1.0",
  org.osgi.framework;version="1.5.0",
  org.osgi.util.tracker;version="1.4.2"
-Require-Bundle: org.eclipse.ecf;bundle-version="3.0.0",
- org.eclipse.equinox.ds;bundle-version="[1.1.0,2.0.0)";resolution:=optional,
- org.eclipse.osgi.services;bundle-version="3.2.0"
+Require-Bundle: org.eclipse.ecf;bundle-version="3.0.0"
 Service-Component: META-INF/dspresent.xml
 Bundle-Localization: plugin

@@ -1,81 +1,102 @@
 /******************************************************************************* 
-* Copyright (c) 2009 EclipseSource and others. All rights reserved. This
-* program and the accompanying materials are made available under the terms of
-* the Eclipse Public License v1.0 which accompanies this distribution, and is
-* available at http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*   EclipseSource - initial API and implementation
-*******************************************************************************/ 
+ * Copyright (c) 2009 EclipseSource and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   EclipseSource - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.identity;
 
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.remoteservice.rest.RestContainer;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.remoteservice.rest.client.RestClientContainer;
 
 /**
- * This class represents a {@link Namespace} for {@link RestContainer}s.
+ * This class represents a {@link Namespace} for {@link RestClientContainer}s.
  */
 public class RestNamespace extends Namespace {
-	
+
 	private static final long serialVersionUID = -398861350452016954L;
-	
+
 	/**
 	 * The name of this namespace.
 	 */
-	public static final String NAME = "ecf.rest.namespace";
-	
+	public static final String NAME = "ecf.rest.namespace"; //$NON-NLS-1$
+
 	/**
 	 * The scheme of this namespace.
 	 */
-	public static final String SCHEME = "rest";
-	
+	public static final String SCHEME = "rest"; //$NON-NLS-1$
 
 	public RestNamespace() {
+		// 
 	}
 
 	public RestNamespace(String name, String desc) {
 		super(name, desc);
-	}	
+	}
+
+	private String getInitFromExternalForm(Object[] args) {
+		if (args == null || args.length < 1 || args[0] == null)
+			return null;
+		if (args[0] instanceof String) {
+			final String arg = (String) args[0];
+			if (arg.startsWith(getScheme() + Namespace.SCHEME_SEPARATOR)) {
+				final int index = arg.indexOf(Namespace.SCHEME_SEPARATOR);
+				if (index >= arg.length())
+					return null;
+				return arg.substring(index + 1);
+			}
+		}
+		return null;
+	}
 
 	/**
-	 * Creates an instance of an {@link RestID}. The parameters must contain specific information.
+	 * Creates an instance of an {@link RestID}. The parameters must contain
+	 * specific information.
 	 * 
-	 * First it should contain a String which represents the {@link RestID#baseUrl}.
-	 * Additional it could contain a ServiceId and/or a ContainerId.
+	 * First it should contain a String which represents the
+	 * {@link RestID#baseUrl}. Additional it could contain a ServiceId and/or a
+	 * ContainerId.
 	 * 
-	 * @param parameters a collection of attributes to call the right constructor on {@link RestID}.
+	 * @param parameters
+	 *            a collection of attributes to call the right constructor on
+	 *            {@link RestID}.
 	 * @return an instance of {@link RestID}. Will not be <code>null</code>.
 	 */
 	public ID createInstance(Object[] parameters) throws IDCreateException {
-		URL url = null;
-		if(parameters[0] instanceof String) {
-			try {
-				url = new URL((String) parameters[0]);
-			} catch (MalformedURLException e) {
-				throw new IllegalArgumentException(e.getLocalizedMessage());
+		URI uri = null;
+		try {
+			final String init = getInitFromExternalForm(parameters);
+			if (init != null) {
+				uri = URI.create(init);
+				return new RestID(this, uri);
 			}
-		} else if((parameters[0] instanceof URL)) {
-			url = (URL) parameters[0];
-		} else 
-			throw new IllegalArgumentException("the first parameter must be transformable to an URL");
-		if(parameters.length == 2 && parameters[1] instanceof Long)
-			return new RestID(this, url, (Long)parameters[1] );
-		if( parameters.length == 3 && parameters[1] instanceof ID && parameters[2] instanceof Long)
-			return new RestID(this, url, (ID)parameters[1], (Long)parameters[2] );
-		return new RestID(this, url );
+			if (parameters != null) {
+				if (parameters[0] instanceof URI)
+					return new RestID(this, (URI) parameters[0]);
+				else if (parameters[0] instanceof String)
+					return new RestID(this, URI.create((String) parameters[0]));
+				else if (parameters[0] instanceof URL)
+					return new RestID(this, URI.create(((URL) parameters[0]).toExternalForm()));
+				else if (parameters[0] instanceof RestID)
+					return (ID) parameters[0];
+			}
+			throw new IllegalArgumentException("Invalid parameters to RestID creation"); //$NON-NLS-1$
+		} catch (Exception e) {
+			throw new IDCreateException("Could not create rest ID", e); //$NON-NLS-1$
+		}
 	}
 
 	public String getScheme() {
 		return SCHEME;
 	}
-	
+
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { URL.class } };
+		return new Class[][] { {ID.class}, {URI.class}, {String.class}, {URL.class}};
 	}
 
 }
