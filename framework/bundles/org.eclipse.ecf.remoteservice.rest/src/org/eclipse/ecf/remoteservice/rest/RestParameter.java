@@ -9,6 +9,10 @@
 ******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
+/**
+ * Default implementation of {@link IRestParameter}.
+ *
+ */
 public class RestParameter implements IRestParameter {
 
 	private String name;

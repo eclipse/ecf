@@ -16,7 +16,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 
 /**
- * Default implementation of {@link IRestCall}.  Note that {@link RestCallFactory} should 
+ * Implementation of {@link IRestCall}.  Note that {@link RestCallFactory} should 
  * typically be used to construct instances.
  */
 public class RestCall implements IRestCall, Serializable {

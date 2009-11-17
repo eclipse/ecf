@@ -16,7 +16,7 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
 
 /**
- * Definition of a callable rest interface.  Instances of this interface can be registered with
+ * Definition of an individual rest method call.  Instances of this interface can be registered with
  * {@link IRestClientContainerAdapter#registerCallable(IRestCallable[], java.util.Dictionary)} in order
  * to setup an association between a method name, and a resourcePath...as well as optionally other 
  * information about a specific rest method (the http request type...i.e. "get", "put", "post", "delete"
@@ -84,6 +84,9 @@ public interface IRestCallable {
 	 */
 	public abstract Map getDefaultRequestHeaders();
 
+	/**
+	 * Http request type (GET, POST, PUT, DELETE).
+	 */
 	public static class RequestType implements Serializable {
 
 		private static final long serialVersionUID = 2532492034058667225L;

@@ -14,8 +14,8 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 
 /**
- * This class acts as a container for a specific REST service call. It can be
- * implemented from scratch or created via {@link RestCallFactory}.  Instances 
+ * Rest call provides a way for clients to access/call a remote service. Instances
+ * can be created via the {@link RestCallFactory} static method.  Created instances
  * typically will be passed to one of the call methods on {@link IRemoteService}.
  */
 public interface IRestCall extends IRemoteCall {

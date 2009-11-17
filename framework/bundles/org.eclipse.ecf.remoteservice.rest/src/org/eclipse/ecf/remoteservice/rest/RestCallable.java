@@ -13,6 +13,10 @@ import java.util.Arrays;
 import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 
+/**
+ * Default implementation of {@link IRestCallable}.
+ *
+ */
 public class RestCallable implements IRestCallable {
 
 	private String method;
