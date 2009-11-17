@@ -252,7 +252,7 @@
       	<dependency>
 			<groupId>ch.ethz.iks.concierge</groupId>
 			<artifactId>concierge</artifactId>
-			<version>1.0_RC2</version>
+			<version>1.0.0</version>
 			<scope>test</scope>
 		</dependency>		
       	<dependency>
