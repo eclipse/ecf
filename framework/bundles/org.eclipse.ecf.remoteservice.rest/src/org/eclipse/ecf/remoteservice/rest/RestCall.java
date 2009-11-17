@@ -16,9 +16,8 @@ import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 
 /**
- * This class acts as the super class for the service object {@link GetRestCall}
- * , {@link PostRestCall}, {@link DeleteRestCall} and {@link PutRestCall}. Sub
- * classes may override the methods from {@link IRestCall}.
+ * Default implementation of {@link IRestCall}.  Note that {@link RestCallFactory} should 
+ * typically be used to construct instances.
  */
 public class RestCall implements IRestCall, Serializable {
 

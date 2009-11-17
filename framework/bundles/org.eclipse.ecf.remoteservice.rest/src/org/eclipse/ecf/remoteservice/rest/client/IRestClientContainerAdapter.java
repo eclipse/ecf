@@ -21,7 +21,7 @@ public interface IRestClientContainerAdapter extends IRemoteServiceContainerAdap
 	/**
 	 * Register rest remote service.
 	 * 
-	 * @param callables the default rest callables to register.  Must not be <code>null</code>.
+	 * @param callable the rest callable to register.  Must not be <code>null</code>.
 	 * @param properties service properties to associate with the rest service.
 	 * @return IRemoteServiceRegistration that allows the registered rest service to be accessed.  If
 	 * <code>null</code> registration failed.

@@ -58,10 +58,6 @@ public class RestNamespace extends Namespace {
 	 * Creates an instance of an {@link RestID}. The parameters must contain
 	 * specific information.
 	 * 
-	 * First it should contain a String which represents the
-	 * {@link RestID#baseUrl}. Additional it could contain a ServiceId and/or a
-	 * ContainerId.
-	 * 
 	 * @param parameters
 	 *            a collection of attributes to call the right constructor on
 	 *            {@link RestID}.

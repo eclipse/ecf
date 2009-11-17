@@ -99,8 +99,10 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 	 * Calls the Rest service with given URL of IRestCall. The returned value is
 	 * the response body as an InputStream.
 	 * 
-	 * @param restCall
-	 *            The Rest Service to call represented by an IRestCall object
+	 * @param call
+	 *            The remote call to make.  Must not be <code>null</code>.
+	 * @param callable
+	 *            The callable with default parameters to use to make the call.
 	 * @return The InputStream of the response body or <code>null</code> if an
 	 *         error occurs.
 	 */
