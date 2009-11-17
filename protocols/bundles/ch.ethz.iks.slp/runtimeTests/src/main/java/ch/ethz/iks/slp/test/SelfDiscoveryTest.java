@@ -26,10 +26,6 @@ public class SelfDiscoveryTest extends TestCase {
 	private final String HOST_AND_PORT = System.getProperty("net.slp.tests.hostAndPort", "gantenbein:123");
 	private ServiceURL service;
 	private Dictionary properties;
-	
-	public SelfDiscoveryTest() {
-		super("runTests");
-	}
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -61,14 +57,6 @@ public class SelfDiscoveryTest extends TestCase {
 			Assert.fail(e.getMessage());
 			e.printStackTrace();
 		}
-	}
-
-	public void runTests() throws Exception {
-		testService();
-		testAttributes();
-		testFilter();
-		testFilterWithWildcard();
-		testFilterWithBrokenParenthesis();
 	}
 	
 	/**
