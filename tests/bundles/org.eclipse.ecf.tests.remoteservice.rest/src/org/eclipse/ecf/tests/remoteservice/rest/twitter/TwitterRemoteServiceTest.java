@@ -52,7 +52,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(username, password));
 		
 		// Setup resource handler
-		adapter.setRestResource(createRestResource());
+		adapter.setResourceProcessor(createRestResource());
 
 		// Create and register callable to register service
 		List callables = new ArrayList();
