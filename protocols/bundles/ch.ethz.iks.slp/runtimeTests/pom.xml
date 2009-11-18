@@ -22,7 +22,7 @@
 				<Bundle-Vendor>Jan S. Rellermeyer, IKS, ETH Zurich</Bundle-Vendor>
             	<Import-Package>org.osgi.framework, ch.ethz.iks.slp, junit.framework, junit.textui</Import-Package>
             	<Private-Package>ch.ethz.iks.slp.test</Private-Package>
-            	<Bundle-Activator>ch.ethz.iks.slp.test.TestActivator</Bundle-Activator>
+				<_include>~META-INF/MANIFEST.MF</_include>
             	<!-- BND just produces Bundle-ManifestVersion: 2 headers which we don't want -->
 				<_removeheaders>Bundle-ManifestVersion</_removeheaders> 
     	  	</instructions>

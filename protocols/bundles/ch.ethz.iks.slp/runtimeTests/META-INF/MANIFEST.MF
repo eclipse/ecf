@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Export-Package: ch.ethz.iks.slp.test;uses:="ch.ethz.iks.slp,junit.fram
+ ework,org.osgi.framework,junit.textui"
+Private-Package: ch.ethz.iks.slp.test
+Built-By: markus
+Tool: Bnd-0.0.357
+Bundle-Name: jslp-test
+Created-By: Apache Maven Bundle Plugin
+Bundle-Vendor: Jan S. Rellermeyer, IKS, ETH Zurich
+Build-Jdk: 1.6.0_16
+Bundle-Version: 1.1.0.qualifier
+Bnd-LastModified: 1258568231718
+Bundle-Activator: ch.ethz.iks.slp.test.TestActivator
+Bundle-SymbolicName: ch.ethz.iks.slp.test
+Import-Package: ch.ethz.iks.slp;version="1.0",junit.framework,junit.te
+ xtui,org.osgi.framework;version="1.2"
+
