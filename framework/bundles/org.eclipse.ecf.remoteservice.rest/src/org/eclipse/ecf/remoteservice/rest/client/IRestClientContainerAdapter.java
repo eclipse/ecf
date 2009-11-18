@@ -14,6 +14,7 @@ import java.util.List;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.rest.IRestCallable;
+import org.eclipse.ecf.remoteservice.rest.resource.IRestParameterSerializer;
 import org.eclipse.ecf.remoteservice.rest.resource.IRestResourceProcessor;
 
 public interface IRestClientContainerAdapter extends IRemoteServiceContainerAdapter {
@@ -37,8 +38,11 @@ public interface IRestClientContainerAdapter extends IRemoteServiceContainerAdap
 	public IRemoteServiceRegistration registerCallable(String[] clazzes, List callables, Dictionary properties);
 
 	// set/get rest resource
-	public void setRestResource(IRestResourceProcessor resource);
+	public void setResourceProcessor(IRestResourceProcessor resource);
 
-	public IRestResourceProcessor getRestResource();
+	public IRestResourceProcessor getResourceProcessor();
 
+	public void setParameterSerializer(IRestParameterSerializer serializer);
+
+	public IRestParameterSerializer getParameterSerializer();
 }

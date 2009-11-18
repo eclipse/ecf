@@ -24,10 +24,10 @@ import org.eclipse.ecf.internal.remoteservice.rest.RestServiceRegistry;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.*;
 import org.eclipse.ecf.remoteservice.rest.IRestCallable;
+import org.eclipse.ecf.remoteservice.rest.IRestParameter;
 import org.eclipse.ecf.remoteservice.rest.identity.RestID;
 import org.eclipse.ecf.remoteservice.rest.identity.RestNamespace;
-import org.eclipse.ecf.remoteservice.rest.resource.IRestResourceProcessor;
-import org.eclipse.ecf.remoteservice.rest.resource.XMLResource;
+import org.eclipse.ecf.remoteservice.rest.resource.*;
 import org.eclipse.ecf.remoteservice.util.RemoteFilterImpl;
 import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.InvalidSyntaxException;
@@ -50,8 +50,11 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 
 	protected List referencesInUse = new ArrayList();
 
-	protected Object restResourceLock = new Object();
-	protected IRestResourceProcessor restResourceProcessor = null;
+	protected Object resourceProcessorLock = new Object();
+	protected IRestResourceProcessor resourceProcessor = null;
+
+	protected Object parameterSerializerLock = new Object();
+	protected IRestParameterSerializer parameterSerializer = null;
 
 	public RestClientContainer(RestID id) {
 		this.containerID = id;
@@ -164,15 +167,27 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 	}
 
 	// Implementation of IRestClientContainerAdapter
-	public void setRestResource(IRestResourceProcessor resource) {
-		synchronized (restResourceLock) {
-			this.restResourceProcessor = resource;
+	public void setResourceProcessor(IRestResourceProcessor resource) {
+		synchronized (resourceProcessorLock) {
+			this.resourceProcessor = resource;
 		}
 	}
 
-	public IRestResourceProcessor getRestResource() {
-		synchronized (restResourceLock) {
-			return this.restResourceProcessor;
+	public IRestResourceProcessor getResourceProcessor() {
+		synchronized (resourceProcessorLock) {
+			return this.resourceProcessor;
+		}
+	}
+
+	public void setParameterSerializer(IRestParameterSerializer serializer) {
+		synchronized (parameterSerializerLock) {
+			this.parameterSerializer = serializer;
+		}
+	}
+
+	public IRestParameterSerializer getParameterSerializer() {
+		synchronized (parameterSerializerLock) {
+			return this.parameterSerializer;
 		}
 	}
 
@@ -257,13 +272,25 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		return connectContext;
 	}
 
-	protected IRestResourceProcessor getRestResourceForCall(IRemoteCall call, IRestCallable callable, Map responseHeaders) {
+	protected static IRestResourceProcessor defaultResourceProcessor = new XMLResource();
+
+	protected IRestResourceProcessor getResourceProcessor(IRemoteCall call, IRestCallable callable, Map responseHeaders) {
 		IRestResourceProcessor result = null;
-		synchronized (restResourceLock) {
-			result = restResourceProcessor;
+		synchronized (resourceProcessorLock) {
+			result = resourceProcessor;
 		}
-		// If no restResourceProcessor explicitly set, we return default of XMLResource
-		return (result == null) ? new XMLResource() : result;
+		// If no resourceProcessor explicitly set, we return default of XMLResource
+		return (result == null) ? defaultResourceProcessor : result;
+	}
+
+	protected static IRestParameterSerializer defaultParameterSerializer = new StringParameterSerializer();
+
+	protected IRestParameterSerializer getParameterSerializer(IRestParameter parameter, Object value) {
+		IRestParameterSerializer result = null;
+		synchronized (parameterSerializerLock) {
+			result = parameterSerializer;
+		}
+		return (result == null) ? defaultParameterSerializer : result;
 	}
 
 	protected RestID getTargetRestID() {

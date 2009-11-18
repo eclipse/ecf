@@ -27,6 +27,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
 import org.eclipse.ecf.remoteservice.rest.*;
 import org.eclipse.ecf.remoteservice.rest.identity.RestID;
+import org.eclipse.ecf.remoteservice.rest.resource.IRestParameterSerializer;
 import org.eclipse.ecf.remoteservice.rest.resource.IRestResourceProcessor;
 import org.eclipse.equinox.concurrent.future.*;
 import org.eclipse.osgi.util.NLS;
@@ -186,7 +187,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 	}
 
 	protected Object processResponse(IRemoteCall call, IRestCallable callable, Map responseHeaders, String responseBody) throws ECFException {
-		IRestResourceProcessor restResourceProcessor = registration.getRestClientContainer().getRestResourceForCall(call, callable, responseHeaders);
+		IRestResourceProcessor restResourceProcessor = registration.getRestClientContainer().getResourceProcessor(call, callable, responseHeaders);
 		if (restResourceProcessor == null)
 			return null;
 		return restResourceProcessor.createResponseRepresentation(call, callable, responseHeaders, responseBody);
@@ -293,7 +294,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		return result;
 	}
 
-	protected NameValuePair[] toNameValuePairs(IRemoteCall call, IRestCallable callable) {
+	protected NameValuePair[] toNameValuePairs(IRemoteCall call, IRestCallable callable) throws ECFException {
 		IRestParameter[] restParameters = toRestParameters(call.getParameters(), callable.getParameters());
 		List nameValueList = new ArrayList();
 		if (restParameters != null) {
@@ -304,7 +305,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		return (NameValuePair[]) nameValueList.toArray(new NameValuePair[nameValueList.size()]);
 	}
 
-	protected IRestParameter[] toRestParameters(Object[] callParameters, IRestParameter[] callableParameters) {
+	protected IRestParameter[] toRestParameters(Object[] callParameters, IRestParameter[] callableParameters) throws ECFException {
 		List results = new ArrayList();
 		if (callParameters == null)
 			return callableParameters;
@@ -317,17 +318,24 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 			}
 			String name = null;
 			if (callableParameters != null && i < callableParameters.length) {
+				// If the call parameter (p) is null, then add the associated
+				// callableParameter
+				if (p == null)
+					results.add(callableParameters[i]);
+				// If not null, then we need to serialize
 				name = callableParameters[i].getName();
-			}
-			if (name != null) {
-				String val = null;
-				if (p instanceof String) {
-					val = (String) p;
+				String val = serializeParameter(callableParameters[i], p);
+				if (val != null)
 					results.add(new RestParameter(name, val));
-				}
 			}
 		}
 		return (IRestParameter[]) results.toArray(new IRestParameter[] {});
+	}
+
+	protected String serializeParameter(IRestParameter parameter, Object callValue) throws ECFException {
+		// If p is already a String just cast/return it as such
+		IRestParameterSerializer parameterSerializer = registration.getRestClientContainer().getParameterSerializer(parameter, callValue);
+		return (parameterSerializer == null) ? null : parameterSerializer.serializeParameter(parameter, callValue);
 	}
 
 	protected void setupAuthenticaton(HttpClient httpClient, HttpMethod method) {
