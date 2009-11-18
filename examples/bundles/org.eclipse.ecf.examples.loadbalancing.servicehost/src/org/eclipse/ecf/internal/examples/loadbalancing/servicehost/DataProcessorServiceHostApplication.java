@@ -12,6 +12,7 @@ import java.util.Properties;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.examples.loadbalancing.IDataProcessor;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.equinox.app.IApplication;
@@ -24,7 +25,6 @@ public class DataProcessorServiceHostApplication implements IApplication {
 	private static final String LB_SVCHOST_CONTAINER_TYPE = "ecf.jms.activemq.tcp.manager.lb.svchost";
 	public static final String DEFAULT_QUEUE_ID = "tcp://localhost:61616/exampleQueue";
 	private static final String DEFAULT_TOPIC_ID = "tcp://localhost:61616/exampleTopic";
-	private static final String LOAD_BALANCING_SERVICE_PROPERTY = "jms.queue.loadbalance";
 
 	private BundleContext bundleContext;
 	private ServiceTracker containerManagerServiceTracker;
@@ -69,11 +69,11 @@ public class DataProcessorServiceHostApplication implements IApplication {
 		// This is setting (currently) magical service property that indicates
 		// that
 		// this service registration is a load balancing service host
-		properties.put(LOAD_BALANCING_SERVICE_PROPERTY, "true");
+		properties.put(Constants.SERVICE_REGISTER_PROXY, "true");
 		// Register the remote service with the IDataProcessor interface as it's
 		// service registration.
-		// Note that the LOAD_BALANCING_SERVICE_PROPERTY allows a new Object to
-		// be specified as the implementation.
+		// Note that the Constants.SERVICE_REGISTER_PROXY allows null to be specified
+		// as the registered remote service implementation.
 		// This object does not implement the IDataProcessor service interface,
 		// but it is not actually used. Rather,
 		// the LOAD_BALANCING_SERVICE_PROPERTY set to "true" specifies that for
@@ -83,7 +83,7 @@ public class DataProcessorServiceHostApplication implements IApplication {
 		// that are consumers from that queue)
 		dataProcessorServiceHostRegistration = remoteServiceAdapter
 				.registerRemoteService(new String[] { IDataProcessor.class
-						.getName() }, new Object(), properties);
+						.getName() }, null, properties);
 
 		System.out.println("Registered service host with registration="
 				+ dataProcessorServiceHostRegistration);
