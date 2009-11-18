@@ -24,8 +24,10 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.rest.IRestCallable;
+import org.eclipse.ecf.remoteservice.rest.IRestParameter;
 import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
 import org.eclipse.ecf.remoteservice.rest.RestCallable;
+import org.eclipse.ecf.remoteservice.rest.RestParameter;
 import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
 import org.eclipse.ecf.remoteservice.rest.resource.IRestResourceProcessor;
 import org.eclipse.ecf.tests.remoteservice.rest.AbstractRestTestCase;
@@ -56,7 +58,8 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 
 		// Create and register callable to register service
 		List callables = new ArrayList();
-		callables.add(new RestCallable("getUserStatuses","/statuses/user_timeline.json",null,IRestCallable.RequestType.GET));
+		IRestParameter [] parameters = new IRestParameter[] { new RestParameter("count") };
+		callables.add(new RestCallable("getUserStatuses","/statuses/user_timeline.json",parameters,IRestCallable.RequestType.GET));
 		// Setup callable
 		registration = adapter.registerCallable(new String[] { IUserTimeline.class.getName() }, callables, null);
 }
@@ -97,6 +100,28 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
 		try {
 			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".getUserStatuses"));
+			assertNotNull(result);
+		} catch (ECFException e) {
+			fail("Could not contact the service");
+		}
+	}
+
+	public void testSyncCallWithCountParameter() {
+		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		try {
+			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".getUserStatuses", new IRestParameter[] { new RestParameter("count", "1") }));
+			assertNotNull(result);
+			assertTrue(result instanceof IUserStatus[]);
+			assertTrue(((IUserStatus[]) result).length == 1);
+		} catch (ECFException e) {
+			fail("Could not contact the service");
+		}
+	}
+
+	public void testSyncCallWithCountParameter1() {
+		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		try {
+			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".getUserStatuses", new String[] { "1" } ));
 			assertNotNull(result);
 		} catch (ECFException e) {
 			fail("Could not contact the service");
