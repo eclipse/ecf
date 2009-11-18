@@ -299,7 +299,10 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		List nameValueList = new ArrayList();
 		if (restParameters != null) {
 			for (int i = 0; i < restParameters.length; i++) {
-				nameValueList.add(new NameValuePair(restParameters[i].getName(), restParameters[i].getValue()));
+				String parameterValue = restParameters[i].getValue();
+				if (parameterValue != null) {
+					nameValueList.add(new NameValuePair(restParameters[i].getName(), restParameters[i].getValue()));
+				}
 			}
 		}
 		return (NameValuePair[]) nameValueList.toArray(new NameValuePair[nameValueList.size()]);

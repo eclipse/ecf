@@ -9,6 +9,8 @@
 ******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
+import org.eclipse.core.runtime.Assert;
+
 /**
  * Default implementation of {@link IRestParameter}.
  *
@@ -18,7 +20,12 @@ public class RestParameter implements IRestParameter {
 	private String name;
 	private String value;
 
+	public RestParameter(String name) {
+		this(name, null);
+	}
+
 	public RestParameter(String name, String value) {
+		Assert.isNotNull(name);
 		this.name = name;
 		this.value = value;
 	}
