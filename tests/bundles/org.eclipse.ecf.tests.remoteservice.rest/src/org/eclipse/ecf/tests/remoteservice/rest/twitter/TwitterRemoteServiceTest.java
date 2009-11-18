@@ -28,6 +28,7 @@ import org.eclipse.ecf.remoteservice.rest.IRestParameter;
 import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
 import org.eclipse.ecf.remoteservice.rest.RestCallable;
 import org.eclipse.ecf.remoteservice.rest.RestParameter;
+import org.eclipse.ecf.remoteservice.rest.RestParameterFactory;
 import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
 import org.eclipse.ecf.remoteservice.rest.resource.IRestResourceProcessor;
 import org.eclipse.ecf.tests.remoteservice.rest.AbstractRestTestCase;
@@ -58,7 +59,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 
 		// Create and register callable to register service
 		List callables = new ArrayList();
-		IRestParameter [] parameters = new IRestParameter[] { new RestParameter("count") };
+		IRestParameter [] parameters = RestParameterFactory.createParameters("count",null);
 		callables.add(new RestCallable("getUserStatuses","/statuses/user_timeline.json",parameters,IRestCallable.RequestType.GET));
 		// Setup callable
 		registration = adapter.registerCallable(new String[] { IUserTimeline.class.getName() }, callables, null);
