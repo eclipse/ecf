@@ -91,7 +91,7 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 			setupProxies();
 			setupAuthentication();
 			setupTimeouts();
-			URLConnection urlConnection = (URLConnection) directoryOrFile.openConnection();
+			URLConnection urlConnection = directoryOrFile.openConnection();
 			// set cache to off if using jar protocol
 			// this is for addressing bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=235933
 			if (directoryOrFile.getProtocol().equalsIgnoreCase("jar")) { //$NON-NLS-1$

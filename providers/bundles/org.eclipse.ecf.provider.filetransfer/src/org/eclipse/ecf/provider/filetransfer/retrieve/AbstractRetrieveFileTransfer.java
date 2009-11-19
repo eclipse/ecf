@@ -821,6 +821,9 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 * org.eclipse.ecf.filetransfer.IFileRangeSpecification,
 	 * org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
 	 */
+	/**
+	 * @throws IncomingFileTransferException  
+	 */
 	public void sendRetrieveRequest(IFileID rFileID, IFileRangeSpecification rangeSpec, IFileTransferListener transferListener, Map ops) throws IncomingFileTransferException {
 		Assert.isNotNull(rFileID, Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
 		Assert.isNotNull(transferListener, Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
