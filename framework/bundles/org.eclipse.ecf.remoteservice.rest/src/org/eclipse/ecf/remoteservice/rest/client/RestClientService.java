@@ -122,7 +122,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		// execute method
 		String responseBody = null;
 		try {
-			int responseCode = executeHttpMethod(httpClient, httpMethod);
+			int responseCode = httpClient.executeMethod(httpMethod);
 			if (responseCode == HttpStatus.SC_OK) {
 				// Get responseBody as String
 				responseBody = getResponseBodyAsString(httpMethod);
@@ -140,10 +140,6 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 
 	protected void handleTransportException(String message, Throwable e) throws ECFException {
 		throw new ECFException(message, e);
-	}
-
-	protected int executeHttpMethod(HttpClient client, HttpMethod method) throws HttpException, IOException {
-		return client.executeMethod(method);
 	}
 
 	protected String getResponseBodyAsString(HttpMethod method) throws IOException {
@@ -302,13 +298,15 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 			for (int i = 0; i < restParameters.length; i++) {
 				try {
 					// encode string as URLencoded
-					String parameterValue = URLEncoder.encode(restParameters[i].getValue(), "UTF-8"); //$NON-NLS-1$
+					String parameterValue = restParameters[i].getValue();
 					if (parameterValue != null) {
 						String parameterName = URLEncoder.encode(restParameters[i].getName(), "UTF-8"); //$NON-NLS-1$
+						parameterValue = URLEncoder.encode(parameterValue, "UTF-8"); //$NON-NLS-1$
 						nameValueList.add(new NameValuePair(parameterName, parameterValue));
 					}
 				} catch (UnsupportedEncodingException e) {
 					// should not happen
+					e.printStackTrace();
 				}
 			}
 		}
