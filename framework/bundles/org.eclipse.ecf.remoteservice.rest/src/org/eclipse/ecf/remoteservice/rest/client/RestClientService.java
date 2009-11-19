@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.*;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.*;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -299,9 +300,15 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		List nameValueList = new ArrayList();
 		if (restParameters != null) {
 			for (int i = 0; i < restParameters.length; i++) {
-				String parameterValue = restParameters[i].getValue();
-				if (parameterValue != null) {
-					nameValueList.add(new NameValuePair(restParameters[i].getName(), restParameters[i].getValue()));
+				try {
+					// encode string as URLencoded
+					String parameterValue = URLEncoder.encode(restParameters[i].getValue(), "UTF-8"); //$NON-NLS-1$
+					if (parameterValue != null) {
+						String parameterName = URLEncoder.encode(restParameters[i].getName(), "UTF-8"); //$NON-NLS-1$
+						nameValueList.add(new NameValuePair(parameterName, parameterValue));
+					}
+				} catch (UnsupportedEncodingException e) {
+					// should not happen
 				}
 			}
 		}
