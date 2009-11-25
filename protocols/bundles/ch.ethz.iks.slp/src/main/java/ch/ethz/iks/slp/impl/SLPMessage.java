@@ -53,6 +53,8 @@ import ch.ethz.iks.slp.impl.attr.gen.Rule;
  */
 public abstract class SLPMessage {
 
+	private static final int SLP_VERSION = 2;
+
 	/**
 	 * the <code>Locale</code> of the message.
 	 */
@@ -175,7 +177,7 @@ public abstract class SLPMessage {
 		if (!tcp && msgSize > SLPCore.CONFIG.getMTU()) {
 			flags |= 0x80;
 		}
-		out.write(2);
+		out.write(SLP_VERSION);
 		out.write(funcID);
 		out.write((byte) ((msgSize) >> 16));
 		out.write((byte) (((msgSize) >> 8) & 0xFF));
@@ -243,12 +245,12 @@ public abstract class SLPMessage {
 			throws ServiceLocationException, ProtocolException {
 		try {
 			final int version = in.readByte(); // version
-			if (version == 1) {
+			if (version == SLP_VERSION) {
 				in.readByte(); // funcID
 				final int length = in.readShort();
 				byte[] drop = new byte[length - 4];
 				in.readFully(drop);
-				SLPCore.platform.logWarning("Dropped SLPv1 message from "
+				SLPCore.platform.logWarning("Dropped SLPv" + version + " message from "
 							+ senderAddr + ":" + senderPort);
 			}
 			final byte funcID = in.readByte(); // funcID
