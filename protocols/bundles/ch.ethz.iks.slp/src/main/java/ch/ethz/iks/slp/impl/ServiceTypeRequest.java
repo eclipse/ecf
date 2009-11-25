@@ -40,7 +40,7 @@ import ch.ethz.iks.slp.ServiceLocationException;
 /**
  * ServiceTypeRequest message is used to find existing service types.
  * 
- * @author Jan S. Rellermeyer, ETH Zürich
+ * @author Jan S. Rellermeyer, ETH Zï¿½rich
  * @since 0.6
  */
 class ServiceTypeRequest extends RequestMessage {
@@ -128,7 +128,6 @@ class ServiceTypeRequest extends RequestMessage {
 	 *             if an IO Exception occurs.
 	 */
 	protected void writeTo(final DataOutputStream out) throws IOException {
-		super.writeHeader(out, getSize());
 		out.writeUTF(listToString(prevRespList, ","));
 		if (namingAuthority.equals(NA_ALL)) {
 			out.writeShort(0xFFFF);
@@ -146,7 +145,7 @@ class ServiceTypeRequest extends RequestMessage {
 	 * @return the length of the message.
 	 * @see ch.ethz.iks.slp.impl.SLPMessage#getSize()
 	 */
-	int getSize() {
+	protected int getSize() {
 		int len = getHeaderSize() + 2
 				+ listToString(prevRespList, ",").length();
 		if(namingAuthority.equals(NA_DEFAULT) || namingAuthority.equals(NA_ALL)) {

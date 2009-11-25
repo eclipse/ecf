@@ -180,7 +180,7 @@ class DAAdvertisement extends ReplyMessage {
 	 * @return the length of the message.
 	 * @see ch.ethz.iks.slp.impl.SLPMessage#getSize()
 	 */
-	int getSize() {
+	protected int getSize() {
 		int len = getHeaderSize() + 8 + origURL.length() + 2
 				+ origScopes.length() + 2 + origAttrs.length() + 2
 				+ spi.length() + 1;

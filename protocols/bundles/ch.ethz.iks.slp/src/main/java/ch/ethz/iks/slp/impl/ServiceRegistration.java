@@ -173,8 +173,7 @@ class ServiceRegistration extends SLPMessage {
 	 * @throws ServiceLocationException
 	 *             if an IO Exception occurs.
 	 */
-	void writeTo(final DataOutputStream out) throws IOException {
-		super.writeHeader(out, getSize());
+	protected void writeTo(final DataOutputStream out) throws IOException {
 		url.writeTo(out);
 		out.writeUTF(serviceType.toString());
 		out.writeUTF(listToString(scopeList, ","));
@@ -191,7 +190,7 @@ class ServiceRegistration extends SLPMessage {
 	 * @return the length of the message.
 	 * @see ch.ethz.iks.slp.impl.SLPMessage#getSize()
 	 */
-	int getSize() {
+	protected int getSize() {
 		int len = getHeaderSize() + url.getLength() + 2
 				+ serviceType.toString().length() + 2
 				+ listToString(scopeList, ",").length() + 2

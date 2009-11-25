@@ -510,7 +510,7 @@ public final class SLPDaemonImpl implements SLPDaemon {
 
 						DataOutputStream out = new DataOutputStream(con
 								.getOutputStream());
-						reply.writeTo(out);
+						out.write(reply.getBytes());
 						/*
 						 * TODO the RFC encourages to keep the connection open
 						 * to allow the other side to send multiple requests per

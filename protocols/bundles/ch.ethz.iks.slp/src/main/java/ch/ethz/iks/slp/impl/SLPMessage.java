@@ -53,8 +53,6 @@ import ch.ethz.iks.slp.impl.attr.gen.Rule;
  */
 public abstract class SLPMessage {
 
-	private static final int SLP_VERSION = 2;
-
 	/**
 	 * the <code>Locale</code> of the message.
 	 */
@@ -90,6 +88,12 @@ public abstract class SLPMessage {
 	 */
 	boolean multicast;
 
+
+	/**
+	 * the message version according to RFC 2608, Version = 2.
+	 */
+	public static final byte VERSION = 2;
+	
 	/**
 	 * the message funcID values according to RFC 2608, Service Request = 1.
 	 */
@@ -165,7 +169,7 @@ public abstract class SLPMessage {
 	 * @throws ServiceLocationException
 	 *             in case of IOExceptions.
 	 */
-	protected void writeHeader(final DataOutputStream out, int msgSize)
+	private void writeHeader(final DataOutputStream out)
 			throws IOException {
 		byte flags = 0;
 		if (funcID == SRVREG) {
@@ -174,10 +178,11 @@ public abstract class SLPMessage {
 		if (multicast) {
 			flags |= 0x20;
 		}
+		int msgSize = getSize();
 		if (!tcp && msgSize > SLPCore.CONFIG.getMTU()) {
 			flags |= 0x80;
 		}
-		out.write(SLP_VERSION);
+		out.write(VERSION);
 		out.write(funcID);
 		out.write((byte) ((msgSize) >> 16));
 		out.write((byte) (((msgSize) >> 8) & 0xFF));
@@ -194,7 +199,7 @@ public abstract class SLPMessage {
 	/**
 	 * 
 	 */
-	abstract void writeTo(final DataOutputStream out) throws IOException;
+	protected abstract void writeTo(final DataOutputStream out) throws IOException;
 
 	/**
 	 * 
@@ -202,6 +207,7 @@ public abstract class SLPMessage {
 	byte[] getBytes() throws IOException {
 		final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		final DataOutputStream out = new DataOutputStream(bytes);
+		writeHeader(out);
 		writeTo(out);
 		return bytes.toByteArray();
 	}
@@ -245,7 +251,7 @@ public abstract class SLPMessage {
 			throws ServiceLocationException, ProtocolException {
 		try {
 			final int version = in.readByte(); // version
-			if (version != SLP_VERSION) {
+			if (version != VERSION) {
 				in.readByte(); // funcID
 				final int length = in.readShort();
 				byte[] drop = new byte[length - 4];
@@ -338,7 +344,7 @@ public abstract class SLPMessage {
 	 * 
 	 * @return
 	 */
-	int getHeaderSize() {
+	protected int getHeaderSize() {
 		return 14 + locale.getLanguage().length();
 	}
 
@@ -346,7 +352,7 @@ public abstract class SLPMessage {
 	 * 
 	 * @return
 	 */
-	abstract int getSize();
+	protected abstract int getSize();
 
 	/**
 	 * Get a string representation of the message. Overridden by message

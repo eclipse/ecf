@@ -124,14 +124,13 @@ class AttributeReply extends ReplyMessage {
 	 *             if an IO Exception occurs.
 	 * @throws IOException 
 	 */
-	void writeTo(final DataOutputStream out) throws IOException {
-		super.writeHeader(out, getSize());
-			out.writeShort(errorCode);
-			out.writeUTF(listToString(attributes, ","));
-			out.write(authBlocks.length);
-			for (int i = 0; i < authBlocks.length; i++) {
-				authBlocks[i].write(out);
-			}
+	protected void writeTo(final DataOutputStream out) throws IOException {
+		out.writeShort(errorCode);
+		out.writeUTF(listToString(attributes, ","));
+		out.write(authBlocks.length);
+		for (int i = 0; i < authBlocks.length; i++) {
+			authBlocks[i].write(out);
+		}
 	}
 	
 	/**
@@ -140,7 +139,7 @@ class AttributeReply extends ReplyMessage {
 	 * @return the length of the message.
 	 * @see ch.ethz.iks.slp.impl.SLPMessage#getSize()
 	 */
-	int getSize() {
+	protected int getSize() {
 		int len = getHeaderSize() + 4 + listToString(attributes, ",").length() + 1;
 		for (int i=0; i<authBlocks.length; i++) {
 			len += authBlocks[i].getLength();

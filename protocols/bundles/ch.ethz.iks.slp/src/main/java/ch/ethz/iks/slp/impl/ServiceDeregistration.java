@@ -138,7 +138,6 @@ class ServiceDeregistration extends SLPMessage {
 	 *             in case of IO errors.
 	 */
 	protected void writeTo(final DataOutputStream out) throws IOException {
-		super.writeHeader(out, getSize());
 		out.writeUTF(listToString(scopeList, ","));
 		url.writeTo(out);
 		out.writeUTF(listToString(attList, ","));
@@ -150,7 +149,7 @@ class ServiceDeregistration extends SLPMessage {
 	 * @return the length of the message.
 	 * @see ch.ethz.iks.slp.impl.SLPMessage#getSize()
 	 */
-	int getSize() {
+	protected int getSize() {
 		return getHeaderSize() + 2 + listToString(scopeList, ",").length()
 				+ url.getLength() + 2
 				+ listToString(attList, ",").length();

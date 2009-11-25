@@ -149,7 +149,6 @@ class ServiceRequest extends RequestMessage {
 	 *             if an IO Exception occurs.
 	 */
 	protected void writeTo(final DataOutputStream out) throws IOException {
-		super.writeHeader(out, getSize());
 		out.writeUTF(listToString(prevRespList, ","));
 		out.writeUTF(serviceType.toString());
 		out.writeUTF(listToString(scopeList, ","));
@@ -163,7 +162,7 @@ class ServiceRequest extends RequestMessage {
 	 * @return the length of the message.
 	 * @see ch.ethz.iks.slp.impl.SLPMessage#getSize()
 	 */
-	int getSize() {
+	protected int getSize() {
 		return getHeaderSize() + 2 + listToString(prevRespList, ",").length()
 				+ 2 + serviceType.toString().length() + 2
 				+ listToString(scopeList, ",").length() + 2

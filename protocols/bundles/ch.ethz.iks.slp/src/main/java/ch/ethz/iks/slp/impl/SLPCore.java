@@ -672,7 +672,7 @@ public abstract class SLPCore {
 			DataOutputStream out = new DataOutputStream(socket
 					.getOutputStream());
 			DataInputStream in = new DataInputStream(socket.getInputStream());
-			msg.writeTo(out);
+			out.write(msg.getBytes());
 			final ReplyMessage reply = (ReplyMessage) SLPMessage.parse(
 					msg.address, msg.port, in, true);
 			socket.close();

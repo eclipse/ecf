@@ -37,7 +37,7 @@ import ch.ethz.iks.slp.ServiceLocationException;
 /**
  * a ServiceReply Message is sent as reaction of a ServiceRequest.
  * 
- * @author Jan S. Rellermeyer, ETH Zürich
+ * @author Jan S. Rellermeyer, ETH Zï¿½rich
  * @since 0.6
  */
 class ServiceTypeReply extends ReplyMessage {
@@ -101,7 +101,6 @@ class ServiceTypeReply extends ReplyMessage {
 	 *             if an IO Exception occurs.
 	 */
 	protected void writeTo(final DataOutputStream out) throws IOException {
-		super.writeHeader(out, getSize());
 		out.writeShort(errorCode);
 		out.writeUTF(listToString(serviceTypes, ","));
 	}
@@ -112,7 +111,7 @@ class ServiceTypeReply extends ReplyMessage {
 	 * @return the length of the message.
 	 * @see ch.ethz.iks.slp.impl.SLPMessage#getSize()
 	 */
-	int getSize() {
+	protected int getSize() {
 		return getHeaderSize() + 2 + 2
 				+ listToString(serviceTypes, ",").length();
 	}

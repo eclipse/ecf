@@ -40,7 +40,7 @@ import ch.ethz.iks.slp.ServiceURL;
 /**
  * a ServiceReply Message is sent as reaction to a ServiceRequest.
  * 
- * @author Jan S. Rellermeyer, ETH Zürich
+ * @author Jan S. Rellermeyer, ETH Zï¿½rich
  * @since 0.1
  */
 class ServiceReply extends ReplyMessage {
@@ -119,7 +119,6 @@ class ServiceReply extends ReplyMessage {
 	 *             if an IO Exception occurs.
 	 */
 	protected void writeTo(final DataOutputStream out) throws IOException {
-		super.writeHeader(out, getSize());
 		out.writeShort(errorCode);
 		out.writeShort(urlList.size());
 		for (int i = 0; i < urlList.size(); i++) {
@@ -133,7 +132,7 @@ class ServiceReply extends ReplyMessage {
 	 * @return the length of the message.
 	 * @see ch.ethz.iks.slp.impl.SLPMessage#getSize()
 	 */
-	int getSize() {
+	protected int getSize() {
 		int len = getHeaderSize() + 2 + 2;
 		for (int i = 0; i < urlList.size(); i++) {
 			len += ((ServiceURL) urlList.get(i)).getLength();

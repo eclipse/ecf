@@ -39,7 +39,7 @@ import ch.ethz.iks.slp.ServiceLocationException;
  * a ServiceAcknowledgement is sent by a DA as reaction to a ServiceRegistration
  * or ServiceDeregistration.
  * 
- * @author Jan S. Rellermeyer, ETH Zürich
+ * @author Jan S. Rellermeyer, ETH Zï¿½rich
  * @since 0.1
  */
 class ServiceAcknowledgement extends ReplyMessage {
@@ -95,7 +95,6 @@ class ServiceAcknowledgement extends ReplyMessage {
 	 *             if an IO Exception occurs.
 	 */
 	protected void writeTo(final DataOutputStream out) throws IOException {
-		super.writeHeader(out, getSize());
 		out.writeShort(errorCode);
 	}
 
@@ -105,7 +104,7 @@ class ServiceAcknowledgement extends ReplyMessage {
 	 * @return the length of the message.
 	 * @see ch.ethz.iks.slp.impl.SLPMessage#getSize()
 	 */
-	int getSize() {
+	protected int getSize() {
 		return getHeaderSize() + 2;
 	}
 

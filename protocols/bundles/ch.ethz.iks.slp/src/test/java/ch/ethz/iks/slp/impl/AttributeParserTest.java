@@ -88,11 +88,11 @@ public class AttributeParserTest extends TestCase {
 	
 	// just make attributeStringToList public
 	private class SLPTestMessage extends SLPMessage {
-		int getSize() {
+		protected int getSize() {
 			return 0;
 		}
 
-		void writeTo(DataOutputStream out) throws IOException {
+		protected void writeTo(final DataOutputStream out) throws IOException {
 			// no op
 		}
 
