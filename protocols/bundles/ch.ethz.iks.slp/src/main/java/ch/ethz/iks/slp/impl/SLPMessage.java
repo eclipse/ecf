@@ -245,7 +245,7 @@ public abstract class SLPMessage {
 			throws ServiceLocationException, ProtocolException {
 		try {
 			final int version = in.readByte(); // version
-			if (version == SLP_VERSION) {
+			if (version != SLP_VERSION) {
 				in.readByte(); // funcID
 				final int length = in.readShort();
 				byte[] drop = new byte[length - 4];
