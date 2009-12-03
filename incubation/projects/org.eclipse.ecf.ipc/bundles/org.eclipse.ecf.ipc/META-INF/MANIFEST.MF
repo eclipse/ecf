@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF IPC API Bundle
+Bundle-SymbolicName: org.eclipse.ecf.ipc;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: Eclipse ECF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.ecf.ipc,
+ org.eclipse.ecf.ipc.fifo,
+ org.eclipse.ecf.ipc.semaphore,
+ org.eclipse.ecf.ipc.sharedmemory
