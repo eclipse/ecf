@@ -224,7 +224,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 		if(aTargetID == null || !(aTargetID instanceof DnsSdServiceTypeID)) {
 			targetID = new DnsSdServiceTypeID();
 			//TODO remove after tutorial
-			targetID.setScope("kuppe.org");
+			targetID.setScope("eclipse.org");
 		} else {
 			targetID = (DnsSdServiceTypeID) aTargetID;
 		}
