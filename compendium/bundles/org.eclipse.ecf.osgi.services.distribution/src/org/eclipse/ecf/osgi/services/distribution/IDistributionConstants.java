@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
-import org.osgi.service.distribution.DistributionConstants;
-
 public interface IDistributionConstants {
 
 	/**
@@ -26,7 +24,7 @@ public interface IDistributionConstants {
 	 * The value of this property is of type String, String[] or Collection of
 	 * String.
 	 */
-	public static final String REMOTE_INTERFACES = DistributionConstants.REMOTE_INTERFACES;
+	public static final String REMOTE_INTERFACES = "osgi.remote.interfaces";
 
 	/**
 	 * This optional service registration property contains a list of intents
@@ -37,7 +35,7 @@ public interface IDistributionConstants {
 	 * The value of this property is of type String, String[] or Collection of
 	 * String.
 	 */
-	public static final String REMOTE_REQUIRES_INTENTS = DistributionConstants.REMOTE_REQUIRES_INTENTS;
+	public static final String REMOTE_REQUIRES_INTENTS = "osgi.remote.requires.intents";
 
 	/**
 	 * This optional service registration property identifies the metadata type
@@ -48,7 +46,7 @@ public interface IDistributionConstants {
 	 * The value of this property is of type String, String[] or Collection of
 	 * String.
 	 */
-	public static final String REMOTE_CONFIGURATION_TYPE = DistributionConstants.REMOTE_CONFIGURATION_TYPE;
+	public static final String REMOTE_CONFIGURATION_TYPE = "osgi.remote.configuration.type";
 
 	/**
 	 * This optional service registration property contains a list of intents
@@ -71,7 +69,7 @@ public interface IDistributionConstants {
 	 * The value of this property is of type String, String[] or Collection of
 	 * String.
 	 */
-	public static final String DEPLOYMENT_INTENTS = DistributionConstants.DEPLOYMENT_INTENTS;
+	public static final String DEPLOYMENT_INTENTS = "osgi.deployment.intents";
 
 	/**
 	 * This service registration property is set on client side service proxies
@@ -81,7 +79,7 @@ public interface IDistributionConstants {
 	 * The value of this property is undefined. The simple fact that the
 	 * property is set denotes that the service is running remotely.
 	 */
-	public static final String REMOTE = DistributionConstants.REMOTE;
+	public static final String REMOTE = "osgi.remote";
 
 	public static final String REMOTE_INTERFACES_WILDCARD = "*";
 

@@ -21,9 +21,8 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.distribution.DistributionProvider;
 
-public class DistributionProviderImpl implements DistributionProvider {
+public class DistributionProviderImpl {
 
 	public static Object VENDOR_NAME = "Eclipse Foundation";
 	public static Object PRODUCT_NAME = "Eclipse Communication Framework (ECF)";

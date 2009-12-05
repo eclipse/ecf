@@ -10,8 +10,6 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Properties;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
@@ -35,7 +33,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
-import org.osgi.service.distribution.DistributionProvider;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -51,7 +48,6 @@ public class Activator implements BundleActivator {
 	private DistributionProviderImpl distributionProvider;
 
 	private ServiceRegistration eventHookRegistration;
-	private ServiceRegistration distributionProviderRegistration;
 	private ServiceRegistration discoveredServiceTrackerRegistration;
 	private ServiceRegistration proxyrsContainerFinderRegistration;
 	private ServiceRegistration hostrsContainerFinderRegistration;
@@ -167,20 +163,6 @@ public class Activator implements BundleActivator {
 			// not possible
 		}
 
-		// Setup properties for the distribution provider
-		final Dictionary properties = new Hashtable();
-		properties.put(DistributionProvider.VENDOR_NAME,
-				DistributionProviderImpl.VENDOR_NAME);
-		properties.put(DistributionProvider.PRODUCT_NAME,
-				DistributionProviderImpl.PRODUCT_NAME);
-		properties.put(DistributionProvider.PRODUCT_VERSION,
-				DistributionProviderImpl.PRODUCT_VERSION);
-		properties.put(DistributionProvider.SUPPORTED_INTENTS,
-				distributionProvider.getSupportedIntents());
-		// Register distribution provider
-		this.distributionProviderRegistration = this.context.registerService(
-				DistributionProvider.class.getName(), distributionProvider,
-				properties);
 	}
 
 	/*
@@ -197,10 +179,6 @@ public class Activator implements BundleActivator {
 		if (this.proxyrsContainerFinderRegistration != null) {
 			this.proxyrsContainerFinderRegistration.unregister();
 			this.proxyrsContainerFinderRegistration = null;
-		}
-		if (this.distributionProviderRegistration != null) {
-			this.distributionProviderRegistration.unregister();
-			this.distributionProviderRegistration = null;
 		}
 		if (this.eventHookRegistration != null) {
 			this.eventHookRegistration.unregister();
