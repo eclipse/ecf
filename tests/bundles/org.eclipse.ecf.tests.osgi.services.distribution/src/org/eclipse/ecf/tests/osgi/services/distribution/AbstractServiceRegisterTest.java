@@ -22,7 +22,6 @@ import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.distribution.DistributionProvider;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -199,6 +198,7 @@ public abstract class AbstractServiceRegisterTest extends
 		Thread.sleep(REGISTER_WAIT);
 	}
 
+	/*
 	public void testGetExposedServicesFromDistributionProvider() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
 		// Setup service tracker for distribution provider
@@ -291,7 +291,8 @@ public abstract class AbstractServiceRegisterTest extends
 		assertTrue(remoteServices.size() < remotesLength);
 
 	}
-
+*/
+	
 	protected IRemoteCall createRemoteCall(Class clazz) {
 		if (clazz.equals(TestServiceInterface1.class)) {
 			return new IRemoteCall() {
