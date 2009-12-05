@@ -31,14 +31,13 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.discovery.DiscoveredServiceNotification;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
-import org.osgi.service.discovery.Discovery;
 import org.osgi.service.discovery.ServiceEndpointDescription;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class FileBasedDiscoveryImpl implements Discovery {
+public class FileBasedDiscoveryImpl {
 	/**
 	 * ServiceRegistration property identifying Discovery's default strategy for
 	 * distribution of published service information. It's up to the Discovery
