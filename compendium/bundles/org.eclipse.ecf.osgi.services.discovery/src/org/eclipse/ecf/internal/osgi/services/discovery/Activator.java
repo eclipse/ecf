@@ -10,8 +10,6 @@
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
 import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
@@ -23,7 +21,6 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
-import org.osgi.service.discovery.Discovery;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -71,13 +68,13 @@ public class Activator implements BundleActivator {
 		servicePublicationTracker.open();
 
 		// register the discovery service which is provided by SPH
-		Dictionary props = new Hashtable();
-		props.put(Discovery.VENDOR_NAME, "Eclipse.org");
-		props.put(Discovery.PRODUCT_NAME, "ECF Discovery");
-		props.put(Discovery.PRODUCT_VERSION, "1.0.0");
-		props.put(Discovery.SUPPORTED_PROTOCOLS, "SLP|mDNS|DNS-SRV");
-		ctxt.registerService(Discovery.class.getName(),
-				servicePublicationHandler, props);
+		// Dictionary props = new Hashtable();
+		// props.put(Discovery.VENDOR_NAME, "Eclipse.org");
+		// props.put(Discovery.PRODUCT_NAME, "ECF Discovery");
+		// props.put(Discovery.PRODUCT_VERSION, "1.0.0");
+		// props.put(Discovery.SUPPORTED_PROTOCOLS, "SLP|mDNS|DNS-SRV");
+		// ctxt.registerService(Discovery.class.getName(),
+		// servicePublicationHandler, props);
 
 		locatorTracker = new ServiceTracker(this.context,
 				IDiscoveryLocator.class.getName(),

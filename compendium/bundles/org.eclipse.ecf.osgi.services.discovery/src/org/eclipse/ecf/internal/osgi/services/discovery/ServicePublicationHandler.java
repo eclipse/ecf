@@ -45,12 +45,11 @@ import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.discovery.DiscoveredServiceNotification;
 import org.osgi.service.discovery.DiscoveredServiceTracker;
-import org.osgi.service.discovery.Discovery;
 import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class ServicePublicationHandler implements ServiceTrackerCustomizer,
-		Discovery, IServiceListener {
+		IServiceListener {
 
 	private IDiscoveryAdvertiser advertiser;
 	private Map serviceInfos = Collections.synchronizedMap(new HashMap());
