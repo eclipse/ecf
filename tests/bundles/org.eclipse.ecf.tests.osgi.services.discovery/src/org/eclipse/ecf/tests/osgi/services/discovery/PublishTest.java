@@ -18,14 +18,14 @@ import junit.framework.TestCase;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification;
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceTracker;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.eclipse.ecf.tests.internal.osgi.discovery.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.discovery.DiscoveredServiceNotification;
-import org.osgi.service.discovery.DiscoveredServiceTracker;
-import org.osgi.service.discovery.ServicePublication;
 
 public class PublishTest extends TestCase {
 
