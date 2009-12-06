@@ -9,6 +9,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification;
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceTracker;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.URI;
@@ -43,9 +47,6 @@ import org.eclipse.ecf.osgi.services.discovery.IProxyDiscoveryListener;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.discovery.DiscoveredServiceNotification;
-import org.osgi.service.discovery.DiscoveredServiceTracker;
-import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class ServicePublicationHandler implements ServiceTrackerCustomizer,

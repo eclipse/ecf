@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.discovery.ServicePublication;
 
 public class ServicePropertyUtils {
 

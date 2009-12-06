@@ -11,7 +11,6 @@ package org.eclipse.ecf.osgi.services.discovery;
 
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
-import org.osgi.service.discovery.ServiceEndpointDescription;
 
 public interface IRemoteServiceEndpointDescription extends
 		ServiceEndpointDescription {

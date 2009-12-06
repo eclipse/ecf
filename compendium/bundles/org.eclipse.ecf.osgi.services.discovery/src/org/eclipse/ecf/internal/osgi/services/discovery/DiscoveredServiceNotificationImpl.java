@@ -9,11 +9,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification;
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
+
 import java.util.Collection;
 import java.util.Collections;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.osgi.service.discovery.DiscoveredServiceNotification;
-import org.osgi.service.discovery.ServiceEndpointDescription;
 
 public class DiscoveredServiceNotificationImpl implements
 		DiscoveredServiceNotification {

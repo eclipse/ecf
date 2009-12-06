@@ -20,7 +20,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.osgi.services.discovery.Activator;
 import org.eclipse.ecf.internal.osgi.services.discovery.ServicePropertyUtils;
-import org.osgi.service.discovery.ServicePublication;
 
 public abstract class RemoteServiceEndpointDescription implements
 		IRemoteServiceEndpointDescription {

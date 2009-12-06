@@ -9,7 +9,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.discovery;
 
-import org.osgi.service.discovery.ServicePublication;
 
 public interface RemoteServicePublication extends ServicePublication {
 
