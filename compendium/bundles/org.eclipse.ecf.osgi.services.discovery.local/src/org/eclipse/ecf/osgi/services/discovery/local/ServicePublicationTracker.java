@@ -20,10 +20,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.discovery.ServiceEndpointDescription;
-import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class ServicePublicationTracker implements ServiceTrackerCustomizer {

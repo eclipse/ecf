@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.osgi.service.discovery.ServiceEndpointDescription;
-import org.osgi.service.discovery.ServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 
 public class ServiceEndpointDescriptionImpl implements
 		ServiceEndpointDescription {
@@ -230,7 +230,7 @@ public class ServiceEndpointDescriptionImpl implements
 
 	/**
 	 * 
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getProvidedInterfaces()
+	 * @see org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription#getProvidedInterfaces()
 	 */
 	public Collection getProvidedInterfaces() {
 		List l = new ArrayList();
@@ -245,7 +245,7 @@ public class ServiceEndpointDescriptionImpl implements
 
 	/**
 	 * 
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getEndpointInterfaceName(java.lang.String)
+	 * @see org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription#getEndpointInterfaceName(java.lang.String)
 	 */
 	public String getEndpointInterfaceName(String interfaceName) {
 		OneInterfaceSED jSED = ((OneInterfaceSED) listOfJSLPSEDs
@@ -259,7 +259,7 @@ public class ServiceEndpointDescriptionImpl implements
 
 	/**
 	 * 
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getVersion(java.lang.String)
+	 * @see org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription#getVersion(java.lang.String)
 	 */
 	public String getVersion(String interfaceName) {
 		OneInterfaceSED jSED = ((OneInterfaceSED) listOfJSLPSEDs
@@ -293,7 +293,7 @@ public class ServiceEndpointDescriptionImpl implements
 	/**
 	 * 
 	 * @return Collection
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getPropertyKeys()
+	 * @see org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription#getPropertyKeys()
 	 */
 	public Collection getPropertyKeys() {
 		return getProperties().keySet();
@@ -421,7 +421,7 @@ public class ServiceEndpointDescriptionImpl implements
 
 	/**
 	 * 
-	 * @see org.osgi.service.discovery.ServiceEndpointDescription#getEndpointID()
+	 * @see org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription#getEndpointID()
 	 */
 	public String getEndpointID() {
 		return endpointID;

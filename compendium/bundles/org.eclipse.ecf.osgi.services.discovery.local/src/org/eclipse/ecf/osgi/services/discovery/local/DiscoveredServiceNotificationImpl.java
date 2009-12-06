@@ -17,8 +17,8 @@ package org.eclipse.ecf.osgi.services.discovery.local;
 
 import java.util.Collection;
 
-import org.osgi.service.discovery.DiscoveredServiceNotification;
-import org.osgi.service.discovery.ServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification;
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
 
 public class DiscoveredServiceNotificationImpl implements
 		DiscoveredServiceNotification {
@@ -38,28 +38,28 @@ public class DiscoveredServiceNotificationImpl implements
 	}
 
 	/**
-	 * @see org.osgi.service.discovery.DiscoveredServiceNotification#getServiceEndpointDescription()
+	 * @see org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification#getServiceEndpointDescription()
 	 */
 	public ServiceEndpointDescription getServiceEndpointDescription() {
 		return descr;
 	}
 
 	/**
-	 * @see org.osgi.service.discovery.DiscoveredServiceNotification#getType()
+	 * @see org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification#getType()
 	 */
 	public int getType() {
 		return type;
 	}
 
 	/**
-	 * @see org.osgi.service.discovery.DiscoveredServiceNotification#getFilters()
+	 * @see org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification#getFilters()
 	 */
 	public Collection getFilters() {
 		return filters;
 	}
 
 	/**
-	 * @see org.osgi.service.discovery.DiscoveredServiceNotification#getInterfaces()
+	 * @see org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification#getInterfaces()
 	 */
 	public Collection getInterfaces() {
 		return interfaces;

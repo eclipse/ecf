@@ -17,8 +17,8 @@ package org.eclipse.ecf.osgi.services.discovery.local;
 
 import java.util.Collection;
 
-import org.osgi.service.discovery.ServiceEndpointDescription;
-import org.osgi.service.discovery.ServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 
 /**
  * 

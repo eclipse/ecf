@@ -19,10 +19,10 @@ import java.util.Iterator;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.eclipse.osgi.util.NLS;
-import org.osgi.service.discovery.ServiceEndpointDescription;
 import org.xml.sax.SAXException;
 
 public class DiscoveryCommandProvider implements CommandProvider {

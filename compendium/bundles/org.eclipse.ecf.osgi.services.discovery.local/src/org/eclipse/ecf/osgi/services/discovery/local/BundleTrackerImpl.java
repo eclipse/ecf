@@ -33,9 +33,9 @@ import java.util.StringTokenizer;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
-import org.osgi.service.discovery.ServiceEndpointDescription;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.xml.sax.SAXException;
