@@ -18,12 +18,12 @@ import junit.framework.TestCase;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.discovery.ServicePublication;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractServicePublicationTest extends TestCase implements IDistributionConstants, RemoteServicePublication {
