@@ -17,7 +17,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription;
-import org.osgi.service.discovery.ServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
 
 public class RemoteServiceEndpointDescriptionImpl extends
 		RemoteServiceEndpointDescription {

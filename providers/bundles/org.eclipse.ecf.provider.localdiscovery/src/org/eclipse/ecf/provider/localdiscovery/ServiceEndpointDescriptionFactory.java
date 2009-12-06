@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
-import org.osgi.service.discovery.ServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
 
 public class ServiceEndpointDescriptionFactory implements IAdapterFactory {
 
