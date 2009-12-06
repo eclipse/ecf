@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceTracker;
+
 import java.util.Arrays;
 import java.util.Properties;
 import org.eclipse.core.runtime.IAdapterManager;
@@ -32,7 +34,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventHook;
-import org.osgi.service.discovery.DiscoveredServiceTracker;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
