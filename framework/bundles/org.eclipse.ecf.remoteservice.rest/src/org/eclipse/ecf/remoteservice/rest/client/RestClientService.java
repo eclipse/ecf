@@ -53,10 +53,12 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 	}
 
 	protected RestClientServiceRegistration registration;
+	protected HttpClient httpClient;
 
 	public RestClientService(RestClientServiceRegistration registration) {
 		Assert.isNotNull(registration);
 		this.registration = registration;
+		this.httpClient = new HttpClient();
 	}
 
 	public Object callSync(IRemoteCall call) throws ECFException {
@@ -113,17 +115,17 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		HttpMethod httpMethod = createHttpMethod(uri, call, callable);
 		// add additional request headers
 		addRequestHeaders(httpMethod, call, callable);
-		HttpClient httpClient = getHttpClientForCall(httpMethod, call, callable);
+		HttpClient client = getHttpClientForCall(httpMethod, call, callable);
 		// handle authentication
-		setupAuthenticaton(httpClient, httpMethod);
+		setupAuthenticaton(client, httpMethod);
 		// needed because a resource can link to another resource
-		httpClient.getParams().setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, new Boolean(true));
-		setupTimeouts(httpClient, call, callable);
+		client.getParams().setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, new Boolean(true));
+		setupTimeouts(client, call, callable);
 		// execute method
 		String responseBody = null;
 		int responseCode = -1;
 		try {
-			responseCode = httpClient.executeMethod(httpMethod);
+			responseCode = client.executeMethod(httpMethod);
 			if (responseCode == HttpStatus.SC_OK) {
 				// Get responseBody as String
 				responseBody = getResponseBodyAsString(httpMethod);
@@ -140,8 +142,8 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 	}
 
 	protected HttpClient getHttpClientForCall(HttpMethod httpMethod, IRemoteCall call, IRestCallable callable) {
-		// By default, create a new HttpClient instance for every request.  
-		return new HttpClient();
+		// By default, reuse the httpClient for each request  
+		return httpClient;
 	}
 
 	protected void handleTransportException(String message, Throwable e, int responseCode) throws RestException {
