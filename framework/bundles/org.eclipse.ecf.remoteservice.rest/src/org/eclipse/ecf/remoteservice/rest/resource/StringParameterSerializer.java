@@ -9,8 +9,8 @@
 ******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.resource;
 
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.rest.IRestParameter;
+import org.eclipse.ecf.remoteservice.rest.RestException;
 
 /**
  * Default parameter serializer.
@@ -19,9 +19,9 @@ import org.eclipse.ecf.remoteservice.rest.IRestParameter;
 public class StringParameterSerializer implements IRestParameterSerializer {
 
 	/**
-	 * @throws ECFException  
+	 * @throws RestException  
 	 */
-	public String serializeParameter(IRestParameter parameter, Object callValue) throws ECFException {
+	public String serializeParameter(IRestParameter parameter, Object callValue) throws RestException {
 		if (callValue == null)
 			return parameter.getValue();
 		if (callValue instanceof String)

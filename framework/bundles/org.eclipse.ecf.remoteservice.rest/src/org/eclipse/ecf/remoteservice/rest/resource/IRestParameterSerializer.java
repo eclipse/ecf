@@ -11,6 +11,7 @@ package org.eclipse.ecf.remoteservice.rest.resource;
 
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.rest.IRestParameter;
+import org.eclipse.ecf.remoteservice.rest.RestException;
 
 /**
  * Instances of this object are responsible for serializing rest parameters.
@@ -26,6 +27,6 @@ public interface IRestParameterSerializer {
 	 * @return String result of parameter serialization.
 	 * @throws ECFException if callValue cannot be serialized.
 	 */
-	public String serializeParameter(IRestParameter parameter, Object callValue) throws ECFException;
+	public String serializeParameter(IRestParameter parameter, Object callValue) throws RestException;
 
 }

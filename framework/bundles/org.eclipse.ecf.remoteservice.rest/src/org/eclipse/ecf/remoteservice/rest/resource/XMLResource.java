@@ -9,15 +9,14 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.resource;
 
-import java.util.Map;
-import org.eclipse.ecf.remoteservice.IRemoteCall;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
-
 import java.io.StringReader;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.remoteservice.rest.Activator;
+import org.eclipse.ecf.remoteservice.IRemoteCall;
+import org.eclipse.ecf.remoteservice.rest.IRestCallable;
+import org.eclipse.ecf.remoteservice.rest.RestException;
 import org.eclipse.osgi.util.NLS;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -29,7 +28,7 @@ import org.xml.sax.InputSource;
  */
 public class XMLResource implements IRestResourceProcessor {
 
-	public Object createResponseRepresentation(IRemoteCall call, IRestCallable callable, Map responseHeaders, String responseBody) throws ECFException {
+	public Object createResponseRepresentation(IRemoteCall call, IRestCallable callable, Map responseHeaders, String responseBody) throws RestException {
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 		String errorMsg = "XML response can't be parsed: {0}"; //$NON-NLS-1$
 		try {
@@ -38,7 +37,7 @@ public class XMLResource implements IRestResourceProcessor {
 			Document dom = builder.parse(src);
 			return dom;
 		} catch (Exception e) {
-			throw new ECFException(NLS.bind(errorMsg, e.getMessage()));
+			throw new RestException(NLS.bind(errorMsg, e.getMessage()), e);
 		}
 
 	}

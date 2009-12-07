@@ -108,7 +108,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 	 * @return The InputStream of the response body or <code>null</code> if an
 	 *         error occurs.
 	 */
-	protected Object callHttpMethod(final IRemoteCall call, final IRestCallable callable) throws ECFException {
+	protected Object callHttpMethod(final IRemoteCall call, final IRestCallable callable) throws RestException {
 		String uri = prepareRequestURI(call, callable);
 		HttpMethod httpMethod = createHttpMethod(uri, call, callable);
 		// add additional request headers
@@ -130,7 +130,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 				if (responseBody == null)
 					throw new RestException("Invalid server response", responseCode); //$NON-NLS-1$
 			} else
-				throw new ECFException(NLS.bind("Http response not OK.  URL={0}, responseCode={1}", uri, new Integer(responseCode))); //$NON-NLS-1$
+				throw new RestException(NLS.bind("Http response not OK.  URL={0}, responseCode={1}", uri, new Integer(responseCode)), responseCode); //$NON-NLS-1$
 		} catch (HttpException e) {
 			handleTransportException("Transport HttpException", e, responseCode); //$NON-NLS-1$
 		} catch (IOException e) {
@@ -144,7 +144,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		return new HttpClient();
 	}
 
-	protected void handleTransportException(String message, Throwable e, int responseCode) throws ECFException {
+	protected void handleTransportException(String message, Throwable e, int responseCode) throws RestException {
 		throw new RestException(message, e, responseCode);
 	}
 
@@ -163,10 +163,10 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		httpClient.getParams().setConnectionManagerTimeout(timeout);
 	}
 
-	protected String prepareRequestURI(IRemoteCall call, IRestCallable callable) throws ECFException {
+	protected String prepareRequestURI(IRemoteCall call, IRestCallable callable) throws RestException {
 		String resourcePath = callable.getResourcePath();
 		if (resourcePath == null || "".equals(resourcePath)) //$NON-NLS-1$
-			throw new ECFException("resourcePath cannot be null or empty"); //$NON-NLS-1$
+			throw new RestException("resourcePath cannot be null or empty"); //$NON-NLS-1$
 		// if resourcePath startswith http then we use it unmodified
 		if (resourcePath.startsWith("http://")) //$NON-NLS-1$
 			return resourcePath;
@@ -189,7 +189,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		return null;
 	}
 
-	protected Object processResponse(IRemoteCall call, IRestCallable callable, Map responseHeaders, String responseBody) throws ECFException {
+	protected Object processResponse(IRemoteCall call, IRestCallable callable, Map responseHeaders, String responseBody) throws RestException {
 		IRestResourceProcessor restResourceProcessor = registration.getRestClientContainer().getResourceProcessor(call, callable, responseHeaders);
 		if (restResourceProcessor == null)
 			return null;
@@ -229,12 +229,12 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		}
 	}
 
-	protected HttpMethod createHttpMethod(String url, IRemoteCall call, IRestCallable callable) throws ECFException {
+	protected HttpMethod createHttpMethod(String url, IRemoteCall call, IRestCallable callable) throws RestException {
 		HttpMethod httpMethod = null;
 
 		IRestCallable.RequestType requestType = callable.getRequestType();
 		if (requestType == null)
-			throw new ECFException("Request type for call cannot be null"); //$NON-NLS-1$
+			throw new RestException("Request type for call cannot be null"); //$NON-NLS-1$
 		if (requestType.equals(IRestCallable.RequestType.GET)) {
 			httpMethod = prepareGetMethod(url, call, callable);
 		} else if (requestType.equals(IRestCallable.RequestType.POST)) {
@@ -244,7 +244,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		} else if (requestType.equals(IRestCallable.RequestType.DELETE)) {
 			httpMethod = prepareDeleteMethod(url, call, callable);
 		} else {
-			throw new ECFException(NLS.bind("HTTP method {0} not supported", requestType)); //$NON-NLS-1$
+			throw new RestException(NLS.bind("HTTP method {0} not supported", requestType)); //$NON-NLS-1$
 		}
 		return httpMethod;
 	}
@@ -252,11 +252,11 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 	/**
 	 * @throws ECFException  
 	 */
-	protected HttpMethod prepareDeleteMethod(String url, IRemoteCall call, IRestCallable callable) throws ECFException {
+	protected HttpMethod prepareDeleteMethod(String url, IRemoteCall call, IRestCallable callable) throws RestException {
 		return new DeleteMethod(url);
 	}
 
-	protected HttpMethod preparePutMethod(String url, IRemoteCall call, IRestCallable callable) throws ECFException {
+	protected HttpMethod preparePutMethod(String url, IRemoteCall call, IRestCallable callable) throws RestException {
 		PutMethod putMethod = new PutMethod(url);
 		if (call.getParameters()[0] instanceof String) {
 
@@ -265,12 +265,12 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 			try {
 				entity = new StringRequestEntity(body, null, null);
 			} catch (UnsupportedEncodingException e) {
-				throw new ECFException("An error occured while creating the request entity", e); //$NON-NLS-1$
+				throw new RestException("An error occured while creating the request entity", e); //$NON-NLS-1$
 			}
 			putMethod.setRequestEntity(entity);
 
 		} else {
-			throw new ECFException("For PutMethod the first parameter must be a String"); //$NON-NLS-1$
+			throw new RestException("For PutMethod the first parameter must be a String"); //$NON-NLS-1$
 		}
 		return putMethod;
 	}
@@ -278,7 +278,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 	/**
 	 * @throws ECFException  
 	 */
-	protected HttpMethod preparePostMethod(String url, IRemoteCall call, IRestCallable callable) throws ECFException {
+	protected HttpMethod preparePostMethod(String url, IRemoteCall call, IRestCallable callable) throws RestException {
 		PostMethod result = new PostMethod(url);
 		NameValuePair[] params = toNameValuePairs(call, callable);
 		if (params != null)
@@ -289,7 +289,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 	/**
 	 * @throws ECFException  
 	 */
-	protected HttpMethod prepareGetMethod(String url, IRemoteCall call, IRestCallable callable) throws ECFException {
+	protected HttpMethod prepareGetMethod(String url, IRemoteCall call, IRestCallable callable) throws RestException {
 		HttpMethod result = new GetMethod(url);
 		NameValuePair[] params = toNameValuePairs(call, callable);
 		if (params != null)
@@ -297,7 +297,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		return result;
 	}
 
-	protected NameValuePair[] toNameValuePairs(IRemoteCall call, IRestCallable callable) throws ECFException {
+	protected NameValuePair[] toNameValuePairs(IRemoteCall call, IRestCallable callable) throws RestException {
 		IRestParameter[] restParameters = toRestParameters(call.getParameters(), callable.getParameters());
 		List nameValueList = new ArrayList();
 		if (restParameters != null) {
@@ -319,7 +319,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		return (NameValuePair[]) nameValueList.toArray(new NameValuePair[nameValueList.size()]);
 	}
 
-	protected IRestParameter[] toRestParameters(Object[] callParameters, IRestParameter[] callableParameters) throws ECFException {
+	protected IRestParameter[] toRestParameters(Object[] callParameters, IRestParameter[] callableParameters) throws RestException {
 		List results = new ArrayList();
 		if (callParameters == null)
 			return callableParameters;
@@ -346,7 +346,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		return (IRestParameter[]) results.toArray(new IRestParameter[] {});
 	}
 
-	protected String serializeParameter(IRestParameter parameter, Object callValue) throws ECFException {
+	protected String serializeParameter(IRestParameter parameter, Object callValue) throws RestException {
 		// If p is already a String just cast/return it as such
 		IRestParameterSerializer parameterSerializer = registration.getRestClientContainer().getParameterSerializer(parameter, callValue);
 		return (parameterSerializer == null) ? null : parameterSerializer.serializeParameter(parameter, callValue);
