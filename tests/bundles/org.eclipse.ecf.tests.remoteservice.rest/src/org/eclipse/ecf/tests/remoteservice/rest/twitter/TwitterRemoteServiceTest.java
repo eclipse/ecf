@@ -27,6 +27,7 @@ import org.eclipse.ecf.remoteservice.rest.IRestCallable;
 import org.eclipse.ecf.remoteservice.rest.IRestParameter;
 import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
 import org.eclipse.ecf.remoteservice.rest.RestCallable;
+import org.eclipse.ecf.remoteservice.rest.RestException;
 import org.eclipse.ecf.remoteservice.rest.RestParameter;
 import org.eclipse.ecf.remoteservice.rest.RestParameterFactory;
 import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
@@ -74,7 +75,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 		return new IRestResourceProcessor() {
 
 			public Object createResponseRepresentation(IRemoteCall call, IRestCallable callable, Map responseHeaders, String responseBody)
-					throws ECFException {
+					throws RestException {
 				try {
 					JSONArray timeline = new JSONArray(responseBody);
 					List statuses = new ArrayList();
@@ -87,12 +88,12 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 							IUserStatus status = new UserStatus(createdString, source, text);
 							statuses.add(status);
 						} catch (JSONException e) {
-							throw new ECFException("Cannot process response representation",e);
+							throw new RestException("Cannot process response representation",e);
 						}
 					}
 					return (IUserStatus[]) statuses.toArray(new IUserStatus[statuses.size()]);
 				} catch (JSONException e) {
-					throw new ECFException("JSON array parse exception",e);
+					throw new RestException("JSON array parse exception",e);
 				}
 			}};
 	}
