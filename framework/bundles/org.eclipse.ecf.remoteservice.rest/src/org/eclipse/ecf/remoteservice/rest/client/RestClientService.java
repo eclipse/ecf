@@ -113,7 +113,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		HttpMethod httpMethod = createHttpMethod(uri, call, callable);
 		// add additional request headers
 		addRequestHeaders(httpMethod, call, callable);
-		HttpClient httpClient = createHttpClient();
+		HttpClient httpClient = createHttpClient(httpMethod, call, callable);
 		// handle authentication
 		setupAuthenticaton(httpClient, httpMethod);
 		// needed because a resource can link to another resource
@@ -121,29 +121,31 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		setupTimeouts(httpClient, call, callable);
 		// execute method
 		String responseBody = null;
+		int responseCode = -1;
 		try {
-			int responseCode = httpClient.executeMethod(httpMethod);
+			responseCode = httpClient.executeMethod(httpMethod);
 			if (responseCode == HttpStatus.SC_OK) {
 				// Get responseBody as String
 				responseBody = getResponseBodyAsString(httpMethod);
 				if (responseBody == null)
-					throw new ECFException("Invalid server response"); //$NON-NLS-1$
+					throw new RestException("Invalid server response", responseCode); //$NON-NLS-1$
 			} else
 				throw new ECFException(NLS.bind("Http response not OK.  URL={0}, responseCode={1}", uri, new Integer(responseCode))); //$NON-NLS-1$
 		} catch (HttpException e) {
-			handleTransportException("Transport exception", e); //$NON-NLS-1$
+			handleTransportException("Transport HttpException", e, responseCode); //$NON-NLS-1$
 		} catch (IOException e) {
-			handleTransportException("Transport exception", e); //$NON-NLS-1$
+			handleTransportException("Transport IOException", e, responseCode); //$NON-NLS-1$
 		}
 		return processResponse(call, callable, convertResponseHeaders(httpMethod.getResponseHeaders()), responseBody);
 	}
 
-	protected HttpClient createHttpClient() {
+	protected HttpClient createHttpClient(HttpMethod httpMethod, IRemoteCall call, IRestCallable callable) {
+		// By default, create a new HttpClient instance for every request.  
 		return new HttpClient();
 	}
 
-	protected void handleTransportException(String message, Throwable e) throws ECFException {
-		throw new ECFException(message, e);
+	protected void handleTransportException(String message, Throwable e, int responseCode) throws ECFException {
+		throw new RestException(message, e, responseCode);
 	}
 
 	protected String getResponseBodyAsString(HttpMethod method) throws IOException {
