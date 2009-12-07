@@ -113,7 +113,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		HttpMethod httpMethod = createHttpMethod(uri, call, callable);
 		// add additional request headers
 		addRequestHeaders(httpMethod, call, callable);
-		HttpClient httpClient = createHttpClient(httpMethod, call, callable);
+		HttpClient httpClient = getHttpClientForCall(httpMethod, call, callable);
 		// handle authentication
 		setupAuthenticaton(httpClient, httpMethod);
 		// needed because a resource can link to another resource
@@ -139,7 +139,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		return processResponse(call, callable, convertResponseHeaders(httpMethod.getResponseHeaders()), responseBody);
 	}
 
-	protected HttpClient createHttpClient(HttpMethod httpMethod, IRemoteCall call, IRestCallable callable) {
+	protected HttpClient getHttpClientForCall(HttpMethod httpMethod, IRemoteCall call, IRestCallable callable) {
 		// By default, create a new HttpClient instance for every request.  
 		return new HttpClient();
 	}
@@ -250,7 +250,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 	}
 
 	/**
-	 * @throws ECFException  
+	 * @throws RestException  
 	 */
 	protected HttpMethod prepareDeleteMethod(String url, IRemoteCall call, IRestCallable callable) throws RestException {
 		return new DeleteMethod(url);
