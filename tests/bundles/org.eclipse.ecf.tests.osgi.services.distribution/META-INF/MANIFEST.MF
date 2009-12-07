@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.ecf.tests,
  org.eclipse.ecf.tests.remoteservice;bundle-version="2.0.0",
  org.eclipse.ecf.osgi.services.discovery;bundle-version="1.0.0",
  org.junit,
- org.eclipse.equinox.common;bundle-version="3.5.100"
+ org.eclipse.equinox.common;bundle-version="3.5.1"
 Export-Package: org.eclipse.ecf.tests.internal.osgi.services.distribution;x-internal:=true,
  org.eclipse.ecf.tests.osgi.services.distribution,
  org.eclipse.ecf.tests.osgi.services.distribution.generic,
