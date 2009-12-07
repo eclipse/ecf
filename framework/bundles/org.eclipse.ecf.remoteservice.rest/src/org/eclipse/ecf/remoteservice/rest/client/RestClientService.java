@@ -113,7 +113,7 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 		HttpMethod httpMethod = createHttpMethod(uri, call, callable);
 		// add additional request headers
 		addRequestHeaders(httpMethod, call, callable);
-		HttpClient httpClient = new HttpClient();
+		HttpClient httpClient = createHttpClient();
 		// handle authentication
 		setupAuthenticaton(httpClient, httpMethod);
 		// needed because a resource can link to another resource
@@ -136,6 +136,10 @@ public class RestClientService implements IRemoteService, InvocationHandler {
 			handleTransportException("Transport exception", e); //$NON-NLS-1$
 		}
 		return processResponse(call, callable, convertResponseHeaders(httpMethod.getResponseHeaders()), responseBody);
+	}
+
+	protected HttpClient createHttpClient() {
+		return new HttpClient();
 	}
 
 	protected void handleTransportException(String message, Throwable e) throws ECFException {
