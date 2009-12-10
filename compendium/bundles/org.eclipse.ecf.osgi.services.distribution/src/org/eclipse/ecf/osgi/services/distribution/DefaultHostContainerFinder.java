@@ -31,9 +31,10 @@ public class DefaultHostContainerFinder extends AbstractContainerFinder
 		implements IHostContainerFinder {
 
 	public IRemoteServiceContainer[] findHostContainers(
-			ServiceReference serviceReference, String[] remoteInterfaces,
-			String[] remoteConfigurationType, String[] remoteRequiresIntents) {
-		Collection rsContainers = findRemoteContainersSatisfyingRequiredIntents(remoteRequiresIntents);
+			ServiceReference serviceReference,
+			String[] serviceExportedInterfaces,
+			String[] serviceExportedConfigs, String[] serviceIntents) {
+		Collection rsContainers = findRemoteContainersSatisfyingRequiredIntents(serviceIntents);
 		List results = new ArrayList();
 		for (Iterator i = rsContainers.iterator(); i.hasNext();) {
 			IRemoteServiceContainer rsContainer = (IRemoteServiceContainer) i
@@ -46,7 +47,7 @@ public class DefaultHostContainerFinder extends AbstractContainerFinder
 	}
 
 	protected Collection findRemoteContainersSatisfyingRequiredIntents(
-			String[] remoteRequiresIntents) {
+			String[] serviceIntents) {
 		List results = new ArrayList();
 		IContainer[] containers = Activator.getDefault().getContainerManager()
 				.getAllContainers();
@@ -69,9 +70,9 @@ public class DefaultHostContainerFinder extends AbstractContainerFinder
 			List supportedIntents = Arrays.asList(description
 					.getSupportedIntents());
 			boolean hasIntents = true;
-			if (remoteRequiresIntents != null) {
-				for (int j = 0; j < remoteRequiresIntents.length; j++) {
-					if (!supportedIntents.contains(remoteRequiresIntents[j]))
+			if (serviceIntents != null) {
+				for (int j = 0; j < serviceIntents.length; j++) {
+					if (!supportedIntents.contains(serviceIntents[j]))
 						hasIntents = false;
 				}
 			}
