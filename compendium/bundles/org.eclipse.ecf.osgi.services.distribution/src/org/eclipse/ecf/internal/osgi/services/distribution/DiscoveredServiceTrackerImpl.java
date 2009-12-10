@@ -1,18 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2009 EclipseSource and others. All rights reserved. This
+ * Copyright (c) 2009 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
-
-import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification;
-import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceTracker;
-import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
-import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,9 +26,13 @@ import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification;
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceTracker;
 import org.eclipse.ecf.osgi.services.discovery.IRemoteServiceEndpointDescription;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IProxyDistributionListener;

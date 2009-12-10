@@ -1,15 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2009 EclipseSource and others. All rights reserved. This
+ * Copyright (c) 2009 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
-
-import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +27,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.osgi.services.distribution.IHostContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IHostDistributionListener;

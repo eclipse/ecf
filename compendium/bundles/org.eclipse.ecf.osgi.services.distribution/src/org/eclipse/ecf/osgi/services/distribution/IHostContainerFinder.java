@@ -1,11 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2009 EclipseSource and others. All rights reserved. This
+ * Copyright (c) 2009 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
@@ -27,20 +27,37 @@ public interface IHostContainerFinder {
 	 * for distribution and remote service publication and discovery.
 	 * 
 	 * @param serviceReference
-	 *            the ServiceReference of the original service registration.
-	 * @param remoteInterfaces
-	 *            the remote interfaces specified by the remote service
-	 *            registration. Will not be <code>null</code>.
-	 * @param remoteConfigurationType
-	 *            remote configuration type. May be <code>null</code>.
-	 * @param remoteRequiresIntents
-	 *            the remote requires intents. May be <code>null</code>.
-	 * @return IRemoteServiceContainer[] the remote service containers that
+	 *            the ServiceReference of the remote service service
+	 *            registration.
+	 * @param serviceExportedInterfaces
+	 *            The exported interfaces specified by the remote service
+	 *            registration. These are the values associated with the
+	 *            required service property
+	 *            {@link IDistributionConstants#SERVICE_EXPORTED_INTERFACES} as
+	 *            per chapter 13 of the OSGi 4.2 compendium specification. Will
+	 *            not be <code>null</code>.
+	 * @param serviceExportedConfigs
+	 *            The exported configuration types specified by the remote
+	 *            service registration. These are the values associated with the
+	 *            optional service property
+	 *            {@link IDistributionConstants#SERVICE_EXPORTED_CONFIGS} as per
+	 *            chapter 13 of the OSGi 4.2 compendium specification. May be
+	 *            <code>null</code>.
+	 * @param serviceIntents
+	 *            The service intents specified by the remote service
+	 *            registration. These are the values associated with the union
+	 *            of the service properties
+	 *            {@link IDistributionConstants#SERVICE_INTENTS},
+	 *            {@link IDistributionConstants#SERVICE_EXPORTED_INTENTS}, and
+	 *            {@link IDistributionConstants#SERVICE_EXPORTED_INTENTS_EXTRA}.
+	 *            May be <code>null</code>.
+	 * @return IRemoteServiceContainer[] the ECF remote service containers that
 	 *         should distribute and publish the remote service (specified by
 	 *         the serviceReference) for remote access.
 	 */
 	public IRemoteServiceContainer[] findHostContainers(
-			ServiceReference serviceReference, String[] remoteInterfaces,
-			String[] remoteConfigurationType, String[] remoteRequiresIntents);
+			ServiceReference serviceReference,
+			String[] serviceExportedInterfaces,
+			String[] serviceExportedConfigs, String[] serviceIntents);
 
 }
