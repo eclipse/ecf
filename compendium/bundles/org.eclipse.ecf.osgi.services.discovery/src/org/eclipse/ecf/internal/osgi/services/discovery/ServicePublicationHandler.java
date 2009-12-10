@@ -1,17 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2009 EclipseSource and others. All rights reserved. This
+ * Copyright (c) 2009 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   EclipseSource - initial API and implementation
+ *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
-
-import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification;
-import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceTracker;
-import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -42,9 +38,12 @@ import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification;
+import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceTracker;
 import org.eclipse.ecf.osgi.services.discovery.IHostDiscoveryListener;
 import org.eclipse.ecf.osgi.services.discovery.IProxyDiscoveryListener;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
