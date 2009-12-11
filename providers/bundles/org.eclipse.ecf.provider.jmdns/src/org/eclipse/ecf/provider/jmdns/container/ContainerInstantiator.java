@@ -53,7 +53,6 @@ public class ContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/** 
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedIntents(org.eclipse.ecf.core.ContainerTypeDescription)
 	 * @since 3.0
 	 */
 	public String[] getSupportedIntents(ContainerTypeDescription description) {
