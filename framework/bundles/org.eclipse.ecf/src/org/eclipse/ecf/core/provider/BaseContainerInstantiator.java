@@ -18,7 +18,8 @@ import org.eclipse.ecf.internal.core.ECFPlugin;
 import org.eclipse.ecf.internal.core.Messages;
 
 /**
- *
+ *  Default implemenation of {@link IContainerInstantiator}.  ECF provider implementers
+ *  may subclass as desired.
  */
 public class BaseContainerInstantiator implements IContainerInstantiator {
 
@@ -78,7 +79,4 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 		return EMPTY_CLASS_ARRAY;
 	}
 
-	public String[] getSupportedIntents(ContainerTypeDescription description) {
-		return EMPTY_STRING_ARRAY;
-	}
 }

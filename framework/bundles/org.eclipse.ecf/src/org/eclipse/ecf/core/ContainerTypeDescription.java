@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.ECFDebugOptions;
 import org.eclipse.ecf.internal.core.ECFPlugin;
@@ -219,9 +220,8 @@ public class ContainerTypeDescription {
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		String[] result = new String[0];
 		try {
-			String[] r = getInstantiator().getSupportedIntents(this);
-			if (r != null)
-				result = r;
+			IContainerInstantiator ci = getInstantiator();
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedIntents(this) : result;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
 		}
@@ -229,4 +229,17 @@ public class ContainerTypeDescription {
 		return result;
 	}
 
+	public String[] getSupportedConfigTypes() {
+		String method = "getSupportedConfigTypes"; //$NON-NLS-1$
+		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
+		String[] result = new String[0];
+		try {
+			IContainerInstantiator ci = getInstantiator();
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedConfigTypes(this) : result;
+		} catch (Exception e) {
+			traceAndLogException(IStatus.ERROR, method, e);
+		}
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
+		return result;
+	}
 }
