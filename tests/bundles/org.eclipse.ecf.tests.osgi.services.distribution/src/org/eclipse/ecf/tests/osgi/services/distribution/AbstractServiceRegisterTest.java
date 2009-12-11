@@ -39,7 +39,7 @@ public abstract class AbstractServiceRegisterTest extends
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		
 		// Set OSGI property that identifies this service as a service to be remoted
-		props.put(REMOTE_INTERFACES, new String[] {REMOTE_INTERFACES_WILDCARD});
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Actually register with default service (IConcatService)
 		ServiceRegistration registration = registerDefaultService(props);
 		// Wait a while
@@ -50,7 +50,7 @@ public abstract class AbstractServiceRegisterTest extends
 	}
 
 	protected ServiceTracker createProxyServiceTracker(String clazz) throws InvalidSyntaxException {
-		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + clazz +")(" + REMOTE + "=*))"),new ServiceTrackerCustomizer() {
+		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + clazz +")(" + SERVICE_IMPORTED + "=*))"),new ServiceTrackerCustomizer() {
 
 			public Object addingService(ServiceReference reference) {
 				Trace.trace(Activator.PLUGIN_ID, "addingService="+reference);
@@ -83,7 +83,7 @@ public abstract class AbstractServiceRegisterTest extends
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		// Set required OSGI property that identifies this service as a service to be remoted
-		props.put(REMOTE_INTERFACES, new String[] {REMOTE_INTERFACES_WILDCARD});
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Put property foo with value bar into published properties
 		String testPropKey = "foo";
 		String testPropVal = "bar";
@@ -126,7 +126,7 @@ public abstract class AbstractServiceRegisterTest extends
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		// Set required OSGI property that identifies this service as a service to be remoted
-		props.put(REMOTE_INTERFACES, new String[] {REMOTE_INTERFACES_WILDCARD});
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Actually register and wait a while
 		ServiceRegistration registration = registerService(classname, new TestService1(),props);
 		Thread.sleep(REGISTER_WAIT);
@@ -165,7 +165,7 @@ public abstract class AbstractServiceRegisterTest extends
 		IContainer serverContainer = getServer();
 		props.put(Constants.SERVICE_CONTAINER_ID, serverContainer.getID());
 		// Set required OSGI property that identifies this service as a service to be remoted
-		props.put(REMOTE_INTERFACES, new String[] {REMOTE_INTERFACES_WILDCARD});
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Actually register and wait a while
 		ServiceRegistration registration = registerService(classname, new TestService1(),props);
 		Thread.sleep(REGISTER_WAIT);
@@ -176,7 +176,7 @@ public abstract class AbstractServiceRegisterTest extends
 		assertTrue(remoteReferences.length > 0);
 		
 		for(int i=0; i < remoteReferences.length; i++) {
-			Object o = remoteReferences[i].getProperty(REMOTE);
+			Object o = remoteReferences[i].getProperty(SERVICE_IMPORTED);
 			assertNotNull(o);
 			assertTrue(o instanceof IRemoteService);
 			IRemoteService rs = (IRemoteService) o;

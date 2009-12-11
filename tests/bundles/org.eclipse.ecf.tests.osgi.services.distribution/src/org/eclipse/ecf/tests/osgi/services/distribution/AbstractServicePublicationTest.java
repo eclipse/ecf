@@ -102,7 +102,7 @@ public abstract class AbstractServicePublicationTest extends TestCase implements
 	
 		// register a service with the marker property set
 		final Dictionary props = new Hashtable();
-		props.put(IDistributionConstants.REMOTE_INTERFACES, getInterfaces());
+		props.put(IDistributionConstants.SERVICE_EXPORTED_INTERFACES, getInterfaces());
 		// prepare a service tracker
 		final ServiceTracker tracker = new ServiceTracker(context,
 				TestServiceInterface1.class.getName(), null);
