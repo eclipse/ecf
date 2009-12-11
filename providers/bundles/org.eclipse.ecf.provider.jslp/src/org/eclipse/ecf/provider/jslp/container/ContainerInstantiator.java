@@ -54,8 +54,9 @@ public class ContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param description 
+	 * @return String[]
 	 * @since 3.0
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedIntents(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
 	public String[] getSupportedIntents(final ContainerTypeDescription description) {
 		return null;
