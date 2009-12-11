@@ -76,7 +76,7 @@ public class HelloConsumerApplication implements IApplication,
 		// services as per RFC119).
 		return bundleContext.createFilter("(&("
 				+ org.osgi.framework.Constants.OBJECTCLASS + "="
-				+ IHello.class.getName() + ")(" + REMOTE + "=*))");
+				+ IHello.class.getName() + ")(" + SERVICE_IMPORTED + "=*))");
 	}
 
 	public void stop() {
@@ -139,7 +139,7 @@ public class HelloConsumerApplication implements IApplication,
 		// Now get remote service reference and use asynchronous
 		// remote invocation
 		IRemoteService remoteService = (IRemoteService) reference
-				.getProperty(REMOTE);
+				.getProperty(SERVICE_IMPORTED);
 
 		// This futureExec returns immediately
 		IFuture future = RemoteServiceHelper.futureExec(remoteService, "hello",
