@@ -152,7 +152,8 @@ public class Activator implements BundleActivator {
 		// register all existing services which have the marker property
 		try {
 			final ServiceReference[] refs = this.context.getServiceReferences(
-					null, "(" + IDistributionConstants.REMOTE_INTERFACES
+					null,
+					"(" + IDistributionConstants.SERVICE_EXPORTED_INTERFACES
 							+ "=*)");
 			if (refs != null) {
 				for (int i = 0; i < refs.length; i++) {

@@ -644,7 +644,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 								+ "#"
 								+ remoteReference
 										.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID));
-		results.put(IDistributionConstants.REMOTE, remoteService);
+		results.put(IDistributionConstants.SERVICE_IMPORTED, remoteService);
 		return results;
 	}
 

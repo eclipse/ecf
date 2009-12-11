@@ -42,8 +42,6 @@ import org.osgi.framework.hooks.service.EventHook;
 
 public class EventHookImpl implements EventHook {
 
-	private final static String[] EMPTY_STRING_ARRAY = new String[0];
-
 	private final DistributionProviderImpl distributionProvider;
 	private final Map srvRefToRemoteSrvRegistration = new HashMap();
 	private final Map srvRefToServicePublicationRegistration = new HashMap();
@@ -52,19 +50,45 @@ public class EventHookImpl implements EventHook {
 		this.distributionProvider = distributionProvider;
 	}
 
-	private void findContainersAndRegisterRemoteService(
-			ServiceReference serviceReference, String[] remoteInterfaces) {
+	public void event(ServiceEvent event, Collection contexts) {
+		switch (event.getType()) {
+		case ServiceEvent.MODIFIED:
+			handleModifiedServiceEvent(event.getServiceReference(), contexts);
+			break;
+		case ServiceEvent.MODIFIED_ENDMATCH:
+			break;
+		case ServiceEvent.REGISTERED:
+			handleRegisteredServiceEvent(event.getServiceReference(), contexts);
+			break;
+		case ServiceEvent.UNREGISTERING:
+			handleUnregisteringServiceEvent(event.getServiceReference(),
+					contexts);
+			break;
+		default:
+			break;
+		}
+	}
 
-		// Get optional service property osgi.remote.configuration.type
-		String[] remoteConfigurationType = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(IDistributionConstants.REMOTE_CONFIGURATION_TYPE));
+	void handleRegisteredServiceEvent(ServiceReference serviceReference,
+			Collection contexts) {
+
+		// Using OSGI 4.2 Chap 13 Remote Services spec, get the remote
+		// interfaces for the given service reference
+		String[] remoteInterfaces = getRemoteInterfacesForServiceReference(serviceReference);
+		// If no remote interfaces set, then we don't do anything with it
+		if (remoteInterfaces == null)
+			return;
+
+		// Get optional service property service.exported.configs
+		String[] configs = getStringArrayFromPropertyValue(serviceReference
+				.getProperty(IDistributionConstants.SERVICE_EXPORTED_CONFIGS));
+
+		String[] intents = getRemoteServiceIntents(serviceReference);
+
 		// Get optional service property service.intents
-		String[] remoteRequiresIntents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(IDistributionConstants.REMOTE_REQUIRES_INTENTS));
 		// Now call out to find host remote service containers
 		IRemoteServiceContainer[] rsContainers = findRemoteServiceContainers(
-				serviceReference, remoteInterfaces, remoteConfigurationType,
-				remoteRequiresIntents);
+				serviceReference, remoteInterfaces, configs, intents);
 
 		if (rsContainers == null || rsContainers.length == 0) {
 			trace("registerRemoteService",
@@ -92,11 +116,29 @@ public class EventHookImpl implements EventHook {
 			fireRemoteServiceRegistered(serviceReference, remoteRegistration);
 			// Step 3
 			publishRemoteService(rsContainers[i], serviceReference,
-					remoteInterfaces, remoteRegistration);
+					remoteInterfaces, remoteRegistration, intents, configs);
 			// Now notify any listeners
 			fireHostRegisteredUnregistered(serviceReference, rsContainers[i],
 					remoteRegistration, true);
 		}
+
+	}
+
+	private String[] getRemoteServiceIntents(ServiceReference serviceReference) {
+		List results = new ArrayList();
+		String[] intents = getStringArrayFromPropertyValue(serviceReference
+				.getProperty(IDistributionConstants.SERVICE_INTENTS));
+		if (intents != null)
+			results.addAll(Arrays.asList(intents));
+		String[] exportedIntents = getStringArrayFromPropertyValue(serviceReference
+				.getProperty(IDistributionConstants.SERVICE_EXPORTED_INTENTS));
+		if (exportedIntents != null)
+			results.addAll(Arrays.asList(exportedIntents));
+		String[] extraIntents = getStringArrayFromPropertyValue(serviceReference
+				.getProperty(IDistributionConstants.SERVICE_EXPORTED_INTENTS_EXTRA));
+		if (extraIntents != null)
+			results.addAll(Arrays.asList(extraIntents));
+		return (String[]) results.toArray(new String[] {});
 	}
 
 	private IRemoteServiceContainer[] findRemoteServiceContainers(
@@ -142,7 +184,8 @@ public class EventHookImpl implements EventHook {
 	private Dictionary getServicePublicationProperties(
 			IRemoteServiceContainer rsContainer, ServiceReference ref,
 			String[] remoteInterfaces,
-			IRemoteServiceRegistration remoteRegistration) {
+			IRemoteServiceRegistration remoteRegistration, String[] intents,
+			String[] configs) {
 		final Dictionary properties = new Properties();
 		// Set mandatory ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME
 		properties.put(ServicePublication.SERVICE_INTERFACE_NAME,
@@ -201,10 +244,12 @@ public class EventHookImpl implements EventHook {
 
 	private void publishRemoteService(IRemoteServiceContainer rsContainer,
 			final ServiceReference ref, String[] remoteInterfaces,
-			IRemoteServiceRegistration remoteRegistration) {
+			IRemoteServiceRegistration remoteRegistration, String[] intents,
+			String[] configs) {
 		// First create properties for new ServicePublication
 		final Dictionary properties = getServicePublicationProperties(
-				rsContainer, ref, remoteInterfaces, remoteRegistration);
+				rsContainer, ref, remoteInterfaces, remoteRegistration,
+				intents, configs);
 		// Just prior to registering the ServicePublication, notify
 		// the IHostRegistrationListeners
 		Activator activator = Activator.getDefault();
@@ -259,10 +304,12 @@ public class EventHookImpl implements EventHook {
 	private static final List excludedProperties = Arrays.asList(new String[] {
 			org.osgi.framework.Constants.SERVICE_ID,
 			org.osgi.framework.Constants.OBJECTCLASS,
-			IDistributionConstants.REMOTE_INTERFACES,
-			IDistributionConstants.REMOTE_REQUIRES_INTENTS,
-			IDistributionConstants.REMOTE,
-			IDistributionConstants.REMOTE_CONFIGURATION_TYPE,
+			IDistributionConstants.SERVICE_EXPORTED_INTERFACES,
+			IDistributionConstants.SERVICE_INTENTS,
+			IDistributionConstants.SERVICE_EXPORTED_INTENTS,
+			IDistributionConstants.SERVICE_EXPORTED_INTENTS_EXTRA,
+			IDistributionConstants.SERVICE_IMPORTED,
+			IDistributionConstants.SERVICE_EXPORTED_CONFIGS,
 			// ECF constants
 			org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID, });
 
@@ -270,25 +317,6 @@ public class EventHookImpl implements EventHook {
 		if (excludedProperties.contains(string))
 			return true;
 		return false;
-	}
-
-	public void event(ServiceEvent event, Collection contexts) {
-		switch (event.getType()) {
-		case ServiceEvent.MODIFIED:
-			handleModifiedServiceEvent(event.getServiceReference(), contexts);
-			break;
-		case ServiceEvent.MODIFIED_ENDMATCH:
-			break;
-		case ServiceEvent.REGISTERED:
-			handleRegisteredServiceEvent(event.getServiceReference(), contexts);
-			break;
-		case ServiceEvent.UNREGISTERING:
-			handleUnregisteringServiceEvent(event.getServiceReference(),
-					contexts);
-			break;
-		default:
-			break;
-		}
 	}
 
 	private String[] getStringArrayFromPropertyValue(Object value) {
@@ -302,42 +330,6 @@ public class EventHookImpl implements EventHook {
 			return (String[]) ((Collection) value).toArray(new String[] {});
 		else
 			return null;
-	}
-
-	void handleRegisteredServiceEvent(ServiceReference serviceReference,
-			Collection contexts) {
-		// This checks to see if the serviceReference has any remote interfaces
-		// declared via osgi.remote.interfaces property
-		Object osgiRemotes = serviceReference
-				.getProperty(IDistributionConstants.REMOTE_INTERFACES);
-		// If osgi.remote.interfaces required property is non-null then we
-		// handle further, if null then ignore the service registration event
-		if (osgiRemotes != null) {
-			String[] remoteInterfacesArr = getStringArrayFromPropertyValue(osgiRemotes);
-			if (remoteInterfacesArr == null) {
-				logError("handleRegisteredServiceEvent",
-						"remoteInterfaces not of String [] type as required by RFC 119");
-				return;
-			}
-			trace("handleRegisteredServiceEvent", "serviceReference="
-					+ serviceReference + ",remoteInterfaces="
-					+ Arrays.asList(remoteInterfacesArr));
-			// We compare the osgi.remote.interfaces with those exposed by the
-			// service reference and make sure that expose some common
-			// interfaces
-			String[] remoteInterfaces = (remoteInterfacesArr != null) ? getInterfacesForServiceReference(
-					remoteInterfacesArr, serviceReference)
-					: null;
-			if (remoteInterfaces == null) {
-				logError("handleRegisteredServiceEvent",
-						"No exposed remoteInterfaces found for serviceReference="
-								+ serviceReference);
-				return;
-			}
-			// Now call registerRemoteService
-			findContainersAndRegisterRemoteService(serviceReference,
-					remoteInterfaces);
-		}
 	}
 
 	private void fireRemoteServiceRegistered(ServiceReference serviceReference,
@@ -453,20 +445,55 @@ public class EventHookImpl implements EventHook {
 		}
 	}
 
-	private String[] getInterfacesForServiceReference(
-			String[] remoteInterfaces, ServiceReference serviceReference) {
-		if (remoteInterfaces == null || remoteInterfaces.length == 0)
-			return EMPTY_STRING_ARRAY;
-		List results = new ArrayList();
-		List interfaces = Arrays.asList((String[]) serviceReference
-				.getProperty(org.osgi.framework.Constants.OBJECTCLASS));
-		for (int i = 0; i < remoteInterfaces.length; i++) {
-			String intf = remoteInterfaces[i];
-			if (IDistributionConstants.REMOTE_INTERFACES_WILDCARD.equals(intf))
-				return (String[]) interfaces.toArray(new String[] {});
-			if (intf != null && interfaces.contains(intf))
-				results.add(intf);
+	private String[] getRemoteInterfacesForServiceReference(
+			ServiceReference serviceReference) {
+		// Get the OSGi 4.2 specified required service property value
+		Object propValue = serviceReference
+				.getProperty(IDistributionConstants.SERVICE_EXPORTED_INTERFACES);
+		// If the required property is not set then it's not being registered
+		// as a remote service so we return null
+		if (propValue == null)
+			return null;
+		boolean wildcard = false;
+		// If they've given a String and it's not a wildcard '*' then return
+		// null
+		String[] exportedInterfaces = null;
+		if (propValue instanceof String) {
+			wildcard = propValue
+					.equals(IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD);
+			// If it is not a wildcard then it's not us
+			if (!wildcard)
+				return null;
+			exportedInterfaces = new String[] { (String) propValue };
 		}
+		if (exportedInterfaces == null && propValue instanceof String[]) {
+			exportedInterfaces = (String[]) propValue;
+		}
+		if (exportedInterfaces == null)
+			return null;
+		String[] serviceInterfaces = (String[]) serviceReference
+				.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
+		List results = new ArrayList();
+		if (wildcard) {
+			// If * is specified, then return all interfaces exposed by service
+			return serviceInterfaces;
+		} else {
+			List interfaces = Arrays.asList(serviceInterfaces);
+			List rsInterfaces = Arrays.asList(exportedInterfaces);
+			for (Iterator i = rsInterfaces.iterator(); i.hasNext();) {
+				String rsIntf = (String) i.next();
+				// If the wildcard is used within the array, add all interfaces
+				if (rsIntf
+						.equals(IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD))
+					results.addAll(interfaces);
+				// else if the interfaces list contains the given interface,
+				// then add it as well
+				if (interfaces.contains(rsIntf))
+					results.add(rsIntf);
+			}
+		}
+		if (results.size() == 0)
+			return null;
 		return (String[]) results.toArray(new String[] {});
 	}
 
@@ -512,7 +539,7 @@ public class EventHookImpl implements EventHook {
 		// This checks to see if the serviceReference has any remote interfaces
 		// declared via osgi.remote.interfaces property
 		Object osgiRemotes = serviceReference
-				.getProperty(IDistributionConstants.REMOTE_INTERFACES);
+				.getProperty(IDistributionConstants.SERVICE_EXPORTED_INTERFACES);
 		if (osgiRemotes != null) {
 			// XXX we currently don't handle the modified service event
 			trace(
