@@ -35,12 +35,12 @@
 
 	<!-- ecf -->
 	<searchPath name="org.eclipse.ecf">
-		<!-- dev.eclipse.org PDEMapProvider -->
-		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="true" source="true">
-			<uri format=":pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/org.eclipse.ecf.releng.maps">
-				<bc:propertyRef key="buckminster.component" />
-			</uri>
-		</provider>
+		<provider readerType="local" componentTypes="osgi.bundle,eclipse.feature" mutable="true" source="true">
+            <uri format="file:{0}/{1}/">
+                <bc:propertyRef key="projectsPath" />
+                <bc:propertyRef key="buckminster.component" />
+            </uri>
+        </provider>
 	</searchPath>
 
 	<!-- pluginbuilder -->
