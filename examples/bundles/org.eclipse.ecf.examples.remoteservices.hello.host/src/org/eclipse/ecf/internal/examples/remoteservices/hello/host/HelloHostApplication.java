@@ -54,7 +54,7 @@ public class HelloHostApplication implements IApplication,
 
 		Properties props = new Properties();
 		// add OSGi service property indicating this
-		props.put(REMOTE_INTERFACES, REMOTE_INTERFACES_WILDCARD);
+		props.put(SERVICE_EXPORTED_INTERFACES, SERVICE_EXPORTED_INTERFACES_WILDCARD);
 		// register remote service
 		helloRegistration = bundleContext.registerService(IHello.class
 				.getName(), new Hello(), props);
