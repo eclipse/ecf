@@ -18,6 +18,8 @@ import org.eclipse.ecf.discovery.ui.DiscoveryHandlerUtil;
 import org.eclipse.ecf.internal.remoteservices.ui.Activator;
 import org.eclipse.ecf.internal.remoteservices.ui.handlers.ReflectiveRemoteServiceHandler;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
@@ -26,8 +28,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.discovery.ServicePublication;
-import org.osgi.service.distribution.DistributionConstants;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class DOSGiReflectiveRemoteServiceHandler extends
@@ -60,7 +60,7 @@ public class DOSGiReflectiveRemoteServiceHandler extends
 		final Filter filter;
 		try {
 			filter = context.createFilter("(&(" + Constants.OBJECTCLASS + "=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ clazz + ")" + "(" + DistributionConstants.REMOTE + "=*" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					+ clazz + ")" + "(" + IDistributionConstants.SERVICE_IMPORTED + "=*" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					+ ")" + "(" + ServicePublication.ENDPOINT_ID + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					+ containerId + "#" + serviceId + "))"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (InvalidSyntaxException e1) {
@@ -83,7 +83,7 @@ public class DOSGiReflectiveRemoteServiceHandler extends
 		// obtain the remote service reference from the local service ref (cool
 		// ECF feature, huh?)
 		final IRemoteService remoteService = (IRemoteService) serviceReference
-				.getProperty(DistributionConstants.REMOTE);
+				.getProperty(IDistributionConstants.SERVICE_IMPORTED);
 		if (remoteService == null) {
 			MessageDialog.openError(null,
 					Messages.DOSGiReflectiveRemoteServiceHandler_HandlerInvocationFailed, Messages.DOSGiReflectiveRemoteServiceHandler_RemoteServiceUnresolveable);
