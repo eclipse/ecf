@@ -49,7 +49,6 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.remoteservice.rest,org.eclipse.ecf.remoteservice.rest"/>
 
 	<!-- Compendium -->
-	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services,org.eclipse.ecf.osgi.services"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.discovery,org.eclipse.ecf.osgi.services.discovery"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.distribution,org.eclipse.ecf.osgi.services.distribution"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.discovery.local,org.eclipse.ecf.osgi.services.discovery.local"/>
