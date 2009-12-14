@@ -33,6 +33,7 @@ Skip Component is not checked.</cq:documentation>
 
 Skip Component is not checked.</cq:documentation>
     </cq:advisorNode>
+    <cq:advisorNode namePattern="^org\.json$" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false">
         <cq:documentation xmlns="http://www.w3.org/1999/xhtml">The name pattern matches org.eclipse.equinox.p2.user.ui exactly.
 
@@ -44,4 +45,3 @@ the platform is not resolved.</cq:documentation>
 rejected.</cq:documentation>
     </cq:advisorNode>
 </cq:componentQuery>
-
