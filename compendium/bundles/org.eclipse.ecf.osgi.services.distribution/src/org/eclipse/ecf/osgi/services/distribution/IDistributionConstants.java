@@ -11,8 +11,6 @@ package org.eclipse.ecf.osgi.services.distribution;
 
 public interface IDistributionConstants {
 
-	public static final String ECF_REMOTE_CONFIGURATION_TYPE = "ecf";
-
 	// From OSGi 4.2 Compendium Specification, table 13.1 in r4.cmpn.pdf
 	/**
 	 * <p>
@@ -166,5 +164,13 @@ public interface IDistributionConstants {
 	 * </p>
 	 */
 	public static final String SERVICE_PID = "service.pid";
+
+	public static final String CONTAINER_FACTORY_ARGUMENTS = "org.eclipse.ecf.containerFactoryArgs";
+
+	public static final String CONTAINER_CONNECT_TARGET = "org.eclipse.ecf.containerConnectTarget";
+
+	public static final String CONTAINER_CONNECT_CONTEXT = "org.eclipse.ecf.containerConnectContext";
+
+	public static final String CONTAINER_FORCE_DISCONNECT = "org.eclipse.ecf.containerForceDisconnect";
 
 }

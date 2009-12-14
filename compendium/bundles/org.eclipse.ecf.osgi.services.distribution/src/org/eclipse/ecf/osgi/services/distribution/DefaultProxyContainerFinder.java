@@ -32,7 +32,7 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 			IRemoteServiceEndpointDescription endpointDescription) {
 
 		// Get all containers available
-		IContainer[] allContainers = getAllContainers();
+		IContainer[] allContainers = getContainers();
 		// If none then return null
 		if (allContainers == null)
 			return null;

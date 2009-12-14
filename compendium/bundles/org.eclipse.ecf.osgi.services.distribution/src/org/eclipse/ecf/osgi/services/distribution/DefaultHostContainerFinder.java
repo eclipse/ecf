@@ -9,18 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.internal.osgi.services.distribution.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -34,92 +24,28 @@ public class DefaultHostContainerFinder extends AbstractContainerFinder
 			ServiceReference serviceReference,
 			String[] serviceExportedInterfaces,
 			String[] serviceExportedConfigs, String[] serviceIntents) {
-		Collection rsContainers = findRemoteContainersSatisfyingRequiredIntents(serviceIntents);
-		List results = new ArrayList();
-		for (Iterator i = rsContainers.iterator(); i.hasNext();) {
-			IRemoteServiceContainer rsContainer = (IRemoteServiceContainer) i
-					.next();
-			if (includeContainer(serviceReference, rsContainer))
-				results.add(rsContainer);
+
+		// Find pre-existing containers for given
+		// serviceExportedConfigs/serviceIntents
+		Collection rsContainers = findExistingContainers(serviceReference,
+				serviceExportedInterfaces, serviceExportedConfigs,
+				serviceIntents);
+
+		if (rsContainers.size() == 0) {
+			// If no existing containers are found we'll go through
+			// finding/creating/configuring
+			// new containers
+			rsContainers = createAndConfigureContainers(serviceReference,
+					serviceExportedInterfaces, serviceExportedConfigs,
+					serviceIntents);
+
 		}
-		return (IRemoteServiceContainer[]) results
+
+		// if properties are specified, XXX connect containers
+
+		// return result
+		return (IRemoteServiceContainer[]) rsContainers
 				.toArray(new IRemoteServiceContainer[] {});
-	}
-
-	protected Collection findRemoteContainersSatisfyingRequiredIntents(
-			String[] serviceIntents) {
-		List results = new ArrayList();
-		IContainer[] containers = Activator.getDefault().getContainerManager()
-				.getAllContainers();
-		if (containers == null || containers.length == 0)
-			return results;
-		for (int i = 0; i < containers.length; i++) {
-			// Check to make sure it's a rs container adapter. If it's not go
-			// onto next one
-			IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) containers[i]
-					.getAdapter(IRemoteServiceContainerAdapter.class);
-			if (adapter == null)
-				continue;
-			// Get container type description and intents
-			ContainerTypeDescription description = Activator.getDefault()
-					.getContainerManager().getContainerTypeDescription(
-							containers[i].getID());
-			// If it has no description continue
-			if (description == null)
-				continue;
-			List supportedIntents = Arrays.asList(description
-					.getSupportedIntents());
-			boolean hasIntents = true;
-			if (serviceIntents != null) {
-				for (int j = 0; j < serviceIntents.length; j++) {
-					if (!supportedIntents.contains(serviceIntents[j]))
-						hasIntents = false;
-				}
-			}
-			if (hasIntents) {
-				trace("findRemoteContainersSatisfyingRequiredIntents",
-						"include containerID=" + containers[i].getID());
-				results.add(new RemoteServiceContainer(containers[i], adapter));
-			} else {
-				trace("findRemoteContainersSatisfyingRequiredIntents",
-						"exclude containerID=" + containers[i].getID()
-								+ " supported intents=" + supportedIntents);
-			}
-		}
-		return results;
-	}
-
-	protected boolean includeContainer(ServiceReference serviceReference,
-			IRemoteServiceContainer rsContainer) {
-		IContainer container = rsContainer.getContainer();
-		Object cID = serviceReference
-				.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID);
-		// If the SERVICE_CONTAINER_ID property is not set, then we'll include
-		// it by default
-		if (cID == null || !(cID instanceof ID)) {
-			trace(
-					"includeContainer",
-					"serviceReference="
-							+ serviceReference
-							+ " does not set remote service container id service property.  INCLUDING containerID="
-							+ container.getID() + " in remote registration");
-			return true;
-		}
-		// Or if the id is specified and it's the same as the containerID under
-		// consideration
-		// then it's included
-		ID containerID = (ID) cID;
-		if (container.getID().equals(containerID)) {
-			trace("includeContainer", "serviceReference=" + serviceReference
-					+ " has MATCHING container id=" + containerID
-					+ ".  INCLUDING rsca=" + container.getID()
-					+ " in remote registration");
-			return true;
-		}
-		trace("includeContainer", "serviceReference=" + serviceReference
-				+ " has non-matching id=" + containerID + ".  EXCLUDING id="
-				+ container.getID() + " in remote registration");
-		return false;
 	}
 
 }
