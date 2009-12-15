@@ -248,7 +248,7 @@ public abstract class AbstractContainerFinder {
 		return false;
 	}
 
-	private boolean matchContainerID(ServiceReference serviceReference,
+	protected boolean matchContainerID(ServiceReference serviceReference,
 			IContainer container) {
 		ID containerID = container.getID();
 		if (containerID == null)
