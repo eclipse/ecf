@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.internal.osgi.services.distribution.Activator;
@@ -39,6 +40,13 @@ import org.osgi.framework.ServiceReference;
 public abstract class AbstractContainerFinder {
 
 	public static final IRemoteServiceContainer[] EMPTY_REMOTE_SERVICE_CONTAINER_ARRAY = new IRemoteServiceContainer[] {};
+
+	protected IIDFactory getIDFactory() {
+		Activator activator = Activator.getDefault();
+		if (activator == null)
+			return null;
+		return activator.getIDFactory();
+	}
 
 	protected IContainerManager getContainerManager() {
 		Activator activator = Activator.getDefault();
@@ -144,32 +152,56 @@ public abstract class AbstractContainerFinder {
 
 			if (matchExistingContainerToConfigsAndIntents(serviceReference,
 					containers[i], adapter, description,
-					serviceExportedConfigs, serviceIntents)) {
-				trace("matchExistingContainerToConfigsAndIntents",
-						"INCLUDING containerID="
-								+ containers[i].getID()
-								+ "configs="
-								+ ((serviceExportedConfigs == null) ? "null"
-										: Arrays.asList(serviceExportedConfigs)
-												.toString())
-								+ "intents="
-								+ ((serviceIntents == null) ? "null" : Arrays
-										.asList(serviceIntents).toString()));
+					serviceExportedConfigs, serviceIntents)
+					&& matchExistingContainerToConnectTarget(serviceReference,
+							containers[i])) {
+				trace("findExistingContainers", "INCLUDING containerID="
+						+ containers[i].getID()
+						+ "configs="
+						+ ((serviceExportedConfigs == null) ? "null" : Arrays
+								.asList(serviceExportedConfigs).toString())
+						+ "intents="
+						+ ((serviceIntents == null) ? "null" : Arrays.asList(
+								serviceIntents).toString()));
 				results.add(new RemoteServiceContainer(containers[i], adapter));
 			} else {
-				trace("matchExistingContainerToConfigsAndIntents",
-						"EXCLUDING containerID="
-								+ containers[i].getID()
-								+ "configs="
-								+ ((serviceExportedConfigs == null) ? "null"
-										: Arrays.asList(serviceExportedConfigs)
-												.toString())
-								+ "intents="
-								+ ((serviceIntents == null) ? "null" : Arrays
-										.asList(serviceIntents).toString()));
+				trace("findExistingContainers", "EXCLUDING containerID="
+						+ containers[i].getID()
+						+ "configs="
+						+ ((serviceExportedConfigs == null) ? "null" : Arrays
+								.asList(serviceExportedConfigs).toString())
+						+ "intents="
+						+ ((serviceIntents == null) ? "null" : Arrays.asList(
+								serviceIntents).toString()));
 			}
 		}
 		return results;
+	}
+
+	protected boolean matchExistingContainerToConnectTarget(
+			ServiceReference serviceReference, IContainer container) {
+		Object target = serviceReference
+				.getProperty(IDistributionConstants.CONTAINER_CONNECT_TARGET);
+		if (target == null)
+			return true;
+		// If a targetID is specified, make sure it either matches what the
+		// container
+		// is already connected to, or that we connect an unconnected container
+		ID connectedID = container.getConnectedID();
+		// If the container is not already connected to anything
+		// then we connect it to the given target
+		if (connectedID == null) {
+			// connect to the target and we have a match
+			doConnectContainer(serviceReference, container, target);
+			return true;
+		} else {
+			ID targetID = createTargetID(container, target);
+			// We check here if the currently connectedID equals the target.
+			// If it does we have a match
+			if (connectedID.equals(targetID))
+				return true;
+		}
+		return false;
 	}
 
 	protected String[] getSupportedConfigTypes(
@@ -284,7 +316,7 @@ public abstract class AbstractContainerFinder {
 		return null;
 	}
 
-	private IContainer createContainer(ServiceReference serviceReference,
+	protected IContainer createContainer(ServiceReference serviceReference,
 			ContainerTypeDescription containerTypeDescription)
 			throws ContainerCreateException {
 
@@ -306,6 +338,49 @@ public abstract class AbstractContainerFinder {
 					(Object[]) containerFactoryArguments);
 		}
 		return containerFactory.createContainer(containerTypeDescription);
+	}
+
+	protected ID createTargetID(IContainer container, Object target) {
+		ID targetID = null;
+		if (target instanceof String) {
+			targetID = getIDFactory().createID(container.getConnectNamespace(),
+					(String) target);
+		} else if (target instanceof Object[]) {
+			targetID = getIDFactory().createID(container.getConnectNamespace(),
+					(Object[]) target);
+		}
+		return targetID;
+	}
+
+	protected void doDisconnectContainer(IContainer container) {
+		container.disconnect();
+	}
+
+	protected void doConnectContainer(ServiceReference serviceReference,
+			IContainer container, Object target) {
+		try {
+			ID targetID = createTargetID(container, target);
+			Object context = serviceReference
+					.getProperty(IDistributionConstants.CONTAINER_CONNECT_CONTEXT);
+			IConnectContext connectContext = null;
+			if (context != null) {
+				connectContext = createConnectContext(serviceReference,
+						container, context);
+			}
+			// connect the container
+			container.connect(targetID, connectContext);
+		} catch (Exception e) {
+			logException("doConnectContainer containerID=" + container.getID()
+					+ " target=" + target, e);
+		}
+	}
+
+	protected IConnectContext createConnectContext(
+			ServiceReference serviceReference, IContainer container,
+			Object context) {
+		if (context instanceof IConnectContext)
+			return (IConnectContext) context;
+		return null;
 	}
 
 	protected void logException(String string, Exception e) {

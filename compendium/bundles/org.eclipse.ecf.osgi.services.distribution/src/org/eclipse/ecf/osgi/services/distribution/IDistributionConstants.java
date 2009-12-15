@@ -171,6 +171,4 @@ public interface IDistributionConstants {
 
 	public static final String CONTAINER_CONNECT_CONTEXT = "org.eclipse.ecf.containerConnectContext";
 
-	public static final String CONTAINER_FORCE_DISCONNECT = "org.eclipse.ecf.containerForceDisconnect";
-
 }

@@ -10,6 +10,7 @@
 package org.eclipse.ecf.osgi.services.distribution;
 
 import java.util.Collection;
+import java.util.Iterator;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.osgi.framework.ServiceReference;
 
@@ -25,8 +26,8 @@ public class DefaultHostContainerFinder extends AbstractContainerFinder
 			String[] serviceExportedInterfaces,
 			String[] serviceExportedConfigs, String[] serviceIntents) {
 
-		// Find pre-existing containers for given
-		// serviceExportedConfigs/serviceIntents
+		// Find previously created containers for that match the given
+		// serviceExportedConfigs and serviceIntents
 		Collection rsContainers = findExistingContainers(serviceReference,
 				serviceExportedInterfaces, serviceExportedConfigs,
 				serviceIntents);
@@ -39,9 +40,20 @@ public class DefaultHostContainerFinder extends AbstractContainerFinder
 					serviceExportedInterfaces, serviceExportedConfigs,
 					serviceIntents);
 
-		}
+			// if CONTAINER_CONNECT_TARGET service property is specified, then
+			// connect container(s)
+			Object target = serviceReference
+					.getProperty(IDistributionConstants.CONTAINER_CONNECT_TARGET);
+			if (target != null) {
+				for (Iterator i = rsContainers.iterator(); i.hasNext();) {
+					doConnectContainer(
+							serviceReference,
+							((IRemoteServiceContainer) i.next()).getContainer(),
+							target);
+				}
 
-		// if properties are specified, XXX connect containers
+			}
+		}
 
 		// return result
 		return (IRemoteServiceContainer[]) rsContainers

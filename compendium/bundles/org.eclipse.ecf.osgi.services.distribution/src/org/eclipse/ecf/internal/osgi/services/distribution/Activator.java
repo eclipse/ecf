@@ -14,6 +14,7 @@ import java.util.Properties;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.PlatformHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
@@ -62,6 +63,8 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker hostRegistrationListenerServiceTracker;
 	private ServiceTracker proxyDistributionListenerServiceTracker;
+
+	private ServiceTracker idFactoryTracker;
 
 	public static Activator getDefault() {
 		return plugin;
@@ -218,6 +221,10 @@ public class Activator implements BundleActivator {
 			proxyDistributionListenerServiceTracker.close();
 			proxyDistributionListenerServiceTracker = null;
 		}
+		if (idFactoryTracker != null) {
+			idFactoryTracker.close();
+			idFactoryTracker = null;
+		}
 		synchronized (this) {
 			this.context = null;
 		}
@@ -313,5 +320,16 @@ public class Activator implements BundleActivator {
 		if (adapterManager == null)
 			adapterManager = PlatformHelper.getPlatformAdapterManager();
 		return adapterManager;
+	}
+
+	public IIDFactory getIDFactory() {
+		if (this.context == null)
+			return null;
+		if (idFactoryTracker == null) {
+			idFactoryTracker = new ServiceTracker(this.context,
+					IIDFactory.class.getName(), null);
+			idFactoryTracker.open();
+		}
+		return (IIDFactory) idFactoryTracker.getService();
 	}
 }
