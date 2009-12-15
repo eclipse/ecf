@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -192,7 +193,13 @@ public abstract class AbstractContainerFinder {
 		// then we connect it to the given target
 		if (connectedID == null) {
 			// connect to the target and we have a match
-			doConnectContainer(serviceReference, container, target);
+			try {
+				doConnectContainer(serviceReference, container, target);
+			} catch (Exception e) {
+				logException("doConnectContainer containerID="
+						+ container.getID() + " target=" + target, e);
+				return false;
+			}
 			return true;
 		} else {
 			ID targetID = createTargetID(container, target);
@@ -357,22 +364,18 @@ public abstract class AbstractContainerFinder {
 	}
 
 	protected void doConnectContainer(ServiceReference serviceReference,
-			IContainer container, Object target) {
-		try {
-			ID targetID = createTargetID(container, target);
-			Object context = serviceReference
-					.getProperty(IDistributionConstants.CONTAINER_CONNECT_CONTEXT);
-			IConnectContext connectContext = null;
-			if (context != null) {
-				connectContext = createConnectContext(serviceReference,
-						container, context);
-			}
-			// connect the container
-			container.connect(targetID, connectContext);
-		} catch (Exception e) {
-			logException("doConnectContainer containerID=" + container.getID()
-					+ " target=" + target, e);
+			IContainer container, Object target)
+			throws ContainerConnectException, IDCreateException {
+		ID targetID = createTargetID(container, target);
+		Object context = serviceReference
+				.getProperty(IDistributionConstants.CONTAINER_CONNECT_CONTEXT);
+		IConnectContext connectContext = null;
+		if (context != null) {
+			connectContext = createConnectContext(serviceReference, container,
+					context);
 		}
+		// connect the container
+		container.connect(targetID, connectContext);
 	}
 
 	protected IConnectContext createConnectContext(
