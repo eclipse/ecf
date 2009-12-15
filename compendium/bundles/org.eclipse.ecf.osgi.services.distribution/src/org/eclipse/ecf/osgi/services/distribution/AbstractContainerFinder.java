@@ -240,10 +240,37 @@ public abstract class AbstractContainerFinder {
 		if (requiredConfigTypes != null
 				&& matchConfigTypes(requiredConfigTypes,
 						getSupportedConfigTypes(description))) {
-			return matchIntents(requiredServiceIntents,
-					getSupportedIntents(description));
+			if (matchContainerID(serviceReference, container)) {
+				return matchIntents(requiredServiceIntents,
+						getSupportedIntents(description));
+			}
 		}
 		return false;
+	}
+
+	private boolean matchContainerID(ServiceReference serviceReference,
+			IContainer container) {
+		ID containerID = container.getID();
+		if (containerID == null)
+			return false;
+		Namespace ns = containerID.getNamespace();
+		Object cid = serviceReference
+				.getProperty(IDistributionConstants.CONTAINER_FACTORY_ARGUMENTS);
+		// If no arguments are present, then any container ID should match
+		if (cid == null)
+			return true;
+		ID cID = null;
+		if (cid instanceof ID) {
+			cID = (ID) cid;
+		} else if (cid instanceof String) {
+			cID = getIDFactory().createID(ns, (String) cid);
+		} else if (cid instanceof Object[]) {
+			Object cido = ((Object[]) cid)[0];
+			cID = getIDFactory().createID(ns, new Object[] { cido });
+		}
+		if (cID == null)
+			return true;
+		return containerID.equals(cID);
 	}
 
 	protected boolean matchConfigTypes(String[] serviceRequiredConfigTypes,
