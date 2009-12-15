@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,10 @@
 
 package org.jivesoftware.smackx.packet;
 
-import java.util.*;
-
 import org.jivesoftware.smack.packet.PacketExtension;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Represents message events relating to the delivery, display, composition and cancellation of 
@@ -303,7 +304,7 @@ public class MessageEvent implements PacketExtension {
      * 
      */
     public String toXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
             "\">");
         // Note: Cancellation events don't specify any tag. They just send the packetID

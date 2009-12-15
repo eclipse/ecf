@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,14 @@
 
 package org.jivesoftware.smackx;
 
-import java.util.*;
-
-import org.jivesoftware.smack.packet.*;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.packet.DataForm;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Represents a Form for gathering data. The form could be of the following types:
@@ -54,6 +58,8 @@ public class Form {
      * extension that matches the elementName and namespace "x","jabber:x:data".  
      * 
      * @param packet the packet used for gathering data.
+     * @return the data form parsed from the packet or <tt>null</tt> if there was not
+     *      a form in the packet.
      */
     public static Form getFormFrom(Packet packet) {
         // Check if the packet includes the DataForm extension
@@ -74,7 +80,7 @@ public class Form {
      * 
      * @param dataForm the data form used for gathering data. 
      */
-    private Form(DataForm dataForm) {
+    public Form(DataForm dataForm) {
         this.dataForm = dataForm;
     }
     
@@ -116,8 +122,8 @@ public class Form {
      * @param variable the variable name that was completed.
      * @param value the String value that was answered.
      * @throws IllegalStateException if the form is not of type "submit".
-     * @throws IllegalArgumentException if the form does not include the specified variable.
-     * @throws IllegalArgumentException if the answer type does not correspond with the field type.
+     * @throws IllegalArgumentException if the form does not include the specified variable or
+     *      if the answer type does not correspond with the field type..
      */
     public void setAnswer(String variable, String value) {
         FormField field = getField(variable);
@@ -142,8 +148,8 @@ public class Form {
      * @param variable the variable name that was completed.
      * @param value the int value that was answered.
      * @throws IllegalStateException if the form is not of type "submit".
-     * @throws IllegalArgumentException if the form does not include the specified variable.
-     * @throws IllegalArgumentException if the answer type does not correspond with the field type.
+     * @throws IllegalArgumentException if the form does not include the specified variable or
+     *      if the answer type does not correspond with the field type.
      */
     public void setAnswer(String variable, int value) {
         FormField field = getField(variable);
@@ -155,7 +161,7 @@ public class Form {
             && !FormField.TYPE_TEXT_SINGLE.equals(field.getType())) {
             throw new IllegalArgumentException("This field is not of type int.");
         }
-        setAnswer(field, new Integer(value));
+        setAnswer(field, value);
     }
 
     /**
@@ -166,8 +172,8 @@ public class Form {
      * @param variable the variable name that was completed.
      * @param value the long value that was answered.
      * @throws IllegalStateException if the form is not of type "submit".
-     * @throws IllegalArgumentException if the form does not include the specified variable.
-     * @throws IllegalArgumentException if the answer type does not correspond with the field type.
+     * @throws IllegalArgumentException if the form does not include the specified variable or
+     *      if the answer type does not correspond with the field type.
      */
     public void setAnswer(String variable, long value) {
         FormField field = getField(variable);
@@ -179,7 +185,7 @@ public class Form {
             && !FormField.TYPE_TEXT_SINGLE.equals(field.getType())) {
             throw new IllegalArgumentException("This field is not of type long.");
         }
-        setAnswer(field, new Long(value));
+        setAnswer(field, value);
     }
 
     /**
@@ -190,8 +196,8 @@ public class Form {
      * @param variable the variable name that was completed.
      * @param value the float value that was answered.
      * @throws IllegalStateException if the form is not of type "submit".
-     * @throws IllegalArgumentException if the form does not include the specified variable.
-     * @throws IllegalArgumentException if the answer type does not correspond with the field type.
+     * @throws IllegalArgumentException if the form does not include the specified variable or
+     *      if the answer type does not correspond with the field type.
      */
     public void setAnswer(String variable, float value) {
         FormField field = getField(variable);
@@ -203,7 +209,7 @@ public class Form {
             && !FormField.TYPE_TEXT_SINGLE.equals(field.getType())) {
             throw new IllegalArgumentException("This field is not of type float.");
         }
-        setAnswer(field, new Float(value));
+        setAnswer(field, value);
     }
 
     /**
@@ -214,8 +220,8 @@ public class Form {
      * @param variable the variable name that was completed.
      * @param value the double value that was answered.
      * @throws IllegalStateException if the form is not of type "submit".
-     * @throws IllegalArgumentException if the form does not include the specified variable.
-     * @throws IllegalArgumentException if the answer type does not correspond with the field type.
+     * @throws IllegalArgumentException if the form does not include the specified variable or
+     *      if the answer type does not correspond with the field type.
      */
     public void setAnswer(String variable, double value) {
         FormField field = getField(variable);
@@ -227,7 +233,7 @@ public class Form {
             && !FormField.TYPE_TEXT_SINGLE.equals(field.getType())) {
             throw new IllegalArgumentException("This field is not of type double.");
         }
-        setAnswer(field, new Double(value));
+        setAnswer(field, value);
     }
 
     /**
@@ -238,8 +244,8 @@ public class Form {
      * @param variable the variable name that was completed.
      * @param value the boolean value that was answered.
      * @throws IllegalStateException if the form is not of type "submit".
-     * @throws IllegalArgumentException if the form does not include the specified variable.
-     * @throws IllegalArgumentException if the answer type does not correspond with the field type.
+     * @throws IllegalArgumentException if the form does not include the specified variable or
+     *      if the answer type does not correspond with the field type.
      */
     public void setAnswer(String variable, boolean value) {
         FormField field = getField(variable);
@@ -291,7 +297,7 @@ public class Form {
      * @throws IllegalStateException if the form is not of type "submit".
      * @throws IllegalArgumentException if the form does not include the specified variable.
      */
-    public void setAnswer(String variable, List values) {
+    public void setAnswer(String variable, List<String> values) {
         if (!isSubmitType()) {
             throw new IllegalStateException("Cannot set an answer if the form is not of type " +
             "\"submit\"");
@@ -334,8 +340,8 @@ public class Form {
             // Clear the old values
             field.resetValues();
             // Set the default value
-            for (Iterator it = field.getValues(); it.hasNext();) {
-                field.addValue((String) it.next());
+            for (Iterator<String> it = field.getValues(); it.hasNext();) {
+                field.addValue(it.next());
             }
         }
         else {
@@ -348,7 +354,7 @@ public class Form {
      *
      * @return an Iterator for the fields that are part of the form.
      */
-    public Iterator getFields() {
+    public Iterator<FormField> getFields() {
         return dataForm.getFields();
     }
 
@@ -366,8 +372,8 @@ public class Form {
         }
         // Look for the field whose variable matches the requested variable
         FormField field;
-        for (Iterator it=getFields();it.hasNext();) {
-            field = (FormField)it.next();
+        for (Iterator<FormField> it=getFields();it.hasNext();) {
+            field = it.next();
             if (variable.equals(field.getVariable())) {
                 return field;
             }
@@ -381,7 +387,7 @@ public class Form {
      * @return instructions that explain how to fill out the form.
      */
     public String getInstructions() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         // Join the list of instructions together separated by newlines
         for (Iterator it = dataForm.getInstructions(); it.hasNext();) {
             sb.append((String) it.next());
@@ -432,7 +438,7 @@ public class Form {
      */
     public void setInstructions(String instructions) {
         // Split the instructions into multiple instructions for each existent newline
-        ArrayList instructionsList = new ArrayList();
+        ArrayList<String> instructionsList = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(instructions, "\n");
         while (st.hasMoreTokens()) {
             instructionsList.add(st.nextToken());
@@ -464,8 +470,8 @@ public class Form {
         if (isSubmitType()) {
             // Create a new DataForm that contains only the answered fields 
             DataForm dataFormToSend = new DataForm(getType());
-            for(Iterator it=getFields();it.hasNext();) {
-                FormField field = (FormField)it.next();
+            for(Iterator<FormField> it=getFields();it.hasNext();) {
+                FormField field = it.next();
                 if (field.getValues().hasNext()) {
                     dataFormToSend.addField(field);
                 }
@@ -513,8 +519,8 @@ public class Form {
         }
         // Create a new Form
         Form form = new Form(TYPE_SUBMIT);
-        for (Iterator fields=getFields(); fields.hasNext();) {
-            FormField field = (FormField)fields.next();
+        for (Iterator<FormField> fields=getFields(); fields.hasNext();) {
+            FormField field = fields.next();
             // Add to the new form any type of field that includes a variable.
             // Note: The fields of type FIXED are the only ones that don't specify a variable
             if (field.getVariable() != null) {
@@ -525,9 +531,9 @@ public class Form {
                 if (FormField.TYPE_HIDDEN.equals(field.getType())) {
                     // Since a hidden field could have many values we need to collect them 
                     // in a list
-                    List values = new ArrayList();
-                    for (Iterator it=field.getValues();it.hasNext();) {
-                        values.add((String)it.next());
+                    List<String> values = new ArrayList<String>();
+                    for (Iterator<String> it=field.getValues();it.hasNext();) {
+                        values.add(it.next());
                     }
                     form.setAnswer(field.getVariable(), values);
                 }                

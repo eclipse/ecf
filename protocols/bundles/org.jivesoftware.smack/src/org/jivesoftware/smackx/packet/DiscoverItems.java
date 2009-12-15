@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,12 @@
 
 package org.jivesoftware.smackx.packet;
 
-import java.util.*;
-
 import org.jivesoftware.smack.packet.IQ;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A DiscoverItems IQ packet, which is used by XMPP clients to request and receive items 
@@ -35,7 +38,7 @@ import org.jivesoftware.smack.packet.IQ;
  */
 public class DiscoverItems extends IQ {
 
-    private List items = new ArrayList();
+    private final List<Item> items = new CopyOnWriteArrayList<Item>();
     private String node;
 
     /**
@@ -54,9 +57,9 @@ public class DiscoverItems extends IQ {
      *
      * @return an Iterator on the discovered entity's items
      */
-    public Iterator getItems() {
+    public Iterator<DiscoverItems.Item> getItems() {
         synchronized (items) {
-            return Collections.unmodifiableList(new ArrayList(items)).iterator();
+            return Collections.unmodifiableList(items).iterator();
         }
     }
 
@@ -87,7 +90,7 @@ public class DiscoverItems extends IQ {
     }
 
     public String getChildElementXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<query xmlns=\"http://jabber.org/protocol/disco#items\"");
         if (getNode() != null) {
             buf.append(" node=\"");
@@ -96,8 +99,7 @@ public class DiscoverItems extends IQ {
         }
         buf.append(">");
         synchronized (items) {
-            for (int i = 0; i < items.size(); i++) {
-                Item item = (Item) items.get(i);
+            for (Item item : items) {
                 buf.append(item.toXML());
             }
         }
@@ -217,7 +219,7 @@ public class DiscoverItems extends IQ {
         }
 
         public String toXML() {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             buf.append("<item jid=\"").append(entityID).append("\"");
             if (name != null) {
                 buf.append(" name=\"").append(name).append("\"");

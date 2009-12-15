@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,18 @@
 
 package org.jivesoftware.smack;
 
-import org.jivesoftware.smack.packet.Registration;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.filter.PacketIDFilter;
+import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.filter.*;
+import org.jivesoftware.smack.packet.Registration;
 import org.jivesoftware.smack.util.StringUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Allows creation and management of accounts on an XMPP server.
@@ -39,12 +45,31 @@ public class AccountManager {
     private Registration info = null;
 
     /**
+     * Flag that indicates whether the server supports In-Band Registration.
+     * In-Band Registration may be advertised as a stream feature. If no stream feature
+     * was advertised from the server then try sending an IQ packet to discover if In-Band
+     * Registration is available.
+     */
+    private boolean accountCreationSupported = false;
+
+    /**
      * Creates a new AccountManager instance.
      *
      * @param connection a connection to a XMPP server.
      */
     public AccountManager(XMPPConnection connection) {
         this.connection = connection;
+    }
+
+    /**
+     * Sets whether the server supports In-Band Registration. In-Band Registration may be
+     * advertised as a stream feature. If no stream feature was advertised from the server
+     * then try sending an IQ packet to discover if In-Band Registration is available.
+     *
+     * @param accountCreationSupported true if the server supports In-Band Registration.
+     */
+    void setSupportsAccountCreation(boolean accountCreationSupported) {
+        this.accountCreationSupported = accountCreationSupported;
     }
 
     /**
@@ -55,11 +80,19 @@ public class AccountManager {
      * @return true if the server support creating new accounts.
      */
     public boolean supportsAccountCreation() {
+        // Check if we already know that the server supports creating new accounts
+        if (accountCreationSupported) {
+            return true;
+        }
+        // No information is known yet (e.g. no stream feature was received from the server
+        // indicating that it supports creating new accounts) so send an IQ packet as a way
+        // to discover if this feature is supported
         try {
             if (info == null) {
                 getRegistrationInfo();
+                accountCreationSupported = info.getType() != IQ.Type.ERROR;
             }
-            return info.getType() != IQ.Type.ERROR;
+            return accountCreationSupported;
         }
         catch (XMPPException xe) {
             return false;
@@ -67,8 +100,8 @@ public class AccountManager {
     }
 
     /**
-     * Returns an Iterator for the (String) names of the required account attributes.
-     * All attributes must be set when creating new accounts. The standard
+     * Returns an unmodifiable collection of the names of the required account attributes.
+     * All attributes must be set when creating new accounts. The standard set of possible
      * attributes are as follows: <ul>
      *      <li>name -- the user's name.
      *      <li>first -- the user's first name.
@@ -90,18 +123,20 @@ public class AccountManager {
      *
      * @return the required account attributes.
      */
-    public Iterator getAccountAttributes() {
+    public Collection<String> getAccountAttributes() {
         try {
             if (info == null) {
                 getRegistrationInfo();
             }
-            Map attributes = info.getAttributes();
+            Map<String, String> attributes = info.getAttributes();
             if (attributes != null) {
-                return attributes.keySet().iterator();
+                return Collections.unmodifiableSet(attributes.keySet());
             }
         }
-        catch (XMPPException xe) { }
-        return Collections.EMPTY_LIST.iterator();
+        catch (XMPPException xe) {
+            xe.printStackTrace();
+        }
+        return Collections.emptySet();
     }
 
     /**
@@ -117,9 +152,11 @@ public class AccountManager {
             if (info == null) {
                 getRegistrationInfo();
             }
-            return (String) info.getAttributes().get(name);
+            return info.getAttributes().get(name);
         }
-        catch (XMPPException xe) { }
+        catch (XMPPException xe) {
+            xe.printStackTrace();
+        }
         return null;
     }
 
@@ -159,9 +196,8 @@ public class AccountManager {
             throw new XMPPException("Server does not support account creation.");
         }
         // Create a map for all the required attributes, but give them blank values.
-        Map attributes = new HashMap();
-        for (Iterator i=getAccountAttributes(); i.hasNext(); ) {
-            String attributeName = (String)i.next();
+        Map<String, String> attributes = new HashMap<String, String>();
+        for (String attributeName : getAccountAttributes()) {
             attributes.put(attributeName, "");
         }
         createAccount(username, password, attributes);
@@ -178,7 +214,7 @@ public class AccountManager {
      * @throws XMPPException if an error occurs creating the account.
      * @see #getAccountAttributes()
      */
-    public void createAccount(String username, String password, Map attributes)
+    public void createAccount(String username, String password, Map<String, String> attributes)
             throws XMPPException
     {
         if (!supportsAccountCreation()) {
@@ -217,7 +253,7 @@ public class AccountManager {
         Registration reg = new Registration();
         reg.setType(IQ.Type.SET);
         reg.setTo(connection.getServiceName());
-        HashMap map = new HashMap();
+        Map<String, String> map = new HashMap<String, String>();
         map.put("username",StringUtils.parseName(connection.getUser()));
         map.put("password",newPassword);
         reg.setAttributes(map);
@@ -251,7 +287,7 @@ public class AccountManager {
         Registration reg = new Registration();
         reg.setType(IQ.Type.SET);
         reg.setTo(connection.getServiceName());
-        Map attributes = new HashMap();
+        Map<String, String> attributes = new HashMap<String, String>();
         // To delete an account, we add a single attribute, "remove", that is blank.
         attributes.put("remove", "");
         reg.setAttributes(attributes);

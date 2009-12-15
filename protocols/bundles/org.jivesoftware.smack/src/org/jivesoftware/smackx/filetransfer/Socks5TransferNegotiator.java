@@ -31,19 +31,17 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.packet.Bytestream;
 import org.jivesoftware.smackx.packet.Bytestream.StreamHost;
 import org.jivesoftware.smackx.packet.Bytestream.StreamHostUsed;
-import org.jivesoftware.smackx.packet.DiscoverInfo;
-import org.jivesoftware.smackx.packet.DiscoverInfo.Identity;
-import org.jivesoftware.smackx.packet.DiscoverItems;
-import org.jivesoftware.smackx.packet.DiscoverItems.Item;
 import org.jivesoftware.smackx.packet.StreamInitiation;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A SOCKS5 bytestream is negotiated partly over the XMPP XML stream and partly
@@ -72,24 +70,24 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
 
     protected static final String NAMESPACE = "http://jabber.org/protocol/bytestreams";
 
+    /**
+     * The number of connection failures it takes to a streamhost for that particular streamhost
+     * to be blacklisted. When a host is blacklisted no more connection attempts will be made to
+     * it for a period of 2 hours.
+     */
+    private static final int CONNECT_FAILURE_THRESHOLD = 2;
+
     public static boolean isAllowLocalProxyHost = true;
 
     private final XMPPConnection connection;
 
-    private List proxies;
+    private Socks5TransferNegotiatorManager transferNegotiatorManager;
 
-    private List streamHosts;
-
-    // locks the proxies during their initialization process
-    private final Object proxyLock = new Object();
-
-    private ProxyProcess proxyProcess;
-
-    // locks on the proxy process during its initiatilization process
-    private final Object processLock = new Object();
-
-    public Socks5TransferNegotiator(final XMPPConnection connection) {
+    public Socks5TransferNegotiator(Socks5TransferNegotiatorManager transferNegotiatorManager,
+            final XMPPConnection connection)
+    {
         this.connection = connection;
+        this.transferNegotiatorManager = transferNegotiatorManager;
     }
 
     public PacketFilter getInitiationPacketFilter(String from, String sessionID) {
@@ -100,12 +98,11 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
     /*
       * (non-Javadoc)
       *
-      * @see org.jivesoftware.smackx.filetransfer.StreamNegotiator#initiateDownload(org.jivesoftware.smackx.packet.StreamInitiation,
-      *      java.io.File)
+      * @see org.jivesoftware.smackx.filetransfer.StreamNegotiator#initiateDownload(
+      * org.jivesoftware.smackx.packet.StreamInitiation, java.io.File)
       */
     InputStream negotiateIncomingStream(Packet streamInitiation)
             throws XMPPException {
-
         Bytestream streamHostsInfo = (Bytestream) streamInitiation;
 
         if (streamHostsInfo.getType().equals(IQ.Type.ERROR)) {
@@ -123,7 +120,7 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
                         ex.getXMPPError());
                 connection.sendPacket(errorPacket);
             }
-            throw(ex);
+            throw (ex);
         }
 
         // send used-host confirmation
@@ -133,7 +130,11 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
         connection.sendPacket(streamResponse);
 
         try {
-            return selectedHost.establishedSocket.getInputStream();
+            PushbackInputStream stream = new PushbackInputStream(
+                    selectedHost.establishedSocket.getInputStream());
+            int firstByte = stream.read();
+            stream.unread(firstByte);
+            return stream;
         }
         catch (IOException e) {
             throw new XMPPException("Error establishing input stream", e);
@@ -169,9 +170,12 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
     }
 
     /**
-     * @param streamHostsInfo
-     * @return
-     * @throws XMPPException
+     * Selects a host to connect to over which the file will be transmitted.
+     *
+     * @param streamHostsInfo the packet recieved from the initiator containing the available hosts
+     *                        to transfer the file
+     * @return the selected host and socket that were created.
+     * @throws XMPPException when there is no appropriate host.
      */
     private SelectedHostInfo selectHost(Bytestream streamHostsInfo)
             throws XMPPException {
@@ -180,10 +184,16 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
         Socket socket = null;
         while (it.hasNext()) {
             selectedHost = (StreamHost) it.next();
+            String address = selectedHost.getAddress();
 
+            // Check to see if this address has been blacklisted
+            int failures = getConnectionFailures(address);
+            if (failures >= CONNECT_FAILURE_THRESHOLD) {
+                continue;
+            }
             // establish socket
             try {
-                socket = new Socket(selectedHost.getAddress(), selectedHost
+                socket = new Socket(address, selectedHost
                         .getPort());
                 establishSOCKS5ConnectionToProxy(socket, createDigest(
                         streamHostsInfo.getSessionID(), streamHostsInfo
@@ -192,16 +202,26 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
             }
             catch (IOException e) {
                 e.printStackTrace();
+                incrementConnectionFailures(address);
                 selectedHost = null;
                 socket = null;
             }
         }
-        if (selectedHost == null || socket == null) {
-            throw new XMPPException(
-                    "Could not establish socket with any provided host", new XMPPError(406));
+        if (selectedHost == null || socket == null || !socket.isConnected()) {
+            String errorMessage = "Could not establish socket with any provided host";
+            throw new XMPPException(errorMessage, new XMPPError(
+                    XMPPError.Condition.no_acceptable, errorMessage));
         }
 
         return new SelectedHostInfo(selectedHost, socket);
+    }
+
+    private void incrementConnectionFailures(String address) {
+        transferNegotiatorManager.incrementConnectionFailures(address);
+    }
+
+    private int getConnectionFailures(String address) {
+        return transferNegotiatorManager.getConnectionFailures(address);
     }
 
     /**
@@ -230,7 +250,8 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
       *      org.jivesoftware.smackx.packet.StreamInitiation, java.io.File)
       */
     public OutputStream createOutgoingStream(String streamID, String initiator,
-            String target) throws XMPPException {
+            String target) throws XMPPException
+    {
         Socket socket;
         try {
             socket = initBytestreamSocket(streamID, initiator, target);
@@ -241,7 +262,7 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
 
         if (socket != null) {
             try {
-                return socket.getOutputStream();
+                return new BufferedOutputStream(socket.getOutputStream());
             }
             catch (IOException e) {
                 throw new XMPPException("Error establishing output stream", e);
@@ -252,7 +273,7 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
 
     private Socket initBytestreamSocket(final String sessionID,
             String initiator, String target) throws Exception {
-        ProxyProcess process;
+        Socks5TransferNegotiatorManager.ProxyProcess process;
         try {
             process = establishListeningSocket();
         }
@@ -260,22 +281,28 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
             process = null;
         }
 
-        String localIP;
+        Socket conn;
         try {
-            localIP = discoverLocalIP();
+            String localIP;
+            try {
+                localIP = discoverLocalIP();
+            }
+            catch (UnknownHostException e1) {
+                localIP = null;
+            }
+
+            Bytestream query = createByteStreamInit(initiator, target, sessionID,
+                    localIP, (process != null ? process.getPort() : 0));
+
+            // if the local host is one of the options we need to wait for the
+            // remote connection.
+            conn = waitForUsedHostResponse(sessionID, process, createDigest(
+                    sessionID, initiator, target), query).establishedSocket;
         }
-        catch (UnknownHostException e1) {
-            localIP = null;
+        finally {
+            cleanupListeningSocket();
         }
 
-        Bytestream query = createByteStreamInit(initiator, target, sessionID,
-                localIP, (process != null ? process.getPort() : 0));
-
-        // if the local host is one of the options we need to wait for the
-        // remote connection.
-        Socket conn = waitForUsedHostResponse(sessionID, process, createDigest(
-                sessionID, initiator, target), query).establishedSocket;
-        cleanupListeningSocket();
         return conn;
     }
 
@@ -286,25 +313,26 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
      * @param sessionID The session id of the stream.
      * @param proxy     The server socket which will listen locally for remote
      *                  connections.
-     * @param digest
-     * @param query
-     * @return
-     * @throws XMPPException
-     * @throws IOException
+     * @param digest    the digest of the userids and the session id
+     * @param query     the query which the response is being awaited
+     * @return the selected host
+     * @throws XMPPException when the response from the peer is an error or doesn't occur
+     * @throws IOException   when there is an error establishing the local socket
      */
     private SelectedHostInfo waitForUsedHostResponse(String sessionID,
-            final ProxyProcess proxy, final String digest,
-            final Bytestream query) throws XMPPException, IOException {
+            final Socks5TransferNegotiatorManager.ProxyProcess proxy, final String digest,
+            final Bytestream query) throws XMPPException, IOException
+    {
         SelectedHostInfo info = new SelectedHostInfo();
 
         PacketCollector collector = connection
                 .createPacketCollector(new PacketIDFilter(query.getPacketID()));
         connection.sendPacket(query);
 
-        Packet packet = collector.nextResult();
+        Packet packet = collector.nextResult(10000);
         collector.cancel();
         Bytestream response;
-        if (packet instanceof Bytestream) {
+        if (packet != null && packet instanceof Bytestream) {
             response = (Bytestream) packet;
         }
         else {
@@ -340,7 +368,8 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
                     activate.getPacketID()));
             connection.sendPacket(activate);
 
-            IQ serverResponse = (IQ) collector.nextResult();
+            IQ serverResponse = (IQ) collector.nextResult(SmackConfiguration
+                    .getPacketReplyTimeout());
             collector.cancel();
             if (!serverResponse.getType().equals(IQ.Type.RESULT)) {
                 info.establishedSocket.close();
@@ -350,22 +379,13 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
         }
     }
 
-    private ProxyProcess establishListeningSocket() throws IOException {
-        synchronized (processLock) {
-            if (proxyProcess == null) {
-                proxyProcess = new ProxyProcess(new ServerSocket(7777));
-                proxyProcess.start();
-            }
-        }
-        proxyProcess.addTransfer();
-        return proxyProcess;
+    private Socks5TransferNegotiatorManager.ProxyProcess establishListeningSocket()
+            throws IOException {
+        return transferNegotiatorManager.addTransfer();
     }
 
     private void cleanupListeningSocket() {
-        if (proxyProcess == null) {
-            return;
-        }
-        proxyProcess.removeTransfer();
+        transferNegotiatorManager.removeTransfer();
     }
 
     private String discoverLocalIP() throws UnknownHostException {
@@ -395,120 +415,52 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
      * &lt;/iq&gt;
      * </pre>
      *
-     * @param from    initiator@host1/foo - The file transfer initiator.
-     * @param to      target@host2/bar - The file transfer target.
+     * @param from    initiator@host1/foo - the file transfer initiator.
+     * @param to      target@host2/bar - the file transfer target.
      * @param sid     'mySID' - the unique identifier for this file transfer
-     * @param localIP The IP of the local machine if it is being provided, null otherwise.
-     * @param port    The port of the local mahine if it is being provided, null otherwise.
-     * @return Returns the created <b><i>Bytestream</b></i> packet
+     * @param localIP the IP of the local machine if it is being provided, null otherwise.
+     * @param port    the port of the local mahine if it is being provided, null otherwise.
+     * @return the created <b><i>Bytestream</b></i> packet
      */
     private Bytestream createByteStreamInit(final String from, final String to,
-            final String sid, final String localIP, final int port) {
+            final String sid, final String localIP, final int port)
+    {
         Bytestream bs = new Bytestream();
         bs.setTo(to);
         bs.setFrom(from);
         bs.setSessionID(sid);
         bs.setType(IQ.Type.SET);
-        bs.setMode(Bytestream.Mode.TCP);
+        bs.setMode(Bytestream.Mode.tcp);
         if (localIP != null && port > 0) {
             bs.addStreamHost(from, localIP, port);
         }
         // make sure the proxies have been initialized completely
-        synchronized (proxyLock) {
-            if (proxies == null) {
-                initProxies();
-            }
-        }
+        Collection<Bytestream.StreamHost> streamHosts = transferNegotiatorManager.getStreamHosts();
+
         if (streamHosts != null) {
-            Iterator it = streamHosts.iterator();
-            while (it.hasNext()) {
-                bs.addStreamHost((StreamHost) it.next());
+            for (StreamHost host : streamHosts) {
+                bs.addStreamHost(host);
             }
         }
 
         return bs;
     }
 
-    private void initProxies() {
-        proxies = new ArrayList();
-        ServiceDiscoveryManager manager = ServiceDiscoveryManager
-                .getInstanceFor(connection);
-
-        DiscoverItems discoItems;
-        try {
-            discoItems = manager.discoverItems(connection.getServiceName());
-
-            DiscoverItems.Item item;
-            DiscoverInfo info;
-            DiscoverInfo.Identity identity;
-
-            Iterator it = discoItems.getItems();
-            while (it.hasNext()) {
-                item = (Item) it.next();
-                info = manager.discoverInfo(item.getEntityID());
-                Iterator itx = info.getIdentities();
-                while (itx.hasNext()) {
-                    identity = (Identity) itx.next();
-                    if (identity.getCategory().equalsIgnoreCase("proxy")
-                            && identity.getType().equalsIgnoreCase(
-                            "bytestreams")) {
-                        proxies.add(info.getFrom());
-                    }
-                }
-            }
-        }
-        catch (XMPPException e) {
-            return;
-        }
-        if (proxies.size() > 0) {
-            initStreamHosts();
-        }
-
-    }
-
-    private void initStreamHosts() {
-        List streamHosts = new ArrayList();
-        Iterator it = proxies.iterator();
-        IQ query;
-        PacketCollector collector;
-        Bytestream response;
-        while (it.hasNext()) {
-            String jid = it.next().toString();
-            query = new IQ() {
-                public String getChildElementXML() {
-                    return "<query xmlns=\"http://jabber.org/protocol/bytestreams\"/>";
-                }
-            };
-            query.setType(IQ.Type.GET);
-            query.setTo(jid);
-
-            collector = connection.createPacketCollector(new PacketIDFilter(
-                    query.getPacketID()));
-            connection.sendPacket(query);
-
-            response = (Bytestream) collector.nextResult(SmackConfiguration
-                    .getPacketReplyTimeout());
-            if (response != null) {
-                streamHosts.addAll(response.getStreamHosts());
-            }
-            collector.cancel();
-        }
-        this.streamHosts = streamHosts;
-    }
 
     /**
      * Returns the packet to send notification to the stream host to activate
      * the stream.
      *
-     * @param sessionID The session ID of the file transfer to activate.
-     * @param from
-     * @param to        The JID of the stream host
-     * @param target    The JID of the file transfer target.
-     * @return Returns the packet to send notification to the stream host to
+     * @param sessionID the session ID of the file transfer to activate.
+     * @param from      the sender of the bytestreeam
+     * @param to        the JID of the stream host
+     * @param target    the JID of the file transfer target.
+     * @return the packet to send notification to the stream host to
      *         activate the stream.
      */
     private static Bytestream createByteStreamActivate(final String sessionID,
-            final String from, final String to, final String target) {
+            final String from, final String to, final String target)
+    {
         Bytestream activate = new Bytestream(sessionID);
         activate.setMode(null);
         activate.setToActivate(target);
@@ -516,61 +468,6 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
         activate.setTo(to);
         activate.setType(IQ.Type.SET);
         return activate;
-    }
-
-    /**
-     * Negotiates the Socks 5 bytestream when the local computer is acting as
-     * the proxy.
-     *
-     * @param connection The socket connection with the peer.
-     * @return The SHA-1 digest that is used to uniquely identify the file
-     *         transfer.
-     * @throws XMPPException
-     * @throws IOException
-     */
-    private String establishSocks5UploadConnection(Socket connection) throws XMPPException, IOException {
-        OutputStream out = new DataOutputStream(connection.getOutputStream());
-        InputStream in = new DataInputStream(connection.getInputStream());
-
-        // first byte is version should be 5
-        int b = in.read();
-        if (b != 5) {
-            throw new XMPPException("Only SOCKS5 supported");
-        }
-
-        // second byte number of authentication methods supported
-        b = in.read();
-        int[] auth = new int[b];
-        for (int i = 0; i < b; i++) {
-            auth[i] = in.read();
-        }
-
-        int authMethod = -1;
-        for (int i = 0; i < auth.length; i++) {
-            authMethod = (auth[i] == 0 ? 0 : -1); // only auth method
-            // 0, no
-            // authentication,
-            // supported
-            if (authMethod == 0) {
-                break;
-            }
-        }
-        if (authMethod != 0) {
-            throw new XMPPException("Authentication method not supported");
-        }
-        byte[] cmd = new byte[2];
-        cmd[0] = (byte) 0x05;
-        cmd[1] = (byte) 0x00;
-        out.write(cmd);
-
-        String responseDigest = createIncomingSocks5Message(in);
-        cmd = createOutgoingSocks5Message(0, responseDigest);
-
-        if (!connection.isConnected()) {
-            throw new XMPPException("Socket closed by remote user");
-        }
-        out.write(cmd);
-        return responseDigest;
     }
 
     public String[] getNamespaces() {
@@ -599,7 +496,7 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
         createIncomingSocks5Message(in);
     }
 
-    private String createIncomingSocks5Message(InputStream in)
+    static String createIncomingSocks5Message(InputStream in)
             throws IOException {
         byte[] cmd = new byte[5];
         in.read(cmd, 0, 5);
@@ -613,7 +510,7 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
         return digest;
     }
 
-    private byte[] createOutgoingSocks5Message(int cmd, String digest) {
+    static byte[] createOutgoingSocks5Message(int cmd, String digest) {
         byte addr[] = digest.getBytes();
 
         byte[] data = new byte[7 + addr.length];
@@ -631,6 +528,7 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
     }
 
     public void cleanup() {
+
     }
 
     private static class SelectedHostInfo {
@@ -650,108 +548,6 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
         }
     }
 
-    private class ProxyProcess implements Runnable {
-
-        private ServerSocket listeningSocket;
-
-        private Map connectionMap = new HashMap();
-
-        private boolean done = false;
-
-        private Thread thread;
-        private int transfers;
-
-        public void run() {
-            try {
-                listeningSocket.setSoTimeout(10000);
-            }
-            catch (SocketException e) {
-                e.printStackTrace();
-            }
-            while (!done) {
-                Socket conn = null;
-                synchronized (ProxyProcess.this) {
-                    while (transfers <= 0) {
-                        transfers = -1;
-                        try {
-                            ProxyProcess.this.wait();
-                        }
-                        catch (InterruptedException e) {
-                        }
-                    }
-                }
-                try {
-                    synchronized (listeningSocket) {
-                        conn = listeningSocket.accept();
-                    }
-                    if (conn == null) {
-                        continue;
-                    }
-                    String digest = establishSocks5UploadConnection(conn);
-                    synchronized (connectionMap) {
-                        connectionMap.put(digest, conn);
-                    }
-                }
-                catch (IOException e) {
-                }
-                catch (XMPPException e) {
-                    e.printStackTrace();
-                    if (conn != null) {
-                        try {
-                            conn.close();
-                        }
-                        catch (IOException e1) {
-                        }
-                    }
-                }
-            }
-        }
-
-
-        public void start() {
-            thread.start();
-        }
-
-        public void stop() {
-            done = true;
-            synchronized (this) {
-                this.notify();
-            }
-        }
-
-        public int getPort() {
-            return listeningSocket.getLocalPort();
-        }
-
-        ProxyProcess(ServerSocket listeningSocket) {
-            thread = new Thread(this, "File Transfer Connection Listener");
-            this.listeningSocket = listeningSocket;
-        }
-
-        public Socket getSocket(String digest) {
-            synchronized (connectionMap) {
-                return (Socket) connectionMap.get(digest);
-            }
-        }
-
-        public void addTransfer() {
-            synchronized (this) {
-                if (transfers == -1) {
-                    transfers = 1;
-                    this.notify();
-                }
-                else {
-                    transfers++;
-                }
-            }
-        }
-
-        public void removeTransfer() {
-            synchronized (this) {
-                transfers--;
-            }
-        }
-    }
 
     private static class BytestreamSIDFilter implements PacketFilter {
 

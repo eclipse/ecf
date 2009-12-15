@@ -35,6 +35,7 @@ import org.jivesoftware.smackx.packet.StreamInitiation;
 
 import java.net.URLConnection;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages the negotiation of file transfers according to JEP-0096. If a file is
@@ -64,7 +65,8 @@ public class FileTransferNegotiator {
 
     private static final String[] PROTOCOLS = {BYTE_STREAM, INBAND_BYTE_STREAM};
 
-    private static final Map transferObject = new HashMap();
+    private static final Map<XMPPConnection, FileTransferNegotiator> transferObject =
+            new ConcurrentHashMap<XMPPConnection, FileTransferNegotiator>();
 
     private static final String STREAM_INIT_PREFIX = "jsi_";
 
@@ -72,6 +74,11 @@ public class FileTransferNegotiator {
 
     private static final Random randomGenerator = new Random();
 
+    /**
+     * A static variable to use only offer IBB for file transfer. It is generally recommend to only
+     * set this variable to true for testing purposes as IBB is the backup file transfer method
+     * and shouldn't be used as the only transfer method in production systems.
+     */
     public static boolean IBB_ONLY = false;
 
     /**
@@ -92,7 +99,7 @@ public class FileTransferNegotiator {
         }
 
         if (transferObject.containsKey(connection)) {
-            return (FileTransferNegotiator) transferObject.get(connection);
+            return transferObject.get(connection);
         }
         else {
             FileTransferNegotiator transfer = new FileTransferNegotiator(
@@ -114,12 +121,12 @@ public class FileTransferNegotiator {
             final boolean isEnabled) {
         ServiceDiscoveryManager manager = ServiceDiscoveryManager
                 .getInstanceFor(connection);
-        for (int i = 0; i < NAMESPACE.length; i++) {
+        for (String ns : NAMESPACE) {
             if (isEnabled) {
-                manager.addFeature(NAMESPACE[i]);
+                manager.addFeature(ns);
             }
             else {
-                manager.removeFeature(NAMESPACE[i]);
+                manager.removeFeature(ns);
             }
         }
     }
@@ -132,9 +139,8 @@ public class FileTransferNegotiator {
      * @return True if all related services are enabled, false if they are not.
      */
     public static boolean isServiceEnabled(final XMPPConnection connection) {
-        for (int i = 0; i < NAMESPACE.length; i++) {
-            if (!ServiceDiscoveryManager.getInstanceFor(connection)
-                    .includesFeature(NAMESPACE[i]))
+        for (String ns : NAMESPACE) {
+            if (!ServiceDiscoveryManager.getInstanceFor(connection).includesFeature(ns))
                 return false;
         }
         return true;
@@ -177,7 +183,7 @@ public class FileTransferNegotiator {
 
     private final XMPPConnection connection;
 
-    private final StreamNegotiator byteStreamTransferManager;
+    private final Socks5TransferNegotiatorManager byteStreamTransferManager;
 
     private final StreamNegotiator inbandTransferManager;
 
@@ -185,7 +191,7 @@ public class FileTransferNegotiator {
         configureConnection(connection);
 
         this.connection = connection;
-        byteStreamTransferManager = new Socks5TransferNegotiator(connection);
+        byteStreamTransferManager = new Socks5TransferNegotiatorManager(connection);
         inbandTransferManager = new IBBTransferNegotiator(connection);
     }
 
@@ -198,14 +204,26 @@ public class FileTransferNegotiator {
             public void connectionClosedOnError(Exception e) {
                 cleanup(connection);
             }
+
+            public void reconnectionFailed(Exception e) {
+                // ignore
+            }
+
+            public void reconnectionSuccessful() {
+                // ignore
+            }
+
+            public void reconnectingIn(int seconds) {
+                // ignore
+            }
         });
     }
 
     private void cleanup(final XMPPConnection connection) {
-        transferObject.remove(connection);
-
-        byteStreamTransferManager.cleanup();
-        inbandTransferManager.cleanup();
+        if (transferObject.remove(connection) != null) {
+            byteStreamTransferManager.cleanup();
+            inbandTransferManager.cleanup();
+        }
     }
 
     /**
@@ -223,12 +241,13 @@ public class FileTransferNegotiator {
                 .getFeatureNegotiationForm());
 
         if (streamMethodField == null) {
-            XMPPError error = new XMPPError(400);
+            String errorMessage = "No stream methods contained in packet.";
+            XMPPError error = new XMPPError(XMPPError.Condition.bad_request, errorMessage);
             IQ iqPacket = createIQ(si.getPacketID(), si.getFrom(), si.getTo(),
                     IQ.Type.ERROR);
             iqPacket.setError(error);
             connection.sendPacket(iqPacket);
-            throw new XMPPException("No stream methods contained in packet.", error);
+            throw new XMPPException(errorMessage, error);
         }
 
         // select the appropriate protocol
@@ -278,15 +297,18 @@ public class FileTransferNegotiator {
         }
 
         if (!isByteStream && !isIBB) {
-            XMPPError error = new XMPPError(400);
-            throw new XMPPException("No acceptable transfer mechanism", error);
+            XMPPError error = new XMPPError(XMPPError.Condition.bad_request,
+                    "No acceptable transfer mechanism");
+            throw new XMPPException(error.getMessage(), error);
         }
 
         if (isByteStream && isIBB && field.getType().equals(FormField.TYPE_LIST_MULTI)) {
-            return new FaultTolerantNegotiator(connection, byteStreamTransferManager, inbandTransferManager);
+            return new FaultTolerantNegotiator(connection,
+                    byteStreamTransferManager.createNegotiator(),
+                    inbandTransferManager);
         }
         else if (isByteStream) {
-            return byteStreamTransferManager;
+            return byteStreamTransferManager.createNegotiator();
         }
         else {
             return inbandTransferManager;
@@ -299,7 +321,7 @@ public class FileTransferNegotiator {
      * @param si The Stream Initiation request to reject.
      */
     public void rejectStream(final StreamInitiation si) {
-        XMPPError error = new XMPPError(403, "Offer Declined");
+        XMPPError error = new XMPPError(XMPPError.Condition.forbidden, "Offer Declined");
         IQ iqPacket = createIQ(si.getPacketID(), si.getFrom(), si.getTo(),
                 IQ.Type.ERROR);
         iqPacket.setError(error);
@@ -312,7 +334,7 @@ public class FileTransferNegotiator {
      * @return Returns a new, unique, stream ID to identify a file transfer.
      */
     public String getNextStreamID() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(STREAM_INIT_PREFIX);
         buffer.append(Math.abs(randomGenerator.nextLong()));
 
@@ -398,8 +420,8 @@ public class FileTransferNegotiator {
         String variable;
         boolean isByteStream = false;
         boolean isIBB = false;
-        for (Iterator it = field.getValues(); it.hasNext();) {
-            variable = (it.next().toString());
+        for (Iterator<String> it = field.getValues(); it.hasNext();) {
+            variable = it.next();
             if (variable.equals(BYTE_STREAM) && !IBB_ONLY) {
                 isByteStream = true;
             }
@@ -409,15 +431,17 @@ public class FileTransferNegotiator {
         }
 
         if (!isByteStream && !isIBB) {
-            XMPPError error = new XMPPError(400);
-            throw new XMPPException("No acceptable transfer mechanism", error);
+            XMPPError error = new XMPPError(XMPPError.Condition.bad_request,
+                    "No acceptable transfer mechanism");
+            throw new XMPPException(error.getMessage(), error);
         }
 
         if (isByteStream && isIBB) {
-            return new FaultTolerantNegotiator(connection, byteStreamTransferManager, inbandTransferManager);
+            return new FaultTolerantNegotiator(connection,
+                    byteStreamTransferManager.createNegotiator(), inbandTransferManager);
         }
         else if (isByteStream) {
-            return byteStreamTransferManager;
+            return byteStreamTransferManager.createNegotiator();
         }
         else {
             return inbandTransferManager;

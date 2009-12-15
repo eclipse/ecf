@@ -1,13 +1,19 @@
 /**
- * $RCSfile$
- * $Revision$
- * $Date$
+ * Copyright 2003-2007 Jive Software.
  *
- * Copyright (C) 1999-2005 Jive Software. All rights reserved.
+ * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This software is the proprietary information of Jive Software.
- * Use is subject to license terms.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package org.jivesoftware.smackx.search;
 
 import org.jivesoftware.smack.packet.IQ;
@@ -42,7 +48,7 @@ class SimpleUserSearch extends IQ {
 
 
     public String getChildElementXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<query xmlns=\"jabber:iq:search\">");
         buf.append(getItemsToSearch());
         buf.append("</query>");
@@ -50,7 +56,7 @@ class SimpleUserSearch extends IQ {
     }
 
     private String getItemsToSearch() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         if (form == null) {
             form = Form.getFormFrom(this);
@@ -60,9 +66,9 @@ class SimpleUserSearch extends IQ {
             return "";
         }
 
-        Iterator fields = form.getFields();
+        Iterator<FormField> fields = form.getFields();
         while (fields.hasNext()) {
-            FormField field = (FormField) fields.next();
+            FormField field = fields.next();
             String name = field.getVariable();
             String value = getSingleValue(field);
             if (value.trim().length() > 0) {
@@ -74,9 +80,9 @@ class SimpleUserSearch extends IQ {
     }
 
     private static String getSingleValue(FormField formField) {
-        Iterator values = formField.getValues();
+        Iterator<String> values = formField.getValues();
         while (values.hasNext()) {
-            return (String) values.next();
+            return values.next();
         }
         return "";
     }
@@ -87,11 +93,11 @@ class SimpleUserSearch extends IQ {
 
         boolean done = false;
 
-        List fields = new ArrayList();
+        List<ReportedData.Field> fields = new ArrayList<ReportedData.Field>();
         while (!done) {
             if (parser.getAttributeCount() > 0) {
                 String jid = parser.getAttributeValue("", "jid");
-                List valueList = new ArrayList();
+                List<String> valueList = new ArrayList<String>();
                 valueList.add(jid);
                 ReportedData.Field field = new ReportedData.Field("jid", valueList);
                 fields.add(field);
@@ -100,7 +106,7 @@ class SimpleUserSearch extends IQ {
             int eventType = parser.next();
 
             if (eventType == XmlPullParser.START_TAG && parser.getName().equals("item")) {
-                fields = new ArrayList();
+                fields = new ArrayList<ReportedData.Field>();
             }
             else if (eventType == XmlPullParser.END_TAG && parser.getName().equals("item")) {
                 ReportedData.Row row = new ReportedData.Row(fields);
@@ -110,7 +116,7 @@ class SimpleUserSearch extends IQ {
                 String name = parser.getName();
                 String value = parser.nextText();
 
-                List valueList = new ArrayList();
+                List<String> valueList = new ArrayList<String>();
                 valueList.add(value);
                 ReportedData.Field field = new ReportedData.Field(name, valueList);
                 fields.add(field);

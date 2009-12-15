@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.*;
 
 /**
  * Represents the configuration of Smack. The configuration is used for:
@@ -44,10 +44,11 @@ import java.util.Enumeration;
  */
 public final class SmackConfiguration {
 
-    private static final String SMACK_VERSION = "2.2.1";
+    private static final String SMACK_VERSION = "3.1.0";
 
     private static int packetReplyTimeout = 5000;
     private static int keepAliveInterval = 30000;
+    private static Vector<String> defaultMechs = new Vector<String>();
 
     private SmackConfiguration() {
     }
@@ -63,8 +64,8 @@ public final class SmackConfiguration {
         try {
             // Get an array of class loaders to try loading the providers files from.
             ClassLoader[] classLoaders = getClassLoaders();
-            for (int i = 0; i < classLoaders.length; i++) {
-                Enumeration configEnum = classLoaders[i].getResources("META-INF/smack-config.xml");
+            for (ClassLoader classLoader : classLoaders) {
+                Enumeration configEnum = classLoader.getResources("META-INF/smack-config.xml");
                 while (configEnum.hasMoreElements()) {
                     URL url = (URL) configEnum.nextElement();
                     InputStream systemStream = null;
@@ -81,10 +82,14 @@ public final class SmackConfiguration {
                                     parseClassToLoad(parser);
                                 }
                                 else if (parser.getName().equals("packetReplyTimeout")) {
-                                    packetReplyTimeout = parseIntProperty(parser, packetReplyTimeout);
+                                    packetReplyTimeout =
+                                            parseIntProperty(parser, packetReplyTimeout);
                                 }
                                 else if (parser.getName().equals("keepAliveInterval")) {
                                     keepAliveInterval = parseIntProperty(parser, keepAliveInterval);
+                                }
+                                else if (parser.getName().equals("mechName")) {
+                                    defaultMechs.add(parser.nextText());
                                 }
                             }
                             eventType = parser.next();
@@ -99,6 +104,7 @@ public final class SmackConfiguration {
                             systemStream.close();
                         }
                         catch (Exception e) {
+                            // Ignore.
                         }
                     }
                 }
@@ -127,7 +133,7 @@ public final class SmackConfiguration {
     public static int getPacketReplyTimeout() {
         // The timeout value must be greater than 0 otherwise we will answer the default value
         if (packetReplyTimeout <= 0) {
-            packetReplyTimeout = 5000; 
+            packetReplyTimeout = 5000;
         }
         return packetReplyTimeout;
     }
@@ -169,6 +175,61 @@ public final class SmackConfiguration {
         keepAliveInterval = interval;
     }
 
+    /**
+     * Add a SASL mechanism to the list to be used.
+     *
+     * @param mech the SASL mechanism to be added
+     */
+    public static void addSaslMech(String mech) {
+        if(! defaultMechs.contains(mech) ) {
+            defaultMechs.add(mech);
+        }
+    }
+
+   /**
+     * Add a Collection of SASL mechanisms to the list to be used.
+     *
+     * @param mechs the Collection of SASL mechanisms to be added
+     */
+    public static void addSaslMechs(Collection<String> mechs) {
+        for(String mech : mechs) {
+            addSaslMech(mech);
+        }
+    }
+
+    /**
+     * Remove a SASL mechanism from the list to be used.
+     *
+     * @param mech the SASL mechanism to be removed
+     */
+    public static void removeSaslMech(String mech) {
+        if( defaultMechs.contains(mech) ) {
+            defaultMechs.remove(mech);
+        }
+    }
+
+   /**
+     * Remove a Collection of SASL mechanisms to the list to be used.
+     *
+     * @param mechs the Collection of SASL mechanisms to be removed
+     */
+    public static void removeSaslMechs(Collection<String> mechs) {
+        for(String mech : mechs) {
+            removeSaslMech(mech);
+        }
+    }
+
+    /**
+     * Returns the list of SASL mechanisms to be used. If a SASL mechanism is
+     * listed here it does not guarantee it will be used. The server may not
+     * support it, or it may not be implemented.
+     *
+     * @return the list of SASL mechanisms to be used.
+     */
+    public static List<String> getSaslMechs() {
+        return defaultMechs;
+    }
+
     private static void parseClassToLoad(XmlPullParser parser) throws Exception {
         String className = parser.nextText();
         // Attempt to load the class so that the class can get initialized
@@ -200,8 +261,15 @@ public final class SmackConfiguration {
      */
     private static ClassLoader[] getClassLoaders() {
         ClassLoader[] classLoaders = new ClassLoader[2];
-        classLoaders[0] = new SmackConfiguration().getClass().getClassLoader();
+        classLoaders[0] = SmackConfiguration.class.getClassLoader();
         classLoaders[1] = Thread.currentThread().getContextClassLoader();
-        return classLoaders;
+        // Clean up possible null values. Note that #getClassLoader may return a null value.
+        List<ClassLoader> loaders = new ArrayList<ClassLoader>();
+        for (ClassLoader classLoader : classLoaders) {
+            if (classLoader != null) {
+                loaders.add(classLoader);
+            }
+        }
+        return loaders.toArray(new ClassLoader[loaders.size()]);
     }
 }

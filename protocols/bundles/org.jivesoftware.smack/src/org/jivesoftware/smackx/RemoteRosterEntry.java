@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import java.util.*;
 /**
  * Represents a roster item, which consists of a JID and , their name and
  * the groups the roster item belongs to. This roster item does not belong
- * to the local roster. Therefore, it does not persist in the server.<p> 
- * 
+ * to the local roster. Therefore, it does not persist in the server.<p>
+ *
  * The idea of a RemoteRosterEntry is to be used as part of a roster exchange.
  *
  * @author Gaston Dombiak
@@ -35,7 +35,7 @@ public class RemoteRosterEntry {
 
     private String user;
     private String name;
-    private List groupNames = new ArrayList();
+    private final List<String> groupNames = new ArrayList<String>();
 
     /**
      * Creates a new remote roster entry.
@@ -49,7 +49,7 @@ public class RemoteRosterEntry {
         this.user = user;
         this.name = name;
 		if (groups != null) {
-			groupNames = new ArrayList(Arrays.asList(groups));
+            groupNames.addAll(Arrays.asList(groups));
 		}
     }
 
@@ -91,23 +91,19 @@ public class RemoteRosterEntry {
      */
     public String[] getGroupArrayNames() {
         synchronized (groupNames) {
-            return (String[])
-                (Collections
-                    .unmodifiableList(groupNames)
-                    .toArray(new String[groupNames.size()]));
+            return Collections.unmodifiableList(groupNames).toArray(new String[groupNames.size()]);
         }
     }
 
     public String toXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<item jid=\"").append(user).append("\"");
         if (name != null) {
             buf.append(" name=\"").append(name).append("\"");
         }
         buf.append(">");
         synchronized (groupNames) {
-            for (int i = 0; i < groupNames.size(); i++) {
-                String groupName = (String) groupNames.get(i);
+            for (String groupName : groupNames) {
                 buf.append("<group>").append(groupName).append("</group>");
             }
         }

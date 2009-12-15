@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketIDFilter;
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.StringUtils;
 
 import java.io.BufferedInputStream;
@@ -89,8 +89,8 @@ public class VCard extends IQ {
      * Phone types:
      * VOICE?, FAX?, PAGER?, MSG?, CELL?, VIDEO?, BBS?, MODEM?, ISDN?, PCS?, PREF?
      */
-    private Map homePhones = new HashMap();
-    private Map workPhones = new HashMap();
+    private Map<String, String> homePhones = new HashMap<String, String>();
+    private Map<String, String> workPhones = new HashMap<String, String>();
 
 
     /**
@@ -98,8 +98,8 @@ public class VCard extends IQ {
      * POSTAL?, PARCEL?, (DOM | INTL)?, PREF?, POBOX?, EXTADR?, STREET?, LOCALITY?,
      * REGION?, PCODE?, CTRY?
      */
-    private Map homeAddr = new HashMap();
-    private Map workAddr = new HashMap();
+    private Map<String, String> homeAddr = new HashMap<String, String>();
+    private Map<String, String> workAddr = new HashMap<String, String>();
 
     private String firstName;
     private String lastName;
@@ -116,10 +116,10 @@ public class VCard extends IQ {
     /**
      * Such as DESC ROLE GEO etc.. see JEP-0054
      */
-    private Map otherSimpleFields = new HashMap();
+    private Map<String, String> otherSimpleFields = new HashMap<String, String>();
 
     // fields that, as they are should not be escaped before forwarding to the server
-    private Map otherUnescapableFields = new HashMap();
+    private Map<String, String> otherUnescapableFields = new HashMap<String, String>();
 
     public VCard() {
     }
@@ -131,7 +131,7 @@ public class VCard extends IQ {
      *              GEO, TITLE, ROLE, LOGO, NOTE, PRODID, REV, SORT-STRING, SOUND, UID, URL, DESC.
      */
     public String getField(String field) {
-        return (String) otherSimpleFields.get(field);
+        return otherSimpleFields.get(field);
     }
 
     /**
@@ -149,12 +149,12 @@ public class VCard extends IQ {
      * Set generic, unescapable VCard field. If unescabale is set to true, XML maybe a part of the
      * value.
      *
-     * @param value value of field
-     * @param field field to set. See {@link #getField(String)}
+     * @param value         value of field
+     * @param field         field to set. See {@link #getField(String)}
      * @param isUnescapable True if the value should not be escaped, and false if it should.
      */
     public void setField(String field, String value, boolean isUnescapable) {
-        if(!isUnescapable) {
+        if (!isUnescapable) {
             otherSimpleFields.put(field, value);
         }
         else {
@@ -168,6 +168,8 @@ public class VCard extends IQ {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+        // Update FN field
+        updateFN();
     }
 
     public String getLastName() {
@@ -176,6 +178,8 @@ public class VCard extends IQ {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+        // Update FN field
+        updateFN();
     }
 
     public String getMiddleName() {
@@ -184,10 +188,12 @@ public class VCard extends IQ {
 
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
+        // Update FN field
+        updateFN();
     }
 
     public String getNickName() {
-        return (String) otherSimpleFields.get("NICKNAME");
+        return otherSimpleFields.get("NICKNAME");
     }
 
     public void setNickName(String nickName) {
@@ -211,7 +217,7 @@ public class VCard extends IQ {
     }
 
     public String getJabberId() {
-        return (String) otherSimpleFields.get("JABBERID");
+        return otherSimpleFields.get("JABBERID");
     }
 
     public void setJabberId(String jabberId) {
@@ -241,7 +247,7 @@ public class VCard extends IQ {
      *                  LOCALITY, REGION, PCODE, CTRY
      */
     public String getAddressFieldHome(String addrField) {
-        return (String) homeAddr.get(addrField);
+        return homeAddr.get(addrField);
     }
 
     /**
@@ -261,7 +267,7 @@ public class VCard extends IQ {
      *                  LOCALITY, REGION, PCODE, CTRY
      */
     public String getAddressFieldWork(String addrField) {
-        return (String) workAddr.get(addrField);
+        return workAddr.get(addrField);
     }
 
     /**
@@ -291,7 +297,7 @@ public class VCard extends IQ {
      * @param phoneType one of VOICE, FAX, PAGER, MSG, CELL, VIDEO, BBS, MODEM, ISDN, PCS, PREF
      */
     public String getPhoneHome(String phoneType) {
-        return (String) homePhones.get(phoneType);
+        return homePhones.get(phoneType);
     }
 
     /**
@@ -310,7 +316,7 @@ public class VCard extends IQ {
      * @param phoneType one of VOICE, FAX, PAGER, MSG, CELL, VIDEO, BBS, MODEM, ISDN, PCS, PREF
      */
     public String getPhoneWork(String phoneType) {
-        return (String) workPhones.get(phoneType);
+        return workPhones.get(phoneType);
     }
 
     /**
@@ -327,10 +333,7 @@ public class VCard extends IQ {
             e.printStackTrace();
         }
 
-        String encodedImage = StringUtils.encodeBase64(bytes);
-        avatar = encodedImage;
-
-        setField("PHOTO", "<TYPE>image/jpeg</TYPE><BINVAL>" + encodedImage + "</BINVAL>", true);
+        setAvatar(bytes);
     }
 
     /**
@@ -339,10 +342,37 @@ public class VCard extends IQ {
      * @param bytes the bytes of the avatar.
      */
     public void setAvatar(byte[] bytes) {
+        if (bytes == null) {
+            // Remove avatar (if any) from mappings
+            otherUnescapableFields.remove("PHOTO");
+            return;
+        }
+
+        // Otherwise, add to mappings.
         String encodedImage = StringUtils.encodeBase64(bytes);
         avatar = encodedImage;
 
         setField("PHOTO", "<TYPE>image/jpeg</TYPE><BINVAL>" + encodedImage + "</BINVAL>", true);
+    }
+
+    /**
+     * Specify the bytes for the avatar to use as well as the mime type.
+     *
+     * @param bytes the bytes of the avatar.
+     * @param mimeType the mime type of the avatar.
+     */
+    public void setAvatar(byte[] bytes, String mimeType) {
+        if (bytes == null) {
+            // Remove avatar (if any) from mappings
+            otherUnescapableFields.remove("PHOTO");
+            return;
+        }
+
+        // Otherwise, add to mappings.
+        String encodedImage = StringUtils.encodeBase64(bytes);
+        avatar = encodedImage;
+
+        setField("PHOTO", "<TYPE>" + mimeType + "</TYPE><BINVAL>" + encodedImage + "</BINVAL>", true);
     }
 
     /**
@@ -407,12 +437,13 @@ public class VCard extends IQ {
             int bytes = (int) file.length();
             byte[] buffer = new byte[bytes];
             int readBytes = bis.read(buffer);
-            if(readBytes != buffer.length) {
+            if (readBytes != buffer.length) {
                 throw new IOException("Entire file not read");
             }
             return buffer;
-        } finally {
-            if(bis != null) {
+        }
+        finally {
+            if (bis != null) {
                 bis.close();
             }
         }
@@ -442,16 +473,31 @@ public class VCard extends IQ {
         return StringUtils.encodeHex(digest.digest());
     }
 
+    private void updateFN() {
+        StringBuilder sb = new StringBuilder();
+        if (firstName != null) {
+            sb.append(StringUtils.escapeForXML(firstName)).append(' ');
+        }
+        if (middleName != null) {
+            sb.append(StringUtils.escapeForXML(middleName)).append(' ');
+        }
+        if (lastName != null) {
+            sb.append(StringUtils.escapeForXML(lastName));
+        }
+        setField("FN", sb.toString());
+    }
+
     /**
      * Save this vCard for the user connected by 'connection'. Connection should be authenticated
      * and not anonymous.<p>
      * <p/>
      * NOTE: the method is asynchronous and does not wait for the returned value.
+     *
      * @param connection the XMPPConnection to use.
      * @throws XMPPException thrown if there was an issue setting the VCard in the server.
      */
     public void save(XMPPConnection connection) throws XMPPException {
-        checkAuthenticated(connection);
+        checkAuthenticated(connection, true);
 
         setType(IQ.Type.SET);
         setFrom(connection.getUser());
@@ -475,7 +521,7 @@ public class VCard extends IQ {
      * and not anonymous.
      */
     public void load(XMPPConnection connection) throws XMPPException {
-        checkAuthenticated(connection);
+        checkAuthenticated(connection, true);
 
         setFrom(connection.getUser());
         doLoad(connection, connection.getUser());
@@ -485,7 +531,7 @@ public class VCard extends IQ {
      * Load VCard information for a given user. Connection should be authenticated and not anonymous.
      */
     public void load(XMPPConnection connection, String user) throws XMPPException {
-        checkAuthenticated(connection);
+        checkAuthenticated(connection, false);
 
         setTo(user);
         doLoad(connection, user);
@@ -502,7 +548,9 @@ public class VCard extends IQ {
             result = (VCard) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
 
             if (result == null) {
-                throw new XMPPException(new XMPPError(408, "Timeout getting VCard information"));
+                String errorMessage = "Timeout getting VCard information";
+                throw new XMPPException(errorMessage, new XMPPError(
+                        XMPPError.Condition.request_timeout, errorMessage));
             }
             if (result.getError() != null) {
                 throw new XMPPException(result.getError());
@@ -516,7 +564,7 @@ public class VCard extends IQ {
     }
 
     public String getChildElementXML() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         new VCardWriter(sb).write();
         return sb.toString();
     }
@@ -525,8 +573,7 @@ public class VCard extends IQ {
         if (result == null) result = new VCard();
 
         Field[] fields = VCard.class.getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
+        for (Field field : fields) {
             if (field.getDeclaringClass() == VCard.class &&
                     !Modifier.isFinal(field.getModifiers())) {
                 try {
@@ -540,14 +587,14 @@ public class VCard extends IQ {
         }
     }
 
-    private void checkAuthenticated(XMPPConnection connection) {
+    private void checkAuthenticated(XMPPConnection connection, boolean checkForAnonymous) {
         if (connection == null) {
             throw new IllegalArgumentException("No connection was provided");
         }
         if (!connection.isAuthenticated()) {
             throw new IllegalArgumentException("Connection is not authenticated");
         }
-        if (connection.isAnonymous()) {
+        if (checkForAnonymous && connection.isAnonymous()) {
             throw new IllegalArgumentException("Connection cannot be anonymous");
         }
     }
@@ -647,9 +694,9 @@ public class VCard extends IQ {
 
     private class VCardWriter {
 
-        private final StringBuffer sb;
+        private final StringBuilder sb;
 
-        VCardWriter(StringBuffer sb) {
+        VCardWriter(StringBuilder sb) {
             this.sb = sb;
         }
 
@@ -663,7 +710,6 @@ public class VCard extends IQ {
 
         private void buildActualContent() {
             if (hasNameField()) {
-                appendFN();
                 appendN();
             }
 
@@ -693,7 +739,7 @@ public class VCard extends IQ {
             }
         }
 
-        private void appendPhones(Map phones, final String code) {
+        private void appendPhones(Map<String, String> phones, final String code) {
             Iterator it = phones.entrySet().iterator();
             while (it.hasNext()) {
                 final Map.Entry entry = (Map.Entry) it.next();
@@ -707,7 +753,7 @@ public class VCard extends IQ {
             }
         }
 
-        private void appendAddress(final Map addr, final String code) {
+        private void appendAddress(final Map<String, String> addr, final String code) {
             if (addr.size() > 0) {
                 appendTag("ADR", true, new ContentBuilder() {
                     public void addTagContent() {
@@ -751,23 +797,6 @@ public class VCard extends IQ {
                     }
                 });
             }
-        }
-
-        private void appendFN() {
-            final ContentBuilder contentBuilder = new ContentBuilder() {
-                public void addTagContent() {
-                    if (firstName != null) {
-                        sb.append(StringUtils.escapeForXML(firstName)).append(' ');
-                    }
-                    if (middleName != null) {
-                        sb.append(StringUtils.escapeForXML(middleName)).append(' ');
-                    }
-                    if (lastName != null) {
-                        sb.append(StringUtils.escapeForXML(lastName));
-                    }
-                }
-            };
-            appendTag("FN", true, contentBuilder);
         }
 
         private void appendN() {

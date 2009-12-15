@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class DiscoverItemsProvider implements IQProvider {
     public IQ parseIQ(XmlPullParser parser) throws Exception {
         DiscoverItems discoverItems = new DiscoverItems();
         boolean done = false;
-        DiscoverItems.Item item = null;
+        DiscoverItems.Item item;
         String jid = "";
         String name = "";
         String action = "";
@@ -43,26 +43,24 @@ public class DiscoverItemsProvider implements IQProvider {
         discoverItems.setNode(parser.getAttributeValue("", "node"));
         while (!done) {
             int eventType = parser.next();
-            if (eventType == XmlPullParser.START_TAG) {
-                if (parser.getName().equals("item")) {
-                    // Initialize the variables from the parsed XML
-                    jid = parser.getAttributeValue("", "jid");
-                    name = parser.getAttributeValue("", "name");
-                    node = parser.getAttributeValue("", "node");
-                    action = parser.getAttributeValue("", "action");
-                }
-            } else if (eventType == XmlPullParser.END_TAG) {
-                if (parser.getName().equals("item")) {
-                    // Create a new Item and add it to DiscoverItems.
-                    item = new DiscoverItems.Item(jid);
-                    item.setName(name);
-                    item.setNode(node);
-                    item.setAction(action);
-                    discoverItems.addItem(item);
-                }
-                if (parser.getName().equals("query")) {
-                    done = true;
-                }
+
+            if (eventType == XmlPullParser.START_TAG && "item".equals(parser.getName())) {
+                // Initialize the variables from the parsed XML
+                jid = parser.getAttributeValue("", "jid");
+                name = parser.getAttributeValue("", "name");
+                node = parser.getAttributeValue("", "node");
+                action = parser.getAttributeValue("", "action");
+            }
+            else if (eventType == XmlPullParser.END_TAG && "item".equals(parser.getName())) {
+                // Create a new Item and add it to DiscoverItems.
+                item = new DiscoverItems.Item(jid);
+                item.setName(name);
+                item.setNode(node);
+                item.setAction(action);
+                discoverItems.addItem(item);
+            }
+            else if (eventType == XmlPullParser.END_TAG && "query".equals(parser.getName())) {
+                done = true;
             }
         }
 

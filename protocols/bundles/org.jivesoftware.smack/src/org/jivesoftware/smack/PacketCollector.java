@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@
 
 package org.jivesoftware.smack;
 
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Packet;
 
 import java.util.LinkedList;
 
@@ -48,7 +48,7 @@ public class PacketCollector {
     private static final int MAX_PACKETS = 65536;
 
     private PacketFilter packetFilter;
-    private LinkedList resultQueue;
+    private LinkedList<Packet> resultQueue;
     private PacketReader packetReader;
     private boolean cancelled = false;
 
@@ -62,11 +62,7 @@ public class PacketCollector {
     protected PacketCollector(PacketReader packetReader, PacketFilter packetFilter) {
         this.packetReader = packetReader;
         this.packetFilter = packetFilter;
-        this.resultQueue = new LinkedList();
-         // Add the collector to the packet reader's list of active collector.
-        synchronized (packetReader.collectors) {
-            packetReader.collectors.add(this);
-        }
+        this.resultQueue = new LinkedList<Packet>();
     }
 
     /**
@@ -78,13 +74,7 @@ public class PacketCollector {
         // If the packet collector has already been cancelled, do nothing.
         if (!cancelled) {
             cancelled = true;
-            // Remove object from collectors list by setting the value in the
-            // list at the correct index to null. The collector thread will
-            // automatically remove the actual list entry when it can.
-            synchronized (packetReader.collectors) {
-                int index = packetReader.collectors.indexOf(this);
-                packetReader.collectors.set(index, null);
-            }
+            packetReader.cancelPacketCollector(this);
         }
     }
 
@@ -111,7 +101,7 @@ public class PacketCollector {
             return null;
         }
         else {
-            return (Packet)resultQueue.removeLast();
+            return resultQueue.removeLast();
         }
     }
 
@@ -131,7 +121,7 @@ public class PacketCollector {
                 // Ignore.
             }
         }
-        return (Packet)resultQueue.removeLast();
+        return resultQueue.removeLast();
     }
 
     /**
@@ -145,19 +135,36 @@ public class PacketCollector {
     public synchronized Packet nextResult(long timeout) {
         // Wait up to the specified amount of time for a result.
         if (resultQueue.isEmpty()) {
+            long waitTime = timeout;
+            long start = System.currentTimeMillis();
             try {
-                wait(timeout);
+                // Keep waiting until the specified amount of time has elapsed, or
+                // a packet is available to return.
+                while (resultQueue.isEmpty()) {
+                    if (waitTime <= 0) {
+                        break;
+                    }
+                    wait(waitTime);
+                    long now = System.currentTimeMillis();
+                    waitTime -= (now - start);
+                    start = now;
+                }
             }
             catch (InterruptedException ie) {
                 // Ignore.
             }
+            // Still haven't found a result, so return null.
+            if (resultQueue.isEmpty()) {
+                return null;
+            }
+            // Return the packet that was found.
+            else {
+                return resultQueue.removeLast();
+            }
         }
-        // If still no result, return null.
-        if (resultQueue.isEmpty()) {
-            return null;
-        }
+        // There's already a packet waiting, so return it.
         else {
-            return (Packet)resultQueue.removeLast();
+            return resultQueue.removeLast();
         }
     }
 

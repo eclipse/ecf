@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,11 @@ package org.jivesoftware.smack.packet;
 
 import org.jivesoftware.smack.util.StringUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.*;
-import java.io.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Base class for XMPP packets. Every packet has a unique ID (which is automatically
@@ -39,9 +42,14 @@ import java.io.*;
  */
 public abstract class Packet {
 
+    protected static final String DEFAULT_LANGUAGE =
+            java.util.Locale.getDefault().getLanguage().toLowerCase();
+
+    private static String DEFAULT_XML_NS = null;
+
     /**
      * Constant used as packetID to indicate that a packet has no id. To indicate that a packet
-     * has no id set this constant as the packet's id. When the packet is asked for its id the 
+     * has no id set this constant as the packet's id. When the packet is asked for its id the
      * answer will be <tt>null</tt>.
      */
     public static final String ID_NOT_AVAILABLE = "ID_NOT_AVAILABLE";
@@ -57,21 +65,29 @@ public abstract class Packet {
      */
     private static long id = 0;
 
+    private String xmlns = DEFAULT_XML_NS;
+
     /**
      * Returns the next unique id. Each id made up of a short alphanumeric
      * prefix along with a unique numeric value.
      *
      * @return the next id.
      */
-    private static synchronized String nextID() {
+    public static synchronized String nextID() {
         return prefix + Long.toString(id++);
+    }
+
+    public static void setDefaultXmlns(String defaultXmlns) {
+        DEFAULT_XML_NS = defaultXmlns;
     }
 
     private String packetID = null;
     private String to = null;
     private String from = null;
-    private List packetExtensions = null;
-    private Map properties = null;
+    private final List<PacketExtension> packetExtensions
+            = new CopyOnWriteArrayList<PacketExtension>();
+
+    private final Map<String,Object> properties = new HashMap<String, Object>();
     private XMPPError error = null;
 
     /**
@@ -84,7 +100,7 @@ public abstract class Packet {
         if (ID_NOT_AVAILABLE.equals(packetID)) {
             return null;
         }
-        
+
         if (packetID == null) {
             packetID = nextID();
         }
@@ -92,7 +108,7 @@ public abstract class Packet {
     }
 
     /**
-     * Sets the unique ID of the packet. To indicate that a packet has no id 
+     * Sets the unique ID of the packet. To indicate that a packet has no id
      * pass the constant ID_NOT_AVAILABLE as the packet's id value.
      *
      * @param packetID the unique ID for the packet.
@@ -104,7 +120,14 @@ public abstract class Packet {
     /**
      * Returns who the packet is being sent "to", or <tt>null</tt> if
      * the value is not set. The XMPP protocol often makes the "to"
-     * attribute optional, so it does not always need to be set.
+     * attribute optional, so it does not always need to be set.<p>
+     *
+     * The StringUtils class provides several useful methods for dealing with
+     * XMPP addresses such as parsing the
+     * {@link StringUtils#parseBareAddress(String) bare address},
+     * {@link StringUtils#parseName(String) user name},
+     * {@link StringUtils#parseServer(String) server}, and
+     * {@link StringUtils#parseResource(String) resource}.  
      *
      * @return who the packet is being sent to, or <tt>null</tt> if the
      *      value has not been set.
@@ -126,10 +149,17 @@ public abstract class Packet {
     /**
      * Returns who the packet is being sent "from" or <tt>null</tt> if
      * the value is not set. The XMPP protocol often makes the "from"
-     * attribute optional, so it does not always need to be set.
+     * attribute optional, so it does not always need to be set.<p>
+     *
+     * The StringUtils class provides several useful methods for dealing with
+     * XMPP addresses such as parsing the
+     * {@link StringUtils#parseBareAddress(String) bare address},
+     * {@link StringUtils#parseName(String) user name},
+     * {@link StringUtils#parseServer(String) server}, and
+     * {@link StringUtils#parseResource(String) resource}.  
      *
      * @return who the packet is being sent from, or <tt>null</tt> if the
-     *      valud has not been set.
+     *      value has not been set.
      */
     public String getFrom() {
         return from;
@@ -166,20 +196,31 @@ public abstract class Packet {
     }
 
     /**
-     * Returns an Iterator for the packet extensions attached to the packet.
+     * Returns an unmodifiable collection of the packet extensions attached to the packet.
      *
-     * @return an Iterator for the packet extensions.
+     * @return the packet extensions.
      */
-    public synchronized Iterator getExtensions() {
+    public synchronized Collection<PacketExtension> getExtensions() {
         if (packetExtensions == null) {
-            return Collections.EMPTY_LIST.iterator();
+            return Collections.emptyList();
         }
-        return Collections.unmodifiableList(new ArrayList(packetExtensions)).iterator();
+        return Collections.unmodifiableList(new ArrayList<PacketExtension>(packetExtensions));
+    }
+
+    /**
+     * Returns the first extension of this packet that has the given namespace.
+     *
+     * @param namespace the namespace of the extension that is desired.
+     * @return the packet extension with the given namespace.
+     */
+    public PacketExtension getExtension(String namespace) {
+        return getExtension(null, namespace);
     }
 
     /**
      * Returns the first packet extension that matches the specified element name and
-     * namespace, or <tt>null</tt> if it doesn't exist. Packet extensions are
+     * namespace, or <tt>null</tt> if it doesn't exist. If the provided elementName is null
+     * than only the provided namespace is attempted to be matched. Packet extensions are
      * are arbitrary XML sub-documents in standard XMPP packets. By default, a 
      * DefaultPacketExtension instance will be returned for each extension. However, 
      * PacketExtensionProvider instances can be registered with the 
@@ -187,17 +228,18 @@ public abstract class Packet {
      * class to handle custom parsing. In that case, the type of the Object
      * will be determined by the provider.
      *
-     * @param elementName the XML element name of the packet extension.
+     * @param elementName the XML element name of the packet extension. (May be null)
      * @param namespace the XML element namespace of the packet extension.
      * @return the extension, or <tt>null</tt> if it doesn't exist.
      */
-    public synchronized PacketExtension getExtension(String elementName, String namespace) {
-        if (packetExtensions == null || elementName == null || namespace == null) {
+    public PacketExtension getExtension(String elementName, String namespace) {
+        if (namespace == null) {
             return null;
         }
-        for (Iterator i=packetExtensions.iterator(); i.hasNext(); ) {
-            PacketExtension ext = (PacketExtension)i.next();
-            if (elementName.equals(ext.getElementName()) && namespace.equals(ext.getNamespace())) {
+        for (PacketExtension ext : packetExtensions) {
+            if ((elementName == null || elementName.equals(ext.getElementName()))
+                    && namespace.equals(ext.getNamespace()))
+            {
                 return ext;
             }
         }
@@ -209,10 +251,7 @@ public abstract class Packet {
      *
      * @param extension a packet extension.
      */
-    public synchronized void addExtension(PacketExtension extension) {
-        if (packetExtensions == null) {
-            packetExtensions = new ArrayList();
-        }
+    public void addExtension(PacketExtension extension) {
         packetExtensions.add(extension);
     }
 
@@ -221,10 +260,8 @@ public abstract class Packet {
      *
      * @param extension the packet extension to remove.
      */
-    public synchronized void removeExtension(PacketExtension extension)  {
-        if (packetExtensions != null) {
-            packetExtensions.remove(extension);
-        }
+    public void removeExtension(PacketExtension extension)  {
+        packetExtensions.remove(extension);
     }
 
     /**
@@ -244,56 +281,6 @@ public abstract class Packet {
     }
 
     /**
-     * Sets a packet property with an int value.
-     *
-     * @param name the name of the property.
-     * @param value the value of the property.
-     */
-    public void setProperty(String name, int value) {
-        setProperty(name, new Integer(value));
-    }
-
-    /**
-     * Sets a packet property with a long value.
-     *
-     * @param name the name of the property.
-     * @param value the value of the property.
-     */
-    public void setProperty(String name, long value) {
-        setProperty(name, new Long(value));
-    }
-
-    /**
-     * Sets a packet property with a float value.
-     *
-     * @param name the name of the property.
-     * @param value the value of the property.
-     */
-    public void setProperty(String name, float value) {
-        setProperty(name, new Float(value));
-    }
-
-    /**
-     * Sets a packet property with a double value.
-     *
-     * @param name the name of the property.
-     * @param value the value of the property.
-     */
-    public void setProperty(String name, double value) {
-        setProperty(name, new Double(value));
-    }
-
-    /**
-     * Sets a packet property with a bboolean value.
-     *
-     * @param name the name of the property.
-     * @param value the value of the property.
-     */
-    public void setProperty(String name, boolean value) {
-        setProperty(name, new Boolean(value));
-    }
-
-    /**
      * Sets a property with an Object as the value. The value must be Serializable
      * or an IllegalArgumentException will be thrown.
      *
@@ -303,9 +290,6 @@ public abstract class Packet {
     public synchronized void setProperty(String name, Object value) {
         if (!(value instanceof Serializable)) {
             throw new IllegalArgumentException("Value must be serialiazble");
-        }
-        if (properties == null) {
-            properties = new HashMap();
         }
         properties.put(name, value);
     }
@@ -323,15 +307,15 @@ public abstract class Packet {
     }
 
     /**
-     * Returns an Iterator for all the property names that are set.
+     * Returns an unmodifiable collection of all the property names that are set.
      *
-     * @return an Iterator for all property names.
+     * @return all property names.
      */
-    public synchronized Iterator getPropertyNames() {
+    public synchronized Collection<String> getPropertyNames() {
         if (properties == null) {
-            return Collections.EMPTY_LIST.iterator();
+            return Collections.emptySet();
         }
-        return properties.keySet().iterator();
+        return Collections.unmodifiableSet(new HashSet<String>(properties.keySet()));
     }
 
     /**
@@ -351,19 +335,16 @@ public abstract class Packet {
      * are no packet extensions.
      */
     protected synchronized String getExtensionsXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         // Add in all standard extension sub-packets.
-        Iterator extensions = getExtensions();
-        while (extensions.hasNext()) {
-            PacketExtension extension = (PacketExtension)extensions.next();
+        for (PacketExtension extension : getExtensions()) {
             buf.append(extension.toXML());
         }
         // Add in packet properties.
         if (properties != null && !properties.isEmpty()) {
             buf.append("<properties xmlns=\"http://www.jivesoftware.com/xmlns/xmpp/properties\">");
             // Loop through all properties and write them out.
-            for (Iterator i=getPropertyNames(); i.hasNext(); ) {
-                String name = (String)i.next();
+            for (String name : getPropertyNames()) {
                 Object value = getProperty(name);
                 buf.append("<property>");
                 buf.append("<name>").append(StringUtils.escapeForXML(name)).append("</name>");
@@ -407,10 +388,20 @@ public abstract class Packet {
                     }
                     finally {
                         if (out != null) {
-                            try { out.close(); } catch (Exception e) { }
+                            try {
+                                out.close();
+                            }
+                            catch (Exception e) {
+                                // Ignore.
+                            }
                         }
                         if (byteStream != null) {
-                            try { byteStream.close(); } catch (Exception e) { }
+                            try {
+                                byteStream.close();
+                            }
+                            catch (Exception e) {
+                                // Ignore.
+                            }
                         }
                     }
                 }
@@ -419,5 +410,53 @@ public abstract class Packet {
             buf.append("</properties>");
         }
         return buf.toString();
+    }
+
+    public String getXmlns() {
+        return this.xmlns;
+    }
+
+    protected static String parseXMLLang(String language) {
+        if (language == null || "".equals(language)) {
+            language = DEFAULT_LANGUAGE;
+        }
+        return language;
+    }
+
+    protected static String getDefaultLanguage() {
+        return DEFAULT_LANGUAGE;
+    }
+
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Packet packet = (Packet) o;
+
+        if (error != null ? !error.equals(packet.error) : packet.error != null) { return false; }
+        if (from != null ? !from.equals(packet.from) : packet.from != null) { return false; }
+        if (!packetExtensions.equals(packet.packetExtensions)) { return false; }
+        if (packetID != null ? !packetID.equals(packet.packetID) : packet.packetID != null) {
+            return false;
+        }
+        if (properties != null ? !properties.equals(packet.properties)
+                : packet.properties != null) {
+            return false;
+        }
+        if (to != null ? !to.equals(packet.to) : packet.to != null)  { return false; }
+        return !(xmlns != null ? !xmlns.equals(packet.xmlns) : packet.xmlns != null);
+    }
+
+    public int hashCode() {
+        int result;
+        result = (xmlns != null ? xmlns.hashCode() : 0);
+        result = 31 * result + (packetID != null ? packetID.hashCode() : 0);
+        result = 31 * result + (to != null ? to.hashCode() : 0);
+        result = 31 * result + (from != null ? from.hashCode() : 0);
+        result = 31 * result + packetExtensions.hashCode();
+        result = 31 * result + properties.hashCode();
+        result = 31 * result + (error != null ? error.hashCode() : 0);
+        return result;
     }
 }

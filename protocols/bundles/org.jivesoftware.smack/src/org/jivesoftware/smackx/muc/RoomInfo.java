@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@
 
 package org.jivesoftware.smackx.muc;
 
-import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.FormField;
+import org.jivesoftware.smackx.packet.DiscoverInfo;
+
+import java.util.Iterator;
 
 /**
  * Represents the room information that was discovered using Service Discovery. It's possible to
@@ -87,15 +89,24 @@ public class RoomInfo {
         // Get the information based on the discovered extended information
         Form form = Form.getFormFrom(info);
         if (form != null) {
+        	// changed by slewis...fix for old smack bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=289944
+        	// get description formField first
         	FormField formField = form.getField("muc#roominfo_description");
             this.description =
                     (String) ((formField==null)?null:formField.getValues().next());
+            // Then get subject formField (and check for null)
             formField = form.getField("muc#roominfo_subject");
-            this.subject = (String) ((formField==null)?null:formField.getValues().next());
+            Iterator<String> values = (formField==null)?null:formField.getValues();
+            if (values != null && values.hasNext()) {
+                this.subject = values.next();
+            }
+            else {
+                this.subject = "";
+            }
             formField = form.getField("muc#roominfo_occupants");
             this.occupantsCount = (formField==null)?0:
-                    Integer.parseInt((String) formField.getValues()
-                    .next());
+                Integer.parseInt((String) formField.getValues()
+                        .next());
         }
     }
 

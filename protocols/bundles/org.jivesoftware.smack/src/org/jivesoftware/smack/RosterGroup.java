@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,15 @@
 
 package org.jivesoftware.smack;
 
-import org.jivesoftware.smack.packet.RosterPacket;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.filter.PacketIDFilter;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.RosterPacket;
+import org.jivesoftware.smack.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A group of roster entries.
@@ -37,7 +40,7 @@ public class RosterGroup {
 
     private String name;
     private XMPPConnection connection;
-    private List entries;
+    private final List<RosterEntry> entries;
 
     /**
      * Creates a new roster group instance.
@@ -48,7 +51,7 @@ public class RosterGroup {
     RosterGroup(String name, XMPPConnection connection) {
         this.name = name;
         this.connection = connection;
-        entries = new ArrayList();
+        entries = new ArrayList<RosterEntry>();
     }
 
     /**
@@ -70,10 +73,9 @@ public class RosterGroup {
      */
     public void setName(String name) {
         synchronized (entries) {
-            for (int i=0; i<entries.size(); i++) {
+            for (RosterEntry entry : entries) {
                 RosterPacket packet = new RosterPacket();
                 packet.setType(IQ.Type.SET);
-                RosterEntry entry = (RosterEntry)entries.get(i);
                 RosterPacket.Item item = RosterEntry.toRosterItem(entry);
                 item.removeGroupName(this.name);
                 item.addGroupName(name);
@@ -95,13 +97,13 @@ public class RosterGroup {
     }
 
     /**
-     * Returns an iterator for the entries in the group.
+     * Returns an unmodifiable collection of all entries in the group.
      *
-     * @return an iterator for the entries in the group.
+     * @return all entries in the group.
      */
-    public Iterator getEntries() {
+    public Collection<RosterEntry> getEntries() {
         synchronized (entries) {
-            return Collections.unmodifiableList(new ArrayList(entries)).iterator();
+            return Collections.unmodifiableList(new ArrayList<RosterEntry>(entries));
         }
     }
 
@@ -121,8 +123,7 @@ public class RosterGroup {
         user = StringUtils.parseBareAddress(user);
         String userLowerCase = user.toLowerCase();
         synchronized (entries) {
-            for (Iterator i=entries.iterator(); i.hasNext(); ) {
-                RosterEntry entry = (RosterEntry)i.next();
+            for (RosterEntry entry : entries) {
                 if (entry.getUser().equals(userLowerCase)) {
                     return entry;
                 }

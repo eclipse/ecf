@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Listens for XML traffic from the XMPP server and parses it into packet objects.
@@ -43,41 +44,52 @@ import java.util.*;
 class PacketReader {
 
     private Thread readerThread;
-    private Thread listenerThread;
+    private ExecutorService listenerExecutor;
 
     private XMPPConnection connection;
     private XmlPullParser parser;
-    private boolean done = false;
-    protected List collectors = new ArrayList();
-    private List listeners = new ArrayList();
-    protected List connectionListeners = new ArrayList();
+    private boolean done;
+    private Collection<PacketCollector> collectors = new ConcurrentLinkedQueue<PacketCollector>();
+    protected final Map<PacketListener, ListenerWrapper> listeners =
+            new ConcurrentHashMap<PacketListener, ListenerWrapper>();
+    protected final Collection<ConnectionListener> connectionListeners =
+            new CopyOnWriteArrayList<ConnectionListener>();
 
     private String connectionID = null;
-    private Object connectionIDLock = new Object();
+    private Semaphore connectionSemaphore;
 
-    protected PacketReader(XMPPConnection connection) {
+    protected PacketReader(final XMPPConnection connection) {
         this.connection = connection;
+        this.init();
+    }
+
+    /**
+     * Initializes the reader in order to be used. The reader is initialized during the
+     * first connection and when reconnecting due to an abruptly disconnection.
+     */
+    protected void init() {
+        done = false;
+        connectionID = null;
 
         readerThread = new Thread() {
             public void run() {
-                parsePackets();
+                parsePackets(this);
             }
         };
-        readerThread.setName("Smack Packet Reader");
+        readerThread.setName("Smack Packet Reader (" + connection.connectionCounterValue + ")");
         readerThread.setDaemon(true);
 
-        listenerThread = new Thread() {
-            public void run() {
-                try {
-                    processListeners();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
+        // Create an executor to deliver incoming packets to listeners. We'll use a single
+        // thread with an unbounded queue.
+        listenerExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+
+            public Thread newThread(Runnable runnable) {
+                Thread thread = new Thread(runnable,
+                        "Smack Listener Processor (" + connection.connectionCounterValue + ")");
+                thread.setDaemon(true);
+                return thread;
             }
-        };
-        listenerThread.setName("Smack Listener Processor");
-        listenerThread.setDaemon(true);
+        });
 
         resetParser();
     }
@@ -90,7 +102,14 @@ class PacketReader {
      * @return a new packet collector.
      */
     public PacketCollector createPacketCollector(PacketFilter packetFilter) {
-        return new PacketCollector(this, packetFilter);
+        PacketCollector collector = new PacketCollector(this, packetFilter);
+        collectors.add(collector);
+        // Add the collector to the list of active collector.
+        return collector;
+    }
+
+    protected void cancelPacketCollector(PacketCollector packetCollector) {
+        collectors.remove(packetCollector);
     }
 
     /**
@@ -101,11 +120,8 @@ class PacketReader {
      * @param packetFilter the packet filter to use.
      */
     public void addPacketListener(PacketListener packetListener, PacketFilter packetFilter) {
-        ListenerWrapper wrapper = new ListenerWrapper(this, packetListener,
-                packetFilter);
-        synchronized (listeners) {
-            listeners.add(wrapper);
-        }
+        ListenerWrapper wrapper = new ListenerWrapper(packetListener, packetFilter);
+        listeners.put(packetListener, wrapper);
     }
 
     /**
@@ -114,14 +130,7 @@ class PacketReader {
      * @param packetListener the packet listener to remove.
      */
     public void removePacketListener(PacketListener packetListener) {
-        synchronized (listeners) {
-            for (int i=0; i<listeners.size(); i++) {
-                ListenerWrapper wrapper = (ListenerWrapper)listeners.get(i);
-                if (wrapper != null && wrapper.packetListener.equals(packetListener)) {
-                    listeners.set(i, null);
-                }
-            }
-        }
+        listeners.remove(packetListener);
     }
 
     /**
@@ -133,31 +142,20 @@ class PacketReader {
      *      for more than five seconds.
      */
     public void startup() throws XMPPException {
+        connectionSemaphore = new Semaphore(1);
+
         readerThread.start();
-        listenerThread.start();
         // Wait for stream tag before returing. We'll wait a couple of seconds before
         // giving up and throwing an error.
         try {
-            synchronized(connectionIDLock) {
-                if (connectionID == null) {
-                    // A waiting thread may be woken up before the wait time or a notify
-                    // (although this is a rare thing). Therefore, we continue waiting
-                    // until either a connectionID has been set (and hence a notify was
-                    // made) or the total wait time has elapsed.
-                    long waitTime = SmackConfiguration.getPacketReplyTimeout();
-                    long start = System.currentTimeMillis();
-                    while (connectionID == null && !done) {
-                        if (waitTime <= 0) {
-                            break;
-                        }
-                        // Wait 3 times the standard time since TLS may take a while
-                        connectionIDLock.wait(waitTime * 3);
-                        long now = System.currentTimeMillis();
-                        waitTime -= now - start;
-                        start = now;
-                    }
-                }
-            }
+            connectionSemaphore.acquire();
+
+            // A waiting thread may be woken up before the wait time or a notify
+            // (although this is a rare thing). Therefore, we continue waiting
+            // until either a connectionID has been set (and hence a notify was
+            // made) or the total wait time has elapsed.
+            int waitTime = SmackConfiguration.getPacketReplyTimeout();
+            connectionSemaphore.tryAcquire(3 * waitTime, TimeUnit.MILLISECONDS);
         }
         catch (InterruptedException ie) {
             // Ignore.
@@ -176,22 +174,30 @@ class PacketReader {
     public void shutdown() {
         // Notify connection listeners of the connection closing if done hasn't already been set.
         if (!done) {
-            ArrayList listenersCopy;
-            synchronized (connectionListeners) {
-                // Make a copy since it's possible that a listener will be removed from the list
-                listenersCopy = new ArrayList(connectionListeners);
-                for (Iterator i=listenersCopy.iterator(); i.hasNext(); ) {
-                    ConnectionListener listener = (ConnectionListener)i.next();
+            for (ConnectionListener listener : connectionListeners) {
+                try {
                     listener.connectionClosed();
+                }
+                catch (Exception e) {
+                    // Cath and print any exception so we can recover
+                    // from a faulty listener and finish the shutdown process
+                    e.printStackTrace();
                 }
             }
         }
         done = true;
 
-        // Make sure that the listenerThread is awake to shutdown properly
-        synchronized (listenerThread) {
-            listenerThread.notify();
-        }
+        // Shut down the listener executor.
+        listenerExecutor.shutdown();
+    }
+
+    /**
+     * Cleans up all resources used by the packet reader.
+     */
+    void cleanup() {
+        connectionListeners.clear();
+        listeners.clear();
+        collectors.clear();
     }
 
     /**
@@ -202,23 +208,37 @@ class PacketReader {
      */
     void notifyConnectionError(Exception e) {
         done = true;
-        connection.close();
+        // Closes the connection temporary. A reconnection is possible
+        connection.shutdown(new Presence(Presence.Type.unavailable));
         // Print the stack trace to help catch the problem
         e.printStackTrace();
         // Notify connection listeners of the error.
-        ArrayList listenersCopy;
-        synchronized (connectionListeners) {
-            // Make a copy since it's possible that a listener will be removed from the list
-            listenersCopy = new ArrayList(connectionListeners);
-            for (Iterator i=listenersCopy.iterator(); i.hasNext(); ) {
-                ConnectionListener listener = (ConnectionListener)i.next();
+        for (ConnectionListener listener : connectionListeners) {
+            try {
                 listener.connectionClosedOnError(e);
             }
+            catch (Exception e2) {
+                // Cath and print any exception so we can recover
+                // from a faulty listener
+                e2.printStackTrace();
+            }
         }
-				
-        // Make sure that the listenerThread is awake to shutdown properly
-        synchronized (listenerThread) {
-            listenerThread.notify();
+    }
+
+    /**
+     * Sends a notification indicating that the connection was reconnected successfully.
+     */
+    protected void notifyReconnection() {
+        // Notify connection listeners of the reconnection.
+        for (ConnectionListener listener : connectionListeners) {
+            try {
+                listener.reconnectionSuccessful();
+            }
+            catch (Exception e) {
+                // Cath and print any exception so we can recover
+                // from a faulty listener
+                e.printStackTrace();
+            }
         }
     }
 
@@ -239,45 +259,11 @@ class PacketReader {
     }
 
     /**
-     * Process listeners.
-     */
-    private void processListeners() {
-        while (!done) {
-            synchronized (listeners) {
-                if (listeners.size() > 0) {
-                    for (int i=listeners.size()-1; i>=0; i--) {
-                        if (listeners.get(i) == null) {
-                            listeners.remove(i);
-                        }
-                    }
-                }
-            }
-            boolean processedPacket = false;
-            int size = listeners.size();
-            for (int i=0; i<size; i++) {
-                ListenerWrapper wrapper = (ListenerWrapper)listeners.get(i);
-                if (wrapper != null) {
-                    processedPacket = processedPacket || wrapper.notifyListener();
-                }
-            }
-            if (!processedPacket) {
-                try {
-                    // Wait until more packets are ready to be processed.
-                    synchronized (listenerThread) {
-                        listenerThread.wait();
-                    }
-                }
-                catch (InterruptedException ie) {
-                    // Ignore.
-                }
-            }
-        }
-    }
-
-    /**
      * Parse top-level packets in order to process them further.
+     *
+     * @param thread the thread that is being used by the reader to parse incoming packets.
      */
-    private void parsePackets() {
+    private void parsePackets(Thread thread) {
         try {
             int eventType = parser.getEventType();
             do {
@@ -320,7 +306,7 @@ class PacketReader {
                         throw new XMPPException(parseStreamError(parser));
                     }
                     else if (parser.getName().equals("features")) {
-                    	parseFeatures(parser);
+                        parseFeatures(parser);
                     }
                     else if (parser.getName().equals("proceed")) {
                         // Secure the connection by negotiating TLS
@@ -352,17 +338,6 @@ class PacketReader {
                         connection.getSASLAuthentication().challengeReceived(parser.nextText());
                     }
                     else if (parser.getName().equals("success")) {
-                        // We now need to bind a resource for the connection
-                        // Open a new stream and wait for the response
-                        connection.packetWriter.openStream();
-
-                        // Reset the state of the parser since a new stream element is going
-                        // to be sent by the server
-                        resetParser();
-
-                        // The SASL authentication with the server was successful. The next step
-                        // will be to bind the resource
-                        connection.getSASLAuthentication().authenticated();
                     }
                     else if (parser.getName().equals("compressed")) {
                         // Server confirmed that it's possible to use stream compression. Start
@@ -375,12 +350,23 @@ class PacketReader {
                 }
                 else if (eventType == XmlPullParser.END_TAG) {
                     if (parser.getName().equals("stream")) {
-                        // Close the connection.
-                        connection.close();
+                        // Disconnect the connection
+                        connection.disconnect();
+                    }
+                    else if (parser.getName().equals("success")) {
+                        // We now need to bind a resource for the connection
+                        // Open a new stream and wait for the response
+                        connection.packetWriter.openStream();
+                        // Reset the state of the parser since a new stream element is going
+                        // to be sent by the server
+                        resetParser();
+                        // The SASL authentication with the server was successful. The next step
+                        // will be to bind the resource
+                        connection.getSASLAuthentication().authenticated();
                     }
                 }
                 eventType = parser.next();
-            } while (!done && eventType != XmlPullParser.END_DOCUMENT);
+            } while (!done && eventType != XmlPullParser.END_DOCUMENT && thread == readerThread);
         }
         catch (Exception e) {
             if (!done) {
@@ -401,9 +387,7 @@ class PacketReader {
      *
      */
     private void releaseConnectionIDLock() {
-        synchronized(connectionIDLock) {
-            connectionIDLock.notifyAll();
-        }
+        connectionSemaphore.release();
     }
 
     /**
@@ -418,29 +402,13 @@ class PacketReader {
             return;
         }
 
-        // Remove all null values from the collectors list.
-        synchronized (collectors) {
-            for (int i=collectors.size()-1; i>=0; i--) {
-                    if (collectors.get(i) == null) {
-                        collectors.remove(i);
-                    }
-                }
-        }
-
         // Loop through all collectors and notify the appropriate ones.
-        int size = collectors.size();
-        for (int i=0; i<size; i++) {
-            PacketCollector collector = (PacketCollector)collectors.get(i);
-            if (collector != null) {
-                // Have the collector process the packet to see if it wants to handle it.
-                collector.processPacket(packet);
-            }
+        for (PacketCollector collector: collectors) {
+            collector.processPacket(packet);
         }
 
-        // Notify the listener thread that packets are waiting.
-        synchronized (listenerThread) {
-            listenerThread.notifyAll();
-        }
+        // Deliver the incoming packet to listeners.
+        listenerExecutor.submit(new ListenerNotification(packet));
     }
 
     private StreamError parseStreamError(XmlPullParser parser) throws IOException,
@@ -464,6 +432,7 @@ class PacketReader {
 
     private void parseFeatures(XmlPullParser parser) throws Exception {
         boolean startTLSReceived = false;
+        boolean startTLSRequired = false;
         boolean done = false;
         while (!done) {
             int eventType = parser.next();
@@ -471,8 +440,6 @@ class PacketReader {
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("starttls")) {
                     startTLSReceived = true;
-                    // Confirm the server that we want to use TLS
-                    connection.startTLSReceived();
                 }
                 else if (parser.getName().equals("mechanisms")) {
                     // The server is reporting available SASL mechanisms. Store this information
@@ -493,14 +460,41 @@ class PacketReader {
                     // The server supports stream compression
                     connection.setAvailableCompressionMethods(parseCompressionMethods(parser));
                 }
+                else if (parser.getName().equals("register")) {
+                    connection.getAccountManager().setSupportsAccountCreation(true);
+                }
             }
             else if (eventType == XmlPullParser.END_TAG) {
-                if (parser.getName().equals("features")) {
+                if (parser.getName().equals("starttls")) {
+                    // Confirm the server that we want to use TLS
+                    connection.startTLSReceived(startTLSRequired);
+                }
+                else if (parser.getName().equals("required") && startTLSReceived) {
+                    startTLSRequired = true;
+                }
+                else if (parser.getName().equals("features")) {
                     done = true;
                 }
             }
         }
-        if (!startTLSReceived) {
+
+        // If TLS is required but the server doesn't offer it, disconnect
+        // from the server and throw an error. First check if we've already negotiated TLS
+        // and are secure, however (features get parsed a second time after TLS is established).
+        if (!connection.isSecureConnection()) {
+            if (!startTLSReceived && connection.getConfiguration().getSecurityMode() ==
+                    ConnectionConfiguration.SecurityMode.required)
+            {
+                throw new XMPPException("Server does not support security (TLS), " +
+                        "but security required by connection configuration.",
+                        new XMPPError(XMPPError.Condition.forbidden));
+            }
+        }
+        
+        // Release the lock after TLS has been negotiated or we are not insterested in TLS
+        if (!startTLSReceived || connection.getConfiguration().getSecurityMode() ==
+                ConnectionConfiguration.SecurityMode.disabled)
+        {
             releaseConnectionIDLock();
         }
     }
@@ -512,8 +506,8 @@ class PacketReader {
      * @return a collection of Stings with the mechanisms included in the mechanisms stanza.
      * @throws Exception if an exception occurs while parsing the stanza.
      */
-    private Collection parseMechanisms(XmlPullParser parser) throws Exception {
-        List mechanisms = new ArrayList();
+    private Collection<String> parseMechanisms(XmlPullParser parser) throws Exception {
+        List<String> mechanisms = new ArrayList<String>();
         boolean done = false;
         while (!done) {
             int eventType = parser.next();
@@ -533,9 +527,9 @@ class PacketReader {
         return mechanisms;
     }
 
-    private Collection parseCompressionMethods(XmlPullParser parser)
+    private Collection<String> parseCompressionMethods(XmlPullParser parser)
             throws IOException, XmlPullParserException {
-        List methods = new ArrayList();
+        List<String> methods = new ArrayList<String>();
         boolean done = false;
         while (!done) {
             int eventType = parser.next();
@@ -597,7 +591,7 @@ class PacketReader {
                 // Otherwise, see if there is a registered provider for
                 // this element name and namespace.
                 else {
-                    Object provider = ProviderManager.getIQProvider(elementName, namespace);
+                    Object provider = ProviderManager.getInstance().getIQProvider(elementName, namespace);
                     if (provider != null) {
                         if (provider instanceof IQProvider) {
                             iqPacket = ((IQProvider)provider).parseIQ(parser);
@@ -630,7 +624,7 @@ class PacketReader {
                 iqPacket.setTo(from);
                 iqPacket.setFrom(to);
                 iqPacket.setType(IQ.Type.ERROR);
-                iqPacket.setError(new XMPPError(501, "feature-not-implemented"));
+                iqPacket.setError(new XMPPError(XMPPError.Condition.feature_not_implemented));
                 connection.sendPacket(iqPacket);
                 return null;
             }
@@ -700,7 +694,7 @@ class PacketReader {
                     item.setItemStatus(status);
                     // Set type.
                     String subscription = parser.getAttributeValue("", "subscription");
-                    RosterPacket.ItemType type = RosterPacket.ItemType.fromString(subscription);
+                    RosterPacket.ItemType type = RosterPacket.ItemType.valueOf(subscription);
                     item.setItemType(type);
                 }
                 if (parser.getName().equals("group") && item!= null) {
@@ -721,7 +715,7 @@ class PacketReader {
 
      private Registration parseRegistration(XmlPullParser parser) throws Exception {
         Registration registration = new Registration();
-        Map fields = null;
+        Map<String, String> fields = null;
         boolean done = false;
         while (!done) {
             int eventType = parser.next();
@@ -732,7 +726,7 @@ class PacketReader {
                     String name = parser.getName();
                     String value = "";
                     if (fields == null) {
-                        fields = new HashMap();
+                        fields = new HashMap<String, String>();
                     }
 
                     if (parser.next() == XmlPullParser.TEXT) {
@@ -745,7 +739,7 @@ class PacketReader {
                     else {
                         registration.setInstructions(value);
                     }
-}
+                }
                 // Otherwise, it must be a packet extension.
                 else {
                     registration.addExtension(
@@ -766,7 +760,8 @@ class PacketReader {
     }
 
     private Bind parseResourceBinding(XmlPullParser parser) throws IOException,
-            XmlPullParserException {
+            XmlPullParserException
+    {
         Bind bind = new Bind();
         boolean done = false;
         while (!done) {
@@ -789,48 +784,40 @@ class PacketReader {
     }
 
     /**
-     * A wrapper class to associate a packet collector with a listener.
+     * A runnable to notify all listeners of a packet.
+     */
+    private class ListenerNotification implements Runnable {
+
+        private Packet packet;
+
+        public ListenerNotification(Packet packet) {
+            this.packet = packet;
+        }
+
+        public void run() {
+            for (ListenerWrapper listenerWrapper : listeners.values()) {
+                listenerWrapper.notifyListener(packet);
+            }
+        }
+    }
+
+    /**
+     * A wrapper class to associate a packet filter with a listener.
      */
     private static class ListenerWrapper {
 
         private PacketListener packetListener;
-        private PacketCollector packetCollector;
+        private PacketFilter packetFilter;
 
-        public ListenerWrapper(PacketReader packetReader, PacketListener packetListener,
-                PacketFilter packetFilter)
-        {
+        public ListenerWrapper(PacketListener packetListener, PacketFilter packetFilter) {
             this.packetListener = packetListener;
-            this.packetCollector = new PacketCollector(packetReader, packetFilter);
+            this.packetFilter = packetFilter;
         }
-
-        public boolean equals(Object object) {
-            if (object == null) {
-                return false;
-            }
-            if (object instanceof ListenerWrapper) {
-                return ((ListenerWrapper)object).packetListener.equals(this.packetListener);
-            }
-            else if (object instanceof PacketListener) {
-                return object.equals(this.packetListener);
-            }
-            return false;
-        }
-
-        public boolean notifyListener() {
-            Packet packet = packetCollector.pollResult();
-            if (packet != null) {
+       
+        public void notifyListener(Packet packet) {
+            if (packetFilter == null || packetFilter.accept(packet)) {
                 packetListener.processPacket(packet);
-                return true;
             }
-            else {
-                return false;
-            }
-        }
-
-        public void cancel() {
-            packetCollector.cancel();
-            packetCollector = null;
-            packetListener = null;
         }
     }
 }

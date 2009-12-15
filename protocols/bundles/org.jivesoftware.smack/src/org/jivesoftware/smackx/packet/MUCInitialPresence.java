@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@
 
 package org.jivesoftware.smackx.packet;
 
+import org.jivesoftware.smack.packet.PacketExtension;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-
-import org.jivesoftware.smack.packet.PacketExtension;
 
 /**
  * Represents extended presence information whose sole purpose is to signal the ability of 
@@ -52,7 +52,7 @@ public class MUCInitialPresence implements PacketExtension {
     }
 
     public String toXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
             "\">");
         if (getPassword() != null) {
@@ -200,7 +200,7 @@ public class MUCInitialPresence implements PacketExtension {
         }
 
         public String toXML() {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             buf.append("<history");
             if (getMaxChars() != -1) {
                 buf.append(" maxchars=\"").append(getMaxChars()).append("\"");

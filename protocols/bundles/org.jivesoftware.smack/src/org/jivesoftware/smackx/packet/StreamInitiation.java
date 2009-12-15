@@ -134,7 +134,7 @@ public class StreamInitiation extends IQ {
       * @see org.jivesoftware.smack.packet.IQ#getChildElementXML()
       */
     public String getChildElementXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (this.getType().equals(IQ.Type.SET)) {
             buf.append("<si xmlns=\"http://jabber.org/protocol/si\" ");
             if (getSessionID() != null) {
@@ -333,13 +333,13 @@ public class StreamInitiation extends IQ {
         }
 
         public String toXML() {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
 
             buffer.append("<").append(getElementName()).append(" xmlns=\"")
                     .append(getNamespace()).append("\" ");
 
             if (getName() != null) {
-                buffer.append("name=\"").append(getName()).append("\" ");
+                buffer.append("name=\"").append(StringUtils.escapeForXML(getName())).append("\" ");
             }
 
             if (getSize() > 0) {
@@ -408,7 +408,7 @@ public class StreamInitiation extends IQ {
         }
 
         public String toXML() {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             buf
                     .append("<feature xmlns=\"http://jabber.org/protocol/feature-neg\">");
 			buf.append(data.toXML());

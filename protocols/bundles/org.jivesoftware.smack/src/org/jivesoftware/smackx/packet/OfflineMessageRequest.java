@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ public class OfflineMessageRequest extends IQ {
     }
 
     public String getChildElementXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<offline xmlns=\"http://jabber.org/protocol/offline\">");
         synchronized (items) {
             for (int i = 0; i < items.size(); i++) {
@@ -175,7 +175,7 @@ public class OfflineMessageRequest extends IQ {
         }
 
         public String toXML() {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             buf.append("<item");
             if (getAction() != null) {
                 buf.append(" action=\"").append(getAction()).append("\"");

@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,5 +100,22 @@ public class Occupant {
      */
     public String getNick() {
         return nick;
+    }
+
+    public boolean equals(Object obj) {
+        if(!(obj instanceof Occupant)) {
+            return false;
+        }
+        Occupant occupant = (Occupant)obj;
+        return jid.equals(occupant.jid);
+    }
+
+    public int hashCode() {
+        int result;
+        result = affiliation.hashCode();
+        result = 17 * result + role.hashCode();
+        result = 17 * result + jid.hashCode();
+        result = 17 * result + (nick != null ? nick.hashCode() : 0);
+        return result;
     }
 }

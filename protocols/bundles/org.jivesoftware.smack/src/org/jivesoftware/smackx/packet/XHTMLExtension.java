@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,12 @@
 
 package org.jivesoftware.smackx.packet;
 
-import java.util.*;
-
 import org.jivesoftware.smack.packet.PacketExtension;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * An XHTML sub-packet, which is used by XMPP clients to exchange formatted text. The XHTML 
@@ -78,7 +81,7 @@ public class XHTMLExtension implements PacketExtension {
      * 
      */
     public String toXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
             "\">");
         // Loop through all the bodies and append them to the string buffer

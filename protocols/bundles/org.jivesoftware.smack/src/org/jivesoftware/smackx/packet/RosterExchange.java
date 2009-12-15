@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,16 @@
 
 package org.jivesoftware.smackx.packet;
 
-import java.util.*;
-
-import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.*;
+import org.jivesoftware.smackx.RemoteRosterEntry;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Represents XMPP Roster Item Exchange packets.<p>
@@ -64,8 +69,8 @@ public class RosterExchange implements PacketExtension {
      */
     public RosterExchange(Roster roster) {
         // Add all the roster entries to the new RosterExchange 
-        for (Iterator rosterEntries = roster.getEntries(); rosterEntries.hasNext();) {
-            this.addRosterEntry((RosterEntry) rosterEntries.next());
+        for (RosterEntry rosterEntry : roster.getEntries()) {
+            this.addRosterEntry(rosterEntry);
         }
     }
 
@@ -76,15 +81,16 @@ public class RosterExchange implements PacketExtension {
      */
     public void addRosterEntry(RosterEntry rosterEntry) {
 		// Obtain a String[] from the roster entry groups name 
-		ArrayList groupNamesList = new ArrayList();
+		List<String> groupNamesList = new ArrayList<String>();
 		String[] groupNames;
-		for (Iterator groups = rosterEntry.getGroups(); groups.hasNext();) {
-			groupNamesList.add(((RosterGroup) groups.next()).getName());
+		for (RosterGroup group : rosterEntry.getGroups()) {
+			groupNamesList.add(group.getName());
 		}
-		groupNames = (String[]) groupNamesList.toArray(new String[groupNamesList.size()]);
+		groupNames = groupNamesList.toArray(new String[groupNamesList.size()]);
 
         // Create a new Entry based on the rosterEntry and add it to the packet
-        RemoteRosterEntry remoteRosterEntry = new RemoteRosterEntry(rosterEntry.getUser(), rosterEntry.getName(), groupNames);
+        RemoteRosterEntry remoteRosterEntry = new RemoteRosterEntry(rosterEntry.getUser(),
+                rosterEntry.getName(), groupNames);
 		
         addRosterEntry(remoteRosterEntry);
     }
@@ -160,7 +166,7 @@ public class RosterExchange implements PacketExtension {
      * 
      */
     public String toXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
             "\">");
         // Loop through all roster entries and append them to the string buffer

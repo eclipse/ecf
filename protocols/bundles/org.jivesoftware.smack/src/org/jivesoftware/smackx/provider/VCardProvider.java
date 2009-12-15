@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,74 +32,76 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * vCard provider.
  *
  * @author Gaston Dombiak
+ * @author Derek DeMoro
  */
 public class VCardProvider implements IQProvider {
 
-  public IQ parseIQ(XmlPullParser parser) throws Exception {
-      StringBuffer sb = new StringBuffer();
-      try {
-          int event = parser.getEventType();
-          // get the content
-          while (true) {
-              switch (event) {
-                  case XmlPullParser.TEXT:
-                      // We must re-escape the xml so that the DOM won't throw an exception
-                      sb.append(StringUtils.escapeForXML(parser.getText()));
-                      break;
-                  case XmlPullParser.START_TAG:
-                      sb.append('<').append(parser.getName()).append('>');
-                      break;
-                  case XmlPullParser.END_TAG:
-                      sb.append("</").append(parser.getName()).append('>');
-                      break;
-                  default:
-              }
+    private static final String PREFERRED_ENCODING = "UTF-8";
 
-              if (event == XmlPullParser.END_TAG && "vCard".equals(parser.getName())) break;
+    public IQ parseIQ(XmlPullParser parser) throws Exception {
+        final StringBuilder sb = new StringBuilder();
+        try {
+            int event = parser.getEventType();
+            // get the content
+            while (true) {
+                switch (event) {
+                    case XmlPullParser.TEXT:
+                        // We must re-escape the xml so that the DOM won't throw an exception
+                        sb.append(StringUtils.escapeForXML(parser.getText()));
+                        break;
+                    case XmlPullParser.START_TAG:
+                        sb.append('<').append(parser.getName()).append('>');
+                        break;
+                    case XmlPullParser.END_TAG:
+                        sb.append("</").append(parser.getName()).append('>');
+                        break;
+                    default:
+                }
 
-              event = parser.next();
-          }
-      } catch (XmlPullParserException e) {
-          e.printStackTrace();
-      } catch (IOException e) {
-          e.printStackTrace();
-      }
+                if (event == XmlPullParser.END_TAG && "vCard".equals(parser.getName())) break;
 
-      String xmlText = sb.toString();
-      return _createVCardFromXml(xmlText);
-  }
+                event = parser.next();
+            }
+        }
+        catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
-    public static VCard _createVCardFromXml(String xmlText) {
-      VCard vCard = new VCard();
-      try {
-          DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-          DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        String xmlText = sb.toString();
+        return createVCardFromXML(xmlText);
+    }
 
-          byte[] bytes;
-          try {
-        	  bytes = xmlText.getBytes("UTF-8"); //$NON-NLS-1$
-          } catch (UnsupportedEncodingException e) {
-        	  bytes = xmlText.getBytes();
-          }
-          Document document = documentBuilder.parse(new ByteArrayInputStream(bytes));
+    /**
+     * Builds a users vCard from xml file.
+     *
+     * @param xml the xml representing a users vCard.
+     * @return the VCard.
+     * @throws Exception if an exception occurs.
+     */
+    public static VCard createVCardFromXML(String xml) throws Exception {
+        VCard vCard = new VCard();
 
-          new VCardReader(vCard, document).initializeFields();
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        Document document = documentBuilder.parse(
+                new ByteArrayInputStream(xml.getBytes(PREFERRED_ENCODING)));
 
-      } catch (Exception e) {
-          e.printStackTrace(System.err);
-      }
-      return vCard;
-  }
+        new VCardReader(vCard, document).initializeFields();
+        return vCard;
+    }
 
     private static class VCardReader {
+
         private final VCard vCard;
         private final Document document;
 
@@ -130,10 +132,11 @@ public class VCardProvider implements IQProvider {
             if (nodes == null) return;
             for (int i = 0; i < nodes.getLength(); i++) {
                 Element element = (Element) nodes.item(i);
-                if ("HOME".equals(element.getParentNode().getFirstChild().getNodeName())) {
-                    vCard.setEmailHome(getTextContent(element));
-                } else {
+                if ("WORK".equals(element.getParentNode().getFirstChild().getNodeName())) {
                     vCard.setEmailWork(getTextContent(element));
+                }
+                else {
+                    vCard.setEmailHome(getTextContent(element));
                 }
             }
         }
@@ -162,8 +165,8 @@ public class VCardProvider implements IQProvider {
                 }
                 if (code == null || value == null) continue;
                 if ("HOME".equals(type)) {
-                        vCard.setPhoneHome(code, value);
-                    }
+                    vCard.setPhoneHome(code, value);
+                }
                 else { // By default, setup work phone
                     vCard.setPhoneWork(code, value);
                 }
@@ -184,18 +187,18 @@ public class VCardProvider implements IQProvider {
                 List code = new ArrayList();
                 List value = new ArrayList();
                 NodeList childNodes = addressNode.getChildNodes();
-                for(int j = 0; j < childNodes.getLength(); j++) {
+                for (int j = 0; j < childNodes.getLength(); j++) {
                     Node node = childNodes.item(j);
                     if (node.getNodeType() != Node.ELEMENT_NODE) continue;
                     String nodeName = node.getNodeName();
                     if (isWorkHome(nodeName)) {
                         type = nodeName;
-                            }
-                            else {
+                    }
+                    else {
                         code.add(nodeName);
                         value.add(getTextContent(node));
-                            }
-                        }
+                    }
+                }
                 for (int j = 0; j < value.size(); j++) {
                     if ("HOME".equals(type)) {
                         vCard.setAddressFieldHome((String) code.get(j), (String) value.get(j));
@@ -225,7 +228,8 @@ public class VCardProvider implements IQProvider {
                     String field = element.getNodeName();
                     if (element.getChildNodes().getLength() == 0) {
                         vCard.setField(field, "");
-                    } else if (element.getChildNodes().getLength() == 1 &&
+                    }
+                    else if (element.getChildNodes().getLength() == 1 &&
                             element.getChildNodes().item(0) instanceof Text) {
                         vCard.setField(field, getTextContent(element));
                     }
@@ -234,12 +238,12 @@ public class VCardProvider implements IQProvider {
         }
 
         private String getTextContent(Node node) {
-            StringBuffer result = new StringBuffer();
+            StringBuilder result = new StringBuilder();
             appendText(result, node);
             return result.toString();
         }
 
-        private void appendText(StringBuffer result, Node node) {
+        private void appendText(StringBuilder result, Node node) {
             NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node nd = childNodes.item(i);

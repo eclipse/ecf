@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,16 +26,16 @@ import org.jivesoftware.smack.util.StringUtils;
  * Represents XMPP presence packets. Every presence packet has a type, which is one of
  * the following values:
  * <ul>
- *      <li><tt>Presence.Type.AVAILABLE</tt> -- (Default) indicates the user is available to
+ *      <li>{@link Presence.Type#available available} -- (Default) indicates the user is available to
  *          receive messages.
- *      <li><tt>Presence.Type.UNAVAILABLE</tt> -- the user is unavailable to receive messages.
- *      <li><tt>Presence.Type.SUBSCRIBE</tt> -- request subscription to recipient's presence.
- *      <li><tt>Presence.Type.SUBSCRIBED</tt> -- grant subscription to sender's presence.
- *      <li><tt>Presence.Type.UNSUBSCRIBE</tt> -- request removal of subscription to sender's
- *          presence.
- *      <li><tt>Presence.Type.UNSUBSCRIBED</tt> -- grant removal of subscription to sender's
- *          presence.
- *      <li><tt>Presence.Type.ERROR</tt> -- the presence packet contains an error message.
+ *      <li>{@link Presence.Type#unavailable unavailable} -- the user is unavailable to receive messages.
+ *      <li>{@link Presence.Type#subscribe subscribe} -- request subscription to recipient's presence.
+ *      <li>{@link Presence.Type#subscribed subscribed} -- grant subscription to sender's presence.
+ *      <li>{@link Presence.Type#unsubscribe unsubscribe} -- request removal of subscription to
+ *          sender's presence.
+ *      <li>{@link Presence.Type#unsubscribed unsubscribed} -- grant removal of subscription to
+ *          sender's presence.
+ *      <li>{@link Presence.Type#error error} -- the presence packet contains an error message.
  * </ul><p>
  *
  * A number of attributes are optional:
@@ -44,8 +44,9 @@ import org.jivesoftware.smack.util.StringUtils;
  *      <li>Priority -- non-negative numerical priority of a sender's resource. The
  *          highest resource priority is the default recipient of packets not addressed
  *          to a particular resource.
- *      <li>Mode -- one of five presence modes: available (the default), chat, away,
- *          xa (extended away, and dnd (do not disturb).
+ *      <li>Mode -- one of five presence modes: {@link Mode#available available} (the default),
+ *          {@link Mode#chat chat}, {@link Mode#away away}, {@link Mode#xa xa} (extended away), and
+ *          {@link Mode#dnd dnd} (do not disturb).
  * </ul><p>
  *
  * Presence packets are used for two purposes. First, to notify the server of our
@@ -57,10 +58,11 @@ import org.jivesoftware.smack.util.StringUtils;
  */
 public class Presence extends Packet {
 
-    private Type type = Type.AVAILABLE;
+    private Type type = Type.available;
     private String status = null;
-    private int priority = -1;
-    private Mode mode = Mode.AVAILABLE;
+    private int priority = Integer.MIN_VALUE;
+    private Mode mode = null;
+    private String language;
 
     /**
      * Creates a new presence update. Status, priority, and mode are left un-set.
@@ -68,7 +70,7 @@ public class Presence extends Packet {
      * @param type the type.
      */
     public Presence(Type type) {
-        this.type = type;
+        setType(type);
     }
 
     /**
@@ -80,10 +82,39 @@ public class Presence extends Packet {
      * @param mode the mode type for this presence update.
      */
     public Presence(Type type, String status, int priority, Mode mode) {
-        this.type = type;
-        this.status = status;
-        this.priority = priority;
-        this.mode = mode;
+        setType(type);
+        setStatus(status);
+        setPriority(priority);
+        setMode(mode);
+    }
+
+    /**
+     * Returns true if the {@link Type presence type} is available (online) and
+     * false if the user is unavailable (offline), or if this is a presence packet
+     * involved in a subscription operation. This is a convenience method
+     * equivalent to <tt>getType() == Presence.Type.available</tt>. Note that even
+     * when the user is available, their presence mode may be {@link Mode#away away},
+     * {@link Mode#xa extended away} or {@link Mode#dnd do not disturb}. Use
+     * {@link #isAway()} to determine if the user is away.
+     *
+     * @return true if the presence type is available.
+     */
+    public boolean isAvailable() {
+        return type == Type.available;    
+    }
+
+    /**
+     * Returns true if the presence type is {@link Type#available available} and the presence
+     * mode is {@link Mode#away away}, {@link Mode#xa extended away}, or
+     * {@link Mode#dnd do not disturb}. False will be returned when the type or mode
+     * is any other value, including when the presence type is unavailable (offline).
+     * This is a convenience method equivalent to
+     * <tt>type == Type.available && (mode == Mode.away || mode == Mode.xa || mode == Mode.dnd)</tt>.
+     *
+     * @return true if the presence type is available and the presence mode is away, xa, or dnd.
+     */
+    public boolean isAway() {
+        return type == Type.available && (mode == Mode.away || mode == Mode.xa || mode == Mode.dnd); 
     }
 
     /**
@@ -101,6 +132,9 @@ public class Presence extends Packet {
      * @param type the type of the presence packet.
      */
     public void setType(Type type) {
+        if(type == null) {
+            throw new NullPointerException("Type cannot be null");
+        }
         this.type = type;
     }
 
@@ -126,7 +160,7 @@ public class Presence extends Packet {
     }
 
     /**
-     * Returns the priority of the presence, or -1 if no priority has been set.
+     * Returns the priority of the presence, or Integer.MIN_VALUE if no priority has been set.
      *
      * @return the priority.
      */
@@ -149,7 +183,9 @@ public class Presence extends Packet {
     }
 
     /**
-     * Returns the mode of the presence update.
+     * Returns the mode of the presence update, or <tt>null</tt> if the mode is not set.
+     * A null presence mode value is interpreted to be the same thing as
+     * {@link Presence.Mode#available}.
      *
      * @return the mode.
      */
@@ -158,8 +194,8 @@ public class Presence extends Packet {
     }
 
     /**
-     * Sets the mode of the presence update. For the standard "available" state, set
-     * the mode to <tt>null</tt>.
+     * Sets the mode of the presence update. A null presence mode value is interpreted
+     * to be the same thing as {@link Presence.Mode#available}.
      *
      * @param mode the mode.
      */
@@ -167,9 +203,35 @@ public class Presence extends Packet {
         this.mode = mode;
     }
 
+    /**
+     * Returns the xml:lang of this Presence, or null if one has not been set.
+     *
+     * @return the xml:lang of this Presence, or null if one has not been set.
+     * @since 3.0.2
+     */
+    private String getLanguage() {
+        return language;
+    }
+
+    /**
+     * Sets the xml:lang of this Presence.
+     *
+     * @param language the xml:lang of this Presence.
+     * @since 3.0.2
+     */
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
     public String toXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<presence");
+        if(getXmlns() != null) {
+            buf.append(" xmlns=\"").append(getXmlns()).append("\"");
+        }
+        if (language != null) {
+            buf.append(" xml:lang=\"").append(getLanguage()).append("\"");
+        }
         if (getPacketID() != null) {
             buf.append(" id=\"").append(getPacketID()).append("\"");
         }
@@ -179,17 +241,17 @@ public class Presence extends Packet {
         if (getFrom() != null) {
             buf.append(" from=\"").append(StringUtils.escapeForXML(getFrom())).append("\"");
         }
-        if (type != Type.AVAILABLE) {
+        if (type != Type.available) {
             buf.append(" type=\"").append(type).append("\"");
         }
         buf.append(">");
         if (status != null) {
             buf.append("<status>").append(StringUtils.escapeForXML(status)).append("</status>");
         }
-        if (priority != -1) {
+        if (priority != Integer.MIN_VALUE) {
             buf.append("<priority>").append(priority).append("</priority>");
         }
-        if (mode != null && mode != Mode.AVAILABLE) {
+        if (mode != null && mode != Mode.available) {
             buf.append("<show>").append(mode).append("</show>");
         }
 
@@ -207,121 +269,90 @@ public class Presence extends Packet {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(type);
         if (mode != null) {
             buf.append(": ").append(mode);
         }
-        if (status != null) {
-            buf.append(" (").append(status).append(")");
+        if (getStatus() != null) {
+            buf.append(" (").append(getStatus()).append(")");
         }
         return buf.toString();
     }
 
     /**
-     * A typsafe enum class to represent the presecence type.
+     * A enum to represent the presecence type. Not that presence type is often confused
+     * with presence mode. Generally, if a user is signed into a server, they have a presence
+     * type of {@link #available available}, even if the mode is {@link Mode#away away},
+     * {@link Mode#dnd dnd}, etc. The presence type is only {@link #unavailable unavailable} when
+     * the user is signing out of the server.
      */
-    public static class Type {
+    public enum Type {
 
-        public static final Type AVAILABLE = new Type("available");
-        public static final Type UNAVAILABLE = new Type("unavailable");
-        public static final Type SUBSCRIBE = new Type("subscribe");
-        public static final Type SUBSCRIBED = new Type("subscribed");
-        public static final Type UNSUBSCRIBE = new Type("unsubscribe");
-        public static final Type UNSUBSCRIBED = new Type("unsubscribed");
-        public static final Type ERROR = new Type("error");
-
-        private String value;
-
-        private Type(String value) {
-            this.value = value;
-        }
-
-        public String toString() {
-            return value;
-        }
+       /**
+        * The user is available to receive messages (default).
+        */
+        available,
 
         /**
-         * Returns the type constant associated with the String value.
+         * The user is unavailable to receive messages.
          */
-        public static Type fromString(String value) {
-            if (value == null) {
-                return AVAILABLE;
-            }
-            value = value.toLowerCase();
-            if ("unavailable".equals(value)) {
-                return UNAVAILABLE;
-            }
-            else if ("subscribe".equals(value)) {
-                return SUBSCRIBE;
-            }
-            else if ("subscribed".equals(value)) {
-                return SUBSCRIBED;
-            }
-            else if ("unsubscribe".equals(value)) {
-                return UNSUBSCRIBE;
-            }
-            else if ("unsubscribed".equals(value)) {
-                return UNSUBSCRIBED;
-            }
-            else if ("error".equals(value)) {
-                return ERROR;
-            }
-            // Default to available.
-            else {
-                return AVAILABLE;
-            }
-        }
+        unavailable,
+
+        /**
+         * Request subscription to recipient's presence.
+         */
+        subscribe,
+
+        /**
+         * Grant subscription to sender's presence.
+         */
+        subscribed,
+
+        /**
+         * Request removal of subscription to sender's presence.
+         */
+        unsubscribe,
+
+        /**
+         * Grant removal of subscription to sender's presence.
+         */
+        unsubscribed,
+
+        /**
+         * The presence packet contains an error message.
+         */
+        error
     }
 
     /**
-     * A typsafe enum class to represent the presence mode.
+     * An enum to represent the presence mode.
      */
-    public static class Mode {
-
-        public static final Mode AVAILABLE = new Mode("available");
-        public static final Mode CHAT = new Mode("chat");
-        public static final Mode AWAY =  new Mode("away");
-        public static final Mode EXTENDED_AWAY = new Mode("xa");
-        public static final Mode DO_NOT_DISTURB = new Mode("dnd");
-        public static final Mode INVISIBLE = new Mode("invisible");
-
-        private String value;
-
-        private Mode(String value) {
-            this.value = value;
-        }
-
-        public String toString() {
-            return value;
-        }
+    public enum Mode {
 
         /**
-         * Returns the mode constant associated with the String value.
+         * Free to chat.
          */
-        public static Mode fromString(String value) {
-            if (value == null) {
-                return AVAILABLE;
-            }
-            value = value.toLowerCase();
-            if (value.equals("chat")) {
-                return CHAT;
-            }
-            else if (value.equals("away")) {
-                return AWAY;
-            }
-            else if (value.equals("xa")) {
-                return EXTENDED_AWAY;
-            }
-            else if (value.equals("dnd")) {
-                return DO_NOT_DISTURB;
-            }
-            else if (value.equals("invisible")) {
-                return INVISIBLE;
-            }
-            else {
-                return AVAILABLE;
-            }
-        }
+        chat,
+
+        /**
+         * Available (the default).
+         */
+        available,
+
+        /**
+         * Away.
+         */
+        away,
+
+        /**
+         * Away for an extended period of time.
+         */
+        xa,
+
+        /**
+         * Do not disturb.
+         */
+        dnd
     }
 }

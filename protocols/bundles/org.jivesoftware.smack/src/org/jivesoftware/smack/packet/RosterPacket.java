@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package org.jivesoftware.smack.packet;
 import org.jivesoftware.smack.util.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Represents XMPP roster packets.
@@ -31,7 +32,7 @@ import java.util.*;
  */
 public class RosterPacket extends IQ {
 
-    private final List rosterItems = new ArrayList();
+    private final List<Item> rosterItems = new ArrayList<Item>();
 
     /**
      * Adds a roster item to the packet.
@@ -56,23 +57,21 @@ public class RosterPacket extends IQ {
     }
 
     /**
-     * Returns an Iterator for the roster items in the packet.
+     * Returns an unmodifiable collection for the roster items in the packet.
      *
-     * @return and Iterator for the roster items in the packet.
+     * @return an unmodifiable collection for the roster items in the packet.
      */
-    public Iterator getRosterItems() {
+    public Collection<Item> getRosterItems() {
         synchronized (rosterItems) {
-            List entries = Collections.unmodifiableList(new ArrayList(rosterItems));
-            return entries.iterator();
+            return Collections.unmodifiableList(new ArrayList<Item>(rosterItems));
         }
     }
 
     public String getChildElementXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<query xmlns=\"jabber:iq:roster\">");
         synchronized (rosterItems) {
-            for (int i=0; i<rosterItems.size(); i++) {
-                Item entry = (Item)rosterItems.get(i);
+            for (Item entry : rosterItems) {
                 buf.append(entry.toXML());
             }
         }
@@ -90,7 +89,7 @@ public class RosterPacket extends IQ {
         private String name;
         private ItemType itemType;
         private ItemStatus itemStatus;
-        private final List groupNames;
+        private final Set<String> groupNames;
 
         /**
          * Creates a new roster item.
@@ -103,7 +102,7 @@ public class RosterPacket extends IQ {
             this.name = name;
             itemType = null;
             itemStatus = null;
-            groupNames = new ArrayList();
+            groupNames = new CopyOnWriteArraySet<String>();
         }
 
         /**
@@ -170,15 +169,13 @@ public class RosterPacket extends IQ {
         }
 
         /**
-         * Returns an Iterator for the group names (as Strings) that the roster item
+         * Returns an unmodifiable set of the group names that the roster item
          * belongs to.
          *
-         * @return an Iterator for the group names.
+         * @return an unmodifiable set of the group names.
          */
-        public Iterator getGroupNames() {
-            synchronized (groupNames) {
-                return Collections.unmodifiableList(groupNames).iterator();
-            }
+        public Set<String> getGroupNames() {
+            return Collections.unmodifiableSet(groupNames);
         }
 
         /**
@@ -187,11 +184,7 @@ public class RosterPacket extends IQ {
          * @param groupName the group name.
          */
         public void addGroupName(String groupName) {
-            synchronized (groupNames) {
-                if (!groupNames.contains(groupName)) {
-                    groupNames.add(groupName);
-                }
-            }
+            groupNames.add(groupName);
         }
 
         /**
@@ -200,16 +193,14 @@ public class RosterPacket extends IQ {
          * @param groupName the group name.
          */
         public void removeGroupName(String groupName) {
-            synchronized (groupNames) {
-                groupNames.remove(groupName);
-            }
+            groupNames.remove(groupName);
         }
 
         public String toXML() {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             buf.append("<item jid=\"").append(user).append("\"");
             if (name != null) {
-                buf.append(" name=\"").append(name).append("\"");
+                buf.append(" name=\"").append(StringUtils.escapeForXML(name)).append("\"");
             }
             if (itemType != null) {
                 buf.append(" subscription=\"").append(itemType).append("\"");
@@ -218,11 +209,8 @@ public class RosterPacket extends IQ {
                 buf.append(" ask=\"").append(itemStatus).append("\"");
             }
             buf.append(">");
-            synchronized (groupNames) {
-                for (int i=0; i<groupNames.size(); i++) {
-                    String groupName = (String)groupNames.get(i);
-                    buf.append("<group>").append(StringUtils.escapeForXML(groupName)).append("</group>");
-                }
+            for (String groupName : groupNames) {
+                buf.append("<group>").append(StringUtils.escapeForXML(groupName)).append("</group>");
             }
             buf.append("</item>");
             return buf.toString();
@@ -243,7 +231,7 @@ public class RosterPacket extends IQ {
         /**
          * Request to unsubscribe.
          */
-        public static final ItemStatus UNSUBCRIPTION_PENDING = new ItemStatus("unsubscribe");
+        public static final ItemStatus UNSUBSCRIPTION_PENDING = new ItemStatus("unsubscribe");
 
         public static ItemStatus fromString(String value) {
             if (value == null) {
@@ -251,7 +239,7 @@ public class RosterPacket extends IQ {
             }
             value = value.toLowerCase();
             if ("unsubscribe".equals(value)) {
-                return SUBSCRIPTION_PENDING;
+                return UNSUBSCRIPTION_PENDING;
             }
             else if ("subscribe".equals(value)) {
                 return SUBSCRIPTION_PENDING;
@@ -277,74 +265,31 @@ public class RosterPacket extends IQ {
         }
     }
 
-    /**
-     * The subscription type of a roster item.
-     */
-    public static class ItemType {
+    public static enum ItemType {
 
         /**
          * The user and subscriber have no interest in each other's presence.
          */
-        public static final ItemType NONE = new ItemType("none");
+        none,
 
         /**
          * The user is interested in receiving presence updates from the subscriber.
          */
-        public static final ItemType TO = new ItemType("to");
+        to,
 
         /**
          * The subscriber is interested in receiving presence updates from the user.
          */
-        public static final ItemType FROM = new ItemType("from");
+        from,
 
         /**
          * The user and subscriber have a mutual interest in each other's presence.
          */
-        public static final ItemType BOTH = new ItemType("both");
+        both,
 
         /**
          * The user wishes to stop receiving presence updates from the subscriber.
          */
-        public static final ItemType REMOVE = new ItemType("remove");
-
-        public static ItemType fromString(String value) {
-            if (value == null) {
-                return null;
-            }
-            value = value.toLowerCase();
-            if ("none".equals(value)) {
-                return NONE;
-            }
-            else if ("to".equals(value)) {
-                return TO;
-            }
-            else if ("from".equals(value)) {
-                return FROM;
-            }
-            else if ("both".equals(value)) {
-                return BOTH;
-            }
-            else if ("remove".equals(value)) {
-                return REMOVE;
-            }
-            else {
-                return null;
-            }
-        }
-
-        private String value;
-
-        /**
-         * Returns the item type associated with the specified string.
-         *
-         * @param value the item type.
-         */
-        public ItemType(String value) {
-            this.value = value;
-        }
-
-        public String toString() {
-            return value;
-        }
+        remove
     }
 }

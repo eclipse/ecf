@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.jivesoftware.smack
-Bundle-Version: 2.2.1
+Bundle-Version: 3.1.0
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Export-Package: org.jivesoftware.smack,
@@ -10,18 +11,29 @@ Export-Package: org.jivesoftware.smack,
  org.jivesoftware.smack.filter,
  org.jivesoftware.smack.packet,
  org.jivesoftware.smack.provider,
+ org.jivesoftware.smack.proxy,
  org.jivesoftware.smack.sasl,
  org.jivesoftware.smack.util,
+ org.jivesoftware.smack.util.collections,
  org.jivesoftware.smackx,
  org.jivesoftware.smackx.bookmark,
+ org.jivesoftware.smackx.commands,
  org.jivesoftware.smackx.debugger,
  org.jivesoftware.smackx.filetransfer,
  org.jivesoftware.smackx.muc,
  org.jivesoftware.smackx.packet,
  org.jivesoftware.smackx.provider,
- org.jivesoftware.smackx.search
+ org.jivesoftware.smackx.search,
+ org.jivesoftware.smackx.workgroup,
+ org.jivesoftware.smackx.workgroup.agent,
+ org.jivesoftware.smackx.workgroup.ext.forms,
+ org.jivesoftware.smackx.workgroup.ext.history,
+ org.jivesoftware.smackx.workgroup.ext.macros,
+ org.jivesoftware.smackx.workgroup.ext.notes,
+ org.jivesoftware.smackx.workgroup.packet,
+ org.jivesoftware.smackx.workgroup.settings,
+ org.jivesoftware.smackx.workgroup.user,
+ org.jivesoftware.smackx.workgroup.util
 Bundle-ClassPath: .,
  jars/xpp.jar
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Eclipse-ExtensibleAPI: true
-

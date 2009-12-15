@@ -1,13 +1,19 @@
 /**
- * $RCSfile$
- * $Revision$
- * $Date$
+ * Copyright 2003-2007 Jive Software.
  *
- * Copyright (C) 1999-2005 Jive Software. All rights reserved.
+ * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This software is the proprietary information of Jive Software.
- * Use is subject to license terms.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package org.jivesoftware.smackx.search;
 
 import org.jivesoftware.smack.XMPPConnection;
@@ -49,7 +55,7 @@ public class UserSearchManager {
     /**
      * Creates a new UserSearchManager.
      *
-     * @param con           the XMPPConnection to use.
+     * @param con the XMPPConnection to use.
      */
     public UserSearchManager(XMPPConnection con) {
         this.con = con;
@@ -71,7 +77,7 @@ public class UserSearchManager {
      * Submits a search form to the server and returns the resulting information
      * in the form of <code>ReportedData</code>
      *
-     * @param searchForm the <code>Form</code> to submit for searching.
+     * @param searchForm    the <code>Form</code> to submit for searching.
      * @param searchService the name of the search service to use.
      * @return the ReportedData returned by the server.
      * @throws XMPPException thrown if a server error has occurred.
@@ -88,18 +94,27 @@ public class UserSearchManager {
      * @throws XMPPException thrown if a server error has occurred.
      */
     public Collection getSearchServices() throws XMPPException {
-        List searchServices = new ArrayList();
+        final List<String> searchServices = new ArrayList<String>();
         ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(con);
         DiscoverItems items = discoManager.discoverItems(con.getServiceName());
-        for (Iterator it = items.getItems(); it.hasNext();) {
-            DiscoverItems.Item item = (DiscoverItems.Item) it.next();
+        Iterator<DiscoverItems.Item> iter = items.getItems();
+        while (iter.hasNext()) {
+            DiscoverItems.Item item = iter.next();
             try {
-                DiscoverInfo info = discoManager.discoverInfo(item.getEntityID());
+                DiscoverInfo info;
+                try {
+                    info = discoManager.discoverInfo(item.getEntityID());
+                }
+                catch (XMPPException e) {
+                    // Ignore Case
+                    continue;
+                }
+
                 if (info.containsFeature("jabber:iq:search")) {
                     searchServices.add(item.getEntityID());
                 }
             }
-            catch (XMPPException e) {
+            catch (Exception e) {
                 // No info found.
                 break;
             }

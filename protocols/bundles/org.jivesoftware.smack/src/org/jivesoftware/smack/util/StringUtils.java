@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@
 
 package org.jivesoftware.smack.util;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
 /**
@@ -47,7 +47,7 @@ public class StringUtils {
         if (XMPPAddress == null) {
             return null;
         }
-        int atIndex = XMPPAddress.indexOf("@");
+        int atIndex = XMPPAddress.lastIndexOf("@");
         if (atIndex <= 0) {
             return "";
         }
@@ -68,13 +68,13 @@ public class StringUtils {
         if (XMPPAddress == null) {
             return null;
         }
-        int atIndex = XMPPAddress.indexOf("@");
+        int atIndex = XMPPAddress.lastIndexOf("@");
         // If the String ends with '@', return the empty string.
         if (atIndex + 1 > XMPPAddress.length()) {
             return "";
         }
         int slashIndex = XMPPAddress.indexOf("/");
-        if (slashIndex > 0) {
+        if (slashIndex > 0 && slashIndex > atIndex) {
             return XMPPAddress.substring(atIndex + 1, slashIndex);
         }
         else {
@@ -128,6 +128,147 @@ public class StringUtils {
     }
 
     /**
+     * Escapes the node portion of a JID according to "JID Escaping" (JEP-0106).
+     * Escaping replaces characters prohibited by node-prep with escape sequences,
+     * as follows:<p>
+     *
+     * <table border="1">
+     * <tr><td><b>Unescaped Character</b></td><td><b>Encoded Sequence</b></td></tr>
+     * <tr><td>&lt;space&gt;</td><td>\20</td></tr>
+     * <tr><td>"</td><td>\22</td></tr>
+     * <tr><td>&</td><td>\26</td></tr>
+     * <tr><td>'</td><td>\27</td></tr>
+     * <tr><td>/</td><td>\2f</td></tr>
+     * <tr><td>:</td><td>\3a</td></tr>
+     * <tr><td>&lt;</td><td>\3c</td></tr>
+     * <tr><td>&gt;</td><td>\3e</td></tr>
+     * <tr><td>@</td><td>\40</td></tr>
+     * <tr><td>\</td><td>\5c</td></tr>
+     * </table><p>
+     *
+     * This process is useful when the node comes from an external source that doesn't
+     * conform to nodeprep. For example, a username in LDAP may be "Joe Smith". Because
+     * the &lt;space&gt; character isn't a valid part of a node, the username should
+     * be escaped to "Joe\20Smith" before being made into a JID (e.g. "joe\20smith@example.com"
+     * after case-folding, etc. has been applied).<p>
+     *
+     * All node escaping and un-escaping must be performed manually at the appropriate
+     * time; the JID class will not escape or un-escape automatically.
+     *
+     * @param node the node.
+     * @return the escaped version of the node.
+     */
+    public static String escapeNode(String node) {
+        if (node == null) {
+            return null;
+        }
+        StringBuilder buf = new StringBuilder(node.length() + 8);
+        for (int i=0, n=node.length(); i<n; i++) {
+            char c = node.charAt(i);
+            switch (c) {
+                case '"': buf.append("\\22"); break;
+                case '&': buf.append("\\26"); break;
+                case '\'': buf.append("\\27"); break;
+                case '/': buf.append("\\2f"); break;
+                case ':': buf.append("\\3a"); break;
+                case '<': buf.append("\\3c"); break;
+                case '>': buf.append("\\3e"); break;
+                case '@': buf.append("\\40"); break;
+                case '\\': buf.append("\\5c"); break;
+                default: {
+                    if (Character.isWhitespace(c)) {
+                        buf.append("\\20");
+                    }
+                    else {
+                        buf.append(c);
+                    }
+                }
+            }
+        }
+        return buf.toString();
+    }
+
+    /**
+     * Un-escapes the node portion of a JID according to "JID Escaping" (JEP-0106).<p>
+     * Escaping replaces characters prohibited by node-prep with escape sequences,
+     * as follows:<p>
+     *
+     * <table border="1">
+     * <tr><td><b>Unescaped Character</b></td><td><b>Encoded Sequence</b></td></tr>
+     * <tr><td>&lt;space&gt;</td><td>\20</td></tr>
+     * <tr><td>"</td><td>\22</td></tr>
+     * <tr><td>&</td><td>\26</td></tr>
+     * <tr><td>'</td><td>\27</td></tr>
+     * <tr><td>/</td><td>\2f</td></tr>
+     * <tr><td>:</td><td>\3a</td></tr>
+     * <tr><td>&lt;</td><td>\3c</td></tr>
+     * <tr><td>&gt;</td><td>\3e</td></tr>
+     * <tr><td>@</td><td>\40</td></tr>
+     * <tr><td>\</td><td>\5c</td></tr>
+     * </table><p>
+     *
+     * This process is useful when the node comes from an external source that doesn't
+     * conform to nodeprep. For example, a username in LDAP may be "Joe Smith". Because
+     * the &lt;space&gt; character isn't a valid part of a node, the username should
+     * be escaped to "Joe\20Smith" before being made into a JID (e.g. "joe\20smith@example.com"
+     * after case-folding, etc. has been applied).<p>
+     *
+     * All node escaping and un-escaping must be performed manually at the appropriate
+     * time; the JID class will not escape or un-escape automatically.
+     *
+     * @param node the escaped version of the node.
+     * @return the un-escaped version of the node.
+     */
+    public static String unescapeNode(String node) {
+        if (node == null) {
+            return null;
+        }
+        char [] nodeChars = node.toCharArray();
+        StringBuilder buf = new StringBuilder(nodeChars.length);
+        for (int i=0, n=nodeChars.length; i<n; i++) {
+            compare: {
+                char c = node.charAt(i);
+                if (c == '\\' && i+2<n) {
+                    char c2 = nodeChars[i+1];
+                    char c3 = nodeChars[i+2];
+                    if (c2 == '2') {
+                        switch (c3) {
+                            case '0': buf.append(' '); i+=2; break compare;
+                            case '2': buf.append('"'); i+=2; break compare;
+                            case '6': buf.append('&'); i+=2; break compare;
+                            case '7': buf.append('\''); i+=2; break compare;
+                            case 'f': buf.append('/'); i+=2; break compare;
+                        }
+                    }
+                    else if (c2 == '3') {
+                        switch (c3) {
+                            case 'a': buf.append(':'); i+=2; break compare;
+                            case 'c': buf.append('<'); i+=2; break compare;
+                            case 'e': buf.append('>'); i+=2; break compare;
+                        }
+                    }
+                    else if (c2 == '4') {
+                        if (c3 == '0') {
+                            buf.append("@");
+                            i+=2;
+                            break compare;
+                        }
+                    }
+                    else if (c2 == '5') {
+                        if (c3 == 'c') {
+                            buf.append("\\");
+                            i+=2;
+                            break compare;
+                        }
+                    }
+                }
+                buf.append(c);
+            }
+        }
+        return buf.toString();
+    }
+
+    /**
      * Escapes all necessary characters in the String so that it can be used
      * in an XML doc.
      *
@@ -143,7 +284,7 @@ public class StringUtils {
         int last=0;
         char[] input = string.toCharArray();
         int len = input.length;
-        StringBuffer out = new StringBuffer((int)(len*1.3));
+        StringBuilder out = new StringBuilder((int)(len*1.3));
         for (; i < len; i++) {
             ch = input[i];
             if (ch > '>') {
@@ -167,7 +308,7 @@ public class StringUtils {
                 if (i > last) {
                     out.append(input, last, i - last);
                 }
-                // Do nothing if the string is of the form &#235; (unicode value) 
+                // Do nothing if the string is of the form &#235; (unicode value)
                 if (!(len > i + 5
                     && input[i + 1] == '#'
                     && Character.isDigit(input[i + 2])
@@ -243,13 +384,13 @@ public class StringUtils {
      * @return generated hex string.
      */
     public static String encodeHex(byte[] bytes) {
-        StringBuffer hex = new StringBuffer(bytes.length * 2);
+        StringBuilder hex = new StringBuilder(bytes.length * 2);
 
-        for (int i=0; i<bytes.length; i++) {
-            if (((int) bytes[i] & 0xff) < 0x10) {
+        for (byte aByte : bytes) {
+            if (((int) aByte & 0xff) < 0x10) {
                 hex.append("0");
             }
-            hex.append(Integer.toString((int) bytes[i] & 0xff, 16));
+            hex.append(Integer.toString((int) aByte & 0xff, 16));
         }
 
         return hex.toString();

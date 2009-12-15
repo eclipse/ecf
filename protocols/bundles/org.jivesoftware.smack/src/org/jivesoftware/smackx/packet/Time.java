@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,11 @@ package org.jivesoftware.smackx.packet;
 
 import org.jivesoftware.smack.packet.IQ;
 
-import java.util.*;
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * A Time IQ packet, which is used by XMPP clients to exchange their respective local
@@ -37,7 +39,7 @@ import java.text.DateFormat;
  * // Request the time from a remote user.
  * Time timeRequest = new Time();
  * timeRequest.setType(IQ.Type.GET);
- * timeRequest.setTo(someUser@example.com);
+ * timeRequest.setTo(someUser@example.com/resource);
  *
  * // Create a packet collector to listen for a response.
  * PacketCollector collector = con.createPacketCollector(
@@ -53,7 +55,7 @@ import java.text.DateFormat;
  * }</pre><p>
  *
  * Warning: this is an non-standard protocol documented by
- * <a href="http://www.jabber.org/jeps/jep-0090.html">JEP-90</a>. Because this is a
+ * <a href="http://www.xmpp.org/extensions/xep-0090.html">XEP-0090</a>. Because this is a
  * non-standard protocol, it is subject to change.
  *
  * @author Matt Tucker
@@ -71,7 +73,7 @@ public class Time extends IQ {
      * Creates a new Time instance with empty values for all fields.
      */
     public Time() {
-        this(Calendar.getInstance());
+        
     }
 
     /**
@@ -179,7 +181,7 @@ public class Time extends IQ {
     }
 
     public String getChildElementXML() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<query xmlns=\"jabber:iq:time\">");
         if (utc != null) {
             buf.append("<utc>").append(utc).append("</utc>");

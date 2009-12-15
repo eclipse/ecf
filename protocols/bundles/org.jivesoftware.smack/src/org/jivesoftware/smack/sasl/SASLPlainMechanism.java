@@ -1,9 +1,4 @@
 /**
- * $RCSfile$
- * $Revision$
- * $Date$
- *
- * Copyright 2003-2004 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +18,9 @@ package org.jivesoftware.smack.sasl;
 import org.jivesoftware.smack.SASLAuthentication;
 
 /**
- * Implementation of the SASL PLAIN mechanisn as defined by the
- * <a href="http://www.ietf.org/internet-drafts/draft-ietf-sasl-plain-08.txt">IETF draft
- * document</a>.
+ * Implementation of the SASL PLAIN mechanism
  *
- * @author Gaston Dombiak
+ * @author Jay Kline
  */
 public class SASLPlainMechanism extends SASLMechanism {
 
@@ -37,22 +30,5 @@ public class SASLPlainMechanism extends SASLMechanism {
 
     protected String getName() {
         return "PLAIN";
-    }
-
-    protected String getAuthenticationText(String username, String host, String password) {
-        // Build the text containing the "authorization identity" + NUL char +
-        // "authentication identity" + NUL char + "clear-text password"
-        StringBuffer text = new StringBuffer();
-        text.append(username).append("@").append(host);
-        text.append('\0');
-        text.append(username);
-        text.append('\0');
-        text.append(password);
-        return text.toString();
-    }
-
-    protected String getChallengeResponse(byte[] bytes) {
-        // Return null since this mechanism will never get a challenge from the server
-        return null;
     }
 }

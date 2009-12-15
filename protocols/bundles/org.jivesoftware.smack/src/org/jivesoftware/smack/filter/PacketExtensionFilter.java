@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,16 @@ public class PacketExtensionFilter implements PacketFilter {
     public PacketExtensionFilter(String elementName, String namespace) {
         this.elementName = elementName;
         this.namespace = namespace;
+    }
+
+    /**
+     * Creates a new packet extension filter. Packets will pass the filter if they have a packet
+     * extension that matches the specified namespace.
+     *
+     * @param namespace the XML namespace of the packet extension.
+     */
+    public PacketExtensionFilter(String namespace) {
+        this(null, namespace);
     }
 
     public boolean accept(Packet packet) {

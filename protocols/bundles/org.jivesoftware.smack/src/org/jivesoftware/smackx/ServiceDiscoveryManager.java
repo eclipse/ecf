@@ -3,7 +3,7 @@
  * $Revision$
  * $Date$
  *
- * Copyright 2003-2004 Jive Software.
+ * Copyright 2003-2007 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,19 @@
 
 package org.jivesoftware.smackx;
 
-import java.util.*;
-
 import org.jivesoftware.smack.*;
-import org.jivesoftware.smack.filter.*;
-import org.jivesoftware.smack.packet.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.filter.PacketIDFilter;
+import org.jivesoftware.smack.filter.PacketTypeFilter;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.XMPPError;
+import org.jivesoftware.smackx.packet.DiscoverInfo;
+import org.jivesoftware.smackx.packet.DiscoverItems;
+import org.jivesoftware.smackx.packet.DataForm;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages discovery of services in XMPP entities. This class provides:
@@ -43,16 +50,19 @@ public class ServiceDiscoveryManager {
     private static String identityName = "Smack";
     private static String identityType = "pc";
 
-    private static Map instances = new Hashtable();
+    private static Map<XMPPConnection, ServiceDiscoveryManager> instances =
+            new ConcurrentHashMap<XMPPConnection, ServiceDiscoveryManager>();
 
     private XMPPConnection connection;
-    private List features = new ArrayList();
-    private Map nodeInformationProviders = new Hashtable();
+    private final List<String> features = new ArrayList<String>();
+    private DataForm extendedInfo = null;
+    private Map<String, NodeInformationProvider> nodeInformationProviders =
+            new ConcurrentHashMap<String, NodeInformationProvider>();
 
     // Create a new ServiceDiscoveryManager on every established connection
     static {
-        XMPPConnection.addConnectionListener(new ConnectionEstablishedListener() {
-            public void connectionEstablished(XMPPConnection connection) {
+        XMPPConnection.addConnectionCreationListener(new ConnectionCreationListener() {
+            public void connectionCreated(XMPPConnection connection) {
                 new ServiceDiscoveryManager(connection);
             }
         });
@@ -77,7 +87,7 @@ public class ServiceDiscoveryManager {
      * @return the ServiceDiscoveryManager associated with a given XMPPConnection.
      */
     public static ServiceDiscoveryManager getInstanceFor(XMPPConnection connection) {
-        return (ServiceDiscoveryManager) instances.get(connection);
+        return instances.get(connection);
     }
 
     /**
@@ -142,8 +152,19 @@ public class ServiceDiscoveryManager {
             }
 
             public void connectionClosedOnError(Exception e) {
-                // Unregister this instance since the connection has been closed
-                instances.remove(connection);
+                // ignore
+            }
+
+            public void reconnectionFailed(Exception e) {
+                // ignore
+            }
+
+            public void reconnectingIn(int seconds) {
+                // ignore
+            }
+
+            public void reconnectionSuccessful() {
+                // ignore
             }
         });
 
@@ -158,21 +179,25 @@ public class ServiceDiscoveryManager {
                     response.setType(IQ.Type.RESULT);
                     response.setTo(discoverItems.getFrom());
                     response.setPacketID(discoverItems.getPacketID());
+                    response.setNode(discoverItems.getNode());
 
                     // Add the defined items related to the requested node. Look for 
                     // the NodeInformationProvider associated with the requested node.  
-                    if (getNodeInformationProvider(discoverItems.getNode()) != null) {
-                        Iterator items =
-                            getNodeInformationProvider(discoverItems.getNode()).getNodeItems();
-                        while (items.hasNext()) {
-                            response.addItem((DiscoverItems.Item) items.next());
+                    NodeInformationProvider nodeInformationProvider =
+                            getNodeInformationProvider(discoverItems.getNode());
+                    if (nodeInformationProvider != null) {
+                        // Specified node was found
+                        List<DiscoverItems.Item> items = nodeInformationProvider.getNodeItems();
+                        if (items != null) {
+                            for (DiscoverItems.Item item : items) {
+                                response.addItem(item);
+                            }
                         }
                     } else if(discoverItems.getNode() != null) {
-                        // Return an <item-not-found/> error since the client
-                        // doesn't contain the specified node
-                        response.setNode(discoverItems.getNode());
+                        // Return <item-not-found/> error since client doesn't contain
+                        // the specified node
                         response.setType(IQ.Type.ERROR);
-                        response.setError(new XMPPError(404, "item-not-found"));
+                        response.setError(new XMPPError(XMPPError.Condition.item_not_found));
                     }
                     connection.sendPacket(response);
                 }
@@ -192,7 +217,8 @@ public class ServiceDiscoveryManager {
                     response.setType(IQ.Type.RESULT);
                     response.setTo(discoverInfo.getFrom());
                     response.setPacketID(discoverInfo.getPacketID());
-                    // Add the client's identity and features only if "node" is null
+                    response.setNode(discoverInfo.getNode());
+                     // Add the client's identity and features only if "node" is null
                     if (discoverInfo.getNode() == null) {
                         // Set this client identity
                         DiscoverInfo.Identity identity = new DiscoverInfo.Identity("client",
@@ -201,16 +227,41 @@ public class ServiceDiscoveryManager {
                         response.addIdentity(identity);
                         // Add the registered features to the response
                         synchronized (features) {
-                            for (Iterator it = getFeatures(); it.hasNext();) {
-                                response.addFeature((String) it.next());
+                            for (Iterator<String> it = getFeatures(); it.hasNext();) {
+                                response.addFeature(it.next());
+                            }
+                            if (extendedInfo != null) {
+                                response.addExtension(extendedInfo);
                             }
                         }
                     }
                     else {
-                        // Return an <item-not-found/> error since a client doesn't have nodes
-                        response.setNode(discoverInfo.getNode());
-                        response.setType(IQ.Type.ERROR);
-                        response.setError(new XMPPError(404, "item-not-found"));
+                        // Disco#info was sent to a node. Check if we have information of the
+                        // specified node
+                        NodeInformationProvider nodeInformationProvider =
+                                getNodeInformationProvider(discoverInfo.getNode());
+                        if (nodeInformationProvider != null) {
+                            // Node was found. Add node features
+                            List<String> features = nodeInformationProvider.getNodeFeatures();
+                            if (features != null) {
+                                for(String feature : features) {
+                                    response.addFeature(feature);
+                                }
+                            }
+                            // Add node identities
+                            List<DiscoverInfo.Identity> identities =
+                                    nodeInformationProvider.getNodeIdentities();
+                            if (identities != null) {
+                                for (DiscoverInfo.Identity identity : identities) {
+                                    response.addIdentity(identity);
+                                }
+                            }
+                        }
+                        else {
+                            // Return <item-not-found/> error since specified node was not found
+                            response.setType(IQ.Type.ERROR);
+                            response.setError(new XMPPError(XMPPError.Condition.item_not_found));
+                        }
                     }
                     connection.sendPacket(response);
                 }
@@ -234,7 +285,7 @@ public class ServiceDiscoveryManager {
         if (node == null) {
             return null;
         }
-        return (NodeInformationProvider) nodeInformationProviders.get(node);
+        return nodeInformationProviders.get(node);
     }
 
     /**
@@ -273,9 +324,9 @@ public class ServiceDiscoveryManager {
      * 
      * @return an Iterator on the supported features by this XMPP entity.
      */
-    public Iterator getFeatures() {
+    public Iterator<String> getFeatures() {
         synchronized (features) {
-            return Collections.unmodifiableList(new ArrayList(features)).iterator();
+            return Collections.unmodifiableList(new ArrayList<String>(features)).iterator();
         }
     }
 
@@ -320,6 +371,36 @@ public class ServiceDiscoveryManager {
         synchronized (features) {
             return features.contains(feature);
         }
+    }
+
+    /**
+     * Registers extended discovery information of this XMPP entity. When this
+     * client is queried for its information this data form will be returned as
+     * specified by XEP-0128.
+     * <p>
+     *
+     * Since no packet is actually sent to the server it is safe to perform this
+     * operation before logging to the server. In fact, you may want to
+     * configure the extended info before logging to the server so that the
+     * information is already available if it is required upon login.
+     *
+     * @param info
+     *            the data form that contains the extend service discovery
+     *            information.
+     */
+    public void setExtendedInfo(DataForm info) {
+      extendedInfo = info;
+    }
+
+    /**
+     * Removes the dataform containing extended service discovery information
+     * from the information returned by this XMPP entity.<p>
+     *
+     * Since no packet is actually sent to the server it is safe to perform this
+     * operation before logging to the server.
+     */
+    public void removeExtendedInfo() {
+       extendedInfo = null;
     }
 
     /**

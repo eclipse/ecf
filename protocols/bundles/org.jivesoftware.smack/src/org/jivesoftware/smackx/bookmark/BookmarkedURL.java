@@ -1,10 +1,22 @@
 /**
- * $Revision: 1.1 $
- * $Date: 2007/01/22 07:07:21 $
+ * $Revision: 1.2 $
+ * $Date: 2009/12/15 09:04:06 $
  *
- * Copyright (C) 1999-2005 Jive Software. All rights reserved.
- * This software is the proprietary information of Jive Software. Use is subject to license terms.
+ * Copyright 2003-2007 Jive Software.
+ *
+ * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package org.jivesoftware.smackx.bookmark;
 
 /**
@@ -12,10 +24,22 @@ package org.jivesoftware.smackx.bookmark;
  *
  * @author Derek DeMoro
  */
-public class BookmarkedURL {
+public class BookmarkedURL implements SharedBookmark {
 
     private String name;
-    private String URL;
+    private final String URL;
+    private boolean isRss;
+    private boolean isShared;
+
+    protected BookmarkedURL(String URL) {
+        this.URL = URL;
+    }
+
+    protected BookmarkedURL(String URL, String name, boolean isRss) {
+        this.URL = URL;
+        this.name = name;
+        this.isRss = isRss;
+    }
 
     /**
      * Returns the name representing the URL (eg. Jive Software). This can be used in as a label, or
@@ -32,7 +56,7 @@ public class BookmarkedURL {
      *
      * @param name the name.
      */
-    public void setName(String name) {
+    protected void setName(String name) {
         this.name = name;
     }
 
@@ -44,14 +68,37 @@ public class BookmarkedURL {
     public String getURL() {
         return URL;
     }
-
     /**
-     * Sets the URL.
+     * Set to true if this URL is an RSS or news feed.
      *
-     * @param URL the url.
+     * @param isRss True if the URL is a news feed and false if it is not.
      */
-    public void setURL(String URL) {
-        this.URL = URL;
+    protected void setRss(boolean isRss) {
+        this.isRss = isRss;
     }
 
+    /**
+     * Returns true if this URL is a news feed.
+     *
+     * @return Returns true if this URL is a news feed.
+     */
+    public boolean isRss() {
+        return isRss;
+    }
+
+    public boolean equals(Object obj) {
+        if(!(obj instanceof BookmarkedURL)) {
+            return false;
+        }
+        BookmarkedURL url = (BookmarkedURL)obj;
+        return url.getURL().equalsIgnoreCase(URL);
+    }
+
+    protected void setShared(boolean shared) {
+        this.isShared = shared;
+    }
+
+    public boolean isShared() {
+        return isShared;
+    }
 }
