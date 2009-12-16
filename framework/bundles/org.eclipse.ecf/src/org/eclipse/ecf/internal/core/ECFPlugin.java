@@ -302,9 +302,6 @@ public class ECFPlugin implements BundleActivator {
 		}
 	}
 
-	/**
-	 * This method is called upon plug-in activation
-	 */
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
@@ -349,9 +346,6 @@ public class ECFPlugin implements BundleActivator {
 		}
 	}
 
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
 	public void stop(BundleContext ctxt) throws Exception {
 		fireDisposables();
 		this.disposables = null;
@@ -389,6 +383,7 @@ public class ECFPlugin implements BundleActivator {
 
 	/**
 	 * Returns the shared instance.
+	 * @return ECFPlugin
 	 */
 	public synchronized static ECFPlugin getDefault() {
 		if (plugin == null) {

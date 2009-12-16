@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.identity.IIdentifiable;
 public interface IUser extends IIdentifiable, Serializable, IAdaptable {
 	/**
 	 * Get basic name for user. Will not return <code>null</.
+	 * @return String
 	 */
 	public String getName();
 

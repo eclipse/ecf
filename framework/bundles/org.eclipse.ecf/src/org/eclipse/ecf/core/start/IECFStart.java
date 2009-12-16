@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 public interface IECFStart {
 	/**
 	 * Run some startup task.
+	 * @param monitor 
 	 * 
 	 * @return IStatus the status of the start
 	 */

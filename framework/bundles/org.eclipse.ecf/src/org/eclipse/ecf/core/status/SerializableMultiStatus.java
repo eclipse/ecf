@@ -124,6 +124,7 @@ public class SerializableMultiStatus extends SerializableStatus {
 	/**
 	 * Returns a string representation of the status, suitable for debugging
 	 * purposes only.
+	 * @return String
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer(super.toString());
