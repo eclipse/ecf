@@ -9,6 +9,9 @@
 ******************************************************************************/
 package org.eclipse.ecf.filetransfer;
 
+/**
+ * @since 3.1
+ */
 public interface ISendFileTransferOptions {
 
 	public static final String REQUEST_HEADERS = ISendFileTransferOptions.class.getName() + ".requestHeaders"; //$NON-NLS-1$
