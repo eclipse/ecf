@@ -1219,8 +1219,8 @@ public class XMPPConnection {
             else {
                 ks = KeyStore.getInstance(configuration.getKeystoreType());
                 try {
-                    ks.load(new FileInputStream(configuration.getKeystorePath()), pcb.getPassword());
                     pcb = new PasswordCallback("Keystore Password: ",false);
+                    ks.load(new FileInputStream(configuration.getKeystorePath()), pcb.getPassword());
                     callbackHandler.handle(new Callback[]{pcb});
                 }
                 catch(Exception e) {
