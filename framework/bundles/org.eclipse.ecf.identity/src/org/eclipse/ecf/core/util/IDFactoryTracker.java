@@ -17,6 +17,8 @@ import org.osgi.util.tracker.ServiceTracker;
  * Service tracker customized to handle tracking the ECF id factory service
  * (singleton).
  * 
+ * @since 3.1
+ * 
  */
 public class IDFactoryTracker extends ServiceTracker {
 

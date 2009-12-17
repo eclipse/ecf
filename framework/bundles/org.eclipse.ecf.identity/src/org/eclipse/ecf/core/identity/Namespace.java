@@ -301,6 +301,9 @@ public abstract class Namespace implements Serializable, IAdaptable {
 		return manager.loadAdapter(this, adapter.getName());
 	}
 
+	/**
+	 * @since 3.1
+	 */
 	protected String getInitStringFromExternalForm(Object[] args) {
 		if (args == null || args.length < 1 || args[0] == null)
 			return null;
