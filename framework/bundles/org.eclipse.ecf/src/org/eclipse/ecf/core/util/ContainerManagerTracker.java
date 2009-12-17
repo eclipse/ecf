@@ -15,6 +15,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Service tracker customized to handle tracking the ECF container manager service (singleton).
+ * @since 4.0
  *
  */
 public class ContainerManagerTracker extends ServiceTracker {

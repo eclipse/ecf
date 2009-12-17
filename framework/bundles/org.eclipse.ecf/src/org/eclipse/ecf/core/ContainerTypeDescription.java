@@ -229,6 +229,9 @@ public class ContainerTypeDescription {
 		return result;
 	}
 
+	/**
+	 * @since 4.0
+	 */
 	public String[] getSupportedConfigTypes() {
 		String method = "getSupportedConfigTypes"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);

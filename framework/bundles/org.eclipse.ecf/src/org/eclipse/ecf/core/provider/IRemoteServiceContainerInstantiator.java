@@ -13,6 +13,7 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 
 /**
  * Interface that must be implemented by ECF remote service provider implementations.
+ * @since 4.0
  * 
  */
 public interface IRemoteServiceContainerInstantiator {

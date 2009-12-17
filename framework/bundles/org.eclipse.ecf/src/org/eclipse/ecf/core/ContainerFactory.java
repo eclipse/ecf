@@ -35,6 +35,7 @@ import org.eclipse.ecf.internal.core.*;
  * 
  * @see IContainer
  * @see IContainerFactory
+ * @since 4.0
  */
 public class ContainerFactory implements IContainerFactory, IContainerManager {
 
@@ -344,29 +345,29 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), new Object[] {containerID});
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String, java.lang.String)
+	/**
+	 * @since 4.0
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, String containerId) throws ContainerCreateException {
 		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerId);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String, java.lang.String, java.lang.Object[])
+	/**
+	 * @since 4.0
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, String containerId, Object[] parameters) throws ContainerCreateException {
 		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerId, parameters);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.String)
+	/**
+	 * @since 4.0
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId) throws ContainerCreateException {
 		return createContainer(containerTypeDescription, containerId, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.String, java.lang.Object[])
+	/**
+	 * @since 4.0
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId, Object[] parameters) throws ContainerCreateException {
 		if (containerId == null)
