@@ -119,6 +119,4 @@ public interface IContainerInstantiator {
 	 */
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description);
 
-	public String[] getSupportedIntents(ContainerTypeDescription description);
-
 }
