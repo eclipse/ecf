@@ -26,7 +26,7 @@ public class CommunicationPerspective implements IPerspectiveFactory {
 
 		// Add "show views".
 		// to be replaced by IPageLayout.ID_PROJECT_EXPLORER
-		layout.addShowViewShortcut("org.eclipse.ui.navigator.ProjectExplorer");
+		layout.addShowViewShortcut("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
@@ -42,7 +42,7 @@ public class CommunicationPerspective implements IPerspectiveFactory {
 		// Top left.
 		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.26f, editorArea); //$NON-NLS-1$
 		// to be replaced by IPageLayout.ID_PROJECT_EXPLORER
-		topLeft.addView("org.eclipse.ui.navigator.ProjectExplorer");
+		topLeft.addView("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
 
 		// Bottom left.
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", //$NON-NLS-1$
