@@ -216,10 +216,6 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 		return new Class[][] { {}, {ID.class}, {ID.class, Integer.class}};
 	}
 
-	/**
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedIntents(org.eclipse.ecf.core.ContainerTypeDescription)
-	 * @since 2.0
-	 */
 	public String[] getSupportedIntents(ContainerTypeDescription description) {
 		return genericProviderIntents;
 	}
