@@ -580,6 +580,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return result;
 	}
 
+	/**
+	 * @since 4.0
+	 */
 	protected int getConnectTimeout() {
 		int result = DEFAULT_CONNECTION_TIMEOUT;
 		Map localOptions = getOptions();
