@@ -25,6 +25,8 @@ import org.eclipse.ecf.internal.core.ECFPlugin;
  */
 public class ContainerTypeDescription {
 
+	private static final String[] EMPTY_ARRAY = new String[0];
+
 	protected String name = null;
 
 	protected String instantiatorClass = null;
@@ -218,7 +220,7 @@ public class ContainerTypeDescription {
 	public String[] getSupportedIntents() {
 		String method = "getSupportedIntents"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
-		String[] result = new String[0];
+		String[] result = EMPTY_ARRAY;
 		try {
 			IContainerInstantiator ci = getInstantiator();
 			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedIntents(this) : result;
@@ -235,14 +237,32 @@ public class ContainerTypeDescription {
 	public String[] getSupportedConfigTypes() {
 		String method = "getSupportedConfigTypes"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
-		String[] result = new String[0];
+		String[] result = EMPTY_ARRAY;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedConfigTypes(this) : result;
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedConfigTypes(this) : new String[] {getName()};
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
 		}
 		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
 		return result;
 	}
+
+	/**
+	 * @since 4.0
+	 */
+	public String[] getCompatibleRemoteContainerFactoryNames() {
+		String method = "getCompatibleRemoteContainerFactoryNames"; //$NON-NLS-1$
+		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
+		String[] result = EMPTY_ARRAY;
+		try {
+			IContainerInstantiator ci = getInstantiator();
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getCompatibleRemoteContainerFactoryNames(this) : new String[] {getName()};
+		} catch (Exception e) {
+			traceAndLogException(IStatus.ERROR, method, e);
+		}
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
+		return result;
+	}
+
 }

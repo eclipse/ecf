@@ -14,7 +14,7 @@ package org.eclipse.ecf.core.provider;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 
 /**
- *  Default implemenation of {@link IRemoteServiceContainerInstantiator}.  ECF provider implementers
+ *  Default implementation of {@link IRemoteServiceContainerInstantiator}.  ECF provider implementers
  *  may subclass as desired.
  * @since 4.0
  */
@@ -25,6 +25,10 @@ public class BaseRemoteServiceContainerInstantiator extends BaseContainerInstant
 	}
 
 	public String[] getSupportedConfigTypes(ContainerTypeDescription description) {
+		return new String[] {description.getName()};
+	}
+
+	public String[] getCompatibleRemoteContainerFactoryNames(ContainerTypeDescription description) {
 		return new String[] {description.getName()};
 	}
 }
