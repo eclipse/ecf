@@ -251,18 +251,17 @@ public class ContainerTypeDescription {
 	/**
 	 * @since 4.0
 	 */
-	public String[] getCompatibleRemoteContainerFactoryNames() {
-		String method = "getCompatibleRemoteContainerFactoryNames"; //$NON-NLS-1$
+	public boolean isImporter(String configType) {
+		if (configType == null)
+			return false;
+		String method = "isImporter"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
-		String[] result = EMPTY_ARRAY;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getCompatibleRemoteContainerFactoryNames(this) : new String[] {getName()};
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).isImporterForRemoteConfigType(this, configType) : false;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
+			return false;
 		}
-		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
-		return result;
 	}
-
 }

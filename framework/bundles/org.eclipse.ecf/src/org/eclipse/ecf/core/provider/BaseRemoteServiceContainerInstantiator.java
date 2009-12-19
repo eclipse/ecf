@@ -28,7 +28,7 @@ public class BaseRemoteServiceContainerInstantiator extends BaseContainerInstant
 		return new String[] {description.getName()};
 	}
 
-	public String[] getCompatibleRemoteContainerFactoryNames(ContainerTypeDescription description) {
-		return new String[] {description.getName()};
+	public boolean isImporterForRemoteConfigType(ContainerTypeDescription description, String remoteConfigType) {
+		return description.getName().equals(remoteConfigType);
 	}
 }

@@ -35,21 +35,17 @@ public interface IRemoteServiceContainerInstantiator {
 	public String[] getSupportedIntents(ContainerTypeDescription description);
 
 	/**
-	 * Get the container factory names that are expected to be supported by the remote
-	 * importing container.  Note that the returned values specify the container
-	 * type name of the remote container...and that a container matching the given
-	 * name should be able to communicate with the container represented by the given description.  <p>
-	 * For example, for the 
-	 * container type description with name: "ecf.generic.server", the result of 
-	 * this method should be ["ecf.generic.client"], since the generic client is 
-	 * the expected importer.</p><p> Another example is r-OSGi...since
-	 * r-OSGi is peer based, the importer will be another peer, so the "ecf.r-osgi.peer"
-	 * will respond with "ecf.r-osgi.peer".</p>
+	 * Determine whether the given container type description is a remote service importer for 
+	 * the given remote config type.  If the description is an importer for the given
+	 * remoteConfigType, this method should return <code>true</code>, otherwise <code>false</code>.
+	 * Implementations should only return <code>true</code> if a container of the given type
+	 * can be created that will be able to communicate with the given remote container (of the
+	 * given type).
 	 * 
-	 * @param description the container type description for the local container.
-	 * 
-	 * @return String[] the container factory names of compatible remote containers
+	 * @param description the local description under consideration.  Will not be <code>null</code>.
+	 * @param remoteConfigType the remoteConfigType to consider.  Will not be <code>null</code>.
+	 * @return <code>true</code> if the description represents a container capable of being a
+	 * remote service importer for the given remoteConfigType, <code>false</code> otherwise.
 	 */
-	public String[] getCompatibleRemoteContainerFactoryNames(ContainerTypeDescription description);
-
+	public boolean isImporterForRemoteConfigType(ContainerTypeDescription description, String remoteConfigType);
 }
