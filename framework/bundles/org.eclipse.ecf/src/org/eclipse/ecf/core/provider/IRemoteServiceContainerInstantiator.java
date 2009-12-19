@@ -65,7 +65,7 @@ public interface IRemoteServiceContainerInstantiator {
 	 * @return String[] indicating the importer's supported config types.  Should be <code>null</code>, unless
 	 * one or more of the exporterSupportedConfigTypes is recognized for the given description.
 	 */
-	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigTypes);
+	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs);
 
 	/**
 	 * Get the properties associated with the given description, with the given importedConfigTypes, via the given exportedProperties.
@@ -77,6 +77,6 @@ public interface IRemoteServiceContainerInstantiator {
 	 * @return Dictionary that has all of the properties for the importedConfigTypes.  May be <code>null</code> if 
 	 * no properties are associated with the given description, importedConfigTypes, exportedProperties.
 	 */
-	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigTypes, Dictionary exportedProperties);
+	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigs, Dictionary exportedProperties);
 
 }

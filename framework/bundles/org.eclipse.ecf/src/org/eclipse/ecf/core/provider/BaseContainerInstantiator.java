@@ -58,23 +58,14 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 		return (String[]) result.toArray(new String[] {});
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
-	 */
 	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
 		throw new ContainerCreateException(Messages.BaseContainerInstantiator_EXCEPTION_CREATEINSTANCE_NOT_SUPPORTED);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
-	 */
 	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
 		return NO_ADAPTERS_ARRAY;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedParameterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
-	 */
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		return EMPTY_CLASS_ARRAY;
 	}

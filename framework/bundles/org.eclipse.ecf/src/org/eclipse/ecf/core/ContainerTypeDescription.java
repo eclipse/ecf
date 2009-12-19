@@ -250,15 +250,15 @@ public class ContainerTypeDescription {
 	/**
 	 * @since 4.0
 	 */
-	public String[] getImportedConfigs(String[] remoteConfigTypes) {
+	public String[] getImportedConfigs(String[] exporterSupportedConfigs) {
 		String method = "getImportedConfigs"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
-		if (remoteConfigTypes == null)
+		if (exporterSupportedConfigs == null)
 			return null;
 		String[] result = null;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			result = (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getImportedConfigs(this, remoteConfigTypes) : null;
+			result = (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getImportedConfigs(this, exporterSupportedConfigs) : null;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
 		}
@@ -268,15 +268,15 @@ public class ContainerTypeDescription {
 	/**
 	 * @since 4.0
 	 */
-	public Dictionary getPropertiesForImportedConfigs(String[] importedConfigTypes, Dictionary exportedProperties) {
+	public Dictionary getPropertiesForImportedConfigs(String[] importedConfigs, Dictionary exportedProperties) {
 		String method = "getPropertiesForImportedConfigs"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
-		if (importedConfigTypes == null)
+		if (importedConfigs == null)
 			return null;
 		Dictionary result = null;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			result = (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getPropertiesForImportedConfigs(this, importedConfigTypes, exportedProperties) : null;
+			result = (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getPropertiesForImportedConfigs(this, importedConfigs, exportedProperties) : null;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
 		}

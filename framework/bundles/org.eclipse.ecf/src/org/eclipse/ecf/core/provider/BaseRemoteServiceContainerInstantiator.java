@@ -29,12 +29,8 @@ public class BaseRemoteServiceContainerInstantiator extends BaseContainerInstant
 		return new String[] {description.getName()};
 	}
 
-	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigTypes) {
+	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs) {
 		return new String[] {description.getName()};
-	}
-
-	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigTypes) {
-		return null;
 	}
 
 	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigTypes, Dictionary exportedProperties) {
