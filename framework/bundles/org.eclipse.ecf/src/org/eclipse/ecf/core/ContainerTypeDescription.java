@@ -251,7 +251,7 @@ public class ContainerTypeDescription {
 	/**
 	 * @since 4.0
 	 */
-	public boolean isImporter(String configType) {
+	public boolean isImporterForRemoteConfigType(String configType) {
 		if (configType == null)
 			return false;
 		String method = "isImporter"; //$NON-NLS-1$
