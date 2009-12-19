@@ -8,8 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
@@ -234,13 +233,13 @@ public class ContainerTypeDescription {
 	/**
 	 * @since 4.0
 	 */
-	public String[] getSupportedConfigTypes() {
-		String method = "getSupportedConfigTypes"; //$NON-NLS-1$
+	public String[] getSupportedConfigs() {
+		String method = "getSupportedConfigs"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		String[] result = EMPTY_ARRAY;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedConfigTypes(this) : new String[] {getName()};
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedConfigs(this) : new String[] {getName()};
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
 		}
@@ -251,17 +250,37 @@ public class ContainerTypeDescription {
 	/**
 	 * @since 4.0
 	 */
-	public boolean isImporterForRemoteConfigType(String configType) {
-		if (configType == null)
-			return false;
-		String method = "isImporter"; //$NON-NLS-1$
+	public String[] getImportedConfigs(String[] remoteConfigTypes) {
+		String method = "getImportedConfigs"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
+		if (remoteConfigTypes == null)
+			return null;
+		String[] result = null;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).isImporterForRemoteConfigType(this, configType) : false;
+			result = (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getImportedConfigs(this, remoteConfigTypes) : null;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
-			return false;
 		}
+		return result;
 	}
+
+	/**
+	 * @since 4.0
+	 */
+	public Dictionary getPropertiesForImportedConfigs(String[] importedConfigTypes, Dictionary exportedProperties) {
+		String method = "getPropertiesForImportedConfigs"; //$NON-NLS-1$
+		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
+		if (importedConfigTypes == null)
+			return null;
+		Dictionary result = null;
+		try {
+			IContainerInstantiator ci = getInstantiator();
+			result = (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getPropertiesForImportedConfigs(this, importedConfigTypes, exportedProperties) : null;
+		} catch (Exception e) {
+			traceAndLogException(IStatus.ERROR, method, e);
+		}
+		return result;
+	}
+
 }

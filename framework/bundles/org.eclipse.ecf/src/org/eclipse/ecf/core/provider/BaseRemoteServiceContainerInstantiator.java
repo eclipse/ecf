@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.core.provider;
 
+import java.util.Dictionary;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 
 /**
@@ -24,11 +25,20 @@ public class BaseRemoteServiceContainerInstantiator extends BaseContainerInstant
 		return EMPTY_STRING_ARRAY;
 	}
 
-	public String[] getSupportedConfigTypes(ContainerTypeDescription description) {
+	public String[] getSupportedConfigs(ContainerTypeDescription description) {
 		return new String[] {description.getName()};
 	}
 
-	public boolean isImporterForRemoteConfigType(ContainerTypeDescription description, String remoteConfigType) {
-		return description.getName().equals(remoteConfigType);
+	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigTypes) {
+		return new String[] {description.getName()};
 	}
+
+	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigTypes) {
+		return null;
+	}
+
+	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigTypes, Dictionary exportedProperties) {
+		return null;
+	}
+
 }
