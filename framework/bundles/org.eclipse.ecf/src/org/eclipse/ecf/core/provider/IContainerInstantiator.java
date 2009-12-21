@@ -119,11 +119,6 @@ public interface IContainerInstantiator {
 	 */
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description);
 
-	/**
-	 * @deprecated
-	 * @param description
-	 * @return String[]
-	 */
 	public String[] getSupportedIntents(ContainerTypeDescription description);
 
 }
