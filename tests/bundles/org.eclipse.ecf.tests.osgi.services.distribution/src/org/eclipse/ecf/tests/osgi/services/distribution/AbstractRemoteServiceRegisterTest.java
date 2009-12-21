@@ -18,7 +18,7 @@ import org.osgi.framework.ServiceRegistration;
 public abstract class AbstractRemoteServiceRegisterTest extends
 		AbstractDistributionTest {
 
-	protected static final int REGISTER_WAIT = 15000;
+	protected static final int REGISTER_WAIT = 2000;
 
 	protected abstract String getServerContainerName();
 	
@@ -54,7 +54,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Set config to the server container name/provider config name (e.g. ecf.generic.server)
 		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
 		// set the container factory arguments to the server identity (e.g. ecftcp://localhost:3282/server)
-		props.put(CONTAINER_FACTORY_ARGUMENTS, new String[] { getServerIdentity() } );
+		props.put(SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS, new String[] { getServerIdentity() } );
 		// Set the service exported interfaces to all
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		
@@ -72,6 +72,16 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		registerWaitAndUnregister(props);
 	}
 
+	public void testRegisterOnExistingServerWithContainerID() throws Exception {
+		// Create server container
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerName(),new Object[] {getServerCreateID()});
+		
+		Properties props = new Properties();
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		props.put(SERVICE_EXPORTED_CONTAINER_ID, getServerCreateID());
+		registerWaitAndUnregister(props);
+	}
+
 	public void testRegisterOnExistingServerWithIdentity() throws Exception {
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerName(),getServerIdentity());
@@ -79,8 +89,6 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		Properties props = new Properties();
 		// Set config to the server container name/provider config name (e.g. ecf.generic.server)
 		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
-		// set the container factory arguments to the server identity (e.g. ecftcp://localhost:3282/server)
-		props.put(CONTAINER_FACTORY_ARGUMENTS, new String[] { getServerIdentity() } );
 		// Set the service exported interfaces to all
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		

@@ -9,11 +9,10 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution.generic;
 
+import org.eclipse.ecf.tests.osgi.services.distribution.AbstractRemoteServiceAccessTest;
 
-import org.eclipse.ecf.tests.osgi.services.distribution.AbstractServiceRegisterTest;
 
-
-public class GenericServiceRegisterTest extends AbstractServiceRegisterTest {
+public class GenericRemoteServiceAccessTest extends AbstractRemoteServiceAccessTest {
 
 	/*
 	 * (non-Javadoc)
@@ -37,7 +36,5 @@ public class GenericServiceRegisterTest extends AbstractServiceRegisterTest {
 	protected String getClientContainerName() {
 		return "ecf.generic.client";
 	}
-
-
 
 }

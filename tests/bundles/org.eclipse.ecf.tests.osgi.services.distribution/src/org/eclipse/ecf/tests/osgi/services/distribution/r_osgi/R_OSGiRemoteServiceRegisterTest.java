@@ -13,11 +13,11 @@ package org.eclipse.ecf.tests.osgi.services.distribution.r_osgi;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.tests.osgi.services.distribution.AbstractServiceRegisterTest;
+import org.eclipse.ecf.tests.osgi.services.distribution.AbstractRemoteServiceRegisterTest;
 import org.osgi.framework.ServiceReference;
 
 
-public class R_OSGiServiceRegisterTest extends AbstractServiceRegisterTest {
+public class R_OSGiRemoteServiceRegisterTest extends AbstractRemoteServiceRegisterTest {
 
 	/*
 	 * (non-Javadoc)
@@ -58,6 +58,11 @@ public class R_OSGiServiceRegisterTest extends AbstractServiceRegisterTest {
 	public ServiceReference getReference() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	protected String getServerContainerName() {
+		return "ecf.r_osgi.peer";
 	}
 	
 }

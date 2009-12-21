@@ -19,7 +19,7 @@ import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
-public abstract class AbstractServiceRegisterListenerTest extends AbstractServiceRegisterTest {
+public abstract class AbstractServiceRegisterListenerTest extends AbstractRemoteServiceAccessTest {
 
 	ServiceRegistration hostDistributionListenerRegistration;
 	ServiceRegistration proxyDistributionListenerRegistration;
