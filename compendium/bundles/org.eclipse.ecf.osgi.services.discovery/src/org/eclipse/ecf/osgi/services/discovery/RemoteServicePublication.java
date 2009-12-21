@@ -63,6 +63,11 @@ public interface RemoteServicePublication extends ServicePublication {
 	 * property must be of type String.
 	 */
 	public static final String ENDPOINT_CONTAINERID_NAMESPACE = "ecf.sp.cns"; //$NON-NLS-1$
+
+	public static final String ENDPOINT_SUPPORTED_CONFIGS = "ecf.sp.ect";
+
+	public static final String ENDPOINT_SERVICE_INTENTS = "ecf.sp.esi";
+
 	/**
 	 * Target container ID property. The value for this property must be of type
 	 * byte[] which is a UTF-8 encoding of a String.
@@ -78,4 +83,5 @@ public interface RemoteServicePublication extends ServicePublication {
 	 * property must be of type String.
 	 */
 	public static final String REMOTE_SERVICE_FILTER = "ecf.client.filter"; //$NON-NLS-1$
+
 }

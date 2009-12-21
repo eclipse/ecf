@@ -184,6 +184,24 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 				ServicePublication.SERVICE_INTERFACE_NAME, ServicePropertyUtils
 						.createStringFromCollection(svcInterfaces));
 
+		Collection configTypes = ServicePropertyUtils.getCollectionProperty(
+				reference, RemoteServicePublication.ENDPOINT_SUPPORTED_CONFIGS);
+		if (configTypes != null) {
+			discoveryServiceProperties.setPropertyString(
+					RemoteServicePublication.ENDPOINT_SUPPORTED_CONFIGS,
+					ServicePropertyUtils
+							.createStringFromCollection(configTypes));
+		}
+
+		Collection serviceIntents = ServicePropertyUtils.getCollectionProperty(
+				reference, RemoteServicePublication.ENDPOINT_SERVICE_INTENTS);
+		if (serviceIntents != null) {
+			discoveryServiceProperties.setPropertyString(
+					RemoteServicePublication.ENDPOINT_SERVICE_INTENTS,
+					ServicePropertyUtils
+							.createStringFromCollection(serviceIntents));
+		}
+
 		// We also use the optional RFC 119 property PROP_KEY_SERVICE_PROPERTIES
 		Map servicePublicationServiceProperties = ServicePropertyUtils
 				.getMapProperty(reference,

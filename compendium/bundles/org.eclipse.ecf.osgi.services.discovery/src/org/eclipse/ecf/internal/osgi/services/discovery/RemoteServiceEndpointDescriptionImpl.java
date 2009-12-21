@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
 import java.net.URI;
+import java.util.Arrays;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -64,6 +65,7 @@ public class RemoteServiceEndpointDescriptionImpl extends
 			targetId = IDFactory.getDefault().createID(targetNamespaceStr,
 					targetStr);
 		}
+
 		// Get location and compute hashCode
 		URI serviceLocation = this.serviceId.getLocation();
 		long rsId = this.getRemoteServiceId();
@@ -116,7 +118,15 @@ public class RemoteServiceEndpointDescriptionImpl extends
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
-		sb.append(";providedinterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
+		sb.append(";providedInterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
+		String[] supportedConfigs = getSupportedConfigs();
+		sb.append(";supportedConfigTypes").append(
+				(supportedConfigs == null) ? "null" : Arrays.asList(
+						supportedConfigs).toString());
+		String[] serviceIntents = getServiceIntents();
+		sb.append(";serviceIntents").append(
+				(serviceIntents == null) ? "null" : Arrays.asList(
+						serviceIntents).toString());
 		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
 		sb.append(";remoteServiceId=").append(getRemoteServiceId()); //$NON-NLS-1$
 		sb.append(";discoveryServiceID=").append(getServiceID()); //$NON-NLS-1$

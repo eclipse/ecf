@@ -65,4 +65,8 @@ public interface IRemoteServiceEndpointDescription extends
 	 */
 	public long getRemoteServiceId();
 
+	public String[] getSupportedConfigs();
+
+	public String[] getServiceIntents();
+
 }

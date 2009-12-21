@@ -206,4 +206,23 @@ public abstract class RemoteServiceEndpointDescription implements
 			this.serviceProperties = props;
 	}
 
+	public String[] getSupportedConfigs() {
+		Object o = serviceProperties
+				.get(RemoteServicePublication.ENDPOINT_SUPPORTED_CONFIGS);
+		if (o == null || !(o instanceof String))
+			return null;
+		Collection c = ServicePropertyUtils
+				.createCollectionFromString((String) o);
+		return (String[]) ((c == null) ? null : c.toArray(new String[] {}));
+	}
+
+	public String[] getServiceIntents() {
+		Object o = serviceProperties
+				.get(RemoteServicePublication.ENDPOINT_SERVICE_INTENTS);
+		if (o == null || !(o instanceof String))
+			return null;
+		Collection c = ServicePropertyUtils
+				.createCollectionFromString((String) o);
+		return (String[]) ((c == null) ? null : c.toArray(new String[] {}));
+	}
 }
