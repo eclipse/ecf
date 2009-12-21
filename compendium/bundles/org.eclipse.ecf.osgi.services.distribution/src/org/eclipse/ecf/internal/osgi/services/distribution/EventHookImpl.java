@@ -69,62 +69,69 @@ public class EventHookImpl implements EventHook {
 		}
 	}
 
+	private String[] getExportedConfigs(ServiceReference serviceReference) {
+		return getStringArrayFromPropertyValue(serviceReference
+				.getProperty(IDistributionConstants.SERVICE_EXPORTED_CONFIGS));
+	}
+
 	void handleRegisteredServiceEvent(ServiceReference serviceReference,
 			Collection contexts) {
 
-		// Using OSGI 4.2 Chap 13 Remote Services spec, get the remote
+		// Using OSGI 4.2 Chap 13 Remote Services spec, get the specified remote
 		// interfaces for the given service reference
-		String[] remoteInterfaces = getRemoteInterfacesForServiceReference(serviceReference);
+		String[] exportedInterfaces = getExportedInterfaces(serviceReference);
 		// If no remote interfaces set, then we don't do anything with it
-		if (remoteInterfaces == null)
+		if (exportedInterfaces == null)
 			return;
 
-		// Get optional service property service.exported.configs
-		String[] configs = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(IDistributionConstants.SERVICE_EXPORTED_CONFIGS));
+		// Get optional service property for exported configs
+		String[] exportedConfigs = getExportedConfigs(serviceReference);
 
-		String[] intents = getRemoteServiceIntents(serviceReference);
+		// Get all intents (service.intents, service.exported.intents,
+		// service.exported.intents.extra)
+		String[] serviceIntents = getServiceIntents(serviceReference);
 
-		// Get optional service property service.intents
-		// Now call out to find host remote service containers
-		IRemoteServiceContainer[] rsContainers = findRemoteServiceContainers(
-				serviceReference, remoteInterfaces, configs, intents);
+		// Now call out to find host remote service containers via
+		// IHostContainerFinder service (service to allow extensibility
+		// in matching to available ECF containers/providers
+		IRemoteServiceContainer[] rsContainers = findHostContainers(
+				serviceReference, exportedInterfaces, exportedConfigs,
+				serviceIntents);
 
 		if (rsContainers == null || rsContainers.length == 0) {
-			trace("registerRemoteService",
-					"No remote service container adapters found for serviceReference="
-							+ serviceReference);
+			LogUtility.logWarning("handleRegisteredServiceEvent",
+					DebugOptions.EVENTHOOKDEBUG, this.getClass(),
+					"No remote service containers found for serviceReference="
+							+ serviceReference + ". Service NOT EXPORTED");
 			return;
 		}
 		// Now actually register remote service with remote service container
-		// adapters found above. This involves three steps:
-		// 1) registering the remote service with each ECF
-		// IRemoteServiceContainerAdapter
-		// 2) save service reference and remote registration
-		// 3) publish remote service (ServicePublication) for discovery
+		// adapters found above.
 		for (int i = 0; i < rsContainers.length; i++) {
-			// Step 1
+			// Step 1 - Register with remote service container adapter for given
+			// all found containers/providers
 			IRemoteServiceRegistration remoteRegistration = rsContainers[i]
 					.getContainerAdapter().registerRemoteService(
-							remoteInterfaces, getService(serviceReference),
+							exportedInterfaces, getService(serviceReference),
 							getPropertiesForRemoteService(serviceReference));
 			trace("registerRemoteService", "containerID="
 					+ rsContainers[i].getContainer().getID()
 					+ " serviceReference=" + serviceReference
 					+ " remoteRegistration=" + remoteRegistration);
-			// Step 2
+			// Step 2 - Save registration
 			fireRemoteServiceRegistered(serviceReference, remoteRegistration);
-			// Step 3
+			// Step 3 - Publish via discovery API
 			publishRemoteService(rsContainers[i], serviceReference,
-					remoteInterfaces, remoteRegistration, intents, configs);
-			// Now notify any listeners
+					exportedInterfaces, remoteRegistration, serviceIntents,
+					exportedConfigs);
+			// Step 4 - Fire registered event to listeners
 			fireHostRegisteredUnregistered(serviceReference, rsContainers[i],
 					remoteRegistration, true);
 		}
 
 	}
 
-	private String[] getRemoteServiceIntents(ServiceReference serviceReference) {
+	private String[] getServiceIntents(ServiceReference serviceReference) {
 		List results = new ArrayList();
 		String[] intents = getStringArrayFromPropertyValue(serviceReference
 				.getProperty(IDistributionConstants.SERVICE_INTENTS));
@@ -138,72 +145,65 @@ public class EventHookImpl implements EventHook {
 				.getProperty(IDistributionConstants.SERVICE_EXPORTED_INTENTS_EXTRA));
 		if (extraIntents != null)
 			results.addAll(Arrays.asList(extraIntents));
+		if (results.size() == 0)
+			return null;
 		return (String[]) results.toArray(new String[] {});
 	}
 
-	private IRemoteServiceContainer[] findRemoteServiceContainers(
-			ServiceReference serviceReference, String[] remoteInterfaces,
-			String[] remoteConfigurationType, String[] remoteRequiresIntents) {
+	private IRemoteServiceContainer[] findHostContainers(
+			ServiceReference serviceReference, String[] exportedInterfaces,
+			String[] exportedConfigs, String[] serviceIntents) {
+		// Get activator
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return null;
-		IHostContainerFinder[] finders = activator
-				.getHostRemoteServiceContainerFinders();
-		if (finders == null) {
+		// Get finder (as service)
+		IHostContainerFinder finder = activator
+				.getHostRemoteServiceContainerFinder();
+		// If none found, then we have nothing that we can do except log the
+		// error and return
+		if (finder == null) {
 			logError("findRemoteServiceContainers",
 					"No container finders available");
 			return null;
 		}
-		Map rsContainers = new HashMap();
-		// For each container finder
-		for (int i = 0; i < finders.length; i++) {
-			// call out to the container finder to get candidates for that
-			// container finder
-			IRemoteServiceContainer[] candidates = finders[i]
-					.findHostContainers(serviceReference, remoteInterfaces,
-							remoteConfigurationType, remoteRequiresIntents);
-
-			if (candidates != null) {
-				// Then for all candidates make sure that they are not already
-				// present in results. This makes sure that
-				for (int j = 0; j < candidates.length; j++) {
-					ID containerID = candidates[j].getContainer().getID();
-					if (containerID != null)
-						rsContainers.put(containerID, candidates[j]);
-				}
-			}
-		}
-		// Then move to results list
-		List results = new ArrayList();
-		for (Iterator i = rsContainers.keySet().iterator(); i.hasNext();)
-			results.add(rsContainers.get(i.next()));
-		return (IRemoteServiceContainer[]) results
-				.toArray(new IRemoteServiceContainer[] {});
+		// Call out to find host containers as candidates
+		return finder.findHostContainers(serviceReference, exportedInterfaces,
+				exportedConfigs, serviceIntents);
 	}
 
 	private Dictionary getServicePublicationProperties(
 			IRemoteServiceContainer rsContainer, ServiceReference ref,
 			String[] remoteInterfaces,
-			IRemoteServiceRegistration remoteRegistration, String[] intents,
-			String[] configs) {
-		final Dictionary properties = new Properties();
-		// Set mandatory ServicePublication.PROP_KEY_SERVICE_INTERFACE_NAME
-		properties.put(ServicePublication.SERVICE_INTERFACE_NAME,
+			IRemoteServiceRegistration remoteRegistration,
+			String[] serviceIntents, String[] supportedConfigs) {
+
+		final Dictionary result = new Properties();
+		IContainer container = rsContainer.getContainer();
+
+		// Set mandatory ServicePublication.SERVICE_INTERFACE_NAME
+		result.put(RemoteServicePublication.SERVICE_INTERFACE_NAME,
 				getAsCollection(remoteInterfaces));
 
-		// Set optional ServicePublication.PROP_KEY_SERVICE_PROPERTIES
-		properties.put(ServicePublication.SERVICE_PROPERTIES,
-				getServicePropertiesForRemotePublication(ref));
+		if (supportedConfigs != null)
+			result.put(RemoteServicePublication.ENDPOINT_SUPPORTED_CONFIGS,
+					getAsCollection(supportedConfigs));
 
-		IContainer container = rsContainer.getContainer();
+		if (serviceIntents != null) {
+			result.put(RemoteServicePublication.ENDPOINT_SERVICE_INTENTS,
+					getAsCollection(serviceIntents));
+		}
+
+		// Set optional ServicePublication.PROP_KEY_SERVICE_PROPERTIES
+		result.put(RemoteServicePublication.SERVICE_PROPERTIES,
+				getServicePropertiesForRemotePublication(ref));
 
 		// Due to slp bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=216944
 		// We are not going to use the RFC 119
 		// ServicePublication.PROP_KEY_ENDPOINT_ID...since
 		// it won't handle some Strings with (e.g. slp) provider
 		ID endpointID = container.getID();
-		properties.put(RemoteServicePublication.ENDPOINT_CONTAINERID,
-				endpointID);
+		result.put(RemoteServicePublication.ENDPOINT_CONTAINERID, endpointID);
 
 		// Also put the target ID in the service properties...*only*
 		// if the target ID is non-null and it's *not* the same as the
@@ -212,15 +212,15 @@ public class EventHookImpl implements EventHook {
 		ID targetID = container.getConnectedID();
 		if (targetID != null && !targetID.equals(endpointID)) {
 			// put the target ID into the properties
-			properties.put(RemoteServicePublication.TARGET_CONTAINERID,
-					targetID);
+			result.put(RemoteServicePublication.TARGET_CONTAINERID, targetID);
 		}
 
 		// Set remote service namespace (String)
 		Namespace rsnamespace = rsContainer.getContainerAdapter()
 				.getRemoteServiceNamespace();
 		if (rsnamespace != null)
-			properties.put(Constants.SERVICE_NAMESPACE, rsnamespace.getName());
+			result.put(Constants.SERVICE_NAMESPACE, rsnamespace.getName());
+
 		// Set the actual remote service id (Long)
 		Long serviceId = (Long) remoteRegistration
 				.getProperty(Constants.SERVICE_ID);
@@ -237,19 +237,19 @@ public class EventHookImpl implements EventHook {
 			serviceIdAsBytes = "0".getBytes();
 		}
 
-		properties.put(Constants.SERVICE_ID, serviceIdAsBytes);
+		result.put(Constants.SERVICE_ID, serviceIdAsBytes);
 
-		return properties;
+		return result;
 	}
 
 	private void publishRemoteService(IRemoteServiceContainer rsContainer,
 			final ServiceReference ref, String[] remoteInterfaces,
-			IRemoteServiceRegistration remoteRegistration, String[] intents,
-			String[] configs) {
+			IRemoteServiceRegistration remoteRegistration,
+			String[] serviceIntents, String[] supportedConfigs) {
 		// First create properties for new ServicePublication
 		final Dictionary properties = getServicePublicationProperties(
 				rsContainer, ref, remoteInterfaces, remoteRegistration,
-				intents, configs);
+				serviceIntents, supportedConfigs);
 		// Just prior to registering the ServicePublication, notify
 		// the IHostRegistrationListeners
 		Activator activator = Activator.getDefault();
@@ -301,17 +301,22 @@ public class EventHookImpl implements EventHook {
 		return newProps;
 	}
 
-	private static final List excludedProperties = Arrays.asList(new String[] {
-			org.osgi.framework.Constants.SERVICE_ID,
-			org.osgi.framework.Constants.OBJECTCLASS,
-			IDistributionConstants.SERVICE_EXPORTED_INTERFACES,
-			IDistributionConstants.SERVICE_INTENTS,
-			IDistributionConstants.SERVICE_EXPORTED_INTENTS,
-			IDistributionConstants.SERVICE_EXPORTED_INTENTS_EXTRA,
-			IDistributionConstants.SERVICE_IMPORTED,
-			IDistributionConstants.SERVICE_EXPORTED_CONFIGS,
-			// ECF constants
-			org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID, });
+	private static final List excludedProperties = Arrays
+			.asList(new String[] {
+					org.osgi.framework.Constants.SERVICE_ID,
+					org.osgi.framework.Constants.OBJECTCLASS,
+					IDistributionConstants.SERVICE_EXPORTED_INTERFACES,
+					IDistributionConstants.SERVICE_INTENTS,
+					IDistributionConstants.SERVICE_EXPORTED_INTENTS,
+					IDistributionConstants.SERVICE_EXPORTED_INTENTS_EXTRA,
+					IDistributionConstants.SERVICE_IMPORTED,
+					IDistributionConstants.SERVICE_EXPORTED_CONFIGS,
+					IDistributionConstants.SERVICE_EXPORTED_CONTAINER_ID,
+					IDistributionConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT,
+					IDistributionConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_TARGET,
+					IDistributionConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS,
+					// ECF constants
+					org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID, });
 
 	private boolean excludeRemoteServiceProperty(String string) {
 		if (excludedProperties.contains(string))
@@ -445,8 +450,7 @@ public class EventHookImpl implements EventHook {
 		}
 	}
 
-	private String[] getRemoteInterfacesForServiceReference(
-			ServiceReference serviceReference) {
+	private String[] getExportedInterfaces(ServiceReference serviceReference) {
 		// Get the OSGi 4.2 specified required service property value
 		Object propValue = serviceReference
 				.getProperty(IDistributionConstants.SERVICE_EXPORTED_INTERFACES);

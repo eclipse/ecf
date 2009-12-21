@@ -9,7 +9,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.IRemoteServiceEndpointDescription;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
@@ -41,9 +40,6 @@ public interface IProxyContainerFinder {
 	 *            {@link IRemoteServiceEndpointDescription#getConnectTargetID()}
 	 *            . Will not be <code>null</code>.
 	 * 
-	 * @param monitor
-	 *            a progress monitor to report progress or cancel operation from
-	 *            within the find. Will not be <code>null</code>.
 	 * @return IRemoteServiceContainer[] the remote service containers that
 	 *         should be used to get remote service references for the remote
 	 *         service described by the endpointDescription. If no containers
@@ -51,7 +47,6 @@ public interface IProxyContainerFinder {
 	 *         <code>null</code>.
 	 */
 	public IRemoteServiceContainer[] findProxyContainers(IServiceID serviceID,
-			IRemoteServiceEndpointDescription endpointDescription,
-			IProgressMonitor monitor);
+			IRemoteServiceEndpointDescription endpointDescription);
 
 }

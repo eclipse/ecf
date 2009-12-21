@@ -242,7 +242,7 @@ public class Activator implements BundleActivator {
 		return (IContainerManager) containerManagerTracker.getService();
 	}
 
-	public synchronized IProxyContainerFinder[] getProxyRemoteServiceContainerFinders() {
+	public synchronized IProxyContainerFinder getProxyRemoteServiceContainerFinder() {
 		if (this.context == null)
 			return null;
 		if (proxyrsContainerFinder == null) {
@@ -250,14 +250,10 @@ public class Activator implements BundleActivator {
 					IProxyContainerFinder.class.getName(), null);
 			proxyrsContainerFinder.open();
 		}
-		Object[] objs = proxyrsContainerFinder.getServices();
-		if (objs == null)
-			return null;
-		return (IProxyContainerFinder[]) Arrays.asList(objs).toArray(
-				new IProxyContainerFinder[] {});
+		return (IProxyContainerFinder) proxyrsContainerFinder.getService();
 	}
 
-	public synchronized IHostContainerFinder[] getHostRemoteServiceContainerFinders() {
+	public synchronized IHostContainerFinder getHostRemoteServiceContainerFinder() {
 		if (this.context == null)
 			return null;
 		if (hostrsContainerFinder == null) {
@@ -265,11 +261,7 @@ public class Activator implements BundleActivator {
 					IHostContainerFinder.class.getName(), null);
 			hostrsContainerFinder.open();
 		}
-		Object[] objs = hostrsContainerFinder.getServices();
-		if (objs == null)
-			return null;
-		return (IHostContainerFinder[]) Arrays.asList(objs).toArray(
-				new IHostContainerFinder[] {});
+		return (IHostContainerFinder) hostrsContainerFinder.getService();
 	}
 
 	public synchronized IHostDistributionListener[] getHostRegistrationListeners() {

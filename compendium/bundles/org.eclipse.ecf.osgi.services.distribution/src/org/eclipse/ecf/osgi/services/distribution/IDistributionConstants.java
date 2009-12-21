@@ -165,10 +165,12 @@ public interface IDistributionConstants {
 	 */
 	public static final String SERVICE_PID = "service.pid";
 
-	public static final String CONTAINER_FACTORY_ARGUMENTS = "org.eclipse.ecf.containerFactoryArgs";
+	public static final String SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS = "org.eclipse.ecf.containerFactoryArgs";
 
-	public static final String CONTAINER_CONNECT_TARGET = "org.eclipse.ecf.containerConnectTarget";
+	public static final String SERVICE_EXPORTED_CONTAINER_CONNECT_TARGET = "org.eclipse.ecf.containerConnectTarget";
 
-	public static final String CONTAINER_CONNECT_CONTEXT = "org.eclipse.ecf.containerConnectContext";
+	public static final String SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT = "org.eclipse.ecf.containerConnectContext";
+
+	public static final String SERVICE_EXPORTED_CONTAINER_ID = "org.eclipse.ecf.containerID";
 
 }

@@ -19,7 +19,7 @@ import org.osgi.framework.ServiceReference;
  * Default implementation of IHostContainerFinder.
  * 
  */
-public class DefaultHostContainerFinder extends AbstractContainerFinder
+public class DefaultHostContainerFinder extends AbstractHostContainerFinder
 		implements IHostContainerFinder {
 
 	public IRemoteServiceContainer[] findHostContainers(
@@ -27,29 +27,30 @@ public class DefaultHostContainerFinder extends AbstractContainerFinder
 			String[] serviceExportedInterfaces,
 			String[] serviceExportedConfigs, String[] serviceIntents) {
 
-		// Find previously created containers for that match the given
+		// Find previously created containers that match the given
 		// serviceExportedConfigs and serviceIntents
-		Collection rsContainers = findExistingContainers(serviceReference,
+		Collection rsContainers = findExistingHostContainers(serviceReference,
 				serviceExportedInterfaces, serviceExportedConfigs,
 				serviceIntents);
 
 		if (rsContainers.size() == 0) {
 			// If no existing containers are found we'll go through
 			// finding/creating/configuring/connecting
-			rsContainers = createAndConfigureContainers(serviceReference,
+			rsContainers = createAndConfigureHostContainers(serviceReference,
 					serviceExportedInterfaces, serviceExportedConfigs,
 					serviceIntents);
 
-			// if CONTAINER_CONNECT_TARGET service property is specified, then
-			// connect container(s)
+			// if SERVICE_EXPORTED_CONTAINER_CONNECT_TARGET service property is
+			// specified, then
+			// connect the host container(s)
 			Object target = serviceReference
-					.getProperty(IDistributionConstants.CONTAINER_CONNECT_TARGET);
+					.getProperty(IDistributionConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_TARGET);
 			if (target != null) {
 				for (Iterator i = rsContainers.iterator(); i.hasNext();) {
 					IContainer container = ((IRemoteServiceContainer) i.next())
 							.getContainer();
 					try {
-						doConnectContainer(serviceReference, container, target);
+						connectHostContainer(serviceReference, container, target);
 					} catch (Exception e) {
 						logException("doConnectContainer failure containerID="
 								+ container.getID() + " target=" + target, e);
