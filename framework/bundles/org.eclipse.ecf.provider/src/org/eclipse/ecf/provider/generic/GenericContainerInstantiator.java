@@ -15,11 +15,12 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
-public class GenericContainerInstantiator implements IContainerInstantiator {
+public class GenericContainerInstantiator implements IContainerInstantiator, IRemoteServiceContainerInstantiator {
 
 	/**
 	 * @since 2.0
@@ -218,5 +219,35 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 
 	public String[] getSupportedIntents(ContainerTypeDescription description) {
 		return genericProviderIntents;
+	}
+
+	/**
+	 * @since 2.1
+	 */
+	public String[] getSupportedConfigs(ContainerTypeDescription description) {
+		return new String[] {description.getName()};
+	}
+
+	/**
+	 * @since 2.1
+	 */
+	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs) {
+		if (exporterSupportedConfigs == null)
+			return null;
+		List results = new ArrayList();
+		for (int i = 0; i < exporterSupportedConfigs.length; i++) {
+			if (TCPSERVER_NAME.equals(exporterSupportedConfigs[i]) && TCPCLIENT_NAME.equals(description.getName()))
+				results.add(TCPCLIENT_NAME);
+			if (TCPCLIENT_NAME.equals(exporterSupportedConfigs[i]))
+				results.add(description.getName());
+		}
+		return (String[]) results.toArray(new String[] {});
+	}
+
+	/**
+	 * @since 2.1
+	 */
+	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigs, Dictionary exportedProperties) {
+		return null;
 	}
 }
