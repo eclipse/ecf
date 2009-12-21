@@ -145,7 +145,7 @@ public interface IContainerFactory {
 	 * @param containerId the container's new ID.  Must not be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, String containerId) throws ContainerCreateException;
 
@@ -160,7 +160,7 @@ public interface IContainerFactory {
 	 *            of the IContainerInstantiator
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, String containerId, Object[] parameters) throws ContainerCreateException;
 
@@ -172,7 +172,7 @@ public interface IContainerFactory {
 	 * @param containerId the container's new ID.  Must not be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId) throws ContainerCreateException;
 
@@ -187,7 +187,7 @@ public interface IContainerFactory {
 	 *            of the IContainerInstantiator
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId, Object[] parameters) throws ContainerCreateException;
 

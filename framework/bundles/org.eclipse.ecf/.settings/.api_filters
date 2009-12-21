@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.ecf" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="3.1.0.qualifier"/>
+                <message_argument value="3.0.0.v20090831-1906"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/core/IContainerFactory.java" type="org.eclipse.ecf.core.IContainerFactory">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.core.IContainerFactory"/>
+                <message_argument value="createContainer(ContainerTypeDescription, String, Object[])"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.core.IContainerFactory"/>
+                <message_argument value="createContainer(ContainerTypeDescription, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.core.IContainerFactory"/>
+                <message_argument value="createContainer(String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.core.IContainerFactory"/>
+                <message_argument value="createContainer(String, String, Object[])"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

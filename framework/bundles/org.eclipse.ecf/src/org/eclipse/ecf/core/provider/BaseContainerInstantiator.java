@@ -70,4 +70,11 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 		return EMPTY_CLASS_ARRAY;
 	}
 
+	/**
+	 * @deprecated
+	 */
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		return null;
+	}
+
 }

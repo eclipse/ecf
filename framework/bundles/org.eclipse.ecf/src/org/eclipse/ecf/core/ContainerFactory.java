@@ -346,28 +346,28 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, String containerId) throws ContainerCreateException {
 		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerId);
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, String containerId, Object[] parameters) throws ContainerCreateException {
 		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerId, parameters);
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId) throws ContainerCreateException {
 		return createContainer(containerTypeDescription, containerId, null);
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId, Object[] parameters) throws ContainerCreateException {
 		if (containerId == null)

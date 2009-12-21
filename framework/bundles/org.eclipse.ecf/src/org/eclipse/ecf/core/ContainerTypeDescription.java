@@ -231,7 +231,7 @@ public class ContainerTypeDescription {
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public String[] getSupportedConfigs() {
 		String method = "getSupportedConfigs"; //$NON-NLS-1$
@@ -248,7 +248,7 @@ public class ContainerTypeDescription {
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public String[] getImportedConfigs(String[] exporterSupportedConfigs) {
 		String method = "getImportedConfigs"; //$NON-NLS-1$
@@ -266,7 +266,7 @@ public class ContainerTypeDescription {
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 3.1
 	 */
 	public Dictionary getPropertiesForImportedConfigs(String[] importedConfigs, Dictionary exportedProperties) {
 		String method = "getPropertiesForImportedConfigs"; //$NON-NLS-1$

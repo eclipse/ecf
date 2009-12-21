@@ -17,13 +17,9 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 /**
  *  Default implementation of {@link IRemoteServiceContainerInstantiator}.  ECF provider implementers
  *  may subclass as desired.
- * @since 4.0
+ * @since 3.1
  */
 public class BaseRemoteServiceContainerInstantiator extends BaseContainerInstantiator implements IRemoteServiceContainerInstantiator {
-
-	public String[] getSupportedIntents(ContainerTypeDescription description) {
-		return EMPTY_STRING_ARRAY;
-	}
 
 	public String[] getSupportedConfigs(ContainerTypeDescription description) {
 		return new String[] {description.getName()};
