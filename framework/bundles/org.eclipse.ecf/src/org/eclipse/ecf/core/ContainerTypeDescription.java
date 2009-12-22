@@ -24,8 +24,6 @@ import org.eclipse.ecf.internal.core.ECFPlugin;
  */
 public class ContainerTypeDescription {
 
-	private static final String[] EMPTY_ARRAY = new String[0];
-
 	protected String name = null;
 
 	protected String instantiatorClass = null;
@@ -219,15 +217,13 @@ public class ContainerTypeDescription {
 	public String[] getSupportedIntents() {
 		String method = "getSupportedIntents"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
-		String[] result = EMPTY_ARRAY;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedIntents(this) : result;
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedIntents(this) : null;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
+			return null;
 		}
-		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
-		return result;
 	}
 
 	/**
@@ -236,15 +232,13 @@ public class ContainerTypeDescription {
 	public String[] getSupportedConfigs() {
 		String method = "getSupportedConfigs"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
-		String[] result = EMPTY_ARRAY;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedConfigs(this) : new String[] {getName()};
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedConfigs(this) : null;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
+			return null;
 		}
-		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
-		return result;
 	}
 
 	/**
@@ -255,14 +249,13 @@ public class ContainerTypeDescription {
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		if (exporterSupportedConfigs == null)
 			return null;
-		String[] result = null;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			result = (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getImportedConfigs(this, exporterSupportedConfigs) : null;
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getImportedConfigs(this, exporterSupportedConfigs) : null;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
+			return null;
 		}
-		return result;
 	}
 
 	/**
@@ -273,14 +266,13 @@ public class ContainerTypeDescription {
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		if (importedConfigs == null)
 			return null;
-		Dictionary result = null;
 		try {
 			IContainerInstantiator ci = getInstantiator();
-			result = (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getPropertiesForImportedConfigs(this, importedConfigs, exportedProperties) : null;
+			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getPropertiesForImportedConfigs(this, importedConfigs, exportedProperties) : null;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
+			return null;
 		}
-		return result;
 	}
 
 }
