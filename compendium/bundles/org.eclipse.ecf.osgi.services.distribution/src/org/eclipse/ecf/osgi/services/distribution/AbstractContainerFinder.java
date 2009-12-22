@@ -11,6 +11,7 @@ package org.eclipse.ecf.osgi.services.distribution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -128,11 +129,9 @@ public abstract class AbstractContainerFinder {
 
 	protected String[] getSupportedConfigTypes(
 			ContainerTypeDescription containerTypeDescription) {
-		// XXX with the new ContainerTypeDescription.getSupportedConfigTypes()
-		// API, the supportedConfigTypes list should be created from
-		// ContainerTypeDescription.getSupportedConfigTypes()
-		// But the ContainerTypeDescription.getSupportedConfigTypes()
-		return new String[] { containerTypeDescription.getName() };
+		String[] supportedConfigs = containerTypeDescription
+				.getSupportedConfigs();
+		return (supportedConfigs == null) ? new String[0] : supportedConfigs;
 	}
 
 	protected String[] getSupportedIntents(
@@ -253,6 +252,64 @@ public abstract class AbstractContainerFinder {
 		if (endpointID == null)
 			return false;
 		return endpointID.equals(container.getID());
+	}
+
+	protected Collection findExistingProxyContainers(ID endpointID,
+			String[] remoteSupportedConfigs) {
+
+		List results = new ArrayList();
+		// Get all containers available
+		IContainer[] containers = getContainers();
+		// If none then return null
+		if (containers == null)
+			return results;
+
+		for (int i = 0; i < containers.length; i++) {
+			// Do *not* include containers with same ID as endpoint ID
+			if (matchContainerID(containers[i], endpointID))
+				continue;
+
+			IRemoteServiceContainerAdapter adapter = hasRemoteServiceContainerAdapter(containers[i]);
+			// Container must have adapter
+			if (adapter != null
+			// And it must match the connect namespace
+					&& matchConnectNamespace(containers[i], endpointID)
+					// and it must match the configs
+					&& matchProxySupportedConfigs(containers[i],
+							remoteSupportedConfigs)) {
+				trace("findExistingProxyContainers",
+						"MATCH of existing remote service container id="
+								+ containers[i].getID()
+								+ " endpointID="
+								+ endpointID
+								+ " remoteSupportedConfigs="
+								+ ((remoteSupportedConfigs == null) ? "[]"
+										: Arrays.asList(remoteSupportedConfigs)
+												.toString()));
+				results.add(new RemoteServiceContainer(containers[i], adapter));
+			} else {
+				trace("findExistingProxyContainers",
+						"No match of existing remote service container id="
+								+ containers[i].getID()
+								+ " endpointID="
+								+ endpointID
+								+ " remoteSupportedConfigs="
+								+ ((remoteSupportedConfigs == null) ? "[]"
+										: Arrays.asList(remoteSupportedConfigs)
+												.toString()));
+			}
+		}
+		return results;
+	}
+
+	protected boolean matchProxySupportedConfigs(IContainer container,
+			String[] remoteSupportedConfigs) {
+		if (remoteSupportedConfigs == null)
+			return false;
+		ContainerTypeDescription description = getContainerTypeDescription(container);
+		if (description == null)
+			return false;
+		return description.getImportedConfigs(remoteSupportedConfigs) != null;
 	}
 
 }
