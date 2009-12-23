@@ -28,6 +28,8 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
 	protected RegistrySharedObject sharedObject = null;
 
+	static final Object[] EMPTY_PARAMETERS = new Object[0];
+
 	public RemoteServiceImpl(RegistrySharedObject sharedObject, RemoteServiceRegistrationImpl registration) {
 		this.sharedObject = sharedObject;
 		this.registration = registration;
@@ -117,7 +119,7 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 				}
 
 				public Object[] getParameters() {
-					return args;
+					return (args == null) ? EMPTY_PARAMETERS : args;
 				}
 
 				public long getTimeout() {
