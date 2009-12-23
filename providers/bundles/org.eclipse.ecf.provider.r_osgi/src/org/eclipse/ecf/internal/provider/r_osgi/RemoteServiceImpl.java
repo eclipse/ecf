@@ -32,6 +32,8 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
 	protected static final long DEFAULT_TIMEOUT = new Long(System.getProperty("ecf.remotecall.timeout", "30000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
+	static final Object[] EMPTY_PARAMETERS = new Object[0];
+
 	// the ECF remote refImpl
 	RemoteServiceReferenceImpl refImpl;
 
@@ -92,14 +94,16 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callSync(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
 	public Object callSync(final IRemoteCall call) throws ECFException {
-		final Class[] formalParams = new Class[call.getParameters().length];
+		Object[] ps = call.getParameters();
+		final Object[] parameters = (ps == null) ? EMPTY_PARAMETERS : ps;
+		final Class[] formalParams = new Class[parameters.length];
 		for (int i = 0; i < formalParams.length; i++) {
 			formalParams[i] = call.getParameters()[i].getClass();
 		}
 		IExecutor executor = new ThreadsExecutor();
 		IFuture future = executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
-				return service.getClass().getMethod(call.getMethod(), formalParams).invoke(service, call.getParameters());
+				return service.getClass().getMethod(call.getMethod(), formalParams).invoke(service, parameters);
 			}
 		}, null);
 		Object result = null;
@@ -202,7 +206,7 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 				}
 
 				public Object[] getParameters() {
-					return args;
+					return (args == null) ? EMPTY_PARAMETERS : args;
 				}
 
 				public long getTimeout() {

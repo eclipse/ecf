@@ -15,10 +15,12 @@ import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Dictionary;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
 import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 
@@ -29,7 +31,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
  * 
  * @author Jan S. Rellermeyer, ETH Zurich
  */
-public final class R_OSGiContainerInstantiator implements IContainerInstantiator {
+public final class R_OSGiContainerInstantiator implements IContainerInstantiator, IRemoteServiceContainerInstantiator {
 
 	public static final String[] r_OSGiIntents = {"passByValue", "exactlyOnce", "ordered",}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -55,8 +57,12 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 				final int port = remoteOsGiService.getListeningPort(protocol);
 				final ID containerID = new R_OSGiID(protocol + "://" + localHost + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 				return new R_OSGiRemoteServiceContainer(remoteOsGiService, containerID);
-			} else if (parameters.length == 1 && parameters[0] instanceof ID) {
-				return new R_OSGiRemoteServiceContainer(remoteOsGiService, (ID) parameters[0]);
+			} else if (parameters.length > 0) {
+				if (parameters[0] instanceof ID) {
+					return new R_OSGiRemoteServiceContainer(remoteOsGiService, (ID) parameters[0]);
+				} else if (parameters[0] instanceof String) {
+					return new R_OSGiRemoteServiceContainer(remoteOsGiService, new R_OSGiID((String) parameters[0]));
+				}
 			}
 			throw new ContainerCreateException("Unsupported arguments " //$NON-NLS-1$
 					+ Arrays.asList(parameters));
@@ -96,6 +102,20 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 
 	public String[] getSupportedIntents(ContainerTypeDescription description) {
 		return r_OSGiIntents;
+	}
+
+	private static final String[] ROSGI_CONFIGS = new String[] {"ecf.r_osgi.peer"}; //$NON-NLS-1$
+
+	public String[] getSupportedConfigs(ContainerTypeDescription description) {
+		return ROSGI_CONFIGS;
+	}
+
+	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs) {
+		return ROSGI_CONFIGS;
+	}
+
+	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigs, Dictionary exportedProperties) {
+		return null;
 	}
 
 }
