@@ -47,19 +47,53 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		return st;
 	}
 	
+	protected Properties getServiceProperties() {
+		Properties props = new Properties();
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		return props;
+	}
+	
 	public void testGetProxy() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
 		// Setup service tracker for client
 		ServiceTracker st = createProxyServiceTracker(classname);
 		
+		Properties props = getServiceProperties();
 		// Server - register service with required OSGI property and some test properties
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		// Actually register and wait a while
+		ServiceRegistration registration = registerService(classname, new TestService1(),props);
+		Thread.sleep(REGISTER_WAIT);
+		
+		// Client - Get service references that are proxies
+		ServiceReference [] remoteReferences = st.getServiceReferences();
+		assertTrue(remoteReferences != null);
+		assertTrue(remoteReferences.length > 0);
+		for(int i=0; i < remoteReferences.length; i++) {
+			// Get OBJECTCLASS property from first remote reference
+			String[] classes = (String []) remoteReferences[i].getProperty(org.osgi.framework.Constants.OBJECTCLASS);
+			assertTrue(classes != null);
+			// Check object class
+			assertTrue(classname.equals(classes[0]));
+		}
+		// Now unregister original registration and wait
+		registration.unregister();
+		st.close();
+		Thread.sleep(REGISTER_WAIT);
+	}
+
+	public void testGetProxyWithExtraProperties() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker for client
+		ServiceTracker st = createProxyServiceTracker(classname);
+		
+		Properties props = getServiceProperties();
 		// Put property foo with value bar into published properties
 		String testPropKey = "foo";
 		String testPropVal = "bar";
 		props.put(testPropKey, testPropVal);
+
+		// Server - register service with required OSGI property and some test properties
 		// Actually register and wait a while
 		ServiceRegistration registration = registerService(classname, new TestService1(),props);
 		Thread.sleep(REGISTER_WAIT);
@@ -90,12 +124,8 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		// Setup service tracker for client
 		ServiceTracker st = createProxyServiceTracker(classname);
 		
-		// Server - register service with required OSGI property and some test properties
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Actually register and wait a while
-		ServiceRegistration registration = registerService(classname, new TestService1(),props);
+		ServiceRegistration registration = registerService(classname, new TestService1(),getServiceProperties());
 		Thread.sleep(REGISTER_WAIT);
 		
 		// Client - Get service references from service tracker
@@ -124,13 +154,8 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		// Setup service tracker for client
 		ServiceTracker st = createProxyServiceTracker(classname);
 		
-		// Server - register service with required OSGI property and some test properties
-		// Server - register service with required OSGI property and some test properties
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Actually register and wait a while
-		ServiceRegistration registration = registerService(classname, new TestService1(),props);
+		ServiceRegistration registration = registerService(classname, new TestService1(),getServiceProperties());
 		Thread.sleep(REGISTER_WAIT);
 		
 		// Client - Get service references from service tracker

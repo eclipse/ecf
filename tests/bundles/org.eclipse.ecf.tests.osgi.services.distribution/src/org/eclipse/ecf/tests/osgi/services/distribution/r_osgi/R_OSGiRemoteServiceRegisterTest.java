@@ -19,6 +19,10 @@ import org.osgi.framework.ServiceReference;
 
 public class R_OSGiRemoteServiceRegisterTest extends AbstractRemoteServiceRegisterTest {
 
+	private static final String CONTAINER_TYPE_NAME = "ecf.r_osgi.peer";
+	
+	private static final String SERVER_IDENTITY = "r-osgi://localhost:9278";
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -38,31 +42,32 @@ public class R_OSGiRemoteServiceRegisterTest extends AbstractRemoteServiceRegist
 	}
 
 	protected IContainer createClient(int index) throws Exception {
-		return ContainerFactory.getDefault().createContainer("ecf.r_osgi.peer",
+		return ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME,
 				new Object[] { IDFactory.getDefault().createStringID(
 				"r-osgi://localhost:"+(9279+index)) });
 	}
 	
 	protected IContainer createServer() throws Exception {
-		return ContainerFactory.getDefault().createContainer("ecf.r_osgi.peer",
-				new Object[] { IDFactory.getDefault().createStringID(
-				"r-osgi://localhost:9278") });
+		return ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME,SERVER_IDENTITY);
 	}
 
 
 	protected String getClientContainerName() {
-		return "ecf.r_osgi.peer";
+		return CONTAINER_TYPE_NAME;
 	}
 
-
+	protected String getServerIdentity() {
+		return SERVER_IDENTITY;
+	}
+	
 	public ServiceReference getReference() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
-	protected String getServerContainerName() {
-		return "ecf.r_osgi.peer";
+	protected String getServerContainerTypeName() {
+		return CONTAINER_TYPE_NAME;
 	}
 	
 }

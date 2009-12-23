@@ -10,15 +10,22 @@
 package org.eclipse.ecf.tests.osgi.services.distribution.r_osgi;
 
 
+import java.util.Properties;
+
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractRemoteServiceAccessTest;
-import org.osgi.framework.ServiceReference;
 
 
 public class R_OSGiRemoteServiceAccessTest extends AbstractRemoteServiceAccessTest {
 
+	private static final String CONTAINER_TYPE_NAME = "ecf.r_osgi.peer";
+	
+	private static final String SERVER_IDENTITY = "r-osgi://localhost:9278";
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -43,21 +50,28 @@ public class R_OSGiRemoteServiceAccessTest extends AbstractRemoteServiceAccessTe
 				"r-osgi://localhost:"+(9279+index)) });
 	}
 	
+	private ID serverID;
+	
 	protected IContainer createServer() throws Exception {
-		return ContainerFactory.getDefault().createContainer("ecf.r_osgi.peer",
-				new Object[] { IDFactory.getDefault().createStringID(
-				"r-osgi://localhost:9278") });
+		serverID = IDFactory.getDefault().createID("ecf.namespace.r_osgi",SERVER_IDENTITY);
+		return ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME,serverID);
 	}
-
 
 	protected String getClientContainerName() {
-		return "ecf.r_osgi.peer";
+		return CONTAINER_TYPE_NAME;
 	}
 
-
-	public ServiceReference getReference() {
-		// TODO Auto-generated method stub
-		return null;
+	protected String getServerIdentity() {
+		return SERVER_IDENTITY;
 	}
 	
+	protected String getServerContainerName() {
+		return CONTAINER_TYPE_NAME;
+	}
+	
+	protected Properties getServiceProperties() {
+		Properties props = super.getServiceProperties();
+		props.put(IDistributionConstants.SERVICE_EXPORTED_CONTAINER_ID, serverID);
+		return props;
+	}
 }

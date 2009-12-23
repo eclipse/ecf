@@ -20,7 +20,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 
 	protected static final int REGISTER_WAIT = 2000;
 
-	protected abstract String getServerContainerName();
+	protected abstract String getServerContainerTypeName();
 	
 	protected void tearDown() throws Exception {
 		super.tearDown();
@@ -44,7 +44,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 
 	public void testRegisterOnCreatedServer() throws Exception {
 		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		registerWaitAndUnregister(props);
 	}
@@ -52,7 +52,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 	public void testRegisterOnCreatedServerWithIdentity() throws Exception {
 		Properties props = new Properties();
 		// Set config to the server container name/provider config name (e.g. ecf.generic.server)
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
 		// set the container factory arguments to the server identity (e.g. ecftcp://localhost:3282/server)
 		props.put(SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS, new String[] { getServerIdentity() } );
 		// Set the service exported interfaces to all
@@ -63,10 +63,10 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 
 	public void testRegisterOnExistingServer() throws Exception {
 		// Create server container
-		this.server = ContainerFactory.getDefault().createContainer(getServerContainerName(),new Object[] {getServerCreateID()});
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {getServerCreateID()});
 		
 		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		
 		registerWaitAndUnregister(props);
@@ -74,7 +74,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 
 	public void testRegisterOnExistingServerWithContainerID() throws Exception {
 		// Create server container
-		this.server = ContainerFactory.getDefault().createContainer(getServerContainerName(),new Object[] {getServerCreateID()});
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {getServerCreateID()});
 		
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
@@ -84,11 +84,11 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 
 	public void testRegisterOnExistingServerWithIdentity() throws Exception {
 		// Create server container
-		this.server = ContainerFactory.getDefault().createContainer(getServerContainerName(),getServerIdentity());
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),getServerIdentity());
 		
 		Properties props = new Properties();
 		// Set config to the server container name/provider config name (e.g. ecf.generic.server)
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
 		// Set the service exported interfaces to all
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		

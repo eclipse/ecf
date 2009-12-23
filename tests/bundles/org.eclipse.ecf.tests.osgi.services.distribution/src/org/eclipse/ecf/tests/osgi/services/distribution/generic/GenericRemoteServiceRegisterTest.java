@@ -16,7 +16,7 @@ import org.eclipse.ecf.tests.osgi.services.distribution.AbstractRemoteServiceReg
 
 public class GenericRemoteServiceRegisterTest extends AbstractRemoteServiceRegisterTest {
 
-	protected String getServerContainerName() {
+	protected String getServerContainerTypeName() {
 		return "ecf.generic.server";
 	}
 
