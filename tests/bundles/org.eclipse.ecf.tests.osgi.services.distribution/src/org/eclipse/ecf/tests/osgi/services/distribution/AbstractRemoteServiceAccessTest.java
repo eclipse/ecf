@@ -343,7 +343,6 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result=" + result);
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
 
-		syncWaitForNotify(REGISTER_WAIT);
 		// Unregister on server
 		registration.unregister();
 		st.close();
