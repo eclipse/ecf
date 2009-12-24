@@ -1,20 +1,25 @@
 /*******************************************************************************
-* Copyright (c) 2009 EclipseSource and others. All rights reserved. This
-* program and the accompanying materials are made available under the terms of
-* the Eclipse Public License v1.0 which accompanies this distribution, and is
-* available at http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*   EclipseSource - initial API and implementation
-******************************************************************************/
+ * Copyright (c) 2009 EclipseSource and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   EclipseSource - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
 import java.util.Properties;
 
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
+import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.remoteservice.IRemoteServiceProxy;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
+import org.eclipse.equinox.concurrent.future.IFuture;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -26,122 +31,216 @@ public abstract class AbstractRemoteServiceAccessTest extends
 
 	protected static final int REGISTER_WAIT = 30000;
 
-	protected ServiceTracker createProxyServiceTracker(String clazz) throws InvalidSyntaxException {
-		ServiceTracker st = new ServiceTracker(getContext(),getContext().createFilter("(&("+org.osgi.framework.Constants.OBJECTCLASS+"=" + clazz +")(" + SERVICE_IMPORTED + "=*))"),new ServiceTrackerCustomizer() {
+	protected ServiceTracker createProxyServiceTracker(String clazz)
+			throws InvalidSyntaxException {
+		ServiceTracker st = new ServiceTracker(getContext(), getContext()
+				.createFilter(
+						"(&(" + org.osgi.framework.Constants.OBJECTCLASS + "="
+								+ clazz + ")(" + SERVICE_IMPORTED + "=*))"),
+				new ServiceTrackerCustomizer() {
 
-			public Object addingService(ServiceReference reference) {
-				Trace.trace(Activator.PLUGIN_ID, "addingService="+reference);
-				return getContext().getService(reference);
-			}
+					public Object addingService(ServiceReference reference) {
+						Trace.trace(Activator.PLUGIN_ID, "addingService="
+								+ reference);
+						return getContext().getService(reference);
+					}
 
-			public void modifiedService(ServiceReference reference,
-					Object service) {
-				Trace.trace(Activator.PLUGIN_ID, "modifiedService="+reference);
-			}
+					public void modifiedService(ServiceReference reference,
+							Object service) {
+						Trace.trace(Activator.PLUGIN_ID, "modifiedService="
+								+ reference);
+					}
 
-			public void removedService(ServiceReference reference,
-					Object service) {
-				Trace.trace(Activator.PLUGIN_ID, "removedService="+reference+",svc="+service);
-			}});
+					public void removedService(ServiceReference reference,
+							Object service) {
+						Trace.trace(Activator.PLUGIN_ID, "removedService="
+								+ reference + ",svc=" + service);
+					}
+				});
 		st.open();
 		return st;
 	}
-	
+
 	protected Properties getServiceProperties() {
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		props.put(SERVICE_EXPORTED_INTERFACES,
+				new String[] { SERVICE_EXPORTED_INTERFACES_WILDCARD });
 		return props;
 	}
+
+	protected void assertReferenceHasCorrectType(ServiceReference sr,
+			String classname) {
+		String[] classes = (String[]) sr
+				.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
+		assertTrue(classes != null);
+		// Check object class
+		assertTrue(classname.equals(classes[0]));
+	}
+
+	protected void assertReferencesValidAndFirstHasCorrectType(
+			ServiceReference[] references, String classname) {
+		assertReferencesValid(references);
+		assertReferenceHasCorrectType(references[0], classname);
+	}
+
+	protected void assertReferencesValid(ServiceReference[] references) {
+		assertTrue(references != null);
+		assertTrue(references.length > 0);
+	}
+
+	protected void assertStringResultValid(Object result, String compare) {
+		assertNotNull(result);
+		assertTrue(result instanceof String);
+		assertTrue(compare.equals(result));
+	}
 	
-	public void testGetProxy() throws Exception {
+	protected void assertProxyValid(Object proxy) {
+		assertNotNull(proxy);
+		assertTrue(proxy instanceof TestServiceInterface1);
+	}
+	
+	protected IRemoteService getRemoteServiceFromProxy(Object proxy) {
+		assertTrue(proxy instanceof IRemoteServiceProxy);
+		return ((IRemoteServiceProxy) proxy).getRemoteService();
+	}
+	
+	protected IRemoteCall createRemoteCall() {
+		return new IRemoteCall() {
+
+			public String getMethod() {
+				return "doStuff1";
+			}
+
+			public Object[] getParameters() {
+				return new Object[] {};
+			}
+
+			public long getTimeout() {
+				return 30000;
+			}
+
+		};
+	}
+
+
+	public void testGetRemoteServiceReference() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
-		// Setup service tracker for client
+		// Setup service tracker for client container
 		ServiceTracker st = createProxyServiceTracker(classname);
-		
+		// Get service properties...and allow subclasses to override to add
+		// other service properties
 		Properties props = getServiceProperties();
-		// Server - register service with required OSGI property and some test properties
-		// Actually register and wait a while
-		ServiceRegistration registration = registerService(classname, new TestService1(),props);
+		// Service Host: register service
+		ServiceRegistration registration = registerService(classname,
+				new TestService1(), props);
+		// Wait
 		Thread.sleep(REGISTER_WAIT);
+
+		// Service Consumer - Get (remote) ervice references
+		ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValidAndFirstHasCorrectType(remoteReferences, classname);
+		// Spec requires that the 'service.imported' property be set
+		assertTrue(remoteReferences[0].getProperty(SERVICE_IMPORTED) != null);
 		
-		// Client - Get service references that are proxies
-		ServiceReference [] remoteReferences = st.getServiceReferences();
-		assertTrue(remoteReferences != null);
-		assertTrue(remoteReferences.length > 0);
-		for(int i=0; i < remoteReferences.length; i++) {
-			// Get OBJECTCLASS property from first remote reference
-			String[] classes = (String []) remoteReferences[i].getProperty(org.osgi.framework.Constants.OBJECTCLASS);
-			assertTrue(classes != null);
-			// Check object class
-			assertTrue(classname.equals(classes[0]));
-		}
-		// Now unregister original registration and wait
 		registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
 
-	public void testGetProxyWithExtraProperties() throws Exception {
+	public void testGetRemoteServiceReference1() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
 		// Setup service tracker for client
 		ServiceTracker st = createProxyServiceTracker(classname);
-		
+
 		Properties props = getServiceProperties();
-		// Put property foo with value bar into published properties
+
+		// Put property 'foo' with value 'bar' into properties
 		String testPropKey = "foo";
 		String testPropVal = "bar";
 		props.put(testPropKey, testPropVal);
+		String testPropKey1 = "foo1";
+		String testPropVal1 = "bar1";
+		props.put(testPropKey1, testPropVal1);
 
-		// Server - register service with required OSGI property and some test properties
-		// Actually register and wait a while
-		ServiceRegistration registration = registerService(classname, new TestService1(),props);
+		ServiceRegistration registration = registerService(classname,
+				new TestService1(), props);
 		Thread.sleep(REGISTER_WAIT);
-		
+
 		// Client - Get service references that are proxies
-		ServiceReference [] remoteReferences = st.getServiceReferences();
-		assertTrue(remoteReferences != null);
-		assertTrue(remoteReferences.length > 0);
-		for(int i=0; i < remoteReferences.length; i++) {
-			// Get OBJECTCLASS property from first remote reference
-			String[] classes = (String []) remoteReferences[i].getProperty(org.osgi.framework.Constants.OBJECTCLASS);
-			assertTrue(classes != null);
-			// Check object class
-			assertTrue(classname.equals(classes[0]));
-			// Check the prop
-			String prop = (String) remoteReferences[i].getProperty(testPropKey);
-			assertTrue(prop != null);
-			assertTrue(prop.equals(testPropVal));
-		}
-		// Now unregister original registration and wait
+		ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValidAndFirstHasCorrectType(remoteReferences, classname);
+
+		// Check the props in service reference
+		String prop = (String) remoteReferences[0].getProperty(testPropKey);
+		assertTrue(prop != null);
+		assertTrue(prop.equals(testPropVal));
+
+		String prop1 = (String) remoteReferences[0].getProperty(testPropKey1);
+		assertTrue(prop1 != null);
+		assertTrue(prop1.equals(testPropVal1));
+
 		registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
-	
-	public void testGetAndUseProxy() throws Exception {
+
+	public void testProxy() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
 		// Setup service tracker for client
 		ServiceTracker st = createProxyServiceTracker(classname);
-		
+
 		// Actually register and wait a while
-		ServiceRegistration registration = registerService(classname, new TestService1(),getServiceProperties());
+		ServiceRegistration registration = registerService(classname,
+				new TestService1(), getServiceProperties());
 		Thread.sleep(REGISTER_WAIT);
-		
+
 		// Client - Get service references from service tracker
-		ServiceReference [] remoteReferences = st.getServiceReferences();
-		assertTrue(remoteReferences != null);
-		assertTrue(remoteReferences.length > 0);
+		ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValidAndFirstHasCorrectType(remoteReferences, classname);
+
+		// Get proxy/service
+		TestServiceInterface1 proxy = (TestServiceInterface1) getContext()
+				.getService(remoteReferences[0]);
+		assertNotNull(proxy);
+		// Now use proxy
+		String result = proxy.doStuff1();
+		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result=" + result);
+		assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
+
+		// Unregister on server and wait
+		registration.unregister();
+		st.close();
+		Thread.sleep(REGISTER_WAIT);
+	}
+
+	public void testCallSyncFromProxy() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker for client
+		ServiceTracker st = createProxyServiceTracker(classname);
+
+		// Actually register and wait a while
+		ServiceRegistration registration = registerService(classname,
+				new TestService1(), getServiceProperties());
+		Thread.sleep(REGISTER_WAIT);
+
+		// Client - Get service references from service tracker
+		ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValidAndFirstHasCorrectType(remoteReferences, classname);
+
+		// Get proxy
+		TestServiceInterface1 proxy = (TestServiceInterface1) getContext()
+				.getService(remoteReferences[0]);
+
+		assertProxyValid(proxy);
 		
-		for(int i=0; i < remoteReferences.length; i++) {
-			// Get proxy/service
-			TestServiceInterface1 proxy = (TestServiceInterface1) getContext().getService(remoteReferences[0]);
-			assertNotNull(proxy);
-			// Now use proxy
-			String result = proxy.doStuff1();
-			Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result="+result);
-			assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
-		}
+		// Get IRemoteService from proxy
+		IRemoteService remoteService = getRemoteServiceFromProxy(proxy);
+
+		// Call remote service synchronously
+		Object result = remoteService.callSync(createRemoteCall());
+		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result=" + result);
+		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
 		
 		// Unregister on server and wait
 		registration.unregister();
@@ -149,61 +248,133 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		Thread.sleep(REGISTER_WAIT);
 	}
 
-	public void testGetAndUseIRemoteService() throws Exception {
+	public void testCallSync() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
 		// Setup service tracker for client
 		ServiceTracker st = createProxyServiceTracker(classname);
-		
+
 		// Actually register and wait a while
-		ServiceRegistration registration = registerService(classname, new TestService1(),getServiceProperties());
+		ServiceRegistration registration = registerService(classname,
+				new TestService1(), getServiceProperties());
 		Thread.sleep(REGISTER_WAIT);
-		
+
 		// Client - Get service references from service tracker
-		ServiceReference [] remoteReferences = st.getServiceReferences();
-		assertTrue(remoteReferences != null);
-		assertTrue(remoteReferences.length > 0);
-		
-		for(int i=0; i < remoteReferences.length; i++) {
-			Object o = remoteReferences[i].getProperty(SERVICE_IMPORTED);
-			assertNotNull(o);
-			assertTrue(o instanceof IRemoteService);
-			IRemoteService rs = (IRemoteService) o;
-			// Now call rs methods
-			IRemoteCall call = createRemoteCall(TestServiceInterface1.class);
-			if (call != null) {
-				// Call synchronously
-				Object result = rs.callSync(call);
-				Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result="+result);
-				assertNotNull(result);
-				assertTrue(result instanceof String);
-				assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
-			}
-		}
-		
+		ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValidAndFirstHasCorrectType(remoteReferences, classname);
+
+		Object o = remoteReferences[0].getProperty(SERVICE_IMPORTED);
+		assertNotNull(o);
+		assertTrue(o instanceof IRemoteService);
+		IRemoteService rs = (IRemoteService) o;
+
+		// Call synchronously
+		Object result = rs.callSync(createRemoteCall());
+		Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result=" + result);
+		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
+
 		// Unregister on server
 		registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
 
-	protected IRemoteCall createRemoteCall(Class clazz) {
-		if (clazz.equals(TestServiceInterface1.class)) {
-			return new IRemoteCall() {
+	public void testCallAsync() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker for client
+		ServiceTracker st = createProxyServiceTracker(classname);
 
-				public String getMethod() {
-					return "doStuff1";
-				}
+		// Actually register and wait a while
+		ServiceRegistration registration = registerService(classname,
+				new TestService1(), getServiceProperties());
+		Thread.sleep(REGISTER_WAIT);
 
-				public Object[] getParameters() {
-					return new Object[] {};
-				}
+		// Client - Get service references from service tracker
+		ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValid(remoteReferences);
 
-				public long getTimeout() {
-					return 30000;
+		Object o = remoteReferences[0].getProperty(SERVICE_IMPORTED);
+		assertNotNull(o);
+		assertTrue(o instanceof IRemoteService);
+		IRemoteService rs = (IRemoteService) o;
+		// Call asynchronously
+		rs.callAsync(createRemoteCall(), new IRemoteCallListener() {
+			public void handleEvent(IRemoteCallEvent event) {
+				if (event instanceof IRemoteCallCompleteEvent) {
+					Object result = ((IRemoteCallCompleteEvent) event)
+							.getResponse();
+					Trace.trace(Activator.PLUGIN_ID,
+							"callSync.doStuff1 result=" + result);
+					assertStringResultValid(result,TestServiceInterface1.TEST_SERVICE_STRING1);
+					syncNotify();
 				}
-				
-			};
-		}
-		return null;
+			}
+		});
+
+		syncWaitForNotify(REGISTER_WAIT);
+		// Unregister on server
+		registration.unregister();
+		st.close();
+		Thread.sleep(REGISTER_WAIT);
 	}
+
+	public void testCallFuture() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker for client
+		ServiceTracker st = createProxyServiceTracker(classname);
+
+		// Actually register and wait a while
+		ServiceRegistration registration = registerService(classname,
+				new TestService1(), getServiceProperties());
+		Thread.sleep(REGISTER_WAIT);
+
+		// Client - Get service references from service tracker
+		ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValid(remoteReferences);
+
+		Object o = remoteReferences[0].getProperty(SERVICE_IMPORTED);
+		assertNotNull(o);
+		assertTrue(o instanceof IRemoteService);
+		IRemoteService rs = (IRemoteService) o;
+		// Call asynchronously
+		IFuture futureResult = rs.callAsync(createRemoteCall());
+
+		// now get result from futureResult
+		Object result = futureResult.get();
+		Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result=" + result);
+		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
+
+		syncWaitForNotify(REGISTER_WAIT);
+		// Unregister on server
+		registration.unregister();
+		st.close();
+		Thread.sleep(REGISTER_WAIT);
+	}
+
+	public void testFireAsync() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker for client
+		ServiceTracker st = createProxyServiceTracker(classname);
+
+		// Actually register and wait a while
+		ServiceRegistration registration = registerService(classname,
+				new TestService1(), getServiceProperties());
+		Thread.sleep(REGISTER_WAIT);
+
+		// Client - Get service references from service tracker
+		ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValid(remoteReferences);
+
+		Object o = remoteReferences[0].getProperty(SERVICE_IMPORTED);
+		assertNotNull(o);
+		assertTrue(o instanceof IRemoteService);
+		IRemoteService rs = (IRemoteService) o;
+		// Call asynchronously
+		rs.fireAsync(createRemoteCall());
+		Thread.sleep(5000);
+		// Unregister on server
+		registration.unregister();
+		st.close();
+		Thread.sleep(REGISTER_WAIT);
+	}
+
 }
