@@ -88,22 +88,20 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		}
 	}
 
-	protected GenericContainerArgs getClientArgs(String[] argDefaults, Object[] args) throws IDCreateException {
+	/**
+	 * @since 3.0
+	 */
+	protected GenericContainerArgs getClientArgs(Object[] args) throws IDCreateException {
 		ID newID = null;
 		Integer ka = null;
-		if (argDefaults != null && argDefaults.length > 0) {
-			if (argDefaults.length == 2) {
-				newID = getIDFromArg(argDefaults[0]);
-				ka = getIntegerFromArg(argDefaults[1]);
-			} else
-				ka = getIntegerFromArg(argDefaults[0]);
-		}
 		if (args != null && args.length > 0) {
-			if (args.length == 2) {
-				newID = getIDFromArg(args[0]);
-				ka = getIntegerFromArg(args[1]);
+			if (args.length > 1) {
+				if (args[0] instanceof String || args[0] instanceof ID)
+					newID = getIDFromArg(args[0]);
+				if (args[1] instanceof String || args[1] instanceof Integer)
+					ka = getIntegerFromArg(args[1]);
 			} else
-				ka = getIntegerFromArg(args[0]);
+				newID = getIDFromArg(args[0]);
 		}
 		if (newID == null)
 			newID = IDFactory.getDefault().createStringID(IDFactory.getDefault().createGUID().getName());
@@ -118,20 +116,18 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		return true;
 	}
 
-	protected GenericContainerArgs getServerArgs(String[] argDefaults, Object[] args) throws IDCreateException {
+	/**
+	 * @since 3.0
+	 */
+	protected GenericContainerArgs getServerArgs(Object[] args) throws IDCreateException {
 		ID newID = null;
 		Integer ka = null;
-		if (argDefaults != null && argDefaults.length > 0) {
-			if (argDefaults.length == 2) {
-				newID = getIDFromArg(argDefaults[0]);
-				ka = getIntegerFromArg(argDefaults[1]);
-			} else
-				newID = getIDFromArg(argDefaults[0]);
-		}
 		if (args != null && args.length > 0) {
-			if (args.length == 2) {
-				newID = getIDFromArg(args[0]);
-				ka = getIntegerFromArg(args[1]);
+			if (args.length > 1) {
+				if (args[0] instanceof String || args[0] instanceof ID)
+					newID = getIDFromArg(args[0]);
+				if (args[1] instanceof String || args[1] instanceof Integer)
+					ka = getIntegerFromArg(args[1]);
 			} else
 				newID = getIDFromArg(args[0]);
 		}
@@ -146,12 +142,10 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		boolean isClient = isClient(description);
 		try {
 			GenericContainerArgs gcargs = null;
-			// XXX get arg defaults from description
-			String[] argDefaults = null;
 			if (isClient)
-				gcargs = getClientArgs(argDefaults, args);
+				gcargs = getClientArgs(args);
 			else
-				gcargs = getServerArgs(argDefaults, args);
+				gcargs = getServerArgs(args);
 			// new ID must not be null
 			if (isClient) {
 				return new TCPClientSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
@@ -222,14 +216,14 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	}
 
 	/**
-	 * @since 2.1
+	 * @since 3.0
 	 */
 	public String[] getSupportedConfigs(ContainerTypeDescription description) {
 		return new String[] {description.getName()};
 	}
 
 	/**
-	 * @since 2.1
+	 * @since 3.0
 	 */
 	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs) {
 		if (exporterSupportedConfigs == null)
@@ -245,7 +239,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	}
 
 	/**
-	 * @since 2.1
+	 * @since 3.0
 	 */
 	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigs, Dictionary exportedProperties) {
 		return null;
