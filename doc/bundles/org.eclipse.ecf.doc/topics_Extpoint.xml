@@ -1,5 +1,6 @@
 
 <toc label="Extension Points">
+<topic label="org.eclipse.ecf.container" href="html/reference/extension-points/org_eclipse_ecf_container.html"/>
 <topic label="org.eclipse.ecf.containerFactory" href="html/reference/extension-points/org_eclipse_ecf_containerFactory.html"/>
 <topic label="org.eclipse.ecf.identity.namespace" href="html/reference/extension-points/org_eclipse_ecf_identity_namespace.html"/>
 <topic label="org.eclipse.ecf.discovery.ui.serviceAccessHandler" href="html/reference/extension-points/org_eclipse_ecf_discovery_ui_serviceAccessHandler.html"/>

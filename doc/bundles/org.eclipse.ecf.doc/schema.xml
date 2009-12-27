@@ -3,7 +3,7 @@
 	<property name="dest.path" value="html/reference/extension-points"/>
 
 	<target name="org.eclipse.ecf.identity">
-		<eclipse.convertPath property="org.eclipse.ecf.identity.manifest" resourcePath="/org.eclipse.ecf.core.identity/plugin.xml"/>
+		<eclipse.convertPath property="org.eclipse.ecf.identity.manifest" resourcePath="/org.eclipse.ecf.identity/plugin.xml"/>
 		<antcall target="_plugin">
 			<param name="manifest.path" value="${org.eclipse.ecf.identity.manifest}"/>
 		</antcall>
@@ -17,7 +17,7 @@
 	</target>
 
 	<target name="org.eclipse.ecf.sharedobject">
-		<eclipse.convertPath property="org.eclipse.ecf.sharedobject.manifest" resourcePath="/org.eclipse.ecf.core.sharedobject/plugin.xml"/>
+		<eclipse.convertPath property="org.eclipse.ecf.sharedobject.manifest" resourcePath="/org.eclipse.ecf.sharedobject/plugin.xml"/>
 		<antcall target="_plugin">
 			<param name="manifest.path" value="${org.eclipse.ecf.sharedobject.manifest}"/>
 		</antcall>

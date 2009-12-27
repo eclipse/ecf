@@ -17,13 +17,13 @@
 <p></p>
 <p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.run">run</a>)+&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST extension</p>
-<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED</p><p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED</p>&gt;</p>
 <p></p>
 <ul class="ConfigMarkupAttlistDesc">
 </ul>
 <br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.run">run</a> EMPTY&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST run</p>
-<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">asynchronous&nbsp;(true | false) &gt;</p>
+<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</p><p class="code SchemaDtdAttlist">asynchronous&nbsp;(true | false) </p>&gt;</p>
 <p></p>
 <ul class="ConfigMarkupAttlistDesc">
 <li><b>class</b> - Class that must implement IECFStart.</li>
@@ -59,6 +59,25 @@ public class CollabStart implements IECFStart {
 
 }
 
+</span></pre>
+<p></p>
+
+<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6><b>org.eclipse.ecf.startup.IECFStartup</b> interface:
+
+<pre class="Example"><span class="code SchemaTag">
+/**
+ * Interface that must be implemented by extensions of the org.eclipse.ecf.start
+ * extension point. Such extensions will have their start method called by a new
+ * Job upon ECF startup.
+ */
+public interface IECFStart {
+ /**
+  * Run some startup task.
+  * 
+  * @return IStatus the status of the start
+  */
+ public IStatus run(IProgressMonitor monitor);
+}
 </span></pre>
 <p></p>
 

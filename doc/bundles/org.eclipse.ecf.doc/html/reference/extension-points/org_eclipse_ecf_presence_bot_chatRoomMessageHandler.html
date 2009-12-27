@@ -17,13 +17,13 @@
 <p></p>
 <p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.handler">handler</a>)+&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST extension</p>
-<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED</p><p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED</p>&gt;</p>
 <p></p>
 <ul class="ConfigMarkupAttlistDesc">
 </ul>
 <br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.handler">handler</a> EMPTY&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST handler</p>
-<p class="code SchemaDtdAttlist">chatRoomRobotId&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">filterExpression&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED&gt;</p>
+<p class="code SchemaDtdAttlist">chatRoomRobotId&nbsp;&nbsp;CDATA #REQUIRED</p><p class="code SchemaDtdAttlist">filterExpression&nbsp;CDATA #IMPLIED</p><p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</p>&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
 The chat room message handler</p>
@@ -56,6 +56,26 @@ Note that the given chatroomrobotid=<b>org.eclipse.ecf.presence.bot.defaultbot</
             id=</span><span class="code SchemaCstring">&quot;org.eclipse.ecf.presence.bot.defaultbot&quot;</span><span class="code SchemaTag">&gt;
       &lt;/chatRoomRobot&gt;
    &lt;/extension&gt;
+</span></pre>
+<p></p>
+
+<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>The class implementation provided in extension point must implement the following interface:
+
+<pre class="Example"><span class="code SchemaTag">
+public interface IChatRoomMessageHandler extends IChatRoomContainerAdvisor {
+
+ /**
+  * This method is called when a {@link IChatRoomMessage} is received.
+  * 
+  * @param message
+  *            the {@link IChatRoomMessage} received. Will not be
+  *            &lt;code&gt;null&lt;/code&gt;. Implementers should not block the
+  *            calling thread. Any methods on the given &lt;code&gt;message&lt;/code&gt;
+  *            parameter may be called.
+  */
+ public void handleRoomMessage(IChatRoomMessage message);
+
+}
 </span></pre>
 <p></p>
 

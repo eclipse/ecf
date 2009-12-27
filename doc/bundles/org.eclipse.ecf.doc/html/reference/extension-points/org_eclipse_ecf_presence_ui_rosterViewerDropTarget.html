@@ -17,13 +17,13 @@
 <p></p>
 <p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.dropTarget">dropTarget</a>+)&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST extension</p>
-<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED</p><p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED</p>&gt;</p>
 <p></p>
 <ul class="ConfigMarkupAttlistDesc">
 </ul>
 <br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.dropTarget">dropTarget</a> EMPTY&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST dropTarget</p>
-<p class="code SchemaDtdAttlist">class&nbsp;CDATA #REQUIRED&gt;</p>
+<p class="code SchemaDtdAttlist">class&nbsp;CDATA #REQUIRED</p>&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
 Drop target element.</p>
@@ -38,6 +38,42 @@ Drop target element.</p>
             class=</span><span class="code SchemaCstring">&quot;org.eclipse.ecf.presence.collab.ui.TextRosterViewerDropTarget&quot;</span><span class="code SchemaTag">&gt;
       &lt;/dropTarget&gt;
    &lt;/extension&gt;
+
+</span></pre>
+<p></p>
+
+<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6><pre class="Example"><span class="code SchemaTag">
+/**
+ * Roster viewer drop target.  This interface defines the 
+ * required methods for implementers of the rosterViewerDropTarget
+ * extension point.
+ */
+public interface IRosterViewerDropTarget {
+
+    /**
+     * Validates dropping on the given roster item. This method is called whenever some 
+     * aspect of the drop operation changes.
+     * 
+     * @param target the object that the mouse is currently hovering over, or
+     *   &lt;code&gt;null&lt;/code&gt; if the mouse is hovering over empty space
+     * @param operation the current drag operation (copy, move, etc.)
+     * @param transferType the current transfer type
+     * @return &lt;code&gt;true&lt;/code&gt; if the drop is valid, and &lt;code&gt;false&lt;/code&gt;
+     *   otherwise
+     */
+ public boolean validateDrop(IRosterItem rosterItem, int operation,
+            TransferData transferType);
+
+    /**
+     * Performs any work associated with the drop.
+     *
+     * @param data the drop data
+     * @return &lt;code&gt;true&lt;/code&gt; if the drop was successful, and 
+     *   &lt;code&gt;false&lt;/code&gt; otherwise
+     */
+
+ public boolean performDrop(Object data);
+}
 
 </span></pre>
 <p></p>

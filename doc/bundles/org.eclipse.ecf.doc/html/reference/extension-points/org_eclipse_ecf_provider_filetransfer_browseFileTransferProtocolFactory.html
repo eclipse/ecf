@@ -17,13 +17,13 @@
 <p></p>
 <p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.browseFileTransferProtocolFactory">browseFileTransferProtocolFactory</a>*)&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST extension</p>
-<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED</p><p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED</p>&gt;</p>
 <p></p>
 <ul class="ConfigMarkupAttlistDesc">
 </ul>
 <br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.browseFileTransferProtocolFactory">browseFileTransferProtocolFactory</a> EMPTY&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST browseFileTransferProtocolFactory</p>
-<p class="code SchemaDtdAttlist">protocol&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">priority&nbsp;CDATA #IMPLIED&gt;</p>
+<p class="code SchemaDtdAttlist">protocol&nbsp;CDATA #REQUIRED</p><p class="code SchemaDtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</p><p class="code SchemaDtdAttlist">priority&nbsp;CDATA #IMPLIED</p>&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
 Browse remote file system protocol factory extention point</p>
@@ -43,6 +43,26 @@ Browse remote file system protocol factory extention point</p>
       &lt;/browseFileTransferProtocolFactory&gt;
    &lt;/extension&gt;
 
+</span></pre>
+<p></p>
+
+<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>Here is the <b>org.eclipse.ecf.filetransfer.service.IRemoteFileSystemBrowserFactory</b>
+
+<pre class="Example"><span class="code SchemaTag">
+/**
+ * Remote file browser factory. This service interface is used by clients to
+ * create a new IRemoteFileSystemBrowser instance.
+ */
+public interface IRemoteFileSystemBrowserFactory {
+
+ /**
+  * Get new instance of IRemoteFileSystemBrowser.
+  * 
+  * @return IRemoteFileSystemBrowser for initiating a retrieval of a remote file.
+  */
+ public IRemoteFileSystemBrowser newInstance();
+
+}
 </span></pre>
 <p></p>
 

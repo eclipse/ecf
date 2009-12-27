@@ -17,13 +17,13 @@
 <p></p>
 <p class="code SchemaDtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.connector">connector</a>+)&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST extension</p>
-<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED<p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p class="code SchemaDtdAttlist">point&nbsp;CDATA #REQUIRED</p><p class="code SchemaDtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code SchemaDtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED</p>&gt;</p>
 <p></p>
 <ul class="ConfigMarkupAttlistDesc">
 </ul>
 <br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.connector">connector</a> (<a href="#e.group">group</a>+)&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST connector</p>
-<p class="code SchemaDtdAttlist">hostname&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">port&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">keepAlive&nbsp;CDATA #IMPLIED<p class="code SchemaDtdAttlist">discovery&nbsp;(true | false) &gt;</p>
+<p class="code SchemaDtdAttlist">hostname&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code SchemaDtdAttlist">port&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code SchemaDtdAttlist">keepAlive&nbsp;CDATA #IMPLIED</p><p class="code SchemaDtdAttlist">discovery&nbsp;(true | false) </p>&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
 A connector defines the port and other information for an ECF generic server to receive connection requests from clients.</p>
@@ -36,7 +36,7 @@ A connector defines the port and other information for an ECF generic server to 
 </ul>
 <br><p class="code SchemaDtd">&lt;!ELEMENT <a name="e.group">group</a> EMPTY&gt;</p>
 <p class="code SchemaDtd">&lt;!ATTLIST group</p>
-<p class="code SchemaDtdAttlist">name&nbsp;CDATA #REQUIRED&gt;</p>
+<p class="code SchemaDtdAttlist">name&nbsp;CDATA #REQUIRED</p>&gt;</p>
 <p></p>
 <p class="ConfigMarkupElementDesc">
 A specific named group for the parent connector.  e.g. 'server' in ecftcp://localhost:3282/server</p>
@@ -61,6 +61,9 @@ A specific named group for the parent connector.  e.g. 'server' in ecftcp://loca
 </span></pre>
 
 Produces a server with groupID:  ecftcp://localhost:3333/groupName
+<p></p>
+
+<h6 class="CaptionFigColumn SchemaHeader">API Information: </h6>No public programmatic API
 <p></p>
 
 <br>
