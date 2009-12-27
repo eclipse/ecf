@@ -250,11 +250,4 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 		assertTrue(parameterTypes[0][1].equals(Class.class));
 
 	}
-	public void testContainerTypeDescriptionGetSupportedIntents() {
-		final ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
-		final String[] intents = desc.getSupportedIntents();
-		assertTrue(intents.length == 2);
-		assertTrue(intents[0] == INTENTONE);
-		assertTrue(intents[1] == INTENTTWO);
-	}
 }
