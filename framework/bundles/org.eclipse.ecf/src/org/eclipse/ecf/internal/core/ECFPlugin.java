@@ -349,17 +349,7 @@ public class ECFPlugin implements BundleActivator {
 				id = member.getAttribute(ID_ATTRIBUTE);
 				id = (id == null || "".equals(id)) ? null : id; //$NON-NLS-1$
 				Map parameters = getParametersForContainer(member);
-				if (id == null) {
-					if (parameters == null)
-						ContainerFactory.getDefault().createContainer(factory);
-					else
-						ContainerFactory.getDefault().createContainer(factory, parameters);
-				} else {
-					if (parameters == null)
-						ContainerFactory.getDefault().createContainer(factory, id);
-					else
-						ContainerFactory.getDefault().createContainer(factory, id, parameters);
-				}
+				ContainerFactory.getDefault().createContainer(factory, id, parameters);
 				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG, method + ".added container with factoryName=" + factory + " and id=" + id); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (final CoreException e) {
 				logException(e.getStatus(), method, e);

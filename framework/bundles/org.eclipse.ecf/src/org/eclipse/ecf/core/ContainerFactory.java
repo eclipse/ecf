@@ -35,7 +35,7 @@ import org.eclipse.ecf.internal.core.*;
  * 
  * @see IContainer
  * @see IContainerFactory
- * @since 4.0
+ * @since 3.1
  */
 public class ContainerFactory implements IContainerFactory, IContainerManager {
 
@@ -235,7 +235,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 */
 	public IContainer createContainer(ID containerID) throws ContainerCreateException {
 		if (containerID == null)
-			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+			return createContainer();
 		return createContainer(BASE_CONTAINER_NAME, new Object[] {containerID});
 	}
 
@@ -312,7 +312,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, ID containerID, Object[] parameters) throws ContainerCreateException {
 		if (containerID == null)
-			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+			return createContainer(containerTypeDescription, parameters);
 		Object[] params = (parameters == null || parameters.length == 0) ? new Object[1] : new Object[parameters.length + 1];
 		params[0] = containerID;
 		if (parameters != null && parameters.length != 0)
@@ -325,7 +325,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, ID containerID, Object[] parameters) throws ContainerCreateException {
 		if (containerID == null)
-			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+			return createContainer(containerTypeDescriptionName, parameters);
 		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerID, parameters);
 	}
 
@@ -334,7 +334,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, ID containerID) throws ContainerCreateException {
 		if (containerID == null)
-			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+			return createContainer(containerTypeDescription);
 		return createContainer(containerTypeDescription, new Object[] {containerID});
 	}
 
@@ -371,7 +371,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId, Object[] parameters) throws ContainerCreateException {
 		if (containerId == null)
-			throw new ContainerCreateException("containerId cannot be null"); //$NON-NLS-1$
+			return createContainer(containerTypeDescription, parameters);
 		Object[] params = (parameters == null || parameters.length == 0) ? new Object[1] : new Object[parameters.length + 1];
 		params[0] = containerId;
 		if (parameters != null && parameters.length != 0)
@@ -544,7 +544,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, ID containerID, Map parameters) throws ContainerCreateException {
 		if (containerID == null)
-			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+			return createContainer(containerTypeDescription, parameters);
 		if (parameters == null)
 			return createContainer(containerTypeDescription, containerID);
 		return createContainer(containerTypeDescription, new Object[] {containerID, parameters});
@@ -555,7 +555,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId, Map parameters) throws ContainerCreateException {
 		if (containerId == null)
-			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+			return createContainer(containerTypeDescription, parameters);
 		if (parameters == null)
 			return createContainer(containerTypeDescription, containerId);
 		return createContainer(containerTypeDescription, new Object[] {containerId, parameters});

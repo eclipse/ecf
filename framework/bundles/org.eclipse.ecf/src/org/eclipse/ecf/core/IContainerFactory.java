@@ -119,7 +119,7 @@ public interface IContainerFactory {
 	 *            the ContainerTypeDescription to use to create the instance. Must not be <code>null</code>.
 	 * @param parameters
 	 *            an Object [] of parameters passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer. A non-<code>null</code> instance will be returned.
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 */
@@ -143,7 +143,7 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescriptionName
 	 *            the ContainerTypeDescription name to use to create the instance.  Must not be <code>null</code>.
-	 * @param containerId the container's new ID.  Must not be <code>null</code>.
+	 * @param containerId the container's new ID.  May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
@@ -155,10 +155,10 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescriptionName
 	 *            the ContainerTypeDescription name to use to create the instance.  Must not be <code>null</code>.
-	 * @param containerId the container's new ID.  Must not be <code>null</code>.
+	 * @param containerId the container's new ID.  May be <code>null</code>.
 	 * @param parameters
 	 *            an Object [] of parameters passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
@@ -170,7 +170,7 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescription
 	 *            the ContainerTypeDescription to use to create the instance.  Must not be <code>null</code>.
-	 * @param containerId the container's new ID.  Must not be <code>null</code>.
+	 * @param containerId the container's new ID.  May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
@@ -182,10 +182,10 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescription
 	 *            the ContainerTypeDescription to use to create the instance.  Must not be <code>null</code>.
-	 * @param containerId the container's new ID.  Must not be <code>null</code>.
+	 * @param containerId the container's new ID.  May be <code>null</code>.
 	 * @param parameters
 	 *            an Object [] of parameters passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
@@ -197,10 +197,10 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescription
 	 *            the ContainerTypeDescription to use to create the instance.  Must not be <code>null</code>.
-	 * @param containerID the container's new ID.  Must not be <code>null</code>.
+	 * @param containerID the container's new ID.  May be <code>null</code>.
 	 * @param parameters
 	 *            an Object [] of parameters passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 */
@@ -211,7 +211,7 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescriptionName
 	 *            the ContainerTypeDescription name to lookup. Must not be <code>null</code>.
-	 * @param containerID the new container's id.  Must not be <code>null</code>.
+	 * @param containerID the new container's id.  May be <code>null</code>.
 	 * @param parameters
 	 *            the Object [] of parameters passed to the
 	 *            IContainerInstantiator.createInstance method.  May be <code>null</code>.
@@ -225,7 +225,7 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescription
 	 *            the ContainerTypeDescription to lookup.  Must not be <code>null</code>.
-	 * @param containerID the new container's id.  Must not be <code>null</code>.
+	 * @param containerID the new container's id.  May be <code>null</code>.
 	 * @return a valid instance of IContainer.  Will not be <code>null</code>.
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 */
@@ -236,7 +236,7 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescriptionName
 	 *            the ContainerTypeDescription name to lookup.  Must not be <code>null</code>.
-	 * @param containerID the new container's id.  Must not be <code>null</code>.
+	 * @param containerID the new container's id.  May be <code>null</code>.
 	 * @return a valid instance of IContainer.  Will not be <code>null</code>.
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 */
@@ -250,7 +250,7 @@ public interface IContainerFactory {
 	 * @param containerID the container's new ID.  Must not be <code>null</code>.
 	 * @param parameters
 	 *            a Map of parameters (name/value pairs) passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
@@ -262,10 +262,10 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescription
 	 *            the ContainerTypeDescription to use to create the instance.  Must not be <code>null</code>.
-	 * @param containerId the container's new ID.  Must not be <code>null</code>.
+	 * @param containerId the container's new ID.  May be <code>null</code>.
 	 * @param parameters
 	 *            a Map of parameters (name/value pairs) passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
@@ -277,10 +277,10 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescriptionName
 	 *            the ContainerTypeDescription name to lookup.  Must not be <code>null</code>.
-	 * @param containerID the container's new ID.  Must not be <code>null</code>.
+	 * @param containerID the container's new ID.  May be <code>null</code>.
 	 * @param parameters
 	 *            a Map of parameters (name/value pairs) passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
@@ -292,10 +292,10 @@ public interface IContainerFactory {
 	 * 
 	 * @param containerTypeDescriptionName
 	 *            the ContainerTypeDescription name to lookup.  Must not be <code>null</code>.
-	 * @param containerId the container's new ID.  Must not be <code>null</code>.
+	 * @param containerId the container's new ID.  May be <code>null</code>.
 	 * @param parameters
 	 *            a Map of parameters (name/value pairs) passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
@@ -309,7 +309,7 @@ public interface IContainerFactory {
 	 *            the ContainerTypeDescription to use to create the instance.  Must not be <code>null</code>.
 	 * @param parameters
 	 *            a Map of parameters (name/value pairs) passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
@@ -323,7 +323,7 @@ public interface IContainerFactory {
 	 *            the ContainerTypeDescription name to lookup.  Must not be <code>null</code>.
 	 * @param parameters
 	 *            a Map of parameters (name/value pairs) passed to the createInstance method
-	 *            of the IContainerInstantiator
+	 *            of the IContainerInstantiator. May be <code>null</code>.
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 * @since 3.1
