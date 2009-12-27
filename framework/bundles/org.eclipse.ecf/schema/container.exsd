@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.ecf" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.ecf" id="container" name="container"/>
+      </appInfo>
+      <documentation>
+         This extension point allows extensions to specify the creation of a container instance of a given type.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="container" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="container">
+      <annotation>
+         <documentation>
+            The container extension point.  Extensions may define new containers created upon ECF core initialization.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="1">
+            <element ref="parameter" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="factoryName" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The required containerFactoryName (e.g. ecf.generic.client or ecf.r_osgi.peer) that defines the type of container to create.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="containerId" type="string">
+            <annotation>
+               <documentation>
+                  Optional containerId that defines the id for the new container instance.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="parameter">
+      <annotation>
+         <documentation>
+            Parameter for container instance creation.  The name value pairs defined by the parameter element name and value attributes are added to a Map that is then passed to the container factory instance creation.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The name for the container parameter.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The value for the container parameter.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         ECF core bundle v 3.1.0.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;pre&gt;
+   &lt;extension
+         point=&quot;org.eclipse.ecf.container&quot;&gt;
+      &lt;container
+            containerId=&quot;foo1&quot;
+            factoryName=&quot;ecf.generic.client&quot;&gt;
+         &lt;parameter
+               name=&quot;name1&quot;
+               value=&quot;value1&quot;&gt;
+         &lt;/parameter&gt;
+         &lt;parameter
+               name=&quot;name2&quot;
+               value=&quot;value2&quot;&gt;
+         &lt;/parameter&gt;
+      &lt;/container&gt;
+      &lt;container
+            containerId=&quot;adfasdf&quot;
+            factoryName=&quot;bogus.factory.name&quot;&gt;
+      &lt;/container&gt;
+      &lt;container
+            containerId=&quot;ecftcp://localhost:32111/server&quot;
+            factoryName=&quot;ecf.generic.server&quot;&gt;
+      &lt;/container&gt;
+      &lt;container
+            factoryName=&quot;ecf.generic.client&quot;&gt;
+      &lt;/container&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiinfo"/>
+      </appInfo>
+      <documentation>
+         No API available.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         The ECF core v3.1.0 bundle supplies the implementation of this extension point.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2009 Composent, Inc. and others.
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation.
+      </documentation>
+   </annotation>
+
+</schema>

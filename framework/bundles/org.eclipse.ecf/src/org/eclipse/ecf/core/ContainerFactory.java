@@ -363,7 +363,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * @since 3.1
 	 */
 	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId) throws ContainerCreateException {
-		return createContainer(containerTypeDescription, containerId, null);
+		return createContainer(containerTypeDescription, containerId, (Object[]) null);
 	}
 
 	/**
@@ -537,6 +537,60 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 				fireContainerRemoved(entry.getContainer());
 			}
 		}
+	}
+
+	/**
+	 * @since 3.1
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, ID containerID, Map parameters) throws ContainerCreateException {
+		if (containerID == null)
+			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+		if (parameters == null)
+			return createContainer(containerTypeDescription, containerID);
+		return createContainer(containerTypeDescription, new Object[] {containerID, parameters});
+	}
+
+	/**
+	 * @since 3.1
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId, Map parameters) throws ContainerCreateException {
+		if (containerId == null)
+			throw new ContainerCreateException(Messages.ContainerFactory_EXCEPTION_CONTAINERID_NOT_NULL);
+		if (parameters == null)
+			return createContainer(containerTypeDescription, containerId);
+		return createContainer(containerTypeDescription, new Object[] {containerId, parameters});
+	}
+
+	/**
+	 * @since 3.1
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, ID containerID, Map parameters) throws ContainerCreateException {
+		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerID, parameters);
+	}
+
+	/**
+	 * @since 3.1
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, String containerId, Map parameters) throws ContainerCreateException {
+		return createContainer(getDescriptionByNameWithException(containerTypeDescriptionName), containerId, parameters);
+	}
+
+	/**
+	 * @since 3.1
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, Map parameters) throws ContainerCreateException {
+		if (parameters == null)
+			return createContainer(containerTypeDescription);
+		return createContainer(containerTypeDescription, new Object[] {parameters});
+	}
+
+	/**
+	 * @since 3.1
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, Map parameters) throws ContainerCreateException {
+		if (parameters == null)
+			return createContainer(containerTypeDescriptionName);
+		return createContainer(containerTypeDescriptionName, new Object[] {parameters});
 	}
 
 }

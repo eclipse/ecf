@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.ecf">
+<schema targetNamespace="org.eclipse.ecf" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.eclipse.ecf" id="containerFactory" name="ECF Container Factory"/>
@@ -12,6 +12,11 @@
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="containerFactory" minOccurs="1" maxOccurs="unbounded"/>
@@ -43,7 +48,7 @@
    <element name="containerFactory">
       <annotation>
          <documentation>
-            The container factory extension point.  Can optionally contain a list of &apos;defaultargument&apos; elements that describe the arguments (and provide default values) to be passed to provider implementation
+            The container factory extension point.  Can optionally contain a list of &apos;defaultargument&apos; elements that describe the arguments to be passed to provider implementation
          </documentation>
       </annotation>
       <complexType>

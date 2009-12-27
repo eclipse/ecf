@@ -61,7 +61,7 @@ public interface IRemoteServiceContainerInstantiator {
 	 * exporterSupportedConfigTypes. </p>
 	 * 
 	 * @param description the container type description under consideration.
-	 * @param exporterSupportedConfigTypes the exporter supported config types under consideration.
+	 * @param exporterSupportedConfigs the exporter supported config types under consideration.
 	 * @return String[] indicating the importer's supported config types.  Should be <code>null</code>, unless
 	 * one or more of the exporterSupportedConfigTypes is recognized for the given description.
 	 */
@@ -71,7 +71,7 @@ public interface IRemoteServiceContainerInstantiator {
 	 * Get the properties associated with the given description, with the given importedConfigTypes, via the given exportedProperties.
 	 * 
 	 * @param description the container type description under consideration.
-	 * @param importedConfigTypes the imported config types for the given properties.  Will not be <code>null</code>, and
+	 * @param importedConfigs the imported config types for the given properties.  Will not be <code>null</code>, and
 	 * should be the same values as returned from {@link #getImportedConfigs(ContainerTypeDescription, String[])}.
 	 * @param exportedProperties the properties from the exported service.  Will not be <code>null</code>.
 	 * @return Dictionary that has all of the properties for the importedConfigTypes.  May be <code>null</code> if 

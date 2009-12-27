@@ -9,6 +9,7 @@
 package org.eclipse.ecf.core;
 
 import java.util.List;
+import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
@@ -240,5 +241,93 @@ public interface IContainerFactory {
 	 * @throws ContainerCreateException if some problem creating the instance.
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName, ID containerID) throws ContainerCreateException;
+
+	/**
+	 * Create a new container. 
+	 * 
+	 * @param containerTypeDescription
+	 *            the ContainerTypeDescription to use to create the instance.  Must not be <code>null</code>.
+	 * @param containerID the container's new ID.  Must not be <code>null</code>.
+	 * @param parameters
+	 *            a Map of parameters (name/value pairs) passed to the createInstance method
+	 *            of the IContainerInstantiator
+	 * @return a valid instance of IContainer
+	 * @throws ContainerCreateException if some problem creating the instance.
+	 * @since 3.1
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, ID containerID, Map parameters) throws ContainerCreateException;
+
+	/**
+	 * Create a new container. 
+	 * 
+	 * @param containerTypeDescription
+	 *            the ContainerTypeDescription to use to create the instance.  Must not be <code>null</code>.
+	 * @param containerId the container's new ID.  Must not be <code>null</code>.
+	 * @param parameters
+	 *            a Map of parameters (name/value pairs) passed to the createInstance method
+	 *            of the IContainerInstantiator
+	 * @return a valid instance of IContainer
+	 * @throws ContainerCreateException if some problem creating the instance.
+	 * @since 3.1
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, String containerId, Map parameters) throws ContainerCreateException;
+
+	/**
+	 * Create a new container. 
+	 * 
+	 * @param containerTypeDescriptionName
+	 *            the ContainerTypeDescription name to lookup.  Must not be <code>null</code>.
+	 * @param containerID the container's new ID.  Must not be <code>null</code>.
+	 * @param parameters
+	 *            a Map of parameters (name/value pairs) passed to the createInstance method
+	 *            of the IContainerInstantiator
+	 * @return a valid instance of IContainer
+	 * @throws ContainerCreateException if some problem creating the instance.
+	 * @since 3.1
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, ID containerID, Map parameters) throws ContainerCreateException;
+
+	/**
+	 * Create a new container. 
+	 * 
+	 * @param containerTypeDescriptionName
+	 *            the ContainerTypeDescription name to lookup.  Must not be <code>null</code>.
+	 * @param containerId the container's new ID.  Must not be <code>null</code>.
+	 * @param parameters
+	 *            a Map of parameters (name/value pairs) passed to the createInstance method
+	 *            of the IContainerInstantiator
+	 * @return a valid instance of IContainer
+	 * @throws ContainerCreateException if some problem creating the instance.
+	 * @since 3.1
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, String containerId, Map parameters) throws ContainerCreateException;
+
+	/**
+	 * Create a new container. 
+	 * 
+	 * @param containerTypeDescription
+	 *            the ContainerTypeDescription to use to create the instance.  Must not be <code>null</code>.
+	 * @param parameters
+	 *            a Map of parameters (name/value pairs) passed to the createInstance method
+	 *            of the IContainerInstantiator
+	 * @return a valid instance of IContainer
+	 * @throws ContainerCreateException if some problem creating the instance.
+	 * @since 3.1
+	 */
+	public IContainer createContainer(ContainerTypeDescription containerTypeDescription, Map parameters) throws ContainerCreateException;
+
+	/**
+	 * Create a new container. 
+	 * 
+	 * @param containerTypeDescriptionName
+	 *            the ContainerTypeDescription name to lookup.  Must not be <code>null</code>.
+	 * @param parameters
+	 *            a Map of parameters (name/value pairs) passed to the createInstance method
+	 *            of the IContainerInstantiator
+	 * @return a valid instance of IContainer
+	 * @throws ContainerCreateException if some problem creating the instance.
+	 * @since 3.1
+	 */
+	public IContainer createContainer(String containerTypeDescriptionName, Map parameters) throws ContainerCreateException;
 
 }

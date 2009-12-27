@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="containerFactory" name="ECF Container Factory" schema="schema/containerFactory.exsd"/>
    <extension-point id="start" name="ECF start" schema="schema/start.exsd"/>
+   <extension-point id="container" name="ECF container" schema="schema/container.exsd"/>
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
