@@ -14,8 +14,7 @@ package org.eclipse.ecf.internal.provider.r_osgi;
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Dictionary;
+import java.util.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
@@ -104,14 +103,21 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 		return r_OSGiIntents;
 	}
 
-	private static final String[] ROSGI_CONFIGS = new String[] {"ecf.r_osgi.peer"}; //$NON-NLS-1$
+	private static final String ROSGI_CONFIG = "ecf.r_osgi.peer"; //$NON-NLS-1$
+
+	private static final String[] ROSGI_CONFIGS = new String[] {ROSGI_CONFIG};
 
 	public String[] getSupportedConfigs(ContainerTypeDescription description) {
 		return ROSGI_CONFIGS;
 	}
 
 	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs) {
-		return ROSGI_CONFIGS;
+		if (exporterSupportedConfigs == null)
+			return null;
+		List supportedConfigs = Arrays.asList(exporterSupportedConfigs);
+		if (supportedConfigs.contains(ROSGI_CONFIG))
+			return ROSGI_CONFIGS;
+		return null;
 	}
 
 	public Dictionary getPropertiesForImportedConfigs(ContainerTypeDescription description, String[] importedConfigs, Dictionary exportedProperties) {
