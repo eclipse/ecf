@@ -147,7 +147,7 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected IContainer createServer() throws Exception {
-		return ContainerFactory.getDefault().createContainer(getServerContainerName(), new Object[] {getServerCreateID()});
+		return ContainerFactory.getDefault().createContainer(getServerContainerName(), new Object[] {serverID});
 	}
 
 	protected IContainer[] createClients() throws Exception {
