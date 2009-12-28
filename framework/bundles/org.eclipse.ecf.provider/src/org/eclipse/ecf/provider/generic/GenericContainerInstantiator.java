@@ -229,12 +229,19 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		if (exporterSupportedConfigs == null)
 			return null;
 		List results = new ArrayList();
-		for (int i = 0; i < exporterSupportedConfigs.length; i++) {
-			if (TCPSERVER_NAME.equals(exporterSupportedConfigs[i]) && TCPCLIENT_NAME.equals(description.getName()))
+		List supportedConfigs = Arrays.asList(exporterSupportedConfigs);
+		// For a server, if exporter is a client then we can be an importer
+		if (TCPSERVER_NAME.equals(description.getName())) {
+			if (supportedConfigs.contains(TCPCLIENT_NAME))
+				results.add(TCPSERVER_NAME);
+			// For a client, if exporter is server we can import
+			// or if remote is either generic server or generic client
+		} else if (TCPCLIENT_NAME.equals(description.getName())) {
+			if (supportedConfigs.contains(TCPSERVER_NAME) || supportedConfigs.contains(TCPCLIENT_NAME))
 				results.add(TCPCLIENT_NAME);
-			if (TCPCLIENT_NAME.equals(exporterSupportedConfigs[i]))
-				results.add(description.getName());
 		}
+		if (results.size() == 0)
+			return null;
 		return (String[]) results.toArray(new String[] {});
 	}
 
