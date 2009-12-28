@@ -63,7 +63,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 
 	public void testRegisterOnExistingServer() throws Exception {
 		// Create server container
-		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {getServerCreateID()});
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
@@ -74,11 +74,11 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 
 	public void testRegisterOnExistingServerWithContainerID() throws Exception {
 		// Create server container
-		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {getServerCreateID()});
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
-		props.put(SERVICE_EXPORTED_CONTAINER_ID, getServerCreateID());
+		props.put(SERVICE_EXPORTED_CONTAINER_ID, createServerID());
 		registerWaitAndUnregister(props);
 	}
 
