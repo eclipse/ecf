@@ -12,7 +12,12 @@ package org.eclipse.ecf.tests.osgi.services.distribution;
 import java.util.Properties;
 
 import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.remoteservice.Constants;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 public abstract class AbstractRemoteServiceRegisterTest extends
@@ -37,9 +42,35 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		ServiceRegistration registration = registerDefaultService(props);
 		// Wait a while
 		Thread.sleep(REGISTER_WAIT);
+		// Verify
+		verifyRemoteServiceRegisteredWithServer();
 		// Then unregister
 		registration.unregister();
 		Thread.sleep(REGISTER_WAIT);
+	}
+
+	private void verifyRemoteServiceRegisteredWithServer() throws Exception {
+		verifyRemoteServiceRegistered(getServerContainerAdapter(), getDefaultServiceClasses()[0]);
+	}
+
+	protected void verifyRemoteServiceRegistered(IRemoteServiceContainerAdapter adapter, String className) throws Exception {
+		IRemoteServiceReference [] refs = adapter.getRemoteServiceReferences((ID[]) null, className, null);
+		assertNotNull(refs);
+		assertTrue(refs.length > 0);
+		String[] objectClasses = (String[]) refs[0].getProperty(Constants.OBJECTCLASS);
+		assertTrue(objectClasses != null);
+		assertTrue(objectClasses.length > 0);
+		assertTrue(objectClasses[0].equals(className));
+	}
+	
+	private IRemoteServiceContainerAdapter getServerContainerAdapter() {
+		IContainer [] containers = getContainerManager().getAllContainers();
+		String containerType = getServerContainerTypeName();
+		for(int i=0; i < containers.length; i++) {
+			ContainerTypeDescription ctd = getContainerManager().getContainerTypeDescription(containers[i].getID());
+			if (ctd != null && ctd.getName().equals(containerType)) return (IRemoteServiceContainerAdapter) containers[i].getAdapter(IRemoteServiceContainerAdapter.class);
+		}
+		return null;
 	}
 
 	public void testRegisterOnCreatedServer() throws Exception {
