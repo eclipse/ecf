@@ -57,7 +57,7 @@ public class RemoteServiceEndpointDescriptionImpl extends
 				.getPropertyBytes(RemoteServicePublication.TARGET_CONTAINERID);
 		// If this is null, we're ok with it
 		if (targetBytes != null) {
-			final String targetStr = new String(endpointBytes);
+			final String targetStr = new String(targetBytes);
 			String targetNamespaceStr = serviceProperties
 					.getPropertyString(RemoteServicePublication.TARGET_CONTAINERID_NAMESPACE);
 			if (targetNamespaceStr == null)
