@@ -10,8 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp;
 
-import org.eclipse.ecf.core.ContainerTypeDescription;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.provider.xmpp.XMPPSContainer;
 
@@ -49,6 +52,27 @@ public class XMPPSContainerInstantiator extends XMPPContainerInstantiator {
 			throw new ContainerCreateException(
 					"Exception creating generic container", e);
 		}
+	}
+
+	private static final String XMPPS_CONFIG = "ecf.xmpps.smack"; //$NON-NLS-1$
+
+	public String[] getImportedConfigs(ContainerTypeDescription description,
+			String[] exporterSupportedConfigs) {
+		if (exporterSupportedConfigs == null)
+			return null;
+		List results = new ArrayList();
+		List supportedConfigs = Arrays.asList(exporterSupportedConfigs);
+		if (XMPPS_CONFIG.equals(description.getName())) {
+			if (supportedConfigs.contains(XMPPS_CONFIG))
+				results.add(XMPPS_CONFIG);
+		}
+		if (supportedConfigs.size() == 0)
+			return null;
+		return (String[]) results.toArray(new String[] {});
+	}
+
+	public String[] getSupportedConfigs(ContainerTypeDescription description) {
+		return new String[] { XMPPS_CONFIG };
 	}
 
 }

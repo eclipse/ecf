@@ -8,7 +8,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp;
 
-import org.eclipse.ecf.core.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
 
@@ -49,11 +54,26 @@ public class XMPPContainerInstantiator extends GenericContainerInstantiator {
 					"Exception creating generic container", e);
 		}
 	}
-	/*
-	 * public String[] getSupportedAdapterTypes( ContainerTypeDescription
-	 * description) { return new String[] { IChatRoomManager.class.getName(),
-	 * IPresenceContainerAdapter.class.getName(),
-	 * ISendFileTransferContainerAdapter.class.getName(),
-	 * ISharedObjectContainer.class.getName() }; }
-	 */
+
+	private static final String XMPP_CONFIG = "ecf.xmpp.smack"; //$NON-NLS-1$
+
+	public String[] getImportedConfigs(ContainerTypeDescription description,
+			String[] exporterSupportedConfigs) {
+		if (exporterSupportedConfigs == null)
+			return null;
+		List results = new ArrayList();
+		List supportedConfigs = Arrays.asList(exporterSupportedConfigs);
+		if (XMPP_CONFIG.equals(description.getName())) {
+			if (supportedConfigs.contains(XMPP_CONFIG))
+				results.add(XMPP_CONFIG);
+		}
+		if (supportedConfigs.size() == 0)
+			return null;
+		return (String[]) results.toArray(new String[] {});
+	}
+
+	public String[] getSupportedConfigs(ContainerTypeDescription description) {
+		return new String[] { XMPP_CONFIG };
+	}
+
 }
