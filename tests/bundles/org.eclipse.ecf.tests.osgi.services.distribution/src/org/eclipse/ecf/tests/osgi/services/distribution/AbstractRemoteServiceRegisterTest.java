@@ -37,13 +37,13 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		
 	}
 	
-	protected void registerWaitAndUnregister(Properties props) throws Exception {
+	protected void registerWaitAndUnregister(Properties props, boolean verifyRegistration) throws Exception {
 		// Actually register with default service (IConcatService)
 		ServiceRegistration registration = registerDefaultService(props);
 		// Wait a while
 		Thread.sleep(REGISTER_WAIT);
 		// Verify
-		verifyRemoteServiceRegisteredWithServer();
+		if (verifyRegistration) verifyRemoteServiceRegisteredWithServer();
 		// Then unregister
 		registration.unregister();
 		Thread.sleep(REGISTER_WAIT);
@@ -77,7 +77,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, true);
 	}
 
 	public void testRegisterOnCreatedServerWithIdentity() throws Exception {
@@ -89,7 +89,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Set the service exported interfaces to all
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, true);
 	}
 
 	public void testRegisterOnExistingServer() throws Exception {
@@ -100,7 +100,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, true);
 	}
 
 	public void testRegisterOnExistingServerWithIntents() throws Exception {
@@ -112,7 +112,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Add intents
 		props.put(SERVICE_INTENTS, "passByValue");
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, true);
 	}
 
 	public void testRegisterOnExistingServerWithMissingIntents() throws Exception {
@@ -124,7 +124,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Add intent that no one actually exposes
 		props.put(SERVICE_INTENTS, "foobar");
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, false);
 	}
 
 	public void testRegisterOnExistingServerWithExportedIntents() throws Exception {
@@ -136,7 +136,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Add intents
 		props.put(SERVICE_EXPORTED_INTENTS, "passByValue");
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, true);
 	}
 
 	public void testRegisterOnExistingServerWithMissingExportedIntents() throws Exception {
@@ -148,7 +148,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Add intent that no one actually exposes
 		props.put(SERVICE_EXPORTED_INTENTS, "foobar");
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, false);
 	}
 
 	public void testRegisterOnExistingServerWithExportedExtraIntents() throws Exception {
@@ -160,7 +160,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Add intents
 		props.put(SERVICE_EXPORTED_INTENTS_EXTRA, "passByValue");
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, true);
 	}
 
 	public void testRegisterOnExistingServerWithMissingExportedExtraIntents() throws Exception {
@@ -172,7 +172,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		// Add intent that no one actually exposes
 		props.put(SERVICE_EXPORTED_INTENTS_EXTRA, "foobar");
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, false);
 	}
 
 	public void testRegisterOnExistingServerWithContainerID() throws Exception {
@@ -182,7 +182,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		props.put(SERVICE_EXPORTED_CONTAINER_ID, createServerID());
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, true);
 	}
 
 	public void testRegisterOnExistingServerWithIdentity() throws Exception {
@@ -195,7 +195,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Set the service exported interfaces to all
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		
-		registerWaitAndUnregister(props);
+		registerWaitAndUnregister(props, true);
 	}
 
 }
