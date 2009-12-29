@@ -72,6 +72,78 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		registerWaitAndUnregister(props);
 	}
 
+	public void testRegisterOnExistingServerWithIntents() throws Exception {
+		// Create server container
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
+		
+		Properties props = new Properties();
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		// Add intents
+		props.put(SERVICE_INTENTS, "passByValue");
+		registerWaitAndUnregister(props);
+	}
+
+	public void testRegisterOnExistingServerWithMissingIntents() throws Exception {
+		// Create server container
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
+		
+		Properties props = new Properties();
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		// Add intent that no one actually exposes
+		props.put(SERVICE_INTENTS, "foobar");
+		registerWaitAndUnregister(props);
+	}
+
+	public void testRegisterOnExistingServerWithExportedIntents() throws Exception {
+		// Create server container
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
+		
+		Properties props = new Properties();
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		// Add intents
+		props.put(SERVICE_EXPORTED_INTENTS, "passByValue");
+		registerWaitAndUnregister(props);
+	}
+
+	public void testRegisterOnExistingServerWithMissingExportedIntents() throws Exception {
+		// Create server container
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
+		
+		Properties props = new Properties();
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		// Add intent that no one actually exposes
+		props.put(SERVICE_EXPORTED_INTENTS, "foobar");
+		registerWaitAndUnregister(props);
+	}
+
+	public void testRegisterOnExistingServerWithExportedExtraIntents() throws Exception {
+		// Create server container
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
+		
+		Properties props = new Properties();
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		// Add intents
+		props.put(SERVICE_EXPORTED_INTENTS_EXTRA, "passByValue");
+		registerWaitAndUnregister(props);
+	}
+
+	public void testRegisterOnExistingServerWithMissingExportedExtraIntents() throws Exception {
+		// Create server container
+		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
+		
+		Properties props = new Properties();
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
+		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		// Add intent that no one actually exposes
+		props.put(SERVICE_EXPORTED_INTENTS_EXTRA, "foobar");
+		registerWaitAndUnregister(props);
+	}
+
 	public void testRegisterOnExistingServerWithContainerID() throws Exception {
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
