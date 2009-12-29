@@ -9,18 +9,17 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
-import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.security.IConnectContext;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
@@ -225,18 +224,41 @@ public abstract class AbstractHostContainerFinder extends
 		return null;
 	}
 
-	protected void connectHostContainer(ServiceReference serviceReference, IContainer container, Object target)
+	protected void connectHostContainer(ServiceReference serviceReference,
+			IContainer container, Object target)
 			throws ContainerConnectException, IDCreateException {
-				ID targetID = createTargetID(container, target);
-				Object context = serviceReference
-						.getProperty(IDistributionConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT);
-				IConnectContext connectContext = null;
-				if (context != null) {
-					connectContext = createConnectContext(serviceReference, container,
-							context);
-				}
-				// connect the container
-				container.connect(targetID, connectContext);
-			}
+		ID targetID = createTargetID(container, target);
+		Object context = serviceReference
+				.getProperty(IDistributionConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT);
+		IConnectContext connectContext = null;
+		if (context != null) {
+			connectContext = createConnectContext(serviceReference, container,
+					context);
+		}
+		// connect the container
+		container.connect(targetID, connectContext);
+	}
+
+	protected boolean matchHostSupportedIntents(
+			String[] serviceRequiredIntents,
+			ContainerTypeDescription containerTypeDescription) {
+		// If there are no required intents then we have a match
+		if (serviceRequiredIntents == null)
+			return true;
+
+		String[] supportedIntents = getSupportedIntents(containerTypeDescription);
+
+		if (supportedIntents == null)
+			return false;
+
+		List supportedIntentsList = Arrays.asList(supportedIntents);
+
+		boolean result = true;
+		for (int i = 0; i < serviceRequiredIntents.length; i++)
+			result = result
+					&& supportedIntentsList.contains(serviceRequiredIntents[i]);
+
+		return result;
+	}
 
 }

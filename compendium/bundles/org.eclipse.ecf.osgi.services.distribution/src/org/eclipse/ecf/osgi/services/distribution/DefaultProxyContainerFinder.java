@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
+import java.util.Collection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.discovery.IRemoteServiceEndpointDescription;
@@ -18,7 +19,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
  * Default implementation of IProxyContainerFinder.
  * 
  */
-public class DefaultProxyContainerFinder extends AbstractContainerFinder
+public class DefaultProxyContainerFinder extends AbstractProxyContainerFinder
 		implements IProxyContainerFinder {
 
 	public IRemoteServiceContainer[] findProxyContainers(IServiceID serviceID,
@@ -35,10 +36,18 @@ public class DefaultProxyContainerFinder extends AbstractContainerFinder
 
 		// Find any/all existing containers for the proxy that
 		// match the endpointID namespace and the remoteSupportedConfigs
-		return (IRemoteServiceContainer[]) findExistingProxyContainers(
-				endpointID, remoteSupportedConfigs).toArray(
-				new IRemoteServiceContainer[] {});
+		Collection rsContainers = findExistingProxyContainers(endpointID,
+				remoteSupportedConfigs);
 
+		// Get the connect target ID from the endpointDescription
+		// and connect the given containers to the connect targetID
+		// This is only needed when when the endpointID is different from
+		// the connect targetID, and the containers are not already connected
+		connectContainersToTarget(rsContainers, endpointDescription
+				.getConnectTargetID());
+
+		return (IRemoteServiceContainer[]) rsContainers
+				.toArray(new IRemoteServiceContainer[] {});
 	}
 
 }
