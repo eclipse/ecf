@@ -105,6 +105,8 @@ public class EventHookImpl implements EventHook {
 							+ serviceReference + ". Service NOT EXPORTED");
 			return;
 		}
+		Dictionary remoteServiceProperties = getPropertiesForRemoteService(serviceReference);
+		Object remoteService = getService(serviceReference);
 		// Now actually register remote service with remote service container
 		// adapters found above.
 		for (int i = 0; i < rsContainers.length; i++) {
@@ -112,8 +114,8 @@ public class EventHookImpl implements EventHook {
 			// all found containers/providers
 			IRemoteServiceRegistration remoteRegistration = rsContainers[i]
 					.getContainerAdapter().registerRemoteService(
-							exportedInterfaces, getService(serviceReference),
-							getPropertiesForRemoteService(serviceReference));
+							exportedInterfaces, remoteService,
+							remoteServiceProperties);
 			trace("registerRemoteService", "containerID="
 					+ rsContainers[i].getContainer().getID()
 					+ " serviceReference=" + serviceReference
@@ -123,7 +125,7 @@ public class EventHookImpl implements EventHook {
 			// Step 3 - Publish via discovery API
 			publishRemoteService(rsContainers[i], serviceReference,
 					exportedInterfaces, remoteRegistration, serviceIntents,
-					exportedConfigs);
+					exportedConfigs, remoteServiceProperties);
 			// Step 4 - Fire registered event to listeners
 			fireHostRegisteredUnregistered(serviceReference, rsContainers[i],
 					remoteRegistration, true);
@@ -176,7 +178,8 @@ public class EventHookImpl implements EventHook {
 			IRemoteServiceContainer rsContainer, ServiceReference ref,
 			String[] remoteInterfaces,
 			IRemoteServiceRegistration remoteRegistration,
-			String[] serviceIntents, String[] supportedConfigs) {
+			String[] serviceIntents, String[] supportedConfigs,
+			Dictionary remoteProperties) {
 
 		final Dictionary result = new Properties();
 		IContainer container = rsContainer.getContainer();
@@ -196,7 +199,7 @@ public class EventHookImpl implements EventHook {
 
 		// Set optional ServicePublication.PROP_KEY_SERVICE_PROPERTIES
 		result.put(RemoteServicePublication.SERVICE_PROPERTIES,
-				getServicePropertiesForRemotePublication(ref));
+				remoteProperties);
 
 		// Due to slp bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=216944
 		// We are not going to use the RFC 119
@@ -245,11 +248,12 @@ public class EventHookImpl implements EventHook {
 	private void publishRemoteService(IRemoteServiceContainer rsContainer,
 			final ServiceReference ref, String[] remoteInterfaces,
 			IRemoteServiceRegistration remoteRegistration,
-			String[] serviceIntents, String[] supportedConfigs) {
+			String[] serviceIntents, String[] supportedConfigs,
+			Dictionary remoteServiceProperties) {
 		// First create properties for new ServicePublication
 		final Dictionary properties = getServicePublicationProperties(
 				rsContainer, ref, remoteInterfaces, remoteRegistration,
-				serviceIntents, supportedConfigs);
+				serviceIntents, supportedConfigs, remoteServiceProperties);
 		// Just prior to registering the ServicePublication, notify
 		// the IHostRegistrationListeners
 		Activator activator = Activator.getDefault();
@@ -282,16 +286,6 @@ public class EventHookImpl implements EventHook {
 	}
 
 	private Dictionary getPropertiesForRemoteService(ServiceReference sr) {
-		String[] propKeys = sr.getPropertyKeys();
-		Properties newProps = new Properties();
-		for (int i = 0; i < propKeys.length; i++) {
-			if (!excludeRemoteServiceProperty(propKeys[i]))
-				newProps.put(propKeys[i], sr.getProperty(propKeys[i]));
-		}
-		return newProps;
-	}
-
-	private Map getServicePropertiesForRemotePublication(ServiceReference sr) {
 		String[] propKeys = sr.getPropertyKeys();
 		Properties newProps = new Properties();
 		for (int i = 0; i < propKeys.length; i++) {

@@ -175,11 +175,14 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	private void handleDiscoveredServiceAvailable(
 			RemoteServiceEndpointDescription endpointDescription,
 			IProgressMonitor monitor) {
+		// Setup progress monitor if not already set
 		if (monitor == null)
 			monitor = new NullProgressMonitor();
+
 		// Find IRemoteServiceContainers for the given
 		// RemoteServiceEndpointDescription via registered services
-		IRemoteServiceContainer[] rsContainers = findProxyRSContainers(endpointDescription);
+		IRemoteServiceContainer[] rsContainers = findProxyContainers(endpointDescription);
+		// If none found, we have nothing to do
 		if (rsContainers == null || rsContainers.length == 0) {
 			logWarning("handleDiscoveredServiceAvailable",
 					"No local RemoteServiceContainers found for endpoint description="
@@ -192,18 +195,19 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		// if it exists.
 		String remoteServiceFilter = endpointDescription
 				.getRemoteServicesFilter();
-		// For all remote service container adapters
-		// Get futureRemoteReferences...then create a thread
-		// to process the future
+		// Get provided interfaces as collection
 		Collection providedInterfaces = endpointDescription
 				.getProvidedInterfaces();
+		// Now for all remote service containers
 		for (int i = 0; i < rsContainers.length; i++) {
 			for (Iterator j = providedInterfaces.iterator(); j.hasNext();) {
 				String providedInterface = (String) j.next();
 				IRemoteServiceReference[] remoteReferences = null;
+				// fire IProxyDistributionListeners pre get references
 				firePreGetRemoteServiceReferences(endpointDescription,
 						rsContainers[i]);
 				try {
+					// Get remote remote references for each container
 					remoteReferences = rsContainers[i].getContainerAdapter()
 							.getRemoteServiceReferences(endpointID,
 									providedInterface, remoteServiceFilter);
@@ -498,9 +502,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						null);
 				return;
 			}
-			// Then setup remote service
+			// Then get/setup remote service
 			for (int i = 0; i < remoteReferences.length; i++) {
-				// Get IRemoteService, used to create the proxy below
+				// Get IRemoteService, used to create the proxy
 				IRemoteService remoteService = remoteServiceContainer
 						.getContainerAdapter().getRemoteService(
 								remoteReferences[i]);
@@ -522,7 +526,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					continue;
 				}
 
-				// Get service properties for the proxy
+				// Get service properties for the proxy registration
 				Dictionary properties = getPropertiesForRemoteService(sed,
 						remoteServiceContainer, remoteReferences[i],
 						remoteService);
@@ -536,16 +540,18 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 								"Remote service proxy is null", null);
 						continue;
 					}
+					// Fire pre register notification fir
+					// IProxyDistributionListener
 					firePreRegister(sed, remoteServiceContainer,
 							remoteReferences[i]);
-					// Finally register
 					trace("registerRemoteServiceReferences", "rsca="
 							+ remoteServiceContainer + ",remoteReference="
 							+ remoteReferences[i]);
+					// Actually register proxy here
 					ServiceRegistration registration = Activator.getDefault()
 							.getContext().registerService(clazzes, proxy,
 									properties);
-					IRemoteServiceReference ref = remoteReferences[i];
+
 					ID containerID = remoteServiceContainer.getContainer()
 							.getID();
 					RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
@@ -558,15 +564,18 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						discoveredRemoteServiceRegistrations.put(containerID,
 								reg);
 					}
-					reg.addServiceRegistration(ref, registration);
+					reg.addServiceRegistration(remoteReferences[i],
+							registration);
 					// And add to distribution provider
 					distributionProvider.addRemoteService(registration
 							.getReference());
 					trace("addLocalServiceRegistration.COMPLETE",
 							"containerHelper=" + remoteServiceContainer
-									+ ",remoteServiceReference=" + ref
+									+ ",remoteServiceReference="
+									+ remoteReferences[i]
 									+ ",localServiceRegistration="
 									+ registration);
+					// Fire IProxyDistributionListener to notify we're done
 					firePostRegister(sed, remoteServiceContainer,
 							remoteReferences[i], registration);
 				} catch (Exception e) {
@@ -588,30 +597,30 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteServiceContainer rsContainer,
 			IRemoteServiceReference rsReference, IRemoteService remoteService) {
 
-		Properties result = new Properties();
+		Properties props = new Properties();
 		// Add the required 'service.imported' property, which for ECF rs
 		// providers
 		// exposes the IRemoteService
-		result.put(IDistributionConstants.SERVICE_IMPORTED, remoteService);
+		props.put(IDistributionConstants.SERVICE_IMPORTED, remoteService);
 
 		// Add service intents...if not null (optional property)
 		String[] serviceIntents = rsEndpointDescription.getServiceIntents();
 		if (serviceIntents != null)
-			result.put(IDistributionConstants.SERVICE_INTENTS, serviceIntents);
+			props.put(IDistributionConstants.SERVICE_INTENTS, serviceIntents);
 
 		// Then add all other service properties
 		String[] propKeys = rsReference.getPropertyKeys();
 		for (int i = 0; i < propKeys.length; i++) {
 			if (!isRemoteServiceProperty(propKeys[i])) {
-				result.put(propKeys[i], rsReference.getProperty(propKeys[i]));
+				props.put(propKeys[i], rsReference.getProperty(propKeys[i]));
 			}
 		}
 		// finally add service.imported.configs
 		addImportedConfigsProperties(getContainerTypeDescription(rsContainer
 				.getContainer()), rsEndpointDescription.getSupportedConfigs(),
-				result);
+				props);
 
-		return result;
+		return props;
 	}
 
 	private void addImportedConfigsProperties(
@@ -718,7 +727,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		}
 	}
 
-	private IRemoteServiceContainer[] findProxyRSContainers(
+	private IRemoteServiceContainer[] findProxyContainers(
 			final RemoteServiceEndpointDescription rsEndpointDescription) {
 		// Get activator
 		Activator activator = Activator.getDefault();
