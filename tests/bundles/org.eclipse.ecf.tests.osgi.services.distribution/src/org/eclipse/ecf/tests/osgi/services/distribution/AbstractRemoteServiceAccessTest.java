@@ -184,43 +184,6 @@ public abstract class AbstractRemoteServiceAccessTest extends
 	}
 
 
-	public void testGetRemoteServiceReference1() throws Exception {
-		String classname = TestServiceInterface1.class.getName();
-		// Setup service tracker for client
-		ServiceTracker st = createProxyServiceTracker(classname);
-
-		Properties props = getServiceProperties();
-
-		// Put property 'foo' with value 'bar' into properties
-		String testPropKey = "foo";
-		String testPropVal = "bar";
-		props.put(testPropKey, testPropVal);
-		String testPropKey1 = "foo1";
-		String testPropVal1 = "bar1";
-		props.put(testPropKey1, testPropVal1);
-
-		ServiceRegistration registration = registerService(classname,
-				new TestService1(), props);
-		Thread.sleep(REGISTER_WAIT);
-
-		// Client - Get service references that are proxies
-		ServiceReference[] remoteReferences = st.getServiceReferences();
-		assertReferencesValidAndFirstHasCorrectType(remoteReferences, classname);
-
-		// Check the props in service reference
-		String prop = (String) remoteReferences[0].getProperty(testPropKey);
-		assertTrue(prop != null);
-		assertTrue(prop.equals(testPropVal));
-
-		String prop1 = (String) remoteReferences[0].getProperty(testPropKey1);
-		assertTrue(prop1 != null);
-		assertTrue(prop1.equals(testPropVal1));
-
-		registration.unregister();
-		st.close();
-		Thread.sleep(REGISTER_WAIT);
-	}
-
 	public void testProxy() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
 		// Setup service tracker for client
