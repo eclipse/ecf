@@ -29,6 +29,10 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public abstract class AbstractRemoteServiceAccessTest extends
 		AbstractDistributionTest {
 
+	private static final String TESTPROP1_VALUE = "baz";
+	private static final String TESTPROP_VALUE = "foobar";
+	private static final String TESTPROP1_NAME = "org.eclipse.ecf.testprop1";
+	private static final String TESTPROP_NAME = "org.eclipse.ecf.testprop";
 	protected static final int REGISTER_WAIT = 30000;
 
 	protected ServiceTracker createProxyServiceTracker(String clazz)
@@ -147,6 +151,38 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
+	
+	public void testGetRemoteServiceReferenceWithExtraProperties() throws Exception {
+		String classname = TestServiceInterface1.class.getName();
+		// Setup service tracker for client container
+		ServiceTracker st = createProxyServiceTracker(classname);
+		// Get service properties...and allow subclasses to override to add
+		// other service properties
+		Properties props = getServiceProperties();
+		// Add other properties
+		props.put(TESTPROP_NAME, TESTPROP_VALUE);
+		props.put(TESTPROP1_NAME,TESTPROP1_VALUE);
+		// Service Host: register service
+		ServiceRegistration registration = registerService(classname,
+				new TestService1(), props);
+		// Wait
+		Thread.sleep(REGISTER_WAIT);
+
+		// Service Consumer - Get (remote) ervice references
+		ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValidAndFirstHasCorrectType(remoteReferences, classname);
+		// Spec requires that the 'service.imported' property be set
+		assertTrue(remoteReferences[0].getProperty(SERVICE_IMPORTED) != null);
+		
+		String testProp = (String) remoteReferences[0].getProperty(TESTPROP_NAME);
+		String testProp1 = (String) remoteReferences[0].getProperty(TESTPROP1_NAME);
+		assertTrue(TESTPROP_VALUE.equals(testProp));
+		assertTrue(TESTPROP1_VALUE.equals(testProp1));
+		registration.unregister();
+		st.close();
+		Thread.sleep(REGISTER_WAIT);
+	}
+
 
 	public void testGetRemoteServiceReference1() throws Exception {
 		String classname = TestServiceInterface1.class.getName();
