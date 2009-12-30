@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" enabled="true" immediate="true" name="org.eclipse.ecf.examples.remoteservices.hello.ds.host">
+   <implementation class="org.eclipse.ecf.examples.internal.remoteservices.hello.ds.host.HelloComponent"/>
+   <property name="service.exported.interfaces" type="String" value="*"/>
+   <property name="service.exported.configs" type="String" value="ecf.generic.server"/>
+   <property name="org.eclipse.ecf.containerFactoryArgs" type="String" value="ecftcp://localhost:30001/server"/>
+   <service>
+      <provide interface="org.eclipse.ecf.examples.remoteservices.hello.IHello"/>
+   </service>
+   <reference cardinality="1..1" interface="org.eclipse.ecf.core.IContainerFactory" name="IContainerFactory" policy="static"/>
+</scr:component>
