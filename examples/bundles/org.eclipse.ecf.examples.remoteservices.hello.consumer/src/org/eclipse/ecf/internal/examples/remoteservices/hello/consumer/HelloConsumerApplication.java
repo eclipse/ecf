@@ -11,11 +11,14 @@
 package org.eclipse.ecf.internal.examples.remoteservices.hello.consumer;
 
 import org.eclipse.ecf.core.IContainerFactory;
-import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
+import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.remoteservice.IRemoteServiceProxy;
 import org.eclipse.ecf.remoteservice.RemoteServiceHelper;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.equinox.concurrent.future.IFuture;
@@ -34,7 +37,7 @@ public class HelloConsumerApplication implements IApplication,
 	private static final String DEFAULT_CONTAINER_TYPE = "ecf.r_osgi.peer";
 
 	private BundleContext bundleContext;
-	private ServiceTracker containerManagerServiceTracker;
+	private ServiceTracker containerFactoryServiceTracker;
 
 	private String containerType = DEFAULT_CONTAINER_TYPE;
 
@@ -48,12 +51,13 @@ public class HelloConsumerApplication implements IApplication,
 		bundleContext = Activator.getContext();
 		processArgs(appContext);
 
-		// Create ECF container. This setup is required so that an ECF provider
-		// will
-		// be available for handling discovered remote endpoints
-		createContainer();
+		// Create ECF container of appropriate type. This setup is required so that 
+		// an ECF provider will be available for handling discovered remote 
+		// service endpoints
+		getContainerFactory().createContainer(containerType);
 
-		// Create service tracker to track IHello instances that are REMOTE
+		// Create service tracker to track IHello instances that have the 'service.imported'
+		// property set (as defined by OSGi 4.2 remote services spec).
 		helloServiceTracker = new ServiceTracker(bundleContext,
 				createRemoteFilter(), this);
 		helloServiceTracker.open();
@@ -63,17 +67,10 @@ public class HelloConsumerApplication implements IApplication,
 		return IApplication.EXIT_OK;
 	}
 
-	private void createContainer() throws Exception {
-		// Get container factory
-		IContainerFactory containerFactory = getContainerManagerService()
-				.getContainerFactory();
-		containerFactory.createContainer(containerType);
-	}
-
 	private Filter createRemoteFilter() throws InvalidSyntaxException {
-		// This filter looks for IHello instances that have the REMOTE property
-		// set (are remote
-		// services as per RFC119).
+		// This filter looks for IHello instances that have the 
+		// 'service.imported' property set, as specified by OSGi 4.2
+		// remote services spec (Chapter 13)
 		return bundleContext.createFilter("(&("
 				+ org.osgi.framework.Constants.OBJECTCLASS + "="
 				+ IHello.class.getName() + ")(" + SERVICE_IMPORTED + "=*))");
@@ -84,20 +81,20 @@ public class HelloConsumerApplication implements IApplication,
 			helloServiceTracker.close();
 			helloServiceTracker = null;
 		}
-		if (containerManagerServiceTracker != null) {
-			containerManagerServiceTracker.close();
-			containerManagerServiceTracker = null;
+		if (containerFactoryServiceTracker != null) {
+			containerFactoryServiceTracker.close();
+			containerFactoryServiceTracker = null;
 		}
 		this.bundleContext = null;
 	}
 
-	private IContainerManager getContainerManagerService() {
-		if (containerManagerServiceTracker == null) {
-			containerManagerServiceTracker = new ServiceTracker(bundleContext,
-					IContainerManager.class.getName(), null);
-			containerManagerServiceTracker.open();
+	private IContainerFactory getContainerFactory() {
+		if (containerFactoryServiceTracker == null) {
+			containerFactoryServiceTracker = new ServiceTracker(bundleContext,
+					IContainerFactory.class.getName(), null);
+			containerFactoryServiceTracker.open();
 		}
-		return (IContainerManager) containerManagerServiceTracker.getService();
+		return (IContainerFactory) containerFactoryServiceTracker.getService();
 	}
 
 	private void processArgs(IApplicationContext appContext) {
@@ -131,27 +128,48 @@ public class HelloConsumerApplication implements IApplication,
 	 */
 	public Object addingService(ServiceReference reference) {
 		System.out.println("IHello service proxy being added");
+		// Since this reference is for a remote service,
+		// The service object returned is a proxy implementing the
+		// IHello interface
 		IHello hello = (IHello) bundleContext.getService(reference);
-		// Call it
+		// This makes a remote 'hello' call
 		hello.hello(CONSUMER_NAME);
-		System.out.println("Called hello using proxy");
+		System.out.println("Completed hello remote service invocation using proxy");
 
-		// Now get remote service reference and use asynchronous
-		// remote invocation
-		IRemoteService remoteService = (IRemoteService) reference
-				.getProperty(SERVICE_IMPORTED);
-
-		// This futureExec returns immediately
-		IFuture future = RemoteServiceHelper.futureExec(remoteService, "hello",
+		// OSGi 4.2 remote service spec requires a property named 'service.imported' to be
+		// set to a non-null value.  In the case of any ECF provider, this 'service.imported' property
+		// is set to the IRemoteService object associated with the remote service.
+		IRemoteService remoteServiceViaProperty = (IRemoteService) reference
+				.getProperty(IDistributionConstants.SERVICE_IMPORTED);
+		// This IRemoteService instance allows allows non-blocking/asynchronous invocation of
+		// remote methods.  This allows the client to decide (at runtime if necessary) whether
+		// to do synchronous/blocking calls or asynchronous/non-blocking calls.
+		
+		// In this case, we will make an non-blocking call and immediately get a 'future'...which is
+		// a placeholder for a result of the remote computation.  This will not block.
+		IFuture future = RemoteServiceHelper.futureExec(remoteServiceViaProperty, "hello",
 				new Object[] { CONSUMER_NAME + " future" });
-
+		// Client can execute arbitrary code here...
 		try {
-			// This method blocks until a return
+			// This blocks until communication and computation have completed successfully
 			future.get();
-			System.out.println("Called hello using future");
+			System.out.println("Completed hello remote service invocation using future");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		// Now get the IRemoteService from the proxy
+		IRemoteService remoteServiceViaProxy = ((IRemoteServiceProxy) hello).getRemoteService();
+		// Create listener for asynchronous callback
+		IRemoteCallListener listener = new IRemoteCallListener() {
+			public void handleEvent(IRemoteCallEvent event) {
+				if (event instanceof IRemoteCallCompleteEvent) {
+					System.out.println("Completed hello remote service invocation using async");
+				}
+			}};
+		// Call asynchronously with listener
+		RemoteServiceHelper.asyncExec(remoteServiceViaProxy, "hello", new Object[] { CONSUMER_NAME + " async" }, listener);
+		
 		return hello;
 	}
 
