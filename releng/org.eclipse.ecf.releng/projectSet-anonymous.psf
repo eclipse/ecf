@@ -131,6 +131,8 @@
     <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.remoteservices.hello,org.eclipse.ecf.examples.remoteservices.hello"/>
     <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.consumer,org.eclipse.ecf.examples.remoteservices.hello.consumer"/>
     <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.host,org.eclipse.ecf.examples.remoteservices.hello.host"/>
+    <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.ds.consumer,org.eclipse.ecf.examples.remoteservices.hello.ds.consumer"/>
+    <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.ds.host,org.eclipse.ecf.examples.remoteservices.hello.ds.host"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.provider.trivial,org.eclipse.ecf.examples.provider.trivial"/>
 
 	<!-- tests -->
