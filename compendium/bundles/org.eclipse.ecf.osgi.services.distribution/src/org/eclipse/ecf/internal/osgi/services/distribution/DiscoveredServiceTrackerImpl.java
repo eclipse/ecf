@@ -589,19 +589,15 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteServiceReference rsReference, IRemoteService remoteService) {
 
 		Properties result = new Properties();
-
-		// add service.imported.configs
-		addImportedConfigsProperties(getContainerTypeDescription(rsContainer
-				.getContainer()), rsEndpointDescription.getSupportedConfigs(),
-				result);
-
-		String[] serviceIntents = rsEndpointDescription.getServiceIntents();
-		if (serviceIntents != null)
-			result.put(IDistributionConstants.SERVICE_INTENTS, serviceIntents);
 		// Add the required 'service.imported' property, which for ECF rs
 		// providers
 		// exposes the IRemoteService
 		result.put(IDistributionConstants.SERVICE_IMPORTED, remoteService);
+
+		// Add service intents...if not null (optional property)
+		String[] serviceIntents = rsEndpointDescription.getServiceIntents();
+		if (serviceIntents != null)
+			result.put(IDistributionConstants.SERVICE_INTENTS, serviceIntents);
 
 		// Then add all other service properties
 		String[] propKeys = rsReference.getPropertyKeys();
@@ -610,6 +606,11 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				result.put(propKeys[i], rsReference.getProperty(propKeys[i]));
 			}
 		}
+		// finally add service.imported.configs
+		addImportedConfigsProperties(getContainerTypeDescription(rsContainer
+				.getContainer()), rsEndpointDescription.getSupportedConfigs(),
+				result);
+
 		return result;
 	}
 
