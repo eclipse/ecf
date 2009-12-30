@@ -12,7 +12,6 @@ package org.eclipse.ecf.internal.examples.remoteservices.hello.host;
 
 import java.util.Properties;
 
-import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.examples.remoteservices.hello.impl.Hello;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
@@ -20,7 +19,6 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class HelloHostApplication implements IApplication,
 		IDistributionConstants {
@@ -29,7 +27,6 @@ public class HelloHostApplication implements IApplication,
 	public static final String DEFAULT_CONTAINER_ID = null;
 
 	private BundleContext bundleContext;
-	private ServiceTracker containerManagerServiceTracker;
 
 	private String containerType = DEFAULT_CONTAINER_TYPE;
 	private String containerId = DEFAULT_CONTAINER_ID;
@@ -43,21 +40,19 @@ public class HelloHostApplication implements IApplication,
 		bundleContext = Activator.getContext();
 		// Process Arguments
 		processArgs(appContext);
-		// Create Container of desired type
-		IContainerManager containerManager = getContainerManagerService();
-		if (containerId == null || "".equals(containerId))
-			containerManager.getContainerFactory().createContainer(
-					containerType);
-		else
-			containerManager.getContainerFactory().createContainer(
-					containerType, new Object[] { containerId });
-
+		// Setup properties for remote service distribution, as per OSGi 4.2 remote services
+		// specification (chap 13 in compendium spec)
 		Properties props = new Properties();
-		// add OSGi service property indicating this
-		props.put(SERVICE_EXPORTED_INTERFACES, SERVICE_EXPORTED_INTERFACES_WILDCARD);
+		// add OSGi service property indicated export of all interfaces exposed by service (wildcard)
+		props.put(IDistributionConstants.SERVICE_EXPORTED_INTERFACES, IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD);
+		// add OSGi service property specifying config
+		props.put(IDistributionConstants.SERVICE_EXPORTED_CONFIGS, containerType);
+		// add ECF service property specifying container factory args
+		props.put(IDistributionConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS, containerId);
 		// register remote service
 		helloRegistration = bundleContext.registerService(IHello.class
 				.getName(), new Hello(), props);
+		// tell everyone
 		System.out.println("Host: Hello Service Registered");
 
 		// wait until stopped
@@ -71,20 +66,7 @@ public class HelloHostApplication implements IApplication,
 			helloRegistration.unregister();
 			helloRegistration = null;
 		}
-		if (containerManagerServiceTracker != null) {
-			containerManagerServiceTracker.close();
-			containerManagerServiceTracker = null;
-		}
 		bundleContext = null;
-	}
-
-	private IContainerManager getContainerManagerService() {
-		if (containerManagerServiceTracker == null) {
-			containerManagerServiceTracker = new ServiceTracker(bundleContext,
-					IContainerManager.class.getName(), null);
-			containerManagerServiceTracker.open();
-		}
-		return (IContainerManager) containerManagerServiceTracker.getService();
 	}
 
 	private void processArgs(IApplicationContext appContext) {
