@@ -16,19 +16,15 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import org.eclipse.ecf.internal.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
+import org.eclipse.ecf.remoteservice.RemoteCall;
 
 /**
  * Implementation of IRemoteCall based upon Method.
  * 
  */
-public class RemoteCallMethod implements IRemoteCall {
-
-	public static final int DEFAULT_TIMEOUT = 30000;
+public class RemoteCallMethod extends RemoteCall implements IRemoteCall {
 
 	protected static final Object[] EMPTY_PARAMETERS = {};
-	protected Method method;
-	protected Object[] parameters;
-	protected long timeout;
 
 	public static void checkSerializable(Object[] parameters) throws NotSerializableException {
 		if (parameters == null)
@@ -52,19 +48,18 @@ public class RemoteCallMethod implements IRemoteCall {
 		}
 	}
 
-	public void setParameters(Object[] parameters) throws NotSerializableException {
-		if (parameters != null) {
-			checkSerializable(parameters);
-			checkForTypeMatch(this.method, parameters);
-			this.parameters = parameters;
-		} else
-			this.parameters = EMPTY_PARAMETERS;
+	/**
+	 * @since 3.3
+	 */
+	public void setParameters(Method method, Object[] parameters) throws NotSerializableException {
+		checkSerializable(parameters);
+		checkForTypeMatch(method, parameters);
+		this.parameters = parameters;
 	}
 
 	public RemoteCallMethod(Method method, Object[] parameters, long timeout) throws NotSerializableException {
-		this.method = method;
-		this.timeout = timeout;
-		setParameters(parameters);
+		super(method.getName(), null, timeout);
+		setParameters(method, parameters);
 	}
 
 	public RemoteCallMethod(Method method, Object[] parameters) throws NotSerializableException {
@@ -72,33 +67,11 @@ public class RemoteCallMethod implements IRemoteCall {
 	}
 
 	public RemoteCallMethod(Method method, long timeout) {
-		this.method = method;
-		this.timeout = timeout;
-		this.parameters = EMPTY_PARAMETERS;
+		super(method.getName(), null, timeout);
 	}
 
 	public RemoteCallMethod(Method method) {
 		this(method, DEFAULT_TIMEOUT);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.remoteservice.IRemoteCall#getMethod()
-	 */
-	public String getMethod() {
-		return method.getName();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.remoteservice.IRemoteCall#getParameters()
-	 */
-	public Object[] getParameters() {
-		return parameters;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.remoteservice.IRemoteCall#getTimeout()
-	 */
-	public long getTimeout() {
-		return timeout;
-	}
 }

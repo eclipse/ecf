@@ -8,4 +8,26 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/ecf/remoteservice/IRemoteCall.java" type="org.eclipse.ecf.remoteservice.IRemoteCall">
+        <filter id="403767336">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.remoteservice.IRemoteCall"/>
+                <message_argument value="DEFAULT_TIMEOUT"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/remoteservice/util/RemoteCallMethod.java" type="org.eclipse.ecf.remoteservice.util.RemoteCallMethod">
+        <filter id="338755678">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.remoteservice.util.RemoteCallMethod"/>
+                <message_argument value="DEFAULT_TIMEOUT"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.remoteservice.util.RemoteCallMethod"/>
+                <message_argument value="setParameters(Object[])"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
