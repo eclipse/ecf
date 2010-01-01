@@ -12,14 +12,13 @@ package org.eclipse.ecf.tests.remoteservice.rest;
 import java.net.URI;
 import java.net.URL;
 import java.util.Dictionary;
-import java.util.List;
 
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
 import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 
@@ -51,16 +50,12 @@ public abstract class AbstractRestTestCase extends ECFAbstractTestCase {
 		return (IRestClientContainerAdapter) container.getAdapter(IRestClientContainerAdapter.class);
 	}
 	
-	protected IRemoteServiceRegistration registerCallable(IContainer container, IRestCallable callable, Dictionary properties) {
-		return getRestClientContainerAdapter(container).registerCallable(callable, properties);
+	protected IRemoteServiceRegistration registerCallable(IContainer container, IRemoteCallable callable, Dictionary properties) {
+		return getRestClientContainerAdapter(container).registerRemoteCallables(new IRemoteCallable[] { callable }, properties);
 	}
 
-	protected IRemoteServiceRegistration registerCallable(IContainer container, IRestCallable[] callables, Dictionary properties) {
-		return getRestClientContainerAdapter(container).registerCallable(callables, properties);
+	protected IRemoteServiceRegistration registerCallable(IContainer container, IRemoteCallable[] callables, Dictionary properties) {
+		return getRestClientContainerAdapter(container).registerRemoteCallables(callables, properties);
 	}
 	
-	protected IRemoteServiceRegistration registerCallable(IContainer container, Class clazz, List callables, Dictionary properties) {
-		return getRestClientContainerAdapter(container).registerCallable(new Class[] { clazz} , callables, properties);
-	}
-
 }

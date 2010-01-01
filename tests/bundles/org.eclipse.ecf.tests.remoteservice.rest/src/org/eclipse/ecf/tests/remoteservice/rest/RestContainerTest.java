@@ -18,11 +18,12 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
-import org.eclipse.ecf.remoteservice.rest.RestCallable;
 import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
 import org.eclipse.ecf.remoteservice.rest.client.RestClientContainer;
+import org.eclipse.ecf.remoteservice.rest.util.HttpGetRequestType;
+import org.eclipse.ecf.remoteservice.rest.util.RestCallableFactory;
 
 public class RestContainerTest extends AbstractRestTestCase {
 
@@ -72,13 +73,10 @@ public class RestContainerTest extends AbstractRestTestCase {
 	
 	public void testRegisterRestService() throws Exception {
 		IContainer container = createRestContainer(RestConstants.TEST_DE_TARGET);
-		IRestClientContainerAdapter adapter = getRestClientContainerAdapter(container);
-		assertNotNull(adapter);
 		Dictionary properties = new Hashtable();
 		properties.put("user", "null");
-		IRestCallable callable = new RestCallable("methodName","resourcePath",null,IRestCallable.RequestType.GET);
-		IRemoteServiceRegistration registration = adapter
-				.registerCallable(callable, properties);
+		IRemoteCallable callable = RestCallableFactory.createRestCallable("methodName","resourcePath",null,new HttpGetRequestType());
+		IRemoteServiceRegistration registration = registerCallable(container, callable, properties);
 		assertNotNull(registration);
 	}
 

@@ -13,14 +13,14 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
+import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.rest.IRestCall;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
-import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
-import org.eclipse.ecf.remoteservice.rest.RestCallable;
+import org.eclipse.ecf.remoteservice.rest.util.RestCallFactory;
+import org.eclipse.ecf.remoteservice.rest.util.RestCallableFactory;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.w3c.dom.Document;
 
@@ -31,7 +31,7 @@ public class RestRemoteServiceTest extends AbstractRestTestCase {
 	
 	protected void setUp() throws Exception {
 		container = createRestContainer(RestConstants.TEST_TWITTER_TARGET);
-		IRestCallable callable = new RestCallable(RestConstants.TEST_TWITTER_RESOURCEPATH,RestConstants.TEST_TWITTER_RESOURCEPATH,null,IRestCallable.RequestType.GET);
+		IRemoteCallable callable = RestCallableFactory.createRestCallable(RestConstants.TEST_TWITTER_RESOURCEPATH);
 		registration = registerCallable(container, callable, null);
 	}
 

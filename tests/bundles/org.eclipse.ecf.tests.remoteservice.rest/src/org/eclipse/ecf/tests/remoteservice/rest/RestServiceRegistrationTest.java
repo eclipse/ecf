@@ -13,10 +13,10 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
-import org.eclipse.ecf.remoteservice.rest.RestCallable;
+import org.eclipse.ecf.remoteservice.rest.util.RestCallableFactory;
 
 public class RestServiceRegistrationTest extends AbstractRestTestCase {
 	
@@ -27,7 +27,7 @@ public class RestServiceRegistrationTest extends AbstractRestTestCase {
 		container = createRestContainer(RestConstants.TEST_TWITTER_TARGET);
 		Dictionary properties = new Hashtable();
 		properties.put("user", "null");
-		IRestCallable callable = new RestCallable("resourcePath","resourcePath",null,IRestCallable.RequestType.GET);
+		IRemoteCallable callable = RestCallableFactory.createRestCallable("resourcePath");
 		registration = registerCallable(container, callable, properties);
 	}
 	

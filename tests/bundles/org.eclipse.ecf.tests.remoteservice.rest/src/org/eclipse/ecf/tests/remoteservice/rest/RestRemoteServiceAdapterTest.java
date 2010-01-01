@@ -11,6 +11,7 @@ package org.eclipse.ecf.tests.remoteservice.rest;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.remoteservice.Constants;
+import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceID;
@@ -19,9 +20,8 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
-import org.eclipse.ecf.remoteservice.rest.RestCallable;
 import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
+import org.eclipse.ecf.remoteservice.rest.util.RestCallableFactory;
 import org.osgi.framework.InvalidSyntaxException;
 
 public class RestRemoteServiceAdapterTest extends AbstractRestTestCase {
@@ -45,7 +45,7 @@ public class RestRemoteServiceAdapterTest extends AbstractRestTestCase {
 	}
 	
 	IRemoteServiceRegistration createRestRegistration(String resourcePath) {
-		IRestCallable callable = new RestCallable(resourcePath,resourcePath,null,IRestCallable.RequestType.GET);
+		IRemoteCallable callable = RestCallableFactory.createRestCallable(resourcePath,resourcePath);
 		return registerCallable(container, callable, null);
 	}
 	
