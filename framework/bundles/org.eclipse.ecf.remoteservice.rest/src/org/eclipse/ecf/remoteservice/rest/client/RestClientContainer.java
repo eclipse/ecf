@@ -9,7 +9,8 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.client;
 
-import java.lang.reflect.Method;
+import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
+
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,6 +36,9 @@ import org.osgi.framework.InvalidSyntaxException;
  * A container for REST services. 
  */
 public class RestClientContainer extends AbstractContainer implements IRestClientContainerAdapter {
+
+	protected static IRestResourceProcessor defaultResourceProcessor = new XMLResource();
+	protected static IRemoteCallParameterSerializer defaultParameterSerializer = new RemoteCallParameterStringSerializer();
 
 	// The container's containerID
 	protected RestID containerID;
@@ -243,7 +247,7 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 
 	public IRemoteServiceRegistration registerRemoteCallables(Class[] clazzes, List callables, Dictionary properties) {
 		Assert.isNotNull(clazzes);
-		IRemoteCallable[][] restCallables = createCallablesFromClasses(clazzes, callables);
+		IRemoteCallable[][] restCallables = RestCallableFactory.createCallablesFromClasses(clazzes, callables);
 		Assert.isNotNull(restCallables);
 		Assert.isTrue(restCallables.length > 0);
 		final String[] classNames = new String[clazzes.length];
@@ -256,7 +260,7 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 	public IRemoteServiceRegistration registerCallable(String[] clazzes, List callables, Dictionary properties) {
 		Assert.isNotNull(clazzes);
 		Assert.isNotNull(callables);
-		return registerRemoteCallables(getClazzesFromString(clazzes), callables, properties);
+		return registerRemoteCallables(RestCallableFactory.getClazzesFromStrings(clazzes), callables, properties);
 	}
 
 	protected IRemoteService createRestClientService(RestClientServiceRegistration registration) {
@@ -267,8 +271,6 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		return connectContext;
 	}
 
-	protected static IRestResourceProcessor defaultResourceProcessor = new XMLResource();
-
 	protected IRestResourceProcessor getResourceProcessor(IRemoteCall call, IRemoteCallable callable, Map responseHeaders) {
 		IRestResourceProcessor result = null;
 		synchronized (resourceProcessorLock) {
@@ -277,8 +279,6 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		// If no resourceProcessor explicitly set, we return default of XMLResource
 		return (result == null) ? defaultResourceProcessor : result;
 	}
-
-	protected static IRemoteCallParameterSerializer defaultParameterSerializer = new RemoteCallParameterStringSerializer();
 
 	protected IRemoteCallParameterSerializer getParameterSerializer(IRemoteCallParameter parameter, Object value) {
 		IRemoteCallParameterSerializer result = null;
@@ -304,86 +304,12 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		return new RestClientServiceRegistration(callables, properties, registry);
 	}
 
-	protected IRemoteCallable[][] createCallablesFromClasses(Class[] cls, List callables) {
-		Assert.isNotNull(cls);
-		Assert.isTrue(cls.length > 0);
-		// First create result list to hold IRestCallable[]...for each Class
-		List results = new ArrayList();
-		for (int i = 0; i < cls.length; i++) {
-			Method[] methods = getMethodsForClass(cls[i]);
-			IRemoteCallable[] methodCallables = getCallablesForMethods(methods, callables);
-			if (methodCallables != null && methodCallables.length > 0)
-				results.add(methodCallables);
-		}
-		return (IRemoteCallable[][]) results.toArray(new IRemoteCallable[][] {});
-	}
-
-	protected IRemoteCallable[] getCallablesForMethods(Method[] methods, List callables) {
-		Assert.isNotNull(methods);
-		Assert.isTrue(methods.length > 0);
-		List results = new ArrayList();
-		for (int i = 0; i < methods.length; i++) {
-			IRemoteCallable callable = findCallableForName(methods[i].getName(), callables);
-			if (callable != null)
-				results.add(callable);
-		}
-		return (IRemoteCallable[]) results.toArray(new IRemoteCallable[] {});
-	}
-
-	protected IRemoteCallable findCallableForName(String fqMethodName, List callables) {
-		if (callables == null || callables.isEmpty())
-			return null;
-		for (Iterator i = callables.iterator(); i.hasNext();) {
-			IRemoteCallable callable = (IRemoteCallable) i.next();
-			if (callable != null && fqMethodName.equals(callable.getMethod()))
-				return callable;
-		}
-		return null;
-	}
-
-	private Method[] getMethodsForClass(Class class1) {
-		Method[] results = null;
-		try {
-			results = class1.getDeclaredMethods();
-		} catch (Exception e) {
-			logException("Could not get declared methods for class=" + class1.getName(), e); //$NON-NLS-1$
-			return null;
-		}
-		return results;
-	}
-
-	protected Class getClazzFromString(String className) throws IllegalArgumentException {
-		Class result = null;
-		try {
-			result = Class.forName(className);
-		} catch (Exception e) {
-			String errorMsg = "ClassNotFoundException for class with name=" + className; //$NON-NLS-1$
-			logException(errorMsg, e);
-			throw new IllegalArgumentException(errorMsg);
-		} catch (NoClassDefFoundError e) {
-			String errorMsg = "NoClassDefFoundError for class with name=" + className; //$NON-NLS-1$
-			logException(errorMsg, e);
-			throw new IllegalArgumentException(errorMsg);
-		}
-		return result;
-	}
-
 	protected void logException(String string, Throwable e) {
 		// XXX log properly
 		if (string != null)
 			System.out.println(string);
 		if (e != null)
 			e.printStackTrace();
-	}
-
-	protected Class[] getClazzesFromString(String[] clazzes) throws IllegalArgumentException {
-		List results = new ArrayList();
-		for (int i = 0; i < clazzes.length; i++) {
-			Class clazz = getClazzFromString(clazzes[i]);
-			if (clazz != null)
-				results.add(clazz);
-		}
-		return (Class[]) results.toArray(new Class[] {});
 	}
 
 	// IContainer implementation methods

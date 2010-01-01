@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
-import org.eclipse.ecf.remoteservice.rest.util.RestCallFactory;
 
 import java.io.Serializable;
 import java.util.Arrays;
