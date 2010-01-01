@@ -30,8 +30,6 @@ import org.osgi.framework.ServiceException;
  */
 final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
-	protected static final long DEFAULT_TIMEOUT = new Long(System.getProperty("ecf.remotecall.timeout", "30000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
-
 	static final Object[] EMPTY_PARAMETERS = new Object[0];
 
 	// the ECF remote refImpl
