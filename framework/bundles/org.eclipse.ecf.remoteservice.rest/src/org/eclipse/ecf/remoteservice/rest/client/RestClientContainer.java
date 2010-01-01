@@ -9,8 +9,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.client;
 
-import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
-
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -24,6 +22,7 @@ import org.eclipse.ecf.internal.remoteservice.rest.RestClientServiceReference;
 import org.eclipse.ecf.internal.remoteservice.rest.RestServiceRegistry;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.*;
+import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
 import org.eclipse.ecf.remoteservice.rest.identity.RestID;
 import org.eclipse.ecf.remoteservice.rest.identity.RestNamespace;
 import org.eclipse.ecf.remoteservice.rest.resource.IRestResourceProcessor;
@@ -131,8 +130,9 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 
 	public IRemoteServiceRegistration registerRemoteService(final String[] clazzes, Object service, Dictionary properties) {
 		if (service instanceof List) {
-			List callables = (List) service;
-			return registerRemoteService(clazzes, callables, properties);
+			return registerRemoteCallables(clazzes, (List) service, properties);
+		} else if (service instanceof IRemoteCallable[][]) {
+			return registerRemoteCallables(clazzes, (IRemoteCallable[][]) service, properties);
 		}
 		throw new RuntimeException("registerRemoteService cannot be used with rest client container"); //$NON-NLS-1$
 	}
@@ -257,7 +257,7 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		return registerRemoteCallables(classNames, restCallables, properties);
 	}
 
-	public IRemoteServiceRegistration registerCallable(String[] clazzes, List callables, Dictionary properties) {
+	public IRemoteServiceRegistration registerRemoteCallables(String[] clazzes, List callables, Dictionary properties) {
 		Assert.isNotNull(clazzes);
 		Assert.isNotNull(callables);
 		return registerRemoteCallables(RestCallableFactory.getClazzesFromStrings(clazzes), callables, properties);
