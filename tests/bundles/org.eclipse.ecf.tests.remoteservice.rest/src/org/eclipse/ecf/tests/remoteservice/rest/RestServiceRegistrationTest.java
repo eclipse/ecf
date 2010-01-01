@@ -16,7 +16,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.eclipse.ecf.remoteservice.rest.util.RestCallableFactory;
+import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
 
 public class RestServiceRegistrationTest extends AbstractRestTestCase {
 	

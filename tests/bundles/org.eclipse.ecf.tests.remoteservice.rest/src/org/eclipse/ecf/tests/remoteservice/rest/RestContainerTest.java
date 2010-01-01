@@ -20,10 +20,10 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
 import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
 import org.eclipse.ecf.remoteservice.rest.client.RestClientContainer;
 import org.eclipse.ecf.remoteservice.rest.util.HttpGetRequestType;
-import org.eclipse.ecf.remoteservice.rest.util.RestCallableFactory;
 
 public class RestContainerTest extends AbstractRestTestCase {
 

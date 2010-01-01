@@ -19,8 +19,8 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.rest.IRestCall;
-import org.eclipse.ecf.remoteservice.rest.util.RestCallFactory;
-import org.eclipse.ecf.remoteservice.rest.util.RestCallableFactory;
+import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
+import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.w3c.dom.Document;
 

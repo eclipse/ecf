@@ -20,8 +20,8 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
+import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
 import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
-import org.eclipse.ecf.remoteservice.rest.util.RestCallableFactory;
 import org.osgi.framework.InvalidSyntaxException;
 
 public class RestRemoteServiceAdapterTest extends AbstractRestTestCase {
