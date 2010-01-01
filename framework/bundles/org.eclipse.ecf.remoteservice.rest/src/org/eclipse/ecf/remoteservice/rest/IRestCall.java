@@ -9,6 +9,8 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
+import org.eclipse.ecf.remoteservice.rest.util.RestCallFactory;
+
 import java.util.Map;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;

@@ -7,23 +7,18 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.remoteservice.rest;
+package org.eclipse.ecf.remoteservice.rest.util;
 
-/**
- * Rest parameter used for defining an {@link IRestCallable}
- */
-public interface IRestParameter {
 
-	/**
-	 * Get the name for the parameter.  Must not return <code>null</code>.
-	 * @return String the parameter name.
-	 */
-	public String getName();
+import java.util.Map;
 
-	/**
-	 * Get the parameter value.  Should not return <code>null</code>.
-	 * @return String the parameter value.
-	 */
-	public String getValue();
+public class HttpDeleteRequestType extends RestRequestType {
 
+	public HttpDeleteRequestType(Map defaultRequestHeaders) {
+		super(defaultRequestHeaders);
+	}
+
+	public HttpDeleteRequestType() {
+		// nothing to do
+	}
 }

@@ -15,7 +15,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.ecf.internal.remoteservice.rest.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
+import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.rest.RestException;
 import org.eclipse.osgi.util.NLS;
 import org.w3c.dom.Document;
@@ -28,7 +28,7 @@ import org.xml.sax.InputSource;
  */
 public class XMLResource implements IRestResourceProcessor {
 
-	public Object createResponseRepresentation(IRemoteCall call, IRestCallable callable, Map responseHeaders, String responseBody) throws RestException {
+	public Object createResponseRepresentation(IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws RestException {
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 		String errorMsg = "XML response can't be parsed: {0}"; //$NON-NLS-1$
 		try {

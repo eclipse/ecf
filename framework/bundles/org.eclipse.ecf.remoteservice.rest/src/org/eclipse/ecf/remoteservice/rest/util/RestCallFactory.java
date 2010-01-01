@@ -8,7 +8,10 @@
  *   EclipseSource - initial API and implementation
  *   Composent, Inc - Simplifications
 *******************************************************************************/
-package org.eclipse.ecf.remoteservice.rest;
+package org.eclipse.ecf.remoteservice.rest.util;
+
+import org.eclipse.ecf.remoteservice.rest.IRestCall;
+import org.eclipse.ecf.remoteservice.rest.RestCall;
 
 import java.util.Map;
 

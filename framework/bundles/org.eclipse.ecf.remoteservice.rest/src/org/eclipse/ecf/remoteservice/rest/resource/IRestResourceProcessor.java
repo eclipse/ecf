@@ -12,7 +12,7 @@ package org.eclipse.ecf.remoteservice.rest.resource;
 import java.util.Map;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
+import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.rest.RestException;
 
 /**
@@ -35,6 +35,6 @@ public interface IRestResourceProcessor {
 	 * 
 	 * @throws ECFException thrown if the response cannot be parsed, or the representation cannot be created.
 	 */
-	public Object createResponseRepresentation(IRemoteCall call, IRestCallable callable, Map responseHeaders, String responseBody) throws RestException;
+	public Object createResponseRepresentation(IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws RestException;
 
 }

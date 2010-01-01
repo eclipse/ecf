@@ -23,12 +23,11 @@ import org.eclipse.ecf.internal.remoteservice.rest.RestClientServiceReference;
 import org.eclipse.ecf.internal.remoteservice.rest.RestServiceRegistry;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.*;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
-import org.eclipse.ecf.remoteservice.rest.IRestParameter;
 import org.eclipse.ecf.remoteservice.rest.identity.RestID;
 import org.eclipse.ecf.remoteservice.rest.identity.RestNamespace;
-import org.eclipse.ecf.remoteservice.rest.resource.*;
-import org.eclipse.ecf.remoteservice.util.RemoteFilterImpl;
+import org.eclipse.ecf.remoteservice.rest.resource.IRestResourceProcessor;
+import org.eclipse.ecf.remoteservice.rest.resource.XMLResource;
+import org.eclipse.ecf.remoteservice.util.*;
 import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.InvalidSyntaxException;
 
@@ -54,7 +53,7 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 	protected IRestResourceProcessor resourceProcessor = null;
 
 	protected Object parameterSerializerLock = new Object();
-	protected IRestParameterSerializer parameterSerializer = null;
+	protected IRemoteCallParameterSerializer parameterSerializer = null;
 
 	public RestClientContainer(RestID id) {
 		this.containerID = id;
@@ -179,23 +178,19 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		}
 	}
 
-	public void setParameterSerializer(IRestParameterSerializer serializer) {
+	public void setRemoteCallParameterSerializer(IRemoteCallParameterSerializer serializer) {
 		synchronized (parameterSerializerLock) {
 			this.parameterSerializer = serializer;
 		}
 	}
 
-	public IRestParameterSerializer getParameterSerializer() {
+	public IRemoteCallParameterSerializer getRemoteCallParameterSerializer() {
 		synchronized (parameterSerializerLock) {
 			return this.parameterSerializer;
 		}
 	}
 
-	public IRemoteServiceRegistration registerCallable(IRestCallable callable, Dictionary properties) {
-		return registerCallable(new IRestCallable[] {callable}, properties);
-	}
-
-	public IRemoteServiceRegistration registerCallable(IRestCallable[] restCallables, Dictionary properties) {
+	public IRemoteServiceRegistration registerRemoteCallables(IRemoteCallable[] restCallables, Dictionary properties) {
 		Assert.isNotNull(restCallables);
 		final RestClientServiceRegistration registration = createRestServiceRegistration(restCallables, properties);
 		// notify
@@ -221,7 +216,7 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		return registration;
 	}
 
-	public IRemoteServiceRegistration registerCallable(String[] clazzes, IRestCallable[][] restCallables, Dictionary properties) {
+	public IRemoteServiceRegistration registerRemoteCallables(String[] clazzes, IRemoteCallable[][] restCallables, Dictionary properties) {
 		final RestClientServiceRegistration registration = createRestServiceRegistration(clazzes, restCallables, properties);
 		// notify
 		fireRemoteServiceEvent(new IRemoteServiceRegisteredEvent() {
@@ -246,22 +241,22 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		return registration;
 	}
 
-	public IRemoteServiceRegistration registerCallable(Class[] clazzes, List callables, Dictionary properties) {
+	public IRemoteServiceRegistration registerRemoteCallables(Class[] clazzes, List callables, Dictionary properties) {
 		Assert.isNotNull(clazzes);
-		IRestCallable[][] restCallables = createCallablesFromClasses(clazzes, callables);
+		IRemoteCallable[][] restCallables = createCallablesFromClasses(clazzes, callables);
 		Assert.isNotNull(restCallables);
 		Assert.isTrue(restCallables.length > 0);
 		final String[] classNames = new String[clazzes.length];
 		for (int i = 0; i < clazzes.length; i++) {
 			classNames[i] = clazzes[i].getName();
 		}
-		return registerCallable(classNames, restCallables, properties);
+		return registerRemoteCallables(classNames, restCallables, properties);
 	}
 
 	public IRemoteServiceRegistration registerCallable(String[] clazzes, List callables, Dictionary properties) {
 		Assert.isNotNull(clazzes);
 		Assert.isNotNull(callables);
-		return registerCallable(getClazzesFromString(clazzes), callables, properties);
+		return registerRemoteCallables(getClazzesFromString(clazzes), callables, properties);
 	}
 
 	protected IRemoteService createRestClientService(RestClientServiceRegistration registration) {
@@ -274,7 +269,7 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 
 	protected static IRestResourceProcessor defaultResourceProcessor = new XMLResource();
 
-	protected IRestResourceProcessor getResourceProcessor(IRemoteCall call, IRestCallable callable, Map responseHeaders) {
+	protected IRestResourceProcessor getResourceProcessor(IRemoteCall call, IRemoteCallable callable, Map responseHeaders) {
 		IRestResourceProcessor result = null;
 		synchronized (resourceProcessorLock) {
 			result = resourceProcessor;
@@ -283,10 +278,10 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		return (result == null) ? defaultResourceProcessor : result;
 	}
 
-	protected static IRestParameterSerializer defaultParameterSerializer = new StringParameterSerializer();
+	protected static IRemoteCallParameterSerializer defaultParameterSerializer = new RemoteCallParameterStringSerializer();
 
-	protected IRestParameterSerializer getParameterSerializer(IRestParameter parameter, Object value) {
-		IRestParameterSerializer result = null;
+	protected IRemoteCallParameterSerializer getParameterSerializer(IRemoteCallParameter parameter, Object value) {
+		IRemoteCallParameterSerializer result = null;
 		synchronized (parameterSerializerLock) {
 			result = parameterSerializer;
 		}
@@ -301,45 +296,45 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 		}
 	}
 
-	protected RestClientServiceRegistration createRestServiceRegistration(String[] clazzes, IRestCallable[][] callables, Dictionary properties) {
+	protected RestClientServiceRegistration createRestServiceRegistration(String[] clazzes, IRemoteCallable[][] callables, Dictionary properties) {
 		return new RestClientServiceRegistration(clazzes, callables, properties, registry);
 	}
 
-	protected RestClientServiceRegistration createRestServiceRegistration(IRestCallable[] callables, Dictionary properties) {
+	protected RestClientServiceRegistration createRestServiceRegistration(IRemoteCallable[] callables, Dictionary properties) {
 		return new RestClientServiceRegistration(callables, properties, registry);
 	}
 
-	protected IRestCallable[][] createCallablesFromClasses(Class[] cls, List callables) {
+	protected IRemoteCallable[][] createCallablesFromClasses(Class[] cls, List callables) {
 		Assert.isNotNull(cls);
 		Assert.isTrue(cls.length > 0);
 		// First create result list to hold IRestCallable[]...for each Class
 		List results = new ArrayList();
 		for (int i = 0; i < cls.length; i++) {
 			Method[] methods = getMethodsForClass(cls[i]);
-			IRestCallable[] methodCallables = getCallablesForMethods(methods, callables);
+			IRemoteCallable[] methodCallables = getCallablesForMethods(methods, callables);
 			if (methodCallables != null && methodCallables.length > 0)
 				results.add(methodCallables);
 		}
-		return (IRestCallable[][]) results.toArray(new IRestCallable[][] {});
+		return (IRemoteCallable[][]) results.toArray(new IRemoteCallable[][] {});
 	}
 
-	protected IRestCallable[] getCallablesForMethods(Method[] methods, List callables) {
+	protected IRemoteCallable[] getCallablesForMethods(Method[] methods, List callables) {
 		Assert.isNotNull(methods);
 		Assert.isTrue(methods.length > 0);
 		List results = new ArrayList();
 		for (int i = 0; i < methods.length; i++) {
-			IRestCallable callable = findCallableForName(methods[i].getName(), callables);
+			IRemoteCallable callable = findCallableForName(methods[i].getName(), callables);
 			if (callable != null)
 				results.add(callable);
 		}
-		return (IRestCallable[]) results.toArray(new IRestCallable[] {});
+		return (IRemoteCallable[]) results.toArray(new IRemoteCallable[] {});
 	}
 
-	protected IRestCallable findCallableForName(String fqMethodName, List callables) {
+	protected IRemoteCallable findCallableForName(String fqMethodName, List callables) {
 		if (callables == null || callables.isEmpty())
 			return null;
 		for (Iterator i = callables.iterator(); i.hasNext();) {
-			IRestCallable callable = (IRestCallable) i.next();
+			IRemoteCallable callable = (IRemoteCallable) i.next();
 			if (callable != null && fqMethodName.equals(callable.getMethod()))
 				return callable;
 		}
@@ -374,7 +369,7 @@ public class RestClientContainer extends AbstractContainer implements IRestClien
 	}
 
 	protected void logException(String string, Throwable e) {
-		// TODO Auto-generated method stub
+		// XXX log properly
 		if (string != null)
 			System.out.println(string);
 		if (e != null)

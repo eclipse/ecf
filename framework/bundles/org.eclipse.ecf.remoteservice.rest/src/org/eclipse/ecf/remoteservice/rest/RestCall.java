@@ -10,34 +10,30 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
+import org.eclipse.ecf.remoteservice.rest.util.RestCallFactory;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
-import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.remoteservice.RemoteCall;
 
 /**
  * Implementation of {@link IRestCall}.  Note that {@link RestCallFactory} should 
  * typically be used to construct instances.
  */
-public class RestCall implements IRestCall, Serializable {
+public class RestCall extends RemoteCall implements IRestCall, Serializable {
 
 	private static final long serialVersionUID = -2688657222934833060L;
 
-	private String method;
-	private Object[] params;
 	private Map requestHeaders;
-	private long timeout = IRestCallable.DEFAULT_TIMEOUT;
 
 	public RestCall(String fqMethod, Object[] params, Map requestHeaders, long timeout) {
-		Assert.isNotNull(fqMethod);
-		this.method = fqMethod;
-		this.params = params;
+		super(fqMethod, params, timeout);
 		this.requestHeaders = requestHeaders;
-		this.timeout = timeout;
 	}
 
 	public RestCall(String fqMethod, Object[] params, Map requestHeaders) {
-		this(fqMethod, params, requestHeaders, IRestCallable.DEFAULT_TIMEOUT);
+		this(fqMethod, params, requestHeaders, DEFAULT_TIMEOUT);
 	}
 
 	public RestCall(String fqMethod, Object[] params) {
@@ -48,31 +44,18 @@ public class RestCall implements IRestCall, Serializable {
 		this(fqMethod, null);
 	}
 
-	public String getMethod() {
-		return method;
-	}
-
-	public Object[] getParameters() {
-		return params;
-	}
-
 	public Map getRequestHeaders() {
 		return requestHeaders;
 	}
 
-	public long getTimeout() {
-		return timeout;
-	}
-
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("RestCall["); //$NON-NLS-1$
-		buffer.append("method="); //$NON-NLS-1$
-		buffer.append(method);
-		buffer.append(", params="); //$NON-NLS-1$
-		buffer.append(params != null ? Arrays.asList(params) : null);
-		buffer.append(", requestHeaders="); //$NON-NLS-1$
+		buffer.append("RestCall[requestHeaders="); //$NON-NLS-1$
 		buffer.append(requestHeaders);
+		buffer.append(", method="); //$NON-NLS-1$
+		buffer.append(method);
+		buffer.append(", parameters="); //$NON-NLS-1$
+		buffer.append(parameters != null ? Arrays.asList(parameters) : null);
 		buffer.append(", timeout="); //$NON-NLS-1$
 		buffer.append(timeout);
 		buffer.append("]"); //$NON-NLS-1$

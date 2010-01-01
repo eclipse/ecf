@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.internal.remoteservice.rest.RestClientServiceReference;
 import org.eclipse.ecf.internal.remoteservice.rest.RestServiceRegistry;
 import org.eclipse.ecf.remoteservice.*;
-import org.eclipse.ecf.remoteservice.rest.IRestCallable;
 import org.eclipse.ecf.remoteservice.rest.identity.RestNamespace;
 
 /**
@@ -26,14 +25,14 @@ public class RestClientServiceRegistration implements IRemoteServiceRegistration
 
 	protected static final String CLASS_METHOD_SEPARATOR = "."; //$NON-NLS-1$
 	protected String[] clazzes;
-	protected IRestCallable[][] callables;
+	protected IRemoteCallable[][] callables;
 	protected IRemoteServiceReference reference;
 	protected Dictionary properties;
 	protected ID containerId;
 	protected RestServiceRegistry registry;
 	protected IRemoteServiceID serviceID;
 
-	public RestClientServiceRegistration(String[] classNames, IRestCallable[][] restCalls, Dictionary properties, RestServiceRegistry registry) {
+	public RestClientServiceRegistration(String[] classNames, IRemoteCallable[][] restCalls, Dictionary properties, RestServiceRegistry registry) {
 		Assert.isNotNull(classNames);
 		this.clazzes = classNames;
 		Assert.isNotNull(restCalls);
@@ -47,13 +46,13 @@ public class RestClientServiceRegistration implements IRemoteServiceRegistration
 		this.serviceID = new RemoteServiceID(namespace, containerId, registry.getNextServiceId());
 	}
 
-	public RestClientServiceRegistration(IRestCallable[] restCalls, Dictionary properties, RestServiceRegistry registry) {
+	public RestClientServiceRegistration(IRemoteCallable[] restCalls, Dictionary properties, RestServiceRegistry registry) {
 		Assert.isNotNull(restCalls);
 		this.clazzes = new String[restCalls.length];
 		for (int i = 0; i < restCalls.length; i++) {
 			this.clazzes[i] = restCalls[i].getMethod();
 		}
-		this.callables = new IRestCallable[][] {restCalls};
+		this.callables = new IRemoteCallable[][] {restCalls};
 		this.properties = properties;
 		containerId = registry.getContainerId();
 		reference = new RestClientServiceReference(this);
@@ -109,12 +108,12 @@ public class RestClientServiceRegistration implements IRemoteServiceRegistration
 		return registry.getContainer();
 	}
 
-	protected IRestCallable findDefaultRestCall(String methodToFind) {
+	protected IRemoteCallable findDefaultRestCall(String methodToFind) {
 		for (int i = 0; i < callables.length; i++) {
 			String className = clazzes[i];
-			IRestCallable[] subArray = callables[i];
+			IRemoteCallable[] subArray = callables[i];
 			for (int j = 0; j < subArray.length; j++) {
-				IRestCallable def = subArray[j];
+				IRemoteCallable def = subArray[j];
 				String defMethod = def.getMethod();
 				String fqDefMethod = getFQMethod(className, defMethod);
 				if (fqDefMethod.equals(methodToFind))
@@ -128,11 +127,11 @@ public class RestClientServiceRegistration implements IRemoteServiceRegistration
 		return className + CLASS_METHOD_SEPARATOR + defMethod;
 	}
 
-	protected IRestCallable findCallable(IRemoteCall remoteCall) {
+	protected IRemoteCallable findCallable(IRemoteCall remoteCall) {
 		String callMethod = remoteCall.getMethod();
 		if (callMethod == null)
 			return null;
-		IRestCallable defaultRestCall = null;
+		IRemoteCallable defaultRestCall = null;
 		for (int i = 0; i < clazzes.length; i++) {
 			if (clazzes[i].equals(callMethod)) {
 				// The method name given is the fully qualified name
@@ -142,7 +141,7 @@ public class RestClientServiceRegistration implements IRemoteServiceRegistration
 		return (defaultRestCall != null) ? defaultRestCall : findDefaultRestCall(callMethod);
 	}
 
-	protected IRestCallable lookupCallable(IRemoteCall remoteCall) {
+	protected IRemoteCallable lookupCallable(IRemoteCall remoteCall) {
 		if (remoteCall == null)
 			return null;
 		return findCallable(remoteCall);
