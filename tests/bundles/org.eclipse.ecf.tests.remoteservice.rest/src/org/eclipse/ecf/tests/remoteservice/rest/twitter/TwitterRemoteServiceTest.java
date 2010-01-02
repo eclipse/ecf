@@ -31,7 +31,7 @@ import org.eclipse.ecf.remoteservice.client.RemoteCallParameterFactory;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
-import org.eclipse.ecf.remoteservice.rest.client.RestCallableFactory;
+import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
 import org.eclipse.ecf.tests.remoteservice.rest.AbstractRestTestCase;
 import org.eclipse.ecf.tests.remoteservice.rest.RestConstants;
 import org.eclipse.equinox.concurrent.future.IFuture;
