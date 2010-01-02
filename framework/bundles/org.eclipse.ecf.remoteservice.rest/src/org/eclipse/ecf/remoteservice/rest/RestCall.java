@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
@@ -32,7 +31,7 @@ public class RestCall extends RemoteCall implements IRestCall, Serializable {
 	}
 
 	public RestCall(String fqMethod, Object[] params, Map requestHeaders) {
-		this(fqMethod, params, requestHeaders, DEFAULT_TIMEOUT);
+		this(fqMethod, params, requestHeaders, IRestCall.DEFAULT_TIMEOUT);
 	}
 
 	public RestCall(String fqMethod, Object[] params) {

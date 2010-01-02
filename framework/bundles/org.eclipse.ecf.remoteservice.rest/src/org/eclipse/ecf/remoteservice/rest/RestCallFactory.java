@@ -10,7 +10,6 @@
 *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
-
 import java.util.Map;
 
 /**
@@ -23,11 +22,11 @@ public class RestCallFactory {
 	}
 
 	public static IRestCall createRestCall(String fqMethod, Object[] params, Map requestHeaders) {
-		return new RestCall(fqMethod, params, requestHeaders);
+		return createRestCall(fqMethod, params, requestHeaders, IRestCall.DEFAULT_TIMEOUT);
 	}
 
 	public static IRestCall createRestCall(String fqMethod, Object[] params) {
-		return new RestCall(fqMethod, params);
+		return createRestCall(fqMethod, params, null);
 	}
 
 	public static IRestCall createRestCall(String resourcePath) {

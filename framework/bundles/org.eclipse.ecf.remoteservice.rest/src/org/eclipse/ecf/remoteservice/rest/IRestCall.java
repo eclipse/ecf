@@ -9,7 +9,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
-
 import java.util.Map;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -20,6 +19,12 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
  * typically will be passed to one of the call methods on {@link IRemoteService}.
  */
 public interface IRestCall extends IRemoteCall {
+
+	/**
+	 * Default remote call timeout is set to the value of system property 'ecf.remotecall.rest.timeout'.  If system
+	 * property not set, the default is set to 30000ms (30s).
+	 */
+	public static final long DEFAULT_TIMEOUT = new Long(System.getProperty("ecf.remotecall.rest.timeout", "30000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * Provides any call-specific request headers.
