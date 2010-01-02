@@ -13,7 +13,7 @@ package org.eclipse.ecf.remoteservice.rest.client;
 
 import java.util.Map;
 
-public class HttpGetRequestType extends AbstractRestRequestType {
+public class HttpGetRequestType extends AbstractRequestType {
 
 	public HttpGetRequestType(Map defaultRequestHeaders) {
 		super(defaultRequestHeaders);

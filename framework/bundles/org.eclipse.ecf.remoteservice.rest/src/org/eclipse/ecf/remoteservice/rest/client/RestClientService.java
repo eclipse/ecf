@@ -23,7 +23,6 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rest.IRestCall;
 import org.eclipse.ecf.remoteservice.rest.RestException;
-import org.eclipse.ecf.remoteservice.rest.util.IRequestEntity;
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -109,7 +108,7 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 
 	protected void addRequestHeaders(HttpMethod httpMethod, IRemoteCall call, IRemoteCallable callable) {
 		// Add request headers from the callable
-		Map requestHeaders = (callable.getRequestType() instanceof AbstractRestRequestType) ? ((AbstractRestRequestType) callable.getRequestType()).getDefaultRequestHeaders() : new HashMap();
+		Map requestHeaders = (callable.getRequestType() instanceof AbstractRequestType) ? ((AbstractRequestType) callable.getRequestType()).getDefaultRequestHeaders() : new HashMap();
 		if (requestHeaders == null)
 			requestHeaders = new HashMap();
 
@@ -128,7 +127,7 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 		}
 	}
 
-	protected HttpMethod createAndPrepareHttpMethod(String url, IRemoteCall call, IRemoteCallable callable) throws RestException {
+	protected HttpMethod createAndPrepareHttpMethod(String uri, IRemoteCall call, IRemoteCallable callable) throws RestException {
 		HttpMethod httpMethod = null;
 
 		IRemoteCallableRequestType requestType = callable.getRequestType();
@@ -136,19 +135,19 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 			throw new RestException("Request type for call cannot be null"); //$NON-NLS-1$
 		try {
 			if (requestType instanceof HttpGetRequestType) {
-				httpMethod = prepareGetMethod(url, call, callable);
+				httpMethod = prepareGetMethod(uri, call, callable);
 			} else if (requestType instanceof HttpPostRequestType) {
-				httpMethod = preparePostMethod(url, call, callable, ((HttpPostRequestType) requestType).getRequestEntity());
+				httpMethod = preparePostMethod(uri, call, callable);
 			} else if (requestType instanceof HttpPutRequestType) {
-				httpMethod = preparePutMethod(url, call, callable, ((HttpPostRequestType) requestType).getRequestEntity());
+				httpMethod = preparePutMethod(uri, call, callable);
 			} else if (requestType instanceof HttpDeleteRequestType) {
-				httpMethod = prepareDeleteMethod(url, call, callable);
+				httpMethod = prepareDeleteMethod(uri, call, callable);
 			} else {
 				throw new RestException(NLS.bind("HTTP method {0} not supported", requestType)); //$NON-NLS-1$
 			}
 		} catch (NotSerializableException e) {
 			// XXX log
-			throw new RestException("Could not serialize parameters for url=" + url + " call=" + call + " callable=" + callable); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			throw new RestException("Could not serialize parameters for uri=" + uri + " call=" + call + " callable=" + callable); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		// add additional request headers
 		addRequestHeaders(httpMethod, call, callable);
@@ -163,63 +162,22 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 	/**
 	 * @throws RestException  
 	 */
-	protected HttpMethod prepareDeleteMethod(String url, IRemoteCall call, IRemoteCallable callable) throws RestException {
-		return new DeleteMethod(url);
+	protected HttpMethod prepareDeleteMethod(String uri, IRemoteCall call, IRemoteCallable callable) throws RestException {
+		return new DeleteMethod(uri);
 	}
 
-	protected HttpMethod preparePutMethod(String url, IRemoteCall call, IRemoteCallable callable, IRequestEntity requestEntity) throws RestException {
-		PutMethod putMethod = new PutMethod(url);
-		if (call.getParameters()[0] instanceof String) {
+	protected HttpMethod preparePutMethod(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+		PutMethod result = new PutMethod(uri);
+		HttpPutRequestType putRequestType = (HttpPutRequestType) callable.getRequestType();
 
-			String body = (String) call.getParameters()[0];
-			RequestEntity entity;
-			try {
-				entity = new StringRequestEntity(body, null, null);
-			} catch (UnsupportedEncodingException e) {
-				throw new RestException("An error occured while creating the request entity", e); //$NON-NLS-1$
-			}
-			putMethod.setRequestEntity(entity);
-
-		} else {
-			throw new RestException("For PutMethod the first parameter must be a String"); //$NON-NLS-1$
-		}
-		return putMethod;
-	}
-
-	/**
-	 * @throws ECFException  
-	 */
-	protected HttpMethod preparePostMethod(String url, IRemoteCall call, IRemoteCallable callable, IRequestEntity requestEntity) throws NotSerializableException {
-		PostMethod result = new PostMethod(url);
-		if (requestEntity != null) {
-			RequestEntity re = null;
-			try {
-				re = getRequestEntity(requestEntity);
-			} catch (UnsupportedEncodingException e) {
-				// XXX log
-				e.printStackTrace();
-			}
-			if (re != null)
-				result.setRequestEntity(re);
-		} else {
-			NameValuePair[] params = toNameValuePairs(url, call, callable);
-			if (params != null)
-				result.addParameters(params);
-		}
-		return result;
-	}
-
-	private RequestEntity getRequestEntity(IRequestEntity requestEntity) throws UnsupportedEncodingException {
-		RequestEntity result = null;
-		if (requestEntity instanceof org.eclipse.ecf.remoteservice.rest.util.StringRequestEntity) {
-			org.eclipse.ecf.remoteservice.rest.util.StringRequestEntity sre = (org.eclipse.ecf.remoteservice.rest.util.StringRequestEntity) requestEntity;
-			result = new StringRequestEntity(sre.getContent(), sre.getContentType(), sre.getCharset());
-		} else if (requestEntity instanceof org.eclipse.ecf.remoteservice.rest.util.ByteArrayRequestEntity) {
-			org.eclipse.ecf.remoteservice.rest.util.ByteArrayRequestEntity bre = (org.eclipse.ecf.remoteservice.rest.util.ByteArrayRequestEntity) requestEntity;
-			result = new ByteArrayRequestEntity(bre.getContent(), bre.getContentType());
-		} else if (requestEntity instanceof org.eclipse.ecf.remoteservice.rest.util.InputStreamRequestEntity) {
-			org.eclipse.ecf.remoteservice.rest.util.InputStreamRequestEntity isre = (org.eclipse.ecf.remoteservice.rest.util.InputStreamRequestEntity) requestEntity;
-			result = new InputStreamRequestEntity(isre.getContent(), isre.getContentLength(), isre.getContentType());
+		IRemoteCallParameter[] defaultParameters = callable.getDefaultParameters();
+		Object[] parameters = call.getParameters();
+		// If we have at least one defaultParameter and call parameter, then
+		// we assume that the first parameter is the request entity in the
+		// form of:  String, byte[], InputStream, or File
+		if (defaultParameters != null && defaultParameters.length > 0 && parameters != null && parameters.length > 0) {
+			RequestEntity requestEntity = putRequestType.generateRequestEntity(uri, call, callable, defaultParameters[0], parameters[0]);
+			result.setRequestEntity(requestEntity);
 		}
 		return result;
 	}
@@ -227,9 +185,28 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 	/**
 	 * @throws ECFException  
 	 */
-	protected HttpMethod prepareGetMethod(String url, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
-		HttpMethod result = new GetMethod(url);
-		NameValuePair[] params = toNameValuePairs(url, call, callable);
+	protected HttpMethod preparePostMethod(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+		PostMethod result = new PostMethod(uri);
+		HttpPostRequestType postRequestType = (HttpPostRequestType) callable.getRequestType();
+
+		IRemoteCallParameter[] defaultParameters = callable.getDefaultParameters();
+		Object[] parameters = call.getParameters();
+		// If we have at least one defaultParameter and call parameter, then
+		// we assume that the first parameter is the request entity in the
+		// form of:  String, byte[], InputStream, or File
+		if (defaultParameters != null && defaultParameters.length > 0 && parameters != null && parameters.length > 0) {
+			RequestEntity requestEntity = postRequestType.generateRequestEntity(uri, call, callable, defaultParameters[0], parameters[0]);
+			result.setRequestEntity(requestEntity);
+		}
+		return result;
+	}
+
+	/**
+	 * @throws ECFException  
+	 */
+	protected HttpMethod prepareGetMethod(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+		HttpMethod result = new GetMethod(uri);
+		NameValuePair[] params = toNameValuePairs(uri, call, callable);
 		if (params != null)
 			result.setQueryString(params);
 		return result;

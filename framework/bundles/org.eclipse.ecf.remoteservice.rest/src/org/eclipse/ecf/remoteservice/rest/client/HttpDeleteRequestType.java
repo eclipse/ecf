@@ -13,7 +13,7 @@ package org.eclipse.ecf.remoteservice.rest.client;
 
 import java.util.Map;
 
-public class HttpDeleteRequestType extends AbstractRestRequestType {
+public class HttpDeleteRequestType extends AbstractRequestType {
 
 	public HttpDeleteRequestType(Map defaultRequestHeaders) {
 		super(defaultRequestHeaders);

@@ -11,16 +11,16 @@ package org.eclipse.ecf.remoteservice.rest;
 
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.client.*;
-import org.eclipse.ecf.remoteservice.rest.client.AbstractRestRequestType;
+import org.eclipse.ecf.remoteservice.rest.client.AbstractRequestType;
 import org.eclipse.ecf.remoteservice.rest.client.HttpGetRequestType;
 
 public class RestCallableFactory {
 
-	public static IRemoteCallable createCallable(String method, String resourcePath, IRemoteCallParameter[] defaultParameters, AbstractRestRequestType requestType, long defaultTimeout) {
+	public static IRemoteCallable createCallable(String method, String resourcePath, IRemoteCallParameter[] defaultParameters, AbstractRequestType requestType, long defaultTimeout) {
 		return new RemoteCallable(method, resourcePath, defaultParameters, requestType, defaultTimeout);
 	}
 
-	public static IRemoteCallable createCallable(String method, String resourcePath, IRemoteCallParameter[] defaultParameters, AbstractRestRequestType requestType) {
+	public static IRemoteCallable createCallable(String method, String resourcePath, IRemoteCallParameter[] defaultParameters, AbstractRequestType requestType) {
 		return createCallable(method, resourcePath, defaultParameters, requestType, IRestCall.DEFAULT_TIMEOUT);
 	}
 
@@ -36,11 +36,11 @@ public class RestCallableFactory {
 		return createCallable(method, method, null, new HttpGetRequestType(), IRestCall.DEFAULT_TIMEOUT);
 	}
 
-	public static IRemoteCallable createCallable(String method, String resourcePath, AbstractRestRequestType requestType, long timeout) {
+	public static IRemoteCallable createCallable(String method, String resourcePath, AbstractRequestType requestType, long timeout) {
 		return createCallable(method, resourcePath, null, requestType, timeout);
 	}
 
-	public static IRemoteCallable createCallable(String method, String resourcePath, AbstractRestRequestType requestType) {
+	public static IRemoteCallable createCallable(String method, String resourcePath, AbstractRequestType requestType) {
 		return createCallable(method, resourcePath, null, requestType, IRemoteCall.DEFAULT_TIMEOUT);
 	}
 

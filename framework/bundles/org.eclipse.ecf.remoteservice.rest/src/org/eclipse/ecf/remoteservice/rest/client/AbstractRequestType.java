@@ -13,15 +13,15 @@ import org.eclipse.ecf.remoteservice.client.IRemoteCallableRequestType;
 
 import java.util.Map;
 
-public abstract class AbstractRestRequestType implements IRemoteCallableRequestType {
+public abstract class AbstractRequestType implements IRemoteCallableRequestType {
 
 	protected Map defaultRequestHeaders;
 
-	public AbstractRestRequestType(Map defaultRequestHeaders) {
+	public AbstractRequestType(Map defaultRequestHeaders) {
 		this.defaultRequestHeaders = defaultRequestHeaders;
 	}
 
-	public AbstractRestRequestType() {
+	public AbstractRequestType() {
 		// nothing to do
 	}
 
