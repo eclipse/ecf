@@ -13,14 +13,14 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
-import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.rest.IRestCall;
 import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
-import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
+import org.eclipse.ecf.remoteservice.rest.client.RestCallableFactory;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.w3c.dom.Document;
 
@@ -31,7 +31,7 @@ public class RestRemoteServiceTest extends AbstractRestTestCase {
 	
 	protected void setUp() throws Exception {
 		container = createRestContainer(RestConstants.TEST_TWITTER_TARGET);
-		IRemoteCallable callable = RestCallableFactory.createRestCallable(RestConstants.TEST_TWITTER_RESOURCEPATH);
+		IRemoteCallable callable = RestCallableFactory.createCallable(RestConstants.TEST_TWITTER_RESOURCEPATH);
 		registration = registerCallable(container, callable, null);
 	}
 
@@ -41,7 +41,7 @@ public class RestRemoteServiceTest extends AbstractRestTestCase {
 	}
 
 	public void testSyncCall() {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		try {
 			Object result = restClientService.callSync(getRestXMLCall());
 			assertNotNull(result);
@@ -51,7 +51,7 @@ public class RestRemoteServiceTest extends AbstractRestTestCase {
 	}
 
 	public void testAsynCall() {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		IFuture future = restClientService.callAsync(getRestXMLCall());
 		try {
 			Object response = future.get();
@@ -64,7 +64,7 @@ public class RestRemoteServiceTest extends AbstractRestTestCase {
 	}
 
 	public void testAsyncCallWithListener() throws Exception {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		restClientService.callAsync(getRestXMLCall(), new IRemoteCallListener() {
 			public void handleEvent(IRemoteCallEvent event) {
 				if (event instanceof IRemoteCallCompleteEvent) {

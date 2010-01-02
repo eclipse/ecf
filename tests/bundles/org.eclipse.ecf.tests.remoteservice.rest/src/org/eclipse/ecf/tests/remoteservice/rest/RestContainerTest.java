@@ -18,12 +18,12 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
-import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
+import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
+import org.eclipse.ecf.remoteservice.client.IRemoteServiceClientContainerAdapter;
+import org.eclipse.ecf.remoteservice.rest.client.HttpGetRequestType;
+import org.eclipse.ecf.remoteservice.rest.client.RestCallableFactory;
 import org.eclipse.ecf.remoteservice.rest.client.RestClientContainer;
-import org.eclipse.ecf.remoteservice.rest.util.HttpGetRequestType;
 
 public class RestContainerTest extends AbstractRestTestCase {
 
@@ -67,15 +67,11 @@ public class RestContainerTest extends AbstractRestTestCase {
 		assertNotNull(container);
 	}
 
-	protected IRestClientContainerAdapter getRestClientContainerAdapter(IContainer container) {
-		return (IRestClientContainerAdapter) container.getAdapter(IRestClientContainerAdapter.class);
-	}
-	
 	public void testRegisterRestService() throws Exception {
 		IContainer container = createRestContainer(RestConstants.TEST_DE_TARGET);
 		Dictionary properties = new Hashtable();
 		properties.put("user", "null");
-		IRemoteCallable callable = RestCallableFactory.createRestCallable("methodName","resourcePath",null,new HttpGetRequestType());
+		IRemoteCallable callable = RestCallableFactory.createCallable("methodName","resourcePath",null,new HttpGetRequestType());
 		IRemoteServiceRegistration registration = registerCallable(container, callable, properties);
 		assertNotNull(registration);
 	}
@@ -110,7 +106,7 @@ public class RestContainerTest extends AbstractRestTestCase {
     
 	public void testGetRemoteServiceNamespace() throws Exception {
 		IContainer container = createRestContainer(RestConstants.TEST_DE_TARGET);
-		IRestClientContainerAdapter adapter = getRestClientContainerAdapter(container);
+		IRemoteServiceClientContainerAdapter adapter = getRemoteServiceClientContainerAdapter(container);
 		assertNotNull(adapter);
 		Namespace namespace = adapter.getRemoteServiceNamespace();
 		assertNotNull(namespace);

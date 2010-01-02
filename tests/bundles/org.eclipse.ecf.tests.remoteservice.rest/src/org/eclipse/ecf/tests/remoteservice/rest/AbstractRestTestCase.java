@@ -17,9 +17,9 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
+import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
+import org.eclipse.ecf.remoteservice.client.IRemoteServiceClientContainerAdapter;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 
 public abstract class AbstractRestTestCase extends ECFAbstractTestCase {
@@ -46,16 +46,16 @@ public abstract class AbstractRestTestCase extends ECFAbstractTestCase {
 		return getIDFactory().createID(RestConstants.NAMESPACE, new Object[] { id });
 	}
 
-	protected IRestClientContainerAdapter getRestClientContainerAdapter(IContainer container) {
-		return (IRestClientContainerAdapter) container.getAdapter(IRestClientContainerAdapter.class);
+	protected IRemoteServiceClientContainerAdapter getRemoteServiceClientContainerAdapter(IContainer container) {
+		return (IRemoteServiceClientContainerAdapter) container.getAdapter(IRemoteServiceClientContainerAdapter.class);
 	}
 	
 	protected IRemoteServiceRegistration registerCallable(IContainer container, IRemoteCallable callable, Dictionary properties) {
-		return getRestClientContainerAdapter(container).registerRemoteCallables(new IRemoteCallable[] { callable }, properties);
+		return getRemoteServiceClientContainerAdapter(container).registerCallables(new IRemoteCallable[] { callable }, properties);
 	}
 
 	protected IRemoteServiceRegistration registerCallable(IContainer container, IRemoteCallable[] callables, Dictionary properties) {
-		return getRestClientContainerAdapter(container).registerRemoteCallables(callables, properties);
+		return getRemoteServiceClientContainerAdapter(container).registerCallables(callables, properties);
 	}
 	
 }

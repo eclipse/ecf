@@ -9,6 +9,7 @@
  *******************************************************************************/
 package org.eclipse.ecf.tests.remoteservice.rest.twitter;
 
+import java.io.NotSerializableException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,19 +20,18 @@ import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
-import org.eclipse.ecf.remoteservice.IRemoteCallParameter;
-import org.eclipse.ecf.remoteservice.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
-import org.eclipse.ecf.remoteservice.RemoteCallParameter;
-import org.eclipse.ecf.remoteservice.RemoteCallParameterFactory;
+import org.eclipse.ecf.remoteservice.client.IRemoteCallParameter;
+import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
+import org.eclipse.ecf.remoteservice.client.IRemoteResponseDeserializer;
+import org.eclipse.ecf.remoteservice.client.IRemoteServiceClientContainerAdapter;
+import org.eclipse.ecf.remoteservice.client.RemoteCallParameter;
+import org.eclipse.ecf.remoteservice.client.RemoteCallParameterFactory;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
-import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
-import org.eclipse.ecf.remoteservice.rest.RestException;
-import org.eclipse.ecf.remoteservice.rest.client.IRestClientContainerAdapter;
-import org.eclipse.ecf.remoteservice.rest.resource.IRestResourceProcessor;
+import org.eclipse.ecf.remoteservice.rest.client.RestCallableFactory;
 import org.eclipse.ecf.tests.remoteservice.rest.AbstractRestTestCase;
 import org.eclipse.ecf.tests.remoteservice.rest.RestConstants;
 import org.eclipse.equinox.concurrent.future.IFuture;
@@ -51,18 +51,18 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 		// Create container
 		container = createRestContainer(RestConstants.TEST_TWITTER_TARGET);	
 		// Get adapter
-		IRestClientContainerAdapter adapter = (IRestClientContainerAdapter) getRestClientContainerAdapter(container);
+		IRemoteServiceClientContainerAdapter adapter = (IRemoteServiceClientContainerAdapter) getRemoteServiceClientContainerAdapter(container);
 		// Setup authentication info
 		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(username, password));
 		
 		// Setup resource handler
-		adapter.setResourceProcessor(createRestResource());
+		adapter.setResponseDeserializer(createRestResource());
 
 		// Create and register callable to register service
 		IRemoteCallParameter [] parameters = RemoteCallParameterFactory.createParameters("count",null);
 		// Setup callable
-		IRemoteCallable callable = RestCallableFactory.createRestCallable("getUserStatuses","/statuses/user_timeline.json",parameters);
-		registration = adapter.registerRemoteCallables(new String[] { IUserTimeline.class.getName() }, new IRemoteCallable[][] { { callable } }, null);
+		IRemoteCallable callable = RestCallableFactory.createCallable("getUserStatuses","/statuses/user_timeline.json",parameters);
+		registration = adapter.registerCallables(new String[] { IUserTimeline.class.getName() }, new IRemoteCallable[][] { { callable } }, null);
 }
 
 	protected void tearDown() throws Exception {
@@ -70,11 +70,11 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 		container.disconnect();
 	}
 
-	private IRestResourceProcessor createRestResource() {
-		return new IRestResourceProcessor() {
+	private IRemoteResponseDeserializer createRestResource() {
+		return new IRemoteResponseDeserializer() {
 
-			public Object createResponseRepresentation(IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody)
-					throws RestException {
+			public Object deserializeResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody)
+					throws NotSerializableException {
 				try {
 					JSONArray timeline = new JSONArray(responseBody);
 					List statuses = new ArrayList();
@@ -87,18 +87,18 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 							IUserStatus status = new UserStatus(createdString, source, text);
 							statuses.add(status);
 						} catch (JSONException e) {
-							throw new RestException("Cannot process response representation",e);
+							throw new NotSerializableException("Cannot process response json representation:"+e.getMessage());
 						}
 					}
 					return (IUserStatus[]) statuses.toArray(new IUserStatus[statuses.size()]);
 				} catch (JSONException e) {
-					throw new RestException("JSON array parse exception",e);
+					throw new NotSerializableException("JSON array parse exception: "+e.getMessage());
 				}
 			}};
 	}
 
 	public void testSyncCall() {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		try {
 			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".getUserStatuses"));
 			assertNotNull(result);
@@ -108,7 +108,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 	}
 
 	public void testSyncCallWithCountParameter() {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		try {
 			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".getUserStatuses", new IRemoteCallParameter[] { new RemoteCallParameter("count", "1") }));
 			assertNotNull(result);
@@ -120,7 +120,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 	}
 
 	public void testSyncCallWithCountParameter1() {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		try {
 			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".getUserStatuses", new String[] { "1" } ));
 			assertNotNull(result);
@@ -130,7 +130,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 	}
 
 	public void testGetProxy() {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		try {
 			IUserTimeline userTimeline = (IUserTimeline) restClientService.getProxy();
 			assertNotNull(userTimeline);
@@ -140,7 +140,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 	}
 
 	public void testAsyncCall() {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		IFuture future = restClientService.callAsync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".getUserStatuses"));
 		try {
 			Object response = future.get();
@@ -153,7 +153,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 	}
 
 	public void testAsyncCallWithListener() throws Exception {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		restClientService.callAsync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".getUserStatuses"), new IRemoteCallListener() {
 			public void handleEvent(IRemoteCallEvent event) {
 				if (event instanceof IRemoteCallCompleteEvent) {
@@ -168,7 +168,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 	}
 
 	public void testProxyCall() {
-		IRemoteService restClientService = getRestClientContainerAdapter(container).getRemoteService(registration.getReference());
+		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
 		try {
 			IUserTimeline userTimeline = (IUserTimeline) restClientService.getProxy();
 			IUserStatus[] statuses = userTimeline.getUserStatuses();
