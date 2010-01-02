@@ -7,18 +7,19 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.remoteservice.rest.util;
+package org.eclipse.ecf.remoteservice.rest.client;
+
 
 
 import java.util.Map;
 
-public class HttpPostRequestType extends RestRequestType {
+public class HttpGetRequestType extends AbstractRestRequestType {
 
-	public HttpPostRequestType(Map defaultRequestHeaders) {
+	public HttpGetRequestType(Map defaultRequestHeaders) {
 		super(defaultRequestHeaders);
 	}
 
-	public HttpPostRequestType() {
+	public HttpGetRequestType() {
 		// nothing to do
 	}
 }

@@ -7,18 +7,26 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.remoteservice.rest.util;
+package org.eclipse.ecf.remoteservice.rest.client;
 
+import org.eclipse.ecf.remoteservice.client.IRemoteCallableRequestType;
 
 import java.util.Map;
 
-public class HttpDeleteRequestType extends RestRequestType {
+public abstract class AbstractRestRequestType implements IRemoteCallableRequestType {
 
-	public HttpDeleteRequestType(Map defaultRequestHeaders) {
-		super(defaultRequestHeaders);
+	protected Map defaultRequestHeaders;
+
+	public AbstractRestRequestType(Map defaultRequestHeaders) {
+		this.defaultRequestHeaders = defaultRequestHeaders;
 	}
 
-	public HttpDeleteRequestType() {
+	public AbstractRestRequestType() {
 		// nothing to do
 	}
+
+	public Map getDefaultRequestHeaders() {
+		return defaultRequestHeaders;
+	}
+
 }

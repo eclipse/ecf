@@ -7,28 +7,29 @@
  * Contributors:
  *   EclipseSource - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ecf.remoteservice.rest.resource;
+package org.eclipse.ecf.remoteservice.rest.client;
 
+import java.io.NotSerializableException;
 import java.io.StringReader;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.ecf.internal.remoteservice.rest.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
-import org.eclipse.ecf.remoteservice.IRemoteCallable;
-import org.eclipse.ecf.remoteservice.rest.RestException;
+import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
+import org.eclipse.ecf.remoteservice.client.IRemoteResponseDeserializer;
 import org.eclipse.osgi.util.NLS;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 /**
- * This class is a sample implementation of {@link IRestResourceProcessor}. This will be
+ * This class is a sample implementation of {@link IRemoteResponseDeserializer}. This will be
  * used to create XML Resource representations and will be registered when the
  * API is started, {@link Activator#start(org.osgi.framework.BundleContext)}.
  */
-public class XMLResource implements IRestResourceProcessor {
+public class XMLRemoteResponseDeserializer implements IRemoteResponseDeserializer {
 
-	public Object createResponseRepresentation(IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws RestException {
+	public Object deserializeResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException {
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 		String errorMsg = "XML response can't be parsed: {0}"; //$NON-NLS-1$
 		try {
@@ -37,7 +38,7 @@ public class XMLResource implements IRestResourceProcessor {
 			Document dom = builder.parse(src);
 			return dom;
 		} catch (Exception e) {
-			throw new RestException(NLS.bind(errorMsg, e.getMessage()), e);
+			throw new NotSerializableException(NLS.bind(errorMsg, e.getMessage()));
 		}
 
 	}

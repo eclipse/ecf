@@ -7,25 +7,19 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.remoteservice.rest.util;
+package org.eclipse.ecf.remoteservice.rest.client;
+
+
 
 import java.util.Map;
-import org.eclipse.ecf.remoteservice.IRemoteCallableRequestType;
 
-public abstract class RestRequestType implements IRemoteCallableRequestType {
+public class HttpPutRequestType extends AbstractRestRequestType {
 
-	protected Map defaultRequestHeaders;
-
-	public RestRequestType(Map defaultRequestHeaders) {
-		this.defaultRequestHeaders = defaultRequestHeaders;
+	public HttpPutRequestType(Map defaultRequestHeaders) {
+		super(defaultRequestHeaders);
 	}
 
-	public RestRequestType() {
+	public HttpPutRequestType() {
 		// nothing to do
 	}
-
-	public Map getDefaultRequestHeaders() {
-		return defaultRequestHeaders;
-	}
-
 }
