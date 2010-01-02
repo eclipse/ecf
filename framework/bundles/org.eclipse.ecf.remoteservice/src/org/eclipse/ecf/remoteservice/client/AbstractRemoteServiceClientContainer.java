@@ -448,7 +448,7 @@ public abstract class AbstractRemoteServiceClientContainer extends AbstractConta
 				name = defaultCallableParameters[i].getName();
 				// Get parameter serializer...and
 				IRemoteCallParameterSerializer serializer = getParameterSerializer();
-				String val = (serializer == null) ? null : serializer.serializeParameter(uri, call, callable, p, defaultCallableParameters[i]);
+				IRemoteCallParameter val = (serializer == null) ? null : serializer.serializeParameter(uri, call, callable, defaultCallableParameters[i], p);
 				if (val != null)
 					results.add(new RemoteCallParameter(name, val));
 			}

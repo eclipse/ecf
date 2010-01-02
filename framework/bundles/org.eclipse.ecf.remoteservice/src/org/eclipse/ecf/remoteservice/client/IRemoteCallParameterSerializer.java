@@ -17,6 +17,6 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
  */
 public interface IRemoteCallParameterSerializer {
 
-	public String serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, Object param, IRemoteCallParameter defaultParam) throws NotSerializableException;
+	public IRemoteCallParameter serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, IRemoteCallParameter paramDefault, Object paramToSerialize) throws NotSerializableException;
 
 }

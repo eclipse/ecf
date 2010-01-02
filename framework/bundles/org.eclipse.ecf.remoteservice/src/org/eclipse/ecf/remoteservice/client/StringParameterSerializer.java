@@ -22,18 +22,15 @@ public class StringParameterSerializer implements IRemoteCallParameterSerializer
 	/**
 	 * @throws NotSerializableException  
 	 */
-	public String serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, Object param, IRemoteCallParameter defaultParam) throws NotSerializableException {
-		if (param == null) {
-			Object defaultValue = defaultParam.getValue();
-			if (defaultValue == null)
-				return null;
+	public IRemoteCallParameter serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, IRemoteCallParameter paramDefault, Object paramToSerialize) throws NotSerializableException {
+		if (paramToSerialize instanceof String)
+			return new RemoteCallParameter(paramDefault.getName(), paramToSerialize);
+		if (paramToSerialize == null) {
+			Object defaultValue = paramDefault.getValue();
 			if (defaultValue instanceof String)
-				return (String) defaultValue;
-			return defaultValue.toString();
+				return new RemoteCallParameter(paramDefault.getName(), defaultValue);
 		}
-		if (param instanceof String)
-			return (String) param;
-		return param.toString();
+		return null;
 	}
 
 }
