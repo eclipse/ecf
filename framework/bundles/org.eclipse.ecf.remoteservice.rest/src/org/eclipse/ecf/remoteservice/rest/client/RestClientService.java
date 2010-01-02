@@ -172,12 +172,16 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 
 		IRemoteCallParameter[] defaultParameters = callable.getDefaultParameters();
 		Object[] parameters = call.getParameters();
-		// If we have at least one defaultParameter and call parameter, then
-		// we assume that the first parameter is the request entity in the
-		// form of:  String, byte[], InputStream, or File
-		if (defaultParameters != null && defaultParameters.length > 0 && parameters != null && parameters.length > 0) {
-			RequestEntity requestEntity = putRequestType.generateRequestEntity(uri, call, callable, defaultParameters[0], parameters[0]);
-			result.setRequestEntity(requestEntity);
+
+		if (putRequestType.useRequestEntity()) {
+			if (defaultParameters != null && defaultParameters.length > 0 && parameters != null && parameters.length > 0) {
+				RequestEntity requestEntity = putRequestType.generateRequestEntity(uri, call, callable, defaultParameters[0], parameters[0]);
+				result.setRequestEntity(requestEntity);
+			}
+		} else {
+			NameValuePair[] params = toNameValuePairs(uri, call, callable);
+			if (params != null)
+				result.setQueryString(params);
 		}
 		return result;
 	}
@@ -191,12 +195,15 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 
 		IRemoteCallParameter[] defaultParameters = callable.getDefaultParameters();
 		Object[] parameters = call.getParameters();
-		// If we have at least one defaultParameter and call parameter, then
-		// we assume that the first parameter is the request entity in the
-		// form of:  String, byte[], InputStream, or File
-		if (defaultParameters != null && defaultParameters.length > 0 && parameters != null && parameters.length > 0) {
-			RequestEntity requestEntity = postRequestType.generateRequestEntity(uri, call, callable, defaultParameters[0], parameters[0]);
-			result.setRequestEntity(requestEntity);
+		if (postRequestType.useRequestEntity()) {
+			if (defaultParameters != null && defaultParameters.length > 0 && parameters != null && parameters.length > 0) {
+				RequestEntity requestEntity = postRequestType.generateRequestEntity(uri, call, callable, defaultParameters[0], parameters[0]);
+				result.setRequestEntity(requestEntity);
+			}
+		} else {
+			NameValuePair[] params = toNameValuePairs(uri, call, callable);
+			if (params != null)
+				result.setQueryString(params);
 		}
 		return result;
 	}

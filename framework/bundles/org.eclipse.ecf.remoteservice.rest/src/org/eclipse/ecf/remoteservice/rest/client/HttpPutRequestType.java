@@ -13,12 +13,40 @@ import java.util.Map;
 
 public class HttpPutRequestType extends AbstractEntityRequestType {
 
+	public HttpPutRequestType(int requestEntityType, String defaultContentType, long defaultContentLength, String defaultCharset, Map defaultRequestHeaders) {
+		super(requestEntityType, defaultContentType, defaultContentLength, defaultCharset, defaultRequestHeaders);
+	}
+
+	public HttpPutRequestType(int requestEntityType, String defaultContentType, long defaultContentLength, String defaultCharset) {
+		super(requestEntityType, defaultContentType, defaultContentLength, defaultCharset);
+	}
+
+	public HttpPutRequestType(int requestEntityType, String defaultContentType, long defaultContentLength, Map defaultRequestHeaders) {
+		super(requestEntityType, defaultContentType, defaultContentLength, defaultRequestHeaders);
+	}
+
+	public HttpPutRequestType(int requestEntityType, String defaultContentType, long defaultContentLength) {
+		super(requestEntityType, defaultContentType, defaultContentLength);
+	}
+
+	public HttpPutRequestType(int requestEntityType, String defaultContentType, Map defaultRequestHeaders) {
+		super(requestEntityType, defaultContentType, defaultRequestHeaders);
+	}
+
+	public HttpPutRequestType(int requestEntityType, String defaultContentType) {
+		super(requestEntityType, defaultContentType);
+	}
+
+	public HttpPutRequestType(int requestEntityType, Map defaultRequestHeaders) {
+		super(requestEntityType, defaultRequestHeaders);
+	}
+
 	public HttpPutRequestType(Map defaultRequestHeaders) {
 		super(defaultRequestHeaders);
 	}
 
 	public HttpPutRequestType() {
-		// nothing to do
+		// nothing
 	}
 
 }
