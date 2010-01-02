@@ -10,6 +10,7 @@
 package org.eclipse.ecf.remoteservice.client;
 
 import java.io.NotSerializableException;
+import java.lang.reflect.Method;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -252,7 +253,7 @@ public abstract class AbstractRemoteServiceClientContainer extends AbstractConta
 
 	public IRemoteServiceRegistration registerRemoteCallables(Class[] clazzes, List callables, Dictionary properties) {
 		Assert.isNotNull(clazzes);
-		IRemoteCallable[][] restCallables = RemoteCallableFactory.createCallablesFromClasses(clazzes, callables);
+		IRemoteCallable[][] restCallables = createCallablesFromClasses(clazzes, callables);
 		Assert.isNotNull(restCallables);
 		Assert.isTrue(restCallables.length > 0);
 		final String[] classNames = new String[clazzes.length];
@@ -265,7 +266,81 @@ public abstract class AbstractRemoteServiceClientContainer extends AbstractConta
 	public IRemoteServiceRegistration registerRemoteCallables(String[] clazzes, List callables, Dictionary properties) {
 		Assert.isNotNull(clazzes);
 		Assert.isNotNull(callables);
-		return registerRemoteCallables(RemoteCallableFactory.getClazzesFromStrings(clazzes), callables, properties);
+		return registerRemoteCallables(getClazzesFromStrings(clazzes), callables, properties);
+	}
+
+	public IRemoteCallable[][] createCallablesFromClasses(Class[] cls, List callables) {
+		Assert.isNotNull(cls);
+		Assert.isTrue(cls.length > 0);
+		// First create result list to hold IRestCallable[]...for each Class
+		List results = new ArrayList();
+		for (int i = 0; i < cls.length; i++) {
+			Method[] methods = getMethodsForClass(cls[i]);
+			IRemoteCallable[] methodCallables = getCallablesForMethods(methods, callables);
+			if (methodCallables != null && methodCallables.length > 0)
+				results.add(methodCallables);
+		}
+		return (IRemoteCallable[][]) results.toArray(new IRemoteCallable[][] {});
+	}
+
+	protected IRemoteCallable[] getCallablesForMethods(Method[] methods, List callables) {
+		Assert.isNotNull(methods);
+		Assert.isTrue(methods.length > 0);
+		List results = new ArrayList();
+		for (int i = 0; i < methods.length; i++) {
+			IRemoteCallable callable = findCallableForName(methods[i].getName(), callables);
+			if (callable != null)
+				results.add(callable);
+		}
+		return (IRemoteCallable[]) results.toArray(new IRemoteCallable[] {});
+	}
+
+	protected IRemoteCallable findCallableForName(String fqMethodName, List callables) {
+		if (callables == null || callables.isEmpty())
+			return null;
+		for (Iterator i = callables.iterator(); i.hasNext();) {
+			IRemoteCallable callable = (IRemoteCallable) i.next();
+			if (callable != null && fqMethodName.equals(callable.getMethod()))
+				return callable;
+		}
+		return null;
+	}
+
+	private Method[] getMethodsForClass(Class class1) {
+		Method[] results = null;
+		try {
+			results = class1.getDeclaredMethods();
+		} catch (Exception e) {
+			logException("Could not get declared methods for class=" + class1.getName(), e); //$NON-NLS-1$
+			return null;
+		}
+		return results;
+	}
+
+	public Class[] getClazzesFromStrings(String[] clazzes) throws IllegalArgumentException {
+		List results = new ArrayList();
+		for (int i = 0; i < clazzes.length; i++) {
+			Class clazz = getClazzFromString(clazzes[i]);
+			if (clazz != null)
+				results.add(clazz);
+		}
+		return (Class[]) results.toArray(new Class[] {});
+	}
+
+	public Class getClazzFromString(String className) throws IllegalArgumentException {
+		Class result = null;
+		try {
+			result = Class.forName(className, true, this.getClass().getClassLoader());
+		} catch (Exception e) {
+			String errorMsg = "ClassNotFoundException for class with name=" + className; //$NON-NLS-1$
+			logException(errorMsg, e);
+			throw new IllegalArgumentException(errorMsg);
+		} catch (NoClassDefFoundError e) {
+			String errorMsg = "NoClassDefFoundError for class with name=" + className; //$NON-NLS-1$
+			logException(errorMsg, e);
+			throw new IllegalArgumentException(errorMsg);
+		}
+		return result;
 	}
 
 	// IContainer implementation methods

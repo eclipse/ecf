@@ -11,6 +11,7 @@ package org.eclipse.ecf.remoteservice.client;
 
 import java.util.Arrays;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.remoteservice.IRemoteCall;
 
 /**
  * @since 3.3
@@ -34,7 +35,7 @@ public class RemoteCallable implements IRemoteCallable {
 	}
 
 	public RemoteCallable(String method, String resourcePath, IRemoteCallParameter[] defaultParameters, IRemoteCallableRequestType requestType) {
-		this(method, resourcePath, defaultParameters, requestType, DEFAULT_TIMEOUT);
+		this(method, resourcePath, defaultParameters, requestType, IRemoteCall.DEFAULT_TIMEOUT);
 	}
 
 	public String getMethod() {

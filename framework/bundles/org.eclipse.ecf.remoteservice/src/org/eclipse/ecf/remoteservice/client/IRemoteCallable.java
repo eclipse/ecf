@@ -15,12 +15,6 @@ package org.eclipse.ecf.remoteservice.client;
 public interface IRemoteCallable {
 
 	/**
-	 * Default remote call timeout is set to the value of system property 'ecf.remotecall.timeout'.  If system
-	 * property not set, the default is set to 30000ms (30s).
-	 */
-	public static final long DEFAULT_TIMEOUT = new Long(System.getProperty("ecf.remotecallable.timeout", "30000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
-
-	/**
 	 * Get the method name associated with this remote callable.
 	 * @return String method name.  Must not be <code>null</code>.
 	 */
