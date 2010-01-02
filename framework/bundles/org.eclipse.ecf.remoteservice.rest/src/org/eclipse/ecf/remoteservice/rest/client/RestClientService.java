@@ -23,6 +23,7 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rest.IRestCall;
 import org.eclipse.ecf.remoteservice.rest.RestException;
+import org.eclipse.ecf.remoteservice.rest.util.IRequestEntity;
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -137,9 +138,9 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 			if (requestType instanceof HttpGetRequestType) {
 				httpMethod = prepareGetMethod(url, call, callable);
 			} else if (requestType instanceof HttpPostRequestType) {
-				httpMethod = preparePostMethod(url, call, callable);
+				httpMethod = preparePostMethod(url, call, callable, ((HttpPostRequestType) requestType).getRequestEntity());
 			} else if (requestType instanceof HttpPutRequestType) {
-				httpMethod = preparePutMethod(url, call, callable);
+				httpMethod = preparePutMethod(url, call, callable, ((HttpPostRequestType) requestType).getRequestEntity());
 			} else if (requestType instanceof HttpDeleteRequestType) {
 				httpMethod = prepareDeleteMethod(url, call, callable);
 			} else {
@@ -166,7 +167,7 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 		return new DeleteMethod(url);
 	}
 
-	protected HttpMethod preparePutMethod(String url, IRemoteCall call, IRemoteCallable callable) throws RestException {
+	protected HttpMethod preparePutMethod(String url, IRemoteCall call, IRemoteCallable callable, IRequestEntity requestEntity) throws RestException {
 		PutMethod putMethod = new PutMethod(url);
 		if (call.getParameters()[0] instanceof String) {
 
@@ -188,12 +189,38 @@ public class RestClientService extends AbstractRemoteServiceClientService {
 	/**
 	 * @throws ECFException  
 	 */
-	protected HttpMethod preparePostMethod(String url, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+	protected HttpMethod preparePostMethod(String url, IRemoteCall call, IRemoteCallable callable, IRequestEntity requestEntity) throws NotSerializableException {
 		PostMethod result = new PostMethod(url);
-		// XXX this has to be changed to handle post
-		NameValuePair[] params = toNameValuePairs(url, call, callable);
-		if (params != null)
-			result.addParameters(params);
+		if (requestEntity != null) {
+			RequestEntity re = null;
+			try {
+				re = getRequestEntity(requestEntity);
+			} catch (UnsupportedEncodingException e) {
+				// XXX log
+				e.printStackTrace();
+			}
+			if (re != null)
+				result.setRequestEntity(re);
+		} else {
+			NameValuePair[] params = toNameValuePairs(url, call, callable);
+			if (params != null)
+				result.addParameters(params);
+		}
+		return result;
+	}
+
+	private RequestEntity getRequestEntity(IRequestEntity requestEntity) throws UnsupportedEncodingException {
+		RequestEntity result = null;
+		if (requestEntity instanceof org.eclipse.ecf.remoteservice.rest.util.StringRequestEntity) {
+			org.eclipse.ecf.remoteservice.rest.util.StringRequestEntity sre = (org.eclipse.ecf.remoteservice.rest.util.StringRequestEntity) requestEntity;
+			result = new StringRequestEntity(sre.getContent(), sre.getContentType(), sre.getCharset());
+		} else if (requestEntity instanceof org.eclipse.ecf.remoteservice.rest.util.ByteArrayRequestEntity) {
+			org.eclipse.ecf.remoteservice.rest.util.ByteArrayRequestEntity bre = (org.eclipse.ecf.remoteservice.rest.util.ByteArrayRequestEntity) requestEntity;
+			result = new ByteArrayRequestEntity(bre.getContent(), bre.getContentType());
+		} else if (requestEntity instanceof org.eclipse.ecf.remoteservice.rest.util.InputStreamRequestEntity) {
+			org.eclipse.ecf.remoteservice.rest.util.InputStreamRequestEntity isre = (org.eclipse.ecf.remoteservice.rest.util.InputStreamRequestEntity) requestEntity;
+			result = new InputStreamRequestEntity(isre.getContent(), isre.getContentLength(), isre.getContentType());
+		}
 		return result;
 	}
 

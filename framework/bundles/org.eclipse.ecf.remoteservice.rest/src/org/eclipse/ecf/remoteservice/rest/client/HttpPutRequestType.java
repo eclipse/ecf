@@ -9,11 +9,22 @@
 ******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.client;
 
-
-
 import java.util.Map;
+import org.eclipse.ecf.remoteservice.rest.util.IRequestEntity;
 
 public class HttpPutRequestType extends AbstractRestRequestType {
+
+	private IRequestEntity requestEntity = null;
+
+	public HttpPutRequestType(IRequestEntity requestEntity, Map defaultRequestHeaders) {
+		super(defaultRequestHeaders);
+		this.requestEntity = requestEntity;
+	}
+
+	public HttpPutRequestType(IRequestEntity requestEntity) {
+		super(null);
+		this.requestEntity = requestEntity;
+	}
 
 	public HttpPutRequestType(Map defaultRequestHeaders) {
 		super(defaultRequestHeaders);
@@ -21,5 +32,9 @@ public class HttpPutRequestType extends AbstractRestRequestType {
 
 	public HttpPutRequestType() {
 		// nothing to do
+	}
+
+	public IRequestEntity getRequestEntity() {
+		return requestEntity;
 	}
 }
