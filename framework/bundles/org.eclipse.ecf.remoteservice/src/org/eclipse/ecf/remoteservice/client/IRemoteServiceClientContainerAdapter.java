@@ -7,10 +7,11 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.remoteservice;
+package org.eclipse.ecf.remoteservice.client;
 
 import java.util.Dictionary;
-import org.eclipse.ecf.remoteservice.util.IRemoteCallParameterSerializer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 
 /**
  * @since 3.3
@@ -47,7 +48,7 @@ public interface IRemoteServiceClientContainerAdapter extends IRemoteServiceCont
 	 * @param properties any service properties to associate with the given registration.
 	 * @return IRemoteServiceRegistration to use to unregister the remote service.  Will not be <code>null</code>.
 	 */
-	public IRemoteServiceRegistration registerRemoteCallables(String[] serviceInterfaceNames, IRemoteCallable[][] remoteCallable, Dictionary properties);
+	public IRemoteServiceRegistration registerCallables(String[] serviceInterfaceNames, IRemoteCallable[][] remoteCallables, Dictionary properties);
 
 	/**
 	 * Register remoteCallables for remote service client.  This method allows providers to register {@link IRemoteCallable}
@@ -58,18 +59,14 @@ public interface IRemoteServiceClientContainerAdapter extends IRemoteServiceCont
 	 * @param properties any service properties to associate with the given registration.
 	 * @return IRemoteServiceRegistration to use to unregister the remote service.  Will not be <code>null</code>.
 	 */
-	public IRemoteServiceRegistration registerRemoteCallables(IRemoteCallable[] remoteCallables, Dictionary properties);
-
-	/**
-	 * Get the remote call parameter serializer for thie client container.
-	 * @return IRemoteCallParameterSerializer to use to serializing remote call parameters.  May be <code>null</code>.
-	 */
-	public IRemoteCallParameterSerializer getRemoteCallParameterSerializer();
+	public IRemoteServiceRegistration registerCallables(IRemoteCallable[] remoteCallables, Dictionary properties);
 
 	/**
 	 * Set the remote call parameter serializer.
 	 * @param serializer the remote call parameter serializer to set for this container.  May be <code>null</code>.
 	 */
-	public void setRemoteCallParameterSerializer(IRemoteCallParameterSerializer serializer);
+	public void setParameterSerializer(IRemoteCallParameterSerializer serializer);
+
+	public void setResponseDeserializer(IRemoteResponseDeserializer deserializer);
 
 }

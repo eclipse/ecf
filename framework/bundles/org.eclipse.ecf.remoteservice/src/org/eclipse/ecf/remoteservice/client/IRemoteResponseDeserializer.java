@@ -7,11 +7,17 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.remoteservice;
+package org.eclipse.ecf.remoteservice.client;
+
+import java.io.NotSerializableException;
+import java.util.Map;
+import org.eclipse.ecf.remoteservice.IRemoteCall;
 
 /**
  * @since 3.3
  */
-public interface IRemoteCallableRequestType {
-	// tag interface, meant to be implemented by various providers
+public interface IRemoteResponseDeserializer {
+
+	public Object deserializeResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException;
+
 }

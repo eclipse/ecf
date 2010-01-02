@@ -7,33 +7,33 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.remoteservice.util;
+package org.eclipse.ecf.remoteservice.client;
 
 import java.io.NotSerializableException;
-import org.eclipse.ecf.remoteservice.IRemoteCallParameter;
+import org.eclipse.ecf.remoteservice.IRemoteCall;
 
 /**
  * Default parameter serializer.
  * @since 3.3
  *
  */
-public class RemoteCallParameterStringSerializer implements IRemoteCallParameterSerializer {
+public class StringParameterSerializer implements IRemoteCallParameterSerializer {
 
 	/**
 	 * @throws NotSerializableException  
 	 */
-	public String serializeRemoteCallParameter(IRemoteCallParameter parameter, Object callValue) throws NotSerializableException {
-		if (callValue == null) {
-			Object defaultValue = parameter.getValue();
+	public String serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, Object param, IRemoteCallParameter defaultParam) throws NotSerializableException {
+		if (param == null) {
+			Object defaultValue = defaultParam.getValue();
 			if (defaultValue == null)
 				return null;
 			if (defaultValue instanceof String)
 				return (String) defaultValue;
 			return defaultValue.toString();
 		}
-		if (callValue instanceof String)
-			return (String) callValue;
-		return callValue.toString();
+		if (param instanceof String)
+			return (String) param;
+		return param.toString();
 	}
 
 }

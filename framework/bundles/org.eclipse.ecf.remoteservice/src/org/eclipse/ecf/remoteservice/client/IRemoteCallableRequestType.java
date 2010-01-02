@@ -7,16 +7,11 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.remoteservice.util;
-
-import java.io.NotSerializableException;
-import org.eclipse.ecf.remoteservice.IRemoteCallParameter;
+package org.eclipse.ecf.remoteservice.client;
 
 /**
  * @since 3.3
  */
-public interface IRemoteCallParameterSerializer {
-
-	public String serializeRemoteCallParameter(IRemoteCallParameter defaultRemoteCallParameter, Object parameterValue) throws NotSerializableException;
-
+public interface IRemoteCallableRequestType {
+	// tag interface, meant to be implemented by various providers
 }

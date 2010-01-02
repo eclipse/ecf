@@ -7,13 +7,13 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.remoteservice;
+package org.eclipse.ecf.remoteservice.client;
 
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 
 /**
- * Factory for creating {@link IRestParameter} instances.
+ * Factory for creating {@link IRemoteCallParameter} instances.
  * @since 3.3
  */
 public class RemoteCallParameterFactory {
