@@ -45,6 +45,10 @@ public class HttpPostRequestType extends AbstractEntityRequestType {
 		super(defaultRequestHeaders);
 	}
 
+	public HttpPostRequestType(int requestEntityType) {
+		this(requestEntityType, (Map) null);
+	}
+
 	public HttpPostRequestType() {
 		// nothing
 	}
