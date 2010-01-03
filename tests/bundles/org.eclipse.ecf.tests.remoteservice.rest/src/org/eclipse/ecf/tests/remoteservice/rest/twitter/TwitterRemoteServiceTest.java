@@ -74,7 +74,7 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 		HttpPostRequestType requestType3 = new HttpPostRequestType(HttpPostRequestType.INPUT_STREAM_REQUEST_ENTITY);
 		IRemoteCallable callable3 = RestCallableFactory.createCallable("postMethodInputStream","/statuses/user_timeline.json",parameters3,requestType3);
 
-		IRemoteCallParameter [] parameters4 = RemoteCallParameterFactory.createParameters("body",new byte[] { 0, 0 });
+		IRemoteCallParameter [] parameters4 = RemoteCallParameterFactory.createParameters("body",null);
 		HttpPostRequestType requestType4 = new HttpPostRequestType(HttpPostRequestType.BYTEARRAY_REQUEST_ENTITY);
 		IRemoteCallable callable4 = RestCallableFactory.createCallable("postMethodByteArray","/statuses/user_timeline.json",parameters4,requestType4);
 
