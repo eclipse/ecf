@@ -9,6 +9,7 @@
  *******************************************************************************/
 package org.eclipse.ecf.tests.remoteservice.rest.twitter;
 
+import java.io.ByteArrayInputStream;
 import java.io.NotSerializableException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
 import org.eclipse.ecf.remoteservice.rest.RestCallableFactory;
+import org.eclipse.ecf.remoteservice.rest.client.HttpPostRequestType;
 import org.eclipse.ecf.tests.remoteservice.rest.AbstractRestTestCase;
 import org.eclipse.ecf.tests.remoteservice.rest.RestConstants;
 import org.eclipse.equinox.concurrent.future.IFuture;
@@ -59,10 +61,24 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 		adapter.setResponseDeserializer(createRestResource());
 
 		// Create and register callable to register service
-		IRemoteCallParameter [] parameters = RemoteCallParameterFactory.createParameters("count",null);
+		IRemoteCallParameter [] parameters1 = RemoteCallParameterFactory.createParameters("count",null);
 		// Setup callable
-		IRemoteCallable callable = RestCallableFactory.createCallable("getUserStatuses","/statuses/user_timeline.json",parameters);
-		registration = adapter.registerCallables(new String[] { IUserTimeline.class.getName() }, new IRemoteCallable[][] { { callable } }, null);
+		IRemoteCallable callable1 = RestCallableFactory.createCallable("getUserStatuses","/statuses/user_timeline.json",parameters1);
+		
+		
+		IRemoteCallParameter [] parameters2 = RemoteCallParameterFactory.createParameters("body",null);
+		HttpPostRequestType requestType2 = new HttpPostRequestType(HttpPostRequestType.STRING_REQUEST_ENTITY);
+		IRemoteCallable callable2 = RestCallableFactory.createCallable("postMethodString","/statuses/user_timeline.json",parameters2,requestType2);
+
+		IRemoteCallParameter [] parameters3 = RemoteCallParameterFactory.createParameters("body",null);
+		HttpPostRequestType requestType3 = new HttpPostRequestType(HttpPostRequestType.INPUT_STREAM_REQUEST_ENTITY);
+		IRemoteCallable callable3 = RestCallableFactory.createCallable("postMethodInputStream","/statuses/user_timeline.json",parameters3,requestType3);
+
+		IRemoteCallParameter [] parameters4 = RemoteCallParameterFactory.createParameters("body",new byte[] { 0, 0 });
+		HttpPostRequestType requestType4 = new HttpPostRequestType(HttpPostRequestType.BYTEARRAY_REQUEST_ENTITY);
+		IRemoteCallable callable4 = RestCallableFactory.createCallable("postMethodByteArray","/statuses/user_timeline.json",parameters4,requestType4);
+
+		registration = adapter.registerCallables(new String[] { IUserTimeline.class.getName() }, new IRemoteCallable[][] { { callable1, callable2, callable3, callable4 } }, null);
 }
 
 	protected void tearDown() throws Exception {
@@ -177,5 +193,49 @@ public class TwitterRemoteServiceTest extends AbstractRestTestCase {
 			fail("Could not contact the service");
 		}
 	}
+
+	
+//	public void testSyncPostCallString() {
+//		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
+//		try {
+//			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".postMethodString",new Object[] { "stringcontent" } ));
+//			assertNotNull(result);
+//		} catch (ECFException e) {
+//			fail("Could not contact the service");
+//		}
+//	
+//	}
+//
+//	public void testSyncPostCallInputStream() {
+//		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
+//		try {
+//			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".postMethodInputStream",new Object[] { new ByteArrayInputStream(new byte[] { 0, 0 }) } ));
+//			assertNotNull(result);
+//		} catch (ECFException e) {
+//			fail("Could not contact the service");
+//		}
+//	
+//	}
+//	
+//	public void testSyncPostCallByteArray() {
+//		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
+//		try {
+//			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".postMethodByteArray",new Object[] { new byte[] { 0, 0 } }));
+//			assertNotNull(result);
+//		} catch (ECFException e) {
+//			fail("Could not contact the service");
+//		}
+//	}
+//
+//	public void testSyncPostCallParametersDontMatch() {
+//		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
+//		try {
+//			Object result = restClientService.callSync(RestCallFactory.createRestCall(IUserTimeline.class.getName() + ".postMethodByteArray",new Object[] { "stringcontent" } ));
+//			fail("Exception should have been thrown");
+//		} catch (ECFException e) {
+//			// Exception should be thrown
+//			assertTrue(true);
+//		}
+//	}
 
 }
