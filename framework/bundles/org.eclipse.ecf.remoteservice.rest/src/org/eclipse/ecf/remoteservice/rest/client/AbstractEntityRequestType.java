@@ -77,7 +77,7 @@ public abstract class AbstractEntityRequestType extends AbstractRequestType {
 		return requestEntityType > -1;
 	}
 
-	protected RequestEntity generateRequestEntity(String uri, IRemoteCall call, IRemoteCallable callable, IRemoteCallParameter paramDefault, Object paramToSerialize) throws NotSerializableException {
+	public RequestEntity generateRequestEntity(String uri, IRemoteCall call, IRemoteCallable callable, IRemoteCallParameter paramDefault, Object paramToSerialize) throws NotSerializableException {
 		if (paramToSerialize instanceof RequestEntity)
 			return (RequestEntity) paramToSerialize;
 		switch (requestEntityType) {
