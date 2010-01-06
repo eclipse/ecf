@@ -42,7 +42,7 @@ public abstract class AbstractRemoteServiceClientService implements IRemoteServi
 	public Object callSync(IRemoteCall call) throws ECFException {
 		IRemoteCallable callable = getRegistration().lookupCallable(call);
 		if (callable == null)
-			throw new ECFException("Restcallable not found"); //$NON-NLS-1$
+			throw new ECFException("Callable not found for call=" + call); //$NON-NLS-1$
 		return invokeRemoteCall(call, callable);
 	}
 
@@ -79,21 +79,27 @@ public abstract class AbstractRemoteServiceClientService implements IRemoteServi
 		return proxy;
 	}
 
-	protected Object[] mapProxyArgsToCallSyncArgs(String fqMethod, Object[] args) {
+	protected Object[] getCallParametersForProxyInvoke(String callMethod, Method proxyMethod, Object[] args) {
 		return args;
 	}
 
-	protected long mapProxyCallToTimeout(String fqMethod, Object[] args) {
+	protected long getCallTimeoutForProxyInvoke(String callMethod, Method proxyMethod, Object[] args) {
 		return IRemoteCall.DEFAULT_TIMEOUT;
+	}
+
+	protected String getCallMethodNameForProxyInvoke(Method method, Object[] args) {
+		return RemoteServiceClientRegistration.getFQMethod(method.getDeclaringClass().getName(), method.getName());
 	}
 
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
 		// methods declared by Object
+		RemoteServiceClientRegistration reg = getRegistration();
+		Assert.isNotNull(reg);
 		try {
 			if (method.getName().equals("toString")) { //$NON-NLS-1$
-				final String[] clazzes = registration.getClazzes();
+				final String[] clazzes = reg.getClazzes();
 				String proxyClass = (clazzes.length == 1) ? clazzes[0] : Arrays.asList(clazzes).toString();
-				return proxyClass + ".proxy@" + registration.getID(); //$NON-NLS-1$
+				return proxyClass + ".proxy@" + reg.getID(); //$NON-NLS-1$
 			} else if (method.getName().equals("hashCode")) { //$NON-NLS-1$
 				return new Integer(hashCode());
 			} else if (method.getName().equals("equals")) { //$NON-NLS-1$
@@ -109,28 +115,38 @@ public abstract class AbstractRemoteServiceClientService implements IRemoteServi
 			} else if (method.getName().equals("getRemoteService")) { //$NON-NLS-1$
 				return this;
 			} else if (method.getName().equals("getRemoteServiceReference")) { //$NON-NLS-1$
-				return registration.getReference();
+				return reg.getReference();
 			}
-			final String fqMethod = RemoteServiceClientRegistration.getFQMethod(method.getDeclaringClass().getName(), method.getName());
-			return callSync(new IRemoteCall() {
+			// So the method is a user-defined method for the proxy
+			// 
+			final String fqCallMethod = getCallMethodNameForProxyInvoke(method, args);
+			final Object[] callParameters = getCallParametersForProxyInvoke(fqCallMethod, method, args);
+			final long callTimeout = getCallTimeoutForProxyInvoke(fqCallMethod, method, args);
+			final IRemoteCall remoteCall = new IRemoteCall() {
 
 				public String getMethod() {
-					return fqMethod;
+					return fqCallMethod;
 				}
 
 				public Object[] getParameters() {
-					return mapProxyArgsToCallSyncArgs(fqMethod, args);
+					return callParameters;
 				}
 
 				public long getTimeout() {
-					return mapProxyCallToTimeout(fqMethod, args);
+					return callTimeout;
 				}
-			});
+			};
+			// Now lookup callable
+			IRemoteCallable callable = reg.lookupCallable(remoteCall);
+			// If not found...we're finished
+			if (callable == null)
+				throw new ECFException("Callable not found for call=" + remoteCall); //$NON-NLS-1$
+			return invokeRemoteCall(remoteCall, callable);
 		} catch (Throwable t) {
 			if (t instanceof ServiceException)
 				throw (ServiceException) t;
 			// else rethrow as service exception
-			throw new ServiceException("Service exception on remote service proxy rsid=" + registration.getID(), ServiceException.REMOTE, t); //$NON-NLS-1$
+			throw new ServiceException("Service exception on remote service proxy rsid=" + reg.getID(), ServiceException.REMOTE, t); //$NON-NLS-1$
 		}
 	}
 
