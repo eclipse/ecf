@@ -79,6 +79,14 @@ public abstract class AbstractRemoteServiceClientService implements IRemoteServi
 		return proxy;
 	}
 
+	protected Object[] mapProxyArgsToCallSyncArgs(String fqMethod, Object[] args) {
+		return args;
+	}
+
+	protected long mapProxyCallToTimeout(String fqMethod, Object[] args) {
+		return IRemoteCall.DEFAULT_TIMEOUT;
+	}
+
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
 		// methods declared by Object
 		try {
@@ -103,18 +111,19 @@ public abstract class AbstractRemoteServiceClientService implements IRemoteServi
 			} else if (method.getName().equals("getRemoteServiceReference")) { //$NON-NLS-1$
 				return registration.getReference();
 			}
+			final String fqMethod = RemoteServiceClientRegistration.getFQMethod(method.getDeclaringClass().getName(), method.getName());
 			return callSync(new IRemoteCall() {
 
 				public String getMethod() {
-					return RemoteServiceClientRegistration.getFQMethod(method.getDeclaringClass().getName(), method.getName());
+					return fqMethod;
 				}
 
 				public Object[] getParameters() {
-					return args;
+					return mapProxyArgsToCallSyncArgs(fqMethod, args);
 				}
 
 				public long getTimeout() {
-					return DEFAULT_TIMEOUT;
+					return mapProxyCallToTimeout(fqMethod, args);
 				}
 			});
 		} catch (Throwable t) {
