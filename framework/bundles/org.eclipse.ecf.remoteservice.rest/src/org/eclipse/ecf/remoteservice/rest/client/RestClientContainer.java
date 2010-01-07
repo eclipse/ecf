@@ -20,7 +20,7 @@ import org.eclipse.ecf.remoteservice.rest.identity.RestNamespace;
 /**
  * A container for REST services. 
  */
-public class RestClientContainer extends AbstractRemoteServiceClientContainer implements IRemoteServiceClientContainerAdapter {
+public class RestClientContainer extends AbstractClientContainer implements IRemoteServiceClientContainerAdapter {
 
 	public RestClientContainer(RestID id) {
 		super(id);

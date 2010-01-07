@@ -30,7 +30,7 @@ import org.eclipse.osgi.util.NLS;
  * RESTful web service can be accessed via the methods provided by this class.
  * Mostly the methods are inherited from {@link IRemoteService}.
  */
-public class RestClientService extends AbstractRemoteServiceClientService {
+public class RestClientService extends AbstractClientService {
 
 	protected HttpClient httpClient;
 
