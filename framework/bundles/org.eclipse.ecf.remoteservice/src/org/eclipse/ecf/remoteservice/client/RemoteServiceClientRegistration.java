@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.remoteservice.*;
 
 /**
- * This class acts as the registration for {@link AbstractRemoteServiceClientContainer}s.
+ * This class acts as the registration for {@link AbstractClientContainer}s.
  * @since 3.3
  */
 public class RemoteServiceClientRegistration implements IRemoteServiceRegistration {

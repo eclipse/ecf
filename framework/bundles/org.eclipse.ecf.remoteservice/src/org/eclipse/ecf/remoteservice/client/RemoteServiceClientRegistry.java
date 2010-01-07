@@ -29,10 +29,10 @@ public class RemoteServiceClientRegistry implements Serializable {
 	private static long nextServiceId = 0L;
 	private ID containerId;
 	private List registrations;
-	private AbstractRemoteServiceClientContainer container;
+	private AbstractClientContainer container;
 	private IConnectContext connectContext;
 
-	public RemoteServiceClientRegistry(AbstractRemoteServiceClientContainer container) {
+	public RemoteServiceClientRegistry(AbstractClientContainer container) {
 		Assert.isNotNull(container);
 		this.containerId = container.getID();
 		this.container = container;

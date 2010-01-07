@@ -30,7 +30,7 @@ import org.osgi.framework.InvalidSyntaxException;
 /**
  * @since 3.3
  */
-public abstract class AbstractRemoteServiceClientContainer extends AbstractContainer implements IRemoteServiceClientContainerAdapter {
+public abstract class AbstractClientContainer extends AbstractContainer implements IRemoteServiceClientContainerAdapter {
 
 	protected ID containerID;
 	// The ID we've been assigned to connect to
@@ -50,7 +50,7 @@ public abstract class AbstractRemoteServiceClientContainer extends AbstractConta
 
 	private List referencesInUse = new ArrayList();
 
-	public AbstractRemoteServiceClientContainer(ID containerID) {
+	public AbstractClientContainer(ID containerID) {
 		this.containerID = containerID;
 		Assert.isNotNull(this.containerID);
 		this.registry = new RemoteServiceClientRegistry(this);

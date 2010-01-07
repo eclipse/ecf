@@ -16,14 +16,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/org/eclipse/ecf/remoteservice/client/AbstractRemoteServiceClientService.java" type="org.eclipse.ecf.remoteservice.client.AbstractRemoteServiceClientService$AsyncResult">
-        <filter id="576725006">
-            <message_arguments>
-                <message_argument value="IProgressRunnable"/>
-                <message_argument value="AsyncResult"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/org/eclipse/ecf/remoteservice/util/RemoteCallMethod.java" type="org.eclipse.ecf.remoteservice.util.RemoteCallMethod">
         <filter id="338755678">
             <message_arguments>

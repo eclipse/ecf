@@ -26,13 +26,13 @@ import org.osgi.framework.ServiceException;
 /**
  * @since 3.3
  */
-public abstract class AbstractRemoteServiceClientService implements IRemoteService, InvocationHandler {
+public abstract class AbstractClientService implements IRemoteService, InvocationHandler {
 
 	private long nextID = 0;
 	protected RemoteServiceClientRegistration registration;
-	protected AbstractRemoteServiceClientContainer container;
+	protected AbstractClientContainer container;
 
-	public AbstractRemoteServiceClientService(AbstractRemoteServiceClientContainer container, RemoteServiceClientRegistration registration) {
+	public AbstractClientService(AbstractClientContainer container, RemoteServiceClientRegistration registration) {
 		this.container = container;
 		Assert.isNotNull(container);
 		this.registration = registration;
@@ -254,7 +254,7 @@ public abstract class AbstractRemoteServiceClientService implements IRemoteServi
 		}
 	}
 
-	protected AbstractRemoteServiceClientContainer getClientContainer() {
+	protected AbstractClientContainer getClientContainer() {
 		return container;
 	}
 
