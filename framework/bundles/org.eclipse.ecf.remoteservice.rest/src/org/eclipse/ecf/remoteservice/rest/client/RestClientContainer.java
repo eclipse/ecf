@@ -37,7 +37,7 @@ public class RestClientContainer extends AbstractClientContainer implements IRem
 		return IDFactory.getDefault().getNamespaceByName(RestNamespace.NAME);
 	}
 
-	public String prepareURIForRequest(IRemoteCall call, IRemoteCallable callable) {
+	public String prepareEndpoint(IRemoteCall call, IRemoteCallable callable) {
 		String resourcePath = callable.getResourcePath();
 		if (resourcePath == null || "".equals(resourcePath)) //$NON-NLS-1$
 			return null;

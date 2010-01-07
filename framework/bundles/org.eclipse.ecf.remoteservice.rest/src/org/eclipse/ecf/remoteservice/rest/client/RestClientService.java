@@ -51,7 +51,7 @@ public class RestClientService extends AbstractClientService {
 	 *         error occurs.
 	 */
 	protected Object invokeRemoteCall(final IRemoteCall call, final IRemoteCallable callable) throws ECFException {
-		String uri = prepareURIForRequest(call, callable);
+		String uri = prepareEndpoint(call, callable);
 		HttpMethod httpMethod = createAndPrepareHttpMethod(uri, call, callable);
 		// execute method
 		String responseBody = null;
@@ -220,7 +220,7 @@ public class RestClientService extends AbstractClientService {
 	}
 
 	protected NameValuePair[] toNameValuePairs(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
-		IRemoteCallParameter[] restParameters = prepareParametersForRequest(uri, call, callable);
+		IRemoteCallParameter[] restParameters = prepareParameters(uri, call, callable);
 		List nameValueList = new ArrayList();
 		if (restParameters != null) {
 			for (int i = 0; i < restParameters.length; i++) {
