@@ -425,7 +425,7 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		}
 	}
 
-	protected IRemoteCallParameter[] prepareParametersForRequest(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+	protected IRemoteCallParameter[] prepareParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
 		List results = new ArrayList();
 		Object[] callParameters = call.getParameters();
 		IRemoteCallParameter[] defaultCallableParameters = callable.getDefaultParameters();
@@ -463,6 +463,6 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 
 	protected abstract IRemoteService createRemoteService(RemoteServiceClientRegistration registration);
 
-	protected abstract String prepareURIForRequest(IRemoteCall call, IRemoteCallable callable);
+	protected abstract String prepareEndpoint(IRemoteCall call, IRemoteCallable callable);
 
 }

@@ -254,6 +254,10 @@ public abstract class AbstractClientService implements IRemoteService, Invocatio
 		}
 	}
 
+	protected void handleInvokeException(String message, Throwable e) throws ECFException {
+		throw new ECFException(message, e);
+	}
+
 	protected AbstractClientContainer getClientContainer() {
 		return container;
 	}
@@ -262,12 +266,12 @@ public abstract class AbstractClientService implements IRemoteService, Invocatio
 		return registration;
 	}
 
-	protected String prepareURIForRequest(IRemoteCall call, IRemoteCallable callable) {
-		return getClientContainer().prepareURIForRequest(call, callable);
+	protected String prepareEndpoint(IRemoteCall call, IRemoteCallable callable) {
+		return getClientContainer().prepareEndpoint(call, callable);
 	}
 
-	protected IRemoteCallParameter[] prepareParametersForRequest(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
-		return getClientContainer().prepareParametersForRequest(uri, call, callable);
+	protected IRemoteCallParameter[] prepareParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+		return getClientContainer().prepareParameters(uri, call, callable);
 	}
 
 	protected Object processResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException {
