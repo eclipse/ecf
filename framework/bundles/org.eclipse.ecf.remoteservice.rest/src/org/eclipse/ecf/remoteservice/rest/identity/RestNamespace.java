@@ -31,12 +31,15 @@ public class RestNamespace extends Namespace {
 	 */
 	public static final String SCHEME = "rest"; //$NON-NLS-1$
 
+	public static Namespace INSTANCE;
+
 	public RestNamespace() {
-		// 
+		INSTANCE = this;
 	}
 
 	public RestNamespace(String name, String desc) {
 		super(name, desc);
+		INSTANCE = this;
 	}
 
 	private String getInitFromExternalForm(Object[] args) {
