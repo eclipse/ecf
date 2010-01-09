@@ -9,7 +9,6 @@
 ******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest;
 
-import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rest.client.AbstractRequestType;
 import org.eclipse.ecf.remoteservice.rest.client.HttpGetRequestType;
@@ -41,7 +40,7 @@ public class RestCallableFactory {
 	}
 
 	public static IRemoteCallable createCallable(String method, String resourcePath, AbstractRequestType requestType) {
-		return createCallable(method, resourcePath, null, requestType, IRemoteCall.DEFAULT_TIMEOUT);
+		return createCallable(method, resourcePath, null, requestType, IRestCall.DEFAULT_TIMEOUT);
 	}
 
 }
