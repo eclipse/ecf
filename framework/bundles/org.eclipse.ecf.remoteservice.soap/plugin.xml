@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.remoteservice.soap.identity.SoapNamespace"
+            description="Soap Namespace"
+            name="ecf.soap.namespace">
+      </namespace>
+   </extension>
+
+</plugin>
