@@ -51,7 +51,7 @@ public class RestClientService extends AbstractClientService {
 	 *         error occurs.
 	 */
 	protected Object invokeRemoteCall(final IRemoteCall call, final IRemoteCallable callable) throws ECFException {
-		String uri = prepareEndpoint(call, callable);
+		String uri = prepareEndpointAddress(call, callable);
 		HttpMethod httpMethod = createAndPrepareHttpMethod(uri, call, callable);
 		// execute method
 		String responseBody = null;
