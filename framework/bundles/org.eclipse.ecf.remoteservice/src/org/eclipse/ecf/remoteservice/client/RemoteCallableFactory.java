@@ -12,6 +12,8 @@ package org.eclipse.ecf.remoteservice.client;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 
 /**
+ * Factory for creating {@link IRemoteCallable} instances.
+ * 
  * @since 3.3
  */
 public class RemoteCallableFactory {

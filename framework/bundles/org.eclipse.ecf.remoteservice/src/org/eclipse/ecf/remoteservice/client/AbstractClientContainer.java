@@ -28,6 +28,8 @@ import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
+ * Remote service client abstract superclass.
+ * 
  * @since 3.3
  */
 public abstract class AbstractClientContainer extends AbstractContainer implements IRemoteServiceClientContainerAdapter {
@@ -461,8 +463,22 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		return (deserializer == null) ? null : deserializer.deserializeResponse(uri, call, callable, responseHeaders, responseBody);
 	}
 
+	/**
+	 * Create an implementer of {@link IRemoteService} for the given registration.
+	 * 
+	 * @param registration registration from which to create the associated IRemoteService.  Will not be <code>null</code>.
+	 * @return IRemoteService the remote service associated with this client container.  Should not return <code>null</code>.
+	 */
 	protected abstract IRemoteService createRemoteService(RemoteServiceClientRegistration registration);
 
+	/**
+	 * Prepare an endpoint for the given call and callable.
+	 * 
+	 * @param call to create an endpoint for.  Will not be <code>null</code>.
+	 * @param callable to create an endpoing for.  Will not be <code>null</code>.
+	 * @return String that represents the endpoing for the given call and callable.  May only return <code>null</code> if the
+	 * given call should not be completed (i.e. there is no endpoint associated with the given call).
+	 */
 	protected abstract String prepareEndpoint(IRemoteCall call, IRemoteCallable callable);
 
 }

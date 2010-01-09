@@ -20,7 +20,8 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.remoteservice.*;
 
 /**
- * A registry for client remote services.
+ * A remote service registry for client remote services.
+ * 
  * @since 3.3
  */
 public class RemoteServiceClientRegistry implements Serializable {

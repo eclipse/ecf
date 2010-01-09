@@ -10,7 +10,7 @@
 package org.eclipse.ecf.remoteservice.client;
 
 /**
- * A representation of a remote call parameter, with a name and value.
+ * A remote call parameter, with a String name and Object value.
  * 
  * @since 3.3
  */

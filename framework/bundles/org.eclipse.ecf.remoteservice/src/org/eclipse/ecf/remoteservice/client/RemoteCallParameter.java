@@ -12,6 +12,8 @@ package org.eclipse.ecf.remoteservice.client;
 import org.eclipse.core.runtime.Assert;
 
 /**
+ * Implementation of {@link IRemoteCallParameter}.
+ * 
  * @since 3.3
  */
 public class RemoteCallParameter implements IRemoteCallParameter {

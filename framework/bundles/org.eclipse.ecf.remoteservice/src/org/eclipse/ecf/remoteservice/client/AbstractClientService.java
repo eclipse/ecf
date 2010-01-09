@@ -24,6 +24,8 @@ import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.ServiceException;
 
 /**
+ * Remote service client service.  Implements {@link IRemoteService}.
+ * 
  * @since 3.3
  */
 public abstract class AbstractClientService implements IRemoteService, InvocationHandler {
@@ -278,6 +280,15 @@ public abstract class AbstractClientService implements IRemoteService, Invocatio
 		return getClientContainer().processResponse(uri, call, callable, responseHeaders, responseBody);
 	}
 
+	/**
+	 * Invoke remote call.  The implementation of this method should actually 
+	 * make the remote call for the given call and associated callable.
+	 * 
+	 * @param call the call for the remote call.  Will not be <code>null</code>.
+	 * @param callable the callable associated with the remote call.  Will not be <code>null</code>.
+	 * @return Object the result of the remote call.  May be <code>null</code>.
+	 * @throws ECFException thrown if the call fails.
+	 */
 	protected abstract Object invokeRemoteCall(final IRemoteCall call, final IRemoteCallable callable) throws ECFException;
 
 }

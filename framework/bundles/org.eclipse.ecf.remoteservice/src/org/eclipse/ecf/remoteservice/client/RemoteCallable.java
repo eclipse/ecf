@@ -14,6 +14,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 
 /**
+ * Implementation of {@link IRemoteCallable}.
+ * 
  * @since 3.3
  */
 public class RemoteCallable implements IRemoteCallable {

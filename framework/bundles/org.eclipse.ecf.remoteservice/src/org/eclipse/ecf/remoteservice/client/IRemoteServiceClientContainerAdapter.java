@@ -14,6 +14,12 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 
 /**
+ * Remote service client container adapter.  This container adapter provides remote 
+ * service clients the ability to register callables.  At runtime when actual remote 
+ * calls are attempted, the associated callable is looked up in the {@link RemoteServiceClientRegistry}.  
+ * If present, the remote call can be completed, if not present in the registry, the 
+ * call is not completed.
+
  * @since 3.3
  */
 public interface IRemoteServiceClientContainerAdapter extends IRemoteServiceContainerAdapter {

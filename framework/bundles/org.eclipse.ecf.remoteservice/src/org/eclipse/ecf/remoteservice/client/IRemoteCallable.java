@@ -10,6 +10,13 @@
 package org.eclipse.ecf.remoteservice.client;
 
 /**
+ * Callables represent a remotely callable method.  Clients can register
+ * callables (via {@link IRemoteServiceClientContainerAdapter#registerCallables(String[], IRemoteCallable[][], java.util.Dictionary)} or
+ * {@link IRemoteServiceClientContainerAdapter#registerCallables(IRemoteCallable[], java.util.Dictionary)} and then at runtime
+ * when actual remote calls are attempted, the associated callable is looked up in the 
+ * {@link RemoteServiceClientRegistry}.  If present, the remote call can be completed, if not present in the
+ * registry, the call is not completed.
+ * 
  * @since 3.3
  */
 public interface IRemoteCallable {

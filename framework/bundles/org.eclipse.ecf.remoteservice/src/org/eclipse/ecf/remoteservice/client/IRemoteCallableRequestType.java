@@ -10,6 +10,8 @@
 package org.eclipse.ecf.remoteservice.client;
 
 /**
+ * The callable request type (e.g. http put, http get, http post, etc).
+ * 
  * @since 3.3
  */
 public interface IRemoteCallableRequestType {
