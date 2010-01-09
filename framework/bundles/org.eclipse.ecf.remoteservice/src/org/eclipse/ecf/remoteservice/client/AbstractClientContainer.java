@@ -472,13 +472,13 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	protected abstract IRemoteService createRemoteService(RemoteServiceClientRegistration registration);
 
 	/**
-	 * Prepare an endpoint for the given call and callable.
+	 * Prepare an endpoint address for the given call and callable.
 	 * 
 	 * @param call to create an endpoint for.  Will not be <code>null</code>.
 	 * @param callable to create an endpoing for.  Will not be <code>null</code>.
 	 * @return String that represents the endpoing for the given call and callable.  May only return <code>null</code> if the
 	 * given call should not be completed (i.e. there is no endpoint associated with the given call).
 	 */
-	protected abstract String prepareEndpoint(IRemoteCall call, IRemoteCallable callable);
+	protected abstract String prepareEndpointAddress(IRemoteCall call, IRemoteCallable callable);
 
 }

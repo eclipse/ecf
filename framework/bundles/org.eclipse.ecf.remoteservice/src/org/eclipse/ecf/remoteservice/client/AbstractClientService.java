@@ -268,8 +268,8 @@ public abstract class AbstractClientService implements IRemoteService, Invocatio
 		return registration;
 	}
 
-	protected String prepareEndpoint(IRemoteCall call, IRemoteCallable callable) {
-		return getClientContainer().prepareEndpoint(call, callable);
+	protected String prepareEndpointAddress(IRemoteCall call, IRemoteCallable callable) {
+		return getClientContainer().prepareEndpointAddress(call, callable);
 	}
 
 	protected IRemoteCallParameter[] prepareParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
