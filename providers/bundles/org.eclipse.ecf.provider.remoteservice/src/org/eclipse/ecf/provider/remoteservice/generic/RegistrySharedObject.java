@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.provider.remoteservice.generic;
@@ -209,7 +209,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 		}
 		ID localContainerID = getLocalContainerID();
-		// Only look in local remote service registry if idFilter is null OR the idFilter 
+		// Only look in local remote service registry if idFilter is null OR the idFilter
 		// contains the local container ID
 		if (idFilter == null || Arrays.asList(idFilter).contains(localContainerID)) {
 			synchronized (localRegistry) {
@@ -634,7 +634,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected void handleRegistryUpdateRequest(ID remoteContainerID) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), REGISTRY_UPDATE_REQUEST);
-		if (remoteContainerID == null || getLocalContainerID().equals(remoteContainerID)) {
+		ID localContainerID = getLocalContainerID();
+		if (remoteContainerID == null || localContainerID == null || localContainerID.equals(remoteContainerID)) {
 			return;
 		}
 		sendRegistryUpdate(remoteContainerID);
@@ -733,7 +734,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected void handleAddRegistration(ID remoteContainerID, Integer requestId, final RemoteServiceRegistrationImpl registration) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), ADD_REGISTRATION, new Object[] {remoteContainerID, registration});
-		if (remoteContainerID == null || getLocalContainerID().equals(remoteContainerID)) {
+		ID localContainerID = getLocalContainerID();
+		if (remoteContainerID == null || localContainerID == null || localContainerID.equals(remoteContainerID)) {
 			return;
 		}
 		boolean added = false;
@@ -1085,7 +1087,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	protected RemoteServiceRegistrationImpl getLocalRegistrationForRequest(Request request) {
