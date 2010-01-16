@@ -32,7 +32,8 @@ public class RestClientContainerInstantiator extends BaseContainerInstantiator i
 			RestID restID = null;
 			if (parameters != null && parameters[0] instanceof RestID)
 				restID = (RestID) parameters[0];
-			restID = (RestID) IDFactory.getDefault().createID(RestNamespace.NAME, parameters);
+			else
+				restID = (RestID) IDFactory.getDefault().createID(RestNamespace.NAME, parameters);
 			return new RestClientContainer(restID);
 		} catch (Exception e) {
 			throw new ContainerCreateException("Could not create RestClientContainer", e); //$NON-NLS-1$
