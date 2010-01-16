@@ -170,7 +170,7 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		} else if (service instanceof IRemoteCallable[][]) {
 			return registerCallables(clazzes, (IRemoteCallable[][]) service, properties);
 		}
-		throw new RuntimeException("registerRemoteService cannot be used with rest client container"); //$NON-NLS-1$
+		throw new RuntimeException("registerRemoteService cannot be used with client container"); //$NON-NLS-1$
 	}
 
 	public void removeRemoteServiceListener(IRemoteServiceListener listener) {
@@ -202,9 +202,9 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	// Implementation of IRestClientContainerAdapter
-	public IRemoteServiceRegistration registerCallables(IRemoteCallable[] restCallables, Dictionary properties) {
-		Assert.isNotNull(restCallables);
-		final RemoteServiceClientRegistration registration = createRestServiceRegistration(restCallables, properties);
+	public IRemoteServiceRegistration registerCallables(IRemoteCallable[] callables, Dictionary properties) {
+		Assert.isNotNull(callables);
+		final RemoteServiceClientRegistration registration = createRestServiceRegistration(callables, properties);
 		// notify
 		fireRemoteServiceEvent(new IRemoteServiceRegisteredEvent() {
 
@@ -228,8 +228,8 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		return registration;
 	}
 
-	public IRemoteServiceRegistration registerCallables(String[] clazzes, IRemoteCallable[][] restCallables, Dictionary properties) {
-		final RemoteServiceClientRegistration registration = createRestServiceRegistration(clazzes, restCallables, properties);
+	public IRemoteServiceRegistration registerCallables(String[] clazzes, IRemoteCallable[][] callables, Dictionary properties) {
+		final RemoteServiceClientRegistration registration = createRestServiceRegistration(clazzes, callables, properties);
 		// notify
 		fireRemoteServiceEvent(new IRemoteServiceRegisteredEvent() {
 
@@ -253,16 +253,16 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		return registration;
 	}
 
-	public IRemoteServiceRegistration registerRemoteCallables(Class[] clazzes, List callables, Dictionary properties) {
+	public IRemoteServiceRegistration registerRemoteCallables(Class[] clazzes, List callablesList, Dictionary properties) {
 		Assert.isNotNull(clazzes);
-		IRemoteCallable[][] restCallables = createCallablesFromClasses(clazzes, callables);
-		Assert.isNotNull(restCallables);
-		Assert.isTrue(restCallables.length > 0);
+		IRemoteCallable[][] callables = createCallablesFromClasses(clazzes, callablesList);
+		Assert.isNotNull(callables);
+		Assert.isTrue(callables.length > 0);
 		final String[] classNames = new String[clazzes.length];
 		for (int i = 0; i < clazzes.length; i++) {
 			classNames[i] = clazzes[i].getName();
 		}
-		return registerCallables(classNames, restCallables, properties);
+		return registerCallables(classNames, callables, properties);
 	}
 
 	public IRemoteServiceRegistration registerRemoteCallables(String[] clazzes, List callables, Dictionary properties) {
@@ -435,7 +435,7 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 			return defaultCallableParameters;
 		for (int i = 0; i < callParameters.length; i++) {
 			Object p = callParameters[i];
-			// If the parameter is already a rest parameter just add
+			// If the parameter is already a remote call parameter just add
 			if (p instanceof IRemoteCallParameter) {
 				results.add(p);
 				continue;
