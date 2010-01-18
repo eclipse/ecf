@@ -35,7 +35,7 @@ import org.eclipse.equinox.concurrent.future.IFuture;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
- * 
+ *
  */
 public abstract class AbstractRemoteServiceTest extends
 		ContainerAbstractTestCase {
@@ -43,10 +43,10 @@ public abstract class AbstractRemoteServiceTest extends
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 
 	protected IRemoteServiceID[] ids;
-	
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.eclipse.ecf.tests.ContainerAbstractTestCase#getClientContainerName()
 	 */
@@ -114,7 +114,7 @@ public abstract class AbstractRemoteServiceTest extends
 	}
 
 	protected IRemoteService getRemoteService(
-			IRemoteServiceContainerAdapter adapter, ID target, String clazz, String filter) {
+			IRemoteServiceContainerAdapter adapter, ID target, String clazz, String filter, int sleepTime) {
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
 				adapter, target, clazz, filter);
 		if (refs == null || refs.length == 0)
@@ -147,7 +147,7 @@ public abstract class AbstractRemoteServiceTest extends
 		registerService(server, serviceName, createService(),
 				serviceProperties, sleepTime);
 		return getRemoteService(client, target, serviceName,
-				getFilterFromServiceProperties(serviceProperties));
+				getFilterFromServiceProperties(serviceProperties), sleepTime);
 	}
 
 	protected IRemoteCall createRemoteCall(final String method,
@@ -162,7 +162,7 @@ public abstract class AbstractRemoteServiceTest extends
 			}
 
 			public long getTimeout() {
-				return 3000;
+				return 5000;
 			}
 		};
 	}
@@ -193,12 +193,12 @@ public abstract class AbstractRemoteServiceTest extends
 			assertNotNull(namespace);
 		}
 	}
-	
+
 	public void testRegisterService() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// adapter [0] is the service 'server'
 		final IRemoteServiceRegistration reg = registerService(adapters[0],
-				IConcatService.class.getName(), createService(), null, 1500);
+				IConcatService.class.getName(), createService(), customizeProperties(null), 0);
 		assertNotNull(reg);
 		IRemoteServiceID remoteServiceID = reg.getID();
 		assertNotNull(remoteServiceID);
@@ -209,18 +209,17 @@ public abstract class AbstractRemoteServiceTest extends
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// adapter [0] is the service 'server'
 		final IRemoteServiceRegistration reg = registerService(adapters[0],
-				IConcatService.class.getName(), createService(), null, 1500);
+				IConcatService.class.getName(), createService(), customizeProperties(null), 0);
 		assertNotNull(reg);
 		assertNotNull(reg.getContainerID());
 
 		reg.unregister();
-
 	}
 
 	public void testGetServiceReferences() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		registerService(adapters[0], IConcatService.class.getName(),
-				createService(), null, 0);
+				createService(), customizeProperties(null), 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
 				adapters[1], getClient(0).getConnectedID(), IConcatService.class.getName(), null);
@@ -235,11 +234,11 @@ public abstract class AbstractRemoteServiceTest extends
 		props.put("foo", "bar");
 		props.put("foo1", "bar");
 		registerService(adapters[0], IConcatService.class.getName(),
-				createService(), props, 0);
+				createService(), customizeProperties(props), 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
 				adapters[1], getClient(0).getConnectedID(), IConcatService.class.getName(),
-				getFilterFromServiceProperties(props));
+				getFilterFromServiceProperties(customizeProperties(props)));
 
 		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
@@ -251,7 +250,7 @@ public abstract class AbstractRemoteServiceTest extends
 		props.put("foo", "bar");
 		props.put("foo1", "bar");
 		registerService(adapters[0], IConcatService.class.getName(),
-				createService(), props, 0);
+				createService(), customizeProperties(props), 0);
 
 		// Create dictionary that is *not* the same as props, so the filter
 		// should miss
@@ -280,8 +279,7 @@ public abstract class AbstractRemoteServiceTest extends
 	protected IRemoteService registerAndGetRemoteService() {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		return registerAndGetRemoteService(adapters[0], adapters[1],
-				getClient(0).getConnectedID(), IConcatService.class.getName(), null, 0);
-
+				getClient(0).getConnectedID(), IConcatService.class.getName(), customizeProperties(null), 0);
 	}
 
 	protected IRemoteCallListener createRemoteCallListener() {
@@ -344,7 +342,6 @@ public abstract class AbstractRemoteServiceTest extends
 		} catch (final ECFException e) {
 			// Exception should occur
 		}
-
 	}
 
 	public void testCallAsynch() throws Exception {
@@ -410,10 +407,12 @@ public abstract class AbstractRemoteServiceTest extends
 				}
 			}
 		});
+
 		// Now register service on server (adapters[0]).  This should result in notification on client (adapters[1])
 		// in above handleServiceEvent
-		adapters[0].registerRemoteService(new String[] { IConcatService.class
-				.getName() }, createService(), null);
+		adapters[0].registerRemoteService(new String[] { IConcatService.class.getName() }, createService(),
+				customizeProperties(null));
+
 		// wait until block above called asynchronously
 		int count = 0;
 		synchronized (lock) {
@@ -425,6 +424,9 @@ public abstract class AbstractRemoteServiceTest extends
 				}
 			}
 		}
+
+		assertTrue(done);
+
 		if (remoteService == null) return;
 		// We've got the remote service, so we're good to go
 		assertTrue(remoteService != null);
@@ -433,5 +435,9 @@ public abstract class AbstractRemoteServiceTest extends
 				.callAsync(createRemoteConcat("ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynch");
 		assertNotNull(result);
+	}
+
+	protected Dictionary customizeProperties(Dictionary props) {
+		return props;
 	}
 }
