@@ -46,7 +46,7 @@ public class LongID extends BaseID {
 		}
 
 		public String getScheme() {
-			return LongID.class.toString();
+			return LongID.class.getName();
 		}
 
 		/*
