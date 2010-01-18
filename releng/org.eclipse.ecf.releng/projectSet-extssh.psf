@@ -97,6 +97,7 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.ui,org.eclipse.ecf.provider.ui"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.xmpp,org.eclipse.ecf.provider.xmpp"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/providers/bundles/org.eclipse.ecf.provider.xmpp.ui,org.eclipse.ecf.provider.xmpp.ui"/>
+	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.console,org.eclipse.ecf.console"/>
 	
 	<!-- protocol support -->
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/protocols/bundles/ch.ethz.iks.r_osgi.remote,ch.ethz.iks.r_osgi.remote"/>

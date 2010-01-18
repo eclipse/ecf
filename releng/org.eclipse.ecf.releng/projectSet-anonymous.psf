@@ -48,6 +48,7 @@
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.ui.capabilities,org.eclipse.ecf.ui.capabilities"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.remoteservice.rest,org.eclipse.ecf.remoteservice.rest"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.remoteservice.soap,org.eclipse.ecf.remoteservice.soap"/>
+	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.console,org.eclipse.ecf.console"/>
 
 	<!-- Compendium -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/compendium/bundles/org.eclipse.ecf.osgi.services.discovery,org.eclipse.ecf.osgi.services.discovery"/>
