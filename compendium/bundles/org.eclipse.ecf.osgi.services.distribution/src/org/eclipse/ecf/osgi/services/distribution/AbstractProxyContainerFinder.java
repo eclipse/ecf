@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
+import org.eclipse.ecf.core.ContainerCreateException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -111,6 +113,49 @@ public abstract class AbstractProxyContainerFinder extends
 	protected IConnectContext getConnectContext(IContainer container,
 			ID connectTargetID) {
 		return null;
+	}
+
+	protected Collection createAndConfigureProxyContainers(String[] remoteSupportedConfigs) {
+		List result = new ArrayList();
+		if (remoteSupportedConfigs == null
+				|| remoteSupportedConfigs.length == 0)
+			return result;
+		// Select config type from the remoteSupportedConfigs array. By default,
+		// this is the first element of the array
+		String selectedConfigType = selectConfigType(remoteSupportedConfigs);
+		// If none selected we can't continue
+		if (selectedConfigType == null)
+			return result;
+		// Now we create a new container instance given the selectedConfigType
+		IRemoteServiceContainer container = createContainer(selectedConfigType);
+		// If not successfully created, we can't continue
+		if (container == null)
+			return result;
+		// Else we've created one and we'll report this to tracing
+		trace("createAndConfigureProxyContainers",
+				"created new proxy container with config type="
+						+ selectedConfigType + " and id="
+						+ container.getContainer().getID());
+		result.add(container);
+		return result;
+	}
+
+	protected IRemoteServiceContainer createContainer(String containerTypeDescriptionName) {
+		try {
+			IContainer container = getContainerFactory().createContainer(
+					containerTypeDescriptionName);
+			return new RemoteServiceContainer(container);
+		} catch (ContainerCreateException e) {
+			logException(
+					"Cannot create container with container type description name="
+							+ containerTypeDescriptionName, e);
+			return null;
+		}
+	}
+
+	protected String selectConfigType(String[] remoteSupportedConfigs) {
+		// By default, we'll select the first config to use...
+		return remoteSupportedConfigs[0];
 	}
 
 }
