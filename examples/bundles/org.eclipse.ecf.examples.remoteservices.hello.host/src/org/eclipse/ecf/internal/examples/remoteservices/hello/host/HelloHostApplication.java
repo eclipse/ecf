@@ -14,7 +14,9 @@ import java.util.Properties;
 
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.examples.remoteservices.hello.impl.Hello;
+import org.eclipse.ecf.osgi.services.distribution.DefaultProxyContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
+import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.BundleContext;
@@ -40,6 +42,8 @@ public class HelloHostApplication implements IApplication,
 		bundleContext = Activator.getContext();
 		// Process Arguments
 		processArgs(appContext);
+		// Disable the proxy container finder, so that a new proxy is not created locally (as this is a server)
+		disableProxyContainerFinder();
 		// Setup properties for remote service distribution, as per OSGi 4.2 remote services
 		// specification (chap 13 in compendium spec)
 		Properties props = new Properties();
@@ -61,6 +65,10 @@ public class HelloHostApplication implements IApplication,
 		return IApplication.EXIT_OK;
 	}
 
+	private void disableProxyContainerFinder() {
+		bundleContext.registerService(IProxyContainerFinder.class.getName(), new DefaultProxyContainerFinder(false), null);
+	}
+	
 	public void stop() {
 		if (helloRegistration != null) {
 			helloRegistration.unregister();
