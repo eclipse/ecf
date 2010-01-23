@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerFactory;
@@ -207,7 +206,7 @@ public abstract class AbstractProxyContainerFinder extends
 					: containerFactory.createContainer(
 							containerTypeDescriptionName, properties);
 			return new RemoteServiceContainer(container);
-		} catch (ContainerCreateException e) {
+		} catch (Exception e) {
 			logException(
 					"Cannot create container with container type description name="
 							+ containerTypeDescriptionName, e);
