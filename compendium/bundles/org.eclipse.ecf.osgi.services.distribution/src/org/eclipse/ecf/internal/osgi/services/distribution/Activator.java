@@ -45,7 +45,7 @@ public class Activator implements BundleActivator {
 			System
 					.getProperty(
 							"org.eclipse.ecf.osgi.services.distribution.autoCreateProxyContainer",
-							"true")).booleanValue();
+							"false")).booleanValue();
 
 	public static final boolean autoCreateHostContainer = new Boolean(
 			System
