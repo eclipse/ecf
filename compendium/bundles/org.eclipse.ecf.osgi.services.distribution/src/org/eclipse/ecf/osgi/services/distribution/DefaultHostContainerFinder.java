@@ -22,6 +22,12 @@ import org.osgi.framework.ServiceReference;
 public class DefaultHostContainerFinder extends AbstractHostContainerFinder
 		implements IHostContainerFinder {
 
+	private boolean autoCreateContainer = false;
+
+	public DefaultHostContainerFinder(boolean autoCreateContainer) {
+		this.autoCreateContainer = autoCreateContainer;
+	}
+
 	public IRemoteServiceContainer[] findHostContainers(
 			ServiceReference serviceReference,
 			String[] serviceExportedInterfaces,
@@ -33,7 +39,7 @@ public class DefaultHostContainerFinder extends AbstractHostContainerFinder
 				serviceExportedInterfaces, serviceExportedConfigs,
 				serviceIntents);
 
-		if (rsContainers.size() == 0) {
+		if (rsContainers.size() == 0 && autoCreateContainer) {
 			// If no existing containers are found we'll go through
 			// finding/creating/configuring/connecting
 			rsContainers = createAndConfigureHostContainers(serviceReference,
@@ -50,7 +56,8 @@ public class DefaultHostContainerFinder extends AbstractHostContainerFinder
 					IContainer container = ((IRemoteServiceContainer) i.next())
 							.getContainer();
 					try {
-						connectHostContainer(serviceReference, container, target);
+						connectHostContainer(serviceReference, container,
+								target);
 					} catch (Exception e) {
 						logException("doConnectContainer failure containerID="
 								+ container.getID() + " target=" + target, e);

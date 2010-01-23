@@ -22,6 +22,12 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 public class DefaultProxyContainerFinder extends AbstractProxyContainerFinder
 		implements IProxyContainerFinder {
 
+	private boolean autoCreateContainer = false;
+
+	public DefaultProxyContainerFinder(boolean autoCreateContainer) {
+		this.autoCreateContainer = autoCreateContainer;
+	}
+
 	public IRemoteServiceContainer[] findProxyContainers(IServiceID serviceID,
 			IRemoteServiceEndpointDescription endpointDescription) {
 
@@ -42,8 +48,9 @@ public class DefaultProxyContainerFinder extends AbstractProxyContainerFinder
 				remoteSupportedConfigs);
 
 		// If we haven't found any existing containers then we create one
-		// From the remoteSupportedConfigs
-		if (rsContainers.size() == 0)
+		// from the remoteSupportedConfigs...*iff* autoCreateContainer is
+		// set to true
+		if (rsContainers.size() == 0 && autoCreateContainer)
 			rsContainers = createAndConfigureProxyContainers(
 					remoteSupportedConfigs, endpointDescription.getProperties());
 

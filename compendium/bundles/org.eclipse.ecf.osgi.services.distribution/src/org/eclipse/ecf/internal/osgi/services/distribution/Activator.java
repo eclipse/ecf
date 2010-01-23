@@ -41,6 +41,18 @@ public class Activator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.distribution";
 
+	public static final boolean autoCreateProxyContainer = new Boolean(
+			System
+					.getProperty(
+							"org.eclipse.ecf.osgi.services.distribution.autoCreateProxyContainer",
+							"true")).booleanValue();
+
+	public static final boolean autoCreateHostContainer = new Boolean(
+			System
+					.getProperty(
+							"org.eclipse.ecf.osgi.services.distribution.autoCreateHostContainer",
+							"true")).booleanValue();
+
 	private static Activator plugin;
 	private BundleContext context;
 
@@ -137,7 +149,8 @@ public class Activator implements BundleActivator {
 		// Register default proxy container finder
 		this.proxyrsContainerFinderRegistration = this.context.registerService(
 				IProxyContainerFinder.class.getName(),
-				new DefaultProxyContainerFinder(), proxyContainerFinderProps);
+				new DefaultProxyContainerFinder(autoCreateProxyContainer),
+				proxyContainerFinderProps);
 
 		// register the event hook to get informed when new services appear
 		final EventHookImpl hook = new EventHookImpl(distributionProvider);
@@ -150,7 +163,8 @@ public class Activator implements BundleActivator {
 				Integer.MIN_VALUE));
 		this.hostrsContainerFinderRegistration = this.context.registerService(
 				IHostContainerFinder.class.getName(),
-				new DefaultHostContainerFinder(), hostContainerFinderProps);
+				new DefaultHostContainerFinder(autoCreateHostContainer),
+				hostContainerFinderProps);
 
 		// register all existing services which have the marker property
 		try {
