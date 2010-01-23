@@ -197,13 +197,10 @@ public abstract class AbstractProxyContainerFinder extends
 
 	protected IRemoteServiceContainer createContainer(
 			String containerTypeDescriptionName, Map properties) {
-		IContainerFactory containerFactory = getContainerFactory();
-		if (containerFactory == null)
-			return null;
 		try {
-			IContainer container = (properties == null) ? containerFactory
+			IContainer container = (properties == null) ? getContainerFactory()
 					.createContainer(containerTypeDescriptionName)
-					: containerFactory.createContainer(
+					: getContainerFactory().createContainer(
 							containerTypeDescriptionName, properties);
 			return new RemoteServiceContainer(container);
 		} catch (Exception e) {
