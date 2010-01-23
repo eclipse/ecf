@@ -28,7 +28,7 @@ public class DefaultProxyContainerFinder extends AbstractProxyContainerFinder
 		trace("findProxyContainers", "serviceID=" + serviceID
 				+ " endpointDescription=" + endpointDescription);
 
-		// Get the endpointID from the endpointDescription
+		// Get the endpointID
 		ID endpointID = endpointDescription.getEndpointAsID();
 		// Get the remote supported configs
 		String[] remoteSupportedConfigs = endpointDescription
@@ -44,7 +44,8 @@ public class DefaultProxyContainerFinder extends AbstractProxyContainerFinder
 		// If we haven't found any existing containers then we create one
 		// From the remoteSupportedConfigs
 		if (rsContainers.size() == 0)
-			rsContainers = createAndConfigureProxyContainers(remoteSupportedConfigs);
+			rsContainers = createAndConfigureProxyContainers(
+					remoteSupportedConfigs, endpointDescription.getProperties());
 
 		// Get the connect target ID from the endpointDescription
 		// and connect the given containers to the connect targetID
