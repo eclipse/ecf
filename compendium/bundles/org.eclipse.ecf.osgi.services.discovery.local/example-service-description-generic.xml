@@ -4,7 +4,7 @@
       <provide
 interface="org.eclipse.ecf.examples.remoteservices.hello.IHello"/>
       <property
-name="ecf.sp.cid">ecftcp://localhost:3282/server</property>
+name="ecf.sp.cid">ecftcp://localhost:3787/server</property>
       <property name="ecf.sp.cns">org.eclipse.ecf.core.identity.StringID</property>
       <property name="ecf.sp.ect">ecf.generic.server</property>
    </service-description>
