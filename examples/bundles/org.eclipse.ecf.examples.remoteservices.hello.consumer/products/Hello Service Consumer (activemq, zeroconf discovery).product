@@ -7,7 +7,7 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-containerType ecf.jms.activemq.tcp.client</programArgs>
+      <programArgs>-console -consoleLog -containerType ecf.jms.activemq.tcp.client</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 

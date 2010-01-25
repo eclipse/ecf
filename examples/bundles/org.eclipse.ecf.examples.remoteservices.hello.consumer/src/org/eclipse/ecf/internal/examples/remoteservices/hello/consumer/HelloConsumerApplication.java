@@ -51,9 +51,10 @@ public class HelloConsumerApplication implements IApplication,
 		bundleContext = Activator.getContext();
 		processArgs(appContext);
 
-		// Create ECF container of appropriate type. This setup is required so that 
-		// an ECF provider will be available for handling discovered remote 
-		// service endpoints
+		// Create ECF container of appropriate type. The container instance
+		// can be created in a variety of ways...e.g. via code like the line below, 
+		// via the new org.eclipse.ecf.container extension point, or automatically 
+		// upon discovery via the IProxyContainerFinder/DefaultProxyContainerFinder.  
 		getContainerFactory().createContainer(containerType);
 
 		// Create service tracker to track IHello instances that have the 'service.imported'
