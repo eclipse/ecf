@@ -50,8 +50,5 @@
       <plugin id="org.eclipse.osgi.services"/>
    </plugins>
 
-   <configurations>
-      <plugin id="org.eclipse.ecf.osgi.services.discovery.local" autoStart="true" startLevel="5" />
-   </configurations>
 
 </product>
