@@ -22,6 +22,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.equinox.concurrent.future.IFuture;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
@@ -34,12 +35,10 @@ public class HelloConsumerApplication implements IApplication,
 
 	public static final String CONSUMER_NAME = "org.eclipse.ecf.examples.remoteservices.hello.consumer";
 
-	private static final String DEFAULT_CONTAINER_TYPE = "ecf.r_osgi.peer";
-
 	private BundleContext bundleContext;
 	private ServiceTracker containerFactoryServiceTracker;
 
-	private String containerType = DEFAULT_CONTAINER_TYPE;
+	private String containerType = "ecf.r_osgi.peer";
 
 	private final Object appLock = new Object();
 	private boolean done = false;
@@ -63,9 +62,24 @@ public class HelloConsumerApplication implements IApplication,
 				createRemoteFilter(), this);
 		helloServiceTracker.open();
 
+		startLocalDiscoveryIfPresent();
+		
 		waitForDone();
 
 		return IApplication.EXIT_OK;
+	}
+
+	private void startLocalDiscoveryIfPresent() {
+		Bundle[] bundles = bundleContext.getBundles();
+		for(int i=0; i < bundles.length; i++) {
+			if (bundles[i].getSymbolicName().equals("org.eclipse.ecf.osgi.services.discovery.local")) {
+				try {
+					bundles[i].start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private Filter createRemoteFilter() throws InvalidSyntaxException {
