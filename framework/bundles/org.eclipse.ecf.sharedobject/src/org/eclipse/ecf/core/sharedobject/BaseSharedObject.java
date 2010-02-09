@@ -109,7 +109,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		if (adapter.isInstance(this)) {
 			return this;
 		}
-		final IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		Activator activator = Activator.getDefault();
+		if (activator == null)
+			return null;
+		final IAdapterManager adapterManager = activator.getAdapterManager();
 		if (adapterManager == null)
 			return null;
 		return adapterManager.loadAdapter(this, adapter.getName());
