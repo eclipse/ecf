@@ -69,7 +69,10 @@ public abstract class AbstractContainer implements IContainer {
 		if (serviceType.isInstance(this)) {
 			return this;
 		}
-		IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
+		ECFPlugin plugin = ECFPlugin.getDefault();
+		if (plugin == null)
+			return null;
+		IAdapterManager adapterManager = plugin.getAdapterManager();
 		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, serviceType.getName());
 	}
 
