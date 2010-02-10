@@ -51,7 +51,7 @@ public class JmDNSImpl extends JmDNS
 {
 //    private static Logger logger = Logger.getLogger(JmDNSImpl.class.getName());
 
-	// hack for the iPhone (arm darwin) to not set the NetworkInterface. This fails os GNU classpath 0.96.
+	// hack for the iPhone (arm darwin) to not set the NetworkInterface. This fails on GNU classpath 0.96.
 	private static final boolean isIphone = Boolean.getBoolean("net.mdns.isArmDarwin");
    /**
      * This is the multicast group, we are listening to for multicast DNS
@@ -183,7 +183,15 @@ public class JmDNSImpl extends JmDNS
 //        logger.finer("JmDNS instance created");
         try
         {
-            final InetAddress addr = InetAddress.getLocalHost();
+    		// determine the interface on which to run on
+        	InetAddress addr = null;
+    		String ip = System.getProperty("net.mdns.interface");
+    		if (ip != null) {
+    			addr = InetAddress.getByName(ip);
+    		} else {
+    			addr = InetAddress.getLocalHost();
+    		}
+    		
             init(addr.isLoopbackAddress() ? null : addr, addr.getHostName()); // [
             // PJYF
             // Oct

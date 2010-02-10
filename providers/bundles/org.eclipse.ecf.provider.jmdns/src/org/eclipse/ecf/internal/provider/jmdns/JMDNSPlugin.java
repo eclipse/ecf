@@ -10,7 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.jmdns;
 
-import java.net.InetAddress;
 import java.util.Properties;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -37,8 +36,6 @@ public class JMDNSPlugin implements BundleActivator {
 	private BundleContext context = null;
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.jmdns"; //$NON-NLS-1$
-
-	protected static InetAddress LOCALHOST = null;
 
 	/**
 	 * The constructor.
@@ -75,7 +72,6 @@ public class JMDNSPlugin implements BundleActivator {
 	 */
 	public void start(final BundleContext ctxt) throws Exception {
 		this.context = ctxt;
-		LOCALHOST = InetAddress.getLocalHost();
 
 		final Properties props = new Properties();
 		props.put(IDiscoveryService.CONTAINER_NAME, NAME);
@@ -90,7 +86,7 @@ public class JMDNSPlugin implements BundleActivator {
 			public Object getService(final Bundle bundle, final ServiceRegistration registration) {
 				if (jdc == null) {
 					try {
-						jdc = new JMDNSDiscoveryContainer(LOCALHOST);
+						jdc = new JMDNSDiscoveryContainer();
 						jdc.connect(null, null);
 					} catch (final IDCreateException e) {
 						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$

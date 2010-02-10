@@ -10,8 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.jmdns.container;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
@@ -25,14 +23,10 @@ public class ContainerInstantiator implements IContainerInstantiator {
 	 */
 	public IContainer createInstance(final ContainerTypeDescription description, final Object[] args) throws ContainerCreateException {
 		try {
-			final AbstractContainer container = new JMDNSDiscoveryContainer(InetAddress.getLocalHost());
+			final AbstractContainer container = new JMDNSDiscoveryContainer();
 			return container;
 		} catch (final IDCreateException e) {
 			final ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_CONTAINER_CREATE);
-			excep.setStackTrace(e.getStackTrace());
-			throw excep;
-		} catch (final IOException e) {
-			final ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_GETTING_INETADDRESS);
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		}

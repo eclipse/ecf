@@ -11,7 +11,6 @@
 package org.eclipse.ecf.provider.jmdns.container;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.URI;
 import java.util.*;
 import javax.jmdns.*;
@@ -39,7 +38,6 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 
 	private static int instanceCount = 0;
 
-	private InetAddress intf = null;
 	JmDNS jmdns = null;
 	private ID targetID = null;
 
@@ -59,10 +57,8 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	SimpleFIFOQueue queue = null;
 	Thread notificationThread = null;
 
-	public JMDNSDiscoveryContainer(final InetAddress addr) {
-		super(JMDNSNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(JMDNSDiscoveryContainer.class.getName() + ";" + addr.toString() + ";" + instanceCount++))); //$NON-NLS-1$  //$NON-NLS-2$
-		Assert.isNotNull(addr);
-		intf = addr;
+	public JMDNSDiscoveryContainer() {
+		super(JMDNSNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(JMDNSDiscoveryContainer.class.getName() + ";" + instanceCount++))); //$NON-NLS-1$  //$NON-NLS-2$
 		serviceTypes = new ArrayList();
 	}
 
@@ -98,7 +94,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			fireContainerEvent(new ContainerConnectingEvent(this.getID(), this.targetID, joinContext));
 			initializeQueue();
 			try {
-				this.jmdns = JmDNS.create(intf);
+				this.jmdns = JmDNS.create();
 				jmdns.addServiceTypeListener(this);
 			} catch (final IOException e) {
 				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "connect", e); //$NON-NLS-1$
