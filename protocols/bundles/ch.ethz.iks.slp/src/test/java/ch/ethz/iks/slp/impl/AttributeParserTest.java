@@ -14,6 +14,7 @@ package ch.ethz.iks.slp.impl;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ch.ethz.iks.slp.ServiceLocationException;
@@ -61,6 +62,25 @@ public class AttributeParserTest extends TestCase {
 
 		assertEquals(1, attributeStringToList.size());
 		assertTrue(attributeStringToList.contains(STRING));
+	}
+	
+	public void testBadTag() {
+		SLPTestMessage stm = new SLPTestMessage();
+		// #bad-tag 		= CR / LF / HTAB / "_";
+		List inputs = new ArrayList();
+		inputs.add("(bad_tag=foo)");
+		inputs.add("(bat\ttag=foo)");
+		inputs.add("(bad\rtag=foo)");
+		inputs.add("(bad\ntag=foo)");
+		for (Iterator iterator = inputs.iterator(); iterator.hasNext();) {
+			String input = (String) iterator.next();
+			try {
+				stm.attributeStringToList(input);
+			} catch(ServiceLocationException e) {
+				continue;
+			}
+			fail("Input " + input + " must throw an Exception");
+		}
 	}
 	
 	/**
