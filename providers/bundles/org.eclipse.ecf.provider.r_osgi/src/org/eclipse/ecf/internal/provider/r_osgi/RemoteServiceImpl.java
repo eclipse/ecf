@@ -101,7 +101,8 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		IExecutor executor = new ThreadsExecutor();
 		IFuture future = executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
-				return service.getClass().getMethod(call.getMethod(), formalParams).invoke(service, parameters);
+				final Method method = getMethod(service.getClass(), call.getMethod(), formalParams);
+				return method.invoke(service, parameters);
 			}
 		}, null);
 		Object result = null;
@@ -215,6 +216,44 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 			// rethrow as service exception
 			throw new ServiceException("Service exception on remote service proxy rsid=" + refImpl.getID(), ServiceException.REMOTE, t); //$NON-NLS-1$
 		}
+	}
+
+	/**
+	 * @param aClass The Class providing method under question (Must not be null)
+	 * @param aMethodName The method name to search for (Must not be null)
+	 * @param someParameterTypes Method arguments (May be null or parameters)
+	 * @return A match. If more than one method matched (due to overloading) an abitrary match is taken
+	 * @throws NoSuchMethodException If a match cannot be found
+	 */
+	Method getMethod(final Class aClass, String aMethodName, final Class[] someParameterTypes) throws NoSuchMethodException {
+		// no args makes matching simple
+		if (someParameterTypes == null || someParameterTypes.length == 0) {
+			return aClass.getMethod(aMethodName, null);
+		}
+
+		// match parameters to determine callee
+		final Method[] methods = aClass.getMethods();
+		final int parameterCount = someParameterTypes.length;
+		aMethodName = aMethodName.intern();
+
+		OUTER: for (int i = 0; i < methods.length; i++) {
+			Method candidate = methods[i];
+			String candidateMethodName = candidate.getName().intern();
+			Class[] candidateParameterTypes = candidate.getParameterTypes();
+			int candidateParameterCount = candidateParameterTypes.length;
+			if (candidateParameterCount == parameterCount && aMethodName == candidateMethodName) {
+				for (int j = 0; j < candidateParameterCount; j++) {
+					Class clazzA = candidateParameterTypes[j];
+					Class clazzB = someParameterTypes[j];
+					if (!clazzA.isAssignableFrom(clazzB)) {
+						continue OUTER;
+					}
+				}
+				return candidate;
+			}
+		}
+		// if no match has been found, fail with NSME
+		throw new NoSuchMethodException("No such method: " + aMethodName + "(" + Arrays.toString(someParameterTypes) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/**
