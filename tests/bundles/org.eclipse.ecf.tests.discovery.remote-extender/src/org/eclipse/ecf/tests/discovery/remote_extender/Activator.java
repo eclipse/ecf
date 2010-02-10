@@ -77,7 +77,8 @@ public class Activator implements BundleActivator, EventHook {
 	public void event(ServiceEvent event, Collection contexts) {
 		ServiceReference serviceReference = event.getServiceReference();
 		// either this bundle is not active or it is not responsible
-		if(context == null || !filter.match(serviceReference)) {
+		// also it might be a cyclic event (http://www.eclipse.org/forums/index.php?t=msg&goto=513544&)
+		if(context == null || !filter.match(serviceReference) || serviceReference.getProperty(MARKER) != null) {
 			return;
 		}
 		
@@ -98,10 +99,6 @@ public class Activator implements BundleActivator, EventHook {
 	}
 
 	private void overwriteServiceRegistration(ServiceReference aServiceReference) {
-		if(aServiceReference.getProperty(MARKER) != null) {
-			return;
-		}
-		
 		Properties props = new Properties();
 		String[] keys = aServiceReference.getPropertyKeys();
 		for (int i = 0; i < keys.length; i++) {
