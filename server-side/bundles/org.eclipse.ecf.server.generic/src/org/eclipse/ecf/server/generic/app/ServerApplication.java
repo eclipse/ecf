@@ -10,21 +10,14 @@ package org.eclipse.ecf.server.generic.app;
 
 import java.io.FileInputStream;
 import java.security.PermissionCollection;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
+import java.util.*;
+import org.eclipse.ecf.core.IContainerListener;
+import org.eclipse.ecf.core.events.*;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectHandlerPolicy;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerGroupManager;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
-import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
-import org.eclipse.ecf.provider.generic.SOContainerConfig;
-import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
-import org.eclipse.ecf.provider.generic.TCPServerSOContainerGroup;
+import org.eclipse.ecf.provider.generic.*;
 
 /**
  * An ECF server container implementation that runs as an application.
@@ -47,11 +40,8 @@ public class ServerApplication {
 	static List servers = new ArrayList();
 
 	static class JoinListener implements IConnectHandlerPolicy {
-		public PermissionCollection checkConnect(Object addr, ID fromID,
-				ID targetID, String targetGroup, Object joinData)
-				throws Exception {
-			System.out
-					.println("JOIN Addr=" + addr + ";From=" + fromID + ";Target Group=" + targetGroup + ";Data=" + joinData); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		public PermissionCollection checkConnect(Object addr, ID fromID, ID targetID, String targetGroup, Object joinData) throws Exception {
+			System.out.println("JOIN Addr=" + addr + ";From=" + fromID + ";Target Group=" + targetGroup + ";Data=" + joinData); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			return null;
 		}
 
@@ -63,16 +53,25 @@ public class ServerApplication {
 
 	static class SharedObjectAddListener implements ISharedObjectPolicy {
 
-		public PermissionCollection checkAddSharedObject(ID fromID, ID toID,
-				ID localID, ReplicaSharedObjectDescription newObject)
-				throws SecurityException {
-			System.out
-					.println("CHECKADDSHAREDOBJECT From=" + fromID + ";To=" + toID + ";SharedObject=" + newObject); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		public PermissionCollection checkAddSharedObject(ID fromID, ID toID, ID localID, ReplicaSharedObjectDescription newObject) throws SecurityException {
+			System.out.println("CHECKADDSHAREDOBJECT From=" + fromID + ";To=" + toID + ";SharedObject=" + newObject); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return null;
 		}
 
 		public void refresh() {
 			System.out.println("connectHandlerPolicy.refresh()"); //$NON-NLS-1$
+		}
+
+	}
+
+	static class ContainerListener implements IContainerListener {
+
+		public void handleEvent(IContainerEvent event) {
+			if (event instanceof IContainerDisconnectedEvent) {
+				System.out.println("Container disconnected id=" + ((IContainerDisconnectedEvent) event).getTargetID()); //$NON-NLS-1$
+			} else if (event instanceof IContainerEjectedEvent) {
+				System.out.println("Container ejected id=" + ((IContainerEjectedEvent) event).getTargetID()); //$NON-NLS-1$
+			}
 		}
 
 	}
@@ -93,22 +92,18 @@ public class ServerApplication {
 			int j = 0;
 			for (Iterator i = connectors.iterator(); i.hasNext();) {
 				Connector connect = (Connector) i.next();
-				serverGroups[j] = createServerGroup(connect.getHostname(),
-						connect.getPort());
+				serverGroups[j] = createServerGroup(connect.getHostname(), connect.getPort());
 				List groups = connect.getGroups();
 
 				for (Iterator g = groups.iterator(); g.hasNext();) {
 					NamedGroup group = (NamedGroup) g.next();
-					TCPServerSOContainer cont = createServerContainer(group
-							.getIDForGroup(), serverGroups[j], group.getName(),
-							connect.getTimeout());
+					TCPServerSOContainer cont = createServerContainer(group.getIDForGroup(), serverGroups[j], group.getName(), connect.getTimeout());
 					// Setup join policy
-					((ISharedObjectContainerGroupManager) cont)
-							.setConnectPolicy(new JoinListener());
+					((ISharedObjectContainerGroupManager) cont).setConnectPolicy(new JoinListener());
+					cont.addListener(new ContainerListener());
 					servers.add(cont);
 				}
-				System.out
-						.println("Putting server " + connect.getHostname() + " on the air"); //$NON-NLS-1$ //$NON-NLS-2$
+				System.out.println("Putting server " + connect.getHostname() + " on the air"); //$NON-NLS-1$ //$NON-NLS-2$
 				serverGroups[j].putOnTheAir();
 				j++;
 				System.out.println("<ctrl>-c to stop server"); //$NON-NLS-1$
@@ -135,12 +130,9 @@ public class ServerApplication {
 			SOContainerConfig config = new SOContainerConfig(id);
 			// Make server instance
 			System.out.print("Creating ECF server container..."); //$NON-NLS-1$
-			TCPServerSOContainer server = new TCPServerSOContainer(config,
-					serverGroups[0], name,
-					TCPServerSOContainer.DEFAULT_KEEPALIVE);
+			TCPServerSOContainer server = new TCPServerSOContainer(config, serverGroups[0], name, TCPServerSOContainer.DEFAULT_KEEPALIVE);
 			// Setup join policy
-			((ISharedObjectContainerGroupManager) server)
-					.setConnectPolicy(new JoinListener());
+			((ISharedObjectContainerGroupManager) server).setConnectPolicy(new JoinListener());
 			// Setup add shared object policy
 			ISharedObjectManager manager = server.getSharedObjectManager();
 			manager.setRemoteAddPolicy(new SharedObjectAddListener());
@@ -148,26 +140,19 @@ public class ServerApplication {
 			serverGroups[0].putOnTheAir();
 			servers.add(server);
 			System.out.println("success!"); //$NON-NLS-1$
-			System.out
-					.println("Waiting for JOIN requests at '" + id.getName() + "'..."); //$NON-NLS-1$ //$NON-NLS-2$
+			System.out.println("Waiting for JOIN requests at '" + id.getName() + "'..."); //$NON-NLS-1$ //$NON-NLS-2$
 			System.out.println("<ctrl>-c to stop server"); //$NON-NLS-1$
 		}
 	}
 
-	protected static TCPServerSOContainerGroup createServerGroup(String name,
-			int port) {
-		System.out
-				.println("Creating server group named " + name + " to listen on port " + port); //$NON-NLS-1$ //$NON-NLS-2$
-		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,
-				port);
+	protected static TCPServerSOContainerGroup createServerGroup(String name, int port) {
+		System.out.println("Creating server group named " + name + " to listen on port " + port); //$NON-NLS-1$ //$NON-NLS-2$
+		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name, port);
 		return group;
 	}
 
-	protected static TCPServerSOContainer createServerContainer(String id,
-			TCPServerSOContainerGroup group, String path, int keepAlive)
-			throws IDCreateException {
-		System.out
-				.println("  Creating container with id=" + id + ", group=" + path + " keepAlive=" + keepAlive); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	protected static TCPServerSOContainer createServerContainer(String id, TCPServerSOContainerGroup group, String path, int keepAlive) throws IDCreateException {
+		System.out.println("  Creating container with id=" + id + ", group=" + path + " keepAlive=" + keepAlive); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		ID newServerID = IDFactory.getDefault().createStringID(id);
 		SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config, group, path, keepAlive);
