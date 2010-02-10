@@ -15,9 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -29,8 +27,12 @@ import org.osgi.framework.hooks.service.EventHook;
 
 public class Activator implements BundleActivator, EventHook {
 	
-	private static final String SERVICE = IDiscoveryAdvertiser.class.getName();
+	// "_" is a bad tag character for SLP 
+	private static final String MARKER = "org.eclipse.ecf.tests.discovery.remote-extender.Activator.class";
+
+	private static final String CONTAINER_TYPE = System.getProperty("org.eclipse.ecf.tests.discovery.remote-extender.containertype", "ecf.r_osgi.peer");
 	
+	private final String service = System.getProperty("org.eclipse.ecf.tests.discovery.remote-extender.service");
 	private Filter filter;
 	private Map overwrites;
 	private BundleContext context;
@@ -40,23 +42,19 @@ public class Activator implements BundleActivator, EventHook {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext aContext) throws Exception {
+		if(service == null) {
+			return;
+		}
 		context = aContext;
 		overwrites = new HashMap();
 		filter = context.createFilter("(&" +
-				"(" + Constants.OBJECTCLASS + "=" + SERVICE + ")" +
-				"(!(osgi.remote.interfaces=" + SERVICE + "))" +
+				"(" + Constants.OBJECTCLASS + "=" + service + ")" +
+				"(!(" + IDistributionConstants.SERVICE_EXPORTED_INTERFACES + "=" + new String[]{service} + "))" +
 						")");
-		
-		// for the moment we have to manually create a container
-		//TODO move into ecf specific configuration
-		ContainerFactory.getDefault().createContainer("ecf.r_osgi.peer",
-				new Object[] { IDFactory.getDefault().createStringID(
-				"r-osgi://localhost:9278") });
-
 		
 		context.registerService(EventHook.class.getName(), this, null);
 		
-		ServiceReference[] serviceReferences = context.getAllServiceReferences(SERVICE, null);
+		ServiceReference[] serviceReferences = context.getAllServiceReferences(service, null);
 		if(serviceReferences != null) {
 			for (int i = 0; i < serviceReferences.length; i++) {
 				ServiceReference serviceReference = serviceReferences[i];
@@ -79,7 +77,7 @@ public class Activator implements BundleActivator, EventHook {
 	public void event(ServiceEvent event, Collection contexts) {
 		ServiceReference serviceReference = event.getServiceReference();
 		// either this bundle is not active or it is not responsible
-		if(context != null || !filter.match(serviceReference)) {
+		if(context == null || !filter.match(serviceReference)) {
 			return;
 		}
 		
@@ -100,6 +98,10 @@ public class Activator implements BundleActivator, EventHook {
 	}
 
 	private void overwriteServiceRegistration(ServiceReference aServiceReference) {
+		if(aServiceReference.getProperty(MARKER) != null) {
+			return;
+		}
+		
 		Properties props = new Properties();
 		String[] keys = aServiceReference.getPropertyKeys();
 		for (int i = 0; i < keys.length; i++) {
@@ -108,10 +110,16 @@ public class Activator implements BundleActivator, EventHook {
 				props.put(key, aServiceReference.getProperty(key));
 			}
 		}
-		props.put("osgi.remote.interfaces", new String[]{SERVICE});
-		Object service = this.context.getService(aServiceReference);
+		props.put(MARKER, Boolean.TRUE);
+		
+		// add OSGi service property indicated export of all interfaces exposed by service (wildcard)
+		props.put(IDistributionConstants.SERVICE_EXPORTED_INTERFACES, new String[]{service});
+		// add OSGi service property specifying config
+		props.put(IDistributionConstants.SERVICE_EXPORTED_CONFIGS, CONTAINER_TYPE);
+		// register remote service
+		Object remoteService = this.context.getService(aServiceReference);
 		// keep in mind that this removes all other interfaces the service was originally registered for
-		ServiceRegistration serviceRegistration = context.registerService(SERVICE, service, props);
+		ServiceRegistration serviceRegistration = context.registerService(service, remoteService, props);
 		overwrites.put(aServiceReference, serviceRegistration);
 	}
 }
