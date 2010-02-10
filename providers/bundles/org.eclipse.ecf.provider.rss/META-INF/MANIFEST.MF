@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.ecf.provider.rss; singleton:=true
 Bundle-Version: 0.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.rss.RssPlugin
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.ecf,
+Require-Bundle: org.eclipse.ecf;bundle-version="3.1.0",
  org.eclipse.ecf.provider,
  org.eclipse.ecf.datashare,
  org.eclipse.ecf.sharedobject,
