@@ -269,6 +269,12 @@ final class CodeAnalyzer implements ClassVisitor {
 	 */
 	private void visit(final String className) throws ClassNotFoundException {
 		currentClass = className.replace('.', '/');
+		// remove array indicators 
+		if(currentClass.startsWith("[L")) {
+			currentClass = currentClass.substring(2);
+		} else if (currentClass.startsWith("L")) {
+			currentClass = currentClass.substring(1);
+		}
 		final String classFile = currentClass + ".class"; //$NON-NLS-1$
 
 		final String pkg = packageOf(className);
