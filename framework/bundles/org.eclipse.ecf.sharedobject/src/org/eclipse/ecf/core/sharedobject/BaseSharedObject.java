@@ -19,8 +19,8 @@ import org.eclipse.ecf.core.sharedobject.events.*;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.sharedobject.util.QueueException;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.internal.core.sharedobject.*;
-import org.eclipse.osgi.util.NLS;
+import org.eclipse.ecf.internal.core.sharedobject.Activator;
+import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
  * Base class for shared object classes. This base class provides a number of
@@ -166,7 +166,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected void handleUnhandledEvent(Event event) {
 		// By default, simply log as warning
-		Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind("handleUnhandledEvent={0}", event), null)); //$NON-NLS-1$
+		Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, "handleUnhandledEvent=" + event, null)); //$NON-NLS-1$
 	}
 
 	/**
@@ -352,7 +352,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	protected void sendSharedObjectMsgTo(ID toID, SharedObjectMsg msg) throws IOException {
 		ISharedObjectContext context = getContext();
 		if (context != null) {
-			Assert.isNotNull(msg, Messages.BaseSharedObject_Message_Not_Null);
+			Assert.isNotNull(msg, "SharedObjectMsg cannot be null"); //$NON-NLS-1$
 			String method = "sendSharedObjectMsgTo"; //$NON-NLS-1$
 			traceEntering(method, new Object[] {toID, msg});
 			context.sendMessage(toID, new SharedObjectMsgEvent(getID(), toID, msg));
@@ -382,7 +382,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected void sendSharedObjectMsgToSelf(SharedObjectMsg msg) {
 		if (msg == null)
-			throw new NullPointerException(Messages.BaseSharedObject_Message_Not_Null);
+			throw new NullPointerException("SharedObjectMsg cannot be null"); //$NON-NLS-1$
 		ISharedObjectContext context = getContext();
 		if (context == null)
 			return;

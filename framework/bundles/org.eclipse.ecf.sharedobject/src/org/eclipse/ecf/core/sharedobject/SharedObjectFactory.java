@@ -11,8 +11,8 @@ package org.eclipse.ecf.core.sharedobject;
 import java.util.*;
 import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.core.sharedobject.*;
-import org.eclipse.osgi.util.NLS;
+import org.eclipse.ecf.internal.core.sharedobject.Activator;
+import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
  * Factory for creating {@link ISharedObject} instances. This class provides ECF
@@ -110,7 +110,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		SharedObjectTypeDescription res = getDescription0(name);
 		if (res == null) {
 			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Shared_Object + name + Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
-			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectFactory_SharedObjectDescription_X_Not_Found, name));
+			throw new SharedObjectCreateException("SharedObjectDescription named " + name + " not found"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return res;
 	}
@@ -125,23 +125,23 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		trace("createSharedObject(" + desc + "," //$NON-NLS-1$ //$NON-NLS-2$
 				+ Trace.getArgumentsString(args) + ")"); //$NON-NLS-1$
 		if (desc == null)
-			throw new SharedObjectCreateException(Messages.SharedObjectFactory_Description_Not_Null);
+			throw new SharedObjectCreateException("SharedObjectTypeDescription cannot be null"); //$NON-NLS-1$
 		SharedObjectTypeDescription cd = getDescription0(desc);
 		if (cd == null)
 			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Shared_Objec + desc.getName() + Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
-			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectFactory_SharedObjectDescription_X_Not_Found, desc.getName()));
+			throw new SharedObjectCreateException("SharedObjectDescription named " + desc.getName() + " not found"); //$NON-NLS-1$ //$NON-NLS-2$
 		ISharedObjectInstantiator instantiator = null;
 		try {
 			instantiator = cd.getInstantiator();
 		} catch (Exception e) {
-			SharedObjectCreateException newexcept = new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_With_Description + desc + ": " + e.getClass().getName() + ": " //$NON-NLS-1$ //$NON-NLS-2$
-					+ e.getMessage(), e);
+			SharedObjectCreateException newexcept = new SharedObjectCreateException("createSharedObject exception with description" + desc, //$NON-NLS-1$
+					e);
 			dumpStack("Exception in createSharedObject", newexcept); //$NON-NLS-1$
 			throw newexcept;
 		}
 		if (instantiator == null)
 			//throw new SharedObjectCreateException(Messages.SharedObjectFactory_Exception_Create_Instantiator + cd.getName() + Messages.SharedObjectFactory_Exception_Create_Instantiator_Null);
-			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectFactory_Exception_Create_Instantiator_X_Null, cd.getName()));
+			throw new SharedObjectCreateException("Instantiator for SharedObjectDescription " + cd.getName() + " is null"); //$NON-NLS-1$ //$NON-NLS-2$
 		// Ask instantiator to actually create instance
 		return instantiator.createInstance(desc, args);
 	}

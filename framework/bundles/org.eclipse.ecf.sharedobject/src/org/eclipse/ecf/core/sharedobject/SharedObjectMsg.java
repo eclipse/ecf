@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.security.*;
 import java.util.Arrays;
-import org.eclipse.ecf.internal.core.sharedobject.Messages;
 
 /**
  * Shared Object Message. Instances may be used for sending/receiving messages
@@ -36,7 +35,7 @@ public class SharedObjectMsg implements Serializable {
 	// Static factory methods for creating SharedObjectMsg instances
 	public static SharedObjectMsg createMsg(String className, String methodName, Object[] param) {
 		if (methodName == null || param == null) {
-			throw new NullPointerException(Messages.SharedObjectMsg_Excepton_Invalid_Shared_Object_Msg);
+			throw new NullPointerException("SharedObjectMsg method name and parameters must not be null"); //$NON-NLS-1$
 		}
 		return new SharedObjectMsg(className, methodName, param);
 	}
@@ -214,7 +213,7 @@ public class SharedObjectMsg implements Serializable {
 		Object args[] = aMsg.getParameters();
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] != null && !(args[i] instanceof Serializable))
-				throw new NotSerializableException(Messages.SharedObjectMsg_Exception_Param + i + Messages.SharedObjectMsg_Exception_Not_Serializable);
+				throw new NotSerializableException("SharedObjectMsg parameter " + i + " not serializable"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -248,7 +247,7 @@ public class SharedObjectMsg implements Serializable {
 	public final void setMethod(String name) {
 		checkAlterMsg();
 		if (name == null)
-			throw new NullPointerException(Messages.SharedObjectMsg_Exception_Methodname_Not_Null);
+			throw new NullPointerException("SharedObjectMsg method cannot be null"); //$NON-NLS-1$
 		method = name;
 	}
 
@@ -298,7 +297,7 @@ public class SharedObjectMsg implements Serializable {
 	Object doInvoke(final Object target) // package scope for security
 			throws Exception {
 		if (target == null)
-			throw new NoSuchMethodException(Messages.SharedObjectMsg_Exception_Null_Target);
+			throw new NoSuchMethodException("doInvoke target method cannot be null"); //$NON-NLS-1$
 		Method meth = null;
 		if (clazz == null) {
 			// If not specific class is specified by SharedObjectMsg instance,

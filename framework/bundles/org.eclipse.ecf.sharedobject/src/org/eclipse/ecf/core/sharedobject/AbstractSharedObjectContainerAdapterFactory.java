@@ -16,7 +16,8 @@ import org.eclipse.ecf.core.AbstractContainerAdapterFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.core.sharedobject.*;
+import org.eclipse.ecf.internal.core.sharedobject.Activator;
+import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
  * Abstract container adapter factory. This class implements the
@@ -33,7 +34,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends Abstra
 
 	protected static final int ADD_ADAPTER_ERROR_CODE = 300001;
 
-	protected static final String ADD_ADAPTER_ERROR_MESSAGE = Messages.AbstractSharedObjectContainerAdapterFactory_Exception_Adding_Adapter;
+	protected static final String ADD_ADAPTER_ERROR_MESSAGE = "Exception adding shared object adapter"; //$NON-NLS-1$
 
 	private static final int CREATE_ADAPTER_ID_ERROR_CODE = 300002;
 

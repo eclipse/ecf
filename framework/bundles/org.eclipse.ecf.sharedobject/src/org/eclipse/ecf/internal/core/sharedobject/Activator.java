@@ -177,7 +177,7 @@ public class Activator implements BundleActivator {
 						+ ")"); //$NON-NLS-1$
 			} catch (Exception e) {
 				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID, SharedObjectDebugOptions.EXCEPTIONS_CATCHING, Activator.class, "removeSharedObjectExtensions", e); //$NON-NLS-1$
-				getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, REMOVE_SHAREDOBJECT_ERRORCODE, Messages.Activator_Exception_Removing_Extension, e));
+				getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, REMOVE_SHAREDOBJECT_ERRORCODE, "Exception removing sharedobject extension", e)); //$NON-NLS-1$
 			}
 		}
 	}

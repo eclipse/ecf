@@ -16,8 +16,8 @@ import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.events.*;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.internal.core.sharedobject.*;
-import org.eclipse.osgi.util.NLS;
+import org.eclipse.ecf.internal.core.sharedobject.Activator;
+import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
  * Implementation of two-phase commit for transactional replication of shared
@@ -293,7 +293,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor, ISharedObj
 		try {
 			getContext().sendMessage(null, new SharedObjectCommitEvent(getSharedObject().getID()));
 		} catch (Exception e2) {
-			doTMAbort(new SharedObjectAddAbortException(Messages.TwoPhaseCommitEventProcessor_Exception_Shared_Object_Add_Abort, e2, getTimeout()));
+			doTMAbort(new SharedObjectAddAbortException("SharedObjectCommitEvent could not be sent", e2, getTimeout())); //$NON-NLS-1$
 		}
 	}
 
@@ -320,7 +320,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor, ISharedObj
 					trace("waitForFinish waiting " + wait + "ms on " //$NON-NLS-1$ //$NON-NLS-2$
 							+ getSharedObject().getID());
 					if (wait <= 0L)
-						throw new SharedObjectAddAbortException(NLS.bind(Messages.TwoPhaseCommitEventProcessor_Exception_Commit_Timeout, new Object[] {getSharedObject().getID(), getHomeID()}), (Throwable) null, getTimeout());
+						throw new SharedObjectAddAbortException("Timeout adding " + getSharedObject().getID() + " to " + getHomeID(), (Throwable) null, getTimeout()); //$NON-NLS-1$ //$NON-NLS-2$
 					// Wait right here
 					lock.wait(wait);
 				}
@@ -343,7 +343,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor, ISharedObj
 		// throw so caller gets exception and can deal with it
 		if (except instanceof SharedObjectAddAbortException)
 			throw (SharedObjectAddAbortException) except;
-		throw new SharedObjectAddAbortException(Messages.TwoPhaseCommitEventProcessor_Exception_Shared_Object_Add_Abort, except, getTimeout());
+		throw new SharedObjectAddAbortException("Shared object add aborted", except, getTimeout()); //$NON-NLS-1$
 	}
 
 	protected void doTMCommit() throws SharedObjectAddAbortException {
@@ -372,7 +372,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor, ISharedObj
 			// Abort!
 			trace("isVotingCompleted:aborting:failed>" + getMinFailedToAbort() //$NON-NLS-1$
 					+ ":failed=" + failed); //$NON-NLS-1$
-			throw new SharedObjectAddAbortException(Messages.TwoPhaseCommitEventProcessor_Exception_Shared_Object_Add_Abort, participants, failed, getTimeout());
+			throw new SharedObjectAddAbortException("SharedObject add aborted", participants, failed, getTimeout()); //$NON-NLS-1$
 			// If no problems, and the number of participants to here from is 0,
 			// then we're done
 		} else if (getTransactionState() == ISharedObjectContainerTransaction.VOTING && participants.size() == 0) {
