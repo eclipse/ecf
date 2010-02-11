@@ -253,7 +253,7 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 			}
 		}
 		// if no match has been found, fail with NSME
-		throw new NoSuchMethodException("No such method: " + aMethodName + "(" + Arrays.toString(someParameterTypes) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		throw new NoSuchMethodException("No such method: " + aMethodName + "(" + Arrays.asList(someParameterTypes) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/**
