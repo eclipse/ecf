@@ -57,6 +57,9 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	SimpleFIFOQueue queue = null;
 	Thread notificationThread = null;
 
+	/**
+	 * @since 4.0
+	 */
 	public JMDNSDiscoveryContainer() {
 		super(JMDNSNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(JMDNSDiscoveryContainer.class.getName() + ";" + instanceCount++))); //$NON-NLS-1$  //$NON-NLS-2$
 		serviceTypes = new ArrayList();
