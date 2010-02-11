@@ -101,6 +101,10 @@ public class HelloConsumerApplication implements IApplication,
 			containerFactoryServiceTracker = null;
 		}
 		this.bundleContext = null;
+		synchronized (appLock) {
+			done = true;
+			notifyAll();
+		}
 	}
 
 	private IContainerFactory getContainerFactory() {
