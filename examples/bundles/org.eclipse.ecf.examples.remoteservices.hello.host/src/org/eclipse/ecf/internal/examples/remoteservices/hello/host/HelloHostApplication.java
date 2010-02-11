@@ -67,6 +67,10 @@ public class HelloHostApplication implements IApplication,
 			helloRegistration = null;
 		}
 		bundleContext = null;
+		synchronized (appLock) {
+			done = true;
+			notifyAll();
+		}
 	}
 
 	private void processArgs(IApplicationContext appContext) {
