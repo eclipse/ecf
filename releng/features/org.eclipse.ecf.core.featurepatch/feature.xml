@@ -2,12 +2,11 @@
 <feature
       id="org.eclipse.ecf.core.featurepatch"
       label="%featureName"
-      version="3.2.0"
+      version="3.2.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides a patch of the Eclipse 3.5.1 ECF Bundles
-to allow them to work with ECF 3.2 SDK.
+      This feature provides a patch of Eclipse 3.5.X ECF Core Bundles.  This allows the ECF 3.2 SDK to function properly.
    </description>
 
    <copyright>
