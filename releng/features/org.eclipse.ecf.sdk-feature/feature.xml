@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.sdk"
-      label="ECF Software Development Kit Feature"
+      label="ECF SDK Feature"
       version="3.2.0.qualifier"
       provider-name="Eclipse.org">
 
@@ -311,10 +311,8 @@ limitations under the License.
          id="org.eclipse.ecf.core"
          version="0.0.0"/>
 
-  <!-- 
-  <includes
-         id="org.eclipse.ecf.examples"
+   <includes
+         id="org.eclipse.ecf.core.featurepatch"
          version="0.0.0"/>
-  -->
 
 </feature>
