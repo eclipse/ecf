@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.core"
-      label="%featureName"
+      label="Eclipse Communication Framework SDK"
       version="3.2.0.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.ecf">
