@@ -22,6 +22,6 @@ Import-Package: org.eclipse.ecf.core,
  org.osgi.util.tracker
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
-Export-Package: org.eclipse.ecf.internal.osgi.services.distribution;version="1.0.0";x-internal:=true,
- org.eclipse.ecf.osgi.services.distribution;version="1.0.0";x-internal:=true
+Export-Package: org.eclipse.ecf.internal.osgi.services.distribution;version="1.1.0";x-internal:=true,
+ org.eclipse.ecf.osgi.services.distribution;version="1.1.0";x-internal:=true
 Require-Bundle: org.eclipse.equinox.common

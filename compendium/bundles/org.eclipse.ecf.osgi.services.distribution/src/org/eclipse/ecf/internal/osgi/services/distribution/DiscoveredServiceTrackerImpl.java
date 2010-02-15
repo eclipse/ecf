@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Composent, Inc. and others. All rights reserved. This
+ * Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -267,10 +267,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						}
 
 						public void run() throws Exception {
-							l
-									.retrievingRemoteServiceReferences(
-											endpointDescription,
-											remoteServiceContainer);
+							l.retrievingRemoteServiceReferences(
+									endpointDescription, remoteServiceContainer);
 						}
 					});
 				}
@@ -329,11 +327,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						}
 
 						public void run() throws Exception {
-							l
-									.registered(endpointDescription,
-											remoteServiceContainer,
-											remoteServiceReference,
-											serviceRegistration);
+							l.registered(endpointDescription,
+									remoteServiceContainer,
+									remoteServiceReference, serviceRegistration);
 						}
 					});
 				}
