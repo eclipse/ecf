@@ -1,19 +1,12 @@
-/*
- * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
+/*******************************************************************************
+ * Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+ * Contributors:
+ *   Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.osgi.services.discovery;
 
 import org.osgi.framework.ServiceReference;
@@ -48,13 +41,15 @@ import org.osgi.framework.ServiceReference;
  * mechanisms has to succeed.
  * 
  * @ThreadSafe
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
- * @deprecated This interface is deprecated because at the time of ECF 3.0/Galileo
- * release, it seems likely that this class will be moved, or renamed, or undergo
- * major changes after the release of ECF 3.0.  This deprecation is therefore intended
- * as a notice to consumers about these upcoming changes in the RFC119 specification, and the
- * consequent changes to these OSGi-defined classes.
+ * @deprecated This interface is deprecated because at the time of ECF
+ *             3.0/Galileo release, it seems likely that this class will be
+ *             moved, or renamed, or undergo major changes after the release of
+ *             ECF 3.0. This deprecation is therefore intended as a notice to
+ *             consumers about these upcoming changes in the RFC119
+ *             specification, and the consequent changes to these OSGi-defined
+ *             classes.
  */
 public interface ServicePublication {
 
@@ -66,7 +61,7 @@ public interface ServicePublication {
 	 * Value of this property is of type
 	 * <code>Collection (&lt;String&gt;)</code>.
 	 */
-	public static final String	SERVICE_INTERFACE_NAME		= "osgi.remote.service.interfaces"; //$NON-NLS-1$
+	public static final String SERVICE_INTERFACE_NAME = "osgi.remote.service.interfaces"; //$NON-NLS-1$
 
 	/**
 	 * Optional ServiceRegistration property which contains a collection of
@@ -80,7 +75,7 @@ public interface ServicePublication {
 	 * <code>Collection (&lt;String&gt;)</code>, may be <code>null</code> or
 	 * empty.
 	 */
-	public static final String	SERVICE_INTERFACE_VERSION	= "osgi.remote.service.interfaces.version"; //$NON-NLS-1$
+	public static final String SERVICE_INTERFACE_VERSION = "osgi.remote.service.interfaces.version"; //$NON-NLS-1$
 
 	/**
 	 * Optional ServiceRegistration property which contains a collection of
@@ -100,7 +95,7 @@ public interface ServicePublication {
 	 * <code>Collection (&lt;String&gt;)</code>, may be <code>null</code> or
 	 * empty.
 	 */
-	public static final String	ENDPOINT_INTERFACE_NAME		= "osgi.remote.endpoint.interfaces"; //$NON-NLS-1$
+	public static final String ENDPOINT_INTERFACE_NAME = "osgi.remote.endpoint.interfaces"; //$NON-NLS-1$
 
 	/**
 	 * Optional ServiceRegistration property which contains a map of properties
@@ -112,7 +107,7 @@ public interface ServicePublication {
 	 * Value of this property is of type <code>Map (String, Object)</code>, may
 	 * be <code>null</code> or empty.
 	 */
-	public static final String	SERVICE_PROPERTIES			= "osgi.remote.discovery.publication.service.properties"; //$NON-NLS-1$
+	public static final String SERVICE_PROPERTIES = "osgi.remote.discovery.publication.service.properties"; //$NON-NLS-1$
 
 	/**
 	 * Optional property of the published service identifying its location. This
@@ -122,7 +117,7 @@ public interface ServicePublication {
 	 * Value of this property is of type <code>java.net.URI</code>, may be
 	 * <code>null</code>.
 	 */
-	public static final String	ENDPOINT_LOCATION			= "osgi.remote.endpoint.location"; //$NON-NLS-1$
+	public static final String ENDPOINT_LOCATION = "osgi.remote.endpoint.location"; //$NON-NLS-1$
 
 	/**
 	 * Optional property of the published service uniquely identifying its
@@ -133,7 +128,7 @@ public interface ServicePublication {
 	 * Value of this property is of type <code>String</code>, may be
 	 * <code>null</code>.
 	 */
-	public static final String	ENDPOINT_ID					= "osgi.remote.endpoint.id"; //$NON-NLS-1$
+	public static final String ENDPOINT_ID = "osgi.remote.endpoint.id"; //$NON-NLS-1$
 
 	/**
 	 * Separator constant for association of interface-specific values with the
@@ -141,7 +136,7 @@ public interface ServicePublication {
 	 * and {@link #ENDPOINT_INTERFACE_NAME} properties which describe such
 	 * interface-specific values.
 	 */
-	public static final String	SEPARATOR					= "|"; //$NON-NLS-1$
+	public static final String SEPARATOR = "|"; //$NON-NLS-1$
 
 	/**
 	 * Returns the <code>ServiceReference</code> this publication metadata is

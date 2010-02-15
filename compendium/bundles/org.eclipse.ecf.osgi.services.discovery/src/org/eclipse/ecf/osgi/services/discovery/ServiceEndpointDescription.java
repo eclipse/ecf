@@ -1,19 +1,12 @@
-/*
- * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
+/*******************************************************************************
+ * Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+ * Contributors:
+ *   Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.osgi.services.discovery;
 
 import java.net.URI;
@@ -29,13 +22,15 @@ import java.util.Map;
  * <code>ServiceEndpointDescription</code> objects are immutable.
  * 
  * @Immutable
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
- * @deprecated This interface is deprecated because at the time of ECF 3.0/Galileo
- * release, it seems likely that this class will be moved, or renamed, or undergo
- * major changes after the release of ECF 3.0.  This deprecation is therefore intended
- * as a notice to consumers about these upcoming changes in the RFC119 specification, and the
- * consequent changes to these OSGi-defined classes.
+ * @deprecated This interface is deprecated because at the time of ECF
+ *             3.0/Galileo release, it seems likely that this class will be
+ *             moved, or renamed, or undergo major changes after the release of
+ *             ECF 3.0. This deprecation is therefore intended as a notice to
+ *             consumers about these upcoming changes in the RFC119
+ *             specification, and the consequent changes to these OSGi-defined
+ *             classes.
  */
 public interface ServiceEndpointDescription {
 
@@ -58,8 +53,9 @@ public interface ServiceEndpointDescription {
 	 * {@link ServicePublication#ENDPOINT_INTERFACE_NAME} is used by this
 	 * operation.
 	 * 
-	 * @param interfaceName for which its non-Java endpoint interface name
-	 *        should be returned.
+	 * @param interfaceName
+	 *            for which its non-Java endpoint interface name should be
+	 *            returned.
 	 * @return non-Java endpoint interface name, or <code>null</code> if it
 	 *         hasn't been provided or if given interface name is
 	 *         <code>null</code>.
@@ -73,7 +69,8 @@ public interface ServiceEndpointDescription {
 	 * {@link ServicePublication#SERVICE_INTERFACE_VERSION} is used by this
 	 * operation.
 	 * 
-	 * @param interfaceName for which its version should be returned.
+	 * @param interfaceName
+	 *            for which its version should be returned.
 	 * @return Version of given service interface, or <code>null</code> if it
 	 *         hasn't been provided or if given interface name is
 	 *         <code>null</code>.
@@ -101,7 +98,8 @@ public interface ServiceEndpointDescription {
 	/**
 	 * Getter method for the property value of a given key.
 	 * 
-	 * @param key Name of the property
+	 * @param key
+	 *            Name of the property
 	 * @return The property value, or <code>null</code> if none is found for the
 	 *         given key or if provided key is <code>null</code>.
 	 */

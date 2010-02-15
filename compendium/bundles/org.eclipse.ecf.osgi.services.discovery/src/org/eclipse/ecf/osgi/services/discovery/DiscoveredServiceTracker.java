@@ -1,19 +1,12 @@
-/*
- * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
+/*******************************************************************************
+ * Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+ * Contributors:
+ *   Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.osgi.services.discovery;
 
 /**
@@ -29,13 +22,15 @@ package org.eclipse.ecf.osgi.services.discovery;
  * and/or reenter a <code>DiscoveredServiceTracker</code>.
  * 
  * @ThreadSafe
- * @version $Revision: 1.1 $
- *
- * @deprecated This interface is deprecated because at the time of ECF 3.0/Galileo
- * release, it seems likely that this class will be moved, or renamed, or undergo
- * major changes after the release of ECF 3.0.  This deprecation is therefore intended
- * as a notice to consumers about these upcoming changes in the RFC119 specification, and the
- * consequent changes to these OSGi-defined classes.
+ * @version $Revision: 1.2 $
+ * 
+ * @deprecated This interface is deprecated because at the time of ECF
+ *             3.0/Galileo release, it seems likely that this class will be
+ *             moved, or renamed, or undergo major changes after the release of
+ *             ECF 3.0. This deprecation is therefore intended as a notice to
+ *             consumers about these upcoming changes in the RFC119
+ *             specification, and the consequent changes to these OSGi-defined
+ *             classes.
  */
 public interface DiscoveredServiceTracker {
 
@@ -47,7 +42,7 @@ public interface DiscoveredServiceTracker {
 	 * <code>Collection (&lt;String&gt;)</code>. May be <code>null</code> or
 	 * empty.
 	 */
-	public static final String	INTERFACE_MATCH_CRITERIA	= "osgi.remote.discovery.interest.interfaces"; //$NON-NLS-1$
+	public static final String INTERFACE_MATCH_CRITERIA = "osgi.remote.discovery.interest.interfaces"; //$NON-NLS-1$
 
 	/**
 	 * Optional ServiceRegistration property which contains filters for services
@@ -67,7 +62,7 @@ public interface DiscoveredServiceTracker {
 	 * <code>Collection (&lt;String&gt;)</code>. May be <code>null</code>. or
 	 * empty
 	 */
-	public static final String	FILTER_MATCH_CRITERIA		= "osgi.remote.discovery.interest.filters"; //$NON-NLS-1$
+	public static final String FILTER_MATCH_CRITERIA = "osgi.remote.discovery.interest.filters"; //$NON-NLS-1$
 
 	/**
 	 * Receives notification that information known to <code>Discovery</code>
@@ -81,8 +76,9 @@ public interface DiscoveredServiceTracker {
 	 * them. This can be done either by a single notification callback or by
 	 * multiple subsequent ones.
 	 * 
-	 * @param notification the <code>DiscoveredServiceNotification</code> object
-	 *        describing the change. Is never <code>null</code>.
+	 * @param notification
+	 *            the <code>DiscoveredServiceNotification</code> object
+	 *            describing the change. Is never <code>null</code>.
 	 */
 	void serviceChanged(DiscoveredServiceNotification notification);
 }

@@ -1,19 +1,12 @@
-/*
- * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
+/*******************************************************************************
+ * Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+ * Contributors:
+ *   Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.osgi.services.discovery;
 
 import java.util.Collection;
@@ -24,14 +17,16 @@ import java.util.Collection;
  * <code>DiscoveredServiceNotification</code> objects are immutable.
  * 
  * @Immutable
- * @version $Revision: 1.1 $
- *
- * @deprecated This interface is deprecated because at the time of ECF 3.0/Galileo
- * release, it seems likely that this class will be moved, or renamed, or undergo
- * major changes after the release of ECF 3.0.  This deprecation is therefore intended
- * as a notice to consumers about these upcoming changes in the RFC119 specification, and the
- * consequent changes to these OSGi-defined classes.
-*/
+ * @version $Revision: 1.2 $
+ * 
+ * @deprecated This interface is deprecated because at the time of ECF
+ *             3.0/Galileo release, it seems likely that this class will be
+ *             moved, or renamed, or undergo major changes after the release of
+ *             ECF 3.0. This deprecation is therefore intended as a notice to
+ *             consumers about these upcoming changes in the RFC119
+ *             specification, and the consequent changes to these OSGi-defined
+ *             classes.
+ */
 public interface DiscoveredServiceNotification {
 
 	/**
@@ -40,7 +35,7 @@ public interface DiscoveredServiceNotification {
 	 * <p>
 	 * The value of <code>AVAILABLE</code> is 0x00000001.
 	 */
-	public final static int	AVAILABLE			= 0x00000001;
+	public final static int AVAILABLE = 0x00000001;
 
 	/**
 	 * Notification indicating that the properties of a previously discovered
@@ -48,7 +43,7 @@ public interface DiscoveredServiceNotification {
 	 * <p>
 	 * The value of <code>MODIFIED</code> is 0x00000002.
 	 */
-	public final static int	MODIFIED			= 0x00000002;
+	public final static int MODIFIED = 0x00000002;
 
 	/**
 	 * Notification indicating that a previously discovered service is no longer
@@ -56,7 +51,7 @@ public interface DiscoveredServiceNotification {
 	 * <p>
 	 * The value of <code>UNAVAILABLE</code> is 0x00000004.
 	 */
-	public final static int	UNAVAILABLE			= 0x00000004;
+	public final static int UNAVAILABLE = 0x00000004;
 
 	/**
 	 * Notification indicating that the properties of a previously discovered
@@ -65,7 +60,7 @@ public interface DiscoveredServiceNotification {
 	 * <p>
 	 * The value of <code>MODIFIED_ENDMATCH</code> is 0x00000008.
 	 */
-	public final static int	MODIFIED_ENDMATCH	= 0x00000008;
+	public final static int MODIFIED_ENDMATCH = 0x00000008;
 
 	/**
 	 * Returns information currently known to <code>Discovery</code> regarding

@@ -18,5 +18,5 @@ Import-Package: org.eclipse.ecf.core.identity,
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common
-Export-Package: org.eclipse.ecf.internal.osgi.services.discovery;version="1.0.0";x-internal:=true,
- org.eclipse.ecf.osgi.services.discovery;version="1.0.0";x-internal:=true
+Export-Package: org.eclipse.ecf.internal.osgi.services.discovery;version="1.1.0";x-internal:=true,
+ org.eclipse.ecf.osgi.services.discovery;version="1.1.0";x-internal:=true
