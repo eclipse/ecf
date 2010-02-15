@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.ecf.core.featurepatch"
+      label="%featureName"
+      version="3.2.0"
+      provider-name="%providerName">
+
+   <description url="http://www.eclipse.org/ecf">
+      This feature provides a patch of the Eclipse 3.5.1 ECF Bundles
+to allow them to work with ECF 3.2 SDK.
+   </description>
+
+   <copyright>
+      Copyright (c) 2010 Composent, Inc. and others. All rights
+reserved.
+This program and the accompanying materials are made available
+under the terms of the Eclipse Public License v1.0 which accompanies
+this distribution, and is available at 
+http://www.eclipse.org/legal/epl-v10.html
+ 
+Contributors: Composent, Inc. - initial API and implementation
+   </copyright>
+
+   <license url="license.html">
+      %license
+   </license>
+
+   <requires>
+      <import feature="org.eclipse.equinox.p2.user.ui" version="1.1.1.R35x_v20090811-7u6FbEFYXk1qWdbS0gnpRg2932" patch="true"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.ecf"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.identity"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
