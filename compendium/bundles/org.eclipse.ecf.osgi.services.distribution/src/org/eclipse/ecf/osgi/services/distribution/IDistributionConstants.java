@@ -9,6 +9,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
+/**
+ * @since 1.1
+ */
 public interface IDistributionConstants {
 
 	// From OSGi 4.2 Compendium Specification, table 13.1 in r4.cmpn.pdf

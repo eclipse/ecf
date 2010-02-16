@@ -9,6 +9,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.distribution;
 
+/**
+ * @since 1.1
+ */
 public interface IDistributionProvider {
 
 }

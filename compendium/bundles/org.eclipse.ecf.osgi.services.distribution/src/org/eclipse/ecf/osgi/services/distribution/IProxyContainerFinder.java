@@ -18,6 +18,8 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
  * containers. Services registered with this interfaces will be consulted when a
  * remote proxy is discovered, in order to select and/or connect
  * IRemoteServiceContainer instances to use to create proxies.
+ * 
+ * @since 1.1
  */
 public interface IProxyContainerFinder {
 

@@ -18,6 +18,8 @@ import org.osgi.framework.ServiceReference;
  * service interface will have their methods called when the distribution
  * implementation events occur.
  * 
+ * @since 1.1
+ * 
  */
 public interface IHostDistributionListener {
 

@@ -34,6 +34,8 @@ import org.osgi.framework.ServiceReference;
 /**
  * Abstract superclass for IHostContainerFinders and IProxyContainerFinders.
  * 
+ * @since 1.1
+ * 
  */
 public abstract class AbstractContainerFinder {
 
