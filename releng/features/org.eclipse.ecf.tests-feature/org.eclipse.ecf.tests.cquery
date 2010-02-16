@@ -4,14 +4,8 @@
     <cq:property key="target.arch" value="*"/>
     <cq:property key="target.os" value="*"/>
     <cq:property key="target.ws" value="*"/>
-
-   
-    <!-- this is us -->
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.filetransfer$" skipComponent="true"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
-
-	<!-- this feature references ECF itself (in a specific version), thus skip it -->
     <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false"/>
-
-	<!-- the rest we want binary only -->
-    <cq:advisorNode namePattern=".*" useTargetPlatform="true" skipComponent="false" mutableLevel="REJECT" sourceLevel="REJECT"/>
+    <cq:advisorNode namePattern=".*" mutableLevel="REJECT" sourceLevel="REJECT"/>
 </cq:componentQuery>
