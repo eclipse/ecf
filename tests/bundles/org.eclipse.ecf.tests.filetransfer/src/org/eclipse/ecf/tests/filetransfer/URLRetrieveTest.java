@@ -12,12 +12,9 @@
 package org.eclipse.ecf.tests.filetransfer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 
 import org.apache.commons.httpclient.server.HttpRequestHandler;
@@ -25,21 +22,17 @@ import org.apache.commons.httpclient.server.ResponseWriter;
 import org.apache.commons.httpclient.server.SimpleHttpServer;
 import org.apache.commons.httpclient.server.SimpleHttpServerConnection;
 import org.apache.commons.httpclient.server.SimpleRequest;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
-import org.eclipse.ecf.filetransfer.SendFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.tests.filetransfer.httpserver.SimpleServer;
-//import org.eclipse.equinox.internal.p2.repository.RepositoryTransport;
 
 public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	public static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
-	public static final String HTTP_RETRIEVE1 = "http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&url=http://ftp.osuosl.org/pub/eclipse/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&mirror_id=272";
+	public static final String HTTP_RETRIEVE1 = "http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&url=http://ftp.osuosl.org/pub/eclipse/eclipse/downloads/drops/S-3.6M5-201001291300/jarprocessor.jar&mirror_id=272";
 	public static final String HTTP_RETRIEVE_PORT = "http://www.eclipse.org:80/ecf/ip_log.html";
 	private static final String HTTP_RETRIEVE_HOST_ONLY = "http://www.google.com";
 
