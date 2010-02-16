@@ -369,13 +369,6 @@ limitations under the License.
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.tests.filetransfer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.tests.presence"
          download-size="0"
          install-size="0"
@@ -396,27 +389,6 @@ limitations under the License.
          install-size="0"
          version="0.0.0"
          fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.provider.filetransfer.efs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.provider.filetransfer.scp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.provider.filetransfer.xmpp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -484,20 +456,6 @@ limitations under the License.
 
    <plugin
          id="org.eclipse.ecf.tests.provider.discovery"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.apache.httpclient.server"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.filetransfer.httpserver"
          download-size="0"
          install-size="0"
          version="0.0.0"
