@@ -41,6 +41,11 @@
                 <bc:propertyRef key="buckminster.component" />
             </uri>
         </provider>
+		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+			<uri format="{0}/?importType=binary"/>
+                <bc:propertyRef key="ecf.p2.repository" />
+            </uri>    
+		</provider>
 	</searchPath>
 
 	<!-- pluginbuilder -->
