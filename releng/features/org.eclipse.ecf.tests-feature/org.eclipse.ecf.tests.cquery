@@ -7,10 +7,7 @@
 
    
     <!-- this is us -->
-    <cq:advisorNode namePattern="^ch\.ethz\.iks(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
-    <cq:advisorNode namePattern="^org\.eclipse\.ecf(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
-    <cq:advisorNode namePattern="^org\.eclipse\.team\.ecf(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
-    <cq:advisorNode namePattern="^org\.jivesoftware\.smack$" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
 
 	<!-- this feature references ECF itself (in a specific version), thus skip it -->
     <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false"/>
