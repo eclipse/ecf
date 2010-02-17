@@ -19,5 +19,5 @@ Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.osgi.util.tracker;version="1.4.2"
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: bundle
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.5.0"
+Require-Bundle: org.eclipse.equinox.common
 Export-Package: org.eclipse.ecf.internal.examples.remoteservices.hello.consumer;x-internal:=true
