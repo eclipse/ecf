@@ -25,7 +25,7 @@ Import-Package: org.apache.commons.httpclient;version="3.0.1",
  org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.eclipse.osgi.util;version="1.1.0",
  org.osgi.framework;version="1.5.0"
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.5.1",
+Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf;bundle-version="3.1.0"
 Service-Component: META-INF/dspresent.xml
 Bundle-Localization: plugin
