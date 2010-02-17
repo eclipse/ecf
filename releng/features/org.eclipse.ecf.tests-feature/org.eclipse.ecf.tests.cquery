@@ -5,6 +5,7 @@
     <cq:property key="target.os" value="*"/>
     <cq:property key="target.ws" value="*"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.filetransfer$" skipComponent="true"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.provider\.filetransfer$" skipComponent="true"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false"/>
     <cq:advisorNode namePattern=".*" mutableLevel="REJECT" sourceLevel="REJECT"/>
