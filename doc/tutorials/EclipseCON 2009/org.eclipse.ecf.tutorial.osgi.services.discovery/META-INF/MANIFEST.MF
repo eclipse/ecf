@@ -19,6 +19,6 @@ Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.osgi.util.tracker
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.4.0"
+Require-Bundle: org.eclipse.equinox.common
 Export-Package: org.eclipse.ecf.internal.osgi.services.discovery;version="1.0.0";x-internal:=true,
  org.eclipse.ecf.osgi.services.discovery;version="1.0.0"
