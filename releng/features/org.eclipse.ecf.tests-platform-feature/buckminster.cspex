@@ -6,7 +6,7 @@
 	<dependencies>
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
-		<dependency name="org.eclipse.ecf.core" componentType="eclipse.feature"/>
+		<dependency name="org.eclipse.ecf.platform_feature" componentType="eclipse.feature"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
