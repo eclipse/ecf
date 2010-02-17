@@ -16,5 +16,5 @@ Import-Package: org.eclipse.ecf.core,
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: bundle
 Export-Package: org.eclipse.ecf.internal.examples.loadbalancing.servicehost;x-internal:=true
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.5.1"
+Require-Bundle: org.eclipse.equinox.common
 
