@@ -15,4 +15,4 @@ Import-Package: org.eclipse.ecf.core,
  org.osgi.util.tracker
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: bundle
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.5.1"
+Require-Bundle: org.eclipse.equinox.common
