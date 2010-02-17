@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.IContainerListener;
@@ -477,6 +478,22 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 
 	public IChatRoomContainer getRootChatRoomContainer() {
 		return container;
+	}
+
+	/**
+	 * @return a list of IChatRoomContainer for each open channel 
+	 * or an empty array if there are no channels open. 
+	 * @since 2.1
+	 */
+	public IChatRoomContainer[] getChatRoomContainers() {
+		List containers = new ArrayList(chatRooms.size());
+		for (Iterator i = chatRooms.values().iterator(); i.hasNext();) {
+			ChatRoom cr = (ChatRoom) i.next();
+			if (cr.chatRoomContainer != null) {
+				containers.add(cr.chatRoomContainer);
+			}
+		}
+		return (IChatRoomContainer[]) containers.toArray(new IChatRoomContainer[containers.size()]);
 	}
 
 	/**
