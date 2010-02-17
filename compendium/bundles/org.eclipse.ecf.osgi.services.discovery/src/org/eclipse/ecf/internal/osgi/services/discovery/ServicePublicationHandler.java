@@ -265,11 +265,19 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 					Constants.SERVICE_NAMESPACE, rsnamespace);
 
 		// and remote service id
-		byte[] remoteServiceIDAsBytes = (byte[]) reference
+		final byte[] remoteServiceIDAsBytes = (byte[]) reference
 				.getProperty(Constants.SERVICE_ID);
-		if (remoteServiceIDAsBytes != null)
-			discoveryServiceProperties.setPropertyBytes(Constants.SERVICE_ID,
-					remoteServiceIDAsBytes);
+		if (remoteServiceIDAsBytes == null) {
+			logInfo(
+					"handleServicePublication", //$NON-NLS-1$
+					"ignoring " //$NON-NLS-1$
+							+ reference
+							+ ". No " + Constants.SERVICE_ID + " property set on ServiceReference", //$NON-NLS-1$
+					null);
+			return;
+		}
+		discoveryServiceProperties.setPropertyBytes(Constants.SERVICE_ID,
+				remoteServiceIDAsBytes);
 
 		IDiscoveryAdvertiser advertiser2 = getAdvertiser();
 		if (advertiser2 == null) {
