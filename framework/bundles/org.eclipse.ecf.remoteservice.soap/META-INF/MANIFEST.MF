@@ -15,5 +15,5 @@ Export-Package: org.eclipse.ecf.remoteservice.soap.client,
  org.eclipse.ecf.remoteservice.soap.identity
 DynamicImport-Package: *
 Eclipse-BuddyPolicy: global
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.5.1"
+Require-Bundle: org.eclipse.equinox.common
 Bundle-Localization: plugin
