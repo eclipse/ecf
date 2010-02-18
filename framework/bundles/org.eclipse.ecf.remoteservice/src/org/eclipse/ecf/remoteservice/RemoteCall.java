@@ -13,7 +13,7 @@ import java.util.Arrays;
 import org.eclipse.core.runtime.Assert;
 
 /**
- * @since 3.3
+ * @since 4.0
  */
 public class RemoteCall implements IRemoteCall {
 

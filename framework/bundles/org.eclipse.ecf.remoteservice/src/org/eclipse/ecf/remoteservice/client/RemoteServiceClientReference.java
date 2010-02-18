@@ -16,7 +16,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 /**
  * Reference objects for {@link AbstractClientContainer}.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public class RemoteServiceClientReference implements IRemoteServiceReference {
 

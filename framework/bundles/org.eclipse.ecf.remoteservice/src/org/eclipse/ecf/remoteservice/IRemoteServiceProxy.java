@@ -11,6 +11,7 @@ package org.eclipse.ecf.remoteservice;
 
 /**
  * @since 3.3
+ * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IRemoteServiceProxy {
 
@@ -26,6 +27,7 @@ public interface IRemoteServiceProxy {
 	 *
 	 * @return IRemoteServiceReference for this proxy.  May be <code>null</code>
 	 * if no IRemoteServiceReference associated with this proxy.
+	 * @since 4.0
 	 */
 	IRemoteServiceReference getRemoteServiceReference();
 }

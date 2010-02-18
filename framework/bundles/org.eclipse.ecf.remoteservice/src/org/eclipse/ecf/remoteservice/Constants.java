@@ -236,7 +236,7 @@ public interface Constants {
 	 * Service property used on service registration to indicate that a service proxy 
 	 * should be created rather than using the given service object (which may be null
 	 * when this service property is set).
-	 * @since 3.3
+	 * @since 4.0
 	 */
 	public static final String SERVICE_REGISTER_PROXY = "ecf.rsvc.proxy"; //$NON-NLS-1$
 }

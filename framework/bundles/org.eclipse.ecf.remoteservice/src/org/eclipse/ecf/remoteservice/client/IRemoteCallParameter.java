@@ -12,7 +12,7 @@ package org.eclipse.ecf.remoteservice.client;
 /**
  * A remote call parameter, with a String name and Object value.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public interface IRemoteCallParameter {
 
