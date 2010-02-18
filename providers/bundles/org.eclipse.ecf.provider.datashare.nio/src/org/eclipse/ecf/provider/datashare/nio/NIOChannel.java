@@ -668,7 +668,7 @@ public abstract class NIOChannel implements IChannel {
 	 * 
 	 * @return the open port for socket connections
 	 * @see #sendRequest(ID)
-	 * @see NIODatashareContainer#enqueue(String[])
+	 * @see NIODatashareContainer#enqueue(SocketAddress)
 	 */
 	protected final int getLocalPort() {
 		return localPort;
@@ -690,7 +690,7 @@ public abstract class NIOChannel implements IChannel {
 	 * @throws ECFException
 	 *             if an error occurred while attempting to send the request
 	 * @see #getLocalPort()
-	 * @see NIODatashareContainer#enqueue(String[])
+	 * @see NIODatashareContainer#enqueue(SocketAddress)
 	 */
 	protected abstract void sendRequest(ID receiver) throws ECFException;
 
