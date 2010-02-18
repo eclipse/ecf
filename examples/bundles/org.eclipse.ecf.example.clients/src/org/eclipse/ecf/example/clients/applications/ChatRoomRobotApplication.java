@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. All rights reserved. This
+ * Copyright (c) 2010 Composent, Inc. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -31,71 +31,67 @@ import org.eclipse.equinox.app.IApplicationContext;
  */
 public class ChatRoomRobotApplication implements IApplication, IMessageReceiver, IIMMessageListener {
 
+	private String senderAccount;
+	private Object lock = new Object();
+	private boolean done = false;
 	private IChatRoomMessageSender sender;
-
-	private boolean running = false;
-
-	private String userName;
-
+	
 	public Object start(IApplicationContext context) throws Exception {
-		Object[] args = context.getArguments().values().toArray();
-		while (args[0] instanceof Object[])
-			args = (Object[]) args[0];
-		final Object[] arguments = args;
-		final int l = arguments.length;
-		if (arguments[l - 1] instanceof String && arguments[l - 2] instanceof String && arguments[l - 3] instanceof String && arguments[l - 4] instanceof String) {
-			userName = (String) arguments[l - 4];
-			final String hostName = (String) arguments[l - 3];
-			final String password = (String) arguments[l - 2];
-			final String roomName = (String) arguments[l - 1];
-			runRobot(hostName, password, roomName);
-			return new Integer(0);
+		// process program arguments
+		String[] originalArgs = (String[]) context.getArguments().get(
+				"application.args");
+		if (originalArgs.length < 4) {
+			System.out
+					.println("Parameters:  <senderAccount> <senderPassword> <chatroomname>.  e.g. sender@gmail.com senderpassword mychatroom");
+			return new Integer(-1);
 		}
-		System.out.println("Usage: pass in four arguments (username, hostname, password, roomname)");
-		return new Integer(-1);
-	}
-
-	public void stop() {
-	}
-
-	private synchronized void runRobot(String hostName, String password, String roomName) throws ECFException, Exception, InterruptedException {
+		senderAccount = originalArgs[0];
+		// Create client
 		final XMPPChatRoomClient client = new XMPPChatRoomClient(this);
+		// connect to senderAccount using senderPassword
+		client.connect(senderAccount, originalArgs[1]);
+		// get chat room
+		final IChatRoomContainer chatRoomContainer = client.createChatRoom(originalArgs[2]);
+		// join/connect to chat room
+		chatRoomContainer.connect(client.getChatRoomInfo().getRoomID(), null);
 
-		// Then connect
-		final String connectTarget = userName + "@" + hostName;
-
-		client.connect(connectTarget, password);
-
-		final IChatRoomContainer room = client.createChatRoom(roomName);
-		room.connect(client.getChatRoomInfo().getRoomID(), null);
-
-		client.createSharedObject();
-
-		System.out.println("ECF chat room robot (" + connectTarget + ").  Connected to room: " + client.getChatRoomInfo().getRoomID().getName());
-
-		room.addMessageListener(this);
-		sender = room.getChatRoomMessageSender();
-		running = true;
+		System.out.println("ECF chat room robot sender=" + senderAccount + "  Connected to room: " + client.getChatRoomInfo().getRoomID().getName());
+		// Add message listener to chat room
+		chatRoomContainer.addMessageListener(this);
+		// Get chat room message sender
+		sender = chatRoomContainer.getChatRoomMessageSender();
 		sender.sendMessage("Hi, I'm a robot. To get rid of me, send me a direct message.");
-		while (running) {
-			wait();
+		synchronized (lock) {
+			while (!done) {
+				lock.wait();
+			}
 		}
+		return IApplication.EXIT_OK;
 	}
 
-	public synchronized void handleMessage(IChatMessage chatMessage) {
+	public void handleMessage(IChatMessage chatMessage) {
 		// direct message
 		try {
 			sender.sendMessage("gotta run");
 		} catch (final ECFException e) {
 			e.printStackTrace();
 		}
-		running = false;
-		notifyAll();
+		synchronized (lock) {
+			done = true;
+			lock.notify();
+		}
 	}
 
-	public void handleChatRoomMessage(ID fromID, String messageBody) {
+	public void handleMessageEvent(IIMMessageEvent messageEvent) {
+		if (messageEvent instanceof IChatRoomMessageEvent) {
+			final IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
+			handleChatRoomMessage(m.getFromID(), m.getMessage());
+		}
+	}
+
+	private void handleChatRoomMessage(ID fromID, String messageBody) {
 		// message in chat room
-		if (fromID.getName().startsWith(userName + "@")) {
+		if (fromID.getName().indexOf(senderAccount) != -1) {
 			// my own message, don't respond
 			return;
 		}
@@ -112,10 +108,10 @@ public class ChatRoomRobotApplication implements IApplication, IMessageReceiver,
 		}
 	}
 
-	public void handleMessageEvent(IIMMessageEvent messageEvent) {
-		if (messageEvent instanceof IChatRoomMessageEvent) {
-			final IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
-			handleChatRoomMessage(m.getFromID(), m.getMessage());
+	public void stop() {
+		synchronized (lock) {
+			done = true;
+			lock.notify();
 		}
 	}
 

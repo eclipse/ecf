@@ -15,7 +15,6 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
@@ -97,18 +96,6 @@ public class XMPPChatRoomClient {
 
 		// Get a local ID for user account
 		userID = getID(account);
-	}
-
-	/**
-	 * @throws ECFException 
-	 * 
-	 */
-	public void createSharedObject() throws ECFException {
-		final ISharedObjectContainer socontainer = (ISharedObjectContainer) chatroom.getAdapter(ISharedObjectContainer.class);
-		final ID sharedObjectID = IDFactory.getDefault().createGUID();
-		if (socontainer != null) {
-			socontainer.getSharedObjectManager().addSharedObject(sharedObjectID, new TestSharedObject("testsharedobject"), null);
-		}
 	}
 
 	public IChatRoomContainer createChatRoom(String chatRoomName) throws Exception {

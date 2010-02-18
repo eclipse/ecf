@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * Copyright (c) 2010 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,51 +10,104 @@
  ******************************************************************************/
 package org.eclipse.ecf.example.clients.applications;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.clients.IMessageReceiver;
 import org.eclipse.ecf.example.clients.XMPPChatClient;
+import org.eclipse.ecf.presence.IPresence;
+import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
-public class ChatSORobotApplication implements IApplication, IMessageReceiver {
+public class ChatSORobotApplication implements IApplication, IMessageReceiver,
+		IPresenceListener {
 
-	public static final int WAIT_TIME = 10000;
-	public static final int WAIT_COUNT = 10;
-
-	private boolean running = false;
-	private String userName;
-	private XMPPChatClient client;
-	private TrivialSharedObject sharedObject = null;
+	// this map contains the account -> XMPPID. Items are added to it via the
+	// IPresenceListener.handlePresence method
+	private Map rosterUsers = Collections.synchronizedMap(new HashMap());
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
+	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
+	 * IApplicationContext)
 	 */
 	public Object start(IApplicationContext context) throws Exception {
-		Object[] args = context.getArguments().values().toArray();
-		while (args[0] instanceof Object[])
-			args = (Object[]) args[0];
-		Object[] arguments = (Object[]) args;
-		int l = arguments.length;
-		if (arguments[l - 1] instanceof String
-				&& arguments[l - 2] instanceof String
-				&& arguments[l - 3] instanceof String
-				&& arguments[l - 4] instanceof String) {
-			userName = (String) arguments[l - 4];
-			String hostName = (String) arguments[l - 3];
-			String password = (String) arguments[l - 2];
-			String targetName = (String) arguments[l - 1];
-			runRobot(hostName, password, targetName);
-			return new Integer(0);
+		// process program arguments
+		String[] originalArgs = (String[]) context.getArguments().get(
+				"application.args");
+		if (originalArgs.length < 3) {
+			System.out
+					.println("Parameters:  <senderAccount> <senderPassword> <targetAccount> [<message>].  e.g. sender@gmail.com senderpassword receiver@gmail.com \"Hello there\"");
+			return new Integer(-1);
+		}
+		String message = null;
+		if (originalArgs.length > 3)
+			message = originalArgs[3];
+
+		// Create client
+		XMPPChatClient client = new XMPPChatClient(this, this);
+
+		// connect
+		client.connect(originalArgs[0], originalArgs[1]);
+
+		// Wait for 5s for the roster/presence information to be received
+		final Object lock = new Object();
+		synchronized (lock) {
+			lock.wait(5000);
 		}
 
-		System.out
-				.println("Usage: pass in four arguments (username, hostname, password, targetIMUser)");
-		return new Integer(-1);
+		// Get desired user ID from rosterUsers map. This is just looking for a
+		// user that's active and on our contacts list
+		ID targetID = (ID) rosterUsers.get(originalArgs[2]);
+		if (targetID == null) {
+			System.out
+					.println("target user="
+							+ originalArgs[2]
+							+ " is not on active on your contacts list.  Cannot send message to this user");
+			return new Integer(0);
+		}
+		// Construct message
+		String msgToSend = (message == null) ? "Hi, I'm an ECF chat robot."
+				: message;
+		System.out.println("ECF chat robot example sending to targetAccount="
+				+ originalArgs[2] + " message=" + msgToSend);
+
+		// Send chat message to targetID
+		client.sendChat(targetID, msgToSend);
+
+		// Get shared object container adapter
+		ISharedObjectContainer socontainer = (ISharedObjectContainer) client
+				.getContainer().getAdapter(ISharedObjectContainer.class);
+		// Create and add shared object to container
+		TrivialSharedObject sharedObject = new TrivialSharedObject();
+		socontainer.getSharedObjectManager().addSharedObject(
+				IDFactory.getDefault().createStringID(
+						TrivialSharedObject.class.getName()), sharedObject,
+				null);
+
+		// Send messages via shared object...and wait a short while before sending the next one
+		int count = 0;
+		synchronized (lock) {
+			while (count++ < 5) {
+				// Send shared object message
+				sharedObject.sendMessageTo(targetID, "hello from "
+						+ originalArgs[0]+" via shared object");
+				lock.wait(5000);
+			}
+
+		}
+
+		// Close up nicely
+		client.close();
+		return IApplication.EXIT_OK;
 	}
 
 	/*
@@ -65,53 +118,21 @@ public class ChatSORobotApplication implements IApplication, IMessageReceiver {
 	public void stop() {
 	}
 
-	private void runRobot(String hostName, String password, String targetIMUser)
-			throws ECFException, Exception, InterruptedException {
-		// Create client and connect to host
-		client = new XMPPChatClient(this);
-		// Setup container
-		client.setupContainer();
-		// Setup presence adapter
-		client.setupPresence();
-		// Create and add shared object
-		createSharedObject();
-
-		// Then connect
-		String connectTarget = userName + "@" + hostName;
-
-		client.doConnect(connectTarget, password);
-
-		System.out.println("ECF so chat robot (" + connectTarget + ")");
-
-		// Send initial message to target user
-		client.sendChat(targetIMUser, "Hi, I'm an IM robot");
-
-		running = true;
-		int count = 0;
-		// Loop ten times and send ten 'hello there' messages to targetIMUser
-		// out-of-band via shared object
-		while (running && count++ < WAIT_COUNT) {
-			// Send shared object message
-			sharedObject.sendMessageTo(client.createID(targetIMUser),
-					"hello from " + userName);
-			wait(WAIT_TIME);
-		}
-	}
-
-	protected void createSharedObject() throws ECFException {
-		ISharedObjectContainer socontainer = (ISharedObjectContainer) client
-				.getContainer().getAdapter(ISharedObjectContainer.class);
-		// Create TrivialSharedObject
-		sharedObject = new TrivialSharedObject();
-		// Add shared object to container
-		socontainer.getSharedObjectManager().addSharedObject(
-				IDFactory.getDefault().createStringID(
-						TrivialSharedObject.class.getName()), sharedObject,
-				null);
-	}
-
-	public synchronized void handleMessage(IChatMessage chatMessage) {
+	public void handleMessage(IChatMessage chatMessage) {
 		System.out.println("handleMessage(" + chatMessage + ")");
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	public void handlePresence(ID fromID, IPresence presence) {
+		System.out.println("handlePresence fromID=" + fromID + " presence="
+				+ presence);
+		IChatID fromChatID = (IChatID) fromID.getAdapter(IChatID.class);
+		if (fromChatID != null) {
+			rosterUsers.put(fromChatID.getUsername() + "@"
+					+ fromChatID.getHostname(), fromID);
+		}
 	}
 
 }

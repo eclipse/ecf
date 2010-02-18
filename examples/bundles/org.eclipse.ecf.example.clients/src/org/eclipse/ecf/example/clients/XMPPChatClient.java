@@ -13,9 +13,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IIMMessageEvent;
@@ -28,9 +26,6 @@ import org.eclipse.ecf.presence.im.IChatMessageSender;
 
 public class XMPPChatClient {
 
-	protected static String CONTAINER_TYPE = "ecf.xmpp.smack";
-
-	Namespace namespace = null;
 	IContainer container = null;
 	IPresenceContainerAdapter presence = null;
 	IChatMessageSender sender = null;
@@ -46,38 +41,25 @@ public class XMPPChatClient {
 
 	public XMPPChatClient(IMessageReceiver receiver) {
 		super();
-		setMessageReceiver(receiver);
+		this.receiver = receiver;
 	}
 
 	public XMPPChatClient(IMessageReceiver receiver,
 			IPresenceListener presenceListener) {
 		this(receiver);
-		setPresenceListener(presenceListener);
-	}
-
-	protected void setMessageReceiver(IMessageReceiver receiver) {
-		this.receiver = receiver;
-	}
-
-	protected void setPresenceListener(IPresenceListener listener) {
-		this.presenceListener = listener;
+		this.presenceListener = presenceListener;
 	}
 
 	public IContainer setupContainer() throws ECFException {
 		if (container == null) {
 			container = ContainerFactory.getDefault().createContainer(
-					CONTAINER_TYPE);
-			namespace = container.getConnectNamespace();
+					"ecf.xmpp.smack");
 		}
 		return container;
 	}
 
 	public IContainer getContainer() {
 		return container;
-	}
-
-	protected Namespace getConnectNamespace() {
-		return namespace;
 	}
 
 	public void setupPresence() throws ECFException {
@@ -115,19 +97,13 @@ public class XMPPChatClient {
 	public void doConnect(String account, String password)
 			throws ECFException {
 		// Now connect
-		ID targetID = IDFactory.getDefault().createID(namespace, account);
-		container.connect(targetID, ConnectContextFactory
-				.createPasswordConnectContext(password));
 		userID = createID(account);
+		container.connect(userID, ConnectContextFactory
+				.createPasswordConnectContext(password));
 	}
 
 	public ID createID(String name) {
-		try {
-			return IDFactory.getDefault().createID(namespace, name);
-		} catch (IDCreateException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return IDFactory.getDefault().createID(container.getConnectNamespace(), name);
 	}
 
 	public void sendChat(String jid, String msg) {
@@ -135,7 +111,19 @@ public class XMPPChatClient {
 			try {
 				sender.sendChatMessage(createID(jid), msg);
 			} catch (ECFException e) {
-				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	public void sendChat(ID targetID, String msg) {
+		if (sender != null) {
+			try {
+				sender.sendChatMessage(targetID, msg);
+			} catch (ECFException e) {
 				e.printStackTrace();
 			}
 		}
@@ -146,7 +134,6 @@ public class XMPPChatClient {
 			try {
 				sender.sendChatMessage(createID(jid), null, IChatMessage.Type.CHAT, null, null, properties);
 			} catch (ECFException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
