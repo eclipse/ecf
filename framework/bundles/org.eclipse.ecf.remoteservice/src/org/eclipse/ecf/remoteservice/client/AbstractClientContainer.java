@@ -30,7 +30,7 @@ import org.osgi.framework.InvalidSyntaxException;
 /**
  * Remote service client abstract superclass.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public abstract class AbstractClientContainer extends AbstractContainer implements IRemoteServiceClientContainerAdapter {
 

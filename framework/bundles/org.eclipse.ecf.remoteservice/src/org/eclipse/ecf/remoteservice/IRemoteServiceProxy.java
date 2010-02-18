@@ -10,7 +10,7 @@
 package org.eclipse.ecf.remoteservice;
 
 /**
- * @since 3.3
+ * @since 3.2
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IRemoteServiceProxy {
