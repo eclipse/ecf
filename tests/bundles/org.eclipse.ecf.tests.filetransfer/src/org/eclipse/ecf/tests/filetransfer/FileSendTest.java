@@ -12,6 +12,9 @@
 package org.eclipse.ecf.tests.filetransfer;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  *
@@ -26,7 +29,15 @@ public class FileSendTest extends AbstractSendTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		inputFile = new File("test.txt");
+		URL url = this.getClass().getResource("/test.txt");
+		inputFile = File.createTempFile("ECFTest", "input.txt");
+		FileOutputStream fos = new FileOutputStream(inputFile);
+		InputStream ins = url.openStream();
+		byte [] buf = new byte[1024];
+		int l;
+		while ((l = ins.read(buf)) != -1) fos.write(buf);
+		fos.close();
+		ins.close();
 		outputFile = File.createTempFile("ECFTest", "test.txt");
 	}
 
