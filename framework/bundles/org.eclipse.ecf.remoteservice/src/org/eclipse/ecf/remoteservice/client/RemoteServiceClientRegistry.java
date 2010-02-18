@@ -22,7 +22,7 @@ import org.eclipse.ecf.remoteservice.*;
 /**
  * A remote service registry for client remote services.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public class RemoteServiceClientRegistry implements Serializable {
 

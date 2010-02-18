@@ -15,7 +15,7 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
 /**
  * Call parameter serializer.  Represents the serializer for remote call parameters.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public interface IRemoteCallParameterSerializer {
 

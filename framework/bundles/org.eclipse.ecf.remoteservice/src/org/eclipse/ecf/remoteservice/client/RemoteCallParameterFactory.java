@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.Assert;
 /**
  * Factory for creating {@link IRemoteCallParameter} instances.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public class RemoteCallParameterFactory {
 

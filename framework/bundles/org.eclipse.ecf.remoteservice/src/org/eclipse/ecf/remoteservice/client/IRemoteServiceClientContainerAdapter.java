@@ -20,7 +20,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
  * If present, the remote call can be completed, if not present in the registry, the 
  * call is not completed.
 
- * @since 3.3
+ * @since 4.0
  */
 public interface IRemoteServiceClientContainerAdapter extends IRemoteServiceContainerAdapter {
 

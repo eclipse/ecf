@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.Assert;
 /**
  * Implementation of {@link IRemoteCallParameter}.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public class RemoteCallParameter implements IRemoteCallParameter {
 

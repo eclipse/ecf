@@ -19,7 +19,7 @@ import org.eclipse.ecf.remoteservice.*;
 /**
  * Registrations for {@link AbstractClientContainer}.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public class RemoteServiceClientRegistration implements IRemoteServiceRegistration {
 

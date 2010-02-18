@@ -26,7 +26,7 @@ import org.osgi.framework.ServiceException;
 /**
  * Remote service client service.  Implements {@link IRemoteService}.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public abstract class AbstractClientService implements IRemoteService, InvocationHandler {
 

@@ -16,7 +16,7 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
 /**
  * Deserializer for processing call response objects.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public interface IRemoteResponseDeserializer {
 

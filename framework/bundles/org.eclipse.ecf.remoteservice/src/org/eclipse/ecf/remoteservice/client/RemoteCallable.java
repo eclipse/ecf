@@ -16,7 +16,7 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
 /**
  * Implementation of {@link IRemoteCallable}.
  * 
- * @since 3.3
+ * @since 4.0
  */
 public class RemoteCallable implements IRemoteCallable {
 

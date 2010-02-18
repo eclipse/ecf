@@ -49,7 +49,7 @@ public class RemoteCallMethod extends RemoteCall implements IRemoteCall {
 	}
 
 	/**
-	 * @since 3.3
+	 * @since 4.0
 	 */
 	public void setParameters(Method method, Object[] parameters) throws NotSerializableException {
 		checkSerializable(parameters);
