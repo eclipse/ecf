@@ -336,6 +336,8 @@ limitations under the License.
       <import plugin="org.eclipse.equinox.common" version="3.5.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.equinox.concurrent" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ecf.provider.discovery"/>
+      <import plugin="org.eclipse.ecf.provider.r_osgi"/>
+      <import plugin="ch.ethz.iks.r_osgi.remote"/>
    </requires>
 
    <plugin
