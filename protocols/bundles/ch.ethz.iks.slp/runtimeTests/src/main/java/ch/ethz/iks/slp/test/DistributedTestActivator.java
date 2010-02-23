@@ -74,7 +74,7 @@ public class DistributedTestActivator extends TestActivator implements ServiceLi
 				public void run() {
 					startTests();
 				}
-			});
+			}).start();
 		}
 	}
 
