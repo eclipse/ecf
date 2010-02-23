@@ -33,7 +33,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 public class URLPartialRetrieveTest extends AbstractRetrieveTestCase {
 
-	private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/rt/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
+	private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/rt/ecf/update/features/org.eclipse.ecf.examples_1.2.0.v20071019-1300.jar";
 
 	private static final String FILENAME = "foo.zip";
 
