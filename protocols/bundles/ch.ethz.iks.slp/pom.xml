@@ -115,12 +115,12 @@
 					eclipse.consoleLog=true
 					osgi.noShutdown=true
 					osgi.bundles=file:${maven.dependency.org.eclipse.osgi.services.jar.path}@2:start, \
-								 file:${maven.dependency.org.junit.jar.path}@start, \
-								 file:${maven.dependency.org.apache.ant.jar.path}@start, \
-								 file:${basedir}/target/ch.ethz.iks.slp_1.1.0.v20090227-1900.jar@start, \
-								 file:${basedir}/target/org.eclipse.ant.optional.junit_3.2.200.jar, \
-								 file:${basedir}/target/jslp-osgi-${pom.version}.jar@start, \
-								 file:${basedir}/runtimeTests/target/jslp-test-${pom.version}.jar@start
+					file:${maven.dependency.org.junit.jar.path}@start, \
+					file:${maven.dependency.org.apache.ant.jar.path}@start, \
+					file:${basedir}/target/ch.ethz.iks.slp_1.1.0.v20090227-1900.jar@start, \
+					file:${basedir}/target/org.eclipse.ant.optional.junit_3.2.200.jar, \
+					file:${basedir}/target/jslp-osgi-${pom.version}.jar@start, \
+					file:${basedir}/runtimeTests/target/jslp-test-${pom.version}.jar@start
 				</echo>
 				<java fork="true" classname="org.eclipse.core.runtime.adaptor.EclipseStarter" failonerror="true" resultproperty="testresult2">
 					<classpath>
