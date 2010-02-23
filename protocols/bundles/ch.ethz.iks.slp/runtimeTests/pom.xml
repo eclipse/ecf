@@ -50,6 +50,12 @@
          	<version>1.5.3-1</version>
          	<scope>provided</scope>
       	</dependency>
+		<dependency>
+        	<groupId>ant</groupId>
+         	<artifactId>ant</artifactId>
+         	<version>1.5.3-1</version>
+         	<scope>provided</scope>
+      	</dependency>
       	<dependency>
       		<groupId>ch.ethz.iks.slp</groupId>
       		<artifactId>jslp-osgi</artifactId>
