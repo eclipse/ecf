@@ -82,7 +82,7 @@ public class DistributedTestActivator extends TestActivator implements ServiceLi
 		final boolean adv = Arrays.equals((String[]) objectClass, new String[]{Advertiser.class.getName()});
 		
 		// r-OSGi also registers the same service with this framework, however we want to explicitly use the services remoted by ecf distribution
-		final String symbolicName = aServiceReference.getBundle().getSymbolicName();
+		final String symbolicName = (String) aServiceReference.getBundle().getHeaders().get("Bundle-SymbolicName");
 		final boolean remote = symbolicName.equals("org.eclipse.ecf.osgi.services.distribution");
 //		final boolean remote = symbolicName.startsWith("R-OSGi Proxy Bundle generated for Endpoint");
 		
