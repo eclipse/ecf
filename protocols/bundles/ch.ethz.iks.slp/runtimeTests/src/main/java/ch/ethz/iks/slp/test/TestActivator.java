@@ -50,55 +50,61 @@ public class TestActivator implements BundleActivator {
 	}
 
 	protected void startTests() {
-		TestSuite suite = new TestSuite();
-		Collection collection = new ArrayList();
-		
-		collection.add(SelfDiscoveryTest.class);
-		
-		for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-			Class clazz = (Class) iterator.next();
-			// run all methods starting with "test*"
-			Method[] methods = clazz.getMethods();
-			for (int i = 0; i < methods.length; i++) {
-				if (methods[i].getName().startsWith("test")) {
-					TestCase testCase;
-					try {
-						testCase = (TestCase) clazz.newInstance();
-						testCase.setName(methods[i].getName());
-						suite.addTest(testCase);
-					} catch (InstantiationException e) {
-						// may never happen
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						// may never happen
-						e.printStackTrace();
+		new Thread(new Runnable() {
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			public void run() {
+				TestSuite suite = new TestSuite();
+				Collection collection = new ArrayList();
+				
+				collection.add(SelfDiscoveryTest.class);
+				
+				for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
+					Class clazz = (Class) iterator.next();
+					// run all methods starting with "test*"
+					Method[] methods = clazz.getMethods();
+					for (int i = 0; i < methods.length; i++) {
+						if (methods[i].getName().startsWith("test")) {
+							TestCase testCase;
+							try {
+								testCase = (TestCase) clazz.newInstance();
+								testCase.setName(methods[i].getName());
+								suite.addTest(testCase);
+							} catch (InstantiationException e) {
+								// may never happen
+								e.printStackTrace();
+							} catch (IllegalAccessException e) {
+								// may never happen
+								e.printStackTrace();
+							}
+						}
 					}
 				}
+				TestResult result = TestRunner.run(suite);
+				if (result.wasSuccessful()) {
+					System.exit(0);
+				} else {
+					if (result.errorCount() > 0) {
+						System.err.println("Errors:");
+						for (Enumeration errors = result.errors(); errors
+								.hasMoreElements();) {
+							TestFailure error = (TestFailure) errors.nextElement();
+							System.err.println(error.trace());
+						}
+					}
+					if (result.failureCount() > 0) {
+						System.err.println("Failures:");
+						for (Enumeration failures = result.failures(); failures
+								.hasMoreElements();) {
+							TestFailure failure = (TestFailure) failures.nextElement();
+							System.err.println(failure.trace());
+						}
+					}
+					System.exit(1);
+				};
 			}
-		}
-		TestResult result = TestRunner.run(suite);
-		if (result.wasSuccessful()) {
-			System.exit(0);
-		} else {
-			if (result.errorCount() > 0) {
-				System.err.println("Errors:");
-				for (Enumeration errors = result.errors(); errors
-						.hasMoreElements();) {
-					TestFailure error = (TestFailure) errors.nextElement();
-					System.err.println(error.trace());
-				}
-			}
-			if (result.failureCount() > 0) {
-				System.err.println("Failures:");
-				for (Enumeration failures = result.failures(); failures
-						.hasMoreElements();) {
-					TestFailure failure = (TestFailure) failures.nextElement();
-					System.err.println(failure.trace());
-				}
-			}
-			System.exit(1);
-		}
-
+		}).start();
 	}
 		
 	public void stop(BundleContext context) throws Exception {
