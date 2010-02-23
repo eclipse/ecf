@@ -20,7 +20,7 @@
 				<Bundle-Name>jslp-test</Bundle-Name>
 				<Bundle-SymbolicName>ch.ethz.iks.slp.test</Bundle-SymbolicName>
 				<Bundle-Vendor>Jan S. Rellermeyer, IKS, ETH Zurich</Bundle-Vendor>
-            	<Import-Package>org.osgi.framework, ch.ethz.iks.slp, junit.framework, junit.textui</Import-Package>
+<!--           	<Import-Package>org.osgi.framework, ch.ethz.iks.slp, junit.framework, junit.textui, org.apache.tools.ant.taskdefs.optional.junit</Import-Package>-->
             	<Private-Package>ch.ethz.iks.slp.test</Private-Package>
 				<_include>~META-INF/MANIFEST.MF</_include>
             	<!-- BND just produces Bundle-ManifestVersion: 2 headers which we don't want -->
@@ -42,6 +42,12 @@
         	<groupId>junit</groupId>
          	<artifactId>junit</artifactId>
          	<version>3.8.1</version>
+         	<scope>provided</scope>
+      	</dependency>
+		<dependency>
+        	<groupId>ant</groupId>
+         	<artifactId>ant-optional</artifactId>
+         	<version>1.5.3-1</version>
          	<scope>provided</scope>
       	</dependency>
       	<dependency>

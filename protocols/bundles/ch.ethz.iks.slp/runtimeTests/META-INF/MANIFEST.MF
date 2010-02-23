@@ -12,6 +12,9 @@ Bundle-Version: 1.1.0.qualifier
 Bnd-LastModified: 1258568231718
 Bundle-Activator: ch.ethz.iks.slp.test.TestActivator
 Bundle-SymbolicName: ch.ethz.iks.slp.test
-Import-Package: ch.ethz.iks.slp;version="1.0",junit.framework,junit.te
- xtui,org.osgi.framework;version="1.2"
+Import-Package: ch.ethz.iks.slp;version="1.0",
+ junit.framework,
+ junit.textui,
+ org.apache.tools.ant.taskdefs.optional.junit,
+ org.osgi.framework;version="1.2"
 
