@@ -210,6 +210,18 @@
     	  	</instructions>
         </configuration>
       </plugin>
+      <!--  runtimeTests is not automatically run by parent clean, thus manually purge folder -->
+      <plugin>
+		<artifactId>maven-clean-plugin</artifactId>
+		<version>2.4</version>
+		<configuration>
+			<filesets>
+				<fileset>
+					<directory>runtimeTests/target/</directory>
+				</fileset>
+			</filesets>
+		</configuration>
+	  </plugin>
     </plugins>
 	<resources>
 			<resource>
