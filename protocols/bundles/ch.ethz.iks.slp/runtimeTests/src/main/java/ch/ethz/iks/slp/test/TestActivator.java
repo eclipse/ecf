@@ -14,6 +14,7 @@ import junit.framework.TestFailure;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
+import org.apache.tools.ant.taskdefs.optional.junit.BriefJUnitResultFormatter;
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitResultFormatter;
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
 import org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter;
@@ -62,15 +63,20 @@ public class TestActivator implements BundleActivator {
 		final JUnitTest jUnitTest = new JUnitTest("ch.ethz.iks.slp.test");
 	    jUnitTest.setProperties(System.getProperties());
 	    
-	    // create a result formatter
-		final JUnitResultFormatter jUnitResultFormatter = new XMLJUnitResultFormatter();
+	    // create the xml result formatter
+		final JUnitResultFormatter xmlResultFormatter = new XMLJUnitResultFormatter();
 		final File file = new File(outputDirectory, "TEST-ch.ethz.iks.slp.test" + ".xml");
 		try {
-			jUnitResultFormatter.setOutput(new FileOutputStream(file));
+			xmlResultFormatter.setOutput(new FileOutputStream(file));
 		} catch (FileNotFoundException e) {
+			// may never happen
 			e.printStackTrace();
 		}
-		result.addListener(jUnitResultFormatter);
+		result.addListener(xmlResultFormatter);
+		// create a result formatter that prints to the console
+		final JUnitResultFormatter consoleResultFormatter = new BriefJUnitResultFormatter();
+		consoleResultFormatter.setOutput(System.out);
+		result.addListener(consoleResultFormatter);
 
 		// add the actual tests to the test suite
 		Collection collection = new ArrayList();
@@ -99,7 +105,8 @@ public class TestActivator implements BundleActivator {
 		
 		// prepare to run tests
 		final long start = System.currentTimeMillis();
-		jUnitResultFormatter.startTestSuite(jUnitTest);
+		xmlResultFormatter.startTestSuite(jUnitTest);
+		consoleResultFormatter.startTestSuite(jUnitTest);
 		
 	    // run tests
 		suite.run(result);
@@ -107,7 +114,8 @@ public class TestActivator implements BundleActivator {
 		// write stats and close reultformatter
 		jUnitTest.setCounts(result.runCount(), result.failureCount(), result.errorCount());
 	    jUnitTest.setRunTime(System.currentTimeMillis() - start);
-		jUnitResultFormatter.endTestSuite(jUnitTest);
+		xmlResultFormatter.endTestSuite(jUnitTest);
+		consoleResultFormatter.endTestSuite(jUnitTest);
 		
 		// print success of failure
 		if (result.wasSuccessful()) {
