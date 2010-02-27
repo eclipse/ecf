@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.net.SocketFactory;
@@ -58,6 +60,7 @@ import org.eclipse.ecf.filetransfer.FileTransferJob;
 import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IFileTransferRunnable;
+import org.eclipse.ecf.filetransfer.IRetrieveFileTransferOptions;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.InvalidFileRangeSpecificationException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
@@ -448,6 +451,23 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		}
 		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		getMethod.addRequestHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		setRequestHeaderValuesFromOptions();
+	}
+
+	private void setRequestHeaderValuesFromOptions() {
+		Map localOptions = getOptions();
+		if (localOptions != null) {
+			Object o = localOptions.get(IRetrieveFileTransferOptions.REQUEST_HEADERS);
+			if (o != null && o instanceof Map) {
+				Map requestHeaders = (Map) o;
+				for (Iterator i = requestHeaders.keySet().iterator(); i.hasNext();) {
+					Object n = i.next();
+					Object v = requestHeaders.get(n);
+					if (n != null && n instanceof String && v != null && v instanceof String)
+						getMethod.addRequestHeader((String) n, (String) v);
+				}
+			}
+		}
 	}
 
 	private void setRangeHeader(String value) {
@@ -567,8 +587,17 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		int result = DEFAULT_READ_TIMEOUT;
 		Map localOptions = getOptions();
 		if (localOptions != null) {
-			// See if the property is present, if so set
-			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout"); //$NON-NLS-1$
+			// See if the connect timeout option is present, if so set
+			Object o = localOptions.get(IRetrieveFileTransferOptions.READ_TIMEOUT);
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).intValue();
+				} else if (o instanceof String) {
+					result = new Integer(((String) o)).intValue();
+				}
+				return result;
+			}
+			o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout"); //$NON-NLS-1$
 			if (o != null) {
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
@@ -587,8 +616,17 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		int result = DEFAULT_CONNECTION_TIMEOUT;
 		Map localOptions = getOptions();
 		if (localOptions != null) {
-			// See if the property is present, if so set
-			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout"); //$NON-NLS-1$
+			// See if the connect timeout option is present, if so set
+			Object o = localOptions.get(IRetrieveFileTransferOptions.CONNECT_TIMEOUT);
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).intValue();
+				} else if (o instanceof String) {
+					result = new Integer(((String) o)).intValue();
+				}
+				return result;
+			}
+			o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout"); //$NON-NLS-1$
 			if (o != null) {
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
@@ -660,6 +698,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			}
 
 			code = responseCode;
+
+			responseHeaders = getResponseHeaders();
+
 			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + code); //$NON-NLS-1$
 
 			// Check for NTLM proxy in response headers 
@@ -701,6 +742,23 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			}
 		}
 		Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreams"); //$NON-NLS-1$
+	}
+
+	private Map getResponseHeaders() {
+		if (getMethod == null)
+			return null;
+		Header[] headers = getMethod.getResponseHeaders();
+		Map result = null;
+		if (headers != null && headers.length > 0) {
+			result = new HashMap();
+			for (int i = 0; i < headers.length; i++) {
+				String name = headers[i].getName();
+				String val = headers[i].getValue();
+				if (name != null && val != null)
+					result.put(name, val);
+			}
+		}
+		return Collections.unmodifiableMap(result);
 	}
 
 	private boolean checkAndHandleDone() {
@@ -827,6 +885,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		setRangeHeader("bytes=" + this.bytesReceived + "-"); //$NON-NLS-1$ //$NON-NLS-2$
 		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		getMethod.addRequestHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		setRequestHeaderValuesFromOptions();
 	}
 
 	private boolean openStreamsForResume() {
@@ -878,6 +937,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			}
 
 			code = responseCode;
+
+			responseHeaders = getResponseHeaders();
+
 			Trace.trace(Activator.PLUGIN_ID, "retrieve resp=" + code); //$NON-NLS-1$
 
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
@@ -887,19 +949,19 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				fireReceiveResumedEvent();
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException(NLS.bind("File not found: {0}", urlString), code); //$NON-NLS-1$
+				throw new IncomingFileTransferException(NLS.bind("File not found: {0}", urlString), code, responseHeaders); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code);
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized, code, responseHeaders);
 			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException("Forbidden", code); //$NON-NLS-1$
+				throw new IncomingFileTransferException("Forbidden", code, responseHeaders); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code, responseHeaders);
 			} else {
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)), code);
+				throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)), code, responseHeaders);
 			}
 			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreamsForResume", Boolean.TRUE); //$NON-NLS-1$
 			return true;
@@ -910,7 +972,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 					setDoneException(e);
 				}
 			} else {
-				setDoneException((e instanceof IncomingFileTransferException) ? e : new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code));
+				setDoneException((e instanceof IncomingFileTransferException) ? e : new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code, responseHeaders));
 			}
 			fireTransferReceiveDoneEvent();
 			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreamsForResume", Boolean.FALSE); //$NON-NLS-1$
