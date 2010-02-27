@@ -11,12 +11,9 @@ package org.eclipse.ecf.filetransfer;
 
 /**
  * @since 3.1
+ * 
+ * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface ISendFileTransferOptions {
-
-	public static final String REQUEST_HEADERS = ISendFileTransferOptions.class.getName() + ".requestHeaders"; //$NON-NLS-1$
-
-	public static final String CONNECT_TIMEOUT = ISendFileTransferOptions.class.getName() + ".connectTimeout"; //$NON-NLS-1$
-
-	public static final String READ_TIMEOUT = ISendFileTransferOptions.class.getName() + ".readTimeout"; //$NON-NLS-1$
+	// Nothing
 }

@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer;
 
+import java.util.Map;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
@@ -20,6 +21,7 @@ public class IncomingFileTransferException extends ECFException {
 	private static final long serialVersionUID = 2438441801862623371L;
 
 	private int errorCode = -1;
+	private Map responseHeaders;
 
 	public IncomingFileTransferException(IStatus status) {
 		super(status);
@@ -61,7 +63,41 @@ public class IncomingFileTransferException extends ECFException {
 		this.errorCode = errorCode;
 	}
 
+	/**
+	 * @since 4.0
+	 */
+	public IncomingFileTransferException(String message, Throwable cause, int errorCode, Map responseHeaders) {
+		super(message, cause);
+		this.errorCode = errorCode;
+		this.responseHeaders = responseHeaders;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public IncomingFileTransferException(String message, int errorCode, Map responseHeaders) {
+		super(message);
+		this.errorCode = errorCode;
+		this.responseHeaders = responseHeaders;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public IncomingFileTransferException(Throwable cause, int errorCode, Map responseHeaders) {
+		super(cause);
+		this.errorCode = errorCode;
+		this.responseHeaders = responseHeaders;
+	}
+
 	public int getErrorCode() {
 		return errorCode;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public Map getResponseHeaders() {
+		return responseHeaders;
 	}
 }

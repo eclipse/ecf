@@ -10,6 +10,7 @@
 package org.eclipse.ecf.filetransfer.events;
 
 import java.io.*;
+import java.util.Map;
 import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
@@ -142,4 +143,10 @@ public interface IIncomingFileTransferReceiveResumedEvent extends IIncomingFileT
 	 */
 	public void cancel();
 
+	/**
+	 * Get response headers.
+	 * @return Map of response headers.  <code>null</code> if no headers available.
+	 * @since 4.0
+	 */
+	public Map getResponseHeaders();
 }
