@@ -179,6 +179,10 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 				return transfer;
 			}
 
+			public Map getResponseHeaders() {
+				return null;
+			}
+
 		});
 	}
 
