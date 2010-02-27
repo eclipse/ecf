@@ -46,6 +46,7 @@ import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IFileTransferRunnable;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
+import org.eclipse.ecf.filetransfer.IRetrieveFileTransferOptions;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
@@ -114,6 +115,11 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	protected long transferStartTime;
 
 	protected double downloadRateBytesPerSecond = 0L;
+
+	/**
+	 * @since 3.1
+	 */
+	protected Map responseHeaders;
 
 	public AbstractRetrieveFileTransfer() {
 		//
@@ -198,8 +204,17 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		int result = READ_TIMEOUT;
 		Map localOptions = getOptions();
 		if (localOptions != null) {
-			// See if the property is present, if so set
-			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.retrieve.readTimeout"); //$NON-NLS-1$
+			// See if the connect timeout option is present, if so set
+			Object o = localOptions.get(IRetrieveFileTransferOptions.READ_TIMEOUT);
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).intValue();
+				} else if (o instanceof String) {
+					result = new Integer(((String) o)).intValue();
+				}
+				return result;
+			}
+			o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout"); //$NON-NLS-1$
 			if (o != null) {
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
@@ -734,6 +749,10 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 				return sb.toString();
 			}
 
+			public Map getResponseHeaders() {
+				return responseHeaders;
+			}
+
 		});
 	}
 
@@ -797,6 +816,10 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
 						.append("]"); //$NON-NLS-1$
 				return sb.toString();
+			}
+
+			public Map getResponseHeaders() {
+				return responseHeaders;
 			}
 
 		});

@@ -18,6 +18,10 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -30,6 +34,7 @@ import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
+import org.eclipse.ecf.filetransfer.IRetrieveFileTransferOptions;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.InvalidFileRangeSpecificationException;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
@@ -112,6 +117,23 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		// set max-age for cache control to 0 for bug
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		urlConnection.setRequestProperty("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		setRequestHeaderValuesFromOptions();
+	}
+
+	private void setRequestHeaderValuesFromOptions() {
+		Map localOptions = getOptions();
+		if (localOptions != null) {
+			Object o = localOptions.get(IRetrieveFileTransferOptions.REQUEST_HEADERS);
+			if (o != null && o instanceof Map) {
+				Map requestHeaders = (Map) o;
+				for (Iterator i = requestHeaders.keySet().iterator(); i.hasNext();) {
+					Object n = i.next();
+					Object v = requestHeaders.get(n);
+					if (n != null && n instanceof String && v != null && v instanceof String)
+						urlConnection.addRequestProperty((String) n, (String) v);
+				}
+			}
+		}
 	}
 
 	protected void setRequestHeaderValues() throws InvalidFileRangeSpecificationException {
@@ -135,6 +157,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		// set max-age for cache control to 0 for bug
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		urlConnection.setRequestProperty("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		setRequestHeaderValuesFromOptions();
 	}
 
 	private void setRangeHeader(String value) {
@@ -288,19 +311,20 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			setCompressionRequestHeader();
 			setInputStream(getDecompressedStream());
 			code = getResponseCode();
+			responseHeaders = getResponseHeaders();
 			if (isHTTP()) {
 				if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 					fireReceiveStartEvent();
 				} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
-					throw new IncomingFileTransferException(NLS.bind("File not found: {0}", getRemoteFileURL().toString()), code); //$NON-NLS-1$
+					throw new IncomingFileTransferException(NLS.bind("File not found: {0}", getRemoteFileURL().toString()), code, responseHeaders); //$NON-NLS-1$
 				} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-					throw new IncomingFileTransferException("Unauthorized", code); //$NON-NLS-1$
+					throw new IncomingFileTransferException("Unauthorized", code, responseHeaders); //$NON-NLS-1$
 				} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
-					throw new IncomingFileTransferException("Forbidden", code); //$NON-NLS-1$
+					throw new IncomingFileTransferException("Forbidden", code, responseHeaders); //$NON-NLS-1$
 				} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
-					throw new IncomingFileTransferException("Proxy authentication required", code); //$NON-NLS-1$
+					throw new IncomingFileTransferException("Proxy authentication required", code, responseHeaders); //$NON-NLS-1$
 				} else {
-					throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code); //$NON-NLS-1$
+					throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code, responseHeaders); //$NON-NLS-1$
 				}
 			} else {
 				fireReceiveStartEvent();
@@ -308,10 +332,32 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		} catch (final FileNotFoundException e) {
 			throw new IncomingFileTransferException(NLS.bind("File not found: {0}", getRemoteFileURL().toString()), 404); //$NON-NLS-1$
 		} catch (final Exception e) {
-			IncomingFileTransferException except = (e instanceof IncomingFileTransferException) ? (IncomingFileTransferException) e : new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, code);
+			IncomingFileTransferException except = (e instanceof IncomingFileTransferException) ? (IncomingFileTransferException) e : new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, code, responseHeaders);
 			hardClose();
 			throw except;
 		}
+	}
+
+	private Map getResponseHeaders() {
+		if (responseHeaders != null)
+			return responseHeaders;
+		if (urlConnection == null)
+			return null;
+		Map headerFields = urlConnection.getHeaderFields();
+		if (headerFields == null)
+			return null;
+		Map result = new HashMap();
+		for (Iterator i = headerFields.keySet().iterator(); i.hasNext();) {
+			String name = (String) i.next();
+			List listValue = (List) headerFields.get(name);
+			String val = null;
+			if (listValue != null && listValue.size() > 0) {
+				val = (String) ((listValue.size() > 1) ? listValue.get(listValue.size() - 1) : listValue.get(0));
+			}
+			if (name != null && val != null)
+				result.put(name, val);
+		}
+		return Collections.unmodifiableMap(result);
 	}
 
 	/*
@@ -377,12 +423,23 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		String result = DEFAULT_CONNECT_TIMEOUT;
 		Map localOptions = getOptions();
 		if (localOptions != null) {
-			// See if the property is present, if so set
-			Object o = localOptions.get("org.eclipse.ecf.provider.filetransfer.retrieve.connectTimeout"); //$NON-NLS-1$
-			if (o instanceof Integer) {
-				result = ((Integer) o).toString();
-			} else if (o instanceof String) {
-				result = (String) o;
+			// See if the connect timeout option is present, if so set
+			Object o = localOptions.get(IRetrieveFileTransferOptions.CONNECT_TIMEOUT);
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).toString();
+				} else if (o instanceof String) {
+					result = (String) o;
+				}
+				return result;
+			}
+			o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout"); //$NON-NLS-1$
+			if (o != null) {
+				if (o instanceof Integer) {
+					result = ((Integer) o).toString();
+				} else if (o instanceof String) {
+					result = (String) o;
+				}
 			}
 		}
 		return result;
@@ -414,24 +471,25 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			// Make actual GET request
 			setInputStream(urlConnection.getInputStream());
 			code = getResponseCode();
+			responseHeaders = getResponseHeaders();
 			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResumeResponseHeaderValues();
 				this.paused = false;
 				fireReceiveResumedEvent();
 				return true;
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
-				throw new IncomingFileTransferException(NLS.bind("File not found: {0}", getRemoteFileURL().toString()), code); //$NON-NLS-1$
+				throw new IncomingFileTransferException(NLS.bind("File not found: {0}", getRemoteFileURL().toString()), code, responseHeaders); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-				throw new IncomingFileTransferException("Unauthorized", code); //$NON-NLS-1$
+				throw new IncomingFileTransferException("Unauthorized", code, responseHeaders); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
-				throw new IncomingFileTransferException("Forbidden", code); //$NON-NLS-1$
+				throw new IncomingFileTransferException("Forbidden", code, responseHeaders); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
-				throw new IncomingFileTransferException("Proxy authentication required", code); //$NON-NLS-1$
+				throw new IncomingFileTransferException("Proxy authentication required", code, responseHeaders); //$NON-NLS-1$
 			} else {
-				throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code); //$NON-NLS-1$
+				throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code, responseHeaders); //$NON-NLS-1$
 			}
 		} catch (final Exception e) {
-			this.exception = (e instanceof IncomingFileTransferException) ? e : new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, code);
+			this.exception = (e instanceof IncomingFileTransferException) ? e : new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, code, responseHeaders);
 			this.done = true;
 			hardClose();
 			fireTransferReceiveDoneEvent();
