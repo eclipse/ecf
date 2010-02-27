@@ -11,20 +11,12 @@
 
 package org.eclipse.ecf.internal.provider.filetransfer.efs;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
-
-import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileInfo;
-import org.eclipse.core.filesystem.IFileStore;
+import java.util.Map;
+import org.eclipse.core.filesystem.*;
 import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.filetransfer.FileTransferJob;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
-import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
+import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
@@ -43,16 +35,23 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 		proxyHelper = new JREProxyHelper();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #hardClose()
 	 */
-	public String getRemoteFileName()
-	{
+	public String getRemoteFileName() {
 		return fileName;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #hardClose()
 	 */
 	protected void hardClose() {
 		super.hardClose();
@@ -65,11 +64,14 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #openStreams()
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
 		try {
-			final IFileStore fileStore = EFS.getStore(new URI(getRemoteFileURL().getPath()));
+			final IFileStore fileStore = EFS.getStore(new URI(
+					getRemoteFileURL().getPath()));
 			final IFileInfo info = fileStore.fetchInfo();
 			setFileLength(info.getLength());
 			setInputStream(fileStore.openInputStream(0, null));
@@ -86,18 +88,22 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 					return remoteFileID;
 				}
 
-				public IIncomingFileTransfer receive(File localFileToSave) throws IOException {
+				public IIncomingFileTransfer receive(File localFileToSave)
+						throws IOException {
 					return receive(localFileToSave, null);
 				}
 
-				public IIncomingFileTransfer receive(File localFileToSave, FileTransferJob fileTransferJob) throws IOException {
-					setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
+				public IIncomingFileTransfer receive(File localFileToSave,
+						FileTransferJob fileTransferJob) throws IOException {
+					setOutputStream(new BufferedOutputStream(
+							new FileOutputStream(localFileToSave)));
 					setupAndScheduleJob(fileTransferJob);
 					return RetrieveFileTransfer.this;
 				}
 
 				public String toString() {
-					final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
+					final StringBuffer sb = new StringBuffer(
+							"IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
 					sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 					sb.append("bytesReceived=").append( //$NON-NLS-1$
 							bytesReceived).append("]"); //$NON-NLS-1$
@@ -111,20 +117,29 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 				/**
 				 * @param streamToStore
 				 * @return incoming file transfer instance.
-				 * @throws IOException not thrown in this implementation.
+				 * @throws IOException
+				 *             not thrown in this implementation.
 				 */
-				public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
+				public IIncomingFileTransfer receive(OutputStream streamToStore)
+						throws IOException {
 					return receive(streamToStore, null);
 				}
 
 				/**
-				 * @throws IOException not actually thrown by this implementation.
+				 * @throws IOException
+				 *             not actually thrown by this implementation.
 				 */
-				public IIncomingFileTransfer receive(OutputStream streamToStore, FileTransferJob fileTransferJob) throws IOException {
+				public IIncomingFileTransfer receive(
+						OutputStream streamToStore,
+						FileTransferJob fileTransferJob) throws IOException {
 					setOutputStream(streamToStore);
 					setCloseOutputStream(false);
 					setupAndScheduleJob(fileTransferJob);
 					return RetrieveFileTransfer.this;
+				}
+
+				public Map getResponseHeaders() {
+					return null;
 				}
 
 			});
@@ -134,22 +149,34 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doPause()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #doPause()
 	 */
 	protected boolean doPause() {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doResume()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #doResume()
 	 */
 	protected boolean doResume() {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#setupProxy(org.eclipse.ecf.core.util.Proxy)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #setupProxy(org.eclipse.ecf.core.util.Proxy)
 	 */
 	protected void setupProxy(Proxy proxy) {
 		proxyHelper.setupProxy(proxy);
