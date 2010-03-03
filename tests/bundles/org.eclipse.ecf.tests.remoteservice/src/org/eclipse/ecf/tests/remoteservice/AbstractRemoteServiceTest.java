@@ -113,6 +113,16 @@ public abstract class AbstractRemoteServiceTest extends
 		return null;
 	}
 
+	protected IRemoteServiceReference[] getRemoteServiceReferences(
+			IRemoteServiceContainerAdapter adapter, ID[] targets, String clazz, String filter) {
+		try {
+			return adapter.getRemoteServiceReferences(targets, clazz, filter);
+		} catch (final InvalidSyntaxException e) {
+			fail("should not happen");
+		}
+		return null;
+	}
+
 	protected IRemoteService getRemoteService(
 			IRemoteServiceContainerAdapter adapter, ID target, String clazz, String filter, int sleepTime) {
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
@@ -218,11 +228,12 @@ public abstract class AbstractRemoteServiceTest extends
 
 	public void testGetServiceReferences() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
+		// Register service on client[0]
 		registerService(adapters[0], IConcatService.class.getName(),
 				createService(), customizeProperties(null), 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], getClient(0).getConnectedID(), IConcatService.class.getName(), null);
+				adapters[1], (ID) null, IConcatService.class.getName(), null);
 
 		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
@@ -237,7 +248,7 @@ public abstract class AbstractRemoteServiceTest extends
 				createService(), customizeProperties(props), 0);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], getClient(0).getConnectedID(), IConcatService.class.getName(),
+				adapters[1], (ID) null, IConcatService.class.getName(),
 				getFilterFromServiceProperties(customizeProperties(props)));
 
 		assertTrue(refs != null);
@@ -259,7 +270,7 @@ public abstract class AbstractRemoteServiceTest extends
 		final String missFilter = getFilterFromServiceProperties(missProps);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], getClient(0).getConnectedID(), IConcatService.class.getName(), missFilter);
+				adapters[1], (ID) null, IConcatService.class.getName(), missFilter);
 
 		assertTrue(refs == null);
 	}
