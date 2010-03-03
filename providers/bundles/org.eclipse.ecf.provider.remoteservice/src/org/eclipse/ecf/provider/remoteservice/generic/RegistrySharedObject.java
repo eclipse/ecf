@@ -156,12 +156,38 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (targetID == null)
 			return getRemoteServiceReferences((ID[]) null, clazz, filter);
 		// If we're not already connected, then connect to targetID
-		// If we *are* already connected, then we do *not* connect to target, but rather just search for targetID/endpoint
-		if (!isConnected()) {
-			getContext().connect(targetID, connectContext);
-		}
+		connectToRemoteServiceTarget(targetID);
 		// Now we're connected (or already were connected), so we look for remote service references for target
 		return getRemoteServiceReferences(new ID[] {targetID}, clazz, filter);
+	}
+
+	/**
+	 * @since 3.3
+	 */
+	protected Object rsConnectLock = new Object();
+
+	/**
+	 * @since 3.3 for preventing issues like bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=304427
+	 */
+	protected void connectToRemoteServiceTarget(ID targetID) throws ContainerConnectException {
+		// This code cannot be reentrant.
+		synchronized (rsConnectLock) {
+			ISharedObjectContext context = getContext();
+			// If we don't have a context we can't connect and we're outta here
+			if (context == null)
+				throw new ContainerConnectException("Cannot connect without context"); //$NON-NLS-1$
+			ID connectedID = context.getConnectedID();
+			// If we're already connected to something
+			if (connectedID != null) {
+				// If we're already connected to the target, then we're done/successful
+				if (connectedID.equals(targetID))
+					return;
+				// If we're already connected to somebody *else*, then we throw
+				throw new ContainerConnectException("Already connected to target=" + connectedID); //$NON-NLS-1$
+			}
+			// else we just try to connect to target
+			context.connect(targetID, connectContext);
+		}
 	}
 
 	/* (non-Javadoc)
