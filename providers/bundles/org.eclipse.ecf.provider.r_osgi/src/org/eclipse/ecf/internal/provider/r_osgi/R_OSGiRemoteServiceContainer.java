@@ -328,11 +328,23 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 
 	private synchronized List getRemoteServiceReferencesConnected(final String clazz, IRemoteFilter filter) {
 		List results = new ArrayList();
-		final RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, filter);
-		if (refs == null)
-			return results;
-		for (int i = 0; i < refs.length; i++)
-			results.add(new RemoteServiceReferenceImpl(createRemoteServiceID(refs[i]), refs[i]));
+		if (connectedID == null) {
+			try {
+				IRemoteServiceReference[] refs = getAllRemoteServiceReferences(clazz, (filter == null) ? null : filter.toString());
+				if (refs == null)
+					return results;
+				for (int i = 0; i < refs.length; i++)
+					results.add(refs[i]);
+			} catch (InvalidSyntaxException e) {
+				// can't happen
+			}
+		} else {
+			RemoteServiceReference[] rrefs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, filter);
+			if (rrefs == null)
+				return results;
+			for (int i = 0; i < rrefs.length; i++)
+				results.add(new RemoteServiceReferenceImpl(createRemoteServiceID(rrefs[i]), rrefs[i]));
+		}
 		return results;
 	}
 
