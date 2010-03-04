@@ -23,11 +23,11 @@ public interface DebugOptions {
 
 	public static final String METHODS_EXITING = DEBUG + "/methods/exiting"; //$NON-NLS-1$
 
-	public static final String EVENTHOOKDEBUG = DEBUG + "/eventhook";
+	public static final String EVENTHOOKDEBUG = DEBUG + "/eventhook"; //$NON-NLS-1$
 
 	public static final String DISCOVEREDSERVICETRACKER = DEBUG
-			+ "/discoveredservicetracker";
+			+ "/discoveredservicetracker"; //$NON-NLS-1$
 
-	public static final String CONTAINERFINDER = DEBUG + "/containerfinder";
+	public static final String CONTAINERFINDER = DEBUG + "/containerfinder"; //$NON-NLS-1$
 
 }

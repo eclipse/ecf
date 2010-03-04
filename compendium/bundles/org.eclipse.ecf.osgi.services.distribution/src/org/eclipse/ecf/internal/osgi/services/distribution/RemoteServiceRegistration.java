@@ -54,9 +54,9 @@ public class RemoteServiceRegistration {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("RemoteServiceRegistration[");
-		buf.append("sed=").append(getServiceEndpointDescription());
-		buf.append(";containerID=").append(getContainer().getID()).append("]");
+		StringBuffer buf = new StringBuffer("RemoteServiceRegistration["); //$NON-NLS-1$
+		buf.append("sed=").append(getServiceEndpointDescription()); //$NON-NLS-1$
+		buf.append(";containerID=").append(getContainer().getID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 

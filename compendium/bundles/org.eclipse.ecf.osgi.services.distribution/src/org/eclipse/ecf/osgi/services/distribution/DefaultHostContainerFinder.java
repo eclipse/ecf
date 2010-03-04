@@ -59,8 +59,8 @@ public class DefaultHostContainerFinder extends AbstractHostContainerFinder
 						connectHostContainer(serviceReference, container,
 								target);
 					} catch (Exception e) {
-						logException("doConnectContainer failure containerID="
-								+ container.getID() + " target=" + target, e);
+						logException("doConnectContainer failure containerID=" //$NON-NLS-1$
+								+ container.getID() + " target=" + target, e); //$NON-NLS-1$
 					}
 				}
 

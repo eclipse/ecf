@@ -44,7 +44,7 @@ public abstract class AbstractProxyContainerFinder extends
 			return results;
 
 		for (int i = 0; i < containers.length; i++) {
-			// Do *not* include containers with same ID as endpoint ID
+			// Do *not* include containers with same ID as endpointID
 			if (matchContainerID(containers[i], endpointID))
 				continue;
 
@@ -55,30 +55,42 @@ public abstract class AbstractProxyContainerFinder extends
 					&& matchConnectNamespace(containers[i], endpointID)
 					// and it must match the configs
 					&& matchProxySupportedConfigs(containers[i],
-							remoteSupportedConfigs)) {
-				trace("findExistingProxyContainers",
-						"MATCH of existing remote service container id="
+							remoteSupportedConfigs)
+					// and the container should either not be connected or
+					// already be connected to the desired endpointID
+					&& matchNotConnected(containers[i], endpointID)) {
+				trace("findExistingProxyContainers", //$NON-NLS-1$
+						"MATCH of existing remote service container id=" //$NON-NLS-1$
 								+ containers[i].getID()
-								+ " endpointID="
+								+ " endpointID=" //$NON-NLS-1$
 								+ endpointID
-								+ " remoteSupportedConfigs="
-								+ ((remoteSupportedConfigs == null) ? "[]"
+								+ " remoteSupportedConfigs=" //$NON-NLS-1$
+								+ ((remoteSupportedConfigs == null) ? "[]" //$NON-NLS-1$
 										: Arrays.asList(remoteSupportedConfigs)
 												.toString()));
 				results.add(new RemoteServiceContainer(containers[i], adapter));
 			} else {
-				trace("findExistingProxyContainers",
-						"No match of existing remote service container id="
+				trace("findExistingProxyContainers", //$NON-NLS-1$
+						"No match of existing remote service container id=" //$NON-NLS-1$
 								+ containers[i].getID()
-								+ " endpointID="
+								+ " endpointID=" //$NON-NLS-1$
 								+ endpointID
-								+ " remoteSupportedConfigs="
-								+ ((remoteSupportedConfigs == null) ? "[]"
+								+ " remoteSupportedConfigs=" //$NON-NLS-1$
+								+ ((remoteSupportedConfigs == null) ? "[]" //$NON-NLS-1$
 										: Arrays.asList(remoteSupportedConfigs)
 												.toString()));
 			}
 		}
 		return results;
+	}
+
+	protected boolean matchNotConnected(IContainer container, ID endpointID) {
+		// if the container is not connected, OR it's connected to the desired
+		// endpointID already then we've got a match
+		ID connectedID = container.getConnectedID();
+		if (connectedID == null || connectedID.equals(endpointID))
+			return true;
+		return false;
 	}
 
 	protected boolean matchProxySupportedConfigs(IContainer container,
@@ -107,8 +119,8 @@ public abstract class AbstractProxyContainerFinder extends
 					connectContainer(container, connectTargetID,
 							getConnectContext(container, connectTargetID));
 				} catch (ContainerConnectException e) {
-					logException("Exception connecting container id="
-							+ container.getID() + " to connectTargetID="
+					logException("Exception connecting container id=" //$NON-NLS-1$
+							+ container.getID() + " to connectTargetID=" //$NON-NLS-1$
 							+ connectTargetID, e);
 				}
 			}
@@ -159,9 +171,9 @@ public abstract class AbstractProxyContainerFinder extends
 							selectedConfig,
 							createMapFromDictionary(importedConfigProperties));
 					if (rsContainer != null) {
-						trace("createAndConfigureProxyContainers",
-								"created new proxy container with config type="
-										+ selectedConfig + " and id="
+						trace("createAndConfigureProxyContainers", //$NON-NLS-1$
+								"created new proxy container with config type=" //$NON-NLS-1$
+										+ selectedConfig + " and id=" //$NON-NLS-1$
 										+ rsContainer.getContainer().getID());
 						results.add(rsContainer);
 					}
@@ -205,7 +217,7 @@ public abstract class AbstractProxyContainerFinder extends
 			return new RemoteServiceContainer(container);
 		} catch (Exception e) {
 			logException(
-					"Cannot create container with container type description name="
+					"Cannot create container with container type description name=" //$NON-NLS-1$
 							+ containerTypeDescriptionName, e);
 			return null;
 		}

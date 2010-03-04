@@ -20,9 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -45,15 +43,17 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
-import org.eclipse.equinox.concurrent.future.IExecutor;
-import org.eclipse.equinox.concurrent.future.IProgressRunnable;
+import org.eclipse.osgi.framework.eventmgr.CopyOnWriteIdentityMap;
+import org.eclipse.osgi.framework.eventmgr.EventDispatcher;
+import org.eclipse.osgi.framework.eventmgr.EventManager;
+import org.eclipse.osgi.framework.eventmgr.ListenerQueue;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 
 public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 	private DistributionProviderImpl distributionProvider;
-	private IExecutor executor;
+	// private IExecutor executor;
 	private List serviceLocations = new ArrayList();
 	// <Map<containerID><RemoteServiceRegistration>
 	private Map discoveredRemoteServiceRegistrations = Collections
@@ -68,15 +68,49 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			RemoteServicePublication.ENDPOINT_LOCATION,
 			RemoteServicePublication.SERVICE_INTERFACE_NAME,
 			RemoteServicePublication.SERVICE_INTERFACE_VERSION,
-			RemoteServicePublication.SERVICE_PROPERTIES, "service.uri" }); // set
+			RemoteServicePublication.SERVICE_PROPERTIES, "service.uri" }); //$NON-NLS-1$
+	// queue for incoming remote service available events
+	private final ListenerQueue queue;
 
-	// by
-	// r-osgi
+	// This class is to hold the discovered endpoint available events
+	class DiscoveredEndpointEvent {
+		private RemoteServiceEndpointDescription rsEndpointDescription;
 
-	public DiscoveredServiceTrackerImpl(DistributionProviderImpl dp,
-			IExecutor executor) {
+		public DiscoveredEndpointEvent(
+				RemoteServiceEndpointDescription rsEndpointDescription) {
+			this.rsEndpointDescription = rsEndpointDescription;
+		}
+
+		public RemoteServiceEndpointDescription getEndpointDescription() {
+			return rsEndpointDescription;
+		}
+	}
+
+	public DiscoveredServiceTrackerImpl(DistributionProviderImpl dp) {
 		this.distributionProvider = dp;
-		this.executor = executor;
+		ThreadGroup eventGroup = new ThreadGroup("Remote Service Dispatcher"); //$NON-NLS-1$
+		eventGroup.setDaemon(true);
+		queue = new ListenerQueue(new EventManager(
+				"Remote Service Dispatcher", eventGroup)); //$NON-NLS-1$
+		CopyOnWriteIdentityMap listeners = new CopyOnWriteIdentityMap();
+		listeners.put(this, this);
+		queue.queueListeners(listeners.entrySet(), new EventDispatcher() {
+			public void dispatchEvent(Object eventListener,
+					Object listenerObject, int eventAction, Object eventObject) {
+				RemoteServiceEndpointDescription rsEndpointDescription = ((DiscoveredEndpointEvent) eventObject)
+						.getEndpointDescription();
+				try {
+					handleDiscoveredServiceAvailable(rsEndpointDescription);
+				} catch (Exception e) {
+					logError("handleDiscoveredServiceAvailble", //$NON-NLS-1$
+							"Unexpected exception with rsEndpointDescription=" //$NON-NLS-1$
+									+ rsEndpointDescription, e);
+					throw new RuntimeException(
+							"Unexpected exception with rsEndpointDescription=" //$NON-NLS-1$
+									+ rsEndpointDescription, e);
+				}
+			}
+		});
 	}
 
 	/*
@@ -99,8 +133,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				adesc = getECFDescription(notification
 						.getServiceEndpointDescription());
 			} catch (Exception e) {
-				logError("serviceChanged.AVAILABLE",
-						"Error creating ECF endpoint description", e);
+				logError("serviceChanged.AVAILABLE", //$NON-NLS-1$
+						"Error creating ECF endpoint description", e); //$NON-NLS-1$
 				return;
 			}
 			// If it's not for us then return
@@ -108,26 +142,15 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				return;
 
 			if (!isValidDescription(adesc)) {
-				trace("serviceChanged.AVAILABLE",
-						"Duplicate or invalid description=" + adesc);
+				trace("serviceChanged.AVAILABLE", //$NON-NLS-1$
+						"Duplicate or invalid description=" + adesc); //$NON-NLS-1$
 				return;
 			}
 			final RemoteServiceEndpointDescription rsEndpointDescription = adesc;
-			// Otherwise execute with executor
-			this.executor.execute(new IProgressRunnable() {
-				public Object run(IProgressMonitor monitor) throws Exception {
-					try {
-						handleDiscoveredServiceAvailable(rsEndpointDescription,
-								monitor);
-					} catch (Exception e) {
-						logError("handleDiscoveredServiceAvailble",
-								"Unexpected exception with rsEndpointDescription="
-										+ rsEndpointDescription, e);
-						throw e;
-					}
-					return null;
-				}
-			}, new NullProgressMonitor());
+
+			// put in queue and execute asynchronously
+			queue.dispatchEventAsynchronous(0, new DiscoveredEndpointEvent(
+					rsEndpointDescription));
 			break;
 		case DiscoveredServiceNotification.UNAVAILABLE:
 			try {
@@ -145,10 +168,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					// Then unregister them
 					if (proxyServiceRegistrations != null) {
 						for (int i = 0; i < proxyServiceRegistrations.length; i++) {
-							trace("handleDiscoveredServiceUnavailable",
-									"proxyServiceRegistrations="
+							trace("handleDiscoveredServiceUnavailable", //$NON-NLS-1$
+									"proxyServiceRegistrations=" //$NON-NLS-1$
 											+ proxyServiceRegistrations[i]
-											+ ",serviceEndpointDesc=" + udesc);
+											+ ",serviceEndpointDesc=" + udesc); //$NON-NLS-1$
 							unregisterProxyServiceRegistration(udesc,
 									proxyServiceRegistrations[i]);
 						}
@@ -156,7 +179,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					}
 				}
 			} catch (Exception e) {
-				logError("serviceChanged", "UNAVAILABLE", e);
+				logError("serviceChanged", "UNAVAILABLE", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			break;
 		case DiscoveredServiceNotification.MODIFIED:
@@ -166,26 +189,21 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			// Do nothing for now
 			break;
 		default:
-			logWarning("serviceChanged", "DiscoveredServiceNotification type="
-					+ notificationType + " not found.  Ignoring");
+			logWarning("serviceChanged", "DiscoveredServiceNotification type=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ notificationType + " not found.  Ignoring"); //$NON-NLS-1$
 			break;
 		}
 	}
 
 	private void handleDiscoveredServiceAvailable(
-			RemoteServiceEndpointDescription endpointDescription,
-			IProgressMonitor monitor) {
-		// Setup progress monitor if not already set
-		if (monitor == null)
-			monitor = new NullProgressMonitor();
-
+			RemoteServiceEndpointDescription endpointDescription) {
 		// Find IRemoteServiceContainers for the given
 		// RemoteServiceEndpointDescription via registered services
 		IRemoteServiceContainer[] rsContainers = findProxyContainers(endpointDescription);
 		// If none found, we have nothing to do
 		if (rsContainers == null || rsContainers.length == 0) {
-			logWarning("handleDiscoveredServiceAvailable",
-					"No local RemoteServiceContainers found for endpoint description="
+			logWarning("handleDiscoveredServiceAvailable", //$NON-NLS-1$
+					"No local RemoteServiceContainers found for endpoint description=" //$NON-NLS-1$
 							+ endpointDescription);
 			return;
 		}
@@ -212,32 +230,32 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							.getRemoteServiceReferences(endpointID,
 									providedInterface, remoteServiceFilter);
 				} catch (ContainerConnectException e) {
-					logError("handleDiscoveredServiceAvailable", "rsca="
-							+ rsContainers[i] + ",endpointId=" + endpointID
-							+ ",intf=" + providedInterface
-							+ ". Connect error in getRemoteServiceReferences",
+					logError("handleDiscoveredServiceAvailable", "rsca=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ rsContainers[i] + ",endpointId=" + endpointID //$NON-NLS-1$
+							+ ",intf=" + providedInterface //$NON-NLS-1$
+							+ ". Connect error in getRemoteServiceReferences", //$NON-NLS-1$
 							e);
 					continue;
 				} catch (InvalidSyntaxException e) {
 					logError(
-							"handleDiscoveredServiceAvailable",
-							"rsca="
+							"handleDiscoveredServiceAvailable", //$NON-NLS-1$
+							"rsca=" //$NON-NLS-1$
 									+ rsContainers[i]
-									+ ",endpointId="
+									+ ",endpointId=" //$NON-NLS-1$
 									+ endpointID
-									+ ",intf="
+									+ ",intf=" //$NON-NLS-1$
 									+ providedInterface
-									+ " Filter syntax error in getRemoteServiceReferences",
+									+ " Filter syntax error in getRemoteServiceReferences", //$NON-NLS-1$
 							e);
 					continue;
 				}
 				if (remoteReferences == null || remoteReferences.length == 0) {
-					logError("handleDiscoveredServiceAvailable",
-							"getRemoteServiceReferences result is empty. "
-									+ "containerHelper="
+					logError("handleDiscoveredServiceAvailable", //$NON-NLS-1$
+							"getRemoteServiceReferences result is empty. " //$NON-NLS-1$
+									+ "containerHelper=" //$NON-NLS-1$
 									+ rsContainers[i]
-									+ "remoteReferences="
-									+ ((remoteReferences == null) ? "null"
+									+ "remoteReferences=" //$NON-NLS-1$
+									+ ((remoteReferences == null) ? "null" //$NON-NLS-1$
 											: Arrays.asList(remoteReferences)
 													.toString()), null);
 					continue;
@@ -261,8 +279,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					SafeRunner.run(new ISafeRunnable() {
 						public void handleException(Throwable exception) {
 							logError(
-									"firePreGetRemoteServiceReferences",
-									"Exception calling proxy distribution listener",
+									"firePreGetRemoteServiceReferences", //$NON-NLS-1$
+									"Exception calling proxy distribution listener", //$NON-NLS-1$
 									exception);
 						}
 
@@ -290,8 +308,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					SafeRunner.run(new ISafeRunnable() {
 						public void handleException(Throwable exception) {
 							logError(
-									"firePreRegister",
-									"Exception calling proxy distribution listener",
+									"firePreRegister", //$NON-NLS-1$
+									"Exception calling proxy distribution listener", //$NON-NLS-1$
 									exception);
 						}
 
@@ -321,8 +339,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					SafeRunner.run(new ISafeRunnable() {
 						public void handleException(Throwable exception) {
 							logError(
-									"firePreRegister",
-									"Exception calling proxy distribution listener",
+									"firePreRegister", //$NON-NLS-1$
+									"Exception calling proxy distribution listener", //$NON-NLS-1$
 									exception);
 						}
 
@@ -350,8 +368,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					SafeRunner.run(new ISafeRunnable() {
 						public void handleException(Throwable exception) {
 							logError(
-									"fireUnregister",
-									"Exception calling proxy distribution listener",
+									"fireUnregister", //$NON-NLS-1$
+									"Exception calling proxy distribution listener", //$NON-NLS-1$
 									exception);
 						}
 
@@ -417,10 +435,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteServiceListener {
 		public void handleServiceEvent(IRemoteServiceEvent event) {
 			if (event instanceof IRemoteServiceUnregisteredEvent) {
-				trace("handleRemoteServiceUnregisteredEvent",
-						"localContainerID=" + event.getLocalContainerID()
-								+ ",containerID=" + event.getContainerID()
-								+ ",remoteReference=" + event.getReference());
+				trace("handleRemoteServiceUnregisteredEvent", //$NON-NLS-1$
+						"localContainerID=" + event.getLocalContainerID() //$NON-NLS-1$
+								+ ",containerID=" + event.getContainerID() //$NON-NLS-1$
+								+ ",remoteReference=" + event.getReference()); //$NON-NLS-1$
 				// Synchronize on the map so no other changes happen while
 				// this is going on...as it can be invoked by an arbitrary
 				// thread
@@ -442,14 +460,14 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				if (proxyServiceRegistrations != null) {
 					for (int i = 0; i < proxyServiceRegistrations.length; i++) {
 						trace(
-								"handleRemoteServiceUnregisteredEvent.unregister",
-								"localContainerID="
+								"handleRemoteServiceUnregisteredEvent.unregister", //$NON-NLS-1$
+								"localContainerID=" //$NON-NLS-1$
 										+ event.getLocalContainerID()
-										+ ",containerID="
+										+ ",containerID=" //$NON-NLS-1$
 										+ event.getContainerID()
-										+ ",remoteReference="
+										+ ",remoteReference=" //$NON-NLS-1$
 										+ event.getReference()
-										+ ",proxyServiceRegistrations="
+										+ ",proxyServiceRegistrations=" //$NON-NLS-1$
 										+ proxyServiceRegistrations[i]);
 						unregisterProxyServiceRegistration(null,
 								proxyServiceRegistrations[i]);
@@ -467,11 +485,11 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			reg.unregister();
 		} catch (IllegalStateException e) {
 			// Ignore
-			logWarning("unregisterProxyServiceRegistration",
-					"Exception unregistering serviceRegistration=" + reg);
+			logWarning("unregisterProxyServiceRegistration", //$NON-NLS-1$
+					"Exception unregistering serviceRegistration=" + reg); //$NON-NLS-1$
 		} catch (Exception e) {
-			logError("unregisterProxyServiceRegistration",
-					"Exception unregistering serviceRegistration=" + reg, e);
+			logError("unregisterProxyServiceRegistration", //$NON-NLS-1$
+					"Exception unregistering serviceRegistration=" + reg, e); //$NON-NLS-1$
 		}
 		fireUnregister(endpointDescription, reg);
 	}
@@ -485,16 +503,16 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			// check to make sure that this serviceLocation
 			// is still present
 			if (!containsDiscoveredServiceID(sed)) {
-				logError("registerRemoteServiceReferences", "serviceLocation="
-						+ sed + " no longer present", null);
+				logError("registerRemoteServiceReferences", "serviceLocation=" //$NON-NLS-1$ //$NON-NLS-2$
+						+ sed + " no longer present", null); //$NON-NLS-1$
 				return;
 			}
 			// check to make sure that the proxy service registry is not
 			// already there
 			if (findProxyServiceRegistration(sed)) {
-				logError("registerRemoteServiceReferences",
-						"serviceEndpointDesc=" + sed
-								+ " previously registered locally...ignoring",
+				logError("registerRemoteServiceReferences", //$NON-NLS-1$
+						"serviceEndpointDesc=" + sed //$NON-NLS-1$
+								+ " previously registered locally...ignoring", //$NON-NLS-1$
 						null);
 				return;
 			}
@@ -506,8 +524,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 								remoteReferences[i]);
 				// If no remote service then give up
 				if (remoteService == null) {
-					logError("registerRemoteServiceReferences",
-							"Remote service is null for remote reference "
+					logError("registerRemoteServiceReferences", //$NON-NLS-1$
+							"Remote service is null for remote reference " //$NON-NLS-1$
 									+ remoteReferences[i], null);
 					continue;
 				}
@@ -516,8 +534,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				String[] clazzes = (String[]) remoteReferences[i]
 						.getProperty(Constants.OBJECTCLASS);
 				if (clazzes == null || clazzes.length == 0) {
-					logError("registerRemoteServiceReferences",
-							"No classes specified for remote service reference "
+					logError("registerRemoteServiceReferences", //$NON-NLS-1$
+							"No classes specified for remote service reference " //$NON-NLS-1$
 									+ remoteReferences[i], null);
 					continue;
 				}
@@ -532,16 +550,16 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				try {
 					proxy = remoteService.getProxy();
 					if (proxy == null) {
-						logError("registerRemoteServiceReferences",
-								"Remote service proxy is null", null);
+						logError("registerRemoteServiceReferences", //$NON-NLS-1$
+								"Remote service proxy is null", null); //$NON-NLS-1$
 						continue;
 					}
 					// Fire pre register notification fir
 					// IProxyDistributionListener
 					firePreRegister(sed, remoteServiceContainer,
 							remoteReferences[i]);
-					trace("registerRemoteServiceReferences", "rsca="
-							+ remoteServiceContainer + ",remoteReference="
+					trace("registerRemoteServiceReferences", "rsca=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ remoteServiceContainer + ",remoteReference=" //$NON-NLS-1$
 							+ remoteReferences[i]);
 					// Actually register proxy here
 					ServiceRegistration registration = Activator.getDefault()
@@ -565,18 +583,18 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					// And add to distribution provider
 					distributionProvider.addRemoteService(registration
 							.getReference());
-					trace("addLocalServiceRegistration.COMPLETE",
-							"containerHelper=" + remoteServiceContainer
-									+ ",remoteServiceReference="
+					trace("addLocalServiceRegistration.COMPLETE", //$NON-NLS-1$
+							"containerHelper=" + remoteServiceContainer //$NON-NLS-1$
+									+ ",remoteServiceReference=" //$NON-NLS-1$
 									+ remoteReferences[i]
-									+ ",localServiceRegistration="
+									+ ",localServiceRegistration=" //$NON-NLS-1$
 									+ registration);
 					// Fire IProxyDistributionListener to notify we're done
 					firePostRegister(sed, remoteServiceContainer,
 							remoteReferences[i], registration);
 				} catch (Exception e) {
-					logError("registerRemoteServiceReferences",
-							"Exception creating or registering remote reference "
+					logError("registerRemoteServiceReferences", //$NON-NLS-1$
+							"Exception creating or registering remote reference " //$NON-NLS-1$
 									+ remoteReferences[i], e);
 					continue;
 				}
@@ -733,8 +751,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		IProxyContainerFinder finder = activator
 				.getProxyRemoteServiceContainerFinder();
 		if (finder == null) {
-			logError("findRemoteServiceContainersViaService",
-					"No container finders available");
+			logError("findRemoteServiceContainersViaService", //$NON-NLS-1$
+					"No container finders available"); //$NON-NLS-1$
 			return null;
 		}
 		return finder.findProxyContainers(rsEndpointDescription.getServiceID(),

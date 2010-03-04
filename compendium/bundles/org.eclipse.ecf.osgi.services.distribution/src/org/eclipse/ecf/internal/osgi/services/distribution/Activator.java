@@ -26,7 +26,6 @@ import org.eclipse.ecf.osgi.services.distribution.IHostContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IHostDistributionListener;
 import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IProxyDistributionListener;
-import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -39,17 +38,17 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 
-	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.distribution";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.distribution"; //$NON-NLS-1$
 
 	public static final boolean autoCreateProxyContainer = new Boolean(
 			System.getProperty(
-					"org.eclipse.ecf.osgi.services.distribution.autoCreateProxyContainer",
-					"false")).booleanValue();
+					"org.eclipse.ecf.osgi.services.distribution.autoCreateProxyContainer", //$NON-NLS-1$
+					"false")).booleanValue(); //$NON-NLS-1$
 
 	public static final boolean autoCreateHostContainer = new Boolean(
 			System.getProperty(
-					"org.eclipse.ecf.osgi.services.distribution.autoCreateHostContainer",
-					"true")).booleanValue();
+					"org.eclipse.ecf.osgi.services.distribution.autoCreateHostContainer", //$NON-NLS-1$
+					"true")).booleanValue(); //$NON-NLS-1$
 
 	private static Activator plugin;
 	private BundleContext context;
@@ -133,7 +132,7 @@ public class Activator implements BundleActivator {
 		this.distributionProvider = new DistributionProviderImpl();
 		// Create discovered service tracker impl
 		DiscoveredServiceTrackerImpl dstImpl = new DiscoveredServiceTrackerImpl(
-				this.distributionProvider, new ThreadsExecutor());
+				this.distributionProvider);
 		// Register discovered service tracker
 		this.discoveredServiceTrackerRegistration = this.context
 				.registerService(DiscoveredServiceTracker.class.getName(),
@@ -168,8 +167,8 @@ public class Activator implements BundleActivator {
 		try {
 			final ServiceReference[] refs = this.context.getServiceReferences(
 					null,
-					"(" + IDistributionConstants.SERVICE_EXPORTED_INTERFACES
-							+ "=*)");
+					"(" + IDistributionConstants.SERVICE_EXPORTED_INTERFACES //$NON-NLS-1$
+							+ "=*)"); //$NON-NLS-1$
 			if (refs != null) {
 				for (int i = 0; i < refs.length; i++) {
 					hook.handleRegisteredServiceEvent(refs[i], null);

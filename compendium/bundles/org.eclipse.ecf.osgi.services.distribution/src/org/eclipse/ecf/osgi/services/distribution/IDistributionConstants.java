@@ -24,7 +24,7 @@ public interface IDistributionConstants {
 	 * services to indicate the supported configuration types.
 	 * </p>
 	 */
-	public static final String REMOTE_CONFIGS_SUPPORTED = "remote.configs.supported";
+	public static final String REMOTE_CONFIGS_SUPPORTED = "remote.configs.supported"; //$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -35,7 +35,7 @@ public interface IDistributionConstants {
 	 * services to indicate the vocabulary of implemented intent.
 	 * </p>
 	 */
-	public static final String REMOTE_INTENTS_SUPPORTED = "remote.intents.supported";
+	public static final String REMOTE_INTENTS_SUPPORTED = "remote.intents.supported"; //$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -48,7 +48,7 @@ public interface IDistributionConstants {
 	 * endpoint for each configuration type that it supports.
 	 * </p>
 	 */
-	public static final String SERVICE_EXPORTED_CONFIGS = "service.exported.configs";
+	public static final String SERVICE_EXPORTED_CONFIGS = "service.exported.configs"; //$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -62,7 +62,7 @@ public interface IDistributionConstants {
 	 * configurable.
 	 * </p>
 	 */
-	public static final String SERVICE_EXPORTED_INTENTS = "service.exported.intents";
+	public static final String SERVICE_EXPORTED_INTENTS = "service.exported.intents"; //$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -78,7 +78,7 @@ public interface IDistributionConstants {
 	 * service.
 	 * </p>
 	 */
-	public static final String SERVICE_EXPORTED_INTENTS_EXTRA = "service.exported.intents.extra";
+	public static final String SERVICE_EXPORTED_INTENTS_EXTRA = "service.exported.intents.extra"; //$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -95,9 +95,9 @@ public interface IDistributionConstants {
 	 * of concrete classes.
 	 * </p>
 	 */
-	public static final String SERVICE_EXPORTED_INTERFACES = "service.exported.interfaces";
+	public static final String SERVICE_EXPORTED_INTERFACES = "service.exported.interfaces"; //$NON-NLS-1$
 
-	public static final String SERVICE_EXPORTED_INTERFACES_WILDCARD = "*";
+	public static final String SERVICE_EXPORTED_INTERFACES_WILDCARD = "*"; //$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -109,7 +109,7 @@ public interface IDistributionConstants {
 	 * use this property to filter out imported services.
 	 * </p>
 	 */
-	public static final String SERVICE_IMPORTED = "service.imported";
+	public static final String SERVICE_IMPORTED = "service.imported"; //$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -126,7 +126,7 @@ public interface IDistributionConstants {
 	 * service.
 	 * </p>
 	 */
-	public static final String SERVICE_IMPORTED_CONFIGS = "service.imported.configs";
+	public static final String SERVICE_IMPORTED_CONFIGS = "service.imported.configs"; //$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -152,7 +152,7 @@ public interface IDistributionConstants {
 	 * recognize all intents before a service can be distributed.
 	 * </p>
 	 */
-	public static final String SERVICE_INTENTS = "service.intents";
+	public static final String SERVICE_INTENTS = "service.intents"; //$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -166,14 +166,14 @@ public interface IDistributionConstants {
 	 * associate persistent proprietary data with a service registration.
 	 * </p>
 	 */
-	public static final String SERVICE_PID = "service.pid";
+	public static final String SERVICE_PID = "service.pid"; //$NON-NLS-1$
 
-	public static final String SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS = "org.eclipse.ecf.containerFactoryArgs";
+	public static final String SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS = "org.eclipse.ecf.containerFactoryArgs"; //$NON-NLS-1$
 
-	public static final String SERVICE_EXPORTED_CONTAINER_CONNECT_TARGET = "org.eclipse.ecf.containerConnectTarget";
+	public static final String SERVICE_EXPORTED_CONTAINER_CONNECT_TARGET = "org.eclipse.ecf.containerConnectTarget"; //$NON-NLS-1$
 
-	public static final String SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT = "org.eclipse.ecf.containerConnectContext";
+	public static final String SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT = "org.eclipse.ecf.containerConnectContext"; //$NON-NLS-1$
 
-	public static final String SERVICE_EXPORTED_CONTAINER_ID = "org.eclipse.ecf.containerID";
+	public static final String SERVICE_EXPORTED_CONTAINER_ID = "org.eclipse.ecf.containerID"; //$NON-NLS-1$
 
 }

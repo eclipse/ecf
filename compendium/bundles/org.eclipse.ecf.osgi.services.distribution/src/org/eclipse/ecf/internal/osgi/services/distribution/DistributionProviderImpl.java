@@ -24,9 +24,9 @@ import org.osgi.framework.ServiceReference;
 
 public class DistributionProviderImpl {
 
-	public static Object VENDOR_NAME = "Eclipse Foundation";
-	public static Object PRODUCT_NAME = "Eclipse Communication Framework (ECF)";
-	public static Object PRODUCT_VERSION = "3.0";
+	public static Object VENDOR_NAME = "Eclipse Foundation"; //$NON-NLS-1$
+	public static Object PRODUCT_NAME = "Eclipse Communication Framework (ECF)"; //$NON-NLS-1$
+	public static Object PRODUCT_VERSION = "3.3"; //$NON-NLS-1$
 
 	List exposedServices = Collections.synchronizedList(new ArrayList());
 	List remoteServices = Collections.synchronizedList(new ArrayList());

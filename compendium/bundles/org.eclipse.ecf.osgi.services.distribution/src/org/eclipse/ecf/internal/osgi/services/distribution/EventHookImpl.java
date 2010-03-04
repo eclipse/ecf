@@ -99,10 +99,10 @@ public class EventHookImpl implements EventHook {
 				serviceIntents);
 
 		if (rsContainers == null || rsContainers.length == 0) {
-			LogUtility.logWarning("handleRegisteredServiceEvent",
+			LogUtility.logWarning("handleRegisteredServiceEvent", //$NON-NLS-1$
 					DebugOptions.EVENTHOOKDEBUG, this.getClass(),
-					"No remote service containers found for serviceReference="
-							+ serviceReference + ". Service NOT EXPORTED");
+					"No remote service containers found for serviceReference=" //$NON-NLS-1$
+							+ serviceReference + ". Service NOT EXPORTED"); //$NON-NLS-1$
 			return;
 		}
 		Dictionary remoteServiceProperties = getPropertiesForRemoteService(serviceReference);
@@ -116,10 +116,10 @@ public class EventHookImpl implements EventHook {
 					.getContainerAdapter().registerRemoteService(
 							exportedInterfaces, remoteService,
 							remoteServiceProperties);
-			trace("registerRemoteService", "containerID="
+			trace("registerRemoteService", "containerID=" //$NON-NLS-1$ //$NON-NLS-2$
 					+ rsContainers[i].getContainer().getID()
-					+ " serviceReference=" + serviceReference
-					+ " remoteRegistration=" + remoteRegistration);
+					+ " serviceReference=" + serviceReference //$NON-NLS-1$
+					+ " remoteRegistration=" + remoteRegistration); //$NON-NLS-1$
 			// Step 2 - Save registration
 			fireRemoteServiceRegistered(serviceReference, remoteRegistration);
 			// Step 3 - Publish via discovery API
@@ -165,8 +165,8 @@ public class EventHookImpl implements EventHook {
 		// If none found, then we have nothing that we can do except log the
 		// error and return
 		if (finder == null) {
-			logError("findRemoteServiceContainers",
-					"No container finders available");
+			logError("findRemoteServiceContainers", //$NON-NLS-1$
+					"No container finders available"); //$NON-NLS-1$
 			return null;
 		}
 		// Call out to find host containers as candidates
@@ -234,10 +234,10 @@ public class EventHookImpl implements EventHook {
 			serviceIdAsBytes = serviceId.toString().getBytes();
 		} else {
 			logError(
-					"getServicePublicationProperties",
-					"RemoteRegistration property remote.service.id is not set in remoteRegistration="
+					"getServicePublicationProperties", //$NON-NLS-1$
+					"RemoteRegistration property remote.service.id is not set in remoteRegistration=" //$NON-NLS-1$
 							+ remoteRegistration);
-			serviceIdAsBytes = "0".getBytes();
+			serviceIdAsBytes = "0".getBytes(); //$NON-NLS-1$
 		}
 
 		result.put(Constants.SERVICE_ID, serviceIdAsBytes);
@@ -270,10 +270,10 @@ public class EventHookImpl implements EventHook {
 					}, properties);
 			fireRemoteServicePublished(ref, reg);
 			// And it's done
-			trace("publishRemoteService", "containerID="
-					+ rsContainer.getContainer().getID() + ",serviceReference="
-					+ ref + " properties=" + properties
-					+ ",remoteRegistration=" + remoteRegistration);
+			trace("publishRemoteService", "containerID=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ rsContainer.getContainer().getID() + ",serviceReference=" //$NON-NLS-1$
+					+ ref + " properties=" + properties //$NON-NLS-1$
+					+ ",remoteRegistration=" + remoteRegistration); //$NON-NLS-1$
 		}
 	}
 
@@ -359,8 +359,8 @@ public class EventHookImpl implements EventHook {
 					SafeRunner.run(new ISafeRunnable() {
 						public void handleException(Throwable exception) {
 							logError(
-									"fireHostRegisteredUnregistered",
-									"Exception calling host distribution listener",
+									"fireHostRegisteredUnregistered", //$NON-NLS-1$
+									"Exception calling host distribution listener", //$NON-NLS-1$
 									exception);
 						}
 
@@ -395,8 +395,8 @@ public class EventHookImpl implements EventHook {
 				} catch (IllegalStateException e) {
 					// ignore
 				} catch (Exception e) {
-					logError("fireRemoteServiceUnregistered",
-							"Exception unregistering remote registration="
+					logError("fireRemoteServiceUnregistered", //$NON-NLS-1$
+							"Exception unregistering remote registration=" //$NON-NLS-1$
 									+ registrations[i], e);
 				}
 				// Now notify any listeners that this servicereference has been
@@ -436,8 +436,8 @@ public class EventHookImpl implements EventHook {
 				try {
 					registrations[i].unregister();
 				} catch (Exception e) {
-					logError("fireRemoteServiceUnpublished",
-							"Exception unregistering service publication registrations="
+					logError("fireRemoteServiceUnpublished", //$NON-NLS-1$
+							"Exception unregistering service publication registrations=" //$NON-NLS-1$
 									+ registrations[i], e);
 				}
 			}
@@ -502,9 +502,9 @@ public class EventHookImpl implements EventHook {
 
 	private void traceException(String methodName, String message, Throwable t) {
 		Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
-				this.getClass(), ((methodName == null) ? "<unknown>"
+				this.getClass(), ((methodName == null) ? "<unknown>" //$NON-NLS-1$
 						: methodName)
-						+ ":" + ((message == null) ? "<empty>" : message), t);
+						+ ":" + ((message == null) ? "<empty>" : message), t); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	private void logError(String methodName, String message, Throwable t) {
@@ -513,11 +513,11 @@ public class EventHookImpl implements EventHook {
 				.log(
 						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 								IStatus.ERROR, this.getClass().getName()
-										+ ":"
-										+ ((methodName == null) ? "<unknown>"
+										+ ":" //$NON-NLS-1$
+										+ ((methodName == null) ? "<unknown>" //$NON-NLS-1$
 												: methodName)
-										+ ":"
-										+ ((message == null) ? "<empty>"
+										+ ":" //$NON-NLS-1$
+										+ ((message == null) ? "<empty>" //$NON-NLS-1$
 												: message), t));
 	}
 
@@ -541,8 +541,8 @@ public class EventHookImpl implements EventHook {
 		if (osgiRemotes != null) {
 			// XXX we currently don't handle the modified service event
 			trace(
-					"org.eclipse.ecf.internal.osgi.services.distribution.EventHookImpl.handleModifiedServiceEvent(ServiceReference, Collection)",
-					"implement!");
+					"org.eclipse.ecf.internal.osgi.services.distribution.EventHookImpl.handleModifiedServiceEvent(ServiceReference, Collection)", //$NON-NLS-1$
+					"implement!"); //$NON-NLS-1$
 		}
 	}
 

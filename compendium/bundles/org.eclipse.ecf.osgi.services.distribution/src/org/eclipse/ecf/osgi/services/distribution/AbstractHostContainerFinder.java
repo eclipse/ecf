@@ -54,23 +54,23 @@ public abstract class AbstractHostContainerFinder extends
 			if (matchExistingHostContainer(serviceReference, containers[i],
 					adapter, description, serviceExportedConfigs,
 					serviceIntents)) {
-				trace("findExistingContainers", "INCLUDING containerID="
+				trace("findExistingContainers", "INCLUDING containerID=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ containers[i].getID()
-						+ "configs="
-						+ ((serviceExportedConfigs == null) ? "null" : Arrays
+						+ "configs=" //$NON-NLS-1$
+						+ ((serviceExportedConfigs == null) ? "null" : Arrays //$NON-NLS-1$
 								.asList(serviceExportedConfigs).toString())
-						+ "intents="
-						+ ((serviceIntents == null) ? "null" : Arrays.asList(
+						+ "intents=" //$NON-NLS-1$
+						+ ((serviceIntents == null) ? "null" : Arrays.asList( //$NON-NLS-1$
 								serviceIntents).toString()));
 				results.add(new RemoteServiceContainer(containers[i], adapter));
 			} else {
-				trace("findExistingContainers", "EXCLUDING containerID="
+				trace("findExistingContainers", "EXCLUDING containerID=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ containers[i].getID()
-						+ "configs="
-						+ ((serviceExportedConfigs == null) ? "null" : Arrays
+						+ "configs=" //$NON-NLS-1$
+						+ ((serviceExportedConfigs == null) ? "null" : Arrays //$NON-NLS-1$
 								.asList(serviceExportedConfigs).toString())
-						+ "intents="
-						+ ((serviceIntents == null) ? "null" : Arrays.asList(
+						+ "intents=" //$NON-NLS-1$
+						+ ((serviceIntents == null) ? "null" : Arrays.asList( //$NON-NLS-1$
 								serviceIntents).toString()));
 			}
 		}
@@ -94,8 +94,8 @@ public abstract class AbstractHostContainerFinder extends
 			try {
 				connectHostContainer(serviceReference, container, target);
 			} catch (Exception e) {
-				logException("doConnectContainer containerID="
-						+ container.getID() + " target=" + target, e);
+				logException("doConnectContainer containerID=" //$NON-NLS-1$
+						+ container.getID() + " target=" + target, e); //$NON-NLS-1$
 				return false;
 			}
 			return true;
@@ -217,7 +217,7 @@ public abstract class AbstractHostContainerFinder extends
 				return new RemoteServiceContainer(container);
 			} catch (Exception e) {
 				logException(
-						"Exception creating container from ContainerTypeDescription="
+						"Exception creating container from ContainerTypeDescription=" //$NON-NLS-1$
 								+ containerTypeDescription, e);
 			}
 		}

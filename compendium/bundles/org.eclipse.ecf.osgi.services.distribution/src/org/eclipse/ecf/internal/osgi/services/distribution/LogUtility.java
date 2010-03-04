@@ -23,14 +23,14 @@ public class LogUtility {
 
 	public static void logWarning(String methodName, String debugOption,
 			Class clazz, String message) {
-		trace(methodName, debugOption, clazz, "WARNING:" + message);
+		trace(methodName, debugOption, clazz, "WARNING:" + message); //$NON-NLS-1$
 		Activator.getDefault().log(
 				new Status(IStatus.WARNING, Activator.PLUGIN_ID,
 						IStatus.WARNING, clazz.getName()
-								+ ":"
-								+ ((methodName == null) ? "<unknown>"
-										: methodName) + ":"
-								+ ((message == null) ? "<empty>" : message),
+								+ ":" //$NON-NLS-1$
+								+ ((methodName == null) ? "<unknown>" //$NON-NLS-1$
+										: methodName) + ":" //$NON-NLS-1$
+								+ ((message == null) ? "<empty>" : message), //$NON-NLS-1$
 						null));
 	}
 
@@ -44,11 +44,11 @@ public class LogUtility {
 				.log(
 						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 								IStatus.ERROR, clazz.getName()
-										+ ":"
-										+ ((methodName == null) ? "<unknown>"
+										+ ":" //$NON-NLS-1$
+										+ ((methodName == null) ? "<unknown>" //$NON-NLS-1$
 												: methodName)
-										+ ":"
-										+ ((message == null) ? "<empty>"
+										+ ":" //$NON-NLS-1$
+										+ ((message == null) ? "<empty>" //$NON-NLS-1$
 												: message), t));
 	}
 
@@ -61,8 +61,8 @@ public class LogUtility {
 	public static void traceException(String methodName, String debugOption,
 			Class clazz, String message, Throwable t) {
 		Trace.catching(Activator.PLUGIN_ID, debugOption, clazz,
-				((methodName == null) ? "<unknown>" : methodName) + ":"
-						+ ((message == null) ? "<empty>" : message), t);
+				((methodName == null) ? "<unknown>" : methodName) + ":" //$NON-NLS-1$ //$NON-NLS-2$
+						+ ((message == null) ? "<empty>" : message), t); //$NON-NLS-1$
 	}
 
 }

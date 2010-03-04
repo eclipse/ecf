@@ -122,8 +122,8 @@ public abstract class AbstractContainerFinder {
 
 	protected void connectContainer(IContainer container, ID connectTargetID,
 			IConnectContext connectContext) throws ContainerConnectException {
-		trace("connectContainer", "Connecting container=" + container.getID()
-				+ " to connectTargetID=" + connectTargetID);
+		trace("connectContainer", "Connecting container=" + container.getID() //$NON-NLS-1$ //$NON-NLS-2$
+				+ " to connectTargetID=" + connectTargetID); //$NON-NLS-1$
 		container.connect(connectTargetID, connectContext);
 	}
 
@@ -148,7 +148,7 @@ public abstract class AbstractContainerFinder {
 		IContainerFactory containerFactory = getContainerFactory();
 		if (containerFactory == null)
 			throw new ContainerCreateException(
-					"container factory must not be null");
+					"container factory must not be null"); //$NON-NLS-1$
 
 		Object containerFactoryArguments = serviceReference
 				.getProperty(IDistributionConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS);

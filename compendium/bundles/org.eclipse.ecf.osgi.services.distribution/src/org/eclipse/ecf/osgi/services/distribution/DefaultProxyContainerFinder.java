@@ -31,8 +31,8 @@ public class DefaultProxyContainerFinder extends AbstractProxyContainerFinder
 	public IRemoteServiceContainer[] findProxyContainers(IServiceID serviceID,
 			IRemoteServiceEndpointDescription endpointDescription) {
 
-		trace("findProxyContainers", "serviceID=" + serviceID
-				+ " endpointDescription=" + endpointDescription);
+		trace("findProxyContainers", "serviceID=" + serviceID //$NON-NLS-1$ //$NON-NLS-2$
+				+ " endpointDescription=" + endpointDescription); //$NON-NLS-1$
 
 		// Get the endpointID
 		ID endpointID = endpointDescription.getEndpointAsID();
