@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 import org.apache.commons.httpclient.server.HttpRequestHandler;
 import org.apache.commons.httpclient.server.ResponseWriter;
@@ -113,6 +114,9 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		super.handleStartEvent(event);
 		assertNotNull(event.getFileID());
 		assertNotNull(event.getFileID().getFilename());
+		Map responseHeaders = event.getResponseHeaders();
+		assertNotNull(responseHeaders);
+		trace("responseHeaders="+responseHeaders);
 		try {
 			incomingFileTransfer = event.receive(tmpFile);
 		} catch (final IOException e) {
