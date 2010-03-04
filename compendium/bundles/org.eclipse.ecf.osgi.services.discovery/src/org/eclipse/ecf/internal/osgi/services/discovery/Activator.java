@@ -237,7 +237,8 @@ public class Activator implements BundleActivator {
 		public Object addingService(ServiceReference reference) {
 			IDiscoveryLocator locator = (IDiscoveryLocator) context
 					.getService(reference);
-			locator.addServiceListener(servicePublicationHandler);
+			if (locator != null)
+				locator.addServiceListener(servicePublicationHandler);
 			return locator;
 		}
 
