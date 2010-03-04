@@ -33,7 +33,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 	private static final String TESTPROP_VALUE = "foobar";
 	private static final String TESTPROP1_NAME = "org.eclipse.ecf.testprop1";
 	private static final String TESTPROP_NAME = "org.eclipse.ecf.testprop";
-	protected static final int REGISTER_WAIT = 30000;
+	protected static final int REGISTER_WAIT = Integer.parseInt(System.getProperty("waittime","15000"));
 
 	protected ServiceTracker createProxyServiceTracker(String clazz)
 			throws InvalidSyntaxException {

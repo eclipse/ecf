@@ -64,6 +64,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 	}
 	
 	private IRemoteServiceContainerAdapter getServerContainerAdapter() {
+		if (this.server != null) return (IRemoteServiceContainerAdapter) this.server.getAdapter(IRemoteServiceContainerAdapter.class);
 		IContainer [] containers = getContainerManager().getAllContainers();
 		String containerType = getServerContainerTypeName();
 		for(int i=0; i < containers.length; i++) {
@@ -181,7 +182,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
-		props.put(SERVICE_EXPORTED_CONTAINER_ID, createServerID());
+		props.put(SERVICE_EXPORTED_CONTAINER_ID, this.server.getID());
 		registerWaitAndUnregister(props, true);
 	}
 
