@@ -35,13 +35,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.remoteservice.rest"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.sharedobject"
          download-size="0"
          install-size="0"
@@ -50,13 +43,6 @@
 
    <plugin
          id="org.eclipse.ecf.provider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.remoteservice.soap"
          download-size="0"
          install-size="0"
          version="0.0.0"
