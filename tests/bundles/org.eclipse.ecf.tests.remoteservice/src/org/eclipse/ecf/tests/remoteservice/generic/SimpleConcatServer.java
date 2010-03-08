@@ -18,7 +18,7 @@ import org.eclipse.ecf.tests.remoteservice.IConcatService;
 
 public class SimpleConcatServer {
 
-	public static final int PORT = 32100;
+	public static final int PORT = 9988;
 	public static final String PATH = "/server";
 	public static final String HOST = "localhost";
 	public static final int KEEPALIVE = 30000;
