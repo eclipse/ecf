@@ -19,7 +19,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -41,8 +40,6 @@ public class Activator implements BundleActivator {
 	private BundleContext context = null;
 
 	private FileBasedDiscoveryImpl discovery = null;
-
-	private ServiceRegistration discoveryRegistration = null;
 
 	/**
 	 * The constructor
@@ -99,13 +96,6 @@ public class Activator implements BundleActivator {
 		context.registerService(CommandProvider.class.getName(),
 				new DiscoveryCommandProvider(discovery), null);
 
-//		Dictionary props = new Hashtable();
-//		props.put(Discovery.VENDOR_NAME,
-//				"Siemens Enterprise Communications GmbH & Co KG");
-//		props.put(Discovery.SUPPORTED_PROTOCOLS,
-//				"OSGi RFC 119 file based Discovery");
-//		discoveryRegistration = context.registerService(Discovery.class
-//				.getName(), discovery, props);
 	}
 
 	/*
@@ -115,7 +105,6 @@ public class Activator implements BundleActivator {
 	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		discoveryRegistration.unregister();
 		logServiceTracker.close();
 		logServiceTracker = null;
 		discovery.destroy();
