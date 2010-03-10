@@ -162,5 +162,6 @@
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.remoteservice.rest,org.eclipse.ecf.tests.remoteservice.rest"/>
     <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.osgi.services.discovery,org.eclipse.ecf.tests.osgi.services.discovery"/>
     <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution,org.eclipse.ecf.tests.osgi.services.distribution"/>
+    <project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution.localdiscovery,org.eclipse.ecf.tests.osgi.services.distribution.localdiscovery"/>
 </provider>
 </psf>
