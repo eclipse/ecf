@@ -93,6 +93,16 @@ public abstract class AbstractConcatHostApplication implements IApplication {
 				.getContainerFactory().createContainer(getContainerType());
 	}
 
+	protected IContainer createContainer(String containerID) throws ContainerCreateException {
+		return Activator.getDefault().getContainerManager()
+		.getContainerFactory().createContainer(getContainerType(),containerID);
+	}
+	
+	protected IContainer createContainer(String containerType, String containerId) throws ContainerCreateException {
+		return Activator.getDefault().getContainerManager()
+		.getContainerFactory().createContainer(containerType,containerId);
+	}
+	
 	protected IContainer createContainer(ID containerID) throws ContainerCreateException {
 		return Activator.getDefault().getContainerManager()
 				.getContainerFactory().createContainer(getContainerType(),containerID);
@@ -100,16 +110,14 @@ public abstract class AbstractConcatHostApplication implements IApplication {
 
 	protected IRemoteServiceContainer createRemoteServiceContainer(
 			IContainer container) {
-		return new RemoteServiceContainer(container,
-				(IRemoteServiceContainerAdapter) container
-						.getAdapter(IRemoteServiceContainerAdapter.class));
+		return new RemoteServiceContainer(container);
 	}
 
 	protected IRemoteServiceRegistration registerRemoteService(Class clazz,
 			Object service, Dictionary properties) {
 		return rsContainer.getContainerAdapter().registerRemoteService(
-				new String[] { getRemoteServiceClass().getName() },
-				createRemoteService(), createRemoteServiceProperties());
+				new String[] { clazz.getName() },
+				service, properties);
 	}
 
 }
