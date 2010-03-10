@@ -7,7 +7,7 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.tests.osgi.services.distribution.localdiscovery.generic;
+package org.eclipse.ecf.tests.osgi.services.distribution.localdiscovery;
 
 import org.eclipse.ecf.osgi.services.discovery.local.DiscoveryCommandProvider;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.localdiscovery.Activator;

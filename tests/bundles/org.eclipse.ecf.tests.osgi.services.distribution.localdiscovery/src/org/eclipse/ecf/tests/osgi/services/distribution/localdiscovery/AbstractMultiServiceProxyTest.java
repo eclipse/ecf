@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.osgi.services.discovery.local.DiscoveryCommandProvider;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.localdiscovery.Activator;
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractDistributionTest;
-import org.eclipse.ecf.tests.osgi.services.distribution.localdiscovery.generic.DiscoveryCommandProviderServiceTracker;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
