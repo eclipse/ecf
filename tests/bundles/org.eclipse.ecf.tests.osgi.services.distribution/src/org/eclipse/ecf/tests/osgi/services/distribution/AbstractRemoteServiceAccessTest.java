@@ -15,16 +15,13 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
-import org.eclipse.ecf.remoteservice.IRemoteServiceProxy;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.eclipse.equinox.concurrent.future.IFuture;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public abstract class AbstractRemoteServiceAccessTest extends
 		AbstractDistributionTest {
@@ -35,36 +32,6 @@ public abstract class AbstractRemoteServiceAccessTest extends
 	private static final String TESTPROP_NAME = "org.eclipse.ecf.testprop";
 	protected static final int REGISTER_WAIT = Integer.parseInt(System.getProperty("waittime","15000"));
 
-	protected ServiceTracker createProxyServiceTracker(String clazz)
-			throws InvalidSyntaxException {
-		ServiceTracker st = new ServiceTracker(getContext(), getContext()
-				.createFilter(
-						"(&(" + org.osgi.framework.Constants.OBJECTCLASS + "="
-								+ clazz + ")(" + SERVICE_IMPORTED + "=*))"),
-				new ServiceTrackerCustomizer() {
-
-					public Object addingService(ServiceReference reference) {
-						Trace.trace(Activator.PLUGIN_ID, "addingService="
-								+ reference);
-						return getContext().getService(reference);
-					}
-
-					public void modifiedService(ServiceReference reference,
-							Object service) {
-						Trace.trace(Activator.PLUGIN_ID, "modifiedService="
-								+ reference);
-					}
-
-					public void removedService(ServiceReference reference,
-							Object service) {
-						Trace.trace(Activator.PLUGIN_ID, "removedService="
-								+ reference + ",svc=" + service);
-					}
-				});
-		st.open();
-		return st;
-	}
-
 	protected Properties getServiceProperties() {
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
@@ -73,42 +40,6 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		return props;
 	}
 
-	protected void assertReferenceHasCorrectType(ServiceReference sr,
-			String classname) {
-		String[] classes = (String[]) sr
-				.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
-		assertTrue(classes != null);
-		// Check object class
-		assertTrue(classname.equals(classes[0]));
-	}
-
-	protected void assertReferencesValidAndFirstHasCorrectType(
-			ServiceReference[] references, String classname) {
-		assertReferencesValid(references);
-		assertReferenceHasCorrectType(references[0], classname);
-	}
-
-	protected void assertReferencesValid(ServiceReference[] references) {
-		assertTrue(references != null);
-		assertTrue(references.length > 0);
-	}
-
-	protected void assertStringResultValid(Object result, String compare) {
-		assertNotNull(result);
-		assertTrue(result instanceof String);
-		assertTrue(compare.equals(result));
-	}
-	
-	protected void assertProxyValid(Object proxy) {
-		assertNotNull(proxy);
-		assertTrue(proxy instanceof TestServiceInterface1);
-	}
-	
-	protected IRemoteService getRemoteServiceFromProxy(Object proxy) {
-		assertTrue(proxy instanceof IRemoteServiceProxy);
-		return ((IRemoteServiceProxy) proxy).getRemoteService();
-	}
-	
 	protected IRemoteCall createRemoteCall() {
 		return new IRemoteCall() {
 
@@ -147,7 +78,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		// Spec requires that the 'service.imported' property be set
 		assertTrue(remoteReferences[0].getProperty(SERVICE_IMPORTED) != null);
 		
-		registration.unregister();
+		if (registration != null) registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
@@ -178,7 +109,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		String testProp1 = (String) remoteReferences[0].getProperty(TESTPROP1_NAME);
 		assertTrue(TESTPROP_VALUE.equals(testProp));
 		assertTrue(TESTPROP1_VALUE.equals(testProp1));
-		registration.unregister();
+		if (registration != null) registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
@@ -208,7 +139,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
 
 		// Unregister on server and wait
-		registration.unregister();
+		if (registration != null) registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
@@ -242,7 +173,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
 		
 		// Unregister on server and wait
-		registration.unregister();
+		if (registration != null) registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
@@ -272,7 +203,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
 
 		// Unregister on server
-		registration.unregister();
+		if (registration != null) registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
@@ -343,7 +274,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
 
 		// Unregister on server
-		registration.unregister();
+		if (registration != null) registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
@@ -370,7 +301,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		rs.fireAsync(createRemoteCall());
 		Thread.sleep(5000);
 		// Unregister on server
-		registration.unregister();
+		if (registration != null) registration.unregister();
 		st.close();
 		Thread.sleep(REGISTER_WAIT);
 	}
