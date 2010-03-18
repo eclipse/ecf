@@ -66,6 +66,7 @@ public class XMPPChatClient {
 		if (presence == null) {
 			presence = (IPresenceContainerAdapter) container
 					.getAdapter(IPresenceContainerAdapter.class);
+			if (presence == null) throw new ECFException("adapter is null");
 			sender = presence.getChatManager().getChatMessageSender();
 			presence.getChatManager().addMessageListener(
 					new IIMMessageListener() {
