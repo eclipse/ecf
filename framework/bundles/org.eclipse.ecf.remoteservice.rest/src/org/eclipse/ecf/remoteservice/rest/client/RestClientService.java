@@ -16,6 +16,7 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.util.EncodingUtil;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
@@ -32,7 +33,10 @@ import org.eclipse.osgi.util.NLS;
  */
 public class RestClientService extends AbstractClientService {
 
+	protected final static int DEFAULT_RESPONSE_BUFFER_SIZE = 1024;
+
 	protected HttpClient httpClient;
+	protected int responseBufferSize = DEFAULT_RESPONSE_BUFFER_SIZE;
 
 	public RestClientService(RestClientContainer container, RemoteServiceClientRegistration registration) {
 		super(container, registration);
@@ -59,10 +63,15 @@ public class RestClientService extends AbstractClientService {
 		try {
 			responseCode = httpClient.executeMethod(httpMethod);
 			if (responseCode == HttpStatus.SC_OK) {
+				// Get response bytes
+				byte[] responseBytes = httpMethod.getResponseBody();
+				String responseCharSet = null;
+				if (httpMethod instanceof HttpMethodBase) {
+					HttpMethodBase methodBase = (HttpMethodBase) httpMethod;
+					responseCharSet = methodBase.getRequestCharSet();
+				}
 				// Get responseBody as String
-				responseBody = httpMethod.getResponseBodyAsString();
-				if (responseBody == null)
-					throw new RestException("Invalid server response", responseCode); //$NON-NLS-1$
+				responseBody = getResponseAsString(responseBytes, responseCharSet);
 			} else
 				handleException(NLS.bind("Http response not OK.  URL={0}, responseCode={1}", uri, new Integer(responseCode)), null, responseCode); //$NON-NLS-1$
 		} catch (HttpException e) {
@@ -77,6 +86,12 @@ public class RestClientService extends AbstractClientService {
 			handleException(NLS.bind("Exception deserializing response.  URL={0}, responseCode={1}", uri, new Integer(responseCode)), e, responseCode); //$NON-NLS-1$
 		}
 		return result;
+	}
+
+	protected String getResponseAsString(byte[] bytes, String responseCharSet) {
+		if (bytes == null)
+			return null;
+		return EncodingUtil.getString(bytes, responseCharSet);
 	}
 
 	protected void handleException(String message, Throwable e, int responseCode) throws RestException {
