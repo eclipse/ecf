@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" enabled="true" immediate="true" name="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer">
    <implementation class="org.eclipse.ecf.examples.internal.remoteservices.hello.ds.consumer.HelloClientComponent"/>
-   <reference bind="bindRemoteService" cardinality="0..n" interface="org.eclipse.ecf.examples.remoteservices.hello.IHello" name="IHello" policy="dynamic"/>
-   <reference bind="setContainerFactory" cardinality="1..1" interface="org.eclipse.ecf.core.IContainerFactory" name="IContainerFactory" policy="static"/>
+   <reference bind="bindHello" cardinality="0..n" interface="org.eclipse.ecf.examples.remoteservices.hello.IHello" name="IHello" policy="dynamic"/>
 </scr:component>

@@ -9,7 +9,6 @@
 ******************************************************************************/
 package org.eclipse.ecf.examples.internal.remoteservices.hello.ds.consumer;
 
-import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -22,26 +21,16 @@ public class HelloClientComponent {
 
 	private static final String CONSUMER_NAME = "helloclientcomponent";
 	
-	private IContainerFactory containerFactory;
-	
-	void setContainerFactory(IContainerFactory cf) {
-		this.containerFactory = cf;
-	}
-	
-	void activate() throws Exception {
-		// Create client of appropriate type
-		containerFactory.createContainer("ecf.generic.client");
-	}
-	
-	public void bindRemoteService(IHello proxy) {
+	public void bindHello(IHello hello) {
 		// First print out on console that we got something
-		System.out.println("Got proxy IHello="+proxy);
-		//Call proxy
-		proxy.hello(CONSUMER_NAME+" via proxy");
+		System.out.println("Got proxy IHello="+hello);
+		//Call proxy.  Note that this call may block or fail due to 
+		// communication with remote service
+		hello.hello(CONSUMER_NAME+" via proxy");
 		
 		// Get IRemoteService from proxy.  This is possible, because for all ECF providers
 		// the proxy also implements org.eclipse.ecf.remoteservice.IRemoteServiceProxy
-		IRemoteService remoteService = ((IRemoteServiceProxy) proxy).getRemoteService();
+		IRemoteService remoteService = ((IRemoteServiceProxy) hello).getRemoteService();
 		// Create listener for callback in asynchronous call
 		IRemoteCallListener listener = new IRemoteCallListener() {
 			public void handleEvent(IRemoteCallEvent event) {
