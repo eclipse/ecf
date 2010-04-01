@@ -48,4 +48,20 @@
          id="org.eclipse.ecf.server.generic.feature"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.ecf.osgi.services.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.discovery.jmdns.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.discovery.local.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.discovery.slp.feature"
+         version="0.0.0"/>
+
 </feature>
