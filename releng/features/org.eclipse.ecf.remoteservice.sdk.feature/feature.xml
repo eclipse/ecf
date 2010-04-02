@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.ecf.remoteservice.sdk"
+      label="ECF Remote Service SDK"
+      version="3.3.0.qualifier"
+      provider-name="Eclipse.org - ECF">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <includes
+         id="org.eclipse.ecf.eventadmin.examples.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.eventadmin.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.remoteservice.examples.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.remoteservice.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.remoteservice.rest.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.remoteservice.rosgi.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.remoteservice.soap.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.server.generic.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.osgi.services.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.discovery.jmdns.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.discovery.local.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.discovery.slp.feature"
+         version="0.0.0"/>
+
+</feature>
