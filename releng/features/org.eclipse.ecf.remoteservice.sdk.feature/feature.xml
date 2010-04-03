@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.remoteservice.sdk"
+      id="org.eclipse.ecf.remoteservice.sdk.feature"
       label="ECF Remote Service SDK"
       version="3.3.0.qualifier"
       provider-name="Eclipse.org - ECF">
