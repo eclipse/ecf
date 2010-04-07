@@ -73,4 +73,8 @@
          id="org.eclipse.ecf.discovery.slp.feature"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.ecf.datashare.feature"
+         version="0.0.0"/>
+
 </feature>
