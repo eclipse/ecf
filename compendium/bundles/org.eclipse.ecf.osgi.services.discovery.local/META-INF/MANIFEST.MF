@@ -16,3 +16,4 @@ Import-Package: javax.xml.parsers,
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %pluginProvider
 Export-Package: org.eclipse.ecf.osgi.services.discovery.local
+Bundle-Localization: plugin
