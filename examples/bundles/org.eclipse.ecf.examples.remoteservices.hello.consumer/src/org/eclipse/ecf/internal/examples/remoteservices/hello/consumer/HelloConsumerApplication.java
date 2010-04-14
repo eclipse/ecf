@@ -10,9 +10,13 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.examples.remoteservices.hello.consumer;
 
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
+import org.eclipse.ecf.examples.remoteservices.hello.IHelloAsync;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
+import org.eclipse.ecf.remoteservice.IAsyncCallback;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceProxy;
@@ -150,46 +154,101 @@ public class HelloConsumerApplication implements IApplication,
 		// Since this reference is for a remote service,
 		// The service object returned is a proxy implementing the
 		// IHello interface
-		IHello hello = (IHello) bundleContext.getService(reference);
-		// This makes a remote 'hello' call
-		hello.hello(CONSUMER_NAME);
-		System.out.println("Completed hello remote service invocation using proxy");
-
+		IHello proxy = (IHello) bundleContext.getService(reference);
+		// Call proxy synchronously.  Note that this call may block or fail due to 
+		// synchronous communication with remote service
+		System.out.println("STARTING remote call via proxy...");
+		proxy.hello(CONSUMER_NAME+" via proxy");
+		System.out.println("COMPLETED remote call via proxy");
+		System.out.println();
+		
+		// If the proxy is also an instance of IHelloAsync then use
+		// this asynchronous interface to invoke methods asynchronously
+		if (proxy instanceof IHelloAsync) {
+			IHelloAsync helloA = (IHelloAsync) proxy;
+			// Create callback for use in IHelloAsync
+			IAsyncCallback callback = new IAsyncCallback() {
+				public void onSuccess(Object result) {
+					System.out.println("COMPLETED remote call with callback SUCCESS with result="+result);
+					System.out.println();
+				}
+				public void onFailure(Throwable t) {
+					System.out.println("COMPLETED remote call with callback FAILED with exception="+t);
+					System.out.println();
+				}
+			};
+			
+			// Call asynchronously with callback
+			System.out.println("STARTING async remote call via callback...");
+			helloA.helloAsync(CONSUMER_NAME + " via async proxy with listener", callback);
+			System.out.println("LOCAL async invocation complete");
+			System.out.println();
+			
+			// Call asynchronously with future
+			System.out.println("STARTING async remote call via future...");
+			IFuture future = helloA.helloAsync(CONSUMER_NAME + " via async proxy with future");
+			System.out.println("LOCAL async future invocation complete");
+			System.out.println();
+			try {
+				while (!future.isDone()) {
+					// do some other stuff
+					System.out.println("LOCAL future not yet done...so we're doing other stuff while waiting for future to be done");
+					Thread.sleep(200);
+				}
+				// Now it's done, so this will not block
+				Object result = future.get();
+				System.out.println("COMPLETED remote call with future SUCCEEDED with result="+result);
+				System.out.println();
+			} catch (OperationCanceledException e) {
+				System.out.println("COMPLETED remote call with callback CANCELLED with exception="+e);
+				System.out.println();
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
+				System.out.println();
+				e.printStackTrace();
+			}
+		}
+		
+		
 		// OSGi 4.2 remote service spec requires a property named 'service.imported' to be
 		// set to a non-null value.  In the case of any ECF provider, this 'service.imported' property
 		// is set to the IRemoteService object associated with the remote service.
-		IRemoteService remoteServiceViaProperty = (IRemoteService) reference
+		IRemoteService remoteService = (IRemoteService) reference
 				.getProperty(IDistributionConstants.SERVICE_IMPORTED);
+		Assert.isNotNull(remoteService);
+		
 		// This IRemoteService instance allows allows non-blocking/asynchronous invocation of
 		// remote methods.  This allows the client to decide (at runtime if necessary) whether
 		// to do synchronous/blocking calls or asynchronous/non-blocking calls.
 		
+		// It's also possible to get the remote service directly from the proxy
+		remoteService = ((IRemoteServiceProxy) proxy).getRemoteService();
+		Assert.isNotNull(remoteService);
+		
 		// In this case, we will make an non-blocking call and immediately get a 'future'...which is
 		// a placeholder for a result of the remote computation.  This will not block.
-		IFuture future = RemoteServiceHelper.futureExec(remoteServiceViaProperty, "hello",
+		System.out.println("STARTING async remote call via future...");
+		IFuture future = RemoteServiceHelper.futureExec(remoteService, "hello",
 				new Object[] { CONSUMER_NAME + " future" });
+		System.out.println("LOCAL async future invocation complete");
 		// Client can execute arbitrary code here...
 		try {
 			// This blocks until communication and computation have completed successfully
-			future.get();
-			System.out.println("Completed hello remote service invocation using future");
+			while (!future.isDone()) {
+				// do some other stuff
+				System.out.println("LOCAL future not yet done...so we're doing other stuff while waiting for future to be done");
+				Thread.sleep(200);
+			}
+			// Now it's done, so this will not block
+			Object result = future.get();
+			System.out.println("COMPLETED remote call with future SUCCEEDED with result="+result);
+			System.out.println();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		// Now get the IRemoteService from the proxy
-		IRemoteService remoteServiceViaProxy = ((IRemoteServiceProxy) hello).getRemoteService();
-		// Create listener for asynchronous callback
-		IRemoteCallListener listener = new IRemoteCallListener() {
-			public void handleEvent(IRemoteCallEvent event) {
-				if (event instanceof IRemoteCallCompleteEvent) {
-					System.out.println("Completed hello remote service invocation using async");
-				}
-			}};
-		// Call asynchronously with listener
-		RemoteServiceHelper.asyncExec(remoteServiceViaProxy, "hello", new Object[] { CONSUMER_NAME + " async" }, listener);
-		
-		return hello;
+		return proxy;
 	}
 
 	public void modifiedService(ServiceReference reference, Object service) {
