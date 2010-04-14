@@ -30,9 +30,6 @@ import org.osgi.framework.ServiceException;
  */
 final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
-	private static final String ASYNCMETHOD_SUFFIX = "Async"; //$NON-NLS-1$
-	private static final String ASYNCINTERFACE_SUFFIX = "Async"; //$NON-NLS-1$
-
 	static final Object[] EMPTY_PARAMETERS = new Object[0];
 
 	// the ECF remote refImpl
@@ -176,7 +173,7 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
 	private Class findAsyncRemoteServiceProxyClass(Class c) {
 		String sourceName = c.getName();
-		String asyncRemoteServiceProxyClassname = sourceName + ASYNCINTERFACE_SUFFIX;
+		String asyncRemoteServiceProxyClassname = sourceName + IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX;
 		try {
 			return Class.forName(asyncRemoteServiceProxyClassname);
 		} catch (Exception t) {
@@ -245,7 +242,7 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	private Object checkAndCallAsync(final Method method, final Object[] args) throws Throwable {
 		IRemoteCallListener listener = verifyMethodAndArgs(method, args);
 		String methodName = method.getName();
-		final String invokeMethodName = methodName.endsWith(ASYNCMETHOD_SUFFIX) ? methodName.substring(0, methodName.length() - ASYNCMETHOD_SUFFIX.length()) : methodName;
+		final String invokeMethodName = methodName.endsWith(IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX) ? methodName.substring(0, methodName.length() - IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX.length()) : methodName;
 		IRemoteCall call = new IRemoteCall() {
 			public String getMethod() {
 				return invokeMethodName;
