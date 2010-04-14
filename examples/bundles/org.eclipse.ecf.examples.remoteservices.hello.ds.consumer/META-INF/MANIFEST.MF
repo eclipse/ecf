@@ -13,4 +13,4 @@ Import-Package: org.eclipse.ecf.examples.remoteservices.hello,
 Service-Component: OSGI-INF/helloclient.xml
 Bundle-Localization: bundle
 Export-Package: org.eclipse.ecf.examples.internal.remoteservices.hello.ds.consumer
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.0"
+Require-Bundle: org.eclipse.equinox.common
