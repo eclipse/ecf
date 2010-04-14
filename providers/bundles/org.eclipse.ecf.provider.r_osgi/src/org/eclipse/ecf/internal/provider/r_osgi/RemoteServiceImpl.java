@@ -171,7 +171,7 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		return proxy;
 	}
 
-	private Class findAsyncRemoteServiceProxyClass(Class c) {
+	protected Class findAsyncRemoteServiceProxyClass(Class c) {
 		String sourceName = c.getName();
 		String asyncRemoteServiceProxyClassname = sourceName + IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX;
 		try {
@@ -239,17 +239,46 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		}
 	}
 
-	private Object checkAndCallAsync(final Method method, final Object[] args) throws Throwable {
-		IRemoteCallListener listener = verifyMethodAndArgs(method, args);
-		String methodName = method.getName();
-		final String invokeMethodName = methodName.endsWith(IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX) ? methodName.substring(0, methodName.length() - IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX.length()) : methodName;
+	/**
+	 * @since 3.3
+	 */
+	protected class AsyncArgs {
+		private IRemoteCallListener listener;
+		private Object[] args;
+
+		public AsyncArgs(IRemoteCallListener listener, Object[] originalArgs) {
+			this.listener = listener;
+			if (this.listener != null) {
+				int asynchArgsLength = originalArgs.length - 1;
+				this.args = new Object[asynchArgsLength];
+				System.arraycopy(originalArgs, 0, args, 0, asynchArgsLength);
+			} else
+				this.args = originalArgs;
+		}
+
+		public IRemoteCallListener getListener() {
+			return listener;
+		}
+
+		public Object[] getArgs() {
+			return args;
+		}
+	}
+
+	/**
+	 * @since 3.3
+	 */
+	protected Object checkAndCallAsync(final Method method, final Object[] args) throws Throwable {
+		final String invokeMethodName = getAsyncInvokeMethodName(method);
+		final AsyncArgs asyncArgs = getAsyncArgs(method, args);
+		IRemoteCallListener listener = asyncArgs.getListener();
 		IRemoteCall call = new IRemoteCall() {
 			public String getMethod() {
 				return invokeMethodName;
 			}
 
 			public Object[] getParameters() {
-				return args;
+				return asyncArgs.getArgs();
 			}
 
 			public long getTimeout() {
@@ -262,7 +291,11 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		return null;
 	}
 
-	private IRemoteCallListener verifyMethodAndArgs(Method method, Object[] args) {
+	/**
+	 * @since 3.3
+	 */
+	protected AsyncArgs getAsyncArgs(Method method, Object[] args) {
+		IRemoteCallListener listener = null;
 		Class returnType = method.getReturnType();
 		// If the return type is declared to be *anything* except an IFuture, then 
 		// we are expecting the last argument to be an IRemoteCallListener
@@ -270,14 +303,30 @@ final class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 			// If the provided args do *not* include an IRemoteCallListener then we have a problem
 			if (args == null || args.length == 0)
 				throw new IllegalArgumentException("Async calls must include a IRemoteCallListener instance as the last argument"); //$NON-NLS-1$
+			// Get the last arg
 			Object lastArg = args[args.length - 1];
-			// Again if the last are is not an instance of IRemoteCallListener then
-			// we have a problem
-			if (!(lastArg instanceof IRemoteCallListener))
+			// If it's an IRemoteCallListener implementer directly, then just cast and return
+			if (lastArg instanceof IRemoteCallListener) {
+				listener = (IRemoteCallListener) lastArg;
+			}
+			// If it's an implementation of IAsyncCallback, then create a new listener based upon 
+			// callback and return
+			if (lastArg instanceof IAsyncCallback) {
+				listener = new CallbackRemoteCallListener((IAsyncCallback) lastArg);
+			}
+			// If the last are is not an instance of IRemoteCallListener then there is a problem
+			if (listener == null)
 				throw new IllegalArgumentException("Last argument must be an instance of IRemoteCallListener"); //$NON-NLS-1$
-			return (IRemoteCallListener) lastArg;
 		}
-		return null;
+		return new AsyncArgs(listener, args);
+	}
+
+	/**
+	 * @since 3.3
+	 */
+	protected String getAsyncInvokeMethodName(Method method) {
+		String methodName = method.getName();
+		return methodName.endsWith(IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX) ? methodName.substring(0, methodName.length() - IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX.length()) : methodName;
 	}
 
 	/**
