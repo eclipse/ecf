@@ -37,8 +37,7 @@ public class Request implements Serializable {
 		this(requestContainerID, serviceId, call, null);
 	}
 
-	public Request(ID requestContainerID, long serviceId, RemoteCallImpl call,
-			IRemoteCallListener listener) {
+	public Request(ID requestContainerID, long serviceId, RemoteCallImpl call, IRemoteCallListener listener) {
 		this.requestContainerID = requestContainerID;
 		this.serviceId = serviceId;
 		this.call = call;
