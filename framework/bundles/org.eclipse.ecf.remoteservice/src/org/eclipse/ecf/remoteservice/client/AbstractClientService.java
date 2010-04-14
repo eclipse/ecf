@@ -10,8 +10,8 @@
 package org.eclipse.ecf.remoteservice.client;
 
 import java.io.NotSerializableException;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.core.util.ECFException;
@@ -20,14 +20,13 @@ import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
 import org.eclipse.equinox.concurrent.future.*;
 import org.eclipse.osgi.util.NLS;
-import org.osgi.framework.ServiceException;
 
 /**
  * Remote service client service.  Implements {@link IRemoteService}.
  * 
  * @since 4.0
  */
-public abstract class AbstractClientService implements IRemoteService, InvocationHandler {
+public abstract class AbstractClientService extends AbstractRemoteService {
 
 	private long nextID = 0;
 	protected RemoteServiceClientRegistration registration;
@@ -62,209 +61,22 @@ public abstract class AbstractClientService implements IRemoteService, Invocatio
 		callAsync(call, callable);
 	}
 
-	public Object getProxy() throws ECFException {
-		Object proxy;
-		try {
-			// Get clazz from reference
-			final String[] clazzes = getRegistration().getClazzes();
-			List classes = new ArrayList();
-			for (int i = 0; i < clazzes.length; i++) {
-				Class c = Class.forName(clazzes[i]);
-				classes.add(c);
-				// check to see if async remote service proxy interface is defined
-				Class asyncRemoteServiceProxyClass = findAsyncRemoteServiceProxyClass(c);
-				if (asyncRemoteServiceProxyClass != null && asyncRemoteServiceProxyClass.isInterface())
-					classes.add(asyncRemoteServiceProxyClass);
-			}
-			// add IRemoteServiceProxy interface to set of interfaces supported by this proxy
-			classes.add(IRemoteServiceProxy.class);
-			proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), (Class[]) classes.toArray(new Class[] {}), this);
-		} catch (final Exception e) {
-			throw new ECFException(NLS.bind("Exception creating proxy rsid={0}", registration.getID()), e); //$NON-NLS-1$
-		}
-		return proxy;
-	}
+	protected Object invokeSync(IRemoteCall remoteCall) throws ECFException {
+		// Now lookup callable
+		IRemoteCallable callable = getRegistration().lookupCallable(remoteCall);
+		// If not found...we're finished
+		if (callable == null)
+			throw new ECFException("Callable not found for call=" + remoteCall); //$NON-NLS-1$
+		return invokeRemoteCall(remoteCall, callable);
 
-	/**
-	 * @since 4.1
-	 */
-	protected Class findAsyncRemoteServiceProxyClass(Class c) {
-		String sourceName = c.getName();
-		String asyncRemoteServiceProxyClassname = sourceName + IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX;
-		try {
-			return Class.forName(asyncRemoteServiceProxyClassname);
-		} catch (Exception t) {
-			return null;
-		} catch (NoClassDefFoundError e) {
-			return null;
-		}
 	}
 
 	protected Object[] getCallParametersForProxyInvoke(String callMethod, Method proxyMethod, Object[] args) {
 		return args;
 	}
 
-	protected long getCallTimeoutForProxyInvoke(String callMethod, Method proxyMethod, Object[] args) {
-		return IRemoteCall.DEFAULT_TIMEOUT;
-	}
-
 	protected String getCallMethodNameForProxyInvoke(Method method, Object[] args) {
 		return RemoteServiceClientRegistration.getFQMethod(method.getDeclaringClass().getName(), method.getName());
-	}
-
-	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-		// methods declared by Object
-		RemoteServiceClientRegistration reg = getRegistration();
-		Assert.isNotNull(reg);
-		try {
-			if (method.getName().equals("toString")) { //$NON-NLS-1$
-				final String[] clazzes = reg.getClazzes();
-				String proxyClass = (clazzes.length == 1) ? clazzes[0] : Arrays.asList(clazzes).toString();
-				return proxyClass + ".proxy@" + reg.getID(); //$NON-NLS-1$
-			} else if (method.getName().equals("hashCode")) { //$NON-NLS-1$
-				return new Integer(hashCode());
-			} else if (method.getName().equals("equals")) { //$NON-NLS-1$
-				if (args == null || args.length == 0)
-					return Boolean.FALSE;
-				try {
-					return new Boolean(Proxy.getInvocationHandler(args[0]).equals(this));
-				} catch (IllegalArgumentException e) {
-					return Boolean.FALSE;
-				}
-				// This handles the use of IRemoteServiceProxy.getRemoteService
-				// method
-			} else if (method.getName().equals("getRemoteService")) { //$NON-NLS-1$
-				return this;
-			} else if (method.getName().equals("getRemoteServiceReference")) { //$NON-NLS-1$
-				return reg.getReference();
-			}
-			// If the method's class is a subclass of IAsyncRemoteServiceProxy, then we assume
-			// that the methods are intended to be invoked asynchronously
-			if (Arrays.asList(method.getDeclaringClass().getInterfaces()).contains(IAsyncRemoteServiceProxy.class))
-				return checkAndCallAsync(method, args);
-			// else call synchronously/block and return result
-			// So the method is a user-defined method for the proxy
-			// 
-			final String fqCallMethod = getCallMethodNameForProxyInvoke(method, args);
-			final Object[] callParameters = getCallParametersForProxyInvoke(fqCallMethod, method, args);
-			final long callTimeout = getCallTimeoutForProxyInvoke(fqCallMethod, method, args);
-
-			final IRemoteCall remoteCall = new IRemoteCall() {
-
-				public String getMethod() {
-					return fqCallMethod;
-				}
-
-				public Object[] getParameters() {
-					return callParameters;
-				}
-
-				public long getTimeout() {
-					return callTimeout;
-				}
-			};
-			// Now lookup callable
-			IRemoteCallable callable = reg.lookupCallable(remoteCall);
-			// If not found...we're finished
-			if (callable == null)
-				throw new ECFException("Callable not found for call=" + remoteCall); //$NON-NLS-1$
-			return invokeRemoteCall(remoteCall, callable);
-		} catch (Throwable t) {
-			if (t instanceof ServiceException)
-				throw (ServiceException) t;
-			// else rethrow as service exception
-			throw new ServiceException("Service exception on remote service proxy rsid=" + reg.getID(), ServiceException.REMOTE, t); //$NON-NLS-1$
-		}
-	}
-
-	/**
-	 * @since 4.1
-	 */
-	protected class AsyncArgs {
-		private IRemoteCallListener listener;
-		private Object[] args;
-
-		public AsyncArgs(IRemoteCallListener listener, Object[] originalArgs) {
-			this.listener = listener;
-			if (this.listener != null) {
-				int asynchArgsLength = originalArgs.length - 1;
-				this.args = new Object[asynchArgsLength];
-				System.arraycopy(originalArgs, 0, args, 0, asynchArgsLength);
-			} else
-				this.args = originalArgs;
-		}
-
-		public IRemoteCallListener getListener() {
-			return listener;
-		}
-
-		public Object[] getArgs() {
-			return args;
-		}
-	}
-
-	/**
-	 * @since 4.1
-	 */
-	protected Object checkAndCallAsync(final Method method, final Object[] args) throws Throwable {
-		final String invokeMethodName = getAsyncInvokeMethodName(method);
-		final AsyncArgs asyncArgs = getAsyncArgs(method, args);
-		IRemoteCallListener listener = asyncArgs.getListener();
-		IRemoteCall call = new IRemoteCall() {
-			public String getMethod() {
-				return invokeMethodName;
-			}
-
-			public Object[] getParameters() {
-				return asyncArgs.getArgs();
-			}
-
-			public long getTimeout() {
-				return DEFAULT_TIMEOUT;
-			}
-		};
-		if (listener == null)
-			return callAsync(call);
-		callAsync(call, listener);
-		return null;
-	}
-
-	/**
-	 * @since 4.1
-	 */
-	protected AsyncArgs getAsyncArgs(Method method, Object[] args) {
-		IRemoteCallListener listener = null;
-		Class returnType = method.getReturnType();
-		// If the return type is declared to be *anything* except an IFuture, then 
-		// we are expecting the last argument to be an IRemoteCallListener
-		if (!returnType.equals(IFuture.class)) {
-			// If the provided args do *not* include an IRemoteCallListener then we have a problem
-			if (args == null || args.length == 0)
-				throw new IllegalArgumentException("Async calls must include a IRemoteCallListener instance as the last argument"); //$NON-NLS-1$
-			// Get the last arg
-			Object lastArg = args[args.length - 1];
-			// If it's an IRemoteCallListener implementer directly, then just cast and return
-			if (lastArg instanceof IRemoteCallListener) {
-				listener = (IRemoteCallListener) lastArg;
-			}
-			// If it's an implementation of IAsyncCallback, then create a new listener based upon 
-			// callback and return
-			if (lastArg instanceof IAsyncCallback) {
-				listener = new CallbackRemoteCallListener((IAsyncCallback) lastArg);
-			}
-			// If the last are is not an instance of IRemoteCallListener then there is a problem
-			if (listener == null)
-				throw new IllegalArgumentException("Last argument must be an instance of IRemoteCallListener"); //$NON-NLS-1$
-		}
-		return new AsyncArgs(listener, args);
-	}
-
-	/**
-	 * @since 4.1
-	 */
-	protected String getAsyncInvokeMethodName(Method method) {
-		String methodName = method.getName();
-		return methodName.endsWith(IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX) ? methodName.substring(0, methodName.length() - IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX.length()) : methodName;
 	}
 
 	protected long getNextRequestID() {
@@ -393,6 +205,18 @@ public abstract class AbstractClientService implements IRemoteService, Invocatio
 
 	protected Object processResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException {
 		return getClientContainer().processResponse(uri, call, callable, responseHeaders, responseBody);
+	}
+
+	protected IRemoteServiceID getRemoteServiceID() {
+		return registration.getID();
+	}
+
+	protected IRemoteServiceReference getRemoteServiceReference() {
+		return registration.getReference();
+	}
+
+	protected String[] getInterfaceClassNames() {
+		return registration.getClazzes();
 	}
 
 	/**
