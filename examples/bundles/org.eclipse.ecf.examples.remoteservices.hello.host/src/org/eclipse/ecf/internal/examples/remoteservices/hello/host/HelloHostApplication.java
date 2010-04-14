@@ -24,7 +24,7 @@ public class HelloHostApplication implements IApplication,
 		IDistributionConstants {
 
 	private static final String DEFAULT_CONTAINER_TYPE = "ecf.r_osgi.peer";
-	public static final String DEFAULT_CONTAINER_ID = null;
+	public static final String DEFAULT_CONTAINER_ID = "r-osgi://localhost:9278";
 
 	private BundleContext bundleContext;
 
