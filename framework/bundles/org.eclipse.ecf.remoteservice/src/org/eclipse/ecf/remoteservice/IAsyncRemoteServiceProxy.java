@@ -14,5 +14,7 @@ package org.eclipse.ecf.remoteservice;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IAsyncRemoteServiceProxy {
+	public static final String ASYNC_INTERFACE_SUFFIX = "Async"; //$NON-NLS-1$
+	public static final String ASYNC_METHOD_SUFFIX = "Async"; //$NON-NLS-1$
 	// no methods
 }
