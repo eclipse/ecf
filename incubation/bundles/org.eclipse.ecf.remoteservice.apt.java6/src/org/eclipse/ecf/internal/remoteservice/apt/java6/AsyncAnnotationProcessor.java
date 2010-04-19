@@ -123,7 +123,7 @@ public class AsyncAnnotationProcessor extends AbstractProcessor {
 	}
 
 	private String getBoxedTypeNameForTypeMirror(TypeMirror resultType) {
-		if (resultType == null) return "";
+		if (resultType == null) return null;
 		if (resultType instanceof ArrayType) {
 			ArrayType at = (ArrayType) resultType;
 			String boxedType = getBoxedTypeNameForTypeMirror(at.getComponentType());
@@ -150,6 +150,8 @@ public class AsyncAnnotationProcessor extends AbstractProcessor {
 			return "Short";
 		} else if (type.equals(TypeKind.VOID)) {
 			return "Void";
+		} else if (type.equals(TypeKind.DECLARED)) {
+			return resultType.toString();
 		}
         return null;
 	}
