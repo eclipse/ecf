@@ -11,7 +11,6 @@ package org.eclipse.ecf.examples.remoteservices.hello;
 
 import org.eclipse.ecf.remoteservice.IAsyncCallback;
 import org.eclipse.ecf.remoteservice.IAsyncRemoteServiceProxy;
-import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
 /**
