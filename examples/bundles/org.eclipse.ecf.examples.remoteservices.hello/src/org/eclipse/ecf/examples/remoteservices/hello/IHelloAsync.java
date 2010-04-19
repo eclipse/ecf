@@ -18,7 +18,7 @@ import org.eclipse.equinox.concurrent.future.IFuture;
  */
 public interface IHelloAsync extends IAsyncRemoteServiceProxy {
 
-	public void helloAsync(String from, IAsyncCallback callback);
+	public void helloAsync(String from, IAsyncCallback<Void> callback);
 	public IFuture helloAsync(String from);
 
 }
