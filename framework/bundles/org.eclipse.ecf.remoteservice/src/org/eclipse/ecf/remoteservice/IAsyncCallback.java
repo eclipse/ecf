@@ -32,7 +32,7 @@ public interface IAsyncCallback<ResultType> {
 	 * when an asynchronous remote service call fails.  Only
 	 * this method xor {@link #onSuccess(Object)} will be called
 	 * for a given remote call.
-	 * @param t any exception associated with the failure.  Will not be <code>null</code>.
+	 * @param exception any exception associated with the failure.  Will not be <code>null</code>.
 	 */
 	public void onFailure(Throwable exception);
 
