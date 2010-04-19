@@ -39,8 +39,8 @@ public class HelloClientComponent {
 		if (proxy instanceof IHelloAsync) {
 			IHelloAsync helloA = (IHelloAsync) proxy;
 			// Create callback for use in IHelloAsync
-			IAsyncCallback callback = new IAsyncCallback() {
-				public void onSuccess(Object result) {
+			IAsyncCallback callback = new IAsyncCallback<Void>() {
+				public void onSuccess(Void result) {
 					System.out.println("COMPLETED remote call with callback SUCCESS with result="+result);
 					System.out.println();
 				}
