@@ -33,6 +33,7 @@ public class RemoteServiceID extends BaseID implements IRemoteServiceID {
 		this.hash = 31 * hash + (int) (containerRelative ^ (containerRelative >>> 32));
 	}
 
+	@SuppressWarnings("unchecked")
 	protected int namespaceCompareTo(BaseID o) {
 		if (o == null || !(o instanceof RemoteServiceID))
 			return Integer.MIN_VALUE;

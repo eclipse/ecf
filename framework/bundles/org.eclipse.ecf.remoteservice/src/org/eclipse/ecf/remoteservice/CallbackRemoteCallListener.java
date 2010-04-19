@@ -25,6 +25,7 @@ public class CallbackRemoteCallListener implements IRemoteCallListener {
 		this.callback = callback;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void handleEvent(IRemoteCallEvent event) {
 		if (event instanceof IRemoteCallCompleteEvent) {
 			IRemoteCallCompleteEvent cce = (IRemoteCallCompleteEvent) event;

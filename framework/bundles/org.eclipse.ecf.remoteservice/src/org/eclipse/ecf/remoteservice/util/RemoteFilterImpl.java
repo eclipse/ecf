@@ -48,6 +48,7 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteFilter#match(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean match(IRemoteServiceReference reference) {
 		if (reference == null)
 			return false;

@@ -24,6 +24,7 @@ import org.eclipse.ecf.remoteservice.*;
  * 
  * @since 4.0
  */
+@SuppressWarnings("unchecked")
 public class RemoteServiceClientRegistry implements Serializable {
 
 	private static final long serialVersionUID = -7002609161000008043L;

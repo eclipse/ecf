@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Assert;
  * 
  * @since 4.0
  */
+@SuppressWarnings("unchecked")
 public class RemoteCallParameterFactory {
 
 	public static IRemoteCallParameter[] createParameters(String[] names, Object[] values) {

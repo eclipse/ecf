@@ -26,6 +26,7 @@ import org.eclipse.osgi.util.NLS;
  * 
  * @since 4.0
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractClientService extends AbstractRemoteService {
 
 	private long nextID = 0;

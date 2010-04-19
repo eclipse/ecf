@@ -27,6 +27,7 @@ import org.osgi.framework.ServiceEvent;
  * @since 3.0
  *
  */
+@SuppressWarnings("unchecked")
 public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/* set this to true to compile in debug messages */

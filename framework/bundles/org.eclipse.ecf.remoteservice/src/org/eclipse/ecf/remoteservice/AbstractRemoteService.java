@@ -56,6 +56,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		}, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getProxy() throws ECFException {
 		try {
 			// Get clazz from reference

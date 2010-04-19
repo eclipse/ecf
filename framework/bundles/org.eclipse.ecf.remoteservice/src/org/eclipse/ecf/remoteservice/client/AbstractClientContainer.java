@@ -32,6 +32,7 @@ import org.osgi.framework.InvalidSyntaxException;
  * 
  * @since 4.0
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractClientContainer extends AbstractContainer implements IRemoteServiceClientContainerAdapter {
 
 	protected ID containerID;

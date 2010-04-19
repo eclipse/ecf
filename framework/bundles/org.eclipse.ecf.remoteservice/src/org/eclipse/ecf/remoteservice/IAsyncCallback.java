@@ -14,7 +14,7 @@ package org.eclipse.ecf.remoteservice;
  * 
  * @since 4.1
  */
-public interface IAsyncCallback {
+public interface IAsyncCallback<ResultType> {
 
 	/**
 	 * This method will be invoked by an arbitrary
@@ -25,7 +25,7 @@ public interface IAsyncCallback {
 	 * 
 	 * @param result the result of the remote call.  May be <code>null</code>.
 	 */
-	public void onSuccess(Object result);
+	public void onSuccess(ResultType result);
 
 	/**
 	 * This method will be invoked by an arbitrary thread
