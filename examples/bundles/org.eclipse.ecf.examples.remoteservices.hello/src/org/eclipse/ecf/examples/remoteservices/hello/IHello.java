@@ -12,6 +12,9 @@ package org.eclipse.ecf.examples.remoteservices.hello;
 
 public interface IHello {
 
-	public void hello(String from);
+	/**
+	 * @since 2.0
+	 */
+	public String hello(String from);
 	
 }
