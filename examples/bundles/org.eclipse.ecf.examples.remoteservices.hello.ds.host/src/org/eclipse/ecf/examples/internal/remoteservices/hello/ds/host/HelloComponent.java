@@ -13,8 +13,10 @@ import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 
 public class HelloComponent implements IHello {
 
-	public void hello(String from) {
-		System.out.println("hello from="+from);
+	public String hello(String from) {
+		// This is the implementation of the IHello service
+		// This method can be executed via remote proxies
+		System.out.println("received hello from="+from);
+		return "Hello service host says 'Hi' back to "+from;
 	}
-
 }
