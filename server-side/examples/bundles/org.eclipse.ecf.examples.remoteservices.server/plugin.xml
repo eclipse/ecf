@@ -3,7 +3,7 @@
 <plugin>
 
    <extension id="remoteServicesServer"  point="org.eclipse.core.runtime.applications">
-      <application cardinality="1" thread="main" visible="true">
+      <application cardinality="*" thread="any" visible="true">
          <run class="org.eclipse.ecf.internal.examples.remoteservices.server.DiscoverableServer"/>
       </application>
    </extension>
