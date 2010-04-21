@@ -9,8 +9,8 @@
          id="chatRoomRobot"
          point="org.eclipse.core.runtime.applications">
       <application
-            cardinality="singleton-global"
-            thread="main"
+            cardinality="*"
+            thread="any"
             visible="true">
          <run
                class="org.eclipse.ecf.presence.bot.application.ChatRoomBotApplication">
@@ -21,8 +21,8 @@
          id="imRobot"
          point="org.eclipse.core.runtime.applications">
       <application
-            cardinality="singleton-global"
-            thread="main"
+            cardinality="*"
+            thread="any"
             visible="true">
          <run
                class="org.eclipse.ecf.presence.bot.application.IMBotApplication">
