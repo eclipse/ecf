@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="ECF Remote Services Example Hello DS" uid="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer.product" application="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer.HelloClientApplication" version="1.0.0" useFeatures="false" includeLaunchers="true">
+<product name="ECF Remote Services Example Hello DS" uid="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer.product" application="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer.HelloConsumerDS" version="1.0.0" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
