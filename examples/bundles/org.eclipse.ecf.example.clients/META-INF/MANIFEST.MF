@@ -13,10 +13,11 @@ Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.sharedobject,
  org.eclipse.ecf.presence.ui,
  org.eclipse.ui,
- org.eclipse.ecf.ui
+ org.eclipse.ecf.ui,
+ org.eclipse.equinox.common,
+ org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
-Import-Package: org.eclipse.core.runtime,
- org.eclipse.equinox.app,
+Import-Package: org.eclipse.equinox.app,
  org.osgi.framework
 Bundle-Activator: org.eclipse.ecf.example.clients.Activator
