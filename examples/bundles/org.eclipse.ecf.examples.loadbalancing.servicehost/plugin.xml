@@ -5,8 +5,8 @@
          id="DataProcessorServiceHost"
          point="org.eclipse.core.runtime.applications">
       <application
-            cardinality="singleton-global"
-            thread="main"
+            cardinality="*"
+            thread="any"
             visible="true">
          <run
                class="org.eclipse.ecf.internal.examples.loadbalancing.servicehost.DataProcessorServiceHostApplication">
