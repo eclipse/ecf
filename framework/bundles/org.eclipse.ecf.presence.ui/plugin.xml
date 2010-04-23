@@ -93,6 +93,22 @@
             name="%Chats"/>
    </extension>
 
+<extension
+    point = "org.eclipse.ui.viewActions">
+      <viewContribution 
+         id="org.eclipse.ecf.ui.multirosterview.vc1" 
+         targetID="org.eclipse.ecf.presence.ui.MultiRosterView">        
+	   <action id="org.eclipse.ecf.example.collab.ui.connectAction" 
+              class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction" enablesFor="*"
+              label="Connect to IM Provider" 
+	      menubarPath="additions"
+              toolbarPath="additions" 
+              icon="icons/messages.gif" 
+              tooltip="Connect to IM Provider"> 
+	   </action>
+      </viewContribution>
+ </extension>
+
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
