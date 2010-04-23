@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2009 Composent, Inc., IBM All rights reserved. This
+ * Copyright (c) 2004, 2010 Composent, Inc., IBM All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -11,6 +11,8 @@
  *  Henrich Kraemer - bug 263613, [transport] Update site contacting / downloading is not cancelable
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
+
+import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -416,6 +418,19 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		username = usernameCallback.getName();
 		password = (String) passwordCallback.getObject();
 		return new UsernamePasswordCredentials(username, password);
+	}
+
+	protected void setupProxies() {
+		// If it's been set directly (via ECF API) then this overrides platform settings
+		if (proxy == null) {
+			// give SOCKS priority see https://bugs.eclipse.org/bugs/show_bug.cgi?id=295030#c61
+			proxy = ProxySetupHelper.getSocksProxy(getRemoteFileURL());
+			if (proxy == null) {
+				proxy = ProxySetupHelper.getProxy(getRemoteFileURL().toExternalForm());
+			}
+		}
+		if (proxy != null)
+			setupProxy(proxy);
 	}
 
 	protected void setupAuthentication(String urlString) throws UnsupportedCallbackException, IOException {

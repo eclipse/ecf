@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2008, 2009 Composent, Inc., IBM and others.
+ * Copyright (c) 2008, 2010 Composent, Inc., IBM and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,8 @@
  *****************************************************************************/
 
 package org.eclipse.ecf.provider.filetransfer.httpclient;
+
+import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -156,6 +158,19 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	protected boolean hasForceNTLMProxyOption() {
 		return (System.getProperties().getProperty(HttpClientOptions.FORCE_NTLM_PROP) != null);
+	}
+
+	protected void setupProxies() {
+		// If it's been set directly (via ECF API) then this overrides platform settings
+		if (proxy == null) {
+			// give SOCKS priority see https://bugs.eclipse.org/bugs/show_bug.cgi?id=295030#c61
+			proxy = ProxySetupHelper.getSocksProxy(directoryOrFile);
+			if (proxy == null) {
+				proxy = ProxySetupHelper.getProxy(directoryOrFile.toExternalForm());
+			}
+		}
+		if (proxy != null)
+			setupProxy(proxy);
 	}
 
 	/* (non-Javadoc)

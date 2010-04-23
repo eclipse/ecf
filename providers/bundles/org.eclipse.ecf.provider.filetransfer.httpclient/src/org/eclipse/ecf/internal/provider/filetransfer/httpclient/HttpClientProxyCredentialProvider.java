@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
@@ -23,6 +26,20 @@ public abstract class HttpClientProxyCredentialProvider implements CredentialsPr
 
 	abstract protected Credentials getNTLMCredentials(Proxy proxy);
 
+	private Collection provided;
+
+	public HttpClientProxyCredentialProvider() {
+		provided = new HashSet();
+	}
+
+	private Object makeProvidedKey(AuthScheme scheme, String host, int port, boolean isProxyAuthenticating) {
+		ArrayList list = new ArrayList(3);
+		list.add(host);
+		list.add(new Integer(port));
+		list.add(Boolean.valueOf(isProxyAuthenticating));
+		return list;
+	}
+
 	/**
 	 * @throws CredentialsNotAvailableException  
 	 */
@@ -34,6 +51,16 @@ public abstract class HttpClientProxyCredentialProvider implements CredentialsPr
 		if (proxy == null) {
 			return null;
 		}
+
+		Object provideKey = makeProvidedKey(scheme, host, port, isProxyAuthenticating);
+		if (provided.contains(provideKey)) {
+			// HttpClient asks about credentials only once.
+			// If already provided don't use them again.
+			return null;
+		}
+
+		provided.add(provideKey);
+
 		if ("ntlm".equalsIgnoreCase(scheme.getSchemeName())) { //$NON-NLS-1$
 			return getNTLMCredentials(proxy);
 		} else if ("basic".equalsIgnoreCase(scheme.getSchemeName()) || //$NON-NLS-1$
