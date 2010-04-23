@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Composent, Inc. and others.
+ * Copyright (c) 2007, 2010 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Henrich Kraemer - bug 295030, Update Manager doesn't work with SOCKS proxy  
  *****************************************************************************/
 
 package org.eclipse.ecf.provider.filetransfer.util;
@@ -48,6 +49,7 @@ public class JREProxyHelper {
 		if (proxyPort != -1)
 			systemProperties.setProperty(proxyPortProperty, proxyPort + ""); //$NON-NLS-1$
 		final String username = proxy2.getUsername();
+		boolean setAuthenticator = false;
 		if (username != null && !username.equals("")) { //$NON-NLS-1$
 			final String password = (proxy2.getPassword() == null) ? "" : proxy2.getPassword(); //$NON-NLS-1$
 			if (proxy2.hasCredentials()) {
@@ -59,7 +61,18 @@ public class JREProxyHelper {
 						return new PasswordAuthentication(username, password.toCharArray());
 					}
 				});
+				setAuthenticator = true;
 			}
+		}
+		if (!setAuthenticator) {
+			Authenticator.setDefault(new Authenticator() {
+				/* (non-Javadoc)
+				 * @see java.net.Authenticator#getPasswordAuthentication()
+				 */
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return null;
+				}
+			});
 		}
 	}
 

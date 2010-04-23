@@ -1,24 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 Composent, Inc. All rights reserved. This
+ * Copyright (c) 2004, 2010 Composent, Inc. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  *               Cloudsmith, Inc. - additional API and implementation
+ *               Henrich Kraemer - bug 295030, Update Manager doesn't work with SOCKS proxy  
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.outgoing;
+
+import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import org.eclipse.core.net.proxy.IProxyData;
-import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,7 +31,6 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.FileTransferInfo;
 import org.eclipse.ecf.filetransfer.FileTransferJob;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
@@ -357,31 +357,7 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	protected void setupProxies() {
 		// If it's been set directly (via ECF API) then this overrides platform settings
 		if (proxy == null) {
-			try {
-				IProxyService proxyService = Activator.getDefault().getProxyService();
-				// Only do this if platform service exists
-				if (proxyService != null && proxyService.isProxiesEnabled()) {
-					// Setup via proxyService entry
-					URI target = new URI(getRemoteFileURL().toExternalForm());
-					String type = IProxyData.SOCKS_PROXY_TYPE;
-					if (target.getScheme().equalsIgnoreCase(IProxyData.HTTP_PROXY_TYPE)) {
-						type = IProxyData.HTTP_PROXY_TYPE;
-					} else if (target.getScheme().equalsIgnoreCase(IProxyData.HTTPS_PROXY_TYPE)) {
-						type = IProxyData.HTTPS_PROXY_TYPE;
-					}
-					final IProxyData[] proxyDatas = proxyService.select(target);
-					final IProxyData proxyData = selectProxyFromProxies(target.getScheme(), proxyDatas);
-					if (proxyData != null) {
-						proxy = new Proxy(((type.equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(proxyData.getHost(), proxyData.getPort()), proxyData.getUserId(), proxyData.getPassword());
-					}
-				}
-			} catch (Exception e) {
-				// If we don't even have the classes for this (i.e. the org.eclipse.core.net plugin not available)
-				// then we simply log and ignore
-				Activator.logNoProxyWarning(e);
-			} catch (NoClassDefFoundError e) {
-				Activator.logNoProxyWarning(e);
-			}
+			proxy = ProxySetupHelper.getProxy(getRemoteFileURL().toExternalForm());
 		}
 		if (proxy != null)
 			setupProxy(proxy);

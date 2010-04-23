@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007, 2009 Composent, Inc., IBM and others.
+ * Copyright (c) 2007, 2010 Composent, Inc., IBM and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,12 @@
 
 package org.eclipse.ecf.provider.filetransfer.browse;
 
-import java.net.URI;
+import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.core.net.proxy.IProxyData;
-import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemRequest;
@@ -33,7 +32,6 @@ import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 
 /**
@@ -211,50 +209,13 @@ public abstract class AbstractFileSystemBrowser {
 	 * @return proxy data selected from the proxies provided.  
 	 */
 	protected IProxyData selectProxyFromProxies(String protocol, IProxyData[] proxies) {
-		if (proxies == null || proxies.length == 0)
-			return null;
-		// If only one proxy is available, then use that
-		if (proxies.length == 1)
-			return proxies[0];
-		// If more than one proxy is available, then if http/https protocol then look for that
-		// one...if not found then use first
-		if (protocol.equalsIgnoreCase("http")) { //$NON-NLS-1$
-			for (int i = 0; i < proxies.length; i++) {
-				if (proxies[i].getType().equals(IProxyData.HTTP_PROXY_TYPE))
-					return proxies[i];
-			}
-		} else if (protocol.equalsIgnoreCase("https")) { //$NON-NLS-1$
-			for (int i = 0; i < proxies.length; i++) {
-				if (proxies[i].getType().equals(IProxyData.HTTPS_PROXY_TYPE))
-					return proxies[i];
-			}
-		}
-		// If we haven't found it yet, then return the first one.
-		return proxies[0];
+		return ProxySetupHelper.selectProxyFromProxies(protocol, proxies);
 	}
 
 	protected void setupProxies() {
 		// If it's been set directly (via ECF API) then this overrides platform settings
 		if (proxy == null) {
-			try {
-				IProxyService proxyService = Activator.getDefault().getProxyService();
-				// Only do this if platform service exists
-				if (proxyService != null && proxyService.isProxiesEnabled()) {
-					// Setup via proxyService entry
-					URI target = new URI(directoryOrFile.toExternalForm());
-					final IProxyData[] proxies = proxyService.select(target);
-					IProxyData selectedProxy = selectProxyFromProxies(target.getScheme(), proxies);
-					if (selectedProxy != null) {
-						proxy = new Proxy(((selectedProxy.getType().equalsIgnoreCase(IProxyData.SOCKS_PROXY_TYPE)) ? Proxy.Type.SOCKS : Proxy.Type.HTTP), new ProxyAddress(selectedProxy.getHost(), selectedProxy.getPort()), selectedProxy.getUserId(), selectedProxy.getPassword());
-					}
-				}
-			} catch (Exception e) {
-				// If we don't even have the classes for this (i.e. the org.eclipse.core.net plugin not available)
-				// then we simply log and ignore
-				Activator.logNoProxyWarning(e);
-			} catch (NoClassDefFoundError e) {
-				Activator.logNoProxyWarning(e);
-			}
+			proxy = ProxySetupHelper.getProxy(directoryOrFile.toExternalForm());
 		}
 		if (proxy != null)
 			setupProxy(proxy);
