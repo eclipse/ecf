@@ -33,7 +33,7 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 // TODO, we should rework this class... it's confusing >_<
-public class SelectProviderAction implements IWizardRegistryConstants, IWorkbenchWindowActionDelegate, IWorkbenchWindowPulldownDelegate {
+public class SelectProviderAction implements IWizardRegistryConstants, IWorkbenchWindowActionDelegate, IWorkbenchWindowPulldownDelegate, IViewActionDelegate {
 
 	private IWorkbenchWindow window;
 
@@ -195,6 +195,10 @@ public class SelectProviderAction implements IWizardRegistryConstants, IWorkbenc
 			return provider.getAttribute(ATT_NAME);
 		}
 
+	}
+
+	public void init(IViewPart view) {
+		this.window = view.getSite().getWorkbenchWindow();
 	}
 
 }
