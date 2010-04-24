@@ -209,7 +209,7 @@ public class ECFCommandProvider implements
 		StringBuffer help = new StringBuffer();
 		help.append(NEW_LINE);
 		help.append("---");
-		help.append("ECF Commands");
+		help.append("Eclipse Communication Framework (ECF) Commands");
 		help.append("---");
 		help.append(NEW_LINE);
 		help.append("\tlistfactories -- List all container factories.");
