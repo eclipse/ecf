@@ -19,7 +19,6 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.tests.presence.AbstractPresenceTestCase;
-import org.eclipse.osgi.util.NLS;
 
 /**
  *
