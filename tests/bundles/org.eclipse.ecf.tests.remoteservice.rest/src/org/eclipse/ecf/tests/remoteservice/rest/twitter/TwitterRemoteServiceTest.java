@@ -9,7 +9,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.tests.remoteservice.rest.twitter;
 
-import java.io.ByteArrayInputStream;
 import java.io.NotSerializableException;
 import java.util.ArrayList;
 import java.util.List;
