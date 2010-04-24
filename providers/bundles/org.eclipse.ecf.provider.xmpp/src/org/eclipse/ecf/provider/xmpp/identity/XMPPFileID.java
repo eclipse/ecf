@@ -17,7 +17,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.IDCreateException;
@@ -50,50 +49,63 @@ public class XMPPFileID extends BaseID implements IFileID {
 	XMPPFileID(URL url) throws IDCreateException, MalformedURLException {
 		Assert.isNotNull(url);
 		this.url = url;
-		this.xmppid = (XMPPID) IDFactory.getDefault().createID(getPropertyFromURL(XMPPIDNAMESPACE_KEY, url), getIDStringFromFileURL(url));
+		this.xmppid = (XMPPID) IDFactory.getDefault().createID(
+				getPropertyFromURL(XMPPIDNAMESPACE_KEY, url),
+				getIDStringFromFileURL(url));
 		this.filename = getPropertyFromURL(FILENAME_KEY, url);
 	}
 
-	private static String getIDStringFromFileURL(URL url) throws MalformedURLException {
+	private static String getIDStringFromFileURL(URL url)
+			throws MalformedURLException {
 		final String result = url.getAuthority();
 		String path = url.getPath();
 		path = (path.startsWith("/") ? path : "/" + path); //$NON-NLS-1$ //$NON-NLS-2$
 		return result + path;
 	}
 
-	private static String getPropertyFromURL(String propKey, URL url) throws MalformedURLException {
+	private static String getPropertyFromURL(String propKey, URL url)
+			throws MalformedURLException {
 		final String query = url.getQuery();
 		if (query == null || query.equals("")) //$NON-NLS-1$
-			throw new MalformedURLException(NLS.bind("Cannot have empty query for URL {0}", url)); //$NON-NLS-1$
+			throw new MalformedURLException(NLS.bind(
+					"Cannot have empty query for URL {0}", url)); //$NON-NLS-1$
 		final StringTokenizer st = new StringTokenizer(query, "&"); //$NON-NLS-1$
 		while (st.hasMoreTokens()) {
 			final String tok = st.nextToken();
 			if (tok.startsWith(propKey + "=")) { //$NON-NLS-1$
 				try {
-					return URLDecoder.decode(tok.substring(propKey.length() + "=".length()), UTF_8); //$NON-NLS-1$
+					return URLDecoder.decode(tok.substring(propKey.length()
+							+ "=".length()), UTF_8); //$NON-NLS-1$
 				} catch (final UnsupportedEncodingException e) {
 					// should not happen
-					throw new MalformedURLException(NLS.bind("Could not decode {0} in URL {1}", propKey, url)); //$NON-NLS-1$
+					throw new MalformedURLException(NLS.bind(
+							"Could not decode {0} in URL {1}", propKey, url)); //$NON-NLS-1$
 
 				}
 			}
 		}
-		throw new MalformedURLException(NLS.bind("Key {0} not found in URL {1}", propKey, url)); //$NON-NLS-1$
+		throw new MalformedURLException(NLS.bind(
+				"Key {0} not found in URL {1}", propKey, url)); //$NON-NLS-1$
 	}
 
-	public static URL createURL(XMPPID xmppid2, String filename2) throws MalformedURLException {
+	public static URL createURL(XMPPID xmppid2, String filename2)
+			throws MalformedURLException {
 		final StringBuffer buf = new StringBuffer(XMPPFileNamespace.SCHEME);
 		buf.append("://"); //$NON-NLS-1$
-		buf.append(xmppid2.getFQName()).append(createQuery(filename2, xmppid2.getNamespace().getName()));
+		buf.append(xmppid2.getFQName()).append(
+				createQuery(filename2, xmppid2.getNamespace().getName()));
 		return new URL(buf.toString());
 	}
 
-	public static String createQuery(String filename, String xmppidScheme) throws MalformedURLException {
+	public static String createQuery(String filename, String xmppidScheme)
+			throws MalformedURLException {
 		final StringBuffer sb = new StringBuffer("?"); //$NON-NLS-1$
 		try {
-			sb.append(FILENAME_KEY).append("=").append(URLEncoder.encode(filename, UTF_8)); //$NON-NLS-1$
+			sb.append(FILENAME_KEY)
+					.append("=").append(URLEncoder.encode(filename, UTF_8)); //$NON-NLS-1$
 			sb.append("&"); //$NON-NLS-1$
-			sb.append(XMPPIDNAMESPACE_KEY).append("=").append(URLEncoder.encode(xmppidScheme, UTF_8)); //$NON-NLS-1$
+			sb.append(XMPPIDNAMESPACE_KEY)
+					.append("=").append(URLEncoder.encode(xmppidScheme, UTF_8)); //$NON-NLS-1$
 			return sb.toString();
 		} catch (final UnsupportedEncodingException e) {
 			// should never happen
@@ -105,54 +117,71 @@ public class XMPPFileID extends BaseID implements IFileID {
 		return xmppid;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.BaseID#toExternalForm()
 	 */
 	public String toExternalForm() {
 		return url.toExternalForm();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceCompareTo(org.eclipse.ecf.core.identity.BaseID)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.core.identity.BaseID#namespaceCompareTo(org.eclipse.ecf
+	 * .core.identity.BaseID)
 	 */
 	protected int namespaceCompareTo(BaseID o) {
 		return getName().compareTo(o.getName());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceEquals(org.eclipse.ecf.core.identity.BaseID)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.core.identity.BaseID#namespaceEquals(org.eclipse.ecf.
+	 * core.identity.BaseID)
 	 */
 	protected boolean namespaceEquals(BaseID o) {
 		if (!(o instanceof XMPPFileID))
 			return false;
-		if (o == null)
-			return false;
 		final XMPPFileID other = (XMPPFileID) o;
-		return this.xmppid.equals(other.xmppid) && this.filename.equals(other.filename);
+		return this.xmppid.equals(other.xmppid)
+				&& this.filename.equals(other.filename);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceGetName()
 	 */
 	protected String namespaceGetName() {
 		return toExternalForm();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceHashCode()
 	 */
 	protected int namespaceHashCode() {
 		return this.xmppid.hashCode() ^ this.filename.hashCode();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.filetransfer.identity.IFileID#getFilename()
 	 */
 	public String getFilename() {
 		return filename;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.filetransfer.identity.IFileID#getURL()
 	 */
 	public URL getURL() throws MalformedURLException {
