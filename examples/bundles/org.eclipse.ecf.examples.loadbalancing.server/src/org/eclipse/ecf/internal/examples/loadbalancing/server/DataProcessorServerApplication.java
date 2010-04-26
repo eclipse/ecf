@@ -24,7 +24,8 @@ public class DataProcessorServerApplication implements IApplication {
 
 	private BundleContext bundleContext;
 	private ServiceTracker containerManagerServiceTracker;
-
+	private String containerType = LB_SERVER_CONTAINER_TYPE;
+	
 	// Queue that we will attach to as queue message consumer (receiver of
 	// actual remote method/invocation
 	// requests). Note that this queueId can be changed by using the -queueId
@@ -49,7 +50,7 @@ public class DataProcessorServerApplication implements IApplication {
 
 		// Create container and connect to given queueId as message consumer
 		container = getContainerManagerService().getContainerFactory()
-				.createContainer(LB_SERVER_CONTAINER_TYPE,
+				.createContainer(containerType,
 						new Object[] { queueId });
 
 		// Get remote service container adapter
@@ -67,8 +68,7 @@ public class DataProcessorServerApplication implements IApplication {
 
 		// Report success of registration
 		System.out
-				.println("Registered data processor.  Remote service registration="
-						+ dataProcessorRemoteServiceRegistration);
+				.println("LB Server:  Data Processor Registered queue="+queueId);
 
 		// then just wait for service requests
 		waitForDone();
@@ -94,6 +94,10 @@ public class DataProcessorServerApplication implements IApplication {
 			containerManagerServiceTracker = null;
 		}
 		bundleContext = null;
+		synchronized (appLock) {
+			done = true;
+			notifyAll();
+		}
 	}
 
 	private void processArgs(IApplicationContext appContext) {
@@ -104,6 +108,9 @@ public class DataProcessorServerApplication implements IApplication {
 		for (int i = 0; i < originalArgs.length; i++) {
 			if (originalArgs[i].equals("-queueId")) {
 				queueId = originalArgs[i + 1];
+				i++;
+			} else if (originalArgs[i].equals("-containerType")) {
+				containerType = originalArgs[i + 1];
 				i++;
 			}
 		}
