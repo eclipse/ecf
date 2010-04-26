@@ -12,15 +12,17 @@ import java.util.Properties;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.examples.loadbalancing.IDataProcessor;
+import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class DataProcessorServiceHostApplication implements IApplication {
+public class DataProcessorServiceHostApplication implements IApplication, IDistributionConstants {
 
 	private static final String LB_SVCHOST_CONTAINER_TYPE = "ecf.jms.activemq.tcp.manager.lb.svchost";
 	public static final String DEFAULT_QUEUE_ID = "tcp://localhost:61616/exampleQueue";
@@ -29,6 +31,8 @@ public class DataProcessorServiceHostApplication implements IApplication {
 	private BundleContext bundleContext;
 	private ServiceTracker containerManagerServiceTracker;
 
+	private String containerType = LB_SVCHOST_CONTAINER_TYPE;
+	
 	// JMS Queue URI that we will attach to as queue message producer (to issue
 	// actual remote method/invocation
 	// requests to server consumers). Note that this queueId can be changed by
@@ -42,6 +46,15 @@ public class DataProcessorServiceHostApplication implements IApplication {
 	// -topicId tcp://myjmdnsbrokerdnsname:61616/myTopicName
 	private String topicId = DEFAULT_TOPIC_ID;
 
+	// The local service registration when using the osgi remote services
+	private ServiceRegistration dataProcessorServiceServiceRegistration;
+	
+	private boolean useECFRemoteServices = false;
+	// The following two member variables are only used if the useECFRemoteServices
+	// flag is set to true via command line argument...e.g. -useECFRemoteServices
+	// The default is to use OSGi remote services, and so these two members
+	// will be null
+	
 	// Container instance that connects us with the ActiveMQ queue as a message
 	// producer and publishes the service on the topicId
 	private IContainer container;
@@ -54,13 +67,46 @@ public class DataProcessorServiceHostApplication implements IApplication {
 		// Process Arguments...i.e. set queueId and topicId if specified
 		processArgs(appContext);
 
+		// Register and publish as OSGi remote service
+		if (useECFRemoteServices) registerECFRemoteService();
+		else registerOSGiRemoteService();
+		
+		// wait for remote service requests until stopped
+		waitForDone();
+
+		return IApplication.EXIT_OK;
+	}
+
+	private void registerOSGiRemoteService() throws Exception {
+		// Setup properties for remote service distribution, as per OSGi 4.2 remote services
+		// specification (chap 13 in compendium spec)
+		Properties props = new Properties();
+		// add OSGi service property indicated export of all interfaces exposed by service (wildcard)
+		props.put(IDistributionConstants.SERVICE_EXPORTED_INTERFACES, IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD);
+		// add OSGi service property specifying config
+		props.put(IDistributionConstants.SERVICE_EXPORTED_CONFIGS, containerType);
+		// add ECF container arguments
+		props.put(IDistributionConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS, new String[] { topicId, queueId });
+		// This is setting (currently) magical service property that indicates
+		// that this service registration is a load balancing service host
+		props.put(Constants.SERVICE_REGISTER_PROXY, "true");
+		// register remote service
+		dataProcessorServiceServiceRegistration = bundleContext.registerService(IDataProcessor.class
+				.getName(), new IDataProcessor() {
+					public String processData(String data) {
+						return null;
+					}}, props);
+		// tell everyone
+		System.out.println("LB Service Host: DataProcessor Registered via OSGi Remote Services topic="+topicId);
+	}
+	
+	private void registerECFRemoteService() throws Exception {
 		// Create container of appropriate type, and with the topicId and
 		// queueId set
 		// upon construction
 		container = getContainerManagerService().getContainerFactory()
-				.createContainer(LB_SVCHOST_CONTAINER_TYPE,
+				.createContainer(containerType,
 						new Object[] { topicId, queueId });
-
 		// Get IRemoteServiceContainerAdapter
 		IRemoteServiceContainerAdapter remoteServiceAdapter = (IRemoteServiceContainerAdapter) container
 				.getAdapter(IRemoteServiceContainerAdapter.class);
@@ -85,16 +131,14 @@ public class DataProcessorServiceHostApplication implements IApplication {
 				.registerRemoteService(new String[] { IDataProcessor.class
 						.getName() }, null, properties);
 
-		System.out.println("Registered service host with registration="
-				+ dataProcessorServiceHostRegistration);
-
-		// wait for remote service requests until stopped
-		waitForDone();
-
-		return IApplication.EXIT_OK;
+		System.out.println("LB Service Host: DataProcessor Registered via ECF Remote Services topic="+topicId);
 	}
-
+	
 	public void stop() {
+		if (dataProcessorServiceServiceRegistration != null) {
+			dataProcessorServiceServiceRegistration.unregister();
+			dataProcessorServiceServiceRegistration = null;
+		}
 		if (dataProcessorServiceHostRegistration != null) {
 			dataProcessorServiceHostRegistration.unregister();
 			dataProcessorServiceHostRegistration = null;
@@ -109,6 +153,10 @@ public class DataProcessorServiceHostApplication implements IApplication {
 			containerManagerServiceTracker = null;
 		}
 		bundleContext = null;
+		synchronized (appLock) {
+			done = true;
+			notifyAll();
+		}
 	}
 
 	private void processArgs(IApplicationContext appContext) {
@@ -122,6 +170,9 @@ public class DataProcessorServiceHostApplication implements IApplication {
 				i++;
 			} else if (originalArgs[i].equals("-topicId")) {
 				topicId = originalArgs[i + 1];
+				i++;
+			} else if (originalArgs[i].equals("-containerType")) {
+				containerType = originalArgs[i + 1];
 				i++;
 			}
 		}
