@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="DataProcessorConsumerDS"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="*"
+            thread="any"
+            visible="true">
+         <run
+               class="org.eclipse.ecf.examples.internal.loadbalancing.ds.consumer.DataProcessorClientApplication">
+         </run>
+      </application>
+   </extension>
+
+</plugin>
