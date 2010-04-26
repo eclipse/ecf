@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.status.SerializableStatus;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.provider.remoteservice.*;
 import org.eclipse.ecf.remoteservice.*;
@@ -887,12 +888,18 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			result = localRegistration.callService(call);
 			response = new Response(request.getRequestId(), result);
 		} catch (final Exception e) {
-			response = new Response(request.getRequestId(), e);
+			response = new Response(request.getRequestId(), getSerializableException(e));
 			log(SERVICE_INVOKE_ERROR_CODE, SERVICE_INVOKE_ERROR_MESSAGE, e);
 		}
 		// Now send response back to responseTarget (original requestor)
 		sendCallResponse(responseTarget, response);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleCallRequest"); //$NON-NLS-1$
+	}
+
+	private Throwable getSerializableException(Exception e) {
+		// Just use the SerializableStatus
+		SerializableStatus ss = new SerializableStatus(0, null, null, e);
+		return ss.getException();
 	}
 
 	protected void sendCallRequestWithListener(RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call, IRemoteCallListener listener) {
