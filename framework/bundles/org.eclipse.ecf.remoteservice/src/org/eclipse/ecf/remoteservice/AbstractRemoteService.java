@@ -76,7 +76,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		} catch (final Exception e) {
 			throw new ECFException("Failed to create proxy", e); //$NON-NLS-1$
 		} catch (final NoClassDefFoundError e) {
-			throw new ECFException("Failed to load proxy interface", e); //$NON-NLS-1$
+			throw new ECFException("Failed to load proxy interface class", e); //$NON-NLS-1$
 		}
 	}
 
