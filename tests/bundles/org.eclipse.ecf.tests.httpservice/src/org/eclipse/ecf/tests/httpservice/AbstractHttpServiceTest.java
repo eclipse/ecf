@@ -10,12 +10,11 @@
 package org.eclipse.ecf.tests.httpservice;
 
 import org.eclipse.ecf.internal.tests.httpservice.Activator;
+import org.eclipse.ecf.tests.ECFAbstractTestCase;
 import org.eclipse.ecf.tests.util.BundleUtil;
 import org.osgi.framework.BundleException;
 
-import junit.framework.TestCase;
-
-public abstract class AbstractHttpServiceTest extends TestCase {
+public abstract class AbstractHttpServiceTest extends ECFAbstractTestCase {
 
 	public static final String JETTY_HTTP_SERVICE_BUNDLE = "org.eclipse.equinox.http.jetty";
 	
