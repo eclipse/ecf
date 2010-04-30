@@ -12,8 +12,7 @@ package org.eclipse.ecf.remoteservice.client;
 import java.io.NotSerializableException;
 import java.lang.reflect.Method;
 import java.util.*;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
@@ -21,6 +20,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.internal.remoteservice.Activator;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.*;
 import org.eclipse.ecf.remoteservice.util.RemoteFilterImpl;
@@ -413,11 +413,7 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	protected void logException(String string, Throwable e) {
-		// XXX log properly
-		if (string != null)
-			System.out.println(string);
-		if (e != null)
-			e.printStackTrace();
+		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, string, e));
 	}
 
 	protected ID getRemoteCallTargetID() {

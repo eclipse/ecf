@@ -11,9 +11,10 @@ package org.eclipse.ecf.remoteservice;
 
 import java.lang.reflect.*;
 import java.util.*;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.remoteservice.Activator;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.eclipse.osgi.util.NLS;
@@ -74,9 +75,13 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 			classes.add(IRemoteServiceProxy.class);
 			return createProxy((Class[]) classes.toArray(new Class[] {}));
 		} catch (final Exception e) {
-			throw new ECFException("Failed to create proxy", e); //$NON-NLS-1$
+			ECFException except = new ECFException("Failed to create proxy", e); //$NON-NLS-1$
+			logWarning("Exception in remote service getProxy", except); //$NON-NLS-1$
+			throw except;
 		} catch (final NoClassDefFoundError e) {
-			throw new ECFException("Failed to load proxy interface class", e); //$NON-NLS-1$
+			ECFException except = new ECFException("Failed to load proxy interface class", e); //$NON-NLS-1$
+			logWarning("Could not load class for getProxy", except); //$NON-NLS-1$
+			throw except;
 		}
 	}
 
@@ -88,11 +93,14 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	 * @since 3.3
 	 */
 	protected Class findAsyncRemoteServiceProxyClass(Class c) {
+		String proxyClassName = convertInterfaceNameToAsyncInterfaceName(c.getName());
 		try {
-			return Class.forName(convertInterfaceNameToAsyncInterfaceName(c.getName()));
-		} catch (Exception t) {
+			return Class.forName(proxyClassName);
+		} catch (Exception e) {
+			logWarning("No async remote service interface found with name=" + proxyClassName + " for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		} catch (NoClassDefFoundError e) {
+			logWarning("Async remote service interface with name=" + proxyClassName + " could not be loaded for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		}
 	}
@@ -267,6 +275,10 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	protected String getAsyncInvokeMethodName(Method method) {
 		String methodName = method.getName();
 		return methodName.endsWith(IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX) ? methodName.substring(0, methodName.length() - IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX.length()) : methodName;
+	}
+
+	protected void logWarning(String string, Throwable e) {
+		Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string));
 	}
 
 }
