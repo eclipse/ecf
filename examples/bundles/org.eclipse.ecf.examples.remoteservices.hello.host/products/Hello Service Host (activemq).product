@@ -8,7 +8,9 @@
 
    <launcherArgs>
       <programArgs>-containerType ecf.jms.activemq.tcp.manager
--containerId tcp://localhost:61616/exampleTopic</programArgs>
+-containerId tcp://localhost:61616/exampleTopic
+-console
+-consoleLog</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
