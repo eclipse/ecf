@@ -34,6 +34,7 @@ public class DataProcessorClientApplication implements IApplication {
 	public void stop() {
 		synchronized (appLock) {
 			done = true;
+			appLock.notifyAll();
 		}
 	}
 
