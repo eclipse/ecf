@@ -34,7 +34,7 @@ public class HelloClientApplication implements IApplication {
 	public void stop() {
 		synchronized (appLock) {
 			done = true;
-			notifyAll();
+			appLock.notifyAll();
 		}
 	}
 
