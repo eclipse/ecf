@@ -65,7 +65,7 @@
 	<!-- default -->
 	<searchPath name="default">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20090911225403/updateSite/?importType=binary"/>
+			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20100423142122//updateSite/?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
@@ -82,7 +82,6 @@
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.team\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.jivesoftware\.smack$" />
-	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.json$" />
 	
 	<!-- EMF -->
 	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.emf(\..+)?" />
