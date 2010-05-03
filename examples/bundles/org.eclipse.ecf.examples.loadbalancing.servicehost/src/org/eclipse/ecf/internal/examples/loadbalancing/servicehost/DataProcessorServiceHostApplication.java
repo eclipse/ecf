@@ -155,7 +155,7 @@ public class DataProcessorServiceHostApplication implements IApplication, IDistr
 		bundleContext = null;
 		synchronized (appLock) {
 			done = true;
-			notifyAll();
+			appLock.notifyAll();
 		}
 	}
 
