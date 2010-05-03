@@ -96,7 +96,7 @@ public class DataProcessorServerApplication implements IApplication {
 		bundleContext = null;
 		synchronized (appLock) {
 			done = true;
-			notifyAll();
+			appLock.notifyAll();
 		}
 	}
 
