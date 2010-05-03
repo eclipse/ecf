@@ -104,7 +104,7 @@ public class HelloConsumerApplication implements IApplication,
 		this.bundleContext = null;
 		synchronized (appLock) {
 			done = true;
-			notifyAll();
+			appLock.notifyAll();
 		}
 	}
 
