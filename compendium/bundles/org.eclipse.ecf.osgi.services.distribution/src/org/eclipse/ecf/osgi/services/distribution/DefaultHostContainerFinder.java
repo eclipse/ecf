@@ -24,7 +24,9 @@ public class DefaultHostContainerFinder extends AbstractHostContainerFinder
 
 	private boolean autoCreateContainer = false;
 
-	public DefaultHostContainerFinder(boolean autoCreateContainer) {
+	public DefaultHostContainerFinder(boolean autoCreateContainer,
+			String[] defaultConfigTypes) {
+		super(defaultConfigTypes);
 		this.autoCreateContainer = autoCreateContainer;
 	}
 

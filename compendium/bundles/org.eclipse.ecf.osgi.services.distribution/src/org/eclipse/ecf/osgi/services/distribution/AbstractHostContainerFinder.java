@@ -12,6 +12,7 @@ package org.eclipse.ecf.osgi.services.distribution;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -27,6 +28,13 @@ import org.osgi.framework.ServiceReference;
 
 public abstract class AbstractHostContainerFinder extends
 		AbstractContainerFinder {
+
+	private static final String NODEFAULT = "<<nodefault>>"; //$NON-NLS-1$
+	protected String[] defaultConfigTypes;
+
+	public AbstractHostContainerFinder(String[] defaultConfigTypes) {
+		this.defaultConfigTypes = defaultConfigTypes;
+	}
 
 	protected Collection findExistingHostContainers(
 			ServiceReference serviceReference,
@@ -164,20 +172,57 @@ public abstract class AbstractHostContainerFinder extends
 	protected boolean matchHostSupportedConfigTypes(
 			String[] serviceRequiredConfigTypes,
 			ContainerTypeDescription containerTypeDescription) {
-		// If the required config types is null then we have a match
-		if (serviceRequiredConfigTypes == null)
-			return true;
-
+		// Get supported config types for this description
 		String[] supportedConfigTypes = getSupportedConfigTypes(containerTypeDescription);
-		if (supportedConfigTypes == null)
+		// If it doesn't support anything, return false
+		if (supportedConfigTypes == null || supportedConfigTypes.length == 0)
 			return false;
-		List supportedConfigTypeList = Arrays.asList(supportedConfigTypes);
+		// Turn supported config types for this description into list
+		List supportedConfigTypesList = Arrays.asList(supportedConfigTypes);
+		// If NO required config types given on registration, then we use a
+		// default as specified
+		// in section 13.2.1 as per the following prose
+		//
+		// "If no configuration types are recognized, the distribution provider
+		// should create an endpoint with a default configuration type except
+		// when one of the listed configuration types is <<nodefault>>."
+		//
+		if (serviceRequiredConfigTypes == null)
+			return matchDefaultConfigTypes(supportedConfigTypesList);
+
 		boolean result = true;
-		for (int i = 0; i < serviceRequiredConfigTypes.length; i++)
-			result = result
-					&& supportedConfigTypeList
-							.contains(serviceRequiredConfigTypes[i]);
+		List requiredConfigTypesList = Arrays
+				.asList(serviceRequiredConfigTypes);
+		// We check all of the required config types and make sure
+		// that they are present in the supportedConfigTypes
+		for (Iterator i = requiredConfigTypesList.iterator(); i.hasNext();)
+			result = result && supportedConfigTypesList.contains(i.next());
+
+		// If result is false, then one/some of the required config types is not
+		// in supported config types list
+		if (!result) {
+			// We'll give it one last shot *unless* one of the required config
+			// types is <<nodefault>>
+			if (!requiredConfigTypesList.contains(NODEFAULT))
+				return matchDefaultConfigTypes(supportedConfigTypesList);
+		}
 		return result;
+	}
+
+	protected boolean matchDefaultConfigTypes(List supportedConfigTypes) {
+		// Get default config types for ECF distribution
+		String[] defaultConfigTypes = getDefaultConfigTypes();
+		if (defaultConfigTypes == null)
+			return false;
+		for (int i = 0; i < defaultConfigTypes.length; i++) {
+			if (supportedConfigTypes.contains(defaultConfigTypes[i]))
+				return true;
+		}
+		return false;
+	}
+
+	protected String[] getDefaultConfigTypes() {
+		return defaultConfigTypes;
 	}
 
 	protected Collection createAndConfigureHostContainers(

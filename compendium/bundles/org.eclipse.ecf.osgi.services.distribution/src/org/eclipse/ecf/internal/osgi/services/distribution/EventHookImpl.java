@@ -22,7 +22,9 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
@@ -99,7 +101,8 @@ public class EventHookImpl implements EventHook {
 				serviceIntents);
 
 		if (rsContainers == null || rsContainers.length == 0) {
-			LogUtility.logWarning("handleRegisteredServiceEvent", //$NON-NLS-1$
+			LogUtility.logWarning(
+					"handleRegisteredServiceEvent", //$NON-NLS-1$
 					DebugOptions.EVENTHOOKDEBUG, this.getClass(),
 					"No remote service containers found for serviceReference=" //$NON-NLS-1$
 							+ serviceReference + ". Service NOT EXPORTED"); //$NON-NLS-1$
@@ -188,14 +191,16 @@ public class EventHookImpl implements EventHook {
 		result.put(RemoteServicePublication.SERVICE_INTERFACE_NAME,
 				getAsCollection(remoteInterfaces));
 
-		if (supportedConfigs != null)
-			result.put(RemoteServicePublication.ENDPOINT_SUPPORTED_CONFIGS,
-					getAsCollection(supportedConfigs));
+		// If supportedConfigs is null, then get supported configs from
+		// description and it must also not be null
+		if (supportedConfigs == null)
+			supportedConfigs = getSupportedConfigs(rsContainer);
+		result.put(RemoteServicePublication.ENDPOINT_SUPPORTED_CONFIGS,
+				getAsCollection(supportedConfigs));
 
-		if (serviceIntents != null) {
+		if (serviceIntents != null)
 			result.put(RemoteServicePublication.ENDPOINT_SERVICE_INTENTS,
 					getAsCollection(serviceIntents));
-		}
 
 		// Set optional ServicePublication.PROP_KEY_SERVICE_PROPERTIES
 		result.put(RemoteServicePublication.SERVICE_PROPERTIES,
@@ -275,6 +280,20 @@ public class EventHookImpl implements EventHook {
 					+ ref + " properties=" + properties //$NON-NLS-1$
 					+ ",remoteRegistration=" + remoteRegistration); //$NON-NLS-1$
 		}
+	}
+
+	private String[] getSupportedConfigs(IRemoteServiceContainer rsContainer) {
+		Activator a = Activator.getDefault();
+		if (a == null)
+			return null;
+		IContainerManager containerManager = a.getContainerManager();
+		if (containerManager == null)
+			return null;
+		ContainerTypeDescription ctd = containerManager
+				.getContainerTypeDescription(rsContainer.getContainer().getID());
+		if (ctd == null)
+			return null;
+		return ctd.getSupportedConfigs();
 	}
 
 	private Collection getAsCollection(String[] remoteInterfaces) {
@@ -496,8 +515,8 @@ public class EventHookImpl implements EventHook {
 	}
 
 	private void trace(String methodName, String message) {
-		Trace.trace(Activator.PLUGIN_ID, DebugOptions.EVENTHOOKDEBUG, this
-				.getClass(), methodName, message);
+		Trace.trace(Activator.PLUGIN_ID, DebugOptions.EVENTHOOKDEBUG,
+				this.getClass(), methodName, message);
 	}
 
 	private void traceException(String methodName, String message, Throwable t) {
@@ -509,16 +528,13 @@ public class EventHookImpl implements EventHook {
 
 	private void logError(String methodName, String message, Throwable t) {
 		traceException(methodName, message, t);
-		Activator.getDefault()
-				.log(
-						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-								IStatus.ERROR, this.getClass().getName()
-										+ ":" //$NON-NLS-1$
-										+ ((methodName == null) ? "<unknown>" //$NON-NLS-1$
-												: methodName)
-										+ ":" //$NON-NLS-1$
-										+ ((message == null) ? "<empty>" //$NON-NLS-1$
-												: message), t));
+		Activator.getDefault().log(
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
+						this.getClass().getName() + ":" //$NON-NLS-1$
+								+ ((methodName == null) ? "<unknown>" //$NON-NLS-1$
+										: methodName) + ":" //$NON-NLS-1$
+								+ ((message == null) ? "<empty>" //$NON-NLS-1$
+										: message), t));
 	}
 
 	private void logError(String methodName, String message) {
@@ -540,9 +556,8 @@ public class EventHookImpl implements EventHook {
 				.getProperty(IDistributionConstants.SERVICE_EXPORTED_INTERFACES);
 		if (osgiRemotes != null) {
 			// XXX we currently don't handle the modified service event
-			trace(
-					"org.eclipse.ecf.internal.osgi.services.distribution.EventHookImpl.handleModifiedServiceEvent(ServiceReference, Collection)", //$NON-NLS-1$
-					"implement!"); //$NON-NLS-1$
+			trace("org.eclipse.ecf.internal.osgi.services.distribution.EventHookImpl.handleModifiedServiceEvent(ServiceReference, Collection)", //$NON-NLS-1$
+			"implement!"); //$NON-NLS-1$
 		}
 	}
 

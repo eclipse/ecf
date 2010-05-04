@@ -50,6 +50,10 @@ public class Activator implements BundleActivator {
 					"org.eclipse.ecf.osgi.services.distribution.autoCreateHostContainer", //$NON-NLS-1$
 					"true")).booleanValue(); //$NON-NLS-1$
 
+	public static final String defaultHostConfigType = System.getProperty(
+			"org.eclipse.ecf.osgi.services.distribution.defaultConfigType", //$NON-NLS-1$
+			"ecf.generic.server"); //$NON-NLS-1$
+
 	private static Activator plugin;
 	private BundleContext context;
 
@@ -101,8 +105,8 @@ public class Activator implements BundleActivator {
 		if (logService == null)
 			logService = getLogService();
 		if (logService != null)
-			logService.log(null, LogHelper.getLogCode(status), LogHelper
-					.getLogMessage(status), status.getException());
+			logService.log(null, LogHelper.getLogCode(status),
+					LogHelper.getLogMessage(status), status.getException());
 	}
 
 	public void log(ServiceReference sr, IStatus status) {
@@ -160,7 +164,8 @@ public class Activator implements BundleActivator {
 				Integer.MIN_VALUE));
 		this.hostrsContainerFinderRegistration = this.context.registerService(
 				IHostContainerFinder.class.getName(),
-				new DefaultHostContainerFinder(autoCreateHostContainer),
+				new DefaultHostContainerFinder(autoCreateHostContainer,
+						new String[] { defaultHostConfigType }),
 				hostContainerFinderProps);
 
 		// register all existing services which have the marker property
