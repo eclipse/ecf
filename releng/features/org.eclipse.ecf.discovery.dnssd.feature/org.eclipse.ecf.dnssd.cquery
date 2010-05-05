@@ -9,7 +9,7 @@
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.provider\.dnssd(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.discovery\.dnssd\.feature?" useTargetPlatform="false" useWorkspace="false"/>
     
-    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.provider\.dnssd\.feature?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.provider\.dnssd?" useTargetPlatform="false" useWorkspace="false"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false"/>
     
