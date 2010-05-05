@@ -4,9 +4,8 @@
     materializer="p2" 
     url="org.eclipse.ecf.dnssd.cquery">
     
-    <md:mspecNode namePattern="^org\.xbill\.dns(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.provider\.dnssd(\..+)?" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.provider\.dnssd\.feature?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.discovery\.dnssd\.feature?" materializer="workspace"/>
     
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.provider\.dnssd?" materializer="workspace"/>
 
