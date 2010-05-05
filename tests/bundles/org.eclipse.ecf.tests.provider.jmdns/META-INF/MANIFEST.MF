@@ -7,7 +7,7 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf,
  org.eclipse.ecf.discovery,
  org.eclipse.ecf.tests.discovery,
- org.junit,
+ org.junit;bundle-version="3.8.2",
  org.eclipse.ecf.provider.jmdns
 Bundle-Vendor: %plugin.provider
 Export-Package: org.eclipse.ecf.tests.provider.jmdns;version="3.0.0",
