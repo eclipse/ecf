@@ -4,8 +4,12 @@
 	xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0"
 	xmlns="http://www.eclipse.org/buckminster/CSpec-1.0">
 	<dependencies>
+		<!-- the feature -->
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.equinox.concurrent" componentType="osgi.bundle"/>
+		<!-- tests -->
+		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
+		<dependency name="org.eclipse.ecf.tests.provider.dnssd" componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
