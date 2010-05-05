@@ -12,6 +12,9 @@
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
 			<uri format="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.5/?importType=binary"/>
 		</provider>
+		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+			<uri format="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.6milestones/?importType=binary"/>
+		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
 			<uri format=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse,org.eclipse.releng/maps">
