@@ -195,8 +195,8 @@ public abstract class AbstractContainerFinder {
 	}
 
 	protected void trace(String methodName, String message) {
-		LogUtility.trace(methodName, DebugOptions.CONTAINERFINDER, this
-				.getClass(), message);
+		LogUtility.trace(methodName, DebugOptions.CONTAINERFINDER,
+				this.getClass(), message);
 	}
 
 	protected void traceException(String methodName, String message, Throwable t) {
@@ -205,25 +205,25 @@ public abstract class AbstractContainerFinder {
 	}
 
 	protected void logError(String methodName, String message, Throwable t) {
-		LogUtility.logError(methodName, DebugOptions.CONTAINERFINDER, this
-				.getClass(), message, t);
+		LogUtility.logError(methodName, DebugOptions.CONTAINERFINDER,
+				this.getClass(), message, t);
 	}
 
 	protected void logError(String methodName, String message) {
-		LogUtility.logError(methodName, DebugOptions.CONTAINERFINDER, this
-				.getClass(), message);
+		LogUtility.logError(methodName, DebugOptions.CONTAINERFINDER,
+				this.getClass(), message);
 	}
 
 	protected void logWarning(String methodName, String message) {
-		LogUtility.logWarning(methodName, DebugOptions.CONTAINERFINDER, this
-				.getClass(), message);
+		LogUtility.logWarning(methodName, DebugOptions.CONTAINERFINDER,
+				this.getClass(), message);
 	}
 
 	protected boolean matchConnectNamespace(IContainer container, ID endpointID) {
 		if (endpointID == null)
 			return false;
-		return endpointID.getNamespace().getName().equals(
-				container.getConnectNamespace().getName());
+		return endpointID.getNamespace().getName()
+				.equals(container.getConnectNamespace().getName());
 	}
 
 	protected boolean matchContainerID(IContainer container, ID endpointID) {

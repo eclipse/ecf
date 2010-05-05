@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -170,7 +171,7 @@ public abstract class AbstractHostContainerFinder extends
 	}
 
 	protected boolean matchHostSupportedConfigTypes(
-			String[] serviceRequiredConfigTypes,
+			String[] requiredConfigTypes,
 			ContainerTypeDescription containerTypeDescription) {
 		// Get supported config types for this description
 		String[] supportedConfigTypes = getSupportedConfigTypes(containerTypeDescription);
@@ -179,50 +180,13 @@ public abstract class AbstractHostContainerFinder extends
 			return false;
 		// Turn supported config types for this description into list
 		List supportedConfigTypesList = Arrays.asList(supportedConfigTypes);
-		// If NO required config types given on registration, then we use a
-		// default as specified
-		// in section 13.2.1 as per the following prose
-		//
-		// "If no configuration types are recognized, the distribution provider
-		// should create an endpoint with a default configuration type except
-		// when one of the listed configuration types is <<nodefault>>."
-		//
-		if (serviceRequiredConfigTypes == null)
-			return matchDefaultConfigTypes(supportedConfigTypesList);
-
-		boolean result = true;
-		List requiredConfigTypesList = Arrays
-				.asList(serviceRequiredConfigTypes);
+		List requiredConfigTypesList = Arrays.asList(requiredConfigTypes);
 		// We check all of the required config types and make sure
 		// that they are present in the supportedConfigTypes
+		boolean result = true;
 		for (Iterator i = requiredConfigTypesList.iterator(); i.hasNext();)
-			result = result && supportedConfigTypesList.contains(i.next());
-
-		// If result is false, then one/some of the required config types is not
-		// in supported config types list
-		if (!result) {
-			// We'll give it one last shot *unless* one of the required config
-			// types is <<nodefault>>
-			if (!requiredConfigTypesList.contains(NODEFAULT))
-				return matchDefaultConfigTypes(supportedConfigTypesList);
-		}
+			result &= supportedConfigTypesList.contains(i.next());
 		return result;
-	}
-
-	protected boolean matchDefaultConfigTypes(List supportedConfigTypes) {
-		// Get default config types for ECF distribution
-		String[] defaultConfigTypes = getDefaultConfigTypes();
-		if (defaultConfigTypes == null)
-			return false;
-		for (int i = 0; i < defaultConfigTypes.length; i++) {
-			if (supportedConfigTypes.contains(defaultConfigTypes[i]))
-				return true;
-		}
-		return false;
-	}
-
-	protected String[] getDefaultConfigTypes() {
-		return defaultConfigTypes;
 	}
 
 	protected Collection createAndConfigureHostContainers(
@@ -234,15 +198,77 @@ public abstract class AbstractHostContainerFinder extends
 		ContainerTypeDescription[] descriptions = getContainerTypeDescriptions();
 		if (descriptions == null)
 			return results;
-
-		for (int i = 0; i < descriptions.length; i++) {
-			IRemoteServiceContainer rsContainer = createMatchingContainer(
-					descriptions[i], serviceReference,
-					serviceExportedInterfaces, requiredConfigs, requiredIntents);
-			if (rsContainer != null)
-				results.add(rsContainer);
+		// If there are no required configs specified, then create any defaults
+		if (requiredConfigs == null || requiredConfigs.length == 0)
+			createDefaultRSContainers(serviceReference, descriptions, results);
+		else {
+			// See if we have a match
+			for (int i = 0; i < descriptions.length; i++) {
+				IRemoteServiceContainer rsContainer = createMatchingContainer(
+						descriptions[i], serviceReference,
+						serviceExportedInterfaces, requiredConfigs,
+						requiredIntents);
+				if (rsContainer != null)
+					results.add(rsContainer);
+			}
+		}
+		// we still haven't created one then we check for no default and if
+		// not present then we
+		// create default ones
+		if (results.size() == 0 && requiredConfigs != null
+				&& requiredConfigs.length > 0) {
+			List requiredConfigsList = Arrays.asList(requiredConfigs);
+			if (!requiredConfigsList.contains(NODEFAULT))
+				createDefaultRSContainers(serviceReference, descriptions,
+						results);
 		}
 		return results;
+	}
+
+	private void createDefaultRSContainers(ServiceReference serviceReference,
+			ContainerTypeDescription[] descriptions, List results) {
+		ContainerTypeDescription[] ctds = getContainerTypeDescriptionsForDefaultConfigTypes(descriptions);
+		if (ctds != null) {
+			for (int i = 0; i < ctds.length; i++) {
+				IRemoteServiceContainer rsContainer = createRSContainer(
+						serviceReference, ctds[i]);
+				if (rsContainer != null)
+					results.add(rsContainer);
+			}
+		}
+	}
+
+	protected ContainerTypeDescription[] getContainerTypeDescriptionsForDefaultConfigTypes(
+			ContainerTypeDescription[] descriptions) {
+		String[] defaultConfigTypes = getDefaultConfigTypes();
+		if (defaultConfigTypes == null || defaultConfigTypes.length == 0)
+			return null;
+		List results = new ArrayList();
+		for (int i = 0; i < descriptions.length; i++) {
+			// For each description, get supported config types
+			String[] supportedConfigTypes = descriptions[i]
+					.getSupportedConfigs();
+			if (supportedConfigTypes != null
+					&& matchDefaultConfigTypes(defaultConfigTypes,
+							supportedConfigTypes))
+				results.add(descriptions[i]);
+		}
+		return (ContainerTypeDescription[]) results
+				.toArray(new ContainerTypeDescription[] {});
+	}
+
+	protected boolean matchDefaultConfigTypes(String[] defaultConfigTypes,
+			String[] supportedConfigTypes) {
+		List supportedConfigTypesList = Arrays.asList(supportedConfigTypes);
+		for (int i = 0; i < defaultConfigTypes.length; i++) {
+			if (supportedConfigTypesList.contains(defaultConfigTypes[i]))
+				return true;
+		}
+		return false;
+	}
+
+	protected String[] getDefaultConfigTypes() {
+		return defaultConfigTypes;
 	}
 
 	protected IRemoteServiceContainer createMatchingContainer(
@@ -251,22 +277,33 @@ public abstract class AbstractHostContainerFinder extends
 			String[] serviceExportedInterfaces, String[] requiredConfigs,
 			String[] requiredIntents) {
 
-		// If there are no required configs, we don't know what to do/create
 		if (matchHostSupportedConfigTypes(requiredConfigs,
 				containerTypeDescription)
 				&& matchHostSupportedIntents(requiredIntents,
 						containerTypeDescription)) {
-			try {
-				IContainer container = createContainer(serviceReference,
-						containerTypeDescription);
-				return new RemoteServiceContainer(container);
-			} catch (Exception e) {
-				logException(
-						"Exception creating container from ContainerTypeDescription=" //$NON-NLS-1$
-								+ containerTypeDescription, e);
-			}
+			return createRSContainer(serviceReference, containerTypeDescription);
 		}
 		return null;
+	}
+
+	protected IRemoteServiceContainer createRSContainer(
+			ServiceReference serviceReference,
+			ContainerTypeDescription containerTypeDescription) {
+		try {
+			IContainer container = createContainer(serviceReference,
+					containerTypeDescription);
+			IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container
+					.getAdapter(IRemoteServiceContainerAdapter.class);
+			if (adapter == null)
+				throw new ContainerCreateException(
+						"Container does not implement IRemoteServiceContainerAdapter"); //$NON-NLS-1$
+			return new RemoteServiceContainer(container, adapter);
+		} catch (Exception e) {
+			logException(
+					"Exception creating container from ContainerTypeDescription=" //$NON-NLS-1$
+							+ containerTypeDescription, e);
+			return null;
+		}
 	}
 
 	protected void connectHostContainer(ServiceReference serviceReference,

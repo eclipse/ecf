@@ -225,6 +225,8 @@ public abstract class AbstractProxyContainerFinder extends
 
 	protected String selectLocalImportedConfig(String[] localConfigTypes,
 			Dictionary importedConfigProperties) {
+		if (localConfigTypes == null || localConfigTypes.length == 0)
+			return null;
 		// By default, we'll select the first config to use...
 		return localConfigTypes[0];
 	}
