@@ -119,8 +119,8 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		this.context = ctxt;
 		// Register IIDFactory service
-		idFactoryServiceRegistration = context.registerService(IIDFactory.class
-				.getName(), IDFactory.getDefault(), null);
+		idFactoryServiceRegistration = context.registerService(
+				IIDFactory.class.getName(), IDFactory.getDefault(), null);
 
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
@@ -223,8 +223,8 @@ public class Activator implements BundleActivator {
 			logService = getLogService();
 
 		if (logService != null)
-			logService.log(LogHelper.getLogCode(status), LogHelper
-					.getLogMessage(status), status.getException());
+			logService.log(LogHelper.getLogCode(status),
+					LogHelper.getLogMessage(status), status.getException());
 	}
 
 	/**
@@ -263,17 +263,10 @@ public class Activator implements BundleActivator {
 					// Now add to known namespaces
 					IDFactory.addNamespace0(ns);
 					org.eclipse.ecf.core.util.Trace
-							.trace(
-									Activator.PLUGIN_ID,
+							.trace(Activator.PLUGIN_ID,
 									IdentityDebugOptions.DEBUG,
 									"addNamespaceExtensions.addedNamespaceToFactory(" + ns //$NON-NLS-1$
 											+ ")"); //$NON-NLS-1$
-				} else {
-					getDefault().log(
-							new Status(IStatus.WARNING, Activator.PLUGIN_ID,
-									IStatus.WARNING,
-									"Namespace collision for name=" + nsName,
-									null));
 				}
 			} catch (final CoreException e) {
 				getDefault().log(e.getStatus());
@@ -282,17 +275,16 @@ public class Activator implements BundleActivator {
 						Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
 			} catch (final Exception e) {
 				getDefault()
-						.log(
-								new Status(
-										IStatus.ERROR,
-										bundleName,
-										FACTORY_NAME_COLLISION_ERRORCODE,
-										"name=" //$NON-NLS-1$
-												+ nsName
-												+ ";extension point id=" //$NON-NLS-1$
-												+ extension
-														.getExtensionPointUniqueIdentifier(),
-										null));
+						.log(new Status(
+								IStatus.ERROR,
+								bundleName,
+								FACTORY_NAME_COLLISION_ERRORCODE,
+								"name=" //$NON-NLS-1$
+										+ nsName
+										+ ";extension point id=" //$NON-NLS-1$
+										+ extension
+												.getExtensionPointUniqueIdentifier(),
+								null));
 				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
 						IdentityDebugOptions.EXCEPTIONS_CATCHING,
 						Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
