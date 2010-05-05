@@ -99,8 +99,9 @@ public class FileBasedDiscoveryImpl {
 				DiscoveredServiceTracker.class.getName(),
 				discoTrackerCustomizer);
 		discoTracker.open();
-		spTracker = new ServiceTracker(context, ServicePublication.class
-				.getName(), new ServicePublicationTracker(context, this));
+		spTracker = new ServiceTracker(context,
+				ServicePublication.class.getName(),
+				new ServicePublicationTracker(context, this));
 		spTracker.open();
 		// 36 stands for bundle states RESOLVED OR ACTIVE
 		bt = new BundleTracker(context, 36, new BundleTrackerImpl(this));
@@ -175,8 +176,8 @@ public class FileBasedDiscoveryImpl {
 	protected void unpublishService(
 			final ServiceEndpointDescription serviceDescription) {
 		validateServiceDescription(serviceDescription);
-		log(LogService.LOG_DEBUG, "unpublish service "
-				+ serviceDescription.toString());
+		log(LogService.LOG_DEBUG,
+				"unpublish service " + serviceDescription.toString());
 		inMemoryCache.remove(serviceDescription.getEndpointID());
 		notifyListenersOnRemovedServiceDescription(serviceDescription);
 	}
@@ -276,11 +277,9 @@ public class FileBasedDiscoveryImpl {
 				matchingFilters.clear();
 				if (isTrackerInterestedInSED(svcDescr, matchingCriteria,
 						matchingInterfaces, matchingFilters)) {
-					tracker
-							.serviceChanged(new DiscoveredServiceNotificationImpl(
-									svcDescr,
-									DiscoveredServiceNotification.AVAILABLE,
-									matchingInterfaces, matchingFilters));
+					tracker.serviceChanged(new DiscoveredServiceNotificationImpl(
+							svcDescr, DiscoveredServiceNotification.AVAILABLE,
+							matchingInterfaces, matchingFilters));
 				}
 			}
 		}
@@ -308,8 +307,7 @@ public class FileBasedDiscoveryImpl {
 							svcDescr, DiscoveredServiceNotification.AVAILABLE,
 							matchingInterfaces, matchingFilters));
 				} catch (Exception e) {
-					log(
-							LogService.LOG_ERROR,
+					log(LogService.LOG_ERROR,
 							"Exceptions where thrown while notifying about a new remote service.",
 							e);
 				}
@@ -345,8 +343,7 @@ public class FileBasedDiscoveryImpl {
 							DiscoveredServiceNotification.UNAVAILABLE,
 							matchingInterfaces, matchingFilters));
 				} catch (Exception e) {
-					log(
-							LogService.LOG_ERROR,
+					log(LogService.LOG_ERROR,
 							"Exceptions where thrown while notifying about removal of a remote service.",
 							e);
 				}
@@ -378,8 +375,7 @@ public class FileBasedDiscoveryImpl {
 							svcDescr, DiscoveredServiceNotification.MODIFIED,
 							matchingInterfaces, matchingFilters));
 				} catch (Exception e) {
-					log(
-							LogService.LOG_ERROR,
+					log(LogService.LOG_ERROR,
 							"Exceptions where thrown while notifying about modification of a remote service.",
 							e);
 				}

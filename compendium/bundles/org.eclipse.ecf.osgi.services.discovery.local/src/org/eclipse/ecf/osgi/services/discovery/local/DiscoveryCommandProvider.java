@@ -76,15 +76,14 @@ public class DiscoveryCommandProvider implements CommandProvider {
 			InputStream inputStream = url.openStream();
 			return new ServiceDescriptionParser().load(inputStream);
 		} catch (IOException e) {
-			ci.print(NLS.bind(Messages
-					.getString("DiscoveryCommandProvider.IOException"), path)); //$NON-NLS-1$
+			ci.print(NLS.bind(
+					Messages.getString("DiscoveryCommandProvider.IOException"), path)); //$NON-NLS-1$
 		} catch (ParserConfigurationException e) {
-			ci
-					.print(Messages
-							.getString("DiscoveryCommandProvider.ParserConfigurationException")); //$NON-NLS-1$
+			ci.print(Messages
+					.getString("DiscoveryCommandProvider.ParserConfigurationException")); //$NON-NLS-1$
 		} catch (SAXException e) {
-			ci.print(NLS.bind(Messages
-					.getString("DiscoveryCommandProvider.SAXException"), path)); //$NON-NLS-1$
+			ci.print(NLS.bind(
+					Messages.getString("DiscoveryCommandProvider.SAXException"), path)); //$NON-NLS-1$
 		}
 		return new ArrayList();
 	}

@@ -192,8 +192,8 @@ public class OneInterfaceSED {
 			sb.append("\tversion=").append(version).append(LINE_SEPARATOR);
 		}
 		if (endpointInterface != null) {
-			sb.append("\tendpointInterface=").append(endpointInterface).append(
-					LINE_SEPARATOR);
+			sb.append("\tendpointInterface=").append(endpointInterface)
+					.append(LINE_SEPARATOR);
 		}
 		return sb.toString();
 	}

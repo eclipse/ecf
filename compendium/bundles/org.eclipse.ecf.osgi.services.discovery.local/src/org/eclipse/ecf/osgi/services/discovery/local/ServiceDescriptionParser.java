@@ -144,8 +144,8 @@ public class ServiceDescriptionParser {
 						} else if (type.equals("Byte")) {
 							providedProperties.put(name, Byte.valueOf(value));
 						} else if (type.equals("Character")) {
-							providedProperties.put(name, new Character(value
-									.charAt(0)));
+							providedProperties.put(name,
+									new Character(value.charAt(0)));
 						} else if (type.equals("Boolean")) {
 							providedProperties
 									.put(name, Boolean.valueOf(value));

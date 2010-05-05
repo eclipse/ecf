@@ -185,8 +185,8 @@ public class BundleTrackerImpl implements BundleTrackerCustomizer {
 			String property = System.getProperty(substring);
 			path = path.replaceAll("\\$\\{" + substring + "\\}", property);
 		}
-		String files = token.substring(token.lastIndexOf("/") + 1, token
-				.length());
+		String files = token.substring(token.lastIndexOf("/") + 1,
+				token.length());
 		Enumeration enumeration = bundle.findEntries(path, files, false);
 		if (enumeration == null) {
 			// that was maybe an absolute file path so lets check that.

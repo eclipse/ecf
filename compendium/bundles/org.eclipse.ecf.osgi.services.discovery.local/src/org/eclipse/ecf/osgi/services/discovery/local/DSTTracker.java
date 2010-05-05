@@ -138,10 +138,8 @@ public class DSTTracker implements ServiceTrackerCustomizer {
 			Collection newFilterCriteria = (Collection) serviceReference
 					.getProperty(DiscoveredServiceTracker.FILTER_MATCH_CRITERIA);
 
-			result
-					.put(DiscoveredServiceTracker.INTERFACE_MATCH_CRITERIA,
-							getAddedEntries(oldInterfaceCriteria,
-									newInterfaceCriteria));
+			result.put(DiscoveredServiceTracker.INTERFACE_MATCH_CRITERIA,
+					getAddedEntries(oldInterfaceCriteria, newInterfaceCriteria));
 			result.put(DiscoveredServiceTracker.FILTER_MATCH_CRITERIA,
 					getAddedEntries(oldFilterCriteria, newFilterCriteria));
 		} else {
@@ -194,14 +192,11 @@ public class DSTTracker implements ServiceTrackerCustomizer {
 		// Retrieve current service properties (required later when modified to
 		// compute the actual modification)
 		Map props = new HashMap();
-		props
-				.put(
-						DiscoveredServiceTracker.INTERFACE_MATCH_CRITERIA,
-						ref
-								.getProperty(DiscoveredServiceTracker.INTERFACE_MATCH_CRITERIA));
+		props.put(DiscoveredServiceTracker.INTERFACE_MATCH_CRITERIA, ref
+				.getProperty(DiscoveredServiceTracker.INTERFACE_MATCH_CRITERIA));
 
-		props.put(DiscoveredServiceTracker.FILTER_MATCH_CRITERIA, ref
-				.getProperty(DiscoveredServiceTracker.FILTER_MATCH_CRITERIA));
+		props.put(DiscoveredServiceTracker.FILTER_MATCH_CRITERIA,
+				ref.getProperty(DiscoveredServiceTracker.FILTER_MATCH_CRITERIA));
 		dsTrackers.put((DiscoveredServiceTracker) context.getService(ref),
 				props);
 	}

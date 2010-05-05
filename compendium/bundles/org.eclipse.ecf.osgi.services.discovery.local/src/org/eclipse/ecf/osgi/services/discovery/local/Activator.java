@@ -19,6 +19,7 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -40,6 +41,11 @@ public class Activator implements BundleActivator {
 	private BundleContext context = null;
 
 	private FileBasedDiscoveryImpl discovery = null;
+
+	private ServiceRegistration commandProviderRegistration;
+
+	private ServiceDescriptionPublisher serviceDescriptionPublisher;
+	private ServiceRegistration serviceDescriptionPublisherRegistration;
 
 	/**
 	 * The constructor
@@ -93,9 +99,15 @@ public class Activator implements BundleActivator {
 		discovery = new FileBasedDiscoveryImpl(bc, logService);
 		discovery.init();
 
-		context.registerService(CommandProvider.class.getName(),
-				new DiscoveryCommandProvider(discovery), null);
+		commandProviderRegistration = context.registerService(
+				CommandProvider.class.getName(), new DiscoveryCommandProvider(
+						discovery), null);
 
+		// Register servicedescription publisher
+		serviceDescriptionPublisher = new ServiceDescriptionPublisher(discovery);
+		serviceDescriptionPublisherRegistration = context.registerService(
+				IServiceEndpointDescriptionPublisher.class.getName(),
+				serviceDescriptionPublisher, null);
 	}
 
 	/*
@@ -105,6 +117,18 @@ public class Activator implements BundleActivator {
 	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		if (commandProviderRegistration != null) {
+			commandProviderRegistration.unregister();
+			commandProviderRegistration = null;
+		}
+		if (serviceDescriptionPublisherRegistration != null) {
+			serviceDescriptionPublisherRegistration.unregister();
+			serviceDescriptionPublisherRegistration = null;
+		}
+		if (serviceDescriptionPublisher != null) {
+			serviceDescriptionPublisher.close();
+			serviceDescriptionPublisher = null;
+		}
 		logServiceTracker.close();
 		logServiceTracker = null;
 		discovery.destroy();
@@ -129,6 +153,10 @@ public class Activator implements BundleActivator {
 	void setLogService(LogService logger) {
 		logService = logger;
 		FileBasedDiscoveryImpl.setLogService(logService);
+	}
+
+	LogService getLogService() {
+		return logService;
 	}
 
 	public BundleContext getBundleContext() {
