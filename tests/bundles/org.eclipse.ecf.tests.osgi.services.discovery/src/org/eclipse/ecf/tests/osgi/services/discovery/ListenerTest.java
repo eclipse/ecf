@@ -9,11 +9,11 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.discovery;
 
-import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.osgi.services.discovery.IHostDiscoveryListener;
 import org.eclipse.ecf.osgi.services.discovery.IProxyDiscoveryListener;
+import org.eclipse.ecf.osgi.services.discovery.LoggingHostDiscoveryListener;
+import org.eclipse.ecf.osgi.services.discovery.LoggingProxyDiscoveryListener;
 import org.eclipse.ecf.tests.internal.osgi.discovery.Activator;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 public class ListenerTest extends PublishTest {
@@ -22,33 +22,11 @@ public class ListenerTest extends PublishTest {
 	ServiceRegistration proxyDiscoveryListenerRegistration;
 	
 	protected IHostDiscoveryListener createHostDiscoveryListener() {
-		return new IHostDiscoveryListener() {
-
-			public void publish(ServiceReference publicationServiceReference,
-					IServiceInfo serviceInfo) {
-				System.out.println("hostPublish\n\tpublicationServiceReference="+publicationServiceReference+"\n\tserviceInfo="+serviceInfo);
-			}
-
-			public void unpublish(ServiceReference publicationServiceReference,
-					IServiceInfo serviceInfo) {
-				System.out.println("hostUnpublish\n\tpublicationServiceReference="+publicationServiceReference+"\n\tserviceInfo="+serviceInfo);
-			}
-			
-		};
+		return new LoggingHostDiscoveryListener();
 	}
 
 	protected IProxyDiscoveryListener createProxyDiscoveryListener() {
-		return new IProxyDiscoveryListener() {
-
-			public void discovered(IServiceInfo serviceInfo) {
-				System.out.println("proxyDiscovered serviceInfo="+serviceInfo);
-			}
-
-			public void undiscovered(IServiceInfo serviceInfo) {
-				System.out.println("proxyUndiscovered serviceInfo="+serviceInfo);
-			}
-			
-		};
+		return new LoggingProxyDiscoveryListener();
 	}
 
 	protected void setUp() throws Exception {

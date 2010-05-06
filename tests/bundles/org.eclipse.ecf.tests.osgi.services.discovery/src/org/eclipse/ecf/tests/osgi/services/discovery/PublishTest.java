@@ -65,6 +65,9 @@ public class PublishTest extends TestCase {
 		Properties props = new Properties();
 		props.put(RemoteServicePublication.SERVICE_INTERFACE_NAME, interfaces);
 		props.put(RemoteServicePublication.ENDPOINT_CONTAINERID, endpointID);
+		byte[] serviceIdAsBytes = new Long(100).toString().getBytes();
+		props.put("ecf.rsvc.id", serviceIdAsBytes);
+		props.put("ecf.rsvc.ns", "namespace");
 		return props;
 	}
 	
