@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.ecf.discovery.zookeeper.feature"
+      label="Eclipse Communication Framework Zookeeper Discovery Provider"
+      version="1.0.0.qualifier"
+      provider-name="Eclipse.org">
+
+   <description>
+      Eclipse Communication Framework Apache Zookeeper Discovery Provider implementation
+   </description>
+
+   <copyright>
+      /*******************************************************************************
+ *  Copyright (c)2010 REMAIN B.V. The Netherlands. (http://www.remainsoftware.com).
+ *  All rights reserved. This program and the accompanying materials
+ *  are made available under the terms of the Eclipse Public License v1.0
+ *  which accompanies this distribution, and is available at
+ *  http://www.eclipse.org/legal/epl-v10.html
+ * 
+ *  Contributors:
+ *     Remain Software - initial API and implementation     
+ *******************************************************************************/
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.apache.log4j"/>
+      <import plugin="org.eclipse.equinox.common" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ecf.discovery" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ecf"/>
+      <import plugin="org.eclipse.ecf.identity"/>
+      <import plugin="org.eclipse.equinox.concurrent"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.osgi.services"/>
+      <import plugin="org.eclipse.equinox.ds"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.ecf.provider.zookeeper"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.zookeeper"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
