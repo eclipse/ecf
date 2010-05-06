@@ -162,11 +162,14 @@ public class Activator implements BundleActivator {
 		final Properties hostContainerFinderProps = new Properties();
 		hostContainerFinderProps.put(Constants.SERVICE_RANKING, new Integer(
 				Integer.MIN_VALUE));
+
+		// If defaultHostConfigType is empty string or "null" then set to null
+		String[] defaultHostConfigTypes = ("".equals(defaultHostConfigType) || "null".equals(defaultHostConfigType)) ? null : new String[] { defaultHostConfigType }; //$NON-NLS-1$ //$NON-NLS-2$
+
 		this.hostrsContainerFinderRegistration = this.context.registerService(
 				IHostContainerFinder.class.getName(),
 				new DefaultHostContainerFinder(autoCreateHostContainer,
-						new String[] { defaultHostConfigType }),
-				hostContainerFinderProps);
+						defaultHostConfigTypes), hostContainerFinderProps);
 
 		// register all existing services which have the marker property
 		try {
