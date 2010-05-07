@@ -53,8 +53,12 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		tracker = new ServiceTracker(context,IRetrieveFileTransferFactory.class.getName(),null);
 		tracker.open();
-		proxyServiceTracker = new ServiceTracker(context,IProxyService.class.getName(),null);
-		proxyServiceTracker.open();
+		try {
+			proxyServiceTracker = new ServiceTracker(context,IProxyService.class.getName(),null);
+			proxyServiceTracker.open();
+		} catch (NoClassDefFoundError e) {
+			System.out.println("Proxy API not available...continuing with testing without it");
+		}
 	}
 
 	/*

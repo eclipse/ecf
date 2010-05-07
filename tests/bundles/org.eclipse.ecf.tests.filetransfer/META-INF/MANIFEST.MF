@@ -15,7 +15,7 @@ Require-Bundle: org.junit,
  org.eclipse.ecf.tests.apache.httpclient.server;bundle-version="3.0.1",
  org.eclipse.ecf.tests.filetransfer.httpserver;bundle-version="1.0.0"
 Eclipse-LazyStart: true
-Import-Package: org.eclipse.core.net.proxy,
+Import-Package: org.eclipse.core.net.proxy;resolution:=optional,
  org.eclipse.core.runtime.jobs,
  org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.eclipse.osgi.util,
