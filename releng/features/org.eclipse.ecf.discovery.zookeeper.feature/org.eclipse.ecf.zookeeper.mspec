@@ -6,6 +6,7 @@
     
     <md:mspecNode namePattern="^org\.apache\.zookeeper(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.provider\.zookeeper(\..+)?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.provider\.zookeeper(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.discovery\.zookeeper\.feature?" materializer="workspace"/>
 
     <md:mspecNode namePattern=".*" installLocation="${targetPlatformPath}"/>
