@@ -20,13 +20,13 @@ public class LogUtility {
 		Activator.getDefault().log(
 				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
 						method + ":" + message, t)); //$NON-NLS-1$
-		String msg = method + ":" + message;
+		String msg = method + ":" + message; //$NON-NLS-1$
 		if (t == null) {
 			Trace.trace(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
 					msg);
 		} else
 			Trace.catching(Activator.PLUGIN_ID,
-					DebugOptions.EXCEPTIONS_CATCHING, clazz, msg, t); //$NON-NLS-1$
+					DebugOptions.EXCEPTIONS_CATCHING, clazz, msg, t);
 	}
 
 	public static void logInfo(String method, String message, Class clazz,
@@ -34,13 +34,13 @@ public class LogUtility {
 		Activator.getDefault().log(
 				new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO,
 						method + ":" + message, t)); //$NON-NLS-1$
-		String msg = method + ":" + message;
+		String msg = method + ":" + message; //$NON-NLS-1$
 		if (t == null) {
 			Trace.trace(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING,
 					msg);
 		} else
 			Trace.catching(Activator.PLUGIN_ID,
-					DebugOptions.EXCEPTIONS_CATCHING, clazz, msg, t); //$NON-NLS-1$
+					DebugOptions.EXCEPTIONS_CATCHING, clazz, msg, t);
 	}
 
 }

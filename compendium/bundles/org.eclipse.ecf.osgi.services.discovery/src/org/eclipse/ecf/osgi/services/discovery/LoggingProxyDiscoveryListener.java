@@ -18,8 +18,8 @@ public class LoggingProxyDiscoveryListener extends AbstractDiscoveryListener
 		if (serviceInfo == null)
 			return;
 		StringBuffer sb = new StringBuffer(
-				"OSGi ECF service discovery: remote service discovered")
-				.append("\n");
+				"OSGi ECF service discovery: remote service discovered") //$NON-NLS-1$
+				.append("\n"); //$NON-NLS-1$
 		sb.append(printServiceInfo(1, serviceInfo));
 		log(null, sb.toString(), null);
 	}
@@ -28,8 +28,8 @@ public class LoggingProxyDiscoveryListener extends AbstractDiscoveryListener
 		if (serviceInfo == null)
 			return;
 		StringBuffer sb = new StringBuffer(
-				"OSGi ECF service discovery: remote service undiscovered")
-				.append("\n");
+				"OSGi ECF service discovery: remote service undiscovered") //$NON-NLS-1$
+				.append("\n"); //$NON-NLS-1$
 		sb.append(printServiceInfo(1, serviceInfo));
 		log(null, sb.toString(), null);
 	}

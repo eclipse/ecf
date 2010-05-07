@@ -272,7 +272,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 					"handleServicePublication", //$NON-NLS-1$
 					"ignoring " //$NON-NLS-1$
 							+ reference
-							+ ". No " + Constants.SERVICE_ID + " property set on ServiceReference", //$NON-NLS-1$
+							+ ". No " + Constants.SERVICE_ID + " property set on ServiceReference", //$NON-NLS-1$ //$NON-NLS-2$
 					null);
 			return;
 		}
@@ -340,8 +340,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 					SafeRunner.run(new ISafeRunnable() {
 						public void handleException(Throwable exception) {
 							logError(
-									"fireHostPublishUnpublish",
-									"Exception calling host discovery listener",
+									"fireHostPublishUnpublish", //$NON-NLS-1$
+									"Exception calling host discovery listener", //$NON-NLS-1$
 									exception);
 						}
 
@@ -369,8 +369,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 					SafeRunner.run(new ISafeRunnable() {
 						public void handleException(Throwable exception) {
 							logError(
-									"fireProxyDiscoveredUndiscovered",
-									"Exception calling proxy discovery listener",
+									"fireProxyDiscoveredUndiscovered", //$NON-NLS-1$
+									"Exception calling proxy discovery listener", //$NON-NLS-1$
 									exception);
 						}
 

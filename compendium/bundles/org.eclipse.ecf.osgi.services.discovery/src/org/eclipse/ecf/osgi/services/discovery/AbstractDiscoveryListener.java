@@ -42,56 +42,56 @@ public abstract class AbstractDiscoveryListener {
 
 	protected String printServiceInfo(int tabLevel, IServiceInfo serviceInfo) {
 		if (serviceInfo == null)
-			return "null";
-		StringBuffer sb = new StringBuffer("");
+			return "null"; //$NON-NLS-1$
+		StringBuffer sb = new StringBuffer(""); //$NON-NLS-1$
 		sb.append(createTabs(tabLevel));
-		sb.append("serviceInfo").append("\n");
-		printServicePropertyString(tabLevel + 1, "location", serviceInfo
+		sb.append("serviceInfo").append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		printServicePropertyString(tabLevel + 1, "location", serviceInfo //$NON-NLS-1$
 				.getLocation().toString(), sb, true);
-		printServicePropertyString(tabLevel + 1, "serviceID", serviceInfo
+		printServicePropertyString(tabLevel + 1, "serviceID", serviceInfo //$NON-NLS-1$
 				.getServiceID().toExternalForm(), sb, true);
-		printServicePropertyString(tabLevel + 1, "serviceName",
+		printServicePropertyString(tabLevel + 1, "serviceName", //$NON-NLS-1$
 				serviceInfo.getServiceName(), sb, true);
-		printServicePropertyString(tabLevel + 1, "priority",
-				serviceInfo.getPriority() + "", sb, true);
-		printServicePropertyString(tabLevel + 1, "weight",
-				serviceInfo.getWeight() + "", sb, true);
+		printServicePropertyString(tabLevel + 1, "priority", //$NON-NLS-1$
+				serviceInfo.getPriority() + "", sb, true); //$NON-NLS-1$
+		printServicePropertyString(tabLevel + 1, "weight", //$NON-NLS-1$
+				serviceInfo.getWeight() + "", sb, true); //$NON-NLS-1$
 		sb.append(createTabs(tabLevel + 1))
-				.append("discoveryServiceProperties")
-				.append("\n")
+				.append("discoveryServiceProperties") //$NON-NLS-1$
+				.append("\n") //$NON-NLS-1$
 				.append(printServiceProperties(tabLevel + 2,
 						serviceInfo.getServiceProperties()));
 		IServiceProperties serviceProperties = serviceInfo
 				.getServiceProperties();
 		if (serviceProperties != null) {
 			sb.append(createTabs(tabLevel + 1));
-			sb.append("osgiServiceProperties");
-			sb.append("\n");
+			sb.append("osgiServiceProperties"); //$NON-NLS-1$
+			sb.append("\n"); //$NON-NLS-1$
 			sb.append(printServicePropertyString(tabLevel + 2,
 					serviceProperties,
 					ServicePublication.SERVICE_INTERFACE_NAME,
-					"osgiServiceInterfaces"));
+					"osgiServiceInterfaces")); //$NON-NLS-1$
 			sb.append(printServicePropertyString(tabLevel + 2,
 					serviceProperties,
 					RemoteServicePublication.ENDPOINT_SUPPORTED_CONFIGS,
-					"endpointSupportedConfigs"));
+					"endpointSupportedConfigs")); //$NON-NLS-1$
 			sb.append(printServicePropertyString(tabLevel + 2,
 					serviceProperties,
 					RemoteServicePublication.ENDPOINT_SERVICE_INTENTS,
-					"endpointServiceIntents"));
+					"endpointServiceIntents")); //$NON-NLS-1$
 			sb.append(printServicePropertyBytes(tabLevel + 2,
 					serviceProperties,
 					RemoteServicePublication.ENDPOINT_CONTAINERID,
-					"endpointContainerID"));
+					"endpointContainerID")); //$NON-NLS-1$
 			sb.append(printServicePropertyString(tabLevel + 2,
 					serviceProperties,
 					RemoteServicePublication.ENDPOINT_CONTAINERID_NAMESPACE,
-					"endpointContainerIDNamespace"));
+					"endpointContainerIDNamespace")); //$NON-NLS-1$
 			sb.append(printServicePropertyBytes(tabLevel + 2,
-					serviceProperties, "ecf.rsvc.id", "remoteServiceID"));
+					serviceProperties, "ecf.rsvc.id", "remoteServiceID")); //$NON-NLS-1$ //$NON-NLS-2$
 			sb.append(printServicePropertyString(tabLevel + 2,
-					serviceProperties, "ecf.rsvc.ns",
-					"remoteServiceIDNamespace"));
+					serviceProperties, "ecf.rsvc.ns", //$NON-NLS-1$
+					"remoteServiceIDNamespace")); //$NON-NLS-1$
 		}
 
 		return sb.toString();
@@ -101,10 +101,10 @@ public abstract class AbstractDiscoveryListener {
 			String propertyValue, StringBuffer sb, boolean newline) {
 		if (propertyValue != null) {
 			sb.append(createTabs(tabLevel)).append(propertyName);
-			sb.append("=");
+			sb.append("="); //$NON-NLS-1$
 			sb.append(propertyValue);
 			if (newline)
-				sb.append("\n");
+				sb.append("\n"); //$NON-NLS-1$
 		}
 	}
 
@@ -133,14 +133,14 @@ public abstract class AbstractDiscoveryListener {
 
 	protected String printServiceID(IServiceID serviceID) {
 		if (serviceID == null)
-			return "null";
+			return "null"; //$NON-NLS-1$
 		return serviceID.toExternalForm();
 	}
 
 	protected String createTabs(int tabLevel) {
-		StringBuffer sb = new StringBuffer("");
+		StringBuffer sb = new StringBuffer(""); //$NON-NLS-1$
 		for (int i = 0; i < tabLevel; i++) {
-			sb.append("\t");
+			sb.append("\t"); //$NON-NLS-1$
 		}
 		return sb.toString();
 	}
@@ -148,27 +148,27 @@ public abstract class AbstractDiscoveryListener {
 	protected String printServiceProperties(int tabLevel,
 			IServiceProperties serviceProperties) {
 		if (serviceProperties == null)
-			return "null";
+			return "null"; //$NON-NLS-1$
 		Enumeration enumeration = serviceProperties.getPropertyNames();
-		StringBuffer sb = new StringBuffer("");
+		StringBuffer sb = new StringBuffer(""); //$NON-NLS-1$
 		if (enumeration != null) {
 			for (Enumeration e = enumeration; e.hasMoreElements();) {
 				String key = (String) e.nextElement();
 				sb.append(createTabs(tabLevel));
-				sb.append("name=").append(key).append(";");
+				sb.append("name=").append(key).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 				String stringValue = serviceProperties.getPropertyString(key);
 				byte[] bytesValue = serviceProperties.getPropertyBytes(key);
 				Object objectValue = serviceProperties.getProperty(key);
 				if (stringValue != null)
-					sb.append("value[String]=").append(stringValue);
+					sb.append("value[String]=").append(stringValue); //$NON-NLS-1$
 				if (bytesValue != null)
-					sb.append("value[bytes]=").append(printBytes(bytesValue));
+					sb.append("value[bytes]=").append(printBytes(bytesValue)); //$NON-NLS-1$
 				if (objectValue != null && stringValue == null) {
 					if (bytesValue != null)
-						sb.append(",");
-					sb.append("value[Object]=").append(objectValue);
+						sb.append(","); //$NON-NLS-1$
+					sb.append("value[Object]=").append(objectValue); //$NON-NLS-1$
 				}
-				sb.append("\n");
+				sb.append("\n"); //$NON-NLS-1$
 			}
 		}
 		return sb.toString();
@@ -176,14 +176,14 @@ public abstract class AbstractDiscoveryListener {
 
 	protected String printBytes(byte[] bytesValue) {
 		if (bytesValue == null)
-			return "null";
-		StringBuffer sb = new StringBuffer("[");
+			return "null"; //$NON-NLS-1$
+		StringBuffer sb = new StringBuffer("["); //$NON-NLS-1$
 		for (int i = 0; i < bytesValue.length; i++) {
 			if (i > 0)
-				sb.append(",");
+				sb.append(","); //$NON-NLS-1$
 			sb.append(bytesValue[i]);
 		}
-		sb.append("]");
+		sb.append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 

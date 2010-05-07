@@ -64,9 +64,9 @@ public interface RemoteServicePublication extends ServicePublication {
 	 */
 	public static final String ENDPOINT_CONTAINERID_NAMESPACE = "ecf.sp.cns"; //$NON-NLS-1$
 
-	public static final String ENDPOINT_SUPPORTED_CONFIGS = "ecf.sp.ect";
+	public static final String ENDPOINT_SUPPORTED_CONFIGS = "ecf.sp.ect"; //$NON-NLS-1$
 
-	public static final String ENDPOINT_SERVICE_INTENTS = "ecf.sp.esi";
+	public static final String ENDPOINT_SERVICE_INTENTS = "ecf.sp.esi"; //$NON-NLS-1$
 
 	/**
 	 * Target container ID property. The value for this property must be of type

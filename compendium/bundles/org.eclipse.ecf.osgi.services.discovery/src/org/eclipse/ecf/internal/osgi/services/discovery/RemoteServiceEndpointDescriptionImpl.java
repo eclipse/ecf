@@ -42,13 +42,13 @@ public class RemoteServiceEndpointDescriptionImpl extends
 				.getPropertyBytes(RemoteServicePublication.ENDPOINT_CONTAINERID);
 		if (endpointBytes == null)
 			throw new IDCreateException(
-					"ServiceEndpointDescription endpointBytes cannot be null");
+					"ServiceEndpointDescription endpointBytes cannot be null"); //$NON-NLS-1$
 		final String endpointStr = new String(endpointBytes);
 		final String namespaceStr = serviceProperties
 				.getPropertyString(RemoteServicePublication.ENDPOINT_CONTAINERID_NAMESPACE);
 		if (namespaceStr == null) {
 			throw new IDCreateException(
-					"ServiceEndpointDescription namespaceStr cannot be null");
+					"ServiceEndpointDescription namespaceStr cannot be null"); //$NON-NLS-1$
 		}
 		endpointId = IDFactory.getDefault().createID(namespaceStr, endpointStr);
 
@@ -120,12 +120,12 @@ public class RemoteServiceEndpointDescriptionImpl extends
 		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
 		sb.append(";providedInterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
 		String[] supportedConfigs = getSupportedConfigs();
-		sb.append(";supportedConfigTypes").append(
-				(supportedConfigs == null) ? "null" : Arrays.asList(
+		sb.append(";supportedConfigTypes").append( //$NON-NLS-1$
+				(supportedConfigs == null) ? "null" : Arrays.asList( //$NON-NLS-1$
 						supportedConfigs).toString());
 		String[] serviceIntents = getServiceIntents();
-		sb.append(";serviceIntents").append(
-				(serviceIntents == null) ? "null" : Arrays.asList(
+		sb.append(";serviceIntents").append( //$NON-NLS-1$
+				(serviceIntents == null) ? "null" : Arrays.asList( //$NON-NLS-1$
 						serviceIntents).toString());
 		sb.append(";location=").append(getLocation()); //$NON-NLS-1$
 		sb.append(";remoteServiceId=").append(getRemoteServiceId()); //$NON-NLS-1$

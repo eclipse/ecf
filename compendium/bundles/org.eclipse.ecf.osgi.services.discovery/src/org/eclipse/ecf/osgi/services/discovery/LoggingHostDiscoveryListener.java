@@ -27,9 +27,9 @@ public class LoggingHostDiscoveryListener extends AbstractDiscoveryListener
 		if (publicationServiceReference == null || serviceInfo == null)
 			return;
 		StringBuffer sb = new StringBuffer(
-				"OSGi ECF service discovery: publish").append("\n");
-		sb.append(createTabs(1)).append("serviceReference=")
-				.append(publicationServiceReference).append("\n")
+				"OSGi ECF service discovery: publish").append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(createTabs(1)).append("serviceReference=") //$NON-NLS-1$
+				.append(publicationServiceReference).append("\n") //$NON-NLS-1$
 				.append(printServiceInfo(1, serviceInfo));
 		log(publicationServiceReference, sb.toString(), null);
 	}
@@ -39,9 +39,9 @@ public class LoggingHostDiscoveryListener extends AbstractDiscoveryListener
 		if (publicationServiceReference == null || serviceInfo == null)
 			return;
 		StringBuffer sb = new StringBuffer(
-				"OSGi ECF service discovery: unpublish").append("\n");
-		sb.append(createTabs(1)).append("serviceReference=")
-				.append(publicationServiceReference).append("\n")
+				"OSGi ECF service discovery: unpublish").append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(createTabs(1)).append("serviceReference=") //$NON-NLS-1$
+				.append(publicationServiceReference).append("\n") //$NON-NLS-1$
 				.append(printServiceInfo(1, serviceInfo));
 		log(publicationServiceReference, sb.toString(), null);
 	}
