@@ -14,7 +14,11 @@ import java.util.Properties;
 
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.examples.remoteservices.hello.impl.Hello;
+import org.eclipse.ecf.osgi.services.discovery.IHostDiscoveryListener;
+import org.eclipse.ecf.osgi.services.discovery.LoggingHostDiscoveryListener;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
+import org.eclipse.ecf.osgi.services.distribution.IHostDistributionListener;
+import org.eclipse.ecf.osgi.services.distribution.LoggingHostDistributionListener;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.BundleContext;
@@ -44,8 +48,17 @@ public class HelloHostApplication implements IApplication,
 		// Register host discovery listener to log the publish/unpublish of remote services.  
 		// This LoggingHostDiscoveryListener logs the publication of OSGi remote services...so 
 		// that the discovery can be more easily debugged.
-		// bundleContext.registerService(IHostDiscoveryListener.class.getName(), new LoggingHostDiscoveryListener(), null);
+		// Note that other IHostDiscoveryListener may be created and registered, and
+		// all will be notified of publish/unpublish events
+		bundleContext.registerService(IHostDiscoveryListener.class.getName(), new LoggingHostDiscoveryListener(), null);
 		
+		// Register host distribution listener to log the register/unregister of remote services.  
+		// This LoggingHostDistributionListener logs the register/unregister of OSGi remote services...so 
+		// that the distribution can be more easily debugged.
+		// Note that other IHostDistributionListener may be created and registered, and
+		// all will be notified of register/unregister events
+		bundleContext.registerService(IHostDistributionListener.class.getName(), new LoggingHostDistributionListener(), null);
+
 		// Setup properties for remote service distribution, as per OSGi 4.2 remote services
 		// specification (chap 13 in compendium spec)
 		Properties props = new Properties();
