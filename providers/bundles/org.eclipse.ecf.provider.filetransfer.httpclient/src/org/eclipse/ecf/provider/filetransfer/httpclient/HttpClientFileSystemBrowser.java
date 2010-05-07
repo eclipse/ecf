@@ -12,8 +12,6 @@
 
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
-import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Socket;
@@ -54,6 +52,7 @@ import org.eclipse.ecf.provider.filetransfer.browse.URLRemoteFile;
 import org.eclipse.ecf.provider.filetransfer.events.socket.SocketEventSource;
 import org.eclipse.ecf.provider.filetransfer.httpclient.HttpClientRetrieveFileTransfer.HostConfigHelper;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
+import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -163,10 +162,17 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 	protected void setupProxies() {
 		// If it's been set directly (via ECF API) then this overrides platform settings
 		if (proxy == null) {
-			// give SOCKS priority see https://bugs.eclipse.org/bugs/show_bug.cgi?id=295030#c61
-			proxy = ProxySetupHelper.getSocksProxy(directoryOrFile);
-			if (proxy == null) {
-				proxy = ProxySetupHelper.getProxy(directoryOrFile.toExternalForm());
+			try {
+				// give SOCKS priority see https://bugs.eclipse.org/bugs/show_bug.cgi?id=295030#c61
+				proxy = ProxySetupHelper.getSocksProxy(directoryOrFile);
+				if (proxy == null) {
+					proxy = ProxySetupHelper.getProxy(directoryOrFile.toExternalForm());
+				}
+			} catch (NoClassDefFoundError e) {
+				// If the proxy API is not available a NoClassDefFoundError will be thrown here.
+				// If that happens then we just want to continue on.
+				Activator.logNoProxyWarning(e);
+
 			}
 		}
 		if (proxy != null)

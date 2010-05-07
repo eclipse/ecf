@@ -119,4 +119,12 @@ public class Activator implements BundleActivator {
 		}
 		return (SSLSocketFactory) sslSocketFactoryTracker.getService();
 	}
+
+	public static void logNoProxyWarning(Throwable e) {
+		Activator a = getDefault();
+		if (a != null) {
+			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.ERROR, "Warning: Platform proxy API not available", e)); //$NON-NLS-1$
+		}
+	}
+
 }
