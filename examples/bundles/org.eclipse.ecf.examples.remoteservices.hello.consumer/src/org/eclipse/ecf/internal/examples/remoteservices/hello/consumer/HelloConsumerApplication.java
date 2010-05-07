@@ -63,6 +63,11 @@ public class HelloConsumerApplication implements IApplication,
 				createRemoteFilter(), this);
 		helloServiceTracker.open();
 
+		// Register proxy discovery listener to log the publish/unpublish of remote services.  
+		// This LoggingProxyDiscoveryListener logs the publication of OSGi remote services...so 
+		// that the discovery can be more easily debugged.
+		//bundleContext.registerService(IProxyDiscoveryListener.class.getName(), new LoggingProxyDiscoveryListener(), null);
+		
 		startLocalDiscoveryIfPresent();
 		
 		waitForDone();
