@@ -19,7 +19,11 @@ import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 
 /**
- * Proxy setup utilities.
+ * Proxy setup utilities.  
+ *
+ * NOTE:  Use of this class implies the presence of the core.net.proxy
+ * API...this class will not load (NoClassDefFoundError will be thrown if load/use is attempted)
+ * if the core.net.proxy bundle is not present in the runtime.  
  * 
  * @noextend This class is not intended to be extended by clients.
  * @since 3.1

@@ -208,7 +208,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 	}
 
 	public static void logNoProxyWarning(Throwable e) {
-		getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.ERROR, "Warning: Platform proxy API not available", e)); //$NON-NLS-1$
+		Activator a = getDefault();
+		if (a != null) {
+			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.ERROR, "Warning: Platform proxy API not available", e)); //$NON-NLS-1$
+		}
 	}
 
 	public void log(IStatus status) {

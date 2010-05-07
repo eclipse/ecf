@@ -12,8 +12,6 @@
 
 package org.eclipse.ecf.provider.filetransfer.browse;
 
-import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
-
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +30,9 @@ import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
+import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
 
 /**
  * Abstract class for browsing an efs file system.
@@ -209,13 +209,26 @@ public abstract class AbstractFileSystemBrowser {
 	 * @return proxy data selected from the proxies provided.  
 	 */
 	protected IProxyData selectProxyFromProxies(String protocol, IProxyData[] proxies) {
-		return ProxySetupHelper.selectProxyFromProxies(protocol, proxies);
+		try {
+			return ProxySetupHelper.selectProxyFromProxies(protocol, proxies);
+		} catch (NoClassDefFoundError e) {
+			// If the proxy API is not available a NoClassDefFoundError will be thrown here.
+			// If that happens then we just want to continue on.
+			Activator.logNoProxyWarning(e);
+			return null;
+		}
 	}
 
 	protected void setupProxies() {
 		// If it's been set directly (via ECF API) then this overrides platform settings
 		if (proxy == null) {
-			proxy = ProxySetupHelper.getProxy(directoryOrFile.toExternalForm());
+			try {
+				proxy = ProxySetupHelper.getProxy(directoryOrFile.toExternalForm());
+			} catch (NoClassDefFoundError e) {
+				// If the proxy API is not available a NoClassDefFoundError will be thrown here.
+				// If that happens then we just want to continue on.
+				Activator.logNoProxyWarning(e);
+			}
 		}
 		if (proxy != null)
 			setupProxy(proxy);

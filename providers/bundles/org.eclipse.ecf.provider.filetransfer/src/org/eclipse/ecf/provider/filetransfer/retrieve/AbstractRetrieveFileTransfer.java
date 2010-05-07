@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
-import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -60,6 +58,7 @@ import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 import org.eclipse.ecf.provider.filetransfer.util.PollingInputStream;
+import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
 import org.eclipse.ecf.provider.filetransfer.util.TimeoutInputStream;
 import org.eclipse.osgi.util.NLS;
 
@@ -941,7 +940,13 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		// If it's been set directly (via ECF API) then this overrides platform
 		// settings
 		if (proxy == null) {
-			proxy = ProxySetupHelper.getProxy(getRemoteFileURL().toExternalForm());
+			try {
+				proxy = ProxySetupHelper.getProxy(getRemoteFileURL().toExternalForm());
+			} catch (NoClassDefFoundError e) {
+				// If the proxy API is not available a NoClassDefFoundError will be thrown here.
+				// If that happens then we just want to continue on.
+				Activator.logNoProxyWarning(e);
+			}
 		}
 		if (proxy != null)
 			setupProxy(proxy);
