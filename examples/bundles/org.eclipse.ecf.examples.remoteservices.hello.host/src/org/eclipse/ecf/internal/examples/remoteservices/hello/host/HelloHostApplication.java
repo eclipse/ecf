@@ -40,6 +40,12 @@ public class HelloHostApplication implements IApplication,
 		bundleContext = Activator.getContext();
 		// Process Arguments
 		processArgs(appContext);
+		
+		// Register host discovery listener to log the publish/unpublish of remote services.  
+		// This LoggingHostDiscoveryListener logs the publication of OSGi remote services...so 
+		// that the discovery can be more easily debugged.
+		// bundleContext.registerService(IHostDiscoveryListener.class.getName(), new LoggingHostDiscoveryListener(), null);
+		
 		// Setup properties for remote service distribution, as per OSGi 4.2 remote services
 		// specification (chap 13 in compendium spec)
 		Properties props = new Properties();
