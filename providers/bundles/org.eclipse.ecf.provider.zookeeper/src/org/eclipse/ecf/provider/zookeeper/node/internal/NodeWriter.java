@@ -31,8 +31,7 @@ public class NodeWriter {
 	private INode node;
 	private String ip;
 	private WriteRoot writeRoot;
-	private boolean isPublished;
-
+	
 	public NodeWriter(INode node, WriteRoot writeRoot) {
 		Assert.isNotNull(node);
 		Assert.isNotNull(writeRoot);
@@ -68,7 +67,6 @@ public class NodeWriter {
 			}
 			PrettyPrinter.prompt(PrettyPrinter.PUBLISHED, this.getNode()
 					.getWrappedService());
-			this.isPublished = true;
 			Localizer.getSingleton().localize(
 					new Notification(this.getNode().getWrappedService(),
 							Notification.AVAILABLE));
@@ -100,7 +98,6 @@ public class NodeWriter {
 								Notification.UNAVAILABLE));
 				PrettyPrinter.prompt(PrettyPrinter.UNPUBLISHED, this.getNode()
 						.getWrappedService());
-				this.isPublished = false;
 
 			} catch (KeeperException e) {
 				// ignore
