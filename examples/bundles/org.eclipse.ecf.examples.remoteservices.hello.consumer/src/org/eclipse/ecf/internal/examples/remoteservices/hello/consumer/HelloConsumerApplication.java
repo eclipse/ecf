@@ -270,6 +270,7 @@ public class HelloConsumerApplication implements IApplication,
 	}
 
 	public void removedService(ServiceReference reference, Object service) {
+		System.out.println("IHello Service proxy removed");
 	}
 
 }
