@@ -416,9 +416,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			ID containerID = (ID) i.next();
 			RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
 					.get(containerID);
-			ServiceRegistration sr = reg.removeServiceRegistration(sed);
 			if (reg != null) {
-				results.add(sr);
+				ServiceRegistration sr = reg.removeServiceRegistration(sed);
+				if (sr != null)
+					results.add(sr);
 				if (reg.isEmpty()) {
 					reg.dispose();
 					discoveredRemoteServiceRegistrations.remove(containerID);
