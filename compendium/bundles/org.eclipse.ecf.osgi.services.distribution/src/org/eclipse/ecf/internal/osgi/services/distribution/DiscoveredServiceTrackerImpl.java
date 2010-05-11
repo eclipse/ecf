@@ -53,7 +53,6 @@ import org.osgi.framework.ServiceRegistration;
 public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 	private DistributionProviderImpl distributionProvider;
-	// private IExecutor executor;
 	private List serviceLocations = new ArrayList();
 	// <Map<containerID><RemoteServiceRegistration>
 	private Map discoveredRemoteServiceRegistrations = Collections
@@ -386,8 +385,10 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			ServiceEndpointDescription aServiceEndpointDesc) {
 		RemoteServiceEndpointDescription ecfSED;
 		if (!(aServiceEndpointDesc instanceof RemoteServiceEndpointDescription)) {
-			ecfSED = (RemoteServiceEndpointDescription) Activator.getDefault()
-					.getAdapterManager().loadAdapter(aServiceEndpointDesc,
+			ecfSED = (RemoteServiceEndpointDescription) Activator
+					.getDefault()
+					.getAdapterManager()
+					.loadAdapter(aServiceEndpointDesc,
 							RemoteServiceEndpointDescription.class.getName());
 		} else
 			ecfSED = (RemoteServiceEndpointDescription) aServiceEndpointDesc;
@@ -401,32 +402,29 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			ID containerID = (ID) i.next();
 			RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
 					.get(containerID);
-			if (sed.equals(reg.getServiceEndpointDescription()))
+			if (reg.hasRSED(sed))
 				return true;
 		}
 		return false;
 	}
 
 	private ServiceRegistration[] removeProxyServiceRegistrations(
-			ServiceEndpointDescription sed) {
+			RemoteServiceEndpointDescription sed) {
 		List results = new ArrayList();
 		for (Iterator i = discoveredRemoteServiceRegistrations.keySet()
 				.iterator(); i.hasNext();) {
 			ID containerID = (ID) i.next();
 			RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
 					.get(containerID);
-			// If the serviceID matches, then remove the
-			// RemoteServiceRegistration
-			// Get the service registrations and then dispose of the
-			// RemoteServiceRegistration instance
-			if (sed.equals(reg.getServiceEndpointDescription())) {
-				i.remove();
-				results.addAll(reg.removeAllServiceRegistrations());
-				reg.dispose();
+			ServiceRegistration sr = reg.removeServiceRegistration(sed);
+			if (reg != null) {
+				results.add(sr);
+				if (reg.isEmpty()) {
+					reg.dispose();
+					discoveredRemoteServiceRegistrations.remove(containerID);
+				}
 			}
 		}
-		// Then return all the ServiceRegistrations that were found
-		// corresponding to this serviceID
 		return (ServiceRegistration[]) results
 				.toArray(new ServiceRegistration[] {});
 	}
@@ -435,42 +433,50 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			IRemoteServiceListener {
 		public void handleServiceEvent(IRemoteServiceEvent event) {
 			if (event instanceof IRemoteServiceUnregisteredEvent) {
+				ID containerID = event.getContainerID();
+				ID localContainerID = event.getLocalContainerID();
+				IRemoteServiceReference reference = event.getReference();
 				trace("handleRemoteServiceUnregisteredEvent", //$NON-NLS-1$
-						"localContainerID=" + event.getLocalContainerID() //$NON-NLS-1$
-								+ ",containerID=" + event.getContainerID() //$NON-NLS-1$
-								+ ",remoteReference=" + event.getReference()); //$NON-NLS-1$
-				// Synchronize on the map so no other changes happen while
+						"localContainerID=" + localContainerID //$NON-NLS-1$
+								+ ",containerID=" + containerID //$NON-NLS-1$
+								+ ",remoteReference=" + reference); //$NON-NLS-1$
+				// Synchronize on serviceLocations so no other changes happen
+				// while
 				// this is going on...as it can be invoked by an arbitrary
-				// thread
-				ServiceRegistration[] proxyServiceRegistrations = null;
+				RemoteServiceRegistration.RSEDAndSRAssoc[] assocs = null;
 				synchronized (serviceLocations) {
 					RemoteServiceRegistration rsRegs = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
-							.get(event.getLocalContainerID());
+							.get(localContainerID);
+					// If we've got any remote service registrations for the
+					// containerID
 					if (rsRegs != null) {
-						proxyServiceRegistrations = rsRegs
-								.removeServiceRegistration(event.getReference());
+						assocs = rsRegs.removeServiceRegistration(reference);
+						// If this removes *all* references for this
+						// registration
 						if (rsRegs.isEmpty()) {
 							rsRegs.dispose();
-							discoveredRemoteServiceRegistrations.remove(event
-									.getContainerID());
+							discoveredRemoteServiceRegistrations
+									.remove(localContainerID);
+						}
+						if (assocs != null) {
+							for (int i = 0; i < assocs.length; i++) {
+								removeDiscoveredServiceID(assocs[i].getRSED());
+							}
 						}
 					}
 				}
 				// Call this outside of synchronized block
-				if (proxyServiceRegistrations != null) {
-					for (int i = 0; i < proxyServiceRegistrations.length; i++) {
-						trace(
-								"handleRemoteServiceUnregisteredEvent.unregister", //$NON-NLS-1$
-								"localContainerID=" //$NON-NLS-1$
-										+ event.getLocalContainerID()
-										+ ",containerID=" //$NON-NLS-1$
-										+ event.getContainerID()
-										+ ",remoteReference=" //$NON-NLS-1$
-										+ event.getReference()
-										+ ",proxyServiceRegistrations=" //$NON-NLS-1$
-										+ proxyServiceRegistrations[i]);
-						unregisterProxyServiceRegistration(null,
-								proxyServiceRegistrations[i]);
+				if (assocs != null) {
+					for (int i = 0; i < assocs.length; i++) {
+						ServiceRegistration sr = assocs[i].getSR();
+						trace("handleRemoteServiceUnregisteredEvent.unregister", //$NON-NLS-1$
+						"localContainerID=" //$NON-NLS-1$
+								+ localContainerID + ",containerID=" //$NON-NLS-1$
+								+ containerID + ",remoteReference=" //$NON-NLS-1$
+								+ reference + ",proxyServiceRegistrations=" //$NON-NLS-1$
+								+ sr);
+						unregisterProxyServiceRegistration(assocs[i].getRSED(),
+								sr);
 					}
 				}
 			}
@@ -563,22 +569,25 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							+ remoteReferences[i]);
 					// Actually register proxy here
 					ServiceRegistration registration = Activator.getDefault()
-							.getContext().registerService(clazzes, proxy,
-									properties);
+							.getContext()
+							.registerService(clazzes, proxy, properties);
 
-					ID containerID = remoteServiceContainer.getContainer()
+					// Get localcontainerID
+					ID localContainerID = remoteServiceContainer.getContainer()
 							.getID();
+					// Get a remote service registration for this remote service
+					// container
 					RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
-							.get(containerID);
+							.get(localContainerID);
+					// If there is none, then create one
 					if (reg == null) {
 						reg = new RemoteServiceRegistration(
-								sed,
 								remoteServiceContainer,
 								new RemoteServiceReferenceUnregisteredListener());
-						discoveredRemoteServiceRegistrations.put(containerID,
-								reg);
+						discoveredRemoteServiceRegistrations.put(
+								localContainerID, reg);
 					}
-					reg.addServiceRegistration(remoteReferences[i],
+					reg.addServiceRegistration(remoteReferences[i], sed,
 							registration);
 					// And add to distribution provider
 					distributionProvider.addRemoteService(registration
@@ -630,9 +639,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			}
 		}
 		// finally add service.imported.configs
-		addImportedConfigsProperties(getContainerTypeDescription(rsContainer
-				.getContainer()), rsEndpointDescription.getSupportedConfigs(),
-				props);
+		addImportedConfigsProperties(
+				getContainerTypeDescription(rsContainer.getContainer()),
+				rsEndpointDescription.getSupportedConfigs(), props);
 
 		return props;
 	}
@@ -658,8 +667,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					for (Enumeration e = localConfigProperties.keys(); e
 							.hasMoreElements();) {
 						String key = (String) e.nextElement();
-						exportedProperties.put(key, localConfigProperties
-								.get(key));
+						exportedProperties.put(key,
+								localConfigProperties.get(key));
 					}
 				}
 			}
