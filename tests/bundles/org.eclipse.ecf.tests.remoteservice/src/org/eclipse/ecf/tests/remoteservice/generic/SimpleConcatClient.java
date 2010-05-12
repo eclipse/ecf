@@ -53,6 +53,7 @@ public class SimpleConcatClient {
 		ID connectTargetID = IDFactory.getDefault().createStringID(
 				NLS.bind(SERVER_ID, new Integer(SimpleConcatServer.PORT)));
 		
+		System.out.println("Attempting connect to id="+connectTargetID);
 		client.connect(connectTargetID, null);
 		System.out.println("Client connected to connectTargetID="
 				+ connectTargetID);

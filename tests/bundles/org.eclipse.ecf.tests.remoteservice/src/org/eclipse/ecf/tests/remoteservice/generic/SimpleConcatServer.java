@@ -44,6 +44,7 @@ public class SimpleConcatServer {
 		Assert.isNotNull(adapter);
 		registration = adapter.registerRemoteService(new String[] { IConcatService.class.getName() }, new ConcatService(), null);
 		Assert.isNotNull(registration);
+		System.out.println("generic server started with id="+serverContainer.getID());
 	}
 	
 	public IRemoteServiceRegistration getConcatServiceRegistration() {
