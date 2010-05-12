@@ -117,14 +117,15 @@ public class RemoteServiceEndpointDescriptionImpl extends
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("ServiceEndpointDescriptionImpl["); //$NON-NLS-1$
-		sb.append(";providedInterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
+		StringBuffer sb = new StringBuffer(
+				"RemoteServiceEndpointDescriptionImpl["); //$NON-NLS-1$
+		sb.append("svcInterfaces=").append(getProvidedInterfaces()); //$NON-NLS-1$
 		String[] supportedConfigs = getSupportedConfigs();
-		sb.append(";supportedConfigTypes").append( //$NON-NLS-1$
+		sb.append(";supportedConfigTypes=").append( //$NON-NLS-1$
 				(supportedConfigs == null) ? "null" : Arrays.asList( //$NON-NLS-1$
 						supportedConfigs).toString());
 		String[] serviceIntents = getServiceIntents();
-		sb.append(";serviceIntents").append( //$NON-NLS-1$
+		sb.append(";serviceIntents=").append( //$NON-NLS-1$
 				(serviceIntents == null) ? "null" : Arrays.asList( //$NON-NLS-1$
 						serviceIntents).toString());
 		sb.append(";location=").append(getLocation()); //$NON-NLS-1$

@@ -92,11 +92,10 @@ public abstract class RemoteServiceEndpointDescription implements
 		try {
 			uri = new URI(uriExternalForm);
 		} catch (URISyntaxException e) {
-			Activator.getDefault()
-					.log(
-							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-									IStatus.ERROR,
-									"Exception getting location URI", e));//$NON-NLS-1$
+			Activator
+					.getDefault()
+					.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							IStatus.ERROR, "Exception getting location URI", e));//$NON-NLS-1$
 		}
 		return uri;
 	}
@@ -180,7 +179,7 @@ public abstract class RemoteServiceEndpointDescription implements
 		byte[] remoteServiceIdAsBytes = (byte[]) serviceProperties
 				.get(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
 		if (remoteServiceIdAsBytes == null)
-			return 0;
+			return -1;
 		else {
 			Long remoteServiceId = new Long(new String(remoteServiceIdAsBytes));
 			return remoteServiceId.longValue();

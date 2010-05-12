@@ -19,7 +19,7 @@ public interface RemoteServicePublication extends ServicePublication {
 	 * Prefix for the default service name. The default service name will be the
 	 * DEFAULT_SERVICE_NAME_PREFIX+serviceID (long)
 	 */
-	public static final String DEFAULT_SERVICE_NAME_PREFIX = "service "; //$NON-NLS-1$
+	public static final String DEFAULT_SERVICE_NAME_PREFIX = "svc_"; //$NON-NLS-1$
 
 	// Discovery service properties
 

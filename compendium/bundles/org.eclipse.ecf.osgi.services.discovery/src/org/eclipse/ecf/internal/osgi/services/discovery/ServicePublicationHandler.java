@@ -67,8 +67,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		trace("handleOSGIServiceDiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 		if (matchServiceID(serviceID)) {
 			fireProxyDiscoveredUndiscovered(serviceInfo, true);
-			trace(
-					"handleOSGIServiceDiscovered matched", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
+			trace("handleOSGIServiceDiscovered matched", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			notifyDiscoveredServiceTrackers(discoveredTrackers, serviceInfo,
 					true);
@@ -87,8 +86,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		IServiceID serviceID = serviceInfo.getServiceID();
 		if (matchServiceID(serviceID)) {
 			fireProxyDiscoveredUndiscovered(serviceInfo, false);
-			trace(
-					"handleOSGIServiceUndiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
+			trace("handleOSGIServiceUndiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
 			notifyDiscoveredServiceTrackers(discoveredTrackers, serviceInfo,
 					false);
@@ -181,8 +179,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		}
 		IServiceProperties discoveryServiceProperties = new ServiceProperties();
 		discoveryServiceProperties.setPropertyString(
-				ServicePublication.SERVICE_INTERFACE_NAME, ServicePropertyUtils
-						.createStringFromCollection(svcInterfaces));
+				ServicePublication.SERVICE_INTERFACE_NAME,
+				ServicePropertyUtils.createStringFromCollection(svcInterfaces));
 
 		Collection configTypes = ServicePropertyUtils.getCollectionProperty(
 				reference, RemoteServicePublication.ENDPOINT_SUPPORTED_CONFIGS);
@@ -268,8 +266,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		final byte[] remoteServiceIDAsBytes = (byte[]) reference
 				.getProperty(Constants.SERVICE_ID);
 		if (remoteServiceIDAsBytes == null) {
-			logInfo(
-					"handleServicePublication", //$NON-NLS-1$
+			logInfo("handleServicePublication", //$NON-NLS-1$
 					"ignoring " //$NON-NLS-1$
 							+ reference
 							+ ". No " + Constants.SERVICE_ID + " property set on ServiceReference", //$NON-NLS-1$ //$NON-NLS-2$
@@ -281,8 +278,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 		IDiscoveryAdvertiser advertiser2 = getAdvertiser();
 		if (advertiser2 == null) {
-			logInfo(
-					"handleServicePublication", //$NON-NLS-1$
+			logInfo("handleServicePublication", //$NON-NLS-1$
 					"ignoring " //$NON-NLS-1$
 							+ reference
 							+ ". No IDiscoveryAdvertiser available to handle this publication", //$NON-NLS-1$
@@ -294,13 +290,12 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		try {
 			IServiceTypeID serviceTypeID = createServiceTypeID(
 					servicePublicationServiceProperties, advertiserNamespace);
-			URI uri = createURI(endpointContainerID);
-
 			String serviceName = getPropertyWithDefault(
 					servicePublicationServiceProperties,
 					RemoteServicePublication.SERVICE_NAME,
 					(RemoteServicePublication.DEFAULT_SERVICE_NAME_PREFIX + new String(
 							remoteServiceIDAsBytes)));
+			URI uri = createURI(endpointContainerID, "/" + serviceName); //$NON-NLS-1$
 
 			svcInfo = new ServiceInfo(uri, serviceName, serviceTypeID,
 					discoveryServiceProperties);
@@ -394,7 +389,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		LogUtility.logInfo(method, message, this.getClass(), exception);
 	}
 
-	private URI createURI(ID endpointContainerID) throws URISyntaxException {
+	private URI createURI(ID endpointContainerID, String path)
+			throws URISyntaxException {
 		boolean done = false;
 		URI uri = null;
 		String str = endpointContainerID.getName();
@@ -423,7 +419,7 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		} catch (Exception e) {
 			host = "localhost"; //$NON-NLS-1$
 		}
-		return new URI(scheme, null, host, port, null, null, null);
+		return new URI(scheme, null, host, port, path, null, null);
 	}
 
 	private void addPropertiesToDiscoveryServiceProperties(
@@ -528,8 +524,8 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 	}
 
 	protected void trace(String methodName, String message) {
-		Trace.trace(Activator.PLUGIN_ID, DebugOptions.SVCPUBHANDLERDEBUG, this
-				.getClass(), methodName, message);
+		Trace.trace(Activator.PLUGIN_ID, DebugOptions.SVCPUBHANDLERDEBUG,
+				this.getClass(), methodName, message);
 	}
 
 	public void dispose() {
