@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
+ * Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -54,8 +54,29 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	protected IConnectContext connectContext;
 
+	/**
+	 * @since 3.3
+	 */
+	protected final Object rsConnectLock = new Object();
+	/**
+	 * @since 3.3
+	 */
+	protected boolean rsConnected = false;
+
+	/**
+	 * @since 3.3
+	 */
+	protected int rsConnectTimeout = ADD_REGISTRATION_REQUEST_TIMEOUT;
+
 	public RegistrySharedObject() {
 		//
+	}
+
+	/**
+	 * @since 3.3
+	 */
+	protected int getRSConnectTimeout() {
+		return rsConnectTimeout;
 	}
 
 	/* (non-Javadoc)
@@ -163,20 +184,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.3
-	 */
-	protected Object rsConnectLock = new Object();
-	/**
-	 * @since 3.3
-	 */
-	protected boolean rsConnected = false;
-
-	/**
-	 * @since 3.3
-	 */
-	protected long rsConnectTimeout = ADD_REGISTRATION_REQUEST_TIMEOUT;
-
-	/**
 	 * @since 3.3 for preventing issues like bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=304427
 	 */
 	protected void connectToRemoteServiceTarget(ID targetID) throws ContainerConnectException {
@@ -197,17 +204,18 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			}
 			// else we just try to connect to target
 			context.connect(targetID, connectContext);
-			waitForConnectEvent(context, targetID);
+			waitForConnectedEvent(context, targetID);
 		}
 	}
 
-	private void waitForConnectEvent(ISharedObjectContext context, ID targetID) throws ContainerConnectException {
+	private void waitForConnectedEvent(ISharedObjectContext context, ID targetID) throws ContainerConnectException {
 		// Wait until we receive the IContainerConnectedEvent on the shared object thread
 		long startTime = System.currentTimeMillis();
-		long endTime = startTime + rsConnectTimeout;
+		int rsTimeout = getRSConnectTimeout();
+		long endTime = startTime + rsTimeout;
 		while (!rsConnected && (endTime >= System.currentTimeMillis())) {
 			try {
-				rsConnectLock.wait(rsConnectTimeout / 10);
+				rsConnectLock.wait(rsTimeout / 10);
 			} catch (InterruptedException e) {
 				throw new ContainerConnectException("No notification of registry connect complete for targetID=" + targetID); //$NON-NLS-1$
 			}
@@ -227,7 +235,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			return null;
 		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
 		// Wait for pending updates from containers in idFilter
-		waitForPendingUpdates(idFilter, addRegistrationRequestTimeout);
+		waitForPendingUpdates(idFilter, getAddRegistrationRequestTimeout());
 		// Lookup from remote registrys...add to given references List
 		final List references = new ArrayList();
 		addReferencesFromRemoteRegistrys(idFilter, clazz, remoteFilter, references);
@@ -340,6 +348,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 						// to expected set and send request for update
 						addPendingContainers(getGroupMemberIDs());
 						sendRegistryUpdateRequest();
+						setRegistryConnected(true);
 					}
 				}
 				return false;
@@ -378,8 +387,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 		// Remove from pending updates
 		removePendingContainers(targetID);
+		if (getConnectedID() == null)
+			setRegistryConnected(false);
+	}
+
+	/**
+	 * @since 3.3
+	 */
+	protected void setRegistryConnected(boolean connected) {
 		synchronized (rsConnectLock) {
-			rsConnected = false;
+			rsConnected = connected;
 			rsConnectLock.notify();
 		}
 	}
@@ -456,12 +473,15 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		// If we're a group manager or the newly connected container is the
 		// group manager
 		ID targetID = event.getTargetID();
+		// Add the target to the set of pending update containers.  These are the ones we expect
+		// to hear from about their registry contents
 		addPendingContainers(new ID[] {targetID});
+		// And send a registry update to the given target
 		sendRegistryUpdate(targetID);
-		synchronized (rsConnectLock) {
-			rsConnected = true;
-			rsConnectLock.notify();
-		}
+		// If we are now connected, then set our registry connected
+		ID connectedID = getConnectedID();
+		if (connectedID != null && connectedID.equals(targetID))
+			setRegistryConnected(true);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleContainerConnectedEvent"); //$NON-NLS-1$
 	}
 
@@ -1362,7 +1382,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	public IRemoteServiceReference getRemoteServiceReference(IRemoteServiceID serviceId) {
 		ID containerID = serviceId.getContainerID();
 		RemoteServiceRegistrationImpl registration = null;
-		waitForPendingUpdates(new ID[] {serviceId.getContainerID()}, addRegistrationRequestTimeout);
+		waitForPendingUpdates(new ID[] {serviceId.getContainerID()}, getAddRegistrationRequestTimeout());
 		if (this.localRegistry.containerID.equals(containerID)) {
 			synchronized (localRegistry) {
 				registration = localRegistry.findRegistrationForServiceId(serviceId.getContainerRelativeID());
