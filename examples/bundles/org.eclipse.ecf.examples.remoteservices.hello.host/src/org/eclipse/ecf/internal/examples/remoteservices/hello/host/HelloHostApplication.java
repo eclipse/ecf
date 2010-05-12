@@ -39,7 +39,8 @@ public class HelloHostApplication implements IApplication,
 	private boolean done = false;
 
 	private ServiceRegistration helloRegistration;
-
+	//private ServiceRegistration helloRegistration2;
+	
 	public Object start(IApplicationContext appContext) throws Exception {
 		bundleContext = Activator.getContext();
 		// Process Arguments
@@ -74,6 +75,13 @@ public class HelloHostApplication implements IApplication,
 		// tell everyone
 		System.out.println("Host: Hello Service Registered");
 
+		// register remote service
+//		helloRegistration2 = bundleContext.registerService(IHello.class
+//				.getName(), new Hello(), props);
+
+		// tell everyone again
+//		System.out.println("Host: Hello2 Service Registered");
+
 		// wait until stopped
 		waitForDone();
 
@@ -85,6 +93,10 @@ public class HelloHostApplication implements IApplication,
 			helloRegistration.unregister();
 			helloRegistration = null;
 		}
+//		if (helloRegistration2 != null) {
+//			helloRegistration2.unregister();
+//			helloRegistration2 = null;
+//		}
 		bundleContext = null;
 		synchronized (appLock) {
 			done = true;
