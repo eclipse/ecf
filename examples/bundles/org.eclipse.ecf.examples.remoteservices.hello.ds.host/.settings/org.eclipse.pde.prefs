@@ -1,9 +1,11 @@
-#Sat Apr 24 11:48:04 PDT 2010
+#Tue May 11 21:26:19 PDT 2010
 compilers.f.unresolved-features=1
 compilers.f.unresolved-plugins=1
 compilers.incompatible-environment=1
 compilers.p.build=1
 compilers.p.build.bin.includes=1
+compilers.p.build.encodings=2
+compilers.p.build.java.compiler=2
 compilers.p.build.java.compliance=1
 compilers.p.build.missing.output=2
 compilers.p.build.output.library=1
