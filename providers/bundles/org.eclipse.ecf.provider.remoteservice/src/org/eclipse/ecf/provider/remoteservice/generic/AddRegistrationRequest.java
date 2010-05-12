@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.Serializable;
 import java.security.AccessControlException;
+import java.util.Vector;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 
@@ -31,10 +32,25 @@ public class AddRegistrationRequest implements Serializable {
 	 */
 	public AddRegistrationRequest(ID targetID, String service, String filter, AddRegistrationRequest parent) {
 		this.targetID = null;
+		this.parent = null;
+		this.service = service;
+		this.filter = filter;
+	}
+
+	private transient Vector requests = null;
+
+	/**
+	 * @since 3.3
+	 */
+	public AddRegistrationRequest(String service, String filter, Vector requests) {
+		this.parent = null;
+		this.targetID = null;
 		Assert.isNotNull(service);
 		this.service = service;
 		this.filter = filter;
-		this.parent = parent;
+		this.requests = requests;
+		if (requests != null)
+			requests.add(this);
 	}
 
 	public String getService() {
@@ -49,6 +65,9 @@ public class AddRegistrationRequest implements Serializable {
 		return new Integer(System.identityHashCode(this));
 	}
 
+	/**
+	 * @since 3.3
+	 */
 	public void waitForResponse(long timeout) {
 		long startTime = System.currentTimeMillis();
 		long endTime = startTime + timeout;
@@ -60,6 +79,32 @@ public class AddRegistrationRequest implements Serializable {
 					// just return;
 					return;
 				}
+			}
+		}
+	}
+
+	void waitForAllResponses(long timeout) {
+		if (requests != null) {
+			long startTime = System.currentTimeMillis();
+			long endTime = startTime + timeout;
+			synchronized (requests) {
+				while (requests.size() > 0 && (endTime >= System.currentTimeMillis())) {
+					try {
+						requests.wait(timeout / 10);
+					} catch (InterruptedException e) {
+						// just return
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	void notifyResponse(AccessControlException exception) {
+		if (requests != null) {
+			synchronized (requests) {
+				requests.remove(this);
+				requests.notify();
 			}
 		}
 	}
@@ -91,4 +136,9 @@ public class AddRegistrationRequest implements Serializable {
 		}
 	}
 
+	public String toString() {
+		StringBuffer buf = new StringBuffer("AddRegistrationRequest["); //$NON-NLS-1$
+		buf.append("service=").append(service).append(";filter=").append(filter).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		return buf.toString();
+	}
 }
