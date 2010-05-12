@@ -30,7 +30,7 @@ public interface Constants {
 	public static final String OBJECTCLASS = "ecf.robjectClass"; //$NON-NLS-1$
 
 	/**
-	 * Remote service property (named &quot;remote.service.id&quot;) identifying a
+	 * Remote service property (named &quot;ecf.rsvc.id&quot;) identifying a
 	 * service's registration number (of type <code>java.lang.Long</code>).
 	 * 
 	 * <p>
