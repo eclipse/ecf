@@ -210,8 +210,9 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		ID endpointID = endpointDescription.getEndpointAsID();
 		// Get remote service filter from the service endpoint description
 		// if it exists.
-		String remoteServiceFilter = endpointDescription
-				.getRemoteServicesFilter();
+		String remoteServiceFilter = getFullRemoteServicesFilter(
+				endpointDescription.getRemoteServicesFilter(),
+				endpointDescription.getRemoteServiceId());
 		// Get provided interfaces as collection
 		Collection providedInterfaces = endpointDescription
 				.getProvidedInterfaces();
@@ -258,11 +259,25 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 											: Arrays.asList(remoteReferences)
 													.toString()), null);
 					continue;
-				} else
+				} else {
 					registerRemoteServiceReferences(endpointDescription,
 							rsContainers[i], remoteReferences);
+				}
 			}
 		}
+	}
+
+	private String getFullRemoteServicesFilter(String remoteServicesFilter,
+			long remoteServiceId) {
+		if (remoteServiceId < 0)
+			return remoteServicesFilter;
+		StringBuffer filter = new StringBuffer("(&(") //$NON-NLS-1$
+				.append(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID)
+				.append("=").append(remoteServiceId).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (remoteServicesFilter != null)
+			filter.append(remoteServicesFilter);
+		filter.append(")"); //$NON-NLS-1$
+		return filter.toString();
 	}
 
 	private void firePreGetRemoteServiceReferences(
