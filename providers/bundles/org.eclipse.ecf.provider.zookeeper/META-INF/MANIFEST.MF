@@ -28,3 +28,4 @@ Export-Package: org.eclipse.ecf.provider.zookeeper,
  org.eclipse.ecf.provider.zookeeper.node.internal;x-internal:=true,
  org.eclipse.ecf.provider.zookeeper.util;x-internal:=true
 Bundle-Vendor: %bundle.provider
+Bundle-Localization: bundle
