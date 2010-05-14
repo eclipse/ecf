@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -471,47 +470,13 @@ public class EventHookImpl implements EventHook {
 		// as a remote service so we return null
 		if (propValue == null)
 			return null;
-		boolean wildcard = false;
-		// If they've given a String and it's not a wildcard '*' then return
-		// null
-		String[] exportedInterfaces = null;
-		if (propValue instanceof String) {
-			wildcard = propValue
-					.equals(IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD);
-			// If it is not a wildcard then it's not us
-			if (!wildcard)
-				return null;
-			exportedInterfaces = new String[] { (String) propValue };
-		}
-		if (exportedInterfaces == null && propValue instanceof String[]) {
-			exportedInterfaces = (String[]) propValue;
-		}
-		if (exportedInterfaces == null)
-			return null;
-		String[] serviceInterfaces = (String[]) serviceReference
-				.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
-		List results = new ArrayList();
-		if (wildcard) {
-			// If * is specified, then return all interfaces exposed by service
-			return serviceInterfaces;
-		} else {
-			List interfaces = Arrays.asList(serviceInterfaces);
-			List rsInterfaces = Arrays.asList(exportedInterfaces);
-			for (Iterator i = rsInterfaces.iterator(); i.hasNext();) {
-				String rsIntf = (String) i.next();
-				// If the wildcard is used within the array, add all interfaces
-				if (rsIntf
-						.equals(IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD))
-					results.addAll(interfaces);
-				// else if the interfaces list contains the given interface,
-				// then add it as well
-				if (interfaces.contains(rsIntf))
-					results.add(rsIntf);
-			}
-		}
-		if (results.size() == 0)
-			return null;
-		return (String[]) results.toArray(new String[] {});
+		boolean wildcard = propValue
+				.equals(IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD);
+		if (wildcard)
+			return (String[]) serviceReference
+					.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
+		else
+			return getStringArrayFromPropertyValue(propValue);
 	}
 
 	private void trace(String methodName, String message) {
