@@ -53,6 +53,11 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 
 	private List referencesInUse = new ArrayList();
 
+	/**
+	 * @since 4.1
+	 */
+	protected boolean alwaysSendDefaultParameters;
+
 	public AbstractClientContainer(ID containerID) {
 		this.containerID = containerID;
 		Assert.isNotNull(this.containerID);
@@ -101,6 +106,22 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		synchronized (parameterSerializerLock) {
 			return parameterSerializer;
 		}
+	}
+
+	/**
+	 * Set the flag to <code>true</code> to include default parameters (which are specified when the callables are created) with
+	 * every request to the remote service.
+	 * <p>
+	 * Setting to <code>false</code> will only send those parameter specified when the call is invoked.
+	 * <p>
+	 * Parameters which are specifed with the call override the defaults. Default parameters with a value of <code>null</code>
+	 * are not included.
+	 * 
+	 * @param alwaysSendDefaultParameters whether to send default parameters with every remote call
+	 * @since 4.1
+	 */
+	public void setAlwaysSendDefaultParameters(boolean alwaysSendDefaultParameters) {
+		this.alwaysSendDefaultParameters = alwaysSendDefaultParameters;
 	}
 
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
@@ -437,22 +458,46 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 				results.add(p);
 				continue;
 			}
-			String name = null;
 			if (defaultCallableParameters != null && i < defaultCallableParameters.length) {
 				// If the call parameter (p) is null, then add the associated
 				// callableParameter
 				if (p == null)
 					results.add(defaultCallableParameters[i]);
 				// If not null, then we need to serialize
-				name = defaultCallableParameters[i].getName();
-				// Get parameter serializer...and
-				IRemoteCallParameterSerializer serializer = getParameterSerializer();
-				IRemoteCallParameter val = (serializer == null) ? null : serializer.serializeParameter(uri, call, callable, defaultCallableParameters[i], p);
+				IRemoteCallParameter val = serializeParameter(uri, call, callable, defaultCallableParameters[i], p);
 				if (val != null)
-					results.add(new RemoteCallParameter(name, val));
+					results.add(val);
+			}
+		}
+		// Check if we should send additional default parameters and whether there are more to send
+		if (alwaysSendDefaultParameters && (defaultCallableParameters.length > callParameters.length)) {
+			// Start with the first parameter that wasn't specified
+			for (int i = callParameters.length; i < defaultCallableParameters.length; i++) {
+				IRemoteCallParameter param = defaultCallableParameters[i];
+				// skip default parameters with null values
+				if (param.getValue() == null) {
+					continue;
+				}
+				// serialize the parameter using the container's parameterSerializer
+				IRemoteCallParameter serialziedParam = serializeParameter(uri, call, callable, param, param.getValue());
+				results.add(serialziedParam);
 			}
 		}
 		return (IRemoteCallParameter[]) results.toArray(new IRemoteCallParameter[] {});
+	}
+
+	/**
+	 * Serialze the parameter using the container's parameterSerializer. If there is no serializer for this container, return null.
+	 * 
+	 * @return the serialized parameter or null if there is no parameterSerializer for this container
+	 * @see IRemoteCallParameterSerializer#serializeParameter(String, IRemoteCall, IRemoteCallable, IRemoteCallParameter, Object)
+	 * @since 4.1
+	 */
+	protected IRemoteCallParameter serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, IRemoteCallParameter defaultParameter, Object parameterValue) throws NotSerializableException {
+		// Get parameter serializer...and
+		IRemoteCallParameterSerializer serializer = getParameterSerializer();
+		IRemoteCallParameter val = (serializer == null) ? null : serializer.serializeParameter(uri, call, callable, defaultParameter, parameterValue);
+		return val;
 	}
 
 	protected Object processResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException {
