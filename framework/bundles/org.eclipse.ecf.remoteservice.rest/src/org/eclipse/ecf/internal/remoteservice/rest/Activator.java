@@ -9,8 +9,13 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.remoteservice.rest;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.SystemLogService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.log.LogService;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -24,6 +29,10 @@ public class Activator implements BundleActivator {
 	private static Activator plugin;
 
 	private BundleContext context;
+
+	private ServiceTracker logServiceTracker = null;
+
+	private LogService logService = null;
 
 	/*
 	 * (non-Javadoc)
@@ -43,9 +52,13 @@ public class Activator implements BundleActivator {
 	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context1) throws Exception {
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+			logService = null;
+		}
 		plugin = null;
 		this.context = null;
-
 	}
 
 	/**
@@ -62,6 +75,24 @@ public class Activator implements BundleActivator {
 
 	public BundleContext getContext() {
 		return context;
+	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		logService = (LogService) logServiceTracker.getService();
+		if (logService == null)
+			logService = new SystemLogService(PLUGIN_ID);
+		return logService;
+	}
+
+	public void log(IStatus status) {
+		if (logService == null)
+			logService = getLogService();
+		if (logService != null)
+			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 	}
 
 }

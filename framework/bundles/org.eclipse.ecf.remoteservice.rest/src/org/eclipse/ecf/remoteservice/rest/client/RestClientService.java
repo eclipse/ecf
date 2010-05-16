@@ -18,8 +18,11 @@ import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.EncodingUtil;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.remoteservice.rest.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.client.*;
@@ -98,6 +101,7 @@ public class RestClientService extends AbstractClientService {
 	}
 
 	protected void handleException(String message, Throwable e, int responseCode) throws RestException {
+		logException(message, e);
 		throw new RestException(message, e, responseCode);
 	}
 
@@ -164,8 +168,9 @@ public class RestClientService extends AbstractClientService {
 				throw new RestException(NLS.bind("HTTP method {0} not supported", requestType)); //$NON-NLS-1$
 			}
 		} catch (NotSerializableException e) {
-			// XXX log
-			throw new RestException("Could not serialize parameters for uri=" + uri + " call=" + call + " callable=" + callable); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String message = "Could not serialize parameters for uri=" + uri + " call=" + call + " callable=" + callable; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			logException(message, e);
+			throw new RestException(message);
 		}
 		// add additional request headers
 		addRequestHeaders(httpMethod, call, callable);
@@ -258,7 +263,7 @@ public class RestClientService extends AbstractClientService {
 					}
 				} catch (UnsupportedEncodingException e) {
 					// should not happen
-					e.printStackTrace();
+					logException("UnsupportedEncodingException for rest parameter", e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -283,12 +288,24 @@ public class RestClientService extends AbstractClientService {
 				httpClient.getState().setCredentials(authscope, credentials);
 				method.setDoAuthentication(true);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logException("IOException setting credentials for rest httpclient", e); //$NON-NLS-1$
 			} catch (UnsupportedCallbackException e) {
-				e.printStackTrace();
+				logException("UnsupportedCallbackException setting credentials for rest httpclient", e); //$NON-NLS-1$
 			}
 
 		}
+	}
+
+	protected void logException(String string, Throwable e) {
+		Activator a = Activator.getDefault();
+		if (a != null)
+			a.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, string, e));
+	}
+
+	protected void logWarning(String string, Throwable e) {
+		Activator a = Activator.getDefault();
+		if (a != null)
+			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string));
 	}
 
 }
