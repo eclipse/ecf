@@ -434,7 +434,9 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	protected void logException(String string, Throwable e) {
-		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, string, e));
+		Activator a = Activator.getDefault();
+		if (a != null)
+			a.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, string, e));
 	}
 
 	protected ID getRemoteCallTargetID() {

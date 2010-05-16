@@ -278,7 +278,9 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	}
 
 	protected void logWarning(String string, Throwable e) {
-		Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string));
+		Activator a = Activator.getDefault();
+		if (a != null)
+			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string));
 	}
 
 }
