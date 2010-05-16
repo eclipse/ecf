@@ -16,6 +16,7 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.EncodingUtil;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.ECFException;
@@ -34,6 +35,8 @@ import org.eclipse.osgi.util.NLS;
 public class RestClientService extends AbstractClientService {
 
 	protected final static int DEFAULT_RESPONSE_BUFFER_SIZE = 1024;
+
+	protected final static String DEFAULT_HTTP_CONTENT_CHARSET = "UTF-8"; //$NON-NLS-1$
 
 	protected HttpClient httpClient;
 	protected int responseBufferSize = DEFAULT_RESPONSE_BUFFER_SIZE;
@@ -170,6 +173,7 @@ public class RestClientService extends AbstractClientService {
 		setupAuthenticaton(httpClient, httpMethod);
 		// needed because a resource can link to another resource
 		httpClient.getParams().setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, new Boolean(true));
+		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, DEFAULT_HTTP_CONTENT_CHARSET);
 		setupTimeouts(httpClient, call, callable);
 		return httpMethod;
 	}
