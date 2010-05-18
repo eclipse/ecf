@@ -12,10 +12,13 @@
 package org.eclipse.ecf.tests.provider.xmpp.remoteservice;
 
 import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
@@ -44,16 +47,27 @@ public class RemoteServiceTest extends AbstractRemoteServiceTest {
 	}
 
 	protected IRemoteServiceRegistration registerService(IRemoteServiceContainerAdapter adapter, String serviceInterface, Object service, Dictionary serviceProperties, int sleepTime) {
-		//final Dictionary props = new Hashtable();
-		//props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClient(1).getConnectedID());
 		final IRemoteServiceRegistration result = adapter.registerRemoteService(new String[] {serviceInterface}, service, serviceProperties);
 		sleep(sleepTime);
 		return result;
 	}
 
+	protected Dictionary customizeProperties(Dictionary serviceProperties) {
+		final Dictionary props = new Hashtable();
+		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClient(1).getConnectedID());
+		if (serviceProperties != null) {
+			for(Enumeration e=serviceProperties.keys(); e.hasMoreElements(); ) {
+				String key = (String) e.nextElement();
+				Object val = serviceProperties.get(key);
+				props.put(key,val);
+			}
+		}
+		return props;
+	}
+	
 	protected IRemoteServiceReference[] getRemoteServiceReferences(IRemoteServiceContainerAdapter adapter, String clazz, String filter) {
 		try {
-			return adapter.getRemoteServiceReferences(new ID[] {getClient(0).getConnectedID()}, clazz, filter);
+			return adapter.getRemoteServiceReferences((ID[]) null, clazz, filter);
 		} catch (final InvalidSyntaxException e) {
 			fail("should not happen");
 		}
