@@ -125,10 +125,10 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 			Object ctx, final List<String> children) {
 
 		// FIXME race condition when two servers run on the same machine
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-		}
+//		try {
+//			Thread.sleep(100);
+//		} catch (InterruptedException e) {
+//		}
 
 		ZooDiscoveryContainer.CACHED_THREAD_POOL.execute(new Runnable() {
 			public void run() {
