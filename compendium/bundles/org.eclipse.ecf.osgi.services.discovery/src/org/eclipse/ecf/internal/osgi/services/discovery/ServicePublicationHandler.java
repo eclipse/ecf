@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.Trace;
@@ -125,7 +126,6 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 	private boolean matchWithDiscoveredServiceInfo(
 			ServiceReference serviceReference, IServiceInfo serviceInfo) {
-		// TODO Auto-generated method stub
 		// XXX for now match everything. See RFC119
 		return true;
 	}
@@ -288,15 +288,19 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		Namespace advertiserNamespace = advertiser2.getServicesNamespace();
 		IServiceInfo svcInfo = null;
 		try {
+			// Create service type ID
 			IServiceTypeID serviceTypeID = createServiceTypeID(
 					servicePublicationServiceProperties, advertiserNamespace);
+			// First create unique default name
+			String defaultServiceName = createUniqueDefaultServiceName();
+			// Allow value of service property 'ecf.sp.svcname' to override
+			// default
 			String serviceName = getPropertyWithDefault(
 					servicePublicationServiceProperties,
-					RemoteServicePublication.SERVICE_NAME,
-					(RemoteServicePublication.DEFAULT_SERVICE_NAME_PREFIX + new String(
-							remoteServiceIDAsBytes)));
+					RemoteServicePublication.SERVICE_NAME, defaultServiceName);
+			// Create service URI
 			URI uri = createURI(endpointContainerID, "/" + serviceName); //$NON-NLS-1$
-
+			// Create service info...in preparation for publication
 			svcInfo = new ServiceInfo(uri, serviceName, serviceTypeID,
 					discoveryServiceProperties);
 
@@ -321,6 +325,11 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 				logError("publishService", "cannot register service", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
+	}
+
+	private String createUniqueDefaultServiceName() {
+		return RemoteServicePublication.DEFAULT_SERVICE_NAME_PREFIX
+				+ IDFactory.getDefault().createGUID().getName();
 	}
 
 	private void fireHostPublishUnpublish(final ServiceReference reference,
@@ -465,6 +474,19 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		return (val == null) ? def : val;
 	}
 
+	private String[] getStringArrayPropertyWithDefault(Map properties,
+			String key, String def) {
+		if (properties == null)
+			return new String[] { def };
+		Object o = properties.get(key);
+		if (o instanceof String) {
+			return new String[] { (String) o };
+		} else if (o instanceof String[]) {
+			return (String[]) o;
+		} else
+			return new String[] { def };
+	}
+
 	protected IServiceTypeID createServiceTypeID(
 			Map servicePublicationProperties, Namespace aNamespace)
 			throws IDCreateException {
@@ -472,16 +494,17 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 				servicePublicationProperties,
 				RemoteServicePublication.NAMING_AUTHORITY,
 				IServiceTypeID.DEFAULT_NA);
-		String scope = getPropertyWithDefault(servicePublicationProperties,
-				RemoteServicePublication.SCOPE, IServiceTypeID.DEFAULT_SCOPE[0]);
-		String protocol = getPropertyWithDefault(servicePublicationProperties,
+		String[] scopes = getStringArrayPropertyWithDefault(
+				servicePublicationProperties, RemoteServicePublication.SCOPE,
+				IServiceTypeID.DEFAULT_SCOPE[0]);
+		String[] protocols = getStringArrayPropertyWithDefault(
+				servicePublicationProperties,
 				RemoteServicePublication.SERVICE_PROTOCOL,
 				IServiceTypeID.DEFAULT_PROTO[0]);
 
 		return ServiceIDFactory.getDefault().createServiceTypeID(aNamespace,
-				new String[] { RemoteServicePublication.SERVICE_TYPE },
-				new String[] { scope }, new String[] { protocol },
-				namingAuthority);
+				new String[] { RemoteServicePublication.SERVICE_TYPE }, scopes,
+				protocols, namingAuthority);
 	}
 
 	/*
