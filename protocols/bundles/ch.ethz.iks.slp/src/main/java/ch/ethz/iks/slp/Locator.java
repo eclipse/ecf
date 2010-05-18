@@ -26,10 +26,6 @@ import java.util.Locale;
  */
 public interface Locator {
 	/**
-	 * @since 1.1
-	 */
-	void methodThatBreaksAPICompatibility();
-	/**
 	 * Returns the locale of this Locator instance.
 	 * 
 	 * @return the current Locale.

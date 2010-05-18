@@ -88,4 +88,9 @@ class ServiceLocationEnumerationImpl implements ServiceLocationEnumeration {
 			return null;
 		}
 	}
+
+	public void testMethod() {
+		// TODO Auto-generated method stub
+		
+	}
 }
