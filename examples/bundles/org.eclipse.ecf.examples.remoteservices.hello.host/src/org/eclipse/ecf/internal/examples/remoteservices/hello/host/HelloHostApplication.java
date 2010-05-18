@@ -42,7 +42,10 @@ public class HelloHostApplication implements IApplication,
 	//private ServiceRegistration helloRegistration2;
 	
 	public Object start(IApplicationContext appContext) throws Exception {
+		
 		bundleContext = Activator.getContext();
+		
+		
 		// Process Arguments
 		processArgs(appContext);
 		
@@ -60,6 +63,18 @@ public class HelloHostApplication implements IApplication,
 		// all will be notified of register/unregister events
 		bundleContext.registerService(IHostDistributionListener.class.getName(), new LoggingHostDistributionListener(), null);
 
+		helloRegistration =	startService(bundleContext, containerType, containerId);
+
+		// Register the console command
+		new HelloCommand(bundleContext, helloRegistration, containerType, containerId);
+		
+		// wait until stopped
+		waitForDone();
+
+		return IApplication.EXIT_OK;
+	}
+
+	public static ServiceRegistration startService(BundleContext bundleContext, String containerType, String containerId) {
 		// Setup properties for remote service distribution, as per OSGi 4.2 remote services
 		// specification (chap 13 in compendium spec)
 		Properties props = new Properties();
@@ -70,24 +85,23 @@ public class HelloHostApplication implements IApplication,
 		// add ECF service property specifying container factory args
 		props.put(IDistributionConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS, containerId);
 		// register remote service
-		helloRegistration = bundleContext.registerService(IHello.class
+		ServiceRegistration reg = bundleContext.registerService(IHello.class
 				.getName(), new Hello(), props);
 		// tell everyone
 		System.out.println("Host: Hello Service Registered");
-
-		// register remote service
-//		helloRegistration2 = bundleContext.registerService(IHello.class
-//				.getName(), new Hello(), props);
-
-		// tell everyone again
-//		System.out.println("Host: Hello2 Service Registered");
-
-		// wait until stopped
-		waitForDone();
-
-		return IApplication.EXIT_OK;
+		
+		return reg;
 	}
 
+	public static ServiceRegistration stopService(ServiceRegistration helloRegistration)
+	{
+		helloRegistration.unregister();
+
+		// tell everyone
+		System.out.println("Host: Hello Service Unregistered");
+		
+		return null;
+	}
 	public void stop() {
 		if (helloRegistration != null) {
 			helloRegistration.unregister();
