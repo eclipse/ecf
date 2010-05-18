@@ -27,6 +27,11 @@ public class NullPatternLocator implements LocatorDecorator {
 		public Object nextElement() {
 			throw new NoSuchElementException();
 		}
+
+		public void testMethod() {
+			// TODO Auto-generated method stub
+
+		}
 	};
 
 	/* (non-Javadoc)
