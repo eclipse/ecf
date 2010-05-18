@@ -42,20 +42,31 @@ public interface IDiscoveryConfig {
 	String ZOODISCOVERY_FLAVOR_CENTRALIZED = "zoodiscovery.flavor.centralized"; //$NON-NLS-1$	
 	String ZOODISCOVERY_FLAVOR_REPLICATED = "zoodiscovery.flavor.replicated"; //$NON-NLS-1$
 
-
 	/** The number of milliseconds of each tick. OPTIONAL **/
 	String ZOOKEEPER_TICKTIME = "tickTime"; //$NON-NLS-1$
 
 	/**
-	 * The full path to the directory where where the snapshot is stored.
-	 * OPIONAL
+	 * If found and the zookeeper discovery bundle is started then the zookeeper
+	 * server will be started automatically. Value is not relevant, only the
+	 * definition.
+	 * 
+	 * @since 1.0.0
+	 **/
+	String ZOOKEEPER_AUTOSTART = "autoStart";
+
+	/** The directory where zookeeper can work. OPTIONAL **/
+	String ZOOKEEPER_TEMPDIR = "tempDir"; //$NON-NLS-1$
+
+	/**
+	 * The single name of the directory in {@link #ZOOKEEPER_TEMPDIR} where the
+	 * snapshot is stored. OPIONAL
 	 **/
 	String ZOOKEEPER_DATADIR = "dataDir"; //$NON-NLS-1$
 
 	/**
-	 * The full path to the directory where the log is stored. It may be the
-	 * same as but better if separate.
-	 * <code>GRAVITY_DISCOVERY_ZOOKEEPER_DATADIR</code>. OPTIONAL
+	 * The single name of the directory in {@link #ZOOKEEPER_TEMPDIR} where the
+	 * log is stored. It may be the same as {@link #ZOOKEEPER_DATADIR} but
+	 * better if separate. OPTIONAL
 	 **/
 	String ZOOKEEPER_DATALOGDIR = "dataLogDir"; //$NON-NLS-1$
 

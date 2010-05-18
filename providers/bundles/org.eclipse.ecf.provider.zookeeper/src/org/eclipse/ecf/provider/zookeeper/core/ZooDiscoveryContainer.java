@@ -23,10 +23,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.zookeeper.server.NIOServerCnxn;
+import org.apache.zookeeper.server.NIOServerCnxn.Factory;
 import org.apache.zookeeper.server.PurgeTxnLog;
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServer;
-import org.apache.zookeeper.server.NIOServerCnxn.Factory;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 import org.apache.zookeeper.server.quorum.QuorumPeer;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
@@ -39,6 +39,8 @@ import org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
+import org.eclipse.ecf.discovery.ServiceContainerEvent;
+import org.eclipse.ecf.discovery.ServiceTypeContainerEvent;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.provider.zookeeper.core.internal.Advertiser;
@@ -60,11 +62,10 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 
 	private static ZooDiscoveryContainer discovery;
 	public static final ExecutorService CACHED_THREAD_POOL = Executors
-			.newCachedThreadPool();	
+			.newCachedThreadPool();
 	private QuorumPeer quorumPeer;
-	public final static int DEFAUL_PORT = 2181;
-	private static final String DEFAULT_TARGET = IDiscoveryConfig.ZOODISCOVERY_FLAVOR_STANDALONE
-			+ "=" + Geo.getLocation();//$NON-NLS-1$
+	// public final static int DEFAUL_PORT = 2181;
+
 	private Properties DiscoveryProperties = new Properties();
 	protected Advertiser advertiser;
 	protected Localizer localizer;
@@ -117,6 +118,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		Configuration conf = Configurator.INSTANCE.createConfig(targetID)
 				.configure();
 		doStart(conf);
+		isConnected = true;
 	}
 
 	private void doStart(final Configuration conf) {
@@ -177,6 +179,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	 * @param conf
 	 */
 	void startStandAlone(final Configuration conf) {
+
 		if (this.zooKeeperServer != null && this.zooKeeperServer.isRunning())
 			return;
 		else if (this.zooKeeperServer != null
@@ -189,7 +192,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 						"Zookeeper server cannot be started! ", e);//$NON-NLS-1$				
 			}
 
-		// create brand new zooKeeper server
+		// create brand new zooKeeper server. FIXME double cake?
 		this.zookeeperThread = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -198,18 +201,21 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 							.getZookeeperData(), conf.getZookeeperData());
 					ZooDiscoveryContainer.this.zooKeeperServer
 							.setTxnLogFactory(fileTxnSnapLog);
-					ZooDiscoveryContainer.this.zooKeeperServer
-							.setTickTime(ZooKeeperServer.DEFAULT_TICK_TIME);
+					ZooDiscoveryContainer.this.zooKeeperServer.setTickTime(conf
+							.getTickTime());
+					System.out.println(conf.getClientPort());
+					// ZooDiscoveryContainer.this.zooKeeperServer
+					// .setServerCnxnFactory(new NIOServerCnxn.Factory(
+					// new InetSocketAddress(conf.getServerPort())));
 					Factory cnxnFactory = new NIOServerCnxn.Factory(
-							new InetSocketAddress(DEFAUL_PORT));
+							new InetSocketAddress(conf.getClientPort()));
 					cnxnFactory
 							.startup(ZooDiscoveryContainer.this.zooKeeperServer);
 				} catch (Exception e) {
-					Logger
-							.log(
-									LogService.LOG_ERROR,
-									"Zookeeper server cannot be started! Possibly another instance is already running. ",
-									e);
+					Logger.log(
+							LogService.LOG_ERROR,
+							"Zookeeper server cannot be started! Possibly another instance is already running. ",
+							e);
 				}
 			}
 		});
@@ -240,14 +246,15 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 						throws IOException {
 					ServerConfig serverConfig = new ServerConfig();
 					serverConfig.readFrom(quorumPeerConfig);
-					QuorumPeer peer = new QuorumPeer(quorumPeerConfig
-							.getServers(), new File(serverConfig.getDataDir()),
-							new File(serverConfig.getDataLogDir()),
-							quorumPeerConfig.getElectionAlg(), quorumPeerConfig
-									.getServerId(), quorumPeerConfig
-									.getTickTime(), quorumPeerConfig
-									.getInitLimit(), quorumPeerConfig
-									.getSyncLimit(), cnxnFactory,
+					QuorumPeer peer = new QuorumPeer(
+							quorumPeerConfig.getServers(), new File(
+									serverConfig.getDataDir()), new File(
+									serverConfig.getDataLogDir()),
+							quorumPeerConfig.getElectionAlg(),
+							quorumPeerConfig.getServerId(),
+							quorumPeerConfig.getTickTime(),
+							quorumPeerConfig.getInitLimit(),
+							quorumPeerConfig.getSyncLimit(), cnxnFactory,
 							quorumPeerConfig.getQuorumVerifier());
 					ZooDiscoveryContainer.this.quorumPeer = peer;
 					return peer;
@@ -255,13 +262,12 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 
 				public NIOServerCnxn.Factory createConnectionFactory()
 						throws IOException {
-					return new NIOServerCnxn.Factory(quorumPeerConfig
-							.getClientPortAddress());
+					return new NIOServerCnxn.Factory(
+							quorumPeerConfig.getClientPortAddress());
 				}
 			};
-			quorumPeer = qpFactory.create(qpFactory
-					.createConnectionFactory());
-			quorumPeer.start();		
+			quorumPeer = qpFactory.create(qpFactory.createConnectionFactory());
+			quorumPeer.start();
 			quorumPeer.setDaemon(true);
 			isQuorumPeerReady = true;
 		} catch (Exception e) {
@@ -327,10 +333,9 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		this.targetId = id;
 		if (this.targetId == null) {
 			this.targetId = this.getConnectNamespace().createInstance(
-					new String[] { DEFAULT_TARGET });
+					new String[] { getDefaultTarget() });
 		}
 		init(this.targetId);
-		isConnected = true;
 	}
 
 	public void disconnect() {
@@ -361,8 +366,12 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	}
 
 	public IServiceInfo[] getServices() {
-		return WatchManager.getAllKnownServices().values().toArray(
-				new IServiceInfo[WatchManager.getAllKnownServices().size()]);
+		return WatchManager
+				.getAllKnownServices()
+				.values()
+				.toArray(
+						new IServiceInfo[WatchManager.getAllKnownServices()
+								.size()]);
 	}
 
 	public IServiceInfo[] getServices(IServiceTypeID type) {
@@ -385,7 +394,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		if (!isDisposed && !isConnected) {
 			if (this.targetId == null) {
 				this.targetId = this.getConnectNamespace().createInstance(
-						new String[] { DEFAULT_TARGET });
+						new String[] { getDefaultTarget() });
 			}
 			init(this.targetId);
 		}
@@ -395,6 +404,16 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		} else
 			for (WatchManager wm : allWatchManagers.values())
 				wm.publish(new AdvertisedService(serviceInfo));
+
+	}
+
+	/**
+	 * Get the default target configuration from the system properties.
+	 * 
+	 * @return
+	 */
+	private String getDefaultTarget() {
+		return System.getProperty("zoodiscovery.flavor");
 	}
 
 	public void unregisterAllServices() {
@@ -407,6 +426,8 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		for (WatchManager wm : allWatchManagers.values())
 			wm.unpublish(serviceInfo.getServiceID().getServiceTypeID()
 					.getInternal());
+
+		fireUndiscovered(serviceInfo);
 	}
 
 	public Collection<IServiceListener> getAllServiceListeners() {
@@ -418,7 +439,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		return super.getListeners(type);
 	}
 
-	public Collection<IServiceTypeListener> getSrviceTypeListeners() {
+	public Collection<IServiceTypeListener> getServiceTypeListeners() {
 		return super.serviceTypeListeners;
 	}
 
@@ -429,5 +450,18 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 
 	public ID getID() {
 		return Configurator.INSTANCE.getID();
+	}
+
+	void fireDiscovered(final IServiceInfo serviceInfo) {
+		fireServiceDiscovered(new ServiceContainerEvent(serviceInfo, getID()));
+	}
+
+	void fireTypeDiscovered(final IServiceTypeID serviceType) {
+		fireServiceTypeDiscovered(new ServiceTypeContainerEvent(serviceType,
+				getID()));
+	}
+
+	void fireUndiscovered(final IServiceInfo serviceInfo) {
+		fireServiceUndiscovered(new ServiceContainerEvent(serviceInfo, getID()));
 	}
 }

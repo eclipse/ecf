@@ -27,8 +27,6 @@ public class Configuration extends DefaultDiscoveryConfig {
 	private ServiceReference reference;
 	private List<String> serverIps = new ArrayList<String>();
 	private FLAVOR flavor;
-	private static final String TEMP = System.getProperties().getProperty(
-			"java.io.tmpdir"); //$NON-NLS-1$
 
 	public Configuration(ServiceReference reference) {
 		Assert.isNotNull(reference);
@@ -56,12 +54,13 @@ public class Configuration extends DefaultDiscoveryConfig {
 		PrintWriter writer = null;
 		boolean isNewZookeeperData = false;
 		try {
-			setZookeeperData(new File(TEMP + File.separator
-					+ DefaultDiscoveryConfig.DATADIR_DEFAULT));
+			setZookeeperData(new File(getConfigProperties().get(
+					ZOOKEEPER_TEMPDIR).toString()
+					+ getConfigProperties().get(ZOOKEEPER_DATADIR)));
 			isNewZookeeperData = getZookeeperData().mkdir();
 			getZookeeperData().deleteOnExit();
 			if (!isNewZookeeperData) {
-				clean();		
+				clean();
 			}
 			this.zooConfFile = new File(getZookeeperData() + "/zoo.cfg");//$NON-NLS-1$
 			this.zooConfFile.createNewFile();
@@ -84,6 +83,9 @@ public class Configuration extends DefaultDiscoveryConfig {
 				this.setFlavor(FLAVOR.REPLICATED);
 				this.serverIps = parseIps();
 				this.serverIps.remove("localhost"); //$NON-NLS-1$	
+
+				// FIXME could contain host:port so this would not match
+				// correctly
 				if (!this.serverIps.contains(Geo.getHost())) {
 					this.serverIps.add(Geo.getHost());
 				}
@@ -127,14 +129,10 @@ public class Configuration extends DefaultDiscoveryConfig {
 			if (this.isQuorum()) {
 				for (int i = 0; i < this.serverIps.size(); i++) {
 					writer.println("server."//$NON-NLS-1$
-							+ i
-							+ "="//$NON-NLS-1$
-							+ this.serverIps.get(i)
-							+ ":"//$NON-NLS-1$
-							+ getConfigProperties().get(ZOOKEEPER_SERVER_PORT)
-							+ ":"//$NON-NLS-1$
-							+ getConfigProperties()
-									.get(ZOOKEEPER_ELECTION_PORT));
+							+ i + "="//$NON-NLS-1$
+							+ this.serverIps.get(i) + ":"//$NON-NLS-1$
+							+ getServerPort() + ":"//$NON-NLS-1$
+							+ getElectionPort());
 
 				}
 			}
@@ -160,6 +158,10 @@ public class Configuration extends DefaultDiscoveryConfig {
 		return this;
 	}
 
+	public int getElectionPort() {
+		return ((Integer) getConfigProperties().get(ZOOKEEPER_ELECTION_PORT));
+	}
+
 	public String getConfFile() {
 		return this.zooConfFile.toString();
 	}
@@ -167,10 +169,14 @@ public class Configuration extends DefaultDiscoveryConfig {
 	public String getServerIps() {
 		String ipsString = ""; //$NON-NLS-1$
 		for (String i : this.serverIps) {
-			ipsString += i
-					+ ":" + DefaultDiscoveryConfig.CLIENT_PORT_DEFAULT + ",";//$NON-NLS-1$ //$NON-NLS-2$
+			ipsString += i + ",";//$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return ipsString.substring(0, ipsString.lastIndexOf(","));//$NON-NLS-1$
+	}
+
+	public int getClientPort() {
+		return Integer.parseInt(getConfigProperties().get(ZOOKEEPER_CLIENTPORT)
+				+ "");//$NON-NLS-1$
 	}
 
 	public List<String> getServerIpsAsList() {
@@ -223,11 +229,12 @@ public class Configuration extends DefaultDiscoveryConfig {
 		}
 	}
 
-	private List parseIps() {
-		List l = Arrays.asList(((String) getConfigProperties().get(
+	private List<String> parseIps() {
+		List<String> l = Arrays.asList(((String) getConfigProperties().get(
 				flavor.toString())).split(","));//$NON-NLS-1$
-		Collections.sort(l);
-		return l;
+		List<String> unfixedSize = new ArrayList<String>(l);
+		Collections.sort(unfixedSize);
+		return unfixedSize;
 	}
 
 	public String toString() {
@@ -236,4 +243,13 @@ public class Configuration extends DefaultDiscoveryConfig {
 			s += o;
 		return s;
 	}
+
+	public int getTickTime() {
+		return ((Integer) getConfigProperties().get(ZOOKEEPER_TICKTIME));
+	}
+
+	public int getServerPort() {
+		return ((Integer) getConfigProperties().get(ZOOKEEPER_SERVER_PORT));
+	}
+
 }

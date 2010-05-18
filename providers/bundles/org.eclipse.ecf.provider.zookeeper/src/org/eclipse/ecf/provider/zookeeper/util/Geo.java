@@ -35,6 +35,7 @@ public class Geo {
 		Assert.isTrue(path.length() > INode.ROOT.length());
 		String[] parts = path.split(INode._URI_);
 		String host = parts[INode.URI_POSITION];
+		System.out.println("geo.islocal" + Geo.getHost() + " " + host);
 		return Geo.getHost().equals(host);
 	}
 

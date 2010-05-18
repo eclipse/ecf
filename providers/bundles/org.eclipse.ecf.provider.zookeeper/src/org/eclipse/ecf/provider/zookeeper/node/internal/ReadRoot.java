@@ -123,6 +123,13 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 
 	public synchronized void processResult(int rc, final String path,
 			Object ctx, final List<String> children) {
+
+		// FIXME race condition when two servers run on the same machine
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+		}
+
 		ZooDiscoveryContainer.CACHED_THREAD_POOL.execute(new Runnable() {
 			public void run() {
 				if (path == null || children == null || children.size() == 0) {
@@ -132,10 +139,10 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 					return;
 				}
 				for (String p : children) {
-					if (Geo.isLocal(p)) {
-						/* locals need not to be discovered */
-						continue;
-					}
+					// if (Geo.isLocal(p)) {
+					// /* locals need not to be discovered */
+					// continue;
+					// }
 					if (!ReadRoot.this.nodeReaders.containsKey(p)) {
 						/* launch a new reader to handle this node's data */
 						NodeReader nr = new NodeReader(p, ReadRoot.this);

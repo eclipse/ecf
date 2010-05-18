@@ -158,7 +158,7 @@ public class WatchManager implements BundleStoppingListener {
 		case STANDALONE:
 			ZooDiscoveryContainer.CACHED_THREAD_POOL.execute(new Runnable() {
 				public void run() {
-					WatchManager.this.writeRoot = new WriteRoot(Geo.getHost(),
+					WatchManager.this.writeRoot = new WriteRoot(Geo.getHost() + ":" + getConfig().getClientPort() ,
 							WatchManager.this);
 					if (!WatchManager.this.writeRoot.isConnected()) {
 						synchronized (WatchManager.this.writeRoot) {

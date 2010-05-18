@@ -15,17 +15,20 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
-import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator;
-import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainer;
+import org.eclipse.ecf.provider.zookeeper.core.DefaultDiscoveryConfig;
 import org.eclipse.ecf.provider.zookeeper.core.IDiscoveryConfig;
+import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainer;
+import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator;
 import org.eclipse.ecf.provider.zookeeper.core.internal.BundleStoppingListener;
 import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -46,18 +49,20 @@ public class DiscoveryActivator implements BundleActivator {
 
 	public void start(final BundleContext c) {
 		context = c;
+
 		Properties props = new Properties();
-		props.put(IDiscoveryLocator.CONTAINER_NAME, ZooDiscoveryContainerInstantiator.NAME);
+		props.put(IDiscoveryLocator.CONTAINER_NAME,
+				ZooDiscoveryContainerInstantiator.NAME);
 		props.put(IDiscoveryAdvertiser.CONTAINER_NAME,
 				ZooDiscoveryContainerInstantiator.NAME);
 		/*
 		 * Make us available as IDiscoveryLocator and IDiscoveryAdvertiser
 		 * services for OSGi trackers
 		 */
-		this.discoveryRegistration = c.registerService(new String[] {
-				IDiscoveryLocator.class.getName(),
-				IDiscoveryAdvertiser.class.getName() }, ZooDiscoveryContainer
-				.getSingleton(), props);
+		this.discoveryRegistration = c.registerService(
+				new String[] { IDiscoveryLocator.class.getName(),
+						IDiscoveryAdvertiser.class.getName() },
+				ZooDiscoveryContainer.getSingleton(), props);
 		ZooDiscoveryContainer.getSingleton().setDiscoveryProperties(props);
 		Executors.newSingleThreadExecutor().execute(new Runnable() {
 			public void run() {
@@ -71,10 +76,11 @@ public class DiscoveryActivator implements BundleActivator {
 							+ IDiscoveryConfig.ZOODISCOVERY_FLAVOR_REPLICATED
 							+ "=*)" //$NON-NLS-1$
 							+ "(" //$NON-NLS-1$
+							+ IDiscoveryConfig.ZOODISCOVERY_FLAVOR_REPLICATED
+							+ "=*)" //$NON-NLS-1$
+							+ "(" //$NON-NLS-1$
 							+ IDiscoveryConfig.ZOODISCOVERY_FLAVOR_STANDALONE
-							+ "=*)" + "(" //$NON-NLS-1$ //$NON-NLS-2$							
-							+ Constants.OBJECTCLASS + "=" //$NON-NLS-1$
-							+ IDiscoveryConfig.class.getName() + "))"); //$NON-NLS-1$
+							+ "=*))"); //$NON-NLS-1$
 				} catch (InvalidSyntaxException e) {
 					e.printStackTrace();
 				}
@@ -88,6 +94,7 @@ public class DiscoveryActivator implements BundleActivator {
 				confTracker.open(true);
 			}
 		});
+
 		Executors.newSingleThreadExecutor().execute(new Runnable() {
 			public void run() {
 				// track OSGi log services
@@ -109,6 +116,30 @@ public class DiscoveryActivator implements BundleActivator {
 				logServiceTraker.open(true);
 			}
 		});
+
+		new Thread(new Runnable() {
+			public void run() {
+
+				while (context.getBundle().getState() != Bundle.ACTIVE)
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+					}
+
+				if (System.getProperty("zoodiscovery."
+						+ DefaultDiscoveryConfig.ZOOKEEPER_AUTOSTART) != null) {
+					try {
+						// "ecf.discovery.zookeeper" is the container name we
+						// want to initiate.
+						IContainer container = ContainerFactory.getDefault()
+								.createContainer("ecf.discovery.zoodiscovery");
+						container.connect(null, null);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		}).start();
 
 		// prompt hi!
 		PrettyPrinter.prompt(PrettyPrinter.ACTIVATED, null);

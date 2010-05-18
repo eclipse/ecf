@@ -12,6 +12,7 @@ package org.eclipse.ecf.provider.zookeeper.core;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -68,18 +70,19 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 			this.internalProperties
 					.put(k, this.serviceReference.getProperty(k));
 		}
-		IServiceTypeID serviceTypeID = ServiceIDFactory
-				.getDefault()
+		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault()
 				.createServiceTypeID(
-						ZooDiscoveryContainer.getSingleton().getConnectNamespace(),
-						services, IServiceTypeID.DEFAULT_PROTO);
+						ZooDiscoveryContainer.getSingleton()
+								.getConnectNamespace(), services,
+						IServiceTypeID.DEFAULT_PROTO);
 		serviceTypeID = new ZooDiscoveryServiceTypeID(
 				(ZooDiscoveryNamespace) ZooDiscoveryContainer.getSingleton()
 						.getConnectNamespace(), serviceTypeID,
 				this.serviceReference.getProperty(Constants.SERVICE_ID)
 						.toString());
-		serviceID = new ZooDiscoveryServiceID(ZooDiscoveryContainer.getSingleton()
-				.getConnectNamespace(), serviceTypeID, Geo.getLocation());
+		serviceID = new ZooDiscoveryServiceID(ZooDiscoveryContainer
+				.getSingleton().getConnectNamespace(), serviceTypeID, Geo
+				.getLocation());
 
 		super.properties = new ServiceProperties(this.internalProperties);
 		// internal properties
@@ -97,6 +100,7 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 		publishedServices.put(serviceTypeID.getInternal(), this);
 	}
 
+	@SuppressWarnings("unchecked")
 	public AdvertisedService(IServiceInfo serviceInfo) {
 		super(serviceInfo.getLocation(), serviceInfo.getServiceName(),
 				serviceInfo.getServiceID().getServiceTypeID(), serviceInfo
@@ -104,6 +108,27 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 						.getServiceProperties());
 		this.uuid = UUID.randomUUID().toString();
 		// internal properties
+
+		Enumeration enumm = serviceInfo.getServiceProperties()
+				.getPropertyNames();
+		IServiceProperties sp = serviceInfo.getServiceProperties();
+
+		while (enumm.hasMoreElements()) {
+			String k = (String) enumm.nextElement();
+			Object value = sp.getProperty(k);
+			byte[] bytes = sp.getPropertyBytes(k);
+			if (value instanceof String
+					&& ((String) value).contains("localhost")) {//$NON-NLS-1$
+				this.internalProperties.put(k, ((String) value).replace(
+						"localhost",//$NON-NLS-1$
+						Geo.getHost()));
+				continue;
+			}
+
+			this.internalProperties.put(k, bytes == null ? value : "bytes:"
+					+ new String(bytes));
+		}
+
 		this.internalProperties
 				.put(NODE_PROPERTY_NAME_PROTOCOLS, arrayToString(getServiceID()
 						.getServiceTypeID().getProtocols()));

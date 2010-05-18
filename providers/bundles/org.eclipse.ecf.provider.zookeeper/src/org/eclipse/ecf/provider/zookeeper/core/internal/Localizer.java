@@ -129,7 +129,7 @@ public class Localizer {
 			}
 			// inform service type listeners
 			for (IServiceTypeListener stl : ZooDiscoveryContainer
-					.getSingleton().getSrviceTypeListeners()) {
+					.getSingleton().getServiceTypeListeners()) {
 				stl.serviceTypeDiscovered(notification);
 			}
 		} else if (notification.getType() == Notification.UNAVAILABLE) {

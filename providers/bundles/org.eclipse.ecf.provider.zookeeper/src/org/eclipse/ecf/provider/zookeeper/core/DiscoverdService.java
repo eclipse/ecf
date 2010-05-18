@@ -11,11 +11,13 @@
 package org.eclipse.ecf.provider.zookeeper.core;
 
 import java.net.URI;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
@@ -61,12 +63,32 @@ public class DiscoverdService extends ServiceInfo implements IService, INode {
 				.remove(INode.NODE_PROPERTY_NAME_PROTOCOLS);
 		String[] scopes = (String[]) this.props
 				.remove(INode.NODE_PROPERTY_NAME_SCOPE);
-		super.properties = new ServiceProperties(this.props);
+		super.properties = createServiceProperties(props);
 		this.serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(
 				ZooDiscoveryContainer.getSingleton().getConnectNamespace(),
 				services, scopes, protocols, na);
-		super.serviceID = new ZooDiscoveryServiceID(ZooDiscoveryContainer.getSingleton()
-				.getConnectNamespace(), serviceTypeID, this.location);
+		super.serviceID = new ZooDiscoveryServiceID(ZooDiscoveryContainer
+				.getSingleton().getConnectNamespace(), serviceTypeID,
+				this.location);
+	}
+
+	private IServiceProperties createServiceProperties(Properties props) {
+
+		ServiceProperties result = new ServiceProperties();
+		for (Enumeration<Object> enumm = props.keys(); enumm.hasMoreElements();) {
+			String k = (String) enumm.nextElement();
+			if (props.get(k) instanceof String) {
+				String value = (String) props.get(k);
+				if (value.startsWith("bytes:")) {
+					byte[] bytes = value.split("bytes:")[1].getBytes();
+					result.setPropertyBytes(k, bytes);
+				} else
+					result.setProperty(k, value);
+			} else
+				result.setProperty(k, props.get(k));
+		}
+
+		return result;
 	}
 
 	public Properties getProperties() {

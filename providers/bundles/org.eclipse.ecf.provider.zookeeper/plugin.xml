@@ -5,6 +5,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator"
+            description="Discovery Container"
             name="ecf.discovery.zoodiscovery">
       </containerFactory>
    </extension>

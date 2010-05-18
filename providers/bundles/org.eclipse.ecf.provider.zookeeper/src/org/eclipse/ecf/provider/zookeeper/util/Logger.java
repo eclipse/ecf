@@ -34,7 +34,7 @@ public class Logger {
 
 	public static void log(int level, String message, Exception e) {
 		if (logServices.isEmpty()) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return;
 		}
 		for (LogService ls : logServices) {
