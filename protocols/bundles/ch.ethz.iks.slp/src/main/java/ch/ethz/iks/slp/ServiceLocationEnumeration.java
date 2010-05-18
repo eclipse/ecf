@@ -31,9 +31,4 @@ public interface ServiceLocationEnumeration extends Enumeration {
      *             if there is no more result.
      */
     Object next() throws ServiceLocationException;
-    
-    /**
-	 * @since 1.1
-	 */
-    void testMethod();
 }
