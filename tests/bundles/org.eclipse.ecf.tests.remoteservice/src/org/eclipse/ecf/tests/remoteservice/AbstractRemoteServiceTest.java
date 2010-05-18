@@ -106,8 +106,10 @@ public abstract class AbstractRemoteServiceTest extends
 		try {
 			return adapter.getRemoteServiceReferences(target, clazz, filter);
 		} catch (final InvalidSyntaxException e) {
+			e.printStackTrace();
 			fail("should not happen");
 		} catch (final ContainerConnectException e) {
+			e.printStackTrace();
 			fail("connect problem");
 		}
 		return null;
@@ -249,7 +251,7 @@ public abstract class AbstractRemoteServiceTest extends
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
 				adapters[1], (ID) null, IConcatService.class.getName(),
-				getFilterFromServiceProperties(customizeProperties(props)));
+				getFilterFromServiceProperties(props));
 
 		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
