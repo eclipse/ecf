@@ -105,7 +105,7 @@ public class HelloConsumerApplication implements IApplication,
 		// This filter looks for IHello instances that have the 
 		// 'service.imported' property set, as specified by OSGi 4.2
 		// remote services spec (Chapter 13)
-		return bundleContext.createFilter("(|("
+		return bundleContext.createFilter("(&("
 				+ org.osgi.framework.Constants.OBJECTCLASS + "="
 				+ IHello.class.getName() + ")(" + SERVICE_IMPORTED + "=*))");
 	}
