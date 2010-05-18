@@ -45,7 +45,7 @@ public class DefaultProxyContainerFinder extends AbstractProxyContainerFinder
 		// Find any/all existing containers for the proxy that
 		// match the endpointID namespace and the remoteSupportedConfigs
 		Collection rsContainers = findExistingProxyContainers(endpointID,
-				remoteSupportedConfigs);
+				remoteSupportedConfigs, connectTargetID);
 
 		// If we haven't found any existing containers then we create one
 		// from the remoteSupportedConfigs...*iff* autoCreateContainer is

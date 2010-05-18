@@ -34,7 +34,7 @@ public abstract class AbstractProxyContainerFinder extends
 		AbstractContainerFinder {
 
 	protected Collection findExistingProxyContainers(ID endpointID,
-			String[] remoteSupportedConfigs) {
+			String[] remoteSupportedConfigs, ID connectTargetID) {
 
 		List results = new ArrayList();
 		// Get all containers available
@@ -51,14 +51,16 @@ public abstract class AbstractProxyContainerFinder extends
 			IRemoteServiceContainerAdapter adapter = hasRemoteServiceContainerAdapter(containers[i]);
 			// Container must have adapter
 			if (adapter != null
-			// And it must match the connect namespace
-					&& matchConnectNamespace(containers[i], endpointID)
+					// And it must match the connect namespace
+					&& matchConnectNamespace(containers[i], endpointID,
+							connectTargetID)
 					// and it must match the configs
 					&& matchProxySupportedConfigs(containers[i],
 							remoteSupportedConfigs)
 					// and the container should either not be connected or
 					// already be connected to the desired endpointID
-					&& matchNotConnected(containers[i], endpointID)) {
+					&& matchNotConnected(containers[i], endpointID,
+							connectTargetID)) {
 				trace("findExistingProxyContainers", //$NON-NLS-1$
 						"MATCH of existing remote service container id=" //$NON-NLS-1$
 								+ containers[i].getID()
@@ -84,11 +86,13 @@ public abstract class AbstractProxyContainerFinder extends
 		return results;
 	}
 
-	protected boolean matchNotConnected(IContainer container, ID endpointID) {
+	protected boolean matchNotConnected(IContainer container, ID endpointID,
+			ID connectTargetID) {
 		// if the container is not connected, OR it's connected to the desired
 		// endpointID already then we've got a match
 		ID connectedID = container.getConnectedID();
-		if (connectedID == null || connectedID.equals(endpointID))
+		if (connectedID == null || connectedID.equals(endpointID)
+				|| connectedID.equals(connectTargetID))
 			return true;
 		return false;
 	}

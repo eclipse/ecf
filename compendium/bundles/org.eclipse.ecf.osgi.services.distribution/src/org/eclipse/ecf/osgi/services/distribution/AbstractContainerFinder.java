@@ -219,7 +219,12 @@ public abstract class AbstractContainerFinder {
 				this.getClass(), message);
 	}
 
-	protected boolean matchConnectNamespace(IContainer container, ID endpointID) {
+	protected boolean matchConnectNamespace(IContainer container,
+			ID endpointID, ID connectTargetID) {
+		if (connectTargetID != null) {
+			return connectTargetID.getNamespace().getName()
+					.equals(container.getConnectNamespace().getName());
+		}
 		if (endpointID == null)
 			return false;
 		return endpointID.getNamespace().getName()
