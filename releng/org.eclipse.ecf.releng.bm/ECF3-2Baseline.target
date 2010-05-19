@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.6"?>
+
+<target includeMode="feature" name="ECF3-2Baseline">
+<locations>
+<location includeAllPlatforms="false" includeMode="slicer" type="InstallableUnit">
+<unit id="org.eclipse.ecf.core.feature.group" version="3.2.0.v20100220-1625"/>
+<repository location="http://build.ecf-project.org/repo/"/>
+</location>
+</locations>
+<includeBundles>
+<feature id="org.eclipse.ecf.core"/>
+</includeBundles>
+<launcherArgs>
+<vmArgs>-XX:PermSize=256M -XX:MaxPermSize=512M -XX:+UseParallelGC -Xms512m -Xmx1024m</vmArgs>
+</launcherArgs>
+</target>
