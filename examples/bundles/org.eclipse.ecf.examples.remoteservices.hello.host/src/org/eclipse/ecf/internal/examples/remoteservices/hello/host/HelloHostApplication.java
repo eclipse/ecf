@@ -10,6 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.examples.remoteservices.hello.host;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
@@ -21,6 +23,7 @@ import org.eclipse.ecf.osgi.services.distribution.IHostDistributionListener;
 import org.eclipse.ecf.osgi.services.distribution.LoggingHostDistributionListener;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -39,83 +42,107 @@ public class HelloHostApplication implements IApplication,
 	private boolean done = false;
 
 	private ServiceRegistration helloRegistration;
-	//private ServiceRegistration helloRegistration2;
+	private ServiceRegistration discoveryListenerRegistration;
+	private ServiceRegistration distributionListenerRegistration;
 	
 	public Object start(IApplicationContext appContext) throws Exception {
-		
 		bundleContext = Activator.getContext();
-		
-		
 		// Process Arguments
 		processArgs(appContext);
-		
-		// Register host discovery listener to log the publish/unpublish of remote services.  
-		// This LoggingHostDiscoveryListener logs the publication of OSGi remote services...so 
-		// that the discovery can be more easily debugged.
-		// Note that other IHostDiscoveryListener may be created and registered, and
-		// all will be notified of publish/unpublish events
-		bundleContext.registerService(IHostDiscoveryListener.class.getName(), new LoggingHostDiscoveryListener(), null);
-		
-		// Register host distribution listener to log the register/unregister of remote services.  
-		// This LoggingHostDistributionListener logs the register/unregister of OSGi remote services...so 
-		// that the distribution can be more easily debugged.
-		// Note that other IHostDistributionListener may be created and registered, and
-		// all will be notified of register/unregister events
-		bundleContext.registerService(IHostDistributionListener.class.getName(), new LoggingHostDistributionListener(), null);
-
-		helloRegistration =	startService(bundleContext, containerType, containerId);
-
-		// Register the console command
-		new HelloCommand(bundleContext, helloRegistration, containerType, containerId);
-		
+		// Register osgi discovery and distribution listeners
+		registerRemoteServiceListeners();
+		// Finally, register the actual remote service
+		registerHelloRemoteService();
+		// Register console provider. This adds 'start' and 'stop' commands to
+		// the OSGI console
+		// so that the hello remote service can be started/stopped
+		registerConsoleProvider();
 		// wait until stopped
 		waitForDone();
-
 		return IApplication.EXIT_OK;
 	}
 
-	public static ServiceRegistration startService(BundleContext bundleContext, String containerType, String containerId) {
-		// Setup properties for remote service distribution, as per OSGi 4.2 remote services
+	void registerHelloRemoteService() {
+		// Setup properties for remote service distribution, as per OSGi 4.2
+		// remote services
 		// specification (chap 13 in compendium spec)
 		Properties props = new Properties();
-		// add OSGi service property indicated export of all interfaces exposed by service (wildcard)
-		props.put(IDistributionConstants.SERVICE_EXPORTED_INTERFACES, IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD);
+		// add OSGi service property indicated export of all interfaces exposed
+		// by service (wildcard)
+		props.put(IDistributionConstants.SERVICE_EXPORTED_INTERFACES,
+				IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD);
 		// add OSGi service property specifying config
-		props.put(IDistributionConstants.SERVICE_EXPORTED_CONFIGS, containerType);
+		props.put(IDistributionConstants.SERVICE_EXPORTED_CONFIGS,
+				containerType);
 		// add ECF service property specifying container factory args
-		props.put(IDistributionConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS, containerId);
+		props.put(
+				IDistributionConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS,
+				containerId);
 		// register remote service
-		ServiceRegistration reg = bundleContext.registerService(IHello.class
-				.getName(), new Hello(), props);
+		helloRegistration = bundleContext.registerService(
+				IHello.class.getName(), new Hello(), props);
 		// tell everyone
 		System.out.println("Host: Hello Service Registered");
-		
-		return reg;
 	}
 
-	public static ServiceRegistration stopService(ServiceRegistration helloRegistration)
-	{
-		helloRegistration.unregister();
-
-		// tell everyone
-		System.out.println("Host: Hello Service Unregistered");
-		
-		return null;
-	}
-	public void stop() {
+	void unregisterHelloRemoteService() {
 		if (helloRegistration != null) {
 			helloRegistration.unregister();
 			helloRegistration = null;
 		}
-//		if (helloRegistration2 != null) {
-//			helloRegistration2.unregister();
-//			helloRegistration2 = null;
-//		}
+		// tell everyone
+		System.out.println("Host: Hello Remote Service Unregistered");
+	}
+
+	public void stop() {
+		unregisterHelloRemoteService();
+		if (discoveryListenerRegistration != null) {
+			discoveryListenerRegistration.unregister();
+			discoveryListenerRegistration = null;
+		}
+		if (distributionListenerRegistration != null) {
+			distributionListenerRegistration.unregister();
+			distributionListenerRegistration = null;
+		}
 		bundleContext = null;
 		synchronized (appLock) {
 			done = true;
 			appLock.notifyAll();
 		}
+	}
+
+	private void registerConsoleProvider() {
+		// Register the console hello start/stop command provider
+		HelloCommandProvider helloCommandProvider = new HelloCommandProvider(this);
+		Dictionary props = new Hashtable();
+		props.put(org.osgi.framework.Constants.SERVICE_RANKING, new Integer(
+				Integer.MAX_VALUE - 100));
+		bundleContext.registerService(CommandProvider.class.getName(),
+				helloCommandProvider, props);
+	}
+
+	private void registerRemoteServiceListeners() {
+		// Register host discovery listener to log the publish/unpublish of
+		// remote services.
+		// This LoggingHostDiscoveryListener logs the publication of OSGi remote
+		// services...so
+		// that the discovery can be more easily debugged.
+		// Note that other IHostDiscoveryListener may be created and registered,
+		// and
+		// all will be notified of publish/unpublish events
+		discoveryListenerRegistration = bundleContext.registerService(IHostDiscoveryListener.class.getName(),
+				new LoggingHostDiscoveryListener(), null);
+		// Register host distribution listener to log the register/unregister of
+		// remote services.
+		// This LoggingHostDistributionListener logs the register/unregister of
+		// OSGi remote services...so
+		// that the distribution can be more easily debugged.
+		// Note that other IHostDistributionListener may be created and
+		// registered, and
+		// all will be notified of register/unregister events
+		distributionListenerRegistration = bundleContext.registerService(
+				IHostDistributionListener.class.getName(),
+				new LoggingHostDistributionListener(), null);
 	}
 
 	private void processArgs(IApplicationContext appContext) {
