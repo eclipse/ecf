@@ -13,7 +13,6 @@ package org.eclipse.ecf.provider.zookeeper.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.zookeeper.ZooDefs;
 import org.eclipse.ecf.provider.zookeeper.util.Geo;
 
 /**

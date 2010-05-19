@@ -15,14 +15,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.zookeeper.AsyncCallback.ChildrenCallback;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.AsyncCallback.ChildrenCallback;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.provider.zookeeper.core.DiscoverdService;
 import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainer;
-import org.eclipse.ecf.provider.zookeeper.util.Geo;
 import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.osgi.service.log.LogService;
 
