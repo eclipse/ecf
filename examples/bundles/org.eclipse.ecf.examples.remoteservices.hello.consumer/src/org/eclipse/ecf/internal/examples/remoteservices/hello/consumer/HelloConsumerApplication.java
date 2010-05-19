@@ -32,6 +32,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -49,6 +50,8 @@ public class HelloConsumerApplication implements IApplication,
 	private boolean done = false;
 
 	private ServiceTracker helloServiceTracker;
+	private ServiceRegistration discoveryListenerRegistration;
+	private ServiceRegistration distributionListenerRegistration;
 
 	public Object start(IApplicationContext appContext) throws Exception {
 		// Set bundle context (for use with service trackers)
@@ -61,19 +64,8 @@ public class HelloConsumerApplication implements IApplication,
 		// upon discovery via the IProxyContainerFinder/DefaultProxyContainerFinder.  
 		getContainerFactory().createContainer(containerType);
 
-		// Register proxy discovery listener to log the publish/unpublish of remote services.  
-		// This LoggingProxyDiscoveryListener logs the publication of OSGi remote services...so 
-		// that the discovery can be more easily debugged.
-		// Note that other IProxyDiscoveryListeners may be created and registered, and
-		// all will be notified of publish/unpublish events
-		bundleContext.registerService(IProxyDiscoveryListener.class.getName(), new LoggingProxyDiscoveryListener(), null);
-		
-		// Register proxy distribution listener to log the register/unregister of remote services.  
-		// This LoggingProxyDistributionListener logs the register/unregister of OSGi remote services...so 
-		// that the distribution can be more easily debugged.
-		// Note that other IProxyDistributionListener may be created and registered, and
-		// all will be notified of register/unregister events
-		bundleContext.registerService(IProxyDistributionListener.class.getName(), new LoggingProxyDistributionListener(), null);
+		// Register osgi discovery and distribution listeners
+		registerRemoteServiceListeners();
 
 		// Create service tracker to track IHello instances that have the 'service.imported'
 		// property set (as defined by OSGi 4.2 remote services spec).
@@ -86,6 +78,21 @@ public class HelloConsumerApplication implements IApplication,
 		waitForDone();
 
 		return IApplication.EXIT_OK;
+	}
+
+	private void registerRemoteServiceListeners() {
+		// Register proxy discovery listener to log the publish/unpublish of remote services.  
+		// This LoggingProxyDiscoveryListener logs the publication of OSGi remote services...so 
+		// that the discovery can be more easily debugged.
+		// Note that other IProxyDiscoveryListeners may be created and registered, and
+		// all will be notified of publish/unpublish events
+		discoveryListenerRegistration = bundleContext.registerService(IProxyDiscoveryListener.class.getName(), new LoggingProxyDiscoveryListener(), null);
+		// Register proxy distribution listener to log the register/unregister of remote services.  
+		// This LoggingProxyDistributionListener logs the register/unregister of OSGi remote services...so 
+		// that the distribution can be more easily debugged.
+		// Note that other IProxyDistributionListener may be created and registered, and
+		// all will be notified of register/unregister events
+		distributionListenerRegistration = bundleContext.registerService(IProxyDistributionListener.class.getName(), new LoggingProxyDistributionListener(), null);
 	}
 
 	private void startLocalDiscoveryIfPresent() {
@@ -118,6 +125,14 @@ public class HelloConsumerApplication implements IApplication,
 		if (containerFactoryServiceTracker != null) {
 			containerFactoryServiceTracker.close();
 			containerFactoryServiceTracker = null;
+		}
+		if (discoveryListenerRegistration != null) {
+			discoveryListenerRegistration.unregister();
+			discoveryListenerRegistration = null;
+		}
+		if (distributionListenerRegistration != null) {
+			distributionListenerRegistration.unregister();
+			distributionListenerRegistration = null;
 		}
 		this.bundleContext = null;
 		synchronized (appLock) {
