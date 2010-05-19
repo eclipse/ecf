@@ -203,7 +203,8 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 							.setTxnLogFactory(fileTxnSnapLog);
 					ZooDiscoveryContainer.this.zooKeeperServer.setTickTime(conf
 							.getTickTime());
-					System.out.println(conf.getClientPort());
+					Logger.log(LogService.LOG_INFO,
+							"Zookeeper client port: " + conf.getClientPort(), null);//$NON-NLS-1$	
 					// ZooDiscoveryContainer.this.zooKeeperServer
 					// .setServerCnxnFactory(new NIOServerCnxn.Factory(
 					// new InetSocketAddress(conf.getServerPort())));
