@@ -39,6 +39,9 @@ public class PollingInputStream extends FilterInputStream {
 	private IProgressMonitor monitor;
 	private boolean cancellable;
 
+	private String readTimeoutMessage = "Timeout while reading input stream"; //$NON-NLS-1$
+	private String closeTimeoutMessage = "Timeout while closing input stream"; //$NON-NLS-1$
+
 	/**
 	 * Creates a new polling input stream.
 	 * 
@@ -56,6 +59,32 @@ public class PollingInputStream extends FilterInputStream {
 		this.numAttempts = numAttempts;
 		this.monitor = monitor;
 		this.cancellable = true;
+	}
+
+	/**
+	 * Creates a new polling input stream.
+	 * 
+	 * @param in
+	 *            the underlying input stream
+	 * @param numAttempts
+	 *            the number of attempts before issuing an
+	 *            InterruptedIOException, if 0, retries indefinitely until
+	 *            canceled
+	 * @param monitor
+	 *            the progress monitor to be polled for cancellation
+	 * @param readTimeoutMessage message to go with InteruptedIOException if read timeout
+	 * @param closeTimeoutMessage message to go with InteruptedIOException if close timeout
+	 * @since 3.1
+	 */
+	public PollingInputStream(InputStream in, int numAttempts, IProgressMonitor monitor, String readTimeoutMessage, String closeTimeoutMessage) {
+		super(in);
+		this.numAttempts = numAttempts;
+		this.monitor = monitor;
+		this.cancellable = true;
+		if (readTimeoutMessage != null)
+			this.readTimeoutMessage = readTimeoutMessage;
+		if (closeTimeoutMessage != null)
+			this.closeTimeoutMessage = closeTimeoutMessage;
 	}
 
 	/**
@@ -89,7 +118,7 @@ public class PollingInputStream extends FilterInputStream {
 					if (checkCancellation())
 						throw new OperationCanceledException();
 					if (++attempts == numAttempts)
-						throw new InterruptedIOException("Timeout while closing input stream"); //$NON-NLS-1$
+						throw new InterruptedIOException(closeTimeoutMessage);
 				} catch (IOException e) {
 					// ignore it - see
 					// https://bugs.eclipse.org/bugs/show_bug.cgi?id=203423#c10
@@ -99,7 +128,9 @@ public class PollingInputStream extends FilterInputStream {
 	}
 
 	private void logError(String message, IOException e) {
-		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, message, e));
+		Activator a = Activator.getDefault();
+		if (a != null)
+			a.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, message, e));
 	}
 
 	/**
@@ -123,7 +154,7 @@ public class PollingInputStream extends FilterInputStream {
 				return in.read();
 			} catch (InterruptedIOException e) {
 				if (++attempts == numAttempts)
-					throw new InterruptedIOException("Timeout while reading input stream"); //$NON-NLS-1$
+					throw new InterruptedIOException(readTimeoutMessage);
 			}
 		}
 	}
@@ -158,7 +189,7 @@ public class PollingInputStream extends FilterInputStream {
 				if (e.bytesTransferred != 0)
 					return e.bytesTransferred; // keep partial transfer
 				if (++attempts == numAttempts)
-					throw new InterruptedIOException("Timeout while reading input stream"); //$NON-NLS-1$
+					throw new InterruptedIOException(readTimeoutMessage);
 			}
 		}
 	}
@@ -188,7 +219,7 @@ public class PollingInputStream extends FilterInputStream {
 				if (e.bytesTransferred != 0)
 					return e.bytesTransferred; // keep partial transfer
 				if (++attempts == numAttempts)
-					throw new InterruptedIOException("Timeout while reading input stream"); //$NON-NLS-1$
+					throw new InterruptedIOException(readTimeoutMessage);
 			}
 		}
 	}
