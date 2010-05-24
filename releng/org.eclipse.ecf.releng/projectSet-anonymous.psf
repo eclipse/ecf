@@ -5,14 +5,10 @@
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/org.eclipse.ecf.releng,org.eclipse.ecf.releng"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/org.eclipse.ecf.releng.bm,org.eclipse.ecf.releng.bm"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/org.eclipse.ecf.releng.maps,org.eclipse.ecf.releng.maps"/>
-	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/org.eclipse.ecf.releng.server,org.eclipse.ecf.releng.server"/>
 
 	<!-- feature projects -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.core-feature,org.eclipse.ecf.core-feature"/>
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.example-feature,org.eclipse.ecf.example-feature"/>
-
-	<!-- updatesite project -->
-	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.updatesite,org.eclipse.ecf.updatesite"/>
 
 	<!-- framework projects -->
 	<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf,org.eclipse.ecf"/>
