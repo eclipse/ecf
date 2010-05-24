@@ -10,9 +10,6 @@
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.core-feature,org.eclipse.ecf.core-feature"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.example-feature,org.eclipse.ecf.example-feature"/>
 
-	<!-- updatesite project -->
-	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/releng/features/org.eclipse.ecf.updatesite,org.eclipse.ecf.updatesite"/>
-
 	<!-- framework projects -->
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf,org.eclipse.ecf"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/framework/bundles/org.eclipse.ecf.datashare,org.eclipse.ecf.datashare"/>
