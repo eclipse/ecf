@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.discovery.zookeeper.feature"
-      label="ECF Zookeeper Discovery Provider"
+      label="ECF Discovery Zookeeper Provider"
       version="1.0.0.qualifier"
       provider-name="%providerName">
 
@@ -12,7 +12,7 @@ implementation
 
    <copyright url="http://www.eclipse.org/legal/epl-v10.html">
       /*******************************************************************************
-*  Copyright (c)2010 REMAIN B.V. The Netherlands. (http://www.remainsoftware.com).
+*  Copyright (c)2010 REMAIN B.V. (http://www.remainsoftware.com).
 *  All rights reserved. This program and the accompanying materials
 *  are made available under the terms of the Eclipse Public License v1.0
 *  which accompanies this distribution, and is available at
