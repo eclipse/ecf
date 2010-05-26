@@ -3,15 +3,13 @@
 
 <product name="R-OSGi Zookeeper Hello Consumer" uid="org.eclipse.ecf.examples.remoteservices.rosgizookeeperhelloconsumer" application="org.eclipse.ecf.examples.remoteservices.hello.consumer.HelloConsumer" version="1.0.0" useFeatures="false" includeLaunchers="false">
 
-
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
       <programArgs>-console  -consoleLog</programArgs>
       <vmArgs>-Dzoodiscovery.autoStart=true;
--Dzoodiscovery.clientPort=2002
--Dzoodiscovery.flavor=zoodiscovery.flavor.standalone=localhost:2001
+-Dzoodiscovery.flavor=zoodiscovery.flavor.standalone=localhost:2001;clientPort=2002
 -Xms40m
 -Xmx512m</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
@@ -25,7 +23,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
