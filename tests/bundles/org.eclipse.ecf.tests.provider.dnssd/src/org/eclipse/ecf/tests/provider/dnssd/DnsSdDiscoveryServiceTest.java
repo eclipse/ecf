@@ -13,6 +13,7 @@ package org.eclipse.ecf.tests.provider.dnssd;
 import java.net.URI;
 import java.util.Properties;
 
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
@@ -26,8 +27,10 @@ import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 
 public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 
+	private static final String DOMAIN = "dnssd.ecf-project.org";
+	
 	public DnsSdDiscoveryServiceTest() {
-		this("ecf.discovery.dnssd", "kuppe.org", "http", "tcp");
+		this("ecf.discovery.dnssd", DOMAIN, "http", "tcp");
 	}
 
 	public DnsSdDiscoveryServiceTest(String string, String scopes,
@@ -48,17 +51,17 @@ public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 		super.setUp();
 		
 		final Properties props = new Properties();
-		final URI uri = URI.create("http://www.kuppe.org:80/blog");
+		final URI uri = URI.create("http://www.ecf-project.org:80/ecf");
 	
 		Namespace namespace = discoveryLocator.getServicesNamespace();
-		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(namespace, new String[]{"http"}, new String[]{"kuppe.org"}, new String[]{"tcp"}, "iana");
+		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(namespace, new String[]{"http"}, new String[]{DOMAIN}, new String[]{"tcp"}, "iana");
 		assertNotNull(serviceTypeID);
 		
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
-		serviceProperties.setPropertyString("path", "/blog");
+		serviceProperties.setPropertyString("path", "/");
 		serviceProperties.setPropertyString("dns-sd.ptcl", "http");
 
-		serviceInfo = new ServiceInfo(uri, "www.kuppe.org", serviceTypeID, 10, 0, serviceProperties);
+		serviceInfo = new ServiceInfo(uri, "www.ecf-project.org", serviceTypeID, 10, 0, serviceProperties);
 		assertNotNull(serviceInfo);
 	}
 
@@ -120,6 +123,39 @@ public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testUnregisterService()
 	 */
 	public void testUnregisterService() throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testGetAsyncServiceInfo()
+	 */
+	public void testGetAsyncServiceInfo() throws OperationCanceledException,
+			InterruptedException, ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testGetAsyncServices()
+	 */
+	public void testGetAsyncServices() throws ContainerConnectException,
+			OperationCanceledException, InterruptedException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testGetAsyncServicesIServiceTypeID()
+	 */
+	public void testGetAsyncServicesIServiceTypeID()
+			throws ContainerConnectException, OperationCanceledException,
+			InterruptedException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testGetAsyncServiceTypes()
+	 */
+	public void testGetAsyncServiceTypes() throws ContainerConnectException,
+			OperationCanceledException, InterruptedException {
 		// NOP, not applicable for DNS-SD
 	}
 
