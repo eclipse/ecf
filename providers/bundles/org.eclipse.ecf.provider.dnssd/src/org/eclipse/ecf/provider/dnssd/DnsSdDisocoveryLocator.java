@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
@@ -60,6 +61,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 * .ecf.discovery.identity.IServiceID)
 	 */
 	public IServiceInfo getServiceInfo(IServiceID aServiceId) {
+		Assert.isNotNull(aServiceId);
 		IServiceInfo[] services = getServices(aServiceId.getServiceTypeID());
 		for (int i = 0; i < services.length; i++) {
 			//TODO This can be a lot faster if done directly instead of via org.eclipse.ecf.provider.dnssrv.DnsSrvDisocoveryLocator.getServices(IServiceTypeID)
@@ -85,7 +87,9 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 		for (int i = 0; i < queries.length; i++) {
 			Lookup query = queries[i];
 			Record[] queryResult = query.run();
-			for (int j = 0; j < queryResult.length; j++) {
+			//TODO file bug upstream that queryResult may never be null
+			int length = queryResult == null ? 0 : queryResult.length;
+			for (int j = 0; j < length; j++) {
 				Record record = queryResult[j];
 				if(record instanceof PTRRecord) {
 					PTRRecord ptrRecord = (PTRRecord) record;
@@ -117,6 +121,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 * .discovery.identity.IServiceTypeID)
 	 */
 	public IServiceInfo[] getServices(IServiceTypeID aServiceTypeId) {
+		Assert.isNotNull(aServiceTypeId);
 		DnsSdServiceTypeID serviceTypeId = (DnsSdServiceTypeID) aServiceTypeId;
 		List srvRecords = getSRVRecords(serviceTypeId.getInternalQueries());
 		List serviceInfos = getServiceInfos(srvRecords);
@@ -128,7 +133,9 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 		for (int i = 0; i < queries.length; i++) {
 			Lookup query = queries[i];
 			Record[] queryResult = query.run();
-			for (int j = 0; j < queryResult.length; j++) {
+			//TODO file bug upstream that queryResult may never be null
+			int length = queryResult == null ? 0 : queryResult.length;
+			for (int j = 0; j < length; j++) {
 				Record[] srvQueryResult = null;
 				Record record = queryResult[j];
 				if(record instanceof PTRRecord) {
@@ -189,6 +196,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 * .ecf.discovery.IServiceInfo)
 	 */
 	public void registerService(IServiceInfo serviceInfo) {
+		Assert.isNotNull(serviceInfo);
 		// nop, we are just a Locator but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
 		throw new UnsupportedOperationException(
@@ -203,6 +211,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 * eclipse.ecf.discovery.IServiceInfo)
 	 */
 	public void unregisterService(IServiceInfo serviceInfo) {
+		Assert.isNotNull(serviceInfo);
 		// nop, we are just a Locator but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
 		throw new UnsupportedOperationException(
@@ -222,9 +231,12 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 			throw new ContainerConnectException("Already connected");
 		}
 		if(aTargetID == null || !(aTargetID instanceof DnsSdServiceTypeID)) {
+			//TODO move into the connect unit test part or make it configurable via config admin
+			// alternatively we simply fall back to the local search path 
+			// but we cannot require clients to call connect(...) with a target explicitly due to
+			// OSGi service factory
 			targetID = new DnsSdServiceTypeID();
-			//TODO remove after tutorial
-			targetID.setScope("eclipse.org");
+ 			targetID.setScope("dnssd.ecf-project.org");
 		} else {
 			targetID = (DnsSdServiceTypeID) aTargetID;
 		}
