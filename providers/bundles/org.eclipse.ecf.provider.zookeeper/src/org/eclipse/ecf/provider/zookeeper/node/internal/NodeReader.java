@@ -6,6 +6,7 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.node.internal;
@@ -29,10 +30,6 @@ import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
 import org.osgi.framework.Constants;
 import org.osgi.service.log.LogService;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class NodeReader implements Watcher,
 		org.apache.zookeeper.AsyncCallback.DataCallback {
 
@@ -111,8 +108,8 @@ public class NodeReader implements Watcher,
 					.getServiceTypeID().getName(), this.discovered);
 			PrettyPrinter.prompt(PrettyPrinter.REMOTE_AVAILABLE,
 					this.discovered);
-			 Localizer.getSingleton().localize(
-			 new Notification(this.discovered, Notification.AVAILABLE));
+			Localizer.getSingleton().localize(
+					new Notification(this.discovered, Notification.AVAILABLE));
 
 		} catch (IOException e) {
 			Logger.log(LogService.LOG_DEBUG, e.getMessage(), e);

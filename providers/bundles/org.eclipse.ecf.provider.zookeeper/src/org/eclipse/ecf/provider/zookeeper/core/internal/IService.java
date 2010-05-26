@@ -6,6 +6,7 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core.internal;
@@ -14,10 +15,6 @@ import java.util.Properties;
 
 import org.eclipse.ecf.discovery.IServiceInfo;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public interface IService extends IServiceInfo {
 
 	String LOCATION = "discovery.service.location"; //$NON-NLS-1$	

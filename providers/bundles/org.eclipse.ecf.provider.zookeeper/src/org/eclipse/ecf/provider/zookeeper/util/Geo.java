@@ -6,6 +6,7 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 
@@ -16,18 +17,15 @@ import java.net.URI;
 import java.net.UnknownHostException;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.provider.zookeeper.core.internal.Configurator;
 import org.eclipse.ecf.provider.zookeeper.node.internal.INode;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class Geo {
 
 	/**
 	 * @param path
 	 *            to be checked whether it's comes form local ZooKeeper server.
-	 *            As local nodes need not to be discovered.
+	 * 
 	 * @return <code>true</code> if local, <code>false</code> otherwise.
 	 */
 	public static boolean isLocal(String path) {
@@ -35,8 +33,21 @@ public class Geo {
 		Assert.isTrue(path.length() > INode.ROOT.length());
 		String[] parts = path.split(INode._URI_);
 		String host = parts[INode.URI_POSITION];
-		System.out.println("geo.islocal" + Geo.getHost() + " " + host);
 		return Geo.getHost().equals(host);
+	}
+
+	/**
+	 * @param childPath
+	 *            Child path to check whether is published by this very
+	 *            ZooDiscovery instance.
+	 * @return true if published by this container, false otherwise.
+	 */
+	public static boolean isOwnPublication(String childPath) {
+		Assert.isNotNull(childPath);
+		Assert.isTrue(childPath.length() > INode.ROOT.length());
+		String[] parts = childPath.split(INode._ZOODISCOVERYID_);
+		String id = parts[1];
+		return id.equals(Configurator.INSTANCE.getID().toString());
 	}
 
 	public static URI getLocation() {

@@ -6,7 +6,8 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
- *     Ahmed Aadel - initial API and implementation     
+ *    Wim Jongman - initial API and implementation 
+ *    Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core;
 
@@ -19,10 +20,6 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.osgi.util.NLS;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class ZooDiscoveryNamespace extends Namespace {
 
 	private static final long serialVersionUID = 3925693055869405334L;

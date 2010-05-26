@@ -6,18 +6,17 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core;
 
 import java.net.URI;
-import java.util.Enumeration;
 import java.util.Properties;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
@@ -30,40 +29,32 @@ import org.eclipse.ecf.provider.zookeeper.util.Geo;
 import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
 import org.osgi.framework.Constants;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
-
 public class DiscoverdService extends ServiceInfo implements IService, INode {
 
 	private static final long serialVersionUID = 3072424087109599612L;
-	private Properties props = new Properties();
 	private String uuid;
 	private URI location;
 	private IServiceTypeID serviceTypeID;
+	private Properties props;
 
-	public DiscoverdService(String path, Properties ps) {
-		Assert.isNotNull(ps);
+	public DiscoverdService(String path, Properties propMap) {
+		Assert.isNotNull(propMap);
 		this.uuid = path.split(INode._URI_)[0];
-		this.props = ps;
-		this.location = URI.create((String) this.props
-				.remove(IService.LOCATION));
-		super.priority = Integer.parseInt((String) this.props
+		this.location = URI.create((String) propMap.remove(IService.LOCATION));
+		super.priority = Integer.parseInt((String) propMap
 				.remove(IService.PRIORITY));
-		super.weight = Integer.parseInt((String) this.props
+		super.weight = Integer.parseInt((String) propMap
 				.remove(IService.WEIGHT));
-		String[] services = (String[]) this.props.remove(Constants.OBJECTCLASS);
+		String[] services = (String[]) propMap.remove(Constants.OBJECTCLASS);
 		if (services == null) {
-			services = (String[]) this.props
-					.remove(INode.NODE_PROPERTY_SERVICES);
+			services = (String[]) propMap.remove(INode.NODE_PROPERTY_SERVICES);
 		}
-		String na = (String) this.props.remove(INode.NODE_PROPERTY_NAME_NA);
-		String[] protocols = (String[]) this.props
+		String na = (String) propMap.remove(INode.NODE_PROPERTY_NAME_NA);
+		String[] protocols = (String[]) propMap
 				.remove(INode.NODE_PROPERTY_NAME_PROTOCOLS);
-		String[] scopes = (String[]) this.props
+		String[] scopes = (String[]) propMap
 				.remove(INode.NODE_PROPERTY_NAME_SCOPE);
-		super.properties = createServiceProperties(props);
+		super.properties = createServiceProperties(propMap);
 		this.serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(
 				ZooDiscoveryContainer.getSingleton().getConnectNamespace(),
 				services, scopes, protocols, na);
@@ -72,22 +63,18 @@ public class DiscoverdService extends ServiceInfo implements IService, INode {
 				this.location);
 	}
 
-	private IServiceProperties createServiceProperties(Properties props) {
-
+	private ServiceProperties createServiceProperties(Properties props) {
 		ServiceProperties result = new ServiceProperties();
-		for (Enumeration<Object> enumm = props.keys(); enumm.hasMoreElements();) {
-			String k = (String) enumm.nextElement();
-			if (props.get(k) instanceof String) {
-				String value = (String) props.get(k);
-				if (value.startsWith("bytes:")) {
-					byte[] bytes = value.split("bytes:")[1].getBytes();
-					result.setPropertyBytes(k, bytes);
-				} else
-					result.setProperty(k, value);
-			} else
-				result.setProperty(k, props.get(k));
+		for (Object k : props.keySet()) {
+			Object value = (String) props.get(k);
+			if (((String) k).startsWith(INode._BYTES_)) {
+				result.setPropertyBytes(((String) k).split(INode._BYTES_)[1],
+						(value + "").getBytes());
+				continue;
+			}
+			result.setProperty((String) k, value);
 		}
-
+		this.props = result.asProperties();
 		return result;
 	}
 

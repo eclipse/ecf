@@ -1,3 +1,14 @@
+/*******************************************************************************
+ *  Copyright (c)2010 REMAIN B.V. The Netherlands. (http://www.remainsoftware.com).
+ *  All rights reserved. This program and the accompanying materials
+ *  are made available under the terms of the Eclipse Public License v1.0
+ *  which accompanies this distribution, and is available at
+ *  http://www.eclipse.org/legal/epl-v10.html
+ * 
+ *  Contributors:
+ *    Wim Jongman - initial API and implementation 
+ *    Ahmed Aadel - initial API and implementation     
+ *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core.internal;
 
 import java.io.File;
@@ -23,16 +34,19 @@ import org.osgi.service.log.LogService;
 public class Configuration extends DefaultDiscoveryConfig {
 
 	private File zooConfFile;
-	private File zookeeperData;
+	private File zookeeperDataFile;
 	private ServiceReference reference;
 	private List<String> serverIps = new ArrayList<String>();
 	private FLAVOR flavor;
+	private static final String LOCALHOST = "localhost";//$NON-NLS-1$
 
 	public Configuration(ServiceReference reference) {
 		Assert.isNotNull(reference);
 		Set<String> legalKeys = getConfigProperties().keySet();
 		for (String key : reference.getPropertyKeys()) {
-			if (legalKeys.contains(key) || key.startsWith("zoodiscovery"))
+			if (legalKeys.contains(key)
+					|| key
+							.startsWith(DefaultDiscoveryConfig.ZOODISCOVERY_PREFIX))
 				getConfigProperties().put(key, reference.getProperty(key));
 		}
 	}
@@ -46,7 +60,7 @@ public class Configuration extends DefaultDiscoveryConfig {
 		String ss[] = propsAsString.split(";");//$NON-NLS-1$
 		for (String s : ss) {
 			String key_value[] = s.split("=");//$NON-NLS-1$
-			getConfigProperties().put(key_value[0], key_value[1]);
+			defaultConfigProperties.put(key_value[0], key_value[1]);
 		}
 	}
 
@@ -54,15 +68,15 @@ public class Configuration extends DefaultDiscoveryConfig {
 		PrintWriter writer = null;
 		boolean isNewZookeeperData = false;
 		try {
-			setZookeeperData(new File(getConfigProperties().get(
-					ZOOKEEPER_TEMPDIR).toString()
-					+ getConfigProperties().get(ZOOKEEPER_DATADIR)));
-			isNewZookeeperData = getZookeeperData().mkdir();
-			getZookeeperData().deleteOnExit();
+			this.zookeeperDataFile = new File(new File(getConfigProperties()
+					.get(ZOOKEEPER_TEMPDIR).toString()),
+					(String) getConfigProperties().get(ZOOKEEPER_DATADIR));
+			isNewZookeeperData = this.zookeeperDataFile.mkdir();
+			this.zookeeperDataFile.deleteOnExit();
 			if (!isNewZookeeperData) {
 				clean();
 			}
-			this.zooConfFile = new File(getZookeeperData() + "/zoo.cfg");//$NON-NLS-1$
+			this.zooConfFile = new File(this.zookeeperDataFile, "zoo.cfg");//$NON-NLS-1$
 			this.zooConfFile.createNewFile();
 			this.zooConfFile.deleteOnExit();
 			if (getConfigProperties().containsKey(
@@ -70,9 +84,9 @@ public class Configuration extends DefaultDiscoveryConfig {
 				this.setFlavor(FLAVOR.CENTRALIZED);
 				this.serverIps = parseIps();
 				if (this.serverIps.size() != 1) {
-					String msg = "Industrial Discovery property "
+					String msg = "ZooDiscovery property "
 							+ ZOODISCOVERY_FLAVOR_CENTRALIZED
-							+ " must contain exactly one ip address";
+							+ " must contain exactly one IP address designating the location of the ZooDiscovery instance playing this central role.";
 					Logger.log(LogService.LOG_ERROR, msg, null);
 					throw new ServiceException(msg);
 
@@ -82,10 +96,6 @@ public class Configuration extends DefaultDiscoveryConfig {
 					ZOODISCOVERY_FLAVOR_REPLICATED)) {
 				this.setFlavor(FLAVOR.REPLICATED);
 				this.serverIps = parseIps();
-				this.serverIps.remove("localhost"); //$NON-NLS-1$	
-
-				// FIXME could contain host:port so this would not match
-				// correctly
 				if (!this.serverIps.contains(Geo.getHost())) {
 					this.serverIps.add(Geo.getHost());
 				}
@@ -102,22 +112,12 @@ public class Configuration extends DefaultDiscoveryConfig {
 					ZOODISCOVERY_FLAVOR_STANDALONE)) {
 				this.setFlavor(FLAVOR.STANDALONE);
 				this.serverIps = parseIps();
-				this.serverIps.remove("localhost"); //$NON-NLS-1$						
-
 			}
-
-			getConfigProperties().put(ZOOKEEPER_DATADIR,
-			/*
-			 * zooKeeper seems not understanding Windows file backslash !!
-			 */
-			getZookeeperData().getAbsolutePath().replace("\\", "/"));//$NON-NLS-1$ //$NON-NLS-2$
-			getConfigProperties().put(ZOOKEEPER_DATALOGDIR,
-					getZookeeperData().getAbsolutePath().replace("\\", "/"));//$NON-NLS-1$ //$NON-NLS-2$
 			Collections.sort(this.serverIps);
 			if (this.isQuorum()) {
 				String myip = Geo.getHost();
 				int myId = this.serverIps.indexOf(myip);
-				File myIdFile = new File(getZookeeperData() + "/myid");//$NON-NLS-1$
+				File myIdFile = new File(getZookeeperDataFile(), "myid");//$NON-NLS-1$
 				myIdFile.createNewFile();
 				myIdFile.deleteOnExit();
 				writer = new PrintWriter(myIdFile);
@@ -137,7 +137,7 @@ public class Configuration extends DefaultDiscoveryConfig {
 				}
 			}
 			for (String k : getConfigProperties().keySet()) {
-				if (k.startsWith("zoodiscovery")) {//$NON-NLS-1$
+				if (k.startsWith(ZOODISCOVERY_PREFIX)) {
 					/*
 					 * Ignore properties that are not intended for ZooKeeper
 					 * internal configuration
@@ -175,20 +175,16 @@ public class Configuration extends DefaultDiscoveryConfig {
 	}
 
 	public int getClientPort() {
-		return Integer.parseInt(getConfigProperties().get(ZOOKEEPER_CLIENTPORT)
-				+ "");//$NON-NLS-1$
+		return Integer.parseInt((String) getConfigProperties().get(
+				ZOOKEEPER_CLIENTPORT));
 	}
 
 	public List<String> getServerIpsAsList() {
 		return this.serverIps;
 	}
 
-	public void setZookeeperData(File zookeeperData) {
-		this.zookeeperData = zookeeperData;
-	}
-
-	public File getZookeeperData() {
-		return this.zookeeperData;
+	public File getZookeeperDataFile() {
+		return this.zookeeperDataFile;
 	}
 
 	public void setFlavor(FLAVOR flavor) {
@@ -216,7 +212,7 @@ public class Configuration extends DefaultDiscoveryConfig {
 	}
 
 	private void clean() {
-		for (File file : this.zookeeperData.listFiles()) {
+		for (File file : this.zookeeperDataFile.listFiles()) {
 			try {
 				if (file.isDirectory()) {
 					for (File f : file.listFiles())
@@ -230,9 +226,14 @@ public class Configuration extends DefaultDiscoveryConfig {
 	}
 
 	private List<String> parseIps() {
-		List<String> l = Arrays.asList(((String) getConfigProperties().get(
+		List<String> ips = Arrays.asList(((String) getConfigProperties().get(
 				flavor.toString())).split(","));//$NON-NLS-1$
-		List<String> unfixedSize = new ArrayList<String>(l);
+		List<String> unfixedSize = new ArrayList<String>();
+		for (String ip : ips) {
+			if (ip.contains(LOCALHOST))
+				ip = ip.replace(LOCALHOST, Geo.getHost());
+			unfixedSize.add(ip);
+		}
 		Collections.sort(unfixedSize);
 		return unfixedSize;
 	}
@@ -245,11 +246,13 @@ public class Configuration extends DefaultDiscoveryConfig {
 	}
 
 	public int getTickTime() {
-		return ((Integer) getConfigProperties().get(ZOOKEEPER_TICKTIME));
+		return Integer.parseInt((String) getConfigProperties().get(
+				ZOOKEEPER_TICKTIME));
 	}
 
 	public int getServerPort() {
-		return ((Integer) getConfigProperties().get(ZOOKEEPER_SERVER_PORT));
+		return Integer.parseInt((String) getConfigProperties().get(
+				ZOOKEEPER_SERVER_PORT));
 	}
 
 }

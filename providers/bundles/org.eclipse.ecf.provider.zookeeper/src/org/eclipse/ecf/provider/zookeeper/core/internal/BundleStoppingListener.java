@@ -6,14 +6,11 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core.internal;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public interface BundleStoppingListener {
 	void bundleStopping();
 

@@ -6,6 +6,7 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core;
@@ -16,10 +17,6 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class ZooDiscoveryServiceID extends ServiceID {
 
 	private static final long serialVersionUID = 1185925207835288995L;

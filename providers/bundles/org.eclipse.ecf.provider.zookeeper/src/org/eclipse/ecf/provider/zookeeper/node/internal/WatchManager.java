@@ -6,6 +6,7 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.node.internal;
@@ -31,22 +32,24 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class WatchManager implements BundleStoppingListener {
 
-	private List<ZooKeeper> zooKeepers = new ArrayList<ZooKeeper>();
-	private Map<String, NodeWriter> nodeWriters = new HashMap<String, NodeWriter>();
-	private static Map<String, IServiceInfo> allKnownServices = new HashMap<String, IServiceInfo>();
+	private List<ZooKeeper> zooKeepers;
+	private Map<String, NodeWriter> nodeWriters;
+	private Map<String, IServiceInfo> allKnownServices;
 	private Configuration config;
 	private WriteRoot writeRoot;
-	private Lock writeRootLock = new Lock().lock();
+	private Lock writeRootLock;
+	private boolean isDisposed;
 
 	public WatchManager(Configuration config) {
 		this.config = config;
 		DiscoveryActivator.registerBundleStoppingListner(this);
+		zooKeepers = new ArrayList<ZooKeeper>();
+		nodeWriters = new HashMap<String, NodeWriter>();
+		allKnownServices = new HashMap<String, IServiceInfo>();
+		writeRootLock = new Lock().lock();
+		isDisposed = false;
 	}
 
 	public synchronized void publish(final ServiceReference ref) {
@@ -140,8 +143,7 @@ public class WatchManager implements BundleStoppingListener {
 			ZooDiscoveryContainer.CACHED_THREAD_POOL.execute(new Runnable() {
 				public void run() {
 					WatchManager.this.writeRoot = new WriteRoot(getConfig()
-							.getServerIps(),
-							WatchManager.this);
+							.getServerIps(), WatchManager.this);
 					synchronized (WatchManager.this.writeRootLock) {
 						WatchManager.this.writeRootLock.unlock();
 						WatchManager.this.writeRootLock.notifyAll();
@@ -158,7 +160,7 @@ public class WatchManager implements BundleStoppingListener {
 		case STANDALONE:
 			ZooDiscoveryContainer.CACHED_THREAD_POOL.execute(new Runnable() {
 				public void run() {
-					WatchManager.this.writeRoot = new WriteRoot(Geo.getHost() + ":" + getConfig().getClientPort() ,
+					WatchManager.this.writeRoot = new WriteRoot(Geo.getHost(),
 							WatchManager.this);
 					if (!WatchManager.this.writeRoot.isConnected()) {
 						synchronized (WatchManager.this.writeRoot) {
@@ -193,21 +195,31 @@ public class WatchManager implements BundleStoppingListener {
 	}
 
 	public void bundleStopping() {
+		this.dispose();
+	}
+
+	public void dispose() {
 		try {
-			Set<NodeWriter> copy = new HashSet<NodeWriter>();
-			copy.addAll(this.getNodeWriters().values());
-			for (NodeWriter nw : copy) {
-				if (nw.getNode().isLocalNode())
-					nw.remove();
+			isDisposed = true;
+			unpublishAll();
+			if (!this.getNodeWriters().isEmpty()) {
+				Set<NodeWriter> copy = new HashSet<NodeWriter>();
+				copy.addAll(this.getNodeWriters().values());
+				for (NodeWriter nw : copy) {
+					if (nw.getNode().isLocalNode())
+						nw.remove();
+				}
+				copy.clear();
 			}
-			copy.clear();
 			for (ZooKeeper zk : this.zooKeepers) {
 				if (zk != null)
 					zk.close();
 			}
-		} catch (InterruptedException e) {
+			this.zooKeepers.clear();
+		} catch (Throwable e) {
 			// Ignore. We're already down at this point.
 		}
+
 	}
 
 	public void setConfig(Configuration config) {
@@ -273,16 +285,12 @@ public class WatchManager implements BundleStoppingListener {
 		}
 	}
 
-	public static Map<String, IServiceInfo> getAllKnownServices() {
+	public Map<String, IServiceInfo> getAllKnownServices() {
 		return allKnownServices;
 	}
 
-	public void dipose() {
-		unpublishAll();
-		try {
-			getWriteRoot().getWriteKeeper().close();
-		} catch (Throwable e) {
-			// ignore
-		}
+	public boolean isDisposed() {
+		return this.isDisposed;
 	}
+
 }

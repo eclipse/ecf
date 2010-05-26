@@ -6,7 +6,8 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
- *     Ahmed Aadel - initial API and implementation     
+ *    Wim Jongman - initial API and implementation 
+ *    Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core;
 
@@ -16,11 +17,8 @@ import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
-public class ZooDiscoveryContainerInstantiator implements IContainerInstantiator {
+public class ZooDiscoveryContainerInstantiator implements
+		IContainerInstantiator {
 
 	public static final String NAME = "ecf.discovery.zoodiscovery"; //$NON-NLS-1$
 

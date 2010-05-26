@@ -6,7 +6,8 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
- *     Ahmed Aadel - initial API and implementation     
+ *    Wim Jongman - initial API and implementation 
+ *    Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core;
 
@@ -20,22 +21,17 @@ import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
+import org.eclipse.ecf.provider.zookeeper.core.internal.Configurator;
 import org.eclipse.ecf.provider.zookeeper.core.internal.IService;
 import org.eclipse.ecf.provider.zookeeper.node.internal.INode;
 import org.eclipse.ecf.provider.zookeeper.util.Geo;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 
 /**
  * Encapsulate a service to be advertised and made visible for discovery. An
@@ -111,12 +107,11 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 
 		Enumeration enumm = serviceInfo.getServiceProperties()
 				.getPropertyNames();
-		IServiceProperties sp = serviceInfo.getServiceProperties();
-
 		while (enumm.hasMoreElements()) {
 			String k = (String) enumm.nextElement();
-			Object value = sp.getProperty(k);
-			byte[] bytes = sp.getPropertyBytes(k);
+			Object value = serviceInfo.getServiceProperties().getProperty(k);
+			byte[] bytes = serviceInfo.getServiceProperties().getPropertyBytes(
+					k);
 			if (value instanceof String
 					&& ((String) value).contains("localhost")) {//$NON-NLS-1$
 				this.internalProperties.put(k, ((String) value).replace(
@@ -124,9 +119,12 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 						Geo.getHost()));
 				continue;
 			}
+			if (bytes != null) {
+				this.internalProperties.put(INode._BYTES_ + k, new String(bytes));
+			} else {
+				this.internalProperties.put(k, value);
+			}
 
-			this.internalProperties.put(k, bytes == null ? value : "bytes:"
-					+ new String(bytes));
 		}
 
 		this.internalProperties
@@ -203,7 +201,9 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 	}
 
 	public String getPath() {
-		return getNodeId() + INode._URI_ + Geo.getHost();
+		return getNodeId() + INode._URI_ + Geo.getHost()
+				+ INode._ZOODISCOVERYID_
+				+ Configurator.INSTANCE.getID().toString();
 	}
 
 	public String getAbsolutePath() {

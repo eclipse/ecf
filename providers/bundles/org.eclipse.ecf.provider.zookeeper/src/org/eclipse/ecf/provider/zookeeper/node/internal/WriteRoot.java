@@ -6,6 +6,7 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 
@@ -22,15 +23,11 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.osgi.service.log.LogService;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 class WriteRoot implements Watcher {
 	private ZooKeeper writeKeeper;
 	private String ip;
 	private WatchManager watchManager;
-	private boolean isConnected = false;
+	private boolean isConnected;
 
 	WriteRoot(String ip, WatchManager watchManager) {
 		Assert.isNotNull(ip);
@@ -65,12 +62,7 @@ class WriteRoot implements Watcher {
 	}
 
 	private void connect() {
-		/*
-		 * this.isConnected = this.writeKeeper != null &&
-		 * this.writeKeeper.getState() == ZooKeeper.States.CONNECTED &
-		 * this.writeKeeper.getState() != ZooKeeper.States.CONNECTING;
-		 */
-		if (this.isConnected) {
+		if (this.isConnected || watchManager.isDisposed()) {
 			return;
 		}
 		try {
@@ -88,8 +80,27 @@ class WriteRoot implements Watcher {
 
 	private void initWriteKeeper() {
 		try {
+			if (watchManager.getConfig().isQuorum()
+					|| watchManager.getConfig().isStandAlone()) {
+				// we write nodes locally but we should check for client port.
+				int port = watchManager.getConfig().getClientPort();
+				if (port != 0)
+					ip += ":" + port;//$NON-NLS-1$
+			} else if (watchManager.getConfig().isCentralized()) {
+				// we write nodes to the machine with this specified IP address.
+				ip = watchManager.getConfig().getServerIps();
+			}
 			this.writeKeeper = new ZooKeeper(this.ip, 3000, this);
 			while (!this.isConnected) {
+				if (watchManager.isDisposed()) {
+					// no need for connecting, we're disposed.
+					try {
+						this.writeKeeper.close();
+					} catch (Throwable t) {
+						// ignore
+					}
+					break;
+				}
 				try {
 					Stat s = this.writeKeeper.exists(INode.ROOT, this);
 					this.isConnected = true;

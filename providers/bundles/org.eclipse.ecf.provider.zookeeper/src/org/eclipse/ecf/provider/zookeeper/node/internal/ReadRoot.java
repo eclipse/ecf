@@ -6,6 +6,7 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.node.internal;
@@ -15,20 +16,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.zookeeper.AsyncCallback.ChildrenCallback;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.AsyncCallback.ChildrenCallback;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.provider.zookeeper.core.DiscoverdService;
 import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainer;
+import org.eclipse.ecf.provider.zookeeper.util.Geo;
 import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.osgi.service.log.LogService;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class ReadRoot implements Watcher, ChildrenCallback {
 	ZooKeeper readKeeper;
 	String ip;
@@ -50,6 +48,8 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 	}
 
 	public synchronized void process(final WatchedEvent event) {
+		if (watchManager.isDisposed())
+			return;
 		ZooDiscoveryContainer.CACHED_THREAD_POOL.execute(new Runnable() {
 			public void run() {
 				switch (event.getState()) {
@@ -96,12 +96,7 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 	}
 
 	private synchronized void connect() {
-
-		// this.isConnected = this.readKeeper != null &&
-		// this.readKeeper.getState() == ZooKeeper.States.CONNECTED &
-		// this.readKeeper.getState() != ZooKeeper.States.CONNECTING;
-
-		if (this.isConnected) {
+		if (this.isConnected || watchManager.isDisposed()) {
 			return;
 		}
 		try {
@@ -123,11 +118,9 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 	public synchronized void processResult(int rc, final String path,
 			Object ctx, final List<String> children) {
 
-		// FIXME race condition when two servers run on the same machine
-//		try {
-//			Thread.sleep(100);
-//		} catch (InterruptedException e) {
-//		}
+		if (watchManager.isDisposed()) {
+			return;
+		}
 
 		ZooDiscoveryContainer.CACHED_THREAD_POOL.execute(new Runnable() {
 			public void run() {
@@ -138,10 +131,10 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 					return;
 				}
 				for (String p : children) {
-					// if (Geo.isLocal(p)) {
-					// /* locals need not to be discovered */
-					// continue;
-					// }
+					if (Geo.isOwnPublication(p)) {
+						/* own publications need not to be discovered */
+						continue;
+					}
 					if (!ReadRoot.this.nodeReaders.containsKey(p)) {
 						/* launch a new reader to handle this node's data */
 						NodeReader nr = new NodeReader(p, ReadRoot.this);

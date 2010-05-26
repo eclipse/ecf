@@ -6,6 +6,7 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.util;
@@ -17,10 +18,6 @@ import org.eclipse.ecf.provider.zookeeper.DiscoveryActivator;
 import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainer;
 import org.osgi.service.log.LogService;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class Logger {
 	private static Set<LogService> logServices = new HashSet<LogService>();
 
@@ -34,7 +31,11 @@ public class Logger {
 
 	public static void log(int level, String message, Exception e) {
 		if (logServices.isEmpty()) {
-			//e.printStackTrace();
+			if (e == null)
+				System.err.println(message);
+			else
+				e.printStackTrace();
+
 			return;
 		}
 		for (LogService ls : logServices) {

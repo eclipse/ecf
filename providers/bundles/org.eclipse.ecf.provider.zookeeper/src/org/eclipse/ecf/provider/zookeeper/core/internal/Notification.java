@@ -6,7 +6,8 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
- *     Ahmed Aadel - initial API and implementation     
+ *    Wim Jongman - initial API and implementation 
+ *    Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core.internal;
 
@@ -17,10 +18,6 @@ import org.eclipse.ecf.discovery.IServiceTypeEvent;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainer;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class Notification implements IServiceEvent, IServiceTypeEvent {
 
 	/**
@@ -59,7 +56,7 @@ public class Notification implements IServiceEvent, IServiceTypeEvent {
 		return discoverdService;
 	}
 
-	public ID getLocalContainerID() {		
+	public ID getLocalContainerID() {
 		return ZooDiscoveryContainer.getSingleton().getID();
 	}
 

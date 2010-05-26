@@ -13,10 +13,6 @@ package org.eclipse.ecf.provider.zookeeper.core;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.provider.zookeeper.core.internal.Configurator;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class ZooDiscoveryTargetID extends BaseID {
 
 	private static final long serialVersionUID = 8563343828552001351L;

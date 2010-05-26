@@ -6,6 +6,7 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
+ *     Wim Jongman - initial API and implementation 
  *     Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core.internal;
@@ -21,10 +22,6 @@ import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
 import org.eclipse.ecf.provider.zookeeper.core.IDiscoveryConfig;
 import org.osgi.framework.ServiceReference;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class Configurator extends DiscoveryContainerConfig {
 
 	private File zooConfFile;

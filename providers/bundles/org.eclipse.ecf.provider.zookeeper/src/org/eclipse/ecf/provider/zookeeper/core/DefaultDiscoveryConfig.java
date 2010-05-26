@@ -6,28 +6,25 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
- *     Ahmed Aadel - initial API and implementation     
+ *     Wim Jongman - initial API and implementation 
+ *     Ahmed Aadel - initial API and implementation    
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.ecf.provider.zookeeper.util.Geo;
 
 /**
- * @author Ahmed Aadel
- * @since 0.1
- */
-/**
  * Default implementation of <code>IDiscoveryConfig</code>. Since this is
  * zookeeper related code, check the net for the zookeeper administration guide
- * 
- * @since 1.0.0
- */
+ * */
+
 public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 
-	private Map<String, Object> defaultConfigProperties = new HashMap<String, Object>();
+	protected static Map<String, Object> defaultConfigProperties = new HashMap<String, Object>();
 
 	/*
 	 * ====================================================================
@@ -40,7 +37,7 @@ public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 	 * 
 	 * @since 1.0.0
 	 */
-	public static final String DEFAULT_FLAVOR = IDiscoveryConfig.ZOODISCOVERY_FLAVOR_STANDALONE// .ZOODISCOVERY_FLAVOR_STANDALONE
+	public static final String DEFAULT_FLAVOR = IDiscoveryConfig.ZOODISCOVERY_FLAVOR_STANDALONE
 			+ "=" + Geo.getLocation();//$NON-NLS-1$
 
 	/**
@@ -87,7 +84,7 @@ public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 	 * 
 	 * @since 1.0.0
 	 */
-	public static final int SERVER_PORT_DEFAULT = 2888;
+	public static final String SERVER_PORT_DEFAULT = "2888";//$NON-NLS-1$		
 
 	/**
 	 * The election port default. Can be controlled by either providing
@@ -99,7 +96,7 @@ public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 	 * 
 	 * @since 1.0.0
 	 */
-	public static final int ELECTION_PORT_DEFAULT = 3888;
+	public static final String ELECTION_PORT_DEFAULT = "3888";//$NON-NLS-1$		
 
 	/**
 	 * The client port default. Can be controlled by either providing
@@ -111,7 +108,7 @@ public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 	 * 
 	 * @since 1.0.0
 	 */
-	public static final int CLIENT_PORT_DEFAULT = 2181;
+	public static final String CLIENT_PORT_DEFAULT = "2181";//$NON-NLS-1$		
 
 	/**
 	 * The tick time default. the length of a single tick, which is the basic
@@ -127,7 +124,7 @@ public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 	 * 
 	 * @since 1.0.0
 	 */
-	public static final int TICKTIME_DEFAULT = 2000;
+	public static final String TICKTIME_DEFAULT = "2000";//$NON-NLS-1$		
 
 	/**
 	 * The server init limit default. Can be controlled by either providing
@@ -138,7 +135,7 @@ public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 	 * 
 	 * @since 1.0.0
 	 */
-	public static final int INITLIMIT_DEFAULT = 50;
+	public static final String INITLIMIT_DEFAULT = "50";//$NON-NLS-1$		
 
 	/**
 	 * The sync limit default. Can be controlled by either providing
@@ -150,106 +147,59 @@ public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 	 * 
 	 * @since 1.0.0
 	 */
-	public static final int SYNCLIMIT_DEFAULT = 2;
+	public static final String SYNCLIMIT_DEFAULT = "2";//$NON-NLS-1$		
 
+	public static final String ZOODISCOVERY_PREFIX = "zoodiscovery.";//$NON-NLS-1$		
+	static {
 
+		// Check for configuration within system properties
+		defaultConfigProperties.put(ZOOKEEPER_TEMPDIR, System.getProperty(
+				ZOODISCOVERY_PREFIX + ZOOKEEPER_TEMPDIR, TEMPDIR_DEFAULT));
+
+		defaultConfigProperties.put(ZOOKEEPER_DATADIR, System.getProperty(
+				ZOODISCOVERY_PREFIX + ZOOKEEPER_DATADIR, DATADIR_DEFAULT));
+
+		defaultConfigProperties.put(ZOOKEEPER_DATALOGDIR, System.getProperty(
+				ZOODISCOVERY_PREFIX + ZOOKEEPER_DATALOGDIR, ZOOKEEPER_DATADIR));
+
+		defaultConfigProperties.put(ZOOKEEPER_CLIENTPORT, System
+				.getProperty(ZOODISCOVERY_PREFIX + ZOOKEEPER_CLIENTPORT,
+						CLIENT_PORT_DEFAULT));
+
+		defaultConfigProperties.put(ZOOKEEPER_TICKTIME, System.getProperty(
+				ZOODISCOVERY_PREFIX + ZOOKEEPER_TICKTIME, TICKTIME_DEFAULT));
+
+		defaultConfigProperties.put(ZOOKEEPER_INITLIMIT, System.getProperty(
+				ZOODISCOVERY_PREFIX + ZOOKEEPER_INITLIMIT, INITLIMIT_DEFAULT));
+
+		defaultConfigProperties.put(ZOOKEEPER_SYNCLIMIT, System.getProperty(
+				ZOODISCOVERY_PREFIX + ZOOKEEPER_SYNCLIMIT, SYNCLIMIT_DEFAULT));
+
+		defaultConfigProperties.put(ZOOKEEPER_SERVER_PORT, System.getProperty(
+				ZOODISCOVERY_PREFIX + ZOOKEEPER_SERVER_PORT,
+				SERVER_PORT_DEFAULT));
+
+		defaultConfigProperties.put(ZOOKEEPER_ELECTION_PORT, System
+				.getProperty(ZOODISCOVERY_PREFIX + ZOOKEEPER_ELECTION_PORT,
+						ELECTION_PORT_DEFAULT));
+
+		defaultConfigProperties.put("preAllocSize", 1); //$NON-NLS-1$		
+
+	}
 
 	public DefaultDiscoveryConfig() {
-
-		String zoodiscoveryClientPort = System.getProperty("zoodiscovery."
-				+ ZOOKEEPER_CLIENTPORT);
-
-		String zoodiscoveryServerPort = System.getProperty("zoodiscovery."
-				+ ZOOKEEPER_SERVER_PORT);
-
-		String zoodiscoveryElectionPort = System.getProperty("zoodiscovery."
-				+ ZOOKEEPER_ELECTION_PORT);
-
-		String zoodiscoveryTempDir = System.getProperty("zoodiscovery."
-				+ ZOOKEEPER_TEMPDIR);
-
-		String zoodiscoveryDataDir = System.getProperty("zoodiscovery."
-				+ ZOOKEEPER_DATADIR);
-
-		String zoodiscoveryDataLogDir = System.getProperty("zoodiscovery."
-				+ ZOOKEEPER_DATALOGDIR);
-
-		String zoodiscoveryTickTime = System.getProperty("zoodiscovery."
-				+ ZOOKEEPER_TICKTIME);
-
-		String zoodiscoveryInitLimit = System.getProperty("zoodiscovery."
-				+ ZOOKEEPER_INITLIMIT);
-
-		String zoodiscoverySyncLimit = System.getProperty("zoodiscovery."
-				+ ZOOKEEPER_SYNCLIMIT);
-
-		// Load from system properties
-		this.defaultConfigProperties.put(ZOOKEEPER_TEMPDIR,
-				zoodiscoveryTempDir == null ? TEMPDIR_DEFAULT
-						: zoodiscoveryTempDir);
-
-		this.defaultConfigProperties.put(ZOOKEEPER_DATADIR,
-				zoodiscoveryDataDir == null ? DATADIR_DEFAULT
-						: zoodiscoveryDataDir);
-
-		this.defaultConfigProperties.put(
-				ZOOKEEPER_DATALOGDIR,
-				zoodiscoveryDataLogDir == null ? defaultConfigProperties
-						.get(ZOOKEEPER_DATADIR) : zoodiscoveryDataLogDir);
-
-		this.defaultConfigProperties.put(
-				ZOOKEEPER_CLIENTPORT,
-				zoodiscoveryClientPort == null ? CLIENT_PORT_DEFAULT : Integer
-						.parseInt(zoodiscoveryClientPort));
-
-		this.defaultConfigProperties.put(
-				ZOOKEEPER_TICKTIME,
-				zoodiscoveryTickTime == null ? TICKTIME_DEFAULT : Integer
-						.parseInt(zoodiscoveryTickTime));
-
-		this.defaultConfigProperties.put(
-				ZOOKEEPER_INITLIMIT,
-				zoodiscoveryTickTime == null ? INITLIMIT_DEFAULT : Integer
-						.parseInt(zoodiscoveryInitLimit));
-
-		this.defaultConfigProperties.put(
-				ZOOKEEPER_SYNCLIMIT,
-				zoodiscoverySyncLimit == null ? SYNCLIMIT_DEFAULT : Integer
-						.parseInt(zoodiscoverySyncLimit));
-
-		this.defaultConfigProperties.put(
-				ZOOKEEPER_SERVER_PORT,
-				zoodiscoveryServerPort == null ? SERVER_PORT_DEFAULT : Integer
-						.parseInt(zoodiscoveryServerPort));
-
-		this.defaultConfigProperties.put(ZOOKEEPER_ELECTION_PORT,
-				zoodiscoveryElectionPort == null ? ELECTION_PORT_DEFAULT
-						: Integer.parseInt(zoodiscoveryElectionPort));
-
-		this.defaultConfigProperties.put("preAllocSize", 1); //$NON-NLS-1$
-
-		//
-		// Load flavor from system properties
-		String zoodiscoveryFlavor = System.getProperty("zoodiscovery.flavor");
-		if (zoodiscoveryFlavor != null) {
-			if (zoodiscoveryFlavor.startsWith(ZOODISCOVERY_FLAVOR_STANDALONE))
-				defaultConfigProperties.put(ZOODISCOVERY_FLAVOR_STANDALONE,
-						zoodiscoveryFlavor);
-			else if (zoodiscoveryFlavor
-					.startsWith(ZOODISCOVERY_FLAVOR_REPLICATED))
-				defaultConfigProperties.put(ZOODISCOVERY_FLAVOR_REPLICATED,
-						zoodiscoveryFlavor);
-			else if (zoodiscoveryFlavor
-					.startsWith(ZOODISCOVERY_FLAVOR_CENTRALIZED))
-				defaultConfigProperties.put(ZOODISCOVERY_FLAVOR_CENTRALIZED,
-						zoodiscoveryFlavor);
-		} else
-			defaultConfigProperties.put(ZOODISCOVERY_FLAVOR_CENTRALIZED,
-					DEFAULT_FLAVOR);
 	}
 
 	public Map<String, Object> getConfigProperties() {
-		return this.defaultConfigProperties;
+		return Collections.unmodifiableMap(defaultConfigProperties);
 	}
 
+	public static String getDefaultTarget() {
+		String f = System.getProperty("zoodiscovery.flavor");
+		if (f == null) {
+			f = DefaultDiscoveryConfig.DEFAULT_FLAVOR;
+		}
+
+		return f;
+	}
 }

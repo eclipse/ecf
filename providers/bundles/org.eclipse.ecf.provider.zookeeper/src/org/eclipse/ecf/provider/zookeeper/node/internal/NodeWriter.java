@@ -6,7 +6,8 @@
  *  http://www.eclipse.org/legal/epl-v10.html
  * 
  *  Contributors:
- *     Ahmed Aadel - initial API and implementation     
+ *    Wim Jongman - initial API and implementation 
+ *    Ahmed Aadel - initial API and implementation     
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.node.internal;
 
@@ -22,16 +23,12 @@ import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
 import org.osgi.service.log.LogService;
 
-/**
- * @author Ahmed Aadel
- * @since 0.1
- */
 public class NodeWriter {
 
 	private INode node;
 	private String ip;
 	private WriteRoot writeRoot;
-	
+
 	public NodeWriter(INode node, WriteRoot writeRoot) {
 		Assert.isNotNull(node);
 		Assert.isNotNull(writeRoot);
@@ -67,9 +64,6 @@ public class NodeWriter {
 			}
 			PrettyPrinter.prompt(PrettyPrinter.PUBLISHED, this.getNode()
 					.getWrappedService());
-			Localizer.getSingleton().localize(
-					new Notification(this.getNode().getWrappedService(),
-							Notification.AVAILABLE));
 		} catch (KeeperException e) {
 			if (e.code() == KeeperException.Code.CONNECTIONLOSS) {
 				Logger.log(LogService.LOG_DEBUG, "Can't connect to server! "
