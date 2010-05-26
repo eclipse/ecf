@@ -12,14 +12,14 @@
 -containerType ecf.generic.server
 -containerId ecftcp://localhost:5782/server</programArgs>
       <vmArgs>-Dzoodiscovery.dataDir=zookeeperdata2
--Dzoodiscovery.clientPort=2001
--Dzoodiscovery.flavor=zoodiscovery.flavor.standalone=localhost:2002
+-Dzoodiscovery.flavor=zoodiscovery.flavor.standalone=localhost:2002;clientPort=2001
 -Xms40m
 -Xmx512m</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
+
 
    <launcher>
       <solaris/>
