@@ -51,7 +51,7 @@ public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 		super.setUp();
 		
 		final Properties props = new Properties();
-		final URI uri = URI.create("http://www.ecf-project.org:80/ecf");
+		final URI uri = URI.create("http://www.ecf-project.org:80/");
 	
 		Namespace namespace = discoveryLocator.getServicesNamespace();
 		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(namespace, new String[]{"http"}, new String[]{DOMAIN}, new String[]{"tcp"}, "iana");
