@@ -76,6 +76,10 @@
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
 			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20100508202910/updateSite/?importType=binary"/>
 		</provider>
+		<!-- RC3 -->
+		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
+			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20100519200754/updateSite/?importType=binary"/>
+		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
 			<uri format=":pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.eclipse.orbit.releng/maps">
