@@ -106,9 +106,11 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID 
 		return (Lookup[]) result.toArray(new Lookup[result.size()]);
 	}
 
-	//TODO hack until we get real configuration admin support
-	public void setScope(String string) {
-		scopes = new String[]{string};
+	public void setScopes(Name[] searchPaths) {
+		String[] s = new String[searchPaths.length];
+		for(int i = 0; i < searchPaths.length; i++) {
+			s[i] = searchPaths[i].toString();
+		}
+		scopes = s;
 	}
-
 }

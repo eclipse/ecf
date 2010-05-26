@@ -37,6 +37,7 @@ import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.ResolverConfig;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.Type;
@@ -231,12 +232,15 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 			throw new ContainerConnectException("Already connected");
 		}
 		if(aTargetID == null || !(aTargetID instanceof DnsSdServiceTypeID)) {
-			//TODO move into the connect unit test part or make it configurable via config admin
-			// alternatively we simply fall back to the local search path 
-			// but we cannot require clients to call connect(...) with a target explicitly due to
-			// OSGi service factory
-			targetID = new DnsSdServiceTypeID();
- 			targetID.setScope("dnssd.ecf-project.org");
+			// fall back to the search path as last resort 
+			ResolverConfig config = new ResolverConfig();
+			Name[] searchPaths = config.searchPath();
+			if(searchPaths.length >= 0) {
+				targetID = new DnsSdServiceTypeID();
+				targetID.setScopes(searchPaths);
+			} else {
+				throw new ContainerConnectException("No target id given");
+			}
 		} else {
 			targetID = (DnsSdServiceTypeID) aTargetID;
 		}
