@@ -27,15 +27,16 @@ import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 
 public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 
-	private static final String DOMAIN = "dnssd.ecf-project.org";
+	protected static final String ECF_DISCOVERY_DNSSD = "ecf.discovery.dnssd";
+	protected static final String DOMAIN = "dns-sd.ecf-project.org";
 	
 	public DnsSdDiscoveryServiceTest() {
-		this("ecf.discovery.dnssd", DOMAIN, "http", "tcp");
+		this(ECF_DISCOVERY_DNSSD, DOMAIN, "http", "tcp");
 	}
 
 	public DnsSdDiscoveryServiceTest(String string, String scopes,
 			String service, String protocol) {
-		super("ecf.discovery.dnssd");
+		super(ECF_DISCOVERY_DNSSD);
 		setNamingAuthority("iana");
 		setScope(scopes);
 		setServices(new String[]{service});

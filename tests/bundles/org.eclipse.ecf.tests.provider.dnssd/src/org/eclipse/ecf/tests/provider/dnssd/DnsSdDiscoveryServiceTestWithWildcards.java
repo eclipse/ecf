@@ -14,6 +14,6 @@ package org.eclipse.ecf.tests.provider.dnssd;
 public class DnsSdDiscoveryServiceTestWithWildcards extends DnsSdDiscoveryServiceTest {
 
 	public DnsSdDiscoveryServiceTestWithWildcards() {
-		super("ecf.discovery.dnssd", "kuppe.org", "", "");
+		super(ECF_DISCOVERY_DNSSD, DOMAIN, "", "");
 	}
 }
