@@ -92,6 +92,10 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID 
 		List result = new ArrayList();
 		for (int i = 0; i < scopes.length; i++) {
 			String scope = scopes[i];
+			// remove dangling "."
+			if(scope.endsWith(".")) {
+				scope = scope.substring(0, scope.length() - 1);
+			}
 			for (int j = 0; j < protos.length; j++) {
 				Lookup query;
 				try {
