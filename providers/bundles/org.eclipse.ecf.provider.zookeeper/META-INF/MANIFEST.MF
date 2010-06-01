@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.ecf.provider.zookeeper;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.provider.zookeeper.DiscoveryActivator
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.apache.zookeeper,
  org.apache.zookeeper.data,
  org.apache.zookeeper.server,
