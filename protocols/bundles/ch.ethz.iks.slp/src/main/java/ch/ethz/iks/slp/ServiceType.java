@@ -110,7 +110,17 @@ public final class ServiceType implements Serializable {
 		} else {
 			namingAuthority = "";
 		}
-
+	}
+		
+	/**
+	 * Always returns true as invalid service types cannot be created any longer.
+	 * 
+	 * @return always true.
+	 */
+	public boolean isServiceURL() {
+		//Kept for API compatibility
+		//Remove when moved to next major
+		return true;
 	}
 
 	/**
