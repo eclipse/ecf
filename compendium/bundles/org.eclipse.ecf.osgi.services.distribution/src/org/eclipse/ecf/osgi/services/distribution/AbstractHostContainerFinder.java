@@ -173,6 +173,8 @@ public abstract class AbstractHostContainerFinder extends
 	protected boolean matchHostSupportedConfigTypes(
 			String[] requiredConfigTypes,
 			ContainerTypeDescription containerTypeDescription) {
+		if (requiredConfigTypes == null)
+			return false;
 		// Get supported config types for this description
 		String[] supportedConfigTypes = getSupportedConfigTypes(containerTypeDescription);
 		// If it doesn't support anything, return false
