@@ -68,17 +68,11 @@
 	<!-- default -->
 	<searchPath name="default">
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20090911225403/updateSite/?importType=binary"/>
-		</provider>
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20100423142122/updateSite/?importType=binary"/>
-		</provider>
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20100508202910/updateSite/?importType=binary"/>
+			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20090825191606/updateSite/?importType=binary"/>
 		</provider>
 		<!-- RC3 -->
 		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20100519200754/updateSite/?importType=binary"/>
+			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20100519200754/updateSite/?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
