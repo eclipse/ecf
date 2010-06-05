@@ -47,7 +47,7 @@ public class Geo {
 		Assert.isTrue(childPath.length() > INode.ROOT.length());
 		String[] parts = childPath.split(INode._ZOODISCOVERYID_);
 		String id = parts[1];
-		return id.equals(Configurator.INSTANCE.getID().toString());
+		return id.equals(Configurator.INSTANCE.getID().getName());
 	}
 
 	public static URI getLocation() {

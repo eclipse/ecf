@@ -65,11 +65,11 @@ public class PrettyPrinter {
 	}
 
 	public static void attemptingConnectionTo(String ip) {
-		System.err.println(prompt
+		System.out.println(prompt
 				+ "INFO - Attempting connection to server: /" + ip);//$NON-NLS-1$ 
 	}
 
 	public static void connectionLost(String ip) {
-		System.err.println(prompt + "INFO - Connection Lost: /" + ip);//$NON-NLS-1$ 
+		System.out.println(prompt + "INFO - Connection Lost: /" + ip);//$NON-NLS-1$ 
 	}
 }

@@ -34,16 +34,18 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 	private boolean isConnected;
 	private Map<String, NodeReader> nodeReaders = Collections
 			.synchronizedMap(new HashMap<String, NodeReader>());
-	public static Map<String, DiscoverdService> discoverdServices = Collections
-			.synchronizedMap(new HashMap<String, DiscoverdService>());
-	public static Map<String, List<DiscoverdService>> perTypeDiscoverdServices = Collections
-			.synchronizedMap(new HashMap<String, List<DiscoverdService>>());
+	private Map<String, DiscoverdService> discoverdServices;
+	private Map<String, List<DiscoverdService>> perTypeDiscoverdServices;
 
 	ReadRoot(String ip, WatchManager watchManager) {
 		Assert.isNotNull(ip);
 		Assert.isNotNull(watchManager);
 		this.ip = ip;
 		this.watchManager = watchManager;
+		discoverdServices = Collections
+				.synchronizedMap(new HashMap<String, DiscoverdService>());
+		perTypeDiscoverdServices = Collections
+				.synchronizedMap(new HashMap<String, List<DiscoverdService>>());
 		connect();
 	}
 
@@ -155,6 +157,14 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 
 	public String getIp() {
 		return this.ip;
+	}
+
+	public Map<String, DiscoverdService> getDiscoverdServices() {
+		return discoverdServices;
+	}
+
+	public Map<String, List<DiscoverdService>> getPerTypeDiscoverdServices() {
+		return perTypeDiscoverdServices;
 	}
 
 }

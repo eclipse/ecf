@@ -203,7 +203,7 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 	public String getPath() {
 		return getNodeId() + INode._URI_ + Geo.getHost()
 				+ INode._ZOODISCOVERYID_
-				+ Configurator.INSTANCE.getID().toString();
+				+ Configurator.INSTANCE.getID().getName();
 	}
 
 	public String getAbsolutePath() {

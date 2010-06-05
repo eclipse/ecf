@@ -14,6 +14,7 @@ package org.eclipse.ecf.provider.zookeeper.core.internal;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
@@ -28,7 +29,8 @@ public class Configurator extends DiscoveryContainerConfig {
 	private File zookeeperData;
 	private List<Configuration> runningConfigs = new ArrayList<Configuration>();
 	public static final Configurator INSTANCE = new Configurator();
-	private static final ID ConfigID = IDFactory.getDefault().createGUID();
+	private static final ID ConfigID = IDFactory.getDefault().createStringID(
+			UUID.randomUUID().toString());
 
 	private Configurator() {
 		super(ConfigID);

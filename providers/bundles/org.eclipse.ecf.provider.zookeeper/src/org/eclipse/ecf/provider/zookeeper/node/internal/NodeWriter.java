@@ -98,6 +98,14 @@ public class NodeWriter {
 			} catch (InterruptedException e) {
 				// ignore
 			}
+		} else if (!this.writeRoot.isConnected()
+				&& writeRoot.getWatchManager().getConfig().isCentralized()) {
+			/*
+			 * connection lost to the central ZooDiscovery where our services
+			 * are published to.
+			 */
+			PrettyPrinter.prompt(PrettyPrinter.UNPUBLISHED, this.getNode()
+					.getWrappedService());
 		}
 
 	}

@@ -39,10 +39,12 @@ public class NodeReader implements Watcher,
 	private String ip;
 	boolean isNodePublished;
 	private boolean isDisposed;
+	private ReadRoot readRoot;
 
 	public NodeReader(String path, ReadRoot readRoot) {
 		Assert.isNotNull(path);
 		Assert.isNotNull(readRoot);
+		this.readRoot = readRoot;
 		this.path = path;
 		this.zookeeper = readRoot.getReadKeeper();
 		this.ip = readRoot.getIp();
@@ -62,17 +64,9 @@ public class NodeReader implements Watcher,
 		return INode.ROOT_SLASH + getPath();
 	}
 
-	public synchronized void dispose() {
-		if (null != ReadRoot.discoverdServices.remove(this.discovered
-				.getServiceID().getServiceTypeID().getName())) {
-			this.discovered.dispose();
-			this.discovered = null;
-		}
-	}
-
 	public void processResult(int rc, String p, Object ctx, byte[] data,
 			Stat stat) {
-		if (p == null || !p.equals(getAbsolutePath())) {
+		if (p == null || !p.equals(getAbsolutePath()) || data == null) {
 			return;
 		}
 		ByteArrayInputStream bis = null;
@@ -104,8 +98,10 @@ public class NodeReader implements Watcher,
 			}
 			bis.close();
 			this.discovered = new DiscoverdService(getPath(), props);
-			ReadRoot.discoverdServices.put(this.discovered.getServiceID()
-					.getServiceTypeID().getName(), this.discovered);
+			readRoot.getDiscoverdServices()
+					.put(
+							this.discovered.getServiceID().getServiceTypeID()
+									.getName(), this.discovered);
 			PrettyPrinter.prompt(PrettyPrinter.REMOTE_AVAILABLE,
 					this.discovered);
 			Localizer.getSingleton().localize(
@@ -147,9 +143,19 @@ public class NodeReader implements Watcher,
 			 * node is no more available.
 			 */
 			dispose();
-			this.isDisposed = true;
 		}
 
+	}
+
+	public synchronized void dispose() {
+		if (isDisposed || discovered == null)
+			return;
+		if (null != readRoot.getDiscoverdServices().remove(
+				this.discovered.getServiceID().getServiceTypeID().getName())) {
+			this.discovered.dispose();
+			isDisposed = true;
+
+		}
 	}
 
 }

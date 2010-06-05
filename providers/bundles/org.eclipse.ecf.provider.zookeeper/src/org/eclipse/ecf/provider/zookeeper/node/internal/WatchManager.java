@@ -215,7 +215,11 @@ public class WatchManager implements BundleStoppingListener {
 				if (zk != null)
 					zk.close();
 			}
-			this.zooKeepers.clear();
+			if (this.zooKeepers != null)
+				this.zooKeepers.clear();
+			if (this.allKnownServices != null)
+				this.allKnownServices.clear();
+
 		} catch (Throwable e) {
 			// Ignore. We're already down at this point.
 		}

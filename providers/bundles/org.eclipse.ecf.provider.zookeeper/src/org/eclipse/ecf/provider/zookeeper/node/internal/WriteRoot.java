@@ -21,12 +21,14 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.provider.zookeeper.util.Logger;
+import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
 import org.osgi.service.log.LogService;
 
 class WriteRoot implements Watcher {
 	private ZooKeeper writeKeeper;
 	private String ip;
 	private WatchManager watchManager;
+
 	private boolean isConnected;
 
 	WriteRoot(String ip, WatchManager watchManager) {
@@ -112,9 +114,12 @@ class WriteRoot implements Watcher {
 				} catch (KeeperException e) {
 					if (e.code().equals(KeeperException.Code.CONNECTIONLOSS)) {
 						this.isConnected = false;
-					}
-					Logger.log(LogService.LOG_INFO,
-							"Trying to connect to " + this.ip, e); //$NON-NLS-1$
+						PrettyPrinter.attemptingConnectionTo(this.ip);
+					} else
+						Logger
+								.log(
+										LogService.LOG_ERROR,
+										"Error while trying to connect to " + this.ip, e); //$NON-NLS-1$
 				}
 			}
 			synchronized (this) {
@@ -133,6 +138,10 @@ class WriteRoot implements Watcher {
 
 	public boolean isConnected() {
 		return this.isConnected;
+	}
+
+	public WatchManager getWatchManager() {
+		return watchManager;
 	}
 
 }
