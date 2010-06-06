@@ -25,13 +25,7 @@ Contributors: Composent, Inc. - initial API and implementation
    </license>
 
    <requires>
-      <import plugin="org.eclipse.equinox.common"/>
-      <import plugin="org.eclipse.equinox.registry"/>
-      <import plugin="org.eclipse.core.jobs"/>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.osgi.services"/>
-      <import plugin="org.eclipse.equinox.concurrent"/>
-      <import plugin="org.eclipse.core.net"/>
+      <import feature="org.eclipse.equinox.p2.user.ui" version="0.0.0" patch="true"/>
    </requires>
 
    <plugin
@@ -91,27 +85,6 @@ Contributors: Composent, Inc. - initial API and implementation
          install-size="0"
          version="0.0.0"
          fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.codec"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.httpclient"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.logging"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
          unpack="false"/>
 
 </feature>
