@@ -33,7 +33,7 @@ import org.eclipse.ecf.internal.tests.filetransfer.httpserver.SimpleServer;
 public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	public static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
-	public static final String HTTP_RETRIEVE1 = "http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&url=http://ftp.osuosl.org/pub/eclipse/eclipse/downloads/drops/S-3.6M5-201001291300/jarprocessor.jar&mirror_id=272";
+	public static final String HTTP_RETRIEVE1 = "http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&url=http://ftp.osuosl.org/pub/eclipse/eclipse/downloads/drops/R-3.5.2-201002111343/jarprocessor.jar&mirror_id=272";
 	public static final String HTTP_RETRIEVE_PORT = "http://www.eclipse.org:80/ecf/ip_log.html";
 	private static final String HTTP_RETRIEVE_HOST_ONLY = "http://www.google.com";
 
