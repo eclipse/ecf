@@ -3,6 +3,7 @@
 
 <toc label="ECF Developer Guide" link_to="toc.xml">
    <topic label="Quick Start" href="html/gettingstarted/quickStart.html"/>
+   <topic label="OSGi 4.2 Remote Services" href="http://wiki.eclipse.org/ECF#OSGi_4.2_Remote_Services"/>
    <topic label="System Requirements" href="html/gettingstarted/prerequisites.html"/>
    <topic label="Overview" href="html/gettingstarted/ecf_overview.html"/>
    <topic label="Tips and Tricks" href="http://wiki.eclipse.org/ECF_Tips_Tricks"/>

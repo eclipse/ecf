@@ -3,6 +3,7 @@
 
 <toc label="Reference" link_to="toc.xml#reference">
 	<topic label="Introduction" href="html/concepts/intro.html"/>
+    <topic label="OSGi 4.2 Remote Services" href="http://wiki.eclipse.org/ECF#OSGi_4.2_Remote_Services"/>
 	<topic label="ECF Architecture" href="http://www.eclipse.org/ecf/documentation.php"/>
 	<topic label="ECF API" href="http://wiki.eclipse.org/index.php/ECF_API_Docs"/>
 	<topic label="JavaDoc" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/overview-summary.html"/>
