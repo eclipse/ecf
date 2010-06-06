@@ -18,19 +18,7 @@
    </license>
 
    <requires>
-      <import plugin="org.eclipse.equinox.common"/>
-      <import plugin="org.eclipse.ecf"/>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.junit" version="3.8.2" match="greaterOrEqual"/>
-      <import plugin="org.apache.commons.httpclient" version="3.0.1" match="greaterOrEqual"/>
-      <import plugin="org.apache.commons.logging" version="1.0.4" match="greaterOrEqual"/>
-      <import plugin="org.apache.commons.codec" version="1.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.filetransfer"/>
-      <import plugin="org.eclipse.ecf.provider.filetransfer"/>
-      <import plugin="org.eclipse.core.net"/>
-      <import plugin="org.eclipse.core.jobs"/>
-      <import plugin="org.eclipse.equinox.concurrent"/>
-      <import plugin="org.eclipse.core.runtime" version="3.4.0" match="compatible"/>
+      <import feature="org.eclipse.ecf.platform_feature" version="3.0.0.qualifier"/>
    </requires>
 
    <plugin
