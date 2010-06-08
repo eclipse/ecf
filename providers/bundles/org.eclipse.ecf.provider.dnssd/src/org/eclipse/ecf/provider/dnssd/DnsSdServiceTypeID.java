@@ -115,6 +115,17 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID 
 		for(int i = 0; i < searchPaths.length; i++) {
 			s[i] = searchPaths[i].toString();
 		}
-		scopes = s;
+		setScopes(s);
+	}
+
+	public void setScopes(String[] searchPaths) {
+		scopes = searchPaths;
+	}
+
+	/**
+	 * @return Search scopes used during discovery
+	 */
+	public String[] getSearchPath() {
+		return scopes;
 	}
 }

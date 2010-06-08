@@ -11,6 +11,7 @@
 package org.eclipse.ecf.provider.dnssd;
 
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -37,8 +38,10 @@ import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.Resolver;
 import org.xbill.DNS.ResolverConfig;
 import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.Type;
 
@@ -47,6 +50,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	private static final String DNS_SD_PATH = "path";
 	private static final String DNS_SD_PTCL = "dns-sd.ptcl";
 	private DnsSdServiceTypeID targetID;
+	private Resolver resolver;
 
 	public DnsSdDisocoveryLocator() {
 		super(DnsSdNamespace.NAME, new DiscoveryContainerConfig(IDFactory
@@ -87,6 +91,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 		Lookup[] queries = serviceTypeId.getInternalQueries();
 		for (int i = 0; i < queries.length; i++) {
 			Lookup query = queries[i];
+			query.setResolver(resolver);
 			Record[] queryResult = query.run();
 			//TODO file bug upstream that queryResult may never be null
 			int length = queryResult == null ? 0 : queryResult.length;
@@ -133,6 +138,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 		List srvRecords = new ArrayList();
 		for (int i = 0; i < queries.length; i++) {
 			Lookup query = queries[i];
+			query.setResolver(resolver);
 			Record[] queryResult = query.run();
 			//TODO file bug upstream that queryResult may never be null
 			int length = queryResult == null ? 0 : queryResult.length;
@@ -143,6 +149,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 					PTRRecord ptrRecord = (PTRRecord) record;
 					Name target = ptrRecord.getTarget();
 					Lookup srvQuery = new Lookup(target, Type.SRV);
+					srvQuery.setResolver(resolver);
 					srvQueryResult = srvQuery.run();
 				} else if (record instanceof SRVRecord) {
 					srvQueryResult = new SRVRecord[]{(SRVRecord) record};
@@ -169,6 +176,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 			// query for txt records (attributes)
 			Properties props = new Properties();
 			Lookup txtQuery = new Lookup(srvRecord.getName(), Type.TXT);
+			txtQuery.setResolver(resolver);
 			Record[] txtQueryResults = txtQuery.run();
 			for (int l = 0; l < txtQueryResults.length; l++) {
 				TXTRecord txtResult = (TXTRecord) txtQueryResults[l];
@@ -244,6 +252,11 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 		} else {
 			targetID = (DnsSdServiceTypeID) aTargetID;
 		}
+		try {
+			resolver = new SimpleResolver();
+		} catch (UnknownHostException e) {
+			throw new ContainerConnectException(e);
+		}
  		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
 				connectContext));
 		fireContainerEvent(new ContainerConnectedEvent(this.getID(), targetID));
@@ -269,5 +282,31 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 */
 	public ID getConnectedID() {
 		return targetID;
+	}
+
+	/**
+	 * @param searchPaths The default search path used for discovery 
+	 */
+	public void setSearchPath(String[] searchPaths) {
+		targetID.setScopes(searchPaths);
+	}
+	
+	/**
+	 * @return The default search path used by this discovery provider
+	 */
+	public String[] getSearchPath() {
+		return targetID.getSearchPath();
+	}
+
+	/**
+	 * @param aResolver The resolver to use
+	 * @throws DnsSdDiscoveryException if hostname cannot be resolved
+	 */
+	public void setResolver(String aResolver) {
+		try {
+			resolver = new SimpleResolver(aResolver);
+		} catch (UnknownHostException e) {
+			throw new DnsSdDiscoveryException(e);
+		}
 	}
 }
