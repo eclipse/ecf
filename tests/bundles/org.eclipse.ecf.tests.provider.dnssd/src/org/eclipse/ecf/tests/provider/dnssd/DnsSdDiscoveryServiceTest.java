@@ -25,19 +25,28 @@ import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.provider.dnssd.DnsSdNamespace;
 import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 
+/**
+ * In order for this unit test to succeed, the system search path has to include "dns-sd.ecf-project.org".
+ */
 public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 
-	protected static final String ECF_DISCOVERY_DNSSD = "ecf.discovery.dnssd";
-	protected static final String DOMAIN = "dns-sd.ecf-project.org";
+	public static final String PORT = "80";
+	public static final String PATH = "/";
+	public static final String DOMAIN_A_RECORD = "www.ecf-project.org";
+	public static final String NAMING_AUTH = "iana";
+	public static final String PROTO = "tcp";
+	public static final String SCHEME = "http";
+	public static final String ECF_DISCOVERY_DNSSD = "ecf.discovery.dnssd";
+	public static final String DOMAIN = "dns-sd.ecf-project.org";
 	
 	public DnsSdDiscoveryServiceTest() {
-		this(ECF_DISCOVERY_DNSSD, DOMAIN, "http", "tcp");
+		this(ECF_DISCOVERY_DNSSD, DOMAIN, SCHEME, PROTO);
 	}
 
 	public DnsSdDiscoveryServiceTest(String string, String scopes,
 			String service, String protocol) {
 		super(ECF_DISCOVERY_DNSSD);
-		setNamingAuthority("iana");
+		setNamingAuthority(NAMING_AUTH);
 		setScope(scopes);
 		setServices(new String[]{service});
 		setProtocol(protocol);
@@ -52,17 +61,17 @@ public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 		super.setUp();
 		
 		final Properties props = new Properties();
-		final URI uri = URI.create("http://www.ecf-project.org:80/");
+		final URI uri = URI.create(SCHEME + "://" + DOMAIN_A_RECORD + ":" + PORT + PATH);
 	
 		Namespace namespace = discoveryLocator.getServicesNamespace();
-		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(namespace, new String[]{"http"}, new String[]{DOMAIN}, new String[]{"tcp"}, "iana");
+		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(namespace, new String[]{SCHEME}, new String[]{DOMAIN}, new String[]{PROTO}, NAMING_AUTH);
 		assertNotNull(serviceTypeID);
 		
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
-		serviceProperties.setPropertyString("path", "/");
-		serviceProperties.setPropertyString("dns-sd.ptcl", "http");
+		serviceProperties.setPropertyString("path", PATH);
+		serviceProperties.setPropertyString("dns-sd.ptcl", SCHEME);
 
-		serviceInfo = new ServiceInfo(uri, "www.ecf-project.org", serviceTypeID, 10, 0, serviceProperties);
+		serviceInfo = new ServiceInfo(uri, DOMAIN_A_RECORD, serviceTypeID, 10, 0, serviceProperties);
 		assertNotNull(serviceInfo);
 	}
 
