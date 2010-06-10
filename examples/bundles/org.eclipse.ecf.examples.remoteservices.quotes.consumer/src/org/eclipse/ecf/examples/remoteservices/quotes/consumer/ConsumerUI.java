@@ -127,19 +127,19 @@ public class ConsumerUI extends Shell {
 
 	protected void startZookeeper() {
 
-		IContainer singleton = null;
+		IContainer zooContainer = null;
 		try {
-			singleton = ContainerFactory.getDefault().createContainer(
+			zooContainer = ContainerFactory.getDefault().createContainer(
 					ZooDiscoveryContainerInstantiator.NAME);
 		} catch (ContainerCreateException e1) {
 		}
 
-		if (singleton.getConnectedID() != null)
-			singleton.disconnect();
+		if (zooContainer.getConnectedID() != null)
+			zooContainer.disconnect();
 
 		try {
-			singleton.connect(
-					singleton.getConnectNamespace().createInstance(
+			zooContainer.connect(
+					zooContainer.getConnectNamespace().createInstance(
 							new String[] { "zoodiscovery.flavor.centralized="
 									+ getServers().getText() }), null);
 		} catch (Exception e) {
