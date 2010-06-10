@@ -14,9 +14,11 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -86,27 +88,38 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 */
 	public IServiceTypeID[] getServiceTypes() {
 		// technically can't do anything without a scope (domain) -> falling back to local domain (mDNS?)
-		List result = new ArrayList();
 		DnsSdServiceTypeID serviceTypeId = (DnsSdServiceTypeID) targetID;
+		return getServiceTypes(serviceTypeId);
+	}
+
+	private IServiceTypeID[] getServiceTypes(final DnsSdServiceTypeID serviceTypeId) {
+		List result = new ArrayList();
+		Record[] queryResult = getRecords(serviceTypeId);
+		for (int j = 0; j < queryResult.length; j++) {
+			Record record = queryResult[j];
+			if(record instanceof PTRRecord) {
+				PTRRecord ptrRecord = (PTRRecord) record;
+				result.add(new DnsSdServiceTypeID(getServicesNamespace(), ptrRecord.getTarget()));
+			} else if (record instanceof SRVRecord) {
+				SRVRecord srvRecord = (SRVRecord) record;
+				result.add(new DnsSdServiceTypeID(getServicesNamespace(), srvRecord.getName()));
+			}
+		}
+		return (IServiceTypeID[]) result.toArray(new IServiceTypeID[result.size()]);
+	}
+	
+	private Record[] getRecords(final DnsSdServiceTypeID serviceTypeId) {
+		List result = new ArrayList();
 		Lookup[] queries = serviceTypeId.getInternalQueries();
 		for (int i = 0; i < queries.length; i++) {
 			Lookup query = queries[i];
 			query.setResolver(resolver);
 			Record[] queryResult = query.run();
-			//TODO file bug upstream that queryResult may never be null
-			int length = queryResult == null ? 0 : queryResult.length;
-			for (int j = 0; j < length; j++) {
-				Record record = queryResult[j];
-				if(record instanceof PTRRecord) {
-					PTRRecord ptrRecord = (PTRRecord) record;
-					result.add(new DnsSdServiceTypeID(getServicesNamespace(), ptrRecord.getTarget()));
-				} else if (record instanceof SRVRecord) {
-					SRVRecord srvRecord = (SRVRecord) record;
-					result.add(new DnsSdServiceTypeID(getServicesNamespace(), srvRecord.getName()));
-				}
+			if(queryResult != null) {
+				result.addAll(Arrays.asList(queryResult));
 			}
 		}
-		return (IServiceTypeID[]) result.toArray(new IServiceTypeID[result.size()]);
+		return (Record[]) result.toArray(new Record[result.size()]);
 	}
 
 	/*
@@ -236,30 +249,58 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 */
 	public void connect(ID aTargetID, IConnectContext connectContext)
 			throws ContainerConnectException {
+
+		// connect can only be called once
 		if (targetID != null || getConfig() == null) {
 			throw new ContainerConnectException("Already connected");
 		}
+		
+		// fall back to the search path as last resort 
 		if(aTargetID == null || !(aTargetID instanceof DnsSdServiceTypeID)) {
-			// fall back to the search path as last resort 
 			ResolverConfig config = new ResolverConfig();
 			Name[] searchPaths = config.searchPath();
 			if(searchPaths.length >= 0) {
 				targetID = new DnsSdServiceTypeID();
-				targetID.setScopes(searchPaths);
+				targetID.setSearchPath(searchPaths);
 			} else {
 				throw new ContainerConnectException("No target id given");
 			}
 		} else {
 			targetID = (DnsSdServiceTypeID) aTargetID;
 		}
+		
+		// instantiate a default resolver
 		try {
 			resolver = new SimpleResolver();
 		} catch (UnknownHostException e) {
 			throw new ContainerConnectException(e);
 		}
- 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
+		
+		// read browsing domains for the given targetID/searchpath and merge with existing
+		targetID.addSearchPath(getBrowsingDomains(targetID));
+
+		// done setting up this provider, send event
+		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
 				connectContext));
 		fireContainerEvent(new ContainerConnectedEvent(this.getID(), targetID));
+	}
+
+	private String[] getBrowsingDomains(IServiceTypeID aServiceTypeId) {
+		Set res = new HashSet();
+		
+		String[] rrs = new String[] {BnRDnsSdServiceTypeID.BROWSE_DOMAIN, BnRDnsSdServiceTypeID.DEFAULT_BROWSE_DOMAIN};
+		for (int i = 0; i < rrs.length; i++) {
+			BnRDnsSdServiceTypeID serviceType = 
+				new BnRDnsSdServiceTypeID(aServiceTypeId, rrs[i]);
+			
+			Record[] defaultBrowsing = getRecords(serviceType);
+			for (int j = 0; j < defaultBrowsing.length; j++) {
+				PTRRecord record = (PTRRecord) defaultBrowsing[j];
+				res.add(record.getTarget().toString());
+			}
+		}
+		
+		return (String[]) res.toArray(new String[res.size()]);
 	}
 
 	/*
@@ -288,7 +329,7 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 * @param searchPaths The default search path used for discovery 
 	 */
 	public void setSearchPath(String[] searchPaths) {
-		targetID.setScopes(searchPaths);
+		targetID.setSearchPath(searchPaths);
 	}
 	
 	/**

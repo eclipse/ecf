@@ -10,10 +10,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.dnssd;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -27,6 +29,14 @@ import org.xbill.DNS.Type;
 public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID {
 
 	private static final long serialVersionUID = 1247933069737880365L;
+	
+	DnsSdServiceTypeID() {
+		super(new DnsSdNamespace());
+		scopes = DEFAULT_SCOPE;
+		protocols = DEFAULT_PROTO;
+		namingAuthority = DEFAULT_NA;
+		services = new String[]{""};
+	}
 
 	public DnsSdServiceTypeID(Namespace ns, IServiceTypeID id) {
 		super(ns, id);
@@ -36,32 +46,7 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID 
 			throws IDCreateException {
 		super(namespace, aType);
 	}
-
-	public DnsSdServiceTypeID(Namespace namespace, String[] services,
-			String[] scopes, String[] protocols, String namingAuthority) {
-		super(namespace, services, scopes, protocols, namingAuthority);
-	}
-
-	public DnsSdServiceTypeID(Namespace namespace) {
-		super(namespace);
-		try {
-			final InetAddress localHost = InetAddress.getLocalHost();
-			final String fqdn = localHost.getCanonicalHostName();
-			int idx = fqdn.indexOf(".");
-			if(idx > -1) {
-				scopes = new String[]{fqdn.substring(idx +1)};
-			} else {
-				scopes = new String[]{fqdn};
-			}
-		} catch (UnknownHostException e) {
-			scopes = null;
-		}
-	}
 	
-	DnsSdServiceTypeID() {
-		super(new DnsSdNamespace());
-	}
-
 	DnsSdServiceTypeID(Namespace namespace, Name aName) {
 		super(namespace, aName.toString());
 	}
@@ -110,22 +95,45 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID 
 		return (Lookup[]) result.toArray(new Lookup[result.size()]);
 	}
 
-	public void setScopes(Name[] searchPaths) {
+	/**
+	 * @param searchPaths Sets the default search path
+	 */
+	void setSearchPath(Name[] searchPaths) {
 		String[] s = new String[searchPaths.length];
 		for(int i = 0; i < searchPaths.length; i++) {
 			s[i] = searchPaths[i].toString();
 		}
-		setScopes(s);
+		setSearchPath(s);
 	}
 
-	public void setScopes(String[] searchPaths) {
+	/**
+	 * @param searchPaths Sets the default search path
+	 */
+	void setSearchPath(String[] searchPaths) {
 		scopes = searchPaths;
 	}
 
 	/**
 	 * @return Search scopes used during discovery
 	 */
-	public String[] getSearchPath() {
+	String[] getSearchPath() {
 		return scopes;
+	}
+
+	/**
+	 * @param additionalSearchPaths Adds the given array to the existing search paths
+	 */
+	void addSearchPath(String[] additionalSearchPaths) {
+	    //convert arrays to collections (lists)
+	    Collection coll1 = Arrays.asList(scopes);
+	    Collection coll2 = Arrays.asList(additionalSearchPaths);
+
+	    // remove dupes
+	    Set s = new HashSet();
+	    s.addAll(coll1);
+	    s.addAll(coll2);
+	    
+	    // convert into new scopes
+	    scopes = (String[]) s.toArray(new String[s.size()]);
 	}
 }
