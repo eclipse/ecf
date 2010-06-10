@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="id1"
+         name="Zookeeper Discoverable Quotes Service"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.eclipse.ecf.examples.remoteservices.quotes.consumer.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="zooquotesgenericconsumer"
+         name="zooQuotes"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ecf.examples.remoteservices.quotes.consumer.id1"
+            description="Zookeeper Discoverable Quotes Service"
+            name="Zookeeper Discoverable Quotes Service">
+         <property
+               name="appName"
+               value="Zookeeper Discoverable Quotes Service">
+         </property>
+      </product>
+   </extension>
+
+</plugin>

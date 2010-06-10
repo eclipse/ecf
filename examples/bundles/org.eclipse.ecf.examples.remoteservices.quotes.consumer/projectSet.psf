@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<psf version="2.0">
+<provider id="org.eclipse.team.cvs.core.cvsnature">
+<project reference="1.0,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/examples/bundles/org.eclipse.ecf.examples.remoteservices.quotes,org.eclipse.ecf.examples.remoteservices.quotes.consumer"/>
+<project reference="1.0,:pserver:anonymous@ecf1.osuosl.org:/ecf,newsreader/bundles/org.eclipse.ecf.services.quotes,org.eclipse.ecf.services.quotes"/>
+</provider>
+</psf>
