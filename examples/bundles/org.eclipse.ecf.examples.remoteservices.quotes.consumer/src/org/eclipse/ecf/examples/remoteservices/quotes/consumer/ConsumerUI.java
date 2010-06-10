@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.TabItem;
 
 public class ConsumerUI extends Shell {
 	private Text servers;
-	private Label label;
+	private Label lblBehindAFirewall;
 	private StyledText styledText;
 	private OSGilloscope gilloscope;
 	private Dispatcher dispatcher;
@@ -102,14 +102,15 @@ public class ConsumerUI extends Shell {
 																						composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 																						composite_1.setLayout(new GridLayout(1, false));
 																						
-																								label = (new Label(composite_1, SWT.NONE));
+																								lblBehindAFirewall = (new Label(composite_1, SWT.NONE));
 																								getLabel().setAlignment(SWT.CENTER);
 																								getLabel().setFont(new Font(null, "Segoe UI", 15, SWT.BOLD));
 																								getLabel().setLayoutData(
 																										new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-																								getLabel().setText("New Label");
+																								getLabel().setText("Behind a Firewall?");
 																								
 																										styledText = (new StyledText(composite_1, SWT.BORDER | SWT.WRAP));
+																										styledText.setText("Ports 2181 needs to be opened for the Zookeeper Discovery to work and port 3282 is needed by the ECF distribution provider. You can change the ports if you run this in your own environment.");
 																										styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 																										styledText.setEditable(false);
 																										
@@ -185,7 +186,7 @@ public class ConsumerUI extends Shell {
 	}
 
 	public Label getLabel() {
-		return label;
+		return lblBehindAFirewall;
 	}
 
 	public StyledText getStyledText() {
