@@ -8,13 +8,10 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-containerType ecf.generic.client</programArgs>
-      <vmArgs>-Dzoodiscovery.flavor=zoodiscovery.flavor.centralized=yazafatutu.com:2181</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
-
 
    <launcher name="zooQuotes">
       <solaris/>
@@ -29,7 +26,6 @@
 
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="org.apache.log4j"/>
@@ -52,7 +48,6 @@
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
-      <plugin id="org.eclipse.equinox.ds"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator"/>
@@ -87,7 +82,6 @@
       <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi.services" autoStart="true" startLevel="2" />
    </configurations>
