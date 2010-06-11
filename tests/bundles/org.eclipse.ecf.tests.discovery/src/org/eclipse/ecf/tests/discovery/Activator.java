@@ -41,9 +41,7 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		context = aContext;
 		locatorTracker = new ServiceTracker(aContext, IDiscoveryLocator.class.getName(), null);
-		locatorTracker.open();
 		advertiserTracker = new ServiceTracker(aContext, IDiscoveryAdvertiser.class.getName(), null);
-		advertiserTracker.open();
 	}
 
 	/*
@@ -72,6 +70,7 @@ public class Activator implements BundleActivator {
 	}
 	
 	public IDiscoveryLocator getDiscoveryLocator(String containerUnderTest) {
+		locatorTracker.open();
 		final ServiceReference[] serviceReferences = locatorTracker.getServiceReferences();
 		for(int i = 0; i < serviceReferences.length; i++) {
 			ServiceReference sr = serviceReferences[i];
@@ -83,6 +82,7 @@ public class Activator implements BundleActivator {
 	}
 
 	public IDiscoveryAdvertiser getDiscoveryAdvertiser(String containerUnderTest) {
+		advertiserTracker.open();
 		final ServiceReference[] serviceReferences = advertiserTracker.getServiceReferences();
 		for(int i = 0; i < serviceReferences.length; i++) {
 			ServiceReference sr = serviceReferences[i];
