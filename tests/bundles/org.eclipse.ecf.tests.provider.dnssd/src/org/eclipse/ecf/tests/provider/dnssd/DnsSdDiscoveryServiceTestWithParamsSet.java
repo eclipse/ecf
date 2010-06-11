@@ -11,7 +11,6 @@
 package org.eclipse.ecf.tests.provider.dnssd;
 
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
-import org.eclipse.ecf.provider.dnssd.DnsSdDisocoveryLocator;
 
 public class DnsSdDiscoveryServiceTestWithParamsSet extends
 		DnsSdDiscoveryServiceTest {
@@ -26,10 +25,6 @@ public class DnsSdDiscoveryServiceTestWithParamsSet extends
 	 * @see org.eclipse.ecf.tests.discovery.DiscoveryServiceTest#getDiscoveryLocator()
 	 */
 	protected IDiscoveryLocator getDiscoveryLocator() {
-		DnsSdDisocoveryLocator locator = (DnsSdDisocoveryLocator) super.getDiscoveryLocator();
-		locator.setSearchPath(new String[]{DOMAIN});
-		locator.setResolver(RESOLVER);
-		return locator;
+		return Activator.getDefault().getDiscoveryLocator();
 	}
-
 }
