@@ -11,6 +11,6 @@ package org.eclipse.ecf.tests.provider.local;
 
 public interface Local {
 
-	String CONTAINER_FACTORY_NAME = "ecf.localremoteservice";
+	String CONTAINER_FACTORY_NAME = "ecf.local";
 
 }
