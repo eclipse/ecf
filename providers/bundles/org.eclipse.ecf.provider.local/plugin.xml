@@ -6,15 +6,16 @@
       <namespace
             class="org.eclipse.ecf.provider.local.identity.LocalNamespace"
             description="Local Namespace"
-            name="ecf.namespace.localremoteservice">
+            name="ecf.namespace.local">
       </namespace>
    </extension>
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.internal.provider.local.container.LocalRemoteServiceContainerInstantiator"
+            description="Local Container"
             hidden="false"
-            name="ecf.localremoteservice"
+            name="ecf.local"
             server="false">
       </containerFactory>
    </extension>

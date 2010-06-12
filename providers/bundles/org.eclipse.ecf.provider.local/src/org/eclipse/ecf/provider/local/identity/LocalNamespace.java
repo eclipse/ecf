@@ -16,7 +16,7 @@ import org.eclipse.ecf.core.identity.*;
 public class LocalNamespace extends Namespace {
 
 	private static final long serialVersionUID = 3536863430112969997L;
-	public static final String NAME = "ecf.namespace.localremoteservice"; //$NON-NLS-1$
+	public static final String NAME = "ecf.namespace.local"; //$NON-NLS-1$
 	public static final String SCHEME = "local"; //$NON-NLS-1$
 
 	public ID createInstance(Object[] parameters) throws IDCreateException {
