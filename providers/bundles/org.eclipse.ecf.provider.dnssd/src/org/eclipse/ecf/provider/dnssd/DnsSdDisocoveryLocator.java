@@ -270,10 +270,12 @@ public class DnsSdDisocoveryLocator extends AbstractDiscoveryContainerAdapter {
 		}
 		
 		// instantiate a default resolver
-		try {
-			resolver = new SimpleResolver();
-		} catch (UnknownHostException e) {
-			throw new ContainerConnectException(e);
+		if(resolver == null) {
+			try {
+				resolver = new SimpleResolver();
+			} catch (UnknownHostException e) {
+				throw new ContainerConnectException(e);
+			}
 		}
 		
 		// read browsing domains for the given targetID/searchpath and merge with existing

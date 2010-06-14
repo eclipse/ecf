@@ -118,13 +118,12 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
 			DnsSdDisocoveryLocator locator = new DnsSdDisocoveryLocator();
 			DnsSdServiceTypeID targetID = new DnsSdServiceTypeID();
 			try {
-				//TODO use properties and define consts
-				final String[] searchPaths = (String[]) properties.get("searchPath");
+				final String[] searchPaths = (String[]) properties.get(IDnsSdDiscoveryConstants.CA_SEARCH_PATH);
 				if(searchPaths != null) {
 					targetID.setSearchPath(searchPaths);
 				}
 
-				final String resolver = (String) properties.get("resolver");
+				final String resolver = (String) properties.get(IDnsSdDiscoveryConstants.CA_RESOLVER);
 				if(resolver != null) {
 					locator.setResolver(resolver);
 				}
