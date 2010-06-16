@@ -16,9 +16,11 @@ Import-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.util,
  org.eclipse.ecf.provider.remoteservice.generic,
  org.eclipse.ecf.remoteservice,
- org.eclipse.ecf.remoteservice.client,
  org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.osgi.framework
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.equinox.common
 Bundle-Localization: bundle
+Export-Package: org.eclipse.ecf.internal.provider.local,
+ org.eclipse.ecf.internal.provider.local.container,
+ org.eclipse.ecf.provider.local.identity
+Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.0"
