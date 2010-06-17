@@ -9,10 +9,10 @@
 	
 	<!-- org.eclipse -->
 	<searchPath name="org.eclipse">
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
 			<uri format="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.5/?importType=binary"/>
 		</provider>
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
 			<uri format="http://rsync.osuosl.org/pub/eclipse/eclipse/updates/3.6milestones/?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
@@ -25,7 +25,7 @@
 	
 	<!-- emf -->
 	<searchPath name="org.eclipse.emf">
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
 			<uri format="http://rsync.osuosl.org/pub/eclipse/modeling/emf/updates/releases?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
@@ -44,7 +44,7 @@
                 <bc:propertyRef key="buckminster.component" />
             </uri>
         </provider>
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
 			<uri format="{0}/?importType=binary">
                 <bc:propertyRef key="ecf.p2.repository" />
             </uri>    
@@ -53,25 +53,25 @@
 
 	<!-- pluginbuilder -->
 	<searchPath name="org.pluginbuilder">
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
 			<uri format="http://self.pluginbuilder.org/nightly/p2-updateSite/?importType=binary"/>
 		</provider>
 	</searchPath>
 
 	<!-- swtbot -->
 	<searchPath name="org.eclipse.swtbot">
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
 			<uri format="http://rsync.osuosl.org/pub/eclipse/technology/swtbot/galileo/dev-build/update-site/?importType=binary"/>
 		</provider>
 	</searchPath>
 
 	<!-- default -->
 	<searchPath name="default">
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
+		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
 			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20090825191606/updateSite/?importType=binary"/>
 		</provider>
 		<!-- RC3 -->
-		<provider readerType="eclipse.import" componentTypes="osgi.bundle" mutable="false" source="false">
+		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
 			<uri format="http://rsync.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20100519200754/updateSite/?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
