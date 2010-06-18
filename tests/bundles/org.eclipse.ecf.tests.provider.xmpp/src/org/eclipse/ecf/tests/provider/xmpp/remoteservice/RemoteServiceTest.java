@@ -98,4 +98,24 @@ public class RemoteServiceTest extends AbstractRemoteServiceTest {
 		super.tearDown();
 	}
 
+	protected String getFilterFromServiceProperties(Dictionary serviceProperties) {
+		StringBuffer filter = null;
+		if (serviceProperties != null && serviceProperties.size() > 0) {
+			serviceProperties.remove(Constants.SERVICE_REGISTRATION_TARGETS);
+			if (serviceProperties.size() == 0) return null;
+			filter = new StringBuffer("(&");
+			for (final Enumeration e = serviceProperties.keys(); e
+					.hasMoreElements();) {
+				final Object key = e.nextElement();
+				final Object val = serviceProperties.get(key);
+				if (key != null && val != null) {
+					filter.append("(").append(key).append("=").append(val)
+							.append(")");
+				}
+			}
+			filter.append(")");
+		}
+		return (filter == null) ? null : filter.toString();
+	}
+
 }
