@@ -292,7 +292,7 @@ public abstract class AbstractRemoteServiceTest extends
 	protected IRemoteService registerAndGetRemoteService() {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		return registerAndGetRemoteService(adapters[0], adapters[1],
-				getClient(0).getConnectedID(), IConcatService.class.getName(), customizeProperties(null), 0);
+				getClient(0).getConnectedID(), IConcatService.class.getName(), customizeProperties(null), 5000);
 	}
 
 	protected IRemoteCallListener createRemoteCallListener() {
