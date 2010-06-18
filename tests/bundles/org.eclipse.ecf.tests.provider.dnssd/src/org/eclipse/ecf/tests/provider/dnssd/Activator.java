@@ -15,6 +15,7 @@ import java.util.Hashtable;
 
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.provider.dnssd.IDnsSdDiscoveryConstants;
+import org.omg.CORBA.SystemException;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -58,7 +59,10 @@ public class Activator implements BundleActivator {
 			properties.put(IDnsSdDiscoveryConstants.CA_RESOLVER, "8.8.8.8");
 			config.update(properties);
 
-			filter = context.createFilter("(" + Constants.SERVICE_PID + "=" + config.getPid() + ")").toString();
+			filter = "(" + Constants.SERVICE_PID + "=" + config.getPid() + ")";
+		} else {
+			System.err.println("You don't have config admin deployed. Some tests will fail that require configuration!");
+			filter = "(" + Constants.OBJECTCLASS + "=" + IDiscoveryLocator.class.getName() + ")";
 		}
 		
 		// add the service listener
