@@ -18,7 +18,6 @@ import org.eclipse.ecf.provider.dnssd.IDnsSdDiscoveryConstants;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
@@ -43,7 +42,7 @@ public class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(final BundleContext context) throws Exception {
-		Filter filter = null;
+		String filter = "";
 		
 		final ServiceReference configAdminServiceRef = context
 				.getServiceReference(ConfigurationAdmin.class.getName());
@@ -59,7 +58,7 @@ public class Activator implements BundleActivator {
 			properties.put(IDnsSdDiscoveryConstants.CA_RESOLVER, "8.8.8.8");
 			config.update(properties);
 
-			filter = context.createFilter("(" + Constants.SERVICE_PID + "=" + config.getPid() + ")");
+			filter = context.createFilter("(" + Constants.SERVICE_PID + "=" + config.getPid() + ")").toString();
 		}
 		
 		// add the service listener
@@ -75,12 +74,12 @@ public class Activator implements BundleActivator {
 				}
 			}
 		};
-		context.addServiceListener(listener, filter.toString());
+		context.addServiceListener(listener, filter);
 		
 		// try to get the service initially
 		ServiceReference[] references = null;
 		try {
-			references = context.getServiceReferences(IDiscoveryLocator.class.getName(), filter.toString());
+			references = context.getServiceReferences(IDiscoveryLocator.class.getName(), filter);
 		} catch (InvalidSyntaxException e) {
 			// may never happen
 			e.printStackTrace();
