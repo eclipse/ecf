@@ -15,7 +15,6 @@ import java.util.Hashtable;
 
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.provider.dnssd.IDnsSdDiscoveryConstants;
-import org.omg.CORBA.SystemException;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
