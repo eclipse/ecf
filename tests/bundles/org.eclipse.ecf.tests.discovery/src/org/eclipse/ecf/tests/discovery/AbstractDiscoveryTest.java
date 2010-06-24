@@ -76,8 +76,8 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	
 		discoveryLocator = getDiscoveryLocator();
 		discoveryAdvertiser = getDiscoveryAdvertiser();
-		assertNotNull(discoveryLocator);
-		assertNotNull(discoveryAdvertiser);
+		assertNotNull("IDiscoveryLocator must not be null", discoveryLocator);
+		assertNotNull("IDiscoveryAdvertiser must not be null", discoveryAdvertiser);
 	
 		final Properties props = new Properties();
 		final URI uri = DiscoveryTestHelper.createDefaultURI();

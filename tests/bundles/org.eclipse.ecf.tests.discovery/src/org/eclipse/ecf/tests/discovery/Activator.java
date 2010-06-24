@@ -72,10 +72,12 @@ public class Activator implements BundleActivator {
 	public IDiscoveryLocator getDiscoveryLocator(String containerUnderTest) {
 		locatorTracker.open();
 		final ServiceReference[] serviceReferences = locatorTracker.getServiceReferences();
-		for(int i = 0; i < serviceReferences.length; i++) {
-			ServiceReference sr = serviceReferences[i];
-			if(containerUnderTest.equals(sr.getProperty(IDiscoveryLocator.CONTAINER_NAME))) {
-				return (IDiscoveryLocator) locatorTracker.getService(sr);
+		if(serviceReferences != null) {
+			for(int i = 0; i < serviceReferences.length; i++) {
+				ServiceReference sr = serviceReferences[i];
+				if(containerUnderTest.equals(sr.getProperty(IDiscoveryLocator.CONTAINER_NAME))) {
+					return (IDiscoveryLocator) locatorTracker.getService(sr);
+				}
 			}
 		}
 		return null;
@@ -84,10 +86,12 @@ public class Activator implements BundleActivator {
 	public IDiscoveryAdvertiser getDiscoveryAdvertiser(String containerUnderTest) {
 		advertiserTracker.open();
 		final ServiceReference[] serviceReferences = advertiserTracker.getServiceReferences();
-		for(int i = 0; i < serviceReferences.length; i++) {
-			ServiceReference sr = serviceReferences[i];
-			if(containerUnderTest.equals(sr.getProperty(IDiscoveryAdvertiser.CONTAINER_NAME))) {
-				return (IDiscoveryAdvertiser) advertiserTracker.getService(sr);
+		if(serviceReferences != null) {
+			for(int i = 0; i < serviceReferences.length; i++) {
+				ServiceReference sr = serviceReferences[i];
+				if(containerUnderTest.equals(sr.getProperty(IDiscoveryAdvertiser.CONTAINER_NAME))) {
+					return (IDiscoveryAdvertiser) advertiserTracker.getService(sr);
+				}
 			}
 		}
 		return null;
