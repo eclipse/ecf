@@ -18,6 +18,7 @@ import java.util.Properties;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -51,7 +52,8 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
 		final Properties props = new Properties();
 		props.put("org.eclipse.ecf.discovery.containerName", NAME);
 		props.put(Constants.SERVICE_RANKING, new Integer(750));
-		serviceRegistrations.put(null, context.registerService(IDiscoveryLocator.class.getName(), new ServiceFactory() {
+		String[] clazzes = new String[]{IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
+		serviceRegistrations.put(null, context.registerService(clazzes, new ServiceFactory() {
 			private volatile DnsSdDisocoveryLocator locator;
 
 			/* (non-Javadoc)

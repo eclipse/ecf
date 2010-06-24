@@ -10,6 +10,14 @@
       </containerFactory>
    </extension>
    <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.dnssd.ContainerInstantiator"
+            description="Discovery Advertiser Container "
+            name="ecf.discovery.dnssd.advertiser">
+      </containerFactory>
+   </extension>
+   <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.provider.dnssd.DnsSdNamespace"
