@@ -52,9 +52,9 @@ public class Activator implements BundleActivator {
 					.getService(configAdminServiceRef);
 
 			Configuration config = configAdmin.createFactoryConfiguration(
-					DnsSdDiscoveryServiceTest.ECF_DISCOVERY_DNSSD, null);
+					DnsSdTestHelper.ECF_DISCOVERY_DNSSD, null);
 			Dictionary properties = new Hashtable();
-			properties.put(IDnsSdDiscoveryConstants.CA_SEARCH_PATH, new String[]{DnsSdDiscoveryServiceTest.DOMAIN});
+			properties.put(IDnsSdDiscoveryConstants.CA_SEARCH_PATH, new String[]{DnsSdTestHelper.DOMAIN});
 			properties.put(IDnsSdDiscoveryConstants.CA_RESOLVER, "8.8.8.8");
 			config.update(properties);
 

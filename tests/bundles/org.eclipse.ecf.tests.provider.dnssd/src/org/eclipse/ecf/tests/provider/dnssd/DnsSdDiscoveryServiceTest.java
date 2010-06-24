@@ -10,18 +10,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.dnssd;
 
-import java.net.URI;
-import java.util.Properties;
-
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.ServiceInfo;
-import org.eclipse.ecf.discovery.ServiceProperties;
-import org.eclipse.ecf.discovery.identity.IServiceTypeID;
-import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.provider.dnssd.DnsSdNamespace;
 import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 
@@ -30,23 +23,14 @@ import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
  */
 public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 
-	public static final String PORT = "80";
-	public static final String PATH = "/";
-	public static final String DOMAIN_A_RECORD = "www.ecf-project.org";
-	public static final String NAMING_AUTH = "iana";
-	public static final String PROTO = "tcp";
-	public static final String SCHEME = "http";
-	public static final String ECF_DISCOVERY_DNSSD = "ecf.discovery.dnssd";
-	public static final String DOMAIN = "dns-sd.ecf-project.org";
-	
 	public DnsSdDiscoveryServiceTest() {
-		this(ECF_DISCOVERY_DNSSD, DOMAIN, SCHEME, PROTO);
+		this(DnsSdTestHelper.ECF_DISCOVERY_DNSSD, DnsSdTestHelper.DOMAIN, DnsSdTestHelper.SCHEME, DnsSdTestHelper.PROTO);
 	}
 
 	public DnsSdDiscoveryServiceTest(String string, String scopes,
 			String service, String protocol) {
-		super(ECF_DISCOVERY_DNSSD);
-		setNamingAuthority(NAMING_AUTH);
+		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD);
+		setNamingAuthority(DnsSdTestHelper.NAMING_AUTH);
 		setScope(scopes);
 		setServices(new String[]{service});
 		setProtocol(protocol);
@@ -60,18 +44,7 @@ public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		final Properties props = new Properties();
-		final URI uri = URI.create(SCHEME + "://" + DOMAIN_A_RECORD + ":" + PORT + PATH);
-	
-		Namespace namespace = discoveryLocator.getServicesNamespace();
-		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(namespace, new String[]{SCHEME}, new String[]{DOMAIN}, new String[]{PROTO}, NAMING_AUTH);
-		assertNotNull(serviceTypeID);
-		
-		final ServiceProperties serviceProperties = new ServiceProperties(props);
-		serviceProperties.setPropertyString("path", PATH);
-		serviceProperties.setPropertyString("dns-sd.ptcl", SCHEME);
-
-		serviceInfo = new ServiceInfo(uri, DOMAIN_A_RECORD, serviceTypeID, 10, 0, serviceProperties);
+		serviceInfo = DnsSdTestHelper.createServiceInfo(discoveryLocator.getServicesNamespace());
 		assertNotNull(serviceInfo);
 	}
 

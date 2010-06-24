@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Markus Alexander Kuppe.
+ * Copyright (c) 2010 Markus Alexander Kuppe.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.dnssd;
 
+import org.eclipse.ecf.tests.discovery.DiscoveryTestsWithoutRegister;
 
-public class DnsSdDiscoveryServiceTestWithWildcards extends DnsSdDiscoveryServiceTest {
+public class DnsSdAdvertiserWithoutRegister extends
+		DiscoveryTestsWithoutRegister {
 
-	public DnsSdDiscoveryServiceTestWithWildcards() {
-		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD, DnsSdTestHelper.DOMAIN, "", "");
+	public DnsSdAdvertiserWithoutRegister() {
+		super("ecf.discovery.dnssd.advertiser");
 	}
 }
