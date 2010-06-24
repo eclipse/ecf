@@ -54,7 +54,7 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
 		props.put(Constants.SERVICE_RANKING, new Integer(750));
 		String[] clazzes = new String[]{IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
 		serviceRegistrations.put(null, context.registerService(clazzes, new ServiceFactory() {
-			private volatile DnsSdDisocoveryLocator locator;
+			private volatile DnsSdDiscoveryLocator locator;
 
 			/* (non-Javadoc)
 			 * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration)
@@ -62,7 +62,7 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
 			public Object getService(final Bundle bundle, final ServiceRegistration registration) {
 				if (locator == null) {
 					try {
-						locator = new DnsSdDisocoveryLocator();
+						locator = new DnsSdDiscoveryLocator();
 						locator.connect(null, null);
 					} catch (final ContainerConnectException e) {
 						locator = null;
@@ -117,7 +117,7 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
 			Properties props = new Properties();
 			props.put(Constants.SERVICE_PID, pid);
 			
-			DnsSdDisocoveryLocator locator = new DnsSdDisocoveryLocator();
+			DnsSdDiscoveryLocator locator = new DnsSdDiscoveryLocator();
 			DnsSdServiceTypeID targetID = new DnsSdServiceTypeID();
 			try {
 				final String[] searchPaths = (String[]) properties.get(IDnsSdDiscoveryConstants.CA_SEARCH_PATH);

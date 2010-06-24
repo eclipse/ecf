@@ -24,9 +24,9 @@ public class ContainerInstantiator implements IContainerInstantiator {
 			Object[] parameters) throws ContainerCreateException {
 // For the moment advertiser and locator are served by the same class/instance		
 //		if(description != null && "ecf.discovery.dnssd.advertiser".equals(description.getName())) {
-//			return new DnsSdDisocoveryLocator();
+//			return new DnsSdDiscoveryLocator();
 //		} else if(description != null && "ecf.discovery.dnssd.locator".equals(description.getName())) {
-			return new DnsSdDisocoveryLocator();
+			return new DnsSdDiscoveryLocator();
 //		}
 //		return null;
 	}
