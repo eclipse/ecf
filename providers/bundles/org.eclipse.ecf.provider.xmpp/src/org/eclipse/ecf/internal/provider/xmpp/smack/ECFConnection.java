@@ -36,10 +36,12 @@ import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Bind;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.Message.Type;
 
 public class ECFConnection implements ISynchAsynchConnection {
 
@@ -52,8 +54,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	protected static final String STRING_ENCODING = "UTF-8";
 	public static final String OBJECT_PROPERTY_NAME = ECFConnection.class
-			.getName()
-			+ ".object";
+			.getName() + ".object";
 	protected static final int XMPP_DEFAULT_PORT = 5222;
 	protected static final int XMPPS_DEFAULT_PORT = 5223;
 
@@ -69,6 +70,14 @@ public class ECFConnection implements ISynchAsynchConnection {
 	private boolean google = false;
 
 	private boolean disconnecting = false;
+
+	private int BIND_TIMEOUT = new Integer(System.getProperty(
+			"org.eclipse.ecf.provider.xmpp.ECFConnection.bindTimeout", "15000"))
+			.intValue();
+
+	private Object bindLock = new Object();
+
+	private String jid;
 
 	private final PacketListener packetListener = new PacketListener() {
 		public void processPacket(Packet arg0) {
@@ -220,11 +229,29 @@ public class ECFConnection implements ISynchAsynchConnection {
 			// Login
 			connection.login(username, (String) data, serverResource);
 
-			isConnected = true;
+			waitForBindResult();
+
 		} catch (final XMPPException e) {
 			throw new ContainerConnectException("Login attempt failed", e);
 		}
-		return null;
+		return jid;
+	}
+
+	private void waitForBindResult() throws XMPPException {
+		// We'll wait a maximum of
+		long bindTimeout = System.currentTimeMillis() + BIND_TIMEOUT;
+		synchronized (bindLock) {
+			while (jid == null && System.currentTimeMillis() < bindTimeout) {
+				try {
+					bindLock.wait(1000);
+				} catch (InterruptedException e) {
+				}
+			}
+			if (jid == null)
+				throw new XMPPException(
+						"timeout waiting for server bind result");
+			isConnected = true;
+		}
 	}
 
 	private String getClientIdentifier() {
@@ -245,8 +272,11 @@ public class ECFConnection implements ISynchAsynchConnection {
 			connection.removePacketListener(packetListener);
 			connection.removeConnectionListener(connectionListener);
 			connection.disconnect();
-			isConnected = false;
 			connection = null;
+			synchronized (bindLock) {
+				jid = null;
+				isConnected = false;
+			}
 		}
 	}
 
@@ -288,6 +318,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 	}
 
 	protected void handlePacket(Packet arg0) {
+		handleJidPacket(arg0);
 		try {
 			final Object val = arg0.getProperty(OBJECT_PROPERTY_NAME);
 			if (val != null) {
@@ -303,6 +334,22 @@ public class ECFConnection implements ISynchAsynchConnection {
 				disconnect();
 			} catch (final Exception e1) {
 				logException("Exception in disconnect()", e1);
+			}
+		}
+	}
+
+	private void handleJidPacket(Packet packet) {
+		if (jid != null)
+			return;
+		if (packet instanceof IQ) {
+			IQ iqPacket = (IQ) packet;
+			if (iqPacket.getType().equals(IQ.Type.RESULT)
+					&& iqPacket instanceof Bind) {
+				Bind bindPacket = (Bind) iqPacket;
+				synchronized (bindLock) {
+					jid = bindPacket.getJid();
+					bindLock.notify();
+				}
 			}
 		}
 	}

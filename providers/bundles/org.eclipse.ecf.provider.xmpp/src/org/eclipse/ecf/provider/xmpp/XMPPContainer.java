@@ -10,23 +10,40 @@ package org.eclipse.ecf.provider.xmpp;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
-import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.core.security.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.Callback;
+import org.eclipse.ecf.core.security.CallbackHandler;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.security.ObjectCallback;
+import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
-import org.eclipse.ecf.internal.provider.xmpp.*;
 import org.eclipse.ecf.internal.provider.xmpp.Messages;
-import org.eclipse.ecf.internal.provider.xmpp.events.*;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomContainer;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomManager;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerAccountManager;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerContext;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerPresenceHelper;
+import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
+import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
+import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
+import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.internal.provider.xmpp.filetransfer.XMPPOutgoingFileTransferHelper;
 import org.eclipse.ecf.internal.provider.xmpp.search.XMPPUserSearchManager;
-import org.eclipse.ecf.internal.provider.xmpp.smack.*;
+import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
+import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
+import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionPacketEvent;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
@@ -35,13 +52,23 @@ import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.search.IUserSearchManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
-import org.eclipse.ecf.provider.comm.*;
-import org.eclipse.ecf.provider.generic.*;
+import org.eclipse.ecf.provider.comm.AsynchEvent;
+import org.eclipse.ecf.provider.comm.ConnectionCreateException;
+import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.provider.generic.ClientSOContainer;
+import org.eclipse.ecf.provider.generic.ContainerMessage;
+import org.eclipse.ecf.provider.generic.SOConfig;
+import org.eclipse.ecf.provider.generic.SOContainerConfig;
+import org.eclipse.ecf.provider.generic.SOContext;
+import org.eclipse.ecf.provider.generic.SOWrapper;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.osgi.util.NLS;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.packet.*;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.packet.MUCUser;
 import org.jivesoftware.smackx.packet.XHTMLExtension;
 
@@ -57,8 +84,7 @@ public class XMPPContainer extends ClientSOContainer implements
 			.getNamespaceIdentifier();
 
 	public static final String CONTAINER_HELPER_ID = XMPPContainer.class
-			.getName()
-			+ ".xmpphandler"; //$NON-NLS-1$
+			.getName() + ".xmpphandler"; //$NON-NLS-1$
 
 	protected static final String GOOGLE_SERVICENAME = "gmail.com"; //$NON-NLS-1$
 
@@ -239,9 +265,34 @@ public class XMPPContainer extends ClientSOContainer implements
 			return super.getAdapter(clazz);
 	}
 
+	private String trimResourceFromJid(String jid) {
+		int slashIndex = jid.indexOf('/');
+		if (slashIndex > 0) {
+			return jid.substring(slashIndex + 1);
+		} else
+			return null;
+	}
+
+	private void resetTargetResource(ID originalTarget, Object serverData) {
+		// Reset resource to that given by server
+		if (originalTarget instanceof XMPPID) {
+			XMPPID xmppOriginalTarget = (XMPPID) originalTarget;
+			if (serverData != null && serverData instanceof String) {
+				String jid = (String) serverData;
+				String jidResource = trimResourceFromJid(jid);
+				if (jidResource != null) {
+					xmppOriginalTarget.setResourceName(jidResource);
+				}
+			}
+		}
+	}
+
 	protected ID handleConnectResponse(ID originalTarget, Object serverData)
 			throws Exception {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
+			// First reset target resource to whatever the server says it is
+			resetTargetResource(originalTarget, serverData);
+
 			addNewRemoteMember(originalTarget, null);
 
 			final ECFConnection conn = getECFConnection();
@@ -371,8 +422,8 @@ public class XMPPContainer extends ClientSOContainer implements
 			final Object extension = i.next();
 			if (extension instanceof XHTMLExtension) {
 				final XHTMLExtension xhtmlExtension = (XHTMLExtension) extension;
-				deliverEvent(new MessageEvent((Message) packet, xhtmlExtension
-						.getBodies()));
+				deliverEvent(new MessageEvent((Message) packet,
+						xhtmlExtension.getBodies()));
 				return true;
 			}
 			if (packet instanceof Presence && extension instanceof MUCUser) {
@@ -392,8 +443,9 @@ public class XMPPContainer extends ClientSOContainer implements
 	 */
 	protected SOContext createSharedObjectContext(SOConfig soconfig,
 			IQueueEnqueue queue) {
-		return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig
-				.getHomeContainerID(), this, soconfig.getProperties(), queue);
+		return new XMPPContainerContext(soconfig.getSharedObjectID(),
+				soconfig.getHomeContainerID(), this, soconfig.getProperties(),
+				queue);
 	}
 
 	/*
@@ -437,8 +489,7 @@ public class XMPPContainer extends ClientSOContainer implements
 					handleSharedObjectDisposeMessage(contMessage);
 				} else {
 					debug(NLS
-							.bind(
-									Messages.XMPPContainer_UNRECOGONIZED_CONTAINER_MESSAGE,
+							.bind(Messages.XMPPContainer_UNRECOGONIZED_CONTAINER_MESSAGE,
 									contMessage));
 				}
 			} else {
