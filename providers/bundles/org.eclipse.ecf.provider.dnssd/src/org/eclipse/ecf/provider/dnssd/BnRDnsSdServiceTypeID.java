@@ -30,7 +30,7 @@ public class BnRDnsSdServiceTypeID extends DnsSdServiceTypeID {
   	/**
   	 * A list of domains recommended for browsing
   	 */
-  	static final String BROWSE_DOMAIN = "b._dns-sd";
+  	static final String BROWSE_DOMAINS = "b._dns-sd";
 	/**
 	 * A single recommended default domain for browsing
 	 */
@@ -38,7 +38,7 @@ public class BnRDnsSdServiceTypeID extends DnsSdServiceTypeID {
 	/**
 	 * A list of domains recommended for registering services using Dynamic Update
 	 */
-	static final String REG_DOMAIN = "r._dns-sd";
+	static final String REG_DOMAINS = "r._dns-sd";
 	/**
 	 * A single recommended default domain for registering services.
 	 */
