@@ -191,7 +191,8 @@ public class DnsSdDiscoveryLocator extends AbstractDiscoveryContainerAdapter {
 			Lookup txtQuery = new Lookup(srvRecord.getName(), Type.TXT);
 			txtQuery.setResolver(resolver);
 			Record[] txtQueryResults = txtQuery.run();
-			for (int l = 0; l < txtQueryResults.length; l++) {
+			int length = txtQueryResults == null ? 0 : txtQueryResults.length;
+			for (int l = 0; l < length; l++) {
 				TXTRecord txtResult = (TXTRecord) txtQueryResults[l];
 				List strings = txtResult.getStrings();
 				for (Iterator itr = strings.iterator(); itr.hasNext();) {
