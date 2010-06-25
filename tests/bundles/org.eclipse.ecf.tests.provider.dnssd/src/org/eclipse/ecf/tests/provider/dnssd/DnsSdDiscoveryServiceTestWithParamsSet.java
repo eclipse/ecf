@@ -15,12 +15,6 @@ import org.eclipse.ecf.discovery.IDiscoveryLocator;
 public class DnsSdDiscoveryServiceTestWithParamsSet extends
 		DnsSdDiscoveryServiceTest {
 
-	public static final String RESOLVER = "ns1.ecf-project.org";
-
-	public DnsSdDiscoveryServiceTestWithParamsSet() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.discovery.DiscoveryServiceTest#getDiscoveryLocator()
 	 */

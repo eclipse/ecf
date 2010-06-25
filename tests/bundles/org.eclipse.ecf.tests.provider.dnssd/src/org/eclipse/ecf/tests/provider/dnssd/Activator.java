@@ -55,7 +55,8 @@ public class Activator implements BundleActivator {
 					DnsSdTestHelper.ECF_DISCOVERY_DNSSD, null);
 			Dictionary properties = new Hashtable();
 			properties.put(IDnsSdDiscoveryConstants.CA_SEARCH_PATH, new String[]{DnsSdTestHelper.DOMAIN});
-			properties.put(IDnsSdDiscoveryConstants.CA_RESOLVER, "8.8.8.8");
+			properties.put(IDnsSdDiscoveryConstants.CA_RESOLVER, DnsSdTestHelper.DNS_RESOLVER);
+			properties.put(IDnsSdDiscoveryConstants.CA_TSIG_KEY, DnsSdTestHelper.TSIG_KEY);
 			config.update(properties);
 
 			filter = "(" + Constants.SERVICE_PID + "=" + config.getPid() + ")";

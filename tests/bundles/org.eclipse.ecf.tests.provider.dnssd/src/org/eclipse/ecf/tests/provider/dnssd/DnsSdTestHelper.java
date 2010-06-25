@@ -29,6 +29,10 @@ public class DnsSdTestHelper {
 	public static final String SCHEME = "http";
 	public static final String ECF_DISCOVERY_DNSSD = "ecf.discovery.dnssd";
 	public static final String DOMAIN = "dns-sd.ecf-project.org";
+	public static final String DNS_RESOLVER = "8.8.8.8";
+	public static final String DNS_SERVER = "188.40.102.175";
+	public static final String TSIG_KEY = "EdoBE6i8YeIiFKiKEGC9LaI4X+C44Rdd6Nwh7ZvBi6tCpszvkartLoPjVYKoJ4RdY4hnFV3zAKp1d1t2MToxUQ==";
+	public static final String REG_DOMAIN = "dnssd2.ecf-project.org";
 
 	public static IServiceInfo createServiceInfo(Namespace namespace) {
 		final Properties props = new Properties();
@@ -42,4 +46,5 @@ public class DnsSdTestHelper {
 
 		return new ServiceInfo(uri, DOMAIN_A_RECORD, serviceTypeID, 10, 0, serviceProperties);
 	}
+
 }

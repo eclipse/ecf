@@ -27,13 +27,13 @@ public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 		this(DnsSdTestHelper.ECF_DISCOVERY_DNSSD, DnsSdTestHelper.DOMAIN, DnsSdTestHelper.SCHEME, DnsSdTestHelper.PROTO);
 	}
 
-	public DnsSdDiscoveryServiceTest(String string, String scopes,
-			String service, String protocol) {
+	public DnsSdDiscoveryServiceTest(String aContainer, String aDomain,
+			String aService, String aProtocol) {
 		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD);
 		setNamingAuthority(DnsSdTestHelper.NAMING_AUTH);
-		setScope(scopes);
-		setServices(new String[]{service});
-		setProtocol(protocol);
+		setScope(aDomain);
+		setServices(new String[]{aService});
+		setProtocol(aProtocol);
 		setComparator(new DnsSdDiscoveryComparator());
 		eventsToExpect = 7;
 	}
