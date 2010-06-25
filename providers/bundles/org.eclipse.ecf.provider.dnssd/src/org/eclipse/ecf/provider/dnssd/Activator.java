@@ -132,7 +132,8 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
 				
 				final String tsigKey = (String) properties.get(IDnsSdDiscoveryConstants.CA_TSIG_KEY);
 				if(tsigKey != null) {
-					locator.setTsigKey(tsigKey);
+					final String tsigKeyName = (String) properties.get(IDnsSdDiscoveryConstants.CA_TSIG_KEY_NAME);
+					locator.setTsigKey(tsigKeyName, tsigKey);
 				}
 				
 				locator.connect(targetID, null);

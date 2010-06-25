@@ -355,10 +355,7 @@ public class DnsSdDiscoveryLocator extends AbstractDiscoveryContainerAdapter {
 		}
 	}
 
-	/**
-	 * @param tsigKey Sets the TSIG key to be used to sign requests
-	 */
-	public void setTsigKey(String aTsigKey) {
-		resolver.setTSIGKey(new TSIG("default", aTsigKey));
+	public void setTsigKey(String tsigKeyName, String tsigKey) {
+		resolver.setTSIGKey(new TSIG(tsigKeyName, tsigKey));
 	}
 }

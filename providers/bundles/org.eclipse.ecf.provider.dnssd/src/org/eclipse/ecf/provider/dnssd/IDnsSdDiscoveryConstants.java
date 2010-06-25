@@ -24,6 +24,7 @@ public interface IDnsSdDiscoveryConstants {
 	/**
 	 * Config admin key to define the TSIG key to be used to sign requests 
 	 */
-	public final String CA_TSIG_KEY = "tsig_key";
+	public final String CA_TSIG_KEY = "tsig-key";
+	public final Object CA_TSIG_KEY_NAME = "tsig-key-name";
 
 }
