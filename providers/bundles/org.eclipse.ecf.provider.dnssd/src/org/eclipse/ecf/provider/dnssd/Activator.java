@@ -130,12 +130,17 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
 					locator.setResolver(resolver);
 				}
 				
+				final String tsigKey = (String) properties.get(IDnsSdDiscoveryConstants.CA_TSIG_KEY);
+				if(tsigKey != null) {
+					locator.setTsigKey(tsigKey);
+				}
+				
 				locator.connect(targetID, null);
 				serviceRegistrations.put(pid, context.registerService(IDiscoveryLocator.class.getName(), locator, props));
 			} catch (ContainerConnectException e) {
-				throw new ConfigurationException("", "", e);
+				throw new ConfigurationException("IDnsSdDiscoveryConstants properties", e.getLocalizedMessage(), e);
 			} catch (ClassCastException cce) {
-				throw new ConfigurationException("", "", cce);
+				throw new ConfigurationException("IDnsSdDiscoveryConstants properties", cce.getLocalizedMessage(), cce);
 			}
 		}
 	}

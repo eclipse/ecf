@@ -44,6 +44,7 @@ import org.xbill.DNS.Resolver;
 import org.xbill.DNS.ResolverConfig;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.SimpleResolver;
+import org.xbill.DNS.TSIG;
 import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.Type;
 
@@ -352,5 +353,12 @@ public class DnsSdDiscoveryLocator extends AbstractDiscoveryContainerAdapter {
 		} catch (UnknownHostException e) {
 			throw new DnsSdDiscoveryException(e);
 		}
+	}
+
+	/**
+	 * @param tsigKey Sets the TSIG key to be used to sign requests
+	 */
+	public void setTsigKey(String aTsigKey) {
+		resolver.setTSIGKey(new TSIG("default", aTsigKey));
 	}
 }
