@@ -22,13 +22,12 @@ public class ContainerInstantiator implements IContainerInstantiator {
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] parameters) throws ContainerCreateException {
-// For the moment advertiser and locator are served by the same class/instance		
-//		if(description != null && "ecf.discovery.dnssd.advertiser".equals(description.getName())) {
-//			return new DnsSdDiscoveryLocator();
-//		} else if(description != null && "ecf.discovery.dnssd.locator".equals(description.getName())) {
+		if(description != null && "ecf.discovery.dnssd.advertiser".equals(description.getName())) {
+			return new DnsSdDiscoveryAdvertiser();
+		} else if(description != null && "ecf.discovery.dnssd.locator".equals(description.getName())) {
 			return new DnsSdDiscoveryLocator();
-//		}
-//		return null;
+		}
+		return null;
 	}
 
 	/* (non-Javadoc)

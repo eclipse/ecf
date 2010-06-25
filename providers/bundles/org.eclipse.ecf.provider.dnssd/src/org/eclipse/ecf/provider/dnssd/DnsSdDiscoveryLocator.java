@@ -52,8 +52,8 @@ public class DnsSdDiscoveryLocator extends AbstractDiscoveryContainerAdapter {
 
 	private static final String DNS_SD_PATH = "path";
 	private static final String DNS_SD_PTCL = "dns-sd.ptcl";
-	private DnsSdServiceTypeID targetID;
-	private Resolver resolver;
+	protected DnsSdServiceTypeID targetID;
+	protected Resolver resolver;
 
 	public DnsSdDiscoveryLocator() {
 		super(DnsSdNamespace.NAME, new DiscoveryContainerConfig(IDFactory
