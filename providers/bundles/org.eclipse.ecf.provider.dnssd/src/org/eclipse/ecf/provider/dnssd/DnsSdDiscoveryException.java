@@ -10,8 +10,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.dnssd;
 
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 
-public class DnsSdDiscoveryException extends RuntimeException {
+
+public class DnsSdDiscoveryException extends ECFRuntimeException {
 
 	private static final long serialVersionUID = 415901701737755102L;
 
