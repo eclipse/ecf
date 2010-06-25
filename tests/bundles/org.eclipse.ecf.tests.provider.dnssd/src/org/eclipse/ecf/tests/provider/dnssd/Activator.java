@@ -57,6 +57,7 @@ public class Activator implements BundleActivator {
 			properties.put(IDnsSdDiscoveryConstants.CA_SEARCH_PATH, new String[]{DnsSdTestHelper.DOMAIN});
 			properties.put(IDnsSdDiscoveryConstants.CA_RESOLVER, DnsSdTestHelper.DNS_RESOLVER);
 			properties.put(IDnsSdDiscoveryConstants.CA_TSIG_KEY, DnsSdTestHelper.TSIG_KEY);
+			properties.put(IDnsSdDiscoveryConstants.CA_TSIG_KEY_NAME, DnsSdTestHelper.TSIG_KEY_NAME);
 			config.update(properties);
 
 			filter = "(" + Constants.SERVICE_PID + "=" + config.getPid() + ")";

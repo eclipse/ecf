@@ -31,8 +31,12 @@ public class DnsSdTestHelper {
 	public static final String DOMAIN = "dns-sd.ecf-project.org";
 	public static final String DNS_RESOLVER = "8.8.8.8";
 	public static final String DNS_SERVER = "188.40.102.175";
+
 	public static final String TSIG_KEY = "EdoBE6i8YeIiFKiKEGC9LaI4X+C44Rdd6Nwh7ZvBi6tCpszvkartLoPjVYKoJ4RdY4hnFV3zAKp1d1t2MToxUQ==";
+	public static final String TSIG_KEY_NAME = "junit.ecf-project.org";
+
 	public static final String REG_DOMAIN = "dnssd2.ecf-project.org";
+	public static final String REG_SCHEME = "junit";
 
 	public static IServiceInfo createServiceInfo(Namespace namespace) {
 		final Properties props = new Properties();
