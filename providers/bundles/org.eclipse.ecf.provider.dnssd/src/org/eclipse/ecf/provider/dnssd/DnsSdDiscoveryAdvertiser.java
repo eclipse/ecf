@@ -10,7 +10,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.dnssd;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -19,9 +21,17 @@ import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Message;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Rcode;
+import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
+import org.xbill.DNS.Type;
+import org.xbill.DNS.Update;
 
 public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryLocator {
 
@@ -30,7 +40,52 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryLocator {
 	 */
 	public void registerService(IServiceInfo serviceInfo) {
 		Assert.isNotNull(serviceInfo);
-		throw new UnsupportedOperationException("Not yet implemented");
+		DnsSdServiceID serviceID = (DnsSdServiceID) serviceInfo.getServiceID();
+		DnsSdServiceTypeID serviceTypeID = (DnsSdServiceTypeID) serviceID.getServiceTypeID();
+
+			String[] scopes = serviceTypeID.getScopes();
+			for (int i = 0; i < scopes.length; i++) {
+				try {
+					String domain = scopes[i] + ".";
+					Name zone = Name.fromString(domain);
+					
+					Name name = Name.fromString("_" + serviceTypeID.getServices()[0] + "._" + serviceTypeID.getProtocols()[0], zone);
+					
+					//TODO make TTL configurable per serviceinfo instance or via config admin
+					int ttl = 3600;
+					int priority = serviceInfo.getPriority();
+					int port = serviceInfo.getLocation().getPort();
+					String target = serviceInfo.getLocation().getHost();
+					int weight = serviceInfo.getWeight();
+
+					// TYPE.SRV
+					Record record = Record.fromString(name, Type.SRV, DClass.IN, ttl, priority + " " + weight + " " + port + " " + target + ".", zone);
+					Update update = new Update(zone);
+					update.replace(record);
+					
+					// TYPE.TXT for service properties
+					IServiceProperties properties = serviceInfo.getServiceProperties();
+					Enumeration enumeration = properties.getPropertyNames();
+					while(enumeration.hasMoreElements()) {
+						Object property = enumeration.nextElement();
+						String key = property.toString();
+						String value = (String) properties.getProperty(key).toString();
+						record = Record.fromString(name, Type.TXT, DClass.IN, ttl, key + "=" + value, zone);
+						update.add(record);
+					}
+					
+					// set up a new resolver for the given domain
+					((SimpleResolver)resolver).setAddress(InetAddress.getByName("ns1.ecf-project.org"));
+					resolver.setTCP(true);
+					Message response = resolver.send(update);
+					
+					if(response.getRcode() != Rcode.NOERROR) {
+						DnsSdDiscoveryException.getException(response.getRcode());
+					}
+				} catch (Exception e) {
+					throw new DnsSdDiscoveryException(e);
+				}
+			}
 	}
 
 	/* (non-Javadoc)

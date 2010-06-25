@@ -11,13 +11,29 @@
 package org.eclipse.ecf.provider.dnssd;
 
 import org.eclipse.ecf.core.util.ECFRuntimeException;
+import org.xbill.DNS.Rcode;
 
 
 public class DnsSdDiscoveryException extends ECFRuntimeException {
 
+	public static DnsSdDiscoveryException getException(int rcode) {
+		switch (rcode) {
+		case Rcode.REFUSED:
+			return new DnsSdDiscoveryException("DNS update denied by server (return code: " + rcode + ")");
+		case Rcode.NOTAUTH:
+			return new DnsSdDiscoveryException("TSIG verify failed (BADKEY) (return code: " + rcode + ")");
+		default:
+			return new DnsSdDiscoveryException("DNS update failed with return code: " + rcode);
+		}
+	}
+	
 	private static final long serialVersionUID = 415901701737755102L;
 
 	public DnsSdDiscoveryException(Throwable e) {
 		super(e);
+	}
+
+	public DnsSdDiscoveryException(String message) {
+		super(message);
 	}
 }
