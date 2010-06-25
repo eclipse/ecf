@@ -20,5 +20,10 @@ public interface IDnsSdDiscoveryConstants {
 	 * Config admin key to define the default resolver
 	 */
 	public final String CA_RESOLVER = "resolver";
+	
+	/**
+	 * Config admin key to define the TSIG key to be used to sign requests 
+	 */
+	public final String CA_TSIG_KEY = "tsig_key";
 
 }
