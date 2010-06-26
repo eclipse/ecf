@@ -261,11 +261,11 @@ public class DnsSdDiscoveryLocator extends AbstractDiscoveryContainerAdapter {
 		if(aTargetID == null || !(aTargetID instanceof DnsSdServiceTypeID)) {
 			ResolverConfig config = new ResolverConfig();
 			Name[] searchPaths = config.searchPath();
-			if(searchPaths.length >= 0) {
+			if(searchPaths != null && searchPaths.length > 0) {
 				targetID = new DnsSdServiceTypeID();
 				targetID.setSearchPath(searchPaths);
 			} else {
-				throw new ContainerConnectException("No target id given");
+				throw new ContainerConnectException("No target id given and fallbacks failed");
 			}
 		} else {
 			targetID = (DnsSdServiceTypeID) aTargetID;
