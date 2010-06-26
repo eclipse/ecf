@@ -19,11 +19,11 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
@@ -33,8 +33,14 @@ import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.Type;
 import org.xbill.DNS.Update;
 
-public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryLocator {
+public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 
+	public DnsSdDiscoveryAdvertiser() {
+		super(DnsSdNamespace.NAME, new DiscoveryContainerConfig(IDFactory
+				.getDefault().createStringID(
+						DnsSdDiscoveryAdvertiser.class.getName())));
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryLocator#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
@@ -141,49 +147,5 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryLocator {
 			fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
 					connectContext));
 			fireContainerEvent(new ContainerConnectedEvent(this.getID(), targetID));
-	}
-
-	/* not a locator! */
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryLocator#getServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID)
-	 */
-	public IServiceInfo getServiceInfo(IServiceID aServiceId) {
-		Assert.isNotNull(aServiceId);
-		// nop, we are just an Advertiser but AbstractDiscoveryContainerAdapter
-		// doesn't support this yet
-		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryLocator");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryLocator#getServiceTypes()
-	 */
-	public IServiceTypeID[] getServiceTypes() {
-		// nop, we are just an Advertiser but AbstractDiscoveryContainerAdapter
-		// doesn't support this yet
-		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryLocator");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryLocator#getServices()
-	 */
-	public IServiceInfo[] getServices() {
-		// nop, we are just an Advertiser but AbstractDiscoveryContainerAdapter
-		// doesn't support this yet
-		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryLocator");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryLocator#getServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)
-	 */
-	public IServiceInfo[] getServices(IServiceTypeID aServiceTypeId) {
-		Assert.isNotNull(aServiceTypeId);
-		// nop, we are just an Advertiser but AbstractDiscoveryContainerAdapter
-		// doesn't support this yet
-		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryLocator");
 	}
 }

@@ -24,12 +24,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.ServiceInfo;
@@ -40,20 +37,16 @@ import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
-import org.xbill.DNS.Resolver;
 import org.xbill.DNS.ResolverConfig;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.SimpleResolver;
-import org.xbill.DNS.TSIG;
 import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.Type;
 
-public class DnsSdDiscoveryLocator extends AbstractDiscoveryContainerAdapter {
+public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 
 	private static final String DNS_SD_PATH = "path";
 	private static final String DNS_SD_PTCL = "dns-sd.ptcl";
-	protected DnsSdServiceTypeID targetID;
-	protected Resolver resolver;
 
 	public DnsSdDiscoveryLocator() {
 		super(DnsSdNamespace.NAME, new DiscoveryContainerConfig(IDFactory
@@ -216,36 +209,6 @@ public class DnsSdDiscoveryLocator extends AbstractDiscoveryContainerAdapter {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.eclipse.ecf.discovery.IDiscoveryAdvertiser#registerService(org.eclipse
-	 * .ecf.discovery.IServiceInfo)
-	 */
-	public void registerService(IServiceInfo serviceInfo) {
-		Assert.isNotNull(serviceInfo);
-		// nop, we are just a Locator but AbstractDiscoveryContainerAdapter
-		// doesn't support this yet
-		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryAdvertiser");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ecf.discovery.IDiscoveryAdvertiser#unregisterService(org.
-	 * eclipse.ecf.discovery.IServiceInfo)
-	 */
-	public void unregisterService(IServiceInfo serviceInfo) {
-		Assert.isNotNull(serviceInfo);
-		// nop, we are just a Locator but AbstractDiscoveryContainerAdapter
-		// doesn't support this yet
-		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryAdvertiser");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
 	 * org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 * org.eclipse.ecf.core.security.IConnectContext)
 	 */
@@ -305,57 +268,5 @@ public class DnsSdDiscoveryLocator extends AbstractDiscoveryContainerAdapter {
 		}
 		
 		return (String[]) res.toArray(new String[res.size()]);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainer#disconnect()
-	 */
-	public void disconnect() {
-		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(),
-				getConnectedID()));
-		targetID = null;
-		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(),
-				getConnectedID()));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainer#getConnectedID()
-	 */
-	public ID getConnectedID() {
-		return targetID;
-	}
-
-	/**
-	 * @param searchPaths The default search path used for discovery 
-	 */
-	public void setSearchPath(String[] searchPaths) {
-		targetID.setSearchPath(searchPaths);
-	}
-	
-	/**
-	 * @return The default search path used by this discovery provider
-	 */
-	public String[] getSearchPath() {
-		return targetID.getSearchPath();
-	}
-
-	/**
-	 * @param aResolver The resolver to use
-	 * @throws DnsSdDiscoveryException if hostname cannot be resolved
-	 */
-	public void setResolver(String aResolver) {
-		try {
-			resolver = new SimpleResolver(aResolver);
-		} catch (UnknownHostException e) {
-			throw new DnsSdDiscoveryException(e);
-		}
-	}
-
-	public void setTsigKey(String tsigKeyName, String tsigKey) {
-		resolver.setTSIGKey(new TSIG(tsigKeyName, tsigKey));
 	}
 }
