@@ -49,7 +49,11 @@ public class DnsSdAdvertiserComparator implements Comparator {
 					final String key = str[0].substring(1);
 					final String value = str[1].substring(0, str[1].length() - 1);
 					final Object property = serviceInfo.getServiceProperties().getProperty(key);
-					result += value.equals(property.toString()) ? 1 : -1;
+					if(property != null) {
+						result += value.equals(property.toString()) ? 1 : -1;
+					} else {
+						result += -1;
+					}
 				}
 			}
 		}
