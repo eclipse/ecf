@@ -14,6 +14,6 @@ package org.eclipse.ecf.tests.provider.dnssd;
 public class DnsSdDiscoveryServiceTestWithWildcards extends DnsSdDiscoveryServiceTest {
 
 	public DnsSdDiscoveryServiceTestWithWildcards() {
-		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD, DnsSdTestHelper.DOMAIN, "", "");
+		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD + ".locator", DnsSdTestHelper.DOMAIN, "", "");
 	}
 }

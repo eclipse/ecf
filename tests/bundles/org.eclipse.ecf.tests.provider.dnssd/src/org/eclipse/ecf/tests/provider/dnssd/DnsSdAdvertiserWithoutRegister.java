@@ -16,6 +16,6 @@ public class DnsSdAdvertiserWithoutRegister extends
 		DiscoveryTestsWithoutRegister {
 
 	public DnsSdAdvertiserWithoutRegister() {
-		super("ecf.discovery.dnssd.advertiser");
+		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD + ".advertiser");
 	}
 }

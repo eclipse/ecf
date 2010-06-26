@@ -16,7 +16,7 @@ public class DnsSdDiscoveryWithoutRegistration extends
 		DiscoveryTestsWithoutRegister {
 
 	public DnsSdDiscoveryWithoutRegistration() {
-		super("ecf.discovery.dnssd.locator");
+		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD + ".locator");
 	}
 
 }

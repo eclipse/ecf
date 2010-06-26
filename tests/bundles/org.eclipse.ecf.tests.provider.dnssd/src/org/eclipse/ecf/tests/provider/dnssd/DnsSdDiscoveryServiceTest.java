@@ -24,12 +24,12 @@ import org.eclipse.ecf.tests.discovery.DiscoveryServiceTest;
 public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 
 	public DnsSdDiscoveryServiceTest() {
-		this(DnsSdTestHelper.ECF_DISCOVERY_DNSSD, DnsSdTestHelper.DOMAIN, DnsSdTestHelper.SCHEME, DnsSdTestHelper.PROTO);
+		this(DnsSdTestHelper.ECF_DISCOVERY_DNSSD + ".locator", DnsSdTestHelper.DOMAIN, DnsSdTestHelper.SCHEME, DnsSdTestHelper.PROTO);
 	}
 
 	public DnsSdDiscoveryServiceTest(String aContainer, String aDomain,
 			String aService, String aProtocol) {
-		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD);
+		super(aContainer);
 		setNamingAuthority(DnsSdTestHelper.NAMING_AUTH);
 		setScope(aDomain);
 		setServices(new String[]{aService});

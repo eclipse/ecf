@@ -28,7 +28,7 @@ import org.xbill.DNS.ZoneTransferIn;
 public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 
 	public DnsSdAdvertiserServiceTest() {
-		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD);
+		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD + ".advertiser");
 		setNamingAuthority(DnsSdTestHelper.NAMING_AUTH);
 		setScope(DnsSdTestHelper.REG_DOMAIN);
 		setServices(new String[]{DnsSdTestHelper.REG_SCHEME});
@@ -72,7 +72,7 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 	 * @see org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest#getDiscoveryLocator()
 	 */
 	protected IDiscoveryAdvertiser getDiscoveryAdvertiser() {
-		return (IDiscoveryAdvertiser) Activator.getDefault().getDiscoveryLocator();
+		return Activator.getDefault().getDiscoveryAdvertiser();
 	}
 
 	/* (non-Javadoc)
