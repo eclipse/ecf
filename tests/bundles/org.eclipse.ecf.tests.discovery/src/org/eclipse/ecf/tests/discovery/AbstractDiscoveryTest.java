@@ -85,7 +85,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(discoveryLocator.getServicesNamespace(), services, new String[]{scope}, new String[]{protocol}, namingAuthority);
 		assertNotNull(serviceTypeID);
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
-		serviceProperties.setPropertyString(getClass() + "testIdentifier", Long.toString(random.nextLong()));
+		serviceProperties.setPropertyString(getName() + "testIdentifier", Long.toString(random.nextLong()));
 		serviceProperties.setPropertyString(getName() + "servicePropertiesString", "serviceProperties");
 		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMax", new Integer(Integer.MIN_VALUE));
 		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMin", new Integer(Integer.MAX_VALUE));
