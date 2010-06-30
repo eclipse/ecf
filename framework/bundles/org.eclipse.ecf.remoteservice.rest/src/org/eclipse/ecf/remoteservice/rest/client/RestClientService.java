@@ -9,8 +9,8 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.client;
 
-import java.io.*;
-import java.net.URLEncoder;
+import java.io.IOException;
+import java.io.NotSerializableException;
 import java.util.*;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -248,22 +248,15 @@ public class RestClientService extends AbstractClientService {
 		List nameValueList = new ArrayList();
 		if (restParameters != null) {
 			for (int i = 0; i < restParameters.length; i++) {
-				try {
-					String parameterValue = null;
-					Object o = restParameters[i].getValue();
-					if (o instanceof String) {
-						parameterValue = (String) o;
-					} else if (o != null) {
-						parameterValue = o.toString();
-					}
-					if (parameterValue != null) {
-						String parameterName = URLEncoder.encode(restParameters[i].getName(), "UTF-8"); //$NON-NLS-1$
-						parameterValue = URLEncoder.encode(parameterValue, "UTF-8"); //$NON-NLS-1$
-						nameValueList.add(new NameValuePair(parameterName, parameterValue));
-					}
-				} catch (UnsupportedEncodingException e) {
-					// should not happen
-					logException("UnsupportedEncodingException for rest parameter", e); //$NON-NLS-1$
+				String parameterValue = null;
+				Object o = restParameters[i].getValue();
+				if (o instanceof String) {
+					parameterValue = (String) o;
+				} else if (o != null) {
+					parameterValue = o.toString();
+				}
+				if (parameterValue != null) {
+					nameValueList.add(new NameValuePair(restParameters[i].getName(), parameterValue));
 				}
 			}
 		}
