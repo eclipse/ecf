@@ -19,6 +19,18 @@ public class SerializableMultiStatus extends SerializableStatus {
 	 */
 	private IStatus[] children;
 
+	public SerializableMultiStatus(IStatus status) {
+		this(status.getPlugin(), status.getCode(), status.getMessage(), status.getException());
+		IStatus[] childs = status.getChildren();
+		for (int i = 0; i < childs.length; i++) {
+			if (childs[i].isMultiStatus()) {
+				add(new SerializableMultiStatus((MultiStatus) childs[i]));
+			} else {
+				add(new SerializableStatus(childs[i]));
+			}
+		}
+	}
+
 	public SerializableMultiStatus(MultiStatus multiStatus) {
 		this(multiStatus.getPlugin(), multiStatus.getCode(), multiStatus.getMessage(), multiStatus.getException());
 		IStatus[] childs = multiStatus.getChildren();
