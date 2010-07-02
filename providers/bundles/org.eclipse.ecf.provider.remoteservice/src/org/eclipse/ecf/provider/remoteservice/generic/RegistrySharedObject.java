@@ -160,6 +160,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getAllRemoteServiceReferences", new Object[] {clazz, filter}); //$NON-NLS-1$
 		final IRemoteServiceReference[] result = getRemoteServiceReferences((ID[]) null, clazz, filter);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getAllRemoteServiceReferences", result); //$NON-NLS-1$
+		if (result == null)
+			return null;
 		return (result.length == 0) ? null : result;
 	}
 
@@ -227,8 +229,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {idFilter, clazz, filter}); //$NON-NLS-1$
-		if (clazz == null)
-			return null;
 		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
 		// Wait for pending updates from containers in idFilter
 		waitForPendingUpdates(idFilter, getAddRegistrationRequestTimeout());
