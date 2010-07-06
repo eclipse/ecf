@@ -17,16 +17,18 @@ public class SerializableMultiStatus extends SerializableStatus {
 	/**
 	 * List of child statuses.
 	 */
-	private IStatus[] children;
+	private IStatus[] children = new IStatus[0];
 
 	public SerializableMultiStatus(IStatus status) {
 		this(status.getPlugin(), status.getCode(), status.getMessage(), status.getException());
 		IStatus[] childs = status.getChildren();
-		for (int i = 0; i < childs.length; i++) {
-			if (childs[i].isMultiStatus()) {
-				add(new SerializableMultiStatus((MultiStatus) childs[i]));
-			} else {
-				add(new SerializableStatus(childs[i]));
+		if (childs != null) {
+			for (int i = 0; i < childs.length; i++) {
+				if (childs[i].isMultiStatus()) {
+					add(new SerializableMultiStatus(childs[i]));
+				} else {
+					add(new SerializableStatus(childs[i]));
+				}
 			}
 		}
 	}
@@ -34,11 +36,13 @@ public class SerializableMultiStatus extends SerializableStatus {
 	public SerializableMultiStatus(MultiStatus multiStatus) {
 		this(multiStatus.getPlugin(), multiStatus.getCode(), multiStatus.getMessage(), multiStatus.getException());
 		IStatus[] childs = multiStatus.getChildren();
-		for (int i = 0; i < childs.length; i++) {
-			if (childs[i].isMultiStatus()) {
-				add(new SerializableMultiStatus((MultiStatus) childs[i]));
-			} else {
-				add(new SerializableStatus(childs[i]));
+		if (childs != null) {
+			for (int i = 0; i < childs.length; i++) {
+				if (childs[i].isMultiStatus()) {
+					add(new SerializableMultiStatus(childs[i]));
+				} else {
+					add(new SerializableStatus(childs[i]));
+				}
 			}
 		}
 	}
@@ -47,20 +51,21 @@ public class SerializableMultiStatus extends SerializableStatus {
 		this(pluginId, code, message, exception);
 		Assert.isLegal(newChildren != null);
 		int maxSeverity = getSeverity();
-		for (int i = 0; i < newChildren.length; i++) {
-			Assert.isLegal(newChildren[i] != null);
-			int severity = newChildren[i].getSeverity();
-			if (severity > maxSeverity)
-				maxSeverity = severity;
+		if (newChildren != null) {
+			for (int i = 0; i < newChildren.length; i++) {
+				Assert.isLegal(newChildren[i] != null);
+				int severity = newChildren[i].getSeverity();
+				if (severity > maxSeverity)
+					maxSeverity = severity;
+			}
+			this.children = new IStatus[newChildren.length];
+			System.arraycopy(newChildren, 0, this.children, 0, newChildren.length);
 		}
-		this.children = new IStatus[newChildren.length];
 		setSeverity(maxSeverity);
-		System.arraycopy(newChildren, 0, this.children, 0, newChildren.length);
 	}
 
 	public SerializableMultiStatus(String pluginId, int code, String message, Throwable exception) {
 		super(OK, pluginId, code, message, exception);
-		children = new IStatus[0];
 	}
 
 	/**
