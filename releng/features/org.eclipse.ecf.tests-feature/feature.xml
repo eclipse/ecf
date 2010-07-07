@@ -426,16 +426,15 @@ limitations under the License.
          version="0.0.0"
          unpack="false"/>
 
-<!--
    <plugin
-         id="org.eclipse.ecf.tests.provider.discovery"
+         id="org.eclipse.ecf.tests.discovery"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
+<!--
    <plugin
-         id="org.eclipse.ecf.tests.discovery"
+         id="org.eclipse.ecf.tests.provider.discovery"
          download-size="0"
          install-size="0"
          version="0.0.0"
