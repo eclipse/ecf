@@ -75,20 +75,23 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 	}
 
 	public void testRegisterOnCreatedServer() throws Exception {
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		Properties props = getServiceProperties();
 		registerWaitAndUnregister(props, true);
 	}
 
-	public void testRegisterOnCreatedServerWithIdentity() throws Exception {
+	private Properties getServiceProperties() {
 		Properties props = new Properties();
 		// Set config to the server container name/provider config name (e.g. ecf.generic.server)
 		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
+		// Set the service exported interfaces to all
+		props.put(SERVICE_EXPORTED_INTERFACES, SERVICE_EXPORTED_INTERFACES_WILDCARD);
+		return props;
+	}
+
+	public void testRegisterOnCreatedServerWithIdentity() throws Exception {
+		Properties props = getServiceProperties();
 		// set the container factory arguments to the server identity (e.g. ecftcp://localhost:3282/server)
 		props.put(SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS, new String[] { getServerIdentity() } );
-		// Set the service exported interfaces to all
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
 		
 		registerWaitAndUnregister(props, true);
 	}
@@ -97,9 +100,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		Properties props = getServiceProperties();
 		
 		registerWaitAndUnregister(props, true);
 	}
@@ -108,9 +109,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		Properties props = getServiceProperties();
 		// Add intents
 		props.put(SERVICE_INTENTS, "passByValue");
 		registerWaitAndUnregister(props, true);
@@ -120,9 +119,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		Properties props = getServiceProperties();
 		// Add intent that no one actually exposes
 		props.put(SERVICE_INTENTS, "foobar");
 		registerWaitAndUnregister(props, false);
@@ -132,9 +129,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		Properties props = getServiceProperties();
 		// Add intents
 		props.put(SERVICE_EXPORTED_INTENTS, "passByValue");
 		registerWaitAndUnregister(props, true);
@@ -144,9 +139,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		Properties props = getServiceProperties();
 		// Add intent that no one actually exposes
 		props.put(SERVICE_EXPORTED_INTENTS, "foobar");
 		registerWaitAndUnregister(props, false);
@@ -156,9 +149,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		Properties props = getServiceProperties();
 		// Add intents
 		props.put(SERVICE_EXPORTED_INTENTS_EXTRA, "passByValue");
 		registerWaitAndUnregister(props, true);
@@ -168,9 +159,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		Properties props = getServiceProperties();
 		// Add intent that no one actually exposes
 		props.put(SERVICE_EXPORTED_INTENTS_EXTRA, "foobar");
 		registerWaitAndUnregister(props, false);
@@ -181,7 +170,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
 		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		props.put(SERVICE_EXPORTED_INTERFACES, SERVICE_EXPORTED_INTERFACES_WILDCARD);
 		props.put(SERVICE_EXPORTED_CONTAINER_ID, this.server.getID());
 		registerWaitAndUnregister(props, true);
 	}
@@ -190,11 +179,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),getServerIdentity());
 		
-		Properties props = new Properties();
-		// Set config to the server container name/provider config name (e.g. ecf.generic.server)
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
-		// Set the service exported interfaces to all
-		props.put(SERVICE_EXPORTED_INTERFACES, new String[] {SERVICE_EXPORTED_INTERFACES_WILDCARD});
+		Properties props = getServiceProperties();
 		
 		registerWaitAndUnregister(props, true);
 	}
