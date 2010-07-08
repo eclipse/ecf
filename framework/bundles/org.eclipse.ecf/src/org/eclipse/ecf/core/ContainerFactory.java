@@ -49,6 +49,8 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 
 	private static IContainerFactory instance = null;
 
+	private volatile static boolean init = false;
+
 	static {
 		instance = new ContainerFactory();
 	}
@@ -71,7 +73,11 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		}
 	}
 
-	public static IContainerFactory getDefault() {
+	public synchronized static IContainerFactory getDefault() {
+		if (init == false) {
+			ECFPlugin.getDefault().initializeExtensions();
+			init = true;
+		}
 		return instance;
 	}
 

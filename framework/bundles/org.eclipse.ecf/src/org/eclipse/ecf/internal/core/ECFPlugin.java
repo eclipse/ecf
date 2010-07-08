@@ -124,11 +124,27 @@ public class ECFPlugin implements BundleActivator {
 			this.registryManager = new ECFRegistryManager();
 			registry.addRegistryChangeListener(registryManager);
 		}
-		containerFactoryServiceRegistration = ctxt.registerService(IContainerFactory.class.getName(), ContainerFactory.getDefault(), null);
-		containerManagerServiceRegistration = ctxt.registerService(IContainerManager.class.getName(), ContainerFactory.getDefault(), null);
-		setupContainerFactoryExtensionPoint(ctxt);
-		setupContainerExtensionPoint(ctxt);
-		setupStartExtensionPoint(ctxt);
+
+		// defer extension execution until first consumer calls
+		final ServiceFactory sf = new ServiceFactory() {
+			public Object getService(Bundle bundle, ServiceRegistration registration) {
+				return ContainerFactory.getDefault();
+			}
+
+			public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+				// NOP
+			}
+		};
+		containerFactoryServiceRegistration = ctxt.registerService(IContainerFactory.class.getName(), sf, null);
+		containerManagerServiceRegistration = ctxt.registerService(IContainerManager.class.getName(), sf, null);
+
+		// but eagerly start ECF startup extension
+		setupStartExtensionPoint(context);
+	}
+
+	public void initializeExtensions() {
+		setupContainerFactoryExtensionPoint(context);
+		setupContainerExtensionPoint(context);
 	}
 
 	public void stop(BundleContext ctxt) throws Exception {
