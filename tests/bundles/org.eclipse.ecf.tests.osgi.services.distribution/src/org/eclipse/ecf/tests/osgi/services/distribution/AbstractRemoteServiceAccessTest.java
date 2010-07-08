@@ -35,8 +35,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 	protected Properties getServiceProperties() {
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerName());
-		props.put(SERVICE_EXPORTED_INTERFACES,
-				new String[] { SERVICE_EXPORTED_INTERFACES_WILDCARD });
+		props.put(SERVICE_EXPORTED_INTERFACES, SERVICE_EXPORTED_INTERFACES_WILDCARD);
 		return props;
 	}
 
