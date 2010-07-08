@@ -75,8 +75,10 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 
 	public synchronized static IContainerFactory getDefault() {
 		if (init == false) {
-			ECFPlugin.getDefault().initializeExtensions();
+			// first mark the extension initalized because it initializeExtensions()
+			// eventually calls this method again
 			init = true;
+			ECFPlugin.getDefault().initializeExtensions();
 		}
 		return instance;
 	}
