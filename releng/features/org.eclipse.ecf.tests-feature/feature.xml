@@ -432,26 +432,19 @@ limitations under the License.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-<!--
+
    <plugin
-         id="org.eclipse.ecf.tests.provider.discovery"
+         id="org.eclipse.ecf.tests.remoteservice.generic"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.tests.provider.jmdns"
+         id="org.eclipse.ecf.tests.remoteservice.r-osgi"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
-   <plugin
-         id="org.eclipse.ecf.tests.provider.jslp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
--->
 </feature>
