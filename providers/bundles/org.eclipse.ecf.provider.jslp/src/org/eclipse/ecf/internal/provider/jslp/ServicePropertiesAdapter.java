@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.jslp;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.util.*;
@@ -21,6 +22,8 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
  * @see "http://www.ietf.org/rfc/rfc2608.txt page. 10ff"
  */
 public class ServicePropertiesAdapter {
+	private static final String ENCODING = "ascii"; //$NON-NLS-1$
+
 	// http://www.iana.org/assignments/enterprise-numbers
 	private static final String ECLIPSE_ENTERPRISE_NUMBER = "28392"; //$NON-NLS-1$
 
@@ -56,6 +59,7 @@ public class ServicePropertiesAdapter {
 			// remove the brackets "( )" from the string value which are added by jSLP for the LDAP style string representation
 			final String key = str[0].substring(1);
 			final String value = str[1].substring(0, str[1].length() - 1);
+			// keep this for wire backward compatibility 
 			if (key.equalsIgnoreCase(SERVICE_ID_NAME)) {
 				serviceName = value;
 			} else if (key.equalsIgnoreCase(PRIORITY)) {
@@ -69,7 +73,16 @@ public class ServicePropertiesAdapter {
 					final byte parseInt = (byte) Integer.parseInt(strs[i], 16);
 					b[i] = parseInt;
 				}
-				serviceProperties.setPropertyBytes(key, Base64.decodeFromCharArray(b));
+				if (key.equalsIgnoreCase(SERVICE_ID_NAME)) {
+					try {
+						serviceName = new String(Base64.decodeFromCharArray(b), ENCODING);
+					} catch (UnsupportedEncodingException e) {
+						// may never happen
+						e.printStackTrace();
+					}
+				} else {
+					serviceProperties.setPropertyBytes(key, Base64.decodeFromCharArray(b));
+				}
 			} else if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) { //$NON-NLS-1$ //$NON-NLS-2$
 				serviceProperties.setProperty(key, Boolean.valueOf(value));
 			} else if (isInteger(value)) {
@@ -88,14 +101,26 @@ public class ServicePropertiesAdapter {
 		Assert.isNotNull(sp);
 
 		serviceProperties = new ServiceProperties(sp);
-		if (sInfo.getPriority() >= 0) {
-			serviceProperties.setPropertyString(PRIORITY, Integer.toString(sInfo.getPriority()));
+		final int sPrio = sInfo.getPriority();
+		if (sPrio >= 0) {
+			priority = sPrio;
+			serviceProperties.setPropertyString(PRIORITY, Integer.toString(sPrio));
 		}
-		if (sInfo.getWeight() >= 0) {
-			serviceProperties.setPropertyString(WEIGHT, Integer.toString(sInfo.getWeight()));
+		final int sWeight = sInfo.getWeight();
+		if (sWeight >= 0) {
+			weight = sWeight;
+			serviceProperties.setPropertyString(WEIGHT, Integer.toString(sWeight));
 		}
-		if (sID.getServiceName() != null) {
-			serviceProperties.setPropertyString(SERVICE_ID_NAME, sID.getServiceName());
+		final String sName = sID.getServiceName();
+		if (sName != null) {
+			serviceName = sName;
+			//service name might contain reserved characters thus transfer as byte[] on wire
+			try {
+				serviceProperties.setPropertyBytes(SERVICE_ID_NAME, sName.getBytes(ENCODING));
+			} catch (UnsupportedEncodingException e) {
+				// may never happen
+				e.printStackTrace();
+			}
 		}
 	}
 
