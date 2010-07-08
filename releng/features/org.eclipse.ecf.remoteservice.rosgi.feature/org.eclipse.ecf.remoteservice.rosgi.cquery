@@ -11,6 +11,7 @@
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.remoteservice\.rosgi\.feature?" useTargetPlatform="false" useWorkspace="false"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice\.r-osgi?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.osgi\.services\.distribution\.r-osgi?" useTargetPlatform="false" useWorkspace="false"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false"/>
     

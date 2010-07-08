@@ -9,7 +9,7 @@
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.rosgi\.feature?" materializer="workspace"/>
     
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice\.r-osgi?" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.osgi\.services\.distribution.\.r-osgi?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.osgi\.services\.distribution\.r-osgi?" materializer="workspace"/>
 
     <md:mspecNode namePattern=".*" installLocation="${targetPlatformPath}"/>
 </md:mspec>
