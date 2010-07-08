@@ -7,7 +7,7 @@
     <cq:property key="target.ws" value="*"/>
     
     <cq:advisorNode namePattern="^ch\.ethz\.iks\.r_osgi\.remote?" useTargetPlatform="false" useWorkspace="false"/>
-    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.provider\.r_osgi?="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.provider\.r_osgi?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.remoteservice\.rosgi\.feature?" useTargetPlatform="false" useWorkspace="false"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice\.r-osgi?" useTargetPlatform="false" useWorkspace="false"/>
