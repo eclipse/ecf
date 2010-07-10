@@ -9,6 +9,9 @@
 		<dependency name="org.eclipse.equinox.concurrent" componentType="osgi.bundle"/>
 		<!-- tests -->
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
+		<!-- eclemma -->
+		<dependency name="com.mountainminds.eclemma.core" componentType="eclipse.feature"/>
+		
 		<dependency name="org.eclipse.ecf.tests.remoteservice.r-osgi" componentType="osgi.bundle"/>
 		<dependency name="org.eclipse.ecf.tests.osgi.services.distribution.r-osgi" componentType="osgi.bundle"/>
 	</dependencies>
