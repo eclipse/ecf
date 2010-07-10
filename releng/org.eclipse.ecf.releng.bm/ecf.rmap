@@ -65,6 +65,13 @@
 		</provider>
 	</searchPath>
 
+	<!-- eclemma -->
+	<searchPath name="com.mountainminds.eclemma">
+		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+			<uri format="http://update.eclemma.org/?importType=binary"/>
+		</provider>
+	</searchPath>
+	
 	<!-- default -->
 	<searchPath name="default">
 		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
@@ -100,6 +107,9 @@
 	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.eclipse\.swtbot(\..+)?" />
 	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.hamcrest(\..+)?" />
 	<locator searchPathRef="org.eclipse.swtbot" pattern="^org\.apache\.log4j$" />
+	
+	<!-- ECLEmma -->
+	<locator searchPathRef="com.mountainminds.eclemma" pattern="^com\.mountainminds\.eclemma(\..+)?" />
 	
 	<!-- Eclipse --> 
 	<locator searchPathRef="org.eclipse" pattern="^org\.eclipse(\..+)?" />
