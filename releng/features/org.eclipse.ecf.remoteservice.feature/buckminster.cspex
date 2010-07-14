@@ -9,7 +9,9 @@
 		<dependency name="org.eclipse.equinox.concurrent" componentType="osgi.bundle"/>
 		<!-- tests -->
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
-		<dependency name="org.eclipse.ecf.tests.remoteservice" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.tests.remoteservice.generic" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.tests.remoteservice.generic" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.tests.osgi.services.distribution.generic" componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->

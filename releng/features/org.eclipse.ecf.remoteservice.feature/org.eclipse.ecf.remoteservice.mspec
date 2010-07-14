@@ -8,6 +8,8 @@
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.feature?" materializer="workspace"/>
     
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice\.generic?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.osgi\.services\.distribution\.generic?" materializer="workspace"/>
 
     <md:mspecNode namePattern=".*" installLocation="${targetPlatformPath}"/>
 </md:mspec>
