@@ -49,49 +49,49 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		DnsSdServiceID serviceID = (DnsSdServiceID) serviceInfo.getServiceID();
 		DnsSdServiceTypeID serviceTypeID = (DnsSdServiceTypeID) serviceID.getServiceTypeID();
 
-			String[] scopes = serviceTypeID.getScopes();
-			for (int i = 0; i < scopes.length; i++) {
-				try {
-					String domain = scopes[i] + ".";
-					Name zone = Name.fromString(domain);
-					
-					Name name = Name.fromString("_" + serviceTypeID.getServices()[0] + "._" + serviceTypeID.getProtocols()[0], zone);
-					
-					//TODO make TTL configurable per serviceinfo instance or via config admin
-					int ttl = 3600;
-					int priority = serviceInfo.getPriority();
-					int port = serviceInfo.getLocation().getPort();
-					String target = serviceInfo.getLocation().getHost();
-					int weight = serviceInfo.getWeight();
+		String[] scopes = serviceTypeID.getScopes();
+		for (int i = 0; i < scopes.length; i++) {
+			try {
+				String domain = scopes[i] + ".";
+				Name zone = Name.fromString(domain);
+				
+				Name name = Name.fromString("_" + serviceTypeID.getServices()[0] + "._" + serviceTypeID.getProtocols()[0], zone);
+				
+				//TODO make TTL configurable per serviceinfo instance or via config admin
+				int ttl = 3600;
+				int priority = serviceInfo.getPriority();
+				int port = serviceInfo.getLocation().getPort();
+				String target = serviceInfo.getLocation().getHost();
+				int weight = serviceInfo.getWeight();
 
-					// TYPE.SRV
-					Record record = Record.fromString(name, Type.SRV, DClass.IN, ttl, priority + " " + weight + " " + port + " " + target + ".", zone);
-					Update update = new Update(zone);
-					update.replace(record);
-					
-					// TYPE.TXT for service properties
-					IServiceProperties properties = serviceInfo.getServiceProperties();
-					Enumeration enumeration = properties.getPropertyNames();
-					while(enumeration.hasMoreElements()) {
-						Object property = enumeration.nextElement();
-						String key = property.toString();
-						String value = (String) properties.getProperty(key).toString();
-						record = Record.fromString(name, Type.TXT, DClass.IN, ttl, key + "=" + value, zone);
-						update.add(record);
-					}
-					
-					// set up a new resolver for the given domain
-					((SimpleResolver)resolver).setAddress(InetAddress.getByName("ns1.ecf-project.org"));
-					resolver.setTCP(true);
-					Message response = resolver.send(update);
-					
-					if(response.getRcode() != Rcode.NOERROR) {
-						DnsSdDiscoveryException.getException(response.getRcode());
-					}
-				} catch (Exception e) {
-					throw new DnsSdDiscoveryException(e);
+				// TYPE.SRV
+				Record record = Record.fromString(name, Type.SRV, DClass.IN, ttl, priority + " " + weight + " " + port + " " + target + ".", zone);
+				Update update = new Update(zone);
+				update.replace(record);
+				
+				// TYPE.TXT for service properties
+				IServiceProperties properties = serviceInfo.getServiceProperties();
+				Enumeration enumeration = properties.getPropertyNames();
+				while(enumeration.hasMoreElements()) {
+					Object property = enumeration.nextElement();
+					String key = property.toString();
+					String value = (String) properties.getProperty(key).toString();
+					record = Record.fromString(name, Type.TXT, DClass.IN, ttl, key + "=" + value, zone);
+					update.add(record);
 				}
+				
+				// set up a new resolver for the given domain
+				((SimpleResolver)resolver).setAddress(InetAddress.getByName("ns1.ecf-project.org"));
+				resolver.setTCP(true);
+				Message response = resolver.send(update);
+				
+				if(response.getRcode() != Rcode.NOERROR) {
+					DnsSdDiscoveryException.getException(response.getRcode());
+				}
+			} catch (Exception e) {
+				throw new DnsSdDiscoveryException(e);
 			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -99,7 +99,51 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 	 */
 	public void unregisterService(IServiceInfo serviceInfo) {
 		Assert.isNotNull(serviceInfo);
-		throw new UnsupportedOperationException("Not yet implemented");
+		DnsSdServiceID serviceID = (DnsSdServiceID) serviceInfo.getServiceID();
+		DnsSdServiceTypeID serviceTypeID = (DnsSdServiceTypeID) serviceID.getServiceTypeID();
+		String[] scopes = serviceTypeID.getScopes();
+		for (int i = 0; i < scopes.length; i++) {
+			try {
+				String domain = scopes[i] + ".";
+				Name zone = Name.fromString(domain);
+				
+				Name name = Name.fromString("_" + serviceTypeID.getServices()[0] + "._" + serviceTypeID.getProtocols()[0], zone);
+				
+				//TODO make TTL configurable per serviceinfo instance or via config admin
+				int ttl = 3600;
+				int priority = serviceInfo.getPriority();
+				int port = serviceInfo.getLocation().getPort();
+				String target = serviceInfo.getLocation().getHost();
+				int weight = serviceInfo.getWeight();
+
+				// TYPE.SRV
+				Record record = Record.fromString(name, Type.SRV, DClass.IN, ttl, priority + " " + weight + " " + port + " " + target + ".", zone);
+				Update update = new Update(zone);
+				update.delete(record);
+				
+				// TYPE.TXT for service properties
+				IServiceProperties properties = serviceInfo.getServiceProperties();
+				Enumeration enumeration = properties.getPropertyNames();
+				while(enumeration.hasMoreElements()) {
+					Object property = enumeration.nextElement();
+					String key = property.toString();
+					String value = (String) properties.getProperty(key).toString();
+					record = Record.fromString(name, Type.TXT, DClass.IN, ttl, key + "=" + value, zone);
+					update.delete(record);
+				}
+				
+				// set up a new resolver for the given domain
+				((SimpleResolver)resolver).setAddress(InetAddress.getByName("ns1.ecf-project.org"));
+				resolver.setTCP(true);
+				Message response = resolver.send(update);
+				
+				if(response.getRcode() != Rcode.NOERROR) {
+					DnsSdDiscoveryException.getException(response.getRcode());
+				}
+			} catch (Exception e) {
+				throw new DnsSdDiscoveryException(e);
+			}
+		}
 	}
 
 	/* (non-Javadoc)
