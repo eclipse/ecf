@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.dnssd;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,12 +18,16 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest;
+import org.xbill.DNS.DClass;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TSIG;
+import org.xbill.DNS.Type;
 import org.xbill.DNS.Update;
+import org.xbill.DNS.ZoneTransferException;
 import org.xbill.DNS.ZoneTransferIn;
 
 public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
@@ -95,7 +100,6 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 		assertTrue("Mismatch between DNS response and IServiceInfo", comparator.compare(serviceInfo, xfr.run()) == 0);
 	}
 	
-	
 	/**
 	 * Tests that a register is handled correctly when no key is present
 	 * for that domain and the underlying ddns call fails
@@ -107,7 +111,45 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.provider.dnssd.DnsSdDiscoveryServiceTest#testUnregisterService()
 	 */
-	public void testUnregisterService() throws ContainerConnectException {
+	public void testUnregisterService() throws ContainerConnectException, IOException, ZoneTransferException {
+		
+		// create a service manually
+		Name origin = Name.fromString(DnsSdTestHelper.REG_DOMAIN + ".");
+		Name type = Name.fromString("_" + DnsSdTestHelper.REG_SCHEME + "._" + DnsSdTestHelper.PROTO, origin);
+		String s = serviceInfo.getPriority() + " " + 
+			serviceInfo.getWeight() + " " + 
+			serviceInfo.getLocation().getPort() + " " + 
+			serviceInfo.getLocation().getHost() + "."; 
+		Record record = Record.fromString(type, Type.SRV, DClass.IN, 3600, s, origin);
+		Update update = new Update(origin);
+		update.add(record);
+		SimpleResolver resolver = new SimpleResolver(DnsSdTestHelper.DNS_SERVER);
+		resolver.setTCP(true);
+		resolver.setTSIGKey(new TSIG(DnsSdTestHelper.TSIG_KEY_NAME, DnsSdTestHelper.TSIG_KEY));
+		Message response = resolver.send(update);
+		int rcode = response.getRcode();
+		assertTrue("", rcode == 0);
+		
+		// unregister via ECF discovery
+		discoveryAdvertiser.unregisterService(serviceInfo);
+		
+		// check SRV record is gone
+		ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
+		List records  = xfr.run();
+		for (Iterator itr = records.iterator(); itr.hasNext();) {
+			record = (Record) itr.next();
+			if(record instanceof SRVRecord) {
+				if(comparator.compare(serviceInfo, record) >= 0) {
+					fail("Service not removed/unregisterd");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Test that all service properties are removed along with the service
+	 */
+	public void testUnregisterServiceWithProperties() {
 		fail("Not yet implemented");
 	}
 
@@ -115,7 +157,7 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 	 * @see org.eclipse.ecf.tests.provider.dnssd.DnsSdDiscoveryServiceTest#testUnregisterAllServices()
 	 */
 	public void testUnregisterAllServices() throws ContainerConnectException {
-		//TODO make sure not to accidentally remove preexisting SRV records
+		//TODO make sure not to accidentally remove pre existing SRV records
 		fail("Not yet implemented");
 	}
 }
