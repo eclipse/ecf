@@ -37,6 +37,7 @@ public class DnsSdTestHelper {
 
 	public static final String REG_DOMAIN = "dnssd2.ecf-project.org";
 	public static final String REG_SCHEME = "junit";
+	public static final long TTL = 600;
 
 	public static IServiceInfo createServiceInfo(Namespace namespace) {
 		final Properties props = new Properties();

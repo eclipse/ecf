@@ -29,7 +29,8 @@ public class DnsSdDiscoveryComparator extends ServiceInfoComparator {
 			boolean prioSame = first.getPriority() == second.getPriority();
 			boolean weightSame = first.getWeight() == second.getWeight();
 			boolean servicePropertiesSame = compareServiceProperties(first.getServiceProperties(), second.getServiceProperties());
-			final boolean result = (idsSame && prioSame && weightSame && servicePropertiesSame);
+			boolean ttlSame = first.getTTL() <= second.getTTL(); // <= due to the fact that we might get a cache hit during testing which ttl has already decreased
+			final boolean result = (idsSame && prioSame && weightSame && servicePropertiesSame && ttlSame);
 			if (result == true) {
 				return 0;
 			}
