@@ -57,8 +57,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 				
 				Name name = Name.fromString("_" + serviceTypeID.getServices()[0] + "._" + serviceTypeID.getProtocols()[0], zone);
 				
-				//TODO make TTL configurable per serviceinfo instance or via config admin
-				int ttl = 3600;
+				long ttl = serviceInfo.getTTL();
 				int priority = serviceInfo.getPriority();
 				int port = serviceInfo.getLocation().getPort();
 				String target = serviceInfo.getLocation().getHost();
@@ -109,8 +108,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 				
 				Name name = Name.fromString("_" + serviceTypeID.getServices()[0] + "._" + serviceTypeID.getProtocols()[0], zone);
 				
-				//TODO make TTL configurable per serviceinfo instance or via config admin
-				int ttl = 3600;
+				long ttl = serviceInfo.getTTL();
 				int priority = serviceInfo.getPriority();
 				int port = serviceInfo.getLocation().getPort();
 				String target = serviceInfo.getLocation().getHost();

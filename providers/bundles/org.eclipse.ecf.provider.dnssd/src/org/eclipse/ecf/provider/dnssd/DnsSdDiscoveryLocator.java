@@ -171,6 +171,7 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 		List infos = new ArrayList();
 		for (Iterator iterator = srvQueryResult.iterator(); iterator.hasNext();) {
 			SRVRecord srvRecord = (SRVRecord) iterator.next();
+			long ttl = srvRecord.getTTL();
 			int priority = srvRecord.getPriority();
 			int weight = srvRecord.getWeight();
 			int port = srvRecord.getPort();
@@ -199,7 +200,7 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 			String proto = props.getProperty(DNS_SD_PTCL) == null ? aServiceTypeID.getProtocols()[0] : props.getProperty(DNS_SD_PTCL);
 			
 			URI uri = URI.create(proto + "://" + host + ":" + port + (path == null ? "" : path));
-			IServiceInfo info =new ServiceInfo(uri, host, aServiceTypeID, priority, weight, new ServiceProperties(props));
+			IServiceInfo info =new ServiceInfo(uri, host, aServiceTypeID, priority, weight, new ServiceProperties(props), ttl);
 			infos.add(info);
 		}
 		return infos;
