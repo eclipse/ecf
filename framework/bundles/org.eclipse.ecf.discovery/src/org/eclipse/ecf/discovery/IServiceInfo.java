@@ -59,6 +59,16 @@ public interface IServiceInfo extends IAdaptable {
 	public int getWeight();
 
 	/**
+	 * The time to live for the service. -1 if no TTL given for service.
+	 * 
+	 * TTL: A time to live (TTL) defining the live time of a service.
+	 * 
+	 * @return long the time to live in seconds
+	 * @since 4.0
+	 */
+	public long getTTL();
+
+	/**
 	 * Map with any/all properties associated with the service. Properties are
 	 * assumed to be name/value pairs, both of type String.
 	 * 

@@ -28,6 +28,10 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 
 	private static final long serialVersionUID = -5651115550295457142L;
 
+	/**
+	 * @since 4.0
+	 */
+	public static final long DEFAULT_TTL = 3600; // 1h
 	public static final int DEFAULT_PRIORITY = 0;
 	public static final int DEFAULT_WEIGHT = 0;
 	public static final String UNKNOWN_PROTOCOL = "unknown"; //$NON-NLS-1$
@@ -44,6 +48,11 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	protected int weight;
 
 	protected IServiceProperties properties;
+	
+	/**
+	 * @since 4.0
+	 */
+	protected long timeToLive;
 
 	protected ServiceInfo() {
 		// null constructor for subclasses
@@ -65,6 +74,15 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this(anURI, aServiceName, aServiceTypeID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
 	}
 	
+
+	/**
+	 * @since 3.0
+	 * @see ServiceInfo#ServiceInfo(URI, String, IServiceTypeID, int, int, IServiceProperties)
+	 */
+	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID, int priority,
+			int weight, IServiceProperties props) {
+		this(anURI, aServiceName, aServiceTypeID, priority, weight, props, DEFAULT_TTL);
+	}
 	/**
 	 * Create an IServiceInfo instance.
 	 * @param anURI The (absolute) location of the service.
@@ -78,11 +96,12 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	 *  Domain administrators SHOULD use Weight 0 when there isn't any server selection to do.
 	 *  In the presence of records containing weights greater than 0, records with weight 0 should have a very small chance of being selected.
 	 * @param props generic service properties.
+	 * @param ttl time to live
 	 * 
-	 * @since 3.0
+	 * @since 4.0
 	 */
 	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID, int priority,
-			int weight, IServiceProperties props) {
+			int weight, IServiceProperties props, long ttl) {
 		Assert.isNotNull(anURI);
 		Assert.isNotNull(aServiceName);
 		Assert.isNotNull(aServiceTypeID);
@@ -150,6 +169,8 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this.priority = priority;
 		
 		properties = (props == null) ? new ServiceProperties() : props;
+		
+		this.timeToLive = ttl;
 	}
 
 	/*
@@ -234,5 +255,14 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	 */
 	public String getServiceName() {
 		return serviceName;
+	}
+	
+	/**
+	 * (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#getTTL()
+	 * @since 4.0
+	 */
+	public long getTTL() {
+		return timeToLive;
 	}
 }
