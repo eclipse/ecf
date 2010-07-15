@@ -63,7 +63,8 @@ public class ServiceInfoComparator implements Comparator {
 			boolean prioSame = first.getPriority() == second.getPriority();
 			boolean weightSame = first.getWeight() == second.getWeight();
 			boolean servicePropertiesSame = compareServiceProperties(first.getServiceProperties(), second.getServiceProperties());
-			final boolean result = (idsSame && prioSame && weightSame && servicePropertiesSame);
+			boolean ttlSame = first.getTTL() == second.getTTL(); 
+			final boolean result = (idsSame && prioSame && weightSame && servicePropertiesSame && ttlSame);
 			if (result == true) {
 				return 0;
 			}

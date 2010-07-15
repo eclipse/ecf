@@ -31,6 +31,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected IServiceInfo serviceInfo;
 	protected String protocol = DiscoveryTestHelper.PROTOCOL;
 	protected String scope = DiscoveryTestHelper.SCOPE;
+	protected long ttl = DiscoveryTestHelper.TTL;
 	protected String namingAuthority = DiscoveryTestHelper.NAMINGAUTHORITY;
 	protected String[] services = DiscoveryTestHelper.SERVICES;
 	protected Comparator comparator = new ServiceInfoComparator();
@@ -61,6 +62,10 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		this.scope = scope;
 	}
 
+	protected void setTTL(long aTTL) {
+		this.ttl = aTTL;
+	}
+	
 	protected void setNamingAuthority(String namingAuthority) {
 		this.namingAuthority = namingAuthority;
 	}
@@ -91,7 +96,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMin", new Integer(Integer.MAX_VALUE));
 		serviceProperties.setProperty(getName() + "servicePropertiesBoolean", new Boolean(false));
 		serviceProperties.setPropertyBytes(getName() + "servicePropertiesByte", new byte[]{-127, -126, -125, 0, 1, 2, 3, 'a', 'b', 'c', 'd', 126, 127});
-		serviceInfo = new ServiceInfo(uri, DiscoveryTestHelper.SERVICENAME, serviceTypeID, 1, 1, serviceProperties);
+		serviceInfo = new ServiceInfo(uri, DiscoveryTestHelper.SERVICENAME, serviceTypeID, 1, 1, serviceProperties, ttl);
 		assertNotNull(serviceInfo);
 	}
 

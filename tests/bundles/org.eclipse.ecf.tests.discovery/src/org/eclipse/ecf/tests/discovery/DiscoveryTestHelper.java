@@ -32,6 +32,7 @@ public abstract class DiscoveryTestHelper {
 	public final static String[] SERVICES = new String[] {"ecf", "junit", "tests"};
 	public final static String[] PROTOCOLS = new String[] {PROTOCOL};
 	public final static String SERVICE_TYPE = "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
+	public final static long TTL = 3600; //TODO change to something different than DEFAULT_TTL
 	
 	public static URI createDefaultURI() {
 //TODO-mkuppe https://bugs.eclipse.org/216944
