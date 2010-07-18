@@ -12,9 +12,6 @@ package org.eclipse.ecf.provider.dnssd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -25,6 +22,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Rcode;
@@ -60,34 +58,37 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 	private void sendToServer(final IServiceInfo serviceInfo, final boolean mode) {
 		Assert.isNotNull(serviceInfo);
 		final DnsSdServiceID serviceID = (DnsSdServiceID) serviceInfo.getServiceID();
-		
 		try {
-			// TYPE.SRV
-			final Map srvRecords = serviceID.toSRVRecords();
-			for (Iterator itr = srvRecords.entrySet().iterator(); itr.hasNext(); ) {
-				final Map.Entry entry = (Entry) itr.next();
-				final Name zone = (Name) entry.getKey();
-				final Record record = (Record) entry.getValue();
+			final Record srvRecord = serviceID.toSRVRecord(); // TYPE.SRV
+			final Record[] txtRecords = serviceID.toTXTRecords(srvRecord); // TYPE.TXT
+			final Name name = serviceID.getDnsName();
+		
+			final String[] registrationDomains = getRegistrationDomains(serviceID.getServiceTypeID());
+		
+			for (int i = 0; i < registrationDomains.length; i++) {
+				final Name zone = new Name(registrationDomains[i]);
+				final Name fqdn = new Name(name.toString() + "." + zone.toString());
 				final Update update = new Update(zone);
+
+				//TYPE.SRV
 				if(mode == ADD) {
 					//TODO add absent/present condition checks
-					update.replace(record);
+					update.replace(srvRecord.withName(fqdn));
 				} else {
-					update.delete(record);
+					update.delete(srvRecord.withName(fqdn));
 				}
 				
-				// TYPE.TXT
-				final Record[] txtRecords = serviceID.toTXTRecords(record.getName(), zone);
+				//TYPE.TXT
 				for (int j = 0; j < txtRecords.length; j++) {
 					if(mode == ADD) {
-						update.add(txtRecords[j]);
+						update.add(txtRecords[j].withName(fqdn));
 					} else {
-						update.delete(txtRecords[j]);
+						update.delete(txtRecords[j].withName(fqdn));
 					}
 				}
 				
 				// set up a new resolver for the given domain (a scope might use different domains)
-				((SimpleResolver)resolver).setAddress(InetAddress.getByName("ns1.ecf-project.org"));
+				((SimpleResolver) resolver).setAddress(getUpdateDomain(zone));
 				resolver.setTCP(true);
 				final Message response = resolver.send(update);
 				if(response.getRcode() != Rcode.NOERROR) {
@@ -97,6 +98,22 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		} catch (Exception e) {
 			throw new DnsSdDiscoveryException(e);
 		}
+	}
+
+	private InetAddress getUpdateDomain(final Name zone) throws UnknownHostException {
+		//TODO resolve dyndns domain
+		return InetAddress.getByName("ns1.ecf-project.org");
+	}
+
+
+	private String[] getRegistrationDomains(IServiceTypeID aServiceTypeId) {
+		String[] rrs = new String[] {BnRDnsSdServiceTypeID.REG_DOMAINS, BnRDnsSdServiceTypeID.DEFAULT_REG_DOMAIN};
+		final String[] registrationDomains = getBrowsingOrRegistrationDomains(aServiceTypeId, rrs);
+		String[] scopes = aServiceTypeId.getScopes();
+		for (int i = 0; i < scopes.length; i++) {
+			scopes[i] = scopes[i].concat(".");
+		}
+		return registrationDomains.length == 0 ? scopes : registrationDomains; 
 	}
 
 	/* (non-Javadoc)

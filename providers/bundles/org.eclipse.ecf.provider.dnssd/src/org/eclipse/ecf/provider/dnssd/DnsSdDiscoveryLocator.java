@@ -14,11 +14,9 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -102,20 +100,6 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 		return (IServiceTypeID[]) result.toArray(new IServiceTypeID[result.size()]);
 	}
 	
-	private Record[] getRecords(final DnsSdServiceTypeID serviceTypeId) {
-		List result = new ArrayList();
-		Lookup[] queries = serviceTypeId.getInternalQueries();
-		for (int i = 0; i < queries.length; i++) {
-			Lookup query = queries[i];
-			query.setResolver(resolver);
-			Record[] queryResult = query.run();
-			if(queryResult != null) {
-				result.addAll(Arrays.asList(queryResult));
-			}
-		}
-		return (Record[]) result.toArray(new Record[result.size()]);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -254,20 +238,7 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 	}
 
 	private String[] getBrowsingDomains(IServiceTypeID aServiceTypeId) {
-		Set res = new HashSet();
-		
 		String[] rrs = new String[] {BnRDnsSdServiceTypeID.BROWSE_DOMAINS, BnRDnsSdServiceTypeID.DEFAULT_BROWSE_DOMAIN};
-		for (int i = 0; i < rrs.length; i++) {
-			BnRDnsSdServiceTypeID serviceType = 
-				new BnRDnsSdServiceTypeID(aServiceTypeId, rrs[i]);
-			
-			Record[] defaultBrowsing = getRecords(serviceType);
-			for (int j = 0; j < defaultBrowsing.length; j++) {
-				PTRRecord record = (PTRRecord) defaultBrowsing[j];
-				res.add(record.getTarget().toString());
-			}
-		}
-		
-		return (String[]) res.toArray(new String[res.size()]);
+		return getBrowsingOrRegistrationDomains(aServiceTypeId, rrs);
 	}
 }

@@ -14,9 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IServiceProperties;
@@ -25,7 +23,9 @@ import org.eclipse.ecf.discovery.identity.ServiceID;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
-import org.xbill.DNS.Type;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TXTRecord;
+import org.xbill.DNS.TextParseException;
 
 public class DnsSdServiceID extends ServiceID {
 
@@ -35,32 +35,33 @@ public class DnsSdServiceID extends ServiceID {
 		super(namespace, type, anUri);
 	}
 
-	// TYPE.SRV
-	public Map toSRVRecords() throws IOException {
-		final Map result = new HashMap();
-		final String[] scopes = type.getScopes();
-		for (int i = 0; i < scopes.length; i++) {
-			final String domain = scopes[i] + ".";
-			final Name zone = Name.fromString(domain);
 
-			final Name name = Name.fromString("_" + type.getServices()[0] + "._"
-					+ type.getProtocols()[0], zone);
+	public Name getDnsName() throws TextParseException {
+		return new Name("_" + type.getServices()[0] + "._"
+		+ type.getProtocols()[0]);
+	}
+	
+	/**
+	 * @return A relative SRV record independent of a given domain/zone
+	 * @throws IOException
+	 */
+	public Record toSRVRecord() throws IOException {
+		final Name name = new Name(getDnsName().toString(), new Name(type.getScopes()[0] + "."));
+		final long ttl = serviceInfo.getTTL();
+		final int priority = serviceInfo.getPriority();
+		final int weight = serviceInfo.getWeight();
+		final int port = serviceInfo.getLocation().getPort();
+		final Name target = Name.fromString(serviceInfo.getLocation().getHost() + ".");
 
-			final long ttl = serviceInfo.getTTL();
-			final int priority = serviceInfo.getPriority();
-			final int port = serviceInfo.getLocation().getPort();
-			final String target = serviceInfo.getLocation().getHost();
-			final int weight = serviceInfo.getWeight();
-
-			result.put(zone, Record.fromString(name, Type.SRV, DClass.IN,
-					ttl, priority + " " + weight + " " + port + " " + target
-							+ ".", zone));
-		}
-		return result;
+		return new SRVRecord(name, DClass.IN, ttl, priority, weight, port, target);
 	}
 
-	// TYPE.TXT
-	public Record[] toTXTRecords(final Name name, final Name zone) throws IOException {
+	/**
+	 * @param aRecord The corresponding SRVRecord
+	 * @return A relative TXT record independent of a given domain/zone
+	 * @throws IOException
+	 */
+	public Record[] toTXTRecords(final Record aRecord) throws IOException {
 		final List result = new ArrayList();
 		final IServiceProperties properties = serviceInfo.getServiceProperties();
 		final Enumeration enumeration = properties.getPropertyNames();
@@ -68,8 +69,8 @@ public class DnsSdServiceID extends ServiceID {
 			final Object property = enumeration.nextElement();
 			final String key = property.toString();
 			final String value = (String) properties.getProperty(key).toString();
-			result.add(Record.fromString(name, Type.TXT, DClass.IN,
-					serviceInfo.getTTL(), key + "=" + value, zone));
+			final long ttl = serviceInfo.getTTL();
+			result.add(new TXTRecord(aRecord.getName(), DClass.IN, ttl, key + "=" + value));
 		}
 		return (Record[]) result.toArray(new Record[result.size()]);
 	}

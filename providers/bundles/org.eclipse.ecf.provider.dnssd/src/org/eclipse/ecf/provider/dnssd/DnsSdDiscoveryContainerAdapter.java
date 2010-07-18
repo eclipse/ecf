@@ -11,6 +11,11 @@
 package org.eclipse.ecf.provider.dnssd;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -23,6 +28,9 @@ import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.PTRRecord;
+import org.xbill.DNS.Record;
 import org.xbill.DNS.Resolver;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TSIG;
@@ -126,6 +134,36 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 				getConnectedID()));
 	}
 
+	protected String[] getBrowsingOrRegistrationDomains(final IServiceTypeID aServiceTypeId, final String[] rrs) {
+		final Set res = new HashSet();
+		for (int i = 0; i < rrs.length; i++) {
+			final BnRDnsSdServiceTypeID serviceType = 
+				new BnRDnsSdServiceTypeID(aServiceTypeId, rrs[i]);
+			
+			final Record[] records = getRecords(serviceType);
+			for (int j = 0; j < records.length; j++) {
+				final PTRRecord record = (PTRRecord) records[j];
+				res.add(record.getTarget().toString());
+			}
+		}
+		
+		return (String[]) res.toArray(new String[res.size()]);
+	}
+	
+	protected Record[] getRecords(final DnsSdServiceTypeID serviceTypeId) {
+		final List result = new ArrayList();
+		final Lookup[] queries = serviceTypeId.getInternalQueries();
+		for (int i = 0; i < queries.length; i++) {
+			final Lookup query = queries[i];
+			query.setResolver(resolver);
+			final Record[] queryResult = query.run();
+			if(queryResult != null) {
+				result.addAll(Arrays.asList(queryResult));
+			}
+		}
+		return (Record[]) result.toArray(new Record[result.size()]);
+	}
+
 	/**
 	 * @param searchPaths The default search path used for discovery 
 	 */
@@ -159,4 +197,6 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 	public void setTsigKey(String tsigKeyName, String tsigKey) {
 		resolver.setTSIGKey(new TSIG(tsigKeyName, tsigKey));
 	}
+
+
 }
