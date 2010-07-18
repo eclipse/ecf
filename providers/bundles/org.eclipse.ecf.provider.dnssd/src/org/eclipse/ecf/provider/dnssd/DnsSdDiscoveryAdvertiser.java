@@ -117,10 +117,10 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 			srvRecord.getPort();
 			return null;
 		}
-		return getAuthorityNameServer(zone);
+		return getAuthoritiveNameServer(zone);
 	}
 	
-	private InetAddress getAuthorityNameServer(final Name zone) throws UnknownHostException {
+	private InetAddress getAuthoritiveNameServer(final Name zone) throws UnknownHostException {
 		final Lookup query = new Lookup(zone, Type.NS);
 		query.setResolver(resolver);
 		final Record[] queryResult = query.run();
