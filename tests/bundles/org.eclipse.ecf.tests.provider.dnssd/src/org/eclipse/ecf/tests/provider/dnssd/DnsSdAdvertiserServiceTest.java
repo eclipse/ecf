@@ -11,6 +11,8 @@
 package org.eclipse.ecf.tests.provider.dnssd;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +20,7 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
+import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryAdvertiser;
 import org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest;
 import org.xbill.DNS.DClass;
@@ -27,6 +30,8 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TSIG;
+import org.xbill.DNS.TXTRecord;
+import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 import org.xbill.DNS.Update;
 import org.xbill.DNS.ZoneTransferException;
@@ -125,23 +130,7 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 	 * @see org.eclipse.ecf.tests.provider.dnssd.DnsSdDiscoveryServiceTest#testUnregisterService()
 	 */
 	public void testUnregisterService() throws ContainerConnectException, IOException, ZoneTransferException {
-		
-		// create a service manually
-		Name origin = Name.fromString(DnsSdTestHelper.REG_DOMAIN + ".");
-		Name type = Name.fromString("_" + DnsSdTestHelper.REG_SCHEME + "._" + DnsSdTestHelper.PROTO, origin);
-		String s = serviceInfo.getPriority() + " " + 
-			serviceInfo.getWeight() + " " + 
-			serviceInfo.getLocation().getPort() + " " + 
-			serviceInfo.getLocation().getHost() + "."; 
-		Record record = Record.fromString(type, Type.SRV, DClass.IN, 3600, s, origin);
-		Update update = new Update(origin);
-		update.add(record);
-		SimpleResolver resolver = new SimpleResolver(DnsSdTestHelper.DNS_SERVER);
-		resolver.setTCP(true);
-		resolver.setTSIGKey(new TSIG(DnsSdTestHelper.TSIG_KEY_NAME, DnsSdTestHelper.TSIG_KEY));
-		Message response = resolver.send(update);
-		int rcode = response.getRcode();
-		assertTrue("", rcode == 0);
+		createSRVRecord();
 		
 		// unregister via ECF discovery
 		discoveryAdvertiser.unregisterService(serviceInfo);
@@ -150,7 +139,7 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 		ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
 		List records  = xfr.run();
 		for (Iterator itr = records.iterator(); itr.hasNext();) {
-			record = (Record) itr.next();
+			Record record = (Record) itr.next();
 			if(record instanceof SRVRecord) {
 				if(comparator.compare(serviceInfo, record) >= 0) {
 					fail("Service not removed/unregisterd");
@@ -162,10 +151,83 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 	/**
 	 * Test that all service properties are removed along with the service
 	 */
-	public void testUnregisterServiceWithProperties() {
-		fail("Not yet implemented");
+	public void testUnregisterServiceWithProperties() throws ContainerConnectException, IOException, ZoneTransferException {
+		createSRVRecord();
+		createTXTRecords();
+		
+		// unregister via ECF discovery
+		discoveryAdvertiser.unregisterService(serviceInfo);
+		
+		// check SRV record is gone
+		ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
+		List records  = xfr.run();
+		for (Iterator itr = records.iterator(); itr.hasNext();) {
+			Record record = (Record) itr.next();
+			if(record instanceof SRVRecord) {
+				if(comparator.compare(serviceInfo, record) >= 0) {
+					fail("Service not removed/unregisterd");
+				}
+			} else if(record instanceof TXTRecord) {
+				if(comparator.compare(serviceInfo, record) >= 0) {
+					fail("TXT record not removed/unregisterd");
+				}
+			}
+		}
 	}
 
+	private void createTXTRecords() throws TextParseException, IOException,
+			UnknownHostException {
+		Name zone = Name.fromString(DnsSdTestHelper.REG_DOMAIN + ".");
+		Name name = Name.fromString("_" + DnsSdTestHelper.REG_SCHEME + "._" + DnsSdTestHelper.PROTO, zone);
+
+		Update update = null;
+		
+		IServiceProperties properties = serviceInfo.getServiceProperties();
+		final Enumeration enumeration = properties.getPropertyNames();
+		while (enumeration.hasMoreElements()) {
+			final Object property = enumeration.nextElement();
+			final String key = property.toString();
+			final String value = (String) properties.getProperty(key).toString();
+			Record record = Record.fromString(name, Type.TXT, DClass.IN,
+					serviceInfo.getTTL(), key + "=" + value, zone);
+			update = new Update(zone);
+			update.add(record);
+		}
+		SimpleResolver resolver = new SimpleResolver(DnsSdTestHelper.DNS_SERVER);
+		resolver.setTCP(true);
+		resolver.setTSIGKey(new TSIG(DnsSdTestHelper.TSIG_KEY_NAME, DnsSdTestHelper.TSIG_KEY));
+		Message response = resolver.send(update);
+		int rcode = response.getRcode();
+		assertTrue("", rcode == 0);
+	}
+
+	private void createSRVRecord() throws TextParseException, IOException,
+			UnknownHostException {
+		// create a service manually
+		Name zone = Name.fromString(DnsSdTestHelper.REG_DOMAIN + ".");
+		Name type = Name.fromString("_" + DnsSdTestHelper.REG_SCHEME + "._" + DnsSdTestHelper.PROTO, zone);
+		String s = serviceInfo.getPriority() + " " + 
+			serviceInfo.getWeight() + " " + 
+			serviceInfo.getLocation().getPort() + " " + 
+			serviceInfo.getLocation().getHost() + "."; 
+		Record record = Record.fromString(type, Type.SRV, DClass.IN, DnsSdTestHelper.TTL, s, zone);
+		Update update = new Update(zone);
+		update.add(record);
+		SimpleResolver resolver = new SimpleResolver(DnsSdTestHelper.DNS_SERVER);
+		resolver.setTCP(true);
+		resolver.setTSIGKey(new TSIG(DnsSdTestHelper.TSIG_KEY_NAME, DnsSdTestHelper.TSIG_KEY));
+		Message response = resolver.send(update);
+		int rcode = response.getRcode();
+		assertTrue("", rcode == 0);
+	}
+	
+	/**
+	 * Test that all service properties are removed along with the service
+	 */
+	public void testUnregisterServiceWithForeignProperties() throws ContainerConnectException, IOException, ZoneTransferException {
+		fail("Not implemented yet");
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.provider.dnssd.DnsSdDiscoveryServiceTest#testUnregisterAllServices()
 	 */
