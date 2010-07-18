@@ -15,8 +15,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
+import org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryAdvertiser;
 import org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Message;
@@ -39,6 +41,7 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 		setServices(new String[]{DnsSdTestHelper.REG_SCHEME});
 		setProtocol(DnsSdTestHelper.PROTO);
 		setComparator(new DnsSdAdvertiserComparator());
+		setTTL(DnsSdTestHelper.TTL);
 	}
 
 	/* (non-Javadoc)
@@ -103,9 +106,19 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 	/**
 	 * Tests that a register is handled correctly when no key is present
 	 * for that domain and the underlying ddns call fails
+	 * @throws ContainerConnectException 
 	 */
-	public void testRegisterServiceWithoutHostKey() {
-		fail("Not yet implemented");
+	public void testRegisterServiceWithoutHostKey() throws ContainerConnectException {
+		final DnsSdDiscoveryAdvertiser advertiser = new DnsSdDiscoveryAdvertiser();
+		advertiser.connect(null, null);
+		
+		try {
+			advertiser.registerService(serviceInfo);
+		} catch(ECFRuntimeException e) {
+			advertiser.disconnect();
+			return;
+		}
+		fail("Register should have failed without a host key given.");
 	}
 
 	/* (non-Javadoc)
