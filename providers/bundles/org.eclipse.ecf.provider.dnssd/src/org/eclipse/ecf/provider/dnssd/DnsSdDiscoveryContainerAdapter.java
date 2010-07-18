@@ -29,11 +29,14 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Name;
 import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Resolver;
+import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TSIG;
+import org.xbill.DNS.Type;
 
 public abstract class DnsSdDiscoveryContainerAdapter extends
 		AbstractDiscoveryContainerAdapter {
@@ -164,6 +167,37 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		return (Record[]) result.toArray(new Record[result.size()]);
 	}
 
+	protected List getSRVRecords(Lookup[] queries) {
+		List srvRecords = new ArrayList();
+		for (int i = 0; i < queries.length; i++) {
+			srvRecords.addAll(getSRVRecord(queries[i]));
+		}
+		return srvRecords;
+	}
+
+	protected List getSRVRecord(Lookup query) {
+		final List srvRecords = new ArrayList();
+		query.setResolver(resolver);
+		final Record[] queryResult = query.run();
+		//TODO file bug upstream that queryResult may never be null
+		final int length = queryResult == null ? 0 : queryResult.length;
+		for (int j = 0; j < length; j++) {
+			Record[] srvQueryResult = null;
+			final Record record = queryResult[j];
+			if(record instanceof PTRRecord) {
+				final PTRRecord ptrRecord = (PTRRecord) record;
+				final Name target = ptrRecord.getTarget();
+				final Lookup srvQuery = new Lookup(target, Type.SRV);
+				srvQuery.setResolver(resolver);
+				srvQueryResult = srvQuery.run();
+			} else if (record instanceof SRVRecord) {
+				srvQueryResult = new SRVRecord[]{(SRVRecord) record};
+			}
+			srvRecords.addAll(Arrays.asList(srvQueryResult));
+		}
+		return srvRecords;
+	}
+
 	/**
 	 * @param searchPaths The default search path used for discovery 
 	 */
@@ -197,6 +231,4 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 	public void setTsigKey(String tsigKeyName, String tsigKey) {
 		resolver.setTSIGKey(new TSIG(tsigKeyName, tsigKey));
 	}
-
-
 }

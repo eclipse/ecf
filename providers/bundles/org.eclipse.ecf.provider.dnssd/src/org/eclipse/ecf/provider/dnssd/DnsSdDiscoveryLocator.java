@@ -13,7 +13,6 @@ package org.eclipse.ecf.provider.dnssd;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -123,32 +122,6 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 		List srvRecords = getSRVRecords(serviceTypeId.getInternalQueries());
 		List serviceInfos = getServiceInfos(srvRecords);
 		return (IServiceInfo[]) serviceInfos.toArray(new IServiceInfo[serviceInfos.size()]);
-	}
-	
-	private List getSRVRecords(Lookup[] queries) {
-		List srvRecords = new ArrayList();
-		for (int i = 0; i < queries.length; i++) {
-			Lookup query = queries[i];
-			query.setResolver(resolver);
-			Record[] queryResult = query.run();
-			//TODO file bug upstream that queryResult may never be null
-			int length = queryResult == null ? 0 : queryResult.length;
-			for (int j = 0; j < length; j++) {
-				Record[] srvQueryResult = null;
-				Record record = queryResult[j];
-				if(record instanceof PTRRecord) {
-					PTRRecord ptrRecord = (PTRRecord) record;
-					Name target = ptrRecord.getTarget();
-					Lookup srvQuery = new Lookup(target, Type.SRV);
-					srvQuery.setResolver(resolver);
-					srvQueryResult = srvQuery.run();
-				} else if (record instanceof SRVRecord) {
-					srvQueryResult = new SRVRecord[]{(SRVRecord) record};
-				}
-				srvRecords.addAll(Arrays.asList(srvQueryResult));
-			}
-		}
-		return srvRecords;
 	}
 	
 	private List getServiceInfos(List srvQueryResult) {

@@ -12,6 +12,7 @@ package org.eclipse.ecf.provider.dnssd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -23,11 +24,16 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Message;
+import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Rcode;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.SimpleResolver;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.Type;
 import org.xbill.DNS.Update;
 
 public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
@@ -100,9 +106,35 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		}
 	}
 
-	private InetAddress getUpdateDomain(final Name zone) throws UnknownHostException {
-		//TODO resolve dyndns domain
-		return InetAddress.getByName("ns1.ecf-project.org");
+	private InetAddress getUpdateDomain(final Name zone) throws TextParseException, UnknownHostException {
+		//TODO check if ._udp has to be prepended
+		Lookup query = new Lookup("_dns-update._udp." + zone, Type.SRV);
+		List srvRecords = getSRVRecord(query);
+		if(srvRecords.size() > 0) {
+			//TODO use the first one returned for the moment, use prio/weight later
+			SRVRecord srvRecord = (SRVRecord) srvRecords.get(0);
+			srvRecord.getTarget();
+			srvRecord.getPort();
+			return null;
+		}
+		return getAuthorityNameServer(zone);
+	}
+	
+	private InetAddress getAuthorityNameServer(final Name zone) throws UnknownHostException {
+		final Lookup query = new Lookup(zone, Type.NS);
+		query.setResolver(resolver);
+		final Record[] queryResult = query.run();
+		//TODO file bug upstream that queryResult may never be null
+		int length = queryResult == null ? 0 : queryResult.length;
+		for (int j = 0; j < length; j++) {
+			Record record = queryResult[j];
+			if(record instanceof NSRecord) {
+				NSRecord nsRecord = (NSRecord) record;
+				Name target = nsRecord.getTarget();
+				return InetAddress.getByName(target.toString());
+			}
+		}
+		return null;
 	}
 
 
