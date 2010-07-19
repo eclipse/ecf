@@ -13,9 +13,12 @@ package org.eclipse.ecf.provider.dnssd;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -167,16 +170,20 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		return (Record[]) result.toArray(new Record[result.size()]);
 	}
 
-	protected List getSRVRecords(Lookup[] queries) {
-		List srvRecords = new ArrayList();
+	protected SortedSet getSRVRecords(Lookup[] queries) {
+		return getSRVRecords(queries, null);
+	}
+	
+	protected SortedSet getSRVRecords(Lookup[] queries, Comparator aComparator) {
+		final SortedSet srvRecords = new TreeSet(aComparator);
 		for (int i = 0; i < queries.length; i++) {
-			srvRecords.addAll(getSRVRecord(queries[i]));
+			srvRecords.addAll(getSRVRecord(queries[i], aComparator));
 		}
 		return srvRecords;
 	}
 
-	protected List getSRVRecord(Lookup query) {
-		final List srvRecords = new ArrayList();
+	protected SortedSet getSRVRecord(Lookup query, Comparator aComparator) {
+		final SortedSet srvRecords = new TreeSet(aComparator);
 		query.setResolver(resolver);
 		final Record[] queryResult = query.run();
 		//TODO file bug upstream that queryResult may never be null
@@ -198,6 +205,32 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		return srvRecords;
 	}
 
+	// compares SRV records based on priority and weight
+	protected class SRVRecordComparator implements Comparator {
+
+		/* (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
+		public int compare(Object arg0, Object arg1) {
+			if(arg0 instanceof SRVRecord && arg1 instanceof SRVRecord) {
+				SRVRecord srv1 = (SRVRecord) arg0;
+				SRVRecord srv2 = (SRVRecord) arg1;
+				if(srv1.getPriority() > srv2.getPriority()) {
+					return 1;
+				} else if (srv1.getPriority() == srv2.getPriority()) {
+					if(srv1.getWeight() > srv2.getWeight()) {
+						return 1;
+					}
+					return -1;
+				} else {
+					return -1;
+				}
+			}
+			throw new UnsupportedOperationException("This appears to be a bug: Comparator can only compare SRVRecords");
+		}
+		
+	}
+	
 	/**
 	 * @param searchPaths The default search path used for discovery 
 	 */

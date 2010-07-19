@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.dnssd;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -119,12 +120,12 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 	public IServiceInfo[] getServices(IServiceTypeID aServiceTypeId) {
 		Assert.isNotNull(aServiceTypeId);
 		DnsSdServiceTypeID serviceTypeId = (DnsSdServiceTypeID) aServiceTypeId;
-		List srvRecords = getSRVRecords(serviceTypeId.getInternalQueries());
+		Collection srvRecords = getSRVRecords(serviceTypeId.getInternalQueries());
 		List serviceInfos = getServiceInfos(srvRecords);
 		return (IServiceInfo[]) serviceInfos.toArray(new IServiceInfo[serviceInfos.size()]);
 	}
 	
-	private List getServiceInfos(List srvQueryResult) {
+	private List getServiceInfos(Collection srvQueryResult) {
 		List infos = new ArrayList();
 		for (Iterator iterator = srvQueryResult.iterator(); iterator.hasNext();) {
 			SRVRecord srvRecord = (SRVRecord) iterator.next();
