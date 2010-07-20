@@ -212,7 +212,8 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 	}
 
 	private String[] getBrowsingDomains(IServiceTypeID aServiceTypeId) {
-		String[] rrs = new String[] {BnRDnsSdServiceTypeID.BROWSE_DOMAINS, BnRDnsSdServiceTypeID.DEFAULT_BROWSE_DOMAIN};
-		return getBrowsingOrRegistrationDomains(aServiceTypeId, rrs);
+		final String[] rrs = new String[] {BnRDnsSdServiceTypeID.BROWSE_DOMAINS, BnRDnsSdServiceTypeID.DEFAULT_BROWSE_DOMAIN};
+		final Collection res = getBrowsingOrRegistrationDomains(aServiceTypeId, rrs);
+		return (String[]) res.toArray(new String[res.size()]);
 	}
 }

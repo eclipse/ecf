@@ -36,7 +36,7 @@ public class DnsSdServiceID extends ServiceID {
 	}
 
 
-	public Name getDnsName() throws TextParseException {
+	Name getDnsName() throws TextParseException {
 		return new Name("_" + type.getServices()[0] + "._"
 		+ type.getProtocols()[0]);
 	}
@@ -45,7 +45,7 @@ public class DnsSdServiceID extends ServiceID {
 	 * @return A relative SRV record independent of a given domain/zone
 	 * @throws IOException
 	 */
-	public Record toSRVRecord() throws IOException {
+	Record toSRVRecord() throws IOException {
 		final Name name = new Name(getDnsName().toString(), new Name(type.getScopes()[0] + "."));
 		final long ttl = serviceInfo.getTTL();
 		final int priority = serviceInfo.getPriority();
@@ -61,7 +61,7 @@ public class DnsSdServiceID extends ServiceID {
 	 * @return A relative TXT record independent of a given domain/zone
 	 * @throws IOException
 	 */
-	public Record[] toTXTRecords(final Record aRecord) throws IOException {
+	Record[] toTXTRecords(final Record aRecord) throws IOException {
 		final List result = new ArrayList();
 		final IServiceProperties properties = serviceInfo.getServiceProperties();
 		final Enumeration enumeration = properties.getPropertyNames();

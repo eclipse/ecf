@@ -118,7 +118,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 			fireContainerEvent(new ContainerConnectedEvent(this.getID(), targetID));
 	}
 
-	private void sendToServer(final IServiceInfo serviceInfo, final boolean mode) {
+	protected void sendToServer(final IServiceInfo serviceInfo, final boolean mode) {
 		Assert.isNotNull(serviceInfo);
 		final DnsSdServiceID serviceID = (DnsSdServiceID) serviceInfo.getServiceID();
 		try {
@@ -198,23 +198,11 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		}
 	}
 
-	private Collection getUpdateDomain(final Name zone) throws TextParseException {
+	protected Collection getUpdateDomain(final Name zone) throws TextParseException {
 		// query for special "_dns-update" SRV records which mark the server to use for dyndns
 		final Lookup query = new Lookup(_DNS_UPDATE + zone, Type.SRV);
 		// use the SRV record with the lowest priority/weight first
 		final SortedSet srvRecords = getSRVRecord(query, new SRVRecordComparator());
-//
-//		int prio = Integer.MAX_VALUE, weight = Integer.MAX_VALUE;
-//		for (Iterator iterator = srvRecords.iterator(); iterator.hasNext();) {
-//			final SRVRecord srvRecord = (SRVRecord) iterator.next();
-//			if(srvRecord.getPriority() < prio) {
-//				if (srvRecord.getWeight() < weight) {
-//					prio = srvRecord.getPriority();
-//					weight = srvRecord.getPriority();
-//					result.add(new URI("dns://" + srvRecord.getTarget() + ":" + srvRecord.getPort()));
-//				}
-//			}
-//		}
 
 		// if no dedicated "_dns-update" server is configured, fall back to regular authoritative server
 		if(srvRecords.size() == 0) {
@@ -223,7 +211,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		return srvRecords; 
 	}
 	
-	private Collection getAuthoritativeNameServer(final Name zone) throws TextParseException {
+	protected Collection getAuthoritativeNameServer(final Name zone) throws TextParseException {
 		final Set result = new HashSet();
 		final Name name = new Name(_DNS_UPDATE + zone);
 		
@@ -258,13 +246,13 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		return result; 
 	}
 
-	private String[] getRegistrationDomains(IServiceTypeID aServiceTypeId) {
-		String[] rrs = new String[] {BnRDnsSdServiceTypeID.REG_DOMAINS, BnRDnsSdServiceTypeID.DEFAULT_REG_DOMAIN};
-		final String[] registrationDomains = getBrowsingOrRegistrationDomains(aServiceTypeId, rrs);
-		String[] scopes = aServiceTypeId.getScopes();
+	protected String[] getRegistrationDomains(IServiceTypeID aServiceTypeId) {
+		final String[] rrs = new String[] {BnRDnsSdServiceTypeID.REG_DOMAINS, BnRDnsSdServiceTypeID.DEFAULT_REG_DOMAIN};
+		final Collection registrationDomains = getBrowsingOrRegistrationDomains(aServiceTypeId, rrs);
+		final String[] scopes = aServiceTypeId.getScopes();
 		for (int i = 0; i < scopes.length; i++) {
 			scopes[i] = scopes[i].concat(".");
 		}
-		return registrationDomains.length == 0 ? scopes : registrationDomains; 
+		return registrationDomains.size() == 0 ? scopes : (String[]) registrationDomains.toArray(new String[registrationDomains.size()]); 
 	}
 }

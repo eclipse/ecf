@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.dnssd;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -140,22 +141,48 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 				getConnectedID()));
 	}
 
-	protected String[] getBrowsingOrRegistrationDomains(final IServiceTypeID aServiceTypeId, final String[] rrs) {
+	protected Collection getBrowsingOrRegistrationDomains(final IServiceTypeID aServiceTypeId, final String[] rrs) {
 		final Set res = new HashSet();
+		getBrowsingOrRegistrationDomains(aServiceTypeId, rrs, res);
+		return res;
+	}
+
+	private void getBrowsingOrRegistrationDomains(final IServiceTypeID aServiceTypeId,
+			final String[] rrs, final Set res) {
 		for (int i = 0; i < rrs.length; i++) {
 			final BnRDnsSdServiceTypeID serviceType = 
 				new BnRDnsSdServiceTypeID(aServiceTypeId, rrs[i]);
 			
 			final Record[] records = getRecords(serviceType);
-			for (int j = 0; j < records.length; j++) {
-				final PTRRecord record = (PTRRecord) records[j];
-				res.add(record.getTarget().toString());
+			if(records.length == 0) {
+				res.addAll(serviceType.getScopesAsZones());
+			} else {
+				for (int j = 0; j < records.length; j++) {
+					final PTRRecord record = (PTRRecord) records[j];
+					final String target = record.getTarget().toString();
+					if(isFinal(record)) {
+						res.add(target.toString());
+					} else {
+						if(!res.contains(target)) { // guard against cycles
+							final BnRDnsSdServiceTypeID newServiceType = 
+								new BnRDnsSdServiceTypeID(serviceType, rrs[i]);
+							newServiceType.setScope(target);
+							getBrowsingOrRegistrationDomains(newServiceType, rrs, res);
+						} else  {
+							continue;
+						}
+					}
+				}
 			}
 		}
-		
-		return (String[]) res.toArray(new String[res.size()]);
 	}
 	
+	private boolean isFinal(PTRRecord record) {
+		Name name = record.getName();
+		Name target = record.getTarget();
+		return name.subdomain(target);
+	}
+
 	protected Record[] getRecords(final DnsSdServiceTypeID serviceTypeId) {
 		final List result = new ArrayList();
 		final Lookup[] queries = serviceTypeId.getInternalQueries();

@@ -11,6 +11,7 @@
 package org.eclipse.ecf.provider.dnssd;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
@@ -70,5 +71,22 @@ public class BnRDnsSdServiceTypeID extends DnsSdServiceTypeID {
 			result.add(query);
 		}
 		return (Lookup[]) result.toArray(new Lookup[result.size()]);
+	}
+	
+	void setScope(String target) {
+		if(target.endsWith(".")) {
+			target = target.substring(0, target.length() - 1);
+		}
+		scopes = new String[]{target};
+		createType();
+	}
+
+	Collection getScopesAsZones() {
+		final List res = new ArrayList(scopes.length);
+		for (int i = 0; i < scopes.length; i++) {
+			String scope = scopes[i];
+			res.add(scope + ".");
+		}
+		return res;
 	}
 }
