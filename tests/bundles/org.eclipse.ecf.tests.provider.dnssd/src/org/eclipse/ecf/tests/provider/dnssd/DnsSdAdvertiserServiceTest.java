@@ -18,11 +18,8 @@ import java.util.List;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
-import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
-import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryAdvertiser;
-import org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
@@ -37,16 +34,10 @@ import org.xbill.DNS.Update;
 import org.xbill.DNS.ZoneTransferException;
 import org.xbill.DNS.ZoneTransferIn;
 
-public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
+public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 
 	public DnsSdAdvertiserServiceTest() {
-		super(DnsSdTestHelper.ECF_DISCOVERY_DNSSD + ".advertiser");
-		setNamingAuthority(DnsSdTestHelper.NAMING_AUTH);
-		setScope(DnsSdTestHelper.REG_DOMAIN);
-		setServices(new String[]{DnsSdTestHelper.REG_SCHEME});
-		setProtocol(DnsSdTestHelper.PROTO);
-		setComparator(new DnsSdAdvertiserComparator());
-		setTTL(DnsSdTestHelper.TTL);
+		super();
 	}
 
 	/* (non-Javadoc)
@@ -79,20 +70,6 @@ public class DnsSdAdvertiserServiceTest extends AbstractDiscoveryTest {
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest#getDiscoveryLocator()
-	 */
-	protected IDiscoveryAdvertiser getDiscoveryAdvertiser() {
-		return Activator.getDefault().getDiscoveryAdvertiser();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest#getDiscoveryLocator()
-	 */
-	protected IDiscoveryLocator getDiscoveryLocator() {
-		return Activator.getDefault().getDiscoveryLocator();
 	}
 	
 	/* (non-Javadoc)
