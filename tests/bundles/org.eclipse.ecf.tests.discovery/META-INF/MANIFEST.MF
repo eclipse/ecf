@@ -9,7 +9,7 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common,
  org.junit,
  org.eclipse.ecf,
- org.eclipse.ecf.discovery
+ org.eclipse.ecf.discovery;bundle-version="4.0.0"
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.tests.discovery,
  org.eclipse.ecf.tests.discovery.identity,
