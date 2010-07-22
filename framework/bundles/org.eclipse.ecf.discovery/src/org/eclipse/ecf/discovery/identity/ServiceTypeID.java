@@ -58,9 +58,8 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 	 * Clients should not call this method directly. Use the {@link Namespace} and/or {@link ServiceIDFactory} instead.
 	 * @param namespace
 	 * @param aType
-	 * @throws IDCreateException
 	 */
-	public ServiceTypeID(Namespace namespace, String aType) throws IDCreateException {
+	public ServiceTypeID(Namespace namespace, String aType) {
 		this(namespace);
 		if (aType != null) {
 			try {

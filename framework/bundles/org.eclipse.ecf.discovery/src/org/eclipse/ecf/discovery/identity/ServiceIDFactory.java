@@ -54,7 +54,7 @@ public class ServiceIDFactory implements IServiceIDFactory {
 	 * @since 3.0
 	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, java.lang.String[], java.lang.String[], java.lang.String[], java.lang.String)
 	 */
-	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] serviceType, String[] scopes, String[] protocols, String namingAuthority) throws IDCreateException {
+	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] serviceType, String[] scopes, String[] protocols, String namingAuthority) {
 		try {
 			IServiceTypeID aServiceType = new ServiceTypeID(namespace, serviceType, scopes, protocols, namingAuthority);
 			return (IServiceTypeID) IDFactory.getDefault().createID(namespace, new Object[] {aServiceType});
@@ -67,7 +67,7 @@ public class ServiceIDFactory implements IServiceIDFactory {
 	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, java.lang.String[], java.lang.String[])
 	 * @since 3.0
 	 */
-	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] serviceType, String[] protocols) throws IDCreateException {
+	public IServiceTypeID createServiceTypeID(Namespace namespace, String[] serviceType, String[] protocols) {
 		return this.createServiceTypeID(namespace, serviceType, IServiceTypeID.DEFAULT_SCOPE, protocols, IServiceTypeID.DEFAULT_NA);
 	}
 
@@ -75,7 +75,7 @@ public class ServiceIDFactory implements IServiceIDFactory {
 	 * @see org.eclipse.ecf.discovery.identity.IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, org.eclipse.ecf.discovery.identity.IServiceTypeID)
 	 * @since 3.0
 	 */
-	public IServiceTypeID createServiceTypeID(Namespace namespace, IServiceTypeID aServiceTypeId) throws IDCreateException {
+	public IServiceTypeID createServiceTypeID(Namespace namespace, IServiceTypeID aServiceTypeId) {
 		return (IServiceTypeID) IDFactory.getDefault().createID(namespace, new Object[] {aServiceTypeId});
 	}
 }

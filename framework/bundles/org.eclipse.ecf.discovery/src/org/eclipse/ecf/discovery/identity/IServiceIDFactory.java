@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.discovery.identity;
 
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
@@ -32,8 +31,6 @@ public interface IServiceIDFactory {
 	 * @since 3.0
 	 * 
 	 * @return IServiceTypeID created. Will not be <code>null</code>.
-	 * @throws IDCreateException
-	 *             if some problem creating the new IServiceTypeID.
 	 */
 	public IServiceTypeID createServiceTypeID(Namespace namespace,
 			String serviceType);
@@ -50,8 +47,6 @@ public interface IServiceIDFactory {
 	 * @since 3.0
 	 * 
 	 * @return IServiceTypeID created. Will not be <code>null</code>.
-	 * @throws IDCreateException
-	 *             if some problem creating the new IServiceTypeID.
 	 */
 	public IServiceTypeID createServiceTypeID(Namespace namespace,
 			String[] serviceType);
@@ -79,12 +74,10 @@ public interface IServiceIDFactory {
 	 * @since 3.0
 	 * 
 	 * @return IServiceTypeID created. Will not be <code>null</code>.
-	 * @throws IDCreateException
-	 *             if some problem creating the new IServiceTypeID.
 	 */
 	public IServiceTypeID createServiceTypeID(Namespace namespace,
 			String[] services, String[] scopes, String[] protocols,
-			String namingAuthority) throws IDCreateException;
+			String namingAuthority);
 
 	/**
 	 * Create an IServiceTypeID. Creates an immutable IServiceTypeID.
@@ -101,11 +94,9 @@ public interface IServiceIDFactory {
 	 * @since 3.0
 	 * 
 	 * @return IServiceTypeID created. Will not be <code>null</code>.
-	 * @throws IDCreateException
-	 *             if some problem creating the new IServiceTypeID.
 	 */
 	public IServiceTypeID createServiceTypeID(Namespace namespace,
-			String[] serviceType, String[] protocols) throws IDCreateException;
+			String[] serviceType, String[] protocols);
 
 	/**
 	 * Create an IServiceTypeID. Creates an immutable IServiceTypeID from a non-
@@ -120,9 +111,7 @@ public interface IServiceIDFactory {
 	 * @since 3.0
 	 * 
 	 * @return IServiceTypeID created. Will not be <code>null</code>.
-	 * @throws IDCreateException
-	 *             if some problem creating the new IServiceTypeID.
 	 */
 	public IServiceTypeID createServiceTypeID(Namespace namespace,
-			IServiceTypeID aServiceTypeID) throws IDCreateException;
+			IServiceTypeID aServiceTypeID);
 }
