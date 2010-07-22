@@ -42,6 +42,17 @@ public class JSLPDiscoveryTest extends DiscoveryContainerTest {
 		setComparator(new JSLPTestComparator());
 		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=218308
 		setScope(IServiceTypeID.DEFAULT_SCOPE[0]);
+		
+
+		String[] ips;
+		// tests need root privileges to bind to slp port 427 in SA mode
+		try {
+			String str = System.getProperty("net.slp.interfaces", "127.0.0.1");
+			ips = str.split(",");
+		} catch (Exception e) {
+			ips = new String[]{"127.0.0.1"};
+		}
+		setHostname(ips[0]);
 	}
 	
 	/**
