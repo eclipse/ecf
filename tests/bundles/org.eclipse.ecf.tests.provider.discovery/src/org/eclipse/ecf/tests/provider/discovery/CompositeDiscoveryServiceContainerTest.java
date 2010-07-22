@@ -38,7 +38,7 @@ public class CompositeDiscoveryServiceContainerTest extends
 		setWaitTimeForProvider(Long.parseLong(System.getProperty("net.slp.rediscover", new Long(60L * 1000L).toString()))); //$NON-NLS-1$);
 		//TODO-mkuppe https://bugs.eclipse.org/bugs/show_bug.cgi?id=218308
 		setScope(IServiceTypeID.DEFAULT_SCOPE[0]);
-		
+		setHostname(System.getProperty("net.mdns.interface", "127.0.0.1"));
 	}
 
 	/* (non-Javadoc)

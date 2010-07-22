@@ -16,5 +16,6 @@ public class WithoutJSLPCompositeDiscoveryServiceContainerTest extends
 
 	public WithoutJSLPCompositeDiscoveryServiceContainerTest() {
 		super("org.eclipse.ecf.provider.jslp");
+		setHostname(System.getProperty("net.mdns.interface", "127.0.0.1"));
 	}
 }

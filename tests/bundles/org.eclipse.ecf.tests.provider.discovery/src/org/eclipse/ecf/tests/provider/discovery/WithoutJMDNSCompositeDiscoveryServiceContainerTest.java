@@ -15,5 +15,14 @@ public class WithoutJMDNSCompositeDiscoveryServiceContainerTest extends
 
 	public WithoutJMDNSCompositeDiscoveryServiceContainerTest() {
 		super("org.eclipse.ecf.provider.jmdns");
+		String[] ips;
+		// tests need root privileges to bind to slp port 427 in SA mode
+		try {
+			String str = System.getProperty("net.slp.interfaces", "127.0.0.1");
+			ips = str.split(",");
+		} catch (Exception e) {
+			ips = new String[]{"127.0.0.1"};
+		}
+		setHostname(ips[0]);
 	}
 }
