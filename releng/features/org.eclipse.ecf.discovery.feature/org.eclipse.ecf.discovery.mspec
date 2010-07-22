@@ -5,9 +5,11 @@
     url="org.eclipse.ecf.discovery.cquery">
     
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.provider\.discovery(\..+)?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.discovery(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.discovery\.feature?" materializer="workspace"/>
     
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.provider\.discovery?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.discovery?" materializer="workspace"/>
 
     <md:mspecNode namePattern=".*" installLocation="${targetPlatformPath}"/>
 </md:mspec>

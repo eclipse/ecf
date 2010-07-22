@@ -7,9 +7,11 @@
     <cq:property key="target.ws" value="*"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.provider\.discovery(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.discovery(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.discovery\.feature?" useTargetPlatform="false" useWorkspace="false"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.provider\.discovery?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.discovery?" useTargetPlatform="false" useWorkspace="false"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false"/>
     
