@@ -33,19 +33,20 @@ public abstract class DiscoveryTestHelper {
 	public final static String[] PROTOCOLS = new String[] {PROTOCOL};
 	public final static String SERVICE_TYPE = "_" + SERVICES[0] + "._" + SERVICES[1] + "._" + SERVICES[2] + "._" + PROTOCOL + "." + SCOPE + "._" + NAMINGAUTHORITY;
 	public final static long TTL = 3600; //TODO change to something different than DEFAULT_TTL
+	public static String HOSTNAME;
 	
-	public static URI createDefaultURI() {
+	public static URI createDefaultURI(String aHostname) {
 //TODO-mkuppe https://bugs.eclipse.org/216944
-//		return URI.create(PROTOCOL + "://" + USERNAME + ":" + PASSWORD + "@" + getHost() + ":" + PORT + "/" + PATH + "?" + QUERY + "#" + FRAGMENT);
-		return URI.create(PROTOCOLS[0] + "://"/* + USERNAME + "@" */+ getHost() + ":" + PORT + PATH);
+//		return URI.create(PROTOCOL + "://" + USERNAME + ":" + PASSWORD + "@" + aHostname + ":" + PORT + "/" + PATH + "?" + QUERY + "#" + FRAGMENT);
+		return URI.create(PROTOCOLS[0] + "://"/* + USERNAME + "@" */+ aHostname + ":" + PORT + PATH);
 	}
 	
-	public static String getHost() {
+	static {
 		try {
-			return InetAddress.getLocalHost().getHostAddress();
+			HOSTNAME = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-			return "localhost";
+			HOSTNAME = "127.0.0.1";
 		}
 	}
 }

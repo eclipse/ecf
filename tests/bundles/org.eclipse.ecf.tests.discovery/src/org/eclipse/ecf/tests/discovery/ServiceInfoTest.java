@@ -38,7 +38,7 @@ public abstract class ServiceInfoTest extends TestCase {
 	protected Comparator serviceInfoComparator = new ServiceInfoComparator();
 
 	public ServiceInfoTest(Namespace namespace) {
-		uri = DiscoveryTestHelper.createDefaultURI();
+		uri = DiscoveryTestHelper.createDefaultURI(DiscoveryTestHelper.HOSTNAME);
 		priority = DiscoveryTestHelper.PRIORITY;
 		weight = DiscoveryTestHelper.WEIGHT;
 		serviceProperties = new ServiceProperties();

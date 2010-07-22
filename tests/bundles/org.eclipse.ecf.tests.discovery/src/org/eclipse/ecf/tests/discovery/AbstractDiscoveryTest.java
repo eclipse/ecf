@@ -39,6 +39,8 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected String containerUnderTest;
 	protected IDiscoveryLocator discoveryLocator = null;
 	protected IDiscoveryAdvertiser discoveryAdvertiser = null;
+
+	private String hostname = DiscoveryTestHelper.HOSTNAME;
 	
 	public AbstractDiscoveryTest(String name) {
 		super();
@@ -66,6 +68,10 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		this.ttl = aTTL;
 	}
 	
+	protected void setHostname(String aHostname) {
+		this.hostname = aHostname;
+	}
+	
 	protected void setNamingAuthority(String namingAuthority) {
 		this.namingAuthority = namingAuthority;
 	}
@@ -85,7 +91,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		assertNotNull("IDiscoveryAdvertiser must not be null", discoveryAdvertiser);
 	
 		final Properties props = new Properties();
-		final URI uri = DiscoveryTestHelper.createDefaultURI();
+		final URI uri = DiscoveryTestHelper.createDefaultURI(hostname);
 	
 		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(discoveryLocator.getServicesNamespace(), services, new String[]{scope}, new String[]{protocol}, namingAuthority);
 		assertNotNull(serviceTypeID);
