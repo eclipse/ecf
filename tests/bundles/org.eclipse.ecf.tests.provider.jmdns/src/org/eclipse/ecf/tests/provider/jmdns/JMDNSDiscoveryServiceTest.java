@@ -16,5 +16,6 @@ public class JMDNSDiscoveryServiceTest extends DiscoveryServiceTest {
 
 	public JMDNSDiscoveryServiceTest() {
 		super("ecf.discovery.jmdns");
+		setHostname(System.getProperty("net.mdns.interface", "127.0.0.1"));
 	}
 }
