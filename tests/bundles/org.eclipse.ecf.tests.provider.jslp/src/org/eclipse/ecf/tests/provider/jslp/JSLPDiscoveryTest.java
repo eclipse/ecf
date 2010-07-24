@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.jslp;
 
+import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.provider.jslp.NullPatternAdvertiser;
 import org.eclipse.ecf.internal.provider.jslp.NullPatternLocator;
@@ -48,7 +49,7 @@ public class JSLPDiscoveryTest extends DiscoveryContainerTest {
 		// tests need root privileges to bind to slp port 427 in SA mode
 		try {
 			String str = System.getProperty("net.slp.interfaces", "127.0.0.1");
-			ips = str.split(",");
+			ips = StringUtils.split(str, ",");
 		} catch (Exception e) {
 			ips = new String[]{"127.0.0.1"};
 		}
