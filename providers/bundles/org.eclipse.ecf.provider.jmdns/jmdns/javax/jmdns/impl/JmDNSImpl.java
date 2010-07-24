@@ -157,11 +157,12 @@ public class JmDNSImpl extends JmDNS {
 			String ip = System.getProperty("net.mdns.interface");
 			if (ip != null) {
 				addr = InetAddress.getByName(ip);
+				init(addr, addr.getHostName());
 			} else {
 				addr = InetAddress.getLocalHost();
+				init(addr.isLoopbackAddress() ? null : addr, addr.getHostName());
 			}
-
-			init(addr.isLoopbackAddress() ? null : addr, addr.getHostName()); // [
+			// [
 			// PJYF
 			// Oct
 			// 14
