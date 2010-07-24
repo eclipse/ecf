@@ -60,7 +60,7 @@ public class ServicePropertiesAdapter {
 			final String key = str[0].substring(1);
 			final String value = str[1].substring(0, str[1].length() - 1);
 			// keep this for wire backward compatibility 
-			if (key.equalsIgnoreCase(SERVICE_ID_NAME)) {
+			if (key.equalsIgnoreCase(SERVICE_ID_NAME) && !value.startsWith(SLP_BYTE_PREFIX)) {
 				serviceName = value;
 			} else if (key.equalsIgnoreCase(PRIORITY)) {
 				priority = Integer.parseInt(value);
