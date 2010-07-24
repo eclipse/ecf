@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.provider.discovery;
 
+import org.eclipse.ecf.core.util.StringUtils;
+
 public class WithoutJMDNSCompositeDiscoveryServiceContainerTest extends
 	SingleCompositeDiscoveryServiceContainerTest {
 
@@ -19,7 +21,7 @@ public class WithoutJMDNSCompositeDiscoveryServiceContainerTest extends
 		// tests need root privileges to bind to slp port 427 in SA mode
 		try {
 			String str = System.getProperty("net.slp.interfaces", "127.0.0.1");
-			ips = str.split(",");
+			ips = StringUtils.split(str, ",");
 		} catch (Exception e) {
 			ips = new String[]{"127.0.0.1"};
 		}
