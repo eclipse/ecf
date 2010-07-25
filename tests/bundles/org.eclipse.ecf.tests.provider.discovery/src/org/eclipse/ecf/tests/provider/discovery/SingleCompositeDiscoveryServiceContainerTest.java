@@ -58,9 +58,11 @@ public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 				}
 			}
 			assertNotNull(bundleName + " bundle not found", bundle);
-			assertTrue("State before stop is: " + startLevelToString(bundle.getState()), bundle.getState() == Bundle.ACTIVE);
-			bundle.stop();
-			assertTrue("State after stop is: " + startLevelToString(bundle.getState()), bundle.getState() == Bundle.RESOLVED);
+			if(bundle.getState() == Bundle.ACTIVE) {
+				bundle.stop();
+			}
+			assertTrue("State after stop is: " + startLevelToString(bundle.getState()),
+					(bundle.getState() == Bundle.RESOLVED) || (bundle.getState() == Bundle.INSTALLED));
 		}
 		super.setUp();
 	}
