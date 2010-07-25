@@ -58,11 +58,30 @@ public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 				}
 			}
 			assertNotNull(bundleName + " bundle not found", bundle);
-			assertTrue(bundle.getState() == Bundle.ACTIVE);
+			assertTrue("State before stop is: " + startLevelToString(bundle.getState()), bundle.getState() == Bundle.ACTIVE);
 			bundle.stop();
-			assertTrue(bundle.getState() == Bundle.RESOLVED);
+			assertTrue("State after stop is: " + startLevelToString(bundle.getState()), bundle.getState() == Bundle.RESOLVED);
 		}
 		super.setUp();
+	}
+	
+	private String startLevelToString(int level) {
+		switch (level) {
+		case Bundle.ACTIVE:
+			return "ACTIVE";
+		case Bundle.INSTALLED:
+			return "INSTALLEd";
+		case Bundle.RESOLVED:
+			return "RESOLVED";
+		case Bundle.STARTING:
+			return "STARTING";
+		case Bundle.STOPPING:
+			return "STOPPING";
+		case Bundle.UNINSTALLED:
+			return "UNINSTALLED";
+		default:
+			return "unknown";
+		}
 	}
 
 	/* (non-Javadoc)
