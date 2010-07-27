@@ -10,13 +10,21 @@
  *******************************************************************************/
 package org.eclipse.ecf.tests.discovery.listener;
 
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
 
 public class TestServiceListener extends TestListener implements IServiceListener {
 
-	public TestServiceListener(int eventsToExpect) {
+	private IDiscoveryLocator locator;
+
+
+	public TestServiceListener(int eventsToExpect, IDiscoveryLocator aLocator) {
 		super(eventsToExpect);
+		Assert.isNotNull(aLocator);
+		locator = aLocator;
 	}
 
 	/* (non-Javadoc)
@@ -36,5 +44,13 @@ public class TestServiceListener extends TestListener implements IServiceListene
 	 */
 	public void serviceUndiscovered(IServiceEvent anEvent) {
 		throw new java.lang.UnsupportedOperationException("TestServiceListener#serviceUndiscovered not yet implemented");
+	}
+
+
+	/**
+	 * @return A DiscoveryLocator (Container)
+	 */
+	public IContainer getLocator() {
+		return (IContainer) locator;
 	}
 }

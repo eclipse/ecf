@@ -209,7 +209,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect);
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
 		addServiceListener(tsl);
 	}
 
@@ -222,7 +222,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect);
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
 		discoveryLocator.addServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		addListenerRegisterAndWait(tsl, serviceInfo);
 		discoveryLocator.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
@@ -271,7 +271,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testRemoveServiceListenerIServiceListener() throws ContainerConnectException {
-		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect);
+		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect, discoveryLocator);
 		addServiceListener(serviceListener);
 		//TODO reregister and verify the listener doesn't receive any events any longer.
 	}
@@ -282,7 +282,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testRemoveServiceListenerIServiceTypeIDIServiceListener() throws ContainerConnectException {
-		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect);
+		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect, discoveryLocator);
 		addServiceListener(serviceListener);
 		//TODO reregister and verify the listener doesn't receive any events any longer.
 	}
@@ -393,7 +393,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		final Object object = aFuture.get();
 		assertTrue(object instanceof IServiceTypeID[]);
 		final IServiceTypeID[] services = (IServiceTypeID[]) object;
-		assertTrue("Found: " + services.length + Arrays.asList(services), services.length == eventsToExpect);
+		assertTrue("Found: " + services.length + Arrays.asList(services), services.length == 1); // just expect one event as the implementation filters dupes
 		for (int i = 0; i < services.length; i++) {
 			IServiceTypeID iServiceTypeId = services[i];
 			if(serviceInfo.getServiceID().getServiceTypeID().equals(iServiceTypeId)) {
