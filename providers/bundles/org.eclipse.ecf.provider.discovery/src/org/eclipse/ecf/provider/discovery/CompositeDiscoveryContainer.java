@@ -165,9 +165,19 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 				final IContainer container = (IContainer) itr.next();
 				container.disconnect();
 			}
+			containers.clear();
 		}
 		synchronized (registeredServices) {
 			registeredServices.clear();
+		}
+		synchronized (allServiceListeners) {
+			allServiceListeners.clear();
+		}
+		synchronized (serviceListeners) {
+			serviceListeners.clear();
+		}
+		synchronized (serviceTypeListeners) {
+			serviceTypeListeners.clear();
 		}
 		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), getConnectedID()));
 	}
