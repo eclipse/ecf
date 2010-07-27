@@ -10,12 +10,12 @@
  *******************************************************************************/
 package org.eclipse.ecf.tests.provider.discovery;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
@@ -94,19 +94,33 @@ public class CompositeDiscoveryContainerTest extends DiscoveryContainerTest {
 		discoveryLocator.addServiceListener(serviceListener);
 		addListenerRegisterAndWait(serviceListener, serviceInfo);
 		discoveryLocator.removeServiceListener(serviceListener);
-		IContainerEvent[] events = serviceListener.getEvent();
+
+		// make sure we use a live container;
+		final IContainer ic = (IContainer) serviceListener.getLocator();
+		assertTrue(ic.getConnectedID() != null);
+		
+		// check if we received correct amount of events
+		final IContainerEvent[] events = serviceListener.getEvent();
 		assertNotNull("Test listener didn't receive any discovery events.", events);
 		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(events), eventsToExpect, events.length);
-		Set origContainers = new HashSet();
+		
+		final List origContainers = new ArrayList();
 		for (int i = 0; i < events.length; i++) {
-			CompositeServiceContainerEvent event = (CompositeServiceContainerEvent) events[i];
-			ID localContainerId = event.getLocalContainerID();
-			ID connectedId = container.getConnectedID();
-			assertTrue("Container mismatch, excepted:\n\t" + localContainerId + " but was:\n\t" + connectedId, localContainerId.equals(connectedId));
-			IServiceInfo serviceInfo2 = ((IServiceEvent) event).getServiceInfo();
+			final CompositeServiceContainerEvent event = (CompositeServiceContainerEvent) events[i];
+
+			// check if the local container is hidden correctly
+			final ID localContainerId = event.getLocalContainerID();
+			final ID connectedId = container.getConnectedID();
+			assertEquals(localContainerId, connectedId);
+			
+			// check the IServiceInfo for correct fields/properties
+			final IServiceInfo serviceInfo2 = ((IServiceEvent) event).getServiceInfo();
 			assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
+			
+			// add the underlying discovery container the the result set
 			origContainers.add(event.getOriginalLocalContainerID());
 		}
-		assertEquals("A nested container didn't send an event, but another multiple", eventsToExpect, origContainers.size());
+		// check that all underlying containers fired an event
+		assertEquals("A nested container didn't send an event, but another multiple.", eventsToExpect, origContainers.size());
 	}
 }
