@@ -2,14 +2,10 @@
 <md:mspec xmlns:md="http://www.eclipse.org/buckminster/MetaData-1.0" 
     name="org.eclipse.ecf.remoteservice" 
     materializer="p2" 
-    url="org.eclipse.ecf.remoteservice.cquery">
+    url="org.eclipse.ecf.osgi.services.cquery">
     
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.provider\.remoteservice(\..+)?" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.feature?" materializer="workspace"/>
-    
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice?" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice\.generic?" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.osgi\.services\.distribution\.generic?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.osgi(\..+)?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.osgi(\..+)?" materializer="workspace"/>
 
     <md:mspecNode namePattern=".*" installLocation="${targetPlatformPath}"/>
 </md:mspec>
