@@ -171,6 +171,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		
 		Properties props = new Properties();
 		props.put(SERVICE_EXPORTED_INTERFACES, SERVICE_EXPORTED_INTERFACES_WILDCARD);
+		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
 		props.put(SERVICE_EXPORTED_CONTAINER_ID, this.server.getID());
 		registerWaitAndUnregister(props, true);
 	}
