@@ -9,6 +9,7 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -22,18 +23,12 @@ import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractServicePublicationTest extends TestCase implements IDistributionConstants, RemoteServicePublication {
-
-	protected static void assertStringsEqual(final String[] s1, final String[] s2) {
-		assertEquals(s1.length, s2.length);
-		for (int i = 0; i < s1.length; i++) {
-			assertEquals(s1[i], s2[i]);
-		}
-	}
 
 	// Member variables that should be set by subclasses
 	protected IContainer container;
@@ -97,7 +92,7 @@ public abstract class AbstractServicePublicationTest extends TestCase implements
 		this.container = container;
 	}
 	
-	public void testServicePublication() throws InterruptedException {
+	public void testServicePublication() throws InterruptedException, InvalidSyntaxException {
 		final BundleContext context = Activator.getDefault().getContext();
 	
 		// register a service with the marker property set
@@ -116,16 +111,23 @@ public abstract class AbstractServicePublicationTest extends TestCase implements
 		tracker.waitForService(10000);
 	
 		// expected behavior: an endpoint is published
-		final ServiceReference ref = context
-				.getServiceReference(ServicePublication.class.getName());
-		assertTrue(ref != null);
-		// check the service publication properties
-		final Object o = ref
+		final ServiceReference[] refs = context
+				.getServiceReferences(ServicePublication.class.getName(), null);
+		assertTrue(refs != null);
+		
+		for (int i = 0; i < refs.length; i++) {
+			ServiceReference ref = refs[i];
+			
+			// check the service publication properties
+			final Object o = ref
 				.getProperty(ServicePublication.SERVICE_INTERFACE_NAME);
-		assertTrue(o instanceof Collection);
-		final Collection refIfaces = (Collection) o;
-		assertStringsEqual(getInterfaces(), (String []) refIfaces.toArray(new String[] {}));
-		Thread.sleep(10000);
+			assertTrue(o instanceof Collection);
+			final Collection refIfaces = (Collection) o;
+			if(Arrays.equals(getInterfaces(), (String []) refIfaces.toArray(new String[] {}))) {
+				return;
+			}
+		}
+		fail("registered service not found.");
 	}
 	public void setInterfaces(String [] interfaces) {
 		this.ifaces = interfaces;
