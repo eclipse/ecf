@@ -24,11 +24,20 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		AbstractDistributionTest {
 
 	protected static final int REGISTER_WAIT = 2000;
+	private ServiceRegistration registration;
 
 	protected abstract String getServerContainerTypeName();
 	
 	protected void tearDown() throws Exception {
+		// Then unregister
+		if(registration != null) {
+			registration.unregister();
+			registration = null;
+		}
+		Thread.sleep(REGISTER_WAIT);
+		
 		super.tearDown();
+		
 		IContainer [] containers = getContainerManager().getAllContainers();
 		for(int i=0; i < containers.length; i++) {
 			containers[i].dispose();
@@ -39,14 +48,13 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 	
 	protected void registerWaitAndUnregister(Properties props, boolean verifyRegistration) throws Exception {
 		// Actually register with default service (IConcatService)
-		ServiceRegistration registration = registerDefaultService(props);
+		registration = registerDefaultService(props);
 		// Wait a while
 		Thread.sleep(REGISTER_WAIT);
 		// Verify
-		if (verifyRegistration) verifyRemoteServiceRegisteredWithServer();
-		// Then unregister
-		registration.unregister();
-		Thread.sleep(REGISTER_WAIT);
+		if (verifyRegistration) {
+			verifyRemoteServiceRegisteredWithServer();
+		}
 	}
 
 	private void verifyRemoteServiceRegisteredWithServer() throws Exception {
