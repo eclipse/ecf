@@ -20,11 +20,8 @@
       <plugin id="org.eclipse.ecf.examples.loadbalancing"/>
       <plugin id="org.eclipse.ecf.examples.loadbalancing.servicehost"/>
       <plugin id="org.eclipse.ecf.identity"/>
-      <plugin id="org.eclipse.ecf.osgi.services.discovery"/>
-      <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.datashare"/>
-      <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.jms"/>
       <plugin id="org.eclipse.ecf.provider.jms.activemq"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
