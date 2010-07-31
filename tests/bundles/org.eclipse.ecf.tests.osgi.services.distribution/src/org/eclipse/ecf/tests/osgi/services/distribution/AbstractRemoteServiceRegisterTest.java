@@ -169,9 +169,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
-		Properties props = new Properties();
-		props.put(SERVICE_EXPORTED_INTERFACES, SERVICE_EXPORTED_INTERFACES_WILDCARD);
-		props.put(SERVICE_EXPORTED_CONFIGS, getServerContainerTypeName());
+		final Properties props = getServiceProperties();
 		props.put(SERVICE_EXPORTED_CONTAINER_ID, this.server.getID());
 		registerWaitAndUnregister(props, true);
 	}
