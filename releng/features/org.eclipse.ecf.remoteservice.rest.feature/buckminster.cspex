@@ -11,6 +11,7 @@
 		<!-- tests -->
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.ecf.tests.remoteservice.rest" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.tests.apache.httpclient.server" componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
