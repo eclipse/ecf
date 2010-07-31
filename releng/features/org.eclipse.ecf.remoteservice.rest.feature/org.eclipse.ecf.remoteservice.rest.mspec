@@ -7,6 +7,7 @@
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.rest?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.rest\.feature?" materializer="workspace"/>
     
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.apache\.httpclient\.server?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice\.rest?" materializer="workspace"/>
 
     <md:mspecNode namePattern=".*" installLocation="${targetPlatformPath}"/>
