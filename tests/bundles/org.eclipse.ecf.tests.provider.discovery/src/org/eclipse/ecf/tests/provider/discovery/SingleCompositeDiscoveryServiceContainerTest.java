@@ -104,8 +104,9 @@ public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 				}
 			}
 			assertNotNull(bundleName + " bundle not found", bundle);
-			assertTrue(bundle.getState() == Bundle.RESOLVED);
-			bundle.start();
+			if(bundle.getState() != Bundle.ACTIVE) {
+				bundle.start();
+			}
 			assertTrue(bundle.getState() == Bundle.ACTIVE);
 			
 			// reset so other instances can reuse
