@@ -14,7 +14,6 @@ import java.util.Properties;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractRemoteServiceAccessTest;
@@ -49,8 +48,6 @@ public class R_OSGiRemoteServiceAccessTest extends AbstractRemoteServiceAccessTe
 				new Object[] { IDFactory.getDefault().createStringID(
 				"r-osgi://localhost:"+(9279+index)) });
 	}
-	
-	private ID serverID;
 	
 	protected IContainer createServer() throws Exception {
 		serverID = IDFactory.getDefault().createID("ecf.namespace.r_osgi",SERVER_IDENTITY);
