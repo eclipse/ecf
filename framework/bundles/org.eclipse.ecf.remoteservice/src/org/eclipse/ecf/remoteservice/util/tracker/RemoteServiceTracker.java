@@ -658,8 +658,6 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 		private static final long serialVersionUID = 1457902368711966642L;
 
-		public static final boolean TRACKED_DEBUG = true;
-
 		/**
 		 * List of ServiceReferences in the process of being added. This is used
 		 * to deal with nesting of ServiceEvents. Since ServiceEvents are
@@ -732,7 +730,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			}
 			int size = references.length;
 			for (int i = 0; i < size; i++) {
-				if (TRACKED_DEBUG) {
+				if (DEBUG) {
 					System.out.println("RemoteServiceTracker.Tracked.setInitialServices: " + references[i]); //$NON-NLS-1$
 				}
 				initial.add(references[i]);
@@ -764,7 +762,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 					reference = (IRemoteServiceReference) initial.removeFirst();
 					if (this.get(reference) != null) {
 						/* if we are already tracking this service */
-						if (TRACKED_DEBUG) {
+						if (DEBUG) {
 							System.out.println("RemoteServiceTracker.Tracked.trackInitialServices[already tracked]: " + reference); //$NON-NLS-1$
 						}
 						continue; /* skip this service */
@@ -774,14 +772,14 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 						 * if this service is already in the process of being
 						 * added.
 						 */
-						if (TRACKED_DEBUG) {
+						if (DEBUG) {
 							System.out.println("RemoteServiceTracker.Tracked.trackInitialServices[already adding]: " + reference); //$NON-NLS-1$
 						}
 						continue; /* skip this service */
 					}
 					adding.add(reference);
 				}
-				if (TRACKED_DEBUG) {
+				if (DEBUG) {
 					System.out.println("RemoteServiceTracker.Tracked.trackInitialServices: " + reference); //$NON-NLS-1$
 				}
 				trackAdding(reference);
@@ -823,7 +821,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 				type = ServiceEvent.UNREGISTERING;
 			}
 			IRemoteServiceReference reference = event.getReference();
-			if (TRACKED_DEBUG) {
+			if (DEBUG) {
 				System.out.println("RemoteServiceTracker.Tracked.serviceChanged[" + event.getClass() + "]: " + reference); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 
@@ -874,7 +872,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			}
 			if (object != null) /* we are already tracking the service */
 			{
-				if (TRACKED_DEBUG) {
+				if (DEBUG) {
 					System.out.println("RemoteServiceTracker.Tracked.track[modified]: " + reference); //$NON-NLS-1$
 				}
 				synchronized (this) {
@@ -895,7 +893,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 					 * already in the process of
 					 * being added.
 					 */
-					if (TRACKED_DEBUG) {
+					if (DEBUG) {
 						System.out.println("RemoteServiceTracker.Tracked.track[already adding]: " + reference); //$NON-NLS-1$
 					}
 					return;
@@ -918,7 +916,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 		 * @param reference IRemoteServiceReference to a service to be tracked.
 		 */
 		private void trackAdding(IRemoteServiceReference reference) {
-			if (TRACKED_DEBUG) {
+			if (DEBUG) {
 				System.out.println("RemoteServiceTracker.Tracked.trackAdding: " + reference); //$NON-NLS-1$
 			}
 			IRemoteService object = null;
@@ -956,7 +954,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 			 * The service became untracked during the customizer callback.
 			 */
 			if (becameUntracked) {
-				if (TRACKED_DEBUG) {
+				if (DEBUG) {
 					System.out.println("RemoteServiceTracker.Tracked.trackAdding[removed]: " + reference); //$NON-NLS-1$
 				}
 				/* Call customizer outside of synchronized region */
@@ -983,7 +981,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 					 * initial references to
 					 * process
 					 */
-					if (TRACKED_DEBUG) {
+					if (DEBUG) {
 						System.out.println("RemoteServiceTracker.Tracked.untrack[removed from initial]: " + reference); //$NON-NLS-1$
 					}
 					return;
@@ -997,7 +995,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 					 * if the service is in the
 					 * process of being added
 					 */
-					if (TRACKED_DEBUG) {
+					if (DEBUG) {
 						System.out.println("RemoteServiceTracker.Tracked.untrack[being added]: " + reference); //$NON-NLS-1$
 					}
 					return;
@@ -1017,7 +1015,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 				}
 				modified(); /* increment modification count */
 			}
-			if (TRACKED_DEBUG) {
+			if (DEBUG) {
 				System.out.println("RemoteServiceTracker.Tracked.untrack[removed]: " + reference); //$NON-NLS-1$
 			}
 			customizer.removedService(reference, object);
