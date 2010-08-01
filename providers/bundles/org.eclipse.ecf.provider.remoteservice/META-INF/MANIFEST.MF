@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.remoteservice;singleton:=true
-Bundle-Version: 3.3.100.qualifier
+Bundle-Version: 3.4.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.remoteservice.Activator
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
@@ -21,6 +21,7 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.discovery
 Import-Package: org.eclipse.core.runtime.jobs,
  org.eclipse.equinox.concurrent.future,
+ org.eclipse.osgi.framework.eventmgr,
  org.eclipse.osgi.util,
  org.osgi.framework,
  org.osgi.service.log,

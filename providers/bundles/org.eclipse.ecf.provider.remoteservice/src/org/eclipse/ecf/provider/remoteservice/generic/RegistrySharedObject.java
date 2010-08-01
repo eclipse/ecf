@@ -28,46 +28,71 @@ import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.events.*;
 import org.eclipse.equinox.concurrent.future.*;
+import org.eclipse.osgi.framework.eventmgr.*;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.*;
 
 public class RegistrySharedObject extends BaseSharedObject implements IRemoteServiceContainerAdapter {
-
-	protected RemoteServiceRegistryImpl localRegistry;
-
-	protected final Map remoteRegistrys = Collections.synchronizedMap(new HashMap());
-
-	protected final List serviceListeners = new ArrayList();
-
-	protected final Map localServiceRegistrations = new HashMap();
-
-	protected Map addRegistrationRequests = new Hashtable();
-
 	/**
+	 * registry impl for local remote service registrations
+	 */
+	protected RemoteServiceRegistryImpl localRegistry;
+	/**
+	 * map of registry impls for remote registrys  key:  ID (identifier of remote container), value: RemoteServiceRegistryImpl (copy of remote service registry for remote container
+	 */
+	protected final Map remoteRegistrys = Collections.synchronizedMap(new HashMap());
+	/**
+	 * List of remote service listeners (added to/removed from by addRemoteServiceListener/removeRemoteServiceListener
+	 */
+	protected final List serviceListeners = new ArrayList();
+	/**
+	 * Local remote service registrations.  key:  ID (identifier of remote container), value:  List (instances of RemoteServiceRegistrationImpl for remote container)
+	 */
+	protected final Map localServiceRegistrations = new HashMap();
+	/**
+	 * Map of add registration requests.  key:  Integer (unique Request id), value: AddRegistrationRequest
+	 */
+	protected Map addRegistrationRequests = new Hashtable();
+	/**
+	 * Add registration request default timeout
 	 * @since 3.0
 	 */
 	protected int addRegistrationRequestTimeout = ADD_REGISTRATION_REQUEST_TIMEOUT;
-
+	/**
+	 * List of invocation requests...instances of Request
+	 */
 	protected List requests = Collections.synchronizedList(new ArrayList());
 
 	/**
+	 * Connect context to be used for connect.
 	 * @since 3.0
 	 */
 	protected IConnectContext connectContext;
-
 	/**
 	 * @since 3.3
 	 */
 	protected final Object rsConnectLock = new Object();
 	/**
+	 * Whether or not we are connected
 	 * @since 3.3
 	 */
 	protected boolean rsConnected = false;
-
 	/**
+	 * Add registration request default timeout.
 	 * @since 3.3
 	 */
 	protected int rsConnectTimeout = ADD_REGISTRATION_REQUEST_TIMEOUT;
+	/**
+	 * ListenerQueue for asynchronously dispatching remote service registration/unregistration
+	 * events
+	 * @since 3.4
+	 */
+	protected ListenerQueue rsListenerDispatchQueue;
+	/**
+	 * Queue lock so that rsListenerDispatchQueue above can be lazily instantiated
+	 * @since 3.4
+	 */
+	protected final Object rsQueueLock = new Object();
 
 	public RegistrySharedObject() {
 		//
@@ -307,7 +332,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 		fireRemoteServiceListeners(createRegisteredEvent(reg));
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "registerRemoteService", reg); //$NON-NLS-1$
-
 		return reg;
 	}
 
@@ -390,16 +414,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				}
 			}
 		}
+		// Remove from pending updates
+		removePendingContainers(targetID);
+		if (getConnectedID() == null)
+			setRegistryConnected(false);
 		// Do notification outside synchronized block
 		if (registrations != null) {
 			for (int i = 0; i < registrations.length; i++) {
 				fireRemoteServiceListeners(createUnregisteredEvent(registrations[i]));
 			}
 		}
-		// Remove from pending updates
-		removePendingContainers(targetID);
-		if (getConnectedID() == null)
-			setRegistryConnected(false);
 	}
 
 	/**
@@ -501,8 +525,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return new Request(this.getLocalContainerID(), remoteRegistration.getServiceId(), RemoteCallImpl.createRemoteCall(refImpl.getRemoteClass(), call.getMethod(), call.getParameters(), call.getTimeout()), listener);
 	}
 
-	protected void fireRemoteServiceListeners(IRemoteServiceEvent event) {
-		List entries = null;
+	void doFireRemoteServiceListeners(IRemoteServiceEvent event) {
+		List entries;
 		synchronized (serviceListeners) {
 			entries = new ArrayList(serviceListeners);
 		}
@@ -510,6 +534,24 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			final IRemoteServiceListener l = (IRemoteServiceListener) i.next();
 			l.handleServiceEvent(event);
 		}
+	}
+
+	protected void fireRemoteServiceListeners(IRemoteServiceEvent event) {
+		synchronized (rsQueueLock) {
+			if (rsListenerDispatchQueue == null) {
+				ThreadGroup eventGroup = new ThreadGroup("RegistrySharedObject Dispatcher"); //$NON-NLS-1$
+				eventGroup.setDaemon(true);
+				rsListenerDispatchQueue = new ListenerQueue(new EventManager("RegistrySharedObject Dispatcher", eventGroup)); //$NON-NLS-1$
+				CopyOnWriteIdentityMap listeners = new CopyOnWriteIdentityMap();
+				listeners.put(this, this);
+				rsListenerDispatchQueue.queueListeners(listeners.entrySet(), new EventDispatcher() {
+					public void dispatchEvent(Object eventListener, Object listenerObject, int eventAction, Object eventObject) {
+						doFireRemoteServiceListeners((IRemoteServiceEvent) eventObject);
+					}
+				});
+			}
+		}
+		rsListenerDispatchQueue.dispatchEventAsynchronous(0, event);
 	}
 
 	private RemoteServiceRegistrationImpl getRemoteServiceRegistrationImpl(IRemoteServiceReference reference) {
@@ -914,13 +956,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (requestId != null)
 			notifyAddRegistrationResponse(remoteContainerID, requestId, null);
 
-		for (Iterator i = addedRegistrations.iterator(); i.hasNext();) {
-			fireRemoteServiceListeners(createRegisteredEvent((RemoteServiceRegistrationImpl) i.next()));
-		}
-
 		// remove pending containers
 		removePendingContainers(remoteContainerID);
 
+		for (Iterator i = addedRegistrations.iterator(); i.hasNext();) {
+			fireRemoteServiceListeners(createRegisteredEvent((RemoteServiceRegistrationImpl) i.next()));
+		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), ADD_REGISTRATIONS);
 	}
 
@@ -1204,7 +1245,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 		if (registration != null)
 			fireRemoteServiceListeners(createUnregisteredEvent(registration));
-
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleUnregister"); //$NON-NLS-1$
 	}
 
