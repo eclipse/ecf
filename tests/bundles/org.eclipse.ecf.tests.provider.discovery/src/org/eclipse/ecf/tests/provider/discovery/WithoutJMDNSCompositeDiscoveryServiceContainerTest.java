@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Markus Alexander Kuppe.
+ * Copyright (c) 2009, 2010 Markus Alexander Kuppe.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ public class WithoutJMDNSCompositeDiscoveryServiceContainerTest extends
 	SingleCompositeDiscoveryServiceContainerTest {
 
 	public WithoutJMDNSCompositeDiscoveryServiceContainerTest() {
-		super("org.eclipse.ecf.provider.jmdns");
+		super("ecf.discovery.jmdns", "org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer");
 		String[] ips;
 		// tests need root privileges to bind to slp port 427 in SA mode
 		try {
