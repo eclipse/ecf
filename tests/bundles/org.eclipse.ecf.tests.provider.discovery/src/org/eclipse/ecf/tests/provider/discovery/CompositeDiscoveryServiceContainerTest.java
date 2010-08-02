@@ -47,6 +47,7 @@ public class CompositeDiscoveryServiceContainerTest extends
 		super.setUp();
 		container = (IContainer) discoveryLocator;  
 		eventsToExpect = ((CompositeDiscoveryContainer) discoveryLocator).getDiscoveryContainers().size();
+		assertTrue("zero events make no sense", eventsToExpect > 0);
 	}
 
 	protected void addServiceListener(TestServiceListener serviceListener) {
