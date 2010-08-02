@@ -62,7 +62,10 @@ public class Activator implements BundleActivator {
 	private DistributionProviderImpl distributionProvider;
 
 	private ServiceRegistration eventHookRegistration;
+
 	private ServiceRegistration discoveredServiceTrackerRegistration;
+	private DiscoveredServiceTrackerImpl discoveredServiceTrackerImpl;
+
 	private ServiceRegistration proxyrsContainerFinderRegistration;
 	private ServiceRegistration hostrsContainerFinderRegistration;
 
@@ -135,12 +138,12 @@ public class Activator implements BundleActivator {
 		// Create distribution provider impl
 		this.distributionProvider = new DistributionProviderImpl();
 		// Create discovered service tracker impl
-		DiscoveredServiceTrackerImpl dstImpl = new DiscoveredServiceTrackerImpl(
+		discoveredServiceTrackerImpl = new DiscoveredServiceTrackerImpl(
 				this.distributionProvider);
 		// Register discovered service tracker
 		this.discoveredServiceTrackerRegistration = this.context
 				.registerService(DiscoveredServiceTracker.class.getName(),
-						dstImpl, null);
+						discoveredServiceTrackerImpl, null);
 
 		// Set service ranking to Integer.MIN_VALUE so that other impls
 		// will be prefered over the default one
@@ -198,6 +201,10 @@ public class Activator implements BundleActivator {
 		if (this.discoveredServiceTrackerRegistration != null) {
 			this.discoveredServiceTrackerRegistration.unregister();
 			this.discoveredServiceTrackerRegistration = null;
+		}
+		if (discoveredServiceTrackerImpl != null) {
+			this.discoveredServiceTrackerImpl.close();
+			this.discoveredServiceTrackerImpl = null;
 		}
 		if (this.proxyrsContainerFinderRegistration != null) {
 			this.proxyrsContainerFinderRegistration.unregister();

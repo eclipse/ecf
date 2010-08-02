@@ -69,7 +69,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			RemoteServicePublication.SERVICE_INTERFACE_VERSION,
 			RemoteServicePublication.SERVICE_PROPERTIES, "service.uri" }); //$NON-NLS-1$
 	// queue for incoming remote service available events
-	private final ListenerQueue queue;
+	private ListenerQueue queue;
+	private EventManager eventManager;
 
 	// This class is to hold the discovered endpoint available events
 	class DiscoveredEndpointEvent {
@@ -89,8 +90,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 		this.distributionProvider = dp;
 		ThreadGroup eventGroup = new ThreadGroup("Remote Service Dispatcher"); //$NON-NLS-1$
 		eventGroup.setDaemon(true);
-		queue = new ListenerQueue(new EventManager(
-				"Remote Service Dispatcher", eventGroup)); //$NON-NLS-1$
+		eventManager = new EventManager("Remote Service Dispatcher", eventGroup); //$NON-NLS-1$
+		queue = new ListenerQueue(eventManager);
 		CopyOnWriteIdentityMap listeners = new CopyOnWriteIdentityMap();
 		listeners.put(this, this);
 		queue.queueListeners(listeners.entrySet(), new EventDispatcher() {
@@ -110,6 +111,22 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				}
 			}
 		});
+	}
+
+	public void close() {
+		if (eventManager != null) {
+			eventManager.close();
+			eventManager = null;
+			queue = null;
+		}
+		if (serviceLocations != null) {
+			serviceLocations.clear();
+			serviceLocations = null;
+		}
+		if (discoveredRemoteServiceRegistrations != null) {
+			discoveredRemoteServiceRegistrations.clear();
+			discoveredRemoteServiceRegistrations = null;
+		}
 	}
 
 	/*
