@@ -94,6 +94,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	protected final Object rsQueueLock = new Object();
 
+	/**
+	 * EventManager for the rsListenerDispatchEventManager
+	 * @since 3.4
+	 */
+	protected EventManager rsListenerDispatchEventManager;
+
 	public RegistrySharedObject() {
 		//
 	}
@@ -117,6 +123,13 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		addRegistrationRequests.clear();
 		requests.clear();
 		pendingUpdateContainers.clear();
+		synchronized (rsQueueLock) {
+			if (rsListenerDispatchEventManager != null) {
+				rsListenerDispatchEventManager.close();
+				rsListenerDispatchEventManager = null;
+				rsListenerDispatchQueue = null;
+			}
+		}
 	}
 
 	/* Begin implementation of IRemoteServiceContainerAdapter public interface */
@@ -539,11 +552,15 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	protected void fireRemoteServiceListeners(IRemoteServiceEvent event) {
 		synchronized (rsQueueLock) {
 			if (rsListenerDispatchQueue == null) {
-				ThreadGroup eventGroup = new ThreadGroup("RegistrySharedObject Dispatcher"); //$NON-NLS-1$
+				ID containerID = getLocalContainerID();
+				String threadGroupName = "RSRegistry Dispatcher for " + containerID.getName(); //$NON-NLS-1$
+				ThreadGroup eventGroup = new ThreadGroup(threadGroupName);
 				eventGroup.setDaemon(true);
-				rsListenerDispatchQueue = new ListenerQueue(new EventManager("RegistrySharedObject Dispatcher", eventGroup)); //$NON-NLS-1$
+				rsListenerDispatchEventManager = new EventManager(threadGroupName, eventGroup);
+				rsListenerDispatchQueue = new ListenerQueue(rsListenerDispatchEventManager);
 				CopyOnWriteIdentityMap listeners = new CopyOnWriteIdentityMap();
 				listeners.put(this, this);
+
 				rsListenerDispatchQueue.queueListeners(listeners.entrySet(), new EventDispatcher() {
 					public void dispatchEvent(Object eventListener, Object listenerObject, int eventAction, Object eventObject) {
 						doFireRemoteServiceListeners((IRemoteServiceEvent) eventObject);
