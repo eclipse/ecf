@@ -82,6 +82,33 @@ public class Activator implements BundleActivator {
 		}
 		return null;
 	}
+	
+	public void closeServiceTracker(String containerUnderTest) {
+		ServiceReference[] serviceReferences = locatorTracker.getServiceReferences();
+		if(serviceReferences != null) {
+			for(int i = 0; i < serviceReferences.length; i++) {
+				ServiceReference sr = serviceReferences[i];
+				if(containerUnderTest.equals(sr.getProperty(IDiscoveryLocator.CONTAINER_NAME))) {
+					locatorTracker.remove(sr);
+				}
+			}
+		}
+		if(locatorTracker != null) {
+			locatorTracker.close();
+		}
+		serviceReferences = advertiserTracker.getServiceReferences();
+		if(serviceReferences != null) {
+			for(int i = 0; i < serviceReferences.length; i++) {
+				ServiceReference sr = serviceReferences[i];
+				if(containerUnderTest.equals(sr.getProperty(IDiscoveryAdvertiser.CONTAINER_NAME))) {
+					advertiserTracker.remove(sr);
+				}
+			}
+		}
+		if(advertiserTracker != null) {
+			advertiserTracker.close();
+		}
+	}
 
 	public IDiscoveryAdvertiser getDiscoveryAdvertiser(String containerUnderTest) {
 		advertiserTracker.open();
