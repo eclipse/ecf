@@ -11,8 +11,9 @@
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.ecf.tests.discovery" componentType="osgi.bundle"/>
 		<dependency name="org.eclipse.ecf.tests.provider.discovery" componentType="osgi.bundle"/>
-		<dependency name="org.eclipse.ecf.discovery.slp.feature" componentType="eclipse.feature"/>
-		<dependency name="org.eclipse.ecf.discovery.jmdns.feature" componentType="eclipse.feature"/>
+		<dependency name="org.eclipse.ecf.provider.jslp" componentType="osgi.bundle"/>
+		<dependency name="ch.ethz.iks.slp" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.provider.jmdns" componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
