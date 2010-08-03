@@ -13,6 +13,8 @@ package org.eclipse.ecf.provider.xmpp.identity;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -74,8 +76,9 @@ public class XMPPFileID extends BaseID implements IFileID {
 			final String tok = st.nextToken();
 			if (tok.startsWith(propKey + "=")) { //$NON-NLS-1$
 				try {
-					return URLDecoder.decode(tok.substring(propKey.length()
-							+ "=".length()), UTF_8); //$NON-NLS-1$
+					return URLDecoder
+							.decode(tok.substring(propKey.length()
+									+ "=".length()), UTF_8); //$NON-NLS-1$
 				} catch (final UnsupportedEncodingException e) {
 					// should not happen
 					throw new MalformedURLException(NLS.bind(
@@ -186,6 +189,13 @@ public class XMPPFileID extends BaseID implements IFileID {
 	 */
 	public URL getURL() throws MalformedURLException {
 		return url;
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public URI getURI() throws URISyntaxException {
+		return new URI(url.toExternalForm());
 	}
 
 }
