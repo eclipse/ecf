@@ -21,8 +21,10 @@ import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
 import org.eclipse.ecf.tests.discovery.Activator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.framework.hooks.service.FindHook;
 
 public abstract class SingleCompositeDiscoveryServiceContainerTest extends
@@ -57,11 +59,16 @@ public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 	 */
 	protected void setUp() throws Exception {
 		if(testMethodsLeft == testMethods) {
+			// HACK: forcefully start the (nested) discovery container if it hasn't been started yet
+			// assuming the bundle declares a lazy start buddy policy
+			Class.forName(className);
+			
 			// initially close the existing CDC to get rid of other test left overs
 			Activator.getDefault().closeServiceTracker(containerUnderTest);
 			
 			final BundleContext context = Activator.getDefault().getContext();
-			findHook = context.registerService(FindHook.class.getName(), new DiscoveryContainerFilterFindHook(ecfDiscoveryContainerName), null);
+			final String[] clazzes = new String[]{FindHook.class.getName(), EventHook.class.getName()};
+			findHook = context.registerService(clazzes, new DiscoveryContainerFilterHook(ecfDiscoveryContainerName), null);
 		}
 		super.setUp();
 	}
@@ -106,20 +113,22 @@ public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 	// make sure the CDC has only a single IDC registered with the correct type
 	private static void checkCompositeDiscoveryContainer(final String aClassName, final CompositeDiscoveryContainer cdc) {
 		final Collection discoveryContainers = cdc.getDiscoveryContainers();
-		assertTrue("Only one IDiscoveryContainer must be registered with the CDC at this point: " + discoveryContainers, discoveryContainers.size() == 1);
+		assertTrue("One IDiscoveryContainer must be registered with the CDC at this point: " + discoveryContainers, discoveryContainers.size() == 1);
 		for (final Iterator iterator = discoveryContainers.iterator(); iterator.hasNext();) {
 			final IDiscoveryLocator dl = (IDiscoveryLocator) iterator.next();
 			assertEquals(aClassName, dl.getClass().getName());
 		}
 	}
 
-	// Filters the corresponding IDC from the result set that is _not_ supposed to be part of the test 
-	private class DiscoveryContainerFilterFindHook implements FindHook {
+	// Filters the corresponding IDC from the result set that is _not_ supposed to be part of the test
+	// we need an EventHook too because due to ECF's namespaces the "other" bundle is started asynchronously
+	// and consequently registered with the CDC 
+	private class DiscoveryContainerFilterHook implements FindHook, EventHook {
 
 		private static final String BUNDLE_UNDER_TEST = "org.eclipse.ecf.provider.discovery"; // rename if bundle name change
 		private final String containerName;
 
-		public DiscoveryContainerFilterFindHook(String anECFDiscoveryContainerName) {
+		public DiscoveryContainerFilterHook(String anECFDiscoveryContainerName) {
 			containerName = anECFDiscoveryContainerName;
 		}
 
@@ -139,9 +148,32 @@ public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 					if(property != null && property.equals(containerName)) {
 						removees.add(serviceReference);
 						System.out.println("Removed reference: " + property);
+						break;
 					}
 				}
-				references.removeAll(removees );
+				references.removeAll(removees);
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see org.osgi.framework.hooks.service.EventHook#event(org.osgi.framework.ServiceEvent, java.util.Collection)
+		 */
+		public void event(ServiceEvent aServiceEvent, Collection aCollection) {
+			if (aServiceEvent.getType() == ServiceEvent.REGISTERED) {
+				final ServiceReference serviceReference = aServiceEvent.getServiceReference();
+				final String property = (String) serviceReference.getProperty(IDiscoveryLocator.CONTAINER_NAME);
+				if(property != null && property.equals(containerName)) {
+					final Collection removees = new ArrayList();
+					for (Iterator iterator = aCollection.iterator(); iterator.hasNext();) {
+						final BundleContext bundleContext = (BundleContext) iterator.next();
+						final String symbolicName = bundleContext.getBundle().getSymbolicName();
+						if(BUNDLE_UNDER_TEST.equals(symbolicName)) {
+							removees.add(bundleContext);
+							break;
+						}
+					}
+					aCollection.removeAll(removees);
+				}
 			}
 		}
 	}
