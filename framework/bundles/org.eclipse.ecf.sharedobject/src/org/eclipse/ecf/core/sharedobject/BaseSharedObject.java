@@ -351,13 +351,15 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected void sendSharedObjectMsgTo(ID toID, SharedObjectMsg msg) throws IOException {
 		ISharedObjectContext context = getContext();
+		String method = "sendSharedObjectMsgTo"; //$NON-NLS-1$
+		traceEntering(method, new Object[] {toID, msg});
 		if (context != null) {
 			Assert.isNotNull(msg, "SharedObjectMsg cannot be null"); //$NON-NLS-1$
-			String method = "sendSharedObjectMsgTo"; //$NON-NLS-1$
-			traceEntering(method, new Object[] {toID, msg});
 			context.sendMessage(toID, new SharedObjectMsgEvent(getID(), toID, msg));
-			traceExiting(method);
+		} else {
+			trace(method, "No shared object context available, so no message sent"); //$NON-NLS-1$
 		}
+		traceExiting(method);
 	}
 
 	/**
@@ -639,4 +641,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		Trace.catching(Activator.PLUGIN_ID, SharedObjectDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), getSharedObjectAsString(method), t);
 	}
 
+	/**
+	 * @since 2.2
+	 */
+	protected void trace(String method, String message) {
+		Trace.trace(Activator.PLUGIN_ID, SharedObjectDebugOptions.DEBUG, this.getClass(), method, getSharedObjectAsString(method) + ": " + message); //$NON-NLS-1$
+	}
 }
