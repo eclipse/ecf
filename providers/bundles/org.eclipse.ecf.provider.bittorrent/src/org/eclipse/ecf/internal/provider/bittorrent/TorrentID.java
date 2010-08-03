@@ -12,6 +12,8 @@ package org.eclipse.ecf.internal.provider.bittorrent;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.eclipse.ecf.core.identity.Namespace;
@@ -81,6 +83,16 @@ public final class TorrentID implements IFileID {
 
 	public URL getURL() throws MalformedURLException {
 		return file.toURL();
+	}
+
+	public URI getURI() throws URISyntaxException {
+		URL url = null;
+		try {
+			url = getURL();
+		} catch (MalformedURLException e) {
+			throw new URISyntaxException(toExternalForm(), "Torrent file not URL format");
+		}
+		return new URI(url.toExternalForm());
 	}
 
 }
