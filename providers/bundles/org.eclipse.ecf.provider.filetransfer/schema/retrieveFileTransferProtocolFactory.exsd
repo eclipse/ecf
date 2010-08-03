@@ -2,15 +2,20 @@
 <!-- Schema file written by PDE -->
 <schema targetNamespace="org.eclipse.ecf.provider.filetransfer" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appinfo>
+      <appInfo>
          <meta.schema plugin="org.eclipse.ecf.provider.filetransfer" id="retrieveFileTransferProtocolFactory" name="retrieveFileTransferProtocolFactory"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          This extension point allows IRetrieveFileTransferFactorys to be defined for given file transfer protocols.
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="retrieveFileTransferProtocolFactory" minOccurs="0" maxOccurs="unbounded"/>
@@ -34,9 +39,9 @@
                <documentation>
                   
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute translatable="true"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -61,9 +66,9 @@
                <documentation>
                   The factory class to use for given protocol.  Must implement &lt;b&gt;org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory&lt;/b&gt;
                </documentation>
-               <appinfo>
+               <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory"/>
-               </appinfo>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="priority" type="string">
@@ -73,22 +78,29 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="uri" type="boolean">
+            <annotation>
+               <documentation>
+                  Flag to indicate that the protocol factory will use URIs (rather than URLs...which is the default).  True indicates that URIs will be used, and *no* URLStreamHandler will be registered for the associated protocol.  If false, URLs will be used and an URLStreamHandler will be registered for the given protocol factory.  NOTE:  If this flag is true, providers that attempt to access IFileID.getURL() may be unable to do so, since the URI may not be successfully parsed as a URL.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="since"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          1.0.0
       </documentation>
    </annotation>
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="examples"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          &lt;pre&gt;
    &lt;extension
@@ -109,9 +121,9 @@
    </annotation>
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="apiInfo"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          Here is the &lt;b&gt;org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory&lt;/b&gt;
 
@@ -134,20 +146,19 @@ public interface IRetrieveFileTransferFactory {
       </documentation>
    </annotation>
 
-
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="implementation"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          None
       </documentation>
    </annotation>
 
    <annotation>
-      <appinfo>
+      <appInfo>
          <meta.section type="copyright"/>
-      </appinfo>
+      </appInfo>
       <documentation>
          Copyright (c) 2004 Composent, Inc., IBM and others.
 All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation, IBM, Inc. - Initial API and implementation

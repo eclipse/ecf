@@ -38,6 +38,29 @@ public interface IFileTransferProtocolToFactoryMapper {
 	public boolean setRetrieveFileTransferFactory(String protocol, String id, IRetrieveFileTransferFactory factory, int priority);
 
 	/**
+	 * <p>
+	 * For the given protocol, set the given factory to be used for retrieve file transfer.  If successful, subsequent retrieve
+	 * requests for the given protocol will use the given factory.  </p>
+	 * <p>For this method to be successful the protocol has to be
+	 * non-null, the id has to be non-null and unique (should probably be set to the bundle symbolic name of the bundle calling this
+	 * method), the factory must be non-null, and the priority must be higher (a *smaller number*) than any existing factory for the
+	 * given protocol.  The default priority is 100, and the highest priority is 0.
+	 * </p>
+	 * @param protocol the protocol (e.g. http/https) to map the factory to.
+	 * @param id a unique id for the factory (should be bundle symbolic name of bundle calling method)
+	 * @param factory the factory to associate with the given protocol
+	 * @param priority priority (highest = 0) to use for this factory relative to any existing factories.
+	 * @param uri if <code>true</code> the factory is added as a URI rather than a URL, meaning that <b>no</b> URLStreamHandler is
+	 * registered for the given protocol.  This is in contrast to the {@link #setRetrieveFileTransferFactory(String, String, IRetrieveFileTransferFactory, int)},
+	 * which automatically registers an URLStreamHandler for the given protocol.  If false, URLs will be used and an URLStreamHandler will be registered for the 
+	 * given protocol factory.  NOTE:  If this flag is true, providers that attempt to access IFileID.getURL() may be unable to do so, since the
+	 * URI may not be successfully parsed as a URL.
+	 * 
+	 * @return <code>true</code> if the given factory was set for this protocol, <code>false</code> if not
+	 */
+	public boolean setRetrieveFileTransferFactory(String protocol, String id, IRetrieveFileTransferFactory factory, int priority, boolean uri);
+
+	/**
 	 * Get the factory id of the active factory for the given protocol.  If the given protocol does not have an
 	 * active factory, returns <code>null</code>.
 	 * 
@@ -81,6 +104,29 @@ public interface IFileTransferProtocolToFactoryMapper {
 	public boolean setBrowseFileTransferFactory(String protocol, String id, IRemoteFileSystemBrowserFactory factory, int priority);
 
 	/**
+	 * <p>
+	 * For the given protocol, set the given factory to be used for retrieve file transfer.  If successful, subsequent retrieve
+	 * requests for the given protocol will use the given factory.  </p>
+	 * <p>For this method to be successful the protocol has to be
+	 * non-null, the id has to be non-null and unique (should probably be set to the bundle symbolic name of the bundle calling this
+	 * method), the factory must be non-null, and the priority must be higher (a *smaller number*) than any existing factory for the
+	 * given protocol.  The default priority is 100, and the highest priority is 0.
+	 * </p>
+	 * @param protocol the protocol (e.g. http/https) to map the factory to.
+	 * @param id a unique id for the factory (should be bundle symbolic name of bundle calling method)
+	 * @param factory the factory to associate with the given protocol
+	 * @param priority priority (highest = 0) to use for this factory relative to any existing factories.
+	 * @param uri if <code>true</code> the factory is added as a URI rather than a URL, meaning that <b>no</b> URLStreamHandler is
+	 * registered for the given protocol.  This is in contrast to the {@link #setRetrieveFileTransferFactory(String, String, IRetrieveFileTransferFactory, int)},
+	 * which automatically registers an URLStreamHandler for the given protocol.  If false, URLs will be used and an URLStreamHandler will be registered for the 
+	 * given protocol factory.  NOTE:  If this flag is true, providers that attempt to access IFileID.getURL() may be unable to do so, since the
+	 * URI may not be successfully parsed as a URL.
+	 *
+	 * @return <code>true</code> if the given factory was set for this protocol, <code>false</code> if not
+	 */
+	public boolean setBrowseFileTransferFactory(String protocol, String id, IRemoteFileSystemBrowserFactory factory, int priority, boolean uri);
+
+	/**
 	 * Get the factory id of the active factory for the given protocol.  If the given protocol does not have an
 	 * active factory, returns <code>null</code>.
 	 * 
@@ -122,6 +168,29 @@ public interface IFileTransferProtocolToFactoryMapper {
 	 * @return <code>true</code> if the given factory was set for this protocol, <code>false</code> if not
 	 */
 	public boolean setSendFileTransferFactory(String protocol, String id, ISendFileTransferFactory factory, int priority);
+
+	/**
+	 * <p>
+	 * For the given protocol, set the given factory to be used for retrieve file transfer.  If successful, subsequent retrieve
+	 * requests for the given protocol will use the given factory.  </p>
+	 * <p>For this method to be successful the protocol has to be
+	 * non-null, the id has to be non-null and unique (should probably be set to the bundle symbolic name of the bundle calling this
+	 * method), the factory must be non-null, and the priority must be higher (a *smaller number*) than any existing factory for the
+	 * given protocol.  The default priority is 100, and the highest priority is 0.
+	 * </p>
+	 * @param protocol the protocol (e.g. http/https) to map the factory to.
+	 * @param id a unique id for the factory (should be bundle symbolic name of bundle calling method)
+	 * @param factory the factory to associate with the given protocol
+	 * @param priority priority (highest = 0) to use for this factory relative to any existing factories.
+	 * @param uri if <code>true</code> the factory is added as a URI rather than a URL, meaning that <b>no</b> URLStreamHandler is
+	 * registered for the given protocol.  This is in contrast to the {@link #setRetrieveFileTransferFactory(String, String, IRetrieveFileTransferFactory, int)},
+	 * which automatically registers an URLStreamHandler for the given protocol.  If false, URLs will be used and an URLStreamHandler will be registered for the 
+	 * given protocol factory.  NOTE:  If this flag is true, providers that attempt to access IFileID.getURL() may be unable to do so, since the
+	 * URI may not be successfully parsed as a URL.
+	 *
+	 * @return <code>true</code> if the given factory was set for this protocol, <code>false</code> if not
+	 */
+	public boolean setSendFileTransferFactory(String protocol, String id, ISendFileTransferFactory factory, int priority, boolean uri);
 
 	/**
 	 * Get the factory id of the active factory for the given protocol.  If the given protocol does not have an

@@ -70,6 +70,7 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 	private static final String PRIORITY_ATTR = "priority"; //$NON-NLS-1$
 	private static final int DEFAULT_PRIORITY = 100;
 	private static final String PROTOCOL_ATTR = "protocol"; //$NON-NLS-1$
+	private static final String URI_ATTR = "uri"; //$NON-NLS-1$
 	private static final String[] jvmSchemes = new String[] {Messages.FileTransferNamespace_Http_Protocol, Messages.FileTransferNamespace_Ftp_Protocol, Messages.FileTransferNamespace_File_Protocol, Messages.FileTransferNamespace_Jar_Protocol, Messages.FileTransferNamespace_Https_Protocol, Messages.FileTransferNamespace_Mailto_Protocol, Messages.FileTransferNamespace_Gopher_Protocol};
 
 	private static final String URL_HANDLER_PROTOCOL_NAME = "url.handler.protocol"; //$NON-NLS-1$
@@ -441,6 +442,8 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
+			String uriStr = configElements[i].getAttribute(URI_ATTR);
+			boolean uri = (uriStr == null) ? false : Boolean.valueOf(uriStr).booleanValue();
 			String CONTRIBUTION_WARNING = "File retrieve contribution"; //$NON-NLS-1$
 			try {
 				String pluginId = configElements[i].getDeclaringExtension().getContributor().getName();
@@ -452,7 +455,7 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 					int priority = getPriority(configElements[i], CONTRIBUTION_WARNING, protocol);
 					String contributorName = configElements[i].getDeclaringExtension().getContributor().getName();
 					// Now add new ProtocolFactory
-					setRetrieveFileTransferFactory(protocol, contributorName, retrieveFactory, priority);
+					setRetrieveFileTransferFactory(protocol, contributorName, retrieveFactory, priority, uri);
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing retrieve factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -478,6 +481,8 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
+			String uriStr = configElements[i].getAttribute(URI_ATTR);
+			boolean uri = (uriStr == null) ? false : Boolean.valueOf(uriStr).booleanValue();
 			String CONTRIBUTION_WARNING = "File send contribution"; //$NON-NLS-1$
 			try {
 				String pluginId = configElements[i].getDeclaringExtension().getContributor().getName();
@@ -487,7 +492,7 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 					final ISendFileTransferFactory clazz = (ISendFileTransferFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
 					// Get priority for new entry, if optional priority attribute specified
 					int priority = getPriority(configElements[i], CONTRIBUTION_WARNING, protocol);
-					setSendFileTransferFactory(protocol, pluginId, clazz, priority);
+					setSendFileTransferFactory(protocol, pluginId, clazz, priority, uri);
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing send factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -513,6 +518,8 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
+			String uriStr = configElements[i].getAttribute(URI_ATTR);
+			boolean uri = (uriStr == null) ? false : Boolean.valueOf(uriStr).booleanValue();
 			String CONTRIBUTION_WARNING = "File browse contribution"; //$NON-NLS-1$
 			try {
 				String pluginId = configElements[i].getDeclaringExtension().getContributor().getName();
@@ -522,7 +529,7 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 					final IRemoteFileSystemBrowserFactory clazz = (IRemoteFileSystemBrowserFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
 					// Get priority for new entry, if optional priority attribute specified
 					int priority = getPriority(configElements[i], CONTRIBUTION_WARNING, protocol);
-					setBrowseFileTransferFactory(protocol, pluginId, clazz, priority);
+					setBrowseFileTransferFactory(protocol, pluginId, clazz, priority, uri);
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing browse factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -647,6 +654,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 	}
 
 	public boolean setRetrieveFileTransferFactory(String protocol, String id, IRetrieveFileTransferFactory factory, int priority) {
+		return setRetrieveFileTransferFactory(protocol, id, factory, priority, false);
+	}
+
+	public boolean setRetrieveFileTransferFactory(String protocol, String id, IRetrieveFileTransferFactory factory, int priority, boolean uri) {
 		if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 			return false;
 		if (id == null)
@@ -675,10 +686,13 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
 					}
 				}
-				String[] existingSchemes = getPlatformSupportedSchemes();
-				if (!isSchemeRegistered(protocol, existingSchemes))
-					registerScheme(protocol);
-				// Finally, put clazz in map with protocol as key
+				// If !uri, then check/register protocol as URLStreamHandlerService
+				if (!uri) {
+					String[] existingSchemes = getPlatformSupportedSchemes();
+					if (!isSchemeRegistered(protocol, existingSchemes))
+						registerScheme(protocol);
+				}
+				// Finally, put protocol factory in map with protocol as key
 				retrieveFileTransferProtocolMap.put(protocol, newProtocolFactory);
 				return true;
 			}
@@ -727,6 +741,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 	}
 
 	public boolean setBrowseFileTransferFactory(String protocol, String id, IRemoteFileSystemBrowserFactory factory, int priority) {
+		return setBrowseFileTransferFactory(protocol, id, factory, priority, false);
+	}
+
+	public boolean setBrowseFileTransferFactory(String protocol, String id, IRemoteFileSystemBrowserFactory factory, int priority, boolean uri) {
 		if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 			return false;
 		if (id == null)
@@ -755,10 +773,13 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
 					}
 				}
-				String[] existingSchemes = getPlatformSupportedSchemes();
-				if (!isSchemeRegistered(protocol, existingSchemes))
-					registerScheme(protocol);
-				// Finally, put clazz in map with protocol as key
+				// If !uri, then check/register protocol as URLStreamHandlerService
+				if (!uri) {
+					String[] existingSchemes = getPlatformSupportedSchemes();
+					if (!isSchemeRegistered(protocol, existingSchemes))
+						registerScheme(protocol);
+				}
+				// Finally, put protocol factory in map with protocol as key
 				browseFileTransferProtocolMap.put(protocol, newProtocolFactory);
 				return true;
 			}
@@ -807,6 +828,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 	}
 
 	public boolean setSendFileTransferFactory(String protocol, String id, ISendFileTransferFactory factory, int priority) {
+		return setSendFileTransferFactory(protocol, id, factory, priority, false);
+	}
+
+	public boolean setSendFileTransferFactory(String protocol, String id, ISendFileTransferFactory factory, int priority, boolean uri) {
 		if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 			return false;
 		if (id == null)
@@ -835,10 +860,13 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
 					}
 				}
-				String[] existingSchemes = getPlatformSupportedSchemes();
-				if (!isSchemeRegistered(protocol, existingSchemes))
-					registerScheme(protocol);
-				// Finally, put clazz in map with protocol as key
+				// If !uri, then check/register protocol as URLStreamHandlerService
+				if (!uri) {
+					String[] existingSchemes = getPlatformSupportedSchemes();
+					if (!isSchemeRegistered(protocol, existingSchemes))
+						registerScheme(protocol);
+				}
+				// Finally, put protocol factory in map with protocol as key
 				sendFileTransferProtocolMap.put(protocol, newProtocolFactory);
 				return true;
 			}

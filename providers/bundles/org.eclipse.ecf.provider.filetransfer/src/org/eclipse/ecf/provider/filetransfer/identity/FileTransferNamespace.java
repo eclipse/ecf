@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.identity;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,11 +52,13 @@ public class FileTransferNamespace extends Namespace {
 		try {
 			String init = getInitFromExternalForm(args);
 			if (init != null)
-				return new FileTransferID(this, new URL(init));
+				return new FileTransferID(this, new URI(init));
 			if (args[0] instanceof URL)
 				return new FileTransferID(this, (URL) args[0]);
 			if (args[0] instanceof String)
-				return new FileTransferID(this, new URL((String) args[0]));
+				return new FileTransferID(this, new URI((String) args[0]));
+			if (args[0] instanceof URI)
+				return new FileTransferID(this, (URI) args[0]);
 		} catch (Exception e) {
 			throw new IDCreateException(Messages.FileTransferNamespace_Exception_Create_Instance, e);
 		}

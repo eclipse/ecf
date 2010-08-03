@@ -13,7 +13,9 @@ package org.eclipse.ecf.provider.filetransfer.outgoing;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.Map;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -67,15 +69,23 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 	}
 
 	public void sendOutgoingRequest(IFileID targetID, File outgoingFile, IFileTransferListener transferListener, Map options) throws SendFileTransferException {
+
+		Assert.isNotNull(targetID);
+		Assert.isNotNull(outgoingFile);
+		Assert.isNotNull(transferListener);
+
 		String protocol = null;
 		try {
-			protocol = targetID.getURL().getProtocol();
-		} catch (final MalformedURLException e) {
-			throw new SendFileTransferException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
+			protocol = targetID.getURI().getScheme();
+		} catch (URISyntaxException e) {
+			try {
+				protocol = targetID.getURL().getProtocol();
+			} catch (final MalformedURLException e1) {
+				throw new SendFileTransferException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
+			}
 		}
 
-		ISendFileTransferContainerAdapter fileTransfer = null;
-		fileTransfer = Activator.getDefault().getSendFileTransfer(protocol);
+		ISendFileTransferContainerAdapter fileTransfer = Activator.getDefault().getSendFileTransfer(protocol);
 
 		// If no handler setup for this protocol then throw
 		if (fileTransfer == null) {
@@ -111,15 +121,22 @@ public class MultiProtocolOutgoingAdapter implements ISendFileTransfer {
 	 * @see org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter#sendOutgoingRequest(org.eclipse.ecf.filetransfer.identity.IFileID, org.eclipse.ecf.filetransfer.IFileTransferInfo, org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
 	 */
 	public void sendOutgoingRequest(IFileID targetID, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map options) throws SendFileTransferException {
+		Assert.isNotNull(targetID);
+		Assert.isNotNull(localFileToSend);
+		Assert.isNotNull(transferListener);
+
 		String protocol = null;
 		try {
-			protocol = targetID.getURL().getProtocol();
-		} catch (final MalformedURLException e) {
-			throw new SendFileTransferException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
+			protocol = targetID.getURI().getScheme();
+		} catch (URISyntaxException e) {
+			try {
+				protocol = targetID.getURL().getProtocol();
+			} catch (final MalformedURLException e1) {
+				throw new SendFileTransferException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
+			}
 		}
 
-		ISendFileTransferContainerAdapter fileTransfer = null;
-		fileTransfer = Activator.getDefault().getSendFileTransfer(protocol);
+		ISendFileTransferContainerAdapter fileTransfer = Activator.getDefault().getSendFileTransfer(protocol);
 
 		// If no handler setup for this protocol then throw
 		if (fileTransfer == null) {
