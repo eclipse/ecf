@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.ecf.tests.filetransfer" version="2">
+    <resource path="src/org/eclipse/ecf/tests/filetransfer/Activator.java" type="org.eclipse.ecf.tests.filetransfer.Activator">
+        <filter comment="protocol mapper is provisional so marked as internal" id="643842064">
+            <message_arguments>
+                <message_argument value="IFileTransferProtocolToFactoryMapper"/>
+                <message_argument value="Activator"/>
+                <message_argument value="getProtocolToFactoryMapper()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/tests/filetransfer/URIProtocolFactoryRetrieveTest.java" type="org.eclipse.ecf.tests.filetransfer.URIProtocolFactoryRetrieveTest">
+        <filter comment="protocol factory mapper is provisional" id="643842064">
+            <message_arguments>
+                <message_argument value="IFileTransferProtocolToFactoryMapper"/>
+                <message_argument value="URIProtocolFactoryRetrieveTest"/>
+                <message_argument value="getProtocolToFactoryMapper()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

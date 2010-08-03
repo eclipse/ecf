@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.tests.filetransfer;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,6 +60,10 @@ public abstract class AbstractRetrieveTestCase extends AbstractFileTransferTestC
 
 	protected IFileID createFileID(URL url) throws Exception {
 		return FileIDFactory.getDefault().createFileID(retrieveAdapter.getRetrieveNamespace(), url);
+	}
+
+	protected IFileID createFileID(URI uri) throws Exception {
+		return FileIDFactory.getDefault().createFileID(retrieveAdapter.getRetrieveNamespace(), uri);
 	}
 
 	protected void handleUnexpectedEvent(IFileTransferEvent event) {
