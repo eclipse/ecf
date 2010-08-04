@@ -15,8 +15,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.tests.presence.sharedobject.AbstractChatRoomSOAddTest;
+import org.eclipse.ecf.tests.provider.xmpp.XMPP;
 import org.eclipse.ecf.tests.sharedobject.TestSharedObject;
-import org.ecllpse.ecf.tests.provider.xmpp.XMPP;
 
 /**
  *

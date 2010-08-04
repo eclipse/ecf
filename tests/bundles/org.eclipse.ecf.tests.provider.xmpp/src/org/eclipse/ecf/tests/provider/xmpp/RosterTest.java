@@ -13,7 +13,6 @@ import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.tests.presence.AbstractPresenceTestCase;
-import org.ecllpse.ecf.tests.provider.xmpp.XMPP;
 
 /**
  *

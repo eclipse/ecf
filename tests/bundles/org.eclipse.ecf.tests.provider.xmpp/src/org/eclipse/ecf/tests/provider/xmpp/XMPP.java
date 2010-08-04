@@ -9,13 +9,13 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.ecllpse.ecf.tests.provider.xmpp;
+package org.eclipse.ecf.tests.provider.xmpp;
 
 /**
  *
  */
-public interface XMPPS {
+public interface XMPP {
 
-	static final String CONTAINER_NAME = "ecf.xmpps.smack";
+	static final String CONTAINER_NAME = "ecf.xmpp.smack";
 
 }

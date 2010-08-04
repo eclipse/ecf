@@ -9,13 +9,20 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.ecllpse.ecf.tests.provider.xmpp;
+package org.eclipse.ecf.tests.provider.xmpp;
+
+import org.eclipse.ecf.tests.presence.AbstractChatRoomTest;
 
 /**
  *
  */
-public interface XMPP {
+public class ChatRoomTest extends AbstractChatRoomTest {
 
-	static final String CONTAINER_NAME = "ecf.xmpp.smack";
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.presence.AbstractPresenceTestCase#getClientContainerName()
+	 */
+	protected String getClientContainerName() {
+		return XMPPS.CONTAINER_NAME;
+	}
 
 }

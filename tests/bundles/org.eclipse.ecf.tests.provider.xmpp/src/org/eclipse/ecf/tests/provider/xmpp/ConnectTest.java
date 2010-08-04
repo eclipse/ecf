@@ -9,14 +9,14 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.ecllpse.ecf.tests.provider.xmpp;
+package org.eclipse.ecf.tests.provider.xmpp;
 
-import org.eclipse.ecf.tests.presence.AbstractChatRoomParticipantTest;
+import org.eclipse.ecf.tests.presence.AbstractConnectTest;
 
 /**
  *
  */
-public class ChatRoomParticipantTest extends AbstractChatRoomParticipantTest {
+public class ConnectTest extends AbstractConnectTest {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.presence.AbstractPresenceTestCase#getClientContainerName()

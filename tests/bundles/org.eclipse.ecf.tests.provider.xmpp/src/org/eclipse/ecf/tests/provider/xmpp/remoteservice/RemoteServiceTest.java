@@ -22,8 +22,8 @@ import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.eclipse.ecf.tests.provider.xmpp.XMPPS;
 import org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest;
-import org.ecllpse.ecf.tests.provider.xmpp.XMPPS;
 import org.osgi.framework.InvalidSyntaxException;
 
 public class RemoteServiceTest extends AbstractRemoteServiceTest {

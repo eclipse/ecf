@@ -9,20 +9,13 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.ecllpse.ecf.tests.provider.xmpp;
-
-import org.eclipse.ecf.tests.presence.AbstractConnectTest;
+package org.eclipse.ecf.tests.provider.xmpp;
 
 /**
  *
  */
-public class ConnectTest extends AbstractConnectTest {
+public interface XMPPS {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.presence.AbstractPresenceTestCase#getClientContainerName()
-	 */
-	protected String getClientContainerName() {
-		return XMPP.CONTAINER_NAME;
-	}
+	static final String CONTAINER_NAME = "ecf.xmpps.smack";
 
 }

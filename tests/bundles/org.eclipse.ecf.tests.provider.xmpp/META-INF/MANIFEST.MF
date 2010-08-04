@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF Xmpp Provider Tests
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.xmpp
 Bundle-Version: 2.0.0.qualifier
-Bundle-Activator: org.ecllpse.ecf.tests.provider.xmpp.Activator
+Bundle-Activator: org.eclipse.ecf.tests.provider.xmpp.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.core.runtime,
  org.junit,
@@ -24,7 +24,6 @@ Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.tests.provider.xmpp,
  org.eclipse.ecf.tests.provider.xmpp.datashare,
  org.eclipse.ecf.tests.provider.xmpp.remoteservice,
- org.eclipse.ecf.tests.provider.xmpp.sharedobject,
- org.ecllpse.ecf.tests.provider.xmpp,
- org.ecllpse.ecf.tests.provider.xmpp.search
+ org.eclipse.ecf.tests.provider.xmpp.search,
+ org.eclipse.ecf.tests.provider.xmpp.sharedobject
 Bundle-ActivationPolicy: lazy

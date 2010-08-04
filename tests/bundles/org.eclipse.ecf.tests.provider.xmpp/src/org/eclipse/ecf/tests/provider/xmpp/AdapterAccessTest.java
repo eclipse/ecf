@@ -9,17 +9,17 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.ecllpse.ecf.tests.provider.xmpp;
+package org.eclipse.ecf.tests.provider.xmpp;
 
-import org.eclipse.ecf.tests.presence.AbstractChatTest;
+import org.eclipse.ecf.tests.presence.AbstractAdapterAccessTest;
 
 /**
  *
  */
-public class ChatTest extends AbstractChatTest {
+public class AdapterAccessTest extends AbstractAdapterAccessTest {
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.presence.AbstractPresenceTestCase#getClientContainerName()
+	 * @see org.eclipse.ecf.tests.presence.AbstractAdapterAccessTest#getClientContainerName()
 	 */
 	protected String getClientContainerName() {
 		return XMPP.CONTAINER_NAME;

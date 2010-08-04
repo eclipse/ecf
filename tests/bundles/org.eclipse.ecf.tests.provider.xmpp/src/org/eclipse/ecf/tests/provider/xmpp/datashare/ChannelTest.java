@@ -20,7 +20,7 @@ import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
-import org.ecllpse.ecf.tests.provider.xmpp.XMPP;
+import org.eclipse.ecf.tests.provider.xmpp.XMPP;
 
 public class ChannelTest extends ContainerAbstractTestCase {
 

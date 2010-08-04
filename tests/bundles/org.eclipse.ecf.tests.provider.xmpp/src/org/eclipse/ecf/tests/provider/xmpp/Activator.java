@@ -1,4 +1,4 @@
-package org.ecllpse.ecf.tests.provider.xmpp;
+package org.eclipse.ecf.tests.provider.xmpp;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

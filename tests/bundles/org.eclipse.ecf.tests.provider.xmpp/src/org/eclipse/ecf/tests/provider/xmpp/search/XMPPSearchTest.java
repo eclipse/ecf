@@ -7,7 +7,7 @@
  * Contributors: 	Marcelo Mayworm - initial API and implementation
  *
  ******************************************************************************/
-package org.ecllpse.ecf.tests.provider.xmpp.search;
+package org.eclipse.ecf.tests.provider.xmpp.search;
 
 import java.util.Iterator;
 
@@ -27,7 +27,7 @@ import org.eclipse.ecf.presence.search.IUserSearchListener;
 import org.eclipse.ecf.presence.search.IUserSearchManager;
 import org.eclipse.ecf.presence.search.UserSearchException;
 import org.eclipse.ecf.tests.presence.AbstractSearchTest;
-import org.ecllpse.ecf.tests.provider.xmpp.XMPP;
+import org.eclipse.ecf.tests.provider.xmpp.XMPP;
 
 /**
  * 
