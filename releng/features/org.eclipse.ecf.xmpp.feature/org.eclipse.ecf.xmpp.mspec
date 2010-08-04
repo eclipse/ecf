@@ -4,6 +4,7 @@
     materializer="p2" 
     url="org.eclipse.ecf.xmpp.cquery">
     
+    <md:mspecNode namePattern="^org\.jivesoftware\.smack?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.provider\.xmpp(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.xmpp\.feature?" materializer="workspace"/>
     
