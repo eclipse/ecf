@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.internal.core.identity.Activator;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
@@ -302,6 +303,7 @@ public class ECFPlugin implements BundleActivator {
 	protected void addContainerFactoryExtensions(IConfigurationElement[] members) {
 		final String method = "addContainerFactoryExtensions"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method, members);
+		final IContainerFactory factory = ContainerFactory.getDefault();
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
 			final IConfigurationElement member = members[m];
@@ -310,14 +312,26 @@ public class ECFPlugin implements BundleActivator {
 			Object exten = null;
 			String name = null;
 			try {
+				// Get value of containerFactory name attribute 
+				name = member.getAttribute(NAME_ATTRIBUTE);
+				if (name != null) {
+					ContainerTypeDescription ctd = factory.getDescriptionByName(name);
+					// If we've got one already by this name, then we skip this new one
+					if (ctd != null) {
+						// log with warning
+						log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, NLS.bind("Factory already has container type description with name={0}.  Ignoring extension from {2}", name, member.getContributor().getName()))); //$NON-NLS-1$
+						// and continue
+						continue;
+					}
+				}
 				// The only required attribute is "class"
 				exten = member.createExecutableExtension(CLASS_ATTRIBUTE);
 				final String clazz = exten.getClass().getName();
-				// Get name and get version, if available
-				name = member.getAttribute(NAME_ATTRIBUTE);
+
 				if (name == null) {
 					name = clazz;
 				}
+
 				// Get description, if present
 				String description = member.getAttribute(DESCRIPTION_ATTRIBUTE);
 				if (description == null) {
@@ -332,10 +346,9 @@ public class ECFPlugin implements BundleActivator {
 				// Now make description instance
 				final ContainerTypeDescription scd = new ContainerTypeDescription(name, (IContainerInstantiator) exten, description, server, hidden);
 
-				final IContainerFactory factory = ContainerFactory.getDefault();
-
 				if (factory.containsDescription(scd)) {
-					throw new CoreException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, NLS.bind(Messages.ECFPlugin_Container_Name_Collision_Prefix, name, extension.getExtensionPointUniqueIdentifier()), null));
+					log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, NLS.bind("Factory already has container type description={0}.  Ignoring extension from {2}", scd, member.getContributor().getName()))); //$NON-NLS-1$
+					continue;
 				}
 				// Now add the description and we're ready to go.
 				factory.addDescription(scd);
