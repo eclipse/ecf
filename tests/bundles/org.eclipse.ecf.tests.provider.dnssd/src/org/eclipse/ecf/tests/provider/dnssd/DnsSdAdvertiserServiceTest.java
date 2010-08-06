@@ -64,12 +64,51 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 			}
 		}
 	}
+	
+	private void createTXTRecords() throws TextParseException, IOException,
+			UnknownHostException {
+		final Name zone = Name.fromString(DnsSdTestHelper.REG_DOMAIN + ".");
+		final Name name = Name.fromString("_" + DnsSdTestHelper.REG_SCHEME + "._" + DnsSdTestHelper.PROTO, zone);
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	protected void tearDown() throws Exception {
-		super.tearDown();
+		Update update = null;
+		
+		final IServiceProperties properties = serviceInfo.getServiceProperties();
+		final Enumeration enumeration = properties.getPropertyNames();
+		while (enumeration.hasMoreElements()) {
+			final Object property = enumeration.nextElement();
+			final String key = property.toString();
+			final String value = (String) properties.getProperty(key).toString();
+			final Record record = Record.fromString(name, Type.TXT, DClass.IN,
+					serviceInfo.getTTL(), key + "=" + value, zone);
+			update = new Update(zone);
+			update.add(record);
+		}
+		final SimpleResolver resolver = new SimpleResolver(DnsSdTestHelper.DNS_SERVER);
+		resolver.setTCP(true);
+		resolver.setTSIGKey(new TSIG(DnsSdTestHelper.TSIG_KEY_NAME, DnsSdTestHelper.TSIG_KEY));
+		final Message response = resolver.send(update);
+		final int rcode = response.getRcode();
+		assertTrue("", rcode == 0);
+	}
+
+	private void createSRVRecord() throws TextParseException, IOException,
+			UnknownHostException {
+		// create a service manually
+		final Name zone = Name.fromString(DnsSdTestHelper.REG_DOMAIN + ".");
+		final Name type = Name.fromString("_" + DnsSdTestHelper.REG_SCHEME + "._" + DnsSdTestHelper.PROTO, zone);
+		final String s = serviceInfo.getPriority() + " " + 
+			serviceInfo.getWeight() + " " + 
+			serviceInfo.getLocation().getPort() + " " + 
+			serviceInfo.getLocation().getHost() + "."; 
+		final Record record = Record.fromString(type, Type.SRV, DClass.IN, DnsSdTestHelper.TTL, s, zone);
+		final Update update = new Update(zone);
+		update.add(record);
+		final SimpleResolver resolver = new SimpleResolver(DnsSdTestHelper.DNS_SERVER);
+		resolver.setTCP(true);
+		resolver.setTSIGKey(new TSIG(DnsSdTestHelper.TSIG_KEY_NAME, DnsSdTestHelper.TSIG_KEY));
+		final Message response = resolver.send(update);
+		final int rcode = response.getRcode();
+		assertTrue("", rcode == 0);
 	}
 	
 	/* (non-Javadoc)
@@ -81,7 +120,7 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 		discoveryAdvertiser.registerService(serviceInfo);
 		
 		// check postcondition service is registered
-		ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
+		final ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
 		assertTrue("Mismatch between DNS response and IServiceInfo", comparator.compare(serviceInfo, xfr.run()) == 0);
 	}
 	
@@ -113,10 +152,10 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 		discoveryAdvertiser.unregisterService(serviceInfo);
 		
 		// check SRV record is gone
-		ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
-		List records  = xfr.run();
-		for (Iterator itr = records.iterator(); itr.hasNext();) {
-			Record record = (Record) itr.next();
+		final ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
+		final List records  = xfr.run();
+		for (final Iterator itr = records.iterator(); itr.hasNext();) {
+			final Record record = (Record) itr.next();
 			if(record instanceof SRVRecord) {
 				if(comparator.compare(serviceInfo, record) >= 0) {
 					fail("Service not removed/unregisterd");
@@ -136,10 +175,10 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 		discoveryAdvertiser.unregisterService(serviceInfo);
 		
 		// check SRV record is gone
-		ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
-		List records  = xfr.run();
-		for (Iterator itr = records.iterator(); itr.hasNext();) {
-			Record record = (Record) itr.next();
+		final ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
+		final List records  = xfr.run();
+		for (final Iterator itr = records.iterator(); itr.hasNext();) {
+			final Record record = (Record) itr.next();
 			if(record instanceof SRVRecord) {
 				if(comparator.compare(serviceInfo, record) >= 0) {
 					fail("Service not removed/unregisterd");
@@ -150,52 +189,6 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 				}
 			}
 		}
-	}
-
-	private void createTXTRecords() throws TextParseException, IOException,
-			UnknownHostException {
-		Name zone = Name.fromString(DnsSdTestHelper.REG_DOMAIN + ".");
-		Name name = Name.fromString("_" + DnsSdTestHelper.REG_SCHEME + "._" + DnsSdTestHelper.PROTO, zone);
-
-		Update update = null;
-		
-		IServiceProperties properties = serviceInfo.getServiceProperties();
-		final Enumeration enumeration = properties.getPropertyNames();
-		while (enumeration.hasMoreElements()) {
-			final Object property = enumeration.nextElement();
-			final String key = property.toString();
-			final String value = (String) properties.getProperty(key).toString();
-			Record record = Record.fromString(name, Type.TXT, DClass.IN,
-					serviceInfo.getTTL(), key + "=" + value, zone);
-			update = new Update(zone);
-			update.add(record);
-		}
-		SimpleResolver resolver = new SimpleResolver(DnsSdTestHelper.DNS_SERVER);
-		resolver.setTCP(true);
-		resolver.setTSIGKey(new TSIG(DnsSdTestHelper.TSIG_KEY_NAME, DnsSdTestHelper.TSIG_KEY));
-		Message response = resolver.send(update);
-		int rcode = response.getRcode();
-		assertTrue("", rcode == 0);
-	}
-
-	private void createSRVRecord() throws TextParseException, IOException,
-			UnknownHostException {
-		// create a service manually
-		Name zone = Name.fromString(DnsSdTestHelper.REG_DOMAIN + ".");
-		Name type = Name.fromString("_" + DnsSdTestHelper.REG_SCHEME + "._" + DnsSdTestHelper.PROTO, zone);
-		String s = serviceInfo.getPriority() + " " + 
-			serviceInfo.getWeight() + " " + 
-			serviceInfo.getLocation().getPort() + " " + 
-			serviceInfo.getLocation().getHost() + "."; 
-		Record record = Record.fromString(type, Type.SRV, DClass.IN, DnsSdTestHelper.TTL, s, zone);
-		Update update = new Update(zone);
-		update.add(record);
-		SimpleResolver resolver = new SimpleResolver(DnsSdTestHelper.DNS_SERVER);
-		resolver.setTCP(true);
-		resolver.setTSIGKey(new TSIG(DnsSdTestHelper.TSIG_KEY_NAME, DnsSdTestHelper.TSIG_KEY));
-		Message response = resolver.send(update);
-		int rcode = response.getRcode();
-		assertTrue("", rcode == 0);
 	}
 	
 	/**
