@@ -32,6 +32,8 @@ import org.osgi.service.cm.ManagedServiceFactory;
 
 public class Activator implements BundleActivator {
 
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.dnssd";
+	
 	private final Map serviceRegistrations = new HashMap();
 	private volatile BundleContext context;
 	private static final String NAME = "ecf.discovery.dnssd";
@@ -72,8 +74,8 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		if (serviceRegistrations != null) {
-			for (Iterator itr = serviceRegistrations.values().iterator(); itr.hasNext();) {
-				ServiceRegistration serviceRegistration = (ServiceRegistration) itr.next();
+			for (final Iterator itr = serviceRegistrations.values().iterator(); itr.hasNext();) {
+				final ServiceRegistration serviceRegistration = (ServiceRegistration) itr.next();
 				disposeServiceRegistration(serviceRegistration);
 			}
 		}
@@ -84,11 +86,11 @@ public class Activator implements BundleActivator {
 	 * @param serviceRegistration disconnects the underlying IContainer and unregisters the service
 	 */
 	private void disposeServiceRegistration(ServiceRegistration serviceRegistration) {
-		ServiceReference reference = serviceRegistration.getReference();
-		IContainer aContainer = (DnsSdDiscoveryContainerAdapter) context.getService(reference);
+		final ServiceReference reference = serviceRegistration.getReference();
+		final IContainer aContainer = (DnsSdDiscoveryContainerAdapter) context.getService(reference);
 		
 		serviceRegistration.unregister();
-		IContainer container = (IContainer) aContainer.getAdapter(IContainer.class);
+		final IContainer container = (IContainer) aContainer.getAdapter(IContainer.class);
 		container.dispose();
 		container.disconnect();
 	}
@@ -154,15 +156,15 @@ public class Activator implements BundleActivator {
 						serviceRegistrations.put(pid, context.registerService(IDiscoveryLocator.class.getName(), adapter, props));
 					}
 				} catch (ContainerConnectException e) {
-					throw new ConfigurationException("IDnsSdDiscoveryConstants properties", e.getLocalizedMessage(), e);
+					throw new ConfigurationException("IDnsSdDiscoveryConstants properties", e.getLocalizedMessage(), e); //$NON-NLS-1$
 				} catch (ClassCastException cce) {
-					throw new ConfigurationException("IDnsSdDiscoveryConstants properties", cce.getLocalizedMessage(), cce);
+					throw new ConfigurationException("IDnsSdDiscoveryConstants properties", cce.getLocalizedMessage(), cce); //$NON-NLS-1$
 				} catch (InstantiationException e) {
 					// may never happen
-					throw new ConfigurationException("InstantiationException", e.getLocalizedMessage(), e);
+					throw new ConfigurationException("InstantiationException", e.getLocalizedMessage(), e); //$NON-NLS-1$
 				} catch (IllegalAccessException e) {
 					// may never happen
-					throw new ConfigurationException("IllegalAccessException", e.getLocalizedMessage(), e);
+					throw new ConfigurationException("IllegalAccessException", e.getLocalizedMessage(), e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -171,7 +173,7 @@ public class Activator implements BundleActivator {
 		 * @see org.osgi.service.cm.ManagedServiceFactory#deleted(java.lang.String)
 		 */
 		public void deleted(String pid) {
-			ServiceRegistration serviceRegistration = (ServiceRegistration) serviceRegistrations.get(pid);
+			final ServiceRegistration serviceRegistration = (ServiceRegistration) serviceRegistrations.get(pid);
 			disposeServiceRegistration(serviceRegistration);
 		}
 	}
@@ -217,6 +219,7 @@ public class Activator implements BundleActivator {
 		 */
 		public void ungetService(Bundle bundle,
 				ServiceRegistration registration, Object service) {
+			// nop
 		}
 	}
 }

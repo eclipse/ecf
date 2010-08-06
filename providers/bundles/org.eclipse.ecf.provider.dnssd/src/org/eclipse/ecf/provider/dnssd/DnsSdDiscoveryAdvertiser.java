@@ -26,6 +26,7 @@ import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
@@ -45,7 +46,7 @@ import org.xbill.DNS.Update;
 
 public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 	
-	private static final String _DNS_UPDATE = "_dns-update._udp.";
+	private static final String _DNS_UPDATE = "_dns-update._udp."; //$NON-NLS-1$
 	private static final boolean ADD = true;
 	private static final boolean REMOVE = false;
 
@@ -58,14 +59,16 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryLocator#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void registerService(IServiceInfo serviceInfo) {
+	public void registerService(final IServiceInfo serviceInfo) {
+		Trace.trace(Activator.PLUGIN_ID, DnsSdDebugOptions.METHODS_TRACING, this.getClass(), "registerService(IServiceInfo serviceInfo)", "Registering service"); //$NON-NLS-1$ //$NON-NLS-2$
 		sendToServer(serviceInfo, ADD); 
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryLocator#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void unregisterService(IServiceInfo serviceInfo) {
+	public void unregisterService(final IServiceInfo serviceInfo) {
+		Trace.trace(Activator.PLUGIN_ID, DnsSdDebugOptions.METHODS_TRACING, this.getClass(), "unregisterService(IServiceInfo serviceInfo)", "Unregistering service"); //$NON-NLS-1$ //$NON-NLS-2$
 		sendToServer(serviceInfo, REMOVE);
 	}
 
@@ -73,7 +76,8 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#unregisterAllServices()
 	 */
 	public void unregisterAllServices() {
-		throw new UnsupportedOperationException("Not yet implemented");
+		Trace.trace(Activator.PLUGIN_ID, DnsSdDebugOptions.METHODS_TRACING, this.getClass(), "unregisterAllServices()", "Unregistering all services"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new UnsupportedOperationException("Not yet implemented"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -81,45 +85,48 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 	 */
 	public IServiceInfo[] purgeCache() {
 		// purge cache means renew resolver?
-		throw new UnsupportedOperationException("Not yet implemented");
+		throw new UnsupportedOperationException("Not yet implemented"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.dnssd.DnsSdDiscoveryLocator#connect(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID aTargetID, IConnectContext connectContext)
+	public void connect(final ID aTargetID, final IConnectContext connectContext)
 			throws ContainerConnectException {
 
-			// connect can only be called once
-			if (targetID != null || getConfig() == null) {
-				throw new ContainerConnectException("Already connected");
-			}
+		Trace.trace(Activator.PLUGIN_ID, DnsSdDebugOptions.METHODS_TRACING, this.getClass(), "connect(ID aTargetID, IConnectContext connectContext)", "connecting container"); //$NON-NLS-1$ //$NON-NLS-2$
 
-			//TODO convert non DnsSdServiceTypeIDs into DSTIDs
-			if(aTargetID == null) {
-				targetID = new DnsSdServiceTypeID();
-			} else {
-				targetID = (DnsSdServiceTypeID) aTargetID;
-			}
-			
-			// instantiate a default resolver
-			if(resolver == null) {
-				try {
-					resolver = new SimpleResolver();
-					resolver.setTCP(true);
-				} catch (UnknownHostException e) {
-					throw new ContainerConnectException(e);
-				}
-			}
+		// connect can only be called once
+		if (targetID != null || getConfig() == null) {
+			throw new ContainerConnectException("Already connected");
+		}
 
-			// done setting up this provider, send event
-			fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
-					connectContext));
-			fireContainerEvent(new ContainerConnectedEvent(this.getID(), targetID));
+		//TODO convert non DnsSdServiceTypeIDs into DSTIDs
+		if(aTargetID == null) {
+			targetID = new DnsSdServiceTypeID();
+		} else {
+			targetID = (DnsSdServiceTypeID) aTargetID;
+		}
+		
+		// instantiate a default resolver
+		if(resolver == null) {
+			try {
+				resolver = new SimpleResolver();
+				resolver.setTCP(true);
+			} catch (UnknownHostException e) {
+				throw new ContainerConnectException(e);
+			}
+		}
+
+		// done setting up this provider, send event
+		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
+				connectContext));
+		fireContainerEvent(new ContainerConnectedEvent(this.getID(), targetID));
 	}
 
 	protected void sendToServer(final IServiceInfo serviceInfo, final boolean mode) {
 		Assert.isNotNull(serviceInfo);
+		Assert.isLegal(serviceInfo.getServiceID() instanceof DnsSdServiceTypeID);
 		final DnsSdServiceID serviceID = (DnsSdServiceID) serviceInfo.getServiceID();
 		try {
 			final Record srvRecord = serviceID.toSRVRecord(); // TYPE.SRV
@@ -199,6 +206,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 	}
 
 	protected Collection getUpdateDomain(final Name zone) throws TextParseException {
+		Trace.trace(Activator.PLUGIN_ID, DnsSdDebugOptions.METHODS_TRACING, this.getClass(), "getUpdateDomain(Name zone)", "Getting update domain"); //$NON-NLS-1$ //$NON-NLS-2$
 		// query for special "_dns-update" SRV records which mark the server to use for dyndns
 		final Lookup query = new Lookup(_DNS_UPDATE + zone, Type.SRV);
 		// use the SRV record with the lowest priority/weight first
@@ -206,12 +214,14 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 
 		// if no dedicated "_dns-update" server is configured, fall back to regular authoritative server
 		if(srvRecords.size() == 0) {
+			Trace.trace(Activator.PLUGIN_ID, DnsSdDebugOptions.METHODS_TRACING, this.getClass(), "getUpdateDomain(Name zone)", "Found no _dns-update SRV records in zone"); //$NON-NLS-1$ //$NON-NLS-2$
 			return getAuthoritativeNameServer(zone);
 		}
 		return srvRecords; 
 	}
 	
 	protected Collection getAuthoritativeNameServer(final Name zone) throws TextParseException {
+		Trace.trace(Activator.PLUGIN_ID, DnsSdDebugOptions.METHODS_TRACING, this.getClass(), "getAuthoritativeNameServer(Name zone)", "Trying to find authoritative name server"); //$NON-NLS-1$ //$NON-NLS-2$
 		final Set result = new HashSet();
 		final Name name = new Name(_DNS_UPDATE + zone);
 		
@@ -246,7 +256,8 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		return result; 
 	}
 
-	protected String[] getRegistrationDomains(IServiceTypeID aServiceTypeId) {
+	protected String[] getRegistrationDomains(final IServiceTypeID aServiceTypeId) {
+		Trace.trace(Activator.PLUGIN_ID, DnsSdDebugOptions.METHODS_TRACING, this.getClass(), "getRegistrationDomains(IServiceTypeID aServiceTypeId)", "Getting registration domains"); //$NON-NLS-1$ //$NON-NLS-2$
 		final String[] rrs = new String[] {BnRDnsSdServiceTypeID.REG_DOMAINS, BnRDnsSdServiceTypeID.DEFAULT_REG_DOMAIN};
 		final Collection registrationDomains = getBrowsingOrRegistrationDomains(aServiceTypeId, rrs);
 		final String[] scopes = aServiceTypeId.getScopes();
