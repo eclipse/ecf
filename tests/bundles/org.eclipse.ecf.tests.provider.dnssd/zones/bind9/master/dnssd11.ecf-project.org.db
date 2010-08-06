@@ -1,0 +1,11 @@
+$TTL    3600
+@       IN      SOA     ns1.ecf-project.org. hostmaster.mkce.de. (
+			2010052605 7200 120 2419200 604800)
+@       IN      NS      ns1.ecf-project.org.
+
+_services._dns-sd._udp	IN	PTR				_http._tcp
+
+_http._tcp	3600	IN	SRV	10	0	80	www.ecf-project.org.
+_http._tcp		IN	TXT				"path=/dnssd11"
+_http._tcp		IN	TXT				"dns-sd.ptcl=http"
+

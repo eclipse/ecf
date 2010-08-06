@@ -1,0 +1,20 @@
+$ORIGIN .
+$TTL 3600	; 1 hour
+dnssd2.ecf-project.org	IN SOA	ns1.ecf-project.org. hostmaster.mkce.de. (
+				2010053676 ; serial
+				7200       ; refresh (2 hours)
+				120        ; retry (2 minutes)
+				2419200    ; expire (4 weeks)
+				3600       ; minimum (1 hour)
+				)
+			NS	ns1.ecf-project.org.
+$ORIGIN _tcp.dnssd2.ecf-project.org.
+_http			SRV	10 0 80 build.ecf-project.org.
+$ORIGIN _udp.dnssd2.ecf-project.org.
+_services._dns-sd	PTR	_dns-update
+_dns-update		SRV	5 0 53 ns-nonexist.ecf-project.org.
+			SRV	7 0 53 8.8.8.8.
+			SRV	10 0 53 ns1.ecf-project.org.
+$ORIGIN tcp.dnssd2.ecf-project.org.
+_http_			SRV	1 1 3282 127.0.1.1.
+_junit_			SRV	1 1 3282 127.0.1.1.

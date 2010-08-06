@@ -1,0 +1,87 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+key "junit.ecf-project.org" { algorithm hmac-md5; secret "EdoBE6i8YeIiFKiKEGC9LaI4X+C44Rdd6Nwh7ZvBi6tCpszvkartLoPj VYKoJ4RdY4hnFV3zAKp1d1t2MToxUQ=="; };
+
+zone "dnssd.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd.ecf-project.org.db";
+};
+
+zone "dnssd2.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd2.ecf-project.org.db";
+    allow-update { key "junit.ecf-project.org";};
+};
+
+zone "dnssd3.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd3.ecf-project.org.db";
+    allow-update { key "junit.ecf-project.org";};
+};
+
+zone "dnssd4.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd4.ecf-project.org.db";
+};
+
+zone "dnssd5.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd5.ecf-project.org.db";
+};
+
+zone "dnssd6.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd6.ecf-project.org.db";
+};
+
+zone "dnssd7.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd7.ecf-project.org.db";
+};
+
+zone "dnssd8.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd8.ecf-project.org.db";
+};
+
+zone "dnssd9.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd9.ecf-project.org.db";
+};
+
+zone "dnssd10.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd10.ecf-project.org.db";
+};
+
+zone "dnssd11.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd11.ecf-project.org.db";
+};
+
+zone "dnssd12.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd12.ecf-project.org.db";
+};
+
+zone "dnssd13.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd13.ecf-project.org.db";
+};
+
+zone "dnssd14.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dnssd14.ecf-project.org.db";
+};
+
+
+zone "dns-sd.ecf-project.org" {
+    type master;
+    file "/etc/bind/master/dns-sd.ecf-project.org.db";
+};
