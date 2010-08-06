@@ -31,19 +31,19 @@ public class BnRDnsSdServiceTypeID extends DnsSdServiceTypeID {
   	/**
   	 * A list of domains recommended for browsing
   	 */
-  	static final String BROWSE_DOMAINS = "b._dns-sd";
+  	static final String BROWSE_DOMAINS = "b._dns-sd"; //$NON-NLS-1$
 	/**
 	 * A single recommended default domain for browsing
 	 */
-	static final String DEFAULT_BROWSE_DOMAIN = "db._dns-sd";
+	static final String DEFAULT_BROWSE_DOMAIN = "db._dns-sd"; //$NON-NLS-1$
 	/**
 	 * A list of domains recommended for registering services using Dynamic Update
 	 */
-	static final String REG_DOMAINS = "r._dns-sd";
+	static final String REG_DOMAINS = "r._dns-sd"; //$NON-NLS-1$
 	/**
 	 * A single recommended default domain for registering services.
 	 */
-	static final String DEFAULT_REG_DOMAIN = "dr._dns-sd";
+	static final String DEFAULT_REG_DOMAIN = "dr._dns-sd"; //$NON-NLS-1$
 
 	BnRDnsSdServiceTypeID(IServiceTypeID aServiceType, String aService) {
 		super(aServiceType.getNamespace(), aServiceType);
@@ -58,12 +58,12 @@ public class BnRDnsSdServiceTypeID extends DnsSdServiceTypeID {
 		for (int i = 0; i < scopes.length; i++) {
 			String scope = scopes[i];
 			// remove dangling "."
-			if(scope.endsWith(".")) {
+			if(scope.endsWith(".")) { //$NON-NLS-1$
 				scope = scope.substring(0, scope.length() - 1);
 			}
 			Lookup query;
 			try {
-				query = new Lookup(services[0] + "._udp" + "." + scope + ".",
+				query = new Lookup(services[0] + "._udp" + "." + scope + ".", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						Type.PTR);
 			} catch (TextParseException e) {
 				continue;
@@ -74,7 +74,7 @@ public class BnRDnsSdServiceTypeID extends DnsSdServiceTypeID {
 	}
 	
 	void setScope(String target) {
-		if(target.endsWith(".")) {
+		if(target.endsWith(".")) { //$NON-NLS-1$
 			target = target.substring(0, target.length() - 1);
 		}
 		scopes = new String[]{target};
@@ -85,7 +85,7 @@ public class BnRDnsSdServiceTypeID extends DnsSdServiceTypeID {
 		final List res = new ArrayList(scopes.length);
 		for (int i = 0; i < scopes.length; i++) {
 			String scope = scopes[i];
-			res.add(scope + ".");
+			res.add(scope + "."); //$NON-NLS-1$
 		}
 		return res;
 	}

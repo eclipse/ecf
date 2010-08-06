@@ -37,7 +37,7 @@ public class DnsSdServiceID extends ServiceID {
 
 
 	Name getDnsName() throws TextParseException {
-		return new Name("_" + type.getServices()[0] + "._"
+		return new Name("_" + type.getServices()[0] + "._" //$NON-NLS-1$ //$NON-NLS-2$
 		+ type.getProtocols()[0]);
 	}
 	
@@ -46,12 +46,12 @@ public class DnsSdServiceID extends ServiceID {
 	 * @throws IOException
 	 */
 	Record toSRVRecord() throws IOException {
-		final Name name = new Name(getDnsName().toString(), new Name(type.getScopes()[0] + "."));
+		final Name name = new Name(getDnsName().toString(), new Name(type.getScopes()[0] + ".")); //$NON-NLS-1$
 		final long ttl = serviceInfo.getTTL();
 		final int priority = serviceInfo.getPriority();
 		final int weight = serviceInfo.getWeight();
 		final int port = serviceInfo.getLocation().getPort();
-		final Name target = Name.fromString(serviceInfo.getLocation().getHost() + ".");
+		final Name target = Name.fromString(serviceInfo.getLocation().getHost() + "."); //$NON-NLS-1$
 
 		return new SRVRecord(name, DClass.IN, ttl, priority, weight, port, target);
 	}
@@ -70,7 +70,7 @@ public class DnsSdServiceID extends ServiceID {
 			final String key = property.toString();
 			final String value = (String) properties.getProperty(key).toString();
 			final long ttl = serviceInfo.getTTL();
-			result.add(new TXTRecord(aRecord.getName(), DClass.IN, ttl, key + "=" + value));
+			result.add(new TXTRecord(aRecord.getName(), DClass.IN, ttl, key + "=" + value)); //$NON-NLS-1$
 		}
 		return (Record[]) result.toArray(new Record[result.size()]);
 	}

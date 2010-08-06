@@ -35,7 +35,7 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID 
 		scopes = DEFAULT_SCOPE;
 		protocols = DEFAULT_PROTO;
 		namingAuthority = DEFAULT_NA;
-		services = new String[]{""};
+		services = new String[]{""}; //$NON-NLS-1$
 	}
 
 	public DnsSdServiceTypeID(Namespace ns, IServiceTypeID id) {
@@ -57,20 +57,20 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID 
 
 		String service = null;
 		if (services == null || services.length == 0
-				|| (services.length == 1 && services[0].equals(""))) {
+				|| (services.length == 1 && services[0].equals(""))) { //$NON-NLS-1$
 			// if no service is set, create a non service specific query
-			service = "_services._dns-sd._";
+			service = "_services._dns-sd._"; //$NON-NLS-1$
 
 			// and set proto to "udp" irregardless what has been set
-			protos = new String[] { "udp" };
+			protos = new String[] { "udp" }; //$NON-NLS-1$
 
 			// and query for PTR records
 			type = Type.PTR;
 		} else {
-			service = "_";
+			service = "_"; //$NON-NLS-1$
 			for (int i = 0; i < services.length; i++) {
 				service += services[i];
-				service += "._";
+				service += "._"; //$NON-NLS-1$
 			}
 		}
 
@@ -78,13 +78,13 @@ public class DnsSdServiceTypeID extends ServiceTypeID implements IServiceTypeID 
 		for (int i = 0; i < scopes.length; i++) {
 			String scope = scopes[i];
 			// remove dangling "."
-			if(scope.endsWith(".")) {
+			if(scope.endsWith(".")) { //$NON-NLS-1$
 				scope = scope.substring(0, scope.length() - 1);
 			}
 			for (int j = 0; j < protos.length; j++) {
 				Lookup query;
 				try {
-					query = new Lookup(service + protos[j] + "." + scope + ".",
+					query = new Lookup(service + protos[j] + "." + scope + ".", //$NON-NLS-1$ //$NON-NLS-2$
 							type);
 				} catch (TextParseException e) {
 					continue;

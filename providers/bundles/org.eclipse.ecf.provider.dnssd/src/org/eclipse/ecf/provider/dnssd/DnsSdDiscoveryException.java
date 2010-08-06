@@ -11,6 +11,7 @@
 package org.eclipse.ecf.provider.dnssd;
 
 import org.eclipse.ecf.core.util.ECFRuntimeException;
+import org.eclipse.osgi.util.NLS;
 import org.xbill.DNS.Rcode;
 
 
@@ -19,11 +20,11 @@ public class DnsSdDiscoveryException extends ECFRuntimeException {
 	public static DnsSdDiscoveryException getException(int rcode) {
 		switch (rcode) {
 		case Rcode.REFUSED:
-			return new DnsSdDiscoveryException("DNS update denied by server (return code: " + rcode + ")");
+			return new DnsSdDiscoveryException(NLS.bind(Messages.DnsSdDiscoveryException_DynDns_Update_Denied, Integer.toString(rcode)));
 		case Rcode.NOTAUTH:
-			return new DnsSdDiscoveryException("TSIG verify failed (BADKEY) (return code: " + rcode + ")");
+			return new DnsSdDiscoveryException(NLS.bind(Messages.DnsSdDiscoveryException_TSIG_Verify_Failed, Integer.toString(rcode)));
 		default:
-			return new DnsSdDiscoveryException("DNS update failed with return code: " + rcode);
+			return new DnsSdDiscoveryException(NLS.bind(Messages.DnsSdDiscoveryException_DynDNS_Updated_Failed, Integer.toString(rcode)));
 		}
 	}
 	

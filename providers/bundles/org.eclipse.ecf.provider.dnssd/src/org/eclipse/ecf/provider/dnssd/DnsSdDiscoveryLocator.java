@@ -43,8 +43,8 @@ import org.xbill.DNS.Type;
 
 public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 
-	private static final String DNS_SD_PATH = "path";
-	private static final String DNS_SD_PTCL = "dns-sd.ptcl";
+	private static final String DNS_SD_PATH = "path"; //$NON-NLS-1$
+	private static final String DNS_SD_PTCL = "dns-sd.ptcl"; //$NON-NLS-1$
 
 	public DnsSdDiscoveryLocator() {
 		super(DnsSdNamespace.NAME, new DiscoveryContainerConfig(IDFactory
@@ -150,14 +150,14 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 				List strings = txtResult.getStrings();
 				for (Iterator itr = strings.iterator(); itr.hasNext();) {
 					String str = (String) itr.next();
-					String[] split = str.split("=");
+					String[] split = str.split("="); //$NON-NLS-1$
 					props.put(split[0], split[1]);
 				}
 			}
 			String path = props.getProperty(DNS_SD_PATH);
 			String proto = props.getProperty(DNS_SD_PTCL) == null ? aServiceTypeID.getProtocols()[0] : props.getProperty(DNS_SD_PTCL);
 			
-			URI uri = URI.create(proto + "://" + host + ":" + port + (path == null ? "" : path));
+			URI uri = URI.create(proto + "://" + host + ":" + port + (path == null ? "" : path)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			IServiceInfo info =new ServiceInfo(uri, host, aServiceTypeID, priority, weight, new ServiceProperties(props), ttl);
 			infos.add(info);
 		}
@@ -176,7 +176,7 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 
 		// connect can only be called once
 		if (targetID != null || getConfig() == null) {
-			throw new ContainerConnectException("Already connected");
+			throw new ContainerConnectException(Messages.DnsSdDiscoveryLocator_Container_Already_Connected);
 		}
 		
 		// fall back to the search path as last resort 
@@ -187,7 +187,7 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 				targetID = new DnsSdServiceTypeID();
 				targetID.setSearchPath(searchPaths);
 			} else {
-				throw new ContainerConnectException("No target id given and fallbacks failed");
+				throw new ContainerConnectException(Messages.DnsSdDiscoveryLocator_No_Target_ID);
 			}
 		} else {
 			targetID = (DnsSdServiceTypeID) aTargetID;

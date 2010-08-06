@@ -39,7 +39,7 @@ public class DnsSdNamespace extends Namespace {
 			URI uri = (URI) parameters[1];
 			return new DnsSdServiceID(this, new DnsSdServiceTypeID(this, serviceTypeID), uri);
 		} else {
-			throw new IDCreateException("Wrong parameters");
+			throw new IDCreateException(Messages.DnsSdNamespace_Wrong_Parameters);
 		}
 	}
 

@@ -98,7 +98,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 
 		// connect can only be called once
 		if (targetID != null || getConfig() == null) {
-			throw new ContainerConnectException("Already connected");
+			throw new ContainerConnectException(Messages.DnsSdDiscoveryAdvertiser_Container_Already_Connected);
 		}
 
 		//TODO convert non DnsSdServiceTypeIDs into DSTIDs
@@ -137,7 +137,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		
 			for (int i = 0; i < registrationDomains.length; i++) {
 				final Name zone = new Name(registrationDomains[i]);
-				final Name fqdn = new Name(name.toString() + "." + zone.toString());
+				final Name fqdn = new Name(name.toString() + "." + zone.toString()); //$NON-NLS-1$
 				final Update update = new Update(zone);
 
 				//TYPE.SRV
@@ -160,7 +160,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 				// set up a the resolver for the given domain (a scope might use different domains)
 				final Collection dnsServers = getUpdateDomain(zone);
 				if(dnsServers.size() == 0) {
-					throw new DnsSdDiscoveryException("No server for dnsupdate could be found");
+					throw new DnsSdDiscoveryException(Messages.DnsSdDiscoveryAdvertiser_No_DynDns_Servers_Found);
 				}
 				for (final Iterator iterator = dnsServers.iterator(); iterator.hasNext();) {
 					final SRVRecord dnsServer = (SRVRecord) iterator.next();
@@ -262,7 +262,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		final Collection registrationDomains = getBrowsingOrRegistrationDomains(aServiceTypeId, rrs);
 		final String[] scopes = aServiceTypeId.getScopes();
 		for (int i = 0; i < scopes.length; i++) {
-			scopes[i] = scopes[i].concat(".");
+			scopes[i] = scopes[i].concat("."); //$NON-NLS-1$
 		}
 		return registrationDomains.size() == 0 ? scopes : (String[]) registrationDomains.toArray(new String[registrationDomains.size()]); 
 	}

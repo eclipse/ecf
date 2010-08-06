@@ -32,11 +32,15 @@ import org.osgi.service.cm.ManagedServiceFactory;
 
 public class Activator implements BundleActivator {
 
-	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.dnssd";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.dnssd"; //$NON-NLS-1$
+	public static final String DISCOVERY_CONTAINER_NAME_VALUE = "ecf.discovery.dnssd"; //$NON-NLS-1$
+	public static final String LOCATOR = ".locator"; //$NON-NLS-1$
+	public static final String ADVERTISER = ".advertiser"; //$NON-NLS-1$
+
+	private static final String DISCOVERY_CONTAINER_NAME_KEY = "org.eclipse.ecf.discovery.containerName"; //$NON-NLS-1$
 	
 	private final Map serviceRegistrations = new HashMap();
 	private volatile BundleContext context;
-	private static final String NAME = "ecf.discovery.dnssd";
 
 	/*
 	 * (non-Javadoc)
@@ -47,23 +51,23 @@ public class Activator implements BundleActivator {
 		
 		// register a managed factory for the locator service
 		final Properties locCmProps = new Properties();
-		locCmProps.put(Constants.SERVICE_PID, NAME + ".locator");
+		locCmProps.put(Constants.SERVICE_PID, DISCOVERY_CONTAINER_NAME_VALUE + LOCATOR);
 		context.registerService(ManagedServiceFactory.class.getName(), new DnsSdManagedServiceFactory(DnsSdDiscoveryLocator.class), locCmProps);
 		
 		// register the locator service
 		final Properties locProps = new Properties();
-		locProps.put("org.eclipse.ecf.discovery.containerName", NAME + ".locator");
+		locProps.put(DISCOVERY_CONTAINER_NAME_KEY, DISCOVERY_CONTAINER_NAME_VALUE + LOCATOR);
 		locProps.put(Constants.SERVICE_RANKING, new Integer(750));
 		serviceRegistrations.put(null, context.registerService(IDiscoveryLocator.class.getName(), new DnsSdServiceFactory(DnsSdDiscoveryLocator.class), locProps));
 
 		// register a managed factory for the advertiser service
 		final Properties advCmProps = new Properties();
-		advCmProps.put(Constants.SERVICE_PID, NAME + ".advertiser");
+		advCmProps.put(Constants.SERVICE_PID, DISCOVERY_CONTAINER_NAME_VALUE + ADVERTISER);
 		context.registerService(ManagedServiceFactory.class.getName(), new DnsSdManagedServiceFactory(DnsSdDiscoveryAdvertiser.class), advCmProps);
 		
 		// register the advertiser service
 		final Properties advProps = new Properties();
-		advProps.put("org.eclipse.ecf.discovery.containerName", NAME + ".advertiser");
+		advProps.put(DISCOVERY_CONTAINER_NAME_KEY, DISCOVERY_CONTAINER_NAME_VALUE + ADVERTISER);
 		advProps.put(Constants.SERVICE_RANKING, new Integer(750));
 		serviceRegistrations.put(null, context.registerService(IDiscoveryAdvertiser.class.getName(), new DnsSdServiceFactory(DnsSdDiscoveryAdvertiser.class), advProps));
 	}

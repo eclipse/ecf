@@ -61,7 +61,7 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		// nop, we are just an Advertiser but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
 		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryLocator");
+				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Locator);
 	}
 
 	/* (non-Javadoc)
@@ -71,7 +71,7 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		// nop, we are just an Advertiser but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
 		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryLocator");
+				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Locator);
 	}
 
 	/* (non-Javadoc)
@@ -81,7 +81,7 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		// nop, we are just an Advertiser but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
 		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryLocator");
+				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Locator);
 	}
 
 	/* (non-Javadoc)
@@ -92,7 +92,7 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		// nop, we are just an Advertiser but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
 		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryLocator");
+				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Locator);
 	}
 
 	/* (non-Javadoc)
@@ -103,7 +103,7 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		// nop, we are just a Locator but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
 		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryAdvertiser");
+				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Advertiser);
 	}
 
 	/* (non-Javadoc)
@@ -114,7 +114,7 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		// nop, we are just a Locator but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
 		throw new UnsupportedOperationException(
-				"This is not an IDiscoveryAdvertiser");
+				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Advertiser);
 	}
 
 	/* (non-Javadoc)
@@ -253,7 +253,7 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 					return -1;
 				}
 			}
-			throw new UnsupportedOperationException("This appears to be a bug: Comparator can only compare SRVRecords");
+			throw new UnsupportedOperationException(Messages.DnsSdDiscoveryContainerAdapter_Comparator_SRV_Records);
 		}
 		
 	}

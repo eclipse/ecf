@@ -16,15 +16,18 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
 public class ContainerInstantiator implements IContainerInstantiator {
-
+	
+	private static final String ADVERTISER = Activator.DISCOVERY_CONTAINER_NAME_VALUE + Activator.ADVERTISER;
+	private static final String LOCATOR = Activator.DISCOVERY_CONTAINER_NAME_VALUE + Activator.LOCATOR;
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] parameters) throws ContainerCreateException {
-		if(description != null && "ecf.discovery.dnssd.advertiser".equals(description.getName())) {
+		if(description != null && ADVERTISER.equals(description.getName())) {
 			return new DnsSdDiscoveryAdvertiser();
-		} else if(description != null && "ecf.discovery.dnssd.locator".equals(description.getName())) {
+		} else if(description != null && LOCATOR.equals(description.getName())) {
 			return new DnsSdDiscoveryLocator();
 		}
 		return null;

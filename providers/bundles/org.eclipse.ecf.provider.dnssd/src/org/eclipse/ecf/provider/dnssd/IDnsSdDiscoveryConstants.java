@@ -15,16 +15,16 @@ public interface IDnsSdDiscoveryConstants {
 	/**
 	 * Config admin key to define the default search path
 	 */
-	public final String CA_SEARCH_PATH = "searchPath";
+	public final String CA_SEARCH_PATH = "searchPath"; //$NON-NLS-1$
 	/**
 	 * Config admin key to define the default resolver
 	 */
-	public final String CA_RESOLVER = "resolver";
+	public final String CA_RESOLVER = "resolver"; //$NON-NLS-1$
 	
 	/**
 	 * Config admin key to define the TSIG key to be used to sign requests 
 	 */
-	public final String CA_TSIG_KEY = "tsig-key";
-	public final Object CA_TSIG_KEY_NAME = "tsig-key-name";
+	public final String CA_TSIG_KEY = "tsig-key"; //$NON-NLS-1$
+	public final Object CA_TSIG_KEY_NAME = "tsig-key-name"; //$NON-NLS-1$
 
 }
