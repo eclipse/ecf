@@ -77,7 +77,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 	 */
 	public void unregisterAllServices() {
 		Trace.trace(Activator.PLUGIN_ID, DnsSdDebugOptions.METHODS_TRACING, this.getClass(), "unregisterAllServices()", "Unregistering all services"); //$NON-NLS-1$ //$NON-NLS-2$
-		throw new UnsupportedOperationException("Not yet implemented"); //$NON-NLS-1$
+		throw new UnsupportedOperationException("Not yet implemented, see http://bugs.eclipse.org/321959"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -85,7 +85,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 	 */
 	public IServiceInfo[] purgeCache() {
 		// purge cache means renew resolver?
-		throw new UnsupportedOperationException("Not yet implemented"); //$NON-NLS-1$
+		throw new UnsupportedOperationException("Not yet implemented, see http://bugs.eclipse.org/"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -126,7 +126,7 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 
 	protected void sendToServer(final IServiceInfo serviceInfo, final boolean mode) {
 		Assert.isNotNull(serviceInfo);
-		Assert.isLegal(serviceInfo.getServiceID() instanceof DnsSdServiceTypeID);
+		Assert.isLegal(serviceInfo.getServiceID() instanceof DnsSdServiceID);
 		final DnsSdServiceID serviceID = (DnsSdServiceID) serviceInfo.getServiceID();
 		try {
 			final Record srvRecord = serviceID.toSRVRecord(); // TYPE.SRV
