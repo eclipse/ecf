@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cq:componentQuery xmlns:cq="http://www.eclipse.org/buckminster/CQuery-1.0" resourceMap="ecf.rmap">
+<cq:componentQuery xmlns:cq="http://www.eclipse.org/buckminster/CQuery-1.0" resourceMap="http://github.com/ECF/Releng/raw/master/ecf.rmap">
     <cq:rootRequest name="org.eclipse.ecf.discovery.dnssd.feature" componentType="eclipse.feature"/>
     
     <cq:property key="target.arch" value="*"/>
