@@ -70,6 +70,7 @@ public class ConsumerUI extends Shell {
 		lblCommaSeperatedList.setText("Servers");
 
 		servers = (new Text(composite, SWT.BORDER));
+		servers.setToolTipText("Enter a host or a comma\r\nseparated list of hosts.");
 		getServers().setText("yazafatutu.com");
 		getServers().setLayoutData(
 				new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -138,10 +139,12 @@ public class ConsumerUI extends Shell {
 			zooContainer.disconnect();
 
 		try {
+			String flavor = "centralized";
+			if (getServers().getText().split(",").length > 1)
+				flavor = "standalone";
 			zooContainer.connect(
 					zooContainer.getConnectNamespace().createInstance(
-							new String[] { "zoodiscovery.flavor.centralized="
-									+ getServers().getText() }), null);
+							new String[] { "zoodiscovery.flavor." + flavor + "=" + getServers().getText() }), null);
 		} catch (Exception e) {
 			getLabel().setText(e.getLocalizedMessage());
 			getStyledText().setText(e.getCause().toString());

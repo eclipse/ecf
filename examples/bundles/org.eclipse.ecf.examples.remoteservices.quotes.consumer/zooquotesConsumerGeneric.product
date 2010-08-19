@@ -3,7 +3,6 @@
 
 <product name="Zookeeper Discoverable Quotes Service" uid="org.eclipse.ecf.examples.remoteservices.quotes.consumer.product" id="org.eclipse.ecf.examples.remoteservices.quotes.consumer.zooquotesgenericconsumer" application="org.eclipse.ecf.examples.remoteservices.quotes.consumer.id1" version="1.0.0" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -22,7 +21,6 @@
             winLargeHigh="/org.eclipse.ecf.examples.remoteservices.quotes.consumer/images/quotes48x48x32.bmp"/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
