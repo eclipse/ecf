@@ -65,15 +65,13 @@ public class ConsumerUI extends Shell {
 		composite.setLayout(new GridLayout(3, false));
 
 		Label lblCommaSeperatedList = new Label(composite, SWT.NONE);
-		lblCommaSeperatedList.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
-				false, false, 1, 1));
+		lblCommaSeperatedList.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblCommaSeperatedList.setText("Servers");
 
 		servers = (new Text(composite, SWT.BORDER));
 		servers.setToolTipText("Enter a host or a comma\r\nseparated list of hosts.");
 		getServers().setText("yazafatutu.com");
-		getServers().setLayoutData(
-				new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		getServers().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		Button btnConnect = new Button(composite, SWT.NONE);
 		btnConnect.addMouseListener(new MouseAdapter() {
@@ -83,46 +81,46 @@ public class ConsumerUI extends Shell {
 			}
 		});
 		btnConnect.setText("Connect");
-																		
-																		TabFolder tabFolder = new TabFolder(composite, SWT.BOTTOM);
-																		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
-																		
-																		TabItem tbtmUi = new TabItem(tabFolder, SWT.NONE);
-																		tbtmUi.setText("UI");
-																		
-																		Composite composite_2 = new Composite(tabFolder, SWT.NONE);
-																		tbtmUi.setControl(composite_2);
-																		composite_2.setLayout(new GridLayout(1, false));
-																		
-																				gilloscope = new OSGilloscope(composite_2, SWT.NONE);
-																				GridData gd_gilloscope = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-																				gd_gilloscope.heightHint = 100;
-																				gilloscope.setLayoutData(gd_gilloscope);
-																				
-																						Composite composite_1 = new Composite(composite_2, SWT.BORDER);
-																						composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-																						composite_1.setLayout(new GridLayout(1, false));
-																						
-																								lblBehindAFirewall = (new Label(composite_1, SWT.NONE));
-																								getLabel().setAlignment(SWT.CENTER);
-																								getLabel().setFont(new Font(null, "Segoe UI", 15, SWT.BOLD));
-																								getLabel().setLayoutData(
-																										new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-																								getLabel().setText("Behind a Firewall?");
-																								
-																										styledText = (new StyledText(composite_1, SWT.BORDER | SWT.WRAP));
-																										styledText.setText("Ports 2181 needs to be opened for the Zookeeper Discovery to work and port 3282 is needed by the ECF distribution provider. You can change the ports if you run this in your own environment.");
-																										styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-																										styledText.setEditable(false);
-																										
-																										TabItem tbtmInfo = new TabItem(tabFolder, SWT.NONE);
-																										tbtmInfo.setText("Info");
-																										
-																										Composite composite_3 = new Composite(tabFolder, SWT.NONE);
-																										tbtmInfo.setControl(composite_3);
-																										composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
-																										
-																										info =new Text(composite_3, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
+
+		TabFolder tabFolder = new TabFolder(composite, SWT.BOTTOM);
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+
+		TabItem tbtmUi = new TabItem(tabFolder, SWT.NONE);
+		tbtmUi.setText("UI");
+
+		Composite composite_2 = new Composite(tabFolder, SWT.NONE);
+		tbtmUi.setControl(composite_2);
+		composite_2.setLayout(new GridLayout(1, false));
+
+		gilloscope = new OSGilloscope(composite_2, SWT.NONE);
+		GridData gd_gilloscope = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_gilloscope.heightHint = 100;
+		gilloscope.setLayoutData(gd_gilloscope);
+
+		Composite composite_1 = new Composite(composite_2, SWT.BORDER);
+		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		composite_1.setLayout(new GridLayout(1, false));
+
+		lblBehindAFirewall = (new Label(composite_1, SWT.NONE));
+		getLabel().setAlignment(SWT.CENTER);
+		getLabel().setFont(new Font(null, "Segoe UI", 15, SWT.BOLD));
+		getLabel().setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		getLabel().setText("Behind a Firewall?");
+
+		styledText = (new StyledText(composite_1, SWT.BORDER | SWT.WRAP));
+		styledText
+				.setText("Ports 2181 needs to be opened for the Zookeeper Discovery to work and port 3282 is needed by the ECF distribution provider. You can change the ports if you run this in your own environment.");
+		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		styledText.setEditable(false);
+
+		TabItem tbtmInfo = new TabItem(tabFolder, SWT.NONE);
+		tbtmInfo.setText("Info");
+
+		Composite composite_3 = new Composite(tabFolder, SWT.NONE);
+		tbtmInfo.setControl(composite_3);
+		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+		info = new Text(composite_3, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
 		createContents();
 	}
 
@@ -130,8 +128,7 @@ public class ConsumerUI extends Shell {
 
 		IContainer zooContainer = null;
 		try {
-			zooContainer = ContainerFactory.getDefault().createContainer(
-					ZooDiscoveryContainerInstantiator.NAME);
+			zooContainer = ContainerFactory.getDefault().createContainer(ZooDiscoveryContainerInstantiator.NAME);
 		} catch (ContainerCreateException e1) {
 		}
 
