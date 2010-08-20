@@ -3,7 +3,6 @@
 
 <product name="Zookeeper Discoverable Quotes Service" uid="org.eclipse.ecf.examples.remoteservices.quotes" version="1.0.0" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -18,7 +17,6 @@
 
    <windowImages/>
 
-
    <launcher>
       <solaris/>
       <win useIco="false">
@@ -26,10 +24,8 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="org.apache.log4j"/>
@@ -74,6 +70,7 @@
    </plugins>
 
    <configurations>
+      <plugin id="org.eclipse.ecf.examples.remoteservices.quotes" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.discovery" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.distribution" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="1" />
