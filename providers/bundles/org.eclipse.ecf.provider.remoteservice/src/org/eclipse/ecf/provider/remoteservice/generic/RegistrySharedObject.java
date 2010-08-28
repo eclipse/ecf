@@ -217,9 +217,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		// If we're not already connected, then connect to targetID
 		connectToRemoteServiceTarget(targetID);
 
-		ID[] targetIDs = new ID[] {targetID};
 		// Now we're connected (or already were connected), so we look for remote service references for target
-		final IRemoteServiceReference[] result = getRemoteServiceReferences(targetIDs, clazz, filter);
+		final IRemoteServiceReference[] result = getRemoteServiceReferences((ID[]) null, clazz, filter);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
 		return result;
 	}
