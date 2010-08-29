@@ -85,20 +85,20 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * ListenerQueue for asynchronously dispatching remote service registration/unregistration
 	 * events
-	 * @since 3.4
+	 * @since 3.3
 	 */
-	protected ListenerQueue rsListenerDispatchQueue;
+	private ListenerQueue rsListenerDispatchQueue;
 	/**
 	 * Queue lock so that rsListenerDispatchQueue above can be lazily instantiated
-	 * @since 3.4
+	 * @since 3.3
 	 */
-	protected final Object rsQueueLock = new Object();
+	private final Object rsQueueLock = new Object();
 
 	/**
 	 * EventManager for the rsListenerDispatchEventManager
-	 * @since 3.4
+	 * @since 3.3
 	 */
-	protected EventManager rsListenerDispatchEventManager;
+	private EventManager rsListenerDispatchEventManager;
 
 	public RegistrySharedObject() {
 		//
