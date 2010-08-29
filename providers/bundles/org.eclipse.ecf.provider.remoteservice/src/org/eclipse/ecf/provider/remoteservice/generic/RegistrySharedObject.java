@@ -230,16 +230,19 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		// This code cannot be reentrant.
 		synchronized (rsConnectLock) {
 			ISharedObjectContext context = getContext();
-			// If we don't have a context we can't connect and we're outta here
+			// If we don't have a context we can't connect and we throw a container connect exception
 			if (context == null)
 				throw new ContainerConnectException("Cannot connect without context"); //$NON-NLS-1$
 			ID connectedID = context.getConnectedID();
-			// If we're already connected to something then we don't need to connect
+			// If we're already connected to something then we don't need to connect...and we return
 			if (connectedID != null)
 				return;
 			// else we just try to connect to target
 			context.connect(targetID, connectContext);
+			// wait to receive connected event
 			waitForConnectedEvent(context, targetID);
+			// Wait for pending registry updates after connect
+			waitForPendingUpdatesAfterConnect(getAddRegistrationRequestTimeout());
 		}
 	}
 
@@ -267,8 +270,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {idFilter, clazz, filter}); //$NON-NLS-1$
 		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
-		// Wait for pending updates from containers in idFilter
-		waitForPendingUpdates(idFilter, getAddRegistrationRequestTimeout());
+		// If the idFilter is not null, then wait for updates from listed IDs given in idFilter
+		if (idFilter != null)
+			waitForPendingUpdates(idFilter, getAddRegistrationRequestTimeout());
 		// Lookup from remote registrys...add to given references List
 		final List references = new ArrayList();
 		addReferencesFromRemoteRegistrys(idFilter, clazz, remoteFilter, references);
@@ -495,6 +499,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				return true;
 		}
 		return false;
+	}
+
+	private void waitForPendingUpdatesAfterConnect(long timeout) {
+		waitForPendingUpdates(null, timeout);
 	}
 
 	private void waitForPendingUpdates(ID[] containerIDs, long timeout) {
@@ -804,7 +812,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.3
 	 */
-	protected static final int ADD_REGISTRATION_REQUEST_TIMEOUT = new Integer(System.getProperty("ecf.addregistrationrequest.timeout", "5000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	protected static final int ADD_REGISTRATION_REQUEST_TIMEOUT = new Integer(System.getProperty("ecf.addregistrationrequest.timeout", "7000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected void sendRegistryUpdateRequest() {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendRegistryUpdateRequest"); //$NON-NLS-1$
