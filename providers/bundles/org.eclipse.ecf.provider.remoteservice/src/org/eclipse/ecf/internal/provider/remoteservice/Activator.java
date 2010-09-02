@@ -10,6 +10,7 @@ package org.eclipse.ecf.internal.provider.remoteservice;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.SystemLogService;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -29,6 +30,8 @@ public class Activator implements BundleActivator {
 
 	private BundleContext context;
 
+	private LogService logService;
+
 	/**
 	 * The constructor
 	 */
@@ -41,6 +44,11 @@ public class Activator implements BundleActivator {
 	}
 
 	public void stop(BundleContext ctxt) throws Exception {
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+			logService = null;
+		}
 		this.context = null;
 		plugin = null;
 	}
@@ -74,13 +82,17 @@ public class Activator implements BundleActivator {
 			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
 		}
-		return (LogService) logServiceTracker.getService();
+		logService = (LogService) logServiceTracker.getService();
+		if (logService == null)
+			logService = new SystemLogService(PLUGIN_ID);
+		return logService;
+
 	}
 
 	public void log(IStatus status) {
-		LogService logService = getLogService();
-		if (logService != null) {
-			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
+		LogService ls = getLogService();
+		if (ls != null) {
+			ls.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 		}
 	}
 

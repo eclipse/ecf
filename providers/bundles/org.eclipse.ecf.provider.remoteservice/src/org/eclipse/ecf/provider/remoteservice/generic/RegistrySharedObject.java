@@ -10,6 +10,7 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.security.*;
 import java.util.*;
 import org.eclipse.core.runtime.*;
@@ -767,8 +768,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static final int MSG_INVOKE_ERROR_CODE = 207;
 
-	private static final String SERVICE_INVOKE_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_INVOKING_SERVICE;
-
 	private static final int SERVICE_INVOKE_ERROR_CODE = 208;
 
 	private static final String HANDLE_REQUEST_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_LOCALLY_INVOKING_REMOTE_CALL;
@@ -1104,18 +1103,31 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		try {
 			result = localRegistration.callService(call);
 			response = new Response(request.getRequestId(), result);
-		} catch (final Exception e) {
+			// Invocation target exception happens if the local method being invoked throws (cause)
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause();
+			response = new Response(request.getRequestId(), getSerializableException(cause));
+			logRemoteCallException(NLS.bind("Invocation target exception invoking remote service.  Remote request={0}", request), cause); //$NON-NLS-1$
+			// This is to catch most other problems
+		} catch (Exception e) {
 			response = new Response(request.getRequestId(), getSerializableException(e));
-			log(SERVICE_INVOKE_ERROR_CODE, SERVICE_INVOKE_ERROR_MESSAGE, e);
+			logRemoteCallException(NLS.bind("Unexpected exception invoking remote service.  Remote request={0}", request), e); //$NON-NLS-1$
+		} catch (NoClassDefFoundError e) {
+			response = new Response(request.getRequestId(), getSerializableException(e));
+			logRemoteCallException(NLS.bind("No class def found error invoking remote service.  Remote request={0}", request), e); //$NON-NLS-1$
 		}
 		// Now send response back to responseTarget (original requestor)
 		sendCallResponse(responseTarget, response);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleCallRequest"); //$NON-NLS-1$
 	}
 
-	private Throwable getSerializableException(Exception e) {
+	private void logRemoteCallException(String message, Throwable e) {
+		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, SERVICE_INVOKE_ERROR_CODE, message, e));
+	}
+
+	private Throwable getSerializableException(Throwable e) {
 		// Just use the SerializableStatus
-		SerializableStatus ss = new SerializableStatus(0, null, null, e);
+		SerializableStatus ss = new SerializableStatus(0, Activator.PLUGIN_ID, null, e);
 		return ss.getException();
 	}
 
@@ -1132,6 +1144,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			fireCallCompleteEvent(listener, request.getRequestId(), null, true, e);
 		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallRequestWithListener"); //$NON-NLS-1$
+	}
+
+	protected void log(int code, String method, Throwable e) {
+		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, code, method, e));
 	}
 
 	protected void sendCallResponse(ID responseTarget, Response response) {
