@@ -770,10 +770,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static final int SERVICE_INVOKE_ERROR_CODE = 208;
 
-	private static final String HANDLE_REQUEST_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_LOCALLY_INVOKING_REMOTE_CALL;
-
-	private static final int HANDLE_REQUEST_ERROR_CODE = 209;
-
 	private static final String CALL_RESPONSE = "handleCallResponse"; //$NON-NLS-1$
 
 	private static final String CALL_RESPONSE_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_SENDING_RESPONSE;
@@ -1092,32 +1088,99 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return request;
 	}
 
+	// system property allowing the executorType to be configured.  Currently types are:  jobs, threads.
+	private static final String DEFAULT_EXECUTOR_TYPE = System.getProperty("org.eclipse.ecf.provider.remoteservice.executorType", "immediate"); //$NON-NLS-1$ //$NON-NLS-2$
+
+	private IExecutor requestExecutor;
+
+	private IExecutor getRequestExecutor(Request request) {
+		if (requestExecutor == null) {
+			requestExecutor = createRequestExecutor(request);
+		}
+		return requestExecutor;
+	}
+
+	private IExecutor createRequestExecutor(Request request) {
+		IExecutor executor = null;
+		if (DEFAULT_EXECUTOR_TYPE.equals("jobs")) { //$NON-NLS-1$
+			executor = new JobsExecutor("Remote Request Handler"); //$NON-NLS-1$
+		} else if (DEFAULT_EXECUTOR_TYPE.equals("immediate")) { //$NON-NLS-1$
+			executor = new ImmediateExecutor();
+		} else {
+			executor = new ThreadsExecutor();
+		}
+		return executor;
+	}
+
+	private void executeRequest(IExecutor executor, final Request request, final ID responseTarget, final RemoteServiceRegistrationImpl localRegistration, final boolean respond) {
+		IProgressRunnable runnable = new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				final RemoteCallImpl call = request.getCall();
+				Response response = null;
+				Object result = null;
+				try {
+					result = localRegistration.callService(call);
+					response = new Response(request.getRequestId(), result);
+					// Invocation target exception happens if the local method being invoked throws (cause)
+				} catch (InvocationTargetException e) {
+					Throwable cause = e.getCause();
+					response = new Response(request.getRequestId(), getSerializableException(cause));
+					logRemoteCallException(NLS.bind("Invocation target exception invoking remote service.  Remote request={0}", request), cause); //$NON-NLS-1$
+					// This is to catch most other problems
+				} catch (Exception e) {
+					response = new Response(request.getRequestId(), getSerializableException(e));
+					logRemoteCallException(NLS.bind("Unexpected exception invoking remote service.  Remote request={0}", request), e); //$NON-NLS-1$
+				} catch (NoClassDefFoundError e) {
+					response = new Response(request.getRequestId(), getSerializableException(e));
+					logRemoteCallException(NLS.bind("No class def found error invoking remote service.  Remote request={0}", request), e); //$NON-NLS-1$
+				}
+				// Now send response back to responseTarget (original requestor)
+				if (respond)
+					sendCallResponse(responseTarget, response);
+				return null;
+			}
+		};
+		// Now actually execute the runnable asynchronously using the executor
+		executor.execute(runnable, new NullProgressMonitor());
+	}
+
+	private void sendErrorResponse(ID responseTarget, long requestId, String message, Throwable e) {
+		logRemoteCallException(message, e);
+		Response response = new Response(requestId, e);
+		sendCallResponse(responseTarget, response);
+	}
+
 	protected void handleCallRequest(Request request) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleCallRequest", request); //$NON-NLS-1$
-		final ID responseTarget = request.getRequestContainerID();
-		final RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
-		// Else we've got a local service and we invoke it
-		final RemoteCallImpl call = request.getCall();
-		Response response = null;
-		Object result = null;
-		try {
-			result = localRegistration.callService(call);
-			response = new Response(request.getRequestId(), result);
-			// Invocation target exception happens if the local method being invoked throws (cause)
-		} catch (InvocationTargetException e) {
-			Throwable cause = e.getCause();
-			response = new Response(request.getRequestId(), getSerializableException(cause));
-			logRemoteCallException(NLS.bind("Invocation target exception invoking remote service.  Remote request={0}", request), cause); //$NON-NLS-1$
-			// This is to catch most other problems
-		} catch (Exception e) {
-			response = new Response(request.getRequestId(), getSerializableException(e));
-			logRemoteCallException(NLS.bind("Unexpected exception invoking remote service.  Remote request={0}", request), e); //$NON-NLS-1$
-		} catch (NoClassDefFoundError e) {
-			response = new Response(request.getRequestId(), getSerializableException(e));
-			logRemoteCallException(NLS.bind("No class def found error invoking remote service.  Remote request={0}", request), e); //$NON-NLS-1$
+		// If request is null, it's bogus, give up/do not respond
+		if (request == null) {
+			log("handleCallRequest", new NullPointerException("Request cannot be null")); //$NON-NLS-1$//$NON-NLS-2$
+			return;
 		}
-		// Now send response back to responseTarget (original requestor)
-		sendCallResponse(responseTarget, response);
+
+		final ID responseTarget = request.getRequestContainerID();
+		// If response target is null then the request is bogus and we give up/do not respond
+		if (responseTarget == null) {
+			log("handleCallRequest", new NullPointerException("Response target cannot be null")); //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		}
+
+		final RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
+		// If localRegistration not found for request, then it's a bogus request and we respond with NPE
+		if (localRegistration == null) {
+			sendErrorResponse(responseTarget, request.getRequestId(), "handleCallRequest", new NullPointerException(NLS.bind("local service registration not found for remote request={0}", request))); //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		}
+
+		IExecutor executor = getRequestExecutor(request);
+		if (executor == null) {
+			sendErrorResponse(responseTarget, request.getRequestId(), "handleCallRequest", new NullPointerException("request executor is not available and so no requests can be processed")); //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		}
+
+		// Else we've got a local service and we execute it using executor
+		executeRequest(executor, request, responseTarget, localRegistration, true);
+
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleCallRequest"); //$NON-NLS-1$
 	}
 
@@ -1198,14 +1261,36 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected void handleFireRequest(Request request) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), FIRE_REQUEST, new Object[] {request});
-		final RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
-		// Else we've got a local service and we invoke it
-		final RemoteCallImpl call = request.getCall();
-		try {
-			localRegistration.callService(call);
-		} catch (final Exception e) {
-			log(HANDLE_REQUEST_ERROR_CODE, HANDLE_REQUEST_ERROR_MESSAGE, e);
+
+		// If request is null, it's bogus, give up/do not respond
+		if (request == null) {
+			log("handleFireRequest", new NullPointerException("Request cannot be null")); //$NON-NLS-1$//$NON-NLS-2$
+			return;
 		}
+
+		final ID responseTarget = request.getRequestContainerID();
+		// If response target is null then the request is bogus and we give up/do not respond
+		if (responseTarget == null) {
+			log("handleFireRequest", new NullPointerException("Response target cannot be null")); //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		}
+
+		final RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
+		// If localRegistration not found for request, then it's a bogus request and we respond with NPE
+		if (localRegistration == null) {
+			sendErrorResponse(responseTarget, request.getRequestId(), "handleFireRequest", new NullPointerException(NLS.bind("local service registration not found for remote request={0}", request))); //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		}
+
+		IExecutor executor = getRequestExecutor(request);
+		if (executor == null) {
+			sendErrorResponse(responseTarget, request.getRequestId(), "handleFireRequest", new NullPointerException("request executor is not available and so no requests can be processed")); //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		}
+
+		// Else we've got a local service and we execute it using executor
+		executeRequest(executor, request, responseTarget, localRegistration, false);
+
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), FIRE_REQUEST);
 	}
 
