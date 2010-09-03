@@ -1100,14 +1100,22 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return requestExecutor;
 	}
 
-	private IExecutor createRequestExecutor(Request request) {
+	private IExecutor createRequestExecutor(final Request request) {
 		IExecutor executor = null;
 		if (DEFAULT_EXECUTOR_TYPE.equals("jobs")) { //$NON-NLS-1$
-			executor = new JobsExecutor("Remote Request Handler"); //$NON-NLS-1$
+			executor = new JobsExecutor("Remote Request Handler") { //$NON-NLS-1$
+				protected String createJobName(String executorName, int jobCounter, IProgressRunnable runnable) {
+					return executorName + " - " + request.getCall().getMethod() + ":" + request.getRequestId(); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			};
 		} else if (DEFAULT_EXECUTOR_TYPE.equals("immediate")) { //$NON-NLS-1$
 			executor = new ImmediateExecutor();
 		} else {
-			executor = new ThreadsExecutor();
+			executor = new ThreadsExecutor() {
+				protected String createThreadName(IProgressRunnable runnable) {
+					return "Remote Request Handler - " + request.getCall().getMethod() + ":" + request.getRequestId(); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			};
 		}
 		return executor;
 	}
