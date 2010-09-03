@@ -1088,8 +1088,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return request;
 	}
 
-	// system property allowing the executorType to be configured.  Currently types are:  jobs, threads.
-	private static final String DEFAULT_EXECUTOR_TYPE = System.getProperty("org.eclipse.ecf.provider.remoteservice.executorType", "immediate"); //$NON-NLS-1$ //$NON-NLS-2$
+	// system property allowing the executorType to be configured.  Currently types are:  jobs, threads, immediate.
+	private static final String DEFAULT_EXECUTOR_TYPE = System.getProperty("org.eclipse.ecf.provider.remoteservice.executorType", "jobs"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private IExecutor requestExecutor;
 
@@ -1110,7 +1110,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			};
 		} else if (DEFAULT_EXECUTOR_TYPE.equals("immediate")) { //$NON-NLS-1$
 			executor = new ImmediateExecutor();
-		} else {
+		} else if (DEFAULT_EXECUTOR_TYPE.equals("threads")) { //$NON-NLS-1$
 			executor = new ThreadsExecutor() {
 				protected String createThreadName(IProgressRunnable runnable) {
 					return "Remote Request Handler - " + request.getCall().getMethod() + ":" + request.getRequestId(); //$NON-NLS-1$ //$NON-NLS-2$
