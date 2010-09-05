@@ -8,10 +8,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject.events;
 
+import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
-public class SharedObjectCommitEvent implements ISharedObjectCommitEvent {
+public class SharedObjectCommitEvent implements ISharedObjectCommitEvent, Serializable {
 	private static final long serialVersionUID = 4615634472917480497L;
 
 	ID senderSharedObjectID = null;
