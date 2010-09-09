@@ -27,7 +27,7 @@ public final class JSLPDiscoveryJob extends Job {
 	private final Map services;
 
 	public JSLPDiscoveryJob(final JSLPDiscoveryContainer container) {
-		super(Messages.JSLPDiscoveryJob_TITLE);
+		super("SLP Discovery"); //$NON-NLS-1$
 		discoveryContainer = container;
 		services = Collections.synchronizedMap(new HashMap());
 	}

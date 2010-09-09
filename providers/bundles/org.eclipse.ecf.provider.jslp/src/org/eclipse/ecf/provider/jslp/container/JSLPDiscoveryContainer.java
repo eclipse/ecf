@@ -48,10 +48,10 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 	 */
 	public void connect(ID aTargetID, IConnectContext connectContext) throws ContainerConnectException {
 		if (targetID != null) {
-			throw new ContainerConnectException(Messages.JSLPDiscoveryContainer_0);
+			throw new ContainerConnectException("Already connected"); //$NON-NLS-1$
 		}
 		if (getConfig() == null) {
-			throw new ContainerConnectException(Messages.JSLPDiscoveryContainer_ContainerIsDisposed);
+			throw new ContainerConnectException("Container has been disposed"); //$NON-NLS-1$
 		}
 		targetID = (aTargetID == null) ? getConfig().getID() : aTargetID;
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), aTargetID, connectContext));

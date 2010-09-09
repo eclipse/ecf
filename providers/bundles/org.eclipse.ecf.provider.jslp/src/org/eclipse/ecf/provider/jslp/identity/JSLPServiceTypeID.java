@@ -19,8 +19,6 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceTypeID;
-import org.eclipse.ecf.internal.provider.jslp.Messages;
-import org.eclipse.osgi.util.NLS;
 
 public class JSLPServiceTypeID extends ServiceTypeID {
 
@@ -55,7 +53,7 @@ public class JSLPServiceTypeID extends ServiceTypeID {
 
 			createType();
 		} catch (Exception e) {
-			throw new IDCreateException(NLS.bind(Messages.JSLPServiceTypeID_4, type));
+			throw new IDCreateException(type + " is not a valid ServiceTypeID"); //$NON-NLS-1$
 		}
 	}
 

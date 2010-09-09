@@ -15,7 +15,6 @@ import ch.ethz.iks.slp.ServiceURL;
 import java.net.URI;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.identity.*;
-import org.eclipse.ecf.internal.provider.jslp.Messages;
 
 public class JSLPNamespace extends Namespace {
 	private static final String JSLP_SCHEME = "jslp"; //$NON-NLS-1$
@@ -30,11 +29,11 @@ public class JSLPNamespace extends Namespace {
 	public ID createInstance(Object[] parameters) {
 		// error case
 		if (parameters == null || parameters.length < 1 || parameters.length > 2) {
-			throw new IDCreateException(Messages.JSLPNamespace_2);
+			throw new IDCreateException("Parameters cannot be null and must be of length 1 or 2"); //$NON-NLS-1$
 
 			// error case
 		} else if (parameters[0] == null || parameters[0].equals("")) { //$NON-NLS-1$
-			throw new IDCreateException(Messages.JSLPNamespace_3);
+			throw new IDCreateException("First parameter cannot be null or empty String"); //$NON-NLS-1$
 
 			// create by jSLP ServiceURL
 		} else if (parameters.length == 2 && parameters[0] instanceof ServiceURL) {
@@ -86,11 +85,11 @@ public class JSLPNamespace extends Namespace {
 
 			// error case second parameter not a String
 		} else if (parameters.length == 2 && parameters[1] != null && !(parameters[1] instanceof String)) {
-			throw new IDCreateException(Messages.JSLPNamespace_4);
+			throw new IDCreateException("Second parameter must be of type String"); //$NON-NLS-1$
 
 			// error case
 		} else {
-			throw new IDCreateException(Messages.JSLPNamespace_3);
+			throw new IDCreateException("Wrong JSLPServiceID creation parameters"); //$NON-NLS-1$
 		}
 	}
 

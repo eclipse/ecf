@@ -14,7 +14,6 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.internal.provider.jslp.Messages;
 
 public class ContainerInstantiator implements IContainerInstantiator {
 
@@ -29,7 +28,7 @@ public class ContainerInstantiator implements IContainerInstantiator {
 			final JSLPDiscoveryContainer container = new JSLPDiscoveryContainer();
 			return container;
 		} catch (IDCreateException e) {
-			final ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_0);
+			final ContainerCreateException excep = new ContainerCreateException("Could not create JSLPDiscoveryContainer", e); //$NON-NLS-1$
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		}
