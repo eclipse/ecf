@@ -12,7 +12,6 @@ package org.eclipse.ecf.core.status;
 import java.io.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
-import org.eclipse.osgi.util.NLS;
 
 public class SerializableStatus implements IStatus, Serializable {
 
@@ -188,7 +187,7 @@ public class SerializableStatus implements IStatus, Serializable {
 			oos = new ObjectOutputStream(new ByteArrayOutputStream());
 			oos.writeObject(exception2);
 		} catch (IOException e) {
-			ECFPlugin.getDefault().log(new Status(IStatus.WARNING, ECFPlugin.PLUGIN_ID, IStatus.WARNING, NLS.bind("Exception {0} could not be serialized for SerializableStatus", exception2), e)); //$NON-NLS-1$
+			ECFPlugin.getDefault().log(new Status(IStatus.WARNING, ECFPlugin.PLUGIN_ID, IStatus.WARNING, "Exception " + exception2 + " could not be serialized for SerializableStatus", e)); //$NON-NLS-1$ //$NON-NLS-2$
 			// In this case, we'll create a new exception that can be serialized
 			return createNewExceptionFor(exception2);
 		} finally {

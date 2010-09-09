@@ -14,7 +14,6 @@ import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
-import org.eclipse.ecf.internal.core.Messages;
 
 /**
  * Abstract implementation of IContainer. Provides implementations of listener
@@ -90,7 +89,7 @@ public abstract class AbstractContainer implements IContainer {
 			ObjectCallback cb = (ObjectCallback) callbacks[0];
 			pw = (String) cb.getObject();
 		} catch (Exception e) {
-			throw new ContainerConnectException(Messages.AbstractContainer_Exception_Callback_Handler, e);
+			throw new ContainerConnectException("Exception in CallbackHandler.handle(<callbacks>)", e); //$NON-NLS-1$
 		}
 		return pw;
 	}

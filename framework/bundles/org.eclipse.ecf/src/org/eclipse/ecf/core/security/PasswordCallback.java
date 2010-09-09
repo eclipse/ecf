@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.security;
 
-import org.eclipse.ecf.internal.core.Messages;
-
 /**
  * Callback that handles passwords
  * 
@@ -35,7 +33,7 @@ public class PasswordCallback implements Callback, java.io.Serializable {
 	 */
 	public PasswordCallback(String prompt) {
 		if (prompt == null)
-			throw new IllegalArgumentException(Messages.BooleanCallback_EXCEPTION_INVALID_BOOLEAN_ARGUMENT);
+			throw new IllegalArgumentException("Prompt cannot be null"); //$NON-NLS-1$
 		this.prompt = prompt;
 	}
 
@@ -57,7 +55,7 @@ public class PasswordCallback implements Callback, java.io.Serializable {
 	 */
 	public PasswordCallback(String prompt, String defaultPassword) {
 		if (prompt == null)
-			throw new IllegalArgumentException(Messages.BooleanCallback_EXCEPTION_INVALID_BOOLEAN_ARGUMENT);
+			throw new IllegalArgumentException("Prompt cannot be null"); //$NON-NLS-1$
 		this.prompt = prompt;
 		this.defaultPassword = defaultPassword;
 	}

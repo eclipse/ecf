@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.security;
 
-import org.eclipse.ecf.internal.core.Messages;
-
 /**
  * Callback that handles Boolean types
  * 
@@ -38,7 +36,7 @@ public class BooleanCallback implements Callback, java.io.Serializable {
 	 */
 	public BooleanCallback(String prompt) {
 		if (prompt == null)
-			throw new IllegalArgumentException(Messages.BooleanCallback_EXCEPTION_INVALID_BOOLEAN_ARGUMENT);
+			throw new IllegalArgumentException("Prompt cannot be null"); //$NON-NLS-1$
 		this.prompt = prompt;
 	}
 
@@ -60,7 +58,7 @@ public class BooleanCallback implements Callback, java.io.Serializable {
 	 */
 	public BooleanCallback(String prompt, boolean defaultValue) {
 		if (prompt == null)
-			throw new IllegalArgumentException(Messages.BooleanCallback_EXCEPTION_INVALID_BOOLEAN_ARGUMENT);
+			throw new IllegalArgumentException("Prompt cannot be null"); //$NON-NLS-1$
 
 		this.prompt = prompt;
 		this.defaultValue = defaultValue;

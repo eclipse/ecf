@@ -39,7 +39,7 @@ import org.eclipse.ecf.internal.core.*;
  */
 public class ContainerFactory implements IContainerFactory, IContainerManager {
 
-	public static final String BASE_CONTAINER_NAME = Messages.ContainerFactory_Base_Container_Name;
+	public static final String BASE_CONTAINER_NAME = "ecf.base"; //$NON-NLS-1$
 
 	static final Map containerdescriptions = new HashMap();
 
@@ -207,7 +207,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 */
 	public ContainerTypeDescription[] getDescriptionsForContainerAdapter(Class containerAdapter) {
 		if (containerAdapter == null)
-			throw new NullPointerException(Messages.ContainerFactory_Exception_Adapter_Not_Null);
+			throw new NullPointerException("containerAdapter cannot be null"); //$NON-NLS-1$
 		List result = new ArrayList();
 		List descriptions = getDescriptions();
 		for (Iterator i = descriptions.iterator(); i.hasNext();) {
@@ -280,7 +280,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		String method = "createContainer"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class, method, new Object[] {containerTypeDescription, Trace.getArgumentsString(parameters)});
 		if (containerTypeDescription == null)
-			throwContainerCreateException(Messages.ContainerFactory_Exception_Create_Container, null, method);
+			throwContainerCreateException("ContainerTypeDescription cannot be null", null, method); //$NON-NLS-1$
 		ContainerTypeDescription cd = getDescription0(containerTypeDescription);
 		if (cd == null)
 			throwContainerCreateException("ContainerTypeDescription '" //$NON-NLS-1$
@@ -456,7 +456,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		Assert.isNotNull(container);
 		Assert.isNotNull(typeDescription);
 		ID containerID = container.getID();
-		Assert.isNotNull(containerID, Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
+		Assert.isNotNull(containerID, "Container ID cannot be null"); //$NON-NLS-1$
 		ContainerEntry result = null;
 		synchronized (containers) {
 			result = (ContainerEntry) containers.put(containerID, new ContainerEntry(container, typeDescription));

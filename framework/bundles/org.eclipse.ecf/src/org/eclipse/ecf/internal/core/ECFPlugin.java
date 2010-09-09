@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.core.identity.Activator;
-import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -206,6 +205,8 @@ public class ECFPlugin implements BundleActivator {
 	}
 
 	protected LogService getLogService() {
+		if (context == null)
+			return new SystemLogService(PLUGIN_ID);
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
@@ -258,7 +259,7 @@ public class ECFPlugin implements BundleActivator {
 				factory.removeDescription(cd);
 				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG, method + ".removed " + cd + " from factory"); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (final Exception e) {
-				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, NLS.bind(Messages.ECFPlugin_Container_Name_Collision_Prefix, name, extension.getExtensionPointUniqueIdentifier()), null), method, e);
+				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "ECF container factory with name=" + name + " already found. Ignoring registration for containerFactory extension point=" + extension.getExtensionPointUniqueIdentifier(), null), method, e); //$NON-NLS-1$//$NON-NLS-2$
 			}
 		}
 	}
@@ -319,7 +320,7 @@ public class ECFPlugin implements BundleActivator {
 					// If we've got one already by this name, then we skip this new one
 					if (ctd != null) {
 						// log with warning
-						log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, NLS.bind("Factory already has container type description with name={0}.  Ignoring extension from {2}", name, member.getContributor().getName()))); //$NON-NLS-1$
+						log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Factory already has container type description with name=" + name + ".  Ignoring extension from " + member.getContributor().getName())); //$NON-NLS-1$ //$NON-NLS-2$
 						// and continue
 						continue;
 					}
@@ -347,7 +348,7 @@ public class ECFPlugin implements BundleActivator {
 				final ContainerTypeDescription scd = new ContainerTypeDescription(name, (IContainerInstantiator) exten, description, server, hidden);
 
 				if (factory.containsDescription(scd)) {
-					log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, NLS.bind("Factory already has container type description={0}.  Ignoring extension from {2}", scd, member.getContributor().getName()))); //$NON-NLS-1$
+					log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Factory already has container type description=" + scd + ".  Ignoring extension from " + member.getContributor().getName())); //$NON-NLS-1$ //$NON-NLS-2$
 					continue;
 				}
 				// Now add the description and we're ready to go.
@@ -356,7 +357,7 @@ public class ECFPlugin implements BundleActivator {
 			} catch (final CoreException e) {
 				logException(e.getStatus(), method, e);
 			} catch (final Exception e) {
-				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, NLS.bind(Messages.ECFPlugin_Container_Name_Collision_Prefix, name, extension.getExtensionPointUniqueIdentifier()), null), method, e);
+				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "ECF container factory with name=" + name + " already found. Ignoring registration for containerFactory extension point=" + extension.getExtensionPointUniqueIdentifier(), null), method, e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 	}
@@ -434,6 +435,8 @@ public class ECFPlugin implements BundleActivator {
 	}
 
 	public IExtensionRegistry getExtensionRegistry() {
+		if (context == null)
+			return null;
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
@@ -518,6 +521,8 @@ public class ECFPlugin implements BundleActivator {
 	}
 
 	public IAdapterManager getAdapterManager() {
+		if (context == null)
+			return null;
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
 			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);

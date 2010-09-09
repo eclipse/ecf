@@ -15,7 +15,6 @@ import java.util.*;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
-import org.eclipse.ecf.internal.core.Messages;
 
 /**
  *  Default implemenation of {@link IContainerInstantiator}.  ECF provider implementers
@@ -59,7 +58,7 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
-		throw new ContainerCreateException(Messages.BaseContainerInstantiator_EXCEPTION_CREATEINSTANCE_NOT_SUPPORTED);
+		throw new ContainerCreateException("createInstance not supported"); //$NON-NLS-1$
 	}
 
 	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
