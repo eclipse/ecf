@@ -170,7 +170,7 @@ public abstract class NIOChannel implements IChannel {
 			serverSocketChannel.configureBlocking(false);
 		} catch (IOException e) {
 			throw new ECFException(new Status(IStatus.ERROR, Util.PLUGIN_ID,
-					Messages.NIOChannel_CouldNotCreateServerSocket, e));
+					"Could not create server socket", e)); //$NON-NLS-1$
 		}
 
 		try {
@@ -179,7 +179,7 @@ public abstract class NIOChannel implements IChannel {
 			socket.bind(getBindAddress(), getBackLog());
 		} catch (IOException e) {
 			throw new ECFException(new Status(IStatus.ERROR, Util.PLUGIN_ID,
-					Messages.NIOChannel_BindOperationFailed, e));
+					"Could not bind server socket", e)); //$NON-NLS-1$
 		}
 
 		localPort = serverSocketChannel.socket().getLocalPort();
@@ -695,8 +695,7 @@ public abstract class NIOChannel implements IChannel {
 	protected abstract void sendRequest(ID receiver) throws ECFException;
 
 	public void sendMessage(byte[] message) throws ECFException {
-		throw new ECFException(new Status(IStatus.ERROR, Util.PLUGIN_ID,
-				Messages.NIOChannel_ReceiverUnspecified));
+		throw new ECFException(new Status(IStatus.ERROR, Util.PLUGIN_ID,"A receiver must be specified, see sendMessage(ID, byte[])"));
 	}
 
 	/**
