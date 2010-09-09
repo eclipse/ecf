@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.eclipse.osgi.util.NLS;
 import org.osgi.service.event.Event;
 
 public class DistributedEventAdminMessage implements Serializable {
@@ -40,11 +39,7 @@ public class DistributedEventAdminMessage implements Serializable {
 		for (int i = 0; i < propertyNames.length; i++) {
 			Object val = event.getProperty(propertyNames[i]);
 			if (!(val instanceof Serializable))
-				throw new NotSerializableException(
-						NLS
-								.bind(
-										"Cannot serialize property value of name={0} and value={1}",
-										propertyNames[i], val));
+				throw new NotSerializableException("Cannot serialize property value of name="+propertyNames[i]+" and value="+val);
 			ht.put(propertyNames[i], val);
 		}
 		return ht;

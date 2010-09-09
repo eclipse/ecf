@@ -13,7 +13,6 @@ package org.eclipse.ecf.internal.remoteservice.eventadmin;
 
 import java.security.Permission;
 
-import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
@@ -82,8 +81,7 @@ public class EventHandlerWrapper {
 			try {
 				filter = context.createFilter((String) o);
 			} catch (InvalidSyntaxException e) {
-				log.log(LogService.LOG_ERROR, NLS.bind(
-						"Invalid handler filter {0}", o), e);
+				log.log(LogService.LOG_ERROR, "Invalid handler filter "+o, e);
 				return false;
 			}
 		}
@@ -192,9 +190,7 @@ public class EventHandlerWrapper {
 			handlerService.handleEvent(event);
 		} catch (Throwable t) {
 			// log/handle any Throwable thrown by the listener
-			log.log(LogService.LOG_ERROR, NLS.bind(
-					"Exception while dispatching event {0} to handler {1}",
-					event, handlerService), t);
+			log.log(LogService.LOG_ERROR, "Exception while dispatching event "+event+" to handler "+handlerService, t);
 		}
 	}
 }

@@ -25,7 +25,6 @@ import org.eclipse.ecf.internal.remoteservice.eventadmin.LogTracker;
 import org.eclipse.osgi.framework.eventmgr.CopyOnWriteIdentityMap;
 import org.eclipse.osgi.framework.eventmgr.EventManager;
 import org.eclipse.osgi.framework.eventmgr.ListenerQueue;
-import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
@@ -65,9 +64,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 			sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(
 					"handlePostEvent", new DistributedEventAdminMessage(event)));
 		} catch (IOException e) {
-			logError(NLS.bind(
-					"IOException posting distributed event {0} to {1}", event,
-					event.getTopic()), e);
+			logError("IOException posting distributed event "+event+" to "+event.getTopic(), e);
 		}
 		localDispatch(event, true);
 	}
@@ -105,11 +102,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 				sm.checkPermission(new TopicPermission(eventTopic,
 						TopicPermission.PUBLISH));
 		} catch (SecurityException e) {
-			String msg = NLS
-					.bind(
-							"Caller bundle does not have TopicPermission to publish topic {0}",
-							eventTopic);
-			logError(msg, e);
+			logError("Caller bundle does not have TopicPermission to publish topic "+eventTopic, e);
 			throw e;
 		}
 
