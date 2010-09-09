@@ -14,7 +14,6 @@ package org.eclipse.ecf.remoteservice.util;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import org.eclipse.ecf.internal.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.RemoteCall;
 
@@ -31,7 +30,7 @@ public class RemoteCallMethod extends RemoteCall implements IRemoteCall {
 			return;
 		for (int i = 0; i < parameters.length; i++) {
 			if (!(parameters instanceof Serializable))
-				throw new NotSerializableException(Messages.RemoteCallMethod_EXCEPTION_PARAMETER_NOT_SERIALIZABLE);
+				throw new NotSerializableException("Remote method call parameter-" + i + " not serializable"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -41,10 +40,10 @@ public class RemoteCallMethod extends RemoteCall implements IRemoteCall {
 		final Class[] parameterTypes = method.getParameterTypes();
 		// Check for same length
 		if (parameterTypes.length != parameters.length)
-			throw new IllegalArgumentException(Messages.RemoteCallMethod_EXCEPTION_ARGS_NOT_RIGHT_LENGTH);
+			throw new IllegalArgumentException("parameter types length=" + parameterTypes.length + " must be equal to parameters length=" + parameters.length); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < parameterTypes.length; i++) {
 			if (!parameterTypes[i].isInstance(parameters[i]))
-				throw new IllegalArgumentException(Messages.RemoteCallMethod_EXCEPTION_ARG_WRONG_TYPE);
+				throw new IllegalArgumentException("parameter-" + i + " is of improper type"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

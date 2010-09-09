@@ -17,7 +17,6 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.remoteservice.Activator;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
-import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.ServiceException;
 
 /**
@@ -49,7 +48,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	}
 
 	public IFuture callAsync(final IRemoteCall call) {
-		JobsExecutor executor = new JobsExecutor(NLS.bind("callAsynch({0}", call.getMethod())); //$NON-NLS-1$
+		JobsExecutor executor = new JobsExecutor("callAsynch " + call.getMethod()); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
 				return callSync(call);

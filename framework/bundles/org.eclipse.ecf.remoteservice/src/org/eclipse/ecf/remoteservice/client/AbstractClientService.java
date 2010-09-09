@@ -19,7 +19,6 @@ import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
 import org.eclipse.equinox.concurrent.future.*;
-import org.eclipse.osgi.util.NLS;
 
 /**
  * Remote service client service.  Implements {@link IRemoteService}.
@@ -147,7 +146,7 @@ public abstract class AbstractClientService extends AbstractRemoteService {
 
 			try {
 				if (callable == null)
-					throw new ECFException(NLS.bind("Restcall not found for method={0}", call.getMethod())); //$NON-NLS-1$
+					throw new ECFException("Restcall not found for method=" + call.getMethod()); //$NON-NLS-1$
 				r = invokeRemoteCall(call, callable);
 			} catch (Throwable t) {
 				e = t;
