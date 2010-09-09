@@ -10,28 +10,16 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.URI;
-
+import java.io.*;
+import java.net.*;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
-import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
-import org.eclipse.ecf.provider.comm.tcp.Client;
-import org.eclipse.ecf.provider.comm.tcp.ConnectRequestMessage;
-import org.eclipse.ecf.provider.comm.tcp.ConnectResultMessage;
-import org.eclipse.ecf.provider.comm.tcp.ISocketAcceptHandler;
-import org.eclipse.ecf.provider.comm.tcp.Server;
+import org.eclipse.ecf.provider.comm.tcp.*;
 
 public class TCPServerSOContainerGroup extends SOContainerGroup implements ISocketAcceptHandler {
 
-	public static final String INVALID_CONNECT = Messages.TCPServerSOContainerGroup_Invalid_Connect_Request;
+	public static final String INVALID_CONNECT = "Invalid connect request."; //$NON-NLS-1$
 	public static final String DEFAULT_GROUP_NAME = TCPServerSOContainerGroup.class.getName();
 	private int port;
 	private Server listener;
@@ -83,16 +71,16 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 		final ObjectInputStream iStream = new ObjectInputStream(aSocket.getInputStream());
 		final ConnectRequestMessage req = (ConnectRequestMessage) iStream.readObject();
 		if (req == null)
-			throw new InvalidObjectException(INVALID_CONNECT + Messages.TCPServerSOContainerGroup_Exception_Connect_Request_Null);
+			throw new InvalidObjectException(INVALID_CONNECT + " Connect request message cannot be null"); //$NON-NLS-1$
 		final URI uri = req.getTarget();
 		if (uri == null)
-			throw new InvalidObjectException(INVALID_CONNECT + Messages.TCPServerSOContainerGroup_Target_Null);
+			throw new InvalidObjectException(INVALID_CONNECT + " URI connect target cannot be null"); //$NON-NLS-1$
 		final String path = uri.getPath();
 		if (path == null)
-			throw new InvalidObjectException(INVALID_CONNECT + Messages.TCPServerSOContainerGroup_Target_Path_Null);
+			throw new InvalidObjectException(INVALID_CONNECT + " Path cannot be null"); //$NON-NLS-1$
 		final TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
 		if (srs == null)
-			throw new InvalidObjectException(Messages.TCPServerSOContainerGroup_Container_For_Target + path + Messages.TCPServerSOContainerGroup_Not_Found);
+			throw new InvalidObjectException("Container not found for path=" + path); //$NON-NLS-1$
 		// Create our local messaging interface
 		final Client newClient = new Client(aSocket, iStream, oStream, srs.getReceiver());
 		// No other threads can access messaging interface until space has

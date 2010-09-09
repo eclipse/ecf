@@ -39,7 +39,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 
 	protected ID getIDFromArg(Object arg) throws IDCreateException {
 		if (arg == null)
-			throw new IDCreateException(Messages.getString("GenericContainerInstantiator.ID_Cannot_Be_Null")); //$NON-NLS-1$
+			throw new IDCreateException("id cannot be null"); //$NON-NLS-1$
 		String val = null;
 		if (arg instanceof StringID)
 			return (ID) arg;

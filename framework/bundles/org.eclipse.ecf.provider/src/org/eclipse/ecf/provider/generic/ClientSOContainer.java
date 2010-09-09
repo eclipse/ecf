@@ -17,7 +17,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.*;
 import org.eclipse.ecf.provider.generic.gmm.Member;
@@ -118,17 +117,17 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	public void connect(ID targetID, IConnectContext joinContext) throws ContainerConnectException {
 		try {
 			if (isClosing)
-				throw new IllegalStateException(Messages.ClientSOContainer_Container_Closing);
+				throw new IllegalStateException("Container closing"); //$NON-NLS-1$
 			if (targetID == null)
-				throw new ContainerConnectException(Messages.ClientSOContainer_EXCEPTION_TARGETID_NOT_NULL);
+				throw new ContainerConnectException("targetID cannot be null"); //$NON-NLS-1$
 			Object response = null;
 			synchronized (getConnectLock()) {
 				// Throw if already connected
 				if (isConnected())
-					throw new IllegalStateException(Messages.ClientSOContainer_Already_Connected + getConnectedID());
+					throw new IllegalStateException("Container already connected connectedID=" + getConnectedID()); //$NON-NLS-1$
 				// Throw if connecting
 				if (isConnecting())
-					throw new IllegalStateException(Messages.ClientSOContainer_Currently_Connecting);
+					throw new IllegalStateException("Container connecting"); //$NON-NLS-1$
 				// else we're entering connecting state
 				// first notify synchonously
 				final ISynchAsynchConnection aConnection = createConnection(targetID, joinContext);
@@ -154,7 +153,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 					// If not in correct state, disconnect and return
 					if (getConnection() != aConnection) {
 						disconnect(aConnection);
-						throw new IllegalStateException(Messages.ClientSOContainer_Connect_Failed_Incorrect_State);
+						throw new IllegalStateException("Container connect failed because not in correct state"); //$NON-NLS-1$
 					}
 					ID serverID = null;
 					try {
@@ -225,10 +224,10 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 			return;
 		final ContainerMessage.ViewChangeMessage vc = (ContainerMessage.ViewChangeMessage) mess.getData();
 		if (vc == null)
-			throw new IOException(Messages.ClientSOContainer_View_Change_Is_Null);
+			throw new IOException("view change message cannot be null"); //$NON-NLS-1$
 		final ID fromID = mess.getFromContainerID();
 		if (fromID == null || !fromID.equals(remoteServerID)) {
-			throw new IOException(Messages.ClientSOContainer_View_Change_Message + fromID + Messages.ClientSOContainer_Is_Not_Same + remoteServerID);
+			throw new IOException("view change message fromID=" + fromID + " is not from remoteServerID=" + remoteServerID); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		final ID[] changeIDs = vc.getChangeIDs();
 		if (changeIDs == null) {
@@ -491,7 +490,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 			checkConnected();
 			final IConnection conn = evt.getConnection();
 			if (connection != conn)
-				throw new ConnectException(Messages.ClientSOContainer_Not_Connected);
+				throw new ConnectException("Container not connected"); //$NON-NLS-1$
 			return super.processSynch(evt);
 		}
 	}
@@ -506,13 +505,13 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 
 	private void checkConnected() throws ConnectException {
 		if (!isConnected())
-			throw new ConnectException(Messages.ClientSOContainer_Not_Connected);
+			throw new ConnectException("Container not connected"); //$NON-NLS-1$
 	}
 
 	protected ID handleConnectResponse(ID orginalTarget, Object serverData) throws Exception {
 		final ContainerMessage aPacket = (ContainerMessage) serverData;
 		final ID fromID = aPacket.getFromContainerID();
-		Assert.isNotNull(fromID, Messages.ClientSOContainer_ServerID_Cannot_Be_Null);
+		Assert.isNotNull(fromID, "fromID cannot be null"); //$NON-NLS-1$
 		final ContainerMessage.ViewChangeMessage viewChangeMessage = (ContainerMessage.ViewChangeMessage) aPacket.getData();
 		// If it's not an add message then we've been refused. Get exception
 		// info from viewChangeMessage and
@@ -522,12 +521,12 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 			final Object data = viewChangeMessage.getData();
 			if (data != null && data instanceof Exception)
 				throw (Exception) data;
-			throw new InvalidObjectException(Messages.ClientSOContainer_Invalid_Server_Response);
+			throw new InvalidObjectException("Invalid server response"); //$NON-NLS-1$
 		}
 		// Otherwise everything is OK to this point and we get the group member
 		// IDs from server
 		final ID[] ids = viewChangeMessage.getChangeIDs();
-		Assert.isNotNull(ids, Messages.ClientSOContainer_Exception_ID_Array_Null);
+		Assert.isNotNull(ids, "view change ids cannot be null"); //$NON-NLS-1$
 		for (int i = 0; i < ids.length; i++) {
 			final ID id = ids[i];
 			if (id != null && !id.equals(getID()))

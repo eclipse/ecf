@@ -17,7 +17,8 @@ import java.net.Socket;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.provider.*;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class Server extends ServerSocket {
 
@@ -38,7 +39,7 @@ public class Server extends ServerSocket {
 	public Server(ThreadGroup group, int port, ISocketAcceptHandler handler) throws IOException {
 		super(port, DEFAULT_BACKLOG);
 		if (handler == null)
-			throw new InstantiationError(Messages.Server_Listener_Not_Null);
+			throw new NullPointerException("Socket accept handler cannot be null"); //$NON-NLS-1$
 		acceptHandler = handler;
 		threadGroup = group;
 		listenerThread = setupListener();

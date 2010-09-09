@@ -21,7 +21,6 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.IConnectHandlerPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerGroupManager;
-import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.provider.comm.*;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
@@ -117,7 +116,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void connect(ID groupID, IConnectContext joinContext) throws ContainerConnectException {
-		final ContainerConnectException e = new ContainerConnectException(Messages.ServerSOContainer_Server_Application_Cannot_Connect + groupID.getName());
+		final ContainerConnectException e = new ContainerConnectException("Server container cannot connect"); //$NON-NLS-1$
 		throw e;
 	}
 
@@ -185,17 +184,17 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 		try {
 			connectMessage = (ContainerMessage) data;
 			if (connectMessage == null)
-				throw new NullPointerException(Messages.ServerSOContainer_Connect_Request_Null);
+				throw new NullPointerException("Connect message cannot be null"); //$NON-NLS-1$
 			remoteID = connectMessage.getFromContainerID();
 			if (remoteID == null)
-				throw new NullPointerException(Messages.ServerSOContainer_FromID_Null);
+				throw new NullPointerException("fromID cannot be null"); //$NON-NLS-1$
 			final ContainerMessage.JoinGroupMessage jgm = (ContainerMessage.JoinGroupMessage) connectMessage.getData();
 			if (jgm == null)
-				throw new NullPointerException(Messages.ServerSOContainer_Connect_Request_Null);
+				throw new NullPointerException("Join group message cannot be null"); //$NON-NLS-1$
 			ID memberIDs[] = null;
 			synchronized (getGroupMembershipLock()) {
 				if (isClosing) {
-					final Exception e = new IllegalStateException(Messages.ServerSOContainer_Server_Closing);
+					final Exception e = new IllegalStateException("Server container is closing"); //$NON-NLS-1$
 					throw e;
 				}
 				// Now check to see if this request is going to be allowed
@@ -220,7 +219,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 					// Start messaging to new member
 					conn.start();
 				} else {
-					final ConnectException e = new ConnectException(Messages.ServerSOContainer_Exception_Server_Refused);
+					final ConnectException e = new ConnectException("server refused connection"); //$NON-NLS-1$
 					throw e;
 				}
 			}

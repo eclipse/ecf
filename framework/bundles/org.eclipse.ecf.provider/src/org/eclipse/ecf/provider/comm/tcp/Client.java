@@ -21,7 +21,8 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.provider.*;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.*;
 
 public final class Client implements ISynchAsynchConnection {
@@ -94,7 +95,7 @@ public final class Client implements ISynchAsynchConnection {
 	}
 
 	public Client(Socket aSocket, ObjectInputStream iStream, ObjectOutputStream oStream, ISynchAsynchEventHandler handler, int maxmsgs) throws IOException {
-		Assert.isNotNull(Messages.Client_Event_Handler_Not_Null);
+		Assert.isNotNull(aSocket);
 		if (aSocket.getKeepAlive())
 			keepAlive = aSocket.getSoTimeout();
 		setSocket(aSocket);
@@ -109,7 +110,7 @@ public final class Client implements ISynchAsynchConnection {
 
 	public Client(ISynchAsynchEventHandler handler, int maxmsgs) {
 		if (handler == null)
-			throw new NullPointerException(Messages.Client_Event_Handler_Not_Null);
+			throw new NullPointerException("event handler cannot be null"); //$NON-NLS-1$
 		this.handler = handler;
 		containerID = handler.getEventHandlerID();
 		maxMsg = maxmsgs;
@@ -163,13 +164,13 @@ public final class Client implements ISynchAsynchConnection {
 	public synchronized Object connect(ID remote, Object data, int timeout) throws ECFException {
 		debug("connect(" + remote + "," + data + "," + timeout + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		if (socket != null)
-			throw new ECFException(Messages.Client_Already_Connected);
+			throw new ECFException("Already connected"); //$NON-NLS-1$
 		// parse URI
 		URI anURI = null;
 		try {
 			anURI = new URI(remote.getName());
 		} catch (final URISyntaxException e) {
-			throw new ECFException(Messages.Client_Invalid_URI + remote, e);
+			throw new ECFException("Invalid URI for remoteID=" + remote, e); //$NON-NLS-1$
 		}
 		// Get socket factory and create/connect socket
 		SocketFactory fact = SocketFactory.getSocketFactory();
@@ -359,7 +360,7 @@ public final class Client implements ISynchAsynchConnection {
 				// Handle ping response
 				handlePingResp();
 			} else
-				throw new IOException(Messages.Client_Invalid_Message);
+				throw new IOException("Invalid message received"); //$NON-NLS-1$
 		} catch (final IOException e) {
 			disconnect();
 			throw e;
@@ -424,7 +425,7 @@ public final class Client implements ISynchAsynchConnection {
 							// If we haven't received a response, then we assume
 							// the remote is not reachable and throw
 							if (waitForPing)
-								throw new IOException(getAddressPort() + Messages.Client_Remote_No_Ping);
+								throw new IOException(getAddressPort() + " remote not reachable by ping"); //$NON-NLS-1$
 						}
 					} catch (final Exception e) {
 						handleException(e);
@@ -467,13 +468,13 @@ public final class Client implements ISynchAsynchConnection {
 
 	public synchronized void queueObject(ID recipient, Serializable obj) throws IOException {
 		if (queue.isStopped() || isClosing)
-			throw new ConnectException(Messages.Client_Exception_Not_Connected);
+			throw new ConnectException("Not connected"); //$NON-NLS-1$
 		queue.enqueue(new AsynchMessage(obj));
 	}
 
 	public synchronized Serializable sendObject(ID recipient, Serializable obj) throws IOException {
 		if (queue.isStopped() || isClosing)
-			throw new ConnectException(Messages.Client_Exception_Not_Connected);
+			throw new ConnectException("Not connected"); //$NON-NLS-1$
 		sendClose(new SynchMessage(obj));
 		return null;
 	}
@@ -492,7 +493,7 @@ public final class Client implements ISynchAsynchConnection {
 			ret = (Serializable) inputStream.readObject();
 		} catch (final ClassNotFoundException e) {
 			traceStack("readObject;classnotfoundexception", e); //$NON-NLS-1$
-			final IOException except = new IOException(Messages.Client_Class_Load_Failure_Protocol_Violation + e.getMessage());
+			final IOException except = new IOException("Protocol violation due to class load failure"); //$NON-NLS-1$
 			except.setStackTrace(e.getStackTrace());
 			throw except;
 		}

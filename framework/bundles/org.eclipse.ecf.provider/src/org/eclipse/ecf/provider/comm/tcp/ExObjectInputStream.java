@@ -11,45 +11,35 @@
 
 package org.eclipse.ecf.provider.comm.tcp;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-
+import java.io.*;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
-import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class ExObjectInputStream extends ObjectInputStream {
 
-	public ExObjectInputStream(InputStream in) throws IOException,
-            SecurityException {
-        super(in);
-    }
+	public ExObjectInputStream(InputStream in) throws IOException, SecurityException {
+		super(in);
+	}
 
-    public ExObjectInputStream(InputStream in, boolean backwardCompatibility)
-            throws IOException, SecurityException {
-        super(in);
-        if (backwardCompatibility) {
-            try {
-                super.enableResolveObject(true);
-                debug("resolveObject"); //$NON-NLS-1$
-            } catch (Exception e) {
-                throw new IOException(
-                        Messages.ExObjectInputStream_Exception_Could_Not_Setup_Object_Replacers);
-            }
-        }
-    }
+	public ExObjectInputStream(InputStream in, boolean backwardCompatibility) throws IOException, SecurityException {
+		super(in);
+		if (backwardCompatibility) {
+			try {
+				super.enableResolveObject(true);
+				debug("resolveObject"); //$NON-NLS-1$
+			} catch (Exception e) {
+				throw new IOException("Exception setting up ExObjectInputStream: " + e.getMessage()); //$NON-NLS-1$
+			}
+		}
+	}
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
-				msg);
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg);
 	}
-	
+
 	protected void traceStack(String msg, Throwable e) {
-		Trace.catching(ProviderPlugin.PLUGIN_ID,
-				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, ExObjectInputStream.class,
-				msg, e);
+		Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, ExObjectInputStream.class, msg, e);
 	}
 
 }
