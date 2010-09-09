@@ -18,7 +18,6 @@ import org.eclipse.ecf.internal.remoteservice.rest.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.client.IRemoteResponseDeserializer;
-import org.eclipse.osgi.util.NLS;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -31,14 +30,14 @@ public class XMLRemoteResponseDeserializer implements IRemoteResponseDeserialize
 
 	public Object deserializeResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException {
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-		String errorMsg = "XML response can't be parsed: {0}"; //$NON-NLS-1$
+		String errorMsg = "XML response can't be parsed: "; //$NON-NLS-1$
 		try {
 			DocumentBuilder builder = documentFactory.newDocumentBuilder();
 			InputSource src = new InputSource(new StringReader(responseBody));
 			Document dom = builder.parse(src);
 			return dom;
 		} catch (Exception e) {
-			throw new NotSerializableException(NLS.bind(errorMsg, e.getMessage()));
+			throw new NotSerializableException(errorMsg + e.getMessage());
 		}
 
 	}

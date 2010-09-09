@@ -28,7 +28,6 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rest.IRestCall;
 import org.eclipse.ecf.remoteservice.rest.RestException;
-import org.eclipse.osgi.util.NLS;
 
 /**
  * This class represents a REST service from the client side of view. So a
@@ -79,7 +78,7 @@ public class RestClientService extends AbstractClientService {
 				// Get responseBody as String
 				responseBody = getResponseAsString(responseBytes, responseCharSet);
 			} else
-				handleException(NLS.bind("Http response not OK.  URL={0}, responseCode={1}", uri, new Integer(responseCode)), null, responseCode); //$NON-NLS-1$
+				handleException("Http response not OK.  URL=" + uri + " responseCode=" + new Integer(responseCode), null, responseCode); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (HttpException e) {
 			handleException("Transport HttpException", e, responseCode); //$NON-NLS-1$
 		} catch (IOException e) {
@@ -89,7 +88,7 @@ public class RestClientService extends AbstractClientService {
 		try {
 			result = processResponse(uri, call, callable, convertResponseHeaders(httpMethod.getResponseHeaders()), responseBody);
 		} catch (NotSerializableException e) {
-			handleException(NLS.bind("Exception deserializing response.  URL={0}, responseCode={1}", uri, new Integer(responseCode)), e, responseCode); //$NON-NLS-1$
+			handleException("Exception deserializing response.  URL=" + uri + " responseCode=" + new Integer(responseCode), e, responseCode); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return result;
 	}
@@ -165,7 +164,7 @@ public class RestClientService extends AbstractClientService {
 			} else if (requestType instanceof HttpDeleteRequestType) {
 				httpMethod = prepareDeleteMethod(uri, call, callable);
 			} else {
-				throw new RestException(NLS.bind("HTTP method {0} not supported", requestType)); //$NON-NLS-1$
+				throw new RestException("HTTP method " + requestType + " not supported"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} catch (NotSerializableException e) {
 			String message = "Could not serialize parameters for uri=" + uri + " call=" + call + " callable=" + callable; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
