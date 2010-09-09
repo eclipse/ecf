@@ -12,7 +12,6 @@
 package org.eclipse.ecf.provider.r_osgi.identity;
 
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.osgi.util.NLS;
 
 /**
  * The R-OSGi default transport namespace (r-osgi://).
@@ -90,7 +89,7 @@ public class R_OSGiNamespace extends Namespace {
 				return new R_OSGiID(init);
 			return new R_OSGiID((String) parameters[0]);
 		} catch (Exception e) {
-			throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
+			throw new IDCreateException(getName() + " createInstance()", e); //$NON-NLS-1$
 		}
 	}
 

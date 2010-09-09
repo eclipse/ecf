@@ -20,7 +20,6 @@ import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
 import org.eclipse.equinox.concurrent.future.*;
-import org.eclipse.osgi.util.NLS;
 
 /**
  * The R-OSGi adapter implementation of the IRemoteService interface.
@@ -123,7 +122,7 @@ final class RemoteServiceImpl extends AbstractRemoteService {
 			// If thread interrupted, then just return null
 			return null;
 		} catch (TimeoutException e) {
-			throw new ECFException(NLS.bind("callSync timed out after {0} ms", Long.toString(call.getTimeout())), new TimeoutException(call.getTimeout())); //$NON-NLS-1$
+			throw new ECFException("callSync timed out after " + Long.toString(call.getTimeout()) + "ms", new TimeoutException(call.getTimeout())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		IStatus status = future.getStatus();
 		if (!status.isOK())
