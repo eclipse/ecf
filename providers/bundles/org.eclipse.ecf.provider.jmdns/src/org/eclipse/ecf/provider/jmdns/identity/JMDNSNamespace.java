@@ -14,8 +14,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
-import org.eclipse.ecf.internal.provider.jmdns.Messages;
-import org.eclipse.osgi.util.NLS;
 
 public class JMDNSNamespace extends Namespace {
 
@@ -51,17 +49,17 @@ public class JMDNSNamespace extends Namespace {
 				type = init;
 			else {
 				if (parameters == null || parameters.length < 1 || parameters.length > 2) {
-					throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_WRONG_PARAM_COUNT);
+					throw new IDCreateException("Parameters cannot be null and must be of length 1 or 2"); //$NON-NLS-1$
 				}
 				if (parameters[0] instanceof IServiceTypeID) {
 					type = ((IServiceTypeID) parameters[0]).getName();
 				} else if (parameters[0] instanceof String) {
 					type = (String) parameters[0];
 				} else
-					throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_TYPE_PARAM_NOT_STRING);
+					throw new IDCreateException("Service type id parameter has to be of type String or IServiceTypeID"); //$NON-NLS-1$
 			}
 		} catch (final Exception e) {
-			throw new IDCreateException(NLS.bind("{0} createInstance()", getName()), e); //$NON-NLS-1$
+			throw new IDCreateException(getName() + " createInstance()", e); //$NON-NLS-1$
 		}
 		final JMDNSServiceTypeID stid = new JMDNSServiceTypeID(this, type);
 		if (parameters.length == 1) {
@@ -71,12 +69,12 @@ public class JMDNSNamespace extends Namespace {
 				final URI uri = new URI((String) parameters[1]);
 				return new JMDNSServiceID(this, stid, uri);
 			} catch (URISyntaxException e) {
-				throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_PARAM_2_WRONG_TYPE);
+				throw new IDCreateException("Second parameter as String must follow URI syntax"); //$NON-NLS-1$
 			}
 		} else if (parameters[1] instanceof URI) {
 			return new JMDNSServiceID(this, stid, (URI) parameters[1]);
 		} else {
-			throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_PARAM_2_WRONG_TYPE);
+			throw new IDCreateException("Second parameter must be of either String or URI type"); //$NON-NLS-1$
 		}
 	}
 

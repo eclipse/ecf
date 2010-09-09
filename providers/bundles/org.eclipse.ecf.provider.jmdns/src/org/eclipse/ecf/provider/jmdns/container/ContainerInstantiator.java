@@ -14,7 +14,6 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.internal.provider.jmdns.Messages;
 
 public class ContainerInstantiator implements IContainerInstantiator {
 
@@ -26,7 +25,7 @@ public class ContainerInstantiator implements IContainerInstantiator {
 			final AbstractContainer container = new JMDNSDiscoveryContainer();
 			return container;
 		} catch (final IDCreateException e) {
-			final ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_CONTAINER_CREATE);
+			final ContainerCreateException excep = new ContainerCreateException("Jmdns container create failed", e); //$NON-NLS-1$
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		}

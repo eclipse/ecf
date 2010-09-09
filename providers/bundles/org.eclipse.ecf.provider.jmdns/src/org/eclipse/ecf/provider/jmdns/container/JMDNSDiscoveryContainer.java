@@ -90,9 +90,9 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	public void connect(final ID targetID1, final IConnectContext joinContext) throws ContainerConnectException {
 		synchronized (lock) {
 			if (disposed)
-				throw new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_CONTAINER_DISPOSED);
+				throw new ContainerConnectException("Container has been disposed"); //$NON-NLS-1$
 			if (this.targetID != null)
-				throw new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_ALREADY_CONNECTED);
+				throw new ContainerConnectException("Already connected"); //$NON-NLS-1$
 			this.targetID = (targetID1 == null) ? getConfig().getID() : targetID1;
 			fireContainerEvent(new ContainerConnectingEvent(this.getID(), this.targetID, joinContext));
 			initializeQueue();
@@ -105,7 +105,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 					jmdns.close();
 					jmdns = null;
 				}
-				throw new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_CREATE_JMDNS_INSTANCE, e);
+				throw new ContainerConnectException("Cannot create JmDNS instance", e); //$NON-NLS-1$
 			}
 			fireContainerEvent(new ContainerConnectedEvent(this.getID(), this.targetID));
 		}
@@ -249,7 +249,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		try {
 			jmdns.registerService(svcInfo);
 		} catch (final IOException e) {
-			throw new ECFRuntimeException(Messages.JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE, e);
+			throw new ECFRuntimeException("Exception registering service", e); //$NON-NLS-1$
 		}
 	}
 
@@ -370,7 +370,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	private void checkServiceInfo(final ServiceInfo serviceInfo) {
 		final String serviceName = serviceInfo.getName();
 		if (serviceName == null)
-			throw new ECFRuntimeException(Messages.JMDNSDiscoveryContainer_SERVICE_NAME_NOT_NULL);
+			throw new ECFRuntimeException("Service name cannot be null"); //$NON-NLS-1$
 	}
 
 	IServiceInfo createIServiceInfoFromServiceInfo(final ServiceInfo serviceInfo) throws Exception {
