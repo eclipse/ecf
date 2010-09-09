@@ -17,7 +17,6 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
-import org.eclipse.ecf.internal.provider.discovery.Messages;
 
 public class CompositeDiscoveryContainerInstantiator implements IContainerInstantiator {
 
@@ -47,11 +46,11 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 			}
 			return new CompositeDiscoveryContainer(containers);
 		} catch (final IDCreateException e) {
-			final ContainerCreateException excep = new ContainerCreateException(Messages.CompositeDiscoveryContainerInstantiator);
+			final ContainerCreateException excep = new ContainerCreateException(e.getMessage());
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		} catch (final ContainerCreateException e) {
-			final ContainerCreateException excep = new ContainerCreateException(Messages.CompositeDiscoveryContainerInstantiator);
+			final ContainerCreateException excep = new ContainerCreateException(e.getMessage());
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		}

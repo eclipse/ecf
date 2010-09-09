@@ -22,7 +22,8 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
-import org.eclipse.ecf.internal.provider.discovery.*;
+import org.eclipse.ecf.internal.provider.discovery.Activator;
+import org.eclipse.ecf.internal.provider.discovery.CompositeNamespace;
 
 public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IDiscoveryService {
 
@@ -136,7 +137,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	 */
 	public void connect(final ID aTargetID, final IConnectContext connectContext) throws ContainerConnectException {
 		if (targetID != null || getConfig() == null) {
-			throw new ContainerConnectException(Messages.CompositeDiscoveryContainer_AlreadyConnected);
+			throw new ContainerConnectException("Already connected"); //$NON-NLS-1$
 		}
 		targetID = (aTargetID == null) ? getConfig().getID() : aTargetID;
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID, connectContext));

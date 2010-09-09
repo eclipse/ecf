@@ -25,7 +25,7 @@ public class CompositeNamespace extends Namespace {
 	 */
 	public ID createInstance(final Object[] parameters) {
 		if (parameters == null || parameters.length < 1 || parameters.length > 2) {
-			throw new IDCreateException(Messages.CompositeNamespace_WrongParameterCount);
+			throw new IDCreateException("parameter count must be non null and of length >= 1 and =< 2"); //$NON-NLS-1$
 		} else if (parameters.length == 2 && parameters[0] instanceof String && parameters[1] instanceof URI) {
 			return new CompositeServiceID(this, new ServiceTypeID(this, (String) parameters[0]), (URI) parameters[1]);
 		} else if (parameters.length == 2 && parameters[0] instanceof IServiceTypeID && parameters[1] instanceof URI) {
@@ -34,7 +34,7 @@ public class CompositeNamespace extends Namespace {
 			final IServiceTypeID iServiceTypeID = (IServiceTypeID) parameters[0];
 			return new ServiceTypeID(this, iServiceTypeID.getName());
 		} else {
-			throw new IDCreateException(Messages.CompositeNamespace_WrongParameters);
+			throw new IDCreateException("wrong parameters"); //$NON-NLS-1$
 		}
 	}
 
