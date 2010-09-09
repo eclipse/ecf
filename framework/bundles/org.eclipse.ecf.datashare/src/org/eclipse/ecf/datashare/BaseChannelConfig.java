@@ -30,7 +30,7 @@ public class BaseChannelConfig implements IChannelConfig {
 
 	public BaseChannelConfig(ID id, IChannelListener listener, Map properties) {
 		if (id == null)
-			throw new NullPointerException(Messages.BaseChannelConfig_ID_Not_Null);
+			throw new NullPointerException("id cannot be null"); //$NON-NLS-1$
 		this.id = id;
 		this.listener = listener;
 		this.properties = properties;
