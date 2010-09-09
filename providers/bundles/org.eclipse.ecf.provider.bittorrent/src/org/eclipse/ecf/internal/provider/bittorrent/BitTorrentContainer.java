@@ -42,7 +42,6 @@ import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.ecf.protocol.bittorrent.Torrent;
 import org.eclipse.ecf.protocol.bittorrent.TorrentFactory;
 import org.eclipse.ecf.protocol.bittorrent.TorrentFile;
-import org.eclipse.osgi.util.NLS;
 
 public final class BitTorrentContainer implements IContainer, IRetrieveFileTransfer {
 
@@ -108,9 +107,9 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 	}
 
 	public void sendRetrieveRequest(final IFileID remoteFileReference, final IFileTransferListener transferListener, Map options) throws IncomingFileTransferException {
-		Assert.isNotNull(remoteFileReference, NLS.bind(BitTorrentMessages.BitTorrentContainer_NullParameter, "remoteFileReference")); //$NON-NLS-1$
-		Assert.isLegal(remoteFileReference instanceof TorrentID, NLS.bind(BitTorrentMessages.BitTorrentContainer_ReferenceNotTorrentID, "remoteFileReference")); //$NON-NLS-1$
-		Assert.isNotNull(transferListener, NLS.bind(BitTorrentMessages.BitTorrentContainer_NullParameter, "transferListener")); //$NON-NLS-1$
+		Assert.isNotNull(remoteFileReference, "remoteFileReference cannot be null"); //$NON-NLS-1$
+		Assert.isLegal(remoteFileReference instanceof TorrentID, "remoteFileReference must be instanceof TorrentID"); //$NON-NLS-1$
+		Assert.isNotNull(transferListener, "transferListener cannot be null"); //$NON-NLS-1$
 
 		transferListener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
 
@@ -125,10 +124,10 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 					throw new RuntimeException(new UserCancelledException());
 				}
 
-				Assert.isNotNull(localFileToSave, NLS.bind(BitTorrentMessages.BitTorrentContainer_NullParameter, "localFileToSave")); //$NON-NLS-1$
+				Assert.isNotNull(localFileToSave, "localFileToSave cannot be null"); //$NON-NLS-1$
 
 				if (localFileToSave.exists() && !localFileToSave.canWrite()) {
-					throw new IOException(NLS.bind(BitTorrentMessages.BitTorrentContainer_CannotWriteToFile, localFileToSave.getAbsolutePath()));
+					throw new IOException("file="+localFileToSave.getAbsolutePath()+" does not exist or cannot be written to"); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 
 				final TorrentFile file = new TorrentFile(((TorrentID) remoteFileReference).getFile());
@@ -143,10 +142,10 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 					throw new RuntimeException(new UserCancelledException());
 				}
 
-				Assert.isNotNull(localFileToSave, NLS.bind(BitTorrentMessages.BitTorrentContainer_NullParameter, "localFileToSave")); //$NON-NLS-1$
+				Assert.isNotNull(localFileToSave, "localFileToSave must not be null"); //$NON-NLS-1$
 
 				if (localFileToSave.exists() && !localFileToSave.canWrite()) {
-					throw new IOException(NLS.bind(BitTorrentMessages.BitTorrentContainer_CannotWriteToFile, localFileToSave.getAbsolutePath()));
+					throw new IOException("file="+localFileToSave.getAbsolutePath()+" does not exist or cannot be written to"); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 
 				final TorrentFile file = new TorrentFile(((TorrentID) remoteFileReference).getFile());
@@ -168,11 +167,11 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 			}
 
 			public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
-				throw new UnsupportedOperationException(BitTorrentMessages.BitTorrentContainer_CannotWriteToStream);
+				throw new UnsupportedOperationException("receive(OutputStream) not supported by this provider");
 			}
 
 			public IIncomingFileTransfer receive(OutputStream streamToStore, FileTransferJob fileTransferJob) throws IOException {
-				throw new UnsupportedOperationException(BitTorrentMessages.BitTorrentContainer_CannotWriteToStream);
+				throw new UnsupportedOperationException("receive(OutputStream,FileTransferJob) not supported by this provider");
 			}
 
 			public IIncomingFileTransfer getSource() {

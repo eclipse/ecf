@@ -15,7 +15,6 @@ import java.io.File;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.osgi.util.NLS;
 
 public final class TorrentNamespace extends Namespace {
 
@@ -25,8 +24,7 @@ public final class TorrentNamespace extends Namespace {
 
 	public ID createInstance(Object[] args) throws IDCreateException {
 		if (args == null || args.length == 0) {
-			throw new IDCreateException(
-					BitTorrentMessages.TorrentNamespace_InvalidParameter);
+			throw new IDCreateException("parameters cannot be null or of 0 length");
 		} else {
 			File file = null;
 			if (args[0] instanceof String) {
@@ -34,20 +32,16 @@ public final class TorrentNamespace extends Namespace {
 			} else if (args[0] instanceof File) {
 				file = (File) args[0];
 			} else {
-				throw new IDCreateException(
-						BitTorrentMessages.TorrentNamespace_InvalidParameter);
+				throw new IDCreateException("parameter-0 must be of type File or String");
 			}
 
 			if (file.isDirectory()) {
-				throw new IDCreateException(NLS.bind(
-						BitTorrentMessages.TorrentNamespace_FileIsDirectory,
-						file.getAbsolutePath()));
+				throw new IDCreateException("file="+
+						file.getAbsolutePath()+" must not be a directory");
 			} else if (file.canRead()) {
 				return new TorrentID(this, file);
 			} else {
-				throw new IDCreateException(NLS.bind(
-						BitTorrentMessages.TorrentNamespace_CannotReadFile,
-						file.getAbsolutePath()));
+				throw new IDCreateException("file="+file.getAbsolutePath()+" cannot be read");
 			}
 		}
 	}
