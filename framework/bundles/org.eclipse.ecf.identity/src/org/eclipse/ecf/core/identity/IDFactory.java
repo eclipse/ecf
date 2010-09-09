@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.identity.Activator;
 import org.eclipse.ecf.internal.core.identity.IdentityDebugOptions;
-import org.eclipse.osgi.util.NLS;
 
 /**
  * A factory class for creating ID instances. This is the factory for plugins to
@@ -260,7 +259,7 @@ public class IDFactory implements IIDFactory {
 		// throw...we don't create any instances that we don't know about!
 		Namespace ns = getNamespace0(n);
 		if (ns == null)
-			logAndThrow(NLS.bind("Namespace {0} not found", n.getName()), null); //$NON-NLS-1$
+			logAndThrow("Namespace " + n.getName() + " not found", null); //$NON-NLS-1$
 		// We're OK, go ahead and setup array of classes for call to
 		// instantiator
 		// Ask instantiator to actually create instance
@@ -281,8 +280,8 @@ public class IDFactory implements IIDFactory {
 			throws IDCreateException {
 		Namespace n = getNamespaceByName(namespaceName);
 		if (n == null)
-			throw new IDCreateException(NLS.bind(
-					"Namespace {0} not found", namespaceName)); //$NON-NLS-1$
+			throw new IDCreateException(
+					"Namespace " + namespaceName + " not found"); //$NON-NLS-1$
 		return createID(n, args);
 	}
 

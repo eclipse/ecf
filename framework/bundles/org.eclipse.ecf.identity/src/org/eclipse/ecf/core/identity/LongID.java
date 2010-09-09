@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import org.eclipse.osgi.util.NLS;
-
 /**
  * A unique ID class based upon Long/long
  * 
@@ -40,8 +38,7 @@ public class LongID extends BaseID {
 					return new LongID(this, Long.decode(init));
 				return new LongID(this, (Long) args[0]);
 			} catch (Exception e) {
-				throw new IDCreateException(NLS.bind(
-						"{0} createInstance()", getName()), e); //$NON-NLS-1$
+				throw new IDCreateException(getName() + " createInstance()", e); //$NON-NLS-1$
 			}
 		}
 

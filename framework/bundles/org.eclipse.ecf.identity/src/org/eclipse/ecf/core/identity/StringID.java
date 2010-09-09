@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import org.eclipse.osgi.util.NLS;
-
 /**
  * A string-based identity
  * 
@@ -35,10 +33,8 @@ public class StringID extends BaseID {
 					return new StringID(this, init);
 				return new StringID(this, (String) parameters[0]);
 			} catch (Exception e) {
-				throw new IDCreateException(
-						NLS
-								.bind(
-										"{0} createInstance()", StringIDNamespace.this.getName()), e); //$NON-NLS-1$
+				throw new IDCreateException(StringIDNamespace.this.getName()
+						+ " createInstance()", e); //$NON-NLS-1$
 			}
 		}
 

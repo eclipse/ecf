@@ -10,8 +10,6 @@ package org.eclipse.ecf.core.identity;
 
 import java.security.SecureRandom;
 import org.eclipse.ecf.core.util.Base64;
-import org.eclipse.ecf.internal.core.identity.Messages;
-import org.eclipse.osgi.util.NLS;
 
 /**
  * Globally unique ID implementation class. Uses
@@ -26,8 +24,7 @@ public class GUID extends StringID {
 		private static final long serialVersionUID = -8546568877571886386L;
 
 		public GUIDNamespace() {
-			super(GUID.class.getName(),
-					Messages.GUID_GUID_Namespace_Description_Default);
+			super(GUID.class.getName(), "GUID Namespace"); //$NON-NLS-1$
 		}
 
 		public ID createInstance(Object[] args) throws IDCreateException {
@@ -44,8 +41,7 @@ public class GUID extends StringID {
 				else
 					return new GUID(this);
 			} catch (Exception e) {
-				throw new IDCreateException(NLS.bind(
-						"{0} createInstance()", getName()), e); //$NON-NLS-1$
+				throw new IDCreateException(getName() + " createInstance()", e); //$NON-NLS-1$
 			}
 		}
 
@@ -91,8 +87,8 @@ public class GUID extends StringID {
 		try {
 			getRandom(algo, provider);
 		} catch (Exception e) {
-			throw new IDCreateException(Messages.GUID_GUID_Creation_Failure
-					+ e.getMessage());
+			throw new IDCreateException(
+					"GUID creation failure: " + e.getMessage()); //$NON-NLS-1$
 		}
 		// make sure we have reasonable byteLength
 		if (byteLength <= 0)
@@ -143,10 +139,9 @@ public class GUID extends StringID {
 		if (provider == null) {
 			if (algo == null) {
 				try {
-					random = SecureRandom
-							.getInstance(Messages.GUID_IBM_SECURE_RANDOM);
+					random = SecureRandom.getInstance("IBMSECURERANDOM"); //$NON-NLS-1$
 				} catch (Exception e) {
-					random = SecureRandom.getInstance(Messages.GUID_SHA1);
+					random = SecureRandom.getInstance("SHA1PRNG"); //$NON-NLS-1$
 				}
 			} else
 				random = SecureRandom.getInstance(algo);

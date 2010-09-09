@@ -11,7 +11,6 @@ package org.eclipse.ecf.core.util;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.eclipse.ecf.internal.core.identity.Activator;
-import org.eclipse.ecf.internal.core.identity.Messages;
 import org.eclipse.osgi.service.debug.DebugOptions;
 
 /**
@@ -129,7 +128,8 @@ public class Trace {
 	 * 
 	 * @return Whether tracing is enabled for the plug-in.
 	 * @param pluginId
-	 *            The symbolic plugin id for which to determine trace enablement.
+	 *            The symbolic plugin id for which to determine trace
+	 *            enablement.
 	 * 
 	 */
 	protected static boolean shouldTrace(String pluginId) {
@@ -242,7 +242,8 @@ public class Trace {
 	 */
 	protected static void trace(String message) {
 		StringBuffer buf = new StringBuffer(PARENTHESIS_OPEN);
-		buf.append(TRACE_STR).append(PARENTHESIS_CLOSE).append(getTimeString()).append(message).append(SEPARATOR_SPACE);
+		buf.append(TRACE_STR).append(PARENTHESIS_CLOSE).append(getTimeString())
+				.append(message).append(SEPARATOR_SPACE);
 		System.out.println(buf.toString());
 	}
 
@@ -253,7 +254,7 @@ public class Trace {
 	 */
 	protected static String getTimeString() {
 		Date d = new Date();
-		SimpleDateFormat df = new SimpleDateFormat(Messages.Trace_Date_Time_Format);
+		SimpleDateFormat df = new SimpleDateFormat("[MM/dd/yy;HH:mm:ss:SSS]"); //$NON-NLS-1$
 		return df.format(d);
 	}
 
@@ -304,11 +305,14 @@ public class Trace {
 	 *            The message to be traced.
 	 * 
 	 */
-	public static void trace(String pluginId, String option, Class clazz, String methodName, String message) {
+	public static void trace(String pluginId, String option, Class clazz,
+			String methodName, String message) {
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_TRACING).append(clazz.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_TRACING).append(clazz
+					.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
-			buf.append(PARENTHESIS_OPEN).append(message).append(PARENTHESIS_CLOSE);
+			buf.append(PARENTHESIS_OPEN).append(message)
+					.append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 	}
@@ -327,12 +331,16 @@ public class Trace {
 	 * @param newValue
 	 *            The new value.
 	 */
-	public static void changing(String pluginId, String option, String valueDescription, Object oldValue, Object newValue) {
+	public static void changing(String pluginId, String option,
+			String valueDescription, Object oldValue, Object newValue) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_CHANGING);
-			buf.append(valueDescription).append(SEPARATOR_SPACE).append(LABEL_OLD_VALUE).append(getArgumentString(oldValue));
-			buf.append(SEPARATOR_PARAMETER).append(LABEL_NEW_VALUE).append(getArgumentString(newValue));
+			buf.append(valueDescription).append(SEPARATOR_SPACE)
+					.append(LABEL_OLD_VALUE)
+					.append(getArgumentString(oldValue));
+			buf.append(SEPARATOR_PARAMETER).append(LABEL_NEW_VALUE)
+					.append(getArgumentString(newValue));
 			trace(buf.toString());
 		}
 	}
@@ -354,12 +362,18 @@ public class Trace {
 	 * @param newValue
 	 *            The new value.
 	 */
-	public static void changing(String pluginId, String option, Class clazz, String methodName, String valueDescription, Object oldValue, Object newValue) {
+	public static void changing(String pluginId, String option, Class clazz,
+			String methodName, String valueDescription, Object oldValue,
+			Object newValue) {
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_CHANGING);
-			buf.append(valueDescription).append(SEPARATOR_SPACE).append(LABEL_OLD_VALUE).append(getArgumentString(oldValue));
-			buf.append(SEPARATOR_PARAMETER).append(LABEL_NEW_VALUE).append(getArgumentString(newValue));
-			buf.append(SEPARATOR_SPACE).append(PARENTHESIS_OPEN).append(clazz.getName()).append(SEPARATOR_METHOD);
+			buf.append(valueDescription).append(SEPARATOR_SPACE)
+					.append(LABEL_OLD_VALUE)
+					.append(getArgumentString(oldValue));
+			buf.append(SEPARATOR_PARAMETER).append(LABEL_NEW_VALUE)
+					.append(getArgumentString(newValue));
+			buf.append(SEPARATOR_SPACE).append(PARENTHESIS_OPEN)
+					.append(clazz.getName()).append(SEPARATOR_METHOD);
 			buf.append(methodName).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
@@ -381,12 +395,14 @@ public class Trace {
 	 *            The throwable that is being caught.
 	 * 
 	 */
-	public static void catching(String pluginId, String option, Class clazz, String methodName, Throwable throwable) {
+	public static void catching(String pluginId, String option, Class clazz,
+			String methodName, Throwable throwable) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_CATCHING);
 			buf.append(throwable.getMessage()).append(SEPARATOR_SPACE);
-			buf.append(PARENTHESIS_OPEN).append(clazz.getName()).append(SEPARATOR_METHOD);
+			buf.append(PARENTHESIS_OPEN).append(clazz.getName())
+					.append(SEPARATOR_METHOD);
 			buf.append(methodName).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 			throwable.printStackTrace(System.err);
@@ -410,12 +426,14 @@ public class Trace {
 	 *            The throwable that is being thrown.
 	 * 
 	 */
-	public static void throwing(String pluginId, String option, Class clazz, String methodName, Throwable throwable) {
+	public static void throwing(String pluginId, String option, Class clazz,
+			String methodName, Throwable throwable) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_THROWING);
 			buf.append(throwable.getMessage()).append(SEPARATOR_SPACE);
-			buf.append(PARENTHESIS_OPEN).append(clazz.getName()).append(SEPARATOR_METHOD);
+			buf.append(PARENTHESIS_OPEN).append(clazz.getName())
+					.append(SEPARATOR_METHOD);
 			buf.append(methodName).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 			throwable.printStackTrace(System.err);
@@ -435,11 +453,14 @@ public class Trace {
 	 *            The name of method that is being entered.
 	 * 
 	 */
-	public static void entering(String pluginId, String option, Class clazz, String methodName) {
+	public static void entering(String pluginId, String option, Class clazz,
+			String methodName) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz.getName());
-			buf.append(SEPARATOR_METHOD).append(methodName).append(PARENTHESIS_OPEN).append(PARENTHESIS_CLOSE);
+			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
+					.getName());
+			buf.append(SEPARATOR_METHOD).append(methodName)
+					.append(PARENTHESIS_OPEN).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 	}
@@ -460,12 +481,15 @@ public class Trace {
 	 *            The parameter to the method being entered.
 	 * 
 	 */
-	public static void entering(String pluginId, String option, Class clazz, String methodName, Object parameter) {
+	public static void entering(String pluginId, String option, Class clazz,
+			String methodName, Object parameter) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
+					.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
-			buf.append(PARENTHESIS_OPEN).append(getArgumentString(parameter)).append(PARENTHESIS_CLOSE);
+			buf.append(PARENTHESIS_OPEN).append(getArgumentString(parameter))
+					.append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 
@@ -487,12 +511,15 @@ public class Trace {
 	 *            The parameters to the method being entered.
 	 * 
 	 */
-	public static void entering(String pluginId, String option, Class clazz, String methodName, Object[] parameters) {
+	public static void entering(String pluginId, String option, Class clazz,
+			String methodName, Object[] parameters) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
+					.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
-			buf.append(PARENTHESIS_OPEN).append(getArgumentString(parameters)).append(PARENTHESIS_CLOSE);
+			buf.append(PARENTHESIS_OPEN).append(getArgumentString(parameters))
+					.append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 
@@ -511,10 +538,12 @@ public class Trace {
 	 *            The name of method that is being exited.
 	 * 
 	 */
-	public static void exiting(String pluginId, String option, Class clazz, String methodName) {
+	public static void exiting(String pluginId, String option, Class clazz,
+			String methodName) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz
+					.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
 			trace(buf.toString());
 		}
@@ -536,12 +565,15 @@ public class Trace {
 	 *            The return value of the method being exited.
 	 * 
 	 */
-	public static void exiting(String pluginId, String option, Class clazz, String methodName, Object returnValue) {
+	public static void exiting(String pluginId, String option, Class clazz,
+			String methodName, Object returnValue) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz
+					.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
-			buf.append(PARENTHESIS_OPEN).append(getArgumentString(returnValue)).append(PARENTHESIS_CLOSE);
+			buf.append(PARENTHESIS_OPEN).append(getArgumentString(returnValue))
+					.append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 
