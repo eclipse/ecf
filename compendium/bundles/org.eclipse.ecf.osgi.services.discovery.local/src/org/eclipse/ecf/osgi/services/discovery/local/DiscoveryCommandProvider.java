@@ -22,7 +22,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-import org.eclipse.osgi.util.NLS;
 import org.xml.sax.SAXException;
 
 public class DiscoveryCommandProvider implements CommandProvider {
@@ -44,10 +43,9 @@ public class DiscoveryCommandProvider implements CommandProvider {
 	 */
 	public String getHelp() {
 		return LINE_SEPARATOR //$NON-NLS-0$
-				+ Messages
-						.getString("DiscoveryCommandProvider.CommandHeadline") //$NON-NLS-1$
+				+ "---ECF File-based Service Discovery---" //$NON-NLS-1$
 				+ LINE_SEPARATOR //$NON-NLS-0$
-				+ Messages.getString("DiscoveryCommandProvider.CommandHelp") //$NON-NLS-1$
+				+ "\tpublish <URL of ServiceEndpointDescriptor XML> -- publish the given Service Endpoint Descriptor\n\tunpublish <URL of ServiceEndpointDescriptor XML> -- unpublish the given Service Endpoint Descriptor" //$NON-NLS-1$
 				+ LINE_SEPARATOR; //$NON-NLS-0$
 	}
 
@@ -76,14 +74,11 @@ public class DiscoveryCommandProvider implements CommandProvider {
 			InputStream inputStream = url.openStream();
 			return new ServiceDescriptionParser().load(inputStream);
 		} catch (IOException e) {
-			ci.print(NLS.bind(
-					Messages.getString("DiscoveryCommandProvider.IOException"), path)); //$NON-NLS-1$
+			ci.print("Error loading service endpoint descriptions from file="+path); //$NON-NLS-1$
 		} catch (ParserConfigurationException e) {
-			ci.print(Messages
-					.getString("DiscoveryCommandProvider.ParserConfigurationException")); //$NON-NLS-1$
+			ci.print("Error setting up parser"); //$NON-NLS-1$
 		} catch (SAXException e) {
-			ci.print(NLS.bind(
-					Messages.getString("DiscoveryCommandProvider.SAXException"), path)); //$NON-NLS-1$
+			ci.print("Error parsing service endpoint descriptions from file="+path); //$NON-NLS-1$
 		}
 		return new ArrayList();
 	}
