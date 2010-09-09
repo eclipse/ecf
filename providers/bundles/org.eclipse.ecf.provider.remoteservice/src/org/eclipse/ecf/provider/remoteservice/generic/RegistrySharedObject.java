@@ -24,13 +24,13 @@ import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.status.SerializableStatus;
 import org.eclipse.ecf.core.util.*;
-import org.eclipse.ecf.internal.provider.remoteservice.*;
+import org.eclipse.ecf.internal.provider.remoteservice.Activator;
+import org.eclipse.ecf.internal.provider.remoteservice.IRemoteServiceProviderDebugOptions;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.events.*;
 import org.eclipse.equinox.concurrent.future.*;
 import org.eclipse.osgi.framework.eventmgr.*;
-import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.*;
 
 public class RegistrySharedObject extends BaseSharedObject implements IRemoteServiceContainerAdapter {
@@ -318,12 +318,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	public IRemoteServiceRegistration registerRemoteService(String[] clazzes, Object service, Dictionary properties) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "registerRemoteService", new Object[] {clazzes, service, properties}); //$NON-NLS-1$
 		if (service == null) {
-			throw new NullPointerException(Messages.RegistrySharedObject_EXCEPTION_SERVICE_CANNOT_BE_NULL);
+			throw new NullPointerException("service cannot be null"); //$NON-NLS-1$
 		}
 		final int size = clazzes.length;
 
 		if (size == 0) {
-			throw new IllegalArgumentException(Messages.RegistrySharedObject_EXCEPTION_SERVICE_CLASSES_LIST_EMPTY);
+			throw new IllegalArgumentException("service classes list is empty"); //$NON-NLS-1$
 		}
 
 		final String[] copy = new String[clazzes.length];
@@ -334,7 +334,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 		final String invalidService = checkServiceClass(clazzes, service);
 		if (invalidService != null) {
-			throw new IllegalArgumentException(Messages.RegistrySharedObject_7 + invalidService);
+			throw new IllegalArgumentException("Service=" + invalidService + " is invalid"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		final RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
@@ -615,11 +615,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			while ((timeout - System.currentTimeMillis()) > 0 && !doneWaiting) {
 				synchronized (request) {
 					if (request.isDone()) {
-						Trace.trace(Activator.PLUGIN_ID, Messages.RegistrySharedObject_15 + requestId);
+						Trace.trace(Activator.PLUGIN_ID, "callSynch.request/response done for requestId=" + requestId); //$NON-NLS-1$
 						doneWaiting = true;
 						response = request.getResponse();
 						if (response == null)
-							throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_INVALID_RESPONSE);
+							throw new ECFException("Invalid response for requestId=" + requestId); //$NON-NLS-1$
 					} else {
 						Trace.trace(Activator.PLUGIN_ID, "Waiting " + RESPONSE_WAIT_INTERVAL + " for response to request: " + requestId); //$NON-NLS-1$ //$NON-NLS-2$
 						request.wait(RESPONSE_WAIT_INTERVAL);
@@ -627,18 +627,18 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				}
 			}
 			if (!doneWaiting)
-				throw new ECFException(NLS.bind(Messages.RegistrySharedObject_19, Long.toString(call.getTimeout())), new TimeoutException(call.getTimeout()));
+				throw new ECFException("Request timed out after " + Long.toString(call.getTimeout()) + "ms", new TimeoutException(call.getTimeout())); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (final IOException e) {
 			log(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
-			throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_SENDING_REQUEST, e);
+			throw new ECFException("Error sending request", e); //$NON-NLS-1$
 		} catch (final InterruptedException e) {
 			log(CALL_REQUEST_TIMEOUT_ERROR_CODE, CALL_REQUEST_TIMEOUT_ERROR_MESSAGE, e);
-			throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_WAIT_INTERRUPTED, e);
+			throw new ECFException("Wait for response interrupted", e); //$NON-NLS-1$
 		}
 		// Success...now get values and return
 		Object result = null;
 		if (response.hadException())
-			throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_IN_REMOTE_CALL, response.getException());
+			throw new ECFException("Exception in remote call", response.getException()); //$NON-NLS-1$
 		result = response.getResponse();
 
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "callSynch", result); //$NON-NLS-1$
@@ -744,27 +744,25 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	private static final String FIRE_REQUEST = "handleFireRequest"; //$NON-NLS-1$
 
-	private static final String FIRE_REQUEST_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_SENDING_FIRE_REQUEST;
+	private static final String FIRE_REQUEST_ERROR_MESSAGE = "exception sending fire request message"; //$NON-NLS-1$
 
 	private static final int FIRE_REQUEST_ERROR_CODE = 202;
 
 	private static final String CALL_REQUEST = "handleCallRequest"; //$NON-NLS-1$
 
-	private static final String CALL_REQUEST_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_SENDING_CALL_REQUEST;
+	private static final String CALL_REQUEST_ERROR_MESSAGE = "exception sending call request message"; //$NON-NLS-1$
 
 	private static final int CALL_REQUEST_ERROR_CODE = 203;
 
-	private static final String CALL_REQUEST_TIMEOUT_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_TIMEOUT_FOR_CALL_REQUEST;
+	private static final String CALL_REQUEST_TIMEOUT_ERROR_MESSAGE = "timeout for remote call"; //$NON-NLS-1$
 
 	private static final int CALL_REQUEST_TIMEOUT_ERROR_CODE = 204;
 
 	private static final String UNREGISTER = "handleUnregister"; //$NON-NLS-1$
 
-	private static final String UNREGISTER_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_SENDING_SERVICE_UNREGISTER;
+	private static final String UNREGISTER_ERROR_MESSAGE = "exception sending service unregister message"; //$NON-NLS-1$
 
 	private static final int UNREGISTER_ERROR_CODE = 206;
-
-	private static final String MSG_INVOKE_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_SHARED_OBJECT_INVOKE;
 
 	private static final int MSG_INVOKE_ERROR_CODE = 207;
 
@@ -772,11 +770,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static final String CALL_RESPONSE = "handleCallResponse"; //$NON-NLS-1$
 
-	private static final String CALL_RESPONSE_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_SENDING_RESPONSE;
+	private static final String CALL_RESPONSE_ERROR_MESSAGE = "Exception sending response"; //$NON-NLS-1$
 
 	private static final int CALL_RESPONSE_ERROR_CODE = 210;
 
-	private static final String REQUEST_NOT_FOUND_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_REQUEST_NOT_FOUND;
+	private static final String REQUEST_NOT_FOUND_ERROR_MESSAGE = "request not found for response"; //$NON-NLS-1$
 
 	private static final int REQUEST_NOT_FOUND_ERROR_CODE = 211;
 
@@ -786,7 +784,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static final String ADD_REGISTRATIONS = "handleAddRegistrations"; //$NON-NLS-1$
 
-	private static final String ADD_REGISTRATION_ERROR_MESSAGE = Messages.RegistrySharedObject_EXCEPTION_SENDING_ADD_SERVICE;
+	private static final String ADD_REGISTRATION_ERROR_MESSAGE = "exception sending add service registration message"; //$NON-NLS-1$
 
 	private static final int ADD_REGISTRATION_ERROR_CODE = 212;
 
@@ -1133,14 +1131,14 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				} catch (InvocationTargetException e) {
 					Throwable cause = e.getCause();
 					response = new Response(request.getRequestId(), getSerializableException(cause));
-					logRemoteCallException(NLS.bind("Invocation target exception invoking remote service.  Remote request={0}", request), cause); //$NON-NLS-1$
+					logRemoteCallException("Invocation target exception invoking remote service.  Remote request=" + request, cause); //$NON-NLS-1$
 					// This is to catch most other problems
 				} catch (Exception e) {
 					response = new Response(request.getRequestId(), getSerializableException(e));
-					logRemoteCallException(NLS.bind("Unexpected exception invoking remote service.  Remote request={0}", request), e); //$NON-NLS-1$
+					logRemoteCallException("Unexpected exception invoking remote service.  Remote request=" + request, e); //$NON-NLS-1$
 				} catch (NoClassDefFoundError e) {
 					response = new Response(request.getRequestId(), getSerializableException(e));
-					logRemoteCallException(NLS.bind("No class def found error invoking remote service.  Remote request={0}", request), e); //$NON-NLS-1$
+					logRemoteCallException("No class def found error invoking remote service.  Remote request=" + request, e); //$NON-NLS-1$
 				}
 				// Now send response back to responseTarget (original requestor)
 				if (respond)
@@ -1176,7 +1174,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		final RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
 		// If localRegistration not found for request, then it's a bogus request and we respond with NPE
 		if (localRegistration == null) {
-			sendErrorResponse(responseTarget, request.getRequestId(), "handleCallRequest", new NullPointerException(NLS.bind("local service registration not found for remote request={0}", request))); //$NON-NLS-1$ //$NON-NLS-2$
+			sendErrorResponse(responseTarget, request.getRequestId(), "handleCallRequest", new NullPointerException("local service registration not found for remote request=" + request)); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 
@@ -1261,7 +1259,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			sendSharedObjectMsgTo(remoteRegistration.getContainerID(), SharedObjectMsg.createMsg(FIRE_REQUEST, request));
 		} catch (final IOException e) {
 			log(FIRE_REQUEST_ERROR_CODE, FIRE_REQUEST_ERROR_MESSAGE, e);
-			throw new ECFException(Messages.RegistrySharedObject_EXCEPTION_SENDING_REMOTE_REQUEST, e);
+			throw new ECFException("IOException sending fire request", e); //$NON-NLS-1$
 		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendFireRequest", request); //$NON-NLS-1$
 		return request;
@@ -1286,7 +1284,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		final RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
 		// If localRegistration not found for request, then it's a bogus request and we respond with NPE
 		if (localRegistration == null) {
-			sendErrorResponse(responseTarget, request.getRequestId(), "handleFireRequest", new NullPointerException(NLS.bind("local service registration not found for remote request={0}", request))); //$NON-NLS-1$ //$NON-NLS-2$
+			sendErrorResponse(responseTarget, request.getRequestId(), "handleFireRequest", new NullPointerException("local service registration not found for remote request=" + request)); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 
@@ -1506,7 +1504,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			msg.invoke(this);
 			return true;
 		} catch (final Exception e) {
-			logException(MSG_INVOKE_ERROR_CODE, NLS.bind(MSG_INVOKE_ERROR_MESSAGE, msg), e);
+			logException(MSG_INVOKE_ERROR_CODE, "Exception invoking shared object message=" + msg, e); //$NON-NLS-1$
 		}
 		return false;
 	}

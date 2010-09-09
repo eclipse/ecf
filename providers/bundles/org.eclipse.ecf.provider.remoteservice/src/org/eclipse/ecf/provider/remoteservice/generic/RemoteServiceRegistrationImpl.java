@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.*;
 
 /**
@@ -110,7 +109,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		synchronized (registrationLock) {
 			/* in the process of unregistering */
 			if (state != REGISTERED) {
-				throw new IllegalStateException(Messages.RemoteServiceRegistrationImpl_EXCEPTION_SERVICE_ALREADY_REGISTERED);
+				throw new IllegalStateException("Service already registered"); //$NON-NLS-1$
 			}
 			this.properties = createProperties(properties);
 		}

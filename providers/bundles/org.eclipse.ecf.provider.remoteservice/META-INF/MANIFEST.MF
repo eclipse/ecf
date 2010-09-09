@@ -22,7 +22,6 @@ Require-Bundle: org.eclipse.equinox.common,
 Import-Package: org.eclipse.core.runtime.jobs,
  org.eclipse.equinox.concurrent.future,
  org.eclipse.osgi.framework.eventmgr,
- org.eclipse.osgi.util,
  org.osgi.framework,
  org.osgi.service.log,
  org.osgi.util.tracker

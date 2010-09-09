@@ -13,7 +13,6 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.util.Dictionary;
 import org.eclipse.ecf.internal.provider.remoteservice.Activator;
-import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.osgi.framework.*;
@@ -30,7 +29,7 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	 */
 	public RemoteFilterImpl(String createFilter) throws InvalidSyntaxException {
 		if (createFilter == null)
-			throw new InvalidSyntaxException(Messages.RemoteFilter_EXCEPTION_FILTER_NOT_NULL, createFilter);
+			throw new InvalidSyntaxException("Filter cannot be null", null); //$NON-NLS-1$
 		this.filter = Activator.getDefault().createFilter(createFilter);
 	}
 
