@@ -18,8 +18,8 @@ import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.datashare.*;
-import org.eclipse.ecf.internal.provider.datashare.*;
-import org.eclipse.ecf.internal.provider.datashare.Messages;
+import org.eclipse.ecf.internal.provider.datashare.Activator;
+import org.eclipse.ecf.internal.provider.datashare.DatashareProviderDebugOptions;
 import org.eclipse.ecf.provider.generic.SOContainer;
 
 public class DatashareContainerAdapter implements IChannelContainerAdapter {
@@ -46,7 +46,7 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 			this.container.getSharedObjectManager().addSharedObject(delegateID, delegate, null);
 		} catch (Exception e) {
 			Trace.catching(Activator.PLUGIN_ID, DatashareProviderDebugOptions.EXCEPTIONS_CATCHING, DatashareContainerAdapter.class, "DatashareContainerAdapter.initialize", e); //$NON-NLS-1$
-			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, SO_CREATION_ERROR, Messages.DatashareContainerAdapter_EXCEPTION_CREATING_ADAPTER, e));
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, SO_CREATION_ERROR, "Exception initializing DatashareContainerAdapter instance", e)); //$NON-NLS-1$
 		}
 	}
 

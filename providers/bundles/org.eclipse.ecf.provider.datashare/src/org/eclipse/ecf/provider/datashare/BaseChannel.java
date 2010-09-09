@@ -21,7 +21,6 @@ import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.datashare.*;
 import org.eclipse.ecf.datashare.events.*;
 import org.eclipse.ecf.internal.provider.datashare.Activator;
-import org.eclipse.ecf.internal.provider.datashare.Messages;
 
 public class BaseChannel extends TransactionSharedObject implements IChannel {
 
@@ -310,18 +309,18 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		try {
 			rcvr = (ID) properties.get(RECEIVER_ID_PROPERTY);
 		} catch (ClassCastException e) {
-			throw new SharedObjectInitException(Messages.BaseChannel_EXCEPTION_BAD_RECEIVER_ID);
+			throw new SharedObjectInitException("Receiver ID property value must be of type ID", e); //$NON-NLS-1$
 		}
 		if (rcvr != null) {
 			// Now...get local channel container first...throw if we can't get
 			// it
 			IChannelContainerAdapter container = (IChannelContainerAdapter) getContext().getAdapter(IChannelContainerAdapter.class);
 			if (container == null)
-				throw new SharedObjectInitException(Messages.BaseChannel_EXCEPTION_CHANNEL_CONTAINER_NULL);
+				throw new SharedObjectInitException("channel container adapter must not be null"); //$NON-NLS-1$
 			// Now get receiver IChannel...throw if we can't get it
 			final IChannel receiver = container.getChannel(rcvr);
 			if (receiver == null)
-				throw new SharedObjectInitException(Messages.BaseChannel_EXCEPTION_RECEIVER_NULL);
+				throw new SharedObjectInitException("channel receiver must not be null"); //$NON-NLS-1$
 			setChannelListener(receiver.getListener());
 		}
 	}

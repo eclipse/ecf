@@ -23,8 +23,6 @@ import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.datashare.*;
 import org.eclipse.ecf.datashare.events.*;
 import org.eclipse.ecf.internal.provider.datashare.Activator;
-import org.eclipse.ecf.internal.provider.datashare.Messages;
-import org.eclipse.osgi.util.NLS;
 
 public class SharedObjectDatashareContainerAdapter extends BaseSharedObject implements IChannelContainerAdapter {
 
@@ -134,7 +132,7 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject impl
 			Constructor cons = clazz.getDeclaredConstructor(new Class[] {ISharedObjectTransactionConfig.class, IChannelListener.class});
 			return (ISharedObject) cons.newInstance(new Object[] {transactionConfig, listener});
 		} catch (Exception e) {
-			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectDatashareContainerAdapter_EXCEPTION_CANNOTCREATESHAREDOBJECT, typeDescription.getClassName()), e);
+			throw new SharedObjectCreateException("Cannot create shared object of class=" + typeDescription.getClassName(), e); //$NON-NLS-1$
 		}
 	}
 
@@ -151,7 +149,7 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject impl
 		}
 		IChannel channel = (IChannel) so.getAdapter(IChannel.class);
 		if (channel == null)
-			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectDatashareContainerAdapter_EXCEPTION_CANNOT_CREATE_OBJECT_OF_TYPE, channel));
+			throw new SharedObjectCreateException("channel must not be null"); //$NON-NLS-1$
 		ID newID = sodesc.getID();
 		if (newID == null)
 			newID = IDFactory.getDefault().createGUID();
