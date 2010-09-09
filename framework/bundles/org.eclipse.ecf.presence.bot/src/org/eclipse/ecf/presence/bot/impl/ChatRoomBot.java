@@ -21,7 +21,6 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.internal.presence.bot.Messages;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.bot.IChatRoomBotEntry;
@@ -86,8 +85,7 @@ public class ChatRoomBot implements IIMMessageListener {
 						bot.getContainerFactoryName());
 				namespace = container.getConnectNamespace();
 			} else
-				throw new ContainerConnectException(
-						Messages.DefaultChatRoomBot_EXCEPTION_ALREADY_CONNECTED);
+				throw new ContainerConnectException("Already connected"); //$NON-NLS-1$
 
 			targetID = IDFactory.getDefault().createID(namespace,
 					bot.getConnectID());
@@ -96,8 +94,7 @@ public class ChatRoomBot implements IIMMessageListener {
 					.getAdapter(IChatRoomManager.class);
 
 			if (manager == null)
-				throw new ECFException(
-						Messages.DefaultChatRoomBot_EXCEPTION_NO_CHAT_ROOM);
+				throw new ECFException("No chat room manager available"); //$NON-NLS-1$
 
 			firePreConnect();
 
