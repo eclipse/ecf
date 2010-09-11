@@ -411,7 +411,7 @@ limitations under the License.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-<!--
+
    <plugin
          id="org.eclipse.ecf.tests.osgi.services.discovery"
          download-size="0"
@@ -460,5 +460,4 @@ limitations under the License.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
--->
 </feature>
