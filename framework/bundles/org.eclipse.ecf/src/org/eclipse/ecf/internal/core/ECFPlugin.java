@@ -204,9 +204,14 @@ public class ECFPlugin implements BundleActivator {
 		return context.getBundle();
 	}
 
+	private LogService systemLogService;
+
 	protected LogService getLogService() {
-		if (context == null)
-			return new SystemLogService(PLUGIN_ID);
+		if (context == null) {
+			if (systemLogService == null)
+				systemLogService = new SystemLogService(PLUGIN_ID);
+			return systemLogService;
+		}
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
