@@ -38,6 +38,8 @@ public class ProviderPlugin implements BundleActivator {
 	private ServiceTracker adapterManagerTracker = null;
 
 	public IAdapterManager getAdapterManager() {
+		if (context == null)
+			return null;
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
 			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
@@ -84,6 +86,8 @@ public class ProviderPlugin implements BundleActivator {
 	}
 
 	protected LogService getLogService() {
+		if (context == null)
+			return null;
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
