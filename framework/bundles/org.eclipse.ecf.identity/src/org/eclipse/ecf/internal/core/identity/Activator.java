@@ -205,8 +205,11 @@ public class Activator implements BundleActivator {
 	}
 
 	protected synchronized LogService getLogService() {
-		if (this.context == null)
-			return null;
+		if (context == null) {
+			if (logService == null)
+				logService = new SystemLogService(PLUGIN_ID);
+			return logService;
+		}
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context,
 					LogService.class.getName(), null);
