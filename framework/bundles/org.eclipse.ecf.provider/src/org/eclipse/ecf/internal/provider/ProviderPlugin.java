@@ -12,8 +12,7 @@
 package org.eclipse.ecf.internal.provider;
 
 import org.eclipse.core.runtime.*;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.PlatformHelper;
+import org.eclipse.ecf.core.util.*;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
@@ -85,9 +84,14 @@ public class ProviderPlugin implements BundleActivator {
 		this.context = null;
 	}
 
+	private LogService systemLogService;
+
 	protected LogService getLogService() {
-		if (context == null)
-			return null;
+		if (context == null) {
+			if (systemLogService == null)
+				systemLogService = new SystemLogService(PLUGIN_ID);
+			return systemLogService;
+		}
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
