@@ -121,9 +121,14 @@ public class Activator implements BundleActivator {
 		return context.getBundle();
 	}
 
+	private LogService systemLogService = null;
+
 	protected LogService getLogService() {
-		if (context == null)
-			return null;
+		if (context == null) {
+			if (systemLogService == null)
+				systemLogService = new SystemLogService(PLUGIN_ID);
+			return systemLogService;
+		}
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
