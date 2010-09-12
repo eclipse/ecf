@@ -159,9 +159,6 @@ public class Activator implements BundleActivator {
 	 *            the members to remove
 	 */
 	protected void removeNamespaceExtensions(IConfigurationElement[] members) {
-		org.eclipse.ecf.core.util.Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, Activator.class,
-				"removeNamespaceExtensions", members); //$NON-NLS-1$
 		for (int m = 0; m < members.length; m++) {
 			final IConfigurationElement member = members[m];
 			String name = null;
@@ -179,23 +176,13 @@ public class Activator implements BundleActivator {
 				}
 				// remove
 				factory.removeNamespace(n);
-				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID,
-						IdentityDebugOptions.DEBUG,
-						"removeNamespaceExtensions.removedNamespace(" //$NON-NLS-1$
-								+ n + ")"); //$NON-NLS-1$
 			} catch (final Exception e) {
-				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
-						IdentityDebugOptions.EXCEPTIONS_CATCHING,
-						Activator.class, "removeNamespaceExtensions", e); //$NON-NLS-1$
 				getDefault().log(
 						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 								REMOVE_NAMESPACE_ERRORCODE,
 								"Exception removing namespace", e)); //$NON-NLS-1$
 			}
 		}
-		org.eclipse.ecf.core.util.Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, Activator.class,
-				"removeNamespaceExtensions", members); //$NON-NLS-1$
 	}
 
 	public Bundle getBundle() {
@@ -237,9 +224,6 @@ public class Activator implements BundleActivator {
 	 *            the members to add
 	 */
 	protected void addNamespaceExtensions(IConfigurationElement[] members) {
-		org.eclipse.ecf.core.util.Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, Activator.class,
-				"addNamespaceExtensions", members); //$NON-NLS-1$
 		final String bundleName = getDefault().getBundle().getSymbolicName();
 		for (int m = 0; m < members.length; m++) {
 			final IConfigurationElement member = members[m];
@@ -258,24 +242,13 @@ public class Activator implements BundleActivator {
 				final String nsDescription = member
 						.getAttribute(DESCRIPTION_ATTRIBUTE);
 				ns.initialize(nsName, nsDescription);
-				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID,
-						IdentityDebugOptions.DEBUG,
-						"addNamespaceExtensions.createdNamespace(" + ns + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 				// Check to see if we have a namespace name collision
 				if (!IDFactory.containsNamespace0(ns)) {
 					// Now add to known namespaces
 					IDFactory.addNamespace0(ns);
-					org.eclipse.ecf.core.util.Trace
-							.trace(Activator.PLUGIN_ID,
-									IdentityDebugOptions.DEBUG,
-									"addNamespaceExtensions.addedNamespaceToFactory(" + ns //$NON-NLS-1$
-											+ ")"); //$NON-NLS-1$
 				}
 			} catch (final CoreException e) {
 				getDefault().log(e.getStatus());
-				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
-						IdentityDebugOptions.EXCEPTIONS_CATCHING,
-						Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
 			} catch (final Exception e) {
 				getDefault()
 						.log(new Status(
@@ -288,14 +261,8 @@ public class Activator implements BundleActivator {
 										+ extension
 												.getExtensionPointUniqueIdentifier(),
 								null));
-				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
-						IdentityDebugOptions.EXCEPTIONS_CATCHING,
-						Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
 			}
 		}
-		org.eclipse.ecf.core.util.Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, Activator.class,
-				"addNamespaceExtensions"); //$NON-NLS-1$
 	}
 
 	/**
@@ -322,8 +289,6 @@ public class Activator implements BundleActivator {
 	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, Activator.class, "stop"); //$NON-NLS-1$
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null)
 			reg.removeRegistryChangeListener(registryManager);
