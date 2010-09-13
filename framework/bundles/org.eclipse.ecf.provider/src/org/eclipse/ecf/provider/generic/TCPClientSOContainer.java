@@ -54,7 +54,7 @@ public class TCPClientSOContainer extends ClientSOContainer {
 		ISharedObjectContainerConfig config = new SOContainerConfig(IDFactory.getDefault().createGUID());
 		TCPClientSOContainer container = new TCPClientSOContainer(config);
 		// now join group
-		ID serverID = IDFactory.getDefault().createStringID(TCPServerSOContainer.getDefaultServerURL());
+		ID serverID = IDFactory.getDefault().createStringID("ecftcp://localhost:3282/server"); //$NON-NLS-1$
 		container.connect(serverID, null);
 		Thread.sleep(200000);
 	}
