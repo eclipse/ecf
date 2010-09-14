@@ -28,6 +28,7 @@ import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.*;
+import org.eclipse.ecf.provider.generic.ContainerMessage.SharedObjectMessage;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 import org.eclipse.ecf.provider.util.*;
 
@@ -349,9 +350,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	protected void addSharedObjectAndWait(ID id, ISharedObject s, Map properties) throws Exception {
-		if (id == null || s == null) {
+		if (id == null || s == null)
 			throw new SharedObjectAddException("shared object or id cannot be null"); //$NON-NLS-1$
-		}
 		final ISharedObjectContainerTransaction t = addSharedObject0(id, s, properties);
 		// Wait right here until committed
 		if (t != null)
@@ -365,9 +365,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		ISharedObjectContainerTransaction transaction = null;
 		synchronized (getGroupMembershipLock()) {
 			final Object obj = groupManager.getFromAny(id);
-			if (obj != null) {
+			if (obj != null)
 				throw new SharedObjectAddException("shared object id=" + id.getName() + " already in container"); //$NON-NLS-1$ //$NON-NLS-2$
-			}
 			// Call initialize. If this throws it halts everything
 			wrapper.init();
 			// Call getAdapter(ISharedObjectContainerTransaction)
@@ -410,9 +409,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 *             failed
 	 */
 	protected Object checkRemoteCreate(ID fromID, ID toID, ReplicaSharedObjectDescription desc) throws Exception {
-		if (policy != null) {
+		if (policy != null)
 			return policy.checkAddSharedObject(fromID, toID, getID(), desc);
-		}
 		return desc;
 	}
 
@@ -699,13 +697,22 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 					Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "handleSharedObjectMessage", e); //$NON-NLS-1$
 					printToSystemError("Class not found sharedObjectID=" + sharedObjectID + " containerID=" + fromID, e); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			}
+			} else
+				handleUndeliveredSharedObjectMessage(resp);
+			// forward in any case
 			forward(fromID, toID, mess);
 		}
 		// Fire container event notifying container listeners about
 		// receiving event.
 		if (sow != null)
 			fireContainerEvent(new ContainerSharedObjectMessageReceivingEvent(getID(), fromID, sharedObjectID, obj));
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	protected void handleUndeliveredSharedObjectMessage(SharedObjectMessage resp) {
+		// by default do nothing.  Subclasses may override
 	}
 
 	/**
