@@ -5,7 +5,7 @@
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.group" version="3.3.0.v20100615-1452"/>
-<repository location="http://build.ecf-project.org/repo/"/>
+<repository location="http://rsync.osuosl.org/pub/eclipse/rt/ecf/3.3/helios/site.p2/"/>
 </location>
 </locations>
 <includeBundles>
