@@ -561,7 +561,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		synchronized (rsQueueLock) {
 			if (rsListenerDispatchQueue == null) {
 				ID containerID = getLocalContainerID();
-				String threadGroupName = "RSRegistry Dispatcher for " + containerID.getName(); //$NON-NLS-1$
+				String threadGroupName = "RSRegistry Dispatcher for containerID=" + containerID; //$NON-NLS-1$
 				ThreadGroup eventGroup = new ThreadGroup(threadGroupName);
 				eventGroup.setDaemon(true);
 				rsListenerDispatchEventManager = new EventManager(threadGroupName, eventGroup);
