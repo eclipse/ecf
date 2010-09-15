@@ -2,12 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.tests.server.generic;singleton:=true
+Bundle-Activator: org.eclipse.ecf.tests.server.generic.Activator
 Bundle-Localization: plugin
 Bundle-Vendor: %providerName
 Bundle-Version: 1.0.0
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: org.osgi.framework;version="1.3.0"
+Import-Package: org.osgi.framework;version="1.3.0",
+ org.osgi.util.tracker
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.equinox.registry,
  org.eclipse.ecf.provider.remoteservice;bundle-version="3.0.0",
