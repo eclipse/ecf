@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.server.generic.IGenericServerContainerGroupFactory;
 import org.eclipse.ecf.server.generic.ServerManager;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
@@ -31,6 +32,9 @@ public class Activator implements BundleActivator {
 	private ServiceTracker logServiceTracker = null;
 
 	private ServiceTracker containerManagerTracker = null;
+
+	private GenericServerContainerGroupFactory gscgFactory = null;
+	private ServiceRegistration gscgRegistration;
 
 	/**
 	 * The constructor
@@ -88,6 +92,9 @@ public class Activator implements BundleActivator {
 		this.discoveryTracker = new ServiceTracker(ctxt, IDiscoveryAdvertiser.class.getName(), null);
 		this.discoveryTracker.open();
 		serverManager = new ServerManager();
+		// Register generic server container group factory service
+		this.gscgFactory = new GenericServerContainerGroupFactory();
+		this.gscgRegistration = this.context.registerService(IGenericServerContainerGroupFactory.class.getName(), gscgFactory, null);
 	}
 
 	/*
@@ -111,6 +118,14 @@ public class Activator implements BundleActivator {
 		if (discoveryTracker != null) {
 			discoveryTracker.close();
 			discoveryTracker = null;
+		}
+		if (gscgRegistration != null) {
+			gscgRegistration.unregister();
+			gscgRegistration = null;
+			if (gscgFactory != null) {
+				gscgFactory.close();
+				gscgFactory = null;
+			}
 		}
 		this.context = null;
 	}

@@ -25,10 +25,8 @@ import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.internal.server.generic.Activator;
-import org.eclipse.ecf.internal.server.generic.Messages;
 import org.eclipse.ecf.provider.generic.*;
 import org.eclipse.ecf.server.generic.app.*;
-import org.eclipse.osgi.util.NLS;
 
 public class ServerManager {
 
@@ -71,10 +69,10 @@ public class ServerManager {
 			if (reg != null) {
 				createServersFromExtensionRegistry(reg);
 			} else {
-				createServersFromConfigurationFile(Activator.getDefault().getBundle().getEntry(Messages.Activator_SERVER_XML).openStream());
+				createServersFromConfigurationFile(Activator.getDefault().getBundle().getEntry("server.xml").openStream()); //$NON-NLS-1$
 			}
 		} catch (final Exception e) {
-			Activator.log(Messages.ServerStarter_EXCEPTION_CREATING_SERVER, e);
+			Activator.log("Exception creating servers", e); //$NON-NLS-1$
 		}
 	}
 
@@ -128,7 +126,7 @@ public class ServerManager {
 				try {
 					server.dispose();
 				} catch (final Exception e) {
-					Activator.log(Messages.ServerStarter_EXCEPTION_DISPOSING_SERVER, e);
+					Activator.log("Exception disposing serverID=" + serverID, e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -154,7 +152,7 @@ public class ServerManager {
 				if (connect.shouldRegisterForDiscovery())
 					registerServerForDiscovery(group, false);
 				servers.put(cont.getID(), cont);
-				final String msg = NLS.bind(Messages.ServerStarter_STARTING_SERVER, cont.getID().getName());
+				final String msg = "Starting server with id=" + cont.getID().getName(); //$NON-NLS-1$
 				System.out.println(msg);
 				Activator.log(msg);
 			}
@@ -203,7 +201,7 @@ public class ServerManager {
 				final ServiceInfo svcInfo = new ServiceInfo(uri, rawGroupName, serviceTypeID, 0, 0, new ServiceProperties(props));
 				discovery.registerService(svcInfo);
 			} catch (final Exception e) {
-				Activator.log(Messages.ServerManager_EXCEPTION_DISCOVERY_REGISTRATION, e);
+				Activator.log("Discovery registration exception", e); //$NON-NLS-1$
 			}
 		}
 	}
