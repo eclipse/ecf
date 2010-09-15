@@ -128,7 +128,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			if (rsListenerDispatchEventManager != null) {
 				rsListenerDispatchEventManager.close();
 				rsListenerDispatchEventManager = null;
-				rsListenerDispatchQueue = null;
 			}
 		}
 	}
