@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.examples.remoteservices.hello.consumer;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainerFactory;
+import org.eclipse.ecf.examples.remoteservices.hello.HelloMessage;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.examples.remoteservices.hello.IHelloAsync;
 import org.eclipse.ecf.osgi.services.discovery.IProxyDiscoveryListener;
@@ -191,7 +192,12 @@ public class HelloConsumerApplication implements IApplication,
 		proxy.hello(CONSUMER_NAME+" via proxy");
 		System.out.println("COMPLETED remote call via proxy");
 		System.out.println();
-		
+		// Call other helloMessage method
+		System.out.println("STARTING remote call via proxy...");
+		proxy.helloMessage(new HelloMessage(CONSUMER_NAME+" via proxy","howdy"));
+		System.out.println("COMPLETED remote call via proxy");
+		System.out.println();
+
 		// If the proxy is also an instance of IHelloAsync then use
 		// this asynchronous interface to invoke methods asynchronously
 		if (proxy instanceof IHelloAsync) {
@@ -238,8 +244,40 @@ public class HelloConsumerApplication implements IApplication,
 				System.out.println();
 				e.printStackTrace();
 			}
+			
+			// Call other helloMessage method
+			// Call asynchronously with callback
+			System.out.println("STARTING async remote call via callback...");
+			helloA.helloMessageAsync(new HelloMessage(CONSUMER_NAME + " via async proxy with listener","howdy"), callback);
+			System.out.println("LOCAL async invocation complete");
+			System.out.println();
+			
+			// Call asynchronously with future
+			System.out.println("STARTING async remote call via future...");
+			future = helloA.helloMessageAsync(new HelloMessage(CONSUMER_NAME + " via async proxy with future","howdy"));
+			System.out.println("LOCAL async future invocation complete");
+			System.out.println();
+			try {
+				while (!future.isDone()) {
+					// do some other stuff
+					System.out.println("LOCAL future not yet done...so we're doing other stuff while waiting for future to be done");
+					Thread.sleep(200);
+				}
+				// Now it's done, so this will not block
+				Object result = future.get();
+				System.out.println("COMPLETED remote call with future SUCCEEDED with result="+result);
+				System.out.println();
+			} catch (OperationCanceledException e) {
+				System.out.println("COMPLETED remote call with callback CANCELLED with exception="+e);
+				System.out.println();
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
+				System.out.println();
+				e.printStackTrace();
+			}
+
 		}
-		
 		
 		// OSGi 4.2 remote service spec requires a property named 'service.imported' to be
 		// set to a non-null value.  In the case of any ECF provider, this 'service.imported' property
