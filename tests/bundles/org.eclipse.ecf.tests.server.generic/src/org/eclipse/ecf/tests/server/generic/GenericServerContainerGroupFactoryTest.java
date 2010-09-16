@@ -33,12 +33,50 @@ public class GenericServerContainerGroupFactoryTest extends TestCase {
 		gscgFactory = null;
 	}
 	
+	protected IGenericServerContainerGroup createContainerGroup() throws Exception {
+		return gscgFactory.createContainerGroup(hostname, port);
+	}
+	
+	protected void removeContainerGroup() throws Exception {
+		gscgFactory.removeContainerGroup(hostname, port);
+	}
+	
 	public void testCreateContainerGroup() throws Exception {
-		IGenericServerContainerGroup containerGroup = gscgFactory.createContainerGroup(hostname, port);
+		IGenericServerContainerGroup containerGroup = createContainerGroup();
 		assertNotNull(containerGroup);
 		URI groupEndpoint = containerGroup.getGroupEndpoint();
 		assertNotNull(groupEndpoint);
 		assertTrue(groupEndpoint.getHost().equals(hostname));
 		assertTrue(groupEndpoint.getPort()==port);
+		removeContainerGroup();
 	}
+	
+	public void testGetContainerGroup() throws Exception {
+		IGenericServerContainerGroup gscg = gscgFactory.getContainerGroup(hostname, port);
+		assertNull(gscg);
+		createContainerGroup();
+		gscg = gscgFactory.getContainerGroup(hostname, port);
+		assertNotNull(gscg);
+		URI groupEndpoint = gscg.getGroupEndpoint();
+		assertNotNull(groupEndpoint);
+		assertTrue(groupEndpoint.getHost().equals(hostname));
+		assertTrue(groupEndpoint.getPort()==port);
+		removeContainerGroup();
+	}
+
+	public void testGetContainerGroups() throws Exception {
+		IGenericServerContainerGroup[] gscgs = gscgFactory.getContainerGroups();
+		assertNotNull(gscgs);
+		assertTrue(gscgs.length == 0);
+		createContainerGroup();
+		gscgs = gscgFactory.getContainerGroups();
+		assertNotNull(gscgs);
+		assertTrue(gscgs.length == 1);
+		URI groupEndpoint = gscgs[0].getGroupEndpoint();
+		assertNotNull(groupEndpoint);
+		assertTrue(groupEndpoint.getHost().equals(hostname));
+		assertTrue(groupEndpoint.getPort()==port);
+		removeContainerGroup();
+	}
+
 }
