@@ -24,4 +24,10 @@ public interface IGenericServerContainerGroupFactory {
 
 	public IGenericServerContainerGroup createContainerGroup(String hostname) throws GenericServerContainerGroupCreateException;
 
+	public IGenericServerContainerGroup getContainerGroup(String hostname, int port);
+
+	public IGenericServerContainerGroup[] getContainerGroups();
+
+	public IGenericServerContainerGroup removeContainerGroup(String hostname, int port);
+
 }

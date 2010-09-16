@@ -87,4 +87,35 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 		}
 		serverContainerGroups.clear();
 	}
+
+	public IGenericServerContainerGroup getContainerGroup(String hostname, int port) {
+		if (hostname == null)
+			return null;
+		SCGData scgdata = new SCGData(hostname, port);
+		synchronized (serverContainerGroups) {
+			return (IGenericServerContainerGroup) serverContainerGroups.get(scgdata);
+		}
+	}
+
+	public IGenericServerContainerGroup[] getContainerGroups() {
+		List results = new ArrayList();
+		synchronized (serverContainerGroups) {
+			for (Iterator i = serverContainerGroups.keySet().iterator(); i.hasNext();) {
+				SCGData scgdata = (SCGData) i.next();
+				IGenericServerContainerGroup gscg = (IGenericServerContainerGroup) serverContainerGroups.get(scgdata);
+				if (gscg != null)
+					results.add(gscg);
+			}
+		}
+		return (IGenericServerContainerGroup[]) results.toArray(new IGenericServerContainerGroup[] {});
+	}
+
+	public IGenericServerContainerGroup removeContainerGroup(String hostname, int port) {
+		if (hostname == null)
+			return null;
+		SCGData scgdata = new SCGData(hostname, port);
+		synchronized (serverContainerGroups) {
+			return (IGenericServerContainerGroup) serverContainerGroups.remove(scgdata);
+		}
+	}
 }
