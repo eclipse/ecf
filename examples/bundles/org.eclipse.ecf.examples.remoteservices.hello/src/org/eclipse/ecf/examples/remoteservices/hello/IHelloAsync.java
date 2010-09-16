@@ -21,4 +21,13 @@ public interface IHelloAsync extends IAsyncRemoteServiceProxy {
 	public void helloAsync(String from, IAsyncCallback<String> callback);
 	public IFuture helloAsync(String from);
 
+	/**
+	 * @since 3.0
+	 */
+	public void helloMessageAsync(HelloMessage message, IAsyncCallback<String> callback);
+	/**
+	 * @since 3.0
+	 */
+	public IFuture helloMessageAsync(HelloMessage message);
+
 }

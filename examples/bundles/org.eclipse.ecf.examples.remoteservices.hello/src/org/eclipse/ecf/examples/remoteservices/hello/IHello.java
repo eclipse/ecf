@@ -17,4 +17,8 @@ public interface IHello {
 	 */
 	public String hello(String from);
 	
+	/**
+	 * @since 3.0
+	 */
+	public String helloMessage(HelloMessage message);
 }

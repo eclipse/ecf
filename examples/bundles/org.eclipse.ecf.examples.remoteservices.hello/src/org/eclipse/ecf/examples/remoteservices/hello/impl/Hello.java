@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.examples.remoteservices.hello.impl;
 
+import org.eclipse.ecf.examples.remoteservices.hello.HelloMessage;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 
 public class Hello implements IHello {
@@ -22,6 +23,14 @@ public class Hello implements IHello {
 		// This method can be executed via remote proxies
 		System.out.println("received hello from="+from);
 		return "Server says 'Hi' back to "+from;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public String helloMessage(HelloMessage message) {
+		System.out.println("received HelloMessage="+message);
+		return "Server says 'Hi' back to "+message.getFrom();
 	}
 
 }
