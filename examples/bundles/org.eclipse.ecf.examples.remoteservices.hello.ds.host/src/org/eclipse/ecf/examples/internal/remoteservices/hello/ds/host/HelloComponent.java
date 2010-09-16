@@ -9,6 +9,7 @@
 ******************************************************************************/
 package org.eclipse.ecf.examples.internal.remoteservices.hello.ds.host;
 
+import org.eclipse.ecf.examples.remoteservices.hello.HelloMessage;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 
 public class HelloComponent implements IHello {
@@ -18,5 +19,10 @@ public class HelloComponent implements IHello {
 		// This method can be executed via remote proxies
 		System.out.println("received hello from="+from);
 		return "Hello service host says 'Hi' back to "+from;
+	}
+
+	public String helloMessage(HelloMessage message) {
+		System.out.println("received HelloMessage="+message);
+		return "Server says 'Hi' back to "+message.getFrom();
 	}
 }
