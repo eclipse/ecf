@@ -18,7 +18,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
-import org.eclipse.osgi.util.NLS;
 
 public class ZooDiscoveryNamespace extends Namespace {
 
@@ -46,8 +45,7 @@ public class ZooDiscoveryNamespace extends Namespace {
 			}
 
 		} catch (Exception e) {
-			throw new IDCreateException(NLS.bind(
-					"{0} createInstance()", getName()), e); //$NON-NLS-1$
+			throw new IDCreateException(getName()+" createInstance()", e); //$NON-NLS-1$
 		}
 		return null;
 
