@@ -9,7 +9,6 @@ Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
 Eclipse-LazyStart: true
 Import-Package: org.eclipse.equinox.security.storage,
- org.eclipse.osgi.util,
  org.osgi.framework,
  org.osgi.service.log,
  org.osgi.util.tracker

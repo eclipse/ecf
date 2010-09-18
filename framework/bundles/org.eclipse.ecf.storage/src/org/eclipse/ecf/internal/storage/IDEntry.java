@@ -19,7 +19,6 @@ import org.eclipse.ecf.storage.IDStoreException;
 import org.eclipse.ecf.storage.IIDEntry;
 import org.eclipse.equinox.security.storage.EncodingUtils;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
-import org.eclipse.osgi.util.NLS;
 
 /**
  *
@@ -37,14 +36,17 @@ public class IDEntry implements IIDEntry {
 		this.prefs = prefs;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.storage.IIDEntry#getPreferences()
 	 */
 	public ISecurePreferences getPreferences() {
 		return prefs;
 	}
 
-	public void putAssociate(String key, IIDEntry entry, boolean encrypt) throws IDStoreException {
+	public void putAssociate(String key, IIDEntry entry, boolean encrypt)
+			throws IDStoreException {
 		if (key == null)
 			throw new IDStoreException("key cannot be null"); //$NON-NLS-1$
 		if (entry == null)
@@ -53,16 +55,21 @@ public class IDEntry implements IIDEntry {
 		ISecurePreferences prefs = entry.getPreferences();
 		// This is where associates are created with form:
 		// <index>:<namespace>:<idname>
-		String entryAssociate = String.valueOf(associateNode.childrenNames().length) + DELIMITER + prefs.parent().name() + DELIMITER + prefs.name();
+		String entryAssociate = String
+				.valueOf(associateNode.childrenNames().length)
+				+ DELIMITER
+				+ prefs.parent().name() + DELIMITER + prefs.name();
 		associateNode.node(entryAssociate);
 	}
 
 	private ISecurePreferences getNamespaceRoot() {
-		// The namespace root is the parent of our parent (which is the namespace)
+		// The namespace root is the parent of our parent (which is the
+		// namespace)
 		return prefs.parent().parent();
 	}
 
-	private ISecurePreferences getPreferences(ISecurePreferences parent, String name) {
+	private ISecurePreferences getPreferences(ISecurePreferences parent,
+			String name) {
 		List names = Arrays.asList(parent.childrenNames());
 		if (names.contains(name))
 			return parent.node(name);
@@ -93,29 +100,39 @@ public class IDEntry implements IIDEntry {
 				throw new IDStoreException("Associate ID not well-formed"); //$NON-NLS-1$
 			// Get namespace name before index
 			String namespaceName = name.substring(0, index);
-			ISecurePreferences namespacePrefs = getPreferences(getNamespaceRoot(), namespaceName);
+			ISecurePreferences namespacePrefs = getPreferences(
+					getNamespaceRoot(), namespaceName);
 			if (namespacePrefs == null)
-				throw new IDStoreException(NLS.bind("Cannot find Namespace {0}", namespaceName)); //$NON-NLS-1$
+				throw new IDStoreException(
+						"Cannot find Namespace=" + namespaceName); //$NON-NLS-1$
 			// Get ID name after index
 			String idName = name.substring(index + 1);
 			ISecurePreferences idPrefs = getPreferences(namespacePrefs, idName);
 			if (idPrefs == null)
-				throw new IDStoreException(NLS.bind("ID {0} not found in Namespace {1}", idName, namespaceName)); //$NON-NLS-1$
+				throw new IDStoreException(
+						"ID="	+ idName + " not found in Namespace=" + namespaceName); //$NON-NLS-1$ //$NON-NLS-2$
 			// Put new IDEntry in sorted collection ordered by resultIndex
 			results.put(resultIndex, new IDEntry(idPrefs));
 		} catch (IDStoreException e) {
-			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Unable to create associate ID", e)); //$NON-NLS-1$
+			Activator.getDefault().log(
+					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							IStatus.ERROR, "Unable to create associate ID", e)); //$NON-NLS-1$
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.storage.IIDEntry#createID()
 	 */
 	public ID createID() throws IDCreateException {
-		return IDFactory.getDefault().createID(prefs.parent().name(), EncodingUtils.decodeSlashes(prefs.name()));
+		return IDFactory.getDefault().createID(prefs.parent().name(),
+				EncodingUtils.decodeSlashes(prefs.name()));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.storage.IIDEntry#delete()
 	 */
 	public void delete() {
@@ -134,7 +151,9 @@ public class IDEntry implements IIDEntry {
 		return (IIDEntry[]) results.values().toArray(new IIDEntry[] {});
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
