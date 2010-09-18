@@ -29,6 +29,7 @@ import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceNotification;
 import org.eclipse.ecf.osgi.services.discovery.DiscoveredServiceTracker;
 import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
 import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
@@ -103,8 +104,8 @@ public class FileBasedDiscoveryImpl {
 				ServicePublication.class.getName(),
 				new ServicePublicationTracker(context, this));
 		spTracker.open();
-		// 36 stands for bundle states RESOLVED OR ACTIVE
-		bt = new BundleTracker(context, 36, new BundleTrackerImpl(this));
+		// We track active and starting bundles as per Remote Services Admin spec
+		bt = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING, new BundleTrackerImpl(this));
 		bt.open();
 	}
 
