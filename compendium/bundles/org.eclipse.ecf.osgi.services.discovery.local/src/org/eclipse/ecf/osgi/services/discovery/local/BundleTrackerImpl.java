@@ -177,7 +177,11 @@ public class BundleTrackerImpl implements BundleTrackerCustomizer {
 	private void handleRemoteService(final Bundle bundle, Collection result,
 			StringTokenizer tokenizer) {
 		String token = tokenizer.nextToken().trim();
-		String path = token.substring(0, token.lastIndexOf("/"));
+		// fix for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=325664
+		int lastSlash = token.lastIndexOf("/");
+		// We set the path to '/' is not present at all in token (lastSlash == -1)
+		// or if the slash is first char (lastSlash==0)
+		String path = (lastSlash <= 0)?"/":token.substring(0,lastSlash);
 		int start = path.indexOf("${");
 		if (start >= 0) {
 			int end = path.indexOf("}");
@@ -185,7 +189,8 @@ public class BundleTrackerImpl implements BundleTrackerCustomizer {
 			String property = System.getProperty(substring);
 			path = path.replaceAll("\\$\\{" + substring + "\\}", property);
 		}
-		String files = token.substring(token.lastIndexOf("/") + 1,
+		// Also be sure to use lastSlash to get files
+		String files = token.substring(lastSlash+1,
 				token.length());
 		Enumeration enumeration = bundle.findEntries(path, files, false);
 		if (enumeration == null) {
