@@ -364,8 +364,16 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 
 						public Object addingService(
 								final ServiceReference reference) {
-							final String[] theTopics = (String[]) reference
+
+							// https://bugs.eclipse.org/bugs/show_bug.cgi?id=326033
+							final String[] theTopics;
+							Object topic = reference
 									.getProperty(EventConstants.EVENT_TOPIC);
+							if (topic instanceof String)
+								theTopics = new String[] { (String) topic };
+							else
+								theTopics = (String[]) topic;
+
 							final LeaseUpdateMessage lu = new LeaseUpdateMessage();
 							lu.setType(LeaseUpdateMessage.TOPIC_UPDATE);
 							lu.setServiceID(""); //$NON-NLS-1$
@@ -380,9 +388,17 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 								final Object oldTopics) {
 
 							final List oldTopicList = (List) oldTopics;
-							final List newTopicList = Arrays
-									.asList((String[]) reference
-											.getProperty(EventConstants.EVENT_TOPIC));
+
+							// https://bugs.eclipse.org/bugs/show_bug.cgi?id=326033
+							final List newTopicList;
+							Object topic = reference
+									.getProperty(EventConstants.EVENT_TOPIC);
+							if (topic instanceof String)
+								newTopicList = Arrays
+										.asList(new String[] { (String) topic });
+							else
+								newTopicList = Arrays.asList((String[]) topic);
+
 							final Collection removed = CollectionUtils
 									.rightDifference(newTopicList, oldTopicList);
 							final Collection added = CollectionUtils
@@ -684,8 +700,8 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	}
 
 	/**
-	 * @param endpoint 
-	 * @throws RemoteOSGiException 
+	 * @param endpoint
+	 * @throws RemoteOSGiException
 	 * 
 	 */
 	public void disconnect(final URI endpoint) throws RemoteOSGiException {
@@ -779,7 +795,8 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	/**
 	 * 
 	 * @throws InterruptedException
-	 * @see ch.ethz.iks.r_osgi.RemoteOSGiService#getRemoteServiceBundle(ch.ethz.iks.r_osgi.RemoteServiceReference, int)
+	 * @see ch.ethz.iks.r_osgi.RemoteOSGiService#getRemoteServiceBundle(ch.ethz.iks.r_osgi.RemoteServiceReference,
+	 *      int)
 	 * @since 1.0.0.RC4
 	 */
 	public Object getRemoteServiceBundle(final RemoteServiceReference ref,
@@ -1273,7 +1290,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 				out.closeEntry();
 			}
 		}
-	}
+	} 
 
 	/**
 	 * 
