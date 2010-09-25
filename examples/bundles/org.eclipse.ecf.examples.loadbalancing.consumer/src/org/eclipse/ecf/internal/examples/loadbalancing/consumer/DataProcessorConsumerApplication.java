@@ -10,6 +10,7 @@ package org.eclipse.ecf.internal.examples.loadbalancing.consumer;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.examples.loadbalancing.IDataProcessor;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
@@ -35,7 +36,8 @@ public class DataProcessorConsumerApplication implements IApplication {
 	// changed by using the -topicId launch parameter...e.g.
 	// -topicId tcp://myjmdnsbrokerdnsname:61616/myTopicName
 	private String topicId = DEFAULT_TOPIC_ID;
-	// Container type is the load balancing service consumer container type, which is normal client
+	// Container type is the load balancing service consumer container type,
+	// which is normal client
 	private String containerType = LB_SVCCONSUMER_CONTAINER_TYPE;
 
 	// Container instance that connects us with the ActiveMQ queue as a message
@@ -50,15 +52,26 @@ public class DataProcessorConsumerApplication implements IApplication {
 	private final Object remoteServiceReceivedLock = new Object();
 	private boolean remoteServiceReceived = false;
 
-	// Remote service.  The RemoteServiceTrackerCustomizer sets this
+	// Remote service. The RemoteServiceTrackerCustomizer sets this
 	IRemoteService remoteService;
 
 	class RemoteServiceTrackerCustomizer implements
 			IRemoteServiceTrackerCustomizer {
 
 		public IRemoteService addingService(IRemoteServiceReference reference) {
-			remoteService = remoteServiceAdapter
-					.getRemoteService(reference);
+			remoteService = remoteServiceAdapter.getRemoteService(reference);
+			try {
+				IDataProcessor dataProcessorProxy = (IDataProcessor) remoteService
+						.getProxy();
+				System.out.println("Calling remote service with input data="
+						+ inputData);
+				// And then call it
+				String result = dataProcessorProxy.processData(inputData);
+				// And print out results
+				System.out.println("\tremote service result=" + result);
+			} catch (ECFException e) {
+				e.printStackTrace();
+			}
 			synchronized (remoteServiceReceivedLock) {
 				remoteServiceReceived = true;
 				remoteServiceReceivedLock.notify();
@@ -95,21 +108,16 @@ public class DataProcessorConsumerApplication implements IApplication {
 		// Open it
 		tracker.open();
 
-		// Connect to topic
+		// Connect to topic.  This should trigger remote service registration to be asynchronously
+		// added, and in turn call RemoteServiceTrackerCustomizer.addingService (see impl of that
+		// method above
 		container.connect(
 				IDFactory.getDefault().createID(
 						container.getConnectNamespace(), topicId), null);
-		
-		// Wait for remote service tracker to receive proxy
-		waitForRemoteService();
 
-		IDataProcessor dataProcessorProxy = (IDataProcessor) remoteService.getProxy();
-		System.out.println("Calling remote service with input data="
-				+ inputData);
-		// And then call it
-		String result = dataProcessorProxy.processData(inputData);
-		// And print out results
-		System.out.println("\tremote service result=" + result);
+		// Wait for remote service tracker to receive proxy and execute.   See 
+		// RemoteServiceTrackerCustomizer.addingService above
+		waitForRemoteService();
 
 		return IApplication.EXIT_OK;
 	}
