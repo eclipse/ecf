@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundle.name
+Bundle-SymbolicName: org.eclipse.osgi.services.remoteserviceadmin
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: %bundle.provider
+Bundle-RequiredExecutionEnvironment: OSGi/Minimum-1.2,
+ CDC-1.1/Foundation-1.1,
+ J2SE-1.4
+Bundle-Localization: bundle
+Bundle-Description: %bundle.description
+Bundle-Copyright: %bundle.copyright
+Export-Package: org.osgi.service.remoteserviceadmin; version="1.0"
