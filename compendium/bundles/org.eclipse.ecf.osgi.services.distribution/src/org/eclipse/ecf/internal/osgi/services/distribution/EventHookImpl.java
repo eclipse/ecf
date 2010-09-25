@@ -475,8 +475,20 @@ public class EventHookImpl implements EventHook {
 		if (wildcard)
 			return (String[]) serviceReference
 					.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
-		else
-			return getStringArrayFromPropertyValue(propValue);
+		else {
+			final String[] stringValue = getStringArrayFromPropertyValue(propValue);
+			if (stringValue != null
+					&& stringValue.length == 1
+					&& stringValue[0]
+							.equals(IDistributionConstants.SERVICE_EXPORTED_INTERFACES_WILDCARD)) {
+				LogUtility
+						.logWarning(
+								"getExportedInterfaces", //$NON-NLS-1$
+								DebugOptions.EVENTHOOKDEBUG, this.getClass(),
+								"Service Exported Interfaces Wildcard does not accept String[\"*\"]"); //$NON-NLS-1$
+			}
+			return stringValue;
+		}
 	}
 
 	private void trace(String methodName, String message) {
