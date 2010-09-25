@@ -33,7 +33,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -85,6 +88,11 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 	 * the exports.
 	 */
 	private String exports;
+
+	/**
+	 * Optional imports
+	 */
+	private String optionalImports = "";
 
 	/**
 	 * Create a new DeliverServiceMessage.
@@ -142,6 +150,28 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 		for (short i = 0; i < blocks; i++) {
 			injections.put(input.readUTF(), readBytes(input));
 		}
+		
+		// generate option imports from injections
+		final Set set = new HashSet();
+		
+		// no need to add imports twice
+		final String[] imp = (imports != null ? imports.split(",") : new String[0]);
+		for (int i = 0; i < imp.length; i++) {
+			String string = imp[i].trim();
+			set.add(string); 
+		}
+		
+		for (final Iterator itr = injections.keySet().iterator(); itr.hasNext();) {
+			final String className = (String) itr.next();
+			final int lastIndexOf = className.lastIndexOf("/");
+			final String pkgName = className.substring(0, lastIndexOf).replace('/', '.');
+			if(!set.contains(pkgName)) {
+				set.add(pkgName);
+				optionalImports += (optionalImports.length() > 0 ? ", " : "") 
+								+ pkgName + ";resolution:=optional";
+			}
+		}
+
 	}
 
 	/**
@@ -329,6 +359,10 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 			buffer.append(injections.keySet());
 		}
 		return buffer.toString();
+	}
+
+	public String getOptionalImports() {
+		return optionalImports;
 	}
 
 }

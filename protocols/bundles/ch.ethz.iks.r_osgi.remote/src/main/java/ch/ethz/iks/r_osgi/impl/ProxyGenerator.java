@@ -226,6 +226,8 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				.putValue(
 						"Import-Package", //$NON-NLS-1$
 						"org.osgi.framework, ch.ethz.iks.r_osgi, ch.ethz.iks.r_osgi.types, ch.ethz.iks.r_osgi.channels" //$NON-NLS-1$
+								+ ("".equals(deliv.getOptionalImports()) ? "" : ", " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+								+ deliv.getOptionalImports())
 								+ ("".equals(deliv.getImports()) ? "" : ", ") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 								+ deliv.getImports());
 		if (!"".equals(deliv.getExports())) { //$NON-NLS-1$
