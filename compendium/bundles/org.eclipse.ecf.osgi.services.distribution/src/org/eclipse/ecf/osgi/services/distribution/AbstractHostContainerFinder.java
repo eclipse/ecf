@@ -173,8 +173,10 @@ public abstract class AbstractHostContainerFinder extends
 	protected boolean matchHostSupportedConfigTypes(
 			String[] requiredConfigTypes,
 			ContainerTypeDescription containerTypeDescription) {
+		// if no config type is set the spec requires to create a default
+		// endpoint (see section 122.5.1)
 		if (requiredConfigTypes == null)
-			return false;
+			return true;
 		// Get supported config types for this description
 		String[] supportedConfigTypes = getSupportedConfigTypes(containerTypeDescription);
 		// If it doesn't support anything, return false
