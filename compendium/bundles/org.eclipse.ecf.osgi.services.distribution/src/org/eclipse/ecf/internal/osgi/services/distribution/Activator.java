@@ -131,7 +131,7 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext
 	 * )
 	 */
-	public void start(BundleContext ctxt) throws Exception {
+	public void start(final BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
 
@@ -175,8 +175,19 @@ public class Activator implements BundleActivator {
 						defaultHostConfigTypes), hostContainerFinderProps);
 
 		// register all existing services which have the marker property
+		// http://bugs.eclipse.org/323208
+		new Thread(new Runnable() {
+			public void run() {
+				registerExistingServices(hook, ctxt);
+			}
+		}, "Distribution Provider startup worker").start(); //$NON-NLS-1$
+
+	}
+
+	private void registerExistingServices(final EventHookImpl hook,
+			final BundleContext bundleContext) {
 		try {
-			final ServiceReference[] refs = this.context.getServiceReferences(
+			final ServiceReference[] refs = bundleContext.getServiceReferences(
 					null,
 					"(" + IDistributionConstants.SERVICE_EXPORTED_INTERFACES //$NON-NLS-1$
 							+ "=*)"); //$NON-NLS-1$
