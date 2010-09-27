@@ -38,6 +38,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import ch.ethz.iks.util.StringUtils;
+
 /**
  * <p>
  * DeliverServiceMessage is used to bring an OSGi service to a remote machine.
@@ -155,7 +157,7 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 		final Set set = new HashSet();
 		
 		// no need to add imports twice
-		final String[] imp = (imports != null ? imports.split(",") : new String[0]);
+		final String[] imp = (imports != null ? StringUtils.stringToArray(imports, ",") : new String[0]);
 		for (int i = 0; i < imp.length; i++) {
 			String string = imp[i].trim();
 			set.add(string); 
