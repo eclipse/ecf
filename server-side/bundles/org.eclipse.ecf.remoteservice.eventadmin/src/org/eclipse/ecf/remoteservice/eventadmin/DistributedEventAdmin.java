@@ -26,6 +26,7 @@ import org.eclipse.osgi.framework.eventmgr.CopyOnWriteIdentityMap;
 import org.eclipse.osgi.framework.eventmgr.EventManager;
 import org.eclipse.osgi.framework.eventmgr.ListenerQueue;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.TopicPermission;
@@ -65,6 +66,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 					"handlePostEvent", new DistributedEventAdminMessage(event)));
 		} catch (IOException e) {
 			logError("IOException posting distributed event "+event+" to "+event.getTopic(), e);
+			throw new ServiceException("postEvent failed",e);
 		}
 		localDispatch(event, true);
 	}
