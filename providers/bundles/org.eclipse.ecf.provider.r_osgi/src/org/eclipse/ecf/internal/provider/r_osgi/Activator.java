@@ -72,6 +72,8 @@ public final class Activator implements BundleActivator {
 	public void stop(final BundleContext bc) throws Exception {
 		r_osgi_tracker.close();
 		r_osgi_tracker = null;
+		pkg_admin_tracker.close();
+		pkg_admin_tracker = null;
 		this.context = null;
 		plugin = null;
 	}
