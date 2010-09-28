@@ -27,6 +27,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.*;
 import org.osgi.framework.Constants;
+import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -398,8 +399,13 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		serviceRanking = (serviceRanking == null) ? new Integer(0) : serviceRanking;
 		props.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_RANKING, serviceRanking);
 
-		// register the service with the local framework
-		final ServiceRegistration reg = context.registerService(clazzes, service, props);
+		// register the service with the local framework but use the original BundleContext
+		// http://bugs.eclipse.org/325950
+		final PackageAdmin pkgAdmin = Activator.getDefault().getPackageAdmin();
+		final Bundle bundle = pkgAdmin.getBundle(service.getClass());
+		final BundleContext bundleContext = bundle.getBundleContext();
+
+		final ServiceRegistration reg = bundleContext.registerService(clazzes, service, props);
 		// Set ECF remote service id property based upon local service property
 		reg.setProperties(prepareProperties(reg.getReference()));
 
