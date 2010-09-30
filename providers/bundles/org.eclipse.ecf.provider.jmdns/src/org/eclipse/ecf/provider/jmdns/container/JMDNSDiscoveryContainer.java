@@ -28,6 +28,7 @@ import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.provider.jmdns.*;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 
+@SuppressWarnings("unchecked")
 public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IDiscoveryService, ServiceListener, ServiceTypeListener {
 
 	private static final String SCHEME_PROPERTY = "jmdns.ptcl"; //$NON-NLS-1$
@@ -467,4 +468,14 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		return si;
 	}
 
+	/**
+	 * @since 4.1
+	 */
+	/* (non-Javadoc)
+	 * @see javax.jmdns.ServiceTypeListener#subTypeForServiceTypeAdded(javax.jmdns.ServiceEvent)
+	 */
+	public void subTypeForServiceTypeAdded(ServiceEvent arg0) {
+		Trace.trace(JMDNSPlugin.PLUGIN_ID, "subTypeForServiceTypeAdded(" + arg0.getType() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		return; // not sure what to do here
+	}
 }

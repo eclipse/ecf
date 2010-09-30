@@ -14,6 +14,7 @@ package org.eclipse.ecf.internal.provider.jmdns;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class SimpleFIFOQueue {
 	private final List list;
 
