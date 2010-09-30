@@ -32,6 +32,13 @@ public class RemoteServiceEndpointDescriptionImpl extends
 		endpointId = anEndpointId;
 	}
 
+	public RemoteServiceEndpointDescriptionImpl(ServiceEndpointDescription sed,
+			ID anEndpointId, Map properties) {
+		super(properties);
+		serviceEndpoint = sed;
+		endpointId = anEndpointId;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

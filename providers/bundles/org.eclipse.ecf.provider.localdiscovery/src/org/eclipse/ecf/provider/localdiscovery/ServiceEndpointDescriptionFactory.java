@@ -20,6 +20,9 @@ import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
 
 public class ServiceEndpointDescriptionFactory implements IAdapterFactory {
 
+	private static final String ECF_IDENTITY_STRING_ID = "org.eclipse.ecf.core.identity.StringID"; //$NON-NLS-1$
+	private static final String ECF_SP_ECT = "ecf.sp.ect"; //$NON-NLS-1$
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -30,21 +33,33 @@ public class ServiceEndpointDescriptionFactory implements IAdapterFactory {
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType.equals(RemoteServiceEndpointDescription.class)
 				&& adaptableObject instanceof ServiceEndpointDescription) {
-			ServiceEndpointDescription sed = (ServiceEndpointDescription) adaptableObject;
-			Map properties = sed.getProperties();
+			final ServiceEndpointDescription sed = (ServiceEndpointDescription) adaptableObject;
+			final Map properties = sed.getProperties();
 			Object obj1 = properties
 					.get(RemoteServicePublication.ENDPOINT_CONTAINERID);
-			Object obj2 = properties
+			final Object obj2 = properties
 					.get(RemoteServicePublication.ENDPOINT_CONTAINERID_NAMESPACE);
 			if (obj1 instanceof byte[]) {
 				obj1 = new String(((byte[]) obj1));
 			}
-			if (obj1 instanceof String && obj2 instanceof String) {
+			if (obj2 != null && obj1 instanceof String && obj2 instanceof String) {
 				// create the endpoint id
 				final String endpointStr = (String) obj1;
 				final String namespaceStr = (String) obj2;
 				return new RemoteServiceEndpointDescriptionImpl(sed, IDFactory
 						.getDefault().createID(namespaceStr, endpointStr));
+			} else if(obj2 == null && obj1 instanceof String) {
+				// create the endpoint id via the endpoint str for known containers
+				final String endpointStr = (String) obj1;
+				if (endpointStr.startsWith("ecftcp://")) { //$NON-NLS-1$
+					properties.put(ECF_SP_ECT, "ecf.generic.server"); //$NON-NLS-1$
+				} else if(endpointStr.startsWith("r-osgi://")) { //$NON-NLS-1$
+					properties.put(ECF_SP_ECT, "ecf.r_osgi.peer"); //$NON-NLS-1$
+				} else {
+					return null;
+				}
+				return new RemoteServiceEndpointDescriptionImpl(sed, IDFactory
+						.getDefault().createID(ECF_IDENTITY_STRING_ID, endpointStr), properties); //$NON-NLS-1$
 			}
 		}
 		return null;
