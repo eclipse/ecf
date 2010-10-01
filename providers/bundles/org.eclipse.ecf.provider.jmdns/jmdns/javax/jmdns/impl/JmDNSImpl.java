@@ -4,2183 +4,1292 @@
 
 package javax.jmdns.impl;
 
-import java.util.Iterator;
-
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-import java.util.Timer;
-import edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap;
-import edu.emory.mathcs.backport.java.util.concurrent.ConcurrentMap;
-import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
-import edu.emory.mathcs.backport.java.util.concurrent.Executors;
-import edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceEvent;
-import javax.jmdns.ServiceInfo;
-import javax.jmdns.ServiceInfo.Fields;
-import javax.jmdns.ServiceListener;
-import javax.jmdns.ServiceTypeListener;
-import javax.jmdns.impl.ListenerStatus.ServiceListenerStatus;
-import javax.jmdns.impl.ListenerStatus.ServiceTypeListenerStatus;
-import javax.jmdns.impl.constants.DNSConstants;
-import javax.jmdns.impl.constants.DNSRecordClass;
-import javax.jmdns.impl.constants.DNSRecordType;
-import javax.jmdns.impl.constants.DNSState;
-import javax.jmdns.impl.tasks.DNSTask;
-import javax.jmdns.impl.tasks.RecordReaper;
-import javax.jmdns.impl.tasks.Responder;
-import javax.jmdns.impl.tasks.resolver.ServiceInfoResolver;
-import javax.jmdns.impl.tasks.resolver.ServiceResolver;
-import javax.jmdns.impl.tasks.resolver.TypeResolver;
-import javax.jmdns.impl.tasks.state.Announcer;
-import javax.jmdns.impl.tasks.state.Canceler;
-import javax.jmdns.impl.tasks.state.Prober;
-import javax.jmdns.impl.tasks.state.Renewer;
+import java.net.*;
+import java.util.*;
+import javax.jmdns.*;
+import javax.jmdns.impl.tasks.*;
 
 // REMIND: multiple IP addresses
 
 /**
  * mDNS implementation in Java.
- *
+ * 
  * @version %I%, %G%
- * @author Arthur van Hoff, Rick Blair, Jeff Sonstein, Werner Randelshofer, Pierre Frisch, Scott Lewis
+ * @author Arthur van Hoff, Rick Blair, Jeff Sonstein, Werner Randelshofer,
+ *  Pierre Frisch, Scott Lewis
  */
-@SuppressWarnings("unchecked")
-public class JmDNSImpl extends JmDNS implements DNSStatefulObject
-{
-    private static Logger logger = Logger.getLogger(JmDNSImpl.class.getName());
-
-    public enum Operation
-    {
-        Remove, Update, Add, RegisterServiceType, Noop
-    }
-
-    /**
-     * This is the multicast group, we are listening to for multicast DNS messages.
-     */
-    private volatile InetAddress _group;
-    /**
-     * This is our multicast socket.
-     */
-    private volatile MulticastSocket _socket;
-
-    /**
-     * Used to fix live lock problem on unregister.
-     */
-    private volatile boolean _closed = false;
-
-    /**
-     * Holds instances of JmDNS.DNSListener. Must by a synchronized collection, because it is updated from concurrent threads.
-     */
-    private final List<DNSListener> _listeners;
-
-    /**
-     * Holds instances of ServiceListener's. Keys are Strings holding a fully qualified service type. Values are LinkedList's of ServiceListener's.
-     */
-    private final ConcurrentMap/*<String, List<ServiceListenerStatus>>*/ _serviceListeners;
-
-    /**
-     * Holds instances of ServiceTypeListener's.
-     */
-    private final Set<ServiceTypeListenerStatus> _typeListeners;
-
-    /**
-     * Cache for DNSEntry's.
-     */
-    private DNSCache _cache;
-
-    /**
-     * This hashtable holds the services that have been registered. Keys are instances of String which hold an all lower-case version of the fully qualified service name. Values are instances of ServiceInfo.
-     */
-    private final ConcurrentMap/*<String, ServiceInfo>*/ _services;
-
-    /**
-     * This hashtable holds the service types that have been registered or that have been received in an incoming datagram. Keys are instances of String which hold an all lower-case version of the fully qualified service type. Values hold the fully
-     * qualified service type.
-     */
-    private final ConcurrentMap/*<String, Set<String>>*/ _serviceTypes;
-
-    /**
-     * This is the shutdown hook, we registered with the java runtime.
-     */
-    protected Thread _shutdown;
-
-    /**
-     * Handle on the local host
-     */
-    private HostInfo _localHost;
-
-    private Thread _incomingListener;
-
-    /**
-     * Throttle count. This is used to count the overall number of probes sent by JmDNS. When the last throttle increment happened .
-     */
-    private int _throttle;
-
-    /**
-     * Last throttle increment.
-     */
-    private long _lastThrottleIncrement;
-
-    private final ExecutorService _executor = Executors.newSingleThreadExecutor();
-
-    //
-    // 2009-09-16 ldeck: adding docbug patch with slight ammendments
-    // 'Fixes two deadlock conditions involving JmDNS.close() - ID: 1473279'
-    //
-    // ---------------------------------------------------
-    /**
-     * The timer that triggers our announcements. We can't use the main timer object, because that could cause a deadlock where Prober waits on JmDNS.this lock held by close(), close() waits for us to finish, and we wait for Prober to give us back
-     * the timer thread so we can announce. (Patch from docbug in 2006-04-19 still wasn't patched .. so I'm doing it!)
-     */
-    // private final Timer _cancelerTimer;
-    // ---------------------------------------------------
-
-    /**
-     * The timer is used to dispatch all outgoing messages of JmDNS. It is also used to dispatch maintenance tasks for the DNS cache.
-     */
-    private final Timer _timer;
-
-    /**
-     * The timer is used to dispatch maintenance tasks for the DNS cache.
-     */
-    private final Timer _stateTimer;
-
-    /**
-     * The source for random values. This is used to introduce random delays in responses. This reduces the potential for collisions on the network.
-     */
-    private final static Random _random = new Random();
-
-    /**
-     * This lock is used to coordinate processing of incoming and outgoing messages. This is needed, because the Rendezvous Conformance Test does not forgive race conditions.
-     */
-    private final ReentrantLock _ioLock = new ReentrantLock();
-
-    /**
-     * If an incoming package which needs an answer is truncated, we store it here. We add more incoming DNSRecords to it, until the JmDNS.Responder timer picks it up.<br/>
-     * FIXME [PJYF June 8 2010]: This does not work well with multiple planned answers for packages that came in from different clients.
-     */
-    private DNSIncoming _plannedAnswer;
-
-    // State machine
-
-    /**
-     * This hashtable is used to maintain a list of service types being collected by this JmDNS instance. The key of the hashtable is a service type name, the value is an instance of JmDNS.ServiceCollector.
-     *
-     * @see #list
-     */
-    private final ConcurrentMap/*<String, ServiceCollector>*/ _serviceCollectors;
-
-    private final String _name;
-
-    /**
-     * Main method to display API information if run from java -jar
-     * <p>
-     *
-     * @param argv
-     *            the command line arguments
-     */
-    public static void main(String[] argv)
-    {
-        String version = null;
-        try
-        {
-            final Properties pomProperties = new Properties();
-            pomProperties.load(JmDNSImpl.class.getResourceAsStream("/META-INF/maven/javax.jmdns/jmdns/pom.properties"));
-            version = pomProperties.getProperty("version");
-        }
-        catch (Exception e)
-        {
-            version = "RUNNING.IN.IDE.FULL";
-        }
-        System.out.println("JmDNS version \"" + version + "\"");
-        System.out.println(" ");
-
-        System.out.println("Running on java version \"" + System.getProperty("java.version") + "\"" + " (build " + System.getProperty("java.runtime.version") + ")" + " from " + System.getProperty("java.vendor"));
-
-        System.out.println("Operating environment \"" + System.getProperty("os.name") + "\"" + " version " + System.getProperty("os.version") + " on " + System.getProperty("os.arch"));
-
-        System.out.println("For more information on JmDNS please visit https://sourceforge.net/projects/jmdns/");
-    }
-
-    /**
-     * Create an instance of JmDNS and bind it to a specific network interface given its IP-address.
-     *
-     * @param address
-     *            IP address to bind to.
-     * @param name
-     *            name of the newly created JmDNS
-     * @throws IOException
-     */
-    public JmDNSImpl(InetAddress address, String name) throws IOException
-    {
-        super();
-        if (logger.isLoggable(Level.FINER))
-        {
-            logger.finer("JmDNS instance created");
-        }
-        _cache = new DNSCache(100);
-
-        _listeners = Collections.synchronizedList(new ArrayList<DNSListener>());
-        _serviceListeners = new ConcurrentHashMap/*<String, List<ServiceListenerStatus>>*/();
-        _typeListeners = Collections.synchronizedSet(new HashSet<ServiceTypeListenerStatus>());
-        _serviceCollectors = new ConcurrentHashMap/*<String, ServiceCollector>*/();
-
-        _services = new ConcurrentHashMap/*<String, ServiceInfo>*/(20);
-        _serviceTypes = new ConcurrentHashMap/*<String, Set<String>>*/(20);
-
-        _localHost = HostInfo.newHostInfo(address, this);
-        _name = (name != null ? name : _localHost.getName());
-
-        _timer = new Timer("JmDNS(" + _name + ").Timer", true);
-        _stateTimer = new Timer("JmDNS(" + _name + ").State.Timer", false);
-        // _cancelerTimer = new Timer("JmDNS.cancelerTimer");
-
-        // (ldeck 2.1.1) preventing shutdown blocking thread
-        // -------------------------------------------------
-        // _shutdown = new Thread(new Shutdown(), "JmDNS.Shutdown");
-        // Runtime.getRuntime().addShutdownHook(_shutdown);
-
-        // -------------------------------------------------
-
-        // Bind to multicast socket
-        this.openMulticastSocket(this.getLocalHost());
-        this.start(this.getServices().values());
-
-        new RecordReaper(this).start(_timer);
-    }
-
-    private void start(Collection<? extends ServiceInfo> serviceInfos)
-    {
-        if (_incomingListener == null)
-        {
-            _incomingListener = new Thread(new SocketListener(this), "JmDNS(" + _name + ").SocketListener");
-            _incomingListener.setDaemon(true);
-            _incomingListener.start();
-        }
-        this.startProber();
-        for (ServiceInfo info : serviceInfos)
-        {
-            try
-            {
-                this.registerService(new ServiceInfoImpl(info));
-            }
-            catch (final Exception exception)
-            {
-                logger.log(Level.WARNING, "start() Registration exception ", exception);
-            }
-        }
-    }
-
-    private void openMulticastSocket(HostInfo hostInfo) throws IOException
-    {
-        if (_group == null)
-        {
-            _group = InetAddress.getByName(DNSConstants.MDNS_GROUP);
-        }
-        if (_socket != null)
-        {
-            this.closeMulticastSocket();
-        }
-        _socket = new MulticastSocket(DNSConstants.MDNS_PORT);
-        if ((hostInfo != null) && (hostInfo.getInterface() != null))
-        {
-            try
-            {
-                _socket.setNetworkInterface(hostInfo.getInterface());
-            }
-            catch (SocketException e)
-            {
-                if (logger.isLoggable(Level.FINE))
-                {
-                    logger.fine("openMulticastSocket() Set network interface exception: " + e.getMessage());
-                }
-            }
-        }
-        _socket.setTimeToLive(255);
-        _socket.joinGroup(_group);
-    }
-
-    private void closeMulticastSocket()
-    {
-        // jP: 20010-01-18. See below. We'll need this monitor...
-        // assert (Thread.holdsLock(this));
-        if (logger.isLoggable(Level.FINER))
-        {
-            logger.finer("closeMulticastSocket()");
-        }
-        if (_socket != null)
-        {
-            // close socket
-            try
-            {
-                try
-                {
-                    _socket.leaveGroup(_group);
-                }
-                catch (SocketException exception)
-                {
-                    //
-                }
-                _socket.close();
-                // jP: 20010-01-18. It isn't safe to join() on the listener
-                // thread - it attempts to lock the IoLock object, and deadlock
-                // ensues. Per issue #2933183, changed this to wait on the JmDNS
-                // monitor, checking on each notify (or timeout) that the
-                // listener thread has stopped.
-                //
-                while (_incomingListener != null && _incomingListener.isAlive())
-                {
-                    synchronized (this)
-                    {
-                        try
-                        {
-                            // wait time is arbitrary, we're really expecting notification.
-                            if (logger.isLoggable(Level.FINER))
-                            {
-                                logger.finer("closeMulticastSocket(): waiting for jmDNS monitor");
-                            }
-                            this.wait(1000);
-                        }
-                        catch (InterruptedException ignored)
-                        {
-                            // Ignored
-                        }
-                    }
-                }
-                _incomingListener = null;
-            }
-            catch (final Exception exception)
-            {
-                logger.log(Level.WARNING, "closeMulticastSocket() Close socket exception ", exception);
-            }
-            _socket = null;
-        }
-    }
-
-    // State machine
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#advanceState(javax.jmdns.impl.tasks.DNSTask)
-     */
-    @Override
-    public boolean advanceState(DNSTask task)
-    {
-        return this._localHost.advanceState(task);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#revertState()
-     */
-    @Override
-    public boolean revertState()
-    {
-        return this._localHost.revertState();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#cancel()
-     */
-    @Override
-    public boolean cancelState()
-    {
-        return this._localHost.cancelState();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#recover()
-     */
-    @Override
-    public boolean recoverState()
-    {
-        return this._localHost.recoverState();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#getDns()
-     */
-    @Override
-    public JmDNSImpl getDns()
-    {
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#associateWithTask(javax.jmdns.impl.tasks.DNSTask, javax.jmdns.impl.constants.DNSState)
-     */
-    @Override
-    public void associateWithTask(DNSTask task, DNSState state)
-    {
-        this._localHost.associateWithTask(task, state);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#removeAssociationWithTask(javax.jmdns.impl.tasks.DNSTask)
-     */
-    @Override
-    public void removeAssociationWithTask(DNSTask task)
-    {
-        this._localHost.removeAssociationWithTask(task);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#isAssociatedWithTask(javax.jmdns.impl.tasks.DNSTask, javax.jmdns.impl.constants.DNSState)
-     */
-    @Override
-    public boolean isAssociatedWithTask(DNSTask task, DNSState state)
-    {
-        return this._localHost.isAssociatedWithTask(task, state);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#isProbing()
-     */
-    @Override
-    public boolean isProbing()
-    {
-        return this._localHost.isProbing();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#isAnnouncing()
-     */
-    @Override
-    public boolean isAnnouncing()
-    {
-        return this._localHost.isAnnouncing();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#isAnnounced()
-     */
-    @Override
-    public boolean isAnnounced()
-    {
-        return this._localHost.isAnnounced();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#isCanceling()
-     */
-    @Override
-    public boolean isCanceling()
-    {
-        return this._localHost.isCanceling();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#isCanceled()
-     */
-    @Override
-    public boolean isCanceled()
-    {
-        return this._localHost.isCanceled();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#waitForAnnounced(long)
-     */
-    @Override
-    public boolean waitForAnnounced(long timeout)
-    {
-        return this._localHost.waitForAnnounced(timeout);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.impl.DNSStatefulObject#waitForCanceled(long)
-     */
-    @Override
-    public boolean waitForCanceled(long timeout)
-    {
-        return this._localHost.waitForCanceled(timeout);
-    }
-
-    /**
-     * Return the DNSCache associated with the cache variable
-     *
-     * @return DNS cache
-     */
-    public DNSCache getCache()
-    {
-        return _cache;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#getName()
-     */
-    @Override
-    public String getName()
-    {
-        return _name;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#getHostName()
-     */
-    @Override
-    public String getHostName()
-    {
-        return _localHost.getName();
-    }
-
-    /**
-     * Returns the local host info
-     *
-     * @return local host info
-     */
-    public HostInfo getLocalHost()
-    {
-        return _localHost;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#getInterface()
-     */
-    @Override
-    public InetAddress getInterface() throws IOException
-    {
-        return _socket.getInterface();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#getServiceInfo(java.lang.String, java.lang.String)
-     */
-    @Override
-    public ServiceInfo getServiceInfo(String type, String name)
-    {
-        return this.getServiceInfo(type, name, false, DNSConstants.SERVICE_INFO_TIMEOUT);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#getServiceInfo(java.lang.String, java.lang.String)
-     */
-    @Override
-    public ServiceInfo getServiceInfo(String type, String name, long timeout)
-    {
-        return this.getServiceInfo(type, name, false, timeout);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#getServiceInfo(java.lang.String, java.lang.String)
-     */
-    @Override
-    public ServiceInfo getServiceInfo(String type, String name, boolean persistent)
-    {
-        return this.getServiceInfo(type, name, persistent, DNSConstants.SERVICE_INFO_TIMEOUT);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#getServiceInfo(java.lang.String, java.lang.String, int)
-     */
-    @Override
-    public ServiceInfo getServiceInfo(String type, String name, boolean persistent, long timeout)
-    {
-        final ServiceInfoImpl info = this.resolveServiceInfo(type, name, "", persistent);
-        this.waitForInfoData(info, timeout);
-        return (info.hasData() ? info : null);
-    }
-
-    ServiceInfoImpl resolveServiceInfo(String type, String name, String subtype, boolean persistent)
-    {
-        String lotype = type.toLowerCase();
-        this.registerServiceType(lotype);
-        if (_serviceCollectors.putIfAbsent(lotype, new ServiceCollector(lotype)) == null)
-        {
-            this.addServiceListener(lotype, (ServiceListener) _serviceCollectors.get(lotype));
-        }
-
-        // Check if the answer is in the cache.
-        final ServiceInfoImpl info = this.getServiceInfoFromCache(type, name, subtype, persistent);
-        // We still run the resolver to do the dispatch but if the info is already there it will quit immediately
-        new ServiceInfoResolver(this, info).start(_timer);
-
-        return info;
-    }
-
-	ServiceInfoImpl getServiceInfoFromCache(String type, String name, String subtype, boolean persistent)
-    {
-        // Check if the answer is in the cache.
-        ServiceInfoImpl info = new ServiceInfoImpl(type, name, subtype, 0, 0, 0, persistent, (byte[]) null);
-        DNSEntry pointerEntry = this.getCache().getDNSEntry(new DNSRecord.Pointer(type, DNSRecordClass.CLASS_ANY, false, 0, info.getQualifiedName()));
-        if (pointerEntry instanceof DNSRecord)
-        {
-            ServiceInfoImpl cachedInfo = (ServiceInfoImpl) ((DNSRecord) pointerEntry).getServiceInfo(persistent);
-            if (cachedInfo != null)
-            {
-                // To get a complete info record we need to retrieve the service, address and the text bytes.
-
-                Map<Fields, String> map = cachedInfo.getQualifiedNameMap();
-                byte[] srvBytes = null;
-                String server = "";
-                DNSEntry serviceEntry = this.getCache().getDNSEntry(info.getQualifiedName(), DNSRecordType.TYPE_SRV, DNSRecordClass.CLASS_ANY);
-                if (serviceEntry instanceof DNSRecord)
-                {
-                    ServiceInfo cachedServiceEntryInfo = ((DNSRecord) serviceEntry).getServiceInfo(persistent);
-                    if (cachedServiceEntryInfo != null)
-                    {
-                        cachedInfo = new ServiceInfoImpl(map, cachedServiceEntryInfo.getPort(), cachedServiceEntryInfo.getWeight(), cachedServiceEntryInfo.getPriority(), persistent, (byte[]) null);
-                        srvBytes = cachedServiceEntryInfo.getTextBytes();
-                        server = cachedServiceEntryInfo.getServer();
-                    }
-                }
-                DNSEntry addressEntry = this.getCache().getDNSEntry(server, DNSRecordType.TYPE_A, DNSRecordClass.CLASS_ANY);
-                if (addressEntry instanceof DNSRecord)
-                {
-                    ServiceInfo cachedAddressInfo = ((DNSRecord) addressEntry).getServiceInfo(persistent);
-                    if (cachedAddressInfo != null)
-                    {
-                        cachedInfo.setAddress(cachedAddressInfo.getInet4Address());
-                        cachedInfo._setText(cachedAddressInfo.getTextBytes());
-                    }
-                }
-                addressEntry = this.getCache().getDNSEntry(server, DNSRecordType.TYPE_AAAA, DNSRecordClass.CLASS_ANY);
-                if (addressEntry instanceof DNSRecord)
-                {
-                    ServiceInfo cachedAddressInfo = ((DNSRecord) addressEntry).getServiceInfo(persistent);
-                    if (cachedAddressInfo != null)
-                    {
-                        cachedInfo.setAddress(cachedAddressInfo.getInet6Address());
-                        cachedInfo._setText(cachedAddressInfo.getTextBytes());
-                    }
-                }
-                DNSEntry textEntry = this.getCache().getDNSEntry(cachedInfo.getQualifiedName(), DNSRecordType.TYPE_TXT, DNSRecordClass.CLASS_ANY);
-                if (textEntry instanceof DNSRecord)
-                {
-                    ServiceInfo cachedTextInfo = ((DNSRecord) textEntry).getServiceInfo(persistent);
-                    if (cachedTextInfo != null)
-                    {
-                        cachedInfo._setText(cachedTextInfo.getTextBytes());
-                    }
-                }
-                if (cachedInfo.getTextBytes().length == 0)
-                {
-                    cachedInfo._setText(srvBytes);
-                }
-                if (cachedInfo.hasData())
-                {
-                    info = cachedInfo;
-                }
-            }
-        }
-        return info;
-    }
-
-    private void waitForInfoData(ServiceInfo info, long timeout)
-    {
-        synchronized (info)
-        {
-            long loops = (timeout / 200L);
-            if (loops < 1)
-            {
-                loops = 1;
-            }
-            for (int i = 0; i < loops; i++)
-            {
-                if (info.hasData())
-                {
-                    break;
-                }
-                try
-                {
-                    info.wait(200);
-                }
-                catch (final InterruptedException e)
-                {
-                    /* Stub */
-                }
-            }
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#requestServiceInfo(java.lang.String, java.lang.String)
-     */
-    @Override
-    public void requestServiceInfo(String type, String name)
-    {
-        this.requestServiceInfo(type, name, false, DNSConstants.SERVICE_INFO_TIMEOUT);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#requestServiceInfo(java.lang.String, java.lang.String, boolean)
-     */
-    @Override
-    public void requestServiceInfo(String type, String name, boolean persistent)
-    {
-        this.requestServiceInfo(type, name, persistent, DNSConstants.SERVICE_INFO_TIMEOUT);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#requestServiceInfo(java.lang.String, java.lang.String, int)
-     */
-    @Override
-    public void requestServiceInfo(String type, String name, long timeout)
-    {
-        this.requestServiceInfo(type, name, false, DNSConstants.SERVICE_INFO_TIMEOUT);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#requestServiceInfo(java.lang.String, java.lang.String, boolean, int)
-     */
-    @Override
-    public void requestServiceInfo(String type, String name, boolean persistent, long timeout)
-    {
-        final ServiceInfoImpl info = this.resolveServiceInfo(type, name, "", persistent);
-        this.waitForInfoData(info, timeout);
-    }
-
-	void handleServiceResolved(ServiceEvent event)
-    {
-        List<ServiceListenerStatus> list = (List<ServiceListenerStatus>) _serviceListeners.get(event.getType().toLowerCase());
-        final List<ServiceListenerStatus> listCopy;
-        if ((list != null) && (!list.isEmpty()))
-        {
-            if ((event.getInfo() != null) && event.getInfo().hasData())
-            {
-                final ServiceEvent localEvent = event;
-                synchronized (list)
-                {
-                    listCopy = new ArrayList<ServiceListenerStatus>(list);
-                }
-                for (final ServiceListenerStatus listener : listCopy)
-                {
-                    _executor.submit(new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                            listener.serviceResolved(localEvent);
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    /**
-     * @see javax.jmdns.JmDNS#addServiceTypeListener(javax.jmdns.ServiceTypeListener )
-     */
-	@Override
-    public void addServiceTypeListener(ServiceTypeListener listener) throws IOException
-    {
-        ServiceTypeListenerStatus status = new ServiceTypeListenerStatus(listener);
-        _typeListeners.add(status);
-
-        // report cached service types
-        for (Iterator<String> itr = _serviceTypes.keySet().iterator(); itr.hasNext();)
-//        for (String type : _serviceTypes.keySet())
-        {
-            status.serviceTypeAdded(new ServiceEventImpl(this, itr.next(), "", null));
-        }
-
-        new TypeResolver(this).start(_timer);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#removeServiceTypeListener(javax.jmdns.ServiceTypeListener)
-     */
-    @Override
-    public void removeServiceTypeListener(ServiceTypeListener listener)
-    {
-        ServiceTypeListenerStatus status = new ServiceTypeListenerStatus(listener);
-        _typeListeners.remove(status);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#addServiceListener(java.lang.String, javax.jmdns.ServiceListener)
-     */
-    @Override
-    public void addServiceListener(String type, ServiceListener listener)
-    {
-        ServiceListenerStatus status = new ServiceListenerStatus(listener);
-        final String lotype = type.toLowerCase();
-        List<ServiceListenerStatus> list = (List<ServiceListenerStatus>) _serviceListeners.get(lotype);
-        if (list == null)
-        {
-            if (_serviceListeners.putIfAbsent(lotype, new LinkedList<ServiceListenerStatus>()) == null)
-            {
-                if (_serviceCollectors.putIfAbsent(lotype, new ServiceCollector(lotype)) == null)
-                {
-                    this.addServiceListener(lotype, (ServiceListener) _serviceCollectors.get(lotype));
-                }
-            }
-            list = (List<ServiceListenerStatus>) _serviceListeners.get(lotype);
-        }
-        if (list != null)
-        {
-            synchronized (list)
-            {
-                if (!list.contains(listener))
-                {
-                    list.add(status);
-                }
-            }
-        }
-        // report cached service types
-        final List<ServiceEvent> serviceEvents = new ArrayList<ServiceEvent>();
-        Collection<DNSEntry> dnsEntryLits = this.getCache().allValues();
-        for (DNSEntry entry : dnsEntryLits)
-        {
-            final DNSRecord record = (DNSRecord) entry;
-            if (record.getRecordType() == DNSRecordType.TYPE_SRV)
-            {
-                if (record.getName().endsWith(type))
-                {
-                    // Do not used the record embedded method for generating event this will not work.
-                    // serviceEvents.add(record.getServiceEvent(this));
-                    serviceEvents.add(new ServiceEventImpl(this, type, toUnqualifiedName(type, record.getName()), record.getServiceInfo()));
-                }
-            }
-        }
-        // Actually call listener with all service events added above
-        for (ServiceEvent serviceEvent : serviceEvents)
-        {
-            status.serviceAdded(serviceEvent);
-        }
-        // Create/start ServiceResolver
-        new ServiceResolver(this, type).start(_timer);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#removeServiceListener(java.lang.String, javax.jmdns.ServiceListener)
-     */
-    @Override
-    public void removeServiceListener(String type, ServiceListener listener)
-    {
-        String aType = type.toLowerCase();
-        List<ServiceListenerStatus> list = (List<ServiceListenerStatus>) _serviceListeners.get(aType);
-        if (list != null)
-        {
-            synchronized (list)
-            {
-                ServiceListenerStatus status = new ServiceListenerStatus(listener);
-                list.remove(status);
-                if (list.isEmpty())
-                {
-                    _serviceListeners.remove(aType, list);
-                }
-            }
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#registerService(javax.jmdns.ServiceInfo)
-     */
-    @Override
-    public void registerService(ServiceInfo infoAbstract) throws IOException
-    {
-        final ServiceInfoImpl info = (ServiceInfoImpl) infoAbstract;
-
-        if ((info.getDns() != null) && (info.getDns() != this))
-        {
-            throw new IllegalStateException("This service information is already registered with another DNS.");
-        }
-        info.setDns(this);
-
-        this.registerServiceType(info.getTypeWithSubtype());
-
-        // bind the service to this address
-        info.setServer(_localHost.getName());
-        info.setAddress(_localHost.getInet4Address());
-        info.setAddress(_localHost.getInet6Address());
-
-        this.waitForAnnounced(0);
-
-        this.makeServiceNameUnique(info);
-        while (_services.putIfAbsent(info.getQualifiedName().toLowerCase(), info) != null)
-        {
-            this.makeServiceNameUnique(info);
-        }
-
-        this.startProber();
-        info.waitForAnnounced(0);
-
-        if (logger.isLoggable(Level.FINE))
-        {
-            logger.fine("registerService() JmDNS registered service as " + info);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#unregisterService(javax.jmdns.ServiceInfo)
-     */
-    @Override
-    public void unregisterService(ServiceInfo infoAbstract)
-    {
-        final ServiceInfoImpl info = (ServiceInfoImpl) infoAbstract;
-        info.cancelState();
-        this.startCanceler();
-
-        // Remind: We get a deadlock here, if the Canceler does not run!
-        info.waitForCanceled(0);
-
-        _services.remove(info.getQualifiedName().toLowerCase(), info);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#unregisterAllServices()
-     */
-    @Override
-    public void unregisterAllServices()
-    {
-        if (logger.isLoggable(Level.FINER))
-        {
-            logger.finer("unregisterAllServices()");
-        }
-
-        for (Iterator<String> itr = _services.keySet().iterator(); itr.hasNext();)
-//        for (String name : _services.keySet())
-        {
-            ServiceInfoImpl info = (ServiceInfoImpl) _services.get(itr.next());
-            if (info != null)
-            {
-                if (logger.isLoggable(Level.FINER))
-                {
-                    logger.finer("Cancelling service info: " + info);
-                }
-                info.cancelState();
-            }
-        }
-        this.startCanceler();
-
-        for (Iterator<String> itr = _services.keySet().iterator(); itr.hasNext();)
-//        for (String name : _services.keySet())
-        {
-        	final String name = itr.next();
-            ServiceInfoImpl info = (ServiceInfoImpl) _services.get(name);
-            if (info != null)
-            {
-                if (logger.isLoggable(Level.FINER))
-                {
-                    logger.finer("Wait for service info cancel: " + info);
-                }
-                info.waitForCanceled(DNSConstants.CLOSE_TIMEOUT);
-                _services.remove(name, info);
-            }
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#registerServiceType(java.lang.String)
-     */
-    @Override
-    public boolean registerServiceType(String type)
-    {
-        boolean typeAdded = false;
-        Map<Fields, String> map = ServiceInfoImpl.decodeQualifiedNameMapForType(type);
-        String domain = map.get(Fields.Domain);
-        String protocol = map.get(Fields.Protocol);
-        String application = map.get(Fields.Application);
-        String subtype = map.get(Fields.Subtype);
-
-        String name = (application.length() > 0 ? "_" + application + "." : "") + (protocol.length() > 0 ? "_" + protocol + "." : "") + domain + ".";
-        if (logger.isLoggable(Level.FINE))
-        {
-            logger.fine(this.getName() + ".registering service type: " + type + " as: " + name + (subtype.length() > 0 ? " subtype: " + subtype : ""));
-        }
-        if (!_serviceTypes.containsKey(name) && !application.equals("dns-sd") && !domain.endsWith("in-addr.arpa") && !domain.endsWith("ip6.arpa"))
-        {
-            typeAdded = _serviceTypes.putIfAbsent(name, new HashSet<String>()) == null;
-            if (typeAdded)
-            {
-                final ServiceTypeListenerStatus[] list = _typeListeners.toArray(new ServiceTypeListenerStatus[_typeListeners.size()]);
-                final ServiceEvent event = new ServiceEventImpl(this, name, "", null);
-                for (final ServiceTypeListenerStatus status : list)
-                {
-                    _executor.submit(new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                            status.serviceTypeAdded(event);
-                        }
-                    });
-                }
-            }
-        }
-        if (subtype.length() > 0)
-        {
-            Set<String> subtypes = (Set<String>) _serviceTypes.get(name);
-            if ((subtypes != null) && (!subtypes.contains(subtype)))
-            {
-                synchronized (subtypes)
-                {
-                    if (!subtypes.contains(subtype))
-                    {
-                        typeAdded = true;
-                        subtypes.add(subtype);
-                        final ServiceTypeListenerStatus[] list = _typeListeners.toArray(new ServiceTypeListenerStatus[_typeListeners.size()]);
-                        final ServiceEvent event = new ServiceEventImpl(this, "_" + subtype + "._sub." + name, "", null);
-                        for (final ServiceTypeListenerStatus status : list)
-                        {
-                            _executor.submit(new Runnable() {
-                                @Override
-                                public void run()
-                                {
-                                    status.subTypeForServiceTypeAdded(event);
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        }
-        return typeAdded;
-    }
-
-    /**
-     * Generate a possibly unique name for a service using the information we have in the cache.
-     *
-     * @return returns true, if the name of the service info had to be changed.
-     */
-    private boolean makeServiceNameUnique(ServiceInfoImpl info)
-    {
-        final String originalQualifiedName = info.getQualifiedName();
-        final long now = System.currentTimeMillis();
-
-        boolean collision;
-        do
-        {
-            collision = false;
-
-            // Check for collision in cache
-            Collection<? extends DNSEntry> entryList = this.getCache().getDNSEntryList(info.getQualifiedName().toLowerCase());
-            if (entryList != null)
-            {
-                for (DNSEntry dnsEntry : entryList)
-                {
-                    if (DNSRecordType.TYPE_SRV.equals(dnsEntry.getRecordType()) && !dnsEntry.isExpired(now))
-                    {
-                        final DNSRecord.Service s = (DNSRecord.Service) dnsEntry;
-                        if (s.getPort() != info.getPort() || !s.getServer().equals(_localHost.getName()))
-                        {
-                            if (logger.isLoggable(Level.FINER))
-                            {
-                                logger.finer("makeServiceNameUnique() JmDNS.makeServiceNameUnique srv collision:" + dnsEntry + " s.server=" + s.getServer() + " " + _localHost.getName() + " equals:" + (s.getServer().equals(_localHost.getName())));
-                            }
-                            info.setName(incrementName(info.getName()));
-                            collision = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Check for collision with other service infos published by JmDNS
-            final ServiceInfo selfService = (ServiceInfo) _services.get(info.getQualifiedName().toLowerCase());
-            if (selfService != null && selfService != info)
-            {
-                info.setName(incrementName(info.getName()));
-                collision = true;
-            }
-        }
-        while (collision);
-
-        return !(originalQualifiedName.equals(info.getQualifiedName()));
-    }
-
-    String incrementName(String name)
-    {
-        String aName = name;
-        try
-        {
-            final int l = aName.lastIndexOf('(');
-            final int r = aName.lastIndexOf(')');
-            if ((l >= 0) && (l < r))
-            {
-                aName = aName.substring(0, l) + "(" + (Integer.parseInt(aName.substring(l + 1, r)) + 1) + ")";
-            }
-            else
-            {
-                aName += " (2)";
-            }
-        }
-        catch (final NumberFormatException e)
-        {
-            aName += " (2)";
-        }
-        return aName;
-    }
-
-    /**
-     * Add a listener for a question. The listener will receive updates of answers to the question as they arrive, or from the cache if they are already available.
-     *
-     * @param listener
-     *            DSN listener
-     * @param question
-     *            DNS query
-     */
-    public void addListener(DNSListener listener, DNSQuestion question)
-    {
-        final long now = System.currentTimeMillis();
-
-        // add the new listener
-        _listeners.add(listener);
-
-        // report existing matched records
-
-        if (question != null)
-        {
-            Collection<? extends DNSEntry> entryList = this.getCache().getDNSEntryList(question.getName().toLowerCase());
-            if (entryList != null)
-            {
-                synchronized (entryList)
-                {
-                    for (DNSEntry dnsEntry : entryList)
-                    {
-                        if (question.answeredBy(dnsEntry) && !dnsEntry.isExpired(now))
-                        {
-                            listener.updateRecord(this.getCache(), now, dnsEntry);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Remove a listener from all outstanding questions. The listener will no longer receive any updates.
-     *
-     * @param listener
-     *            DSN listener
-     */
-    public void removeListener(DNSListener listener)
-    {
-        _listeners.remove(listener);
-    }
-
-    /**
-     * Renew a service when the record become stale. If there is no service collector for the type this method does nothing.
-     *
-     * @param record
-     *            DNS record
-     */
-    public void renewServiceCollector(DNSRecord record)
-    {
-        ServiceInfo info = record.getServiceInfo();
-        if (_serviceCollectors.containsKey(info.getType().toLowerCase()))
-        {
-            // Create/start ServiceResolver
-            new ServiceResolver(this, info.getType()).start(_timer);
-        }
-    }
-
-    // Remind: Method updateRecord should receive a better name.
-    /**
-     * Notify all listeners that a record was updated.
-     *
-     * @param now
-     *            update date
-     * @param rec
-     *            DNS record
-     * @param operation
-     *            DNS cache operation
-     */
-    public void updateRecord(long now, DNSRecord rec, Operation operation)
-    {
-        // We do not want to block the entire DNS while we are updating the record for each listener (service info)
-        {
-            List<DNSListener> listenerList = null;
-            synchronized (_listeners)
-            {
-                listenerList = new ArrayList<DNSListener>(_listeners);
-            }
-            for (DNSListener listener : listenerList)
-            {
-                listener.updateRecord(this.getCache(), now, rec);
-            }
-        }
-        if (DNSRecordType.TYPE_PTR.equals(rec.getRecordType()))
-        // if (DNSRecordType.TYPE_PTR.equals(rec.getRecordType()) || DNSRecordType.TYPE_SRV.equals(rec.getRecordType()))
-        {
-            ServiceEvent event = rec.getServiceEvent(this);
-            if ((event.getInfo() == null) || !event.getInfo().hasData())
-            {
-                // We do not care about the subtype because the info is only used if complete and the subtype will then be included.
-                ServiceInfo info = this.getServiceInfoFromCache(event.getType(), event.getName(), "", false);
-                if (info.hasData())
-                {
-                    event = new ServiceEventImpl(this, event.getType(), event.getName(), info);
-                }
-            }
-
-            List<ServiceListenerStatus> list = (List<ServiceListenerStatus>) _serviceListeners.get(event.getType());
-            final List<ServiceListenerStatus> serviceListenerList;
-            if (list != null)
-            {
-                synchronized (list)
-                {
-                    serviceListenerList = new ArrayList<ServiceListenerStatus>(list);
-                }
-            }
-            else
-            {
-                serviceListenerList = Collections.emptyList();
-            }
-            if (logger.isLoggable(Level.FINEST))
-            {
-                logger.finest(this.getName() + ".updating record for event: " + event + " list " + serviceListenerList + " operation: " + operation);
-            }
-            if (!serviceListenerList.isEmpty())
-            {
-                final ServiceEvent localEvent = event;
-
-                switch (operation)
-                {
-                    case Add:
-                        for (final ServiceListenerStatus listener : serviceListenerList)
-                        {
-                            _executor.submit(new Runnable() {
-                                @Override
-                                public void run()
-                                {
-                                    listener.serviceAdded(localEvent);
-                                }
-                            });
-                        }
-                        break;
-                    case Remove:
-                        for (final ServiceListenerStatus listener : serviceListenerList)
-                        {
-                            _executor.submit(new Runnable() {
-                                @Override
-                                public void run()
-                                {
-                                    listener.serviceRemoved(localEvent);
-                                }
-                            });
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
-    void handleRecord(DNSRecord record, long now)
-    {
-        DNSRecord newRecord = record;
-
-        Operation cacheOperation = Operation.Noop;
-        final boolean expired = newRecord.isExpired(now);
-
-        // update the cache
-        final DNSRecord cachedRecord = (DNSRecord) this.getCache().getDNSEntry(newRecord);
-        if (logger.isLoggable(Level.FINE))
-        {
-            logger.fine(this.getName() + ".handle response: " + newRecord + "\ncached record: " + cachedRecord);
-        }
-        if (cachedRecord != null)
-        {
-            if (expired)
-            {
-                cacheOperation = Operation.Remove;
-                this.getCache().removeDNSEntry(cachedRecord);
-            }
-            else
-            {
-                // If the record content has changed we need to inform our listeners.
-                if (!newRecord.sameValue(cachedRecord) || (!newRecord.sameSubtype(cachedRecord) && (newRecord.getSubtype().length() > 0)))
-                {
-                    cacheOperation = Operation.Update;
-                    this.getCache().replaceDNSEntry(newRecord, cachedRecord);
-                }
-                else
-                {
-                    cachedRecord.resetTTL(newRecord);
-                    newRecord = cachedRecord;
-                }
-            }
-        }
-        else
-        {
-            if (!expired)
-            {
-                cacheOperation = Operation.Add;
-                this.getCache().addDNSEntry(newRecord);
-            }
-        }
-
-        switch (newRecord.getRecordType())
-        {
-            case TYPE_PTR:
-                // handle DNSConstants.DNS_META_QUERY records
-                boolean typeAdded = false;
-                if (newRecord.isServicesDiscoveryMetaQuery())
-                {
-                    // The service names are in the alias.
-                    if (!expired)
-                    {
-                        typeAdded = this.registerServiceType(((DNSRecord.Pointer) newRecord).getAlias());
-                    }
-                    return;
-                }
-                typeAdded |= this.registerServiceType(newRecord.getName());
-                if (typeAdded && (cacheOperation == Operation.Noop))
-                    cacheOperation = Operation.RegisterServiceType;
-                break;
-            default:
-                break;
-        }
-
-        // notify the listeners
-        if (cacheOperation != Operation.Noop)
-        {
-            this.updateRecord(now, newRecord, cacheOperation);
-        }
-
-    }
-
-    /**
-     * Handle an incoming response. Cache answers, and pass them on to the appropriate questions.
-     *
-     * @throws IOException
-     */
-    void handleResponse(DNSIncoming msg) throws IOException
-    {
-        final long now = System.currentTimeMillis();
-
-        boolean hostConflictDetected = false;
-        boolean serviceConflictDetected = false;
-
-        for (Iterator itr = msg.getAllAnswers().iterator(); itr.hasNext();)
-//        for (DNSRecord newRecord : msg.getAllAnswers())
-        {
-        	final DNSRecord newRecord = (DNSRecord) itr.next();
-            this.handleRecord(newRecord, now);
-
-            if (DNSRecordType.TYPE_A.equals(newRecord.getRecordType()) || DNSRecordType.TYPE_AAAA.equals(newRecord.getRecordType()))
-            {
-                hostConflictDetected |= newRecord.handleResponse(this);
-            }
-            else
-            {
-                serviceConflictDetected |= newRecord.handleResponse(this);
-            }
-
-        }
-
-        if (hostConflictDetected || serviceConflictDetected)
-        {
-            this.startProber();
-        }
-    }
-
-    /**
-     * Handle an incoming query. See if we can answer any part of it given our service infos.
-     *
-     * @param in
-     * @param addr
-     * @param port
-     * @throws IOException
-     */
-    void handleQuery(DNSIncoming in, InetAddress addr, int port) throws IOException
-    {
-        if (logger.isLoggable(Level.FINE))
-        {
-            logger.fine(this.getName() + ".handle query: " + in);
-        }
-        // Track known answers
-        boolean conflictDetected = false;
-        final long expirationTime = System.currentTimeMillis() + DNSConstants.KNOWN_ANSWER_TTL;
-        for (Iterator itr = in.getAllAnswers().iterator(); itr.hasNext();)
-//        for (DNSRecord answer : in.getAllAnswers())
-        {
-            conflictDetected |= ((DNSRecord) itr.next()).handleQuery(this, expirationTime);
-        }
-
-        _ioLock.lock();
-        try
-        {
-
-            if (_plannedAnswer != null)
-            {
-                _plannedAnswer.append(in);
-            }
-            else
-            {
-                if (in.isTruncated())
-                {
-                    _plannedAnswer = in;
-                }
-                new Responder(this, in, port).start(_timer);
-            }
-
-        }
-        finally
-        {
-            _ioLock.unlock();
-        }
-
-        final long now = System.currentTimeMillis();
-        for (Iterator itr = in.getAnswers().iterator(); itr.hasNext();)
-//        for (DNSRecord answer : in.getAnswers())
-        {
-            this.handleRecord((DNSRecord) itr.next(), now);
-        }
-
-        if (conflictDetected)
-        {
-            this.startProber();
-        }
-    }
-
-    public void respondToQuery(DNSIncoming in)
-    {
-        _ioLock.lock();
-        try
-        {
-            if (_plannedAnswer == in)
-            {
-                _plannedAnswer = null;
-            }
-        }
-        finally
-        {
-            _ioLock.unlock();
-        }
-    }
-
-    /**
-     * Add an answer to a question. Deal with the case when the outgoing packet overflows
-     *
-     * @param in
-     * @param addr
-     * @param port
-     * @param out
-     * @param rec
-     * @return outgoing answer
-     * @throws IOException
-     */
-    public DNSOutgoing addAnswer(DNSIncoming in, InetAddress addr, int port, DNSOutgoing out, DNSRecord rec) throws IOException
-    {
-        DNSOutgoing newOut = out;
-        if (newOut == null)
-        {
-            newOut = new DNSOutgoing(DNSConstants.FLAGS_QR_RESPONSE | DNSConstants.FLAGS_AA, false, in.getSenderUDPPayload());
-        }
-        try
-        {
-            newOut.addAnswer(in, rec);
-        }
-        catch (final IOException e)
-        {
-            newOut.setFlags(newOut.getFlags() | DNSConstants.FLAGS_TC);
-            newOut.setId(in.getId());
-            send(newOut);
-
-            newOut = new DNSOutgoing(DNSConstants.FLAGS_QR_RESPONSE | DNSConstants.FLAGS_AA, false, in.getSenderUDPPayload());
-            newOut.addAnswer(in, rec);
-        }
-        return newOut;
-    }
-
-    /**
-     * Send an outgoing multicast DNS message.
-     *
-     * @param out
-     * @throws IOException
-     */
-    public void send(DNSOutgoing out) throws IOException
-    {
-        if (!out.isEmpty())
-        {
-            byte[] message = out.data();
-            final DatagramPacket packet = new DatagramPacket(message, message.length, _group, DNSConstants.MDNS_PORT);
-
-            if (logger.isLoggable(Level.FINEST))
-            {
-                try
-                {
-                    final DNSIncoming msg = new DNSIncoming(packet);
-                    if (logger.isLoggable(Level.FINEST))
-                    {
-                        logger.finest("send(" + this.getName() + ") JmDNS out:" + msg.print(true));
-                    }
-                }
-                catch (final IOException e)
-                {
-                    logger.throwing(getClass().toString(), "send(" + this.getName() + ") - JmDNS can not parse what it sends!!!", e);
-                }
-            }
-            final MulticastSocket ms = _socket;
-            if (ms != null && !ms.isClosed())
-                ms.send(packet);
-        }
-    }
-
-    public void startProber()
-    {
-        new Prober(this).start(_stateTimer);
-    }
-
-    public void startAnnouncer()
-    {
-        new Announcer(this).start(_stateTimer);
-    }
-
-    public void startRenewer()
-    {
-        new Renewer(this).start(_stateTimer);
-    }
-
-    public void startCanceler()
-    {
-        new Canceler(this).start(_stateTimer);
-    }
-
-    // REMIND: Why is this not an anonymous inner class?
-    /**
-     * Shutdown operations.
-     */
-    protected class Shutdown implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            try
-            {
-                _shutdown = null;
-                close();
-            }
-            catch (Throwable exception)
-            {
-                System.err.println("Error while shuting down. " + exception);
-            }
-        }
-    }
-
-    /**
-     * Recover jmdns when there is an error.
-     */
-    public void recover()
-    {
-        logger.finer("recover()");
-        // We have an IO error so lets try to recover if anything happens lets close it.
-        // This should cover the case of the IP address changing under our feet
-        if (this.isCanceling() || this.isCanceled())
-            return;
-
-        // Stop JmDNS
-        // This protects against recursive calls
-        if (this.cancelState())
-        {
-            // Synchronize only if we are not already in process to prevent dead locks
-            //
-            if (logger.isLoggable(Level.FINER))
-            {
-                logger.finer("recover() Cleanning up");
-            }
-
-            // Purge the timer
-            _timer.purge();
-
-            // We need to keep a copy for reregistration
-            final Collection<ServiceInfo> oldServiceInfos = new ArrayList<ServiceInfo>(getServices().values());
-
-            // Cancel all services
-            this.unregisterAllServices();
-            this.disposeServiceCollectors();
-
-            this.waitForCanceled(0);
-
-            // Purge the canceler timer
-            _stateTimer.purge();
-
-            //
-            // close multicast socket
-            this.closeMulticastSocket();
-            //
-            this.getCache().clear();
-            if (logger.isLoggable(Level.FINER))
-            {
-                logger.finer("recover() All is clean");
-            }
-            //
-            // All is clear now start the services
-            //
-            for (ServiceInfo info : oldServiceInfos)
-            {
-                ((ServiceInfoImpl) info).recoverState();
-            }
-            this.recoverState();
-
-            try
-            {
-                this.openMulticastSocket(this.getLocalHost());
-                this.start(oldServiceInfos);
-            }
-            catch (final Exception exception)
-            {
-                logger.log(Level.WARNING, "recover() Start services exception ", exception);
-            }
-            logger.log(Level.WARNING, "recover() We are back!");
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#close()
-     */
-    @Override
-    public void close()
-    {
-        if (this.isCanceling() || this.isCanceled())
-            return;
-
-        if (logger.isLoggable(Level.FINER))
-        {
-            logger.finer("Cancelling JmDNS: " + this);
-        }
-        // Stop JmDNS
-        // This protects against recursive calls
-        if (this.cancelState())
-        {
-            // We got the tie break now clean up
-
-            // Stop the timer
-            _timer.cancel();
-
-            // Cancel all services
-            this.unregisterAllServices();
-            this.disposeServiceCollectors();
-
-            if (logger.isLoggable(Level.FINER))
-            {
-                logger.finer("Wait for JmDNS cancel: " + this);
-            }
-            this.waitForCanceled(DNSConstants.CLOSE_TIMEOUT);
-
-            // Stop the canceler timer
-            _stateTimer.cancel();
-
-            // Stop the executor
-            _executor.shutdown();
-
-            // close socket
-            this.closeMulticastSocket();
-
-            // remove the shutdown hook
-            if (_shutdown != null)
-            {
-                Runtime.getRuntime().removeShutdownHook(_shutdown);
-            }
-
-        }
-    }
-
-    /**
-     * @see javax.jmdns.JmDNS#printServices()
-     */
-    @Override
-    public void printServices()
-    {
-        System.err.println(toString());
-    }
-
-	@Override
-    public String toString()
-    {
-        final StringBuilder aLog = new StringBuilder(2048);
-        aLog.append("\t---- Local Host -----");
-        aLog.append("\n\t" + _localHost);
-        aLog.append("\n\t---- Services -----");
-        for (Iterator<String> itr = _services.keySet().iterator(); itr.hasNext();)
-//        for (String key : _services.keySet())
-        {
-        	final String key = itr.next();
-            aLog.append("\n\t\tService: " + key + ": " + _services.get(key));
-        }
-        aLog.append("\n");
-        aLog.append("\t---- Types ----");
-        for (Iterator<String> itr = _serviceTypes.keySet().iterator(); itr.hasNext();)
-//        for (String key : _serviceTypes.keySet())
-        {
-        	final String key = itr.next();
-            Set<String> subtypes = (Set<String>) _serviceTypes.get(key);
-            aLog.append("\n\t\tType: " + key + ": " + ((subtypes == null) || subtypes.isEmpty() ? "no subtypes" : subtypes));
-        }
-        aLog.append("\n");
-        aLog.append(_cache.toString());
-        aLog.append("\n");
-        aLog.append("\t---- Service Collectors ----");
-        for (Iterator<String> itr = _serviceCollectors.keySet().iterator(); itr.hasNext();)
-//        for (String key : _serviceCollectors.keySet())
-        {
-        	final String key = itr.next();
-            aLog.append("\n\t\tService Collector: " + key + ": " + _serviceCollectors.get(key));
-        }
-        aLog.append("\n");
-        aLog.append("\t---- Service Listeners ----");
-        for (Iterator<String> itr = _serviceListeners.keySet().iterator(); itr.hasNext();)
-//        for (String key : _serviceListeners.keySet())
-        {
-        	final String key = itr.next();
-            aLog.append("\n\t\tService Listener: " + key + ": " + _serviceListeners.get(key));
-        }
-        return aLog.toString();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#list(java.lang.String)
-     */
-    @Override
-    public ServiceInfo[] list(String type)
-    {
-        return this.list(type, DNSConstants.SERVICE_INFO_TIMEOUT);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#list(java.lang.String, int)
-     */
-    @Override
-    public ServiceInfo[] list(String type, long timeout)
-    {
-        // Implementation note: The first time a list for a given type is
-        // requested, a ServiceCollector is created which collects service
-        // infos. This greatly speeds up the performance of subsequent calls
-        // to this method. The caveats are, that 1) the first call to this
-        // method for a given type is slow, and 2) we spawn a ServiceCollector
-        // instance for each service type which increases network traffic a
-        // little.
-
-        String aType = type.toLowerCase();
-
-        boolean newCollectorCreated = false;
-        if (this.isCanceling() || this.isCanceled())
-        {
-            return new ServiceInfo[0];
-        }
-
-        ServiceCollector collector = (ServiceCollector) _serviceCollectors.get(aType);
-        if (collector == null)
-        {
-            newCollectorCreated = _serviceCollectors.putIfAbsent(aType, new ServiceCollector(aType)) == null;
-            collector = (ServiceCollector) _serviceCollectors.get(aType);
-            if (newCollectorCreated)
-            {
-                this.addServiceListener(aType, collector);
-            }
-        }
-        if (logger.isLoggable(Level.FINER))
-        {
-            logger.finer(this.getName() + ".collector: " + collector);
-        }
-        // At this stage the collector should never be null but it keeps findbugs happy.
-        return (collector != null ? collector.list(timeout) : new ServiceInfo[0]);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#listBySubtype(java.lang.String)
-     */
-    @Override
-    public Map<String, ServiceInfo[]> listBySubtype(String type)
-    {
-        return this.listBySubtype(type, DNSConstants.SERVICE_INFO_TIMEOUT);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.jmdns.JmDNS#listBySubtype(java.lang.String, long)
-     */
-    @Override
-    public Map<String, ServiceInfo[]> listBySubtype(String type, long timeout)
-    {
-        Map<String, List<ServiceInfo>> map = new HashMap<String, List<ServiceInfo>>(5);
-        for (ServiceInfo info : this.list(type, timeout))
-        {
-            String subtype = info.getSubtype();
-            if (!map.containsKey(subtype))
-            {
-                map.put(subtype, new ArrayList<ServiceInfo>(10));
-            }
-            map.get(subtype).add(info);
-        }
-
-        Map<String, ServiceInfo[]> result = new HashMap<String, ServiceInfo[]>(map.size());
-        for (String subtype : map.keySet())
-        {
-            List<ServiceInfo> infoForSubType = map.get(subtype);
-            result.put(subtype, infoForSubType.toArray(new ServiceInfo[infoForSubType.size()]));
-        }
-
-        return result;
-    }
-
-    /**
-     * This method disposes all ServiceCollector instances which have been created by calls to method <code>list(type)</code>.
-     *
-     * @see #list
-     */
-	private void disposeServiceCollectors()
-    {
-        if (logger.isLoggable(Level.FINER))
-        {
-            logger.finer("disposeServiceCollectors()");
-        }
-        for (Iterator<String> itr = _serviceCollectors.keySet().iterator(); itr.hasNext();)
-//        for (String type : _serviceCollectors.keySet())
-        {
-        	final String type = itr.next();
-            ServiceCollector collector = (ServiceCollector) _serviceCollectors.get(type);
-            if (collector != null)
-            {
-                this.removeServiceListener(type, collector);
-                _serviceCollectors.remove(type, collector);
-            }
-        }
-    }
-
-    /**
-     * Instances of ServiceCollector are used internally to speed up the performance of method <code>list(type)</code>.
-     *
-     * @see #list
-     */
-    private static class ServiceCollector implements ServiceListener
-    {
-        // private static Logger logger = Logger.getLogger(ServiceCollector.class.getName());
-
-        /**
-         * A set of collected service instance names.
-         */
-        private final ConcurrentMap/*<String, ServiceInfo>*/ _infos;
-
-        /**
-         * A set of collected service event waiting to be resolved.
-         */
-        private final ConcurrentMap/*<String, ServiceEvent>*/ _events;
-
-        private final String _type;
-
-        /**
-         * This is used to force a wait on the first invocation of list.
-         */
-        private volatile boolean _needToWaitForInfos;
-
-        public ServiceCollector(String type)
-        {
-            super();
-            _infos = new ConcurrentHashMap/*<String, ServiceInfo>*/();
-            _events = new ConcurrentHashMap/*<String, ServiceEvent>*/();
-            _type = type;
-            _needToWaitForInfos = true;
-        }
-
-        /**
-         * A service has been added.
-         *
-         * @param event
-         *            service event
-         */
-		@Override
-        public void serviceAdded(ServiceEvent event)
-        {
-            synchronized (this)
-            {
-                ServiceInfo info = event.getInfo();
-                if ((info != null) && (info.hasData()))
-                {
-                    _infos.put(event.getName(), info);
-                }
-                else
-                {
-                    String subtype = (info != null ? info.getSubtype() : "");
-                    info = ((JmDNSImpl) event.getDNS()).resolveServiceInfo(event.getType(), event.getName(), subtype, true);
-                    if (info != null)
-                    {
-                        _infos.put(event.getName(), info);
-                    }
-                    else
-                    {
-                        _events.put(event.getName(), event);
-                    }
-                }
-            }
-        }
-
-        /**
-         * A service has been removed.
-         *
-         * @param event
-         *            service event
-         */
-        @Override
-        public void serviceRemoved(ServiceEvent event)
-        {
-            synchronized (this)
-            {
-                _infos.remove(event.getName());
-                _events.remove(event.getName());
-            }
-        }
-
-        /**
-         * A service has been resolved. Its details are now available in the ServiceInfo record.
-         *
-         * @param event
-         *            service event
-         */
-		@Override
-        public void serviceResolved(ServiceEvent event)
-        {
-            synchronized (this)
-            {
-                _infos.put(event.getName(), event.getInfo());
-                _events.remove(event.getName());
-            }
-        }
-
-        /**
-         * Returns an array of all service infos which have been collected by this ServiceCollector.
-         *
-         * @param timeout
-         *            timeout if the info list is empty.
-         *
-         * @return Service Info array
-         */
-        public ServiceInfo[] list(long timeout)
-        {
-            if (_infos.isEmpty() || !_events.isEmpty() || _needToWaitForInfos)
-            {
-                long loops = (timeout / 200L);
-                if (loops < 1)
-                {
-                    loops = 1;
-                }
-                for (int i = 0; i < loops; i++)
-                {
-                    try
-                    {
-                        Thread.sleep(200);
-                    }
-                    catch (final InterruptedException e)
-                    {
-                        /* Stub */
-                    }
-                    if (_events.isEmpty() && !_infos.isEmpty() && !_needToWaitForInfos)
-                    {
-                        break;
-                    }
-                }
-            }
-            _needToWaitForInfos = false;
-            return (ServiceInfo[]) _infos.values().toArray(new ServiceInfo[_infos.size()]);
-        }
-
-        @Override
-        public String toString()
-        {
-            final StringBuffer aLog = new StringBuffer();
-            aLog.append("\n\tType: " + _type);
-            if (_infos.isEmpty())
-            {
-                aLog.append("\n\tNo services collected.");
-            }
-            else
-            {
-                aLog.append("\n\tServices");
-                for (Iterator<String> itr = _infos.keySet().iterator(); itr.hasNext();)
-//                for (String key : _infos.keySet())
-                {
-                	final String key = itr.next();
-                    aLog.append("\n\t\tService: " + key + ": " + _infos.get(key));
-                }
-            }
-            if (_events.isEmpty())
-            {
-                aLog.append("\n\tNo event queued.");
-            }
-            else
-            {
-                aLog.append("\n\tEvents");
-                for (Iterator<String> itr = _events.keySet().iterator(); itr.hasNext();)
-//                for (String key : _events.keySet())
-                {
-                	final String key = itr.next();
-                    aLog.append("\n\t\tEvent: " + key + ": " + _events.get(key));
-                }
-            }
-            return aLog.toString();
-        }
-    }
-
-    static String toUnqualifiedName(String type, String qualifiedName)
-    {
-        if (qualifiedName.endsWith(type) && !(qualifiedName.equals(type)))
-        {
-            return qualifiedName.substring(0, qualifiedName.length() - type.length() - 1);
-        }
-        return qualifiedName;
-    }
-
-    public Map<String, ServiceInfo> getServices()
-    {
-        return _services;
-    }
-
-    public void setLastThrottleIncrement(long lastThrottleIncrement)
-    {
-        this._lastThrottleIncrement = lastThrottleIncrement;
-    }
-
-    public long getLastThrottleIncrement()
-    {
-        return _lastThrottleIncrement;
-    }
-
-    public void setThrottle(int throttle)
-    {
-        this._throttle = throttle;
-    }
-
-    public int getThrottle()
-    {
-        return _throttle;
-    }
-
-    public static Random getRandom()
-    {
-        return _random;
-    }
-
-    public void ioLock()
-    {
-        _ioLock.lock();
-    }
-
-    public void ioUnlock()
-    {
-        _ioLock.unlock();
-    }
-
-    public void setPlannedAnswer(DNSIncoming plannedAnswer)
-    {
-        this._plannedAnswer = plannedAnswer;
-    }
-
-    public DNSIncoming getPlannedAnswer()
-    {
-        return _plannedAnswer;
-    }
-
-    void setLocalHost(HostInfo localHost)
-    {
-        this._localHost = localHost;
-    }
-
-    public Map<String, Set<String>> getServiceTypes()
-    {
-        return _serviceTypes;
-    }
-
-    public void setClosed(boolean closed)
-    {
-        this._closed = closed;
-    }
-
-    public boolean isClosed()
-    {
-        return _closed;
-    }
-
-    public MulticastSocket getSocket()
-    {
-        return _socket;
-    }
-
-    public InetAddress getGroup()
-    {
-        return _group;
-    }
-
+public class JmDNSImpl extends JmDNS {
+	//    private static Logger logger = Logger.getLogger(JmDNSImpl.class.getName());
+
+	// hack for the iPhone (arm darwin) to not set the NetworkInterface. This fails on GNU classpath 0.96.
+	private static final boolean isIphone = Boolean.getBoolean("net.mdns.isArmDarwin");
+	/**
+	  * This is the multicast group, we are listening to for multicast DNS
+	  * messages.
+	  */
+	private InetAddress group;
+	/**
+	 * This is our multicast socket.
+	 */
+	private MulticastSocket socket;
+
+	/**
+	 * Used to fix live lock problem on unregester.
+	 */
+
+	private boolean closed = false;
+
+	/**
+	 * Holds instances of JmDNS.DNSListener. Must by a synchronized collection,
+	 * because it is updated from concurrent threads.
+	 */
+	private List listeners;
+	/**
+	 * Holds instances of ServiceListener's. Keys are Strings holding a fully
+	 * qualified service type. Values are LinkedList's of ServiceListener's.
+	 */
+	private Map serviceListeners;
+	/**
+	 * Holds instances of ServiceTypeListener's.
+	 */
+	private List typeListeners;
+
+	/**
+	 * Cache for DNSEntry's.
+	 */
+	private DNSCache cache;
+
+	/**
+	 * This hashtable holds the services that have been registered. Keys are
+	 * instances of String which hold an all lower-case version of the fully
+	 * qualified service name. Values are instances of ServiceInfo.
+	 */
+	Map services;
+
+	/**
+	 * This hashtable holds the service types that have been registered or that
+	 * have been received in an incoming datagram. Keys are instances of String
+	 * which hold an all lower-case version of the fully qualified service type.
+	 * Values hold the fully qualified service type.
+	 */
+	Map serviceTypes;
+	/**
+	 * This is the shutdown hook, we registered with the java runtime.
+	 */
+	private Thread shutdown;
+
+	/**
+	 * Handle on the local host
+	 */
+	private HostInfo localHost;
+
+	private Thread incomingListener = null;
+
+	/**
+	 * Throttle count. This is used to count the overall number of probes sent
+	 * by JmDNS. When the last throttle increment happened .
+	 */
+	private int throttle;
+	/**
+	 * Last throttle increment.
+	 */
+	private long lastThrottleIncrement;
+
+	/**
+	 * The timer is used to dispatch all outgoing messages of JmDNS. It is also
+	 * used to dispatch maintenance tasks for the DNS cache.
+	 */
+	Timer timer;
+
+	/**
+	 * The source for random values. This is used to introduce random delays in
+	 * responses. This reduces the potential for collisions on the network.
+	 */
+	private final static Random random = new Random();
+
+	/**
+	 * This lock is used to coordinate processing of incoming and outgoing
+	 * messages. This is needed, because the Rendezvous Conformance Test does
+	 * not forgive race conditions.
+	 */
+	private Object ioLock = new Object();
+
+	/**
+	 * If an incoming package which needs an answer is truncated, we store it
+	 * here. We add more incoming DNSRecords to it, until the JmDNS.Responder
+	 * timer picks it up. Remind: This does not work well with multiple planned
+	 * answers for packages that came in from different clients.
+	 */
+	private DNSIncoming plannedAnswer;
+
+	// State machine
+	/**
+	 * The state of JmDNS. <p/> For proper handling of concurrency, this
+	 * variable must be changed only using methods advanceState(), revertState()
+	 * and cancel().
+	 */
+	private DNSState state = DNSState.PROBING_1;
+
+	/**
+	 * Timer task associated to the host name. This is used to prevent from
+	 * having multiple tasks associated to the host name at the same time.
+	 */
+	private TimerTask task;
+
+	/**
+	 * This hashtable is used to maintain a list of service types being
+	 * collected by this JmDNS instance. The key of the hashtable is a service
+	 * type name, the value is an instance of JmDNS.ServiceCollector.
+	 * 
+	 * @see #list
+	 */
+	private final HashMap serviceCollectors = new HashMap();
+
+	/**
+	 * Create an instance of JmDNS.
+	 */
+	public JmDNSImpl() throws IOException {
+		//        logger.finer("JmDNS instance created");
+		try {
+			// determine the interface on which to run on
+			InetAddress addr = null;
+			String ip = System.getProperty("net.mdns.interface");
+			if (ip != null) {
+				addr = InetAddress.getByName(ip);
+				init(addr, addr.getHostName());
+			} else {
+				addr = InetAddress.getLocalHost();
+				init(addr.isLoopbackAddress() ? null : addr, addr.getHostName());
+			}
+			// [
+			// PJYF
+			// Oct
+			// 14
+			// 2004
+			// ]
+			// Why
+			// do
+			// we
+			// disallow
+			// the
+			// loopback
+			// address
+			// ?
+		} catch (final IOException e) {
+			init(null, "computer");
+		}
+	}
+
+	/**
+	 * Create an instance of JmDNS and bind it to a specific network interface
+	 * given its IP-address.
+	 */
+	public JmDNSImpl(InetAddress addr) throws IOException {
+		try {
+			init(addr, addr.getHostName());
+		} catch (final IOException e) {
+			init(null, "computer");
+		}
+	}
+
+	/**
+	 * Initialize everything.
+	 * 
+	 * @param address
+	 *      The interface to which JmDNS binds to.
+	 * @param name
+	 *      The host name of the interface.
+	 */
+	private void init(InetAddress address, String name) throws IOException {
+		// A host name with "." is illegal. so strip off everything and append .
+		// local.
+		final int idx = name.indexOf(".");
+		if (idx > 0) {
+			name = name.substring(0, idx);
+		}
+		name += ".local.";
+		// localHost to IP address binding
+		localHost = new HostInfo(address, name);
+
+		cache = new DNSCache(100);
+
+		listeners = Collections.synchronizedList(new ArrayList());
+		serviceListeners = new HashMap();
+		typeListeners = new ArrayList();
+
+		services = new Hashtable(20);
+		serviceTypes = new Hashtable(20);
+
+		// REMIND: If I could pass in a name for the Timer thread,
+		// I would pass' JmDNS.Timer'.
+		timer = new Timer();
+		new RecordReaper(this).start(timer);
+		shutdown = new Thread(new Shutdown(), "JmDNS.Shutdown");
+		Runtime.getRuntime().addShutdownHook(shutdown);
+
+		incomingListener = new Thread(new SocketListener(this), "JmDNS.SocketListener");
+
+		// Bind to multicast socket
+		openMulticastSocket(getLocalHost());
+		start(getServices().values());
+	}
+
+	private void start(Collection serviceInfos) {
+		setState(DNSState.PROBING_1);
+		incomingListener.start();
+		new Prober(this).start(timer);
+		for (final Iterator iterator = serviceInfos.iterator(); iterator.hasNext();) {
+			try {
+				registerService(new ServiceInfoImpl((ServiceInfoImpl) iterator.next()));
+			} catch (final Exception exception) {
+				//                logger.log(Level.WARNING, "start() Registration exception ", exception);
+			}
+		}
+	}
+
+	private void openMulticastSocket(HostInfo hostInfo) throws IOException {
+		if (group == null) {
+			group = InetAddress.getByName(DNSConstants.MDNS_GROUP);
+		}
+		if (socket != null) {
+			this.closeMulticastSocket();
+		}
+		socket = new MulticastSocket(DNSConstants.MDNS_PORT);
+		if (!isIphone && (hostInfo != null) && (localHost.getInterface() != null)) {
+			socket.setNetworkInterface(hostInfo.getInterface());
+		}
+		socket.setTimeToLive(255);
+		socket.joinGroup(group);
+	}
+
+	private void closeMulticastSocket() {
+		//        logger.finer("closeMulticastSocket()");
+		if (socket != null) {
+			// close socket
+			try {
+				socket.leaveGroup(group);
+				socket.close();
+				if (incomingListener != null) {
+					incomingListener.join();
+				}
+			} catch (final Exception exception) {
+				//                logger.log(Level.WARNING, "closeMulticastSocket() Close socket exception ",
+				//                        exception);
+			}
+			socket = null;
+		}
+	}
+
+	// State machine
+	/**
+	 * Sets the state and notifies all objects that wait on JmDNS.
+	 */
+	public synchronized void advanceState() {
+		setState(getState().advance());
+		notifyAll();
+	}
+
+	/**
+	 * Sets the state and notifies all objects that wait on JmDNS.
+	 */
+	synchronized void revertState() {
+		setState(getState().revert());
+		notifyAll();
+	}
+
+	/**
+	 * Sets the state and notifies all objects that wait on JmDNS.
+	 */
+	synchronized void cancel() {
+		setState(DNSState.CANCELED);
+		notifyAll();
+	}
+
+	/**
+	 * Returns the current state of this info.
+	 */
+	public DNSState getState() {
+		return state;
+	}
+
+	/**
+	 * Return the DNSCache associated with the cache variable
+	 */
+	public DNSCache getCache() {
+		return cache;
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#getHostName()
+	 */
+	public String getHostName() {
+		return localHost.getName();
+	}
+
+	public HostInfo getLocalHost() {
+		return localHost;
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#getInterface()
+	 */
+	public InetAddress getInterface() throws IOException {
+		return socket.getInterface();
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#getServiceInfo(java.lang.String, java.lang.String)
+	 */
+	public ServiceInfo getServiceInfo(String type, String name) {
+		return getServiceInfo(type, name, 3 * 1000);
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#getServiceInfo(java.lang.String, java.lang.String,
+	 *  int)
+	 */
+	public ServiceInfo getServiceInfo(String type, String name, int timeout) {
+		final ServiceInfoImpl info = new ServiceInfoImpl(type, name);
+		new ServiceInfoResolver(this, info).start(timer);
+
+		try {
+			final long end = System.currentTimeMillis() + timeout;
+			long delay;
+			synchronized (info) {
+				while (!info.hasData() && (delay = end - System.currentTimeMillis()) > 0) {
+					info.wait(delay);
+				}
+			}
+		} catch (final InterruptedException e) {
+			// empty
+		}
+
+		return (info.hasData()) ? info : null;
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#requestServiceInfo(java.lang.String,
+	 *  java.lang.String)
+	 */
+	public void requestServiceInfo(String type, String name) {
+		requestServiceInfo(type, name, 3 * 1000);
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#requestServiceInfo(java.lang.String,
+	 *  java.lang.String, int)
+	 */
+	public void requestServiceInfo(String type, String name, int timeout) {
+		registerServiceType(type);
+		final ServiceInfoImpl info = new ServiceInfoImpl(type, name);
+		new ServiceInfoResolver(this, info).start(timer);
+
+		try {
+			final long end = System.currentTimeMillis() + timeout;
+			long delay;
+			synchronized (info) {
+				while (!info.hasData() && (delay = end - System.currentTimeMillis()) > 0) {
+					info.wait(delay);
+				}
+			}
+		} catch (final InterruptedException e) {
+			// empty
+		}
+	}
+
+	void handleServiceResolved(ServiceInfoImpl info) {
+		List list = null;
+		ArrayList listCopy = null;
+		synchronized (serviceListeners) {
+			list = (List) serviceListeners.get(info.type.toLowerCase());
+
+			if (list != null) {
+				listCopy = new ArrayList(list);
+			}
+		}
+		if (listCopy != null) {
+			final ServiceEvent event = new ServiceEventImpl(this, info.type, info.getName(), info);
+			for (final Iterator iterator = listCopy.iterator(); iterator.hasNext();) {
+				((ServiceListener) iterator.next()).serviceResolved(event);
+			}
+		}
+	}
+
+	/**
+	 * @see
+	 *  javax.jmdns.JmDNS#addServiceTypeListener(javax.jmdns.ServiceTypeListener
+	 *  )
+	 */
+	public void addServiceTypeListener(ServiceTypeListener listener) throws IOException {
+		synchronized (this) {
+			typeListeners.remove(listener);
+			typeListeners.add(listener);
+		}
+
+		// report cached service types
+		for (final Iterator iterator = serviceTypes.values().iterator(); iterator.hasNext();) {
+			listener.serviceTypeAdded(new ServiceEventImpl(this, (String) iterator.next(), null, null));
+		}
+
+		new TypeResolver(this).start(timer);
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#removeServiceTypeListener(javax.jmdns.
+	 *  ServiceTypeListener)
+	 */
+	public void removeServiceTypeListener(ServiceTypeListener listener) {
+		synchronized (this) {
+			typeListeners.remove(listener);
+		}
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#addServiceListener(java.lang.String,
+	 *  javax.jmdns.ServiceListener)
+	 */
+	public void addServiceListener(String type, ServiceListener listener) {
+		final String lotype = type.toLowerCase();
+		removeServiceListener(lotype, listener);
+		List list = null;
+
+		synchronized (serviceListeners) {
+			list = (List) serviceListeners.get(lotype);
+			if (list == null) {
+				list = Collections.synchronizedList(new LinkedList());
+				serviceListeners.put(lotype, list);
+			}
+			list.add(listener);
+		}
+
+		// report cached service types
+		final List serviceEvents = new ArrayList();
+		synchronized (cache) {
+			for (final Iterator i = cache.iterator(); i.hasNext();) {
+				for (DNSCache.CacheNode n = (DNSCache.CacheNode) i.next(); n != null; n = n.next()) {
+					final DNSRecord rec = (DNSRecord) n.getValue();
+					if (rec.type == DNSConstants.TYPE_SRV) {
+						if (rec.name.endsWith(type)) {
+							serviceEvents.add(new ServiceEventImpl(this, type, toUnqualifiedName(type, rec.name), null));
+						}
+					}
+				}
+			}
+		}
+		// Actually call listener with all service events added above
+		for (final Iterator i = serviceEvents.iterator(); i.hasNext();) {
+			listener.serviceAdded((ServiceEventImpl) i.next());
+		}
+		// Create/start ServiceResolver
+		new ServiceResolver(this, type).start(timer);
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#removeServiceListener(java.lang.String,
+	 *  javax.jmdns.ServiceListener)
+	 */
+	public void removeServiceListener(String type, ServiceListener listener) {
+		type = type.toLowerCase();
+		List list = null;
+		synchronized (serviceListeners) {
+			list = (List) serviceListeners.get(type);
+			if (list != null) {
+				list.remove(listener);
+				if (list.size() == 0) {
+					serviceListeners.remove(type);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#registerService(javax.jmdns.ServiceInfo)
+	 */
+	public void registerService(ServiceInfo infoAbstract) throws IOException {
+		final ServiceInfoImpl info = (ServiceInfoImpl) infoAbstract;
+
+		registerServiceType(info.type);
+
+		// bind the service to this address
+		info.server = localHost.getName();
+		info.addr = localHost.getAddress();
+
+		synchronized (this) {
+			makeServiceNameUnique(info);
+			services.put(info.getQualifiedName().toLowerCase(), info);
+		}
+
+		new /* Service */Prober(this).start(timer);
+		try {
+			synchronized (info) {
+				while (info.getState().compareTo(DNSState.ANNOUNCED) < 0) {
+					info.wait();
+				}
+			}
+		} catch (final InterruptedException e) {
+			// empty
+		}
+		//        logger.fine("registerService() JmDNS registered service as " + info);
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#unregisterService(javax.jmdns.ServiceInfo)
+	 */
+	public void unregisterService(ServiceInfo infoAbstract) {
+		final ServiceInfoImpl info = (ServiceInfoImpl) infoAbstract;
+		synchronized (this) {
+			services.remove(info.getQualifiedName().toLowerCase());
+		}
+		info.cancel();
+
+		// Note: We use this lock object to synchronize on it.
+		// Synchronizing on another object (e.g. the ServiceInfo) does
+		// not make sense, because the sole purpose of the lock is to
+		// wait until the canceler has finished. If we synchronized on
+		// the ServiceInfo or on the Canceler, we would block all
+		// accesses to synchronized methods on that object. This is not
+		// what we want!
+		final Object lock = new Object();
+
+		// Remind: We get a deadlock here, if the Canceler does not run!
+		try {
+			synchronized (lock) {
+				new Canceler(this, info, lock).start(timer);
+				lock.wait();
+			}
+		} catch (final InterruptedException e) {
+			// empty
+		}
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#unregisterAllServices()
+	 */
+	public void unregisterAllServices() {
+		//        logger.finer("unregisterAllServices()");
+		if (services.size() == 0) {
+			return;
+		}
+
+		Collection list;
+		synchronized (this) {
+			list = new LinkedList(services.values());
+			services.clear();
+		}
+		for (final Iterator iterator = list.iterator(); iterator.hasNext();) {
+			((ServiceInfoImpl) iterator.next()).cancel();
+		}
+
+		final Object lock = new Object();
+		new Canceler(this, list, lock).start(timer);
+		// Remind: We get a livelock here, if the Canceler does not run!
+		try {
+			synchronized (lock) {
+				if (!closed) {
+					lock.wait();
+				}
+			}
+		} catch (final InterruptedException e) {
+			// empty
+		}
+
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#registerServiceType(java.lang.String)
+	 */
+	public void registerServiceType(String type) {
+		final String name = type.toLowerCase();
+		if (serviceTypes.get(name) == null) {
+			if ((type.indexOf(DNSConstants.DNS_META_QUERY) < 0) && !type.endsWith(".in-addr.arpa.")) {
+				Collection list;
+				synchronized (this) {
+					serviceTypes.put(name, type);
+					list = new LinkedList(typeListeners);
+				}
+				for (final Iterator iterator = list.iterator(); iterator.hasNext();) {
+					((ServiceTypeListener) iterator.next()).serviceTypeAdded(new ServiceEventImpl(this, type, null, null));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Generate a possibly unique name for a host using the information we have
+	 * in the cache.
+	 * 
+	 * @return returns true, if the name of the host had to be changed.
+	 */
+	//    private boolean makeHostNameUnique(DNSRecord.Address host)
+	//    {
+	//        final String originalName = host.getName();
+	//        System.currentTimeMillis();
+	//
+	//        boolean collision;
+	//        do
+	//        {
+	//            collision = false;
+	//
+	//            // Check for collision in cache
+	//            for (DNSCache.CacheNode j = cache.find(host.getName().toLowerCase()); j != null; j = j
+	//                    .next())
+	//            {
+	//                if (false)
+	//                {
+	//                    host.name = incrementName(host.getName());
+	//                    collision = true;
+	//                    break;
+	//                }
+	//            }
+	//        }
+	//        while (collision);
+	//
+	//        if (originalName.equals(host.getName()))
+	//        {
+	//            return false;
+	//        }
+	//        else
+	//        {
+	//            return true;
+	//        }
+	//    }
+
+	/**
+	 * Generate a possibly unique name for a service using the information we
+	 * have in the cache.
+	 * 
+	 * @return returns true, if the name of the service info had to be changed.
+	 */
+	private boolean makeServiceNameUnique(ServiceInfoImpl info) {
+		final String originalQualifiedName = info.getQualifiedName();
+		final long now = System.currentTimeMillis();
+
+		boolean collision;
+		do {
+			collision = false;
+
+			// Check for collision in cache
+			for (DNSCache.CacheNode j = cache.find(info.getQualifiedName().toLowerCase()); j != null; j = j.next()) {
+				final DNSRecord a = (DNSRecord) j.getValue();
+				if ((a.type == DNSConstants.TYPE_SRV) && !a.isExpired(now)) {
+					final DNSRecord.Service s = (DNSRecord.Service) a;
+					if (s.port != info.port || !s.server.equals(localHost.getName())) {
+						//                        logger
+						//                                .finer("makeServiceNameUnique() JmDNS.makeServiceNameUnique srv collision:"
+						//                                        + a
+						//                                        + " s.server="
+						//                                        + s.server
+						//                                        + " "
+						//                                        + localHost.getName()
+						//                                        + " equals:" + (s.server.equals(localHost.getName())));
+						info.setName(incrementName(info.getName()));
+						collision = true;
+						break;
+					}
+				}
+			}
+
+			// Check for collision with other service infos published by JmDNS
+			final Object selfService = services.get(info.getQualifiedName().toLowerCase());
+			if (selfService != null && selfService != info) {
+				info.setName(incrementName(info.getName()));
+				collision = true;
+			}
+		} while (collision);
+
+		return !(originalQualifiedName.equals(info.getQualifiedName()));
+	}
+
+	String incrementName(String name) {
+		try {
+			final int l = name.lastIndexOf('(');
+			final int r = name.lastIndexOf(')');
+			if ((l >= 0) && (l < r)) {
+				name = name.substring(0, l) + "(" + (Integer.parseInt(name.substring(l + 1, r)) + 1) + ")";
+			} else {
+				name += " (2)";
+			}
+		} catch (final NumberFormatException e) {
+			name += " (2)";
+		}
+		return name;
+	}
+
+	/**
+	 * Add a listener for a question. The listener will receive updates of
+	 * answers to the question as they arrive, or from the cache if they are
+	 * already available.
+	 */
+	public void addListener(DNSListener listener, DNSQuestion question) {
+		final long now = System.currentTimeMillis();
+
+		// add the new listener
+		synchronized (this) {
+			listeners.add(listener);
+		}
+
+		// report existing matched records
+		if (question != null) {
+			for (DNSCache.CacheNode i = cache.find(question.name); i != null; i = i.next()) {
+				final DNSRecord c = (DNSRecord) i.getValue();
+				if (question.answeredBy(c) && !c.isExpired(now)) {
+					listener.updateRecord(this, now, c);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Remove a listener from all outstanding questions. The listener will no
+	 * longer receive any updates.
+	 */
+	public void removeListener(DNSListener listener) {
+		synchronized (this) {
+			listeners.remove(listener);
+		}
+	}
+
+	// Remind: Method updateRecord should receive a better name.
+	/**
+	 * Notify all listeners that a record was updated.
+	 */
+	public void updateRecord(long now, DNSRecord rec) {
+		// We do not want to block the entire DNS while we are updating the
+		// record for each listener (service info)
+		List listenerList = null;
+		synchronized (this) {
+			listenerList = new ArrayList(listeners);
+		}
+		for (final Iterator iterator = listenerList.iterator(); iterator.hasNext();) {
+			final DNSListener listener = (DNSListener) iterator.next();
+			listener.updateRecord(this, now, rec);
+		}
+		if (rec.type == DNSConstants.TYPE_PTR || rec.type == DNSConstants.TYPE_SRV) {
+			List serviceListenerList = null;
+			synchronized (serviceListeners) {
+				serviceListenerList = (List) serviceListeners.get(rec.name.toLowerCase());
+				// Iterate on a copy in case listeners will modify it
+				if (serviceListenerList != null) {
+					serviceListenerList = new ArrayList(serviceListenerList);
+				}
+			}
+			if (serviceListenerList != null) {
+				final boolean expired = rec.isExpired(now);
+				final String type = rec.getName();
+				final String name = ((DNSRecord.Pointer) rec).getAlias();
+				// DNSRecord old = (DNSRecord)services.get(name.toLowerCase());
+				if (!expired) {
+					// new record
+					final ServiceEvent event = new ServiceEventImpl(this, type, toUnqualifiedName(type, name), null);
+					for (final Iterator iterator = serviceListenerList.iterator(); iterator.hasNext();) {
+						((ServiceListener) iterator.next()).serviceAdded(event);
+					}
+				} else {
+					// expire record
+					final ServiceEvent event = new ServiceEventImpl(this, type, toUnqualifiedName(type, name), null);
+					for (final Iterator iterator = serviceListenerList.iterator(); iterator.hasNext();) {
+						((ServiceListener) iterator.next()).serviceRemoved(event);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Handle an incoming response. Cache answers, and pass them on to the
+	 * appropriate questions.
+	 */
+	void handleResponse(DNSIncoming msg) throws IOException {
+		final long now = System.currentTimeMillis();
+
+		boolean hostConflictDetected = false;
+		boolean serviceConflictDetected = false;
+
+		for (final Iterator i = msg.answers.iterator(); i.hasNext();) {
+			boolean isInformative = false;
+			DNSRecord rec = (DNSRecord) i.next();
+			final boolean expired = rec.isExpired(now);
+
+			// update the cache
+			final DNSRecord c = (DNSRecord) cache.get(rec);
+			if (c != null) {
+				if (expired) {
+					isInformative = true;
+					cache.remove(c);
+				} else {
+					c.resetTTL(rec);
+					rec = c;
+				}
+			} else {
+				if (!expired) {
+					isInformative = true;
+					cache.add(rec);
+				}
+			}
+			switch (rec.type) {
+				case DNSConstants.TYPE_PTR :
+					// handle _mdns._udp records
+					if (rec.getName().indexOf(DNSConstants.DNS_META_QUERY) >= 0) {
+						if (!expired && rec.name.startsWith("_services" + DNSConstants.DNS_META_QUERY)) {
+							isInformative = true;
+							registerServiceType(((DNSRecord.Pointer) rec).alias);
+						}
+						continue;
+					}
+					registerServiceType(rec.name);
+					break;
+			}
+
+			if ((rec.getType() == DNSConstants.TYPE_A) || (rec.getType() == DNSConstants.TYPE_AAAA)) {
+				hostConflictDetected |= rec.handleResponse(this);
+			} else {
+				serviceConflictDetected |= rec.handleResponse(this);
+			}
+
+			// notify the listeners
+			if (isInformative) {
+				updateRecord(now, rec);
+			}
+		}
+
+		if (hostConflictDetected || serviceConflictDetected) {
+			new Prober(this).start(timer);
+		}
+	}
+
+	/**
+	 * Handle an incoming query. See if we can answer any part of it given our
+	 * service infos.
+	 */
+	void handleQuery(DNSIncoming in, InetAddress addr, int port) throws IOException {
+		// Track known answers
+		boolean hostConflictDetected = false;
+		boolean serviceConflictDetected = false;
+		final long expirationTime = System.currentTimeMillis() + DNSConstants.KNOWN_ANSWER_TTL;
+		for (final Iterator i = in.answers.iterator(); i.hasNext();) {
+			final DNSRecord answer = (DNSRecord) i.next();
+			if ((answer.getType() == DNSConstants.TYPE_A) || (answer.getType() == DNSConstants.TYPE_AAAA)) {
+				hostConflictDetected |= answer.handleQuery(this, expirationTime);
+			} else {
+				serviceConflictDetected |= answer.handleQuery(this, expirationTime);
+			}
+		}
+
+		if (plannedAnswer != null) {
+			plannedAnswer.append(in);
+		} else {
+			if (in.isTruncated()) {
+				plannedAnswer = in;
+			}
+
+			new Responder(this, in, addr, port).start();
+		}
+
+		if (hostConflictDetected || serviceConflictDetected) {
+			new Prober(this).start(timer);
+		}
+	}
+
+	/**
+	 * Add an answer to a question. Deal with the case when the outgoing packet
+	 * overflows
+	 */
+	public DNSOutgoing addAnswer(DNSIncoming in, InetAddress addr, int port, DNSOutgoing out, DNSRecord rec) throws IOException {
+		if (out == null) {
+			out = new DNSOutgoing(DNSConstants.FLAGS_QR_RESPONSE | DNSConstants.FLAGS_AA);
+		}
+		try {
+			out.addAnswer(in, rec);
+		} catch (final IOException e) {
+			out.flags |= DNSConstants.FLAGS_TC;
+			out.id = in.id;
+			out.finish();
+			send(out);
+
+			out = new DNSOutgoing(DNSConstants.FLAGS_QR_RESPONSE | DNSConstants.FLAGS_AA);
+			out.addAnswer(in, rec);
+		}
+		return out;
+	}
+
+	/**
+	 * Send an outgoing multicast DNS message.
+	 */
+	public void send(DNSOutgoing out) throws IOException {
+		out.finish();
+		if (!out.isEmpty()) {
+			final DatagramPacket packet = new DatagramPacket(out.data, out.off, group, DNSConstants.MDNS_PORT);
+
+			try {
+				final DNSIncoming msg = new DNSIncoming(packet);
+				//                logger.finest("send() JmDNS out:" + msg.print(true));
+			} catch (final IOException e) {
+				//                logger.throwing(getClass().toString(),
+				//                        "send(DNSOutgoing) - JmDNS can not parse what it sends!!!", e);
+			}
+			final MulticastSocket ms = socket;
+			if (ms != null && !ms.isClosed())
+				ms.send(packet);
+		}
+	}
+
+	public void startAnnouncer() {
+		if (getState() != DNSState.CANCELED)
+			new Announcer(this).start(timer);
+	}
+
+	public void startRenewer() {
+		if (getState() != DNSState.CANCELED)
+			new Renewer(this).start(timer);
+	}
+
+	public void schedule(TimerTask task, int delay) {
+		if (getState() != DNSState.CANCELED)
+			timer.schedule(task, delay);
+	}
+
+	// REMIND: Why is this not an anonymous inner class?
+	/**
+	 * Shutdown operations.
+	 */
+	private class Shutdown implements Runnable {
+		public void run() {
+			shutdown = null;
+			close();
+		}
+	}
+
+	/**
+	 * Recover jmdns when there is an error.
+	 */
+	public void recover() {
+		//        logger.finer("recover()");
+		// We have an IO error so lets try to recover if anything happens lets
+		// close it.
+		// This should cover the case of the IP address changing under our feet
+		if (DNSState.CANCELED != getState()) {
+			synchronized (this) { // Synchronize only if we are not already in process to prevent
+									// dead locks
+									//
+									//                logger.finer("recover() Cleanning up");
+									// Stop JmDNS
+				setState(DNSState.CANCELED); // This protects against recursive
+				// calls
+
+				// We need to keep a copy for reregistration
+				final Collection oldServiceInfos = new ArrayList(getServices().values());
+
+				// Cancel all services
+				unregisterAllServices();
+				disposeServiceCollectors();
+				//
+				// close multicast socket
+				closeMulticastSocket();
+				//
+				cache.clear();
+				//                logger.finer("recover() All is clean");
+				//
+				// All is clear now start the services
+				//
+				try {
+					openMulticastSocket(getLocalHost());
+					start(oldServiceInfos);
+				} catch (final Exception exception) {
+					//                    logger.log(Level.WARNING, "recover() Start services exception ", exception);
+				}
+				//                logger.log(Level.WARNING, "recover() We are back!");
+			}
+		}
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#close()
+	 */
+	public void close() {
+		if (getState() != DNSState.CANCELED) {
+			synchronized (this) { // Synchronize only if we are not already in process to prevent
+									// dead locks
+									// Stop JmDNS
+				setState(DNSState.CANCELED); // This protects against recursive
+				// calls
+
+				unregisterAllServices();
+
+				// Stop the timer
+				timer.cancel();
+
+				disposeServiceCollectors();
+
+				// close socket
+				closeMulticastSocket();
+
+				// remove the shutdown hook
+				if (shutdown != null) {
+					Runtime.getRuntime().removeShutdownHook(shutdown);
+				}
+
+			}
+		}
+	}
+
+	/**
+	 * List cache entries, for debugging only.
+	 */
+	void print() {
+		System.out.println("---- cache ----");
+		cache.print();
+		System.out.println();
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#printServices()
+	 */
+	public void printServices() {
+		System.err.println(toString());
+	}
+
+	public String toString() {
+		final StringBuffer aLog = new StringBuffer();
+		aLog.append("\t---- Services -----");
+		if (services != null) {
+			for (final Iterator k = services.keySet().iterator(); k.hasNext();) {
+				final Object key = k.next();
+				aLog.append("\n\t\tService: " + key + ": " + services.get(key));
+			}
+		}
+		aLog.append("\n");
+		aLog.append("\t---- Types ----");
+		if (serviceTypes != null) {
+			for (final Iterator k = serviceTypes.keySet().iterator(); k.hasNext();) {
+				final Object key = k.next();
+				aLog.append("\n\t\tType: " + key + ": " + serviceTypes.get(key));
+			}
+		}
+		aLog.append("\n");
+		aLog.append(cache.toString());
+		aLog.append("\n");
+		aLog.append("\t---- Service Collectors ----");
+		if (serviceCollectors != null) {
+			synchronized (serviceCollectors) {
+				for (final Iterator k = serviceCollectors.keySet().iterator(); k.hasNext();) {
+					final Object key = k.next();
+					aLog.append("\n\t\tService Collector: " + key + ": " + serviceCollectors.get(key));
+				}
+				serviceCollectors.clear();
+			}
+		}
+		return aLog.toString();
+	}
+
+	/**
+	 * @see javax.jmdns.JmDNS#list(java.lang.String)
+	 */
+	public ServiceInfo[] list(String type) {
+		// Implementation note: The first time a list for a given type is
+		// requested, a ServiceCollector is created which collects service
+		// infos. This greatly speeds up the performance of subsequent calls
+		// to this method. The caveats are, that 1) the first call to this
+		// method
+		// for a given type is slow, and 2) we spawn a ServiceCollector
+		// instance for each service type which increases network traffic a
+		// little.
+
+		ServiceCollector collector;
+
+		boolean newCollectorCreated;
+		synchronized (serviceCollectors) {
+			collector = (ServiceCollector) serviceCollectors.get(type);
+			if (collector == null) {
+				collector = new ServiceCollector(type);
+				serviceCollectors.put(type, collector);
+				addServiceListener(type, collector);
+				newCollectorCreated = true;
+			} else {
+				newCollectorCreated = false;
+			}
+		}
+
+		// After creating a new ServiceCollector, we collect service infos for
+		// 200 milliseconds. This should be enough time, to get some service
+		// infos from the network.
+		if (newCollectorCreated) {
+			try {
+				Thread.sleep(200);
+			} catch (final InterruptedException e) {
+			}
+		}
+
+		return collector.list();
+	}
+
+	/**
+	 * This method disposes all ServiceCollector instances which have been
+	 * created by calls to method <code>list(type)</code>.
+	 * 
+	 * @see #list
+	 */
+	private void disposeServiceCollectors() {
+		//        logger.finer("disposeServiceCollectors()");
+		synchronized (serviceCollectors) {
+			for (final Iterator i = serviceCollectors.values().iterator(); i.hasNext();) {
+				final ServiceCollector collector = (ServiceCollector) i.next();
+				removeServiceListener(collector.type, collector);
+			}
+			serviceCollectors.clear();
+		}
+	}
+
+	/**
+	 * Instances of ServiceCollector are used internally to speed up the
+	 * performance of method <code>list(type)</code>.
+	 * 
+	 * @see #list
+	 */
+	private static class ServiceCollector implements ServiceListener {
+		//        private static Logger logger = Logger.getLogger(ServiceCollector.class.getName());
+		/**
+		 * A set of collected service instance names.
+		 */
+		private final Map infos = Collections.synchronizedMap(new HashMap());
+
+		public String type;
+
+		public ServiceCollector(String type) {
+			this.type = type;
+		}
+
+		/**
+		 * A service has been added.
+		 */
+		public void serviceAdded(ServiceEvent event) {
+			synchronized (infos) {
+				event.getDNS().requestServiceInfo(event.getType(), event.getName(), 0);
+			}
+		}
+
+		/**
+		 * A service has been removed.
+		 */
+		public void serviceRemoved(ServiceEvent event) {
+			synchronized (infos) {
+				infos.remove(event.getName());
+			}
+		}
+
+		/**
+		 * A service hase been resolved. Its details are now available in the
+		 * ServiceInfo record.
+		 */
+		public void serviceResolved(ServiceEvent event) {
+			synchronized (infos) {
+				infos.put(event.getName(), event.getInfo());
+			}
+		}
+
+		/**
+		 * Returns an array of all service infos which have been collected by
+		 * this ServiceCollector.
+		 */
+		public ServiceInfoImpl[] list() {
+			synchronized (infos) {
+				return (ServiceInfoImpl[]) infos.values().toArray(new ServiceInfoImpl[infos.size()]);
+			}
+		}
+
+		public String toString() {
+			final StringBuffer aLog = new StringBuffer();
+			synchronized (infos) {
+				for (final Iterator k = infos.keySet().iterator(); k.hasNext();) {
+					final Object key = k.next();
+					aLog.append("\n\t\tService: " + key + ": " + infos.get(key));
+				}
+			}
+			return aLog.toString();
+		}
+	};
+
+	private static String toUnqualifiedName(String type, String qualifiedName) {
+		if (qualifiedName.endsWith(type)) {
+			return qualifiedName.substring(0, qualifiedName.length() - type.length() - 1);
+		} else {
+			return qualifiedName;
+		}
+	}
+
+	public void setState(DNSState state) {
+		this.state = state;
+	}
+
+	public void setTask(TimerTask task) {
+		this.task = task;
+	}
+
+	public TimerTask getTask() {
+		return task;
+	}
+
+	public Map getServices() {
+		return services;
+	}
+
+	public void setLastThrottleIncrement(long lastThrottleIncrement) {
+		this.lastThrottleIncrement = lastThrottleIncrement;
+	}
+
+	public long getLastThrottleIncrement() {
+		return lastThrottleIncrement;
+	}
+
+	public void setThrottle(int throttle) {
+		this.throttle = throttle;
+	}
+
+	public int getThrottle() {
+		return throttle;
+	}
+
+	public static Random getRandom() {
+		return random;
+	}
+
+	public void setIoLock(Object ioLock) {
+		this.ioLock = ioLock;
+	}
+
+	public Object getIoLock() {
+		return ioLock;
+	}
+
+	public void setPlannedAnswer(DNSIncoming plannedAnswer) {
+		this.plannedAnswer = plannedAnswer;
+	}
+
+	public DNSIncoming getPlannedAnswer() {
+		return plannedAnswer;
+	}
+
+	void setLocalHost(HostInfo localHost) {
+		this.localHost = localHost;
+	}
+
+	public Map getServiceTypes() {
+		return serviceTypes;
+	}
+
+	public void setClosed(boolean closed) {
+		this.closed = closed;
+	}
+
+	public boolean isClosed() {
+		return closed;
+	}
+
+	public MulticastSocket getSocket() {
+		return socket;
+	}
+
+	public InetAddress getGroup() {
+		return group;
+	}
 }
