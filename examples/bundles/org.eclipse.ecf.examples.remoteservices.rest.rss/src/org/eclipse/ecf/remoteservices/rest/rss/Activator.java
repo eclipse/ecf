@@ -165,7 +165,6 @@ public class Activator implements BundleActivator {
     {
         return new IRemoteCallListener()
         {
-            @Override
             public void handleEvent(IRemoteCallEvent event)
             {
                 if (event instanceof IRemoteCallCompleteEvent)
