@@ -282,4 +282,46 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string));
 	}
 
+	/**
+	 * @param aClass The Class providing method under question (Must not be null)
+	 * @param aMethodName The method name to search for (Must not be null)
+	 * @param someParameterTypes Method arguments (May be null or parameters)
+	 * @return A match. If more than one method matched (due to overloading) an abitrary match is taken
+	 * @throws NoSuchMethodException If a match cannot be found
+	 * 
+	 * @since 4.2
+	 */
+	public static Method getMethod(final Class aClass, String aMethodName, final Class[] someParameterTypes) throws NoSuchMethodException {
+		// no args makes matching simple
+		if (someParameterTypes == null || someParameterTypes.length == 0) {
+			return aClass.getMethod(aMethodName, (Class[]) null);
+		}
+
+		// match parameters to determine callee
+		final Method[] methods = aClass.getMethods();
+		final int parameterCount = someParameterTypes.length;
+		aMethodName = aMethodName.intern();
+
+		OUTER: for (int i = 0; i < methods.length; i++) {
+			Method candidate = methods[i];
+			String candidateMethodName = candidate.getName().intern();
+			Class[] candidateParameterTypes = candidate.getParameterTypes();
+			int candidateParameterCount = candidateParameterTypes.length;
+			if (candidateParameterCount == parameterCount && aMethodName == candidateMethodName) {
+				for (int j = 0; j < candidateParameterCount; j++) {
+					Class<?> clazzA = candidateParameterTypes[j];
+					Class clazzB = someParameterTypes[j];
+					// clazzA must be non-null, but clazzB could be null (null given as parameter value)
+					// so in that case we consider it a match and continue
+					if (!(clazzB == null || clazzA.isAssignableFrom(clazzB))) {
+						continue OUTER;
+					}
+				}
+				return candidate;
+			}
+		}
+		// if no match has been found, fail with NSME
+		throw new NoSuchMethodException("No such method: " + aMethodName + "(" + Arrays.asList(someParameterTypes) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	}
+
 }
