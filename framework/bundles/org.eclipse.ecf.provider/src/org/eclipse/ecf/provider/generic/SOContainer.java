@@ -694,8 +694,17 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 					// Actually deliver event to shared object asynchronously
 					sow.deliverSharedObjectMessage(fromID, obj);
 				} catch (final ClassNotFoundException e) {
-					Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "handleSharedObjectMessage", e); //$NON-NLS-1$
-					printToSystemError("Class not found sharedObjectID=" + sharedObjectID + " containerID=" + fromID, e); //$NON-NLS-1$ //$NON-NLS-2$
+					String message = "shared object message ClassNotFoundException.  sharedObjectID=" + sharedObjectID + " fromContainerID=" + fromID; //$NON-NLS-1$ //$NON-NLS-2$
+					ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, message, e));
+					printToSystemError(message, e);
+				} catch (final IOException e) {
+					String message = "shared object message IOException.  sharedObjectID=" + sharedObjectID + " fromContainerID=" + fromID; //$NON-NLS-1$ //$NON-NLS-2$
+					ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, message, e));
+					printToSystemError(message, e);
+				} catch (final NoClassDefFoundError e) {
+					String message = "shared object message NoClassDefFoundError.  sharedObjectID=" + sharedObjectID + " fromContainerID=" + fromID; //$NON-NLS-1$ //$NON-NLS-2$
+					ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, message, e));
+					printToSystemError(message, e);
 				}
 			} else
 				handleUndeliveredSharedObjectMessage(resp);
