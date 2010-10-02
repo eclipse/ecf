@@ -19,15 +19,26 @@ import org.eclipse.ecf.provider.comm.IConnectRequestHandler;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 
 public class TCPServerSOContainer extends ServerSOContainer implements IConnectRequestHandler {
-	public static final String DEFAULT_PROTOCOL = "ecftcp"; //$NON-NLS-1$
+	public static final String DEFAULT_PROTOCOL = System.getProperty("org.eclipse.ecf.provider.generic.scheme", "ecftcp"); //$NON-NLS-1$ //$NON-NLS-2$
 
-	public static final int DEFAULT_PORT = 3282;
+	public static final int DEFAULT_PORT = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.generic.port", "3282")); //$NON-NLS-1$ //$NON-NLS-2$;
 
-	public static final int DEFAULT_KEEPALIVE = 30000;
+	public static final int DEFAULT_KEEPALIVE = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.generic.keepalive", "30000")); //$NON-NLS-1$ //$NON-NLS-2$;
 
-	public static final String DEFAULT_NAME = "/server"; //$NON-NLS-1$
+	public static final String DEFAULT_NAME = System.getProperty("org.eclipse.ecf.provider.generic.name", "/server"); //$NON-NLS-1$ //$NON-NLS-2$"
 
-	public static final String DEFAULT_HOST = "localhost"; //$NON-NLS-1$
+	public static String DEFAULT_HOST = System.getProperty("org.eclipse.ecf.provider.generic.host", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
+
+	static {
+		final Boolean useHostname = Boolean.valueOf(System.getProperty("org.eclipse.ecf.provider.generic.host.useHostName", "false")); //$NON-NLS-1$ //$NON-NLS-2$
+		if (useHostname.booleanValue()) {
+			try {
+				DEFAULT_HOST = InetAddress.getLocalHost().getCanonicalHostName();
+			} catch (UnknownHostException e) {
+				DEFAULT_HOST = "localhost"; //$NON-NLS-1$
+			}
+		}
+	}
 
 	// Keep alive value
 	protected int keepAlive;
