@@ -13,7 +13,8 @@ package org.eclipse.ecf.core.sharedobject;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.security.*;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 
 /**
@@ -150,17 +151,53 @@ public class SharedObjectMsg implements Serializable {
 	 * @return Method instance found on given class. Null if none found.
 	 */
 	public static Method findMethod(final Class clazz, String meth, Class args[]) {
-		Method methods[] = null;
 		try {
-			methods = (Method[]) AccessController.doPrivileged(new PrivilegedExceptionAction() {
-				public Object run() throws Exception {
-					return clazz.getDeclaredMethods();
-				}
-			});
-		} catch (PrivilegedActionException e) {
+			return getMethod(clazz, meth, args);
+		} catch (NoSuchMethodException e) {
 			return null;
 		}
-		return searchForMethod(methods, meth, args);
+	}
+
+	/**
+	 * @param aClass The Class providing method under question (Must not be null)
+	 * @param aMethodName The method name to search for (Must not be null)
+	 * @param someParameterTypes Method arguments (May be null or parameters)
+	 * @return A match. If more than one method matched (due to overloading) an abitrary match is taken
+	 * @throws NoSuchMethodException If a match cannot be found
+	 * 
+	 * @since 2.2
+	 */
+	public static Method getMethod(final Class aClass, String aMethodName, final Class[] someParameterTypes) throws NoSuchMethodException {
+		// no args makes matching simple
+		if (someParameterTypes == null || someParameterTypes.length == 0) {
+			return aClass.getDeclaredMethod(aMethodName, (Class[]) null);
+		}
+
+		// match parameters to determine callee
+		final Method[] methods = aClass.getDeclaredMethods();
+		final int parameterCount = someParameterTypes.length;
+		aMethodName = aMethodName.intern();
+
+		OUTER: for (int i = 0; i < methods.length; i++) {
+			Method candidate = methods[i];
+			String candidateMethodName = candidate.getName().intern();
+			Class[] candidateParameterTypes = candidate.getParameterTypes();
+			int candidateParameterCount = candidateParameterTypes.length;
+			if (candidateParameterCount == parameterCount && aMethodName == candidateMethodName) {
+				for (int j = 0; j < candidateParameterCount; j++) {
+					Class clazzA = candidateParameterTypes[j];
+					Class clazzB = someParameterTypes[j];
+					// clazzA must be non-null, but clazzB could be null (null given as parameter value)
+					// so in that case we consider it a match and continue
+					if (!(clazzB == null || clazzA.isAssignableFrom(clazzB))) {
+						continue OUTER;
+					}
+				}
+				return candidate;
+			}
+		}
+		// if no match has been found, fail with NSME
+		throw new NoSuchMethodException("No such method: " + aMethodName + "(" + Arrays.asList(someParameterTypes) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	public static Method searchForMethod(Method meths[], String meth, Class args[]) {
@@ -309,8 +346,10 @@ public class SharedObjectMsg implements Serializable {
 			meth = findMethod(getClass(target.getClass().getClassLoader(), clazz));
 		}
 		// If no method was found, then throw
-		if (meth == null)
-			throw new NoSuchMethodException(getMethod());
+		if (meth == null) {
+			Class[] someParameterTypes = getParameterTypes();
+			throw new NoSuchMethodException("No such method: " + getMethod() + "(" + ((someParameterTypes == null) ? "" : Arrays.asList(someParameterTypes).toString()) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		}
 		final Method toCall = meth;
 		// Make priveleged call to set the method as accessible
 		AccessController.doPrivileged(new PrivilegedExceptionAction() {
