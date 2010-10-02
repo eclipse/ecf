@@ -389,6 +389,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		props.put(RemoteOSGiService.R_OSGi_REGISTRATION, Boolean.TRUE);
 		// remove the RFC 119 hint, if present, to avoid loops
 		props.remove("osgi.remote.interfaces"); //$NON-NLS-1$
+		props.remove("service.exported.interfaces"); //$NON-NLS-1$
 		// ECF remote service properties
 		// container ID (ID)
 		props.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID, containerID);
