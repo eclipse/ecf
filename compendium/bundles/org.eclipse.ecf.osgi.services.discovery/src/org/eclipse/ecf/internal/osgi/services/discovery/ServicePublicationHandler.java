@@ -423,10 +423,16 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 				port = 32565;
 		}
 		String host = null;
-		try {
-			host = InetAddress.getLocalHost().getHostAddress();
-		} catch (Exception e) {
-			host = "localhost"; //$NON-NLS-1$
+		if (uri != null) {
+			host = uri.getHost();
+		} else {
+			try {
+				host = InetAddress.getLocalHost().getHostAddress();
+			} catch (Exception e) {
+				logInfo("createURI", //$NON-NLS-1$
+						"failed to get local host adress, falling back to \'localhost\'.", e); //$NON-NLS-1$
+				host = "localhost"; //$NON-NLS-1$
+			}
 		}
 		return new URI(scheme, null, host, port, path, null, null);
 	}
