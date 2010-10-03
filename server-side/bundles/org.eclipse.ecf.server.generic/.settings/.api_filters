@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.ecf.server.generic" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="3.1.0.qualifier"/>
+                <message_argument value="3.0.0.v20100615-1451"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/server/generic/app/ClientApplication.java" type="org.eclipse.ecf.server.generic.app.ClientApplication">
+        <filter id="389242988">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.server.generic.app.ClientApplication"/>
+                <message_argument value="DEFAULT_TIMEOUT"/>
+                <message_argument value="30000"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/server/generic/app/Connector.java" type="org.eclipse.ecf.server.generic.app.Connector">
+        <filter id="389242988">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.server.generic.app.Connector"/>
+                <message_argument value="DEFAULT_HOSTNAME"/>
+                <message_argument value="localhost"/>
+            </message_arguments>
+        </filter>
+        <filter id="389242988">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.server.generic.app.Connector"/>
+                <message_argument value="DEFAULT_PORT"/>
+                <message_argument value="3282"/>
+            </message_arguments>
+        </filter>
+        <filter id="389242988">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.server.generic.app.Connector"/>
+                <message_argument value="DEFAULT_PROTOCOL"/>
+                <message_argument value="ecftcp"/>
+            </message_arguments>
+        </filter>
+        <filter id="389242988">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.server.generic.app.Connector"/>
+                <message_argument value="DEFAULT_SERVERNAME"/>
+                <message_argument value="/server"/>
+            </message_arguments>
+        </filter>
+        <filter id="389242988">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.server.generic.app.Connector"/>
+                <message_argument value="DEFAULT_TIMEOUT"/>
+                <message_argument value="30000"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/server/generic/app/ServerApplication.java" type="org.eclipse.ecf.server.generic.app.ServerApplication">
+        <filter id="389242988">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.server.generic.app.ServerApplication"/>
+                <message_argument value="DEFAULT_KEEPALIVE"/>
+                <message_argument value="30000"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
