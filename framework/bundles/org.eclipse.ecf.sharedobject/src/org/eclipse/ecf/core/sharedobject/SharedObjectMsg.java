@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
+import org.eclipse.ecf.core.util.reflection.ClassUtil;
 
 /**
  * Shared Object Message. Instances may be used for sending/receiving messages
@@ -152,52 +153,10 @@ public class SharedObjectMsg implements Serializable {
 	 */
 	public static Method findMethod(final Class clazz, String meth, Class args[]) {
 		try {
-			return getMethod(clazz, meth, args);
+			return ClassUtil.getDeclaredMethod(clazz, meth, args);
 		} catch (NoSuchMethodException e) {
 			return null;
 		}
-	}
-
-	/**
-	 * @param aClass The Class providing method under question (Must not be null)
-	 * @param aMethodName The method name to search for (Must not be null)
-	 * @param someParameterTypes Method arguments (May be null or parameters)
-	 * @return A match. If more than one method matched (due to overloading) an abitrary match is taken
-	 * @throws NoSuchMethodException If a match cannot be found
-	 * 
-	 * @since 2.2
-	 */
-	public static Method getMethod(final Class aClass, String aMethodName, final Class[] someParameterTypes) throws NoSuchMethodException {
-		// no args makes matching simple
-		if (someParameterTypes == null || someParameterTypes.length == 0) {
-			return aClass.getDeclaredMethod(aMethodName, (Class[]) null);
-		}
-
-		// match parameters to determine callee
-		final Method[] methods = aClass.getDeclaredMethods();
-		final int parameterCount = someParameterTypes.length;
-		aMethodName = aMethodName.intern();
-
-		OUTER: for (int i = 0; i < methods.length; i++) {
-			Method candidate = methods[i];
-			String candidateMethodName = candidate.getName().intern();
-			Class[] candidateParameterTypes = candidate.getParameterTypes();
-			int candidateParameterCount = candidateParameterTypes.length;
-			if (candidateParameterCount == parameterCount && aMethodName == candidateMethodName) {
-				for (int j = 0; j < candidateParameterCount; j++) {
-					Class clazzA = candidateParameterTypes[j];
-					Class clazzB = someParameterTypes[j];
-					// clazzA must be non-null, but clazzB could be null (null given as parameter value)
-					// so in that case we consider it a match and continue
-					if (!(clazzB == null || clazzA.isAssignableFrom(clazzB))) {
-						continue OUTER;
-					}
-				}
-				return candidate;
-			}
-		}
-		// if no match has been found, fail with NSME
-		throw new NoSuchMethodException("No such method: " + aMethodName + "(" + Arrays.asList(someParameterTypes) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	public static Method searchForMethod(Method meths[], String meth, Class args[]) {

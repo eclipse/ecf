@@ -11,6 +11,7 @@ Export-Package: org.eclipse.ecf.core.sharedobject,
  org.eclipse.ecf.core.sharedobject.provider,
  org.eclipse.ecf.core.sharedobject.security,
  org.eclipse.ecf.core.sharedobject.util,
+ org.eclipse.ecf.core.util.reflection,
  org.eclipse.ecf.internal.core.sharedobject;x-internal:=true
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: CDC-1.0/Foundation-1.0,
