@@ -15,6 +15,7 @@ import ch.ethz.iks.r_osgi.RemoteOSGiException;
 import java.lang.reflect.Method;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.reflection.ClassUtil;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
@@ -108,7 +109,7 @@ final class RemoteServiceImpl extends AbstractRemoteService {
 		IExecutor executor = new ThreadsExecutor();
 		IFuture future = executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
-				final Method method = getMethod(service.getClass(), call.getMethod(), formalParams);
+				final Method method = ClassUtil.getMethod(service.getClass(), call.getMethod(), formalParams);
 				return method.invoke(service, parameters);
 			}
 		}, null);
