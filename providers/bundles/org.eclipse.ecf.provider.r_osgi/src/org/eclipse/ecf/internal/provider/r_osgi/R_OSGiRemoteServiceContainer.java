@@ -404,7 +404,14 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		// http://bugs.eclipse.org/325950
 		final PackageAdmin pkgAdmin = Activator.getDefault().getPackageAdmin();
 		final Bundle bundle = pkgAdmin.getBundle(service.getClass());
-		final BundleContext bundleContext = bundle.getBundleContext();
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		//TODO replace with a fix for 325950 comment #17
+		// if pkgadmin does not return a context (in cases where a third bundle registered
+		// the service) fall back to our own bundle context
+		if (bundleContext == null) {
+			bundleContext = context;
+		}
 
 		final ServiceRegistration reg = bundleContext.registerService(clazzes, service, props);
 		// Set ECF remote service id property based upon local service property
