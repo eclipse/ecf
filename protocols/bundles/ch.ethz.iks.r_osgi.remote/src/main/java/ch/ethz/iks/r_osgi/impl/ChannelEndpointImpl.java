@@ -239,7 +239,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		final ThreadGroup threadPool = new ThreadGroup("WorkerThreads"
 				+ toString());
 		for (int i = 0; i < RemoteOSGiServiceImpl.MAX_THREADS_PER_ENDPOINT; i++) {
-			final Thread t = new Thread(threadPool, "WorkerThread" + i) {
+			final Thread t = new Thread(threadPool, "r-OSGi ChannelWorkerThread" + i) {
 				public void run() {
 					try {
 						while (!isInterrupted()) {
