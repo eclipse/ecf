@@ -202,6 +202,17 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		return new RemoteServiceImpl(impl, rs);
 	}
 
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		if (target == null)
+			return getRemoteServiceReferences(idFilter, clazz, filter);
+		if (idFilter == null)
+			return getRemoteServiceReferences(target, clazz, filter);
+		List idsList = Arrays.asList(idFilter);
+		// add target
+		idsList.add(target);
+		return getRemoteServiceReferences((ID[]) idsList.toArray(new ID[] {}), clazz, filter);
+	}
+
 	/**
 	 * get remote service references.
 	 * 
@@ -740,6 +751,15 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		return executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
 				return getRemoteServiceReferences(target, clazz, filter);
+			}
+		}, null);
+	}
+
+	public IFuture asyncGetRemoteServiceReferences(final ID target, final ID[] idFilter, final String clazz, final String filter) {
+		IExecutor executor = new ThreadsExecutor();
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getRemoteServiceReferences(target, idFilter, clazz, filter);
 			}
 		}, null);
 	}
