@@ -9,8 +9,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.discovery;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.identity.GUID;
+import org.eclipse.ecf.core.identity.GUID.GUIDNamespace;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
@@ -61,7 +64,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
-		servicePublicationHandler = new ServicePublicationHandler();
+		servicePublicationHandler = new ServicePublicationHandler(getGUID());
 
 		servicePublicationTracker = new ServiceTracker(context,
 				ServicePublication.class.getName(), servicePublicationHandler);
@@ -87,6 +90,14 @@ public class Activator implements BundleActivator {
 		}
 	}
 
+	private byte[] getGUID() throws UnsupportedEncodingException {
+		final GUIDNamespace namespace = new GUID.GUIDNamespace();
+		final GUID id = (GUID) namespace.createInstance(null);
+		// convert to external form to avoid problems with illegal chars in
+		// discovery providers (e.g. '=' is not allowed in SLP)
+		return id.toExternalForm().getBytes("ASCII"); //$NON-NLS-1$
+	}
+
 	protected synchronized LogService getLogService() {
 		if (this.context == null)
 			return null;
@@ -105,8 +116,8 @@ public class Activator implements BundleActivator {
 		if (logService == null)
 			logService = getLogService();
 		if (logService != null)
-			logService.log(null, LogHelper.getLogCode(status), LogHelper
-					.getLogMessage(status), status.getException());
+			logService.log(null, LogHelper.getLogCode(status),
+					LogHelper.getLogMessage(status), status.getException());
 	}
 
 	public void log(ServiceReference sr, IStatus status) {

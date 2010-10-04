@@ -52,8 +52,17 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		IServiceListener {
 
+	private static final String DISCOVERY_IDENTIFIER = "org.eclipse.ecf.internal.discovery.id"; //$NON-NLS-1$
+	private static final boolean allowLoopbackReferences = Boolean
+			.getBoolean("org.eclipse.ecf.osgi.services.discovery.allowLoopbackReference"); //$NON-NLS-1$
+	private final byte[] guid;
+
 	private IDiscoveryAdvertiser advertiser;
-	private Map serviceInfos = Collections.synchronizedMap(new HashMap());
+	private final Map serviceInfos = Collections.synchronizedMap(new HashMap());
+
+	public ServicePublicationHandler(byte[] aGuid) {
+		guid = aGuid;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -63,10 +72,16 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 	 * .ecf.discovery.IServiceEvent)
 	 */
 	public void serviceDiscovered(IServiceEvent event) {
-		IServiceInfo serviceInfo = event.getServiceInfo();
-		IServiceID serviceID = serviceInfo.getServiceID();
+		final IServiceInfo serviceInfo = event.getServiceInfo();
+		final IServiceID serviceID = serviceInfo.getServiceID();
 		trace("handleOSGIServiceDiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 		if (matchServiceID(serviceID)) {
+			if (isLoopbackReference(serviceInfo)) {
+				logInfo("serviceDiscovered", //$NON-NLS-1$
+						"ignoring loopback ServiceReference: " //$NON-NLS-1$
+								+ serviceID, null);
+				return;
+			}
 			fireProxyDiscoveredUndiscovered(serviceInfo, true);
 			trace("handleOSGIServiceDiscovered matched", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
@@ -83,9 +98,15 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 	 * .ecf.discovery.IServiceEvent)
 	 */
 	public void serviceUndiscovered(IServiceEvent event) {
-		IServiceInfo serviceInfo = event.getServiceInfo();
-		IServiceID serviceID = serviceInfo.getServiceID();
+		final IServiceInfo serviceInfo = event.getServiceInfo();
+		final IServiceID serviceID = serviceInfo.getServiceID();
 		if (matchServiceID(serviceID)) {
+			if (isLoopbackReference(serviceInfo)) {
+				logInfo("serviceUndiscovered", //$NON-NLS-1$
+						"ignoring loopback ServiceReference: " //$NON-NLS-1$
+								+ serviceID, null);
+				return;
+			}
 			fireProxyDiscoveredUndiscovered(serviceInfo, false);
 			trace("handleOSGIServiceUndiscovered", " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 			DiscoveredServiceTracker[] discoveredTrackers = findMatchingDiscoveredServiceTrackers(serviceInfo);
@@ -137,6 +158,21 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 		return false;
 	}
 
+	// returns true if the given service has been registered by this very
+	// ServicePublicationHandler (same instance)
+	private boolean isLoopbackReference(final IServiceInfo serviceInfo) {
+		if (allowLoopbackReferences) {
+			return false;
+		}
+		final byte[] aGuid = serviceInfo.getServiceProperties()
+				.getPropertyBytes(DISCOVERY_IDENTIFIER);
+		// backward compatibility
+		if (aGuid == null) {
+			return false;
+		}
+		return Arrays.equals(guid, aGuid);
+	}
+
 	private IServiceInfo addServiceInfo(ServiceReference sr, IServiceInfo si) {
 		return (IServiceInfo) serviceInfos.put(sr, si);
 	}
@@ -178,6 +214,10 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 			return;
 		}
 		IServiceProperties discoveryServiceProperties = new ServiceProperties();
+
+		// set this identifier to filter out loobacks
+		discoveryServiceProperties.setPropertyBytes(DISCOVERY_IDENTIFIER, guid);
+
 		discoveryServiceProperties.setPropertyString(
 				ServicePublication.SERVICE_INTERFACE_NAME,
 				ServicePropertyUtils.createStringFromCollection(svcInterfaces));
