@@ -204,23 +204,30 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.0
+	 * @since 3.4
 	 */
-	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {targetID, clazz, filter}); //$NON-NLS-1$
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {target, idFilter, clazz, filter}); //$NON-NLS-1$
 		// If no target specified, just search for all available references
-		if (targetID == null) {
-			final IRemoteServiceReference[] result = getRemoteServiceReferences((ID[]) null, clazz, filter);
+		if (target == null) {
+			final IRemoteServiceReference[] result = getRemoteServiceReferences(idFilter, clazz, filter);
 			Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
 			return result;
 		}
 		// If we're not already connected, then connect to targetID
-		connectToRemoteServiceTarget(targetID);
+		connectToRemoteServiceTarget(target);
 
 		// Now we're connected (or already were connected), so we look for remote service references for target
-		final IRemoteServiceReference[] result = getRemoteServiceReferences((ID[]) null, clazz, filter);
+		final IRemoteServiceReference[] result = getRemoteServiceReferences(idFilter, clazz, filter);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
 		return result;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		return getRemoteServiceReferences(targetID, null, clazz, filter);
 	}
 
 	/**
@@ -1518,6 +1525,18 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
 				return getRemoteServiceReferences(idFilter, clazz, filter);
+			}
+		}, null);
+	}
+
+	/**
+	 * @since 3.4
+	 */
+	public IFuture asyncGetRemoteServiceReferences(final ID target, final ID[] idFilter, final String clazz, final String filter) {
+		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getRemoteServiceReferences(target, idFilter, clazz, filter);
 			}
 		}, null);
 	}

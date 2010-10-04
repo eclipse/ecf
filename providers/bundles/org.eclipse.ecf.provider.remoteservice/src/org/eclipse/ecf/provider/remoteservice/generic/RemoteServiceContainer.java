@@ -123,4 +123,18 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements IRem
 	public IRemoteServiceReference[] getAllRemoteServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
 		return registry.getAllRemoteServiceReferences(clazz, filter);
 	}
+
+	/**
+	 * @since 3.4
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		return registry.getRemoteServiceReferences(target, idFilter, clazz, filter);
+	}
+
+	/**
+	 * @since 3.4
+	 */
+	public IFuture asyncGetRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) {
+		return registry.asyncGetRemoteServiceReferences(target, idFilter, clazz, filter);
+	}
 }
