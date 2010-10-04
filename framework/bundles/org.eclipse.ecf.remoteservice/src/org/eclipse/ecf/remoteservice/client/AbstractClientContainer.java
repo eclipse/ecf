@@ -146,6 +146,18 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		}, null);
 	}
 
+	/**
+	 * @since 5.0
+	 */
+	public IFuture asyncGetRemoteServiceReferences(final ID target, final ID[] idFilter, final String clazz, final String filter) {
+		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getRemoteServiceReferences(target, idFilter, clazz, filter);
+			}
+		}, null);
+	}
+
 	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException {
 		return new RemoteFilterImpl(filter);
 	}
@@ -184,6 +196,13 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
 		return registry.getRemoteServiceReferences(target, clazz, (filter == null) ? null : createRemoteFilter(filter));
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		return registry.getRemoteServiceReferences(target, idFilter, clazz, (filter == null) ? null : createRemoteFilter(filter));
 	}
 
 	public IRemoteServiceRegistration registerRemoteService(final String[] clazzes, Object service, Dictionary properties) {

@@ -91,6 +91,23 @@ public class RemoteServiceClientRegistry implements Serializable {
 		return getRemoteServiceReferences(new ID[] {target}, clazz, remoteFilter);
 	}
 
+	/**
+	 * @since 5.0
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, IRemoteFilter filter) throws ContainerConnectException {
+		if (target == null)
+			return getRemoteServiceReferences(idFilter, clazz, filter);
+		// If we're not already connected, then connect to targetID
+		// If we *are* already connected, then we do *not* connect to target,
+		// but rather just search for targetID/endpoint
+		if (container.getConnectedID() == null) {
+			container.connect(target, connectContext);
+		}
+		// Now we're connected (or already were connected), so we look for
+		// remote service references for target
+		return getRemoteServiceReferences(idFilter, clazz, filter);
+	}
+
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, IRemoteFilter remoteFilter) {
 		if (clazz == null)
 			return null;

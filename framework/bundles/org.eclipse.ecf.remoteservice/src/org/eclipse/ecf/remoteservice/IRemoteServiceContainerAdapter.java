@@ -90,6 +90,116 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * the Framework is a very dynamic environment, services can be modified or
 	 * unregistered at anytime.
 	 * 
+	 * <p><code>target</code> is a remote container to connect to.  If <code>null</code>, no connection attempt is made.</p>
+	 * <p>
+	 * <code>idFilter</code> is used to select a registered services that were
+	 * registered by a given set of containers with id in idFilter. Only
+	 * services exposed by a container with id in idFilter will be returned.  If <code>idFilter</code> is <code>null</code>, all containers are
+	 * considered to match the filter.
+	 * 
+	 * <p>
+	 * <code>filter</code> is used to select the registered service whose
+	 * properties objects contain keys and values which satisfy the filter. See
+	 * {@link Filter} for a description of the filter string syntax.
+	 * If <code>filter</code> is <code>null</code>, all registered services
+	 * are considered to match the filter. If <code>filter</code> cannot be
+	 * parsed, an {@link InvalidSyntaxException} will be thrown with a human
+	 * readable message where the filter became unparsable.
+	 * 
+	 * @param target
+	 *            a target container to connect to if enclosing container is not already 
+	 *            connected.  May be <code>null</code>.
+	 * @param idFilter
+	 *            an array of ID instances that will restrict the search for
+	 *            matching container ids If null, all remote containers will be
+	 *            considered in search for matching IRemoteServiceReference
+	 *            instances. May be <code>null</code>.
+	 * 
+	 * @param clazz
+	 *            the fully qualified name of the interface class that describes
+	 *            the desired service. Must not be <code>null</code>.
+	 * @param filter
+	 *            The filter criteria. May be <code>null</code>.
+	 * @return Array of IRemoteServiceReferences matching given search criteria or 
+	 *            <code>null</code> if no services are found that match the search.
+	 * 
+	 * @throws InvalidSyntaxException If filter contains an invalid filter string that cannot be parsed.
+	 * @since 5.0
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException;
+
+	/**
+	 * Asynchronously returns an array of <code>IRemoteServiceReference</code> objects. The
+	 * returned array of <code>IRemoteServiceReference</code> objects contains
+	 * services that were registered under the specified class and match the
+	 * specified idFilter, and filter criteria.
+	 * <p>
+	 * The IFuture is returned immediately, and subsequent calls to {@link IFuture#get()}
+	 * or {@link IFuture#get(long)} will return the actual results received.  The type of
+	 * the Object returned from {@link IFuture#get()} will be IRemoteServiceReference [].
+	 * 
+	 * <p>
+	 * The list is valid at the time of the call to this method, however since
+	 * the Framework is a very dynamic environment, services can be modified or
+	 * unregistered at anytime.
+	 * 
+	 * <p><code>target</code> is a remote container to connect to.  If <code>null</code>, no connection attempt is made.</p>
+	 * <p>
+	 * <code>idFilter</code> is used to select a registered services that were
+	 * registered by a given set of containers with id in idFilter. Only
+	 * services exposed by a container with id in idFilter will be returned.  If <code>idFilter</code> is <code>null</code>, all containers are
+	 * considered to match the filter.
+	 * 
+	 * <p>
+	 * <code>filter</code> is used to select the registered service whose
+	 * properties objects contain keys and values which satisfy the filter. See
+	 * {@link Filter} for a description of the filter string syntax.
+	 * If <code>filter</code> is <code>null</code>, all registered services
+	 * are considered to match the filter. If <code>filter</code> cannot be
+	 * parsed, an {@link InvalidSyntaxException} will be thrown with a human
+	 * readable message where the filter became unparsable.
+	 * 
+	 * @param target
+	 *            an target to connect to if enclosing container is not already 
+	 *            connected.  May be <code>null</code>.
+	 * 
+	 * @param idFilter
+	 *            an array of ID instances that will restrict the search for
+	 *            matching container ids If null, all remote containers will be
+	 *            considered in search for matching IRemoteServiceReference
+	 *            instances. May be <code>null</code>.
+	 *            
+	 * @param clazz
+	 *            the fully qualified name of the interface class that describes
+	 *            the desired service. Must not be <code>null</code>.
+	 * @param filter
+	 *            The filter criteria. May be <code>null</code>.
+	 * @return IFuture that through subsequent calls to IFuture#get() will return
+	 *         IRemoteServiceReference [] with IRemoteServiceReferences matching given search criteria. 
+	 *         Will not return <code>null</code>.
+	 * 
+	 * @since 5.0
+	 */
+	public IFuture asyncGetRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter);
+
+	/**
+	 * Returns an array of <code>IRemoteServiceReference</code> objects. The
+	 * returned array of <code>IRemoteServiceReference</code> objects contains
+	 * services that were registered under the specified class and match the
+	 * specified idFilter, and filter criteria.
+	 * </p>
+	 * <p>
+	 * Note this method assumes that the enclosing container has previously
+	 * been connected, and uses the idFilter to filter among targets within the
+	 * previously connected set of container IDs.  To request connection as 
+	 * part of reference lookup, see {@link #getRemoteServiceReferences(ID, String, String)}.
+	 * </p>
+	 * 
+	 * <p>
+	 * The list is valid at the time of the call to this method, however since
+	 * the Framework is a very dynamic environment, services can be modified or
+	 * unregistered at anytime.
+	 * 
 	 * <p>
 	 * <code>idFilter</code> is used to select a registered services that were
 	 * registered by a given set of containers with id in idFilter. Only
