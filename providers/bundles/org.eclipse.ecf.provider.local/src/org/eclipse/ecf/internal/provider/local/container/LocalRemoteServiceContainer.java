@@ -59,6 +59,14 @@ public class LocalRemoteServiceContainer extends AbstractContainer implements IR
 		return registry.asyncGetRemoteServiceReferences(target, clazz, filter);
 	}
 
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		return registry.getRemoteServiceReferences(target, idFilter, clazz, filter);
+	}
+
+	public IFuture asyncGetRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) {
+		return registry.asyncGetRemoteServiceReferences(target, idFilter, clazz, filter);
+	}
+
 	public IRemoteServiceReference[] getAllRemoteServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
 		return registry.getAllRemoteServiceReferences(clazz, filter);
 	}
