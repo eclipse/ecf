@@ -216,4 +216,17 @@ public class RienaContainer extends BaseContainer implements IContainer,
 		return null;
 	}
 
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target,
+			ID[] idFilter, String clazz, String filter)
+			throws InvalidSyntaxException, ContainerConnectException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IFuture asyncGetRemoteServiceReferences(ID target, ID[] idFilter,
+			String clazz, String filter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
