@@ -222,6 +222,13 @@ final class RemoteServiceRegistration {
 	 * @return the Method object.
 	 */
 	Method getMethod(final String signature) {
+		// https://bugs.eclipse.org/327029
+		if (signature.startsWith("_rosgi")) {
+			final String newsig = signature.substring(6);
+			final String firstChar = newsig.substring(0, 1);
+			return (Method) methodTable.get(newsig.replaceFirst(firstChar,
+					firstChar.toLowerCase()));
+		}
 		return (Method) methodTable.get(signature);
 	}
 
