@@ -110,7 +110,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 		Object[] messageData = null;
 		try {
 			target = getTarget(eventToSend);
-			messageData = createMessageData(target, eventToSend);
+			messageData = createMessageDataFromEvent(target, eventToSend);
 			sendSharedObjectMsgTo(target, SharedObjectMsg.createMsg(
 					SHARED_OBJECT_MESSAGE_METHOD, messageData));				
 		} catch (IOException e) {
@@ -121,10 +121,19 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	/**
 	 * @since 1.1
 	 */
-	protected Object[] createMessageData(ID target, Event eventToSend) throws NotSerializableException {
+	protected Object[] createMessageDataFromEvent(ID target, Event eventToSend) throws NotSerializableException {
 		Object[] results = { new EventMessage(eventToSend) };
 		return results;
 	}
+
+	/**
+	 * @since 1.1
+	 */
+	protected Event createEventFromMessageData(ID fromID, Object[] messageData) {
+		EventMessage eventMessage = (EventMessage) messageData[0];
+		return eventMessage.getEvent();
+	}
+
 
 	/**
 	 * @since 1.1
@@ -233,9 +242,9 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 		if (SHARED_OBJECT_MESSAGE_METHOD.equals(soMethod)) {
 			try {
 				Object[] messageData = msg.getParameters();
-				Event receivedEvent = createReceivedEvent(fromID, messageData);
+				Event receivedEvent = createEventFromMessageData(fromID, messageData);
 				if (receivedEvent != null) {
-					receivedEvent(fromID, messageData, receivedEvent);
+					notifyReceivedEvent(fromID, receivedEvent);
 					localDispatch(receivedEvent, true);
 				}
 			} catch (Exception e) {
@@ -251,17 +260,8 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	/**
 	 * @since 1.1
 	 */
-	protected void receivedEvent(ID fromID, Object[] messageData,
-			Event receivedEvent) {
-		System.out.println("receivedEvent fromID="+fromID+" messageData="+Arrays.asList(messageData)+" receivedEvent="+receivedEvent);
-	}
-
-	/**
-	 * @since 1.1
-	 */
-	protected Event createReceivedEvent(ID fromID, Object[] messageParameters) {
-		EventMessage eventMessage = (EventMessage) messageParameters[0];
-		return eventMessage.createLocalEvent();
+	protected void notifyReceivedEvent(ID fromID, Event receivedEvent) {
+		System.out.println("notifyReceivedEvent fromID="+fromID+" receivedEvent="+receivedEvent);
 	}
 
 	/**
