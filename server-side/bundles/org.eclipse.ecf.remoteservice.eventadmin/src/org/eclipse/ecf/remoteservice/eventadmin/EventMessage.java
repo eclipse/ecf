@@ -21,7 +21,7 @@ import org.osgi.service.event.Event;
 /**
  * @since 1.1
  */
-public class DistributedEvent implements Serializable {
+public class EventMessage implements Serializable {
 
 	private static final long serialVersionUID = 2743430591605178391L;
 	private String topic;
@@ -29,18 +29,18 @@ public class DistributedEvent implements Serializable {
 
 	private transient Event localEvent;
 
-	public DistributedEvent(Event event)
+	public EventMessage(Event event)
 			throws NotSerializableException {
 		this.topic = event.getTopic();
 		this.properties = createPropertiesFromEvent(event);
 	}
 
-	public DistributedEvent(String topic, Map properties) {
+	public EventMessage(String topic, Map properties) {
 		this.topic = topic;
 		this.properties = properties;
 	}
 	
-	private Map createPropertiesFromEvent(Event event)
+	protected Map createPropertiesFromEvent(Event event)
 			throws NotSerializableException {
 		String[] propertyNames = event.getPropertyNames();
 		Hashtable ht = (propertyNames == null) ? new Hashtable(1)
@@ -75,7 +75,7 @@ public class DistributedEvent implements Serializable {
 
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("DistributedEvent[topic=");
+		buffer.append("EventMessage[topic=");
 		buffer.append(topic);
 		buffer.append(", properties=");
 		buffer.append(properties);

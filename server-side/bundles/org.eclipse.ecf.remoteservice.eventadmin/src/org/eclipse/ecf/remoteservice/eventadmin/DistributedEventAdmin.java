@@ -122,7 +122,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * @since 1.1
 	 */
 	protected Object[] createMessageData(ID target, Event eventToSend) throws NotSerializableException {
-		Object[] results = { new DistributedEvent(eventToSend) };
+		Object[] results = { new EventMessage(eventToSend) };
 		return results;
 	}
 
@@ -260,8 +260,8 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * @since 1.1
 	 */
 	protected Event createReceivedEvent(ID fromID, Object[] messageParameters) {
-		DistributedEvent distributedEvent = (DistributedEvent) messageParameters[0];
-		return distributedEvent.createLocalEvent();
+		EventMessage eventMessage = (EventMessage) messageParameters[0];
+		return eventMessage.createLocalEvent();
 	}
 
 	/**
