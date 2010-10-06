@@ -8,8 +8,9 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.internal.remoteservice.eventadmin;
+package org.eclipse.ecf.remoteservice.eventadmin;
 
+import java.io.Externalizable;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.util.Hashtable;
@@ -17,7 +18,10 @@ import java.util.Map;
 
 import org.osgi.service.event.Event;
 
-public class DistributedEventAdminMessage implements Serializable {
+/**
+ * @since 1.1
+ */
+public class DistributedEvent implements Serializable {
 
 	private static final long serialVersionUID = 2743430591605178391L;
 	private String topic;
@@ -25,12 +29,17 @@ public class DistributedEventAdminMessage implements Serializable {
 
 	private transient Event localEvent;
 
-	public DistributedEventAdminMessage(Event event)
+	public DistributedEvent(Event event)
 			throws NotSerializableException {
 		this.topic = event.getTopic();
 		this.properties = createPropertiesFromEvent(event);
 	}
 
+	public DistributedEvent(String topic, Map properties) {
+		this.topic = topic;
+		this.properties = properties;
+	}
+	
 	private Map createPropertiesFromEvent(Event event)
 			throws NotSerializableException {
 		String[] propertyNames = event.getPropertyNames();
@@ -38,17 +47,40 @@ public class DistributedEventAdminMessage implements Serializable {
 				: new Hashtable(propertyNames.length);
 		for (int i = 0; i < propertyNames.length; i++) {
 			Object val = event.getProperty(propertyNames[i]);
-			if (!(val instanceof Serializable))
+			if (!(val instanceof Serializable || val instanceof Externalizable))
 				throw new NotSerializableException("Cannot serialize property value of name="+propertyNames[i]+" and value="+val);
 			ht.put(propertyNames[i], val);
 		}
 		return ht;
 	}
 
+	protected String getTopic() {
+		return topic;
+	}
+	
+	protected Map getProperties() {
+		return properties;
+	}
+	
+	protected Event createLocalEvent() {
+		return new Event(getTopic(), getProperties());
+	}
+	
 	public synchronized Event getEvent() {
 		if (localEvent == null) {
-			localEvent = new Event(topic, properties);
+			localEvent = createLocalEvent();
 		}
 		return localEvent;
 	}
+
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("DistributedEvent[topic=");
+		buffer.append(topic);
+		buffer.append(", properties=");
+		buffer.append(properties);
+		buffer.append("]");
+		return buffer.toString();
+	}
+	
 }
