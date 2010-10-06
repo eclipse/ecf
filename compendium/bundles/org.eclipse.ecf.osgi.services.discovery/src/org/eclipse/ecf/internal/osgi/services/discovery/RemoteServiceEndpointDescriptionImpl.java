@@ -71,6 +71,7 @@ public class RemoteServiceEndpointDescriptionImpl extends
 		long rsId = this.getRemoteServiceId();
 		hashCode = 31 * hashCode + (int) (rsId ^ (rsId >>> 32));
 		hashCode = 31 * hashCode + serviceLocation.hashCode();
+		hashCode = 31 * hashCode + endpointId.hashCode();
 	}
 
 	/*
@@ -109,7 +110,8 @@ public class RemoteServiceEndpointDescriptionImpl extends
 		RemoteServiceEndpointDescriptionImpl other = (RemoteServiceEndpointDescriptionImpl) obj;
 		return this.serviceId.getLocation().equals(
 				other.serviceId.getLocation())
-				&& getRemoteServiceId() == other.getRemoteServiceId();
+				&& getRemoteServiceId() == other.getRemoteServiceId()
+				&& endpointId.equals(other.getEndpointAsID());
 	}
 
 	public IServiceID getServiceID() {
