@@ -75,61 +75,103 @@ public final class SmartObjectOutputStream extends ObjectOutputStream {
 			out.writeUTF(id != null ? id : clazzName);
 			out.writeUTF(obj.toString());
 			return;
+		} else if (isNestedSmartSerializedObject(obj)) {
+			final Object[] objArray = (Object[]) obj;
+			final String clazzname = objArray.getClass().getName();
+			out.write(4);
+			out.writeByte(objArray.length);
+			out.writeUTF(clazzname.substring(2, clazzname.length() - 1));
+			for (int i = 0; i < objArray.length; i++) {
+				final Object elem = objArray[i];
+				if(elem == null) {
+					out.writeByte(-1);
+				} else {
+					writeSmartSerializedObject(elem);
+				}
+			}
 		} else if (obj instanceof Serializable) {
 			// java serializable classes
 			out.writeByte(2);
 			out.writeObject(obj);
 			return;
 		} else {
-			out.writeByte(3);
-
-			// all other classes: try smart serialization
-			Class clazz = obj.getClass();
-
-			if (SmartConstants.blackList.contains(clazz.getName())) {
-				throw new NotSerializableException("Class " + clazz.getName() //$NON-NLS-1$
-						+ " is not serializable"); //$NON-NLS-1$
-			}
-
-			out.writeUTF(clazz.getName());
-
-			// TODO: cache this information...
-			while (clazz != Object.class) {
-				// check for native methods
-				final Method[] methods = clazz.getDeclaredMethods();
-				for (int j = 0; j < methods.length; j++) {
-					final int mod = methods[j].getModifiers();
-					if (Modifier.isNative(mod)) {
-						throw new NotSerializableException(
-								"Class " //$NON-NLS-1$
-										+ clazz.getName()
-										+ " contains native methods and is therefore not serializable."); //$NON-NLS-1$ 
-					}
-				}
-
-				try {
-					final Field[] fields = clazz.getDeclaredFields();
-					final int fieldCount = fields.length;
-					out.writeInt(fieldCount);
-					for (int i = 0; i < fieldCount; i++) {
-						final int mod = fields[i].getModifiers();
-						if (Modifier.isStatic(mod)) {
-							continue;
-						} else if (!Modifier.isPublic(mod)) {
-							fields[i].setAccessible(true);
-						}
-						out.writeUTF(fields[i].getName());
-						writeObjectOverride(fields[i].get(obj));
-					}
-				} catch (final Exception e) {
-					throw new NotSerializableException(
-							"Exception while serializing " + obj.toString() //$NON-NLS-1$
-									+ ":\n" + e.getMessage()); //$NON-NLS-1$ 
-				}
-				clazz = clazz.getSuperclass();
-			}
-			out.writeInt(-1);
+			writeSmartSerializedObject(obj);
 		}
+	}
+
+	private boolean isNestedSmartSerializedObject(final Object obj) {
+		if(obj != null && obj instanceof Object[]) {
+			Object[] objArray = (Object[]) obj;
+			if(objArray.length > 0) {
+				// iterate to skip null
+				for(int i = 0; i < objArray.length; i++) {
+					if(objArray[i] instanceof Serializable) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void writeSmartSerializedObject(final Object obj) throws IOException,
+			NotSerializableException {
+		out.writeByte(3);
+
+		// all other classes: try smart serialization
+		Class clazz = obj.getClass();
+
+		if (SmartConstants.blackList.contains(clazz.getName())) {
+			throw new NotSerializableException("Class " + clazz.getName() //$NON-NLS-1$
+					+ " is not serializable"); //$NON-NLS-1$
+		}
+
+		out.writeUTF(clazz.getName());
+
+		// TODO: cache this information...
+		while (clazz != Object.class) {
+			// check for native methods
+			final Method[] methods = clazz.getDeclaredMethods();
+			for (int j = 0; j < methods.length; j++) {
+				final int mod = methods[j].getModifiers();
+				if (Modifier.isNative(mod)) {
+					throw new NotSerializableException(
+							"Class " //$NON-NLS-1$
+									+ clazz.getName()
+									+ " contains native methods and is therefore not serializable."); //$NON-NLS-1$ 
+				}
+			}
+
+			try {
+				final Field[] fields = clazz.getDeclaredFields();					
+				final int fieldCount = fields.length;
+				int realFieldCount = 0;
+				for (int i = 0; i < fieldCount; i++) {
+					final int mod = fields[i].getModifiers();
+					if (!(Modifier.isStatic(mod) || Modifier.isTransient(mod))) {
+						realFieldCount++;
+					}								
+				}							
+				out.writeInt(realFieldCount);
+				for (int i = 0; i < fieldCount; i++) {
+					final int mod = fields[i].getModifiers();
+					if (Modifier.isStatic(mod) || Modifier.isTransient(mod)) {
+						continue;
+					} else if (!Modifier.isPublic(mod)) {
+						fields[i].setAccessible(true);
+					}
+					out.writeUTF(fields[i].getName());
+					writeObjectOverride(fields[i].get(obj));
+				}
+			} catch (final Exception e) {
+				throw new NotSerializableException(
+						"Exception while serializing " + obj.toString() //$NON-NLS-1$
+								+ ":\n" + e.getMessage()); //$NON-NLS-1$ 
+			}
+			clazz = clazz.getSuperclass();
+		}
+		out.writeInt(-1);
 	}
 
 	/**

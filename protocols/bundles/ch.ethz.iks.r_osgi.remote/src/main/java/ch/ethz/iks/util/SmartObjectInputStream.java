@@ -80,42 +80,61 @@ public final class SmartObjectInputStream extends ObjectInputStream {
 			// java serialized object
 			return in.readObject();
 		case 3:
-			// smart serialized object
+			return readSmartSerializedObject();
+		case 4:
+			final int length = in.readByte();
 			final String clazzName = in.readUTF();
-
-			// TODO: cache this information...
-			Class clazz = Class.forName(clazzName);
-
-			try {
-				final Constructor constr = clazz.getDeclaredConstructor(null);
-				constr.setAccessible(true);
-				final Object newInstance = constr.newInstance(null);
-
-				int fieldCount = in.readInt();
-				while (fieldCount > -1) {
-					for (int i = 0; i < fieldCount; i++) {
-						final String fieldName = in.readUTF();
-						final Object value = readObjectOverride();
-						final Field field = clazz.getDeclaredField(fieldName);
-
-						final int mod = field.getModifiers();
-						if (!Modifier.isPublic(mod)) {
-							field.setAccessible(true);
-						}
-
-						field.set(newInstance, value);
-					}
-					clazz = clazz.getSuperclass();
-					fieldCount = in.readInt();
+			final Class clazz = Class.forName(clazzName);
+			final Object[] array = (Object[]) java.lang.reflect.Array
+					.newInstance(clazz, length);
+			for (int i = 0; i < length; i++) {
+				final byte b = in.readByte();
+				if(b == -1) {
+					array[i] = null;
+				} else {
+					array[i] = readSmartSerializedObject();
 				}
-				return newInstance;
-			} catch (final Exception e) {
-				e.printStackTrace();
-				throw new IOException("Error while deserializing " + clazzName //$NON-NLS-1$
-						+ ": " + e.getMessage()); //$NON-NLS-1$
 			}
+			return array;
 		default:
 			throw new IllegalStateException("Unhandled case " + cat); //$NON-NLS-1$
+		}
+	}
+
+	private Object readSmartSerializedObject() throws IOException, ClassNotFoundException {
+		// smart serialized object
+		final String clazzName = in.readUTF();
+
+		// TODO: cache this information...
+		Class clazz = Class.forName(clazzName);
+
+		try {
+			final Constructor constr = clazz.getDeclaredConstructor(null);
+			constr.setAccessible(true);
+			final Object newInstance = constr.newInstance(null);
+
+			int fieldCount = in.readInt();
+			while (fieldCount > -1) {
+				for (int i = 0; i < fieldCount; i++) {
+					final String fieldName = in.readUTF();
+					final Object value = readObjectOverride();
+					final Field field = clazz.getDeclaredField(fieldName);
+
+					final int mod = field.getModifiers();
+					if (!Modifier.isPublic(mod)) {
+						field.setAccessible(true);
+					}
+
+					field.set(newInstance, value);
+				}
+				clazz = clazz.getSuperclass();
+				fieldCount = in.readInt();
+			}
+			return newInstance;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			throw new IOException("Error while deserializing " + clazzName //$NON-NLS-1$
+					+ ": " + e.getMessage()); //$NON-NLS-1$
 		}
 	}
 
