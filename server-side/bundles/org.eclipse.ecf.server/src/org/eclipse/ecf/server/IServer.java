@@ -9,17 +9,17 @@
 ******************************************************************************/
 package org.eclipse.ecf.server;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * @since 2.1
  */
 public interface IServer {
 
-	public IStatus start();
+	public void start() throws ECFException;
 
-	public IStatus stop();
+	public void stop() throws ECFException;
 
 	public IContainer getContainer();
 }
