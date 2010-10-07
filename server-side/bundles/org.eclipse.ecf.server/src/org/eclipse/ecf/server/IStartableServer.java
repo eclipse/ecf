@@ -15,11 +15,11 @@ import org.eclipse.ecf.core.util.ECFException;
 /**
  * @since 2.1
  */
-public interface IServer {
+public interface IStartableServer {
 
 	public void start() throws ECFException;
 
-	public void stop() throws ECFException;
+	public void stop();
 
 	public IContainer getContainer();
 }
