@@ -261,7 +261,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * @since 1.1
 	 */
 	protected void notifyReceivedEvent(ID fromID, Event receivedEvent) {
-		System.out.println("notifyReceivedEvent fromID="+fromID+" receivedEvent="+receivedEvent);
 	}
 
 	/**
