@@ -1,17 +1,15 @@
-/****************************************************************************
- * Copyright (c) 2004, 2009 Composent, Inc. and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Composent, Inc. - initial API and implementation
- *****************************************************************************/
-
+/*******************************************************************************
+* Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
+* program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0 which accompanies this distribution, and is
+* available at http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Composent, Inc. - initial API and implementation
+******************************************************************************/
 package org.eclipse.ecf.remoteservice;
 
-import java.util.Dictionary;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -20,11 +18,9 @@ import org.eclipse.equinox.concurrent.future.IFuture;
 import org.osgi.framework.*;
 
 /**
- * Entry point remote service container adapter. This is the entry point
- * interface for accessing remote services through ECF containers.
- * 
+ * @since 5.0
  */
-public interface IRemoteServiceContainerAdapter extends IRemoteServiceHost, IRemoteServiceConsumer {
+public interface IRemoteServiceConsumer extends IAdaptable {
 
 	/**
 	 * Add listener for remote service registration/unregistration for this
@@ -44,32 +40,6 @@ public interface IRemoteServiceContainerAdapter extends IRemoteServiceHost, IRem
 	 *            to remove. Must not be <code>null</code> .
 	 */
 	public void removeRemoteServiceListener(IRemoteServiceListener listener);
-
-	/**
-	 * Register a new remote service. This method is to be called by the service
-	 * server...i.e. the client that wishes to make available a service to other
-	 * client within this container.
-	 * 
-	 * @param clazzes
-	 *            the interface classes that the service exposes to remote
-	 *            clients. Must not be <code>null</code> and must not be an
-	 *            empty array.
-	 * @param service
-	 *            the service object.  Under normal conditions this object must
-	 *            <ul><li>not be <code>null</code></li>
-	 *            <li>implement all of the classes specified by the first parameter</li>
-	 *            </ul>
-	 *            The only situation when the service object may be <code>null</code> is if
-	 *            the service property {@link Constants#SERVICE_REGISTER_PROXY} is set
-	 *            in the properties.  If {@link Constants#SERVICE_REGISTER_PROXY} is set
-	 *            in the properties parameter (to an arbitrary value), then the service
-	 *            object may then be <code>null</code>.
-	 * @param properties
-	 *            to be associated with service
-	 * @return IRemoteServiceRegistration the service registration. Will not
-	 *         return <code>null</code> .
-	 */
-	public IRemoteServiceRegistration registerRemoteService(String[] clazzes, Object service, Dictionary properties);
 
 	/**
 	 * Returns an array of <code>IRemoteServiceReference</code> objects. The
