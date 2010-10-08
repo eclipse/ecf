@@ -8,11 +8,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
+import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionFactory;
+import org.eclipse.equinox.concurrent.future.IExecutor;
+import org.eclipse.equinox.concurrent.future.IProgressRunnable;
+import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -37,11 +42,12 @@ public class Activator implements BundleActivator {
 		return instance;
 	}
 
+	private IExecutor executor;
+
 	private ServiceTracker logServiceTracker = null;
 	private LogService logService = null;
 	private Object logServiceTrackerLock = new Object();
 
-	private IDiscoveryLocator locator;
 	private LocatorServiceListener locatorServiceListener;
 	private ServiceTracker locatorServiceTracker;
 
@@ -58,6 +64,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
+		executor = new ThreadsExecutor();
 		// Create service listener
 		locatorServiceListener = new LocatorServiceListener();
 		// Create locator service tracker
@@ -65,13 +72,56 @@ public class Activator implements BundleActivator {
 				IDiscoveryLocator.class.getName(),
 				new LocatorTrackerCustomizer());
 		locatorServiceTracker.open();
-		// XXX should this be locator.getServices()? That way a locator
-		// service listener would be added to every locator
-		locator = (IDiscoveryLocator) locatorServiceTracker.getService();
-		if (locator != null)
-			locator.addServiceListener(locatorServiceListener);
-		else {
-			// XXX should we log this?
+		openLocators();
+	}
+
+	private void openLocators() {
+		Object[] locators = locatorServiceTracker.getServices();
+		if (locators != null) {
+			for (int i = 0; i < locators.length; i++) {
+				// Add service listener to locator
+				openLocator((IDiscoveryLocator) locators[i]);
+			}
+		}
+	}
+
+	void openLocator(IDiscoveryLocator locator) {
+		if (locator == null || context == null)
+			return;
+		locator.addServiceListener(locatorServiceListener);
+		processInitialLocatorServices(locator);
+	}
+
+	void shutdownLocator(IDiscoveryLocator locator) {
+		if (locator == null || context == null)
+			return;
+		locator.removeServiceListener(locatorServiceListener);
+	}
+
+	private void processInitialLocatorServices(final IDiscoveryLocator locator) {
+		IProgressRunnable runnable = new IProgressRunnable() {
+			public Object run(IProgressMonitor arg0) throws Exception {
+				if (context == null)
+					return null;
+				IServiceInfo[] serviceInfos = locator.getServices();
+				if (context == null)
+					return null;
+				for (int i = 0; i < serviceInfos.length; i++) {
+					locatorServiceListener.handleService(serviceInfos[i], true);
+				}
+				return null;
+			}
+		};
+		executor.execute(runnable, null);
+	}
+
+	void shutdownLocators() {
+		Object[] locators = locatorServiceTracker.getServices();
+		if (locators != null) {
+			for (int i = 0; i < locators.length; i++) {
+				// Add service listener to locator
+				shutdownLocator((IDiscoveryLocator) locators[i]);
+			}
 		}
 	}
 
@@ -95,23 +145,19 @@ public class Activator implements BundleActivator {
 				logService = null;
 			}
 		}
-		
+
 		synchronized (endpointDescriptionFactoryServiceTrackerLock) {
 			if (endpointDescriptionFactoryServiceTracker != null) {
 				endpointDescriptionFactoryServiceTracker.close();
 				endpointDescriptionFactoryServiceTracker = null;
 			}
 		}
-		
 		if (locatorServiceTracker != null) {
 			locatorServiceTracker.close();
 			locatorServiceTracker = null;
 		}
-		if (locator != null) {
-			locator.removeServiceListener(locatorServiceListener);
-			locatorServiceListener = null;
-			locator = null;
-		}
+		locatorServiceListener.close();
+		executor = null;
 		Activator.context = null;
 		Activator.instance = null;
 	}
@@ -164,8 +210,7 @@ public class Activator implements BundleActivator {
 		public Object addingService(ServiceReference reference) {
 			IDiscoveryLocator locator = (IDiscoveryLocator) context
 					.getService(reference);
-			if (locator != null)
-				locator.addServiceListener(locatorServiceListener);
+			openLocator(locator);
 			return locator;
 		}
 
@@ -173,76 +218,93 @@ public class Activator implements BundleActivator {
 		}
 
 		public void removedService(ServiceReference reference, Object service) {
+			shutdownLocator((IDiscoveryLocator) service);
 		}
 	}
 
-	public EndpointListenerHolder[] getMatchingEndpointListenerHolders(EndpointDescription description) {
+	public EndpointListenerHolder[] getMatchingEndpointListenerHolders(
+			EndpointDescription description) {
 		synchronized (endpointListenerServiceTrackerLock) {
+			if (context == null)
+				return null;
 			if (endpointListenerServiceTracker == null) {
 				endpointListenerServiceTracker = new ServiceTracker(context,
 						EndpointListener.class.getName(), null);
 				endpointListenerServiceTracker.open();
 			}
-			return getMatchingEndpointListenerHolders(endpointListenerServiceTracker.getServiceReferences(),description);
+			return getMatchingEndpointListenerHolders(
+					endpointListenerServiceTracker.getServiceReferences(),
+					description);
 		}
 	}
-	
+
 	class EndpointListenerHolder {
-		
+
 		private EndpointListener listener;
 		private EndpointDescription description;
 		private String matchingFilter;
-		
-		public EndpointListenerHolder(EndpointListener l, EndpointDescription d, String f) {
+
+		public EndpointListenerHolder(EndpointListener l,
+				EndpointDescription d, String f) {
 			this.listener = l;
 			this.matchingFilter = f;
 		}
-		
+
 		public EndpointListener getListener() {
 			return listener;
 		}
-		
+
 		public EndpointDescription getDescription() {
 			return description;
 		}
-		
-		public String getFilter() {
+
+		public String getMatchingFilter() {
 			return matchingFilter;
 		}
 	}
-	
-	private EndpointListenerHolder[] getMatchingEndpointListenerHolders(ServiceReference[] refs, EndpointDescription description) {
-		if (refs == null) return null;
+
+	private EndpointListenerHolder[] getMatchingEndpointListenerHolders(
+			ServiceReference[] refs, EndpointDescription description) {
+		if (refs == null)
+			return null;
 		List results = new ArrayList();
-		for(int i=0; i < refs.length; i++) {
-			EndpointListener listener = (EndpointListener) context.getService(refs[i]);
-			if (listener == null) continue;
-			List filters = getStringPlusProperty(EndpointListener.ENDPOINT_LISTENER_SCOPE,getMapFromProperties(refs[i]));
+		for (int i = 0; i < refs.length; i++) {
+			EndpointListener listener = (EndpointListener) context
+					.getService(refs[i]);
+			if (listener == null)
+				continue;
+			List filters = getStringPlusProperty(
+					EndpointListener.ENDPOINT_LISTENER_SCOPE,
+					getMapFromProperties(refs[i]));
 			String matchingFilter = isMatch(description, filters);
-			if (matchingFilter != null) results.add(new EndpointListenerHolder(listener, description, matchingFilter));
+			if (matchingFilter != null)
+				results.add(new EndpointListenerHolder(listener, description,
+						matchingFilter));
 		}
-		return (EndpointListenerHolder[]) results.toArray(new EndpointListenerHolder[] {});
+		return (EndpointListenerHolder[]) results
+				.toArray(new EndpointListenerHolder[] {});
 	}
-	
+
 	private String isMatch(EndpointDescription description, List filters) {
-		for(Iterator j=filters.iterator(); j.hasNext(); ) {
+		for (Iterator j = filters.iterator(); j.hasNext();) {
 			String filter = (String) j.next();
-			if (description.matches(filter)) return filter;
+			if (description.matches(filter))
+				return filter;
 		}
 		return null;
 	}
-	
+
 	private Map getMapFromProperties(ServiceReference ref) {
 		Map results = new HashMap();
 		String[] keys = ref.getPropertyKeys();
 		if (keys != null) {
-			for(int i=0; i < keys.length; i++) {
+			for (int i = 0; i < keys.length; i++) {
 				results.put(keys[i], ref.getProperty(keys[i]));
 			}
 		}
 		return results;
 	}
-	
+
 	private List getStringPlusProperty(String key, Map properties) {
 		Object value = properties.get(key);
 		if (value == null) {
@@ -256,7 +318,7 @@ public class Activator implements BundleActivator {
 		if (value instanceof String[]) {
 			String[] values = (String[]) value;
 			List result = new ArrayList(values.length);
-			for (int i=0; i < values.length; i++) {
+			for (int i = 0; i < values.length; i++) {
 				if (values[i] != null) {
 					result.add(values[i]);
 				}
@@ -281,14 +343,19 @@ public class Activator implements BundleActivator {
 
 	private Object endpointDescriptionFactoryServiceTrackerLock = new Object();
 	private ServiceTracker endpointDescriptionFactoryServiceTracker;
-	
+
 	public IEndpointDescriptionFactory getEndpointDescriptionFactory() {
 		synchronized (endpointDescriptionFactoryServiceTrackerLock) {
+			if (context == null)
+				return null;
 			if (endpointDescriptionFactoryServiceTracker == null) {
-				endpointDescriptionFactoryServiceTracker = new ServiceTracker(context,IEndpointDescriptionFactory.class.getName(), null);
+				endpointDescriptionFactoryServiceTracker = new ServiceTracker(
+						context, IEndpointDescriptionFactory.class.getName(),
+						null);
 				endpointDescriptionFactoryServiceTracker.open();
 			}
-			return (IEndpointDescriptionFactory) endpointDescriptionFactoryServiceTracker.getService();
+			return (IEndpointDescriptionFactory) endpointDescriptionFactoryServiceTracker
+					.getService();
 		}
 	}
 
