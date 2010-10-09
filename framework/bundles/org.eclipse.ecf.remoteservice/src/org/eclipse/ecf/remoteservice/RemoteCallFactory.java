@@ -11,7 +11,8 @@
 package org.eclipse.ecf.remoteservice;
 
 /**
- * Factory to support the creation of {@link IRestCall} objects.
+ * Factory to support the creation of {@link IRemoteCall} objects.
+ * @since 5.0
  */
 public class RemoteCallFactory {
 
@@ -23,7 +24,7 @@ public class RemoteCallFactory {
 		return createRemoteCall(fqMethod, params, IRemoteCall.DEFAULT_TIMEOUT);
 	}
 
-	public static IRemoteCall createRestCall(String fqMethod) {
+	public static IRemoteCall createRemoteCall(String fqMethod) {
 		return createRemoteCall(fqMethod, null);
 	}
 }
