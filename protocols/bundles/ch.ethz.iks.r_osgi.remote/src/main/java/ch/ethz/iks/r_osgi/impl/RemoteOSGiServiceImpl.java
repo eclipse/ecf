@@ -905,7 +905,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 		final String channel = getChannelURI(URI.create(uri));
 		ChannelEndpointMultiplexer multiplexer = (ChannelEndpointMultiplexer) multiplexers
 				.get(channel);
-		if (multiplexer == null || multiplexer.isConnected()) {
+		if (multiplexer == null || !multiplexer.isConnected()) {
 			multiplexer = new ChannelEndpointMultiplexer(
 					(ChannelEndpointImpl) channels.get(channel));
 			multiplexers.put(channel, multiplexer);
