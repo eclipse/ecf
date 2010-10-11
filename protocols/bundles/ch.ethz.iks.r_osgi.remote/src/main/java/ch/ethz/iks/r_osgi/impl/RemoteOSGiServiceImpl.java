@@ -905,7 +905,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 		final String channel = getChannelURI(URI.create(uri));
 		ChannelEndpointMultiplexer multiplexer = (ChannelEndpointMultiplexer) multiplexers
 				.get(channel);
-		if (multiplexer == null) {
+		if (multiplexer == null || multiplexer.isConnected()) {
 			multiplexer = new ChannelEndpointMultiplexer(
 					(ChannelEndpointImpl) channels.get(channel));
 			multiplexers.put(channel, multiplexer);
@@ -1106,13 +1106,12 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	 */
 	void registerWithServiceDiscovery(final RemoteServiceRegistration reg) {
 		// register the service with all service
-		// discovery
-		// handler
-		final Dictionary props = reg.getProperties();
+		// discovery handler
 		final Object[] handler = serviceDiscoveryHandlerTracker.getServices();
 
 		if (handler != null) {
 			for (int i = 0; i < handler.length; i++) {
+				final Dictionary props = reg.getProperties();
 				((ServiceDiscoveryHandler) handler[i]).registerService(reg
 						.getReference(), props, URI.create("r-osgi://" //$NON-NLS-1$
 						+ RemoteOSGiServiceImpl.MY_ADDRESS + ":" //$NON-NLS-1$

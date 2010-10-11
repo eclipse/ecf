@@ -223,7 +223,7 @@ final class ChannelEndpointMultiplexer implements ChannelEndpoint,
 	}
 
 	public boolean isConnected() {
-		return true;
+		return primary.isConnected();
 	}
 
 	/**
