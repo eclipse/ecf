@@ -27,7 +27,6 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.*;
 import org.osgi.framework.Constants;
-import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -37,7 +36,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  * 
  * @author Jan S. Rellermeyer, ETH Zurich
  */
-final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapter, IContainer, RemoteServiceListener {
+final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter, IRemoteServiceContainerAdapter, IContainer, RemoteServiceListener {
 
 	// the bundle context.
 	private BundleContext context;
@@ -389,6 +388,19 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 	 *      java.lang.Object, java.util.Dictionary)
 	 */
 	public IRemoteServiceRegistration registerRemoteService(final String[] clazzes, final Object service, final Dictionary properties) {
+		return registerRemoteService(clazzes, service, properties, context);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter#registerRemoteService(java.lang.String[], org.osgi.framework.ServiceReference, java.util.Dictionary)
+	 */
+	public IRemoteServiceRegistration registerRemoteService(final String[] clazzes, final ServiceReference aServiceReference, final Dictionary properties) {
+		final Object service = context.getService(aServiceReference);
+		final BundleContext bundleContext = aServiceReference.getBundle().getBundleContext();
+		return registerRemoteService(clazzes, service, properties, bundleContext);
+	}
+
+	private IRemoteServiceRegistration registerRemoteService(final String[] clazzes, final Object service, final Dictionary properties, final BundleContext aContext) {
 		if (containerID == null) {
 			throw new IllegalStateException("Container is not connected"); //$NON-NLS-1$
 		}
@@ -411,20 +423,7 @@ final class R_OSGiRemoteServiceContainer implements IRemoteServiceContainerAdapt
 		serviceRanking = (serviceRanking == null) ? new Integer(0) : serviceRanking;
 		props.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_RANKING, serviceRanking);
 
-		// register the service with the local framework but use the original BundleContext
-		// http://bugs.eclipse.org/325950
-		final PackageAdmin pkgAdmin = Activator.getDefault().getPackageAdmin();
-		final Bundle bundle = pkgAdmin.getBundle(service.getClass());
-		BundleContext bundleContext = bundle.getBundleContext();
-
-		//TODO replace with a fix for 325950 comment #17
-		// if pkgadmin does not return a context (in cases where a third bundle registered
-		// the service) fall back to our own bundle context
-		if (bundleContext == null) {
-			bundleContext = context;
-		}
-
-		final ServiceRegistration reg = bundleContext.registerService(clazzes, service, props);
+		final ServiceRegistration reg = aContext.registerService(clazzes, service, props);
 		// Set ECF remote service id property based upon local service property
 		reg.setProperties(prepareProperties(reg.getReference()));
 

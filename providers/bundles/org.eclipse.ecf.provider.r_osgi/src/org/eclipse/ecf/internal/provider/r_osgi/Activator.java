@@ -14,7 +14,6 @@ package org.eclipse.ecf.internal.provider.r_osgi;
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -36,9 +35,6 @@ public final class Activator implements BundleActivator {
 	// The service tracker for the R-OSGi remote service
 	private ServiceTracker r_osgi_tracker;
 
-	// The package admin service tracker
-	private ServiceTracker pkg_admin_tracker;
-
 	/**
 	 * The constructor.
 	 */
@@ -57,9 +53,6 @@ public final class Activator implements BundleActivator {
 		this.context = bc;
 		r_osgi_tracker = new ServiceTracker(context, RemoteOSGiService.class.getName(), null);
 		r_osgi_tracker.open();
-
-		pkg_admin_tracker = new ServiceTracker(context, PackageAdmin.class.getName(), null);
-		pkg_admin_tracker.open();
 	}
 
 	/**
@@ -72,8 +65,6 @@ public final class Activator implements BundleActivator {
 	public void stop(final BundleContext bc) throws Exception {
 		r_osgi_tracker.close();
 		r_osgi_tracker = null;
-		pkg_admin_tracker.close();
-		pkg_admin_tracker = null;
 		this.context = null;
 		plugin = null;
 	}
@@ -110,17 +101,4 @@ public final class Activator implements BundleActivator {
 		}
 		return plugin;
 	}
-
-	/**
-	 * get the PackageAdmin service instance.
-	 * 
-	 * @return the PackageAdmin service instance or null, if there is none.
-	 */
-	public PackageAdmin getPackageAdmin() {
-		if (pkg_admin_tracker == null) {
-			return null;
-		}
-		return (PackageAdmin) pkg_admin_tracker.getService();
-	}
-
 }
