@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
+import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +36,7 @@ import org.eclipse.ecf.osgi.services.distribution.IHostContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IHostDistributionListener;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
@@ -114,10 +117,19 @@ public class EventHookImpl implements EventHook {
 		for (int i = 0; i < rsContainers.length; i++) {
 			// Step 1 - Register with remote service container adapter for given
 			// all found containers/providers
-			IRemoteServiceRegistration remoteRegistration = rsContainers[i]
-					.getContainerAdapter().registerRemoteService(
-							exportedInterfaces, remoteService,
-							remoteServiceProperties);
+			IRemoteServiceContainerAdapter containerAdapter = rsContainers[i]
+					.getContainerAdapter();
+			IRemoteServiceRegistration remoteRegistration;
+			if (containerAdapter instanceof IOSGiRemoteServiceContainerAdapter) {
+				IOSGiRemoteServiceContainerAdapter osgiContainerAdapter = (IOSGiRemoteServiceContainerAdapter) containerAdapter;
+				remoteRegistration = osgiContainerAdapter
+						.registerRemoteService(exportedInterfaces,
+								serviceReference, remoteServiceProperties);
+			} else {
+				remoteRegistration = containerAdapter.registerRemoteService(
+						exportedInterfaces, remoteService,
+						remoteServiceProperties);
+			}
 			trace("registerRemoteService", "containerID=" //$NON-NLS-1$ //$NON-NLS-2$
 					+ rsContainers[i].getContainer().getID()
 					+ " serviceReference=" + serviceReference //$NON-NLS-1$
