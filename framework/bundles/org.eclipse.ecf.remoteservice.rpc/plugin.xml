@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.internal.remoteservice.rpc.RPCClientContainerInstantiator"
+            description="Client Container for XML-RPC Services"
+            name="ecf.xmlrpc.client">
+      </containerFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.remoteservice.rpc.identity.RPCNamespace"
+            name="ecf.xmlrpc.namespace">
+      </namespace>
+   </extension>
+</plugin>
