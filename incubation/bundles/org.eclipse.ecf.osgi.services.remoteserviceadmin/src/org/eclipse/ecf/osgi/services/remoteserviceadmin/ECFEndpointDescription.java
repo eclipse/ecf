@@ -32,4 +32,14 @@ public class ECFEndpointDescription extends EndpointDescription {
 		super(properties);
 		// XXX todo
 	}
+	
+	public boolean equals(Object other) {
+		// TODO Auto-generated method stub
+		return super.equals(other);
+	}
+	
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return super.hashCode();
+	}
 }
