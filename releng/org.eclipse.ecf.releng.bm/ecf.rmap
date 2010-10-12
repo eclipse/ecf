@@ -107,7 +107,6 @@
 	<!-- below order does matter!!! -->
 
 	<!-- ECF Discovery DNS-SD -->
-	<locator searchPathRef="org.eclipse.ecf.discovery.dnssd" pattern="^org\.eclipse\.ecf\.discovery\.feature?" />
 	<locator searchPathRef="org.eclipse.ecf.discovery.dnssd" pattern="^org\.eclipse\.ecf\.discovery\.dnssd(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf.discovery.dnssd" pattern="^org\.eclipse\.ecf\.provider\.dnssd(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf.discovery.dnssd" pattern="^org\.xbill\.dns?" />
