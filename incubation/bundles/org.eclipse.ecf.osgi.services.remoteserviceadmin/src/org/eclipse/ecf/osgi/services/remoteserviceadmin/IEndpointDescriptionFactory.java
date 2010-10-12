@@ -15,7 +15,31 @@ import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
 public interface IEndpointDescriptionFactory {
 
+	/**
+	 * Create an EndpointDescription for a discovered remote service.  Implementers of this
+	 * factory service may return the type of EndpointDescription appropriate for the
+	 * associated distribution system (e.g. ECFEndpointDescription).  Implementers should return
+	 * <code>null</code> if no notification should occur.
+	 * 
+	 * @param serviceId the discovered service ID.  Must not be <code>null</code>.
+	 * @param discoveredServiceInfo the discovered service info.  Must not be <code>null</code>.
+	 * @return EndpointDescription that will be used to notify EndpointListeners
+	 * about a new EndpointDescription.  If <code>null</code> is returned, no
+	 * notification should be performed by the calling code.  
+	 */
 	public EndpointDescription createDiscoveredEndpointDescription(IServiceID serviceId, IServiceInfo discoveredServiceInfo);
-	public EndpointDescription createUndiscoveredEndpointDescription(IServiceID serviceId, IServiceInfo undiscoveredServiceInfo);
+	/**
+	 * Get an EndpointDescription for an undiscovered remote service.  Implementers of this
+	 * factory service may return the type of EndpointDescription appropriate for the
+	 * associated distribution system (e.g. ECFEndpointDescription).  Implementers should return
+	 * <code>null</code> if no notification should occur.
+	 * 
+	 * @param serviceId the discovered service ID.  Must not be <code>null</code>.
+	 * @param discoveredServiceInfo the discovered service info.  May be <code>null</code>.
+	 * @return EndpointDescription that will be used to notify EndpointListeners
+	 * about an undiscovered EndpointDescription.  If <code>null</code> is returned, no
+	 * notification should be performed by the calling code.  
+	 */
+	public EndpointDescription getUndiscoveredEndpointDescription(IServiceID serviceId, IServiceInfo undiscoveredServiceInfo);
 	
 }

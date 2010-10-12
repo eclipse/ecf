@@ -9,10 +9,13 @@
 ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -21,14 +24,26 @@ import static org.osgi.service.remoteserviceadmin.RemoteConstants.*;
 
 public class DefaultEndpointDescriptionFactory implements IEndpointDescriptionFactory {
 
+	private List discoveredECFEndpointDescriptions = new ArrayList();
+	
 	public EndpointDescription createDiscoveredEndpointDescription(
-			IServiceID serviceId, IServiceInfo discoveredServiceInfo) {
-		if (serviceId == null || discoveredServiceInfo == null) return null;
-		Map properties = createPropertiesFromDiscoveredServiceInfo(discoveredServiceInfo);
-		return new ECFEndpointDescription(serviceId, discoveredServiceInfo, properties);
+			IServiceID serviceID, IServiceInfo serviceInfo) {
+		Assert.isNotNull(serviceID);
+		Assert.isNotNull(serviceInfo);
+		return getECFEndpointDescription(serviceID, serviceInfo);
 	}
 
-	private Map createPropertiesFromDiscoveredServiceInfo(
+	protected void logWarning(String message) {
+		// XXX change to log
+		System.out.println(message);
+	}
+	
+	protected ECFEndpointDescription getECFEndpointDescription(IServiceID serviceID, IServiceInfo serviceInfo) {
+		// XXX todo
+		return null;
+	}
+	
+	private Map createOSGiPropertiesFromDiscoveredServiceInfo(
 			IServiceInfo discoveredServiceInfo) {
 		Properties discoveredProperties = ((ServiceProperties) discoveredServiceInfo.getServiceProperties()).asProperties();
 		Map props = new TreeMap(
@@ -47,11 +62,10 @@ public class DefaultEndpointDescriptionFactory implements IEndpointDescriptionFa
 		return props;
 	}
 
-	public EndpointDescription createUndiscoveredEndpointDescription(
+	public EndpointDescription getUndiscoveredEndpointDescription(
 			IServiceID serviceId, IServiceInfo undiscoveredServiceInfo) {
-		if (serviceId == null || undiscoveredServiceInfo == null) return null;
-		Map properties = createPropertiesFromDiscoveredServiceInfo(undiscoveredServiceInfo);
-		return new ECFEndpointDescription(serviceId, undiscoveredServiceInfo, properties);
+		// XXX todo
+		return null;
 	}
 
 }

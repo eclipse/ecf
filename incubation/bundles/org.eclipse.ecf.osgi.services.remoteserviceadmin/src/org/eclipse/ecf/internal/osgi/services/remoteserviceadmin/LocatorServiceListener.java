@@ -175,11 +175,19 @@ class LocatorServiceListener implements IServiceListener {
 					+ " serviceInfo=" + serviceInfo);
 			return null;
 		}
+		try {
 		// Else get endpoint description factory to create EndpointDescription
 		// for given serviceID and serviceInfo
 		return (discovered) ? factory.createDiscoveredEndpointDescription(
 				serviceId, serviceInfo) : factory
-				.createUndiscoveredEndpointDescription(serviceId, serviceInfo);
+				.getUndiscoveredEndpointDescription(serviceId, serviceInfo);
+		} catch (Exception e) {
+			logError("Exception calling IEndpointDescriptionFactory."+((discovered)?"createDiscoveredEndpointDescription":"getUndiscoveredEndpointDescription"), e);
+			return null;
+		} catch (NoClassDefFoundError e) {
+			logError("NoClassDefFoundError calling IEndpointDescriptionFactory."+((discovered)?"createDiscoveredEndpointDescription":"getUndiscoveredEndpointDescription"), e);
+			return null;
+		}
 	}
 
 	public void close() {

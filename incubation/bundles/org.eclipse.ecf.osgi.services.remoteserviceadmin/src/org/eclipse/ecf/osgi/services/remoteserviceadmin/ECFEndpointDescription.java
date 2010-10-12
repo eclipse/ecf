@@ -18,18 +18,14 @@ import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
 public class ECFEndpointDescription extends EndpointDescription {
 
-	public ECFEndpointDescription(Map arg0) {
-		super(arg0);
-	}
-
 	public ECFEndpointDescription(final ServiceReference reference,
-			final Map<String, Object> properties) {
-		super(reference,properties);
+			final Map osgiProperties) {
+		super(reference,osgiProperties);
 	}
 
 	public ECFEndpointDescription(IServiceID serviceId,
-			IServiceInfo discoveredServiceInfo, Map properties) {
-		super(properties);
+			IServiceInfo discoveredServiceInfo, Map osgiProperties) {
+		super(osgiProperties);
 		// XXX todo
 	}
 	
