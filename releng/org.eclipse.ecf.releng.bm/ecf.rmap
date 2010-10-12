@@ -50,6 +50,15 @@
             </uri>    
 		</provider>
 	</searchPath>
+	
+	<!-- ecf.discovery.dnssd -->
+	<searchPath name="org.eclipse.ecf.discovery.dnssd">
+		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
+			<uri format="{0}/?importType=binary">
+                <bc:propertyRef key="ecf.p2.repository" />
+            </uri>    
+		</provider>
+	</searchPath>
 
 	<!-- pluginbuilder -->
 	<searchPath name="org.pluginbuilder">
@@ -97,6 +106,11 @@
 	
 	<!-- below order does matter!!! -->
 
+	<!-- ECF Discovery DNS-SD -->
+	<locator searchPathRef="org.eclipse.ecf.discovery.dnssd" pattern="^org\.eclipse\.ecf\.discovery\.dnssd(\..+)?" />
+	<locator searchPathRef="org.eclipse.ecf.discovery.dnssd" pattern="^org\.eclipse\.ecf\.provider\.dnssd(\..+)?" />
+	<locator searchPathRef="org.eclipse.ecf.discovery.dnssd" pattern="^org\.xbill\.dns?" />
+	
 	<!-- ECF -->
 	<locator searchPathRef="org.eclipse.ecf" pattern="^ch\.ethz\.iks(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.ecf(\..+)?" />
