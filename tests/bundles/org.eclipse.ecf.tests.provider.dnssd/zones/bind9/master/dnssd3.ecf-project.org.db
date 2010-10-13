@@ -1,0 +1,22 @@
+$ORIGIN .
+$TTL 3600	; 1 hour
+dnssd3.ecf-project.org	IN SOA	ns1.ecf-project.org. hostmaster.mkce.de. (
+				2010052607 ; serial
+				7200       ; refresh (2 hours)
+				120        ; retry (2 minutes)
+				2419200    ; expire (4 weeks)
+				604800     ; minimum (1 week)
+				)
+			NS	ns1.ecf-project.org.
+$ORIGIN dnssd3.ecf-project.org.
+$TTL 600	; 10 minutes
+_junit._tcp		TXT	"testRegisterServiceservicePropertiesBoolean=false"
+			TXT	"testRegisterServicetestIdentifier=1603167762219265632"
+			TXT	"testRegisterServicetestIdentifier=-3846295950690515251"
+			TXT	"testRegisterServicetestIdentifier=-4521862963982181415"
+			TXT	"testRegisterServiceservicePropertiesIntegerMin=2147483647"
+			TXT	"testRegisterServiceservicePropertiesIntegerMax=-2147483648"
+			TXT	"testRegisterServiceservicePropertiesString=serviceProperties"
+			TXT	"testRegisterServiceservicePropertiesByte=org.eclipse.ecf.discovery.ServiceProperties$ByteArrayWrapper@b364dcb"
+			TXT	"testRegisterServiceservicePropertiesByte=org.eclipse.ecf.discovery.ServiceProperties$ByteArrayWrapper@14eac7c8"
+			SRV	1 1 3282 127.0.1.1.
