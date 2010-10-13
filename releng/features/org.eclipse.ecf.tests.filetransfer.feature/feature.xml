@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.platform_tests_feature"
+      id="org.eclipse.ecf.tests.filetransfer.feature"
       label="ECF Platform "
       version="1.0.0.qualifier"
       provider-name="Eclipse.org - ECF">

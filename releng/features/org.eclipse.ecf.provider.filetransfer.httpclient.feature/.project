@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.eclipse.ecf.example-feature</name>
+	<name>org.eclipse.ecf.provider.filetransfer.httpclient.feature</name>
 	<comment></comment>
 	<projects>
 	</projects>

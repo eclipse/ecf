@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.provider.filetransfer.httpclient_feature"
+      id="org.eclipse.ecf.provider.filetransfer.httpclient.feature"
       label="%featureName"
       version="2.1.0.qualifier"
       provider-name="%providerName">

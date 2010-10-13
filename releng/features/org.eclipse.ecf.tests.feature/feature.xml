@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.tests_feature"
+      id="org.eclipse.ecf.tests.feature"
       label="Used to build and execute tests (should never appear in a product)"
       version="3.0.0"
       provider-name="Eclipse.org">
@@ -460,4 +460,5 @@ limitations under the License.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
 </feature>
