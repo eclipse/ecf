@@ -202,14 +202,8 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 	}
 
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
-		if (target == null)
-			return getRemoteServiceReferences(idFilter, clazz, filter);
-		if (idFilter == null)
-			return getRemoteServiceReferences(target, clazz, filter);
-		List idsList = Arrays.asList(idFilter);
-		// add target
-		idsList.add(target);
-		return getRemoteServiceReferences((ID[]) idsList.toArray(new ID[] {}), clazz, filter);
+		// r-osgi does not support the idFilter, since it does not support pub/sub
+		return getRemoteServiceReferences(target, clazz, filter);
 	}
 
 	/**
@@ -229,21 +223,12 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 	 *      java.lang.String, java.lang.String)
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) throws InvalidSyntaxException {
-		if (clazz == null)
-			return null;
+		// r-osgi does not support the idFilter, since it does not support pub/sub
 		IRemoteFilter remoteFilter = (filter == null) ? null : createRemoteFilter(filter);
-		if (idFilter == null) {
-			IRemoteServiceReference[] refs = (IRemoteServiceReference[]) getRemoteServiceReferencesConnected(clazz, remoteFilter).toArray(new IRemoteServiceReference[] {});
-			return (refs.length == 0) ? null : refs;
-		}
-		synchronized (this) {
-			List results = new ArrayList();
-			for (int i = 0; i < idFilter.length; i++) {
-				results.addAll(connectAndGetRemoteServiceReferencesForTarget(getConnectedID(), idFilter[i], clazz, remoteFilter));
-			}
-			IRemoteServiceReference[] refs = (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
-			return (refs.length == 0) ? null : refs;
-		}
+		List results = getRemoteServiceReferencesConnected(clazz, remoteFilter);
+		if (results == null)
+			return null;
+		return (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
 	}
 
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
@@ -292,49 +277,6 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 
 	private IRemoteServiceReference createLocalRemoteServiceReference(ServiceReference ref) {
 		return new LocalRemoteServiceReferenceImpl(createRemoteServiceID(containerID, (Long) ref.getProperty(Constants.SERVICE_ID)), ref);
-	}
-
-	private List /*IRemoteServiceReference*/connectAndGetRemoteServiceReferencesForTarget(ID currentlyConnectedID, ID targetID, String clazz, IRemoteFilter remoteFilter) {
-		List results = new ArrayList();
-		if (currentlyConnectedID != null) {
-			if (targetID.equals(currentlyConnectedID))
-				results.addAll(getRemoteServiceReferencesConnected(clazz, remoteFilter));
-			else {
-				disconnect();
-				results.addAll(connectAndGetRemoteServiceReferencesForTarget(targetID, clazz, remoteFilter, true));
-				// try to reconnect to original
-				try {
-					connect(currentlyConnectedID, connectContext);
-				} catch (ContainerConnectException e) {
-					logException("connectAndGetRemoteServiceReferencesForTarget.  Could not reconnect to " + currentlyConnectedID, e); //$NON-NLS-1$
-				}
-			}
-		} else {
-			results.addAll(connectAndGetRemoteServiceReferencesForTarget(targetID, clazz, remoteFilter, false));
-		}
-		return results;
-	}
-
-	private List /*IRemoteServiceReference[]*/connectAndGetRemoteServiceReferencesForTarget(ID targetID, String clazz, IRemoteFilter remoteFilter, boolean doDisconnect) {
-		List results = new ArrayList();
-		try {
-			// we first connect
-			connect(targetID, connectContext);
-			// get remote services references...assuming we're connected
-			results.addAll(getRemoteServiceReferencesConnected(clazz, remoteFilter));
-			// then disconnect
-			if (doDisconnect)
-				disconnect();
-		} catch (ContainerConnectException e) {
-			logException("connectAndGetRemoteServiceReferencesForTarget=" + targetID + ",class=" + clazz + ",remoteFilter=" + remoteFilter, e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		}
-		return results;
-	}
-
-	private void logException(String message, Throwable e) {
-		System.err.println(message);
-		if (e != null)
-			e.printStackTrace(System.err);
 	}
 
 	private synchronized List getRemoteServiceReferencesConnected(final String clazz, IRemoteFilter filter) {

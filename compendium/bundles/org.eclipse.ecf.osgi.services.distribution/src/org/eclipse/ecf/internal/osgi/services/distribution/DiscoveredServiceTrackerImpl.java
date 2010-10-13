@@ -12,7 +12,6 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -55,8 +54,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 	private DistributionProviderImpl distributionProvider;
 	private List serviceLocations = new ArrayList();
 	// <Map<containerID><RemoteServiceRegistration>
-	private Map discoveredRemoteServiceRegistrations = Collections
-			.synchronizedMap(new HashMap());
+	private Map discoveredRemoteServiceRegistrations = new HashMap();
 	private List ecfRemoteServiceProperties = Arrays.asList(new String[] {
 			Constants.SERVICE_ID, Constants.OBJECTCLASS,
 			org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
@@ -119,14 +117,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			eventManager = null;
 			queue = null;
 		}
-		if (serviceLocations != null) {
-			serviceLocations.clear();
-			serviceLocations = null;
-		}
-		if (discoveredRemoteServiceRegistrations != null) {
-			discoveredRemoteServiceRegistrations.clear();
-			discoveredRemoteServiceRegistrations = null;
-		}
+		serviceLocations.clear();
+		discoveredRemoteServiceRegistrations.clear();
 	}
 
 	/*
@@ -429,37 +421,42 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 	private boolean findProxyServiceRegistration(
 			RemoteServiceEndpointDescription sed) {
-		for (Iterator i = discoveredRemoteServiceRegistrations.keySet()
-				.iterator(); i.hasNext();) {
-			ID containerID = (ID) i.next();
-			RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
-					.get(containerID);
-			if (reg.hasRSED(sed))
-				return true;
+		synchronized (discoveredRemoteServiceRegistrations) {
+			for (Iterator i = discoveredRemoteServiceRegistrations.keySet()
+					.iterator(); i.hasNext();) {
+				ID containerID = (ID) i.next();
+				RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
+						.get(containerID);
+				if (reg.hasRSED(sed))
+					return true;
+			}
+			return false;
 		}
-		return false;
 	}
 
 	private ServiceRegistration[] removeProxyServiceRegistrations(
 			RemoteServiceEndpointDescription sed) {
 		List results = new ArrayList();
-		for (Iterator i = discoveredRemoteServiceRegistrations.keySet()
-				.iterator(); i.hasNext();) {
-			ID containerID = (ID) i.next();
-			RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
-					.get(containerID);
-			if (reg != null) {
-				ServiceRegistration sr = reg.removeServiceRegistration(sed);
-				if (sr != null)
-					results.add(sr);
-				if (reg.isEmpty()) {
-					reg.dispose();
-					discoveredRemoteServiceRegistrations.remove(containerID);
+		synchronized (discoveredRemoteServiceRegistrations) {
+			for (Iterator i = discoveredRemoteServiceRegistrations.keySet()
+					.iterator(); i.hasNext();) {
+				ID containerID = (ID) i.next();
+				RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
+						.get(containerID);
+				if (reg != null) {
+					ServiceRegistration sr = reg.removeServiceRegistration(sed);
+					if (sr != null)
+						results.add(sr);
+					if (reg.isEmpty()) {
+						reg.dispose();
+						discoveredRemoteServiceRegistrations
+								.remove(containerID);
+					}
 				}
 			}
+			return (ServiceRegistration[]) results
+					.toArray(new ServiceRegistration[] {});
 		}
-		return (ServiceRegistration[]) results
-				.toArray(new ServiceRegistration[] {});
 	}
 
 	class RemoteServiceReferenceUnregisteredListener implements
@@ -478,22 +475,26 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				// this is going on...as it can be invoked by an arbitrary
 				RemoteServiceRegistration.RSEDAndSRAssoc[] assocs = null;
 				synchronized (serviceLocations) {
-					RemoteServiceRegistration rsRegs = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
-							.get(localContainerID);
-					// If we've got any remote service registrations for the
-					// containerID
-					if (rsRegs != null) {
-						assocs = rsRegs.removeServiceRegistration(reference);
-						// If this removes *all* references for this
-						// registration
-						if (rsRegs.isEmpty()) {
-							rsRegs.dispose();
-							discoveredRemoteServiceRegistrations
-									.remove(localContainerID);
-						}
-						if (assocs != null) {
-							for (int i = 0; i < assocs.length; i++) {
-								removeDiscoveredServiceID(assocs[i].getRSED());
+					synchronized (discoveredRemoteServiceRegistrations) {
+						RemoteServiceRegistration rsRegs = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
+								.get(localContainerID);
+						// If we've got any remote service registrations for the
+						// containerID
+						if (rsRegs != null) {
+							assocs = rsRegs
+									.removeServiceRegistration(reference);
+							// If this removes *all* references for this
+							// registration
+							if (rsRegs.isEmpty()) {
+								rsRegs.dispose();
+								discoveredRemoteServiceRegistrations
+										.remove(localContainerID);
+							}
+							if (assocs != null) {
+								for (int i = 0; i < assocs.length; i++) {
+									removeDiscoveredServiceID(assocs[i]
+											.getRSED());
+								}
 							}
 						}
 					}
@@ -605,21 +606,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							.getContext()
 							.registerService(clazzes, proxy, properties);
 
-					// Get localcontainerID
-					ID localContainerID = remoteServiceContainer.getContainer()
-							.getID();
-					// Get a remote service registration for this remote service
-					// container
-					RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
-							.get(localContainerID);
-					// If there is none, then create one
-					if (reg == null) {
-						reg = new RemoteServiceRegistration(
-								remoteServiceContainer,
-								new RemoteServiceReferenceUnregisteredListener());
-						discoveredRemoteServiceRegistrations.put(
-								localContainerID, reg);
-					}
+					RemoteServiceRegistration reg = getProxyServiceRegistration(remoteServiceContainer);
 					reg.addServiceRegistration(remoteReferences[i], sed,
 							registration);
 					// And add to distribution provider
@@ -641,6 +628,22 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					continue;
 				}
 			}
+		}
+	}
+
+	private RemoteServiceRegistration getProxyServiceRegistration(
+			IRemoteServiceContainer rsContainer) {
+		ID localContainerID = rsContainer.getContainer().getID();
+		synchronized (discoveredRemoteServiceRegistrations) {
+			RemoteServiceRegistration reg = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
+					.get(localContainerID);
+			// If there is none, then create one
+			if (reg == null) {
+				reg = new RemoteServiceRegistration(rsContainer,
+						new RemoteServiceReferenceUnregisteredListener());
+				discoveredRemoteServiceRegistrations.put(localContainerID, reg);
+			}
+			return reg;
 		}
 	}
 

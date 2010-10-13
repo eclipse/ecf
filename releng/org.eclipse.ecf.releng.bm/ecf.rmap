@@ -10,10 +10,7 @@
 	<!-- org.eclipse -->
 	<searchPath name="org.eclipse">
 		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/eclipse/updates/3.5/?importType=binary"/>
-		</provider>
-		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/eclipse/updates/3.6/?importType=binary"/>
+			<uri format="http://download.eclipse.org/eclipse/updates/3.6/R-3.6.1-201009090800/?importType=binary"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
@@ -86,10 +83,6 @@
 	
 	<!-- default -->
 	<searchPath name="default">
-		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/tools/orbit/downloads/drops/R20090825191606/updateSite/?importType=binary"/>
-		</provider>
-		<!-- RC3 -->
 		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
 			<uri format="http://download.eclipse.org/tools/orbit/downloads/drops/R20100519200754/updateSite/?importType=binary"/>
 		</provider>
