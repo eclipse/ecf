@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.3"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.dnssd.ContainerInstantiator"
+            description="Discovery Locator Container "
+            name="ecf.discovery.dnssd.locator">
+      </containerFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.dnssd.ContainerInstantiator"
+            description="Discovery Advertiser Container "
+            name="ecf.discovery.dnssd.advertiser">
+      </containerFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.provider.dnssd.DnsSdNamespace"
+            description="Dns SD Namespace"
+            name="ecf.namespace.dnssd"/>
+   </extension>
+
+</plugin>
