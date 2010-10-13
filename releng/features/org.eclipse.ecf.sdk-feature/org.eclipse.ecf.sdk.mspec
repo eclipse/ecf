@@ -4,11 +4,6 @@
     materializer="p2" 
     url="org.eclipse.ecf.sdk.cquery">
 
-	<!-- ECF discovery DNS-SD -->
-	<md:mspecNode namePattern="^org\.eclipse\.ecf\.discovery\.dnssd(\..+)?" materializer="p2" installLocation="${targetPlatformPath}"/>
-	<md:mspecNode namePattern="^org\.eclipse\.ecf\.provider\.dnssd(\..+)?" materializer="p2" installLocation="${targetPlatformPath}"/>
-	<md:mspecNode namePattern="^org\.xbill\.dns?" materializer="p2" installLocation="${targetPlatformPath}"/>
-    
     <md:mspecNode namePattern="^ch\.ethz\.iks(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.team\.ecf(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf(\..+)?" materializer="workspace"/>
