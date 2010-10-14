@@ -2,7 +2,7 @@
 <md:mspec xmlns:md="http://www.eclipse.org/buckminster/MetaData-1.0" 
     name="org.eclipse.ecf" 
     materializer="p2" 
-    url="org.eclipse.ecf.platform.cquery">
+    url="org.eclipse.ecf.filetransfer.cquery">
     
     <md:mspecNode namePattern="^org\.eclipse\.ecf(\..+)?" materializer="workspace"/>
 
