@@ -21,7 +21,7 @@ public class RPCID extends URIID {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("XMLRPCID["); //$NON-NLS-1$
+		StringBuffer sb = new StringBuffer("XmlRpcId["); //$NON-NLS-1$
 		sb.append(getName()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
