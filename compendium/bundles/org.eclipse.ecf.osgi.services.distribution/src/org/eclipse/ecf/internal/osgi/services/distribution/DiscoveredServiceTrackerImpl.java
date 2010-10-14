@@ -438,6 +438,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			RemoteServiceEndpointDescription sed) {
 		List results = new ArrayList();
 		synchronized (discoveredRemoteServiceRegistrations) {
+			final List containerIDsToRemove = new ArrayList();
 			for (Iterator i = discoveredRemoteServiceRegistrations.keySet()
 					.iterator(); i.hasNext();) {
 				ID containerID = (ID) i.next();
@@ -449,10 +450,14 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 						results.add(sr);
 					if (reg.isEmpty()) {
 						reg.dispose();
-						discoveredRemoteServiceRegistrations
-								.remove(containerID);
+						containerIDsToRemove.add(containerID);
 					}
 				}
+			}
+			// Outside of the iterator, now remove any containerID found to
+			// match
+			for (Iterator i = containerIDsToRemove.iterator(); i.hasNext();) {
+				discoveredRemoteServiceRegistrations.remove(i.next());
 			}
 			return (ServiceRegistration[]) results
 					.toArray(new ServiceRegistration[] {});
@@ -476,6 +481,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				RemoteServiceRegistration.RSEDAndSRAssoc[] assocs = null;
 				synchronized (serviceLocations) {
 					synchronized (discoveredRemoteServiceRegistrations) {
+						List containerIDsToRemove = new ArrayList();
 						RemoteServiceRegistration rsRegs = (RemoteServiceRegistration) discoveredRemoteServiceRegistrations
 								.get(localContainerID);
 						// If we've got any remote service registrations for the
@@ -487,8 +493,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 							// registration
 							if (rsRegs.isEmpty()) {
 								rsRegs.dispose();
-								discoveredRemoteServiceRegistrations
-										.remove(localContainerID);
+								containerIDsToRemove.add(localContainerID);
 							}
 							if (assocs != null) {
 								for (int i = 0; i < assocs.length; i++) {
@@ -497,7 +502,13 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 								}
 							}
 						}
+						for (Iterator i = containerIDsToRemove.iterator(); i
+								.hasNext();) {
+							discoveredRemoteServiceRegistrations.remove(i
+									.next());
+						}
 					}
+
 				}
 				// Call this outside of synchronized block
 				if (assocs != null) {
