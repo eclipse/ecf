@@ -50,8 +50,8 @@
 
 	<!-- org.xbill.dns -->
 	<searchPath name="org.xbill.dns">
-		<provider readerType="url" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://download.ecf-project.org/org.xbill.dns_2.0.8.jar"/>
+		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
+			<uri format="http://download.eclipse.org/tools/orbit/committers/drops/I20101014084557/repository/?importType=binary"/>
 		</provider>
 	</searchPath>
 
