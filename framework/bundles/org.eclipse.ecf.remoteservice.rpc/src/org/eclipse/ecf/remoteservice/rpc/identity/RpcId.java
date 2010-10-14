@@ -12,11 +12,11 @@ import java.net.URI;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.URIID;
 
-public class RPCID extends URIID {
+public class RpcId extends URIID {
 
 	private static final long serialVersionUID = -713344242499901489L;
 
-	public RPCID(Namespace namespace, URI uri) {
+	public RpcId(Namespace namespace, URI uri) {
 		super(namespace, uri);
 	}
 

@@ -13,11 +13,11 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.BaseContainerInstantiator;
 import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
-import org.eclipse.ecf.remoteservice.rpc.client.RPCClientContainer;
-import org.eclipse.ecf.remoteservice.rpc.identity.RPCID;
-import org.eclipse.ecf.remoteservice.rpc.identity.RPCNamespace;
+import org.eclipse.ecf.remoteservice.rpc.client.RpcClientContainer;
+import org.eclipse.ecf.remoteservice.rpc.identity.RpcId;
+import org.eclipse.ecf.remoteservice.rpc.identity.RpcNamespace;
 
-public class RPCClientContainerInstantiator extends BaseContainerInstantiator implements
+public class RpcClientContainerInstantiator extends BaseContainerInstantiator implements
 		IRemoteServiceContainerInstantiator {
 
 	private static final String RPC_CONTAINER_TYPE = "ecf.xmlrpc.client"; //$NON-NLS-1$
@@ -25,23 +25,23 @@ public class RPCClientContainerInstantiator extends BaseContainerInstantiator im
 	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters)
 			throws ContainerCreateException {
 		try {
-			RPCID ID = null;
-			if (parameters != null && parameters[0] instanceof RPCID)
-				ID = (RPCID) parameters[0];
+			RpcId ID = null;
+			if (parameters != null && parameters[0] instanceof RpcId)
+				ID = (RpcId) parameters[0];
 			else
-				ID = (RPCID) IDFactory.getDefault().createID(RPCNamespace.NAME, parameters);
-			return new RPCClientContainer(ID);
+				ID = (RpcId) IDFactory.getDefault().createID(RpcNamespace.NAME, parameters);
+			return new RpcClientContainer(ID);
 		} catch (Exception e) {
 			throw new ContainerCreateException(Messages.PRC_COULD_NOT_CREATE_CONTAINER, e);
 		}
 	}
 
 	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
-		return getInterfacesAndAdaptersForClass(RPCClientContainer.class);
+		return getInterfacesAndAdaptersForClass(RpcClientContainer.class);
 	}
 
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
-		RPCNamespace namespace = (RPCNamespace) IDFactory.getDefault().getNamespaceByName(RPCNamespace.NAME);
+		RpcNamespace namespace = (RpcNamespace) IDFactory.getDefault().getNamespaceByName(RpcNamespace.NAME);
 		return namespace.getSupportedParameterTypes();
 	}
 

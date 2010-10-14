@@ -15,9 +15,9 @@ import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.internal.remoteservice.rpc.Messages;
 
 /**
- * This class represents a {@link Namespace} for {@link RPCClientContainer}s.
+ * This class represents a {@link Namespace} for {@link RpcClientContainer}s.
  */
-public class RPCNamespace extends Namespace {
+public class RpcNamespace extends Namespace {
 
 	private static final long serialVersionUID = -4255624538742281975L;
 
@@ -31,11 +31,11 @@ public class RPCNamespace extends Namespace {
 	 */
 	public static final String SCHEME = "xmlrpc"; //$NON-NLS-1$
 
-	public RPCNamespace() {
+	public RpcNamespace() {
 		// nothing
 	}
 
-	public RPCNamespace(String name, String desc) {
+	public RpcNamespace(String name, String desc) {
 		super(name, desc);
 	}
 
@@ -57,8 +57,8 @@ public class RPCNamespace extends Namespace {
 	/**
 	 * Creates an instance of an {@link RPCD}. The parameters must contain specific information.
 	 * 
-	 * @param parameters a collection of attributes to call the right constructor on {@link RPCID}.
-	 * @return an instance of {@link RPCID}. Will not be <code>null</code>.
+	 * @param parameters a collection of attributes to call the right constructor on {@link RpcId}.
+	 * @return an instance of {@link RpcId}. Will not be <code>null</code>.
 	 */
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		URI uri = null;
@@ -66,16 +66,16 @@ public class RPCNamespace extends Namespace {
 			final String init = getInitFromExternalForm(parameters);
 			if (init != null) {
 				uri = URI.create(init);
-				return new RPCID(this, uri);
+				return new RpcId(this, uri);
 			}
 			if (parameters != null) {
 				if (parameters[0] instanceof URI)
-					return new RPCID(this, (URI) parameters[0]);
+					return new RpcId(this, (URI) parameters[0]);
 				else if (parameters[0] instanceof String)
-					return new RPCID(this, URI.create((String) parameters[0]));
+					return new RpcId(this, URI.create((String) parameters[0]));
 				else if (parameters[0] instanceof URL)
-					return new RPCID(this, URI.create(((URL) parameters[0]).toExternalForm()));
-				else if (parameters[0] instanceof RPCID)
+					return new RpcId(this, URI.create(((URL) parameters[0]).toExternalForm()));
+				else if (parameters[0] instanceof RpcId)
 					return (ID) parameters[0];
 			}
 			throw new IllegalArgumentException(Messages.RPC_INVALID_PARAMETERS_TO_ID_CREATION);

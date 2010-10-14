@@ -13,20 +13,20 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.client.*;
-import org.eclipse.ecf.remoteservice.rpc.identity.RPCID;
-import org.eclipse.ecf.remoteservice.rpc.identity.RPCNamespace;
+import org.eclipse.ecf.remoteservice.rpc.identity.RpcId;
+import org.eclipse.ecf.remoteservice.rpc.identity.RpcNamespace;
 
 /**
  * A container for XML-RPC services. 
  */
-public class RPCClientContainer extends AbstractClientContainer implements IRemoteServiceClientContainerAdapter {
+public class RpcClientContainer extends AbstractClientContainer implements IRemoteServiceClientContainerAdapter {
 
-	public RPCClientContainer(RPCID id) {
+	public RpcClientContainer(RpcId id) {
 		super(id);
 	}
 
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(RPCNamespace.NAME);
+		return IDFactory.getDefault().getNamespaceByName(RpcNamespace.NAME);
 	}
 
 	protected IRemoteService createRemoteService(RemoteServiceClientRegistration registration) {
