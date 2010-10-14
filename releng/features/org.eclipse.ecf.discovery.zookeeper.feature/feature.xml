@@ -27,10 +27,6 @@ implementation
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.discovery.feature"
-         version="0.0.0"/>
-
    <requires>
       <import plugin="org.apache.log4j"/>
       <import plugin="org.eclipse.equinox.common" version="3.5.0" match="greaterOrEqual"/>
@@ -41,6 +37,7 @@ implementation
       <import plugin="org.eclipse.osgi"/>
       <import plugin="org.eclipse.osgi.services"/>
       <import plugin="org.eclipse.equinox.ds"/>
+      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0"/>
    </requires>
 
    <plugin
