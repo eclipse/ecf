@@ -179,7 +179,7 @@ class LocatorServiceListener implements IServiceListener {
 		// Else get endpoint description factory to create EndpointDescription
 		// for given serviceID and serviceInfo
 		return (discovered) ? factory.createDiscoveredEndpointDescription(
-				serviceId, serviceInfo) : factory
+				serviceInfo) : factory
 				.getUndiscoveredEndpointDescription(serviceId, serviceInfo);
 		} catch (Exception e) {
 			logError("Exception calling IEndpointDescriptionFactory."+((discovered)?"createDiscoveredEndpointDescription":"getUndiscoveredEndpointDescription"), e);

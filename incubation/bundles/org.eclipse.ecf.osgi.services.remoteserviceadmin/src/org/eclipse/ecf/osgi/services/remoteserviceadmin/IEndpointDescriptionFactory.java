@@ -11,7 +11,6 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
 public interface IEndpointDescriptionFactory {
 
@@ -21,13 +20,12 @@ public interface IEndpointDescriptionFactory {
 	 * associated distribution system (e.g. ECFEndpointDescription).  Implementers should return
 	 * <code>null</code> if no notification should occur.
 	 * 
-	 * @param serviceId the discovered service ID.  Must not be <code>null</code>.
 	 * @param discoveredServiceInfo the discovered service info.  Must not be <code>null</code>.
 	 * @return EndpointDescription that will be used to notify EndpointListeners
 	 * about a new EndpointDescription.  If <code>null</code> is returned, no
 	 * notification should be performed by the calling code.  
 	 */
-	public EndpointDescription createDiscoveredEndpointDescription(IServiceID serviceId, IServiceInfo discoveredServiceInfo);
+	public EndpointDescription createDiscoveredEndpointDescription(IServiceInfo discoveredServiceInfo);
 	/**
 	 * Get an EndpointDescription for an undiscovered remote service.  Implementers of this
 	 * factory service may return the type of EndpointDescription appropriate for the
@@ -40,6 +38,6 @@ public interface IEndpointDescriptionFactory {
 	 * about an undiscovered EndpointDescription.  If <code>null</code> is returned, no
 	 * notification should be performed by the calling code.  
 	 */
-	public EndpointDescription getUndiscoveredEndpointDescription(IServiceID serviceId, IServiceInfo undiscoveredServiceInfo);
+	public EndpointDescription getUndiscoveredEndpointDescription(IServiceID serviceID, IServiceInfo undiscoveredServiceInfo);
 	
 }
