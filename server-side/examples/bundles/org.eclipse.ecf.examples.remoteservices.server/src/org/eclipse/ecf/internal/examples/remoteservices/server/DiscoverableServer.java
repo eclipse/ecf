@@ -22,8 +22,6 @@ import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.examples.remoteservices.common.IRemoteEnvironmentInfo;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.eclipse.ecf.remoteservice.util.DiscoveryProperties;
-import org.eclipse.ecf.remoteservice.util.RemoteServiceProperties;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
@@ -60,7 +58,9 @@ public class DiscoverableServer implements IApplication {
 	}
 
 	protected Properties createServiceDiscoveryProperties() {
-		Properties props = new RemoteServiceProperties(serviceHostContainerType, serviceHostContainer);
+		Properties props = new Properties();
+		props.put(Constants.SERVICE_CONTAINER_ID, serviceHostContainer.getID());
+		props.put(Constants.SERVICE_CONTAINER_FACTORY_NAME, serviceHostContainerType);
 		// Add auto registration of remote proxy
 		props.put(Constants.AUTOREGISTER_REMOTE_PROXY, "true"); //$NON-NLS-1$
 		return props;
