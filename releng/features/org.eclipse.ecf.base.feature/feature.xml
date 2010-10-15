@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.base_feature"
+      id="org.eclipse.ecf.base.feature"
       label="ECF Base Feature"
       version="2.0.0.qualifier"
       provider-name="Eclipse.org">
