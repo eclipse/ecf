@@ -16,8 +16,7 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.osgi.framework.ServiceReference;
 
 public class EndpointDescription extends
-		org.osgi.service.remoteserviceadmin.EndpointDescription implements
-		IEndpointDescription {
+		org.osgi.service.remoteserviceadmin.EndpointDescription {
 
 	private ID containerID;
 	private long remoteServiceId;

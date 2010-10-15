@@ -152,6 +152,13 @@ public interface Constants {
 	public static final String SERVICE_CONTAINER_ID = "ecf.rsvc.cid"; //$NON-NLS-1$
 
 	/**
+	 * Remote service property that defines the remote service container ID.
+	 * <p>
+	 * @since 5.0
+	 */
+	public static final String SERVICE_PROXY_CONTAINER_ID = "ecf.rsvc.pcid"; //$NON-NLS-1$
+
+	/**
 	 * Service property that determines whether a remote service proxy is automatically added to the local
 	 * service registry.  This property can be used to expose remote services transparently
 	 * to client (i.e. automatically putting a proxy into the client's local service registry).
