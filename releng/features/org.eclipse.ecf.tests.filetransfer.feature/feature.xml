@@ -18,7 +18,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.platform_feature" version="3.0.0.qualifier"/>
+      <import feature="org.eclipse.ecf.filetransfer.feature" version="3.0.0.qualifier"/>
    </requires>
 
    <plugin
