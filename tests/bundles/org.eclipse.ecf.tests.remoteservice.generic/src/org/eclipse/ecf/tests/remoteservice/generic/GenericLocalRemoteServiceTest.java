@@ -17,7 +17,7 @@ public class GenericLocalRemoteServiceTest extends
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		container = getContainerFactory().createContainer(Generic.HOST_CONTAINER_TYPE);
+		container = getContainerFactory().createContainer(Generic.CONSUMER_CONTAINER_TYPE);
 		containerAdapter = (IRemoteServiceContainerAdapter) container.getAdapter(IRemoteServiceContainerAdapter.class);
 	}
 	
