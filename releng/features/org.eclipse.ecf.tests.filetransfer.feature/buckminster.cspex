@@ -6,7 +6,6 @@
 	<dependencies>
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
-		<dependency name="org.eclipse.ecf.filetransfer.feature" componentType="eclipse.feature"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
