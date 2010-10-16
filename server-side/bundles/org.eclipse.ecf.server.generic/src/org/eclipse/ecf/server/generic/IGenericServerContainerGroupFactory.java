@@ -12,7 +12,7 @@ package org.eclipse.ecf.server.generic;
 import java.util.Map;
 
 /**
- * @since 3.1
+ * @since 4.0
  */
 public interface IGenericServerContainerGroupFactory {
 

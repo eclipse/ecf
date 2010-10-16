@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * @since 3.1
+ * @since 4.0
  */
 public class GenericServerContainerGroupCreateException extends ECFException {
 

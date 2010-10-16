@@ -12,6 +12,8 @@ package org.eclipse.ecf.internal.sync.resources.core;
 
 public class DenyMessage extends ShareResponseMessage {
 
+	private static final long serialVersionUID = 1048310911137255469L;
+
 	DenyMessage(String projectName) {
 		super(projectName);
 	}

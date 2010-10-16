@@ -12,4 +12,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ecf.remoteservice,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.presence.ui
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.4

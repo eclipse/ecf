@@ -16,7 +16,7 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 
 /**
- * @since 3.1
+ * @since 4.0
  */
 public interface IGenericServerContainerGroup {
 

@@ -12,6 +12,7 @@ package org.eclipse.ecf.internal.sync.resources.core;
 
 public class ShareResponseMessage extends Message {
 
+	private static final long serialVersionUID = 3474808487525320422L;
 	private String projectName;
 
 	ShareResponseMessage(String projectName) {

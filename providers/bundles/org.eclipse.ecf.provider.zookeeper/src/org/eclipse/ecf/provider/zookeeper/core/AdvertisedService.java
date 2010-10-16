@@ -96,7 +96,6 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 		publishedServices.put(serviceTypeID.getInternal(), this);
 	}
 
-	@SuppressWarnings("unchecked")
 	public AdvertisedService(IServiceInfo serviceInfo) {
 		super(serviceInfo.getLocation(), serviceInfo.getServiceName(),
 				serviceInfo.getServiceID().getServiceTypeID(), serviceInfo
