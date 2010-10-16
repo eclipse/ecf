@@ -37,6 +37,7 @@ import org.osgi.framework.InvalidSyntaxException;
 
 public abstract class AbstractConcatConsumerTestCase extends TestCase {
 
+	private static int ASYNC_WAITTIME = 5000;
 	protected IRemoteServiceContainer rsContainer;
 	protected ID targetID;
 
@@ -280,6 +281,7 @@ public abstract class AbstractConcatConsumerTestCase extends TestCase {
 		service.callAsync(createRemoteConcat("ECF ", "is cool"),
 				createRemoteCallListener());
 		traceCallEnd("callAsynch");
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testFireAsynch() throws Exception {
@@ -289,6 +291,7 @@ public abstract class AbstractConcatConsumerTestCase extends TestCase {
 		traceCallStart("fireAsynch");
 		service.fireAsync(createRemoteConcat("Eclipse ", "sucks"));
 		traceCallEnd("fireAsynch");
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testProxy() throws Exception {
@@ -300,6 +303,7 @@ public abstract class AbstractConcatConsumerTestCase extends TestCase {
 		traceCallStart("getProxy");
 		final String result = proxy.concat("ECF ", "sucks");
 		traceCallEnd("getProxy", result);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testAsyncResult() throws Exception {
@@ -309,6 +313,7 @@ public abstract class AbstractConcatConsumerTestCase extends TestCase {
 		traceCallStart("callAsynchResult");
 		final IFuture result = service.callAsync(createRemoteConcat(
 				"ECF AsynchResults ", "are cool"));
+		Thread.sleep(ASYNC_WAITTIME);
 		traceCallEnd("callAsynchResult", result);
 		assertNotNull(result);
 	}
@@ -322,6 +327,7 @@ public abstract class AbstractConcatConsumerTestCase extends TestCase {
 		assertTrue(references.length == 1);
 		assertTrue(references[0].getContainerID().equals(
 				rsContainer.getContainer().getID()));
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	private void registerLocalService(String name, Object service,
@@ -346,5 +352,6 @@ public abstract class AbstractConcatConsumerTestCase extends TestCase {
 				getRemoteServiceFilter());
 		assertNotNull(references);
 		assertTrue(references.length == 2);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 }

@@ -105,6 +105,59 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		//
 	}
 
+	// Get remote service references methods
+	/**
+	 * @since 3.4
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {target, idFilter, clazz, filter}); //$NON-NLS-1$
+		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
+		// First, if we need to connect, then do so
+		if (target != null)
+			connectToRemoteServiceTarget(target);
+		// Wait for any pending remote registry updates...whether we've connected or not
+		waitForPendingUpdates(idFilter, getAddRegistrationRequestTimeout());
+		// Now we lookup remote service references
+		final List references = new ArrayList();
+		// first from remote registrys
+		addReferencesFromRemoteRegistrys(idFilter, clazz, remoteFilter, references);
+		// then from the local registry
+		addReferencesFromLocalRegistry(idFilter, clazz, remoteFilter, references);
+		// And we return the result
+		final IRemoteServiceReference[] result = (IRemoteServiceReference[]) references.toArray(new IRemoteServiceReference[references.size()]);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
+		return (result.length == 0) ? null : result;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#getRemoteServiceReferences(org.eclipse.ecf.core.identity.ID[], java.lang.String, java.lang.String)
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException {
+		try {
+			return getRemoteServiceReferences(null, idFilter, clazz, filter);
+		} catch (ContainerConnectException e) {
+			// can't occur, because first parameter is null
+			return null;
+		}
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		return getRemoteServiceReferences(targetID, null, clazz, filter);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference[] getAllRemoteServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+		final IRemoteServiceReference[] result = getRemoteServiceReferences((ID[]) null, clazz, filter);
+		if (result == null)
+			return null;
+		return (result.length == 0) ? null : result;
+	}
+
 	/**
 	 * @since 3.3
 	 */
@@ -184,6 +237,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 	}
 
+	private void addReferencesFromLocalRegistry(ID[] idFilter, String clazz, IRemoteFilter remoteFilter, List referencesFound) {
+		ID localContainerID = getLocalContainerID();
+		if (idFilter == null || Arrays.asList(idFilter).contains(localContainerID)) {
+			synchronized (localRegistry) {
+				// Add any from local registry
+				addReferencesFromRegistry(clazz, remoteFilter, localRegistry, referencesFound);
+			}
+		}
+	}
+
 	/**
 	 * @since 3.0
 	 */
@@ -192,107 +255,33 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.0
-	 */
-	public IRemoteServiceReference[] getAllRemoteServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getAllRemoteServiceReferences", new Object[] {clazz, filter}); //$NON-NLS-1$
-		final IRemoteServiceReference[] result = getRemoteServiceReferences((ID[]) null, clazz, filter);
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getAllRemoteServiceReferences", result); //$NON-NLS-1$
-		if (result == null)
-			return null;
-		return (result.length == 0) ? null : result;
-	}
-
-	/**
-	 * @since 3.4
-	 */
-	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {target, idFilter, clazz, filter}); //$NON-NLS-1$
-		// If no target specified, just search for all available references
-		if (target == null) {
-			final IRemoteServiceReference[] result = getRemoteServiceReferences(idFilter, clazz, filter);
-			Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
-			return result;
-		}
-		// If we're not already connected, then connect to targetID
-		connectToRemoteServiceTarget(target);
-
-		// Now we're connected (or already were connected), so we look for remote service references for target
-		final IRemoteServiceReference[] result = getRemoteServiceReferences(idFilter, clazz, filter);
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
-		return result;
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public IRemoteServiceReference[] getRemoteServiceReferences(ID targetID, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
-		return getRemoteServiceReferences(targetID, null, clazz, filter);
-	}
-
-	/**
 	 * @since 3.3 for preventing issues like bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=304427
 	 */
 	protected void connectToRemoteServiceTarget(ID targetID) throws ContainerConnectException {
-		// This code cannot be reentrant.
+		ISharedObjectContext context = getContext();
+		ID connectedID = context.getConnectedID();
+		// If we're already connected to something then we don't need to connect...and we return
+		if (connectedID != null)
+			return;
+
 		synchronized (rsConnectLock) {
-			ISharedObjectContext context = getContext();
-			// If we don't have a context we can't connect and we throw a container connect exception
-			if (context == null)
-				throw new ContainerConnectException("Cannot connect without context"); //$NON-NLS-1$
-			ID connectedID = context.getConnectedID();
-			// If we're already connected to something then we don't need to connect...and we return
-			if (connectedID != null)
-				return;
-			// else we just try to connect to target
+			// we just try to connect to target with our given connectContext
 			context.connect(targetID, connectContext);
 			// wait to receive connected event
-			waitForConnectedEvent(context, targetID);
-			// Wait for pending registry updates after connect
-			waitForPendingUpdatesAfterConnect(getAddRegistrationRequestTimeout());
-		}
-	}
-
-	private void waitForConnectedEvent(ISharedObjectContext context, ID targetID) throws ContainerConnectException {
-		// Wait until we receive the IContainerConnectedEvent on the shared object thread
-		long startTime = System.currentTimeMillis();
-		int rsTimeout = getRSConnectTimeout();
-		long endTime = startTime + rsTimeout;
-		while (!rsConnected && (endTime >= System.currentTimeMillis())) {
-			try {
-				rsConnectLock.wait(rsTimeout / 10);
-			} catch (InterruptedException e) {
-				throw new ContainerConnectException("No notification of registry connect complete for targetID=" + targetID); //$NON-NLS-1$
+			// Wait until we receive the IContainerConnectedEvent on the shared object thread
+			long startTime = System.currentTimeMillis();
+			int rsTimeout = getRSConnectTimeout();
+			long endTime = startTime + rsTimeout;
+			while (!rsConnected && (endTime >= System.currentTimeMillis())) {
+				try {
+					rsConnectLock.wait(rsTimeout / 10);
+				} catch (InterruptedException e) {
+					throw new ContainerConnectException("No notification of registry connect complete for connect targetID=" + targetID); //$NON-NLS-1$
+				}
 			}
+			if (!rsConnected)
+				throw new ContainerConnectException("Could not complete registry connect for targetID=" + targetID); //$NON-NLS-1$
 		}
-		if (!rsConnected) {
-			context.disconnect();
-			throw new ContainerConnectException("Could not complete registry connect for targetID=" + targetID); //$NON-NLS-1$
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#getRemoteServiceReferences(org.eclipse.ecf.core.identity.ID[], java.lang.String, java.lang.String)
-	 */
-	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {idFilter, clazz, filter}); //$NON-NLS-1$
-		final IRemoteFilter remoteFilter = (filter == null) ? null : new RemoteFilterImpl(filter);
-		// If the idFilter is not null, then wait for updates from listed IDs given in idFilter
-		if (idFilter != null)
-			waitForPendingUpdates(idFilter, getAddRegistrationRequestTimeout());
-		// Lookup from remote registrys...add to given references List
-		final List references = new ArrayList();
-		addReferencesFromRemoteRegistrys(idFilter, clazz, remoteFilter, references);
-		ID localContainerID = getLocalContainerID();
-		if (idFilter == null || Arrays.asList(idFilter).contains(localContainerID)) {
-			synchronized (localRegistry) {
-				// Add any from local registry
-				addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
-			}
-		}
-		final IRemoteServiceReference[] result = (IRemoteServiceReference[]) references.toArray(new IRemoteServiceReference[references.size()]);
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
-		return (result.length == 0) ? null : result;
 	}
 
 	protected Serializable getAddRegistrationRequestCredentials(AddRegistrationRequest request) {
@@ -346,12 +335,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		final RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
 		reg.publish(this, localRegistry, service, clazzes, properties);
 
-		final ID[] targets = getTargetsFromProperties(properties);
-		if (targets == null)
-			sendAddRegistrations(null, null, new RemoteServiceRegistrationImpl[] {reg});
-		else
-			for (int i = 0; i < targets.length; i++)
-				sendAddRegistrations(targets[i], null, new RemoteServiceRegistrationImpl[] {reg});
+		// Only send add registrations if we are connected
+		if (isConnected()) {
+			final ID[] targets = getTargetsFromProperties(properties);
+			RemoteServiceRegistrationImpl[] regs = new RemoteServiceRegistrationImpl[] {reg};
+			if (targets == null)
+				sendAddRegistrations(null, null, regs);
+			else
+				for (int i = 0; i < targets.length; i++)
+					sendAddRegistrations(targets[i], null, regs);
+		}
 
 		fireRemoteServiceListeners(createRegisteredEvent(reg));
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "registerRemoteService", reg); //$NON-NLS-1$
@@ -401,8 +394,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				} else if (arg0 instanceof IContainerEjectedEvent) {
 					handleContainerEjectedEvent((IContainerEjectedEvent) arg0);
 				} else if (arg0 instanceof ISharedObjectActivatedEvent) {
-					if (getSOContext().getConnectedID() != null) {
-						// We're already connected, so add exiting members
+					if (isConnected()) {
+						// We're already connected, so add existing members
 						// to expected set and send request for update
 						addPendingContainers(getGroupMemberIDs());
 						sendRegistryUpdateRequest();
@@ -439,7 +432,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 		// Remove from pending updates
 		removePendingContainers(targetID);
-		if (getConnectedID() == null)
+		if (!isConnected())
 			setRegistryConnected(false);
 		// Do notification outside synchronized block
 		if (registrations != null) {
@@ -506,10 +499,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				return true;
 		}
 		return false;
-	}
-
-	private void waitForPendingUpdatesAfterConnect(long timeout) {
-		waitForPendingUpdates(null, timeout);
 	}
 
 	private void waitForPendingUpdates(ID[] containerIDs, long timeout) {
@@ -771,8 +760,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	private static final int UNREGISTER_ERROR_CODE = 206;
 
 	private static final int MSG_INVOKE_ERROR_CODE = 207;
-
-	private static final int SERVICE_INVOKE_ERROR_CODE = 208;
 
 	private static final String CALL_RESPONSE = "handleCallResponse"; //$NON-NLS-1$
 
@@ -1123,7 +1110,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return executor;
 	}
 
-	private void executeRequest(IExecutor executor, final Request request, final ID responseTarget, final RemoteServiceRegistrationImpl localRegistration, final boolean respond) {
+	/**
+	 * @since 3.4
+	 */
+	protected void executeRequest(IExecutor executor, final Request request, final ID responseTarget, final RemoteServiceRegistrationImpl localRegistration, final boolean respond) {
 		IProgressRunnable runnable = new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
 				final RemoteCallImpl call = request.getCall();
@@ -1195,8 +1185,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleCallRequest"); //$NON-NLS-1$
 	}
 
-	private void logRemoteCallException(String message, Throwable e) {
-		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, SERVICE_INVOKE_ERROR_CODE, message, e));
+	/**
+	 * @since 3.4
+	 */
+	protected void logRemoteCallException(String message, Throwable e) {
+		//Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, SERVICE_INVOKE_ERROR_CODE, message, e));
 	}
 
 	private Throwable getSerializableException(Throwable e) {

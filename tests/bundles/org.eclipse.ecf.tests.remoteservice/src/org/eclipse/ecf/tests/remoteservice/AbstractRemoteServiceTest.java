@@ -232,7 +232,7 @@ public abstract class AbstractRemoteServiceTest extends
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// Register service on client[0]
 		registerService(adapters[0], IConcatService.class.getName(),
-				createService(), customizeProperties(null), 0);
+				createService(), customizeProperties(null), 3000);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
 				adapters[1], (ID) null, IConcatService.class.getName(), null);
@@ -247,7 +247,7 @@ public abstract class AbstractRemoteServiceTest extends
 		props.put("foo", "bar");
 		props.put("foo1", "bar");
 		registerService(adapters[0], IConcatService.class.getName(),
-				createService(), customizeProperties(props), 0);
+				createService(), customizeProperties(props), 3000);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
 				adapters[1], (ID) null, IConcatService.class.getName(),
