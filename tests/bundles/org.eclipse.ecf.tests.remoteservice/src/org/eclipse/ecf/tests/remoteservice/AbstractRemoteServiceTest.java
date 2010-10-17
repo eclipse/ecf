@@ -40,6 +40,8 @@ import org.osgi.framework.InvalidSyntaxException;
 public abstract class AbstractRemoteServiceTest extends
 		ContainerAbstractTestCase {
 
+	private static final long ASYNC_WAITTIME = 3000;
+
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 
 	protected IRemoteServiceID[] ids;
@@ -59,6 +61,7 @@ public abstract class AbstractRemoteServiceTest extends
 	}
 
 	protected void setupRemoteServiceAdapters() throws Exception {
+		if (server != null) server.getAdapter(IRemoteServiceContainerAdapter.class);
 		final int clientCount = getClientCount();
 		for (int i = 0; i < clientCount; i++) {
 			adapters[i] = (IRemoteServiceContainerAdapter) getClients()[i]
@@ -195,6 +198,7 @@ public abstract class AbstractRemoteServiceTest extends
 		assertNotNull(adapters);
 		for (int i = 0; i < adapters.length; i++)
 			assertNotNull(adapters[i]);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testRemoteServiceNamespace() throws Exception {
@@ -204,6 +208,7 @@ public abstract class AbstractRemoteServiceTest extends
 			Namespace namespace = adapters[i].getRemoteServiceNamespace();
 			assertNotNull(namespace);
 		}
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testRegisterService() throws Exception {
@@ -215,6 +220,7 @@ public abstract class AbstractRemoteServiceTest extends
 		IRemoteServiceID remoteServiceID = reg.getID();
 		assertNotNull(remoteServiceID);
 		assertNotNull(remoteServiceID.getContainerID());
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testUnregisterService() throws Exception {
@@ -226,6 +232,7 @@ public abstract class AbstractRemoteServiceTest extends
 		assertNotNull(reg.getContainerID());
 
 		reg.unregister();
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testGetServiceReferences() throws Exception {
@@ -239,6 +246,7 @@ public abstract class AbstractRemoteServiceTest extends
 
 		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testGetServiceReferencesWithFilter() throws Exception {
@@ -255,6 +263,7 @@ public abstract class AbstractRemoteServiceTest extends
 
 		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testGetServiceReferencesWithFilterFail() throws Exception {
@@ -275,6 +284,7 @@ public abstract class AbstractRemoteServiceTest extends
 				adapters[1], (ID) null, IConcatService.class.getName(), missFilter);
 
 		assertTrue(refs == null);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testGetService() throws Exception {
@@ -283,6 +293,7 @@ public abstract class AbstractRemoteServiceTest extends
 		if (service == null)
 			return;
 		assertNotNull(service);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	protected IRemoteCall createRemoteConcat(String first, String second) {
@@ -316,6 +327,7 @@ public abstract class AbstractRemoteServiceTest extends
 
 		assertNotNull(result);
 		assertTrue(result.equals("Eclipse ".concat("is cool")));
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	protected void traceCallStart(String callType) {
@@ -355,6 +367,7 @@ public abstract class AbstractRemoteServiceTest extends
 		} catch (final ECFException e) {
 			// Exception should occur
 		}
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testCallAsynch() throws Exception {
@@ -365,6 +378,7 @@ public abstract class AbstractRemoteServiceTest extends
 		service.callAsync(createRemoteConcat("ECF ", "is cool"),
 				createRemoteCallListener());
 		traceCallEnd("callAsynch");
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testFireAsynch() throws Exception {
@@ -374,7 +388,7 @@ public abstract class AbstractRemoteServiceTest extends
 		traceCallStart("fireAsynch");
 		service.fireAsync(createRemoteConcat("Eclipse ", "sucks"));
 		traceCallEnd("fireAsynch");
-
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testProxy() throws Exception {
@@ -386,6 +400,7 @@ public abstract class AbstractRemoteServiceTest extends
 		traceCallStart("getProxy");
 		final String result = proxy.concat("ECF ", "sucks");
 		traceCallEnd("getProxy", result);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	public void testAsyncResult() throws Exception {
@@ -397,6 +412,7 @@ public abstract class AbstractRemoteServiceTest extends
 				"ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynchResult", result);
 		assertNotNull(result);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	IRemoteService remoteService;
@@ -448,6 +464,7 @@ public abstract class AbstractRemoteServiceTest extends
 				.callAsync(createRemoteConcat("ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynch");
 		assertNotNull(result);
+		Thread.sleep(ASYNC_WAITTIME);
 	}
 
 	protected Dictionary customizeProperties(Dictionary props) {

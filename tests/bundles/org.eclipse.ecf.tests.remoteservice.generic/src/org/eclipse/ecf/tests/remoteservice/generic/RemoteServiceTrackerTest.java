@@ -17,13 +17,13 @@ import java.util.Hashtable;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.util.tracker.RemoteServiceTracker;
-import org.eclipse.ecf.tests.remoteservice.AbstractServiceTrackerTest;
+import org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest;
 import org.eclipse.ecf.tests.remoteservice.IConcatService;
 
 /**
  *
  */
-public class RemoteServiceTrackerTest extends AbstractServiceTrackerTest {
+public class RemoteServiceTrackerTest extends AbstractRemoteServiceTest {
 
 	RemoteServiceTracker remoteServiceTracker;
 	
@@ -43,8 +43,8 @@ public class RemoteServiceTrackerTest extends AbstractServiceTrackerTest {
 		super.setUp();
 		setClientCount(2);
 		createServerAndClients();
-		connectClients();
 		setupRemoteServiceAdapters();
+		connectClients();
 		addRemoteServiceListeners();
 	}
 

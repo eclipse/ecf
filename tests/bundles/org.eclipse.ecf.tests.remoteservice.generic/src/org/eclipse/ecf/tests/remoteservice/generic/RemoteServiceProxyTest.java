@@ -20,13 +20,13 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceProxy;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.RemoteServiceHelper;
 import org.eclipse.ecf.remoteservice.util.tracker.RemoteServiceTracker;
-import org.eclipse.ecf.tests.remoteservice.AbstractServiceTrackerTest;
+import org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest;
 import org.eclipse.ecf.tests.remoteservice.IConcatService;
 
 /**
  *
  */
-public class RemoteServiceProxyTest extends AbstractServiceTrackerTest {
+public class RemoteServiceProxyTest extends AbstractRemoteServiceTest {
 
 	RemoteServiceTracker remoteServiceTracker;
 	
@@ -46,8 +46,8 @@ public class RemoteServiceProxyTest extends AbstractServiceTrackerTest {
 		super.setUp();
 		setClientCount(2);
 		createServerAndClients();
-		connectClients();
 		setupRemoteServiceAdapters();
+		connectClients();
 		addRemoteServiceListeners();
 	}
 

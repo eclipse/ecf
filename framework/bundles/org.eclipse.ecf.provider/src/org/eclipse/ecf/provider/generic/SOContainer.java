@@ -590,45 +590,47 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ID sharedObjectID = desc.getID();
 		if (sharedObjectID == null)
 			throw new IOException("shared object id cannot be null"); //$NON-NLS-1$
-		// Check to make sure that the remote creation is allowed.
-		// If this method throws, a failure (and exception will be sent back to
-		// caller
-		// If this method returns null, the create message is ignored. If this
-		// method
-		// returns a non-null object, the creation is allowed to proceed
-		debug("handleCreateMessage(from=" + fromID + ",to=" + toID + ",this=" + getID() + ",desc=" + desc + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-		try {
-			checkCreateResult = checkRemoteCreate(fromID, toID, desc);
-		} catch (final Exception e) {
-			final SharedObjectAddException addException = new SharedObjectAddException("shared object=" + sharedObjectID + " could not be added to container=" + getID(), e); //$NON-NLS-1$ //$NON-NLS-2$
-			traceStack("Exception in checkRemoteCreate:" + desc, addException); //$NON-NLS-1$
+		if (toID == null || toID.equals(getID())) {
 			try {
-				sendCreateResponse(fromID, sharedObjectID, addException, desc.getIdentifier());
-			} catch (final IOException except) {
-				traceStack("Exception from sendCreateResponse in handleCreateResponse", //$NON-NLS-1$
-						except);
-			}
-			return;
-		}
-		// Then if result from check is non-null, we continue. If null, we
-		// ignore
-		if (checkCreateResult != null) {
-			final LoadingSharedObject lso = new LoadingSharedObject(fromID, desc);
-			synchronized (getGroupMembershipLock()) {
-				if (!addToLoading(lso)) {
-					try {
-						sendCreateResponse(fromID, sharedObjectID, new SharedObjectAddException("shared object=" + sharedObjectID + " already exists in container=" + getID()), desc.getIdentifier()); //$NON-NLS-1$ //$NON-NLS-2$
-					} catch (final IOException e) {
-						traceStack("Exception in handleCreateMessage.sendCreateResponse", //$NON-NLS-1$
-								e);
-					}
+				// Check to make sure that the remote creation is allowed.
+				// If this method throws, a failure (and exception will be sent back to
+				// caller
+				// If this method returns null, the create message is ignored. If this
+				// method
+				// returns a non-null object, the creation is allowed to proceed
+				checkCreateResult = checkRemoteCreate(fromID, toID, desc);
+			} catch (final Exception e) {
+				final SharedObjectAddException addException = new SharedObjectAddException("shared object=" + sharedObjectID + " could not be added to container=" + getID(), e); //$NON-NLS-1$ //$NON-NLS-2$
+				traceStack("Exception in checkRemoteCreate:" + desc, addException); //$NON-NLS-1$
+				try {
+					sendCreateResponse(fromID, sharedObjectID, addException, desc.getIdentifier());
+				} catch (final IOException except) {
+					traceStack("Exception from sendCreateResponse in handleCreateResponse", //$NON-NLS-1$
+							except);
 				}
-				forward(fromID, toID, mess);
 				return;
 			}
-		}
-		synchronized (getGroupMembershipLock()) {
-			forward(fromID, toID, mess);
+			// Then if result from check is non-null, we continue. If null, we
+			// ignore
+			if (checkCreateResult != null) {
+				final LoadingSharedObject lso = new LoadingSharedObject(fromID, desc);
+				synchronized (getGroupMembershipLock()) {
+					if (!addToLoading(lso)) {
+						try {
+							sendCreateResponse(fromID, sharedObjectID, new SharedObjectAddException("shared object=" + sharedObjectID + " already exists in container=" + getID()), desc.getIdentifier()); //$NON-NLS-1$ //$NON-NLS-2$
+						} catch (final IOException e) {
+							traceStack("Exception in handleCreateMessage.sendCreateResponse", //$NON-NLS-1$
+									e);
+						}
+					}
+					forward(fromID, toID, mess);
+					return;
+				}
+			}
+		} else {
+			synchronized (getGroupMembershipLock()) {
+				forward(fromID, toID, mess);
+			}
 		}
 	}
 
@@ -636,18 +638,15 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ID fromID = mess.getFromContainerID();
 		final ID toID = mess.getToContainerID();
 		final ContainerMessage.CreateResponseMessage resp = (ContainerMessage.CreateResponseMessage) mess.getData();
-		if (toID != null && toID.equals(getID())) {
-			final ID sharedObjectID = resp.getSharedObjectID();
-			final SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
-			if (sow != null) {
-				debug("handleCreateResponseMessage(from=" + fromID + ",to=" + toID + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				sow.deliverCreateResponse(fromID, resp);
-			} else {
-				debug("handleCreateResponseMessage...wrapper not found for " //$NON-NLS-1$
-						+ sharedObjectID);
-			}
-		} else {
-			forwardToRemote(fromID, toID, mess);
+		synchronized (getGroupMembershipLock()) {
+			if (toID != null && toID.equals(getID())) {
+				final ID sharedObjectID = resp.getSharedObjectID();
+				final SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
+				if (sow != null) {
+					sow.deliverCreateResponse(fromID, resp);
+				}
+			} else
+				forward(fromID, toID, mess);
 		}
 	}
 
@@ -661,12 +660,13 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ID toID = mess.getToContainerID();
 		final ContainerMessage.SharedObjectDisposeMessage resp = (ContainerMessage.SharedObjectDisposeMessage) mess.getData();
 		final ID sharedObjectID = resp.getSharedObjectID();
-		debug("handleSharedObjectDisposeMessage(from=" + fromID + ",to=" + toID + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		synchronized (getGroupMembershipLock()) {
-			if (groupManager.isLoading(sharedObjectID)) {
-				groupManager.removeSharedObjectFromLoading(sharedObjectID);
-			} else {
-				groupManager.removeSharedObject(sharedObjectID);
+			if (toID == null || toID.equals(getID())) {
+				if (groupManager.isLoading(sharedObjectID)) {
+					groupManager.removeSharedObjectFromLoading(sharedObjectID);
+				} else {
+					groupManager.removeSharedObject(sharedObjectID);
+				}
 			}
 			forward(fromID, toID, mess);
 		}
@@ -687,27 +687,30 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		Serializable obj = null;
 		debug("handleSharedObjectMessage(from=" + fromID + ",to=" + toID + ",sharedObject=" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		synchronized (getGroupMembershipLock()) {
-			sow = getSharedObjectWrapper(sharedObjectID);
-			if (sow != null) {
-				try {
-					obj = (Serializable) deserializeSharedObjectMessage((byte[]) resp.getData());
-					// Actually deliver event to shared object asynchronously
-					sow.deliverSharedObjectMessage(fromID, obj);
-				} catch (final ClassNotFoundException e) {
-					String message = "shared object message ClassNotFoundException.  sharedObjectID=" + sharedObjectID + " fromContainerID=" + fromID; //$NON-NLS-1$ //$NON-NLS-2$
-					ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, message, e));
-					printToSystemError(message, e);
-				} catch (final IOException e) {
-					String message = "shared object message IOException.  sharedObjectID=" + sharedObjectID + " fromContainerID=" + fromID; //$NON-NLS-1$ //$NON-NLS-2$
-					ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, message, e));
-					printToSystemError(message, e);
-				} catch (final NoClassDefFoundError e) {
-					String message = "shared object message NoClassDefFoundError.  sharedObjectID=" + sharedObjectID + " fromContainerID=" + fromID; //$NON-NLS-1$ //$NON-NLS-2$
-					ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, message, e));
-					printToSystemError(message, e);
-				}
-			} else
-				handleUndeliveredSharedObjectMessage(resp);
+			// We only deliver to local copy if the toID equals null (all), or it equals ours
+			if (toID == null || toID.equals(getID())) {
+				sow = getSharedObjectWrapper(sharedObjectID);
+				if (sow != null) {
+					try {
+						obj = (Serializable) deserializeSharedObjectMessage((byte[]) resp.getData());
+						// Actually deliver event to shared object asynchronously
+						sow.deliverSharedObjectMessage(fromID, obj);
+					} catch (final ClassNotFoundException e) {
+						String message = "shared object message ClassNotFoundException.  sharedObjectID=" + sharedObjectID + " fromContainerID=" + fromID; //$NON-NLS-1$ //$NON-NLS-2$
+						ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, message, e));
+						printToSystemError(message, e);
+					} catch (final IOException e) {
+						String message = "shared object message IOException.  sharedObjectID=" + sharedObjectID + " fromContainerID=" + fromID; //$NON-NLS-1$ //$NON-NLS-2$
+						ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, message, e));
+						printToSystemError(message, e);
+					} catch (final NoClassDefFoundError e) {
+						String message = "shared object message NoClassDefFoundError.  sharedObjectID=" + sharedObjectID + " fromContainerID=" + fromID; //$NON-NLS-1$ //$NON-NLS-2$
+						ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, message, e));
+						printToSystemError(message, e);
+					}
+				} else
+					handleUndeliveredSharedObjectMessage(resp);
+			}
 			// forward in any case
 			forward(fromID, toID, mess);
 		}
