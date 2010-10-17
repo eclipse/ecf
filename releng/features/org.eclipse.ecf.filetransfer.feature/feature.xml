@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.filetransfer.feature"
-      label="ECF Platform Feature"
+      label="ECF Filetransfer Feature"
       version="3.7.0.qualifier"
       provider-name="Eclipse.org">
 
@@ -29,21 +29,7 @@ Contributors: Composent, Inc. - initial API and implementation
    </requires>
 
    <plugin
-         id="org.eclipse.ecf"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.filetransfer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.identity"
          download-size="0"
          install-size="0"
          version="0.0.0"
