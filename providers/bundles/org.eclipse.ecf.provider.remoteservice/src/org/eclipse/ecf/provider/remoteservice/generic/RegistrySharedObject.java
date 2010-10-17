@@ -173,12 +173,22 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	public void dispose(ID containerID) {
 		super.dispose(containerID);
 		unregisterAllServiceRegistrations();
-		remoteRegistrys.clear();
-		serviceListeners.clear();
-		localServiceRegistrations.clear();
-		addRegistrationRequests.clear();
-		requests.clear();
-		pendingUpdateContainers.clear();
+		synchronized (remoteRegistrys) {
+			remoteRegistrys.clear();
+			localServiceRegistrations.clear();
+		}
+		synchronized (serviceListeners) {
+			serviceListeners.clear();
+		}
+		synchronized (addRegistrationRequests) {
+			addRegistrationRequests.clear();
+		}
+		synchronized (requests) {
+			requests.clear();
+		}
+		synchronized (pendingUpdateContainers) {
+			pendingUpdateContainers.clear();
+		}
 		synchronized (rsQueueLock) {
 			if (rsListenerDispatchEventManager != null) {
 				rsListenerDispatchEventManager.close();
@@ -1061,9 +1071,15 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			return;
 		if (requestId == null)
 			return;
-		AddRegistrationRequest request = (AddRegistrationRequest) addRegistrationRequests.get(requestId);
+		AddRegistrationRequest request = removeAddRegistrationRequest(requestId);
 		if (request != null)
 			request.notifyResponse(exception);
+	}
+
+	private AddRegistrationRequest removeAddRegistrationRequest(Integer requestId) {
+		synchronized (addRegistrationRequests) {
+			return (AddRegistrationRequest) addRegistrationRequests.remove(requestId);
+		}
 	}
 
 	/**
@@ -1515,7 +1531,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 * @since 3.2
 	 */
 	protected boolean addRequest(Request request) {
-		return requests.add(request);
+		synchronized (requests) {
+			return requests.add(request);
+		}
 	}
 
 	/**
@@ -1538,7 +1556,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 * @since 3.2
 	 */
 	protected boolean removeRequest(Request request) {
-		return requests.remove(request);
+		synchronized (requests) {
+			return requests.remove(request);
+		}
 	}
 
 	protected void logException(int code, String message, Throwable e) {
