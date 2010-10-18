@@ -109,4 +109,7 @@ public class DiscoveryPlugin implements BundleActivator {
 		return plugin;
 	}
 
+	public BundleContext getBundleContext() {
+		return context;
+	}
 }
