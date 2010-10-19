@@ -72,6 +72,38 @@ public class DnsSdDiscoveryServiceTest extends DiscoveryServiceTest {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryServiceTest#testAddServiceListenerIServiceListenerOSGi()
+	 */
+	public void testAddServiceListenerIServiceListenerOSGi()
+			throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryServiceTest#testAddServiceListenerIServiceTypeIDIServiceListenerOSGi()
+	 */
+	public void testAddServiceListenerIServiceTypeIDIServiceListenerOSGi()
+			throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryServiceTest#testAddServiceListenerIServiceTypeIDIServiceListenerOSGiWildcards()
+	 */
+	public void testAddServiceListenerIServiceTypeIDIServiceListenerOSGiWildcards()
+			throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.DiscoveryServiceTest#testAddServiceTypeListenerOSGi()
+	 */
+	public void testAddServiceTypeListenerOSGi()
+			throws ContainerConnectException {
+		// NOP, not applicable for DNS-SD
+	}
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.discovery.DiscoveryTest#testRegisterService()
 	 */
 	public void testRegisterService() throws ContainerConnectException {
