@@ -164,7 +164,7 @@ public class XMPPContainer extends ClientSOContainer implements
 			if (connectedID == null)
 				throw new ConnectException("Container not connected"); //$NON-NLS-1$
 			synchronized (getGroupMembershipLock()) {
-				if (connectedID.equals(data.getToContainerID()))
+				if (!connectedID.equals(data.getToContainerID()))
 					queueContainerMessage(data);
 			}
 		}
