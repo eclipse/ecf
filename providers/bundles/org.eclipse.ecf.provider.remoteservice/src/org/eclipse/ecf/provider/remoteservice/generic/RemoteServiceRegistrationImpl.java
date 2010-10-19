@@ -78,6 +78,9 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		this.clazzes = clzzes;
 		this.reference = new RemoteServiceReferenceImpl(this);
 		synchronized (registry) {
+			ID containerID = registry.getContainerID();
+			if (containerID == null)
+				throw new NullPointerException("Local containerID must be non-null to register remote services"); //$NON-NLS-1$
 			this.remoteServiceID = registry.createRemoteServiceID(registry.getNextServiceId());
 			this.properties = createProperties(props);
 			registry.publishService(this);

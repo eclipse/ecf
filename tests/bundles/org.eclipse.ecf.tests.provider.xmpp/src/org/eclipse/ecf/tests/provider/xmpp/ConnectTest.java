@@ -25,4 +25,9 @@ public class ConnectTest extends AbstractConnectTest {
 		return XMPP.CONTAINER_NAME;
 	}
 
+	protected void tearDown() throws Exception {
+		// This is a possible workaround for what appears to be Smack bug:  https://bugs.eclipse.org/bugs/show_bug.cgi?id=321032
+		Thread.sleep(2000);
+		super.tearDown();
+	}
 }

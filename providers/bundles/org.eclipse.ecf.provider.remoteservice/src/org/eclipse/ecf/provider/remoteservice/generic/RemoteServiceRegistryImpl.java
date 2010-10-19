@@ -26,8 +26,6 @@ public class RemoteServiceRegistryImpl implements Serializable {
 
 	protected static final String REMOTESERVICE_RANKING = Constants.SERVICE_RANKING;
 
-	protected ID containerID;
-
 	public RemoteServiceRegistryImpl() {
 		//
 	}
@@ -37,6 +35,8 @@ public class RemoteServiceRegistryImpl implements Serializable {
 	 * ArrayList of IRemoteServiceRegistrations
 	 */
 	protected HashMap publishedServicesByClass = new HashMap(50);
+
+	protected ID containerID;
 
 	/** All published services */
 	protected ArrayList allPublishedServices = new ArrayList(50);
@@ -52,6 +52,13 @@ public class RemoteServiceRegistryImpl implements Serializable {
 
 	public ID getContainerID() {
 		return containerID;
+	}
+
+	/**
+	 * @since 3.4
+	 */
+	public void setContainerID(ID containerID) {
+		this.containerID = containerID;
 	}
 
 	public void publishService(RemoteServiceRegistrationImpl serviceReg) {
@@ -204,7 +211,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 	 * @since 3.0
 	 */
 	public IRemoteServiceID createRemoteServiceID(long serviceid) {
-		return (IRemoteServiceID) IDFactory.getDefault().createID(IDFactory.getDefault().getNamespaceByName(RemoteServiceNamespace.NAME), new Object[] {containerID, new Long(serviceid)});
+		return (IRemoteServiceID) IDFactory.getDefault().createID(IDFactory.getDefault().getNamespaceByName(RemoteServiceNamespace.NAME), new Object[] {getContainerID(), new Long(serviceid)});
 	}
 
 }

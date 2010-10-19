@@ -11,6 +11,10 @@
 
 package org.eclipse.ecf.internal.provider.xmpp;
 
+import java.util.Dictionary;
+
+import org.eclipse.ecf.core.events.IContainerConnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
@@ -22,11 +26,47 @@ public class XMPPRemoteServiceAdapterFactory extends
 		RemoteServiceContainerAdapterFactory {
 
 	class XMPPRegistrySharedObject extends RegistrySharedObject {
+		
 		protected ID getLocalContainerID() {
-			// For XMPP, the local container ID is its connected ID.
 			return getContext().getConnectedID();
 		}
-
+		
+		protected void handleContainerConnectedEvent(
+				IContainerConnectedEvent event) {
+			ID targetID = event.getTargetID();
+			if (targetID != null) {
+				synchronized (localRegistry) {
+					localRegistry.setContainerID(targetID);
+				}
+			}
+		}
+		
+		protected void handleContainerDisconnectedEvent(
+				IContainerDisconnectedEvent event) {
+			ID targetID = event.getTargetID();
+			if (targetID.equals(event.getLocalContainerID())) {
+				clearRemoteRegistrys();
+				synchronized (localRegistry) {
+					localRegistry.setContainerID(null);
+				}
+			}
+		}
+		
+		protected void handleRegistryActivatedEvent() {
+			// do nothing
+		}
+		
+		protected ID[] getGroupMemberIDs() {
+			return new ID[0];
+		}
+		
+		protected ID[] getTargetsFromProperties(Dictionary properties) {
+			ID[] targets = super.getTargetsFromProperties(properties);
+			// returning ID[0] means that no sending of registrations should occur on
+			// remote service registration (i.e. in RegistrySharedObject.registerRemoteService
+			return (targets == null)?new ID[0]:targets;
+			
+		}
 	}
 
 	public XMPPRemoteServiceAdapterFactory() {

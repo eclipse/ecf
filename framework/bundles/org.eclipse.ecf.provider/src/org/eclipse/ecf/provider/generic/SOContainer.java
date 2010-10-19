@@ -590,7 +590,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ID sharedObjectID = desc.getID();
 		if (sharedObjectID == null)
 			throw new IOException("shared object id cannot be null"); //$NON-NLS-1$
-		if (toID == null || toID.equals(getID())) {
+		if (verifySharedObjectMessageTarget(toID)) {
 			try {
 				// Check to make sure that the remote creation is allowed.
 				// If this method throws, a failure (and exception will be sent back to
@@ -639,7 +639,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ID toID = mess.getToContainerID();
 		final ContainerMessage.CreateResponseMessage resp = (ContainerMessage.CreateResponseMessage) mess.getData();
 		synchronized (getGroupMembershipLock()) {
-			if (toID != null && toID.equals(getID())) {
+			if (verifySharedObjectMessageTarget(toID)) {
 				final ID sharedObjectID = resp.getSharedObjectID();
 				final SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
 				if (sow != null) {
@@ -655,13 +655,20 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 */
 	protected abstract void handleLeaveGroupMessage(ContainerMessage mess);
 
+	/**
+	 * @since 4.0
+	 */
+	protected boolean verifySharedObjectMessageTarget(ID containerID) {
+		return (containerID == null || containerID.equals(getID()));
+	}
+
 	protected void handleSharedObjectDisposeMessage(ContainerMessage mess) throws IOException {
 		final ID fromID = mess.getFromContainerID();
 		final ID toID = mess.getToContainerID();
 		final ContainerMessage.SharedObjectDisposeMessage resp = (ContainerMessage.SharedObjectDisposeMessage) mess.getData();
 		final ID sharedObjectID = resp.getSharedObjectID();
 		synchronized (getGroupMembershipLock()) {
-			if (toID == null || toID.equals(getID())) {
+			if (verifySharedObjectMessageTarget(toID)) {
 				if (groupManager.isLoading(sharedObjectID)) {
 					groupManager.removeSharedObjectFromLoading(sharedObjectID);
 				} else {
@@ -688,7 +695,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		debug("handleSharedObjectMessage(from=" + fromID + ",to=" + toID + ",sharedObject=" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		synchronized (getGroupMembershipLock()) {
 			// We only deliver to local copy if the toID equals null (all), or it equals ours
-			if (toID == null || toID.equals(getID())) {
+			if (verifySharedObjectMessageTarget(toID)) {
 				sow = getSharedObjectWrapper(sharedObjectID);
 				if (sow != null) {
 					try {

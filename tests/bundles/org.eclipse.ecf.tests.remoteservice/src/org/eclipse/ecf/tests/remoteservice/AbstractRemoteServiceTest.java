@@ -40,7 +40,7 @@ import org.osgi.framework.InvalidSyntaxException;
 public abstract class AbstractRemoteServiceTest extends
 		ContainerAbstractTestCase {
 
-	private static final long ASYNC_WAITTIME = 3000;
+	protected static final long ASYNC_WAITTIME = new Long(System.getProperty("org.eclipse.ecf.tests.remoteservice.asyncWaittime","3000")).longValue();
 
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 
@@ -105,23 +105,9 @@ public abstract class AbstractRemoteServiceTest extends
 	}
 
 	protected IRemoteServiceReference[] getRemoteServiceReferences(
-			IRemoteServiceContainerAdapter adapter, ID target, String clazz, String filter) {
+			IRemoteServiceContainerAdapter adapter, ID target, ID[] idFilter, String clazz, String filter) throws ContainerConnectException {
 		try {
-			return adapter.getRemoteServiceReferences(target, clazz, filter);
-		} catch (final InvalidSyntaxException e) {
-			e.printStackTrace();
-			fail("should not happen");
-		} catch (final ContainerConnectException e) {
-			e.printStackTrace();
-			fail("connect problem");
-		}
-		return null;
-	}
-
-	protected IRemoteServiceReference[] getRemoteServiceReferences(
-			IRemoteServiceContainerAdapter adapter, ID[] targets, String clazz, String filter) {
-		try {
-			return adapter.getRemoteServiceReferences(targets, clazz, filter);
+			return adapter.getRemoteServiceReferences(target, idFilter, clazz, filter);
 		} catch (final InvalidSyntaxException e) {
 			fail("should not happen");
 		}
@@ -129,9 +115,9 @@ public abstract class AbstractRemoteServiceTest extends
 	}
 
 	protected IRemoteService getRemoteService(
-			IRemoteServiceContainerAdapter adapter, ID target, String clazz, String filter, int sleepTime) {
+			IRemoteServiceContainerAdapter adapter, ID target, ID[] idFilter, String clazz, String filter, int sleepTime) throws ContainerConnectException {
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapter, target, clazz, filter);
+				adapter, target, idFilter, clazz, filter);
 		if (refs == null || refs.length == 0)
 			return null;
 		return adapter.getRemoteService(refs[0]);
@@ -157,11 +143,11 @@ public abstract class AbstractRemoteServiceTest extends
 
 	protected IRemoteService registerAndGetRemoteService(
 			IRemoteServiceContainerAdapter server,
-			IRemoteServiceContainerAdapter client, ID target, String serviceName,
-			Dictionary serviceProperties, int sleepTime) {
+			IRemoteServiceContainerAdapter client, ID target, ID[] idFilter, String serviceName,
+			Dictionary serviceProperties, int sleepTime) throws ContainerConnectException {
 		registerService(server, serviceName, createService(),
 				serviceProperties, sleepTime);
-		return getRemoteService(client, target, serviceName,
+		return getRemoteService(client, target, idFilter, serviceName,
 				getFilterFromServiceProperties(serviceProperties), sleepTime);
 	}
 
@@ -235,6 +221,14 @@ public abstract class AbstractRemoteServiceTest extends
 		Thread.sleep(ASYNC_WAITTIME);
 	}
 
+	protected ID getConnectTargetID() {
+		return null;
+	}
+	
+	protected ID[] getIDFilter() {
+		return null;
+	}
+	
 	public void testGetServiceReferences() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// Register service on client[0]
@@ -242,7 +236,7 @@ public abstract class AbstractRemoteServiceTest extends
 				createService(), customizeProperties(null), 3000);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], (ID) null, IConcatService.class.getName(), null);
+				adapters[1], getConnectTargetID(), getIDFilter(), IConcatService.class.getName(), null);
 
 		assertTrue(refs != null);
 		assertTrue(refs.length > 0);
@@ -258,7 +252,7 @@ public abstract class AbstractRemoteServiceTest extends
 				createService(), customizeProperties(props), 3000);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], (ID) null, IConcatService.class.getName(),
+				adapters[1], getConnectTargetID(), getIDFilter(), IConcatService.class.getName(),
 				getFilterFromServiceProperties(props));
 
 		assertTrue(refs != null);
@@ -281,7 +275,7 @@ public abstract class AbstractRemoteServiceTest extends
 		final String missFilter = getFilterFromServiceProperties(missProps);
 
 		final IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], (ID) null, IConcatService.class.getName(), missFilter);
+				adapters[1], getConnectTargetID(), getIDFilter(), IConcatService.class.getName(), missFilter);
 
 		assertTrue(refs == null);
 		Thread.sleep(ASYNC_WAITTIME);
@@ -300,10 +294,10 @@ public abstract class AbstractRemoteServiceTest extends
 		return createRemoteCall("concat", new Object[] { first, second });
 	}
 
-	protected IRemoteService registerAndGetRemoteService() {
+	protected IRemoteService registerAndGetRemoteService() throws ContainerConnectException {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		return registerAndGetRemoteService(adapters[0], adapters[1],
-				getClient(0).getConnectedID(), IConcatService.class.getName(), customizeProperties(null), 5000);
+				getClient(0).getConnectedID(), getIDFilter(), IConcatService.class.getName(), customizeProperties(null), 5000);
 	}
 
 	protected IRemoteCallListener createRemoteCallListener() {
@@ -411,58 +405,6 @@ public abstract class AbstractRemoteServiceTest extends
 		final IFuture result = service.callAsync(createRemoteConcat(
 				"ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynchResult", result);
-		assertNotNull(result);
-		Thread.sleep(ASYNC_WAITTIME);
-	}
-
-	IRemoteService remoteService;
-	boolean done;
-
-	public void testServiceListener() throws Exception {
-		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
-		done = false;
-		final Object lock = new Object();
-		adapters[1].addRemoteServiceListener(new IRemoteServiceListener() {
-			public void handleServiceEvent(IRemoteServiceEvent event) {
-				if (event instanceof IRemoteServiceRegisteredEvent) {
-					IRemoteServiceRegisteredEvent e = (IRemoteServiceRegisteredEvent) event;
-					IRemoteServiceReference ref = e.getReference();
-					remoteService = adapters[1].getRemoteService(ref);
-					assertNotNull(remoteService);
-					synchronized (lock) {
-						done = true;
-						lock.notify();
-					}
-				}
-			}
-		});
-
-		// Now register service on server (adapters[0]).  This should result in notification on client (adapters[1])
-		// in above handleServiceEvent
-		adapters[0].registerRemoteService(new String[] { IConcatService.class.getName() }, createService(),
-				customizeProperties(null));
-
-		// wait until block above called asynchronously
-		int count = 0;
-		synchronized (lock) {
-			while (!done && count++ < 4) {
-				try {
-					lock.wait(1000);
-				} catch (InterruptedException e) {
-					fail();
-				}
-			}
-		}
-
-		assertTrue(done);
-
-		if (remoteService == null) return;
-		// We've got the remote service, so we're good to go
-		assertTrue(remoteService != null);
-		traceCallStart("callAsynchResult");
-		final IFuture result = remoteService
-				.callAsync(createRemoteConcat("ECF AsynchResults ", "are cool"));
-		traceCallEnd("callAsynch");
 		assertNotNull(result);
 		Thread.sleep(ASYNC_WAITTIME);
 	}

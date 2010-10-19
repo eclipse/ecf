@@ -20,11 +20,9 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.tests.provider.xmpp.XMPPS;
 import org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest;
-import org.osgi.framework.InvalidSyntaxException;
 
 public class RemoteServiceTest extends AbstractRemoteServiceTest {
 
@@ -52,28 +50,10 @@ public class RemoteServiceTest extends AbstractRemoteServiceTest {
 		return result;
 	}
 
-	protected Dictionary customizeProperties(Dictionary serviceProperties) {
-		final Dictionary props = new Hashtable();
-		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClient(1).getConnectedID());
-		if (serviceProperties != null) {
-			for(Enumeration e=serviceProperties.keys(); e.hasMoreElements(); ) {
-				String key = (String) e.nextElement();
-				Object val = serviceProperties.get(key);
-				props.put(key,val);
-			}
-		}
-		return props;
+	protected ID[] getIDFilter() {
+		return new ID[] { getClient(0).getConnectedID() };
 	}
 	
-	protected IRemoteServiceReference[] getRemoteServiceReferences(IRemoteServiceContainerAdapter adapter, String clazz, String filter) {
-		try {
-			return adapter.getRemoteServiceReferences((ID[]) null, clazz, filter);
-		} catch (final InvalidSyntaxException e) {
-			fail("should not happen");
-		}
-		return null;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -83,8 +63,8 @@ public class RemoteServiceTest extends AbstractRemoteServiceTest {
 		super.setUp();
 		setClientCount(2);
 		clients = createClients();
-		connectClients();
 		setupRemoteServiceAdapters();
+		connectClients();
 		addRemoteServiceListeners();
 	}
 
@@ -96,6 +76,19 @@ public class RemoteServiceTest extends AbstractRemoteServiceTest {
 	protected void tearDown() throws Exception {
 		cleanUpClients();
 		super.tearDown();
+	}
+
+	protected Dictionary customizeProperties(Dictionary serviceProperties) {
+		final Dictionary props = new Hashtable();
+		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClient(1).getConnectedID());
+		if (serviceProperties != null) {
+			for(Enumeration e=serviceProperties.keys(); e.hasMoreElements(); ) {
+				String key = (String) e.nextElement();
+				Object val = serviceProperties.get(key);
+				props.put(key,val);
+			}
+		}
+		return props;
 	}
 
 	protected String getFilterFromServiceProperties(Dictionary serviceProperties) {

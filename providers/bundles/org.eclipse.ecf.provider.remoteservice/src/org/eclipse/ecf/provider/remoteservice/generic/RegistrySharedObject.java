@@ -14,7 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.*;
 import java.util.*;
 import org.eclipse.core.runtime.*;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
@@ -35,7 +34,17 @@ import org.osgi.framework.*;
 
 public class RegistrySharedObject extends BaseSharedObject implements IRemoteServiceContainerAdapter {
 
-	private static final boolean DEBUG = false;
+	/**
+	 * @since 3.3
+	 */
+	protected static final int ADD_REGISTRATION_REQUEST_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.remoteservice.addRegistrationRequestTimeout", "7000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+
+	private static int uniqueRequestId = 0;
+
+	private static Integer createNextRequestId() {
+		return new Integer(uniqueRequestId++);
+	}
+
 	/**
 	 * registry impl for local remote service registrations
 	 */
@@ -103,11 +112,24 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	private EventManager rsListenerDispatchEventManager;
 
+	/**
+	 * @since 3.4
+	 */
+	protected long registryUpdateRequestTimeout = new Long(System.getProperty("org.eclipse.ecf.provider.remoteservice.registryUpdateRequestTimeout", "5000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
+
+	private Hashtable pendingUpdateContainers = new Hashtable();
+	private List registryUpdateRequests = new ArrayList();
+
+	// system property allowing the executorType to be configured.  Currently types are:  jobs, threads, immediate.
+	private static final String DEFAULT_EXECUTOR_TYPE = System.getProperty("org.eclipse.ecf.provider.remoteservice.executorType", "jobs"); //$NON-NLS-1$ //$NON-NLS-2$
+
+	private IExecutor requestExecutor;
+
 	public RegistrySharedObject() {
 		//
 	}
 
-	// Get remote service references methods
+	// IRemoteServiceContainerAdapter methods
 	/**
 	 * @since 3.4
 	 */
@@ -118,7 +140,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (target != null)
 			connectToRemoteServiceTarget(target);
 		// Wait for any pending remote registry updates...whether we've connected or not
-		waitForPendingUpdates(idFilter, getAddRegistrationRequestTimeout());
+		waitForPendingUpdates(idFilter);
 		// Now we lookup remote service references
 		final List references = new ArrayList();
 		// first from remote registrys
@@ -160,43 +182,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return (result.length == 0) ? null : result;
 	}
 
-	/**
-	 * @since 3.3
-	 */
-	protected int getRSConnectTimeout() {
-		return rsConnectTimeout;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.sharedobject.BaseSharedObject#dispose(org.eclipse.ecf.core.identity.ID)
-	 */
-	public void dispose(ID containerID) {
-		super.dispose(containerID);
-		unregisterAllServiceRegistrations();
-		synchronized (remoteRegistrys) {
-			remoteRegistrys.clear();
-			localServiceRegistrations.clear();
-		}
-		synchronized (serviceListeners) {
-			serviceListeners.clear();
-		}
-		synchronized (addRegistrationRequests) {
-			addRegistrationRequests.clear();
-		}
-		synchronized (requests) {
-			requests.clear();
-		}
-		synchronized (pendingUpdateContainers) {
-			pendingUpdateContainers.clear();
-		}
-		synchronized (rsQueueLock) {
-			if (rsListenerDispatchEventManager != null) {
-				rsListenerDispatchEventManager.close();
-				rsListenerDispatchEventManager = null;
-			}
-		}
-	}
-
 	/* Begin implementation of IRemoteServiceContainerAdapter public interface */
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#addRemoteServiceListener(org.eclipse.ecf.remoteservice.IRemoteServiceListener)
@@ -229,21 +214,326 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return remoteService;
 	}
 
-	private void addReferencesFromRemoteRegistrys(ID[] idFilter, String clazz, IRemoteFilter remoteFilter, List referencesFound) {
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#registerRemoteService(java.lang.String[], java.lang.Object, java.util.Dictionary)
+	 */
+	public IRemoteServiceRegistration registerRemoteService(String[] clazzes, Object service, Dictionary properties) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "registerRemoteService", new Object[] {clazzes, service, properties}); //$NON-NLS-1$
+		if (service == null) {
+			throw new NullPointerException("service cannot be null"); //$NON-NLS-1$
+		}
+		final int size = clazzes.length;
+
+		if (size == 0) {
+			throw new IllegalArgumentException("service classes list is empty"); //$NON-NLS-1$
+		}
+
+		final String[] copy = new String[clazzes.length];
+		for (int i = 0; i < clazzes.length; i++) {
+			copy[i] = new String(clazzes[i].getBytes());
+		}
+		clazzes = copy;
+
+		final String invalidService = checkServiceClass(clazzes, service);
+		if (invalidService != null) {
+			throw new IllegalArgumentException("Service=" + invalidService + " is invalid"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		// Add to local registry
+		final RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
+		reg.publish(this, localRegistry, service, clazzes, properties);
+
+		// Only send add registrations if we are connected
+		if (isConnected()) {
+			final ID[] targets = getTargetsFromProperties(properties);
+			RemoteServiceRegistrationImpl[] regs = new RemoteServiceRegistrationImpl[] {reg};
+			if (targets == null)
+				sendAddRegistrations(null, null, regs);
+			else
+				for (int i = 0; i < targets.length; i++)
+					sendAddRegistrations(targets[i], null, regs);
+		}
+
+		fireRemoteServiceListeners(createRegisteredEvent(reg));
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "registerRemoteService", reg); //$NON-NLS-1$
+		return reg;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#ungetRemoteService(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
+	 */
+	public boolean ungetRemoteService(IRemoteServiceReference ref) {
+		if (ref == null)
+			return false;
+		IRemoteServiceID serviceID = ref.getID();
+		if (serviceID == null)
+			return false;
+		synchronized (localRegistry) {
+			RemoteServiceRegistrationImpl registry = localRegistry.findRegistrationForRemoteServiceId(serviceID);
+			if (registry != null)
+				return true;
+		}
 		synchronized (remoteRegistrys) {
-			if (idFilter == null) {
+			final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(serviceID.getContainerID());
+			if (registry != null)
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
+		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getRemoteServiceReferences(idFilter, clazz, filter);
+			}
+		}, null);
+	}
+
+	/**
+	 * @since 3.4
+	 */
+	public IFuture asyncGetRemoteServiceReferences(final ID target, final ID[] idFilter, final String clazz, final String filter) {
+		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getRemoteServiceReferences(target, idFilter, clazz, filter);
+			}
+		}, null);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IFuture asyncGetRemoteServiceReferences(final ID target, final String clazz, final String filter) {
+		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
+		return executor.execute(new IProgressRunnable() {
+			public Object run(IProgressMonitor monitor) throws Exception {
+				return getRemoteServiceReferences(target, clazz, filter);
+			}
+		}, null);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public Namespace getRemoteServiceNamespace() {
+		return IDFactory.getDefault().getNamespaceByName(RemoteServiceNamespace.NAME);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException {
+		return new RemoteFilterImpl(filter);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteServiceReference getRemoteServiceReference(IRemoteServiceID serviceId) {
+		ID containerID = serviceId.getContainerID();
+		if (containerID == null)
+			return null;
+		RemoteServiceRegistrationImpl registration = null;
+		waitForPendingUpdates(new ID[] {containerID});
+		ID localContainerID = getLocalContainerID();
+		if (containerID.equals(localContainerID)) {
+			synchronized (localRegistry) {
+				registration = localRegistry.findRegistrationForServiceId(serviceId.getContainerRelativeID());
+				if (registration != null)
+					return registration.getReference();
+			}
+		} else {
+			synchronized (remoteRegistrys) {
+				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
+				for (final Iterator i = registrys.iterator(); i.hasNext();) {
+					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
+					registration = registry.findRegistrationForServiceId(serviceId.getContainerRelativeID());
+				}
+			}
+		}
+		return (registration == null) ? null : registration.getReference();
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IRemoteServiceID getRemoteServiceID(ID containerId, long containerRelativeId) {
+		if (containerId == null)
+			return null;
+		ID localContainerID = getLocalContainerID();
+		if (containerId.equals(localContainerID)) {
+			synchronized (localRegistry) {
+				RemoteServiceRegistrationImpl reg = localRegistry.findRegistrationForServiceId(containerRelativeId);
+				if (reg != null)
+					return reg.getID();
+			}
+		} else {
+			synchronized (remoteRegistrys) {
+				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
+				for (final Iterator i = registrys.iterator(); i.hasNext();) {
+					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
+					RemoteServiceRegistrationImpl reg = registry.findRegistrationForServiceId(containerRelativeId);
+					if (reg != null)
+						return reg.getID();
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+		this.connectContext = connectContext;
+	}
+
+	// End IRemoteServiceContainerAdapter methods
+
+	// ISharedObject overrides
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.BaseSharedObject#initialize()
+	 */
+	public void initialize() throws SharedObjectInitException {
+		super.initialize();
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "initialize"); //$NON-NLS-1$
+		ID localContainerID = getLocalContainerID();
+		localRegistry = (localContainerID == null) ? new RemoteServiceRegistryImpl() : new RemoteServiceRegistryImpl(localContainerID);
+		super.addEventProcessor(new IEventProcessor() {
+			public boolean processEvent(Event arg0) {
+				if (arg0 instanceof IContainerConnectedEvent) {
+					handleContainerConnectedEvent((IContainerConnectedEvent) arg0);
+				} else if (arg0 instanceof IContainerDisconnectedEvent) {
+					handleContainerDisconnectedEvent((IContainerDisconnectedEvent) arg0);
+				} else if (arg0 instanceof IContainerEjectedEvent) {
+					handleContainerEjectedEvent((IContainerEjectedEvent) arg0);
+				} else if (arg0 instanceof ISharedObjectActivatedEvent) {
+					// If it's us that's being activated, then we do something about it
+					if (getID().equals(((ISharedObjectActivatedEvent) arg0).getActivatedID()))
+						handleRegistryActivatedEvent();
+				}
+				return false;
+			}
+		});
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "initialize"); //$NON-NLS-1$
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.BaseSharedObject#dispose(org.eclipse.ecf.core.identity.ID)
+	 */
+	public void dispose(ID containerID) {
+		unregisterAllServiceRegistrations();
+
+		synchronized (rsQueueLock) {
+			if (rsListenerDispatchEventManager != null) {
+				rsListenerDispatchEventManager.close();
+				rsListenerDispatchEventManager = null;
+				rsListenerDispatchQueue = null;
+			}
+		}
+		synchronized (remoteRegistrys) {
+			remoteRegistrys.clear();
+			localServiceRegistrations.clear();
+		}
+		synchronized (serviceListeners) {
+			serviceListeners.clear();
+		}
+		synchronized (addRegistrationRequests) {
+			addRegistrationRequests.clear();
+		}
+		synchronized (requests) {
+			requests.clear();
+		}
+		synchronized (pendingUpdateContainers) {
+			pendingUpdateContainers.clear();
+		}
+		synchronized (registryUpdateRequests) {
+			registryUpdateRequests.clear();
+		}
+		super.dispose(containerID);
+	}
+
+	// End ISharedObject overrides
+	/**
+	 * @since 3.3
+	 */
+	protected int getRSConnectTimeout() {
+		return rsConnectTimeout;
+	}
+
+	/**
+	 * @since 3.4
+	 */
+	protected long getRegistryUpdateRequestTimeout() {
+		return registryUpdateRequestTimeout;
+	}
+
+	private void sendRegistryUpdateRequestAndWait(ID targetContainerID) {
+		synchronized (registryUpdateRequests) {
+			// create request id
+			Integer requestId = createNextRequestId();
+			// add it to the registryUpdateRequests list
+			registryUpdateRequests.add(requestId);
+			// send registry update request message to targetContainerID
+			sendRegistryUpdateRequest(targetContainerID, requestId);
+			// Get timeout
+			long timeOut = System.currentTimeMillis() + getRegistryUpdateRequestTimeout();
+			while ((timeOut - System.currentTimeMillis()) >= 0) {
+				if (!registryUpdateRequests.contains(requestId)) {
+					Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), "sendRegistryUpdateRequestAndWait", "localContainerID=" + getLocalContainerID() + " returning because response received"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					return;
+				}
+				try {
+					registryUpdateRequests.wait(500);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+			Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), "sendRegistryUpdateRequestAndWait", "localContainerID=" + getLocalContainerID() + " returning because of timeout"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+	}
+
+	private void addReferencesFromRemoteRegistrys(ID[] idFilter, String clazz, IRemoteFilter remoteFilter, List referencesFound) {
+		// If no idFilter, then we add all known references from all remote registrys
+		if (idFilter == null) {
+			synchronized (remoteRegistrys) {
 				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
 				for (final Iterator i = registrys.iterator(); i.hasNext();) {
 					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
 					// Add IRemoteServiceReferences from each remote registry
 					addReferencesFromRegistry(clazz, remoteFilter, registry, referencesFound);
 				}
-			} else {
-				for (int i = 0; i < idFilter.length; i++) {
-					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(idFilter[i]);
-					if (registry != null) {
-						addReferencesFromRegistry(clazz, remoteFilter, registry, referencesFound);
+			}
+			// Otherwise there is a filter
+		} else {
+			for (int i = 0; i < idFilter.length; i++) {
+				ID targetContainerID = idFilter[i];
+				// Skip if the targetContainerID is null
+				if (targetContainerID == null)
+					continue;
+				RemoteServiceRegistryImpl remoteRegistryForContainer = null;
+				// No change to the registrys while we look for the appropriate registry
+				synchronized (remoteRegistrys) {
+					remoteRegistryForContainer = (RemoteServiceRegistryImpl) remoteRegistrys.get(targetContainerID);
+					// If one is found, then we simply add any entrys to referencesFound and we're done
+					// for that container
+					if (remoteRegistryForContainer != null) {
+						addReferencesFromRegistry(clazz, remoteFilter, remoteRegistryForContainer, referencesFound);
+						continue;
 					}
+				}
+				// This block is only reached if remoteRegistryForContainer is null
+				sendRegistryUpdateRequestAndWait(targetContainerID);
+				// Now we check remoteRegistrys again
+				synchronized (remoteRegistrys) {
+					remoteRegistryForContainer = (RemoteServiceRegistryImpl) remoteRegistrys.get(targetContainerID);
+					if (remoteRegistryForContainer != null)
+						addReferencesFromRegistry(clazz, remoteFilter, remoteRegistryForContainer, referencesFound);
 				}
 			}
 		}
@@ -281,11 +571,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			context.connect(targetID, connectContext);
 			// wait to receive connected event
 			// Wait until we receive the IContainerConnectedEvent on the shared object thread
-			long startTime = System.currentTimeMillis();
 			int rsTimeout = getRSConnectTimeout();
-			long endTime = startTime + rsTimeout;
+			long endTime = System.currentTimeMillis() + rsTimeout;
 			while (!rsConnected && (endTime >= System.currentTimeMillis())) {
 				try {
+					// wait for asynchronous notification of getting connected
 					rsConnectLock.wait(rsTimeout / 10);
 				} catch (InterruptedException e) {
 					throw new ContainerConnectException("No notification of registry connect complete for connect targetID=" + targetID); //$NON-NLS-1$
@@ -319,114 +609,20 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return (ID[]) results.toArray(new ID[] {});
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#registerRemoteService(java.lang.String[], java.lang.Object, java.util.Dictionary)
-	 */
-	public IRemoteServiceRegistration registerRemoteService(String[] clazzes, Object service, Dictionary properties) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "registerRemoteService", new Object[] {clazzes, service, properties}); //$NON-NLS-1$
-		if (service == null) {
-			throw new NullPointerException("service cannot be null"); //$NON-NLS-1$
-		}
-		final int size = clazzes.length;
-
-		if (size == 0) {
-			throw new IllegalArgumentException("service classes list is empty"); //$NON-NLS-1$
-		}
-
-		final String[] copy = new String[clazzes.length];
-		for (int i = 0; i < clazzes.length; i++) {
-			copy[i] = new String(clazzes[i].getBytes());
-		}
-		clazzes = copy;
-
-		final String invalidService = checkServiceClass(clazzes, service);
-		if (invalidService != null) {
-			throw new IllegalArgumentException("Service=" + invalidService + " is invalid"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-
-		final RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
-		reg.publish(this, localRegistry, service, clazzes, properties);
-
-		// Only send add registrations if we are connected
-		if (isConnected()) {
-			final ID[] targets = getTargetsFromProperties(properties);
-			RemoteServiceRegistrationImpl[] regs = new RemoteServiceRegistrationImpl[] {reg};
-			if (targets == null)
-				sendAddRegistrations(null, null, regs);
-			else
-				for (int i = 0; i < targets.length; i++)
-					sendAddRegistrations(targets[i], null, regs);
-		}
-
-		fireRemoteServiceListeners(createRegisteredEvent(reg));
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "registerRemoteService", reg); //$NON-NLS-1$
-		return reg;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#ungetRemoteService(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
-	 */
-	public boolean ungetRemoteService(IRemoteServiceReference ref) {
-		IRemoteServiceID serviceID = ref.getID();
-		if (serviceID == null)
-			return false;
-		synchronized (localRegistry) {
-			RemoteServiceRegistrationImpl registry = localRegistry.findRegistrationForRemoteServiceId(serviceID);
-			if (registry != null)
-				return true;
-		}
-		synchronized (remoteRegistrys) {
-			final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(serviceID.getContainerID());
-			if (registry != null) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	protected ISharedObjectContext getSOContext() {
 		return super.getContext();
-	}
-
-	/* End implementation of IRemoteServiceContainerAdapter public interface */
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.sharedobject.BaseSharedObject#initialize()
-	 */
-	public void initialize() throws SharedObjectInitException {
-		super.initialize();
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "initialize"); //$NON-NLS-1$
-		localRegistry = new RemoteServiceRegistryImpl(getLocalContainerID());
-		super.addEventProcessor(new IEventProcessor() {
-			public boolean processEvent(Event arg0) {
-				if (arg0 instanceof IContainerConnectedEvent) {
-					handleContainerConnectedEvent((IContainerConnectedEvent) arg0);
-				} else if (arg0 instanceof IContainerDisconnectedEvent) {
-					handleContainerDisconnectedEvent((IContainerDisconnectedEvent) arg0);
-				} else if (arg0 instanceof IContainerEjectedEvent) {
-					handleContainerEjectedEvent((IContainerEjectedEvent) arg0);
-				} else if (arg0 instanceof ISharedObjectActivatedEvent) {
-					// If it's us that's being activated, then we do something about it
-					if (getID().equals(((ISharedObjectActivatedEvent) arg0).getActivatedID()))
-						handleRegistryActivatedEvent();
-				}
-				return false;
-			}
-		});
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "initialize"); //$NON-NLS-1$
 	}
 
 	/**
 	 * @since 3.4
 	 */
 	protected void handleRegistryActivatedEvent() {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleRegistryActivatedEvent"); //$NON-NLS-1$
 		// Only do something with this if we're already connected
 		ID[] members = getGroupMemberIDs();
 		ID localContainerID = getLocalContainerID();
 		ID connectedID = getConnectedID();
-		if (DEBUG) {
-			System.out.println("handleRegistryActivatedEvent localContainerID=" + getLocalContainerID() + ",members=" + Arrays.asList(members)); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), "handleRegistryActivatedEvent", "localContainerID=" + getLocalContainerID() + ",members=" + Arrays.asList(members)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		// Only do this if we've already been connected
 		if (isConnected()) {
 			for (int i = 0; i < members.length; i++) {
@@ -452,6 +648,33 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		handleTargetGoneEvent(arg0.getTargetID());
 	}
 
+	/**
+	 * @since 3.4
+	 */
+	protected void clearRemoteRegistrys() {
+		List registrations = new ArrayList();
+		synchronized (remoteRegistrys) {
+			for (Iterator i = remoteRegistrys.keySet().iterator(); i.hasNext();) {
+				ID containerID = (ID) i.next();
+				RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(containerID);
+				if (registry != null) {
+					removeRemoteRegistry(containerID);
+					RemoteServiceRegistrationImpl[] regs = registry.getRegistrations();
+					if (regs != null) {
+						for (int j = 0; j < regs.length; j++) {
+							registry.unpublishService(regs[j]);
+							unregisterServiceRegistrationsForContainer(regs[j].getContainerID());
+							registrations.add(regs[j]);
+						}
+					}
+				}
+			}
+		}
+		for (Iterator i = registrations.iterator(); i.hasNext();) {
+			fireRemoteServiceListeners(createUnregisteredEvent((RemoteServiceRegistrationImpl) i.next()));
+		}
+	}
+
 	private void handleTargetGoneEvent(ID targetID) {
 		RemoteServiceRegistrationImpl registrations[] = null;
 		synchronized (remoteRegistrys) {
@@ -469,8 +692,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 		// Remove from pending updates
 		removePendingContainers(targetID);
+
 		if (!isConnected())
 			setRegistryConnected(false);
+
+		ID localContainerID = getLocalContainerID();
+		if (localContainerID == null) {
+			synchronized (localRegistry) {
+				localRegistry.setContainerID(null);
+			}
+		}
 		// Do notification outside synchronized block
 		if (registrations != null) {
 			for (int i = 0; i < registrations.length; i++) {
@@ -490,28 +721,31 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	protected void handleContainerDisconnectedEvent(IContainerDisconnectedEvent event) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleContainerDisconnectedEvent", event); //$NON-NLS-1$
 		handleTargetGoneEvent(event.getTargetID());
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleContainerDisconnectedEvent"); //$NON-NLS-1$
 	}
 
 	protected void sendRegistryUpdate(ID targetContainerID) {
-		synchronized (localRegistry) {
-			final RemoteServiceRegistrationImpl registrations[] = localRegistry.getRegistrations();
-			sendAddRegistrations(targetContainerID, null, registrations);
-		}
+		sendRegistryUpdate(targetContainerID, null);
 	}
 
-	private Hashtable pendingUpdateContainers = new Hashtable();
+	/**
+	 * @since 3.4
+	 */
+	protected void sendRegistryUpdate(ID targetContainerID, Integer requestId) {
+		synchronized (localRegistry) {
+			final RemoteServiceRegistrationImpl registrations[] = localRegistry.getRegistrations();
+			sendAddRegistrations(targetContainerID, requestId, registrations);
+		}
+	}
 
 	private void addPendingContainers(ID[] ids) {
 		if (ids == null)
 			return;
+		ID localContainerID = getLocalContainerID();
 		synchronized (pendingUpdateContainers) {
 			for (int i = 0; i < ids.length; i++) {
-				if (!ids[i].equals(getLocalContainerID())) {
+				if (!ids[i].equals(localContainerID)) {
 					pendingUpdateContainers.put(ids[i], ids[i]);
-					Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), getLocalContainerID() + ".addPendingContainers", "added containerIDs=" + ((ids == null) ? "null" : Arrays.asList(ids).toString()) + ",pendingUpdateContainer=" + pendingUpdateContainers); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				}
 			}
 		}
@@ -521,38 +755,31 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (id == null)
 			return false;
 		ID localContainerID = getLocalContainerID();
-		if (localContainerID.equals(id))
-			return false;
 		synchronized (pendingUpdateContainers) {
 			Object result = pendingUpdateContainers.remove(id);
-			if (DEBUG) {
-				if (result != null)
-					System.out.println("removePendingContainers localContainerID=" + getLocalContainerID() + ",REMOVED=" + result + ",pendingUpdateContainers=" + pendingUpdateContainers); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			}
-			Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), getLocalContainerID() + ".removePendingContainers", "removed containerID=" + id + ",pendingUpdateContainer=" + pendingUpdateContainers); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), "removePendingContainers", "localContainerID=" + localContainerID + ",REMOVED=" + result + ",pendingUpdateContainers=" + pendingUpdateContainers); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			pendingUpdateContainers.notify();
 			return result != null;
 		}
 	}
 
-	private boolean anyPending(ID[] containerIDs) {
-		if (containerIDs == null)
+	private boolean anyPending(ID[] idFilter) {
+		if (idFilter == null)
 			return pendingUpdateContainers.size() > 0;
-		for (int i = 0; i < containerIDs.length; i++) {
-			if (pendingUpdateContainers.containsKey(containerIDs[i]))
+		for (int i = 0; i < idFilter.length; i++) {
+			if (pendingUpdateContainers.containsKey(idFilter[i]))
 				return true;
 		}
 		return false;
 	}
 
-	private void waitForPendingUpdates(ID[] containerIDs, long timeout) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), getLocalContainerID() + ".waitForPendingUpdates", new Object[] {containerIDs, new Long(timeout), pendingUpdateContainers}); //$NON-NLS-1$
-		long startTime = System.currentTimeMillis();
-		long endTime = startTime + timeout;
+	private void waitForPendingUpdates(ID[] idFilter) {
+		long timeout = getAddRegistrationRequestTimeout();
+		long endTime = System.currentTimeMillis() + timeout;
 		synchronized (pendingUpdateContainers) {
-			while (anyPending(containerIDs) && (endTime >= System.currentTimeMillis())) {
+			// If there are any requred
+			while (anyPending(idFilter) && (endTime >= System.currentTimeMillis())) {
 				try {
-					Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), "waitForPendingUpdates", "waiting containerIDs=" + ((containerIDs == null) ? "null" : Arrays.asList(containerIDs).toString()) + ",pendingUpdateContainer=" + pendingUpdateContainers); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 					pendingUpdateContainers.wait(timeout / 10);
 				} catch (InterruptedException e) {
 					// just return
@@ -560,7 +787,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				}
 			}
 		}
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "waitForPendingUpdates", new Object[] {containerIDs, new Long(timeout), pendingUpdateContainers}); //$NON-NLS-1$
 	}
 
 	protected void handleContainerConnectedEvent(IContainerConnectedEvent event) {
@@ -571,9 +797,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 * @since 3.4
 	 */
 	protected void handleTargetConnected(ID targetID) {
-		if (DEBUG) {
-			System.out.println("handleTargetConnected localContainerID=" + getLocalContainerID() + ",targetID=" + targetID); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), "handleTargetConnected", "localContainerID=" + getLocalContainerID() + ",targetID=" + targetID); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		// Add the target to the set of pending update containers.  These are the ones we expect
 		// to hear from about their registry contents
 		addPendingContainers(new ID[] {targetID});
@@ -845,9 +1069,25 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	private static final String REGISTRY_UPDATE_REQUEST = "handleRegistryUpdateRequest"; //$NON-NLS-1$
 
 	/**
-	 * @since 3.3
+	 * @since 3.4
 	 */
-	protected static final int ADD_REGISTRATION_REQUEST_TIMEOUT = new Integer(System.getProperty("ecf.addregistrationrequest.timeout", "7000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	protected void sendRegistryUpdateRequest(ID receiver, Integer requestId) {
+		ID localContainerID = getLocalContainerID();
+		Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), "sendRegistryUpdateRequest", "localContainerID=" + localContainerID + ",targetContainerID=" + receiver + ",requestId=" + requestId); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		try {
+			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null, REGISTRY_UPDATE_REQUEST, new Object[] {localContainerID, requestId}));
+		} catch (IOException e) {
+			log(ADD_REGISTRATION_ERROR_CODE, "Exception sending registry update request/2 message", e); //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * @since 3.4
+	 */
+	protected void handleRegistryUpdateRequest(ID remoteContainerID, Integer requestId) {
+		Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), "handleRegistryUpdateRequest", "localContainerID=" + getLocalContainerID() + ",remoteContainerID=" + remoteContainerID + ",requestId=" + requestId); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		sendRegistryUpdate(remoteContainerID, requestId);
+	}
 
 	protected void sendRegistryUpdateRequest() {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendRegistryUpdateRequest"); //$NON-NLS-1$
@@ -861,12 +1101,21 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected void handleRegistryUpdateRequest(ID remoteContainerID) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), REGISTRY_UPDATE_REQUEST);
-		ID localContainerID = getLocalContainerID();
-		if (remoteContainerID == null || localContainerID == null || localContainerID.equals(remoteContainerID)) {
+		if (remoteContainerID == null)
 			return;
-		}
 		sendRegistryUpdate(remoteContainerID);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), REGISTRY_UPDATE_REQUEST);
+	}
+
+	private boolean removeRegistryUpdateRequest(Integer requestId) {
+		if (requestId == null)
+			return false;
+		synchronized (registryUpdateRequests) {
+			boolean result = registryUpdateRequests.remove(requestId);
+			Trace.trace(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.DEBUG, this.getClass(), "removeRegistryUpdateRequest", "localContainerID=" + getLocalContainerID() + ", REMOVED requestId=" + requestId); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			registryUpdateRequests.notify();
+			return result;
+		}
 	}
 
 	protected AddRegistrationRequest sendAddRegistrationRequest(ID receiver, AddRegistrationRequest request, Serializable credentials) {
@@ -951,9 +1200,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 * @since 3.3
 	 */
 	protected void sendAddRegistrations(ID receiver, Integer requestId, RemoteServiceRegistrationImpl[] regs) {
-		if (DEBUG) {
-			System.out.println("sendAddRegistrations localContainerID=" + getLocalContainerID() + ",remoteContainerID=" + receiver + ",requestId=" + requestId + ",registrations=" + Arrays.asList(regs)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		}
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendAddRegistrations", new Object[] {receiver, requestId, regs}); //$NON-NLS-1$
 		try {
 			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null, ADD_REGISTRATIONS, getLocalContainerID(), requestId, regs));
@@ -988,10 +1234,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 * @since 3.3
 	 */
 	protected void handleAddRegistrations(ID remoteContainerID, Integer requestId, final RemoteServiceRegistrationImpl[] registrations) {
-		if (DEBUG) {
-			System.out.println("handleAddRegistrations localContainerID=" + getLocalContainerID() + ",remoteContainerID=" + remoteContainerID + ",requestId=" + requestId + ",registrations=" + Arrays.asList(registrations)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		}
-
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), ADD_REGISTRATIONS, new Object[] {remoteContainerID, registrations});
 		ID localContainerID = getLocalContainerID();
 		if (remoteContainerID == null || localContainerID == null || localContainerID.equals(remoteContainerID)) {
@@ -1021,6 +1263,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 		// remove pending containers
 		removePendingContainers(remoteContainerID);
+		// remove from pending update requests
+		if (requestId != null)
+			removeRegistryUpdateRequest(requestId);
 
 		for (Iterator i = addedRegistrations.iterator(); i.hasNext();) {
 			fireRemoteServiceListeners(createRegisteredEvent((RemoteServiceRegistrationImpl) i.next()));
@@ -1029,9 +1274,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	protected void handleAddRegistration(ID remoteContainerID, Integer requestId, final RemoteServiceRegistrationImpl registration) {
-		if (DEBUG) {
-			System.out.println("handleAddRegistration localContainerID=" + getLocalContainerID() + ",requestId=" + requestId + ",registration=" + registration); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		}
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), ADD_REGISTRATION, new Object[] {remoteContainerID, registration});
 		ID localContainerID = getLocalContainerID();
 		if (remoteContainerID == null || localContainerID == null || localContainerID.equals(remoteContainerID)) {
@@ -1140,11 +1382,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return request;
 	}
 
-	// system property allowing the executorType to be configured.  Currently types are:  jobs, threads, immediate.
-	private static final String DEFAULT_EXECUTOR_TYPE = System.getProperty("org.eclipse.ecf.provider.remoteservice.executorType", "jobs"); //$NON-NLS-1$ //$NON-NLS-2$
-
-	private IExecutor requestExecutor;
-
 	private IExecutor getRequestExecutor(Request request) {
 		if (requestExecutor == null) {
 			requestExecutor = createRequestExecutor(request);
@@ -1152,7 +1389,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return requestExecutor;
 	}
 
-	private IExecutor createRequestExecutor(final Request request) {
+	/**
+	 * @since 3.4
+	 */
+	protected IExecutor createRequestExecutor(final Request request) {
 		IExecutor executor = null;
 		if (DEFAULT_EXECUTOR_TYPE.equals("jobs")) { //$NON-NLS-1$
 			executor = new JobsExecutor("Remote Request Handler") { //$NON-NLS-1$
@@ -1573,115 +1813,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			logException(MSG_INVOKE_ERROR_CODE, "Exception invoking shared object message=" + msg, e); //$NON-NLS-1$
 		}
 		return false;
-	}
-
-	IProgressMonitor progressMonitor = Job.getJobManager().createProgressGroup();
-
-	/**
-	 * @since 3.0
-	 */
-	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
-		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
-		return executor.execute(new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Exception {
-				return getRemoteServiceReferences(idFilter, clazz, filter);
-			}
-		}, null);
-	}
-
-	/**
-	 * @since 3.4
-	 */
-	public IFuture asyncGetRemoteServiceReferences(final ID target, final ID[] idFilter, final String clazz, final String filter) {
-		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
-		return executor.execute(new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Exception {
-				return getRemoteServiceReferences(target, idFilter, clazz, filter);
-			}
-		}, null);
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public IFuture asyncGetRemoteServiceReferences(final ID target, final String clazz, final String filter) {
-		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
-		return executor.execute(new IProgressRunnable() {
-			public Object run(IProgressMonitor monitor) throws Exception {
-				return getRemoteServiceReferences(target, clazz, filter);
-			}
-		}, null);
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public Namespace getRemoteServiceNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(RemoteServiceNamespace.NAME);
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public IRemoteFilter createRemoteFilter(String filter) throws InvalidSyntaxException {
-		return new RemoteFilterImpl(filter);
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public IRemoteServiceReference getRemoteServiceReference(IRemoteServiceID serviceId) {
-		ID containerID = serviceId.getContainerID();
-		RemoteServiceRegistrationImpl registration = null;
-		waitForPendingUpdates(new ID[] {serviceId.getContainerID()}, getAddRegistrationRequestTimeout());
-		if (this.localRegistry.containerID.equals(containerID)) {
-			synchronized (localRegistry) {
-				registration = localRegistry.findRegistrationForServiceId(serviceId.getContainerRelativeID());
-				if (registration != null)
-					return registration.getReference();
-			}
-		} else {
-			synchronized (remoteRegistrys) {
-				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
-				for (final Iterator i = registrys.iterator(); i.hasNext();) {
-					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
-					registration = registry.findRegistrationForServiceId(serviceId.getContainerRelativeID());
-				}
-			}
-		}
-		return (registration == null) ? null : registration.getReference();
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public IRemoteServiceID getRemoteServiceID(ID containerId, long containerRelativeId) {
-		if (containerId == null)
-			return null;
-		synchronized (localRegistry) {
-			if (localRegistry.containerID.equals(containerId)) {
-				RemoteServiceRegistrationImpl reg = localRegistry.findRegistrationForServiceId(containerRelativeId);
-				if (reg != null)
-					return reg.getID();
-			}
-		}
-		synchronized (remoteRegistrys) {
-			final ArrayList registrys = new ArrayList(remoteRegistrys.values());
-			for (final Iterator i = registrys.iterator(); i.hasNext();) {
-				final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
-				RemoteServiceRegistrationImpl reg = registry.findRegistrationForServiceId(containerRelativeId);
-				if (reg != null)
-					return reg.getID();
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public void setConnectContextForAuthentication(IConnectContext connectContext) {
-		this.connectContext = connectContext;
 	}
 
 }

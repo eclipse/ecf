@@ -148,6 +148,26 @@ public class XMPPContainer extends ClientSOContainer implements
 				userhost)), ka);
 	}
 
+	/**
+	 * @since 3.2
+	 */
+	protected boolean verifySharedObjectMessageTarget(ID containerID) {
+		return true;
+	}
+
+	protected void sendMessage(ContainerMessage data) throws IOException {
+		super.sendMessage(data);
+		synchronized (getConnectLock()) {
+			ID connectedID = getConnectedID();
+			if (connectedID == null)
+				throw new ConnectException("Container not connected"); //$NON-NLS-1$
+			synchronized (getGroupMembershipLock()) {
+				if (connectedID.equals(data.getToContainerID()))
+					queueContainerMessage(data);
+			}
+		}
+	}
+
 	public IRosterManager getRosterManager() {
 		return presenceHelper.getRosterManager();
 	}
