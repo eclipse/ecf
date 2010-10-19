@@ -1,31 +1,43 @@
-/**
- * 
- */
+/*******************************************************************************
+ * Copyright (c) 2010 Markus Alexander Kuppe.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Markus Alexander Kuppe (ecf-dev_eclipse.org <at> lemmster <dot> de) - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.internal.discovery;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.discovery.*;
-import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.*;
 import org.osgi.framework.*;
 
 public class DiscoveryServiceListener implements ServiceListener {
 
-	private AbstractDiscoveryContainerAdapter discoveryContainer;
-	private BundleContext context;
-	private Class listenerClass;
+	private final AbstractDiscoveryContainerAdapter discoveryContainer;
+	private final Class listenerClass;
+	private final BundleContext context;
+	private final IServiceIDFactory idFactory;
+	private final Namespace discoveryNamespace;
 
 	public DiscoveryServiceListener(
 			AbstractDiscoveryContainerAdapter anAbstractDiscoveryContainerAdapter,
 			Class clazz) {
 		discoveryContainer = anAbstractDiscoveryContainerAdapter;
 		listenerClass = clazz;
+		discoveryNamespace = IDFactory.getDefault().getNamespaceByName(
+				DiscoveryNamespace.NAME);
+		idFactory = ServiceIDFactory.getDefault();
 		context = DiscoveryPlugin.getDefault().getBundleContext();
 		try {
 			// get existing listener
-			ServiceReference[] references = context.getServiceReferences(
+			final ServiceReference[] references = context.getServiceReferences(
 					listenerClass.getName(), null);
 			addServiceListener(references);
 
@@ -43,16 +55,22 @@ public class DiscoveryServiceListener implements ServiceListener {
 	}
 
 	private void addServiceListener(ServiceReference[] references) {
+		if (references == null) {
+			return;
+		}
 		for (int i = 0; i < references.length; i++) {
-			ServiceReference serviceReference = references[i];
+			final ServiceReference serviceReference = references[i];
 			if (listenerClass.getName()
 					.equals(IServiceListener.class.getName())) {
-				IServiceTypeID aType = getIServiceTypeID(serviceReference);
-				IServiceListener aListener = (IServiceListener) context
+				final IServiceTypeID aType = getIServiceTypeID(serviceReference);
+				if (aType == null) {
+					continue;
+				}
+				final IServiceListener aListener = (IServiceListener) context
 						.getService(serviceReference);
 				discoveryContainer.addServiceListener(aType, aListener);
 			} else {
-				IServiceTypeListener aListener = (IServiceTypeListener) context
+				final IServiceTypeListener aListener = (IServiceTypeListener) context
 						.getService(serviceReference);
 				discoveryContainer.addServiceTypeListener(aListener);
 			}
@@ -64,16 +82,22 @@ public class DiscoveryServiceListener implements ServiceListener {
 	}
 
 	private void removeServiceListener(ServiceReference[] references) {
+		if (references == null) {
+			return;
+		}
 		for (int i = 0; i < references.length; i++) {
-			ServiceReference serviceReference = references[i];
+			final ServiceReference serviceReference = references[i];
 			if (listenerClass.getName()
 					.equals(IServiceListener.class.getName())) {
-				IServiceTypeID aType = getIServiceTypeID(serviceReference);
-				IServiceListener aListener = (IServiceListener) context
+				final IServiceTypeID aType = getIServiceTypeID(serviceReference);
+				if (aType == null) {
+					continue;
+				}
+				final IServiceListener aListener = (IServiceListener) context
 						.getService(serviceReference);
 				discoveryContainer.removeServiceListener(aType, aListener);
 			} else {
-				IServiceTypeListener aListener = (IServiceTypeListener) context
+				final IServiceTypeListener aListener = (IServiceTypeListener) context
 						.getService(serviceReference);
 				discoveryContainer.removeServiceTypeListener(aListener);
 			}
@@ -85,19 +109,37 @@ public class DiscoveryServiceListener implements ServiceListener {
 	}
 
 	private IServiceTypeID getIServiceTypeID(ServiceReference serviceReference) {
-		Namespace namespace = discoveryContainer.getServicesNamespace();
-		String services = (String) serviceReference
-				.getProperty("org.eclipse.ecf.discovery.services");
-		String scopes = (String) serviceReference
-				.getProperty("org.eclipse.ecf.discovery.scopes");
-		String protocols = (String) serviceReference
-				.getProperty("org.eclipse.ecf.discovery.protocols");
 		String namingAuthority = (String) serviceReference
-				.getProperty("org.eclipse.ecf.discovery.namingauthority");
-		return (IServiceTypeID) IDFactory.getDefault().createID(
-				namespace,
-				"_" + services + "" + protocols + "" + scopes + ""
-						+ namingAuthority);
+				.getProperty("org.eclipse.ecf.discovery.namingauthority"); //$NON-NLS-1$
+		if (namingAuthority == null) {
+			namingAuthority = "*"; //$NON-NLS-1$
+		}
+		try {
+			final IServiceTypeID createServiceTypeID = idFactory
+					.createServiceTypeID(
+							discoveryNamespace,
+							convert(serviceReference,
+									"org.eclipse.ecf.discovery.services"), //$NON-NLS-1$
+							convert(serviceReference,
+									"org.eclipse.ecf.discovery.scopes"), //$NON-NLS-1$
+							convert(serviceReference,
+									"org.eclipse.ecf.discovery.protocols"), //$NON-NLS-1$
+							namingAuthority);
+			return createServiceTypeID;
+		} catch (final IDCreateException e) {
+			return null;
+		}
+	}
+
+	private String[] convert(ServiceReference serviceReference, String key) {
+		final Object value = serviceReference.getProperty(key);
+		// default to wildcard for non-set values
+		if (value == null) {
+			return new String[] { "*" }; //$NON-NLS-1$
+		} else if (value instanceof String[]) {
+			return (String[]) value;
+		}
+		return StringUtils.split((String) value, "._"); //$NON-NLS-1$
 	}
 
 	/*
@@ -121,7 +163,7 @@ public class DiscoveryServiceListener implements ServiceListener {
 	}
 
 	private String getFilter() {
-		return "(" + Constants.OBJECTCLASS + "=" + listenerClass.getName()
-				+ ")";
+		return "(" + Constants.OBJECTCLASS + "=" + listenerClass.getName() //$NON-NLS-1$ //$NON-NLS-2$
+				+ ")"; //$NON-NLS-1$
 	}
 }

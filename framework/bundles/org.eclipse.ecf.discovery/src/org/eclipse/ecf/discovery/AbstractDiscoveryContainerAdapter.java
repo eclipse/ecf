@@ -261,11 +261,11 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 		Collection listeners = new HashSet();
 		synchronized (serviceListeners) {
 			for (Iterator itr = serviceListeners.keySet().iterator(); itr.hasNext();) {
-				IServiceTypeID typeID = (IServiceTypeID) itr.next();
+				final IServiceTypeID typeID = (IServiceTypeID) itr.next();
 				int compare = discoveryServiceListenerComparator.compare(aServiceType, typeID);
 				if(compare == 0) {
 					Collection collection = (Collection) serviceListeners
-					.get(aServiceType);
+					.get(typeID);
 					if (collection != null) {
 						listeners.addAll(collection);
 					}
