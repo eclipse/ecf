@@ -155,8 +155,10 @@ public class XMPPContainer extends ClientSOContainer implements
 		return true;
 	}
 
+	/**
+	 * @since 3.2
+	 */
 	protected void sendMessage(ContainerMessage data) throws IOException {
-		super.sendMessage(data);
 		synchronized (getConnectLock()) {
 			ID connectedID = getConnectedID();
 			if (connectedID == null)
