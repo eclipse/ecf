@@ -266,4 +266,11 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		}
 		return registrationDomains.size() == 0 ? scopes : (String[]) registrationDomains.toArray(new String[registrationDomains.size()]); 
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getContainerName()
+	 */
+	public String getContainerName() {
+		return Activator.DISCOVERY_CONTAINER_NAME_VALUE + Activator.ADVERTISER;
+	}
 }

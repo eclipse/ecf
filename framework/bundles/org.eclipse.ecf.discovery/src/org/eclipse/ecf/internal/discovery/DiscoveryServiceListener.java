@@ -150,6 +150,12 @@ public class DiscoveryServiceListener implements ServiceListener {
 	 * ServiceEvent)
 	 */
 	public void serviceChanged(ServiceEvent event) {
+		// ignore events that are targeted at different discovery containers
+		final Object containerName = event.getServiceReference().getProperty(
+				IDiscoveryLocator.CONTAINER_NAME);
+		if (!discoveryContainer.getContainerName().equals(containerName)) {
+			return;
+		}
 		switch (event.getType()) {
 		case ServiceEvent.REGISTERED:
 			addServiceListener(event.getServiceReference());

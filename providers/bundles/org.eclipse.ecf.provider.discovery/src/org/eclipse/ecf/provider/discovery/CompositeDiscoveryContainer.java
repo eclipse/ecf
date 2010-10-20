@@ -426,4 +426,11 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 	public Collection getDiscoveryContainers() {
 		return Collections.unmodifiableCollection(containers);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getContainerName()
+	 */
+	public String getContainerName() {
+		return NAME;
+	}
 }

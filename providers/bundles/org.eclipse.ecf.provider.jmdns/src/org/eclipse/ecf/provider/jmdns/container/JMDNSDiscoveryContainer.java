@@ -466,4 +466,11 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		final ServiceInfo si = ServiceInfo.create(sID.getServiceTypeID().getInternal(), serviceInfo.getServiceName(), location.getPort(), serviceInfo.getWeight(), serviceInfo.getPriority(), props);
 		return si;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getContainerName()
+	 */
+	public String getContainerName() {
+		return JMDNSPlugin.NAME;
+	}
 }

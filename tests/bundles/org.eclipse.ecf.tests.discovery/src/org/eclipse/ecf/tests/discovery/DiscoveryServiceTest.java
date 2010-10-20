@@ -61,9 +61,11 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
 		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
-		
+
+		Properties props = new Properties();
+		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
 		BundleContext ctxt = Activator.getDefault().getContext();
-		ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, null);
+		ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
 		
 		addListenerRegisterAndWait(tsl, serviceInfo);
 
@@ -88,6 +90,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		props.put("org.eclipse.ecf.discovery.scopes", serviceTypeID.getScopes());
 		props.put("org.eclipse.ecf.discovery.protocols", serviceTypeID.getProtocols());
 		props.put("org.eclipse.ecf.discovery.namingauthority", serviceTypeID.getNamingAuthority());
+		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
 
 		BundleContext ctxt = Activator.getDefault().getContext();
 		ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
@@ -114,6 +117,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		props.put("org.eclipse.ecf.discovery.scopes", "*");
 		props.put("org.eclipse.ecf.discovery.protocols", "*");
 		props.put("org.eclipse.ecf.discovery.namingauthority", "*");
+		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
 
 		BundleContext ctxt = Activator.getDefault().getContext();
 		ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
@@ -134,8 +138,10 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
 		final TestServiceTypeListener testTypeListener = new TestServiceTypeListener(eventsToExpect);
+		Properties props = new Properties();
+		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
 		BundleContext ctxt = Activator.getDefault().getContext();
-		ServiceRegistration registration = ctxt.registerService(IServiceTypeListener.class.getName(), testTypeListener, null);
+		ServiceRegistration registration = ctxt.registerService(IServiceTypeListener.class.getName(), testTypeListener, props);
 
 		synchronized (testTypeListener) {
 			// register a service which we expect the test listener to get notified of

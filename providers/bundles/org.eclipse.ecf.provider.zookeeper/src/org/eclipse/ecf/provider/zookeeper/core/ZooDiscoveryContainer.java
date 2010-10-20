@@ -22,10 +22,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.zookeeper.server.NIOServerCnxn;
+import org.apache.zookeeper.server.NIOServerCnxn.Factory;
 import org.apache.zookeeper.server.PurgeTxnLog;
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServer;
-import org.apache.zookeeper.server.NIOServerCnxn.Factory;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 import org.apache.zookeeper.server.quorum.QuorumPeer;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
@@ -442,6 +442,13 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 
 	public boolean isDisposed() {
 		return this.isDisposed;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getContainerName()
+	 */
+	public String getContainerName() {
+		return ZooDiscoveryContainerInstantiator.NAME;
 	}
 
 	private void setDisposed(boolean d) {

@@ -10,12 +10,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.discovery;
 
-import org.eclipse.ecf.internal.discovery.ServiceTypeComparator;
-
-import java.util.Iterator;
-
-import org.eclipse.ecf.internal.discovery.DiscoveryServiceListener;
-
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -24,8 +18,7 @@ import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
-import org.eclipse.ecf.internal.discovery.DiscoveryDebugOption;
-import org.eclipse.ecf.internal.discovery.DiscoveryPlugin;
+import org.eclipse.ecf.internal.discovery.*;
 import org.eclipse.equinox.concurrent.future.*;
 
 public abstract class AbstractDiscoveryContainerAdapter extends
@@ -242,6 +235,12 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 		return null;
 	}
 
+	/**
+	 * @return The name of this discovery container
+	 * @since 4.0
+	 */
+	public abstract String getContainerName();
+
 	// merges the allServiceListener with the serviceListeners for the given
 	// type
 
@@ -260,12 +259,14 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 		Assert.isNotNull(aServiceType);
 		Collection listeners = new HashSet();
 		synchronized (serviceListeners) {
-			for (Iterator itr = serviceListeners.keySet().iterator(); itr.hasNext();) {
+			for (Iterator itr = serviceListeners.keySet().iterator(); itr
+					.hasNext();) {
 				final IServiceTypeID typeID = (IServiceTypeID) itr.next();
-				int compare = discoveryServiceListenerComparator.compare(aServiceType, typeID);
-				if(compare == 0) {
+				int compare = discoveryServiceListenerComparator.compare(
+						aServiceType, typeID);
+				if (compare == 0) {
 					Collection collection = (Collection) serviceListeners
-					.get(typeID);
+							.get(typeID);
 					if (collection != null) {
 						listeners.addAll(collection);
 					}

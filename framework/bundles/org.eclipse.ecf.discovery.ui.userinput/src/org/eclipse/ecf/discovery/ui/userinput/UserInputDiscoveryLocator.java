@@ -123,4 +123,11 @@ public class UserInputDiscoveryLocator extends
 			fireServiceUndiscovered(new ServiceContainerEvent(iinfo, getID()));
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getContainerName()
+	 */
+	public String getContainerName() {
+		return "ecf.discovery.userinput";
+	}
 }

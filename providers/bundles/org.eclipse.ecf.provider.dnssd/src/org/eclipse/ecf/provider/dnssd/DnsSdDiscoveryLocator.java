@@ -41,6 +41,10 @@ import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.Type;
 
+/**
+ * @author markus
+ *
+ */
 public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 
 	private static final String DNS_SD_PATH = "path"; //$NON-NLS-1$
@@ -215,5 +219,13 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 		final String[] rrs = new String[] {BnRDnsSdServiceTypeID.BROWSE_DOMAINS, BnRDnsSdServiceTypeID.DEFAULT_BROWSE_DOMAIN};
 		final Collection res = getBrowsingOrRegistrationDomains(aServiceTypeId, rrs);
 		return (String[]) res.toArray(new String[res.size()]);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getContainerName()
+	 */
+	public String getContainerName() {
+		return Activator.DISCOVERY_CONTAINER_NAME_VALUE + Activator.LOCATOR;
 	}
 }

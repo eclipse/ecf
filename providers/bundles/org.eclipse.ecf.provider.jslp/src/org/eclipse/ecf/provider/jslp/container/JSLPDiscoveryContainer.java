@@ -263,4 +263,11 @@ public class JSLPDiscoveryContainer extends AbstractDiscoveryContainerAdapter im
 			discoveryJob.schedule();
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getContainerName()
+	 */
+	public String getContainerName() {
+		return NAME;
+	}
 }

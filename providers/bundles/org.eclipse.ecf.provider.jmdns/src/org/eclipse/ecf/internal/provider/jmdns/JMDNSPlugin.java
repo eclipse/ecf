@@ -28,7 +28,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * The main plugin class to be used in the desktop.
  */
 public class JMDNSPlugin implements BundleActivator {
-	private static final String NAME = "ecf.discovery.jmdns"; //$NON-NLS-1$
+	public static final String NAME = "ecf.discovery.jmdns"; //$NON-NLS-1$
 
 	// The shared instance.
 	private static JMDNSPlugin plugin;
