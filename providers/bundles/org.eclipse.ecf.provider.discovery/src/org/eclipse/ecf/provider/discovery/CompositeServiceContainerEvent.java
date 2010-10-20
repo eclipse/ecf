@@ -29,4 +29,11 @@ public class CompositeServiceContainerEvent extends ServiceContainerEvent implem
 	public ID getOriginalLocalContainerID() {
 		return origId;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.ServiceContainerEvent#toString()
+	 */
+	public String toString() {
+		return origId.toString() + ": " + super.toString(); //$NON-NLS-1$
+	}
 }

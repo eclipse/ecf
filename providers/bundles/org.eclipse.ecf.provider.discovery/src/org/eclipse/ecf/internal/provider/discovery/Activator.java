@@ -113,7 +113,7 @@ public class Activator implements BundleActivator {
 			 * @see org.osgi.framework.ServiceFactory#ungetService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration, java.lang.Object)
 			 */
 			public void ungetService(final Bundle bundle, final ServiceRegistration registration, final Object service) {
-				// nop
+				((CompositeDiscoveryContainer) service).dispose();
 			}
 		}, props);
 	}
