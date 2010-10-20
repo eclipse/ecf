@@ -135,7 +135,7 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 				arrayToString(getServiceID().getServiceTypeID().getServices()));
 		this.internalProperties.put(NODE_PROPERTY_NAME_NA, getServiceID()
 				.getServiceTypeID().getNamingAuthority());
-		this.internalProperties.put(LOCATION, Geo.getLocation());
+		this.internalProperties.put(LOCATION, serviceInfo.getLocation());
 		this.internalProperties.put(WEIGHT, getWeight());
 		this.internalProperties.put(PRIORITY, getPriority());
 		publishedServices.put(serviceInfo.getServiceID().getServiceTypeID()
