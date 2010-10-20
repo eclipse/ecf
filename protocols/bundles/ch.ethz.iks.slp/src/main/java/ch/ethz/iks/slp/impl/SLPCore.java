@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.ProtocolException;
@@ -31,6 +32,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -221,27 +223,35 @@ public abstract class SLPCore {
 		noDiscovery = CONFIG.getNoDaDiscovery();
 
 		// determine the interfaces on which jSLP runs on
+		final List ips = new ArrayList();
 		String[] IPs = CONFIG.getInterfaces();
 		if (IPs == null) {
 			InetAddress[] addresses = null;
 			try {
 				addresses = InetAddress.getAllByName(InetAddress.getLocalHost()
 						.getHostName());
-				IPs = new String[addresses.length];
 				for (int i = 0; i < addresses.length; i++) {
-					IPs[i] = addresses[i].getHostAddress();
+					// https://bugs.eclipse.org/328074
+					if(addresses[i] instanceof Inet6Address) {
+						System.err.println("No support for IPv6 in jSLP yet (see https://bugs.eclipse.org/328074), skipping interface...");
+						continue;
+					}
+					ips.add(addresses[i].getHostAddress());
 				}
 			} catch (UnknownHostException e) {
 				System.err
 						.println("Reverse lookup of host name failed. Running service discovery on localloop.");
 				try {
-					addresses = new InetAddress[] { InetAddress.getLocalHost() };
+					ips.clear();
+					ips.add(InetAddress.getLocalHost().getHostAddress());
 				} catch (UnknownHostException e1) {
 					e1.printStackTrace();
 				}
 			}
+		} else {
+			ips.addAll(Arrays.asList(IPs));
 		}
-		myIPs = IPs;
+		myIPs = (String[]) ips.toArray(new String[ips.size()]);
 		SLP_PORT = CONFIG.getPort();
 
 		// initialize the XID with a random number
