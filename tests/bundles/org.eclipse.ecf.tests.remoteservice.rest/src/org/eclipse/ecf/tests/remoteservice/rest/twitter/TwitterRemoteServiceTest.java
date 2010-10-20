@@ -40,7 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class TwitterRemoteServiceTest extends AbstractRestTestCase {
+public abstract class TwitterRemoteServiceTest extends AbstractRestTestCase {
 
 	private String username = System.getProperty("username","eclipsedummy");
 	private String password = System.getProperty("password","eclipse");
