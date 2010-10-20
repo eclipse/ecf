@@ -66,4 +66,9 @@ public class EndpointDescriptionDiscoveryContainerAdapter extends
 		return null;
 	}
 
+	@Override
+	public String getContainerName() {
+		return "ecf.discovery.local"; //$NON-NLS-1$
+	}
+
 }
