@@ -32,7 +32,9 @@ import org.schwering.irc.lib.IRCUser;
 public class IRCChannelContainer extends IRCAbstractContainer implements
 		IChatMessageSender, IChatRoomContainer {
 
-	private static final long CONNECT_TIMEOUT = 10000;
+	private static final long CONNECT_TIMEOUT = new Long(System.getProperty(
+			"org.eclipse.ecf.provider.irc.connectTimeout", "30000"))
+			.longValue();
 
 	protected List participantListeners = new ArrayList();
 	protected IRCRootContainer rootContainer;
@@ -48,8 +50,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 
 	protected IChatRoomMessageSender sender = new IChatRoomMessageSender() {
 		public void sendMessage(String message) throws ECFException {
-			rootContainer.doSendChannelMessage(targetID.getName(), ircUser
-					.toString(), message);
+			rootContainer.doSendChannelMessage(targetID.getName(),
+					ircUser.toString(), message);
 		}
 	};
 
@@ -169,9 +171,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 						IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
 								.next();
 
-						l
-								.handlePresenceUpdated(removeID,
-										createPresence(false));
+						l.handlePresenceUpdated(removeID, createPresence(false));
 						l.handleDeparted(new User(removeID));
 					}
 
@@ -250,11 +250,9 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 				}
 				if (connectWaiting)
 					throw new TimeoutException(
-							NLS
-									.bind(
-											Messages.IRCChannelContainer_Exception_Connect_Timeout,
-											connectID.getName()),
-							CONNECT_TIMEOUT);
+							NLS.bind(
+									Messages.IRCChannelContainer_Exception_Connect_Timeout,
+									connectID.getName()), CONNECT_TIMEOUT);
 				this.targetID = connectID;
 				fireContainerEvent(new ContainerConnectedEvent(this.getID(),
 						this.targetID));
@@ -355,8 +353,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 				adminSender = new IChatRoomAdminSender() {
 					public void sendSubjectChange(String newsubject)
 							throws ECFException {
-						rootContainer.doSendSubjectChangeMessage(targetID
-								.getName(), newsubject);
+						rootContainer.doSendSubjectChangeMessage(
+								targetID.getName(), newsubject);
 					}
 				};
 			}

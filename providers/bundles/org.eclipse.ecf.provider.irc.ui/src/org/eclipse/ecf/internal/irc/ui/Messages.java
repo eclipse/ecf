@@ -23,6 +23,8 @@ public class Messages extends NLS {
 	public static String IRCConnectWizardPage_CONNECTID_LABEL;
 	public static String IRCConnectWizardPage_PASSWORD_INFO;
 	public static String IRCConnectWizardPage_PASSWORD_LABEL;
+	public static String IRCConnectWizardPage_CONNECT_TIMEOUT;
+	public static String IRCConnectWizardPage_CONNECT_TIMEOUT_INFO;
 	public static String IRCConnectWizardPage_STATUS_MESSAGE_EMPTY;
 	public static String IRCConnectWizardPage_STATUS_MESSAGE_MALFORMED;
 	public static String IRCConnectWizardPage_WIZARD_PAGE_DESCRIPTION;

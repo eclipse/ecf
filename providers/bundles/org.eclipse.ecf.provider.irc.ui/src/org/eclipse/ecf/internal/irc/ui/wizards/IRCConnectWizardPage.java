@@ -11,11 +11,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.wizards;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-
 import org.eclipse.ecf.internal.irc.ui.Activator;
 import org.eclipse.ecf.internal.irc.ui.Messages;
 import org.eclipse.ecf.ui.SharedImages;
@@ -24,16 +21,10 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 
 final class IRCConnectWizardPage extends WizardPage {
 
@@ -43,12 +34,17 @@ final class IRCConnectWizardPage extends WizardPage {
 
 	private String authorityAndPath;
 
+	private Combo connectTimeOut;
+
+	private String[] connectTimeOutValues = { "10", "15", "20", "25", "30" };
+
 	IRCConnectWizardPage() {
 		super("IRCConnectWizardPage"); //$NON-NLS-1$
 		setTitle(Messages.IRCConnectWizardPage_WIZARD_PAGE_TITLE);
 		setDescription(Messages.IRCConnectWizardPage_WIZARD_PAGE_DESCRIPTION);
 		setPageComplete(false);
-		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_CHAT_WIZARD));
+		setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_CHAT_WIZARD));
 	}
 
 	IRCConnectWizardPage(String authorityAndPath) {
@@ -67,27 +63,32 @@ final class IRCConnectWizardPage extends WizardPage {
 			restorePassword(text);
 		}
 	}
-	
+
 	protected String getPasswordKeyFromUserName(String username) {
-		if (username == null || username.equals("")) return null;
+		if (username == null || username.equals(""))
+			return null;
 		else {
 			int slashIndex = username.indexOf("/");
-			if (slashIndex == -1) return username;
-			else return username.substring(0,username.indexOf("/"));
+			if (slashIndex == -1)
+				return username;
+			else
+				return username.substring(0, username.indexOf("/"));
 		}
 	}
+
 	protected void restorePassword(String username) {
-		PasswordCacheHelper pwStorage = new PasswordCacheHelper(getPasswordKeyFromUserName(username));
+		PasswordCacheHelper pwStorage = new PasswordCacheHelper(
+				getPasswordKeyFromUserName(username));
 		String pw = pwStorage.retrievePassword();
 		if (pw != null) {
 			passwordText.setText(pw);
 		}
 	}
-	
+
 	public void createControl(Composite parent) {
-		
+
 		parent = new Composite(parent, SWT.NONE);
-		
+
 		parent.setLayout(new GridLayout());
 		GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
@@ -106,12 +107,15 @@ final class IRCConnectWizardPage extends WizardPage {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				verify();
 			}
+
 			public void widgetSelected(SelectionEvent e) {
 				passwordText.setText("");
 				verify();
-			}});
+			}
+		});
 		connectText.setText(NLS.bind(
-				Messages.IRCConnectWizardPage_CONNECTID_DEFAULT, getRandomNumber()));
+				Messages.IRCConnectWizardPage_CONNECTID_DEFAULT,
+				getRandomNumber()));
 
 		label = new Label(parent, SWT.RIGHT);
 		label.setText(Messages.IRCConnectWizardPage_CONNECTID_EXAMPLE);
@@ -121,17 +125,39 @@ final class IRCConnectWizardPage extends WizardPage {
 		label.setText(Messages.IRCConnectWizardPage_PASSWORD_LABEL);
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(fillData);
-		label = new Label(parent, SWT.RIGHT | SWT.WRAP);
+		label = new Label(parent, SWT.RIGHT);
 		label.setText(Messages.IRCConnectWizardPage_PASSWORD_INFO);
 		label.setLayoutData(endData);
-
 		restoreCombo();
-		
+
 		if (authorityAndPath != null) {
 			connectText.setText(authorityAndPath);
 			restorePassword(authorityAndPath);
 			passwordText.setFocus();
 		}
+		label.setLayoutData(endData);
+
+		// New Connect Timeout: Fixed bug 327032.
+		label = new Label(parent, SWT.LEFT);
+		label.setText(Messages.IRCConnectWizardPage_CONNECT_TIMEOUT);
+		connectTimeOut = new Combo(parent, SWT.SINGLE | SWT.BORDER
+				| SWT.DROP_DOWN);
+		connectTimeOut.setLayoutData(fillData);
+		connectTimeOut.setItems(connectTimeOutValues);
+		connectTimeOut.select(connectTimeOutValues.length - 1);
+		connectText.addListener(SWT.Selection, new Listener() {
+
+			public void handleEvent(Event arg0) {
+				System.setProperty(
+						"org.eclipse.ecf.provider.irc.connectTimeout",
+						connectTimeOut.getText());
+
+			}
+		});
+
+		label = new Label(parent, SWT.RIGHT);
+		label.setText(Messages.IRCConnectWizardPage_CONNECT_TIMEOUT_INFO);
+		label.setLayoutData(endData);
 
 		org.eclipse.jface.dialogs.Dialog.applyDialogFont(parent);
 		setControl(parent);
@@ -148,6 +174,10 @@ final class IRCConnectWizardPage extends WizardPage {
 
 	String getPassword() {
 		return passwordText.getText();
+	}
+
+	int getConnectTimeOut() {
+		return Integer.parseInt(connectTimeOut.getText());
 	}
 
 	private void updateStatus(String message) {
