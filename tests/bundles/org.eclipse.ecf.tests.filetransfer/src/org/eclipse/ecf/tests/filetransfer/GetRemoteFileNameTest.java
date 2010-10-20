@@ -49,6 +49,9 @@ public class GetRemoteFileNameTest extends AbstractRetrieveTestCase {
 		tmpFile = null;
 	}
 
+	private boolean done = false;
+	private Object lock = new Object();
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase#handleStartEvent(org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent)
 	 */
@@ -58,6 +61,10 @@ public class GetRemoteFileNameTest extends AbstractRetrieveTestCase {
 		assertNotNull(event.getFileID().getFilename());
 		try {
 			incomingFileTransfer = event.receive(tmpFile);
+			synchronized (lock) {
+				done = true;
+				lock.notify();
+			}
 		} catch (final IOException e) {
 			fail(e.getLocalizedMessage());
 		}
@@ -67,8 +74,19 @@ public class GetRemoteFileNameTest extends AbstractRetrieveTestCase {
 		assertNotNull(retrieveAdapter);
 		final IFileTransferListener listener = createFileTransferListener();
 		final IFileID fileID = createFileID(new URL(url));
+		done = false;
 		retrieveAdapter.sendRetrieveRequest(fileID, listener, null);
 
+			synchronized (lock) {
+				try {
+					lock.wait(7000);
+				} catch (InterruptedException e) {
+					
+				}
+			}
+			
+	    if (!done) fail();
+	    
 		System.out.println("remote file name=" + incomingFileTransfer.getRemoteFileName());
 
 		waitForDone(10000);
