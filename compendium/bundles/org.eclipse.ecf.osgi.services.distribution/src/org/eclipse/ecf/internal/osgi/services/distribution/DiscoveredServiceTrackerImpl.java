@@ -237,7 +237,8 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 					// Get remote remote references for each container
 					remoteReferences = rsContainers[i].getContainerAdapter()
 							.getRemoteServiceReferences(endpointID,
-									providedInterface, remoteServiceFilter);
+									new ID[] { endpointID }, providedInterface,
+									remoteServiceFilter);
 				} catch (ContainerConnectException e) {
 					logError("handleDiscoveredServiceAvailable", "rsca=" //$NON-NLS-1$ //$NON-NLS-2$
 							+ rsContainers[i] + ",endpointId=" + endpointID //$NON-NLS-1$
