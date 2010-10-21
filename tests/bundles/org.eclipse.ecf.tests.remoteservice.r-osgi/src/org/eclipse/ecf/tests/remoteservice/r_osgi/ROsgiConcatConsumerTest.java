@@ -25,4 +25,9 @@ public class ROsgiConcatConsumerTest extends AbstractConcatConsumerTestCase {
 		return R_OSGi.CONSUMER_CONTAINER_TYPE;
 	}
 
+	public void testGetRemoteServiceWithLocallyRegisteredService()
+	throws Exception {
+		// This test case is inappropriate for r-osgi, as it behaves differently
+		// than other remote service API providers wrt local remote service registration.
+	}
 }
