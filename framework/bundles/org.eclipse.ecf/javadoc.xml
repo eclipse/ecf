@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="javadoc">
 	
-	<path id="files-classpath">
-		<fileset dir="${targetPlatformPath}/">
+	<path id="files.classpath">
+		<fileset dir="${target}/">
 			<filename name="**/*.jar" />
-		</fileset>
-		<fileset dir="${source}">
-			<include name="**/bin/**/*.class" />
 		</fileset>
 	</path>
 	
     <target name="javadoc">
-        <javadoc access="protected" additionalparam="-J-Xmx256m  -tag model:a:Model -tag generated:a:Generated -tag noreference:tcmf:DoNotReference -tag ordered:a:Ordered -tag noimplement:a:NoImplement -tag noextend:a:NoExtend -tag ThreadSafe -tag Immutable " 
+    	<echo message="${target}"/>
+    	<echo message="${source}"/>
+       	<echo message="${output}"/>
+        <javadoc access="protected" additionalparam="-J-Xmx512m  -tag model:a:Model -tag generated:a:Generated -tag noreference:tcmf:DoNotReference -tag ordered:a:Ordered -tag noimplement:a:NoImplement -tag noextend:a:NoExtend -tag ThreadSafe -tag Immutable " 
         	author="false" 
-        	classpath="files-classpath" 
+        	classpathref="files.classpath" 
         	destdir="${output}" 
         	doctitle="Eclipse Communication Framework (ECF) 3.4.0" 
         	nodeprecated="false" 
@@ -21,15 +21,17 @@
         	noindex="false" 
         	nonavbar="false" 
         	notree="false" 
-        	packagenames="org.eclipse.ecf.ui.hyperlink,org.eclipse.ecf.core.sharedobject.util,org.eclipse.ecf.core.util,org.eclipse.ecf.filetransfer.ui,org.eclipse.ecf.core.sharedobject.provider,org.eclipse.ecf.remoteservice.soap.client,org.eclipse.ecf.presence.history,org.eclipse.ecf.core.start,org.eclipse.ecf.presence.collab.ui.view,org.eclipse.ecf.osgi.services.distribution,org.eclipse.ecf.docshare.messages,org.eclipse.ecf.core.security,org.eclipse.ecf.remoteservice.rest.util,org.eclipse.ecf.discovery.ui.model.resource,org.eclipse.ecf.presence.im,org.eclipse.ecf.ui.actions,org.eclipse.ecf.telephony.call.ui.actions,org.eclipse.ecf.core.provider,org.eclipse.ecf.remoteservice.rest.client,org.eclipse.ecf.discovery.ui.browser,org.eclipse.ecf.presence.ui.menu,org.eclipse.ecf.discovery.service,org.eclipse.ecf.presence.bot,org.eclipse.ecf.presence.search,org.eclipse.ecf.core.sharedobject.events,org.eclipse.ecf.ui,org.eclipse.ecf.discovery.ui.userinput,org.eclipse.ecf.telephony.call.events,org.eclipse.ecf.provider.comm.tcp,org.eclipse.ecf.presence.collab.ui,org.eclipse.ecf.core.identity,org.eclipse.ecf.remoteservice.util.tracker,org.eclipse.ecf.presence.bot.impl,org.eclipse.ecf.presence.ui,org.eclipse.ecf.docshare,org.eclipse.ecf.core.util.reflection,org.eclipse.ecf.presence.collab.ui.url,org.eclipse.ecf.storage,org.eclipse.ecf.remoteservice.eventadmin,org.eclipse.ecf.filetransfer.events.socketfactory,org.eclipse.ecf.presence.ui.chatroom,org.eclipse.ecf.remoteservice.rest.synd,org.eclipse.ecf.server.generic,org.eclipse.ecf.internal.docshare,org.eclipse.ecf.presence.roster,org.eclipse.ecf.core.events,org.eclipse.ecf.discovery.ui.model,org.eclipse.ecf.docshare.menu,org.eclipse.ecf.datashare.events,org.eclipse.ecf.provider.discovery,org.eclipse.ecf.provider.generic.gmm,org.eclipse.ecf.provider.datashare.nio,org.eclipse.ecf.telephony.call.service,org.eclipse.ecf.filetransfer.identity,org.eclipse.ecf.telephony.call,org.eclipse.ecf.server.generic.app,org.eclipse.ecf.presence.collab.ui.screencapture,org.eclipse.ecf.datashare,org.eclipse.ecf.discovery.ui.model.provider,org.eclipse.ecf.remoteservice.util,org.eclipse.ecf.sync,org.eclipse.ecf.discovery.ui.model.impl,org.eclipse.ecf.filetransfer.events,org.eclipse.ecf.datashare.service,org.eclipse.ecf.presence.collab.ui.console,org.eclipse.ecf.filetransfer.ui.actions,org.eclipse.ecf.datashare.mergeable,org.eclipse.ecf.core.sharedobject,org.eclipse.ecf.filetransfer.events.socket,org.eclipse.ecf.provider.util,org.eclipse.ecf.discovery.identity,org.eclipse.ecf.remoteservice.soap.identity,org.eclipse.ecf.sync.doc,org.eclipse.ecf.ui.util,org.eclipse.ecf.presence.ui.roster,org.eclipse.ecf.core.sharedobject.security,org.eclipse.ecf.remoteservice.rest.identity,org.eclipse.ecf.filetransfer.service,org.eclipse.ecf.discovery.ui.model.util,org.eclipse.ecf.presence.service,org.eclipse.ecf.remoteservice.client,org.eclipse.ecf.core.user,org.eclipse.ecf.presence.chatroom,org.eclipse.ecf.remoteservices.ui,org.eclipse.ecf.provider.generic,org.eclipse.ecf.presence.ui.dnd,org.eclipse.ecf.core.jobs,org.eclipse.ecf.osgi.services.discovery.local,org.eclipse.ecf.remoteservice.events,org.eclipse.ecf.presence.bot.application,org.eclipse.ecf.ui.screencapture,org.eclipse.ecf.provider.comm,org.eclipse.ecf.presence.search.message,org.eclipse.ecf.core.status,org.eclipse.ecf.ui.dialogs,org.eclipse.ecf.ui.wizards,org.eclipse.ecf.discovery.ui.userinput.handler" 
         	source="1.5" 
         	splitindex="true" 
         	use="true" 
         	version="true">
         	
         	<fileset dir="${source}" defaultexcludes="true">
-	        	<include name="framework/**/*.java"/>
+	        	<include name="**/*.java"/>
+	        	<exclude name="**/util/**"/>
 	        	<exclude name="**/ui/**"/>
+	        	<exclude name="**/provider/**"/>
+	        	<exclude name="**/smack/**"/>
 	        	<exclude name="**/incubation/**"/>
 	        	<exclude name="**/internal/**"/>
 	        	<exclude name="**/ch/**"/>

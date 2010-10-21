@@ -18,9 +18,9 @@
 				<property key="targets" value="javadoc" />
 			</actorProperties>
 			<properties>
-				<property key="source" value="${source}" />
-				<property key="output" value="${output}" />
-				<property key="targetPlatformPath" value="${targetPlatformPath}" />
+				<property key="source" value="${projectsPath}" />
+				<property key="output" value="${buckminster.output}" />
+				<property key="target" value="${targetPlatformPath}" />
 			</properties>
 		</public>	
 	</actions>
