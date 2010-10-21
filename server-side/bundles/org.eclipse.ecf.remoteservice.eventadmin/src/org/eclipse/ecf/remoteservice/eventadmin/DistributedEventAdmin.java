@@ -228,7 +228,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * <p>
 	 * </p>
 	 * Subclasses may override as appropriate. If this method is overridden,
-	 * then {@link #createEventFromMessageData(ID, Object[]) should also be
+	 * then {@link #createEventFromMessageData(ID, Object[])} should also be
 	 * overridden as well on the receiver.
 	 * 
 	 * @param target
@@ -265,8 +265,8 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * 
 	 * @param fromID
 	 *            the ID of the message sender. Will not be <code>null</code>.
-	 * @param Object
-	 *            [] messageData received from fromID. Will be a deserialized
+	 * @param messageData
+	 *            Object[] received from fromID. Will be a deserialized
 	 *            local version of the Object[] from fromID.
 	 * @return Event to be delivered to local {@link EventHandler}s. Should not
 	 *         be <code>null</code>.
@@ -475,7 +475,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * <p></p>
 	 * This implementation does the following:
 	 * <ol>
-	 * <li>Verifies that the value {@link SharedObjectMsg#getMethod() matches the appropriate String.</li>
+	 * <li>Verifies that the value {@link SharedObjectMsg#getMethod()} matches the appropriate String.</li>
 	 * <li>Calls #createEventFromMessageData(ID, Object[]) to convert the message data (returned from #createMessageDataFromEvent(ID, Event)
 	 * on the sender)</li>
 	 * <li>If the Event returned from #createEventFromMessageData(ID, Object[]) is non-<code>null</code>, then call
