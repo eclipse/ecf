@@ -19,7 +19,7 @@
 			</actorProperties>
 			<properties>
 				<property key="source" value="${projectsPath}" />
-				<property key="output" value="${buckminster.output}" />
+				<property key="output" value="${javadoc.output}" />
 				<property key="target" value="${targetPlatformPath}" />
 			</properties>
 		</public>	
