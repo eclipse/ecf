@@ -440,19 +440,27 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 
 	private URI createURI(ID endpointContainerID, String path)
 			throws URISyntaxException {
-		boolean done = false;
 		URI uri = null;
 		String str = endpointContainerID.getName();
-		while (!done) {
+		while (true) {
 			try {
 				uri = new URI(str);
-				if (!uri.isOpaque()) {
-					done = true;
+				if (uri.getHost() != null) {
+					break;
 				} else {
-					str = uri.getRawSchemeSpecificPart();
+					final String rawSchemeSpecificPart = uri
+							.getRawSchemeSpecificPart();
+					// make sure we break eventually
+					if (str.equals(rawSchemeSpecificPart)) {
+						uri = null;
+						break;
+					} else {
+						str = rawSchemeSpecificPart;
+					}
 				}
 			} catch (URISyntaxException e) {
-				done = true;
+				uri = null;
+				break;
 			}
 		}
 		String scheme = RemoteServicePublication.SERVICE_TYPE;
