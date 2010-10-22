@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Apache Zookeeper
 Bundle-SymbolicName: org.apache.zookeeper
-Bundle-Version: 3.3.0
+Bundle-Version: 3.3.0.qualifier
 Bundle-ClassPath: conf/,
  zookeeper-3.3.0.jar
 Export-Package: org.apache.jute,
@@ -25,4 +25,4 @@ Export-Package: org.apache.jute,
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.apache.log4j
 Eclipse-RegisterBuddy: org.apache.log4j
-Bundle-Vendor: The Apache Software Foundation
+Bundle-Vendor: Eclipse.org - ECF
