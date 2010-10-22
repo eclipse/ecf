@@ -3,7 +3,6 @@ package org.eclipse.ecf.examples.remoteservices.quotes.consumer;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.MouseAdapter;
@@ -128,8 +127,10 @@ public class ConsumerUI extends Shell {
 
 		IContainer zooContainer = null;
 		try {
-			zooContainer = ContainerFactory.getDefault().createContainer(ZooDiscoveryContainerInstantiator.NAME);
+			zooContainer = ContainerFactory.getDefault().createContainer("ecf.discovery.zoodiscovery");
 		} catch (ContainerCreateException e1) {
+			System.out.println("Failed to create ZooDiscovery container. Is ZooDiscovery deployed?");;
+			return;
 		}
 
 		if (zooContainer.getConnectedID() != null)
