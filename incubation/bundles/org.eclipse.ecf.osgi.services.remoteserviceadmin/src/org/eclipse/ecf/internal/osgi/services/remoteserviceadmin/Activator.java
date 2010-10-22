@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -14,13 +15,20 @@ import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractServiceInfoFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultServiceInfoFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
 import org.eclipse.equinox.concurrent.future.IExecutor;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
@@ -42,17 +50,24 @@ public class Activator implements BundleActivator {
 		return instance;
 	}
 
+	private AbstractServiceInfoFactory serviceInfoFactory;
+	private ServiceRegistration serviceInfoFactoryRegistration;
+	
+	private AbstractEndpointDescriptionFactory endpointDescriptionFactory;
+	private ServiceRegistration endpointDescriptionFactoryRegistration;
+	
 	private IExecutor executor;
-
-	private ServiceTracker logServiceTracker = null;
-	private LogService logService = null;
-	private Object logServiceTrackerLock = new Object();
 
 	private LocatorServiceListener locatorServiceListener;
 	private ServiceTracker locatorServiceTracker;
 
 	private ServiceTracker endpointListenerServiceTracker;
 	private Object endpointListenerServiceTrackerLock = new Object();
+
+	private ServiceTracker logServiceTracker = null;
+	private LogService logService = null;
+	private Object logServiceTrackerLock = new Object();
+
 
 	/*
 	 * (non-Javadoc)
@@ -64,7 +79,20 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
+		// For the service info factory and the endpointdescription factory
+		// registration, set the service ranking property to Integer.MIN_VALUE so 
+		// that any other registered factories will be preferred.
+		final Properties properties = new Properties();
+		properties.put(Constants.SERVICE_RANKING, new Integer(
+				Integer.MIN_VALUE));
+		serviceInfoFactory = new DefaultServiceInfoFactory();
+		serviceInfoFactoryRegistration = context.registerService(IServiceInfoFactory.class.getName(), serviceInfoFactory, properties);
+		// also endpoint description factory
+		endpointDescriptionFactory = new DefaultEndpointDescriptionFactory();
+		endpointDescriptionFactoryRegistration = context.registerService(IEndpointDescriptionFactory.class.getName(), endpointDescriptionFactory, properties);
+
 		executor = new ThreadsExecutor();
+		
 		// Create service listener
 		locatorServiceListener = new LocatorServiceListener();
 		// Create locator service tracker
@@ -132,6 +160,24 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
+		if (endpointDescriptionFactoryRegistration != null) {
+			endpointDescriptionFactoryRegistration.unregister();
+			endpointDescriptionFactoryRegistration = null;
+		}
+		if (endpointDescriptionFactory != null) {
+			endpointDescriptionFactory.close();
+			endpointDescriptionFactory = null;
+		}
+		
+		if (serviceInfoFactoryRegistration != null) {
+			serviceInfoFactoryRegistration.unregister();
+			serviceInfoFactoryRegistration = null;
+		}
+		if (serviceInfoFactory != null) {
+			serviceInfoFactory.close();
+			serviceInfoFactory = null;
+		}
+		
 		synchronized (endpointListenerServiceTrackerLock) {
 			if (endpointListenerServiceTracker != null) {
 				endpointListenerServiceTracker.close();
@@ -145,7 +191,6 @@ public class Activator implements BundleActivator {
 				logService = null;
 			}
 		}
-
 		synchronized (endpointDescriptionFactoryServiceTrackerLock) {
 			if (endpointDescriptionFactoryServiceTracker != null) {
 				endpointDescriptionFactoryServiceTracker.close();

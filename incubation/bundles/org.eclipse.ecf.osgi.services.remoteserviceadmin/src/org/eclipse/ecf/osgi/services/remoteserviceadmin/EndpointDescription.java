@@ -9,10 +9,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.discovery.IServiceInfo;
 import org.osgi.framework.ServiceReference;
 
 public class EndpointDescription extends
@@ -40,11 +40,31 @@ public class EndpointDescription extends
 	}
 
 	private void initRemoteServiceProperties() {
-		// XXX todo
+		Map properties = getProperties();
+
+		containerID = (ID) properties.get(IConstants.CONTAINER_ID_PROPNAME);
+		if (containerID == null)
+			throw new NullPointerException(
+					"ECF EndpointDescription must include non-null containerID");
+
+		Object rsid = properties.get(IConstants.REMOTE_SERVICE_ID_PROPNAME);
+		if (rsid != null)
+			remoteServiceId = ((Long) rsid).longValue();
+
+		Object ctid = properties.get(IConstants.CONNECT_TARGET_ID_PROPNAME);
+		if (ctid != null)
+			connectTargetID = (ID) ctid;
+
+		Object idf = properties.get(IConstants.IDFILTER_PROPNAME);
+		if (idf != null)
+			idFilter = (ID[]) idf;
+
+		Object rsf = properties.get(IConstants.REMOTESERVICE_FILTER_PROPNAME);
+		if (rsf != null)
+			rsFilter = (String) rsFilter;
 	}
 
-	public EndpointDescription(IServiceInfo discoveredServiceInfo,
-			Map osgiProperties) {
+	public EndpointDescription(Map osgiProperties) {
 		super(osgiProperties);
 		initRemoteServiceProperties();
 		computeHashCode();
@@ -82,6 +102,14 @@ public class EndpointDescription extends
 
 	public String getRemoteServiceFilter() {
 		return rsFilter;
+	}
+
+	public String toString() {
+		return "ECFEndpointDescription[properties=" + super.toString()
+				+ ",containerID=" + containerID + ", remoteServiceId="
+				+ remoteServiceId + ", connectTargetID=" + connectTargetID
+				+ ", idFilter=" + Arrays.toString(idFilter) + ", rsFilter="
+				+ rsFilter + ", hashCode=" + hashCode + "]";
 	}
 
 }

@@ -33,11 +33,10 @@ public interface IEndpointDescriptionFactory {
 	 * <code>null</code> if no notification should occur.
 	 * 
 	 * @param serviceId the discovered service ID.  Must not be <code>null</code>.
-	 * @param discoveredServiceInfo the discovered service info.  May be <code>null</code>.
 	 * @return EndpointDescription that will be used to notify EndpointListeners
 	 * about an undiscovered EndpointDescription.  If <code>null</code> is returned, no
 	 * notification should be performed by the calling code.  
 	 */
-	public EndpointDescription getUndiscoveredEndpointDescription(IServiceID serviceID, IServiceInfo undiscoveredServiceInfo);
+	public EndpointDescription getUndiscoveredEndpointDescription(IServiceID serviceID);
 	
 }
