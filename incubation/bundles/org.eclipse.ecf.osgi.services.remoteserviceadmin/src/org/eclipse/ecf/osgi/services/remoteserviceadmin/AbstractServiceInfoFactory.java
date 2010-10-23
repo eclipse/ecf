@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
@@ -17,51 +18,71 @@ import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 public abstract class AbstractServiceInfoFactory extends
 		AbstractMetadataFactory implements IServiceInfoFactory {
 
-	protected Map<EndpointDescription, IServiceInfo> serviceInfos = new HashMap();
+	protected Map<ServiceInfoKey, IServiceInfo> serviceInfos = new HashMap();
 
-	protected IServiceInfo addServiceInfo(EndpointDescription endpointDescription, IServiceInfo serviceInfo) {
-		if (endpointDescription == null) return null;
-		synchronized (serviceInfos) {
-			return serviceInfos.put(endpointDescription, serviceInfo);
+	protected class ServiceInfoKey {
+		private EndpointDescription endpointDescription;
+		private Namespace discoveryNamespace;
+		private int hashCode = 7;
+
+		public ServiceInfoKey(EndpointDescription endpointDescription,
+				Namespace discoveryNamespace) {
+			this.endpointDescription = endpointDescription;
+			this.discoveryNamespace = discoveryNamespace;
+			this.hashCode = 31 * this.hashCode + endpointDescription.hashCode();
+			this.hashCode = 31 * this.hashCode + discoveryNamespace.hashCode();
+		}
+
+		public boolean equals(Object other) {
+			if (other == null)
+				return false;
+			if (!(other instanceof ServiceInfoKey))
+				return false;
+			ServiceInfoKey otherKey = (ServiceInfoKey) other;
+			return (this.endpointDescription
+					.equals(otherKey.endpointDescription) && this.discoveryNamespace
+					.equals(otherKey.discoveryNamespace));
+		}
+
+		public int hashCode() {
+			return hashCode;
 		}
 	}
-	
-	protected IServiceInfo removeServiceInfo(EndpointDescription endpointDescription) {
-		if (endpointDescription == null) return null;
-		synchronized (serviceInfos) {
-			return serviceInfos.remove(endpointDescription);
-		}
-	}
-	
-	protected boolean hasServiceInfo(EndpointDescription endpointDescription) {
-		if (endpointDescription == null) return false;
-		synchronized (serviceInfos) {
-			return serviceInfos.containsKey(endpointDescription);
-		}
-	}
-	
+
 	public IServiceInfo createServiceInfoForDiscovery(
-			EndpointDescription endpointDescription,  IDiscoveryAdvertiser advertiser) {
-		// First check if we already have a serviceInfo for endpointDescription
+			EndpointDescription endpointDescription,
+			IDiscoveryAdvertiser advertiser) {
+		Namespace advertiserNamespace = advertiser.getServicesNamespace();
+		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,advertiserNamespace);
 		IServiceInfo existingServiceInfo = null;
 		synchronized (serviceInfos) {
-			existingServiceInfo = serviceInfos.get(endpointDescription);
+			existingServiceInfo = serviceInfos.get(key);
+			// If it's already there, then we return null
+			if (existingServiceInfo != null)
+				return null;
+			IServiceTypeID serviceTypeID = createServiceTypeID(endpointDescription,
+					advertiser);
+			String serviceName = createServiceName(endpointDescription, advertiser,
+					serviceTypeID);
+			URI uri = null;
+			try {
+				uri = createURI(endpointDescription, advertiser, serviceTypeID,
+						serviceName);
+			} catch (URISyntaxException e) {
+				String message = "URI could not be created for endpoint description="
+						+ endpointDescription;
+				logError("createURI", message, e);
+				throw new RuntimeException(message, e);
+			}
+			IServiceProperties serviceProperties = createServiceProperties(
+					endpointDescription, advertiser, serviceTypeID, serviceName,
+					uri);
+			IServiceInfo newServiceInfo = new ServiceInfo(uri,
+					serviceName, serviceTypeID, serviceProperties);
+			// put into map using key
+			serviceInfos.put(key,  newServiceInfo);
+			return newServiceInfo;
 		}
-		// If so, then we return null
-		if (existingServiceInfo != null) return null;
-		
-		IServiceTypeID serviceTypeID = createServiceTypeID(endpointDescription,advertiser);
-		String serviceName = createServiceName(endpointDescription,advertiser,serviceTypeID);
-		URI uri = null;
-		try {
-			uri = createURI(endpointDescription,advertiser,serviceTypeID,serviceName);
-		} catch (URISyntaxException e) {
-			String message = "URI could not be created for endpoint description="+endpointDescription;
-			logError("createURI", message, e);
-			throw new RuntimeException(message,e);
-		}
-		IServiceProperties serviceProperties = createServiceProperties(endpointDescription,advertiser,serviceTypeID,serviceName,uri);
-		return addServiceInfo(endpointDescription,new ServiceInfo(uri,serviceName,serviceTypeID,serviceProperties));
 	}
 
 	protected IServiceProperties createServiceProperties(
@@ -75,7 +96,7 @@ public abstract class AbstractServiceInfoFactory extends
 	protected URI createURI(EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID,
 			String serviceName) throws URISyntaxException {
-		String path = "/"+serviceName;
+		String path = "/" + serviceName;
 		String str = endpointDescription.getID().getName();
 		URI uri = null;
 		while (true) {
@@ -124,7 +145,7 @@ public abstract class AbstractServiceInfoFactory extends
 	protected void logInfo(String methodName, String message, Throwable t) {
 		// XXX todo
 	}
-	
+
 	protected void logError(String methodName, String message, Throwable t) {
 		// XXX todo
 	}
@@ -132,7 +153,8 @@ public abstract class AbstractServiceInfoFactory extends
 	protected String createServiceName(EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID) {
 		// First create unique default name
-		String defaultServiceName = createDefaultServiceName(endpointDescription,advertiser,serviceTypeID);
+		String defaultServiceName = createDefaultServiceName(
+				endpointDescription, advertiser, serviceTypeID);
 		// Look for service name that was explicitly set
 		String serviceName = getStringPropertyWithDefault(
 				endpointDescription.getProperties(),
@@ -140,26 +162,39 @@ public abstract class AbstractServiceInfoFactory extends
 		return serviceName;
 	}
 
-	protected String createDefaultServiceName(EndpointDescription endpointDescription, IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID) {
+	protected String createDefaultServiceName(
+			EndpointDescription endpointDescription,
+			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID) {
 		return RemoteConstants.DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX
 				+ IDFactory.getDefault().createGUID().getName();
 	}
 
 	protected IServiceTypeID createServiceTypeID(
-			EndpointDescription endpointDescription, IDiscoveryAdvertiser advertiser) {
+			EndpointDescription endpointDescription,
+			IDiscoveryAdvertiser advertiser) {
 		Map props = endpointDescription.getProperties();
-		String[] scopes = getStringArrayPropertyWithDefault(props, RemoteConstants.DISCOVERY_SCOPE, IServiceTypeID.DEFAULT_SCOPE);
-		String[] protocols = getStringArrayPropertyWithDefault(props, RemoteConstants.DISCOVERY_PROTOCOLS, IServiceTypeID.DEFAULT_SCOPE);
-		String namingAuthority = getStringPropertyWithDefault(props, RemoteConstants.DISCOVERY_NAMING_AUTHORITY, IServiceTypeID.DEFAULT_NA);
-		return ServiceIDFactory.getDefault().createServiceTypeID(advertiser.getServicesNamespace(),
+		String[] scopes = getStringArrayPropertyWithDefault(props,
+				RemoteConstants.DISCOVERY_SCOPE, IServiceTypeID.DEFAULT_SCOPE);
+		String[] protocols = getStringArrayPropertyWithDefault(props,
+				RemoteConstants.DISCOVERY_PROTOCOLS,
+				IServiceTypeID.DEFAULT_SCOPE);
+		String namingAuthority = getStringPropertyWithDefault(props,
+				RemoteConstants.DISCOVERY_NAMING_AUTHORITY,
+				IServiceTypeID.DEFAULT_NA);
+		return ServiceIDFactory.getDefault().createServiceTypeID(
+				advertiser.getServicesNamespace(),
 				new String[] { RemoteConstants.SERVICE_TYPE }, scopes,
 				protocols, namingAuthority);
 	}
 
-	public IServiceInfo createServiceInfoForUndiscovery(
-			EndpointDescription endpointDescription,  IDiscoveryAdvertiser advertiser) {
-		// XXX todo
-		return null;
+	public IServiceInfo removeServiceInfoForUndiscovery(
+			EndpointDescription endpointDescription,
+			IDiscoveryAdvertiser advertiser) {
+		Namespace advertiserNamespace = advertiser.getServicesNamespace();
+		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,advertiserNamespace);
+		synchronized (serviceInfos) {
+			return serviceInfos.remove(key);
+		}
 	}
 
 	public void close() {

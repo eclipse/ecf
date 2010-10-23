@@ -7,6 +7,6 @@ public interface IServiceInfoFactory {
 
 	public IServiceInfo createServiceInfoForDiscovery(EndpointDescription endpointDescription, IDiscoveryAdvertiser advertiser);
 	
-	public IServiceInfo createServiceInfoForUndiscovery(EndpointDescription endpointDescription, IDiscoveryAdvertiser advertiser);
+	public IServiceInfo removeServiceInfoForUndiscovery(EndpointDescription endpointDescription, IDiscoveryAdvertiser advertiser);
 	
 }
