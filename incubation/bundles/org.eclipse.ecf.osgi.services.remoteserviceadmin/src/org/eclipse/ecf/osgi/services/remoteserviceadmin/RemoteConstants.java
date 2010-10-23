@@ -3,9 +3,12 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 public class RemoteConstants {
 
 	public static final String SERVICE_TYPE = "osgirsvc";
+	
 	public static final String DISCOVERY_SCOPE = "ecf.endpoint.discovery.scope";
 	public static final String DISCOVERY_PROTOCOLS = "ecf.endpoint.discovery.protocols";
 	public static final String DISCOVERY_NAMING_AUTHORITY = "ecf.endpoint.discovery.na";
+	public static final String DISCOVERY_SERVICE_NAME = "ecf.endpoint.discovery.servicename";
+	public static final String DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX = "osgirsvc_";
 
 	// value of this property is expected to be of type ID
 	public static final String CONTAINER_ID_PROPNAME = "ecf.endpoint.containerid";
