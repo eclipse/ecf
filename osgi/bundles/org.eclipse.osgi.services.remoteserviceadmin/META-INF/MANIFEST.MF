@@ -11,3 +11,4 @@ Bundle-Localization: bundle
 Bundle-Description: %bundle.description
 Bundle-Copyright: %bundle.copyright
 Export-Package: org.osgi.service.remoteserviceadmin; version="1.0"
+Import-Package: org.osgi.framework

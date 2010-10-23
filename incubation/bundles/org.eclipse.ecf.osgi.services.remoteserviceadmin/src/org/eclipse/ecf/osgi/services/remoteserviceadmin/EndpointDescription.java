@@ -42,24 +42,24 @@ public class EndpointDescription extends
 	private void initRemoteServiceProperties() {
 		Map properties = getProperties();
 
-		containerID = (ID) properties.get(IConstants.CONTAINER_ID_PROPNAME);
+		containerID = (ID) properties.get(RemoteConstants.CONTAINER_ID_PROPNAME);
 		if (containerID == null)
 			throw new NullPointerException(
 					"ECF EndpointDescription must include non-null containerID");
 
-		Object rsid = properties.get(IConstants.REMOTE_SERVICE_ID_PROPNAME);
+		Object rsid = properties.get(RemoteConstants.REMOTE_SERVICE_ID_PROPNAME);
 		if (rsid != null)
 			remoteServiceId = ((Long) rsid).longValue();
 
-		Object ctid = properties.get(IConstants.CONNECT_TARGET_ID_PROPNAME);
+		Object ctid = properties.get(RemoteConstants.CONNECT_TARGET_ID_PROPNAME);
 		if (ctid != null)
 			connectTargetID = (ID) ctid;
 
-		Object idf = properties.get(IConstants.IDFILTER_PROPNAME);
+		Object idf = properties.get(RemoteConstants.IDFILTER_PROPNAME);
 		if (idf != null)
 			idFilter = (ID[]) idf;
 
-		Object rsf = properties.get(IConstants.REMOTESERVICE_FILTER_PROPNAME);
+		Object rsf = properties.get(RemoteConstants.REMOTESERVICE_FILTER_PROPNAME);
 		if (rsf != null)
 			rsFilter = (String) rsFilter;
 	}

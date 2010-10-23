@@ -591,7 +591,6 @@ public class EndpointDescriptionParser {
 			}
 			buf.append(">"); //$NON-NLS-1$
 			characters = new StringBuffer();
-			System.out.println(buf);
 		}
 
 		public void startElement(String name, Attributes attributes)

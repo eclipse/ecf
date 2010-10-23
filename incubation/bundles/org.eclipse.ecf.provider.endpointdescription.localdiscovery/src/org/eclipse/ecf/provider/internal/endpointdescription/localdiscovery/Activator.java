@@ -2,14 +2,17 @@ package org.eclipse.ecf.provider.internal.endpointdescription.localdiscovery;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -42,6 +45,33 @@ public class Activator implements BundleActivator {
 		testParseServiceDescription();
 	}
 
+	private Map convertProperties(Map properties) {
+		Map result = new HashMap();
+		
+		String svcimportedcfgs = (String) properties.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS);
+		result.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,svcimportedcfgs);
+		
+		
+		String objectClass = (String) properties.get("objectClass");
+		result.put("objectClass", new String[] { objectClass });
+		String endpointid = (String) properties.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
+		result.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID, endpointid);
+
+		String endpointsvcid = (String) properties.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID);
+		result.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID, new Long(endpointsvcid));
+
+		String endpointfmkid = (String) properties.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID);
+		result.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID, endpointfmkid);
+		
+		String containerid = (String) properties.get(RemoteConstants.CONTAINER_ID_PROPNAME);
+		String containerns = (String) properties.get(RemoteConstants.CONTAINER_ID_NAMESPACE_PROPNAME);
+		result.put(RemoteConstants.CONTAINER_ID_PROPNAME, IDFactory.getDefault().createID(containerns, containerid));
+		
+		String rsid = (String) properties.get(RemoteConstants.REMOTE_SERVICE_ID_PROPNAME);
+		result.put(RemoteConstants.REMOTE_SERVICE_ID_PROPNAME, new Long(rsid));
+		
+		return result;
+	}
 	private void testParseServiceDescription() {
 		try {
 			URL file = context.getBundle().getEntry("/endpointdescription1.xml");
@@ -51,9 +81,10 @@ public class Activator implements BundleActivator {
 			List<org.eclipse.ecf.provider.internal.endpointdescription.localdiscovery.EndpointDescriptionParser.EndpointDescription> descs = parser.getEndpointDescriptions();
 			IServiceInfoFactory serviceInfoFactory = getServiceInfoFactory();
 			for(EndpointDescriptionParser.EndpointDescription d: descs) {
-				EndpointDescription ed = new EndpointDescription(d.getProperties());
+				Map props = convertProperties(d.getProperties());
+				EndpointDescription ed = new EndpointDescription(props);
 				System.out.println("endpoint description="+ed);
-				IServiceInfo serviceInfo = serviceInfoFactory.createServiceInfoForDiscovery(ed);
+				IServiceInfo serviceInfo = serviceInfoFactory.createServiceInfoForDiscovery(ed,null);
 				System.out.println("serviceInfo="+serviceInfo);
 			}
 		} catch (Exception e) {

@@ -20,7 +20,7 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator.EndpointListenerHolder;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IConstants;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionFactory;
 import org.eclipse.osgi.framework.eventmgr.CopyOnWriteIdentityMap;
 import org.eclipse.osgi.framework.eventmgr.EventDispatcher;
@@ -135,7 +135,7 @@ class LocatorServiceListener implements IServiceListener {
 
 	private boolean matchServiceID(IServiceID serviceId) {
 		if (Arrays.asList(serviceId.getServiceTypeID().getServices()).contains(
-				IConstants.DISCOVERED_SERVICE_NAME))
+				RemoteConstants.SERVICE_TYPE))
 			return true;
 		return false;
 	}
