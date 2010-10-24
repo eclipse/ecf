@@ -148,6 +148,19 @@ public class Activator implements BundleActivator {
 		executor.execute(runnable, null);
 	}
 
+	private void shutdownLocatorListeners() {
+		synchronized (locatorListeners) {
+			for(IDiscoveryLocator l: locatorListeners.keySet()) {
+				LocatorServiceListener locatorListener = locatorListeners.get(l);
+				if (locatorListener != null) {
+					l.removeServiceListener(locatorListener);
+					locatorListener.close();
+				}
+			}
+			locatorListeners.clear();
+		}
+	}
+
 	void shutdownLocators() {
 		Object[] locators = locatorServiceTracker.getServices();
 		if (locators != null) {
@@ -210,16 +223,6 @@ public class Activator implements BundleActivator {
 		executor = null;
 		Activator.context = null;
 		Activator.instance = null;
-	}
-
-	private void shutdownLocatorListeners() {
-		synchronized (locatorListeners) {
-			for(IDiscoveryLocator l: locatorListeners.keySet()) {
-				LocatorServiceListener locatorListener = locatorListeners.get(l);
-				if (locatorListener != null) locatorListener.close();
-			}
-			locatorListeners.clear();
-		}
 	}
 
 	protected LogService getLogService() {
