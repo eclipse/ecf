@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
@@ -39,6 +40,8 @@ class LocatorServiceListener implements IServiceListener {
 	private ListenerQueue queue;
 	private EventManager eventManager;
 
+	private IDiscoveryLocator locator;
+	
 	class EndpointListenerEvent {
 
 		private EndpointListenerHolder holder;
@@ -59,7 +62,8 @@ class LocatorServiceListener implements IServiceListener {
 		}
 	}
 
-	public LocatorServiceListener() {
+	public LocatorServiceListener(IDiscoveryLocator locator) {
+		this.locator = locator;
 	}
 
 	public void serviceDiscovered(IServiceEvent anEvent) {
@@ -201,8 +205,8 @@ class LocatorServiceListener implements IServiceListener {
 			// EndpointDescription
 			// for given serviceID and serviceInfo
 			return (discovered) ? factory
-					.createDiscoveredEndpointDescription(serviceInfo) : factory
-					.getUndiscoveredEndpointDescription(serviceId);
+					.createDiscoveredEndpointDescription(locator, serviceInfo) : factory
+					.getUndiscoveredEndpointDescription(locator, serviceId);
 		} catch (Exception e) {
 			logError("Exception calling IEndpointDescriptionFactory."
 					+ ((discovered) ? "createDiscoveredEndpointDescription"
@@ -229,5 +233,6 @@ class LocatorServiceListener implements IServiceListener {
 				}
 			}
 		}
+		locator = null;
 	}
 }

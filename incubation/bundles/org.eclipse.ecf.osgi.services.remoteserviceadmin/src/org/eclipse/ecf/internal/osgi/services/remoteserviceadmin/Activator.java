@@ -58,8 +58,6 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration endpointDescriptionFactoryRegistration;
 	
 	private IExecutor executor;
-
-	private LocatorServiceListener locatorServiceListener;
 	private ServiceTracker locatorServiceTracker;
 
 	private ServiceTracker endpointListenerServiceTracker;
@@ -69,7 +67,8 @@ public class Activator implements BundleActivator {
 	private LogService logService = null;
 	private Object logServiceTrackerLock = new Object();
 
-
+	private Map<IDiscoveryLocator, LocatorServiceListener> locatorListeners;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -94,8 +93,7 @@ public class Activator implements BundleActivator {
 
 		executor = new ThreadsExecutor();
 		
-		// Create service listener
-		locatorServiceListener = new LocatorServiceListener();
+		locatorListeners = new HashMap();
 		// Create locator service tracker
 		locatorServiceTracker = new ServiceTracker(context,
 				IDiscoveryLocator.class.getName(),
@@ -117,17 +115,23 @@ public class Activator implements BundleActivator {
 	void openLocator(IDiscoveryLocator locator) {
 		if (locator == null || context == null)
 			return;
-		locator.addServiceListener(locatorServiceListener);
-		processInitialLocatorServices(locator);
+		synchronized (locatorListeners) {
+			LocatorServiceListener locatorListener = new LocatorServiceListener(locator);
+			locatorListeners.put(locator, locatorListener);
+			processInitialLocatorServices(locator,locatorListener);
+		}
 	}
 
 	void shutdownLocator(IDiscoveryLocator locator) {
 		if (locator == null || context == null)
 			return;
-		locator.removeServiceListener(locatorServiceListener);
+		synchronized (locatorListeners) {
+			LocatorServiceListener locatorListener = locatorListeners.remove(locator);
+			if (locatorListener != null) locatorListener.close();
+		}
 	}
 
-	private void processInitialLocatorServices(final IDiscoveryLocator locator) {
+	private void processInitialLocatorServices(final IDiscoveryLocator locator, final LocatorServiceListener locatorListener) {
 		IProgressRunnable runnable = new IProgressRunnable() {
 			public Object run(IProgressMonitor arg0) throws Exception {
 				if (context == null)
@@ -136,7 +140,7 @@ public class Activator implements BundleActivator {
 				if (context == null)
 					return null;
 				for (int i = 0; i < serviceInfos.length; i++) {
-					locatorServiceListener.handleService(serviceInfos[i], true);
+					locatorListener.handleService(serviceInfos[i], true);
 				}
 				return null;
 			}
@@ -202,10 +206,20 @@ public class Activator implements BundleActivator {
 			locatorServiceTracker.close();
 			locatorServiceTracker = null;
 		}
-		locatorServiceListener.close();
+		shutdownLocatorListeners();
 		executor = null;
 		Activator.context = null;
 		Activator.instance = null;
+	}
+
+	private void shutdownLocatorListeners() {
+		synchronized (locatorListeners) {
+			for(IDiscoveryLocator l: locatorListeners.keySet()) {
+				LocatorServiceListener locatorListener = locatorListeners.get(l);
+				if (locatorListener != null) locatorListener.close();
+			}
+			locatorListeners.clear();
+		}
 	}
 
 	protected LogService getLogService() {

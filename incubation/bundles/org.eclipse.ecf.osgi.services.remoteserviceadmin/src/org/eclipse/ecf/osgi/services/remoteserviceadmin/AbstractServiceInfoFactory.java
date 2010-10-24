@@ -50,9 +50,8 @@ public abstract class AbstractServiceInfoFactory extends
 		}
 	}
 
-	public IServiceInfo createServiceInfoForDiscovery(
-			EndpointDescription endpointDescription,
-			IDiscoveryAdvertiser advertiser) {
+	public IServiceInfo createServiceInfoForDiscovery(IDiscoveryAdvertiser advertiser,
+			EndpointDescription endpointDescription) {
 		Namespace advertiserNamespace = advertiser.getServicesNamespace();
 		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
 				advertiserNamespace);
@@ -183,9 +182,8 @@ public abstract class AbstractServiceInfoFactory extends
 				protocols, namingAuthority);
 	}
 
-	public IServiceInfo removeServiceInfoForUndiscovery(
-			EndpointDescription endpointDescription,
-			IDiscoveryAdvertiser advertiser) {
+	public IServiceInfo removeServiceInfoForUndiscovery(IDiscoveryAdvertiser advertiser,
+			EndpointDescription endpointDescription) {
 		Namespace advertiserNamespace = advertiser.getServicesNamespace();
 		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
 				advertiserNamespace);

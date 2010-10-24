@@ -72,6 +72,7 @@ public class Activator implements BundleActivator {
 		
 		return result;
 	}
+	
 	private void testParseServiceDescription() {
 		try {
 			URL file = context.getBundle().getEntry("/endpointdescription1.xml");
@@ -84,7 +85,7 @@ public class Activator implements BundleActivator {
 				Map props = convertProperties(d.getProperties());
 				EndpointDescription ed = new EndpointDescription(props);
 				System.out.println("endpoint description="+ed);
-				IServiceInfo serviceInfo = serviceInfoFactory.createServiceInfoForDiscovery(ed,null);
+				IServiceInfo serviceInfo = serviceInfoFactory.createServiceInfoForDiscovery(null, ed);
 				System.out.println("serviceInfo="+serviceInfo);
 			}
 		} catch (Exception e) {
