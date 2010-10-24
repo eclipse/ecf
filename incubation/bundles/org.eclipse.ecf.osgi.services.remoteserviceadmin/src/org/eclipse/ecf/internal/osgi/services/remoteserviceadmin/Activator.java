@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -401,6 +402,20 @@ public class Activator implements BundleActivator {
 			}
 			return (IEndpointDescriptionFactory) endpointDescriptionFactoryServiceTracker
 					.getService();
+		}
+	}
+
+	public String getFrameworkUUID() {
+		if (context == null) return null;
+		// code get and set the framework uuid property as specified in r2.enterprise.pdf pg 297
+		synchronized ("org.osgi.framework.uuid") {
+			String result = context.getProperty("org.osgi.framework.uuid");
+			if (result == null) {
+				UUID newUUID = UUID.randomUUID();
+				result = newUUID.toString();
+				System.setProperty("org.osgi.framework.uuid", newUUID.toString());
+			}
+			return result;
 		}
 	}
 

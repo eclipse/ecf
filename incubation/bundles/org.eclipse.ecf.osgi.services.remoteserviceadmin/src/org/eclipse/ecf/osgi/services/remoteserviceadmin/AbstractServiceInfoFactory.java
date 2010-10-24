@@ -12,6 +12,7 @@ import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
+import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
@@ -53,17 +54,18 @@ public abstract class AbstractServiceInfoFactory extends
 			EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser) {
 		Namespace advertiserNamespace = advertiser.getServicesNamespace();
-		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,advertiserNamespace);
+		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
+				advertiserNamespace);
 		IServiceInfo existingServiceInfo = null;
 		synchronized (serviceInfos) {
 			existingServiceInfo = serviceInfos.get(key);
 			// If it's already there, then we return null
 			if (existingServiceInfo != null)
 				return null;
-			IServiceTypeID serviceTypeID = createServiceTypeID(endpointDescription,
-					advertiser);
-			String serviceName = createServiceName(endpointDescription, advertiser,
-					serviceTypeID);
+			IServiceTypeID serviceTypeID = createServiceTypeID(
+					endpointDescription, advertiser);
+			String serviceName = createServiceName(endpointDescription,
+					advertiser, serviceTypeID);
 			URI uri = null;
 			try {
 				uri = createURI(endpointDescription, advertiser, serviceTypeID,
@@ -75,22 +77,24 @@ public abstract class AbstractServiceInfoFactory extends
 				throw new RuntimeException(message, e);
 			}
 			IServiceProperties serviceProperties = createServiceProperties(
-					endpointDescription, advertiser, serviceTypeID, serviceName,
-					uri);
-			IServiceInfo newServiceInfo = new ServiceInfo(uri,
-					serviceName, serviceTypeID, serviceProperties);
+					endpointDescription, advertiser, serviceTypeID,
+					serviceName, uri);
+			IServiceInfo newServiceInfo = new ServiceInfo(uri, serviceName,
+					serviceTypeID, serviceProperties);
 			// put into map using key
-			serviceInfos.put(key,  newServiceInfo);
+			serviceInfos.put(key, newServiceInfo);
 			return newServiceInfo;
 		}
 	}
 
+	
 	protected IServiceProperties createServiceProperties(
 			EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID,
 			String serviceName, URI uri) {
-		// TODO Auto-generated method stub
-		return null;
+		ServiceProperties result = new ServiceProperties();
+		encodeServiceProperties(endpointDescription, result);
+		return result;
 	}
 
 	protected URI createURI(EndpointDescription endpointDescription,
@@ -142,21 +146,13 @@ public abstract class AbstractServiceInfoFactory extends
 		return new URI(scheme, null, host, port, path, null, null);
 	}
 
-	protected void logInfo(String methodName, String message, Throwable t) {
-		// XXX todo
-	}
-
-	protected void logError(String methodName, String message, Throwable t) {
-		// XXX todo
-	}
-
 	protected String createServiceName(EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID) {
 		// First create unique default name
 		String defaultServiceName = createDefaultServiceName(
 				endpointDescription, advertiser, serviceTypeID);
 		// Look for service name that was explicitly set
-		String serviceName = getStringPropertyWithDefault(
+		String serviceName = getStringWithDefault(
 				endpointDescription.getProperties(),
 				RemoteConstants.DISCOVERY_SERVICE_NAME, defaultServiceName);
 		return serviceName;
@@ -173,12 +169,12 @@ public abstract class AbstractServiceInfoFactory extends
 			EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser) {
 		Map props = endpointDescription.getProperties();
-		String[] scopes = getStringArrayPropertyWithDefault(props,
+		String[] scopes = getStringArrayWithDefault(props,
 				RemoteConstants.DISCOVERY_SCOPE, IServiceTypeID.DEFAULT_SCOPE);
-		String[] protocols = getStringArrayPropertyWithDefault(props,
+		String[] protocols = getStringArrayWithDefault(props,
 				RemoteConstants.DISCOVERY_PROTOCOLS,
 				IServiceTypeID.DEFAULT_SCOPE);
-		String namingAuthority = getStringPropertyWithDefault(props,
+		String namingAuthority = getStringWithDefault(props,
 				RemoteConstants.DISCOVERY_NAMING_AUTHORITY,
 				IServiceTypeID.DEFAULT_NA);
 		return ServiceIDFactory.getDefault().createServiceTypeID(
@@ -191,7 +187,8 @@ public abstract class AbstractServiceInfoFactory extends
 			EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser) {
 		Namespace advertiserNamespace = advertiser.getServicesNamespace();
-		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,advertiserNamespace);
+		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
+				advertiserNamespace);
 		synchronized (serviceInfos) {
 			return serviceInfos.remove(key);
 		}

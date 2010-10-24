@@ -6,25 +6,26 @@ public class RemoteConstants {
 	
 	public static final String DISCOVERY_SCOPE = "ecf.endpoint.discovery.scope";
 	public static final String DISCOVERY_PROTOCOLS = "ecf.endpoint.discovery.protocols";
-	public static final String DISCOVERY_NAMING_AUTHORITY = "ecf.endpoint.discovery.na";
+	public static final String DISCOVERY_NAMING_AUTHORITY = "ecf.endpoint.discovery.nameingauthority";
 	public static final String DISCOVERY_SERVICE_NAME = "ecf.endpoint.discovery.servicename";
 	public static final String DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX = "osgirsvc_";
-
-	// value of this property is expected to be of type ID
-	public static final String CONTAINER_ID_PROPNAME = "ecf.endpoint.containerid";
-	public static final String CONTAINER_ID_NAMESPACE_PROPNAME = "ecf.endpoint.containerid.namespace";
-	// value of this property is expected to be of type Long
-	public static final String REMOTE_SERVICE_ID_PROPNAME = "ecf.endpoint.remoteserviceid";
 	
+	// ECF endpoint description properties <-> service info properties
+	// container id external form
+	public static final String ENDPOINT_ID = "ecf.endpoint.id";
+	// container id namespace
+	public static final String ENDPOINT_ID_NAMESPACE = "ecf.endpoint.id.ns";
+	// remote service id
+	public static final String ENDPOINT_REMOTESERVICE_ID = "ecf.endpoint.rs.id";
 	
-	// value of this property is expected to be ID
-	public static final String CONNECT_TARGET_ID_PROPNAME = "ecf.endpoint.connecttargetid";
-	public static final String CONNECT_TARGET_ID_NAMESPACE_PROPNAME = "ecf.endpoint.connecttargetid.namespace";
+	public static final String ENDPOINT_TARGET_ID = "ecf.endpoint.target.id";
+	public static final String ENDPOINT_TARGET_ID_NAMESPACE = "ecf.endpoint.target.id.ns";
 	
-	// value of this property is expected to be ID[]
-	public static final String IDFILTER_PROPNAME = "ecf.endpoint.idfilter";
-	public static final String IDFILTER_NAMESPACE_PROPNAME = "ecf.endpoint.idfilter.namespace";
-	// value of this property is expected to be String
-	public static final String REMOTESERVICE_FILTER_PROPNAME = "ecf.endpoint.remoteservicefilter";
+// id filter external form
+	public static final String ENDPOINT_IDFILTER_IDS = "ecf.endpoint.idfilter.ids";
+	// id filter namespaces
+	public static final String ENDPOINT_IDFILTER_NAMESPACES = "ecf.endpoint.idfilter.ids.ns";
+	// remote service filter
+	public static final String ENDPOINT_REMOTESERVICEFILTER = "ecf.endpoint.rsfilter";
 
 }

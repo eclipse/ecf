@@ -45,8 +45,8 @@ public class Activator implements BundleActivator {
 		testParseServiceDescription();
 	}
 
-	private Map convertProperties(Map properties) {
-		Map result = new HashMap();
+	private Map<String,Object> convertProperties(Map properties) {
+		Map<String,Object> result = new HashMap<String,Object>();
 		
 		String svcimportedcfgs = (String) properties.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS);
 		result.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,svcimportedcfgs);
@@ -63,12 +63,12 @@ public class Activator implements BundleActivator {
 		String endpointfmkid = (String) properties.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID);
 		result.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID, endpointfmkid);
 		
-		String containerid = (String) properties.get(RemoteConstants.CONTAINER_ID_PROPNAME);
-		String containerns = (String) properties.get(RemoteConstants.CONTAINER_ID_NAMESPACE_PROPNAME);
-		result.put(RemoteConstants.CONTAINER_ID_PROPNAME, IDFactory.getDefault().createID(containerns, containerid));
+		String containerid = (String) properties.get(RemoteConstants.ENDPOINT_ID);
+		String containerns = (String) properties.get(RemoteConstants.ENDPOINT_ID_NAMESPACE);
+		result.put(RemoteConstants.ENDPOINT_ID, IDFactory.getDefault().createID(containerns, containerid));
 		
-		String rsid = (String) properties.get(RemoteConstants.REMOTE_SERVICE_ID_PROPNAME);
-		result.put(RemoteConstants.REMOTE_SERVICE_ID_PROPNAME, new Long(rsid));
+		String rsid = (String) properties.get(RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
+		result.put(RemoteConstants.ENDPOINT_REMOTESERVICE_ID, new Long(rsid));
 		
 		return result;
 	}
