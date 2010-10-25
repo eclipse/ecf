@@ -13,6 +13,8 @@ import java.util.StringTokenizer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
+import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 
@@ -38,7 +40,6 @@ public abstract class AbstractMetadataFactory {
 			RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
 			RemoteConstants.ENDPOINT_REMOTESERVICEFILTER
 	});
-
 
 	protected String[] getStringArrayWithDefault(
 			Map<String, Object> properties, String key, String[] def) {
@@ -144,14 +145,8 @@ public abstract class AbstractMetadataFactory {
 		return (ID[]) result.toArray(new ID[] {});
 	}
 
-	protected ID createID(String namespace, String name) {
-		try {
-			return IDFactory.getDefault().createID(namespace, name);
-		} catch (IDCreateException e) {
-			logError("createID", "Exception creating id for namespace="
-					+ namespace + ",name=" + name, e);
-			return null;
-		}
+	protected ID createID(String namespace, String name) throws IDCreateException {
+		return IDFactory.getDefault().createID(namespace, name);
 	}
 
 	protected Map decodeServiceProperties(IServiceProperties props) {

@@ -50,42 +50,47 @@ public abstract class AbstractServiceInfoFactory extends
 		}
 	}
 
-	public IServiceInfo createServiceInfoForDiscovery(IDiscoveryAdvertiser advertiser,
+	public IServiceInfo createServiceInfoForDiscovery(
+			IDiscoveryAdvertiser advertiser,
 			EndpointDescription endpointDescription) {
-		Namespace advertiserNamespace = advertiser.getServicesNamespace();
-		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
-				advertiserNamespace);
-		IServiceInfo existingServiceInfo = null;
-		synchronized (serviceInfos) {
-			existingServiceInfo = serviceInfos.get(key);
-			// If it's already there, then we return null
-			if (existingServiceInfo != null)
-				return null;
-			IServiceTypeID serviceTypeID = createServiceTypeID(
-					endpointDescription, advertiser);
-			String serviceName = createServiceName(endpointDescription,
-					advertiser, serviceTypeID);
-			URI uri = null;
-			try {
-				uri = createURI(endpointDescription, advertiser, serviceTypeID,
-						serviceName);
-			} catch (URISyntaxException e) {
-				String message = "URI could not be created for endpoint description="
-						+ endpointDescription;
-				logError("createURI", message, e);
-				throw new RuntimeException(message, e);
+		try {
+			Namespace advertiserNamespace = advertiser.getServicesNamespace();
+			ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
+					advertiserNamespace);
+			IServiceInfo existingServiceInfo = null;
+			synchronized (serviceInfos) {
+				existingServiceInfo = serviceInfos.get(key);
+				// If it's already there, then we return null
+				if (existingServiceInfo != null)
+					return null;
+				IServiceTypeID serviceTypeID = createServiceTypeID(
+						endpointDescription, advertiser);
+				String serviceName = createServiceName(endpointDescription,
+						advertiser, serviceTypeID);
+				URI uri = createURI(endpointDescription, advertiser,
+						serviceTypeID, serviceName);
+				IServiceProperties serviceProperties = createServiceProperties(
+						endpointDescription, advertiser, serviceTypeID,
+						serviceName, uri);
+				IServiceInfo newServiceInfo = createServiceInfo(uri, serviceName, serviceTypeID, serviceProperties);
+				// put into map using key
+				serviceInfos.put(key, newServiceInfo);
+				return newServiceInfo;
 			}
-			IServiceProperties serviceProperties = createServiceProperties(
-					endpointDescription, advertiser, serviceTypeID,
-					serviceName, uri);
-			IServiceInfo newServiceInfo = new ServiceInfo(uri, serviceName,
-					serviceTypeID, serviceProperties);
-			// put into map using key
-			serviceInfos.put(key, newServiceInfo);
-			return newServiceInfo;
+		} catch (Exception e) {
+			logError(
+					"createServiceInfoForDiscovery",
+					"Exception creating service info for endpointDescription="
+							+ endpointDescription + ",advertiser=" + advertiser,
+					e);
+			return null;
 		}
 	}
 
+	protected IServiceInfo createServiceInfo(URI uri, String serviceName, IServiceTypeID serviceTypeID, IServiceProperties serviceProperties) {
+		return new ServiceInfo(uri, serviceName,
+				serviceTypeID, serviceProperties);
+	}
 	
 	protected IServiceProperties createServiceProperties(
 			EndpointDescription endpointDescription,
@@ -182,7 +187,8 @@ public abstract class AbstractServiceInfoFactory extends
 				protocols, namingAuthority);
 	}
 
-	public IServiceInfo removeServiceInfoForUndiscovery(IDiscoveryAdvertiser advertiser,
+	public IServiceInfo removeServiceInfoForUndiscovery(
+			IDiscoveryAdvertiser advertiser,
 			EndpointDescription endpointDescription) {
 		Namespace advertiserNamespace = advertiser.getServicesNamespace();
 		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,

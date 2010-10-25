@@ -23,11 +23,11 @@ public interface IEndpointDescriptionFactory {
 	 * 
 	 * @param locator the locator responsible for the discoveredServiceInfo.  Must not be <code>null</code>.
 	 * @param discoveredServiceInfo the discovered service info.  Must not be <code>null</code>.
-	 * @return EndpointDescription that will be used to notify EndpointListeners
+	 * @return DiscoveredEndpointDescription that will be used to notify EndpointListeners
 	 * about a new EndpointDescription.  If <code>null</code> is returned, no
 	 * notification should be performed by the calling code.  
 	 */
-	public EndpointDescription createDiscoveredEndpointDescription(IDiscoveryLocator locator, IServiceInfo discoveredServiceInfo);
+	public DiscoveredEndpointDescription createDiscoveredEndpointDescription(IDiscoveryLocator locator, IServiceInfo discoveredServiceInfo);
 	/**
 	 * Get an EndpointDescription for an undiscovered remote service.  Implementers of this
 	 * factory service may return the type of EndpointDescription appropriate for the
@@ -40,6 +40,6 @@ public interface IEndpointDescriptionFactory {
 	 * about an undiscovered EndpointDescription.  If <code>null</code> is returned, no
 	 * notification should be performed by the calling code.  
 	 */
-	public EndpointDescription getUndiscoveredEndpointDescription(IDiscoveryLocator locator, IServiceID serviceID);
+	public DiscoveredEndpointDescription getUndiscoveredEndpointDescription(IDiscoveryLocator locator, IServiceID serviceID);
 	
 }
