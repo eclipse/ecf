@@ -20,7 +20,9 @@ import org.eclipse.ecf.core.identity.ID;
 public abstract class AbstractConnectTest extends AbstractPresenceTestCase {
 
 	public static final int CLIENT_COUNT = 2;
-	public static final int WAITTIME = 3000;
+	public static final int SLEEPTIME = new Integer(System.getProperty(
+			"org.eclipse.ecf.tests.presence.AbstractConnectTest.SLEEPTIME", "1000"))
+			.intValue();
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -36,7 +38,7 @@ public abstract class AbstractConnectTest extends AbstractPresenceTestCase {
 		assertNotNull(serverConnectID);
 		connectClient(client, serverConnectID, getConnectContext(clientIndex));
 		assertEquals(serverConnectID, client.getConnectedID());
-		sleep(WAITTIME);
+		sleep(SLEEPTIME);
 		client.disconnect();
 		assertNull(client.getConnectedID());
 	}

@@ -26,6 +26,8 @@ public class ChannelTest extends ContainerAbstractTestCase {
 
 	private static final String CHANNEL_NAME = "channel";
 
+	private static final int SLEEPTIME = new Integer(System.getProperty("org.eclipse.ecf.tests.provider.xmpp.datashare.ChannelTest.SLEEPTIME","5000")).intValue();
+
 	private static final int SEND_MESSAGE_COUNT = 5;
 
 	private ID channelID;
@@ -65,7 +67,7 @@ public class ChannelTest extends ContainerAbstractTestCase {
 	 */
 	protected void tearDown() throws Exception {
 		// This is a possible workaround for what appears to be Smack bug:  https://bugs.eclipse.org/bugs/show_bug.cgi?id=321032
-		Thread.sleep(2000);
+		Thread.sleep(SLEEPTIME);
 		cleanUpClients();
 		super.tearDown();
 	}
@@ -74,7 +76,7 @@ public class ChannelTest extends ContainerAbstractTestCase {
 		final IChannel ch0 = getChannelContainer(0).getChannel(channelID);
 		ID target1 = getClient(1).getConnectedID();
 		ch0.sendMessage(target1, new String("hello").getBytes());
-		sleep(3000);
+		sleep(SLEEPTIME);
 	}
 
 	public void testBiSendMessage() throws Exception {
@@ -86,7 +88,7 @@ public class ChannelTest extends ContainerAbstractTestCase {
 		
 		ch0.sendMessage(target1, new String("hello").getBytes());
 		ch1.sendMessage(target0, new String("hello").getBytes());
-		sleep(3000);
+		sleep(SLEEPTIME);
 	}
 
 
@@ -95,9 +97,8 @@ public class ChannelTest extends ContainerAbstractTestCase {
 		ID target1 = getClient(1).getConnectedID();
 		for(int i=0; i < SEND_MESSAGE_COUNT; i++) {
 			ch0.sendMessage(target1, new String("hello.  msg#="+i).getBytes());
-			sleep(500);
 		}
-		sleep(3000);
+		sleep(SLEEPTIME);
 	}
 
 	public void testBiSendMessages() throws Exception {
@@ -109,10 +110,9 @@ public class ChannelTest extends ContainerAbstractTestCase {
 				
 		for(int i=0; i < SEND_MESSAGE_COUNT; i++) {
 			ch0.sendMessage(target1, new String("hello.  msg#="+i).getBytes());
-			sleep(500);
 			ch1.sendMessage(target0, new String("hello.  msg#="+i).getBytes());
 		}
-		sleep(3000);
+		sleep(SLEEPTIME);
 	}
 
 	protected IChannelListener getIChannelListener(final ID containerid) throws Exception {

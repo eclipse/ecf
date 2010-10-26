@@ -240,17 +240,18 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 		// Add to local registry
 		final RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
-		reg.publish(this, localRegistry, service, clazzes, properties);
-
-		// Only send add registrations if we are connected
-		if (isConnected()) {
-			final ID[] targets = getTargetsFromProperties(properties);
-			RemoteServiceRegistrationImpl[] regs = new RemoteServiceRegistrationImpl[] {reg};
-			if (targets == null)
-				sendAddRegistrations(null, null, regs);
-			else
-				for (int i = 0; i < targets.length; i++)
-					sendAddRegistrations(targets[i], null, regs);
+		synchronized (localRegistry) {
+			reg.publish(this, localRegistry, service, clazzes, properties);
+			// Only send add registrations if we are connected
+			if (isConnected()) {
+				final ID[] targets = getTargetsFromProperties(properties);
+				RemoteServiceRegistrationImpl[] regs = new RemoteServiceRegistrationImpl[] {reg};
+				if (targets == null)
+					sendAddRegistrations(null, null, regs);
+				else
+					for (int i = 0; i < targets.length; i++)
+						sendAddRegistrations(targets[i], null, regs);
+			}
 		}
 
 		fireRemoteServiceListeners(createRegisteredEvent(reg));
@@ -455,6 +456,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		synchronized (registryUpdateRequests) {
 			registryUpdateRequests.clear();
 		}
+		synchronized (localRegistry) {
+			localRegistry.unpublishServices();
+			localRegistryUnregistrationTargets.clear();
+		}
 		super.dispose(containerID);
 	}
 
@@ -516,22 +521,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				// Skip if the targetContainerID is null
 				if (targetContainerID == null)
 					continue;
-				RemoteServiceRegistryImpl remoteRegistryForContainer = null;
-				// No change to the registrys while we look for the appropriate registry
-				synchronized (remoteRegistrys) {
-					remoteRegistryForContainer = (RemoteServiceRegistryImpl) remoteRegistrys.get(targetContainerID);
-					// If one is found, then we simply add any entrys to referencesFound and we're done
-					// for that container
-					if (remoteRegistryForContainer != null) {
-						addReferencesFromRegistry(clazz, remoteFilter, remoteRegistryForContainer, referencesFound);
-						continue;
-					}
-				}
-				// This block is only reached if remoteRegistryForContainer is null
 				sendRegistryUpdateRequestAndWait(targetContainerID);
-				// Now we check remoteRegistrys again
 				synchronized (remoteRegistrys) {
-					remoteRegistryForContainer = (RemoteServiceRegistryImpl) remoteRegistrys.get(targetContainerID);
+					RemoteServiceRegistryImpl remoteRegistryForContainer = (RemoteServiceRegistryImpl) remoteRegistrys.get(targetContainerID);
 					if (remoteRegistryForContainer != null)
 						addReferencesFromRegistry(clazz, remoteFilter, remoteRegistryForContainer, referencesFound);
 				}
@@ -1203,6 +1195,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendAddRegistrations", new Object[] {receiver, requestId, regs}); //$NON-NLS-1$
 		try {
 			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null, ADD_REGISTRATIONS, getLocalContainerID(), requestId, regs));
+			// if the receiver is in response to an explicit remote request (receiver != null && requestId != null)
+			// then for all registrations add a target for unregistration, so that upon unregistration we can 
+			if (receiver != null && requestId != null) {
+				for (int i = 0; i < regs.length; i++)
+					addTargetForUnregister(regs[i], receiver);
+			}
 		} catch (final IOException e) {
 			log(ADD_REGISTRATION_ERROR_CODE, ADD_REGISTRATION_ERROR_MESSAGE, e);
 		}
@@ -1600,6 +1598,44 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), FIRE_REQUEST);
 	}
 
+	// RemoteServiceRegistrationImpl -> List<ID>
+	private Map localRegistryUnregistrationTargets = new HashMap();
+
+	private void addTargetForUnregister(RemoteServiceRegistrationImpl serviceRegistration, ID targetContainerID) {
+		List existingTargets = (List) localRegistryUnregistrationTargets.get(serviceRegistration);
+		if (existingTargets == null) {
+			existingTargets = new ArrayList();
+		}
+		existingTargets.add(targetContainerID);
+		Trace.trace(Activator.PLUGIN_ID, "addTargetForUnregister localContainerID=" + getLocalContainerID() + ",targetContainerID=" + targetContainerID + ",serviceRegistration=" + serviceRegistration); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		localRegistryUnregistrationTargets.put(serviceRegistration, existingTargets);
+	}
+
+	private void sendUnregisterToTargets(RemoteServiceRegistrationImpl serviceRegistration, ID[] otherTargets) {
+		List allTargets = new ArrayList();
+		// First add in otherTargets
+		if (otherTargets != null) {
+			allTargets.addAll(Arrays.asList(otherTargets));
+		}
+		// Then add any explicitly registered targets
+		List registeredTargets = (List) localRegistryUnregistrationTargets.remove(serviceRegistration);
+		if (registeredTargets != null) {
+			allTargets.addAll(registeredTargets);
+		}
+		// Now allTargets should have all the container IDs of unregistration messages so we send to all
+		for (Iterator i = allTargets.iterator(); i.hasNext();) {
+			ID unregistrationTarget = (ID) i.next();
+			ID registrationLocalContainerID = serviceRegistration.getContainerID();
+			Long serviceId = new Long(serviceRegistration.getServiceId());
+			Trace.trace(Activator.PLUGIN_ID, "sendUnregisterToTargets " + "localContainerID=" + getLocalContainerID() + ",targetContainerID=" + unregistrationTarget + ",serviceRegistration=" + serviceRegistration); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			try {
+				this.sendSharedObjectMsgTo(unregistrationTarget, SharedObjectMsg.createMsg(UNREGISTER, new Object[] {registrationLocalContainerID, serviceId}));
+			} catch (final IOException e) {
+				log(UNREGISTER_ERROR_CODE, UNREGISTER_ERROR_MESSAGE, e);
+			}
+		}
+	}
+
 	protected void sendUnregister(RemoteServiceRegistrationImpl serviceRegistration) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendUnregister", new Object[] {serviceRegistration}); //$NON-NLS-1$
 		synchronized (localRegistry) {
@@ -1616,19 +1652,39 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 					} catch (final IOException e) {
 						log(UNREGISTER_ERROR_CODE, UNREGISTER_ERROR_MESSAGE, e);
 					}
-				} else
-					// Send an unregister message to all targetIds
-					for (int i = 0; i < targetIds.length; i++) {
-						try {
-							this.sendSharedObjectMsgTo(targetIds[i], SharedObjectMsg.createMsg(UNREGISTER, new Object[] {containerID, serviceId}));
-						} catch (final IOException e) {
-							log(UNREGISTER_ERROR_CODE, UNREGISTER_ERROR_MESSAGE, e);
-						}
-					}
+				}
+				// And send unregister explicitly to targets
+				sendUnregisterToTargets(serviceRegistration, targetIds);
 			}
 		}
 		fireRemoteServiceListeners(createUnregisteredEvent(serviceRegistration));
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendUnregister"); //$NON-NLS-1$
+	}
+
+	protected void handleUnregister(ID containerID, Long serviceId) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleUnregister", new Object[] {containerID, serviceId}); //$NON-NLS-1$
+		RemoteServiceRegistrationImpl registration = null;
+		synchronized (remoteRegistrys) {
+			// get registry for given containerID
+			final RemoteServiceRegistryImpl serviceRegistry = (RemoteServiceRegistryImpl) remoteRegistrys.get(containerID);
+			if (serviceRegistry != null) {
+				registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
+				if (registration != null) {
+					serviceRegistry.unpublishService(registration);
+					unregisterServiceRegistrationsForContainer(registration.getContainerID());
+					// If there are no remaining registration for this remote service registry,
+					// then remove the registry from the remoteRegistrys
+					RemoteServiceRegistrationImpl[] registrations = serviceRegistry.getRegistrations();
+					Trace.trace(Activator.PLUGIN_ID, "handleUnregister localContainerID=" + getLocalContainerID() + ",registrationRemoved=" + registration + ",containerID=" + containerID); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					if (registrations.length == 0) {
+						remoteRegistrys.remove(containerID);
+					}
+				}
+			}
+		}
+		if (registration != null)
+			fireRemoteServiceListeners(createUnregisteredEvent(registration));
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleUnregister"); //$NON-NLS-1$
 	}
 
 	/**
@@ -1660,25 +1716,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				unregisterServiceRegistrationsForContainer((ID) i.next());
 			}
 		}
-	}
-
-	protected void handleUnregister(ID containerID, Long serviceId) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleUnregister", new Object[] {containerID, serviceId}); //$NON-NLS-1$
-		RemoteServiceRegistrationImpl registration = null;
-		synchronized (remoteRegistrys) {
-			// get registry for given containerID
-			final RemoteServiceRegistryImpl serviceRegistry = (RemoteServiceRegistryImpl) remoteRegistrys.get(containerID);
-			if (serviceRegistry != null) {
-				registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
-				if (registration != null) {
-					serviceRegistry.unpublishService(registration);
-					unregisterServiceRegistrationsForContainer(registration.getContainerID());
-				}
-			}
-		}
-		if (registration != null)
-			fireRemoteServiceListeners(createUnregisteredEvent(registration));
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleUnregister"); //$NON-NLS-1$
 	}
 
 	protected IRemoteServiceUnregisteredEvent createUnregisteredEvent(final RemoteServiceRegistrationImpl registration) {

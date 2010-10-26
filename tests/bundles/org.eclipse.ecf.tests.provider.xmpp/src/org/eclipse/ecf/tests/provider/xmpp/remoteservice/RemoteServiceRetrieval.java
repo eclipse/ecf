@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
@@ -25,12 +26,18 @@ import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
+import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.tests.provider.xmpp.XMPPS;
 import org.osgi.framework.InvalidSyntaxException;
 
 public class RemoteServiceRetrieval extends TestCase {
 
 	private XMPPClient[] xmppClients;
+
+	private static final int SLEEPTIME = new Integer(
+			System.getProperty(
+					"org.eclipse.ecf.tests.provider.xmpp.remoteservice.RemoteServiceRetrieval.SLEEPTIME",
+					"6000")).intValue();
 
 	public void setUp() {
 		try {
@@ -57,8 +64,7 @@ public class RemoteServiceRetrieval extends TestCase {
 	/*
 	 * Make sure that the right service is returned for the right client.
 	 */
-	public void testRightServiceForClients() throws InvalidSyntaxException,
-			ECFException {
+	public void testRightServiceForClients() throws Exception {
 
 		// Client 1 tries to retrieve services registered by client 2 & 3
 		IExampleService remoteService1 = getClient(0).getRemoteService(
@@ -94,21 +100,26 @@ public class RemoteServiceRetrieval extends TestCase {
 		assertEquals(getClient(1).getClientID(), remoteService6.getClientID());
 	}
 
-	public void testConnectAndDisconnectClients() throws ECFException,
-			InvalidSyntaxException {
+	public void testRegisterAndUnregisterRemoteServices() throws Exception {
 		// Client 0 tries to get service from client 1
 		IExampleService remoteService1 = getClient(0).getRemoteService(
 				getClient(1));
 		assertNotNull(remoteService1);
-
-		// disconnect client 1, no services available for client 1
-		getClient(1).disconnect();
+		// unregister remote service on client 1, no services available for
+		// client 1
+		getClient(1).unregisterRemoteService();
+		// wait for unregistration to propogate
+		Thread.sleep(SLEEPTIME);
+		// Now lookup and make sure the reference is now null
 		IExampleService remoteService2 = getClient(0).getRemoteService(
 				getClient(1));
 		assertNull(remoteService2);
 
-		// connect client 1 again, services are available again
-		getClient(1).connect();
+		// register remote service on client 1
+		registerRemoteServiceOnClient(getClient(1));
+		// wait for registration to propogate
+		Thread.sleep(SLEEPTIME);
+
 		IExampleService remoteService3 = getClient(0).getRemoteService(
 				getClient(1));
 		assertNotNull(remoteService3);
@@ -118,27 +129,18 @@ public class RemoteServiceRetrieval extends TestCase {
 	 * Remote service registration without filterIDs.
 	 */
 	private void registerRemoteServicesNoFilterIDs() {
-		IExampleService clientService1 = new ExampleService(getClient(0)
-				.getClientID());
-		IExampleService clientService2 = new ExampleService(getClient(1)
-				.getClientID());
-		IExampleService clientService3 = new ExampleService(getClient(2)
-				.getClientID());
+		registerRemoteServiceOnClient(getClient(0));
+		registerRemoteServiceOnClient(getClient(1));
+		registerRemoteServiceOnClient(getClient(2));
+	}
 
-		getClient(0).getRemoteServiceAdapter().registerRemoteService(
-				new String[] { IExampleService.class.getName() },
-				clientService1, null);
-		getClient(1).getRemoteServiceAdapter().registerRemoteService(
-				new String[] { IExampleService.class.getName() },
-				clientService2, null);
-		getClient(2).getRemoteServiceAdapter().registerRemoteService(
-				new String[] { IExampleService.class.getName() },
-				clientService3, null);
+	private void registerRemoteServiceOnClient(XMPPClient client) {
+		client.registerRemoteService(IExampleService.class.getName(), new ExampleService(client.getClientID()));
 	}
 
 	public void tearDown() {
 		for (int clientNumber = 0; clientNumber <= 2; clientNumber++) {
-			getClient(clientNumber).disconnect();
+			getClient(clientNumber).tearDown();
 		}
 	}
 
@@ -169,6 +171,7 @@ public class RemoteServiceRetrieval extends TestCase {
 		private XMPPID clientID;
 		private IConnectContext connectContext;
 		private IRemoteServiceContainerAdapter adapter;
+		private IRemoteServiceRegistration registration;
 
 		public XMPPClient(String username, String password)
 				throws ContainerCreateException, URISyntaxException {
@@ -188,8 +191,15 @@ public class RemoteServiceRetrieval extends TestCase {
 			assertNotNull(connectContext);
 		}
 
-		IRemoteServiceContainerAdapter getRemoteServiceAdapter() {
-			return adapter;
+		void tearDown() {
+			unregisterRemoteService();
+			try {
+				Thread.sleep(SLEEPTIME);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			container.disconnect();
 		}
 
 		XMPPID getClientID() {
@@ -200,15 +210,27 @@ public class RemoteServiceRetrieval extends TestCase {
 			container.connect(clientID, connectContext);
 		}
 
-		void disconnect() {
-			container.disconnect();
+		public void registerRemoteService(String svcInterface, Object svc) {
+			this.registration = adapter.registerRemoteService(
+					new String[] { svcInterface }, svc, null);
+		}
+
+		void unregisterRemoteService() {
+			if (registration != null) {
+				// unregister the remote service registration
+				registration.unregister();
+			}
 		}
 
 		private IExampleService getRemoteService(XMPPClient toClient)
 				throws InvalidSyntaxException, ECFException {
 			IRemoteServiceReference[] remoteServiceReferences = adapter
-					.getRemoteServiceReferences(toClient.getClientID(),
+					.getRemoteServiceReferences(
+							new ID[] { toClient.getClientID() },
 							IExampleService.class.getName(), null);
+			if (remoteServiceReferences == null
+					|| remoteServiceReferences.length == 0)
+				return null;
 			assertEquals(1, remoteServiceReferences.length);
 
 			IRemoteService remoteService = adapter
