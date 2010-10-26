@@ -178,7 +178,9 @@ public class SerializableStatus implements IStatus, Serializable {
 	 *            a low-level exception, or <code>null</code> if not applicable
 	 */
 	protected void setException(Throwable exception) {
-		this.exception = checkForSerializable(exception);
+		// null is never serializable (https://bugs.eclipse.org/328772)
+		if (exception != null)
+			this.exception = checkForSerializable(exception);
 	}
 
 	private Throwable checkForSerializable(Throwable exception2) {
