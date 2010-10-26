@@ -161,7 +161,7 @@ public class RemoteServiceProxyTest extends AbstractRemoteServiceTest {
 				.callAsync(createRemoteConcat("ECF AsynchResults ", "are cool"));
 		traceCallEnd("callAsynch");
 		assertNotNull(result);
-		Thread.sleep(ASYNC_WAITTIME);
+		Thread.sleep(SLEEPTIME);
 	}
 
 }
