@@ -75,6 +75,7 @@ public class IDFactoryTest extends NamespaceTest {
 		Namespace ns = fixture.addNamespace(namespace);
 		assertNull(ns);
 		assertTrue(fixture.getNamespaces().size() == (currentSize + 1));
+		fixture.removeNamespace(namespace);
 	}
 
 	public void testIDFactoryRemoveNamespace() {
