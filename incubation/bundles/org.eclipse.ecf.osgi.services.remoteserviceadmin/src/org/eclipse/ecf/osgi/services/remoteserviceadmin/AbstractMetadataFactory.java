@@ -13,8 +13,6 @@ import java.util.StringTokenizer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.discovery.IDiscoveryLocator;
-import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 
@@ -30,6 +28,7 @@ public abstract class AbstractMetadataFactory {
 			org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
 			org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
 			org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
+			org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED,
 			// ECF properties
 			RemoteConstants.ENDPOINT_ID,
 			RemoteConstants.ENDPOINT_ID_NAMESPACE,
