@@ -18,3 +18,4 @@ Import-Package: com.sun.syndication.feed;version="0.9.0",
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.jdom;bundle-version="1.0.0"
 Export-Package: org.eclipse.ecf.remoteservice.rest.synd
+Bundle-Localization: plugin
