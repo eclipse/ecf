@@ -30,10 +30,13 @@ public class RemoteConstants {
 	public static final String ENDPOINT_TARGET_ID = "ecf.endpoint.target.id";
 	public static final String ENDPOINT_TARGET_ID_NAMESPACE = "ecf.endpoint.target.id.ns";
 	
-// id filter external form
 	public static final String ENDPOINT_IDFILTER_IDS = "ecf.endpoint.idfilter.ids";
+	
+	public static final String ENDPOINT_IDFILTER_ID_COUNT = "ecf.endpoint.idfilter.id.n";
+    // id filter external form
+	public static final String ENDPOINT_IDFILTER_ID_NAME_ = "ecf.endpoint.idfilter.id.name.";
 	// id filter namespaces
-	public static final String ENDPOINT_IDFILTER_NAMESPACES = "ecf.endpoint.idfilter.ids.ns";
+	public static final String ENDPOINT_IDFILTER_NAMESPACE_ = "ecf.endpoint.idfilter.id.ns.";
 	// remote service filter
 	public static final String ENDPOINT_REMOTESERVICEFILTER = "ecf.endpoint.rsfilter";
 

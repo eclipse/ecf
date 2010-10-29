@@ -45,12 +45,13 @@ public class EndpointDescription extends
 		containerID = (ID) properties.get(RemoteConstants.ENDPOINT_ID);
 		if (containerID == null)
 			throw new NullPointerException(
-					"ECF EndpointDescription must include non-null containerID");
+					"ECF EndpointDescription must include non-null value for 'ecf.endpoint.id' of type ID");
 
 		Object rsid = properties.get(RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
 		if (rsid != null)
 			remoteServiceId = ((Long) rsid).longValue();
-
+		else throw new NullPointerException("ECF EndpointDescription must include value of 'ecf.endpoint.rs.id' of type Long");
+		
 		Object ctid = properties.get(RemoteConstants.ENDPOINT_TARGET_ID);
 		if (ctid != null)
 			connectTargetID = (ID) ctid;
@@ -61,7 +62,7 @@ public class EndpointDescription extends
 
 		Object rsf = properties.get(RemoteConstants.ENDPOINT_REMOTESERVICEFILTER);
 		if (rsf != null)
-			rsFilter = (String) rsFilter;
+			rsFilter = (String) rsf;
 	}
 
 	public EndpointDescription(Map osgiProperties) {
