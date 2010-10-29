@@ -145,7 +145,13 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
 				final IContainer container = (IContainer) itr.next();
 				if (container.getConnectedID() == null) {
-					container.connect(targetID, connectContext);
+					try {
+						container.connect(targetID, connectContext);
+					} catch (ContainerConnectException cce) {
+						Trace.catching(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "connect", //$NON-NLS-1$
+								cce);
+						continue;
+					}
 				}
 				final IDiscoveryLocator idca = (IDiscoveryLocator) container;
 				idca.addServiceListener(ccsl);
