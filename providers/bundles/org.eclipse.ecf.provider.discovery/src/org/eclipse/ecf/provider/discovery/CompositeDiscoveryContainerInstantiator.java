@@ -20,9 +20,12 @@ import org.eclipse.ecf.discovery.IDiscoveryLocator;
 
 public class CompositeDiscoveryContainerInstantiator implements IContainerInstantiator {
 
+	private static final String ADVERTISER = ".advertiser"; //$NON-NLS-1$
+	private static final String LOCATOR = ".locator"; //$NON-NLS-1$
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription,
 	 *      java.lang.Object[])
 	 */
@@ -39,9 +42,17 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 				if (name.startsWith(CompositeDiscoveryContainer.NAME)) {
 					continue;
 				}
-				if (name.startsWith("ecf.discovery.") && (name.endsWith(".locator") || name.endsWith(".advertiser"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					final IContainer container = factory.createContainer(ctd.getName());
-					containers.add(container);
+				if (name.startsWith("ecf.discovery.")) { //$NON-NLS-1$
+					final String ccName = description.getName();
+					// if composite is set to be a locator only, use only discovery locators
+					if (ccName.endsWith(LOCATOR) && name.endsWith(LOCATOR)) {
+						final IContainer container = factory.createContainer(ctd.getName());
+						containers.add(container);
+						// if composite is set to be a advertiser only, use only discovery advertiser
+					} else if (ccName.endsWith(ADVERTISER) && name.endsWith(ADVERTISER)) {
+						final IContainer container = factory.createContainer(ctd.getName());
+						containers.add(container);
+					}
 				}
 			}
 			return new CompositeDiscoveryContainer(containers);
@@ -58,7 +69,7 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
 	public String[] getSupportedAdapterTypes(final ContainerTypeDescription description) {
@@ -67,7 +78,7 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedParameterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
 	public Class[][] getSupportedParameterTypes(final ContainerTypeDescription description) {
