@@ -355,6 +355,10 @@ public class ServiceResource extends ResourceImpl implements Resource {
 								+ emfIServiceInfo);
 				InetAddress inetAddress = getInetAddress(ecfServiceInfo
 						.getLocation());
+				if (inetAddress == null) {
+					// ignore broken service
+					return;
+				}
 				IHost host = findIHost(inetAddress);
 				if (host == null) {
 					host = getIHost(inetAddress);
