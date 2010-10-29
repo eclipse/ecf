@@ -23,7 +23,9 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -194,7 +196,12 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 				throw new ContainerConnectException(Messages.DnsSdDiscoveryLocator_No_Target_ID);
 			}
 		} else {
-			targetID = (DnsSdServiceTypeID) aTargetID;
+			final Namespace ns = getConnectNamespace();
+			try {
+				targetID = (DnsSdServiceTypeID) ns.createInstance(new Object[]{aTargetID});
+			} catch(IDCreateException e) {
+				throw new ContainerConnectException(e);
+			}
 		}
 		
 		// instantiate a default resolver

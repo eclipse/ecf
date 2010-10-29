@@ -24,7 +24,9 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
@@ -105,7 +107,12 @@ public class DnsSdDiscoveryAdvertiser extends DnsSdDiscoveryContainerAdapter {
 		if(aTargetID == null) {
 			targetID = new DnsSdServiceTypeID();
 		} else {
-			targetID = (DnsSdServiceTypeID) aTargetID;
+			final Namespace ns = getConnectNamespace();
+			try {
+				targetID = (DnsSdServiceTypeID) ns.createInstance(new Object[]{aTargetID});
+			} catch(IDCreateException e) {
+				throw new ContainerConnectException(e);
+			}
 		}
 		
 		// instantiate a default resolver

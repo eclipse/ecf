@@ -15,6 +15,8 @@ import java.net.URI;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.StringID;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 
 public class DnsSdNamespace extends Namespace {
@@ -34,6 +36,12 @@ public class DnsSdNamespace extends Namespace {
 		} else if (parameters != null && parameters.length == 1 && parameters[0] instanceof IServiceTypeID) {
 			IServiceTypeID serviceTypeID = (IServiceTypeID) parameters[0];
 			return new DnsSdServiceTypeID(this, serviceTypeID);
+		} else if (parameters != null && parameters.length == 1 && parameters[0] instanceof IServiceID) {
+			IServiceID serviceID = (IServiceID) parameters[0];
+			return new DnsSdServiceTypeID(this, serviceID.getServiceTypeID());
+		} else if (parameters != null && parameters.length == 1 && parameters[0] instanceof StringID) {
+			StringID stringID = (StringID) parameters[0];
+			return new DnsSdServiceTypeID(this, stringID.getName());
 		} else if (parameters != null && parameters.length == 2 && parameters[0] instanceof IServiceTypeID && parameters[1] instanceof URI) {
 			IServiceTypeID serviceTypeID = (IServiceTypeID) parameters[0];
 			URI uri = (URI) parameters[1];
