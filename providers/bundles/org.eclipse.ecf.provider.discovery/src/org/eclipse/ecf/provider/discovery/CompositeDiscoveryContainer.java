@@ -142,15 +142,25 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		targetID = (aTargetID == null) ? getConfig().getID() : aTargetID;
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID, connectContext));
 		synchronized (containers) {
+			final Collection containersFailedToConnect = new HashSet();
 			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
 				final IContainer container = (IContainer) itr.next();
 				if (container.getConnectedID() == null) {
-					container.connect(targetID, connectContext);
+					try {
+						container.connect(targetID, connectContext);
+					} catch (ContainerConnectException cce) {
+						Trace.catching(Activator.PLUGIN_ID, METHODS_TRACING, this.getClass(), "connect", //$NON-NLS-1$
+								cce);
+						containersFailedToConnect.add(container);
+						continue;
+					}
 				}
 				final IDiscoveryLocator idca = (IDiscoveryLocator) container;
 				idca.addServiceListener(ccsl);
 				idca.addServiceTypeListener(ccstl);
 			}
+			// remove all containers that failed to connect and thus are unusable subsequently
+			containers.removeAll(containersFailedToConnect);
 		}
 		fireContainerEvent(new ContainerConnectedEvent(this.getID(), targetID));
 	}
@@ -378,6 +388,7 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 			} catch (ContainerConnectException e) {
 				// we eat the exception here
 				Trace.catching(Activator.PLUGIN_ID, METHODS_CATCHING, this.getClass(), "addContainer(Object)", e); //$NON-NLS-1$
+				return false;
 			}
 		}
 		final IDiscoveryLocator idca = (IDiscoveryLocator) object;
