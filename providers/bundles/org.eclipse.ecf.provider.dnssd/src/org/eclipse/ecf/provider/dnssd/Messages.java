@@ -9,8 +9,6 @@ public class Messages extends NLS {
 	public static String DnsSdDiscoveryContainerAdapter_Comparator_SRV_Records;
 	public static String DnsSdDiscoveryContainerAdapter_No_IDiscovery_Advertiser;
 	public static String DnsSdDiscoveryContainerAdapter_No_IDiscovery_Locator;
-	public static String DnsSdDiscoveryException_1;
-	public static String DnsSdDiscoveryException_3;
 	public static String DnsSdDiscoveryException_DynDns_Update_Denied;
 	public static String DnsSdDiscoveryException_DynDNS_Updated_Failed;
 	public static String DnsSdDiscoveryException_TSIG_Verify_Failed;
