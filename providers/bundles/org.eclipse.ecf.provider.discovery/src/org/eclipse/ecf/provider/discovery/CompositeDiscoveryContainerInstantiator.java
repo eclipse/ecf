@@ -44,8 +44,12 @@ public class CompositeDiscoveryContainerInstantiator implements IContainerInstan
 				}
 				if (name.startsWith("ecf.discovery.")) { //$NON-NLS-1$
 					final String ccName = description.getName();
-					// if composite is set to be a locator only, use only discovery locators
-					if (ccName.endsWith(LOCATOR) && name.endsWith(LOCATOR)) {
+					// composite is configured to be generic container, thus use all discovery providers
+					if (CompositeDiscoveryContainer.NAME.equals(ccName)) {
+						final IContainer container = factory.createContainer(ctd.getName());
+						containers.add(container);
+						// if composite is set to be a locator only, use only discovery locators
+					} else if (ccName.endsWith(LOCATOR) && name.endsWith(LOCATOR)) {
 						final IContainer container = factory.createContainer(ctd.getName());
 						containers.add(container);
 						// if composite is set to be a advertiser only, use only discovery advertiser
