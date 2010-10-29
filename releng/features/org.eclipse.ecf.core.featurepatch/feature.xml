@@ -6,7 +6,7 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides a patch of Eclipse 3.5-3.6 ECF Core Bundles.  This allows the ECF 3.3 Target Components to function properly.
+      This feature provides a patch of Eclipse 3.5-3.6 ECF Core Bundles.  This allows the ECF 3.4 Target Components to function properly.
    </description>
 
    <copyright>
