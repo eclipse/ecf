@@ -39,14 +39,14 @@ public abstract class AbstractMetadataFactory {
 			org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
 			org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED,
 			// ECF properties
-			RemoteConstants.ENDPOINT_ID,
-			RemoteConstants.ENDPOINT_ID_NAMESPACE,
+			RemoteConstants.ENDPOINT_CONTAINER_ID,
+			RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
 			RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
 			RemoteConstants.ENDPOINT_TARGET_ID,
 			RemoteConstants.ENDPOINT_TARGET_ID_NAMESPACE,
 			RemoteConstants.ENDPOINT_IDFILTER_IDS,
-			RemoteConstants.ENDPOINT_IDFILTER_ID_COUNT,
-			RemoteConstants.ENDPOINT_REMOTESERVICEFILTER
+			RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT,
+			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER
 	});
 
 	protected String[] getStringArrayWithDefault(
@@ -125,24 +125,24 @@ public abstract class AbstractMetadataFactory {
 	protected void encodeIDArray(IServiceProperties result, ID[] idFilter) {
 		// First, for every id, setup prop name with index suffix
 		for(int i=0; i < idFilter.length; i++) {
-			encodeString(result, RemoteConstants.ENDPOINT_IDFILTER_ID_NAME_+i, idFilter[i].toExternalForm());
-			result.setPropertyString(RemoteConstants.ENDPOINT_IDFILTER_NAMESPACE_+i, idFilter[i].getNamespace().getName());
+			encodeString(result, RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_+i, idFilter[i].toExternalForm());
+			result.setPropertyString(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_+i, idFilter[i].getNamespace().getName());
 		}
 		// Now add count
-		result.setPropertyString(RemoteConstants.ENDPOINT_IDFILTER_ID_COUNT, new Integer(idFilter.length).toString());
+		result.setPropertyString(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT, new Integer(idFilter.length).toString());
 	}
 
 	protected ID[] decodeIDArray(IServiceProperties props) {
 		// First, get the count
-		String countValue = props.getPropertyString(RemoteConstants.ENDPOINT_IDFILTER_ID_COUNT);
+		String countValue = props.getPropertyString(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT);
 		if (countValue == null) return null;
 		int count = new Integer(countValue).intValue();
 		if (count <= 0) return null;
 		List result = new ArrayList();
 		for(int i=0; i < count; i++) {
 			// decode string as name
-			String name = decodeString(props,RemoteConstants.ENDPOINT_IDFILTER_ID_NAME_+i);
-			String ns = props.getPropertyString(RemoteConstants.ENDPOINT_IDFILTER_NAMESPACE_+i);
+			String name = decodeString(props,RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_+i);
+			String ns = props.getPropertyString(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_+i);
 			if (name != null && ns != null) {
 				ID id = createID(ns,name);
 				if (id != null) result.add(id);
@@ -178,18 +178,18 @@ public abstract class AbstractMetadataFactory {
 		if (intents != null && intents.size() > 0) result.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS, (String[]) intents.toArray(new String[] {}));
 
 		// endpoint ID
-		String endpointName = decodeString(props,RemoteConstants.ENDPOINT_ID);
-		String endpointNamespace = decodeString(props,RemoteConstants.ENDPOINT_ID_NAMESPACE);
+		String endpointName = decodeString(props,RemoteConstants.ENDPOINT_CONTAINER_ID);
+		String endpointNamespace = decodeString(props,RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		ID endpointID = createID(endpointNamespace,endpointName);
 		if (endpointID != null) {
-			result.put(RemoteConstants.ENDPOINT_ID,endpointID);
+			result.put(RemoteConstants.ENDPOINT_CONTAINER_ID,endpointID);
 		}
 		// remote service id
 		Long remoteServiceId = decodeLong(props,RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
 		result.put(RemoteConstants.ENDPOINT_REMOTESERVICE_ID, remoteServiceId);
 		// target ID
 		String targetName = decodeString(props,RemoteConstants.ENDPOINT_TARGET_ID);
-		String targetNamespace = decodeString(props,RemoteConstants.ENDPOINT_ID_NAMESPACE);
+		String targetNamespace = decodeString(props,RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		if (targetName != null && targetNamespace != null) {
 			ID targetID = createID(targetNamespace,targetName);
 			if (targetID != null) {
@@ -202,9 +202,9 @@ public abstract class AbstractMetadataFactory {
 			result.put(RemoteConstants.ENDPOINT_IDFILTER_IDS, idFilter);
 		}
 		// remote service filter
-		String remoteServiceFilter = decodeString(props,RemoteConstants.ENDPOINT_REMOTESERVICEFILTER);
+		String remoteServiceFilter = decodeString(props,RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
 		if (remoteServiceFilter != null) {
-			result.put(RemoteConstants.ENDPOINT_REMOTESERVICEFILTER, remoteServiceFilter);
+			result.put(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, remoteServiceFilter);
 		}
 		decodeNonStandardServiceProperties(props,result);
 		return result;
@@ -261,12 +261,12 @@ public abstract class AbstractMetadataFactory {
 		}
 
 		// ECF endpoint ID = endpointDescription.getID()
-		ID endpointID = endpointDescription.getID();
+		ID endpointID = endpointDescription.getContainerID();
 		// external form of ID
-		encodeString(result, RemoteConstants.ENDPOINT_ID,
+		encodeString(result, RemoteConstants.ENDPOINT_CONTAINER_ID,
 				endpointID.toExternalForm());
 		// namespace
-		encodeString(result, RemoteConstants.ENDPOINT_ID_NAMESPACE, endpointID
+		encodeString(result, RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE, endpointID
 				.getNamespace().getName());
 		// ECF remote service id = endpointDescription.getRemoteServiceId()
 		long remoteServiceId = endpointDescription.getRemoteServiceId();
@@ -292,7 +292,7 @@ public abstract class AbstractMetadataFactory {
 		// endpointDescription.getRemoteServiceFilter()
 		String remoteFilter = endpointDescription.getRemoteServiceFilter();
 		if (remoteFilter != null) {
-			encodeString(result, RemoteConstants.ENDPOINT_REMOTESERVICEFILTER,
+			encodeString(result, RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 					remoteFilter);
 		}
 		// encode non standar properties
@@ -320,8 +320,8 @@ public abstract class AbstractMetadataFactory {
 		for(Enumeration keys=props.getPropertyNames(); keys.hasMoreElements(); ) {
 			String key = (String) keys.nextElement();
 			if (!standardProperties.contains(key) &&
-					!key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_ID_NAME_) &&
-					!key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_NAMESPACE_)) {
+					!key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_) &&
+					!key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_)) {
 				byte[] bytes = props.getPropertyBytes(key);
 				if (bytes != null) {
 					result.put(key, bytes);

@@ -42,15 +42,15 @@ public class EndpointDescription extends
 	private void initRemoteServiceProperties() {
 		Map properties = getProperties();
 
-		containerID = (ID) properties.get(RemoteConstants.ENDPOINT_ID);
+		containerID = (ID) properties.get(RemoteConstants.ENDPOINT_CONTAINER_ID);
 		if (containerID == null)
 			throw new NullPointerException(
-					"ECF EndpointDescription must include non-null value for 'ecf.endpoint.id' of type ID");
+					"ECF EndpointDescriptions must include non-null value for "+RemoteConstants.ENDPOINT_CONTAINER_ID+" of type ID");
 
 		Object rsid = properties.get(RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
 		if (rsid != null)
 			remoteServiceId = ((Long) rsid).longValue();
-		else throw new NullPointerException("ECF EndpointDescription must include value of 'ecf.endpoint.rs.id' of type Long");
+		else throw new NullPointerException("ECF EndpointDescription must include non-null value of "+RemoteConstants.ENDPOINT_REMOTESERVICE_ID+" of type Long");
 		
 		Object ctid = properties.get(RemoteConstants.ENDPOINT_TARGET_ID);
 		if (ctid != null)
@@ -60,7 +60,7 @@ public class EndpointDescription extends
 		if (idf != null)
 			idFilter = (ID[]) idf;
 
-		Object rsf = properties.get(RemoteConstants.ENDPOINT_REMOTESERVICEFILTER);
+		Object rsf = properties.get(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
 		if (rsf != null)
 			rsFilter = (String) rsf;
 	}
@@ -86,7 +86,7 @@ public class EndpointDescription extends
 		return hashCode;
 	}
 
-	public ID getID() {
+	public ID getContainerID() {
 		return containerID;
 	}
 

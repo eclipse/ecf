@@ -186,7 +186,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 
 	protected void addRequiredECFProperties(Map<String,Object> props) {
 		// ecf.endpoint.id
-		props.put(RemoteConstants.ENDPOINT_ID,createECFContainerID(props));
+		props.put(RemoteConstants.ENDPOINT_CONTAINER_ID,createECFContainerID(props));
 		// ecf.endpoint.
 		props.put(RemoteConstants.ENDPOINT_REMOTESERVICE_ID, createECFRemoteServiceId(props));
 	}
@@ -197,7 +197,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		// ecf.endpoint.idfilter.ids
 		props.put(RemoteConstants.ENDPOINT_IDFILTER_IDS, createECFIDFilterIDs(props));
 		// ecf.endpoint.idfilter
-		props.put(RemoteConstants.ENDPOINT_REMOTESERVICEFILTER, createECFIDFilter(props));
+		props.put(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, createECFIDFilter(props));
 	}
 
 	protected Object createECFIDFilter(Map<String, Object> props) {

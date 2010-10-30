@@ -114,7 +114,7 @@ public abstract class AbstractServiceInfoFactory extends
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID,
 			String serviceName) throws URISyntaxException {
 		String path = "/" + serviceName;
-		String str = endpointDescription.getID().getName();
+		String str = endpointDescription.getContainerID().getName();
 		URI uri = null;
 		while (true) {
 			try {

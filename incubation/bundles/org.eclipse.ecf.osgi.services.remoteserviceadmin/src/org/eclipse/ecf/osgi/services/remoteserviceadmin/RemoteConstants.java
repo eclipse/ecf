@@ -19,25 +19,25 @@ public class RemoteConstants {
 	public static final String DISCOVERY_SERVICE_NAME = "ecf.endpoint.discovery.servicename";
 	public static final String DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX = "osgirsvc_";
 	
-	// ECF endpoint description properties <-> service info properties
-	// container id external form
-	public static final String ENDPOINT_ID = "ecf.endpoint.id";
-	// container id namespace
-	public static final String ENDPOINT_ID_NAMESPACE = "ecf.endpoint.id.ns";
-	// remote service id
+	// container id.  Value of type ID for EndpointDescription
+	public static final String ENDPOINT_CONTAINER_ID = "ecf.endpoint.id";
+	// container id namespace.  Value of type String
+	public static final String ENDPOINT_CONTAINER_ID_NAMESPACE = "ecf.endpoint.id.ns";
+	// remote service id.  Value of type Long
 	public static final String ENDPOINT_REMOTESERVICE_ID = "ecf.endpoint.rs.id";
-	
+	// target id.  Value of type ID
 	public static final String ENDPOINT_TARGET_ID = "ecf.endpoint.target.id";
+	// target namespace.  Value of type String
 	public static final String ENDPOINT_TARGET_ID_NAMESPACE = "ecf.endpoint.target.id.ns";
-	
+	// id filter.  Value of type ID[]
 	public static final String ENDPOINT_IDFILTER_IDS = "ecf.endpoint.idfilter.ids";
 	
-	public static final String ENDPOINT_IDFILTER_ID_COUNT = "ecf.endpoint.idfilter.id.n";
+	public static final String ENDPOINT_IDFILTER_IDARRAY_COUNT = "ecf.endpoint.idfilter.id.n";
     // id filter external form
-	public static final String ENDPOINT_IDFILTER_ID_NAME_ = "ecf.endpoint.idfilter.id.name.";
+	public static final String ENDPOINT_IDFILTER_IDARRAY_NAME_ = "ecf.endpoint.idfilter.id.name.";
 	// id filter namespaces
-	public static final String ENDPOINT_IDFILTER_NAMESPACE_ = "ecf.endpoint.idfilter.id.ns.";
+	public static final String ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_ = "ecf.endpoint.idfilter.id.ns.";
 	// remote service filter
-	public static final String ENDPOINT_REMOTESERVICEFILTER = "ecf.endpoint.rsfilter";
+	public static final String ENDPOINT_REMOTESERVICE_FILTER = "ecf.endpoint.rsfilter";
 
 }
