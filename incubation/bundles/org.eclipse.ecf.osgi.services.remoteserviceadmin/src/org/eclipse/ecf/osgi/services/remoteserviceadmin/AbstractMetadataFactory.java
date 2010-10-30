@@ -41,13 +41,11 @@ public abstract class AbstractMetadataFactory {
 			// ECF properties
 			RemoteConstants.ENDPOINT_ID,
 			RemoteConstants.ENDPOINT_ID_NAMESPACE,
+			RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
 			RemoteConstants.ENDPOINT_TARGET_ID,
 			RemoteConstants.ENDPOINT_TARGET_ID_NAMESPACE,
 			RemoteConstants.ENDPOINT_IDFILTER_IDS,
 			RemoteConstants.ENDPOINT_IDFILTER_ID_COUNT,
-			RemoteConstants.ENDPOINT_IDFILTER_ID_NAME_,
-			RemoteConstants.ENDPOINT_IDFILTER_NAMESPACE_,
-			RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
 			RemoteConstants.ENDPOINT_REMOTESERVICEFILTER
 	});
 
@@ -321,7 +319,9 @@ public abstract class AbstractMetadataFactory {
 	protected void decodeNonStandardServiceProperties(IServiceProperties props, Map<String, Object> result) {
 		for(Enumeration keys=props.getPropertyNames(); keys.hasMoreElements(); ) {
 			String key = (String) keys.nextElement();
-			if (!standardProperties.contains(key)) {
+			if (!standardProperties.contains(key) &&
+					!key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_ID_NAME_) &&
+					!key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_NAMESPACE_)) {
 				byte[] bytes = props.getPropertyBytes(key);
 				if (bytes != null) {
 					result.put(key, bytes);
