@@ -51,7 +51,9 @@ public class DiscoveryServiceListener implements ServiceListener {
 	}
 
 	public void dispose() {
-		context.removeServiceListener(this);
+		if (!DiscoveryPlugin.isStopped()) {
+			context.removeServiceListener(this);
+		}
 	}
 
 	private void addServiceListener(ServiceReference[] references) {
