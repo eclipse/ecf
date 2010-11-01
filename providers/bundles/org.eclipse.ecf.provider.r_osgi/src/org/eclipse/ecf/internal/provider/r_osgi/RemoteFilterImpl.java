@@ -20,8 +20,6 @@ import org.osgi.framework.*;
  */
 public class RemoteFilterImpl extends org.eclipse.ecf.remoteservice.util.RemoteFilterImpl implements IRemoteFilter {
 
-	Filter filter;
-
 	/**
 	 * @param createFilter
 	 */

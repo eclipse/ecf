@@ -13,14 +13,13 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
-import org.osgi.framework.*;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
 /**
  *
  */
 public class RemoteFilterImpl extends org.eclipse.ecf.remoteservice.util.RemoteFilterImpl implements IRemoteFilter {
-
-	Filter filter;
 
 	/**
 	 * @param createFilter

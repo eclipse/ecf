@@ -11,8 +11,7 @@
 
 package org.eclipse.ecf.remoteservice.util;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.*;
 import org.eclipse.ecf.internal.remoteservice.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
@@ -71,6 +70,7 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteFilter#match(java.util.Dictionary)
 	 */
+	@SuppressWarnings("unchecked") // DO NOT REMOVE!!!
 	public boolean match(Dictionary dictionary) {
 		return filter.match(dictionary);
 	}
@@ -78,6 +78,7 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteFilter#matchCase(java.util.Dictionary)
 	 */
+	@SuppressWarnings("unchecked") // DO NOT REMOVE!!!
 	public boolean matchCase(Dictionary dictionary) {
 		return filter.matchCase(dictionary);
 	}
@@ -104,11 +105,32 @@ public class RemoteFilterImpl implements IRemoteFilter {
 		return this.toString().hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return filter.toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.osgi.framework.Filter#match(org.osgi.framework.ServiceReference)
+	 */
 	public boolean match(ServiceReference reference) {
 		return filter.match(reference);
+	}
+
+	/**
+	 * @see org.osgi.framework.Filter#matches(java.util.Map)
+	 * @since 5.1
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean matches(Map map) {
+		// Once we stop supporting <= OSGi r4.2, delegate to filter.matches(Map) instead
+		final Dictionary dict = new Hashtable(map.size());
+		for (Iterator iterator = map.entrySet().iterator(); iterator.hasNext();) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			dict.put(entry.getKey(), entry.getValue());
+		}
+		return filter.matchCase(dict);
 	}
 }

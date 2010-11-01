@@ -442,7 +442,7 @@ public class Activator implements BundleActivator {
 		serviceInfoFactory = new DefaultServiceInfoFactory();
 		serviceInfoFactoryRegistration = context.registerService(
 				IServiceInfoFactory.class.getName(), serviceInfoFactory,
-				properties);
+				(Dictionary) properties);
 	}
 
 	private void closeServiceInfoFactory() {
@@ -470,7 +470,7 @@ public class Activator implements BundleActivator {
 		endpointDescriptionFactory = new DefaultEndpointDescriptionFactory();
 		endpointDescriptionFactoryRegistration = context.registerService(
 				IEndpointDescriptionFactory.class.getName(),
-				endpointDescriptionFactory, properties);
+				endpointDescriptionFactory, (Dictionary) properties);
 	}
 
 	private void closeEndpointDescriptionFactory() {
