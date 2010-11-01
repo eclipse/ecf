@@ -11,8 +11,6 @@
 
 package org.eclipse.ecf.provider.remoteservice.generic;
 
-import java.util.Dictionary;
-import org.eclipse.ecf.internal.provider.remoteservice.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.osgi.framework.*;
@@ -20,7 +18,7 @@ import org.osgi.framework.*;
 /**
  *
  */
-public class RemoteFilterImpl implements IRemoteFilter {
+public class RemoteFilterImpl extends org.eclipse.ecf.remoteservice.util.RemoteFilterImpl implements IRemoteFilter {
 
 	Filter filter;
 
@@ -28,9 +26,7 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	 * @param createFilter
 	 */
 	public RemoteFilterImpl(String createFilter) throws InvalidSyntaxException {
-		if (createFilter == null)
-			throw new InvalidSyntaxException("Filter cannot be null", null); //$NON-NLS-1$
-		this.filter = Activator.getDefault().createFilter(createFilter);
+		super(createFilter);
 	}
 
 	/* (non-Javadoc)
@@ -44,46 +40,6 @@ public class RemoteFilterImpl implements IRemoteFilter {
 			return match(impl.getRegistration().properties);
 		}
 		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.remoteservice.IRemoteFilter#match(java.util.Dictionary)
-	 */
-	public boolean match(Dictionary dictionary) {
-		return filter.match(dictionary);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.remoteservice.IRemoteFilter#matchCase(java.util.Dictionary)
-	 */
-	public boolean matchCase(Dictionary dictionary) {
-		return filter.matchCase(dictionary);
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
-
-		if (!(obj instanceof RemoteFilterImpl)) {
-			return false;
-		}
-
-		return this.toString().equals(obj.toString());
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		return this.toString().hashCode();
-	}
-
-	public String toString() {
-		return filter.toString();
 	}
 
 	public boolean match(ServiceReference reference) {

@@ -30,9 +30,17 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	 * @param createFilter
 	 */
 	public RemoteFilterImpl(String createFilter) throws InvalidSyntaxException {
+		this(Activator.getDefault().getContext(), createFilter);
+	}
+
+	/**
+	 * @param createFilter
+	 * @since 5.1
+	 */
+	public RemoteFilterImpl(BundleContext context, String createFilter) throws InvalidSyntaxException {
 		if (createFilter == null)
-			throw new InvalidSyntaxException("createFilter cannot be null", createFilter); //$NON-NLS-1$
-		this.filter = Activator.getDefault().getContext().createFilter(createFilter);
+			throw new InvalidSyntaxException("Filter cannot be null", createFilter); //$NON-NLS-1$
+		this.filter = context.createFilter(createFilter);
 	}
 
 	public RemoteFilterImpl(Filter filter) {
