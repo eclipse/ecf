@@ -979,7 +979,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 
 		try {
 			final ServiceReference[] refs = RemoteOSGiActivator.getActivator()
-					.getContext().getServiceReferences(null, filter);
+					.getContext().getServiceReferences((String) null, filter);
 			if (refs == null) {
 				if (log != null) {
 					log.log(LogService.LOG_WARNING, "COULD NOT FIND " + filter); //$NON-NLS-1$

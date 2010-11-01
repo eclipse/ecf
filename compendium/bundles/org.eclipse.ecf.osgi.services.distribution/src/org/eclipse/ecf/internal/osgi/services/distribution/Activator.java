@@ -188,7 +188,7 @@ public class Activator implements BundleActivator {
 			final BundleContext bundleContext) {
 		try {
 			final ServiceReference[] refs = bundleContext.getServiceReferences(
-					null,
+					(String) null,
 					"(" + IDistributionConstants.SERVICE_EXPORTED_INTERFACES //$NON-NLS-1$
 							+ "=*)"); //$NON-NLS-1$
 			if (refs != null) {

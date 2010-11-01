@@ -12,6 +12,7 @@ package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -95,10 +96,10 @@ public class Activator implements BundleActivator {
 		properties.put(Constants.SERVICE_RANKING, new Integer(
 				Integer.MIN_VALUE));
 		serviceInfoFactory = new DefaultServiceInfoFactory();
-		serviceInfoFactoryRegistration = context.registerService(IServiceInfoFactory.class.getName(), serviceInfoFactory, properties);
+		serviceInfoFactoryRegistration = context.registerService(IServiceInfoFactory.class.getName(), serviceInfoFactory, (Dictionary) properties);
 		// also endpoint description factory
 		endpointDescriptionFactory = new DefaultEndpointDescriptionFactory();
-		endpointDescriptionFactoryRegistration = context.registerService(IEndpointDescriptionFactory.class.getName(), endpointDescriptionFactory, properties);
+		endpointDescriptionFactoryRegistration = context.registerService(IEndpointDescriptionFactory.class.getName(), endpointDescriptionFactory, (Dictionary) properties);
 
 		executor = new ThreadsExecutor();
 		

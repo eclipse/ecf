@@ -161,7 +161,7 @@ public abstract class AbstractDistributionTest extends
 
 	protected ServiceRegistration registerService(String[] clazzes,
 			Object service, Properties props) throws Exception {
-		return getContext().registerService(clazzes, service, props);
+		return getContext().registerService(clazzes, service, (Dictionary) props);
 	}
 
 	protected ServiceRegistration registerService(String clazz, Object service,

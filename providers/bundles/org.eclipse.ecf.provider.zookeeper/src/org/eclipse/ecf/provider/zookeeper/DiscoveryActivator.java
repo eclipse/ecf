@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper;
 
+import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -51,7 +52,7 @@ public class DiscoveryActivator implements BundleActivator {
 		discoveryRegistration = ctxt.registerService(new String[] {
 				IDiscoveryLocator.class.getName(),
 				IDiscoveryAdvertiser.class.getName() }, ZooDiscoveryContainer
-				.getSingleton(), props);
+				.getSingleton(), (Dictionary) props);
 		ZooDiscoveryContainer.getSingleton().setDiscoveryProperties(props);
 
 		// track OSGi log services

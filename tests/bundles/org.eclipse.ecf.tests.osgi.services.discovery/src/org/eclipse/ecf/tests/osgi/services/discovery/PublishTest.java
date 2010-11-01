@@ -10,6 +10,7 @@
 package org.eclipse.ecf.tests.osgi.services.discovery;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Properties;
 
@@ -78,7 +79,7 @@ public class PublishTest extends TestCase {
 	public void testServicePublish() throws Exception {
 	    List interfaces = new ArrayList();
 	    interfaces.add("foo.bar");
-		ServiceRegistration reg = context.registerService(ServicePublication.class.getName(), createServicePublication(), createServicePublicationProperties(interfaces));
+		ServiceRegistration reg = context.registerService(ServicePublication.class.getName(), createServicePublication(), (Dictionary) createServicePublicationProperties(interfaces));
 		Thread.sleep(60000);
 		reg.unregister();
 		Thread.sleep(60000);
