@@ -109,6 +109,10 @@ public class DiscoveryPlugin implements BundleActivator {
 		return plugin;
 	}
 
+	public static boolean isStopped() {
+		return plugin == null;
+	}
+	
 	public BundleContext getBundleContext() {
 		return context;
 	}

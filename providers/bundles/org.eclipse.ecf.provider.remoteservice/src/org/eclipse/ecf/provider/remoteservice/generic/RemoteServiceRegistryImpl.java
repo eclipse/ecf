@@ -95,7 +95,9 @@ public class RemoteServiceRegistryImpl implements Serializable {
 		for (int i = 0; i < size; i++) {
 			final String clazz = clazzes[i];
 			final ArrayList services = (ArrayList) publishedServicesByClass.get(clazz);
-			services.remove(serviceReg);
+			// Fix for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=329161
+			if (services != null)
+				services.remove(serviceReg);
 		}
 
 		// Remove the ServiceRegistration from the list of all published
