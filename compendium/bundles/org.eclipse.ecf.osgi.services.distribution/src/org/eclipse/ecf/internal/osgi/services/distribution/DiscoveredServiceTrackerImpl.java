@@ -32,6 +32,7 @@ import org.eclipse.ecf.osgi.services.discovery.IRemoteServiceEndpointDescription
 import org.eclipse.ecf.osgi.services.discovery.RemoteServiceEndpointDescription;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
+import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.osgi.services.distribution.IProxyContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IProxyDistributionListener;
@@ -60,6 +61,7 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 			org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
 			org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID,
 			org.eclipse.ecf.remoteservice.Constants.SERVICE_RANKING,
+			IDistributionConstants.SERVICE_EXPORTED_CONFIGS,
 			RemoteServicePublication.ENDPOINT_ID,
 			RemoteServicePublication.ENDPOINT_INTERFACE_NAME,
 			RemoteServicePublication.ENDPOINT_LOCATION,
@@ -686,6 +688,15 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 				props.put(propKeys[i], rsReference.getProperty(propKeys[i]));
 			}
 		}
+
+		// make the service identifiable by consumers
+		// especially org.eclipse.ecf.remoteservice.ui.dosgi
+		final ID endpointId = (ID) rsReference
+				.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID);
+		final Long serviceId = (Long) rsReference
+				.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		props.put(ServicePublication.ENDPOINT_ID, endpointId + "#" + serviceId); //$NON-NLS-1$
+
 		// finally add service.imported.configs
 		addImportedConfigsProperties(
 				getContainerTypeDescription(rsContainer.getContainer()),
