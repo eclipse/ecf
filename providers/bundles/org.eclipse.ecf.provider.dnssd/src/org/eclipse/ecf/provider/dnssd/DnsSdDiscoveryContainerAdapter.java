@@ -226,6 +226,9 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 				srvQueryResult = srvQuery.run();
 			} else if (record instanceof SRVRecord) {
 				srvQueryResult = new SRVRecord[]{(SRVRecord) record};
+			} else {
+				// avoid NPE
+				srvQueryResult = new SRVRecord[0];
 			}
 			srvRecords.addAll(Arrays.asList(srvQueryResult));
 		}
