@@ -691,11 +691,15 @@ public class DiscoveredServiceTrackerImpl implements DiscoveredServiceTracker {
 
 		// make the service identifiable by consumers
 		// especially org.eclipse.ecf.remoteservice.ui.dosgi
-		final ID endpointId = (ID) rsReference
+		ID endpointId = (ID) rsReference
 				.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_CONTAINER_ID);
+		if (endpointId == null) {
+			endpointId = rsEndpointDescription.getEndpointAsID();
+		}
 		final Long serviceId = (Long) rsReference
 				.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-		props.put(ServicePublication.ENDPOINT_ID, endpointId + "#" + serviceId); //$NON-NLS-1$
+		props.put(ServicePublication.ENDPOINT_ID, endpointId.toExternalForm()
+				+ "#" + serviceId); //$NON-NLS-1$
 
 		// finally add service.imported.configs
 		addImportedConfigsProperties(
