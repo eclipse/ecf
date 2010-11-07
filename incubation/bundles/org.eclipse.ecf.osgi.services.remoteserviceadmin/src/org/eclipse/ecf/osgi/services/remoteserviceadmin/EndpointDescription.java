@@ -12,6 +12,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.osgi.framework.ServiceReference;
 
@@ -26,9 +27,25 @@ public class EndpointDescription extends
 
 	private int hashCode;
 
-	public EndpointDescription(ServiceReference reference, Map osgiProperties) {
+	public EndpointDescription(ServiceReference reference, Map osgiProperties, ID containerID, long remoteServiceId, ID connectTargetID, ID[] idFilter, String rsFilter) {
 		super(reference, osgiProperties);
-		initRemoteServiceProperties();
+		this.containerID = containerID;
+		Assert.isNotNull(this.containerID);
+		this.remoteServiceId = remoteServiceId;
+		this.connectTargetID = connectTargetID;
+		this.idFilter = idFilter;
+		this.rsFilter = rsFilter;
+		computeHashCode();
+	}
+
+	public EndpointDescription(Map osgiProperties, ID containerID, long remoteServiceId, ID connectTargetID, ID[] idFilter, String rsFilter) {
+		super(osgiProperties);
+		this.containerID = containerID;
+		Assert.isNotNull(this.containerID);
+		this.remoteServiceId = remoteServiceId;
+		this.connectTargetID = connectTargetID;
+		this.idFilter = idFilter;
+		this.rsFilter = rsFilter;
 		computeHashCode();
 	}
 
@@ -37,38 +54,6 @@ public class EndpointDescription extends
 		this.hashCode = 31 * hashCode + containerID.hashCode();
 		this.hashCode = 31 * hashCode
 				+ (int) (remoteServiceId ^ (remoteServiceId >>> 32));
-	}
-
-	private void initRemoteServiceProperties() {
-		Map properties = getProperties();
-
-		containerID = (ID) properties.get(RemoteConstants.ENDPOINT_CONTAINER_ID);
-		if (containerID == null)
-			throw new NullPointerException(
-					"ECF EndpointDescriptions must include non-null value for "+RemoteConstants.ENDPOINT_CONTAINER_ID+" of type ID");
-
-		Object rsid = properties.get(RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
-		if (rsid != null)
-			remoteServiceId = ((Long) rsid).longValue();
-		else throw new NullPointerException("ECF EndpointDescription must include non-null value of "+RemoteConstants.ENDPOINT_REMOTESERVICE_ID+" of type Long");
-		
-		Object ctid = properties.get(RemoteConstants.ENDPOINT_TARGET_ID);
-		if (ctid != null)
-			connectTargetID = (ID) ctid;
-
-		Object idf = properties.get(RemoteConstants.ENDPOINT_IDFILTER_IDS);
-		if (idf != null)
-			idFilter = (ID[]) idf;
-
-		Object rsf = properties.get(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
-		if (rsf != null)
-			rsFilter = (String) rsf;
-	}
-
-	public EndpointDescription(Map osgiProperties) {
-		super(osgiProperties);
-		initRemoteServiceProperties();
-		computeHashCode();
 	}
 
 	public boolean equals(Object other) {

@@ -19,9 +19,8 @@ import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 import org.osgi.framework.Constants;
 import org.osgi.util.tracker.ServiceTracker;
@@ -37,12 +36,12 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 	protected static final String DEFAULT_SERVICE_INTENT1 = "test.intent.1";
 	protected static final String DEFAULT_SERVICE_INTENT2 = "test.intent.2";
 	protected static final String DEFAULT_ECF_TARGET_ID = "ecftcp://localhost:3333/server";
-	protected static final Object DEFAULT_IDFILTER = "(&(key1=foo)(key2=foo2))";
+	protected static final String DEFAULT_RSFILTER = "(&(key1=foo)(key2=foo2))";
 	protected static final String EXTRA_PROPERTY1 = "test.extra.prop.value.1";
 	protected static final String EXTRA_PROPERTY2 = "test.extra.prop.value.2";
 	
 	protected IServiceInfoFactory serviceInfoFactory;
-	protected IEndpointDescriptionFactory endpointDescriptionFactory;
+	protected IDiscoveredEndpointDescriptionFactory endpointDescriptionFactory;
 	
 	protected IDiscoveryAdvertiser discoveryAdvertiser;
 	protected IDiscoveryLocator discoveryLocator;
@@ -95,11 +94,11 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		Map<String,Object> props = new HashMap<String,Object>();
 		// Add required OSGi properties
 		addRequiredOSGiProperties(props);
-		// Add required ECF properties
-		addRequiredECFProperties(props);
+		ID containerID = createECFContainerID(props);
+		Long remoteServiceId = createECFRemoteServiceId(props);
 		// Add extra properties
 		addExtraProperties(props);
-		return new EndpointDescription(props);
+		return new EndpointDescription(props,containerID,remoteServiceId,null,null,null);
 	}
 	
 	protected EndpointDescription createFullEndpointDescription() {
@@ -108,13 +107,15 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		addRequiredOSGiProperties(props);
 		// Add full OSGi properties
 		addOptionalOSGiProperties(props);
-		// Add required ECF properties
-		addRequiredECFProperties(props);
-		// Add optional ECF properties
-		addOptionalECFProperties(props);
+		// required ECF properties
+		ID containerID = createECFContainerID(props);
+		Long remoteServiceId = createECFRemoteServiceId(props);
+		ID targetID = createECFTargetID(props);
+		ID[] idFilter = createECFIDFilterIDs(props);
+		String rsFilter = createECFRSFilter(props);
 		// Add extra properties
 		addExtraProperties(props);
-		return new EndpointDescription(props);
+		return new EndpointDescription(props,containerID, remoteServiceId,targetID,idFilter,rsFilter);
 	}
 
 	protected void addExtraProperties(Map<String, Object> props) {
@@ -126,10 +127,10 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		Map<String,Object> props = new HashMap<String,Object>();
 		// Add only ECF properties
 		// no OSGi properties
-		// Add required ECF properties
-		addRequiredECFProperties(props);
+		ID containerID = createECFContainerID(props);
+		Long remoteServiceId = createECFRemoteServiceId(props);
 		// This should throw a runtime exception 
-		return new EndpointDescription(props);
+		return new EndpointDescription(props,containerID,remoteServiceId.longValue(),null,null,null);
 	}
 	
 	protected EndpointDescription createBadECFEndpointDescrption() throws Exception {
@@ -141,7 +142,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		
 		// No ECF required properties
 		// This should throw a runtime exception 
-		return new EndpointDescription(props);
+		return new EndpointDescription(props,null,0,null,null,null);
 	}
 
 	protected String createOSGiServiceImportedConfig() {
@@ -184,27 +185,11 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		return new String[] { DEFAULT_SERVICE_INTENT1, DEFAULT_SERVICE_INTENT2 };
 	}
 
-	protected void addRequiredECFProperties(Map<String,Object> props) {
-		// ecf.endpoint.id
-		props.put(RemoteConstants.ENDPOINT_CONTAINER_ID,createECFContainerID(props));
-		// ecf.endpoint.
-		props.put(RemoteConstants.ENDPOINT_REMOTESERVICE_ID, createECFRemoteServiceId(props));
+	protected String createECFRSFilter(Map<String, Object> props) {
+		return DEFAULT_RSFILTER;
 	}
 
-	protected void addOptionalECFProperties(Map<String,Object> props) {
-		// ecf.endpoint.target.id
-		props.put(RemoteConstants.ENDPOINT_TARGET_ID,createECFTargetID(props));
-		// ecf.endpoint.idfilter.ids
-		props.put(RemoteConstants.ENDPOINT_IDFILTER_IDS, createECFIDFilterIDs(props));
-		// ecf.endpoint.idfilter
-		props.put(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, createECFIDFilter(props));
-	}
-
-	protected Object createECFIDFilter(Map<String, Object> props) {
-		return DEFAULT_IDFILTER;
-	}
-
-	protected Object createECFIDFilterIDs(Map<String, Object> props) {
+	protected ID[] createECFIDFilterIDs(Map<String, Object> props) {
 		return new ID[] { getIDFactory().createGUID(), getIDFactory().createGUID() };
 	}
 

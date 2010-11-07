@@ -12,39 +12,108 @@ package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.identity.StringID;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractMetadataFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionParseException;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
+import org.osgi.framework.Constants;
 
-public class EndpointDescriptionBuilder {
+public class EndpointDescriptionBuilder extends AbstractMetadataFactory {
 
-	public EndpointDescription[] createEndpointDescriptions(InputStream input) throws IOException, EndpointDescriptionParseException {
+	public org.osgi.service.remoteserviceadmin.EndpointDescription[] createEndpointDescriptions(InputStream input) throws IOException, EndpointDescriptionParseException {
 		// First create parser
 		EndpointDescriptionParser parser = new EndpointDescriptionParser();
 		// Parse input stream
 		parser.parse(input);
 		// Get possible endpoint descriptions
 		List<EndpointDescriptionParser.EndpointDescription> parsedDescriptions = parser.getEndpointDescriptions();
-		List<EndpointDescription> results = new ArrayList();
+		List<org.osgi.service.remoteserviceadmin.EndpointDescription> results = new ArrayList();
 		// For each one parsed, get properties and 
 		for(EndpointDescriptionParser.EndpointDescription ed: parsedDescriptions) {
-			Map endpointDescriptionProperties = createProperties(ed.getProperties());
-			if (endpointDescriptionProperties != null) results.add(new EndpointDescription(endpointDescriptionProperties));
+			Map parsedProperties = ed.getProperties();
+			org.osgi.service.remoteserviceadmin.EndpointDescription result = null;
+			try {
+				// Make sure that objectClasses is array, rather than single String
+				// as single string is allowed in endpoint description file
+				String[] objectClasses = getObjectClasses(parsedProperties);
+				parsedProperties.put(Constants.OBJECTCLASS,objectClasses);
+				// Create OSGi endpoint description
+				result = new org.osgi.service.remoteserviceadmin.EndpointDescription(parsedProperties);
+				// If ECF endpoint description, then an endpoint container ID will be found
+				ID endpointContainerID = getContainerID(parsedProperties);
+				// if the endpointContainerID is not found, then this is not an ECF endpoint description
+				if (endpointContainerID != null) {
+					result = createECFEndpointDescription(endpointContainerID, parsedProperties);
+				}
+				results.add(result);
+			} catch (Exception e) {
+				logError("Exception parsing endpoint description properties",e);
+			}
 		}
-		return (EndpointDescription[]) results.toArray(new EndpointDescription[] {});
+		return (org.osgi.service.remoteserviceadmin.EndpointDescription[]) results.toArray(new org.osgi.service.remoteserviceadmin.EndpointDescription[] {});
 	}
 
-	private String verifyStringProperty(Map<String,Object> properties, String propName) {
+	private String[] getObjectClasses(Map properties) {
+		Object o = properties.get(Constants.OBJECTCLASS);
+		if (o == null) return null;
+		if (o instanceof String) return new String[] { (String) o };
+		if (o instanceof String[]) return (String[]) o;
+		if (o instanceof List) return (String[]) ((List) o).toArray(new String[] {});
+		return null;
+	}
+	
+	private org.osgi.service.remoteserviceadmin.EndpointDescription createECFEndpointDescription(
+			ID endpointContainerID, Map parsedProperties) {
+		// we get the remote service id
+		Long remoteServiceId = null;
+		Object rso = parsedProperties.get(RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
+		if (rso instanceof Long) remoteServiceId = (Long) rso;
+		if (rso instanceof String) remoteServiceId = Long.decode((String) rso);
+		if (remoteServiceId == null) throw new IllegalArgumentException(RemoteConstants.ENDPOINT_REMOTESERVICE_ID+" is missing from endpoint description properties.  A valid value must be present for ECF EndpointDescriptions");
+		
+		// target ID
+		ID targetID = null;
+		String targetName = (String) parsedProperties.get(RemoteConstants.ENDPOINT_TARGET_ID);
+		String targetNamespace = (String) parsedProperties.get(RemoteConstants.ENDPOINT_TARGET_ID_NAMESPACE);
+		if (targetName != null) {
+			if (targetNamespace == null) targetNamespace = endpointContainerID.getNamespace().getName();
+			targetID = createID(targetNamespace,targetName);
+		}
+		// id filter
+		ID[] idFilter = null;
+		// XXX todo
+		
+		String rsFilter = (String) parsedProperties.get(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
+		Map properties = getNonECFProperties(parsedProperties);
+		return new EndpointDescription(properties,endpointContainerID,remoteServiceId.longValue(),targetID,idFilter,rsFilter);
+	}
+
+	private Map<String,Object> getNonECFProperties(Map<String,Object> parsedProperties) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		for(String key: parsedProperties.keySet()) {
+			if (!isECFProperty(key) &&  !key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_) &&
+					!key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_)) {
+				result.put(key, parsedProperties.get(key));
+			}
+		}
+		return result;
+	}
+
+	private void logError(String message, Throwable exception) {
+		System.err.println(message);
+		if (exception != null) {
+			exception.printStackTrace(System.err);
+		}
+	}
+	
+	private String verifyStringProperty(Map properties, String propName) {
 		Object r = properties.get(propName);
 		try {
 			return (String) r;
@@ -57,6 +126,7 @@ public class EndpointDescriptionBuilder {
 		}
 	}
 
+	
 	private ID getContainerID(Map<String,Object> properties) throws IDCreateException {
 		ID result = null;
 		// First check to see if the container id and namespace have been explicitly set
@@ -68,83 +138,12 @@ public class EndpointDescriptionBuilder {
 		} else {
 			// We try to get the ID from the OSGi id
 			String osgiId = verifyStringProperty(properties, org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
-			if (osgiId == null) throw new IDCreateException("OSGi endpoint.id must not be null");
+			if (osgiId == null) throw new IDCreateException(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID+" must not be null");
 			Namespace ns = findNamespaceForOSGiId(osgiId);
 			if (ns != null) result = createID(ns,osgiId);
 		}
 		return result;
 	}
 	
-	private Namespace findNamespace(String namespaceName) {
-		return getIDFactory().getNamespaceByName(namespaceName);
-	}
 	
-	private Namespace findNamespaceForOSGiId(String osgiId) {
-		int colonIndex = osgiId.indexOf(':');
-		if (colonIndex <= 0) return null;
-		String scheme = osgiId.substring(0,colonIndex-1);
-		// First try to find the Namespace using the protocol directly
-		Namespace ns = findNamespace(scheme);
-		if (ns == null) {
-			// Then try to find by comparing to all Namespace.getScheme()
-			ns = findNamespaceByScheme(scheme);
-		}
-		return ns;
-	}
-
-	private Namespace findNamespaceByScheme(String scheme) {
-		if (scheme == null) return null;
-		List namespaces = getIDFactory().getNamespaces();
-		for(Iterator i=namespaces.iterator(); i.hasNext(); ) {
-			Namespace ns = (Namespace) i.next();
-			if (scheme.equals(ns.getScheme())) {
-				// found it...so return
-				return ns;
-			}
-		}
-		return null;
-	}
-	
-	private IIDFactory getIDFactory() {
-		return IDFactory.getDefault();
-	}
-	
-	private Namespace getNamespace(String namespaceName) {
-		Namespace result = findNamespace(namespaceName);
-		return (result == null)?getIDFactory().getNamespaceByName(StringID.class.getName()):result;
-	}
-	
-	private Map createProperties(Map<String, Object> properties) {
-		try {
-			ID containerID = getContainerID(properties);
-			if (containerID == null) throw new NullPointerException("ECF EndpointDescriptions must include non-null value for "+RemoteConstants.ENDPOINT_CONTAINER_ID+" of type ID");
-			properties.put(RemoteConstants.ENDPOINT_CONTAINER_ID, containerID);
-			properties.remove(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-			Long rsId = getRemoteServiceID(properties);
-			if (rsId == null) throw new NullPointerException("ECF EndpointDescription must include non-null value of "+RemoteConstants.ENDPOINT_REMOTESERVICE_ID+" of type Long");
-			properties.put(RemoteConstants.ENDPOINT_REMOTESERVICE_ID, rsId);
-			
-			// XXX do targetID, idFilter IDs
-			
-			return properties;
-		} catch (Exception e) {
-			logError("createStandardProperties","unexpected error getting ECF properties from properties="+properties,e);
-			return null;
-		}
-	}
-
-	private Long getRemoteServiceID(Map<String, Object> properties) {
-		Long remoteServiceID = (Long) properties.get(RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
-		if (remoteServiceID != null) return remoteServiceID;
-		return new Long(0);
-	}
-
-	private ID createID(Namespace ns, String containerIDName) throws IDCreateException {
-		return getIDFactory().createID(ns, new Object[] { containerIDName });
-	}
-
-	private void logError(String string, String string2, Throwable e) {
-		// TODO Auto-generated method stub
-		
-	}
 }

@@ -23,7 +23,7 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator.EndpointListenerHolder;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
 import org.eclipse.osgi.framework.eventmgr.CopyOnWriteIdentityMap;
 import org.eclipse.osgi.framework.eventmgr.EventDispatcher;
 import org.eclipse.osgi.framework.eventmgr.EventManager;
@@ -213,7 +213,7 @@ class LocatorServiceListener implements IServiceListener {
 		if (activator == null)
 			return null;
 		// Get IEndpointDescriptionFactory
-		IEndpointDescriptionFactory factory = activator
+		IDiscoveredEndpointDescriptionFactory factory = activator
 				.getEndpointDescriptionFactory();
 		if (factory == null) {
 			logError("No IEndpointDescriptionFactory found, could not create EndpointDescription for "

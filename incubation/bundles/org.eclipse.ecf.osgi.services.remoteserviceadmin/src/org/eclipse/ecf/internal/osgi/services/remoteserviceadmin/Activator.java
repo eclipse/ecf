@@ -28,15 +28,16 @@ import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractDiscoveredEndpointDescriptionFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractServiceInfoFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultDiscoveredEndpointDescriptionFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultServiceInfoFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
 import org.eclipse.equinox.concurrent.future.IExecutor;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -45,6 +46,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
+import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -63,11 +65,6 @@ public class Activator implements BundleActivator {
 		return instance;
 	}
 
-	private IExecutor executor;
-	
-	private ServiceTracker locatorServiceTracker;
-	private Map<IDiscoveryLocator, LocatorServiceListener> locatorListeners;
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -82,7 +79,51 @@ public class Activator implements BundleActivator {
 		startEndpointDescriptionFactory();
 		startExecutor();
 		startLocators();
+		startBundleTracker();
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+	 */
+	public void stop(BundleContext bundleContext) throws Exception {
+		stopBundleTracker();
+		stopLocators();
+		stopEndpointDescriptionFactory();
+		stopServiceInfoFactory();
+		stopEndpointDescriptionFactoryTracker();
+		stopSAXParserTracker();
+		stopEndpointListenerTracker();
+		stopLogServiceTracker();
+		executor = null;
+		Activator.context = null;
+		Activator.instance = null;
+	}
+
+	private BundleTracker bundleTracker;
+	private EndpointDescriptionBundleTrackerCustomizer bundleTrackerCustomizer;
+	
+	private void startBundleTracker() {
+		bundleTrackerCustomizer = new EndpointDescriptionBundleTrackerCustomizer();
+		bundleTracker = new BundleTracker(context,Bundle.ACTIVE | Bundle.STARTING,bundleTrackerCustomizer);
+		bundleTracker.open();
+	}
+	
+	private void stopBundleTracker() {
+		if (bundleTracker != null) {
+			bundleTracker.close();
+			bundleTracker = null;
+		}
+		if (bundleTrackerCustomizer != null) {
+			bundleTrackerCustomizer.close();
+			bundleTrackerCustomizer = null;
+		}
+	}
+	
+	private ServiceTracker locatorServiceTracker;
+	private Map<IDiscoveryLocator, LocatorServiceListener> locatorListeners;
 
 	private void startLocators() {
 		locatorListeners = new HashMap();
@@ -91,14 +132,6 @@ public class Activator implements BundleActivator {
 				IDiscoveryLocator.class.getName(),
 				new LocatorTrackerCustomizer());
 		locatorServiceTracker.open();
-		openLocators();
-	}
-
-	private void startExecutor() {
-		executor = new ThreadsExecutor();
-	}
-
-	private void openLocators() {
 		Object[] locators = locatorServiceTracker.getServices();
 		if (locators != null) {
 			for (int i = 0; i < locators.length; i++) {
@@ -108,6 +141,33 @@ public class Activator implements BundleActivator {
 		}
 	}
 
+	private void stopLocators() {
+		synchronized (locatorListeners) {
+			for (IDiscoveryLocator l : locatorListeners.keySet()) {
+				LocatorServiceListener locatorListener = locatorListeners
+						.get(l);
+				if (locatorListener != null) {
+					l.removeServiceListener(locatorListener);
+					locatorListener.close();
+				}
+			}
+			locatorListeners.clear();
+		}
+		
+		Object[] locators = locatorServiceTracker.getServices();
+		if (locators != null) {
+			for (int i = 0; i < locators.length; i++) {
+				// Add service listener to locator
+				shutdownLocator((IDiscoveryLocator) locators[i]);
+			}
+		}
+
+		if (locatorServiceTracker != null) {
+			locatorServiceTracker.close();
+			locatorServiceTracker = null;
+		}
+	}
+	
 	void openLocator(IDiscoveryLocator locator) {
 		if (locator == null || context == null)
 			return;
@@ -137,8 +197,6 @@ public class Activator implements BundleActivator {
 				if (context == null)
 					return null;
 				IServiceInfo[] serviceInfos = locator.getServices();
-				if (context == null)
-					return null;
 				for (int i = 0; i < serviceInfos.length; i++) {
 					locatorListener.handleService(serviceInfos[i], true);
 				}
@@ -146,20 +204,6 @@ public class Activator implements BundleActivator {
 			}
 		};
 		executor.execute(runnable, null);
-	}
-
-	private void closeLocatorListeners() {
-		synchronized (locatorListeners) {
-			for (IDiscoveryLocator l : locatorListeners.keySet()) {
-				LocatorServiceListener locatorListener = locatorListeners
-						.get(l);
-				if (locatorListener != null) {
-					l.removeServiceListener(locatorListener);
-					locatorListener.close();
-				}
-			}
-			locatorListeners.clear();
-		}
 	}
 
 	void shutdownLocators() {
@@ -172,46 +216,16 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext bundleContext) throws Exception {
-		closeEndpointDescriptionFactory();
-		closeServiceInfoFactory();
-		closeSAXParserTracker();
-		closeEndpointListenerTracker();
-		closeLogServiceTracker();
-		closeEndpointDescriptionFactoryTracker();
-		closeLocatorTracker();
-		closeLocatorListeners();
-		executor = null;
-		Activator.context = null;
-		Activator.instance = null;
-	}
-
-	private void closeLocatorTracker() {
-		if (locatorServiceTracker != null) {
-			locatorServiceTracker.close();
-			locatorServiceTracker = null;
-		}
-	}
-
-	private void closeEndpointDescriptionFactoryTracker() {
-		synchronized (endpointDescriptionFactoryServiceTrackerLock) {
-			if (endpointDescriptionFactoryServiceTracker != null) {
-				endpointDescriptionFactoryServiceTracker.close();
-				endpointDescriptionFactoryServiceTracker = null;
-			}
-		}
+	private IExecutor executor;
+	
+	private void startExecutor() {
+		executor = new ThreadsExecutor();
 	}
 
 	private ServiceTracker endpointListenerServiceTracker;
 	private Object endpointListenerServiceTrackerLock = new Object();
 
-	private void closeEndpointListenerTracker() {
+	private void stopEndpointListenerTracker() {
 		synchronized (endpointListenerServiceTrackerLock) {
 			if (endpointListenerServiceTracker != null) {
 				endpointListenerServiceTracker.close();
@@ -219,8 +233,6 @@ public class Activator implements BundleActivator {
 			}
 		}
 	}
-
-
 
 	private class LocatorTrackerCustomizer implements ServiceTrackerCustomizer {
 
@@ -365,20 +377,29 @@ public class Activator implements BundleActivator {
 		return Collections.EMPTY_LIST;
 	}
 
-	private Object endpointDescriptionFactoryServiceTrackerLock = new Object();
-	private ServiceTracker endpointDescriptionFactoryServiceTracker;
+	private Object endpointDescriptionFactoryTrackerLock = new Object();
+	private ServiceTracker endpointDescriptionFactoryTracker;
 
-	public IEndpointDescriptionFactory getEndpointDescriptionFactory() {
-		synchronized (endpointDescriptionFactoryServiceTrackerLock) {
+	private void stopEndpointDescriptionFactoryTracker() {
+		synchronized (endpointDescriptionFactoryTrackerLock) {
+			if (endpointDescriptionFactoryTracker != null) {
+				endpointDescriptionFactoryTracker.close();
+				endpointDescriptionFactoryTracker = null;
+			}
+		}
+	}
+
+	public IDiscoveredEndpointDescriptionFactory getEndpointDescriptionFactory() {
+		synchronized (endpointDescriptionFactoryTrackerLock) {
 			if (context == null)
 				return null;
-			if (endpointDescriptionFactoryServiceTracker == null) {
-				endpointDescriptionFactoryServiceTracker = new ServiceTracker(
-						context, IEndpointDescriptionFactory.class.getName(),
+			if (endpointDescriptionFactoryTracker == null) {
+				endpointDescriptionFactoryTracker = new ServiceTracker(
+						context, IDiscoveredEndpointDescriptionFactory.class.getName(),
 						null);
-				endpointDescriptionFactoryServiceTracker.open();
+				endpointDescriptionFactoryTracker.open();
 			}
-			return (IEndpointDescriptionFactory) endpointDescriptionFactoryServiceTracker
+			return (IDiscoveredEndpointDescriptionFactory) endpointDescriptionFactoryTracker
 					.getService();
 		}
 	}
@@ -418,7 +439,7 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	private void closeSAXParserTracker() {
+	private void stopSAXParserTracker() {
 		synchronized (saxParserFactoryTrackerLock) {
 			if (saxParserFactoryTracker != null) {
 				saxParserFactoryTracker.close();
@@ -427,7 +448,6 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	
 	private AbstractServiceInfoFactory serviceInfoFactory;
 	private ServiceRegistration serviceInfoFactoryRegistration;
 
@@ -445,7 +465,7 @@ public class Activator implements BundleActivator {
 				(Dictionary) properties);
 	}
 
-	private void closeServiceInfoFactory() {
+	private void stopServiceInfoFactory() {
 		if (serviceInfoFactoryRegistration != null) {
 			serviceInfoFactoryRegistration.unregister();
 			serviceInfoFactoryRegistration = null;
@@ -457,7 +477,7 @@ public class Activator implements BundleActivator {
 	}
 
     // endpoint description factory
-	private AbstractEndpointDescriptionFactory endpointDescriptionFactory;
+	private AbstractDiscoveredEndpointDescriptionFactory endpointDescriptionFactory;
 	private ServiceRegistration endpointDescriptionFactoryRegistration;
 
 	private void startEndpointDescriptionFactory() {
@@ -467,13 +487,13 @@ public class Activator implements BundleActivator {
 		final Properties properties = new Properties();
 		properties.put(Constants.SERVICE_RANKING,
 				new Integer(Integer.MIN_VALUE));
-		endpointDescriptionFactory = new DefaultEndpointDescriptionFactory();
+		endpointDescriptionFactory = new DefaultDiscoveredEndpointDescriptionFactory();
 		endpointDescriptionFactoryRegistration = context.registerService(
-				IEndpointDescriptionFactory.class.getName(),
+				IDiscoveredEndpointDescriptionFactory.class.getName(),
 				endpointDescriptionFactory, (Dictionary) properties);
 	}
 
-	private void closeEndpointDescriptionFactory() {
+	private void stopEndpointDescriptionFactory() {
 		if (endpointDescriptionFactoryRegistration != null) {
 			endpointDescriptionFactoryRegistration.unregister();
 			endpointDescriptionFactoryRegistration = null;
@@ -483,10 +503,6 @@ public class Activator implements BundleActivator {
 			endpointDescriptionFactory = null;
 		}
 	}
-	
-
-	
-	
 	
 	// Logging
 	
@@ -530,7 +546,7 @@ public class Activator implements BundleActivator {
 			logService.log(sr, level, message, t);
 	}
 
-	private void closeLogServiceTracker() {
+	private void stopLogServiceTracker() {
 		synchronized (logServiceTrackerLock) {
 			if (logServiceTracker != null) {
 				logServiceTracker.close();

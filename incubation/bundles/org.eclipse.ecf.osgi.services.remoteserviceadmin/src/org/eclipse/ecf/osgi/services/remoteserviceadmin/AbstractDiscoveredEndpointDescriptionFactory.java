@@ -17,8 +17,8 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
-public abstract class AbstractEndpointDescriptionFactory extends
-		AbstractMetadataFactory implements IEndpointDescriptionFactory {
+public abstract class AbstractDiscoveredEndpointDescriptionFactory extends
+		AbstractMetadataFactory implements IDiscoveredEndpointDescriptionFactory {
 
 	protected List<DiscoveredEndpointDescription> discoveredEndpointDescriptions = new ArrayList();
 
