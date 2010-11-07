@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoint-descriptions xmlns="http://www.osgi.org/xmlns/rsa/v1.0.0">
+<endpoint-description>
+  <property name="endpoint.id" value="ecftcp://localhost:3280/server"/>
+  <property name="endpoint.service.id" value="5"/>
+  <property name="objectClass" value="com.acme.Foo"/>
+  <property name="service.imported.configs" value="com.acme"/>
+  <property name="ecf.endpoint.remoteservice.id" value="5"/>
+</endpoint-description>
+</endpoint-descriptions>

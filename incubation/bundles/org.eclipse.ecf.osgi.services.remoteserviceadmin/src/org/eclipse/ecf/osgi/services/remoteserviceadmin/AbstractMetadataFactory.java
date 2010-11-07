@@ -49,8 +49,8 @@ public abstract class AbstractMetadataFactory {
 			RemoteConstants.ENDPOINT_CONTAINER_ID,
 			RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
 			RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
-			RemoteConstants.ENDPOINT_TARGET_ID,
-			RemoteConstants.ENDPOINT_TARGET_ID_NAMESPACE,
+			RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
+			RemoteConstants.ENDPOINT_CONNECTTARGET_ID_NAMESPACE,
 			RemoteConstants.ENDPOINT_IDFILTER_IDS,
 			RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT,
 			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER
@@ -242,7 +242,7 @@ public abstract class AbstractMetadataFactory {
 		// remote service id
 		Long remoteServiceId = decodeLong(discoveredServiceProperties,RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
 		// target ID
-		String targetName = decodeString(discoveredServiceProperties,RemoteConstants.ENDPOINT_TARGET_ID);
+		String targetName = decodeString(discoveredServiceProperties,RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		String targetNamespace = decodeString(discoveredServiceProperties,RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		ID targetID = null;
 		if (targetName != null && targetNamespace != null) {
@@ -325,10 +325,10 @@ public abstract class AbstractMetadataFactory {
 		ID connectTargetID = endpointDescription.getTargetID();
 		if (connectTargetID != null) {
 			// external form of ID
-			encodeString(result, RemoteConstants.ENDPOINT_TARGET_ID,
+			encodeString(result, RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
 					connectTargetID.toExternalForm());
 			// namespace
-			encodeString(result, RemoteConstants.ENDPOINT_TARGET_ID_NAMESPACE,
+			encodeString(result, RemoteConstants.ENDPOINT_CONNECTTARGET_ID_NAMESPACE,
 					connectTargetID.getNamespace().getName());
 		}
 		// ECF idFilter = endpointDescription.getIDFilter();

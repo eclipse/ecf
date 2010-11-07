@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoint-descriptions xmlns="http://www.osgi.org/xmlns/rsa/v1.0.0">
+<endpoint-description>
+  <property name="endpoint.id" value="http://ws.acme.com:9000/hello"/>
+  <property name="objectClass" value="com.acme.Foo"/>
+  <property name="service.imported.configs" value="com.acme"/>
+</endpoint-description>
+</endpoint-descriptions>

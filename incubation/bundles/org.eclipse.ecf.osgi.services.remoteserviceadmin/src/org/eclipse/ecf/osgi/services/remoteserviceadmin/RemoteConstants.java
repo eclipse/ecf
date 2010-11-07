@@ -24,11 +24,11 @@ public class RemoteConstants {
 	// container id namespace.  Value of type String
 	public static final String ENDPOINT_CONTAINER_ID_NAMESPACE = "ecf.endpoint.id.ns";
 	// remote service id.  Value of type Long
-	public static final String ENDPOINT_REMOTESERVICE_ID = "ecf.endpoint.rs.id";
+	public static final String ENDPOINT_REMOTESERVICE_ID = "ecf.endpoint.remoteservice.id";
 	// target id.  Value of type ID
-	public static final String ENDPOINT_TARGET_ID = "ecf.endpoint.target.id";
+	public static final String ENDPOINT_CONNECTTARGET_ID = "ecf.endpoint.connecttarget.id";
 	// target namespace.  Value of type String
-	public static final String ENDPOINT_TARGET_ID_NAMESPACE = "ecf.endpoint.target.id.ns";
+	public static final String ENDPOINT_CONNECTTARGET_ID_NAMESPACE = "ecf.endpoint.connecttarget.id.ns";
 	// id filter.  Value of type ID[]
 	public static final String ENDPOINT_IDFILTER_IDS = "ecf.endpoint.idfilter.ids";
 	
