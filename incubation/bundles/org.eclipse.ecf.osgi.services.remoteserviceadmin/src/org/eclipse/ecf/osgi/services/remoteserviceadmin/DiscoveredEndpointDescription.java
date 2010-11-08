@@ -19,8 +19,8 @@ public class DiscoveredEndpointDescription {
 	private EndpointDescription endpointDescription;
 	private int hashCode = 7;
 
-	public DiscoveredEndpointDescription(Namespace discoveryLocatorNamespace, IServiceID serviceID,
-			EndpointDescription endpointDescription) {
+	public DiscoveredEndpointDescription(Namespace discoveryLocatorNamespace,
+			IServiceID serviceID, EndpointDescription endpointDescription) {
 		this.discoveryLocatorNamespace = discoveryLocatorNamespace;
 		this.serviceID = serviceID;
 		this.endpointDescription = endpointDescription;
@@ -53,7 +53,7 @@ public class DiscoveredEndpointDescription {
 	public IServiceID getServiceID() {
 		return serviceID;
 	}
-	
+
 	public EndpointDescription getEndpointDescription() {
 		return endpointDescription;
 	}

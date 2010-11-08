@@ -150,8 +150,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 	}
 	
 	protected ID createECFContainerID(Map<String,Object> props) {
-		String osgiEndpointId = (String) props.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
-		return getIDFactory().createStringID(osgiEndpointId);
+		return getIDFactory().createStringID(DEFAULT_ENDPOINT_ID);
 	}
 	
 	protected ID createECFTargetID(Map<String,Object> props) {

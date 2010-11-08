@@ -19,9 +19,17 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 	private static final String REMOTESERVICE_MANIFESTHEADER = "Remote-Service";
 	private static final String XML_FILE_PATTERN = "*.xml";
 
-	private Map<Long,Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>> bundleDescriptionMap = Collections.synchronizedMap(new HashMap<Long,Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>>());
+	private Map<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>> bundleDescriptionMap = Collections
+			.synchronizedMap(new HashMap<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>>());
 	private EndpointDescriptionBuilder builder = new EndpointDescriptionBuilder();
-	
+
+	private LocatorServiceListener endpointDescriptionHandler;
+
+	public EndpointDescriptionBundleTrackerCustomizer(
+			LocatorServiceListener endpointDescriptionHandler) {
+		this.endpointDescriptionHandler = endpointDescriptionHandler;
+	}
+
 	public Object addingBundle(Bundle bundle, BundleEvent event) {
 		handleAddingBundle(bundle);
 		return bundle;
@@ -72,33 +80,46 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 			}
 		}
 		// Now process any found
-		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> bundleDescriptions = new ArrayList<org.osgi.service.remoteserviceadmin.EndpointDescription>();
+		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptions = new ArrayList<org.osgi.service.remoteserviceadmin.EndpointDescription>();
 		if (e != null) {
 			while (e.hasMoreElements()) {
-				org.osgi.service.remoteserviceadmin.EndpointDescription[] eps = handleEndpointDescriptionFile(bundle, e.nextElement());
-				if (eps != null) for(int i=0; i < eps.length; i++) bundleDescriptions.add(eps[i]);
+				org.osgi.service.remoteserviceadmin.EndpointDescription[] eps = handleEndpointDescriptionFile(
+						bundle, e.nextElement());
+				if (eps != null)
+					for (int i = 0; i < eps.length; i++)
+						endpointDescriptions.add(eps[i]);
 			}
 		}
-		// finally, publish them
-		if (bundleDescriptions.size() > 0) publish(bundle, bundleDescriptions);
+		// finally, handle them
+		if (endpointDescriptions.size() > 0) {
+			bundleDescriptionMap.put(new Long(bundle.getBundleId()),
+					endpointDescriptions);
+			for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions) {
+				endpointDescriptionHandler.handleEndpointDescription(ed, true);
+			}
+		}
 	}
 
-	private org.osgi.service.remoteserviceadmin.EndpointDescription[] handleEndpointDescriptionFile(Bundle bundle, URL fileURL) {
+	private org.osgi.service.remoteserviceadmin.EndpointDescription[] handleEndpointDescriptionFile(
+			Bundle bundle, URL fileURL) {
 		try {
 			return builder.createEndpointDescriptions(fileURL.openStream());
 		} catch (Exception e) {
 			// log
-			e.printStackTrace();
+			logError("Exception creating endpoint descriptions from fileURL="
+					+ fileURL, e);
 			return null;
 		}
 	}
 
-	private void publish(Bundle bundle, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptions) {
-		bundleDescriptionMap.put(new Long(bundle.getBundleId()), endpointDescriptions);
+	private void logError(String message, Throwable t) {
 		// XXX todo
-		System.out.println("publish bundle="+bundle+" endpointDescriptions="+endpointDescriptions);
+		System.err.println(message);
+		if (t != null) {
+			t.printStackTrace(System.err);
+		}
 	}
-	
+
 	public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
 	}
 
@@ -107,14 +128,13 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 	}
 
 	private void handleRemovedBundle(Bundle bundle) {
-		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptionsForBundle = bundleDescriptionMap.remove(new Long(bundle.getBundleId()));
-		if (endpointDescriptionsForBundle != null) unpublish(bundle, endpointDescriptionsForBundle);
-	}
-
-	private void unpublish(Bundle bundle,
-			Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptionsForBundle) {
-		// TODO Auto-generated method stub
-		System.out.println("unpublish bundle="+bundle+" endpointDescriptions="+endpointDescriptionsForBundle);
+		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptions = bundleDescriptionMap
+				.remove(new Long(bundle.getBundleId()));
+		if (endpointDescriptions != null) {
+			for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions) {
+				endpointDescriptionHandler.handleEndpointDescription(ed, false);
+			}
+		}
 	}
 
 	public void close() {

@@ -18,7 +18,8 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
 public abstract class AbstractDiscoveredEndpointDescriptionFactory extends
-		AbstractMetadataFactory implements IDiscoveredEndpointDescriptionFactory {
+		AbstractMetadataFactory implements
+		IDiscoveredEndpointDescriptionFactory {
 
 	protected List<DiscoveredEndpointDescription> discoveredEndpointDescriptions = new ArrayList();
 
@@ -41,8 +42,11 @@ public abstract class AbstractDiscoveredEndpointDescriptionFactory extends
 					locator, discoveredServiceInfo);
 			synchronized (discoveredEndpointDescriptions) {
 				DiscoveredEndpointDescription ded = findDiscoveredEndpointDescription(endpointDescription);
-				if (ded != null) return ded;
-				else return createDiscoveredEndpointDescription(locator,discoveredServiceInfo,endpointDescription);
+				if (ded != null)
+					return ded;
+				else
+					return createDiscoveredEndpointDescription(locator,
+							discoveredServiceInfo, endpointDescription);
 			}
 		} catch (Exception e) {
 			logError("createDiscoveredEndpointDescription",
@@ -69,9 +73,9 @@ public abstract class AbstractDiscoveredEndpointDescriptionFactory extends
 			IDiscoveryLocator locator, IServiceInfo discoveredServiceInfo,
 			EndpointDescription endpointDescription) {
 		return new DiscoveredEndpointDescription(
-				locator.getServicesNamespace(), discoveredServiceInfo.getServiceID(), endpointDescription);
+				locator.getServicesNamespace(),
+				discoveredServiceInfo.getServiceID(), endpointDescription);
 	}
-
 
 	public void close() {
 		synchronized (discoveredEndpointDescriptions) {

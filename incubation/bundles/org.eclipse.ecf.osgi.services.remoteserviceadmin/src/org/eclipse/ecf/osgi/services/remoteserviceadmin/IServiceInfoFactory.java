@@ -14,8 +14,12 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 
 public interface IServiceInfoFactory {
 
-	public IServiceInfo createServiceInfoForDiscovery(IDiscoveryAdvertiser advertiser, EndpointDescription endpointDescription);
-	
-	public IServiceInfo removeServiceInfoForUndiscovery(IDiscoveryAdvertiser advertiser, EndpointDescription endpointDescription);
-	
+	public IServiceInfo createServiceInfoForDiscovery(
+			IDiscoveryAdvertiser advertiser,
+			EndpointDescription endpointDescription);
+
+	public IServiceInfo removeServiceInfoForUndiscovery(
+			IDiscoveryAdvertiser advertiser,
+			EndpointDescription endpointDescription);
+
 }

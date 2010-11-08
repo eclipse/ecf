@@ -2,10 +2,11 @@
 <endpoint-descriptions xmlns="http://www.osgi.org/xmlns/rsa/v1.0.0">
 <endpoint-description>
   <property name="objectClass" value="com.acme.Foo"/>
-  <property name="endpoint.id" value="http://ws.acme.com:9000/hello2"/>
+  <property name="endpoint.id" value="ecftcp://localhost:3282/server2"/>
   <property name="endpoint.service.id" value="2"/>
   <property name="endpoint.framework.uuid" value="abcd-1234-7654-fedc"/>
-  <property name="service.imported.configs" value="com.acme"/>
+  <property name="service.imported.configs" value="ecf.generic.server"/>
+  <property name="ecf.endpoint.remoteservice.id" value="200"/>
   <property name="endpoint.package.version.com.acme" value="4.2"/>
   <property name="com.acme.ws.xml">
     <xml>

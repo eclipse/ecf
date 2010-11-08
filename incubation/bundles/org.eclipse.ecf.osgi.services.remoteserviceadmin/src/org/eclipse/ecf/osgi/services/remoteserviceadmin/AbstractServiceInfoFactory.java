@@ -81,7 +81,8 @@ public abstract class AbstractServiceInfoFactory extends
 				IServiceProperties serviceProperties = createServiceProperties(
 						endpointDescription, advertiser, serviceTypeID,
 						serviceName, uri);
-				IServiceInfo newServiceInfo = createServiceInfo(uri, serviceName, serviceTypeID, serviceProperties);
+				IServiceInfo newServiceInfo = createServiceInfo(uri,
+						serviceName, serviceTypeID, serviceProperties);
 				// put into map using key
 				serviceInfos.put(key, newServiceInfo);
 				return newServiceInfo;
@@ -96,11 +97,12 @@ public abstract class AbstractServiceInfoFactory extends
 		}
 	}
 
-	protected IServiceInfo createServiceInfo(URI uri, String serviceName, IServiceTypeID serviceTypeID, IServiceProperties serviceProperties) {
-		return new ServiceInfo(uri, serviceName,
-				serviceTypeID, serviceProperties);
+	protected IServiceInfo createServiceInfo(URI uri, String serviceName,
+			IServiceTypeID serviceTypeID, IServiceProperties serviceProperties) {
+		return new ServiceInfo(uri, serviceName, serviceTypeID,
+				serviceProperties);
 	}
-	
+
 	protected IServiceProperties createServiceProperties(
 			EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID,

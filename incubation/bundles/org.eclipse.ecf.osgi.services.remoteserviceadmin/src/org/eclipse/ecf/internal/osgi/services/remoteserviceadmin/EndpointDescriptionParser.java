@@ -260,8 +260,7 @@ public class EndpointDescriptionParser {
 
 	}
 
-	SAXParser getParser() throws ParserConfigurationException,
-			SAXException {
+	SAXParser getParser() throws ParserConfigurationException, SAXException {
 		Activator a = Activator.getDefault();
 		if (a == null)
 			return null;
@@ -373,7 +372,7 @@ public class EndpointDescriptionParser {
 
 	class EndpointDescriptionHandler extends AbstractHandler {
 
-		private Map<String,Object> properties;
+		private Map<String, Object> properties;
 		private List<EndpointDescription> descriptions;
 
 		public EndpointDescriptionHandler(ContentHandler parentHandler,
@@ -559,7 +558,7 @@ public class EndpointDescriptionParser {
 
 	class XMLValueHandler extends AbstractHandler {
 
-		private Map<String,String> nsPrefixMap = new HashMap<String,String>();
+		private Map<String, String> nsPrefixMap = new HashMap<String, String>();
 		private StringBuffer buf;
 
 		public XMLValueHandler(ContentHandler parentHandler) {
@@ -575,19 +574,22 @@ public class EndpointDescriptionParser {
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
 			buf.append("<").append(qName); //$NON-NLS-1$
-			for(Iterator<String> i=nsPrefixMap.keySet().iterator(); i.hasNext(); ) {
+			for (Iterator<String> i = nsPrefixMap.keySet().iterator(); i
+					.hasNext();) {
 				String nsURI = (String) i.next();
 				String prefix = (String) nsPrefixMap.get(nsURI);
 				i.remove();
 				if (nsURI != null) {
 					buf.append(" xmlns"); //$NON-NLS-1$
-					if (prefix != null) buf.append(":").append(prefix); //$NON-NLS-1$
+					if (prefix != null)
+						buf.append(":").append(prefix); //$NON-NLS-1$
 					buf.append("=\"").append(nsURI).append("\""); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			for (int i = 0; i < attributes.getLength(); i++) {
 				buf.append(" "); //$NON-NLS-1$
-				buf.append(attributes.getQName(i)).append("=\"").append(attributes.getValue(i)).append("\""); //$NON-NLS-1$ //$NON-NLS-2$
+				buf.append(attributes.getQName(i))
+						.append("=\"").append(attributes.getValue(i)).append("\""); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			buf.append(">"); //$NON-NLS-1$
 			characters = new StringBuffer();
@@ -603,7 +605,8 @@ public class EndpointDescriptionParser {
 			if (elementHandled.equals(localName)) {
 				super.endElement(namespaceURI, localName, qName);
 			} else {
-				if (characters != null) buf.append(characters);
+				if (characters != null)
+					buf.append(characters);
 				buf.append("</").append(qName).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
 				characters = null;
 			}
@@ -616,7 +619,7 @@ public class EndpointDescriptionParser {
 
 	class EndpointPropertyHandler extends AbstractHandler {
 
-		private Map<String,Object> properties;
+		private Map<String, Object> properties;
 		private String name;
 		private String valueType = "String"; //$NON-NLS-1$
 		private String value;
@@ -624,7 +627,8 @@ public class EndpointDescriptionParser {
 		private XMLValueHandler xmlValueHandler;
 
 		public EndpointPropertyHandler(ContentHandler parentHandler,
-				Attributes attributes, Map<String,Object> properties) throws SAXException {
+				Attributes attributes, Map<String, Object> properties)
+				throws SAXException {
 			super(parentHandler, ENDPOINT_PROPERTY);
 			name = parseRequiredAttributes(attributes,
 					new String[] { ENDPOINT_PROPERTY_NAME })[0];
@@ -705,13 +709,13 @@ public class EndpointDescriptionParser {
 	}
 
 	public class EndpointDescription {
-		private Map<String,Object> properties;
+		private Map<String, Object> properties;
 
-		public EndpointDescription(Map<String,Object> properties) {
+		public EndpointDescription(Map<String, Object> properties) {
 			this.properties = properties;
 		}
 
-		public Map<String,Object> getProperties() {
+		public Map<String, Object> getProperties() {
 			return properties;
 		}
 

@@ -27,7 +27,9 @@ public class EndpointDescription extends
 
 	private int hashCode;
 
-	public EndpointDescription(ServiceReference reference, Map osgiProperties, ID containerID, long remoteServiceId, ID connectTargetID, ID[] idFilter, String rsFilter) {
+	public EndpointDescription(ServiceReference reference, Map osgiProperties,
+			ID containerID, long remoteServiceId, ID connectTargetID,
+			ID[] idFilter, String rsFilter) {
 		super(reference, osgiProperties);
 		this.containerID = containerID;
 		Assert.isNotNull(this.containerID);
@@ -38,7 +40,9 @@ public class EndpointDescription extends
 		computeHashCode();
 	}
 
-	public EndpointDescription(Map osgiProperties, ID containerID, long remoteServiceId, ID connectTargetID, ID[] idFilter, String rsFilter) {
+	public EndpointDescription(Map osgiProperties, ID containerID,
+			long remoteServiceId, ID connectTargetID, ID[] idFilter,
+			String rsFilter) {
 		super(osgiProperties);
 		this.containerID = containerID;
 		Assert.isNotNull(this.containerID);
@@ -59,7 +63,8 @@ public class EndpointDescription extends
 	public boolean equals(Object other) {
 		if (other == null)
 			return false;
-		if (other == this) return true;
+		if (other == this)
+			return true;
 		if (!(other instanceof EndpointDescription))
 			return false;
 		EndpointDescription o = (EndpointDescription) other;

@@ -37,7 +37,6 @@ public class ServiceInfoFactoryTest extends AbstractMetadataFactoryTest {
 			createBadOSGiEndpointDescrption();
 			fail();
 		} catch (Exception e) {
-			e.printStackTrace();
 			// this is test success
 		}
 	}
@@ -48,7 +47,6 @@ public class ServiceInfoFactoryTest extends AbstractMetadataFactoryTest {
 			fail();
 		} catch (Exception e) {
 			// this is test success
-			e.printStackTrace();
 		}
 	}
 

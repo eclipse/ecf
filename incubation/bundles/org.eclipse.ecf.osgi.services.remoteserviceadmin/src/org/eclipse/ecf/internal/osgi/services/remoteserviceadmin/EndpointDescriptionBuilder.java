@@ -28,8 +28,7 @@ import org.osgi.framework.Constants;
 public class EndpointDescriptionBuilder extends AbstractMetadataFactory {
 
 	public org.osgi.service.remoteserviceadmin.EndpointDescription[] createEndpointDescriptions(
-			InputStream input) throws IOException,
-			EndpointDescriptionParseException {
+			InputStream input) throws IOException {
 		// First create parser
 		EndpointDescriptionParser parser = new EndpointDescriptionParser();
 		// Parse input stream
@@ -43,16 +42,62 @@ public class EndpointDescriptionBuilder extends AbstractMetadataFactory {
 			Map parsedProperties = ed.getProperties();
 			org.osgi.service.remoteserviceadmin.EndpointDescription result = null;
 			try {
-				// Make sure that objectClasses is array, rather than single
-				// String
-				// as single string is allowed in endpoint description file
-				String[] objectClasses = getObjectClasses(parsedProperties);
-				parsedProperties.put(Constants.OBJECTCLASS, objectClasses);
-				// Create OSGi endpoint description
+				// OSGI required properties
+				// objectClass/String+
+				List<String> objectClasses = Activator.getStringPlusProperty(
+						parsedProperties, Constants.OBJECTCLASS);
+				// Must have at least one objectClass
+				if (objectClasses == null || objectClasses.size() == 0)
+					throw new EndpointDescriptionParseException(
+							Constants.OBJECTCLASS
+									+ " is not set in endpoint description.  It must be set to String+ value");
+				parsedProperties.put(Constants.OBJECTCLASS,
+						(String[]) objectClasses
+								.toArray(new String[objectClasses.size()]));
+
+				// endpoint.id
+				String endpointId = getStringWithDefault(
+						parsedProperties,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+						null);
+				// Must have endpoint id, so throw if it's not found
+				if (endpointId == null)
+					throw new EndpointDescriptionParseException(
+							org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID
+									+ " is not set in endpoint description.  It must be set to String value");
+				parsedProperties
+						.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+								endpointId);
+
+				// endpoint.service.id. Default is set to Long(0), which means
+				// not an OSGi endpoint description
+				Long endpointServiceId = getLongWithDefault(
+						parsedProperties,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
+						new Long(0));
+				parsedProperties
+						.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
+								endpointServiceId);
+
+				// service.imported.configs
+				List<String> configurationTypes = Activator
+						.getStringPlusProperty(
+								parsedProperties,
+								org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS);
+				// Must have at least one service.imported.config
+				if (configurationTypes == null
+						|| configurationTypes.size() == 0)
+					throw new EndpointDescriptionParseException(
+							org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS
+									+ " is not set in endpoint description.  It must be set to String+ value)");
+
+				// Create OSGi endpoint description to verify that all OSGi
+				// properties are correct/set
 				result = new org.osgi.service.remoteserviceadmin.EndpointDescription(
 						parsedProperties);
+
 				// If ECF endpoint description, then an endpoint container ID
-				// will be found
+				// will be non-null
 				ID endpointContainerID = getContainerID(parsedProperties);
 				// if the endpointContainerID is not found, then this is not an
 				// ECF endpoint description
@@ -69,34 +114,17 @@ public class EndpointDescriptionBuilder extends AbstractMetadataFactory {
 				.toArray(new org.osgi.service.remoteserviceadmin.EndpointDescription[] {});
 	}
 
-	private String[] getObjectClasses(Map properties) {
-		Object o = properties.get(Constants.OBJECTCLASS);
-		if (o == null)
-			return null;
-		if (o instanceof String)
-			return new String[] { (String) o };
-		if (o instanceof String[])
-			return (String[]) o;
-		if (o instanceof List)
-			return (String[]) ((List) o).toArray(new String[] {});
-		return null;
-	}
-
 	private org.osgi.service.remoteserviceadmin.EndpointDescription createECFEndpointDescription(
-			ID endpointContainerID, Map parsedProperties) {
-		// we get the remote service id
-		Long remoteServiceId = null;
-		Object rso = parsedProperties
-				.get(RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
-		if (rso instanceof Long)
-			remoteServiceId = (Long) rso;
-		if (rso instanceof String)
-			remoteServiceId = Long.decode((String) rso);
+			ID endpointContainerID, Map parsedProperties)
+			throws EndpointDescriptionParseException {
+		// we get the remote service id...default 0 means that it's not an ECF
+		// remote service
+		Long remoteServiceId = getLongWithDefault(parsedProperties,
+				RemoteConstants.ENDPOINT_REMOTESERVICE_ID, null);
 		if (remoteServiceId == null)
-			throw new IllegalArgumentException(
+			throw new EndpointDescriptionParseException(
 					RemoteConstants.ENDPOINT_REMOTESERVICE_ID
-							+ " is missing from endpoint description properties.  A valid value must be present for ECF EndpointDescriptions");
-
+							+ " is not set in endpoint description.  It must be set to Long value");
 		// target ID
 		ID targetID = null;
 		String targetName = (String) parsedProperties
@@ -128,8 +156,9 @@ public class EndpointDescriptionBuilder extends AbstractMetadataFactory {
 		if (o != null && o instanceof List<?>) {
 			// Assumed to be list of strings
 			for (String i : (List<String>) o) {
-				ID id = createID(namespace,i);
-				if (id != null) resultList.add(id);
+				ID id = createID(namespace, i);
+				if (id != null)
+					resultList.add(id);
 			}
 		} else {
 			Number countInt = null;
@@ -159,19 +188,16 @@ public class EndpointDescriptionBuilder extends AbstractMetadataFactory {
 				}
 			}
 		}
-		return (resultList.size() > 0)?(ID[]) resultList.toArray(new ID[resultList.size()]):null;
+		return (resultList.size() > 0) ? (ID[]) resultList
+				.toArray(new ID[resultList.size()]) : null;
 	}
 
 	private Map<String, Object> getNonECFProperties(
 			Map<String, Object> parsedProperties) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		for (String key : parsedProperties.keySet()) {
-			if (!isECFProperty(key)
-					&& !key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_)
-					&& !key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_)) {
+		for (String key : parsedProperties.keySet())
+			if (!isECFProperty(key))
 				result.put(key, parsedProperties.get(key));
-			}
-		}
 		return result;
 	}
 
