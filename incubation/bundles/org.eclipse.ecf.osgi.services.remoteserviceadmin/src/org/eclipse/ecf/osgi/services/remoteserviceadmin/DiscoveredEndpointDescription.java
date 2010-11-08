@@ -16,11 +16,11 @@ public class DiscoveredEndpointDescription {
 
 	private Namespace discoveryLocatorNamespace;
 	private IServiceID serviceID;
-	private EndpointDescription endpointDescription;
+	private org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription;
 	private int hashCode = 7;
 
 	public DiscoveredEndpointDescription(Namespace discoveryLocatorNamespace,
-			IServiceID serviceID, EndpointDescription endpointDescription) {
+			IServiceID serviceID, org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		this.discoveryLocatorNamespace = discoveryLocatorNamespace;
 		this.serviceID = serviceID;
 		this.endpointDescription = endpointDescription;
@@ -54,7 +54,7 @@ public class DiscoveredEndpointDescription {
 		return serviceID;
 	}
 
-	public EndpointDescription getEndpointDescription() {
+	public org.osgi.service.remoteserviceadmin.EndpointDescription getEndpointDescription() {
 		return endpointDescription;
 	}
 }

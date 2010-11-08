@@ -210,9 +210,18 @@ public class DefaultServiceInfoFactory extends
 	}
 
 	public void close() {
+		removeAllServiceInfos();
+		super.close();
+	}
+
+	public boolean removeServiceInfo(IDiscoveryAdvertiser advertiser,
+			EndpointDescription endpointDescription) {
+		return removeServiceInfoForUndiscovery(advertiser,endpointDescription) != null;
+	}
+
+	public void removeAllServiceInfos() {
 		synchronized (serviceInfos) {
 			serviceInfos.clear();
 		}
-		super.close();
 	}
 }
