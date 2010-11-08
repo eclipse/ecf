@@ -32,7 +32,6 @@ import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LocatorServiceListener.EndpointListenerEvent;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultDiscoveredEndpointDescriptionFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultEndpointDescriptionPublisher;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultServiceInfoFactory;
@@ -63,6 +62,8 @@ public class Activator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin";
 
+	private static final boolean DEBUG = false;
+	
 	private static BundleContext context;
 	private static Activator instance;
 
@@ -89,6 +90,7 @@ public class Activator implements BundleActivator {
 		startEndpointDescriptionFactory();
 		startEndpointDescriptionPublisher();
 		startLocators();
+		startEndpointListenerTracker();
 		startLocalEndpointDescriptionHandler();
 	}
 
@@ -100,13 +102,13 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		stopLocalEndpointDescriptionHandler();
+		stopEndpointListenerTracker();
 		stopLocators();
 		stopEndpointDescriptionPublisher();
 		stopEndpointDescriptionFactory();
 		stopServiceInfoFactory();
 		stopDiscoveryAdvertiserTracker();
 		stopSAXParserTracker();
-		stopEndpointListenerTracker();
 		stopLogServiceTracker();
 		executor = null;
 		Activator.context = null;
@@ -166,7 +168,7 @@ public class Activator implements BundleActivator {
 			}
 		});
 
-		localLocatorServiceListener = new LocatorServiceListener(eventQueue);
+		localLocatorServiceListener = new LocatorServiceListener();
 		bundleTrackerCustomizer = new EndpointDescriptionBundleTrackerCustomizer(
 				localLocatorServiceListener);
 		bundleTracker = new BundleTracker(context, Bundle.ACTIVE
@@ -240,12 +242,99 @@ public class Activator implements BundleActivator {
 		}
 	}
 
+	public Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> getAllDiscoveredEndpointDescriptions() {
+		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> result = new ArrayList();
+		// Get local first
+		result.addAll(localLocatorServiceListener.getEndpointDescriptions());
+		synchronized (locatorListeners) {
+			for (IDiscoveryLocator l : locatorListeners.keySet()) {
+				LocatorServiceListener locatorListener = locatorListeners
+						.get(l);
+				result.addAll(locatorListener.getEndpointDescriptions());
+			}
+		}
+		return result;
+	}
+
+	class EndpointListenerEvent {
+
+		private EndpointListener endpointListener;
+		private org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription;
+		private String matchingFilter;
+		private boolean discovered;
+
+		public EndpointListenerEvent(
+				EndpointListener endpointListener,
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+				String matchingFilter, boolean discovered) {
+			this.endpointListener = endpointListener;
+			this.endpointDescription = endpointDescription;
+			this.matchingFilter = matchingFilter;
+			this.discovered = discovered;
+		}
+
+		public EndpointListener getEndpointListener() {
+			return endpointListener;
+		}
+
+		public org.osgi.service.remoteserviceadmin.EndpointDescription getEndointDescription() {
+			return endpointDescription;
+		}
+
+		public String getMatchingFilter() {
+			return matchingFilter;
+		}
+
+		public boolean isDiscovered() {
+			return discovered;
+		}
+	}
+
+	public void queueEndpointDescription(
+			EndpointListener listener,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+			String matchingFilters, boolean discovered) {
+		if (eventQueue == null)
+			return;
+		synchronized (eventQueue) {
+			eventQueue
+					.dispatchEventAsynchronous(0, new EndpointListenerEvent(
+							listener, endpointDescription, matchingFilters,
+							discovered));
+		}
+	}
+
+	public void queueEndpointDescription(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+			boolean discovered) {
+		Activator.EndpointListenerHolder[] endpointListenerHolders = Activator
+				.getDefault().getMatchingEndpointListenerHolders(
+						endpointDescription);
+		if (endpointListenerHolders != null) {
+			for (int i = 0; i < endpointListenerHolders.length; i++) {
+				queueEndpointDescription(
+						endpointListenerHolders[i].getListener(),
+						endpointListenerHolders[i].getDescription(),
+						endpointListenerHolders[i].getMatchingFilter(),
+						discovered);
+
+			}
+		} else {
+			if (DEBUG) log(new Status(IStatus.INFO, Activator.PLUGIN_ID,
+					IStatus.INFO, "No matching EndpointListeners found for "
+							+ (discovered ? "discovered" : "undiscovered")
+							+ " endpointDescription=" + endpointDescription,
+					null));
+		}
+
+	}
+
 	void openLocator(IDiscoveryLocator locator) {
 		if (locator == null || context == null)
 			return;
 		synchronized (locatorListeners) {
 			LocatorServiceListener locatorListener = new LocatorServiceListener(
-					locator, eventQueue);
+					locator);
 			locatorListeners.put(locator, locatorListener);
 			processInitialLocatorServices(locator, locatorListener);
 		}
@@ -294,14 +383,40 @@ public class Activator implements BundleActivator {
 		executor = new ThreadsExecutor();
 	}
 
+	private EndpointListenerTrackerCustomizer endpointListenerServiceTrackerCustomizer;
 	private ServiceTracker endpointListenerServiceTracker;
 	private Object endpointListenerServiceTrackerLock = new Object();
+
+	private EndpointListenerHolder[] getMatchingEndpointListenerHolders(
+			EndpointDescription description) {
+		synchronized (endpointListenerServiceTrackerLock) {
+			if (context == null)
+				return null;
+			return getMatchingEndpointListenerHolders(
+					endpointListenerServiceTracker.getServiceReferences(),
+					description);
+		}
+	}
+
+	private void startEndpointListenerTracker() {
+		synchronized (endpointListenerServiceTrackerLock) {
+			endpointListenerServiceTrackerCustomizer = new EndpointListenerTrackerCustomizer();
+			endpointListenerServiceTracker = new ServiceTracker(context,
+					EndpointListener.class.getName(),
+					endpointListenerServiceTrackerCustomizer);
+			endpointListenerServiceTracker.open();
+		}
+	}
 
 	private void stopEndpointListenerTracker() {
 		synchronized (endpointListenerServiceTrackerLock) {
 			if (endpointListenerServiceTracker != null) {
 				endpointListenerServiceTracker.close();
 				endpointListenerServiceTracker = null;
+			}
+			if (endpointListenerServiceTrackerCustomizer != null) {
+				endpointListenerServiceTrackerCustomizer.close();
+				endpointListenerServiceTrackerCustomizer = null;
 			}
 		}
 	}
@@ -327,22 +442,6 @@ public class Activator implements BundleActivator {
 
 		public void removedService(ServiceReference reference, Object service) {
 			shutdownLocator((IDiscoveryLocator) service);
-		}
-	}
-
-	public EndpointListenerHolder[] getMatchingEndpointListenerHolders(
-			EndpointDescription description) {
-		synchronized (endpointListenerServiceTrackerLock) {
-			if (context == null)
-				return null;
-			if (endpointListenerServiceTracker == null) {
-				endpointListenerServiceTracker = new ServiceTracker(context,
-						EndpointListener.class.getName(), null);
-				endpointListenerServiceTracker.open();
-			}
-			return getMatchingEndpointListenerHolders(
-					endpointListenerServiceTracker.getServiceReferences(),
-					description);
 		}
 	}
 
@@ -372,7 +471,7 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	private EndpointListenerHolder[] getMatchingEndpointListenerHolders(
+	public EndpointListenerHolder[] getMatchingEndpointListenerHolders(
 			ServiceReference[] refs, EndpointDescription description) {
 		if (refs == null)
 			return null;
