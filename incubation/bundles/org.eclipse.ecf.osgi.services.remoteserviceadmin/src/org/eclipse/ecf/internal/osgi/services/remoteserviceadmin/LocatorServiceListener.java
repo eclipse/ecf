@@ -18,11 +18,11 @@ import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator.EndpointListenerHolder;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.eclipse.osgi.framework.eventmgr.ListenerQueue;
+import org.osgi.service.remoteserviceadmin.EndpointListener;
 
 class LocatorServiceListener implements IServiceListener {
 
@@ -33,17 +33,31 @@ class LocatorServiceListener implements IServiceListener {
 
 	class EndpointListenerEvent {
 
-		private EndpointListenerHolder holder;
+		private EndpointListener endpointListener;
+		private org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription;
+		private String matchingFilter;
 		private boolean discovered;
 
-		public EndpointListenerEvent(EndpointListenerHolder holder,
-				boolean discovered) {
-			this.holder = holder;
+		public EndpointListenerEvent(
+				EndpointListener endpointListener,
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+				String matchingFilter, boolean discovered) {
+			this.endpointListener = endpointListener;
+			this.endpointDescription = endpointDescription;
+			this.matchingFilter = matchingFilter;
 			this.discovered = discovered;
 		}
 
-		public EndpointListenerHolder getEndpointListenerHolder() {
-			return holder;
+		public EndpointListener getEndpointListener() {
+			return endpointListener;
+		}
+
+		public org.osgi.service.remoteserviceadmin.EndpointDescription getEndointDescription() {
+			return endpointDescription;
+		}
+
+		public String getMatchingFilter() {
+			return matchingFilter;
 		}
 
 		public boolean isDiscovered() {
@@ -107,9 +121,13 @@ class LocatorServiceListener implements IServiceListener {
 							endpointDescription);
 			if (endpointListenerHolders != null) {
 				for (int i = 0; i < endpointListenerHolders.length; i++) {
-					queue.dispatchEventAsynchronous(0,
+					queue.dispatchEventAsynchronous(
+							0,
 							new EndpointListenerEvent(
-									endpointListenerHolders[i], discovered));
+									endpointListenerHolders[i].getListener(),
+									endpointListenerHolders[i].getDescription(),
+									endpointListenerHolders[i]
+											.getMatchingFilter(), discovered));
 				}
 			} else {
 				logWarning("No matching EndpointListeners found for "

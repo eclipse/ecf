@@ -133,18 +133,13 @@ public class Activator implements BundleActivator {
 		eventQueue.queueListeners(listeners.entrySet(), new EventDispatcher() {
 			public void dispatchEvent(Object eventListener,
 					Object listenerObject, int eventAction, Object eventObject) {
-				EndpointListenerHolder endpointListenerHolder = ((EndpointListenerEvent) eventObject)
-						.getEndpointListenerHolder();
-				final boolean discovered = ((EndpointListenerEvent) eventObject)
-						.isDiscovered();
 
-				final EndpointListener endpointListener = endpointListenerHolder
-						.getListener();
-				final EndpointDescription endpointDescription = endpointListenerHolder
-						.getDescription();
-				final String matchingFilter = endpointListenerHolder
-						.getMatchingFilter();
-
+				final EndpointListenerEvent event = (EndpointListenerEvent) eventObject;
+				final EndpointListener endpointListener = event
+						.getEndpointListener();
+				final EndpointDescription endpointDescription = event
+						.getEndointDescription();
+				final String matchingFilter = event.getMatchingFilter();
 				// run with SafeRunner, so that any exceptions are logged by
 				// our logger
 				SafeRunner.run(new ISafeRunnable() {
@@ -160,7 +155,7 @@ public class Activator implements BundleActivator {
 
 					public void run() throws Exception {
 						// Call endpointAdded or endpointRemoved
-						if (discovered)
+						if (event.isDiscovered())
 							endpointListener.endpointAdded(endpointDescription,
 									matchingFilter);
 						else
