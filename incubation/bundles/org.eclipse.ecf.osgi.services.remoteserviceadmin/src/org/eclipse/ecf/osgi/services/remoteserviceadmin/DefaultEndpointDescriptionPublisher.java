@@ -18,26 +18,23 @@ public class DefaultEndpointDescriptionPublisher implements
 		IEndpointDescriptionPublisher {
 
 	public boolean publish(EndpointDescription endpointDescription) {
-		boolean published = false;
 		if (endpointDescription == null)
-			return published;
+			return false;
 		if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
 			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription eed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpointDescription;
 			// First get serviceInfoFactory
-			IServiceInfoFactory serviceInfoFactory = Activator.getDefault()
-					.getServiceInfoFactory();
+			IServiceInfoFactory serviceInfoFactory = getServiceInfoFactory();
 			if (serviceInfoFactory == null) {
 				logError("No IServiceInfoFactory is available.  Cannot publish endpointDescription="
 						+ eed);
-				return published;
+				return false;
 			}
-			IDiscoveryAdvertiser[] discoveryAdvertisers = Activator
-					.getDefault().getDiscoveryAdvertisers();
+			IDiscoveryAdvertiser[] discoveryAdvertisers = getDiscoveryAdvertisers();
 			if (discoveryAdvertisers == null
 					|| discoveryAdvertisers.length == 0) {
 				logError("No discovery advertisers available.  Cannot publish endpointDescription="
 						+ eed);
-				return published;
+				return false;
 			}
 			for (int i = 0; i < discoveryAdvertisers.length; i++) {
 				IServiceInfo serviceInfo = serviceInfoFactory
@@ -49,8 +46,7 @@ public class DefaultEndpointDescriptionPublisher implements
 					continue;
 				}
 				// Now actually register with advertiser
-				discoveryAdvertisers[i].registerService(serviceInfo);
-				published = true;
+				return doPublish(discoveryAdvertisers[i],serviceInfo);
 			}
 		} else {
 			// logWarning
@@ -58,9 +54,38 @@ public class DefaultEndpointDescriptionPublisher implements
 					+ endpointDescription
 					+ " is not of ECFEndpointDescription type.  Not publishing.");
 		}
-		return published;
+		return false;
 	}
 
+	protected boolean doPublish(IDiscoveryAdvertiser discoveryAdvertiser, IServiceInfo serviceInfo) {
+		try {
+			discoveryAdvertiser.registerService(serviceInfo);
+			return true;
+		} catch (Exception e) {
+			logError("Exception calling registerService with serviceInfo="+serviceInfo+" for discoveryAdvertiser="+discoveryAdvertiser, e);
+			return false;
+		}
+	}
+	
+	protected boolean doUnpublish(IDiscoveryAdvertiser discoveryAdvertiser, IServiceInfo serviceInfo) {
+		try {
+			discoveryAdvertiser.unregisterService(serviceInfo);
+			return true;
+		} catch (Exception e) {
+			logError("Exception calling unregisterService with serviceInfo="+serviceInfo+" for discoveryAdvertiser="+discoveryAdvertiser, e);
+			return false;
+		}
+	}
+
+	protected IServiceInfoFactory getServiceInfoFactory() {
+		return Activator.getDefault()
+		.getServiceInfoFactory();
+	}
+	protected IDiscoveryAdvertiser[] getDiscoveryAdvertisers() {
+		return Activator
+		.getDefault().getDiscoveryAdvertisers();
+	}
+	
 	private void logWarning(String string) {
 		// TODO Auto-generated method stub
 
@@ -79,26 +104,23 @@ public class DefaultEndpointDescriptionPublisher implements
 	}
 
 	public boolean unpublish(EndpointDescription endpointDescription) {
-		boolean unpublished = false;
 		if (endpointDescription == null)
-			return unpublished;
+			return false;
 		if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
 			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription eed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpointDescription;
 			// First get serviceInfoFactory
-			IServiceInfoFactory serviceInfoFactory = Activator.getDefault()
-					.getServiceInfoFactory();
+			IServiceInfoFactory serviceInfoFactory = getServiceInfoFactory();
 			if (serviceInfoFactory == null) {
 				logError("No IServiceInfoFactory is available.  Cannot unpublish endpointDescription="
 						+ eed);
-				return unpublished;
+				return false;
 			}
-			IDiscoveryAdvertiser[] discoveryAdvertisers = Activator
-					.getDefault().getDiscoveryAdvertisers();
+			IDiscoveryAdvertiser[] discoveryAdvertisers = getDiscoveryAdvertisers();
 			if (discoveryAdvertisers == null
 					|| discoveryAdvertisers.length == 0) {
 				logError("No discovery advertisers available.  Cannot unpublish endpointDescription="
 						+ eed);
-				return unpublished;
+				return false;
 			}
 			for (int i = 0; i < discoveryAdvertisers.length; i++) {
 				IServiceInfo serviceInfo = serviceInfoFactory
@@ -110,8 +132,7 @@ public class DefaultEndpointDescriptionPublisher implements
 					continue;
 				}
 				// Now actually unregister with advertiser
-				discoveryAdvertisers[i].unregisterService(serviceInfo);
-				unpublished = true;
+				return doUnpublish(discoveryAdvertisers[i],serviceInfo);
 			}
 		} else {
 			// logWarning
@@ -119,7 +140,7 @@ public class DefaultEndpointDescriptionPublisher implements
 					+ endpointDescription
 					+ " is not of ECFEndpointDescription type.  Not publishing.");
 		}
-		return unpublished;
+		return false;
 	}
 
 	public void close() {
