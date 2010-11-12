@@ -196,7 +196,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		return serviceInfoFactory.createServiceInfoForDiscovery(discoveryAdvertiser, endpointDescription);
 	}
 	
-	protected EndpointDescription createEndpointDescriptionFromDiscovery(
+	protected org.osgi.service.remoteserviceadmin.EndpointDescription createEndpointDescriptionFromDiscovery(
 			IServiceInfo discoveredServiceInfo) {
 		DiscoveredEndpointDescription ded = endpointDescriptionFactory.createDiscoveredEndpointDescription(discoveryLocator, discoveredServiceInfo);
 		assertNotNull(ded);

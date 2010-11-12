@@ -25,7 +25,7 @@ public class EndpointDescriptionFactoryTest extends AbstractMetadataFactoryTest 
 		assertNotNull(published);
 		IServiceInfo serviceInfo = createServiceInfoForDiscovery(published);
 		assertNotNull(serviceInfo);
-		EndpointDescription received = createEndpointDescriptionFromDiscovery(serviceInfo);
+		org.osgi.service.remoteserviceadmin.EndpointDescription received = createEndpointDescriptionFromDiscovery(serviceInfo);
 		assertNotNull(received);
 		assertTrue(published.equals(received));
 	}
@@ -35,7 +35,7 @@ public class EndpointDescriptionFactoryTest extends AbstractMetadataFactoryTest 
 		assertNotNull(published);
 		IServiceInfo serviceInfo = createServiceInfoForDiscovery(published);
 		assertNotNull(serviceInfo);
-		EndpointDescription received = createEndpointDescriptionFromDiscovery(serviceInfo);
+		org.osgi.service.remoteserviceadmin.EndpointDescription received = createEndpointDescriptionFromDiscovery(serviceInfo);
 		assertNotNull(received);
 		assertTrue(published.equals(received));
 	}
