@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.6"?>
+
+<target includeMode="feature" name="ECF3-4Baseline">
+<locations>
+<location includeAllPlatforms="false" includeMode="slicer" type="InstallableUnit">
+<unit id="org.eclipse.ecf.core.feature.group" version="3.4.0.v20101029-1626"/>
+<repository location="http://rsync.osuosl.org/pub/eclipse/rt/ecf/3.4/site.p2/"/>
+</location>
+</locations>
+<includeBundles>
+<feature id="org.eclipse.ecf.core"/>
+</includeBundles>
+<launcherArgs>
+<vmArgs>-XX:PermSize=256M -XX:MaxPermSize=512M -XX:+UseParallelGC -Xms512m -Xmx1024m</vmArgs>
+</launcherArgs>
+</target>
