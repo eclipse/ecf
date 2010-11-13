@@ -54,6 +54,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
+import org.osgi.service.remoteserviceadmin.RemoteConstants;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -85,6 +86,21 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
+		startDistribution();
+		startDiscovery();
+	}
+
+	private TopologyManagerImpl topologyManager;
+	private ServiceRegistration topologyManagerEndpointListenerRegistration;
+	
+	private void startDistribution() throws Exception {
+		topologyManager = new TopologyManagerImpl(context);
+		Properties props = new Properties();
+		props.put(org.osgi.service.remoteserviceadmin.EndpointListener.ENDPOINT_LISTENER_SCOPE,"("+RemoteConstants.ENDPOINT_ID+"=*)");
+		topologyManagerEndpointListenerRegistration = context.registerService(EndpointListener.class.getName(), topologyManager,props);
+	}
+	
+	private void startDiscovery() throws Exception {
 		startExecutor();
 		startServiceInfoFactory();
 		startEndpointDescriptionFactory();
@@ -93,7 +109,7 @@ public class Activator implements BundleActivator {
 		startEndpointListenerTracker();
 		startLocalEndpointDescriptionHandler();
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -101,6 +117,25 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
+		stopDiscovery();
+		stopDistribution();
+		executor = null;
+		Activator.context = null;
+		Activator.instance = null;
+	}
+	
+	private void stopDistribution() {
+		if (topologyManagerEndpointListenerRegistration != null) {
+			topologyManagerEndpointListenerRegistration.unregister();
+			topologyManagerEndpointListenerRegistration = null;
+		}
+		if (topologyManager != null) {
+			topologyManager.close();
+			topologyManager = null;
+		}
+	}
+	
+	private void stopDiscovery() throws Exception {
 		stopLocalEndpointDescriptionHandler();
 		stopEndpointListenerTracker();
 		stopLocators();
@@ -110,9 +145,6 @@ public class Activator implements BundleActivator {
 		stopDiscoveryAdvertiserTracker();
 		stopSAXParserTracker();
 		stopLogServiceTracker();
-		executor = null;
-		Activator.context = null;
-		Activator.instance = null;
 	}
 
 	private EventManager eventManager;
@@ -168,7 +200,6 @@ public class Activator implements BundleActivator {
 			}
 		});
 
-		localLocatorServiceListener = new LocatorServiceListener();
 		bundleTrackerCustomizer = new EndpointDescriptionBundleTrackerCustomizer(
 				localLocatorServiceListener);
 		bundleTracker = new BundleTracker(context, Bundle.ACTIVE
@@ -184,10 +215,6 @@ public class Activator implements BundleActivator {
 		if (bundleTrackerCustomizer != null) {
 			bundleTrackerCustomizer.close();
 			bundleTrackerCustomizer = null;
-		}
-		if (localLocatorServiceListener != null) {
-			localLocatorServiceListener.close();
-			localLocatorServiceListener = null;
 		}
 		// Finally, shutdown event manager
 		if (eventManager != null) {
@@ -399,6 +426,7 @@ public class Activator implements BundleActivator {
 	}
 
 	private void startEndpointListenerTracker() {
+		localLocatorServiceListener = new LocatorServiceListener();
 		synchronized (endpointListenerServiceTrackerLock) {
 			endpointListenerServiceTrackerCustomizer = new EndpointListenerTrackerCustomizer();
 			endpointListenerServiceTracker = new ServiceTracker(context,
@@ -418,6 +446,10 @@ public class Activator implements BundleActivator {
 				endpointListenerServiceTrackerCustomizer.close();
 				endpointListenerServiceTrackerCustomizer = null;
 			}
+		}
+		if (localLocatorServiceListener != null) {
+			localLocatorServiceListener.close();
+			localLocatorServiceListener = null;
 		}
 	}
 
