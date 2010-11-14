@@ -25,8 +25,8 @@ import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
-public class DefaultServiceInfoFactory extends
-		AbstractMetadataFactory implements IServiceInfoFactory {
+public class DefaultServiceInfoFactory extends AbstractMetadataFactory
+		implements IServiceInfoFactory {
 
 	protected Map<ServiceInfoKey, IServiceInfo> serviceInfos = new HashMap();
 
@@ -216,7 +216,7 @@ public class DefaultServiceInfoFactory extends
 
 	public boolean removeServiceInfo(IDiscoveryAdvertiser advertiser,
 			EndpointDescription endpointDescription) {
-		return removeServiceInfoForUndiscovery(advertiser,endpointDescription) != null;
+		return removeServiceInfoForUndiscovery(advertiser, endpointDescription) != null;
 	}
 
 	public void removeAllServiceInfos() {

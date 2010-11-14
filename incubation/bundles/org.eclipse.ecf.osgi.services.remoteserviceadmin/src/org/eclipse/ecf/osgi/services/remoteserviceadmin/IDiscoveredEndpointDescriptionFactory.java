@@ -55,7 +55,8 @@ public interface IDiscoveredEndpointDescriptionFactory {
 	public DiscoveredEndpointDescription getUndiscoveredEndpointDescription(
 			IDiscoveryLocator locator, IServiceID serviceID);
 
-	public boolean removeEndpointDescription(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
-	
+	public boolean removeEndpointDescription(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
+
 	public void removeAllEndpointDescriptions();
 }

@@ -22,8 +22,9 @@ public interface IServiceInfoFactory {
 			IDiscoveryAdvertiser advertiser,
 			EndpointDescription endpointDescription);
 
-	public boolean removeServiceInfo(IDiscoveryAdvertiser advertiser, EndpointDescription endpointDescription);
+	public boolean removeServiceInfo(IDiscoveryAdvertiser advertiser,
+			EndpointDescription endpointDescription);
+
 	public void removeAllServiceInfos();
-	
-		
+
 }

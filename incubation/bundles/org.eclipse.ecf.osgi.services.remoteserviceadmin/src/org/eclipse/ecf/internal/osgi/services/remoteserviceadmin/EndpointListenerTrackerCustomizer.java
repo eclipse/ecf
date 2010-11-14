@@ -18,20 +18,30 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public class EndpointListenerTrackerCustomizer implements
 		ServiceTrackerCustomizer {
 
+	private DiscoveryImpl discovery;
+
+	public EndpointListenerTrackerCustomizer(DiscoveryImpl discovery) {
+		this.discovery = discovery;
+	}
+
 	public Object addingService(ServiceReference reference) {
-		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = Activator.getDefault().getAllDiscoveredEndpointDescriptions();
-		EndpointListener listener = (EndpointListener) Activator.getContext().getService(reference);
-		if (listener == null) return null;
-		for(org.osgi.service.remoteserviceadmin.EndpointDescription ed: allDiscoveredEndpointDescriptions) {
-			Activator.EndpointListenerHolder[] endpointListenerHolders = Activator.getDefault().getMatchingEndpointListenerHolders(new ServiceReference[] { reference} , ed);
+		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = discovery
+				.getAllDiscoveredEndpointDescriptions();
+		EndpointListener listener = (EndpointListener) Activator.getContext()
+				.getService(reference);
+		if (listener == null)
+			return null;
+		for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
+			DiscoveryImpl.EndpointListenerHolder[] endpointListenerHolders = discovery
+					.getMatchingEndpointListenerHolders(
+							new ServiceReference[] { reference }, ed);
 			if (endpointListenerHolders != null) {
 				for (int i = 0; i < endpointListenerHolders.length; i++) {
-					Activator.getDefault().queueEndpointDescription(
+					discovery.queueEndpointDescription(
 							endpointListenerHolders[i].getListener(),
 							endpointListenerHolders[i].getDescription(),
 							endpointListenerHolders[i].getMatchingFilter(),
 							true);
-
 				}
 			}
 		}

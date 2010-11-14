@@ -11,11 +11,17 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DiscoveryImpl;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
 public class DefaultEndpointDescriptionPublisher implements
 		IEndpointDescriptionPublisher {
+
+	private DiscoveryImpl discovery;
+
+	public DefaultEndpointDescriptionPublisher(DiscoveryImpl discovery) {
+		this.discovery = discovery;
+	}
 
 	public boolean publish(EndpointDescription endpointDescription) {
 		if (endpointDescription == null)
@@ -46,7 +52,7 @@ public class DefaultEndpointDescriptionPublisher implements
 					continue;
 				}
 				// Now actually register with advertiser
-				return doPublish(discoveryAdvertisers[i],serviceInfo);
+				return doPublish(discoveryAdvertisers[i], serviceInfo);
 			}
 		} else {
 			// logWarning
@@ -57,35 +63,40 @@ public class DefaultEndpointDescriptionPublisher implements
 		return false;
 	}
 
-	protected boolean doPublish(IDiscoveryAdvertiser discoveryAdvertiser, IServiceInfo serviceInfo) {
+	protected boolean doPublish(IDiscoveryAdvertiser discoveryAdvertiser,
+			IServiceInfo serviceInfo) {
 		try {
 			discoveryAdvertiser.registerService(serviceInfo);
 			return true;
 		} catch (Exception e) {
-			logError("Exception calling registerService with serviceInfo="+serviceInfo+" for discoveryAdvertiser="+discoveryAdvertiser, e);
+			logError("Exception calling registerService with serviceInfo="
+					+ serviceInfo + " for discoveryAdvertiser="
+					+ discoveryAdvertiser, e);
 			return false;
 		}
 	}
-	
-	protected boolean doUnpublish(IDiscoveryAdvertiser discoveryAdvertiser, IServiceInfo serviceInfo) {
+
+	protected boolean doUnpublish(IDiscoveryAdvertiser discoveryAdvertiser,
+			IServiceInfo serviceInfo) {
 		try {
 			discoveryAdvertiser.unregisterService(serviceInfo);
 			return true;
 		} catch (Exception e) {
-			logError("Exception calling unregisterService with serviceInfo="+serviceInfo+" for discoveryAdvertiser="+discoveryAdvertiser, e);
+			logError("Exception calling unregisterService with serviceInfo="
+					+ serviceInfo + " for discoveryAdvertiser="
+					+ discoveryAdvertiser, e);
 			return false;
 		}
 	}
 
 	protected IServiceInfoFactory getServiceInfoFactory() {
-		return Activator.getDefault()
-		.getServiceInfoFactory();
+		return discovery.getServiceInfoFactory();
 	}
+
 	protected IDiscoveryAdvertiser[] getDiscoveryAdvertisers() {
-		return Activator
-		.getDefault().getDiscoveryAdvertisers();
+		return discovery.getDiscoveryAdvertisers();
 	}
-	
+
 	private void logWarning(String string) {
 		// TODO Auto-generated method stub
 
@@ -132,7 +143,7 @@ public class DefaultEndpointDescriptionPublisher implements
 					continue;
 				}
 				// Now actually unregister with advertiser
-				return doUnpublish(discoveryAdvertisers[i],serviceInfo);
+				return doUnpublish(discoveryAdvertisers[i], serviceInfo);
 			}
 		} else {
 			// logWarning

@@ -28,16 +28,18 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 class LocatorServiceListener implements IServiceListener {
 
 	private Object listenerLock = new Object();
-
 	private IDiscoveryLocator locator;
+	private DiscoveryImpl discovery;
 
 	private List<org.osgi.service.remoteserviceadmin.EndpointDescription> discoveredEndpointDescriptions = new ArrayList();
 
-	public LocatorServiceListener() {
-		this(null);
+	public LocatorServiceListener(DiscoveryImpl discovery) {
+		this(discovery, null);
 	}
-	
-	public LocatorServiceListener(IDiscoveryLocator locator) {
+
+	public LocatorServiceListener(DiscoveryImpl discovery,
+			IDiscoveryLocator locator) {
+		this.discovery = discovery;
 		this.locator = locator;
 	}
 
@@ -87,7 +89,7 @@ class LocatorServiceListener implements IServiceListener {
 			else
 				discoveredEndpointDescriptions.remove(endpointDescription);
 
-			Activator.getDefault().queueEndpointDescription(endpointDescription, discovered);
+			discovery.queueEndpointDescription(endpointDescription, discovered);
 		}
 	}
 
@@ -117,12 +119,8 @@ class LocatorServiceListener implements IServiceListener {
 
 	private DiscoveredEndpointDescription getDiscoveredEndpointDescription(
 			IServiceID serviceId, IServiceInfo serviceInfo, boolean discovered) {
-		// Get activator
-		Activator activator = Activator.getDefault();
-		if (activator == null)
-			return null;
 		// Get IEndpointDescriptionFactory
-		IDiscoveredEndpointDescriptionFactory factory = activator
+		IDiscoveredEndpointDescriptionFactory factory = discovery
 				.getDiscoveredEndpointDescriptionFactory();
 		if (factory == null) {
 			logError("No IEndpointDescriptionFactory found, could not create EndpointDescription for "
@@ -152,9 +150,8 @@ class LocatorServiceListener implements IServiceListener {
 	}
 
 	public void close() {
-		if (locator != null) {
-			locator = null;
-		}
+		locator = null;
+		discovery = null;
 		discoveredEndpointDescriptions.clear();
 	}
 }

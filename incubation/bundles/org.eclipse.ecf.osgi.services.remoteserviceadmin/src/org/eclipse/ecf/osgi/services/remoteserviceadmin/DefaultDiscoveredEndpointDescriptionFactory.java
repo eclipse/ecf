@@ -29,7 +29,8 @@ public class DefaultDiscoveredEndpointDescriptionFactory extends
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		synchronized (discoveredEndpointDescriptions) {
 			for (DiscoveredEndpointDescription d : discoveredEndpointDescriptions) {
-				org.osgi.service.remoteserviceadmin.EndpointDescription ed = d.getEndpointDescription();
+				org.osgi.service.remoteserviceadmin.EndpointDescription ed = d
+						.getEndpointDescription();
 				if (ed.equals(endpointDescription))
 					return d;
 			}
@@ -37,12 +38,15 @@ public class DefaultDiscoveredEndpointDescriptionFactory extends
 		return null;
 	}
 
-	private DiscoveredEndpointDescription findUniscoveredEndpointDescription(IDiscoveryLocator locator, IServiceID serviceID) {
+	private DiscoveredEndpointDescription findUniscoveredEndpointDescription(
+			IDiscoveryLocator locator, IServiceID serviceID) {
 		synchronized (discoveredEndpointDescriptions) {
 			for (DiscoveredEndpointDescription d : discoveredEndpointDescriptions) {
 				Namespace dln = d.getDiscoveryLocatorNamespace();
 				IServiceID svcId = d.getServiceID();
-				if (dln.getName().equals(locator.getServicesNamespace().getName()) && svcId.equals(serviceID)) {
+				if (dln.getName().equals(
+						locator.getServicesNamespace().getName())
+						&& svcId.equals(serviceID)) {
 					return d;
 				}
 			}
@@ -62,7 +66,7 @@ public class DefaultDiscoveredEndpointDescriptionFactory extends
 				else {
 					ded = createDiscoveredEndpointDescription(locator,
 							discoveredServiceInfo, endpointDescription);
-					//put into discoveredEndpointDescriptions
+					// put into discoveredEndpointDescriptions
 					discoveredEndpointDescriptions.add(ded);
 					return ded;
 				}
@@ -77,7 +81,8 @@ public class DefaultDiscoveredEndpointDescriptionFactory extends
 	public DiscoveredEndpointDescription getUndiscoveredEndpointDescription(
 			IDiscoveryLocator locator, IServiceID serviceID) {
 		synchronized (discoveredEndpointDescriptions) {
-			DiscoveredEndpointDescription ded = findUniscoveredEndpointDescription(locator, serviceID);
+			DiscoveredEndpointDescription ded = findUniscoveredEndpointDescription(
+					locator, serviceID);
 			if (ded != null) {
 				// remove
 				discoveredEndpointDescriptions.remove(ded);
@@ -96,7 +101,8 @@ public class DefaultDiscoveredEndpointDescriptionFactory extends
 	}
 
 	protected DiscoveredEndpointDescription createDiscoveredEndpointDescription(
-			IDiscoveryLocator locator, IServiceInfo discoveredServiceInfo,
+			IDiscoveryLocator locator,
+			IServiceInfo discoveredServiceInfo,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		return new DiscoveredEndpointDescription(
 				locator.getServicesNamespace(),
@@ -119,7 +125,7 @@ public class DefaultDiscoveredEndpointDescriptionFactory extends
 		}
 		return false;
 	}
-	
+
 	public void removeAllEndpointDescriptions() {
 		synchronized (discoveredEndpointDescriptions) {
 			discoveredEndpointDescriptions.clear();

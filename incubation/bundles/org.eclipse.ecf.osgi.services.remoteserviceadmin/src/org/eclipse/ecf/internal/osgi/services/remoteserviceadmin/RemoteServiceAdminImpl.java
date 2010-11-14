@@ -25,12 +25,13 @@ public class RemoteServiceAdminImpl implements RemoteServiceAdmin {
 
 	private BundleContext context;
 	private TopologyManagerImpl topologyManager;
-	
-	public RemoteServiceAdminImpl(BundleContext context, TopologyManagerImpl topologyManager) {
+
+	public RemoteServiceAdminImpl(BundleContext context,
+			TopologyManagerImpl topologyManager) {
 		this.context = context;
 		this.topologyManager = topologyManager;
 	}
-	
+
 	public Collection<ExportRegistration> exportService(
 			ServiceReference reference, Map<String, Object> properties) {
 		// TODO Auto-generated method stub
@@ -53,6 +54,8 @@ public class RemoteServiceAdminImpl implements RemoteServiceAdmin {
 	}
 
 	public void close() {
+		
+		this.topologyManager = null;
 		this.context = null;
 	}
 }
