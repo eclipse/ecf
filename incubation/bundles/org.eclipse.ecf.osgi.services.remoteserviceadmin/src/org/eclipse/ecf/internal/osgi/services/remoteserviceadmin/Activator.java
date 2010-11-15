@@ -71,26 +71,18 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
-		stopDiscovery();
-		stopDistribution();
-		stopSAXParserTracker();
-		stopLogServiceTracker();
-		Activator.context = null;
-		Activator.instance = null;
-	}
-
-	private void stopDistribution() {
-		if (topologyManager != null) {
-			topologyManager.close();
-			topologyManager = null;
-		}
-	}
-
-	private void stopDiscovery() throws Exception {
 		if (discovery != null) {
 			discovery.close();
 			discovery = null;
 		}
+		if (topologyManager != null) {
+			topologyManager.close();
+			topologyManager = null;
+		}
+		stopSAXParserTracker();
+		stopLogServiceTracker();
+		Activator.context = null;
+		Activator.instance = null;
 	}
 
 	public String getFrameworkUUID() {

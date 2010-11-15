@@ -11,8 +11,11 @@ package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
 import java.util.Properties;
 
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultConsumerContainerSelector;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultEndpointDescriptionPublisher;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IConsumerContainerSelector;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionPublisher;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -21,9 +24,8 @@ import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.RemoteConstants;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class TopologyManagerImpl implements EndpointListener {
+public class TopologyManagerImpl extends AbstractTopologyManager implements EndpointListener {
 
-	private BundleContext context;
 	private DiscoveryImpl discovery;
 	private RemoteServiceAdminImpl remoteServiceAdminImpl;
 
@@ -34,8 +36,13 @@ public class TopologyManagerImpl implements EndpointListener {
 	private ServiceTracker publisherTracker;
 	private Object publisherTrackerLock = new Object();
 
+	private DefaultConsumerContainerSelector defaultConsumerContainerSelector;
+	private ServiceRegistration defaultConsumerContainerSelectorRegistration;
+	private ServiceTracker consumerContainerTracker;
+	private Object consumerContainerTrackerLock = new Object();
+	
 	public TopologyManagerImpl(BundleContext context, DiscoveryImpl discovery) {
-		this.context = context;
+		super(context);
 		this.discovery = discovery;
 		this.remoteServiceAdminImpl = new RemoteServiceAdminImpl(context, this);
 	}
@@ -59,9 +66,28 @@ public class TopologyManagerImpl implements EndpointListener {
 		defaultPublisherRegistration = context.registerService(
 				IEndpointDescriptionPublisher.class.getName(),
 				defaultPublisher, properties);
+		
+		// Register consumer container selector
+		defaultConsumerContainerSelector = new DefaultConsumerContainerSelector();
+		defaultConsumerContainerSelectorRegistration = context.registerService(IConsumerContainerSelector.class.getName(), defaultConsumerContainerSelector, null);
+		
 	}
 
 	public void close() {
+		synchronized (consumerContainerTrackerLock) {
+			if (consumerContainerTracker != null) {
+				consumerContainerTracker.close();
+				consumerContainerTracker = null;
+			}
+		}
+		if (defaultConsumerContainerSelectorRegistration != null) {
+			defaultConsumerContainerSelectorRegistration.unregister();
+			defaultConsumerContainerSelectorRegistration = null;
+		}
+		if (defaultConsumerContainerSelector != null) {
+			defaultConsumerContainerSelector.close();
+			defaultConsumerContainerSelector = null;
+		}
 		synchronized (publisherTrackerLock) {
 			if (publisherTracker != null) {
 				publisherTracker.close();
@@ -87,7 +113,7 @@ public class TopologyManagerImpl implements EndpointListener {
 		}
 		remoteServiceAdminImpl = null;
 		discovery = null;
-		context = null;
+		super.close();
 	}
 
 	public void endpointAdded(
@@ -110,7 +136,7 @@ public class TopologyManagerImpl implements EndpointListener {
 					+ endpoint + ",matchedFilter=" + matchedFilter);
 	}
 
-	public IEndpointDescriptionPublisher getEndpointDescriptionPublisher() {
+	protected IEndpointDescriptionPublisher getEndpointDescriptionPublisher() {
 		synchronized (publisherTrackerLock) {
 			if (publisherTracker == null) {
 				publisherTracker = new ServiceTracker(context,
@@ -121,6 +147,16 @@ public class TopologyManagerImpl implements EndpointListener {
 		return (IEndpointDescriptionPublisher) publisherTracker.getService();
 	}
 
+	protected IConsumerContainerSelector getConsumerContainerSelector() {
+		synchronized (consumerContainerTrackerLock) {
+			if (consumerContainerTracker != null) {
+				consumerContainerTracker = new ServiceTracker(context, IConsumerContainerSelector.class.getName(), null);
+				consumerContainerTracker.open();
+			}
+		}
+		return (IConsumerContainerSelector) consumerContainerTracker.getService();
+	}
+	
 	private void handleEndpointAdded(EndpointDescription endpoint) {
 		// TODO Auto-generated method stub
 		trace("handleEndpointAdded", "endpoint=" + endpoint);
