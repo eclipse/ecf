@@ -30,7 +30,7 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 
 	private Map<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>> bundleDescriptionMap = Collections
 			.synchronizedMap(new HashMap<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>>());
-	private EndpointDescriptionBuilder builder = new EndpointDescriptionBuilder();
+	private EndpointDescriptionReader builder = new EndpointDescriptionReader();
 
 	private LocatorServiceListener endpointDescriptionHandler;
 
@@ -112,7 +112,7 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 	private org.osgi.service.remoteserviceadmin.EndpointDescription[] handleEndpointDescriptionFile(
 			Bundle bundle, URL fileURL) {
 		try {
-			return builder.createEndpointDescriptions(fileURL.openStream());
+			return builder.readEndpointDescriptions(fileURL.openStream());
 		} catch (Exception e) {
 			// log
 			logError("Exception creating endpoint descriptions from fileURL="

@@ -25,9 +25,9 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionParse
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.osgi.framework.Constants;
 
-public class EndpointDescriptionBuilder extends AbstractMetadataFactory {
+public class EndpointDescriptionReader extends AbstractMetadataFactory {
 
-	public org.osgi.service.remoteserviceadmin.EndpointDescription[] createEndpointDescriptions(
+	public org.osgi.service.remoteserviceadmin.EndpointDescription[] readEndpointDescriptions(
 			InputStream input) throws IOException {
 		// First create parser
 		EndpointDescriptionParser parser = new EndpointDescriptionParser();
