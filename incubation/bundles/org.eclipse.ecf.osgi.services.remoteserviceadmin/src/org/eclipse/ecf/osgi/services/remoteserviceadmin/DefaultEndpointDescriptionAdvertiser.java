@@ -14,16 +14,16 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DiscoveryImpl;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
-public class DefaultEndpointDescriptionPublisher implements
-		IEndpointDescriptionPublisher {
+public class DefaultEndpointDescriptionAdvertiser implements
+		IEndpointDescriptionAdvertiser {
 
 	private DiscoveryImpl discovery;
 
-	public DefaultEndpointDescriptionPublisher(DiscoveryImpl discovery) {
+	public DefaultEndpointDescriptionAdvertiser(DiscoveryImpl discovery) {
 		this.discovery = discovery;
 	}
 
-	public boolean publish(EndpointDescription endpointDescription) {
+	public boolean advertise(EndpointDescription endpointDescription) {
 		if (endpointDescription == null)
 			return false;
 		if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
@@ -114,7 +114,7 @@ public class DefaultEndpointDescriptionPublisher implements
 		}
 	}
 
-	public boolean unpublish(EndpointDescription endpointDescription) {
+	public boolean unadvertise(EndpointDescription endpointDescription) {
 		if (endpointDescription == null)
 			return false;
 		if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {

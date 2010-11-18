@@ -9,17 +9,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+public interface IEndpointDescriptionAdvertiser {
 
-public class DefaultConsumerContainerSelector implements IConsumerContainerSelector {
+	public boolean advertise(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 
-	public IRemoteServiceContainer[] selectConsumerContainers(
-			EndpointDescription endpointDescription) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void close() {
-	}
+	public boolean unadvertise(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 
 }

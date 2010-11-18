@@ -13,6 +13,6 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
 public interface IConsumerContainerSelector {
 
-	public IRemoteServiceContainer[] getConsumerRemoteServiceContainers(EndpointDescription endpointDescription);
+	public IRemoteServiceContainer[] selectConsumerContainers(EndpointDescription endpointDescription);
 	
 }

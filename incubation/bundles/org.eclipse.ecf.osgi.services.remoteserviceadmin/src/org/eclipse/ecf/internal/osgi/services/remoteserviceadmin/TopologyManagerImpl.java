@@ -13,10 +13,10 @@ import java.util.Properties;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultConsumerContainerSelector;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultEndpointDescriptionPublisher;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultEndpointDescriptionAdvertiser;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IConsumerContainerSelector;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionPublisher;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionAdvertiser;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -31,7 +31,7 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 
 	private ServiceRegistration endpointListenerRegistration;
 
-	private DefaultEndpointDescriptionPublisher defaultPublisher;
+	private DefaultEndpointDescriptionAdvertiser defaultPublisher;
 	private ServiceRegistration defaultPublisherRegistration;
 	private ServiceTracker publisherTracker;
 	private Object publisherTrackerLock = new Object();
@@ -58,13 +58,13 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 				EndpointListener.class.getName(), this, props);
 
 		// Create default publisher
-		defaultPublisher = new DefaultEndpointDescriptionPublisher(discovery);
+		defaultPublisher = new DefaultEndpointDescriptionAdvertiser(discovery);
 		// Register with minimum service ranking so others can customize
 		final Properties properties = new Properties();
 		properties.put(Constants.SERVICE_RANKING,
 				new Integer(Integer.MIN_VALUE));
 		defaultPublisherRegistration = context.registerService(
-				IEndpointDescriptionPublisher.class.getName(),
+				IEndpointDescriptionAdvertiser.class.getName(),
 				defaultPublisher, properties);
 		
 		// Register consumer container selector
@@ -136,15 +136,15 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 					+ endpoint + ",matchedFilter=" + matchedFilter);
 	}
 
-	protected IEndpointDescriptionPublisher getEndpointDescriptionPublisher() {
+	protected IEndpointDescriptionAdvertiser getEndpointDescriptionPublisher() {
 		synchronized (publisherTrackerLock) {
 			if (publisherTracker == null) {
 				publisherTracker = new ServiceTracker(context,
-						IEndpointDescriptionPublisher.class.getName(), null);
+						IEndpointDescriptionAdvertiser.class.getName(), null);
 				publisherTracker.open();
 			}
 		}
-		return (IEndpointDescriptionPublisher) publisherTracker.getService();
+		return (IEndpointDescriptionAdvertiser) publisherTracker.getService();
 	}
 
 	protected IConsumerContainerSelector getConsumerContainerSelector() {

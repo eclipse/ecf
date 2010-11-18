@@ -9,12 +9,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-public interface IEndpointDescriptionPublisher {
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.osgi.framework.ServiceReference;
 
-	public boolean publish(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
-
-	public boolean unpublish(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
-
+public interface IHostContainerSelector {
+	IRemoteServiceContainer[] selectHostContainers(
+			ServiceReference serviceReference,
+			String[] serviceExportedInterfaces,
+			String[] serviceExportedConfigs, String[] serviceIntents);
 }
