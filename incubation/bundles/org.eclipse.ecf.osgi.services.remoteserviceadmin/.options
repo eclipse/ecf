@@ -1,0 +1,13 @@
+# Debugging options for the org.eclipse.ecf.osgi.services.remoteserviceadmin plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.osgi.services.remoteservicesadmin plug-in
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug=true
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/filter = *
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/flag = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/exceptions/catching=true
+# Trace when exceptions are thrown
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/exceptions/throwing=true
+
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/remoteserviceadmin=true

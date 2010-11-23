@@ -40,6 +40,10 @@ public class ExportRegistration implements
 		}
 	}
 
+	public IRemoteServiceRegistration getRemoteServiceRegistration() {
+		return rsRegistration;
+	}
+	
 	public void close() {
 		synchronized (closeLock) {
 			if (rsRegistration != null) {

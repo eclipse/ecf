@@ -7,7 +7,7 @@
  * Contributors:
  *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
+package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Collection;
 import java.util.Map;
@@ -19,17 +19,11 @@ import org.osgi.service.remoteserviceadmin.ExportReference;
 import org.osgi.service.remoteserviceadmin.ExportRegistration;
 import org.osgi.service.remoteserviceadmin.ImportReference;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
-import org.osgi.service.remoteserviceadmin.RemoteServiceAdmin;
 
-public class RemoteServiceAdminImpl implements RemoteServiceAdmin {
+public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.RemoteServiceAdmin {
 
-	private BundleContext context;
-	private TopologyManagerImpl topologyManager;
-
-	public RemoteServiceAdminImpl(BundleContext context,
-			TopologyManagerImpl topologyManager) {
-		this.context = context;
-		this.topologyManager = topologyManager;
+	public RemoteServiceAdmin(BundleContext context) {
+		super(context);
 	}
 
 	public Collection<ExportRegistration> exportService(
@@ -54,8 +48,6 @@ public class RemoteServiceAdminImpl implements RemoteServiceAdmin {
 	}
 
 	public void close() {
-		
-		this.topologyManager = null;
-		this.context = null;
+		super.close();
 	}
 }

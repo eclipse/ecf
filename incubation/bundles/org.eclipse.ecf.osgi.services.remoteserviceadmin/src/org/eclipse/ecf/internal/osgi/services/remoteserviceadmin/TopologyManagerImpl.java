@@ -11,12 +11,14 @@ package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
 import java.util.Properties;
 
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractRemoteServiceAdmin;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultConsumerContainerSelector;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultEndpointDescriptionAdvertiser;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IConsumerContainerSelector;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionAdvertiser;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -27,7 +29,6 @@ import org.osgi.util.tracker.ServiceTracker;
 public class TopologyManagerImpl extends AbstractTopologyManager implements EndpointListener {
 
 	private DiscoveryImpl discovery;
-	private RemoteServiceAdminImpl remoteServiceAdminImpl;
 
 	private ServiceRegistration endpointListenerRegistration;
 
@@ -36,15 +37,9 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 	private ServiceTracker publisherTracker;
 	private Object publisherTrackerLock = new Object();
 
-	private DefaultConsumerContainerSelector defaultConsumerContainerSelector;
-	private ServiceRegistration defaultConsumerContainerSelectorRegistration;
-	private ServiceTracker consumerContainerTracker;
-	private Object consumerContainerTrackerLock = new Object();
-	
 	public TopologyManagerImpl(BundleContext context, DiscoveryImpl discovery) {
 		super(context);
 		this.discovery = discovery;
-		this.remoteServiceAdminImpl = new RemoteServiceAdminImpl(context, this);
 	}
 
 	public void start() throws Exception {
@@ -67,27 +62,9 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 				IEndpointDescriptionAdvertiser.class.getName(),
 				defaultPublisher, properties);
 		
-		// Register consumer container selector
-		defaultConsumerContainerSelector = new DefaultConsumerContainerSelector();
-		defaultConsumerContainerSelectorRegistration = context.registerService(IConsumerContainerSelector.class.getName(), defaultConsumerContainerSelector, null);
-		
 	}
 
 	public void close() {
-		synchronized (consumerContainerTrackerLock) {
-			if (consumerContainerTracker != null) {
-				consumerContainerTracker.close();
-				consumerContainerTracker = null;
-			}
-		}
-		if (defaultConsumerContainerSelectorRegistration != null) {
-			defaultConsumerContainerSelectorRegistration.unregister();
-			defaultConsumerContainerSelectorRegistration = null;
-		}
-		if (defaultConsumerContainerSelector != null) {
-			defaultConsumerContainerSelector.close();
-			defaultConsumerContainerSelector = null;
-		}
 		synchronized (publisherTrackerLock) {
 			if (publisherTracker != null) {
 				publisherTracker.close();
@@ -107,11 +84,6 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 			endpointListenerRegistration.unregister();
 			endpointListenerRegistration = null;
 		}
-		if (remoteServiceAdminImpl != null) {
-			remoteServiceAdminImpl.close();
-			remoteServiceAdminImpl = null;
-		}
-		remoteServiceAdminImpl = null;
 		discovery = null;
 		super.close();
 	}
@@ -147,16 +119,6 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 		return (IEndpointDescriptionAdvertiser) publisherTracker.getService();
 	}
 
-	protected IConsumerContainerSelector getConsumerContainerSelector() {
-		synchronized (consumerContainerTrackerLock) {
-			if (consumerContainerTracker != null) {
-				consumerContainerTracker = new ServiceTracker(context, IConsumerContainerSelector.class.getName(), null);
-				consumerContainerTracker.open();
-			}
-		}
-		return (IConsumerContainerSelector) consumerContainerTracker.getService();
-	}
-	
 	private void handleEndpointAdded(EndpointDescription endpoint) {
 		// TODO Auto-generated method stub
 		trace("handleEndpointAdded", "endpoint=" + endpoint);
