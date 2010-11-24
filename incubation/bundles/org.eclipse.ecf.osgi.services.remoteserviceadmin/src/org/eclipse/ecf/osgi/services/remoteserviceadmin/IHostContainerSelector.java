@@ -15,6 +15,6 @@ import org.osgi.framework.ServiceReference;
 public interface IHostContainerSelector {
 	IRemoteServiceContainer[] selectHostContainers(
 			ServiceReference serviceReference,
-			String[] serviceExportedInterfaces,
-			String[] serviceExportedConfigs, String[] serviceIntents);
+			String[] exportedInterfaces,
+			String[] exportedConfigs, String[] serviceIntents);
 }

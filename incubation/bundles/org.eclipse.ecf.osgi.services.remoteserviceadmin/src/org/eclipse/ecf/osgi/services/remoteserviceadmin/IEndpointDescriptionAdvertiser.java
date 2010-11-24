@@ -9,12 +9,14 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import org.eclipse.core.runtime.IStatus;
+
 public interface IEndpointDescriptionAdvertiser {
 
-	public boolean advertise(
+	public IStatus advertise(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 
-	public boolean unadvertise(
+	public IStatus unadvertise(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 
 }

@@ -24,5 +24,7 @@ public interface DebugOptions {
 	public static final String METHODS_EXITING = DEBUG + "/methods/exiting"; //$NON-NLS-1$
 
 	public static final String REMOTE_SERVICE_ADMIN = DEBUG + "/remoteserviceadmin"; //$NON-NLS-1$
-	
+
+	public static final String TOPOLOGY_MANAGER = DEBUG + "/topologymanager"; //$NON-NLS-1$
+
 }

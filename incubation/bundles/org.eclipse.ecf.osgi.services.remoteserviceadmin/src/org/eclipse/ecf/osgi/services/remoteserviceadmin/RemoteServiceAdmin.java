@@ -12,7 +12,6 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.Collection;
 import java.util.Map;
 
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 import org.osgi.service.remoteserviceadmin.ExportReference;
@@ -21,10 +20,6 @@ import org.osgi.service.remoteserviceadmin.ImportReference;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
 
 public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.RemoteServiceAdmin {
-
-	public RemoteServiceAdmin(BundleContext context) {
-		super(context);
-	}
 
 	public Collection<ExportRegistration> exportService(
 			ServiceReference reference, Map<String, Object> properties) {
@@ -48,6 +43,5 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements or
 	}
 
 	public void close() {
-		super.close();
 	}
 }
