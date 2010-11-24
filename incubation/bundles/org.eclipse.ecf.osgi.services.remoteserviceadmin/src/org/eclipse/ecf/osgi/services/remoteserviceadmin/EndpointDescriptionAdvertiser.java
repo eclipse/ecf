@@ -22,12 +22,12 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DiscoveryImpl;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
-public class DefaultEndpointDescriptionAdvertiser implements
+public class EndpointDescriptionAdvertiser implements
 		IEndpointDescriptionAdvertiser {
 
 	private DiscoveryImpl discovery;
 
-	public DefaultEndpointDescriptionAdvertiser(DiscoveryImpl discovery) {
+	public EndpointDescriptionAdvertiser(DiscoveryImpl discovery) {
 		this.discovery = discovery;
 	}
 

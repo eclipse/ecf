@@ -11,7 +11,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
-public class DefaultConsumerContainerSelector implements IConsumerContainerSelector {
+public class ConsumerContainerSelector implements IConsumerContainerSelector {
 
 	public IRemoteServiceContainer[] selectConsumerContainers(
 			EndpointDescription endpointDescription) {

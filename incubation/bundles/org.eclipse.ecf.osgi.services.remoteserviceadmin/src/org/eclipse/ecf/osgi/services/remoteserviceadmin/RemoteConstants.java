@@ -40,4 +40,6 @@ public class RemoteConstants {
 	// remote service filter
 	public static final String ENDPOINT_REMOTESERVICE_FILTER = "ecf.endpoint.rsfilter";
 
+	public static final String RSA_CONTAINERS = "ecf.rsa.containers";
+
 }

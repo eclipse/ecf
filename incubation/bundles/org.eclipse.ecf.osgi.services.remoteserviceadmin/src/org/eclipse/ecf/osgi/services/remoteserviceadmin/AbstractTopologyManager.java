@@ -13,21 +13,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DiscoveryImpl;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractTopologyManager {
 
-	public AbstractTopologyManager(BundleContext context) {
-		this.context = context;
-	}
 	public static final String SERVICE_EXPORTED_INTERFACES_WILDCARD = "*";
 
 	private BundleContext context;
+	
+	private DiscoveryImpl discovery;
 	
 	private ServiceTracker hostContainerSelectorTracker;
 	private Object hostContainerSelectorTrackerLock = new Object();
@@ -38,8 +42,34 @@ public abstract class AbstractTopologyManager {
 	private org.osgi.service.remoteserviceadmin.RemoteServiceAdmin remoteServiceAdmin;
 	private Object remoteServiceAdminLock = new Object();
 	
+	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
+	private ServiceRegistration defaultEndpointDescriptionAdvertiserRegistration;
+	private ServiceTracker endpointDescriptionAdvertiserTracker;
+	private Object endpointDescriptionAdvertiserTrackerLock = new Object();
+
+	public AbstractTopologyManager(BundleContext context, DiscoveryImpl discovery) {
+		this.context = context;
+		this.discovery = discovery;
+	}
+	
+	public void start() throws Exception {
+		// Create default publisher
+		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(getDiscovery());
+		// Register with minimum service ranking so others can customize
+		final Properties properties = new Properties();
+		properties.put(Constants.SERVICE_RANKING,
+				new Integer(Integer.MIN_VALUE));
+		defaultEndpointDescriptionAdvertiserRegistration = getContext().registerService(
+				IEndpointDescriptionAdvertiser.class.getName(),
+				endpointDescriptionAdvertiser, properties);
+	}
+	
 	protected BundleContext getContext() {
 		return context;
+	}
+	
+	protected DiscoveryImpl getDiscovery() {
+		return discovery;
 	}
 	
 	protected IHostContainerSelector getHostContainerSelector() {
@@ -62,6 +92,17 @@ public abstract class AbstractTopologyManager {
 		return (IConsumerContainerSelector) consumerContainerSelectorTracker.getService();
 	}
 	
+	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser() {
+		synchronized (endpointDescriptionAdvertiserTrackerLock) {
+			if (endpointDescriptionAdvertiserTracker == null) {
+				endpointDescriptionAdvertiserTracker = new ServiceTracker(getContext(),
+						IEndpointDescriptionAdvertiser.class.getName(), null);
+				endpointDescriptionAdvertiserTracker.open();
+			}
+		}
+		return (IEndpointDescriptionAdvertiser) endpointDescriptionAdvertiserTracker.getService();
+	}
+
 	public void close() {
 		synchronized (hostContainerSelectorTrackerLock) {
 			if (hostContainerSelectorTracker != null) {
@@ -75,7 +116,22 @@ public abstract class AbstractTopologyManager {
 				consumerContainerSelectorTracker = null;
 			}
 		}
-
+		synchronized (endpointDescriptionAdvertiserTrackerLock) {
+			if (endpointDescriptionAdvertiserTracker != null) {
+				endpointDescriptionAdvertiserTracker.close();
+				endpointDescriptionAdvertiserTracker = null;
+			}
+		}
+		if (defaultEndpointDescriptionAdvertiserRegistration != null) {
+			defaultEndpointDescriptionAdvertiserRegistration.unregister();
+			defaultEndpointDescriptionAdvertiserRegistration = null;
+		}
+		if (endpointDescriptionAdvertiser != null) {
+			endpointDescriptionAdvertiser.close();
+			endpointDescriptionAdvertiser = null;
+		}
+		discovery = null;
+		context = null;
 	}
 
 	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectRemoteServiceAdmin(
@@ -153,5 +209,46 @@ public abstract class AbstractTopologyManager {
 			String message) {
 				// xxx todo
 			}
+
+	protected void publishExportedRegistrations(
+			Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> registrations) {
+		for(org.osgi.service.remoteserviceadmin.ExportRegistration reg: registrations) {
+			if (reg instanceof ExportRegistration) {
+				publishExportedRegistration((ExportRegistration) reg);
+			}
+		}
+	}
+
+	private void publishExportedRegistration(ExportRegistration reg) {
+		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser();
+		if (advertiser == null) {
+			logError("advertiseExportedRegistration","No endpoint description advertiser available to advertise ExportRegistration="+reg);
+			return;
+		}
+		// Now advertise endpoint description using endpoint description advertiser
+		IStatus result = advertiser.advertise((EndpointDescription) reg.getExportReference().getExportedEndpoint());
+		if (!result.isOK()) logError("advertiseExportedRegistration","Advertise of ExportRegistration="+reg+" FAILED",result);
+	}
+
+	protected void logError(String method, String message, IStatus result) {
+		// TODO Auto-generated method stub
+		logError(method,method);
+		
+	}
+
+	protected void trace(String method, String message) {
+		// TODO Auto-generated method stub
+		System.out.println("TopologyManager." + method + ": " + message);
+	}
+
+	protected void logWarning(String string) {
+		System.out.println(string);
+	}
+
+	protected void logError(String method, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

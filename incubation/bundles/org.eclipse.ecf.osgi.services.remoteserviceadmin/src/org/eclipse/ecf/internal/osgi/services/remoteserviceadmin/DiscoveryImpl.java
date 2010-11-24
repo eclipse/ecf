@@ -24,8 +24,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultDiscoveredEndpointDescriptionFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultServiceInfoFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
 import org.eclipse.equinox.concurrent.future.IExecutor;
@@ -54,14 +54,14 @@ public class DiscoveryImpl {
 	private IExecutor executor;
 
 	// service info factory default
-	private DefaultServiceInfoFactory defaultServiceInfoFactory;
+	private ServiceInfoFactory serviceInfoFactory;
 	private ServiceRegistration defaultServiceInfoFactoryRegistration;
 	// service info factory service tracker
 	private Object serviceInfoFactoryTrackerLock = new Object();
 	private ServiceTracker serviceInfoFactoryTracker;
 
 	// endpoint description factory default
-	private DefaultDiscoveredEndpointDescriptionFactory defaultEndpointDescriptionFactory;
+	private DiscoveredEndpointDescriptionFactory defaultEndpointDescriptionFactory;
 	private ServiceRegistration defaultEndpointDescriptionFactoryRegistration;
 	// endpoint description factory tracker
 	private Object endpointDescriptionFactoryTrackerLock = new Object();
@@ -98,11 +98,11 @@ public class DiscoveryImpl {
 		final Properties properties = new Properties();
 		properties.put(Constants.SERVICE_RANKING,
 				new Integer(Integer.MIN_VALUE));
-		defaultServiceInfoFactory = new DefaultServiceInfoFactory();
+		serviceInfoFactory = new ServiceInfoFactory();
 		defaultServiceInfoFactoryRegistration = context.registerService(
-				IServiceInfoFactory.class.getName(), defaultServiceInfoFactory,
+				IServiceInfoFactory.class.getName(), serviceInfoFactory,
 				(Dictionary) properties);
-		defaultEndpointDescriptionFactory = new DefaultDiscoveredEndpointDescriptionFactory();
+		defaultEndpointDescriptionFactory = new DiscoveredEndpointDescriptionFactory();
 		defaultEndpointDescriptionFactoryRegistration = context
 				.registerService(
 						IDiscoveredEndpointDescriptionFactory.class.getName(),
@@ -269,9 +269,9 @@ public class DiscoveryImpl {
 			defaultServiceInfoFactoryRegistration.unregister();
 			defaultServiceInfoFactoryRegistration = null;
 		}
-		if (defaultServiceInfoFactory != null) {
-			defaultServiceInfoFactory.close();
-			defaultServiceInfoFactory = null;
+		if (serviceInfoFactory != null) {
+			serviceInfoFactory.close();
+			serviceInfoFactory = null;
 		}
 		if (locatorServiceTracker != null) {
 			locatorServiceTracker.close();

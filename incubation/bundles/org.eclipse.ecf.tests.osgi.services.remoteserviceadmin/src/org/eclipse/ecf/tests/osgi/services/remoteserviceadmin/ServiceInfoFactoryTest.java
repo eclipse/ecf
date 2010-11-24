@@ -11,7 +11,7 @@ package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultServiceInfoFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
 
 public class ServiceInfoFactoryTest extends AbstractMetadataFactoryTest {
 
@@ -19,7 +19,7 @@ public class ServiceInfoFactoryTest extends AbstractMetadataFactoryTest {
 		super.setUp();
 		discoveryAdvertiser = getDiscoveryAdvertiser();
 		Assert.isNotNull(discoveryAdvertiser);
-		serviceInfoFactory = new DefaultServiceInfoFactory();
+		serviceInfoFactory = new ServiceInfoFactory();
 	}
 	
 	public void testCreateServiceInfoFromMinimalEndpointDescription() throws Exception {

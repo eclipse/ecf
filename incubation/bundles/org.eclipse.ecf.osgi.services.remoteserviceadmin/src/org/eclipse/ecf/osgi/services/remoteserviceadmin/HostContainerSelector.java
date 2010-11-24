@@ -3,7 +3,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.osgi.framework.ServiceReference;
 
-public class DefaultHostContainerSelector implements IHostContainerSelector {
+public class HostContainerSelector implements IHostContainerSelector {
 
 	public IRemoteServiceContainer[] selectHostContainers(
 			ServiceReference serviceReference,

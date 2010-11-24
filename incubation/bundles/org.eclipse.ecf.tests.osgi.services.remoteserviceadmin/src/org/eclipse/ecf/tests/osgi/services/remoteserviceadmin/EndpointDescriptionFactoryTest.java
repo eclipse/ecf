@@ -2,8 +2,8 @@ package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultDiscoveredEndpointDescriptionFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DefaultServiceInfoFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 
 public class EndpointDescriptionFactoryTest extends AbstractMetadataFactoryTest {
@@ -12,11 +12,11 @@ public class EndpointDescriptionFactoryTest extends AbstractMetadataFactoryTest 
 		super.setUp();
 		discoveryAdvertiser = getDiscoveryAdvertiser();
 		Assert.isNotNull(discoveryAdvertiser);
-		serviceInfoFactory = new DefaultServiceInfoFactory();
+		serviceInfoFactory = new ServiceInfoFactory();
 		Assert.isNotNull(serviceInfoFactory);
 		discoveryLocator = getDiscoveryLocator();
 		Assert.isNotNull(discoveryLocator);
-		endpointDescriptionFactory = new DefaultDiscoveredEndpointDescriptionFactory();
+		endpointDescriptionFactory = new DiscoveredEndpointDescriptionFactory();
 		Assert.isNotNull(endpointDescriptionFactory);
 	}
 	

@@ -9,7 +9,30 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import org.eclipse.core.runtime.IStatus;
+
 
 public abstract class AbstractRemoteServiceAdmin {
+
+	protected void logError(String method, String message, IStatus result) {
+		// TODO Auto-generated method stub
+		logError(method,method);
+		
+	}
+
+	protected void trace(String method, String message) {
+		// TODO Auto-generated method stub
+		System.out.println("TopologyManager." + method + ": " + message);
+	}
+
+	protected void logWarning(String string) {
+		System.out.println(string);
+	}
+
+	protected void logError(String method, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
