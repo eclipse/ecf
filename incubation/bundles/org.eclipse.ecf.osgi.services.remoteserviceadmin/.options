@@ -11,3 +11,5 @@ org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/exceptions/catching=true
 org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/exceptions/throwing=true
 
 org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/remoteserviceadmin=true
+
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/containerselector=true
