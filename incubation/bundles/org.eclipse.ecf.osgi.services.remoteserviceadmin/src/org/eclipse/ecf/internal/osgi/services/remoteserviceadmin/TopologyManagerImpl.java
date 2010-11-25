@@ -74,8 +74,9 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements
 		if (endpoint instanceof EndpointDescription) {
 			handleEndpointAdded((EndpointDescription) endpoint);
 		} else
-			logWarning("ECF Topology Manager:  Ignoring Non-ECF endpointAdded="
-					+ endpoint + ",matchedFilter=" + matchedFilter);
+			logWarning("endpointAdded",
+					"ECF Topology Manager:  Ignoring Non-ECF endpointAdded="
+							+ endpoint + ",matchedFilter=" + matchedFilter);
 	}
 
 	public void endpointRemoved(
@@ -84,8 +85,9 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements
 		if (endpoint instanceof EndpointDescription) {
 			handleEndpointRemoved((EndpointDescription) endpoint);
 		} else
-			logWarning("ECF Topology Manager:  Ignoring Non-ECF endpointRemoved="
-					+ endpoint + ",matchedFilter=" + matchedFilter);
+			logWarning("endpointRemoved",
+					"ECF Topology Manager:  Ignoring Non-ECF endpointRemoved="
+							+ endpoint + ",matchedFilter=" + matchedFilter);
 	}
 
 	private void handleEndpointAdded(EndpointDescription endpoint) {
@@ -158,9 +160,7 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements
 		// If none found, log a warning and we're done
 		if (rsContainers == null || rsContainers.length == 0) {
 			logWarning(
-					"handleServiceRegistered", //$NON-NLS-1$
-					DebugOptions.TOPOLOGY_MANAGER, this.getClass(),
-					"No remote service containers found for serviceReference=" //$NON-NLS-1$
+					"handleServiceRegistered", "No remote service containers found for serviceReference=" //$NON-NLS-1$
 							+ serviceReference
 							+ ". Remote service NOT EXPORTED"); //$NON-NLS-1$
 			return;

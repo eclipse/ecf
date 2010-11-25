@@ -220,15 +220,16 @@ public class Activator implements BundleActivator {
 	}
 
 	private ServiceTracker containerManagerTracker;
-	
+
 	public IContainerManager getContainerManager() {
 		if (containerManagerTracker == null) {
-			containerManagerTracker = new ServiceTracker(context,IContainerManager.class.getName(), null);
+			containerManagerTracker = new ServiceTracker(context,
+					IContainerManager.class.getName(), null);
 			containerManagerTracker.open();
 		}
 		return (IContainerManager) containerManagerTracker.getService();
 	}
-	
+
 	private void stopContainerManagerTracker() {
 		if (containerManagerTracker != null) {
 			containerManagerTracker.close();

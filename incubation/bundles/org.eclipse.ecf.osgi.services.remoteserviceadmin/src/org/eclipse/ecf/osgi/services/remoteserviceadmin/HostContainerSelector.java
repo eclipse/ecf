@@ -70,4 +70,6 @@ public class HostContainerSelector extends AbstractHostContainerSelector
 				.toArray(new IRemoteServiceContainer[] {});
 	}
 
+	public void close() {
+	}
 }
