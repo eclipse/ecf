@@ -48,7 +48,7 @@ public class HostContainerSelector extends AbstractHostContainerSelector
 			// specified, then
 			// connect the host container(s)
 			Object target = serviceReference
-					.getProperty(RemoteConstants.EXPORTED_CONTAINER_CONNECT_TARGET);
+					.getProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 			if (target != null) {
 				for (Iterator i = rsContainers.iterator(); i.hasNext();) {
 					IContainer container = ((IRemoteServiceContainer) i.next())

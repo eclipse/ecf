@@ -90,7 +90,7 @@ public abstract class AbstractHostContainerSelector extends
 	protected boolean matchHostContainerToConnectTarget(
 			ServiceReference serviceReference, IContainer container) {
 		Object target = serviceReference
-				.getProperty(RemoteConstants.EXPORTED_CONTAINER_CONNECT_TARGET);
+				.getProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		if (target == null)
 			return true;
 		// If a targetID is specified, make sure it either matches what the

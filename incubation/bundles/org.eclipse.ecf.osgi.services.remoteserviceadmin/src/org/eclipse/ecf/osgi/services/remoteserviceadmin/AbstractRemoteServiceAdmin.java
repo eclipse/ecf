@@ -68,19 +68,23 @@ public abstract class AbstractRemoteServiceAdmin {
 			ServiceReference serviceReference, Map<String, Object> properties,
 			IRemoteServiceRegistration registration,
 			IRemoteServiceContainer container) {
+		// endpoint ID is container ID
 		ID endpointID = registration.getContainerID();
-		ID connectTargetID = (ID) getPropertyValue(
-				RemoteConstants.EXPORTED_CONTAINER_CONNECT_TARGET,
+		// If connectTarget is set
+		Object connectTarget = getPropertyValue(
+				RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
 				serviceReference, properties);
-		if (connectTargetID == null) {
+		ID connectTargetID = null;
+		if (connectTarget != null) {
+			// Then we get the host container connected ID
 			ID connectedID = container.getContainer().getConnectedID();
 			if (connectedID != null && !connectedID.equals(endpointID))
 				connectTargetID = connectedID;
 		}
 		ID[] idFilter = (ID[]) getPropertyValue(
-				RemoteConstants.EXPORTED_IDFILTER, serviceReference, properties);
+				RemoteConstants.ENDPOINT_IDFILTER_IDS, serviceReference, properties);
 		String rsFilter = (String) getPropertyValue(
-				RemoteConstants.EXPORTED_REMOTESERVICE_FILTER,
+				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 				serviceReference, properties);
 		IRemoteServiceID rsID = registration.getID();
 		return new EndpointDescription(serviceReference, properties,
