@@ -28,4 +28,6 @@ public interface DebugOptions {
 
 	public static final String TOPOLOGY_MANAGER = DEBUG + "/topologymanager"; //$NON-NLS-1$
 
+	public static final String CONTAINERSELECTOR = DEBUG + "/containerselector"; //$NON-NLS-1$
+
 }

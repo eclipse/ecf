@@ -20,6 +20,7 @@ import java.util.UUID;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.osgi.framework.BundleActivator;
@@ -81,6 +82,7 @@ public class Activator implements BundleActivator {
 		}
 		stopSAXParserTracker();
 		stopLogServiceTracker();
+		stopContainerManagerTracker();
 		Activator.context = null;
 		Activator.instance = null;
 	}
@@ -217,4 +219,20 @@ public class Activator implements BundleActivator {
 		return Collections.EMPTY_LIST;
 	}
 
+	private ServiceTracker containerManagerTracker;
+	
+	public IContainerManager getContainerManager() {
+		if (containerManagerTracker == null) {
+			containerManagerTracker = new ServiceTracker(context,IContainerManager.class.getName(), null);
+			containerManagerTracker.open();
+		}
+		return (IContainerManager) containerManagerTracker.getService();
+	}
+	
+	private void stopContainerManagerTracker() {
+		if (containerManagerTracker != null) {
+			containerManagerTracker.close();
+			containerManagerTracker = null;
+		}
+	}
 }
