@@ -137,13 +137,9 @@ public abstract class AbstractContainerSelector {
 
 	protected ID createTargetID(IContainer container, Object target) {
 		ID targetID = null;
-		if (target instanceof String) {
+		if (target instanceof String)
 			targetID = getIDFactory().createID(container.getConnectNamespace(),
 					(String) target);
-		} else if (target instanceof Object[]) {
-			targetID = getIDFactory().createID(container.getConnectNamespace(),
-					(Object[]) target);
-		}
 		return targetID;
 	}
 

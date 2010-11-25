@@ -72,8 +72,8 @@ public abstract class AbstractRemoteServiceAdmin {
 		ID endpointID = registration.getContainerID();
 		// If connectTarget is set
 		Object connectTarget = getPropertyValue(
-				RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
-				serviceReference, properties);
+				RemoteConstants.ENDPOINT_CONNECTTARGET_ID, serviceReference,
+				properties);
 		ID connectTargetID = null;
 		if (connectTarget != null) {
 			// Then we get the host container connected ID
@@ -82,7 +82,8 @@ public abstract class AbstractRemoteServiceAdmin {
 				connectTargetID = connectedID;
 		}
 		ID[] idFilter = (ID[]) getPropertyValue(
-				RemoteConstants.ENDPOINT_IDFILTER_IDS, serviceReference, properties);
+				RemoteConstants.ENDPOINT_IDFILTER_IDS, serviceReference,
+				properties);
 		String rsFilter = (String) getPropertyValue(
 				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 				serviceReference, properties);
