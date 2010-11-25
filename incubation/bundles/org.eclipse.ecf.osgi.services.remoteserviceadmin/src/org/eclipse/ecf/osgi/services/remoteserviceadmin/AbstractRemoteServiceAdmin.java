@@ -70,18 +70,17 @@ public abstract class AbstractRemoteServiceAdmin {
 			IRemoteServiceContainer container) {
 		ID endpointID = registration.getContainerID();
 		ID connectTargetID = (ID) getPropertyValue(
-				RemoteConstants.ENDPOINT_CONNECTTARGET_ID, serviceReference,
-				properties);
+				RemoteConstants.EXPORTED_CONTAINER_CONNECT_TARGET,
+				serviceReference, properties);
 		if (connectTargetID == null) {
 			ID connectedID = container.getContainer().getConnectedID();
 			if (connectedID != null && !connectedID.equals(endpointID))
 				connectTargetID = connectedID;
 		}
 		ID[] idFilter = (ID[]) getPropertyValue(
-				RemoteConstants.ENDPOINT_IDFILTER_IDS, serviceReference,
-				properties);
+				RemoteConstants.EXPORTED_IDFILTER, serviceReference, properties);
 		String rsFilter = (String) getPropertyValue(
-				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
+				RemoteConstants.EXPORTED_REMOTESERVICE_FILTER,
 				serviceReference, properties);
 		IRemoteServiceID rsID = registration.getID();
 		return new EndpointDescription(serviceReference, properties,

@@ -18,7 +18,7 @@ public class ExportRegistration implements
 
 	private IRemoteServiceRegistration rsRegistration;
 	private ExportReference exportReference;
-	
+
 	private Throwable throwable;
 
 	private final Object closeLock = new Object();

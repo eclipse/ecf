@@ -44,6 +44,16 @@ public class RemoteConstants {
 
 	public static final String RSA_EXPORTED_INTERFACES = "ecf.rsa.exportedInterfaces";
 
-	public static final String SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS = "ecf.service.exported.containerfactoryargs";
+	public static final String EXPORTED_CONTAINER_FACTORY_ARGS = "ecf.exported.containerfactoryargs";
+
+	public static final String EXPORTED_CONTAINER_CONNECT_CONTEXT = "ecf.exported.containerconnectcontext";
+
+	public static final String EXPORTED_CONTAINER_ID = "ecf.exported.containerid";
+
+	public static final String EXPORTED_CONTAINER_CONNECT_TARGET = "ecf.exported.connecttarget";
+
+	public static final String EXPORTED_IDFILTER = "ecf.exported.idfilter";
+
+	public static final String EXPORTED_REMOTESERVICE_FILTER = "ecf.exported.remoteservicefilter";
 
 }

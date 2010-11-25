@@ -50,8 +50,8 @@ public abstract class AbstractContainerSelector {
 	}
 
 	protected ContainerTypeDescription[] getContainerTypeDescriptions() {
-		return (ContainerTypeDescription[]) getContainerFactory().getDescriptions()
-				.toArray(new ContainerTypeDescription[] {});
+		return (ContainerTypeDescription[]) getContainerFactory()
+				.getDescriptions().toArray(new ContainerTypeDescription[] {});
 	}
 
 	protected IContainer[] getContainers() {
@@ -66,7 +66,8 @@ public abstract class AbstractContainerSelector {
 
 	protected ContainerTypeDescription getContainerTypeDescription(
 			IContainer container) {
-		return getContainerManager().getContainerTypeDescription(container.getID());
+		return getContainerManager().getContainerTypeDescription(
+				container.getID());
 	}
 
 	protected IRemoteServiceContainer[] getRemoteServiceContainers(
@@ -120,7 +121,7 @@ public abstract class AbstractContainerSelector {
 		IContainerFactory containerFactory = getContainerFactory();
 
 		Object containerFactoryArguments = serviceReference
-				.getProperty(RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS);
+				.getProperty(RemoteConstants.EXPORTED_CONTAINER_FACTORY_ARGS);
 		if (containerFactoryArguments instanceof String) {
 			return containerFactory.createContainer(containerTypeDescription,
 					(String) containerFactoryArguments);
