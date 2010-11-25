@@ -16,26 +16,33 @@ import org.osgi.framework.ServiceReference;
 public class ExportRegistration implements
 		org.osgi.service.remoteserviceadmin.ExportRegistration {
 
-	private IRemoteServiceRegistration rsRegistration;	
+	private IRemoteServiceRegistration rsRegistration;
 	private ExportReference exportReference;
+	
 	private Throwable throwable;
-	
+
 	private final Object closeLock = new Object();
-	
-	public ExportRegistration(IRemoteServiceRegistration rsRegistration, ServiceReference serviceReference, EndpointDescription endpointDescription) {
+
+	public ExportRegistration(IRemoteServiceRegistration rsRegistration,
+			ServiceReference serviceReference,
+			EndpointDescription endpointDescription) {
 		Assert.isNotNull(rsRegistration);
 		this.rsRegistration = rsRegistration;
-		this.exportReference = new ExportReference(serviceReference,endpointDescription);
+		this.exportReference = new ExportReference(serviceReference,
+				endpointDescription);
 	}
-	
+
 	public ExportRegistration(Throwable t) {
 		this.throwable = t;
 	}
-	
+
 	public org.osgi.service.remoteserviceadmin.ExportReference getExportReference() {
 		synchronized (closeLock) {
 			Throwable t = getException();
-			if (t != null) throw new IllegalStateException("Cannot get export reference as registration not properly initialized",t);
+			if (t != null)
+				throw new IllegalStateException(
+						"Cannot get export reference as registration not properly initialized",
+						t);
 			return exportReference;
 		}
 	}
@@ -43,14 +50,17 @@ public class ExportRegistration implements
 	public IRemoteServiceRegistration getRemoteServiceRegistration() {
 		return rsRegistration;
 	}
-	
+
 	public void close() {
 		synchronized (closeLock) {
 			if (rsRegistration != null) {
 				rsRegistration.unregister();
 				rsRegistration = null;
 			}
-			exportReference = null;
+			if (exportReference != null) {
+				exportReference.close();
+				exportReference = null;
+			}
 			throwable = null;
 		}
 	}
@@ -58,6 +68,14 @@ public class ExportRegistration implements
 	public Throwable getException() {
 		synchronized (closeLock) {
 			return throwable;
+		}
+	}
+
+	public String toString() {
+		synchronized (closeLock) {
+			return "ExportRegistration[rsRegistration=" + rsRegistration
+					+ ", exportReference=" + exportReference + ", throwable="
+					+ throwable + "]";
 		}
 	}
 

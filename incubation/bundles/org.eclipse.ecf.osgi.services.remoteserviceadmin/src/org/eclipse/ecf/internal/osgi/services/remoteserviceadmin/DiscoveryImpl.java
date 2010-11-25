@@ -25,9 +25,9 @@ import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescriptionFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
 import org.eclipse.equinox.concurrent.future.IExecutor;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
@@ -108,8 +108,9 @@ public class DiscoveryImpl {
 						IDiscoveredEndpointDescriptionFactory.class.getName(),
 						defaultEndpointDescriptionFactory,
 						(Dictionary) properties);
-		
-		// Create thread group, event manager, and eventQueue, and setup to dispatch EndpointListenerEvents
+
+		// Create thread group, event manager, and eventQueue, and setup to
+		// dispatch EndpointListenerEvents
 		ThreadGroup eventGroup = new ThreadGroup(
 				"EventAdmin Discovery EndpointListener Dispatcher"); //$NON-NLS-1$
 		eventGroup.setDaemon(true);
@@ -128,27 +129,41 @@ public class DiscoveryImpl {
 				final EndpointDescription endpointDescription = event
 						.getEndointDescription();
 				final String matchingFilter = event.getMatchingFilter();
-				
+
 				try {
 					if (event.isDiscovered())
 						endpointListener.endpointAdded(endpointDescription,
 								matchingFilter);
 					else
-						endpointListener.endpointRemoved(
-								endpointDescription, matchingFilter);
+						endpointListener.endpointRemoved(endpointDescription,
+								matchingFilter);
 				} catch (Exception e) {
-					String message = "Exception in EndpointListener listener=" + endpointListener + " description=" + endpointDescription + " matchingFilter=" + matchingFilter;
+					String message = "Exception in EndpointListener listener="
+							+ endpointListener + " description="
+							+ endpointDescription + " matchingFilter="
+							+ matchingFilter;
 					logError(message, e);
 				} catch (LinkageError e) {
-					String message = "LinkageError in EndpointListener listener=" + endpointListener + " description=" + endpointDescription + " matchingFilter=" + matchingFilter;
+					String message = "LinkageError in EndpointListener listener="
+							+ endpointListener
+							+ " description="
+							+ endpointDescription
+							+ " matchingFilter="
+							+ matchingFilter;
 					logError(message, e);
 				} catch (AssertionError e) {
-					String message = "AssertionError in EndpointListener listener=" + endpointListener + " description=" + endpointDescription + " matchingFilter=" + matchingFilter;
+					String message = "AssertionError in EndpointListener listener="
+							+ endpointListener
+							+ " description="
+							+ endpointDescription
+							+ " matchingFilter="
+							+ matchingFilter;
 					logError(message, e);
 				}
 			}
 		});
-		// Register the endpoint listener tracker, so that endpoint listeners that are subsequently added
+		// Register the endpoint listener tracker, so that endpoint listeners
+		// that are subsequently added
 		// will then be notified of discovered endpoints
 		endpointListenerTrackerCustomizer = new EndpointListenerTrackerCustomizer(
 				this);
@@ -168,13 +183,14 @@ public class DiscoveryImpl {
 		// Get any existing locators
 		Object[] locators = locatorServiceTracker.getServices();
 		if (locators != null) {
-			// for all of them 
+			// for all of them
 			for (int i = 0; i < locators.length; i++) {
 				// Add service listener to locator
 				openLocator((IDiscoveryLocator) locators[i]);
 			}
 		}
-		// Create bundle tracker for reading local/xml-file endpoint descriptions
+		// Create bundle tracker for reading local/xml-file endpoint
+		// descriptions
 		bundleTrackerCustomizer = new EndpointDescriptionBundleTrackerCustomizer(
 				localLocatorServiceListener);
 		bundleTracker = new BundleTracker(context, Bundle.ACTIVE
@@ -186,13 +202,11 @@ public class DiscoveryImpl {
 	private void logError(String message, Throwable e) {
 		Activator a = Activator.getDefault();
 		if (a != null)
-			a.log(new Status(
-					IStatus.ERROR,
-					Activator.PLUGIN_ID,
-					IStatus.ERROR,message
-					, e)); //$NON-NLS-1$
+			a.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
+					message, e)); //$NON-NLS-1$
 
 	}
+
 	public void close() {
 		if (bundleTracker != null) {
 			bundleTracker.close();

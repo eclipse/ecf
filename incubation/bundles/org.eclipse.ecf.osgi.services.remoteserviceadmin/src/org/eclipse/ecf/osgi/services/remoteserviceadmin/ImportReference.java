@@ -11,35 +11,36 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import org.osgi.framework.ServiceReference;
 
-public class ExportReference implements
-		org.osgi.service.remoteserviceadmin.ExportReference {
+public class ImportReference implements
+		org.osgi.service.remoteserviceadmin.ImportReference {
 
-	private ServiceReference serviceReference;
+	private ServiceReference importedServiceReference;
 	private EndpointDescription endpointDescription;
 
-	protected ExportReference(ServiceReference serviceReference,
+	protected ImportReference(ServiceReference serviceReference,
 			EndpointDescription endpointDescription) {
-		this.serviceReference = serviceReference;
+		this.importedServiceReference = serviceReference;
 		this.endpointDescription = endpointDescription;
 	}
 
-	public synchronized ServiceReference getExportedService() {
-		return serviceReference;
+	public synchronized ServiceReference getImportedService() {
+		return importedServiceReference;
 	}
 
-	public synchronized org.osgi.service.remoteserviceadmin.EndpointDescription getExportedEndpoint() {
+	public synchronized org.osgi.service.remoteserviceadmin.EndpointDescription getImportedEndpoint() {
 		return endpointDescription;
 	}
 
 	public synchronized void close() {
-		this.serviceReference = null;
+		this.importedServiceReference = null;
 		this.endpointDescription = null;
 	}
 
 	@Override
-	public synchronized String toString() {
-		return "ExportReference[serviceReference=" + serviceReference
-				+ ", endpointDescription=" + endpointDescription + "]";
+	public String toString() {
+		return "ImportReference[importedServiceReference="
+				+ importedServiceReference + ", endpointDescription="
+				+ endpointDescription + "]";
 	}
 
 }

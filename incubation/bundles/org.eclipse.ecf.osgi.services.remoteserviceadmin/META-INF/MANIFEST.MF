@@ -7,7 +7,8 @@ Bundle-Activator: org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Acti
 Bundle-Vendor: %bundle.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5,
  J2SE-1.4
-Import-Package: org.eclipse.ecf.core.identity,
+Import-Package: org.eclipse.ecf.core;version="3.0.0",
+ org.eclipse.ecf.core.identity,
  org.eclipse.ecf.core.util,
  org.eclipse.ecf.discovery;version="4.0.0",
  org.eclipse.ecf.discovery.identity,

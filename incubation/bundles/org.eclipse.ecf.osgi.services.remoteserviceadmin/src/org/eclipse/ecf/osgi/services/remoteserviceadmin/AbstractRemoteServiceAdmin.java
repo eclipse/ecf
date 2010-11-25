@@ -9,15 +9,32 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import org.eclipse.core.runtime.IStatus;
+import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceID;
+import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public abstract class AbstractRemoteServiceAdmin {
 
+	private BundleContext context;
+
+	public AbstractRemoteServiceAdmin(BundleContext context) {
+		this.context = context;
+	}
+
+	protected BundleContext getContext() {
+		return context;
+	}
+
 	protected void logError(String method, String message, IStatus result) {
 		// TODO Auto-generated method stub
-		logError(method,method);
-		
+		logError(method, method);
+
 	}
 
 	protected void trace(String method, String message) {
@@ -31,8 +48,48 @@ public abstract class AbstractRemoteServiceAdmin {
 
 	protected void logError(String method, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	protected Object getService(ServiceReference serviceReference) {
+		return context.getService(serviceReference);
+	}
 
+	private Object getPropertyValue(String propertyName,
+			ServiceReference serviceReference, Map<String, Object> properties) {
+		Object result = properties.get(propertyName);
+		if (result == null) {
+			result = serviceReference.getProperty(propertyName);
+		}
+		return result;
+	}
+
+	protected EndpointDescription createEndpointDescription(
+			ServiceReference serviceReference, Map<String, Object> properties,
+			IRemoteServiceRegistration registration,
+			IRemoteServiceContainer container) {
+		ID endpointID = registration.getContainerID();
+		ID connectTargetID = (ID) getPropertyValue(
+				RemoteConstants.ENDPOINT_CONNECTTARGET_ID, serviceReference,
+				properties);
+		if (connectTargetID == null) {
+			ID connectedID = container.getContainer().getConnectedID();
+			if (connectedID != null && !connectedID.equals(endpointID))
+				connectTargetID = connectedID;
+		}
+		ID[] idFilter = (ID[]) getPropertyValue(
+				RemoteConstants.ENDPOINT_IDFILTER_IDS, serviceReference,
+				properties);
+		String rsFilter = (String) getPropertyValue(
+				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
+				serviceReference, properties);
+		IRemoteServiceID rsID = registration.getID();
+		return new EndpointDescription(serviceReference, properties,
+				rsID.getContainerID(), rsID.getContainerRelativeID(),
+				connectTargetID, idFilter, rsFilter);
+	}
+
+	public void close() {
+		this.context = null;
+	}
 }

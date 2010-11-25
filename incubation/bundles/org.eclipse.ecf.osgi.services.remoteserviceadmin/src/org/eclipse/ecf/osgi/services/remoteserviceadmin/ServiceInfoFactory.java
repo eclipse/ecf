@@ -25,8 +25,8 @@ import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
-public class ServiceInfoFactory extends AbstractMetadataFactory
-		implements IServiceInfoFactory {
+public class ServiceInfoFactory extends AbstractMetadataFactory implements
+		IServiceInfoFactory {
 
 	protected Map<ServiceInfoKey, IServiceInfo> serviceInfos = new HashMap();
 

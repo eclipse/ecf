@@ -42,4 +42,6 @@ public class RemoteConstants {
 
 	public static final String RSA_CONTAINERS = "ecf.rsa.containers";
 
+	public static final String RSA_EXPORTED_INTERFACES = "ecf.rsa.exportedInterfaces";
+
 }
