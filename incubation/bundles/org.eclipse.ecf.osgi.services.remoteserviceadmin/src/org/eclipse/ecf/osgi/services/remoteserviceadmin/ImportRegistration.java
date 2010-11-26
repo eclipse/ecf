@@ -9,36 +9,37 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 public class ImportRegistration implements
 		org.osgi.service.remoteserviceadmin.ImportRegistration {
 
-	private IRemoteServiceContainerAdapter containerAdapter;
+	private IRemoteServiceContainer rsContainer;
 	private IRemoteServiceReference rsReference;
+	private ServiceRegistration importRegistration;
 	private ImportReference importReference;
 	private Throwable throwable;
 	private final Object closeLock = new Object();
 
-	protected ImportRegistration(
-			IRemoteServiceContainerAdapter containerAdapter,
+	protected ImportRegistration(IRemoteServiceContainer rsContainer,
 			IRemoteServiceReference rsReference,
-			ServiceReference serviceReference,
-			EndpointDescription endpointDescription) {
-		this.containerAdapter = containerAdapter;
+			EndpointDescription endpointDescription,
+			ServiceRegistration importRegistration) {
+		this.rsContainer = rsContainer;
 		this.rsReference = rsReference;
-		this.importReference = new ImportReference(serviceReference,
-				endpointDescription);
+		this.importRegistration = importRegistration;
+		this.importReference = new ImportReference(
+				importRegistration.getReference(), endpointDescription);
 	}
 
 	public IRemoteServiceReference getRemoteServiceReference() {
 		return rsReference;
 	}
 
-	public IRemoteServiceContainerAdapter getContainerAdapter() {
-		return containerAdapter;
+	public IRemoteServiceContainer getRemoteServiceContainer() {
+		return rsContainer;
 	}
 
 	public ImportReference getImportReference() {
@@ -54,10 +55,15 @@ public class ImportRegistration implements
 
 	public void close() {
 		synchronized (closeLock) {
+			if (importRegistration != null) {
+				importRegistration.unregister();
+				importRegistration = null;
+			}
 			if (rsReference != null) {
-				containerAdapter.ungetRemoteService(rsReference);
+				rsContainer.getContainerAdapter().ungetRemoteService(
+						rsReference);
 				rsReference = null;
-				containerAdapter = null;
+				rsContainer = null;
 			}
 			if (importReference != null) {
 				importReference.close();

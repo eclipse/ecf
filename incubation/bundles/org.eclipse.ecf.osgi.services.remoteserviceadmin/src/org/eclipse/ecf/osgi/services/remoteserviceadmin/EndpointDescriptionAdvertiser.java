@@ -19,15 +19,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DiscoveryImpl;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
 public class EndpointDescriptionAdvertiser implements
 		IEndpointDescriptionAdvertiser {
 
-	private DiscoveryImpl discovery;
+	private Discovery discovery;
 
-	public EndpointDescriptionAdvertiser(DiscoveryImpl discovery) {
+	public EndpointDescriptionAdvertiser(Discovery discovery) {
 		this.discovery = discovery;
 	}
 

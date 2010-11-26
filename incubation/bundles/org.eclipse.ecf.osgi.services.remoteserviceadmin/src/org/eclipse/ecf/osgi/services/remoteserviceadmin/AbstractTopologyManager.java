@@ -17,7 +17,7 @@ import java.util.Properties;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DiscoveryImpl;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.osgi.framework.BundleContext;
@@ -31,7 +31,7 @@ public abstract class AbstractTopologyManager {
 	public static final String SERVICE_EXPORTED_INTERFACES_WILDCARD = "*";
 
 	private BundleContext context;
-	private DiscoveryImpl discovery;
+	private Discovery discovery;
 
 	private boolean hostAutoCreateContainer = new Boolean(
 			System.getProperty(
@@ -65,8 +65,7 @@ public abstract class AbstractTopologyManager {
 	private org.osgi.service.remoteserviceadmin.RemoteServiceAdmin remoteServiceAdmin;
 	private Object remoteServiceAdminLock = new Object();
 
-	public AbstractTopologyManager(BundleContext context,
-			DiscoveryImpl discovery) {
+	public AbstractTopologyManager(BundleContext context, Discovery discovery) {
 		this.context = context;
 		this.discovery = discovery;
 	}
@@ -121,7 +120,7 @@ public abstract class AbstractTopologyManager {
 		return context;
 	}
 
-	protected DiscoveryImpl getDiscovery() {
+	protected Discovery getDiscovery() {
 		return discovery;
 	}
 
@@ -224,10 +223,19 @@ public abstract class AbstractTopologyManager {
 		context = null;
 	}
 
-	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectRemoteServiceAdmin(
+	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectExportRemoteServiceAdmin(
 			ServiceReference serviceReference, String[] exportedInterfaces,
 			String[] exportedConfigs, String[] serviceIntents,
 			IRemoteServiceContainer[] rsContainers) {
+		synchronized (remoteServiceAdminLock) {
+			if (remoteServiceAdmin == null)
+				remoteServiceAdmin = new RemoteServiceAdmin(getContext());
+		}
+		return remoteServiceAdmin;
+	}
+
+	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectImportRemoteServiceAdmin(
+			EndpointDescription endpoint, IRemoteServiceContainer[] rsContainers) {
 		synchronized (remoteServiceAdminLock) {
 			if (remoteServiceAdmin == null)
 				remoteServiceAdmin = new RemoteServiceAdmin(getContext());

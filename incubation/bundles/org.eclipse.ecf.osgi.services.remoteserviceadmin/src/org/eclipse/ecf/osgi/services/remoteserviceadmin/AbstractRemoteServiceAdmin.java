@@ -13,6 +13,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
@@ -31,24 +33,24 @@ public abstract class AbstractRemoteServiceAdmin {
 		return context;
 	}
 
-	protected void logError(String method, String message, IStatus result) {
-		// TODO Auto-generated method stub
-		logError(method, method);
-
+	protected void logError(String methodName, String message, IStatus status) {
+		LogUtility.logError(methodName, DebugOptions.REMOTE_SERVICE_ADMIN,
+				this.getClass(), status);
 	}
 
-	protected void trace(String method, String message) {
-		// TODO Auto-generated method stub
-		System.out.println("TopologyManager." + method + ": " + message);
+	protected void trace(String methodName, String message) {
+		LogUtility.trace(methodName, DebugOptions.REMOTE_SERVICE_ADMIN,
+				this.getClass(), message);
 	}
 
-	protected void logWarning(String string) {
-		System.out.println(string);
+	protected void logWarning(String methodName, String message) {
+		LogUtility.logWarning(methodName, DebugOptions.REMOTE_SERVICE_ADMIN,
+				this.getClass(), message);
 	}
 
-	protected void logError(String method, String message) {
-		// TODO Auto-generated method stub
-
+	protected void logError(String methodName, String message) {
+		LogUtility.logError(methodName, DebugOptions.REMOTE_SERVICE_ADMIN,
+				this.getClass(), message);
 	}
 
 	protected Object getService(ServiceReference serviceReference) {

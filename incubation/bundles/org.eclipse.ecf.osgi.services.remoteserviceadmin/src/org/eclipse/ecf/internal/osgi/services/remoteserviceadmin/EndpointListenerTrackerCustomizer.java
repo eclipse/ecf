@@ -18,9 +18,9 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public class EndpointListenerTrackerCustomizer implements
 		ServiceTrackerCustomizer {
 
-	private DiscoveryImpl discovery;
+	private Discovery discovery;
 
-	public EndpointListenerTrackerCustomizer(DiscoveryImpl discovery) {
+	public EndpointListenerTrackerCustomizer(Discovery discovery) {
 		this.discovery = discovery;
 	}
 
@@ -32,7 +32,7 @@ public class EndpointListenerTrackerCustomizer implements
 		if (listener == null)
 			return null;
 		for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
-			DiscoveryImpl.EndpointListenerHolder[] endpointListenerHolders = discovery
+			Discovery.EndpointListenerHolder[] endpointListenerHolders = discovery
 					.getMatchingEndpointListenerHolders(
 							new ServiceReference[] { reference }, ed);
 			if (endpointListenerHolders != null) {

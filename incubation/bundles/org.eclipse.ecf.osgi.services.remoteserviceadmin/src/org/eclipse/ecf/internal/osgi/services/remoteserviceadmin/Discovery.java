@@ -46,7 +46,7 @@ import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-public class DiscoveryImpl {
+public class Discovery {
 
 	private static final boolean DEBUG = false;
 
@@ -86,7 +86,7 @@ public class DiscoveryImpl {
 	private BundleTracker bundleTracker;
 	private EndpointDescriptionBundleTrackerCustomizer bundleTrackerCustomizer;
 
-	public DiscoveryImpl(BundleContext context) {
+	public Discovery(BundleContext context) {
 		this.context = context;
 		this.executor = new ThreadsExecutor();
 	}

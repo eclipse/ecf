@@ -29,16 +29,15 @@ class LocatorServiceListener implements IServiceListener {
 
 	private Object listenerLock = new Object();
 	private IDiscoveryLocator locator;
-	private DiscoveryImpl discovery;
+	private Discovery discovery;
 
 	private List<org.osgi.service.remoteserviceadmin.EndpointDescription> discoveredEndpointDescriptions = new ArrayList();
 
-	public LocatorServiceListener(DiscoveryImpl discovery) {
+	public LocatorServiceListener(Discovery discovery) {
 		this(discovery, null);
 	}
 
-	public LocatorServiceListener(DiscoveryImpl discovery,
-			IDiscoveryLocator locator) {
+	public LocatorServiceListener(Discovery discovery, IDiscoveryLocator locator) {
 		this.discovery = discovery;
 		this.locator = locator;
 	}

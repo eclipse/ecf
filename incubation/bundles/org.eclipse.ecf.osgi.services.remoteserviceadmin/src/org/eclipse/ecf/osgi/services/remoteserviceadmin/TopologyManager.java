@@ -7,17 +7,14 @@
  * Contributors:
  *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
+package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IHostContainerSelector;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
@@ -25,15 +22,16 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
+import org.osgi.service.remoteserviceadmin.ImportRegistration;
 
-public class TopologyManagerImpl extends AbstractTopologyManager implements
+public class TopologyManager extends AbstractTopologyManager implements
 		EventHook, EndpointListener {
 
 	private ServiceRegistration endpointListenerRegistration;
 
 	private ServiceRegistration eventHookRegistration;
 
-	public TopologyManagerImpl(BundleContext context, DiscoveryImpl discovery) {
+	public TopologyManager(BundleContext context, Discovery discovery) {
 		super(context, discovery);
 	}
 
@@ -91,8 +89,37 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements
 	}
 
 	private void handleEndpointAdded(EndpointDescription endpoint) {
-		// TODO Auto-generated method stub
 		trace("handleEndpointAdded", "endpoint=" + endpoint);
+		IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
+		if (consumerContainerSelector == null) {
+			logError("handleEndpointAdded",
+					"No consumerContainerSelector available");
+			return;
+		}
+		IRemoteServiceContainer[] rsContainers = consumerContainerSelector
+				.selectConsumerContainers(endpoint);
+		// If none found, log a warning and we're done
+		if (rsContainers == null || rsContainers.length == 0) {
+			logWarning(
+					"handleEndpointAdded", "No remote service containers found for endpoint=" //$NON-NLS-1$
+							+ endpoint + ". Remote service NOT IMPORTED"); //$NON-NLS-1$
+			return;
+		}
+
+		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectImportRemoteServiceAdmin(
+				endpoint, rsContainers);
+		for (int i = 0; i < rsContainers.length; i++) {
+			endpoint.setImportRemoteServiceContainer(rsContainers[i]);
+			// now call rsa.import
+			ImportRegistration importRegistration = rsa.importService(endpoint);
+			if (importRegistration == null) {
+				logError("handleEndpointAdded",
+						"Import registration is null for endpoint=" + endpoint
+								+ " and rsa=" + rsa);
+			} else
+				trace("handleEndpointAdded", "Import registration="
+						+ importRegistration + " for endpoint=" + endpoint);
+		}
 	}
 
 	private void handleEndpointRemoved(EndpointDescription endpoint) {
@@ -103,7 +130,8 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements
 	private Map<String, Object> prepareExportProperties(
 			ServiceReference serviceReference, String[] exportedInterfaces,
 			String[] exportedConfigs, String[] serviceIntents,
-			IRemoteServiceContainer[] rsContainers) {
+			IRemoteServiceContainer[] rsContainers,
+			org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put(RemoteConstants.RSA_CONTAINERS, rsContainers);
 		result.put(RemoteConstants.RSA_EXPORTED_INTERFACES, exportedInterfaces);
@@ -148,7 +176,7 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements
 		// Get a host container selector
 		IHostContainerSelector hostContainerSelector = getHostContainerSelector();
 		if (hostContainerSelector == null) {
-			logError("selectRemoteServiceContainers",
+			logError("handleServiceRegistering",
 					"No hostContainerSelector available");
 			return;
 		}
@@ -165,15 +193,16 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements
 							+ ". Remote service NOT EXPORTED"); //$NON-NLS-1$
 			return;
 		}
-		// prepare export properties
-		Map<String, Object> exportProperties = prepareExportProperties(
+
+		// Select remote service admin
+		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectExportRemoteServiceAdmin(
 				serviceReference, exportedInterfaces, exportedConfigs,
 				serviceIntents, rsContainers);
 
-		// Select remote service admin
-		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectRemoteServiceAdmin(
+		// prepare export properties
+		Map<String, Object> exportProperties = prepareExportProperties(
 				serviceReference, exportedInterfaces, exportedConfigs,
-				serviceIntents, rsContainers);
+				serviceIntents, rsContainers, rsa);
 
 		// if no remote service admin available, then log error and return
 		if (rsa == null) {

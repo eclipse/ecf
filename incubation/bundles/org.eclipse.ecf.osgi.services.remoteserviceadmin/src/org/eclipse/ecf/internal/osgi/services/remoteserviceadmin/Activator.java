@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.TopologyManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -44,8 +45,8 @@ public class Activator implements BundleActivator {
 		return instance;
 	}
 
-	private DiscoveryImpl discovery;
-	private TopologyManagerImpl topologyManager;
+	private Discovery discovery;
+	private TopologyManager topologyManager;
 
 	/*
 	 * (non-Javadoc)
@@ -57,8 +58,8 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
-		discovery = new DiscoveryImpl(context);
-		topologyManager = new TopologyManagerImpl(context, discovery);
+		discovery = new Discovery(context);
+		topologyManager = new TopologyManager(context, discovery);
 		// start discovery
 		discovery.start();
 		// start topology manager

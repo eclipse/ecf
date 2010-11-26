@@ -36,7 +36,7 @@ public class ConsumerContainerSelector extends
 		String[] remoteSupportedConfigs = (String[]) remoteSupportedConfigsList
 				.toArray();
 		// Get connect targetID
-		ID connectTargetID = endpointDescription.getTargetID();
+		ID connectTargetID = endpointDescription.getConnectTargetID();
 
 		// Find any/all existing containers for the proxy that
 		// match the endpointID namespace and the remoteSupportedConfigs

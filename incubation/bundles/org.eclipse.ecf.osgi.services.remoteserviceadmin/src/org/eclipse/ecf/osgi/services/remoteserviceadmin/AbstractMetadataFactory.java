@@ -389,7 +389,7 @@ public abstract class AbstractMetadataFactory {
 		encodeLong(result, RemoteConstants.ENDPOINT_REMOTESERVICE_ID, new Long(
 				remoteServiceId));
 		// ECF connectTargetID = endpointDescription.getConnectTargetID()
-		ID connectTargetID = endpointDescription.getTargetID();
+		ID connectTargetID = endpointDescription.getConnectTargetID();
 		if (connectTargetID != null) {
 			// external form of ID
 			encodeString(result, RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
