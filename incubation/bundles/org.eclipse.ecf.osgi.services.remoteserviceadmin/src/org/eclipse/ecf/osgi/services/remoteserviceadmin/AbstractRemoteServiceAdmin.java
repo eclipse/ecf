@@ -55,25 +55,6 @@ public abstract class AbstractRemoteServiceAdmin {
 
 	public AbstractRemoteServiceAdmin(BundleContext context) {
 		this.context = context;
-	}
-
-	protected BundleContext getContext() {
-		return context;
-	}
-
-	public void setHostAutoCreateContainer(boolean value) {
-		this.hostAutoCreateContainer = value;
-	}
-
-	public void setHostDefaultConfigTypes(String[] configTypes) {
-		this.hostDefaultConfigTypes = configTypes;
-	}
-
-	public void setConsumerContainerSelector(boolean value) {
-		this.consumerAutoCreateContainer = value;
-	}
-
-	public void start() throws Exception {
 		final Properties properties = new Properties();
 		properties.put(Constants.SERVICE_RANKING,
 				new Integer(Integer.MIN_VALUE));
@@ -95,7 +76,22 @@ public abstract class AbstractRemoteServiceAdmin {
 		defaultConsumerContainerSelectorRegistration = getContext()
 				.registerService(IConsumerContainerSelector.class.getName(),
 						consumerContainerSelector, properties);
+	}
 
+	protected BundleContext getContext() {
+		return context;
+	}
+
+	public void setHostAutoCreateContainer(boolean value) {
+		this.hostAutoCreateContainer = value;
+	}
+
+	public void setHostDefaultConfigTypes(String[] configTypes) {
+		this.hostDefaultConfigTypes = configTypes;
+	}
+
+	public void setConsumerContainerSelector(boolean value) {
+		this.consumerAutoCreateContainer = value;
 	}
 
 	private void closeConsumerContainerSelector() {
