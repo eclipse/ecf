@@ -9,10 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -34,15 +31,14 @@ import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
 public class AbstractConsumerContainerSelector extends
 		AbstractContainerSelector {
 
-	protected Collection findExistingProxyContainers(ID endpointID,
+	protected IRemoteServiceContainer selectExistingConsumerContainer(ID endpointID,
 			String[] remoteSupportedConfigs, ID connectTargetID) {
 
-		List results = new ArrayList();
 		// Get all containers available
 		IContainer[] containers = getContainers();
 		// If none then return null
 		if (containers == null)
-			return results;
+			return null;
 
 		for (int i = 0; i < containers.length; i++) {
 			// Do *not* include containers with same ID as endpointID
@@ -56,13 +52,13 @@ public class AbstractConsumerContainerSelector extends
 					&& matchConnectNamespace(containers[i], endpointID,
 							connectTargetID)
 					// and it must match the configs
-					&& matchProxySupportedConfigs(containers[i],
+					&& matchSupportedConfigs(containers[i],
 							remoteSupportedConfigs)
 					// and the container should either not be connected or
 					// already be connected to the desired endpointID
 					&& matchNotConnected(containers[i], endpointID,
 							connectTargetID)) {
-				trace("findExistingProxyContainers", //$NON-NLS-1$
+				trace("selectExistingConsumerContainer", //$NON-NLS-1$
 						"MATCH of existing remote service container id=" //$NON-NLS-1$
 								+ containers[i].getID()
 								+ " endpointID=" //$NON-NLS-1$
@@ -71,9 +67,9 @@ public class AbstractConsumerContainerSelector extends
 								+ ((remoteSupportedConfigs == null) ? "[]" //$NON-NLS-1$
 										: Arrays.asList(remoteSupportedConfigs)
 												.toString()));
-				results.add(new RemoteServiceContainer(containers[i], adapter));
+				return new RemoteServiceContainer(containers[i], adapter);
 			} else {
-				trace("findExistingProxyContainers", //$NON-NLS-1$
+				trace("selectExistingConsumerContainer", //$NON-NLS-1$
 						"No match of existing remote service container id=" //$NON-NLS-1$
 								+ containers[i].getID()
 								+ " endpointID=" //$NON-NLS-1$
@@ -84,7 +80,7 @@ public class AbstractConsumerContainerSelector extends
 												.toString()));
 			}
 		}
-		return results;
+		return null;
 	}
 
 	protected boolean matchNotConnected(IContainer container, ID endpointID,
@@ -98,7 +94,7 @@ public class AbstractConsumerContainerSelector extends
 		return false;
 	}
 
-	protected boolean matchProxySupportedConfigs(IContainer container,
+	protected boolean matchSupportedConfigs(IContainer container,
 			String[] remoteSupportedConfigs) {
 		if (remoteSupportedConfigs == null)
 			return false;
@@ -108,26 +104,23 @@ public class AbstractConsumerContainerSelector extends
 		return description.getImportedConfigs(remoteSupportedConfigs) != null;
 	}
 
-	protected void connectContainersToTarget(Collection rsContainers,
-			ID connectTargetID) {
+	protected void connectContainerToTarget(
+			IRemoteServiceContainer rsContainer, ID connectTargetID) {
 		if (connectTargetID == null)
 			return;
-		for (Iterator i = rsContainers.iterator(); i.hasNext();) {
-			IContainer container = ((IRemoteServiceContainer) i.next())
-					.getContainer();
-			ID connectedID = container.getConnectedID();
-			// Only connect the container to the connect target when
-			// it's not already connected
-			if (connectedID == null) {
-				// connect to target
-				try {
-					connectContainer(container, connectTargetID,
-							getConnectContext(container, connectTargetID));
-				} catch (ContainerConnectException e) {
-					logException("Exception connecting container id=" //$NON-NLS-1$
-							+ container.getID() + " to connectTargetID=" //$NON-NLS-1$
-							+ connectTargetID, e);
-				}
+		IContainer container = rsContainer.getContainer();
+		ID connectedID = container.getConnectedID();
+		// Only connect the container to the connect target when
+		// it's not already connected
+		if (connectedID == null) {
+			// connect to target
+			try {
+				connectContainer(container, connectTargetID,
+						getConnectContext(container, connectTargetID));
+			} catch (ContainerConnectException e) {
+				logException("Exception connecting container id=" //$NON-NLS-1$
+						+ container.getID() + " to connectTargetID=" //$NON-NLS-1$
+						+ connectTargetID, e);
 			}
 		}
 	}
@@ -137,21 +130,20 @@ public class AbstractConsumerContainerSelector extends
 		return null;
 	}
 
-	protected Collection createAndConfigureProxyContainers(
+	protected IRemoteServiceContainer createAndConfigureConsumerContainer(
 			String[] remoteSupportedConfigs, Map remoteExportedProperties) {
 		if (remoteSupportedConfigs == null
 				|| remoteSupportedConfigs.length == 0)
-			return Collections.EMPTY_LIST;
+			return null;
 		// Get container factory
 		IContainerFactory containerFactory = getContainerFactory();
 		if (containerFactory == null)
-			return Collections.EMPTY_LIST;
+			return null;
 		// Get all container type descriptions from factory
 		List containerTypeDescriptions = containerFactory.getDescriptions();
 		if (containerTypeDescriptions == null)
-			return Collections.EMPTY_LIST;
+			return null;
 
-		List results = new ArrayList();
 		// Go through all containerTypeDescriptions
 		for (Iterator i = containerTypeDescriptions.iterator(); i.hasNext();) {
 			ContainerTypeDescription desc = (ContainerTypeDescription) i.next();
@@ -180,12 +172,12 @@ public class AbstractConsumerContainerSelector extends
 								"created new proxy container with config type=" //$NON-NLS-1$
 										+ selectedConfig + " and id=" //$NON-NLS-1$
 										+ rsContainer.getContainer().getID());
-						results.add(rsContainer);
+						return rsContainer;
 					}
 				}
 			}
 		}
-		return results;
+		return null;
 	}
 
 	private Map createMapFromDictionary(Dictionary input) {

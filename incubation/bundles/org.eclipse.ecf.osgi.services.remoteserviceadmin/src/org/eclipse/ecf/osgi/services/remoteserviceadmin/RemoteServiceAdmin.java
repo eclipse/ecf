@@ -11,6 +11,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Map;
 
@@ -38,30 +39,51 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 	}
 
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
-			ServiceReference reference, Map<String, Object> properties) {
-		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>();
-		IRemoteServiceContainer[] rsContainers = (IRemoteServiceContainer[]) properties
-				.get(RemoteConstants.RSA_CONTAINERS);
-
-		if (rsContainers == null || rsContainers.length == 0) {
-			logError(
-					"exportService",
-					RemoteConstants.RSA_CONTAINERS
-							+ " must be non-null and have at least one IRemoteServiceContainer in array");
-			return results;
+			ServiceReference serviceReference, Map<String, Object> properties) {
+		String[] exportedInterfaces = (String[]) getPropertyValue(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
+				serviceReference, properties);
+		String[] exportedConfigs = (String[]) getPropertyValue(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS,
+				serviceReference, properties);
+		String[] serviceIntents = (String[]) getPropertyValue(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
+				serviceReference, properties);
+		// Get a host container selector
+		IHostContainerSelector hostContainerSelector = getHostContainerSelector();
+		if (hostContainerSelector == null) {
+			logError("handleServiceRegistering",
+					"No hostContainerSelector available");
+			return Collections.EMPTY_LIST;
 		}
+		// select ECF remote service containers that match given exported
+		// interfaces, configs, and intents
+		IRemoteServiceContainer[] rsContainers = hostContainerSelector
+				.selectHostContainers(serviceReference, exportedInterfaces,
+						exportedConfigs, serviceIntents);
+		// If none found, log a warning and we're done
+		if (rsContainers == null || rsContainers.length == 0) {
+			logWarning(
+					"handleServiceRegistered", "No remote service containers found for serviceReference=" //$NON-NLS-1$
+							+ serviceReference
+							+ ". Remote service NOT EXPORTED"); //$NON-NLS-1$
+			return Collections.EMPTY_LIST;
+		}
+		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>();
 		synchronized (exportedRegistrations) {
 			for (int i = 0; i < rsContainers.length; i++) {
 				ExportRegistration rsRegistration = null;
 				try {
-					rsRegistration = doExportService(reference, properties,
-							rsContainers[i]);
-					exportedRegistrations.add(rsRegistration);
+					rsRegistration = doExportService(serviceReference,
+							properties, rsContainers[i], exportedInterfaces);
 				} catch (Exception e) {
-					rsRegistration = handleExportServiceException(reference,
-							properties, rsContainers[i], e);
+					rsRegistration = handleExportServiceException(
+							serviceReference, properties, rsContainers[i], e);
 				}
-				results.add(rsRegistration);
+				if (rsRegistration != null) {
+					results.add(rsRegistration);
+					exportedRegistrations.add(rsRegistration);
+				}
 			}
 		}
 		return results;
@@ -76,11 +98,10 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 
 	private ExportRegistration doExportService(
 			ServiceReference serviceReference, Map<String, Object> properties,
-			IRemoteServiceContainer container) throws ECFException {
+			IRemoteServiceContainer container, String[] exportedInterfaces)
+			throws ECFException {
 		IRemoteServiceRegistration remoteRegistration = null;
 		try {
-			String[] exportedInterfaces = (String[]) properties
-					.get(RemoteConstants.RSA_EXPORTED_INTERFACES);
 			Dictionary remoteServiceProperties = getRemoteServiceProperties(
 					serviceReference, properties, container);
 			IRemoteServiceContainerAdapter containerAdapter = container
@@ -98,10 +119,11 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			// Create EndpointDescription
 			EndpointDescription endpointDescription = createExportEndpointDescription(
 					serviceReference, properties, remoteRegistration, container);
-			return createExportRegistration(
-					remoteRegistration, serviceReference, endpointDescription);
+			return createExportRegistration(remoteRegistration,
+					serviceReference, endpointDescription);
 		} catch (Exception e) {
-			if (remoteRegistration != null) remoteRegistration.unregister();
+			if (remoteRegistration != null)
+				remoteRegistration.unregister();
 			throw new ECFException("Exception exporting serviceReference="
 					+ serviceReference, e);
 		}
@@ -124,26 +146,39 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 
 	public org.osgi.service.remoteserviceadmin.ImportRegistration importService(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-		EndpointDescription ed = (EndpointDescription) endpoint;
-		IRemoteServiceContainer rsContainer = ed
-				.getImportRemoteServiceContainer();
-		if (rsContainer == null) {
-			logError(
-					"importService",
-					"endpoint description getImportRemoteServiceContainer return value must be non-null");
-			return null;
-		}
-		ImportRegistration result = null;
-		synchronized (importedRegistrations) {
-			try {
-				result = doImportService(ed, rsContainer);
-				if (result != null)
-					importedRegistrations.add(result);
-			} catch (ECFException e) {
-				result = handleImportServiceException(ed, rsContainer, e);
+
+		if (endpoint instanceof EndpointDescription) {
+			EndpointDescription ed = (EndpointDescription) endpoint;
+			IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
+			if (consumerContainerSelector == null) {
+				logError("importService",
+						"No consumerContainerSelector available");
+				return null;
 			}
-		}
-		return result;
+			IRemoteServiceContainer rsContainer = consumerContainerSelector
+					.selectConsumerContainer(ed);
+			// If none found, log a warning and we're done
+			if (rsContainer == null) {
+				logWarning(
+						"importService", "No remote service container selected for endpoint=" //$NON-NLS-1$
+								+ endpoint + ". Remote service NOT IMPORTED"); //$NON-NLS-1$
+				return null;
+			}
+
+			ImportRegistration importRegistration = null;
+			synchronized (importedRegistrations) {
+				try {
+					importRegistration = doImportService(ed, rsContainer);
+				} catch (ECFException e) {
+					importRegistration = handleImportServiceException(ed,
+							rsContainer, e);
+				}
+				if (importRegistration != null)
+					importedRegistrations.add(importRegistration);
+			}
+			return importRegistration;
+		} else
+			return null;
 	}
 
 	private ImportRegistration handleImportServiceException(

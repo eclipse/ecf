@@ -38,7 +38,7 @@ public abstract class AbstractHostContainerSelector extends
 		this.defaultConfigTypes = defaultConfigTypes;
 	}
 
-	protected Collection findExistingHostContainers(
+	protected Collection selectExistingHostContainers(
 			ServiceReference serviceReference,
 			String[] serviceExportedInterfaces,
 			String[] serviceExportedConfigs, String[] serviceIntents) {
@@ -64,7 +64,7 @@ public abstract class AbstractHostContainerSelector extends
 			if (matchExistingHostContainer(serviceReference, containers[i],
 					adapter, description, serviceExportedConfigs,
 					serviceIntents)) {
-				trace("findExistingContainers", "INCLUDING containerID=" //$NON-NLS-1$ //$NON-NLS-2$
+				trace("selectExistingHostContainers", "INCLUDING containerID=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ containers[i].getID()
 						+ "configs=" //$NON-NLS-1$
 						+ ((serviceExportedConfigs == null) ? "null" : Arrays //$NON-NLS-1$
@@ -74,7 +74,7 @@ public abstract class AbstractHostContainerSelector extends
 								serviceIntents).toString()));
 				results.add(new RemoteServiceContainer(containers[i], adapter));
 			} else {
-				trace("findExistingContainers", "EXCLUDING containerID=" //$NON-NLS-1$ //$NON-NLS-2$
+				trace("selectExistingHostContainers", "EXCLUDING containerID=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ containers[i].getID()
 						+ "configs=" //$NON-NLS-1$
 						+ ((serviceExportedConfigs == null) ? "null" : Arrays //$NON-NLS-1$

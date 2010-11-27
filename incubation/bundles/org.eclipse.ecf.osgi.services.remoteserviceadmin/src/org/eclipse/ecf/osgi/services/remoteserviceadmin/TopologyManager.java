@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
@@ -90,37 +89,17 @@ public class TopologyManager extends AbstractTopologyManager implements
 
 	private void handleEndpointAdded(EndpointDescription endpoint) {
 		trace("handleEndpointAdded", "endpoint=" + endpoint);
-		IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
-		if (consumerContainerSelector == null) {
-			logError("handleEndpointAdded",
-					"No consumerContainerSelector available");
-			return;
-		}
-		IRemoteServiceContainer[] rsContainers = consumerContainerSelector
-				.selectConsumerContainers(endpoint);
-		// If none found, log a warning and we're done
-		if (rsContainers == null || rsContainers.length == 0) {
-			logWarning(
-					"handleEndpointAdded", "No remote service containers found for endpoint=" //$NON-NLS-1$
-							+ endpoint + ". Remote service NOT IMPORTED"); //$NON-NLS-1$
-			return;
-		}
+		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectImportRemoteServiceAdmin(endpoint);
 
-		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectImportRemoteServiceAdmin(
-				endpoint, rsContainers);
-		
-		for (int i = 0; i < rsContainers.length; i++) {
-			endpoint.setImportRemoteServiceContainer(rsContainers[i]);
-			// now call rsa.import
-			ImportRegistration importRegistration = rsa.importService(endpoint);
-			if (importRegistration == null) {
-				logError("handleEndpointAdded",
-						"Import registration is null for endpoint=" + endpoint
-								+ " and rsa=" + rsa);
-			} else
-				trace("handleEndpointAdded", "Import registration="
-						+ importRegistration + " for endpoint=" + endpoint);
-		}
+		// now call rsa.import
+		ImportRegistration importRegistration = rsa.importService(endpoint);
+		if (importRegistration == null) {
+			logError("handleEndpointAdded",
+					"Import registration is null for endpoint=" + endpoint
+							+ " and rsa=" + rsa);
+		} else
+			trace("handleEndpointAdded", "Import registration="
+					+ importRegistration + " for endpoint=" + endpoint);
 	}
 
 	private void handleEndpointRemoved(EndpointDescription endpoint) {
@@ -131,11 +110,18 @@ public class TopologyManager extends AbstractTopologyManager implements
 	private Map<String, Object> prepareExportProperties(
 			ServiceReference serviceReference, String[] exportedInterfaces,
 			String[] exportedConfigs, String[] serviceIntents,
-			IRemoteServiceContainer[] rsContainers,
 			org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		result.put(RemoteConstants.RSA_CONTAINERS, rsContainers);
-		result.put(RemoteConstants.RSA_EXPORTED_INTERFACES, exportedInterfaces);
+		result.put(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
+				exportedInterfaces);
+		result.put(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS,
+				exportedConfigs);
+		if (serviceIntents != null)
+			result.put(
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
+					serviceIntents);
 		return result;
 	}
 
@@ -174,36 +160,15 @@ public class TopologyManager extends AbstractTopologyManager implements
 		// service.exported.intents.extra)
 		String[] serviceIntents = getServiceIntents(serviceReference);
 
-		// Get a host container selector
-		IHostContainerSelector hostContainerSelector = getHostContainerSelector();
-		if (hostContainerSelector == null) {
-			logError("handleServiceRegistering",
-					"No hostContainerSelector available");
-			return;
-		}
-		// select ECF remote service containers that match given exported
-		// interfaces, configs, and intents
-		IRemoteServiceContainer[] rsContainers = hostContainerSelector
-				.selectHostContainers(serviceReference, exportedInterfaces,
-						exportedConfigs, serviceIntents);
-		// If none found, log a warning and we're done
-		if (rsContainers == null || rsContainers.length == 0) {
-			logWarning(
-					"handleServiceRegistered", "No remote service containers found for serviceReference=" //$NON-NLS-1$
-							+ serviceReference
-							+ ". Remote service NOT EXPORTED"); //$NON-NLS-1$
-			return;
-		}
-
 		// Select remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectExportRemoteServiceAdmin(
 				serviceReference, exportedInterfaces, exportedConfigs,
-				serviceIntents, rsContainers);
+				serviceIntents);
 
 		// prepare export properties
 		Map<String, Object> exportProperties = prepareExportProperties(
 				serviceReference, exportedInterfaces, exportedConfigs,
-				serviceIntents, rsContainers, rsa);
+				serviceIntents, rsa);
 
 		// if no remote service admin available, then log error and return
 		if (rsa == null) {

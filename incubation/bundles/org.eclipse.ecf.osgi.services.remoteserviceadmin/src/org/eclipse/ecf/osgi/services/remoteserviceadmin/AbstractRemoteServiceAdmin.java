@@ -10,6 +10,7 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.identity.ID;
@@ -19,11 +20,38 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractRemoteServiceAdmin {
 
 	private BundleContext context;
+
+	private boolean hostAutoCreateContainer = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.hostAutoCreateContainer",
+					"true")).booleanValue();
+	private String[] hostDefaultConfigTypes = new String[] { System
+			.getProperty(
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.hostDefaultConfigType",
+					"ecf.generic.server") };
+
+	private boolean consumerAutoCreateContainer = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.consumerAutoCreateContainer",
+					"true")).booleanValue();
+
+	private HostContainerSelector hostContainerSelector;
+	private ServiceRegistration defaultHostContainerSelectorRegistration;
+	private ServiceTracker hostContainerSelectorTracker;
+	private Object hostContainerSelectorTrackerLock = new Object();
+
+	private ConsumerContainerSelector consumerContainerSelector;
+	private ServiceRegistration defaultConsumerContainerSelectorRegistration;
+	private ServiceTracker consumerContainerSelectorTracker;
+	private Object consumerContainerSelectorTrackerLock = new Object();
 
 	public AbstractRemoteServiceAdmin(BundleContext context) {
 		this.context = context;
@@ -31,6 +59,101 @@ public abstract class AbstractRemoteServiceAdmin {
 
 	protected BundleContext getContext() {
 		return context;
+	}
+
+	public void setHostAutoCreateContainer(boolean value) {
+		this.hostAutoCreateContainer = value;
+	}
+
+	public void setHostDefaultConfigTypes(String[] configTypes) {
+		this.hostDefaultConfigTypes = configTypes;
+	}
+
+	public void setConsumerContainerSelector(boolean value) {
+		this.consumerAutoCreateContainer = value;
+	}
+
+	public void start() throws Exception {
+		final Properties properties = new Properties();
+		properties.put(Constants.SERVICE_RANKING,
+				new Integer(Integer.MIN_VALUE));
+		// create and register default host container selector. Since this is
+		// registered with minimum service ranking
+		// others can override this default simply by registering a
+		// IHostContainerSelector implementer
+		hostContainerSelector = new HostContainerSelector(
+				hostDefaultConfigTypes, hostAutoCreateContainer);
+		defaultHostContainerSelectorRegistration = getContext()
+				.registerService(IHostContainerSelector.class.getName(),
+						hostContainerSelector, properties);
+		// create and register default consumer container selector. Since this
+		// is registered with minimum service ranking
+		// others can override this default simply by registering a
+		// IConsumerContainerSelector implementer
+		consumerContainerSelector = new ConsumerContainerSelector(
+				consumerAutoCreateContainer);
+		defaultConsumerContainerSelectorRegistration = getContext()
+				.registerService(IConsumerContainerSelector.class.getName(),
+						consumerContainerSelector, properties);
+
+	}
+
+	private void closeConsumerContainerSelector() {
+		synchronized (consumerContainerSelectorTrackerLock) {
+			if (consumerContainerSelectorTracker != null) {
+				consumerContainerSelectorTracker.close();
+				consumerContainerSelectorTracker = null;
+			}
+		}
+		if (defaultConsumerContainerSelectorRegistration != null) {
+			defaultConsumerContainerSelectorRegistration.unregister();
+			defaultConsumerContainerSelectorRegistration = null;
+		}
+		if (consumerContainerSelector != null) {
+			consumerContainerSelector.close();
+			consumerContainerSelector = null;
+		}
+	}
+
+	private void closeHostContainerSelector() {
+		synchronized (hostContainerSelectorTrackerLock) {
+			if (hostContainerSelectorTracker != null) {
+				hostContainerSelectorTracker.close();
+				hostContainerSelectorTracker = null;
+			}
+		}
+		if (defaultHostContainerSelectorRegistration != null) {
+			defaultHostContainerSelectorRegistration.unregister();
+			defaultHostContainerSelectorRegistration = null;
+		}
+		if (hostContainerSelector != null) {
+			hostContainerSelector.close();
+			hostContainerSelector = null;
+		}
+	}
+
+	protected IHostContainerSelector getHostContainerSelector() {
+		synchronized (hostContainerSelectorTrackerLock) {
+			if (hostContainerSelectorTracker == null) {
+				hostContainerSelectorTracker = new ServiceTracker(context,
+						IHostContainerSelector.class.getName(), null);
+				hostContainerSelectorTracker.open();
+			}
+		}
+		return (IHostContainerSelector) hostContainerSelectorTracker
+				.getService();
+	}
+
+	protected IConsumerContainerSelector getConsumerContainerSelector() {
+		synchronized (consumerContainerSelectorTrackerLock) {
+			if (consumerContainerSelectorTracker == null) {
+				consumerContainerSelectorTracker = new ServiceTracker(context,
+						IConsumerContainerSelector.class.getName(), null);
+				consumerContainerSelectorTracker.open();
+			}
+		}
+		return (IConsumerContainerSelector) consumerContainerSelectorTracker
+				.getService();
 	}
 
 	protected void logError(String methodName, String message, IStatus status) {
@@ -57,7 +180,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		return context.getService(serviceReference);
 	}
 
-	private Object getPropertyValue(String propertyName,
+	protected Object getPropertyValue(String propertyName,
 			ServiceReference serviceReference, Map<String, Object> properties) {
 		Object result = properties.get(propertyName);
 		if (result == null) {
@@ -96,6 +219,8 @@ public abstract class AbstractRemoteServiceAdmin {
 	}
 
 	public void close() {
+		closeConsumerContainerSelector();
+		closeHostContainerSelector();
 		this.context = null;
 	}
 }

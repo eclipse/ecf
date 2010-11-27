@@ -33,7 +33,7 @@ public class HostContainerSelector extends AbstractHostContainerSelector
 			String[] serviceExportedConfigs, String[] serviceIntents) {
 		// Find previously created containers that match the given
 		// serviceExportedConfigs and serviceIntents
-		Collection rsContainers = findExistingHostContainers(serviceReference,
+		Collection rsContainers = selectExistingHostContainers(serviceReference,
 				serviceExportedInterfaces, serviceExportedConfigs,
 				serviceIntents);
 

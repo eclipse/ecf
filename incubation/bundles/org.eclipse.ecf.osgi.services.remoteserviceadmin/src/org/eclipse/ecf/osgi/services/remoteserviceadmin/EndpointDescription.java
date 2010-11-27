@@ -14,7 +14,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.osgi.framework.ServiceReference;
 
 public class EndpointDescription extends
@@ -95,17 +94,6 @@ public class EndpointDescription extends
 
 	public String getRemoteServiceFilter() {
 		return rsFilter;
-	}
-
-	private IRemoteServiceContainer rsContainer;
-
-	public IRemoteServiceContainer getImportRemoteServiceContainer() {
-		return rsContainer;
-	}
-
-	public void setImportRemoteServiceContainer(
-			IRemoteServiceContainer rsContainer) {
-		this.rsContainer = rsContainer;
 	}
 
 	public String toString() {

@@ -39,10 +39,7 @@ public class RemoteConstants {
 	public static final String ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_ = "ecf.endpoint.idfilter.id.ns.";
 	// remote service filter. Value of type String
 	public static final String ENDPOINT_REMOTESERVICE_FILTER = "ecf.endpoint.rsfilter";
-	// Value of type IRemoteServiceContainer[]
-	public static final String RSA_CONTAINERS = "ecf.rsa.containers";
-	// Value of type String[]
-	public static final String RSA_EXPORTED_INTERFACES = "ecf.rsa.exportedInterfaces";
+
 	// Value of type String,ID,or Object[]
 	public static final String EXPORTED_CONTAINER_FACTORY_ARGS = "ecf.exported.containerfactoryargs";
 	// Value of type IConnectContext

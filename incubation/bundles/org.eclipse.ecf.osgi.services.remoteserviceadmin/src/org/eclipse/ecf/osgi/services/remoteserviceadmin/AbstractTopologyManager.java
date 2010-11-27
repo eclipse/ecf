@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -32,30 +31,6 @@ public abstract class AbstractTopologyManager {
 
 	private BundleContext context;
 	private Discovery discovery;
-
-	private boolean hostAutoCreateContainer = new Boolean(
-			System.getProperty(
-					"org.eclipse.ecf.osgi.services.remoteserviceadmin.hostAutoCreateContainer",
-					"true")).booleanValue();
-	private String[] hostDefaultConfigTypes = new String[] { System
-			.getProperty(
-					"org.eclipse.ecf.osgi.services.remoteserviceadmin.hostDefaultConfigType",
-					"ecf.generic.server") };
-
-	private boolean consumerAutoCreateContainer = new Boolean(
-			System.getProperty(
-					"org.eclipse.ecf.osgi.services.remoteserviceadmin.consumerAutoCreateContainer",
-					"true")).booleanValue();
-
-	private HostContainerSelector hostContainerSelector;
-	private ServiceRegistration defaultHostContainerSelectorRegistration;
-	private ServiceTracker hostContainerSelectorTracker;
-	private Object hostContainerSelectorTrackerLock = new Object();
-
-	private ConsumerContainerSelector consumerContainerSelector;
-	private ServiceRegistration defaultConsumerContainerSelectorRegistration;
-	private ServiceTracker consumerContainerSelectorTracker;
-	private Object consumerContainerSelectorTrackerLock = new Object();
 
 	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
 	private ServiceRegistration defaultEndpointDescriptionAdvertiserRegistration;
@@ -70,40 +45,10 @@ public abstract class AbstractTopologyManager {
 		this.discovery = discovery;
 	}
 
-	public void setHostAutoCreateContainer(boolean value) {
-		this.hostAutoCreateContainer = value;
-	}
-
-	public void setHostDefaultConfigTypes(String[] configTypes) {
-		this.hostDefaultConfigTypes = configTypes;
-	}
-
-	public void setConsumerContainerSelector(boolean value) {
-		this.consumerAutoCreateContainer = value;
-	}
-
 	public void start() throws Exception {
 		final Properties properties = new Properties();
 		properties.put(Constants.SERVICE_RANKING,
 				new Integer(Integer.MIN_VALUE));
-		// create and register default host container selector. Since this is
-		// registered with minimum service ranking
-		// others can override this default simply by registering a
-		// IHostContainerSelector implementer
-		hostContainerSelector = new HostContainerSelector(
-				hostDefaultConfigTypes, hostAutoCreateContainer);
-		defaultHostContainerSelectorRegistration = getContext()
-				.registerService(IHostContainerSelector.class.getName(),
-						hostContainerSelector, properties);
-		// create and register default consumer container selector. Since this
-		// is registered with minimum service ranking
-		// others can override this default simply by registering a
-		// IConsumerContainerSelector implementer
-		consumerContainerSelector = new ConsumerContainerSelector(
-				consumerAutoCreateContainer);
-		defaultConsumerContainerSelectorRegistration = getContext()
-				.registerService(IConsumerContainerSelector.class.getName(),
-						consumerContainerSelector, properties);
 		// create and register default endpoint description advertiser. Since
 		// this is registered with minimum service ranking
 		// others can override this default simply by registering a
@@ -122,30 +67,6 @@ public abstract class AbstractTopologyManager {
 
 	protected Discovery getDiscovery() {
 		return discovery;
-	}
-
-	protected IHostContainerSelector getHostContainerSelector() {
-		synchronized (hostContainerSelectorTrackerLock) {
-			if (hostContainerSelectorTracker == null) {
-				hostContainerSelectorTracker = new ServiceTracker(context,
-						IHostContainerSelector.class.getName(), null);
-				hostContainerSelectorTracker.open();
-			}
-		}
-		return (IHostContainerSelector) hostContainerSelectorTracker
-				.getService();
-	}
-
-	protected IConsumerContainerSelector getConsumerContainerSelector() {
-		synchronized (consumerContainerSelectorTrackerLock) {
-			if (consumerContainerSelectorTracker == null) {
-				consumerContainerSelectorTracker = new ServiceTracker(context,
-						IConsumerContainerSelector.class.getName(), null);
-				consumerContainerSelectorTracker.open();
-			}
-		}
-		return (IConsumerContainerSelector) consumerContainerSelectorTracker
-				.getService();
 	}
 
 	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser() {
@@ -181,52 +102,15 @@ public abstract class AbstractTopologyManager {
 		}
 	}
 
-	private void closeConsumerContainerSelector() {
-		synchronized (consumerContainerSelectorTrackerLock) {
-			if (consumerContainerSelectorTracker != null) {
-				consumerContainerSelectorTracker.close();
-				consumerContainerSelectorTracker = null;
-			}
-		}
-		if (defaultConsumerContainerSelectorRegistration != null) {
-			defaultConsumerContainerSelectorRegistration.unregister();
-			defaultConsumerContainerSelectorRegistration = null;
-		}
-		if (consumerContainerSelector != null) {
-			consumerContainerSelector.close();
-			consumerContainerSelector = null;
-		}
-	}
-
-	private void closeHostContainerSelector() {
-		synchronized (hostContainerSelectorTrackerLock) {
-			if (hostContainerSelectorTracker != null) {
-				hostContainerSelectorTracker.close();
-				hostContainerSelectorTracker = null;
-			}
-		}
-		if (defaultHostContainerSelectorRegistration != null) {
-			defaultHostContainerSelectorRegistration.unregister();
-			defaultHostContainerSelectorRegistration = null;
-		}
-		if (hostContainerSelector != null) {
-			hostContainerSelector.close();
-			hostContainerSelector = null;
-		}
-	}
-
 	public void close() {
 		closeEndpointDescriptionAdvertiser();
-		closeConsumerContainerSelector();
-		closeHostContainerSelector();
 		discovery = null;
 		context = null;
 	}
 
 	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectExportRemoteServiceAdmin(
 			ServiceReference serviceReference, String[] exportedInterfaces,
-			String[] exportedConfigs, String[] serviceIntents,
-			IRemoteServiceContainer[] rsContainers) {
+			String[] exportedConfigs, String[] serviceIntents) {
 		synchronized (remoteServiceAdminLock) {
 			if (remoteServiceAdmin == null)
 				remoteServiceAdmin = new RemoteServiceAdmin(getContext());
@@ -235,7 +119,7 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectImportRemoteServiceAdmin(
-			EndpointDescription endpoint, IRemoteServiceContainer[] rsContainers) {
+			EndpointDescription endpoint) {
 		synchronized (remoteServiceAdminLock) {
 			if (remoteServiceAdmin == null)
 				remoteServiceAdmin = new RemoteServiceAdmin(getContext());
