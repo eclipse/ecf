@@ -108,6 +108,7 @@ public class TopologyManager extends AbstractTopologyManager implements
 
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectImportRemoteServiceAdmin(
 				endpoint, rsContainers);
+		
 		for (int i = 0; i < rsContainers.length; i++) {
 			endpoint.setImportRemoteServiceContainer(rsContainers[i]);
 			// now call rsa.import

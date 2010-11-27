@@ -66,7 +66,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		return result;
 	}
 
-	protected EndpointDescription createEndpointDescription(
+	protected EndpointDescription createExportEndpointDescription(
 			ServiceReference serviceReference, Map<String, Object> properties,
 			IRemoteServiceRegistration registration,
 			IRemoteServiceContainer container) {

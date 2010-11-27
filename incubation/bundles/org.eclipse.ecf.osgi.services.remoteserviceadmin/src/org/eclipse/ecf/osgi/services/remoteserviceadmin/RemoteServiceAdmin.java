@@ -76,35 +76,34 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 
 	private ExportRegistration doExportService(
 			ServiceReference serviceReference, Map<String, Object> properties,
-			IRemoteServiceContainer container) throws Exception {
-		String[] exportedInterfaces = (String[]) properties
-				.get(RemoteConstants.RSA_EXPORTED_INTERFACES);
-		Dictionary remoteServiceProperties = getRemoteServiceProperties(
-				serviceReference, properties, container);
-		IRemoteServiceContainerAdapter containerAdapter = container
-				.getContainerAdapter();
-		IRemoteServiceRegistration remoteRegistration;
-		if (containerAdapter instanceof IOSGiRemoteServiceContainerAdapter) {
-			IOSGiRemoteServiceContainerAdapter osgiContainerAdapter = (IOSGiRemoteServiceContainerAdapter) containerAdapter;
-			remoteRegistration = osgiContainerAdapter.registerRemoteService(
-					exportedInterfaces, serviceReference,
-					remoteServiceProperties);
-		} else {
-			remoteRegistration = containerAdapter.registerRemoteService(
-					exportedInterfaces, getService(serviceReference),
-					remoteServiceProperties);
-		}
+			IRemoteServiceContainer container) throws ECFException {
+		IRemoteServiceRegistration remoteRegistration = null;
 		try {
+			String[] exportedInterfaces = (String[]) properties
+					.get(RemoteConstants.RSA_EXPORTED_INTERFACES);
+			Dictionary remoteServiceProperties = getRemoteServiceProperties(
+					serviceReference, properties, container);
+			IRemoteServiceContainerAdapter containerAdapter = container
+					.getContainerAdapter();
+			if (containerAdapter instanceof IOSGiRemoteServiceContainerAdapter) {
+				IOSGiRemoteServiceContainerAdapter osgiContainerAdapter = (IOSGiRemoteServiceContainerAdapter) containerAdapter;
+				remoteRegistration = osgiContainerAdapter
+						.registerRemoteService(exportedInterfaces,
+								serviceReference, remoteServiceProperties);
+			} else {
+				remoteRegistration = containerAdapter.registerRemoteService(
+						exportedInterfaces, getService(serviceReference),
+						remoteServiceProperties);
+			}
 			// Create EndpointDescription
-			EndpointDescription endpointDescription = createEndpointDescription(
+			EndpointDescription endpointDescription = createExportEndpointDescription(
 					serviceReference, properties, remoteRegistration, container);
-			// Create ExportRegistration
-			ExportRegistration exportRegistration = createExportRegistration(
+			return createExportRegistration(
 					remoteRegistration, serviceReference, endpointDescription);
-			return exportRegistration;
 		} catch (Exception e) {
-			remoteRegistration.unregister();
-			throw e;
+			if (remoteRegistration != null) remoteRegistration.unregister();
+			throw new ECFException("Exception exporting serviceReference="
+					+ serviceReference, e);
 		}
 	}
 
