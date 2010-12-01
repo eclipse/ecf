@@ -19,7 +19,8 @@
       <containerFactory
             class="org.eclipse.ecf.internal.provider.r_osgi.R_OSGiContainerInstantiator"
             description="R-OSGi Container Instantiator"
-            name="ecf.r_osgi.peer">
+            name="ecf.r_osgi.peer"
+            server="true">
       </containerFactory>
    </extension>
 
