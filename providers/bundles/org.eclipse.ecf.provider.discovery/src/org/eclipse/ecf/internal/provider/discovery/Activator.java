@@ -10,7 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.discovery;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Properties;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
@@ -57,24 +58,9 @@ public class Activator implements BundleActivator {
 			 */
 			public Object getService(final Bundle bundle, final ServiceRegistration registration) {
 
-				// get all previously registered IDS from OSGi (but not this one)
-				Filter filter = null;
-				try {
-					final String filter2 = "(&(" + Constants.OBJECTCLASS + "=" + IDiscoveryService.class.getName() + ")(!(" + IDiscoveryLocator.CONTAINER_NAME + "=" + CompositeDiscoveryContainer.NAME + ")))"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-					filter = context.createFilter(filter2);
-				} catch (final InvalidSyntaxException e2) {
-					Trace.catching(Activator.PLUGIN_ID, Activator.PLUGIN_ID + "/debug/methods/catching", this.getClass(), "getService(Bundle, ServiceRegistration)", e2); //$NON-NLS-1$ //$NON-NLS-2$
-					return null;
-				}
-				final ServiceTracker tracker = new ServiceTracker(context, filter, null);
-				tracker.open();
-				final Object[] services = tracker.getServices();
-				tracker.close();
-				final List discoveries = services == null ? new ArrayList() : new ArrayList(Arrays.asList(services));
-
 				// register the composite discovery service)
 				final CompositeDiscoveryContainer cdc;
-				cdc = new CompositeDiscoveryContainer(discoveries);
+				cdc = new CompositeDiscoveryContainer(new HashSet());
 				try {
 					cdc.connect(null, null);
 				} catch (final ContainerConnectException e) {
@@ -82,8 +68,11 @@ public class Activator implements BundleActivator {
 					return null;
 				}
 
+				Filter filter = null;
 				// add a service listener to add/remove IDS dynamically 
 				try {
+					final String filter2 = "(&(" + Constants.OBJECTCLASS + "=" + IDiscoveryAdvertiser.class.getName() + ")(!(" + IDiscoveryLocator.CONTAINER_NAME + "=" + CompositeDiscoveryContainer.NAME + ")))"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					filter = context.createFilter(filter2);
 					context.addServiceListener(new ServiceListener() {
 						/* (non-Javadoc)
 						 * @see org.osgi.framework.ServiceListener#serviceChanged(org.osgi.framework.ServiceEvent)
@@ -102,10 +91,24 @@ public class Activator implements BundleActivator {
 							}
 						}
 
-					}, "(" + Constants.OBJECTCLASS + "=" + IDiscoveryService.class.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					}, filter2);
 				} catch (final InvalidSyntaxException e) {
 					// nop
 				}
+
+				// get all previously registered IDS from OSGi (but not this one)
+				final ServiceTracker tracker = new ServiceTracker(context, filter, null);
+				tracker.open();
+				final Object[] services = tracker.getServices();
+				tracker.close();
+				if (services != null) {
+					for (int i = 0; i < services.length; i++) {
+						final Object obj = services[i];
+						if (obj != cdc)
+							cdc.addContainer(obj);
+					}
+				}
+
 				return cdc;
 			}
 
