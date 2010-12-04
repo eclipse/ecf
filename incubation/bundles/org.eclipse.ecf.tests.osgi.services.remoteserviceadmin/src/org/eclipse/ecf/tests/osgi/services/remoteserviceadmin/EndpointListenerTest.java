@@ -30,7 +30,7 @@ public class EndpointListenerTest extends TestCase {
 	public void testEndpointListenerNotification() throws Exception {
 		Properties props = new Properties();
 		props.put(org.osgi.service.remoteserviceadmin.EndpointListener.ENDPOINT_LISTENER_SCOPE,"("+RemoteConstants.ENDPOINT_ID+"=*)");
-		ServiceRegistration endpointListenerRegistration = Activator.getContext().registerService(EndpointListener.class.getName(), createEndpointListener(), props);
+		ServiceRegistration endpointListenerRegistration = Activator.getDefault().getContext().registerService(EndpointListener.class.getName(), createEndpointListener(), props);
 		Thread.sleep(5000);
 		endpointListenerRegistration.unregister();
 	}

@@ -47,7 +47,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 	protected IDiscoveryLocator discoveryLocator;
 
 	protected IDiscoveryLocator getDiscoveryLocator() {
-		ServiceTracker serviceTracker = new ServiceTracker(Activator.getContext(),IDiscoveryLocator.class.getName(), null);
+		ServiceTracker serviceTracker = new ServiceTracker(Activator.getDefault().getContext(),IDiscoveryLocator.class.getName(), null);
 		serviceTracker.open();
 		IDiscoveryLocator result = (IDiscoveryLocator) serviceTracker.getService();
 		serviceTracker.close();
@@ -55,7 +55,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 	}
 	
 	protected IDiscoveryAdvertiser getDiscoveryAdvertiser() {
-		ServiceTracker serviceTracker = new ServiceTracker(Activator.getContext(),IDiscoveryAdvertiser.class.getName(), null);
+		ServiceTracker serviceTracker = new ServiceTracker(Activator.getDefault().getContext(),IDiscoveryAdvertiser.class.getName(), null);
 		serviceTracker.open();
 		IDiscoveryAdvertiser result = (IDiscoveryAdvertiser) serviceTracker.getService();
 		serviceTracker.close();

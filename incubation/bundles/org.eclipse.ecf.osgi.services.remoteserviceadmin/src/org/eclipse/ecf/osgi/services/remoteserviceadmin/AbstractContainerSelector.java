@@ -121,7 +121,7 @@ public abstract class AbstractContainerSelector {
 		IContainerFactory containerFactory = getContainerFactory();
 
 		Object containerFactoryArguments = serviceReference
-				.getProperty(RemoteConstants.EXPORTED_CONTAINER_FACTORY_ARGS);
+				.getProperty(RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS);
 		if (containerFactoryArguments instanceof String) {
 			return containerFactory.createContainer(containerTypeDescription,
 					(String) containerFactoryArguments);

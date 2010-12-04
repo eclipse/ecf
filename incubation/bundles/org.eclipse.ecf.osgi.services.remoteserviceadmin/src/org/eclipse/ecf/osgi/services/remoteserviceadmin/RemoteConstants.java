@@ -41,10 +41,10 @@ public class RemoteConstants {
 	public static final String ENDPOINT_REMOTESERVICE_FILTER = "ecf.endpoint.rsfilter";
 
 	// Value of type String,ID,or Object[]
-	public static final String EXPORTED_CONTAINER_FACTORY_ARGS = "ecf.exported.containerfactoryargs";
+	public static final String SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS = "ecf.exported.containerfactoryargs";
 	// Value of type IConnectContext
-	public static final String EXPORTED_CONTAINER_CONNECT_CONTEXT = "ecf.exported.containerconnectcontext";
+	public static final String SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT = "ecf.exported.containerconnectcontext";
 	// Value of type ID
-	public static final String EXPORTED_CONTAINER_ID = "ecf.exported.containerid";
+	public static final String SERVICE_EXPORTED_CONTAINER_ID = "ecf.exported.containerid";
 
 }

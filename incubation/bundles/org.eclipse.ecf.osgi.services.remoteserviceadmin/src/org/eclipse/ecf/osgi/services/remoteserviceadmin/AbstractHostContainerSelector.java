@@ -143,7 +143,7 @@ public abstract class AbstractHostContainerSelector extends
 
 		// Then get containerid if specified directly by user in properties
 		ID requiredContainerID = (ID) serviceReference
-				.getProperty(RemoteConstants.EXPORTED_CONTAINER_ID);
+				.getProperty(RemoteConstants.SERVICE_EXPORTED_CONTAINER_ID);
 		// If the CONTAINER_I
 		if (requiredContainerID != null) {
 			return requiredContainerID.equals(containerID);
@@ -153,7 +153,7 @@ public abstract class AbstractHostContainerSelector extends
 		// and check if the ID matches that
 		Namespace ns = containerID.getNamespace();
 		Object cid = serviceReference
-				.getProperty(RemoteConstants.EXPORTED_CONTAINER_FACTORY_ARGS);
+				.getProperty(RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS);
 		// If no arguments are present, then any container ID should match
 		if (cid == null)
 			return true;
@@ -316,7 +316,7 @@ public abstract class AbstractHostContainerSelector extends
 			throws ContainerConnectException, IDCreateException {
 		ID targetID = createTargetID(container, target);
 		Object context = serviceReference
-				.getProperty(RemoteConstants.EXPORTED_CONTAINER_CONNECT_CONTEXT);
+				.getProperty(RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT);
 		IConnectContext connectContext = null;
 		if (context != null) {
 			connectContext = createConnectContext(serviceReference, container,

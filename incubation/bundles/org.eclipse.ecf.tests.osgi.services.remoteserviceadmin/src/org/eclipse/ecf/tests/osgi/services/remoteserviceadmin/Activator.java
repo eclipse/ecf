@@ -14,9 +14,12 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 
+	public static final String PLUGIN_ID = "org.eclipse.ecf.tests.osgi.services.remoteserviceadmin";
+	
 	private static BundleContext context;
-
-	static BundleContext getContext() {
+	private static Activator instance;
+	
+	public BundleContext getContext() {
 		return context;
 	}
 
@@ -26,6 +29,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		instance = this;
 	}
 
 	/*
@@ -34,6 +38,11 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
+		instance = null;
+	}
+
+	public static Activator getDefault() {
+		return instance;
 	}
 
 }
