@@ -101,8 +101,9 @@ public class IDUtil {
 		return createID(endpointDescription.getContainerIDNamespace(),
 				endpointDescription.getId());
 	}
-	
-	public static ID createID(Namespace namespace, Object[] args) throws IDCreateException {
+
+	public static ID createID(Namespace namespace, Object[] args)
+			throws IDCreateException {
 		return getIDFactory().createID(namespace, args);
 	}
 }

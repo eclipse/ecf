@@ -22,47 +22,14 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 
 public abstract class AbstractMetadataFactory {
 
 	protected static final String COLLECTION_SEPARATOR = ",";
-	protected String[] getStringArrayWithDefault(
-			Map<String, Object> properties, String key, String[] def) {
-		if (properties == null)
-			return def;
-		Object o = properties.get(key);
-		if (o instanceof String) {
-			return new String[] { (String) o };
-		} else if (o instanceof String[]) {
-			return (String[]) o;
-		} else if (o instanceof List) {
-			List l = (List) o;
-			return (String[]) l.toArray(new String[l.size()]);
-		}
-		return def;
-	}
-
-	protected String getStringWithDefault(Map props, String key, String def) {
-		if (props == null)
-			return def;
-		Object o = props.get(key);
-		if (o == null || (!(o instanceof String)))
-			return def;
-		return (String) o;
-	}
-
-	protected Long getLongWithDefault(Map props, String key, Long def) {
-		if (props == null)
-			return def;
-		Object o = props.get(key);
-		if (o instanceof Long)
-			return (Long) o;
-		if (o instanceof String)
-			return Long.valueOf((String) o);
-		return def;
-	}
 
 	protected void encodeString(IServiceProperties props, String name,
 			String value) {
@@ -372,12 +339,12 @@ public abstract class AbstractMetadataFactory {
 		}
 	}
 
-	protected void logInfo(String methodName, String message, Throwable t) {
-		// XXX todo
+	protected void logWarning(String methodName, String message, Throwable t) {
+		LogUtility.logWarning(methodName, DebugOptions.DISCOVERY, this.getClass(), message, t);
 	}
 
 	protected void logError(String methodName, String message, Throwable t) {
-		// XXX todo
+		LogUtility.logError(methodName, DebugOptions.DISCOVERY, this.getClass(), message, t);
 	}
 
 	public void close() {

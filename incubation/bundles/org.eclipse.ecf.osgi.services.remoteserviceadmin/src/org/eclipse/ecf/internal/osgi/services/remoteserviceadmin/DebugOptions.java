@@ -30,4 +30,8 @@ public interface DebugOptions {
 
 	public static final String CONTAINERSELECTOR = DEBUG + "/containerselector"; //$NON-NLS-1$
 
+	public static final String DISCOVERY = DEBUG + "/discovery"; //$NON-NLS-1$
+
+	public static final String ENDPOINTDESCRIPTIONREADER = "/endpointdescriptionreader";
+
 }

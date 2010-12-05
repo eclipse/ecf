@@ -48,6 +48,21 @@ public class LogUtility {
 										: message), t));
 	}
 
+	public static void logWarning(String methodName, String debugOption,
+			Class clazz, String message, Throwable t) {
+		if (t != null)
+			traceException(methodName, debugOption, clazz, message, t);
+		else
+			trace(methodName, debugOption, clazz, message);
+		Activator.getDefault().log(
+				new Status(IStatus.WARNING, Activator.PLUGIN_ID,
+						IStatus.WARNING, clazz.getName() + ":" //$NON-NLS-1$
+								+ ((methodName == null) ? "<unknown>" //$NON-NLS-1$
+										: methodName) + ":" //$NON-NLS-1$
+								+ ((message == null) ? "<empty>" //$NON-NLS-1$
+										: message), t));
+	}
+
 	public static void logError(String methodName, String debugOption,
 			Class clazz, IStatus status) {
 		Throwable t = status.getException();
@@ -57,6 +72,11 @@ public class LogUtility {
 		else
 			trace(methodName, debugOption, clazz, status.getMessage());
 		Activator.getDefault().log(status);
+	}
+
+	public static void logWarning(String methodName, String debugOption,
+			Class clazz, IStatus status) {
+		logError(methodName, debugOption, clazz, status);
 	}
 
 	public static void trace(String methodName, String debugOptions,

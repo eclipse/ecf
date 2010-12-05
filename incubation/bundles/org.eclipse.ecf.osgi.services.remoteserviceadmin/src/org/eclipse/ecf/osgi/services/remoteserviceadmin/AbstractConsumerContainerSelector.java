@@ -11,12 +11,9 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Arrays;
 import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -24,6 +21,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
@@ -157,7 +155,8 @@ public class AbstractConsumerContainerSelector extends
 				Dictionary importedConfigProperties = desc
 						.getPropertiesForImportedConfigs(
 								localImportedConfigs,
-								createDictionaryFromMap(remoteExportedProperties));
+								PropertiesUtil
+										.createDictionaryFromMap(remoteExportedProperties));
 				// Then select a specific local imported config (typically the
 				// first on in the array)
 				String selectedConfig = selectLocalImportedConfig(
@@ -166,7 +165,8 @@ public class AbstractConsumerContainerSelector extends
 				if (selectedConfig != null) {
 					IRemoteServiceContainer rsContainer = createContainer(
 							selectedConfig,
-							createMapFromDictionary(importedConfigProperties));
+							PropertiesUtil
+									.createMapFromDictionary(importedConfigProperties));
 					if (rsContainer != null) {
 						trace("createAndConfigureProxyContainers", //$NON-NLS-1$
 								"created new proxy container with config type=" //$NON-NLS-1$
@@ -178,30 +178,6 @@ public class AbstractConsumerContainerSelector extends
 			}
 		}
 		return null;
-	}
-
-	private Map createMapFromDictionary(Dictionary input) {
-		if (input == null)
-			return null;
-		Map result = new HashMap();
-		for (Enumeration e = input.keys(); e.hasMoreElements();) {
-			Object key = e.nextElement();
-			Object val = input.get(key);
-			result.put(key, val);
-		}
-		return result;
-	}
-
-	private Dictionary createDictionaryFromMap(Map propMap) {
-		if (propMap == null)
-			return null;
-		Dictionary result = new Properties();
-		for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
-			Object key = i.next();
-			Object val = propMap.get(key);
-			result.put(key, val);
-		}
-		return result;
 	}
 
 	protected IRemoteServiceContainer createContainer(

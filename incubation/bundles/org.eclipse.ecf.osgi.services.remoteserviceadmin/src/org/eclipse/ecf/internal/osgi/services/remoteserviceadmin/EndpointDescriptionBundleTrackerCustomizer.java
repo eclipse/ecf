@@ -17,6 +17,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -114,18 +116,11 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 		try {
 			return builder.readEndpointDescriptions(fileURL.openStream());
 		} catch (Exception e) {
-			// log
-			logError("Exception creating endpoint descriptions from fileURL="
-					+ fileURL, e);
+			LogUtility.logError("handleEndpointDescriptionFile", DebugOptions.DISCOVERY,
+			this.getClass(), new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+					IStatus.ERROR, ("Exception creating endpoint descriptions from fileURL="
+												+ fileURL), e));
 			return null;
-		}
-	}
-
-	private void logError(String message, Throwable t) {
-		// XXX todo
-		System.err.println(message);
-		if (t != null) {
-			t.printStackTrace(System.err);
 		}
 	}
 

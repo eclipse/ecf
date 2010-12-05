@@ -13,9 +13,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 
@@ -117,6 +121,75 @@ public class PropertiesUtil {
 		if (key == null)
 			return false;
 		return isOSGiProperty(key) || isECFProperty(key);
+	}
+
+	public static Map createMapFromDictionary(Dictionary input) {
+		if (input == null)
+			return null;
+		Map result = new HashMap();
+		for (Enumeration e = input.keys(); e.hasMoreElements();) {
+			Object key = e.nextElement();
+			Object val = input.get(key);
+			result.put(key, val);
+		}
+		return result;
+	}
+
+	public static Dictionary createDictionaryFromMap(Map propMap) {
+		if (propMap == null)
+			return null;
+		Dictionary result = new Properties();
+		for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
+			Object key = i.next();
+			Object val = propMap.get(key);
+			result.put(key, val);
+		}
+		return result;
+	}
+
+	public static Long getLongWithDefault(Map props, String key, Long def) {
+		if (props == null)
+			return def;
+		Object o = props.get(key);
+		if (o instanceof Long)
+			return (Long) o;
+		if (o instanceof String)
+			return Long.valueOf((String) o);
+		return def;
+	}
+
+	public static String[] getStringArrayWithDefault(
+			Map<String, Object> properties, String key, String[] def) {
+		if (properties == null)
+			return def;
+		Object o = properties.get(key);
+		if (o instanceof String) {
+			return new String[] { (String) o };
+		} else if (o instanceof String[]) {
+			return (String[]) o;
+		} else if (o instanceof List) {
+			List l = (List) o;
+			return (String[]) l.toArray(new String[l.size()]);
+		}
+		return def;
+	}
+
+	public static String getStringWithDefault(Map props, String key, String def) {
+		if (props == null)
+			return def;
+		Object o = props.get(key);
+		if (o == null || (!(o instanceof String)))
+			return def;
+		return (String) o;
+	}
+
+	public static Map<String, Object> getNonECFProperties(
+			Map<String, Object> parsedProperties) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		for (String key : parsedProperties.keySet())
+			if (!isECFProperty(key))
+				result.put(key, parsedProperties.get(key));
+		return result;
 	}
 
 

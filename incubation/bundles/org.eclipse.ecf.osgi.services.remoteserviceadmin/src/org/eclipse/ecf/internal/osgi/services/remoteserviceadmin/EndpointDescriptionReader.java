@@ -12,20 +12,18 @@ package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractMetadataFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionParseException;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.osgi.framework.Constants;
 
-public class EndpointDescriptionReader extends AbstractMetadataFactory {
+public class EndpointDescriptionReader {
 
 	public org.osgi.service.remoteserviceadmin.EndpointDescription[] readEndpointDescriptions(
 			InputStream input) throws IOException {
@@ -44,8 +42,9 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 			try {
 				// OSGI required properties
 				// objectClass/String+
-				List<String> objectClasses = PropertiesUtil.getStringPlusProperty(
-						parsedProperties, Constants.OBJECTCLASS);
+				List<String> objectClasses = PropertiesUtil
+						.getStringPlusProperty(parsedProperties,
+								Constants.OBJECTCLASS);
 				// Must have at least one objectClass
 				if (objectClasses == null || objectClasses.size() == 0)
 					throw new EndpointDescriptionParseException(
@@ -56,10 +55,11 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 								.toArray(new String[objectClasses.size()]));
 
 				// endpoint.id
-				String endpointId = getStringWithDefault(
-						parsedProperties,
-						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
-						null);
+				String endpointId = PropertiesUtil
+						.getStringWithDefault(
+								parsedProperties,
+								org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+								null);
 				// Must have endpoint id, so throw if it's not found
 				if (endpointId == null)
 					throw new EndpointDescriptionParseException(
@@ -71,10 +71,11 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 
 				// endpoint.service.id. Default is set to Long(0), which means
 				// not an OSGi endpoint description
-				Long endpointServiceId = getLongWithDefault(
-						parsedProperties,
-						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
-						new Long(0));
+				Long endpointServiceId = PropertiesUtil
+						.getLongWithDefault(
+								parsedProperties,
+								org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
+								new Long(0));
 				parsedProperties
 						.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
 								endpointServiceId);
@@ -107,7 +108,7 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 				}
 				results.add(result);
 			} catch (Exception e) {
-				logError("Exception parsing endpoint description properties", e);
+				LogUtility.logError("readEndpointDescriptions", DebugOptions.ENDPOINTDESCRIPTIONREADER, this.getClass(), "Exception parsing endpoint description properties", e);
 			}
 		}
 		return (org.osgi.service.remoteserviceadmin.EndpointDescription[]) results
@@ -119,8 +120,9 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 			throws EndpointDescriptionParseException {
 		// we get the remote service id...default 0 means that it's not an ECF
 		// remote service
-		Long remoteServiceId = getLongWithDefault(parsedProperties,
-				RemoteConstants.ENDPOINT_REMOTESERVICE_ID, null);
+		Long remoteServiceId = PropertiesUtil.getLongWithDefault(
+				parsedProperties, RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
+				null);
 		if (remoteServiceId == null)
 			throw new EndpointDescriptionParseException(
 					RemoteConstants.ENDPOINT_REMOTESERVICE_ID
@@ -141,7 +143,7 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 		String rsFilter = (String) parsedProperties
 				.get(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
 
-		Map properties = getNonECFProperties(parsedProperties);
+		Map properties = PropertiesUtil.getNonECFProperties(parsedProperties);
 
 		return new EndpointDescription(properties, endpointContainerID
 				.getNamespace().getName(), remoteServiceId.longValue(),
@@ -190,44 +192,16 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 				.toArray(new ID[resultList.size()]) : null;
 	}
 
-	private Map<String, Object> getNonECFProperties(
-			Map<String, Object> parsedProperties) {
-		Map<String, Object> result = new HashMap<String, Object>();
-		for (String key : parsedProperties.keySet())
-			if (!PropertiesUtil.isECFProperty(key))
-				result.put(key, parsedProperties.get(key));
-		return result;
-	}
-
-	private void logError(String message, Throwable exception) {
-		System.err.println(message);
-		if (exception != null) {
-			exception.printStackTrace(System.err);
-		}
-	}
-
-	private String verifyStringProperty(Map properties, String propName) {
-		Object r = properties.get(propName);
-		try {
-			return (String) r;
-		} catch (ClassCastException e) {
-			IllegalArgumentException iae = new IllegalArgumentException(
-					"property value is not a String: " + propName);
-			iae.initCause(e);
-			throw iae;
-		}
-	}
-
 	private ID getContainerID(Map<String, Object> properties)
 			throws IDCreateException {
 		// We try to get the ID from the OSGi id
-		String osgiId = verifyStringProperty(properties,
+		String osgiId = PropertiesUtil.verifyStringProperty(properties,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
 		if (osgiId == null)
 			throw new IDCreateException(
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID
 							+ " must not be null");
-		String containerIDNamespace = verifyStringProperty(properties,
+		String containerIDNamespace = PropertiesUtil.verifyStringProperty(properties,
 				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		return IDUtil.createID(properties, containerIDNamespace);
 	}

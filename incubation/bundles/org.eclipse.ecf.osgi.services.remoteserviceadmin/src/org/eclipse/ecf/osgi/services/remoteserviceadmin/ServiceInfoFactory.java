@@ -24,6 +24,7 @@ import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 
 public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		IServiceInfoFactory {
@@ -153,7 +154,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 			try {
 				host = InetAddress.getLocalHost().getHostAddress();
 			} catch (Exception e) {
-				logInfo("createURI", //$NON-NLS-1$
+				logWarning("createURI", //$NON-NLS-1$
 						"failed to get local host adress, falling back to \'localhost\'.", e); //$NON-NLS-1$
 				host = "localhost"; //$NON-NLS-1$
 			}
@@ -167,7 +168,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		String defaultServiceName = createDefaultServiceName(
 				endpointDescription, advertiser, serviceTypeID);
 		// Look for service name that was explicitly set
-		String serviceName = getStringWithDefault(
+		String serviceName = PropertiesUtil.getStringWithDefault(
 				endpointDescription.getProperties(),
 				RemoteConstants.DISCOVERY_SERVICE_NAME, defaultServiceName);
 		return serviceName;
@@ -184,12 +185,12 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 			EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser) {
 		Map props = endpointDescription.getProperties();
-		String[] scopes = getStringArrayWithDefault(props,
+		String[] scopes = PropertiesUtil.getStringArrayWithDefault(props,
 				RemoteConstants.DISCOVERY_SCOPE, IServiceTypeID.DEFAULT_SCOPE);
-		String[] protocols = getStringArrayWithDefault(props,
+		String[] protocols = PropertiesUtil.getStringArrayWithDefault(props,
 				RemoteConstants.DISCOVERY_PROTOCOLS,
 				IServiceTypeID.DEFAULT_SCOPE);
-		String namingAuthority = getStringWithDefault(props,
+		String namingAuthority = PropertiesUtil.getStringWithDefault(props,
 				RemoteConstants.DISCOVERY_NAMING_AUTHORITY,
 				IServiceTypeID.DEFAULT_NA);
 		return ServiceIDFactory.getDefault().createServiceTypeID(

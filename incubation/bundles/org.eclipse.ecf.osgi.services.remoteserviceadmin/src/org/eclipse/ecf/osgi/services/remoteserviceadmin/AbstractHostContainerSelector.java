@@ -205,9 +205,17 @@ public abstract class AbstractHostContainerSelector extends
 		if (descriptions == null)
 			return results;
 		// If there are no required configs specified, then create any defaults
-		if (requiredConfigs == null || requiredConfigs.length == 0)
-			createDefaultRSContainers(serviceReference, descriptions, results);
-		else {
+		if (requiredConfigs == null || requiredConfigs.length == 0) {
+			ContainerTypeDescription[] ctds = getContainerTypeDescriptionsForDefaultConfigTypes(descriptions);
+			if (ctds != null) {
+				for (int i = 0; i < ctds.length; i++) {
+					IRemoteServiceContainer rsContainer = createRSContainer(
+							serviceReference, ctds[i]);
+					if (rsContainer != null)
+						results.add(rsContainer);
+				}
+			}
+		} else {
 			// See if we have a match
 			for (int i = 0; i < descriptions.length; i++) {
 				IRemoteServiceContainer rsContainer = createMatchingContainer(
@@ -224,24 +232,19 @@ public abstract class AbstractHostContainerSelector extends
 		if (results.size() == 0 && requiredConfigs != null
 				&& requiredConfigs.length > 0) {
 			List requiredConfigsList = Arrays.asList(requiredConfigs);
-			if (!requiredConfigsList.contains(NODEFAULT))
-				createDefaultRSContainers(serviceReference, descriptions,
-						results);
-		}
-		return results;
-	}
-
-	private void createDefaultRSContainers(ServiceReference serviceReference,
-			ContainerTypeDescription[] descriptions, List results) {
-		ContainerTypeDescription[] ctds = getContainerTypeDescriptionsForDefaultConfigTypes(descriptions);
-		if (ctds != null) {
-			for (int i = 0; i < ctds.length; i++) {
-				IRemoteServiceContainer rsContainer = createRSContainer(
-						serviceReference, ctds[i]);
-				if (rsContainer != null)
-					results.add(rsContainer);
+			if (!requiredConfigsList.contains(NODEFAULT)) {
+				ContainerTypeDescription[] ctds = getContainerTypeDescriptionsForDefaultConfigTypes(descriptions);
+				if (ctds != null) {
+					for (int i = 0; i < ctds.length; i++) {
+						IRemoteServiceContainer rsContainer = createRSContainer(
+								serviceReference, ctds[i]);
+						if (rsContainer != null)
+							results.add(rsContainer);
+					}
+				}
 			}
 		}
+		return results;
 	}
 
 	protected ContainerTypeDescription[] getContainerTypeDescriptionsForDefaultConfigTypes(
@@ -315,7 +318,10 @@ public abstract class AbstractHostContainerSelector extends
 	protected void connectHostContainer(ServiceReference serviceReference,
 			IContainer container, Object target)
 			throws ContainerConnectException, IDCreateException {
-		ID targetID = (target instanceof String)?IDUtil.createID(container.getConnectNamespace(), (String) target):IDUtil.createID(container.getConnectNamespace(), new Object[] { target});
+		ID targetID = (target instanceof String) ? IDUtil.createID(
+				container.getConnectNamespace(), (String) target) : IDUtil
+				.createID(container.getConnectNamespace(),
+						new Object[] { target });
 		Object context = serviceReference
 				.getProperty(RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT);
 		IConnectContext connectContext = null;

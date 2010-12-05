@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -47,8 +45,6 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class Discovery {
-
-	private static final boolean DEBUG = false;
 
 	private BundleContext context;
 	private IExecutor executor;
@@ -122,7 +118,7 @@ public class Discovery {
 		eventQueue.queueListeners(listeners.entrySet(), new EventDispatcher() {
 			public void dispatchEvent(Object eventListener,
 					Object listenerObject, int eventAction, Object eventObject) {
-
+				final String logMethodName = "dispatchEvent";
 				final EndpointListenerEvent event = (EndpointListenerEvent) eventObject;
 				final EndpointListener endpointListener = event
 						.getEndpointListener();
@@ -142,7 +138,7 @@ public class Discovery {
 							+ endpointListener + " description="
 							+ endpointDescription + " matchingFilter="
 							+ matchingFilter;
-					logError(message, e);
+					logError(logMethodName, message, e);
 				} catch (LinkageError e) {
 					String message = "LinkageError in EndpointListener listener="
 							+ endpointListener
@@ -150,7 +146,7 @@ public class Discovery {
 							+ endpointDescription
 							+ " matchingFilter="
 							+ matchingFilter;
-					logError(message, e);
+					logError(logMethodName, message, e);
 				} catch (AssertionError e) {
 					String message = "AssertionError in EndpointListener listener="
 							+ endpointListener
@@ -158,7 +154,7 @@ public class Discovery {
 							+ endpointDescription
 							+ " matchingFilter="
 							+ matchingFilter;
-					logError(message, e);
+					logError(logMethodName, message, e);
 				}
 			}
 		});
@@ -199,12 +195,9 @@ public class Discovery {
 		bundleTracker.open();
 	}
 
-	private void logError(String message, Throwable e) {
-		Activator a = Activator.getDefault();
-		if (a != null)
-			a.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-					message, e)); //$NON-NLS-1$
-
+	private void logError(String methodName, String message, Throwable e) {
+		LogUtility.logError(methodName, DebugOptions.DISCOVERY,
+				this.getClass(), message, e);
 	}
 
 	public void close() {
@@ -376,20 +369,13 @@ public class Discovery {
 
 			}
 		} else {
-			if (DEBUG)
-				logInfo("No matching EndpointListeners found for "
-						+ (discovered ? "discovered" : "undiscovered")
-						+ " endpointDescription=" + endpointDescription);
+			LogUtility.logWarning("queueEndpointDescription",
+					DebugOptions.DISCOVERY, this.getClass(),
+					"No matching EndpointListeners found for "
+							+ (discovered ? "discovered" : "undiscovered")
+							+ " endpointDescription=" + endpointDescription);
 		}
 
-	}
-
-	private void logInfo(String info) {
-		log(new Status(IStatus.INFO, Activator.PLUGIN_ID, IStatus.INFO, info,
-				null));
-	}
-
-	private void log(IStatus status) {
 	}
 
 	private void processInitialLocatorServices(final IDiscoveryLocator locator,
