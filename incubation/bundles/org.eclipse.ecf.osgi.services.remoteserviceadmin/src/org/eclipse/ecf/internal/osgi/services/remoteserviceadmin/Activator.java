@@ -9,12 +9,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -182,42 +176,6 @@ public class Activator implements BundleActivator {
 				logService = null;
 			}
 		}
-	}
-
-	public static List getStringPlusProperty(Map properties, String key) {
-		Object value = properties.get(key);
-		if (value == null) {
-			return Collections.EMPTY_LIST;
-		}
-
-		if (value instanceof String) {
-			return Collections.singletonList((String) value);
-		}
-
-		if (value instanceof String[]) {
-			String[] values = (String[]) value;
-			List result = new ArrayList(values.length);
-			for (int i = 0; i < values.length; i++) {
-				if (values[i] != null) {
-					result.add(values[i]);
-				}
-			}
-			return Collections.unmodifiableList(result);
-		}
-
-		if (value instanceof Collection) {
-			Collection values = (Collection) value;
-			List result = new ArrayList(values.size());
-			for (Iterator iter = values.iterator(); iter.hasNext();) {
-				Object v = iter.next();
-				if (v instanceof String) {
-					result.add((String) v);
-				}
-			}
-			return Collections.unmodifiableList(result);
-		}
-
-		return Collections.EMPTY_LIST;
 	}
 
 	private ServiceTracker containerManagerTracker;

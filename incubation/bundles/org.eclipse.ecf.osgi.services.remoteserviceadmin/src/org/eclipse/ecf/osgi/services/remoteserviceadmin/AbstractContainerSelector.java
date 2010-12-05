@@ -21,12 +21,11 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
@@ -36,10 +35,6 @@ import org.osgi.framework.ServiceReference;
 public abstract class AbstractContainerSelector {
 
 	public static final IRemoteServiceContainer[] EMPTY_REMOTE_SERVICE_CONTAINER_ARRAY = new IRemoteServiceContainer[] {};
-
-	protected IIDFactory getIDFactory() {
-		return IDFactory.getDefault();
-	}
 
 	protected IContainerManager getContainerManager() {
 		return Activator.getDefault().getContainerManager();
@@ -135,12 +130,8 @@ public abstract class AbstractContainerSelector {
 		return containerFactory.createContainer(containerTypeDescription);
 	}
 
-	protected ID createTargetID(IContainer container, Object target) {
-		ID targetID = null;
-		if (target instanceof String)
-			targetID = getIDFactory().createID(container.getConnectNamespace(),
-					(String) target);
-		return targetID;
+	protected ID createTargetID(IContainer container, String target) {
+		return IDUtil.createID(container.getConnectNamespace(), target);
 	}
 
 	protected void disconnectContainer(IContainer container) {

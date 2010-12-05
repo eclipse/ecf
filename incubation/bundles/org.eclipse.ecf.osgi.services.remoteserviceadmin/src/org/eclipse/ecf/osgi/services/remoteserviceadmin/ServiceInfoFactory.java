@@ -116,7 +116,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID,
 			String serviceName) throws URISyntaxException {
 		String path = "/" + serviceName;
-		String str = endpointDescription.getContainerID().getName();
+		String str = endpointDescription.getId();
 		URI uri = null;
 		while (true) {
 			try {

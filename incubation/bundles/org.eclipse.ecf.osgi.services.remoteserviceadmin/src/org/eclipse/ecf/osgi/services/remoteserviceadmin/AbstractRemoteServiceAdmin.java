@@ -13,7 +13,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
@@ -189,8 +193,8 @@ public abstract class AbstractRemoteServiceAdmin {
 			ServiceReference serviceReference, Map<String, Object> properties,
 			IRemoteServiceRegistration registration,
 			IRemoteServiceContainer container) {
-		// endpoint ID is container ID
-		ID endpointID = registration.getContainerID();
+		// container ID
+		ID containerID = registration.getContainerID();
 		// If connectTarget is set
 		Object connectTarget = getPropertyValue(
 				RemoteConstants.ENDPOINT_CONNECTTARGET_ID, serviceReference,
@@ -199,7 +203,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		if (connectTarget != null) {
 			// Then we get the host container connected ID
 			ID connectedID = container.getContainer().getConnectedID();
-			if (connectedID != null && !connectedID.equals(endpointID))
+			if (connectedID != null && !connectedID.equals(containerID))
 				connectTargetID = connectedID;
 		}
 		ID[] idFilter = (ID[]) getPropertyValue(
@@ -209,9 +213,45 @@ public abstract class AbstractRemoteServiceAdmin {
 				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 				serviceReference, properties);
 		IRemoteServiceID rsID = registration.getID();
+		// Make sure OSGi properties are set here
+
+		// endpoint id
+		String endpointid = (String) getPropertyValue(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+				serviceReference, properties);
+		if (endpointid == null)
+			endpointid = containerID.getName();
+		properties
+				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+						endpointid);
+		// framework id
+		String frameworkId = Activator.getDefault().getFrameworkUUID();
+		properties
+				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
+						frameworkId);
+
+		String[] supportedConfigs = getSupportedConfigs(container
+				.getContainer());
+		properties
+				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
+						supportedConfigs);
+
 		return new EndpointDescription(serviceReference, properties,
-				rsID.getContainerID(), rsID.getContainerRelativeID(),
-				connectTargetID, idFilter, rsFilter);
+				containerID.getNamespace().getName(),
+				rsID.getContainerRelativeID(), connectTargetID, idFilter,
+				rsFilter);
+	}
+
+	private String[] getSupportedConfigs(IContainer container) {
+		IContainerManager containerManager = Activator.getDefault()
+				.getContainerManager();
+		if (containerManager == null)
+			return null;
+		ContainerTypeDescription ctd = containerManager
+				.getContainerTypeDescription(container.getID());
+		if (ctd == null)
+			return null;
+		return ctd.getSupportedConfigs();
 	}
 
 	public void close() {

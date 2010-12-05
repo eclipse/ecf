@@ -23,6 +23,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
@@ -89,7 +90,7 @@ public abstract class AbstractHostContainerSelector extends
 
 	protected boolean matchHostContainerToConnectTarget(
 			ServiceReference serviceReference, IContainer container) {
-		Object target = serviceReference
+		String target = (String) serviceReference
 				.getProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		if (target == null)
 			return true;
@@ -161,10 +162,10 @@ public abstract class AbstractHostContainerSelector extends
 		if (cid instanceof ID) {
 			cID = (ID) cid;
 		} else if (cid instanceof String) {
-			cID = getIDFactory().createID(ns, (String) cid);
+			cID = IDUtil.createID(ns, (String) cid);
 		} else if (cid instanceof Object[]) {
 			Object cido = ((Object[]) cid)[0];
-			cID = getIDFactory().createID(ns, new Object[] { cido });
+			cID = IDUtil.createID(ns, new Object[] { cido });
 		}
 		if (cID == null)
 			return true;
@@ -314,7 +315,7 @@ public abstract class AbstractHostContainerSelector extends
 	protected void connectHostContainer(ServiceReference serviceReference,
 			IContainer container, Object target)
 			throws ContainerConnectException, IDCreateException {
-		ID targetID = createTargetID(container, target);
+		ID targetID = (target instanceof String)?IDUtil.createID(container.getConnectNamespace(), (String) target):IDUtil.createID(container.getConnectNamespace(), new Object[] { target});
 		Object context = serviceReference
 				.getProperty(RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT);
 		IConnectContext connectContext = null;

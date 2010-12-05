@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
@@ -205,7 +206,7 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			EndpointDescription endpointDescription,
 			IRemoteServiceContainer rsContainer) throws ECFException {
 		Collection<String> interfaces = endpointDescription.getInterfaces();
-		ID endpointID = endpointDescription.getContainerID();
+		ID endpointID = IDUtil.createContainerID(endpointDescription);
 		ID targetID = endpointDescription.getConnectTargetID();
 		ID[] idFilter = endpointDescription.getIDFilter();
 		if (idFilter == null)

@@ -44,7 +44,7 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 			try {
 				// OSGI required properties
 				// objectClass/String+
-				List<String> objectClasses = Activator.getStringPlusProperty(
+				List<String> objectClasses = PropertiesUtil.getStringPlusProperty(
 						parsedProperties, Constants.OBJECTCLASS);
 				// Must have at least one objectClass
 				if (objectClasses == null || objectClasses.size() == 0)
@@ -80,7 +80,7 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 								endpointServiceId);
 
 				// service.imported.configs
-				List<String> configurationTypes = Activator
+				List<String> configurationTypes = PropertiesUtil
 						.getStringPlusProperty(
 								parsedProperties,
 								org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS);
@@ -131,11 +131,8 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 				.get(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		String targetNamespace = (String) parsedProperties
 				.get(RemoteConstants.ENDPOINT_CONNECTTARGET_ID_NAMESPACE);
-		if (targetName != null) {
-			if (targetNamespace == null)
-				targetNamespace = endpointContainerID.getNamespace().getName();
-			targetID = createID(targetNamespace, targetName);
-		}
+		if (targetName != null)
+			targetID = IDUtil.createID(targetNamespace, targetName);
 
 		// id filter
 		ID[] idFilter = getIDFilter(endpointContainerID.getNamespace(),
@@ -146,8 +143,9 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 
 		Map properties = getNonECFProperties(parsedProperties);
 
-		return new EndpointDescription(properties, endpointContainerID,
-				remoteServiceId.longValue(), targetID, idFilter, rsFilter);
+		return new EndpointDescription(properties, endpointContainerID
+				.getNamespace().getName(), remoteServiceId.longValue(),
+				targetID, idFilter, rsFilter);
 	}
 
 	private ID[] getIDFilter(Namespace namespace, Map<String, Object> properties) {
@@ -156,7 +154,7 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 		if (o != null && o instanceof List<?>) {
 			// Assumed to be list of strings
 			for (String i : (List<String>) o) {
-				ID id = createID(namespace, i);
+				ID id = IDUtil.createID(namespace, i);
 				if (id != null)
 					resultList.add(id);
 			}
@@ -182,7 +180,7 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 									+ i);
 					if (ns == null)
 						ns = namespace.getName();
-					ID id = createID(ns, name);
+					ID id = IDUtil.createID(ns, name);
 					if (id != null)
 						resultList.add(id);
 				}
@@ -196,7 +194,7 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 			Map<String, Object> parsedProperties) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		for (String key : parsedProperties.keySet())
-			if (!isECFProperty(key))
+			if (!PropertiesUtil.isECFProperty(key))
 				result.put(key, parsedProperties.get(key));
 		return result;
 	}
@@ -222,31 +220,16 @@ public class EndpointDescriptionReader extends AbstractMetadataFactory {
 
 	private ID getContainerID(Map<String, Object> properties)
 			throws IDCreateException {
-		ID result = null;
-		// First check to see if the container id and namespace have been
-		// explicitly set
-		String containerIDName = verifyStringProperty(properties,
-				RemoteConstants.ENDPOINT_CONTAINER_ID);
-		if (containerIDName != null) {
-			String containerNS = verifyStringProperty(properties,
-					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-			Namespace ns = getNamespace(containerNS);
-			if (ns != null)
-				result = createID(ns, containerIDName);
-		} else {
-			// We try to get the ID from the OSGi id
-			String osgiId = verifyStringProperty(
-					properties,
-					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
-			if (osgiId == null)
-				throw new IDCreateException(
-						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID
-								+ " must not be null");
-			Namespace ns = findNamespaceForOSGiId(osgiId);
-			if (ns != null)
-				result = createID(ns, osgiId);
-		}
-		return result;
+		// We try to get the ID from the OSGi id
+		String osgiId = verifyStringProperty(properties,
+				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
+		if (osgiId == null)
+			throw new IDCreateException(
+					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID
+							+ " must not be null");
+		String containerIDNamespace = verifyStringProperty(properties,
+				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
+		return IDUtil.createID(properties, containerIDNamespace);
 	}
 
 }

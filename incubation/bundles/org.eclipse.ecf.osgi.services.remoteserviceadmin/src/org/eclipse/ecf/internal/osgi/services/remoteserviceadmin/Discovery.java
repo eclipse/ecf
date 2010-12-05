@@ -550,7 +550,7 @@ public class Discovery {
 					.getService(refs[i]);
 			if (listener == null)
 				continue;
-			List filters = Activator.getStringPlusProperty(
+			List filters = PropertiesUtil.getStringPlusProperty(
 					getMapFromProperties(refs[i]),
 					EndpointListener.ENDPOINT_LISTENER_SCOPE);
 			String matchingFilter = isMatch(description, filters);

@@ -12,14 +12,13 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.osgi.framework.ServiceReference;
 
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
 
-	private ID containerID;
+	private String containerIDNamespace;
 	private long remoteServiceId;
 	private ID connectTargetID;
 	private ID[] idFilter;
@@ -28,11 +27,10 @@ public class EndpointDescription extends
 	private int hashCode;
 
 	public EndpointDescription(ServiceReference reference, Map osgiProperties,
-			ID containerID, long remoteServiceId, ID connectTargetID,
-			ID[] idFilter, String rsFilter) {
+			String containerIDNamespace, long remoteServiceId,
+			ID connectTargetID, ID[] idFilter, String rsFilter) {
 		super(reference, osgiProperties);
-		this.containerID = containerID;
-		Assert.isNotNull(this.containerID);
+		this.containerIDNamespace = containerIDNamespace;
 		this.remoteServiceId = remoteServiceId;
 		this.connectTargetID = connectTargetID;
 		this.idFilter = idFilter;
@@ -40,12 +38,11 @@ public class EndpointDescription extends
 		computeHashCode();
 	}
 
-	public EndpointDescription(Map osgiProperties, ID containerID,
+	public EndpointDescription(Map osgiProperties, String containerIDNamespace,
 			long remoteServiceId, ID connectTargetID, ID[] idFilter,
 			String rsFilter) {
 		super(osgiProperties);
-		this.containerID = containerID;
-		Assert.isNotNull(this.containerID);
+		this.containerIDNamespace = containerIDNamespace;
 		this.remoteServiceId = remoteServiceId;
 		this.connectTargetID = connectTargetID;
 		this.idFilter = idFilter;
@@ -55,7 +52,6 @@ public class EndpointDescription extends
 
 	private void computeHashCode() {
 		this.hashCode = super.hashCode();
-		this.hashCode = 31 * hashCode + containerID.hashCode();
 		this.hashCode = 31 * hashCode
 				+ (int) (remoteServiceId ^ (remoteServiceId >>> 32));
 	}
@@ -68,7 +64,7 @@ public class EndpointDescription extends
 		if (!(other instanceof EndpointDescription))
 			return false;
 		EndpointDescription o = (EndpointDescription) other;
-		return super.equals(other) && (o.containerID.equals(this.containerID))
+		return super.equals(other)
 				&& (o.remoteServiceId == this.remoteServiceId);
 	}
 
@@ -76,8 +72,8 @@ public class EndpointDescription extends
 		return hashCode;
 	}
 
-	public ID getContainerID() {
-		return containerID;
+	public String getContainerIDNamespace() {
+		return containerIDNamespace;
 	}
 
 	public ID getConnectTargetID() {
@@ -98,10 +94,10 @@ public class EndpointDescription extends
 
 	public String toString() {
 		return "ECFEndpointDescription[properties=" + super.toString()
-				+ ",containerID=" + containerID + ", remoteServiceId="
-				+ remoteServiceId + ", connectTargetID=" + connectTargetID
-				+ ", idFilter=" + Arrays.toString(idFilter) + ", rsFilter="
-				+ rsFilter + ", hashCode=" + hashCode + "]";
+				+ ",containerIDNamespace=" + containerIDNamespace
+				+ ", remoteServiceId=" + remoteServiceId + ", connectTargetID="
+				+ connectTargetID + ", idFilter=" + Arrays.toString(idFilter)
+				+ ", rsFilter=" + rsFilter + ", hashCode=" + hashCode + "]";
 	}
 
 }

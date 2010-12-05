@@ -10,7 +10,6 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -20,39 +19,15 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 
 public abstract class AbstractMetadataFactory {
 
 	protected static final String COLLECTION_SEPARATOR = ",";
-	protected static final List osgiProperties = Arrays
-			.asList(new String[] {
-					// OSGi properties
-					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
-					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
-					org.osgi.framework.Constants.OBJECTCLASS,
-					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
-					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
-					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
-					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED, });
-
-	protected static final List ecfProperties = Arrays.asList(new String[] {
-			// ECF properties
-			RemoteConstants.ENDPOINT_CONTAINER_ID,
-			RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
-			RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
-			RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
-			RemoteConstants.ENDPOINT_CONNECTTARGET_ID_NAMESPACE,
-			RemoteConstants.ENDPOINT_IDFILTER_IDS,
-			RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT,
-			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER });
-
 	protected String[] getStringArrayWithDefault(
 			Map<String, Object> properties, String key, String[] def) {
 		if (properties == null)
@@ -168,73 +143,20 @@ public abstract class AbstractMetadataFactory {
 		List result = new ArrayList();
 		for (int i = 0; i < count; i++) {
 			// decode string as name
-			String name = decodeString(props,
+			String idName = decodeString(props,
 					RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_ + i);
-			String ns = props
+			if (idName == null)
+				continue;
+			String nsName = props
 					.getPropertyString(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_
 							+ i);
-			if (name != null && ns != null) {
-				ID id = createID(ns, name);
-				if (id != null)
-					result.add(id);
-			}
+			Namespace ns = (nsName != null) ? IDUtil.getNamespaceByName(nsName)
+					: IDUtil.findNamespaceByIdName(idName);
+			if (ns == null)
+				continue;
+			result.add(IDUtil.createID(ns, idName));
 		}
 		return (ID[]) result.toArray(new ID[] {});
-	}
-
-	protected ID createID(String namespace, String name)
-			throws IDCreateException {
-		return IDFactory.getDefault().createID(namespace, name);
-	}
-
-	protected ID createID(Namespace namespace, String name)
-			throws IDCreateException {
-		return IDFactory.getDefault().createID(namespace, name);
-	}
-
-	protected IIDFactory getIDFactory() {
-		return IDFactory.getDefault();
-	}
-
-	protected Namespace getNamespace(String namespaceName) {
-		Namespace result = findNamespace(namespaceName);
-		return (result == null) ? getIDFactory().getNamespaceByName(
-				StringID.class.getName()) : result;
-	}
-
-	protected Namespace findNamespace(String namespaceName) {
-		return getIDFactory().getNamespaceByName(namespaceName);
-	}
-
-	protected Namespace findNamespaceForOSGiId(String osgiId) {
-		int colonIndex = osgiId.indexOf(':');
-		if (colonIndex <= 0)
-			return null;
-		String scheme = osgiId.substring(0, colonIndex);
-		// First try to find the Namespace using the protocol directly
-		Namespace ns = findNamespace(scheme);
-		if (ns == null) {
-			// Then try to find by comparing to all Namespace.getScheme()
-			ns = findNamespaceByScheme(scheme);
-		}
-		return ns;
-	}
-
-	protected Namespace findNamespaceByScheme(String scheme) {
-		if (scheme == null)
-			return null;
-		if (scheme.equals("ecftcp"))
-			return getIDFactory().getNamespaceByName(StringID.class.getName());
-		List namespaces = getIDFactory().getNamespaces();
-		for (Iterator i = namespaces.iterator(); i.hasNext();) {
-			Namespace ns = (Namespace) i.next();
-			if (scheme.equals(ns.getScheme())) {
-				// found it...so return
-				return ns;
-			}
-		}
-		// If the scheme is "ecftcp" then we use StringID
-		return null;
 	}
 
 	protected void decodeOSGiProperties(IServiceProperties props,
@@ -288,17 +210,8 @@ public abstract class AbstractMetadataFactory {
 		Map osgiProperties = new HashMap();
 		decodeOSGiProperties(discoveredServiceProperties, osgiProperties);
 
-		// endpoint ID
-		String endpointName = decodeString(discoveredServiceProperties,
-				RemoteConstants.ENDPOINT_CONTAINER_ID);
-		String endpointNamespace = decodeString(discoveredServiceProperties,
+		String containerIDNamespace = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-		ID containerID = createID(endpointNamespace, endpointName);
-		if (containerID == null)
-			throw new NullPointerException("endpoint containerID for name="
-					+ endpointName + " an namespace=" + endpointNamespace
-					+ " cannot be null");
-
 		// remote service id
 		Long remoteServiceId = decodeLong(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
@@ -308,8 +221,12 @@ public abstract class AbstractMetadataFactory {
 		String targetNamespace = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		ID targetID = null;
-		if (targetName != null && targetNamespace != null) {
-			targetID = createID(targetNamespace, targetName);
+		if (targetName != null) {
+			Namespace ns = (targetNamespace != null) ? IDUtil
+					.getNamespaceByName(targetNamespace) : IDUtil
+					.findNamespaceByIdName(targetName);
+			if (ns != null)
+				targetID = IDUtil.createID(ns, targetName);
 		}
 		// ID filter
 		ID[] idFilter = decodeIDArray(discoveredServiceProperties);
@@ -321,7 +238,7 @@ public abstract class AbstractMetadataFactory {
 		decodeNonStandardServiceProperties(discoveredServiceProperties,
 				osgiProperties);
 
-		return new EndpointDescription(osgiProperties, containerID,
+		return new EndpointDescription(osgiProperties, containerIDNamespace,
 				remoteServiceId.longValue(), targetID, idFilter,
 				remoteServiceFilter);
 	}
@@ -376,14 +293,11 @@ public abstract class AbstractMetadataFactory {
 					serviceIntents);
 		}
 
-		// ECF endpoint ID = endpointDescription.getID()
-		ID endpointID = endpointDescription.getContainerID();
-		// external form of ID
-		encodeString(result, RemoteConstants.ENDPOINT_CONTAINER_ID,
-				endpointID.toExternalForm());
 		// namespace
+		String containerIDNamespace = endpointDescription
+				.getContainerIDNamespace();
 		encodeString(result, RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
-				endpointID.getNamespace().getName());
+				containerIDNamespace);
 		// ECF remote service id = endpointDescription.getRemoteServiceId()
 		long remoteServiceId = endpointDescription.getRemoteServiceId();
 		encodeLong(result, RemoteConstants.ENDPOINT_REMOTESERVICE_ID, new Long(
@@ -417,30 +331,10 @@ public abstract class AbstractMetadataFactory {
 				result);
 	}
 
-	protected boolean isOSGiProperty(String key) {
-		if (key == null)
-			return false;
-		return osgiProperties.contains(key);
-	}
-
-	protected boolean isECFProperty(String key) {
-		if (key == null)
-			return false;
-		return ecfProperties.contains(key)
-				&& !key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_)
-				&& !key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_);
-	}
-
-	protected boolean isStandardProperty(String key) {
-		if (key == null)
-			return false;
-		return isOSGiProperty(key) || isECFProperty(key);
-	}
-
 	protected void encodeNonStandardServiceProperties(
 			Map<String, Object> properties, IServiceProperties result) {
 		for (String key : properties.keySet()) {
-			if (!isStandardProperty(key)) {
+			if (!PropertiesUtil.isStandardProperty(key)) {
 				Object val = properties.get(key);
 				if (val instanceof byte[]) {
 					result.setPropertyBytes(key, (byte[]) val);
@@ -458,7 +352,7 @@ public abstract class AbstractMetadataFactory {
 		for (Enumeration keys = props.getPropertyNames(); keys
 				.hasMoreElements();) {
 			String key = (String) keys.nextElement();
-			if (!isStandardProperty(key)) {
+			if (!PropertiesUtil.isStandardProperty(key)) {
 				byte[] bytes = props.getPropertyBytes(key);
 				if (bytes != null) {
 					result.put(key, bytes);

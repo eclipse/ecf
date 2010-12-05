@@ -12,6 +12,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.List;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
 public class ConsumerContainerSelector extends
@@ -28,7 +29,7 @@ public class ConsumerContainerSelector extends
 		trace("selectConsumerContainers", "endpointDescription=" + endpointDescription); //$NON-NLS-1$
 
 		// Get the endpointID
-		ID endpointID = endpointDescription.getContainerID();
+		ID endpointID = IDUtil.createContainerID(endpointDescription);
 		// Get the remote supported configs
 		List<String> remoteSupportedConfigsList = endpointDescription
 				.getConfigurationTypes();

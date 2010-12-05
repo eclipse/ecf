@@ -31,8 +31,8 @@ import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
 public class AbstractConsumerContainerSelector extends
 		AbstractContainerSelector {
 
-	protected IRemoteServiceContainer selectExistingConsumerContainer(ID endpointID,
-			String[] remoteSupportedConfigs, ID connectTargetID) {
+	protected IRemoteServiceContainer selectExistingConsumerContainer(
+			ID endpointID, String[] remoteSupportedConfigs, ID connectTargetID) {
 
 		// Get all containers available
 		IContainer[] containers = getContainers();

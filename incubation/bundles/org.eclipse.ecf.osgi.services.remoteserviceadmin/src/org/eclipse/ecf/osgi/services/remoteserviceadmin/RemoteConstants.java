@@ -19,8 +19,6 @@ public class RemoteConstants {
 	public static final String DISCOVERY_SERVICE_NAME = "ecf.endpoint.discovery.servicename";
 	public static final String DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX = "osgirsvc_";
 
-	// container id. Value of type ID for EndpointDescription
-	public static final String ENDPOINT_CONTAINER_ID = "ecf.endpoint.id";
 	// container id namespace. Value of type String
 	public static final String ENDPOINT_CONTAINER_ID_NAMESPACE = "ecf.endpoint.id.ns";
 	// remote service id. Value of type Long
