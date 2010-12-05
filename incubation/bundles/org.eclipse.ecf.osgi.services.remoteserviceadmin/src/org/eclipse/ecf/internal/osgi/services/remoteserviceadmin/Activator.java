@@ -54,10 +54,10 @@ public class Activator implements BundleActivator {
 		Activator.instance = this;
 		discovery = new Discovery(context);
 		topologyManager = new TopologyManager(context, discovery);
-		// start discovery
-		discovery.start();
 		// start topology manager
 		topologyManager.start();
+		// start discovery
+		discovery.start();
 	}
 
 	/*
