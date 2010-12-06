@@ -76,7 +76,7 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 				ExportRegistration rsRegistration = null;
 				try {
 					rsRegistration = doExportService(serviceReference,
-							properties, rsContainers[i], exportedInterfaces);
+							properties, exportedInterfaces, serviceIntents, rsContainers[i]);
 				} catch (Exception e) {
 					rsRegistration = handleExportServiceException(
 							serviceReference, properties, rsContainers[i], e);
@@ -99,7 +99,9 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 
 	private ExportRegistration doExportService(
 			ServiceReference serviceReference, Map<String, Object> properties,
-			IRemoteServiceContainer container, String[] exportedInterfaces)
+			String [] exportedInterfaces,
+			String [] serviceIntents,
+			IRemoteServiceContainer container)
 			throws ECFException {
 		IRemoteServiceRegistration remoteRegistration = null;
 		try {
@@ -119,7 +121,7 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			}
 			// Create EndpointDescription
 			EndpointDescription endpointDescription = createExportEndpointDescription(
-					serviceReference, properties, remoteRegistration, container);
+					serviceReference, properties, exportedInterfaces, serviceIntents, remoteRegistration, container);
 			return createExportRegistration(remoteRegistration,
 					serviceReference, endpointDescription);
 		} catch (Exception e) {

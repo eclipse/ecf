@@ -28,28 +28,35 @@ public class PropertiesUtil {
 	protected static final List osgiProperties = Arrays
 			.asList(new String[] {
 					// OSGi properties
+					org.osgi.framework.Constants.OBJECTCLASS,
+					org.osgi.framework.Constants.SERVICE_ID,
+					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
-					org.osgi.framework.Constants.OBJECTCLASS,
-					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
+					org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
+					org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED,
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS,
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS,
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS_EXTRA,
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
-					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
-					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED });
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS });
 
 	protected static final List ecfProperties = Arrays.asList(new String[] {
 			// ECF properties
-			RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
-			RemoteConstants.ENDPOINT_CONNECTTARGET_ID_NAMESPACE,
-			RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
-			RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
-			RemoteConstants.ENDPOINT_IDFILTER_IDS,
-			RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT,
-			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 			RemoteConstants.DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX,
 			RemoteConstants.DISCOVERY_NAMING_AUTHORITY,
 			RemoteConstants.DISCOVERY_PROTOCOLS,
 			RemoteConstants.DISCOVERY_SCOPE,
 			RemoteConstants.DISCOVERY_SERVICE_NAME,
+			RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
+			RemoteConstants.ENDPOINT_CONNECTTARGET_ID_NAMESPACE,
+			RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
+			RemoteConstants.ENDPOINT_IDFILTER_IDS,
+			RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT,
+			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
+			RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_ID,
@@ -106,7 +113,7 @@ public class PropertiesUtil {
 	public static boolean isOSGiProperty(String key) {
 		if (key == null)
 			return false;
-		return osgiProperties.contains(key);
+		return osgiProperties.contains(key) && !key.startsWith(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_);
 	}
 
 	public static boolean isECFProperty(String key) {

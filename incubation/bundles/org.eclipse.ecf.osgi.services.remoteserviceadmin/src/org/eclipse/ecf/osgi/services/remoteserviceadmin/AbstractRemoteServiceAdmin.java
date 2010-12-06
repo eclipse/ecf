@@ -11,6 +11,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -20,8 +21,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
-import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -183,18 +184,51 @@ public abstract class AbstractRemoteServiceAdmin {
 	protected Object getPropertyValue(String propertyName,
 			ServiceReference serviceReference, Map<String, Object> properties) {
 		Object result = properties.get(propertyName);
-		if (result == null) {
-			result = serviceReference.getProperty(propertyName);
-		}
-		return result;
+		return (result == null)?serviceReference.getProperty(propertyName):result;
 	}
 
 	protected EndpointDescription createExportEndpointDescription(
 			ServiceReference serviceReference, Map<String, Object> properties,
-			IRemoteServiceRegistration registration,
-			IRemoteServiceContainer container) {
+			String[] exportedInterfaces,
+			String[] serviceIntents,
+			IRemoteServiceRegistration rsRegistration,
+			IRemoteServiceContainer rsContainer) {
+
 		// container ID
-		ID containerID = registration.getContainerID();
+		ID containerID = rsRegistration.getContainerID();
+		
+		Map<String, Object> endpointDescriptionProperties = new TreeMap<String, Object>(
+				String.CASE_INSENSITIVE_ORDER);
+		// ENDPOINT_SERVICE_ID
+		Long serviceId = (Long) getPropertyValue(org.osgi.framework.Constants.SERVICE_ID, serviceReference, properties);
+		endpointDescriptionProperties.put(org.osgi.framework.Constants.SERVICE_ID, serviceId);
+		// ENDPOINT_FRAMEWORK_ID
+		String frameworkId = Activator.getDefault().getFrameworkUUID();
+		endpointDescriptionProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID, frameworkId);
+		// OBJECTCLASS
+		endpointDescriptionProperties.put(org.osgi.framework.Constants.OBJECTCLASS, exportedInterfaces);
+		// ENDPOINT_ID
+		String endpointId = (String) getPropertyValue(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+				serviceReference, properties);
+		if (endpointId == null)
+			endpointId = containerID.getName();
+		endpointDescriptionProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID, endpointId);
+		
+		// SERVICE_IMPORTED_CONFIGS...set to ECF constant
+		String serviceImportedConfigs = "ecf.service.imported.configs.default";
+		endpointDescriptionProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS, serviceImportedConfigs);
+		
+		// SERVICE_INTENTS
+		if (serviceIntents != null) endpointDescriptionProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS, serviceIntents);
+		
+		// REMOTE_INTENTS_SUPPORTED 
+		String[] remoteIntentsSupported = getSupportedIntents(rsContainer.getContainer());
+		if (remoteIntentsSupported != null) endpointDescriptionProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED, remoteIntentsSupported);
+		// REMOTE_CONFIGS_SUPPORTED
+		String[] remoteConfigsSupported = getSupportedConfigs(rsContainer.getContainer());
+		if (remoteConfigsSupported != null) endpointDescriptionProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED, remoteConfigsSupported);
+		
 		// If connectTarget is set
 		Object connectTarget = getPropertyValue(
 				RemoteConstants.ENDPOINT_CONNECTTARGET_ID, serviceReference,
@@ -202,56 +236,61 @@ public abstract class AbstractRemoteServiceAdmin {
 		ID connectTargetID = null;
 		if (connectTarget != null) {
 			// Then we get the host container connected ID
-			ID connectedID = container.getContainer().getConnectedID();
+			ID connectedID = rsContainer.getContainer().getConnectedID();
 			if (connectedID != null && !connectedID.equals(containerID))
 				connectTargetID = connectedID;
 		}
+		
 		ID[] idFilter = (ID[]) getPropertyValue(
 				RemoteConstants.ENDPOINT_IDFILTER_IDS, serviceReference,
 				properties);
+		
 		String rsFilter = (String) getPropertyValue(
 				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 				serviceReference, properties);
-		IRemoteServiceID rsID = registration.getID();
-		// Make sure OSGi properties are set here
-
-		// endpoint id
-		String endpointid = (String) getPropertyValue(
-				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
-				serviceReference, properties);
-		if (endpointid == null)
-			endpointid = containerID.getName();
-		properties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
-						endpointid);
-		// framework id
-		String frameworkId = Activator.getDefault().getFrameworkUUID();
-		properties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
-						frameworkId);
-
-		String[] supportedConfigs = getSupportedConfigs(container
-				.getContainer());
-		properties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
-						supportedConfigs);
-
-		return new EndpointDescription(serviceReference, properties,
+		
+		// fill out all other properties
+		copyEndpointDescriptionProperties(serviceReference,properties,endpointDescriptionProperties);
+		
+		return new EndpointDescription(endpointDescriptionProperties,
 				containerID.getNamespace().getName(),
-				rsID.getContainerRelativeID(), connectTargetID, idFilter,
+				rsRegistration.getID().getContainerRelativeID(), connectTargetID, idFilter,
 				rsFilter);
 	}
 
-	private String[] getSupportedConfigs(IContainer container) {
+	private void copyEndpointDescriptionProperties(
+			ServiceReference serviceReference, Map<String, Object> properties,
+			Map<String, Object> target) {
+		String[] srKeys = serviceReference.getPropertyKeys();
+		if (srKeys != null) {
+			for(int i=0; i < srKeys.length; i++) {
+				if (!PropertiesUtil.isStandardProperty(srKeys[i])) target.put(srKeys[i], serviceReference.getProperty(srKeys[i]));
+			}
+		}
+		for(String key: properties.keySet()) {
+			if (!PropertiesUtil.isStandardProperty(key)) target.put(key, properties.get(key));
+		}
+	}
+
+	private ContainerTypeDescription getContainerTypeDescription(
+			IContainer container) {
+		if (container == null)
+			return null;
 		IContainerManager containerManager = Activator.getDefault()
 				.getContainerManager();
 		if (containerManager == null)
 			return null;
-		ContainerTypeDescription ctd = containerManager
-				.getContainerTypeDescription(container.getID());
-		if (ctd == null)
-			return null;
-		return ctd.getSupportedConfigs();
+		return containerManager.getContainerTypeDescription(container.getID());
+	}
+
+	protected String[] getSupportedConfigs(IContainer container) {
+		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+		return (ctd == null) ? null : ctd.getSupportedConfigs();
+	}
+
+	protected String[] getSupportedIntents(IContainer container) {
+		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+		return (ctd == null) ? null : ctd.getSupportedIntents();
 	}
 
 	public void close() {
