@@ -302,7 +302,13 @@ public class Discovery {
 				advertiserTracker.open();
 			}
 		}
-		return (IDiscoveryAdvertiser[]) advertiserTracker.getServices();
+		ServiceReference[] advertiserRefs = advertiserTracker.getServiceReferences();
+		if (advertiserRefs == null) return null;
+		List<IDiscoveryAdvertiser> results = new ArrayList<IDiscoveryAdvertiser>();
+		for(int i=0; i < advertiserRefs.length; i++) {
+			results.add((IDiscoveryAdvertiser) context.getService(advertiserRefs[i]));
+		}
+		return results.toArray(new IDiscoveryAdvertiser[results.size()]);
 	}
 
 	private void openLocator(IDiscoveryLocator locator) {
