@@ -343,6 +343,7 @@ public class Discovery {
 
 	Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> getAllDiscoveredEndpointDescriptions() {
 		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> result = new ArrayList();
+		if (localLocatorServiceListener == null) return result;
 		// Get local first
 		result.addAll(localLocatorServiceListener.getEndpointDescriptions());
 		synchronized (locatorListeners) {

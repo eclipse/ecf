@@ -194,8 +194,8 @@ public abstract class AbstractRemoteServiceAdmin {
 			IRemoteServiceRegistration rsRegistration,
 			IRemoteServiceContainer rsContainer) {
 
-		// container ID
-		ID containerID = rsRegistration.getContainerID();
+		IContainer container = rsContainer.getContainer();
+		ID containerID = container.getID();
 		
 		Map<String, Object> endpointDescriptionProperties = new TreeMap<String, Object>(
 				String.CASE_INSENSITIVE_ORDER);
@@ -223,10 +223,10 @@ public abstract class AbstractRemoteServiceAdmin {
 		if (serviceIntents != null) endpointDescriptionProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS, serviceIntents);
 		
 		// REMOTE_INTENTS_SUPPORTED 
-		String[] remoteIntentsSupported = getSupportedIntents(rsContainer.getContainer());
+		String[] remoteIntentsSupported = getSupportedIntents(container);
 		if (remoteIntentsSupported != null) endpointDescriptionProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED, remoteIntentsSupported);
 		// REMOTE_CONFIGS_SUPPORTED
-		String[] remoteConfigsSupported = getSupportedConfigs(rsContainer.getContainer());
+		String[] remoteConfigsSupported = getSupportedConfigs(container);
 		if (remoteConfigsSupported != null) endpointDescriptionProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED, remoteConfigsSupported);
 		
 		// If connectTarget is set
@@ -250,7 +250,15 @@ public abstract class AbstractRemoteServiceAdmin {
 				serviceReference, properties);
 		
 		// fill out all other properties
-		copyEndpointDescriptionProperties(serviceReference,properties,endpointDescriptionProperties);
+		String[] srKeys = serviceReference.getPropertyKeys();
+		if (srKeys != null) {
+			for(int i=0; i < srKeys.length; i++) {
+				if (!PropertiesUtil.isStandardProperty(srKeys[i])) endpointDescriptionProperties.put(srKeys[i], serviceReference.getProperty(srKeys[i]));
+			}
+		}
+		for(String key: properties.keySet()) {
+			if (!PropertiesUtil.isStandardProperty(key)) endpointDescriptionProperties.put(key, properties.get(key));
+		}
 		
 		return new EndpointDescription(endpointDescriptionProperties,
 				containerID.getNamespace().getName(),
@@ -258,21 +266,7 @@ public abstract class AbstractRemoteServiceAdmin {
 				rsFilter);
 	}
 
-	private void copyEndpointDescriptionProperties(
-			ServiceReference serviceReference, Map<String, Object> properties,
-			Map<String, Object> target) {
-		String[] srKeys = serviceReference.getPropertyKeys();
-		if (srKeys != null) {
-			for(int i=0; i < srKeys.length; i++) {
-				if (!PropertiesUtil.isStandardProperty(srKeys[i])) target.put(srKeys[i], serviceReference.getProperty(srKeys[i]));
-			}
-		}
-		for(String key: properties.keySet()) {
-			if (!PropertiesUtil.isStandardProperty(key)) target.put(key, properties.get(key));
-		}
-	}
-
-	private ContainerTypeDescription getContainerTypeDescription(
+	protected ContainerTypeDescription getContainerTypeDescription(
 			IContainer container) {
 		if (container == null)
 			return null;

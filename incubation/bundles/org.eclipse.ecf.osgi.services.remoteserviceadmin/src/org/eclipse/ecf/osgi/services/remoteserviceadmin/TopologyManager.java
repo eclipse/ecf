@@ -115,6 +115,7 @@ public class TopologyManager extends AbstractTopologyManager implements
 		result.put(
 				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
 				exportedInterfaces);
+		if (exportedConfigs != null)
 		result.put(
 				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS,
 				exportedConfigs);
