@@ -37,7 +37,7 @@ public abstract class AbstractTopologyManager {
 	private ServiceTracker endpointDescriptionAdvertiserTracker;
 	private Object endpointDescriptionAdvertiserTrackerLock = new Object();
 
-	private org.osgi.service.remoteserviceadmin.RemoteServiceAdmin remoteServiceAdmin;
+	private RemoteServiceAdmin remoteServiceAdmin;
 	private Object remoteServiceAdminLock = new Object();
 
 	public AbstractTopologyManager(BundleContext context, Discovery discovery) {
@@ -118,6 +118,12 @@ public abstract class AbstractTopologyManager {
 		return remoteServiceAdmin;
 	}
 
+	protected RemoteServiceAdmin selectUnexportRemoteServiceAdmin(ServiceReference serviceReference) {
+		synchronized (remoteServiceAdminLock) {
+			return remoteServiceAdmin;
+		}
+	}
+	
 	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectImportRemoteServiceAdmin(
 			EndpointDescription endpoint) {
 		synchronized (remoteServiceAdminLock) {

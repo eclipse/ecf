@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -78,57 +79,54 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 					rsRegistration = doExportService(serviceReference,
 							properties, exportedInterfaces, serviceIntents, rsContainers[i]);
 				} catch (Exception e) {
-					rsRegistration = handleExportServiceException(
-							serviceReference, properties, rsContainers[i], e);
+					logError("exportService", "Exception exporting serviceReference="+serviceReference+" with properties="+properties+" rsContainerID="+rsContainers[i].getContainer().getID(),e);
+					rsRegistration = new ExportRegistration(e);
 				}
-				if (rsRegistration != null) {
-					results.add(rsRegistration);
-					exportedRegistrations.add(rsRegistration);
-				}
+				results.add(rsRegistration);
+				exportedRegistrations.add(rsRegistration);
 			}
 		}
 		return results;
-	}
-
-	private ExportRegistration handleExportServiceException(
-			ServiceReference reference, Map<String, Object> properties,
-			IRemoteServiceContainer iRemoteServiceContainer, Exception e) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	private ExportRegistration doExportService(
 			ServiceReference serviceReference, Map<String, Object> properties,
 			String [] exportedInterfaces,
 			String [] serviceIntents,
-			IRemoteServiceContainer container)
-			throws ECFException {
+			IRemoteServiceContainer rsContainer)
+			throws Exception {
 		IRemoteServiceRegistration remoteRegistration = null;
 		try {
-			Dictionary remoteServiceProperties = getRemoteServiceProperties(
-					serviceReference, properties, container);
-			IRemoteServiceContainerAdapter containerAdapter = container
+			// Create remote service properties for remote service export
+			Dictionary remoteServiceProperties = createRemoteServiceProperties(
+					serviceReference, properties, rsContainer);
+			// Get container adapter
+			IRemoteServiceContainerAdapter containerAdapter = rsContainer
 					.getContainerAdapter();
+			// If it's an IOSGiRemoteServiceContainerAdapter then call it one way
 			if (containerAdapter instanceof IOSGiRemoteServiceContainerAdapter) {
 				IOSGiRemoteServiceContainerAdapter osgiContainerAdapter = (IOSGiRemoteServiceContainerAdapter) containerAdapter;
 				remoteRegistration = osgiContainerAdapter
 						.registerRemoteService(exportedInterfaces,
 								serviceReference, remoteServiceProperties);
 			} else {
+			// call it the normal way
 				remoteRegistration = containerAdapter.registerRemoteService(
 						exportedInterfaces, getService(serviceReference),
 						remoteServiceProperties);
 			}
-			// Create EndpointDescription
+			// Create EndpointDescription from remoteRegistration
 			EndpointDescription endpointDescription = createExportEndpointDescription(
-					serviceReference, properties, exportedInterfaces, serviceIntents, remoteRegistration, container);
+					serviceReference, properties, exportedInterfaces, serviceIntents, remoteRegistration, rsContainer);
+			// Create ExportRegistration
 			return createExportRegistration(remoteRegistration,
 					serviceReference, endpointDescription);
 		} catch (Exception e) {
+			// If we actually created an IRemoteRegistration then unregister
 			if (remoteRegistration != null)
 				remoteRegistration.unregister();
-			throw new ECFException("Exception exporting serviceReference="
-					+ serviceReference, e);
+			// rethrow
+			throw e;
 		}
 	}
 
@@ -138,13 +136,6 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			EndpointDescription endpointDescription) {
 		return new ExportRegistration(remoteRegistration, serviceReference,
 				endpointDescription);
-	}
-
-	private Dictionary getRemoteServiceProperties(
-			ServiceReference serviceReference, Map<String, Object> properties,
-			IRemoteServiceContainer container) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public org.osgi.service.remoteserviceadmin.ImportRegistration importService(
@@ -336,5 +327,25 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			importedRegistrations.clear();
 		}
 		super.close();
+	}
+
+	private ExportRegistration[] findExportRegistrations(ServiceReference serviceReference) {
+		List<ExportRegistration> results = new ArrayList<ExportRegistration>();
+		for(ExportRegistration exportReg: exportedRegistrations) {
+			if (exportReg.matchesServiceReference(serviceReference)) results.add(exportReg);
+		}
+		return results.toArray(new ExportRegistration[results.size()]);
+	}
+	
+	public void unexportService(ServiceReference serviceReference) {
+		synchronized (exportedRegistrations) {
+			ExportRegistration[] exportRegs = findExportRegistrations(serviceReference);
+			if (exportRegs != null) {
+				for(int i=0; i < exportRegs.length; i++) {
+					exportRegs[i].close();
+					exportedRegistrations.remove(exportRegs[i]);
+				}
+			}
+		}
 	}
 }

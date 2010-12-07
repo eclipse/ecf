@@ -47,6 +47,16 @@ public class ExportRegistration implements
 		}
 	}
 
+	public boolean matchesServiceReference(ServiceReference serviceReference) {
+		if (serviceReference == null) return false;
+		synchronized (closeLock) {
+			if (exportReference == null) return false;
+			ServiceReference sr = exportReference.getExportedService();
+			if (sr.equals(serviceReference)) return true;
+			else return false;
+		}
+	}
+	
 	public IRemoteServiceRegistration getRemoteServiceRegistration() {
 		return rsRegistration;
 	}

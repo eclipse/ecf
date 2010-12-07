@@ -202,8 +202,15 @@ public class TopologyManager extends AbstractTopologyManager implements
 	}
 
 	private void handleServiceUnregistering(ServiceReference serviceReference) {
-		// TODO Auto-generated method stub
-
+		RemoteServiceAdmin rsa = selectUnexportRemoteServiceAdmin(serviceReference);
+		if (rsa == null) {
+			logError("handleServiceUnregistering",
+					"No RemoteServiceAdmin found for serviceReference="
+							+ serviceReference
+							+ ".  Remote service NOT UNEXPORTED");
+			return;
+		}
+		rsa.unexportService(serviceReference);
 	}
 
 }

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -172,11 +173,15 @@ public abstract class AbstractRemoteServiceAdmin {
 				this.getClass(), message);
 	}
 
-	protected void logError(String methodName, String message) {
+	protected void logError(String methodName, String message, Throwable t) {
 		LogUtility.logError(methodName, DebugOptions.REMOTE_SERVICE_ADMIN,
-				this.getClass(), message);
+				this.getClass(), message, t);
 	}
 
+	protected void logError(String methodName, String message) {
+		logError(methodName,message,(Throwable)null);
+	}
+	
 	protected Object getService(ServiceReference serviceReference) {
 		return context.getService(serviceReference);
 	}
@@ -285,6 +290,26 @@ public abstract class AbstractRemoteServiceAdmin {
 	protected String[] getSupportedIntents(IContainer container) {
 		ContainerTypeDescription ctd = getContainerTypeDescription(container);
 		return (ctd == null) ? null : ctd.getSupportedIntents();
+	}
+
+	protected void getNonStandardProperties(ServiceReference serviceReference, Map<String,Object> properties, Map result) {
+		String[] srKeys = serviceReference.getPropertyKeys();
+		if (srKeys != null) {
+			for(int i=0; i < srKeys.length; i++) {
+				if (!PropertiesUtil.isStandardProperty(srKeys[i])) result.put(srKeys[i], serviceReference.getProperty(srKeys[i]));
+			}
+		}
+		for(String key: properties.keySet()) {
+			if (!PropertiesUtil.isStandardProperty(key)) result.put(key, properties.get(key));
+		}
+	}
+	
+	protected Dictionary createRemoteServiceProperties(
+			ServiceReference serviceReference, Map<String, Object> properties, IRemoteServiceContainer rsContainer) {
+		Map<String, Object> result = new TreeMap<String, Object>(
+				String.CASE_INSENSITIVE_ORDER);
+		getNonStandardProperties(serviceReference,properties,result);
+		return PropertiesUtil.createDictionaryFromMap(result);
 	}
 
 	public void close() {
