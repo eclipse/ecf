@@ -12,6 +12,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Properties;
 
@@ -58,7 +59,7 @@ public abstract class AbstractTopologyManager {
 		defaultEndpointDescriptionAdvertiserRegistration = getContext()
 				.registerService(
 						IEndpointDescriptionAdvertiser.class.getName(),
-						endpointDescriptionAdvertiser, properties);
+						endpointDescriptionAdvertiser, (Dictionary) properties);
 	}
 
 	protected BundleContext getContext() {

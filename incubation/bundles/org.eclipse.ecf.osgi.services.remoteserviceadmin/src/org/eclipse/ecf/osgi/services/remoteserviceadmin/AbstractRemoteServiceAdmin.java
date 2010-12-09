@@ -72,7 +72,7 @@ public abstract class AbstractRemoteServiceAdmin {
 				hostDefaultConfigTypes, hostAutoCreateContainer);
 		defaultHostContainerSelectorRegistration = getContext()
 				.registerService(IHostContainerSelector.class.getName(),
-						hostContainerSelector, properties);
+						hostContainerSelector, (Dictionary) properties);
 		// create and register default consumer container selector. Since this
 		// is registered with minimum service ranking
 		// others can override this default simply by registering a
@@ -81,7 +81,7 @@ public abstract class AbstractRemoteServiceAdmin {
 				consumerAutoCreateContainer);
 		defaultConsumerContainerSelectorRegistration = getContext()
 				.registerService(IConsumerContainerSelector.class.getName(),
-						consumerContainerSelector, properties);
+						consumerContainerSelector, (Dictionary) properties);
 	}
 
 	protected BundleContext getContext() {

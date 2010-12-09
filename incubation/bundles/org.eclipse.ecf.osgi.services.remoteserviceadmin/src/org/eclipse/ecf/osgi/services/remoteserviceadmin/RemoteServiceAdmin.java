@@ -275,7 +275,7 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 				endpointDescription, rsReference);
 
 		ServiceRegistration proxyRegistration = getContext().registerService(
-				(String[]) interfaces.toArray(), proxy, proxyProperties);
+				(String[]) interfaces.toArray(), proxy, (Dictionary) proxyProperties);
 		// Now create import registration for newly registered proxy
 		return new ImportRegistration(rsContainer, rsReference,
 				endpointDescription, proxyRegistration);
