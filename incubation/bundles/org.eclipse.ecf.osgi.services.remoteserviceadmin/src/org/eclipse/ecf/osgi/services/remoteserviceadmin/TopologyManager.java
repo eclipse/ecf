@@ -192,7 +192,9 @@ public class TopologyManager extends AbstractTopologyManager implements
 		}
 
 		// publish exported registrations
-		publishExportedRegistrations(registrations);
+		for (org.osgi.service.remoteserviceadmin.ExportRegistration reg : registrations) {
+			advertiseEndpointDescription((EndpointDescription) reg.getExportReference().getExportedEndpoint());
+		}
 
 	}
 
@@ -210,7 +212,12 @@ public class TopologyManager extends AbstractTopologyManager implements
 							+ ".  Remote service NOT UNEXPORTED");
 			return;
 		}
-		rsa.unexportService(serviceReference);
+		EndpointDescription[] endpointDescriptions = rsa.unexportService(serviceReference);
+		if (endpointDescriptions != null) {
+			for(int i=0; i < endpointDescriptions.length; i++) {
+				unadvertiseEndpointDescription(endpointDescriptions[i]);
+			}
+		}
 	}
 
 }

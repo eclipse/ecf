@@ -77,9 +77,14 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 				ExportRegistration rsRegistration = null;
 				try {
 					rsRegistration = doExportService(serviceReference,
-							properties, exportedInterfaces, serviceIntents, rsContainers[i]);
+							properties, exportedInterfaces, serviceIntents,
+							rsContainers[i]);
 				} catch (Exception e) {
-					logError("exportService", "Exception exporting serviceReference="+serviceReference+" with properties="+properties+" rsContainerID="+rsContainers[i].getContainer().getID(),e);
+					logError("exportService",
+							"Exception exporting serviceReference="
+									+ serviceReference + " with properties="
+									+ properties + " rsContainerID="
+									+ rsContainers[i].getContainer().getID(), e);
 					rsRegistration = new ExportRegistration(e);
 				}
 				results.add(rsRegistration);
@@ -91,10 +96,8 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 
 	private ExportRegistration doExportService(
 			ServiceReference serviceReference, Map<String, Object> properties,
-			String [] exportedInterfaces,
-			String [] serviceIntents,
-			IRemoteServiceContainer rsContainer)
-			throws Exception {
+			String[] exportedInterfaces, String[] serviceIntents,
+			IRemoteServiceContainer rsContainer) throws Exception {
 		IRemoteServiceRegistration remoteRegistration = null;
 		try {
 			// Create remote service properties for remote service export
@@ -103,21 +106,23 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			// Get container adapter
 			IRemoteServiceContainerAdapter containerAdapter = rsContainer
 					.getContainerAdapter();
-			// If it's an IOSGiRemoteServiceContainerAdapter then call it one way
+			// If it's an IOSGiRemoteServiceContainerAdapter then call it one
+			// way
 			if (containerAdapter instanceof IOSGiRemoteServiceContainerAdapter) {
 				IOSGiRemoteServiceContainerAdapter osgiContainerAdapter = (IOSGiRemoteServiceContainerAdapter) containerAdapter;
 				remoteRegistration = osgiContainerAdapter
 						.registerRemoteService(exportedInterfaces,
 								serviceReference, remoteServiceProperties);
 			} else {
-			// call it the normal way
+				// call it the normal way
 				remoteRegistration = containerAdapter.registerRemoteService(
 						exportedInterfaces, getService(serviceReference),
 						remoteServiceProperties);
 			}
 			// Create EndpointDescription from remoteRegistration
 			EndpointDescription endpointDescription = createExportEndpointDescription(
-					serviceReference, properties, exportedInterfaces, serviceIntents, remoteRegistration, rsContainer);
+					serviceReference, properties, exportedInterfaces,
+					serviceIntents, remoteRegistration, rsContainer);
 			// Create ExportRegistration
 			return createExportRegistration(remoteRegistration,
 					serviceReference, endpointDescription);
@@ -329,23 +334,37 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 		super.close();
 	}
 
-	private ExportRegistration[] findExportRegistrations(ServiceReference serviceReference) {
+	private ExportRegistration[] findExportRegistrations(
+			ServiceReference serviceReference) {
 		List<ExportRegistration> results = new ArrayList<ExportRegistration>();
-		for(ExportRegistration exportReg: exportedRegistrations) {
-			if (exportReg.matchesServiceReference(serviceReference)) results.add(exportReg);
-		}
+		for (ExportRegistration exportReg : exportedRegistrations)
+			if (exportReg.matchesServiceReference(serviceReference))
+				results.add(exportReg);
 		return results.toArray(new ExportRegistration[results.size()]);
 	}
-	
-	public void unexportService(ServiceReference serviceReference) {
+
+	public EndpointDescription[] unexportService(ServiceReference serviceReference) {
+		List<EndpointDescription> endpointDescriptions = new ArrayList<EndpointDescription>();
 		synchronized (exportedRegistrations) {
 			ExportRegistration[] exportRegs = findExportRegistrations(serviceReference);
 			if (exportRegs != null) {
-				for(int i=0; i < exportRegs.length; i++) {
+				for (int i = 0; i < exportRegs.length; i++) {
+					org.osgi.service.remoteserviceadmin.ExportReference exportRef = exportRegs[i]
+							.getExportReference();
+					if (exportRef != null) {
+						org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription = exportRef
+								.getExportedEndpoint();
+						if (endpointDescription != null
+								&& endpointDescription instanceof EndpointDescription) {
+							endpointDescriptions
+									.add((EndpointDescription) endpointDescription);
+						}
+					}
 					exportRegs[i].close();
 					exportedRegistrations.remove(exportRegs[i]);
 				}
 			}
 		}
+		return endpointDescriptions.toArray(new EndpointDescription[endpointDescriptions.size()]);
 	}
 }
