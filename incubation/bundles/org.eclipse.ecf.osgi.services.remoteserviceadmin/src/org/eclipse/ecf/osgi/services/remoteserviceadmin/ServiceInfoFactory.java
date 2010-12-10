@@ -154,7 +154,8 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 			try {
 				host = InetAddress.getLocalHost().getHostAddress();
 			} catch (Exception e) {
-				logWarning("createURI", //$NON-NLS-1$
+				logWarning(
+						"createURI", //$NON-NLS-1$
 						"failed to get local host adress, falling back to \'localhost\'.", e); //$NON-NLS-1$
 				host = "localhost"; //$NON-NLS-1$
 			}

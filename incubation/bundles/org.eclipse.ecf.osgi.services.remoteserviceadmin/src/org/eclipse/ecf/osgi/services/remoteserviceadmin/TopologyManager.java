@@ -117,9 +117,9 @@ public class TopologyManager extends AbstractTopologyManager implements
 				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
 				exportedInterfaces);
 		if (exportedConfigs != null)
-		result.put(
-				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS,
-				exportedConfigs);
+			result.put(
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS,
+					exportedConfigs);
 		if (serviceIntents != null)
 			result.put(
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
@@ -194,7 +194,8 @@ public class TopologyManager extends AbstractTopologyManager implements
 
 		// publish exported registrations
 		for (org.osgi.service.remoteserviceadmin.ExportRegistration reg : registrations) {
-			advertiseEndpointDescription((EndpointDescription) reg.getExportReference().getExportedEndpoint());
+			advertiseEndpointDescription((EndpointDescription) reg
+					.getExportReference().getExportedEndpoint());
 		}
 
 	}
@@ -213,9 +214,10 @@ public class TopologyManager extends AbstractTopologyManager implements
 							+ ".  Remote service NOT UNEXPORTED");
 			return;
 		}
-		EndpointDescription[] endpointDescriptions = rsa.unexportService(serviceReference);
+		EndpointDescription[] endpointDescriptions = rsa
+				.unexportService(serviceReference);
 		if (endpointDescriptions != null) {
-			for(int i=0; i < endpointDescriptions.length; i++) {
+			for (int i = 0; i < endpointDescriptions.length; i++) {
 				unadvertiseEndpointDescription(endpointDescriptions[i]);
 			}
 		}

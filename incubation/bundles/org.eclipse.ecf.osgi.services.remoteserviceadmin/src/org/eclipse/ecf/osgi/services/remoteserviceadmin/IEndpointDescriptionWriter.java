@@ -14,6 +14,7 @@ import java.io.OutputStream;
 
 public interface IEndpointDescriptionWriter {
 
-	public void writeEndpointDescriptions(OutputStream outs, EndpointDescription[] endpointDescriptions) throws IOException;
-	
+	public void writeEndpointDescriptions(OutputStream outs,
+			EndpointDescription[] endpointDescriptions) throws IOException;
+
 }

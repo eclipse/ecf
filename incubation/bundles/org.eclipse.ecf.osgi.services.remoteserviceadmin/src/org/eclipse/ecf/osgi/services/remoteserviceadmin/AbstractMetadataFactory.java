@@ -340,11 +340,13 @@ public abstract class AbstractMetadataFactory {
 	}
 
 	protected void logWarning(String methodName, String message, Throwable t) {
-		LogUtility.logWarning(methodName, DebugOptions.DISCOVERY, this.getClass(), message, t);
+		LogUtility.logWarning(methodName, DebugOptions.DISCOVERY,
+				this.getClass(), message, t);
 	}
 
 	protected void logError(String methodName, String message, Throwable t) {
-		LogUtility.logError(methodName, DebugOptions.DISCOVERY, this.getClass(), message, t);
+		LogUtility.logError(methodName, DebugOptions.DISCOVERY,
+				this.getClass(), message, t);
 	}
 
 	public void close() {

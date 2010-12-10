@@ -108,7 +108,10 @@ public class EndpointDescriptionReader {
 				}
 				results.add(result);
 			} catch (Exception e) {
-				LogUtility.logError("readEndpointDescriptions", DebugOptions.ENDPOINTDESCRIPTIONREADER, this.getClass(), "Exception parsing endpoint description properties", e);
+				LogUtility.logError("readEndpointDescriptions",
+						DebugOptions.ENDPOINTDESCRIPTIONREADER,
+						this.getClass(),
+						"Exception parsing endpoint description properties", e);
 			}
 		}
 		return (org.osgi.service.remoteserviceadmin.EndpointDescription[]) results
@@ -195,14 +198,16 @@ public class EndpointDescriptionReader {
 	private ID getContainerID(Map<String, Object> properties)
 			throws IDCreateException {
 		// We try to get the ID from the OSGi id
-		String osgiId = PropertiesUtil.verifyStringProperty(properties,
-				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
+		String osgiId = PropertiesUtil
+				.verifyStringProperty(
+						properties,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
 		if (osgiId == null)
 			throw new IDCreateException(
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID
 							+ " must not be null");
-		String containerIDNamespace = PropertiesUtil.verifyStringProperty(properties,
-				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
+		String containerIDNamespace = PropertiesUtil.verifyStringProperty(
+				properties, RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		return IDUtil.createID(properties, containerIDNamespace);
 	}
 

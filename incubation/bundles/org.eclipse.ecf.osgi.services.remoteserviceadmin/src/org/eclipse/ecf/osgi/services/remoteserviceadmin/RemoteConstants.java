@@ -38,6 +38,11 @@ public class RemoteConstants {
 	// remote service filter. Value of type String
 	public static final String ENDPOINT_REMOTESERVICE_FILTER = "ecf.endpoint.rsfilter";
 
+	// Value of
+	// org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS
+	// For ECF providers this is a constant, and receivers of
+	public static final String ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE = "ecf.service.imported.configs.default";
+
 	// Value of type String,ID,or Object[]
 	public static final String SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS = "ecf.exported.containerfactoryargs";
 	// Value of type IConnectContext

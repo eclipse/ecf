@@ -116,10 +116,17 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 		try {
 			return builder.readEndpointDescriptions(fileURL.openStream());
 		} catch (Exception e) {
-			LogUtility.logError("handleEndpointDescriptionFile", DebugOptions.DISCOVERY,
-			this.getClass(), new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-					IStatus.ERROR, ("Exception creating endpoint descriptions from fileURL="
-												+ fileURL), e));
+			LogUtility
+					.logError(
+							"handleEndpointDescriptionFile",
+							DebugOptions.DISCOVERY,
+							this.getClass(),
+							new Status(
+									IStatus.ERROR,
+									Activator.PLUGIN_ID,
+									IStatus.ERROR,
+									("Exception creating endpoint descriptions from fileURL=" + fileURL),
+									e));
 			return null;
 		}
 	}

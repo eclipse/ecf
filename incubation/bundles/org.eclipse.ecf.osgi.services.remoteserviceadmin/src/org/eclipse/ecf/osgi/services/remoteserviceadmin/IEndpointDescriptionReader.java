@@ -14,6 +14,7 @@ import java.io.InputStream;
 
 public interface IEndpointDescriptionReader {
 
-	public EndpointDescription[] readEndpointDescriptions(InputStream ins) throws IOException, EndpointDescriptionParseException;
-	
+	public EndpointDescription[] readEndpointDescriptions(InputStream ins)
+			throws IOException, EndpointDescriptionParseException;
+
 }

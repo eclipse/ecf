@@ -275,7 +275,8 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 				endpointDescription, rsReference);
 
 		ServiceRegistration proxyRegistration = getContext().registerService(
-				(String[]) interfaces.toArray(), proxy, (Dictionary) proxyProperties);
+				(String[]) interfaces.toArray(), proxy,
+				(Dictionary) proxyProperties);
 		// Now create import registration for newly registered proxy
 		return new ImportRegistration(rsContainer, rsReference,
 				endpointDescription, proxyRegistration);
@@ -343,7 +344,8 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 		return results.toArray(new ExportRegistration[results.size()]);
 	}
 
-	public EndpointDescription[] unexportService(ServiceReference serviceReference) {
+	public EndpointDescription[] unexportService(
+			ServiceReference serviceReference) {
 		List<EndpointDescription> endpointDescriptions = new ArrayList<EndpointDescription>();
 		synchronized (exportedRegistrations) {
 			ExportRegistration[] exportRegs = findExportRegistrations(serviceReference);
@@ -365,6 +367,7 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 				}
 			}
 		}
-		return endpointDescriptions.toArray(new EndpointDescription[endpointDescriptions.size()]);
+		return endpointDescriptions
+				.toArray(new EndpointDescription[endpointDescriptions.size()]);
 	}
 }

@@ -119,12 +119,13 @@ public abstract class AbstractTopologyManager {
 		return remoteServiceAdmin;
 	}
 
-	protected RemoteServiceAdmin selectUnexportRemoteServiceAdmin(ServiceReference serviceReference) {
+	protected RemoteServiceAdmin selectUnexportRemoteServiceAdmin(
+			ServiceReference serviceReference) {
 		synchronized (remoteServiceAdminLock) {
 			return remoteServiceAdmin;
 		}
 	}
-	
+
 	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectImportRemoteServiceAdmin(
 			EndpointDescription endpoint) {
 		synchronized (remoteServiceAdminLock) {
@@ -197,36 +198,42 @@ public abstract class AbstractTopologyManager {
 				this.getClass(), message);
 	}
 
-	protected void advertiseEndpointDescription(EndpointDescription endpointDescription) {
+	protected void advertiseEndpointDescription(
+			EndpointDescription endpointDescription) {
 		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser();
 		if (advertiser == null) {
-			logError("advertiseExportedRegistration",
+			logError(
+					"advertiseExportedRegistration",
 					"No endpoint description advertiser available to advertise endpointDescription="
 							+ endpointDescription);
 			return;
 		}
-		// Now advertise endpoint description using endpoint description advertiser
+		// Now advertise endpoint description using endpoint description
+		// advertiser
 		IStatus result = advertiser.advertise(endpointDescription);
 		if (!result.isOK())
 			logError("advertiseExportedRegistration",
-					"Advertise of endpointDescription=" + endpointDescription + " FAILED",
-					result);
+					"Advertise of endpointDescription=" + endpointDescription
+							+ " FAILED", result);
 	}
 
-	protected void unadvertiseEndpointDescription(EndpointDescription endpointDescription) {
+	protected void unadvertiseEndpointDescription(
+			EndpointDescription endpointDescription) {
 		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser();
 		if (advertiser == null) {
-			logError("advertiseExportedRegistration",
+			logError(
+					"advertiseExportedRegistration",
 					"No endpoint description advertiser available to unadvertise endpointDescription="
 							+ endpointDescription);
 			return;
 		}
-		// Now unadvertise endpoint description using endpoint description advertiser
+		// Now unadvertise endpoint description using endpoint description
+		// advertiser
 		IStatus result = advertiser.unadvertise(endpointDescription);
 		if (!result.isOK())
 			logError("advertiseExportedRegistration",
-					"Unadvertise of endpointDescription=" + endpointDescription + " FAILED",
-					result);
+					"Unadvertise of endpointDescription=" + endpointDescription
+							+ " FAILED", result);
 	}
 
 	protected void logError(String methodName, String message, IStatus result) {

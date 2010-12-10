@@ -72,8 +72,9 @@ class LocatorServiceListener implements IServiceListener {
 					discoveredEndpointDescription.getEndpointDescription(),
 					discovered);
 		} else {
-			logWarning("handleOSGiServiceEvent","discoveredEndpointDescription is null for service info="
-					+ serviceInfo + ",discovered=" + discovered);
+			logWarning("handleOSGiServiceEvent",
+					"discoveredEndpointDescription is null for service info="
+							+ serviceInfo + ",discovered=" + discovered);
 		}
 	}
 
@@ -99,7 +100,8 @@ class LocatorServiceListener implements IServiceListener {
 	}
 
 	private void logWarning(String methodName, String message) {
-		LogUtility.logWarning(methodName, DebugOptions.DISCOVERY, this.getClass(), message);
+		LogUtility.logWarning(methodName, DebugOptions.DISCOVERY,
+				this.getClass(), message);
 	}
 
 	private void logError(String methodName, String message) {

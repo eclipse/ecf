@@ -56,6 +56,7 @@ public class PropertiesUtil {
 			RemoteConstants.ENDPOINT_IDFILTER_IDS,
 			RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT,
 			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
+			RemoteConstants.ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE,
 			RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS,
@@ -113,7 +114,8 @@ public class PropertiesUtil {
 	public static boolean isOSGiProperty(String key) {
 		if (key == null)
 			return false;
-		return osgiProperties.contains(key) && !key.startsWith(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_);
+		return osgiProperties.contains(key)
+				&& !key.startsWith(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_);
 	}
 
 	public static boolean isECFProperty(String key) {
@@ -198,6 +200,5 @@ public class PropertiesUtil {
 				result.put(key, parsedProperties.get(key));
 		return result;
 	}
-
 
 }

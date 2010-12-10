@@ -302,11 +302,14 @@ public class Discovery {
 				advertiserTracker.open();
 			}
 		}
-		ServiceReference[] advertiserRefs = advertiserTracker.getServiceReferences();
-		if (advertiserRefs == null) return null;
+		ServiceReference[] advertiserRefs = advertiserTracker
+				.getServiceReferences();
+		if (advertiserRefs == null)
+			return null;
 		List<IDiscoveryAdvertiser> results = new ArrayList<IDiscoveryAdvertiser>();
-		for(int i=0; i < advertiserRefs.length; i++) {
-			results.add((IDiscoveryAdvertiser) context.getService(advertiserRefs[i]));
+		for (int i = 0; i < advertiserRefs.length; i++) {
+			results.add((IDiscoveryAdvertiser) context
+					.getService(advertiserRefs[i]));
 		}
 		return results.toArray(new IDiscoveryAdvertiser[results.size()]);
 	}
@@ -349,7 +352,8 @@ public class Discovery {
 
 	Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> getAllDiscoveredEndpointDescriptions() {
 		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> result = new ArrayList();
-		if (localLocatorServiceListener == null) return result;
+		if (localLocatorServiceListener == null)
+			return result;
 		// Get local first
 		result.addAll(localLocatorServiceListener.getEndpointDescriptions());
 		synchronized (locatorListeners) {
