@@ -15,10 +15,12 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
@@ -95,14 +97,17 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 	}
 
 	private ExportRegistration doExportService(
-			ServiceReference serviceReference, Map<String, Object> properties,
+			ServiceReference serviceReference,
+			Map<String, Object> overridingProperties,
 			String[] exportedInterfaces, String[] serviceIntents,
 			IRemoteServiceContainer rsContainer) throws Exception {
 		IRemoteServiceRegistration remoteRegistration = null;
 		try {
-			// Create remote service properties for remote service export
-			Dictionary remoteServiceProperties = createRemoteServiceProperties(
-					serviceReference, properties, rsContainer);
+			Dictionary remoteServiceProperties = PropertiesUtil
+					.createDictionaryFromMap(copyNonReservedProperties(
+							serviceReference, overridingProperties,
+							new TreeMap<String, Object>(
+									String.CASE_INSENSITIVE_ORDER)));
 			// Get container adapter
 			IRemoteServiceContainerAdapter containerAdapter = rsContainer
 					.getContainerAdapter();
@@ -121,7 +126,7 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			}
 			// Create EndpointDescription from remoteRegistration
 			EndpointDescription endpointDescription = createExportEndpointDescription(
-					serviceReference, properties, exportedInterfaces,
+					serviceReference, overridingProperties, exportedInterfaces,
 					serviceIntents, remoteRegistration, rsContainer);
 			// Create ExportRegistration
 			return createExportRegistration(remoteRegistration,

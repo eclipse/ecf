@@ -21,8 +21,6 @@ public class RemoteConstants {
 
 	// container id namespace. Value of type String
 	public static final String ENDPOINT_CONTAINER_ID_NAMESPACE = "ecf.endpoint.id.ns";
-	// remote service id. Value of type Long
-	public static final String ENDPOINT_REMOTESERVICE_ID = "ecf.endpoint.remoteservice.id";
 	// target id. Value of type String
 	public static final String ENDPOINT_CONNECTTARGET_ID = "ecf.endpoint.connecttarget.id";
 	// target namespace. Value of type String
@@ -41,7 +39,7 @@ public class RemoteConstants {
 	// Value of
 	// org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS
 	// For ECF providers this is a constant, and receivers of
-	public static final String ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE = "ecf.service.imported.configs.default";
+	public static final String ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE = "ecf.default";
 
 	// Value of type String,ID,or Object[]
 	public static final String SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS = "ecf.exported.containerfactoryargs";

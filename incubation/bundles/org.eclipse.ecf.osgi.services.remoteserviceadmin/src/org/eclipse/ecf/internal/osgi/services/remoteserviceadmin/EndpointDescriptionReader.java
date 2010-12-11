@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
@@ -121,15 +122,22 @@ public class EndpointDescriptionReader {
 	private org.osgi.service.remoteserviceadmin.EndpointDescription createECFEndpointDescription(
 			ID endpointContainerID, Map parsedProperties)
 			throws EndpointDescriptionParseException {
+		Map<String, Object> endointDescriptionProperties = PropertiesUtil
+				.copyNonECFProperties(parsedProperties,
+						new TreeMap<String, Object>());
 		// we get the remote service id...default 0 means that it's not an ECF
 		// remote service
 		Long remoteServiceId = PropertiesUtil.getLongWithDefault(
-				parsedProperties, RemoteConstants.ENDPOINT_REMOTESERVICE_ID,
-				null);
+				parsedProperties,
+				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID, null);
 		if (remoteServiceId == null)
 			throw new EndpointDescriptionParseException(
-					RemoteConstants.ENDPOINT_REMOTESERVICE_ID
+					org.eclipse.ecf.remoteservice.Constants.SERVICE_ID
 							+ " is not set in endpoint description.  It must be set to Long value");
+		endointDescriptionProperties.put(
+				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+				remoteServiceId);
+
 		// target ID
 		ID targetID = null;
 		String targetName = (String) parsedProperties
@@ -146,11 +154,9 @@ public class EndpointDescriptionReader {
 		String rsFilter = (String) parsedProperties
 				.get(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
 
-		Map properties = PropertiesUtil.getNonECFProperties(parsedProperties);
-
-		return new EndpointDescription(properties, endpointContainerID
-				.getNamespace().getName(), remoteServiceId.longValue(),
-				targetID, idFilter, rsFilter);
+		return new EndpointDescription(endointDescriptionProperties,
+				endpointContainerID.getNamespace().getName(), targetID,
+				idFilter, rsFilter);
 	}
 
 	private ID[] getIDFilter(Namespace namespace, Map<String, Object> properties) {

@@ -194,7 +194,8 @@ public abstract class AbstractRemoteServiceAdmin {
 	}
 
 	protected EndpointDescription createExportEndpointDescription(
-			ServiceReference serviceReference, Map<String, Object> properties,
+			ServiceReference serviceReference,
+			Map<String, Object> overridingProperties,
 			String[] exportedInterfaces, String[] serviceIntents,
 			IRemoteServiceRegistration rsRegistration,
 			IRemoteServiceContainer rsContainer) {
@@ -204,13 +205,15 @@ public abstract class AbstractRemoteServiceAdmin {
 
 		Map<String, Object> endpointDescriptionProperties = new TreeMap<String, Object>(
 				String.CASE_INSENSITIVE_ORDER);
+
+		// OSGi properties
 		// OBJECTCLASS
 		endpointDescriptionProperties.put(
 				org.osgi.framework.Constants.OBJECTCLASS, exportedInterfaces);
 		// ENDPOINT_ID
 		String endpointId = (String) getPropertyValue(
 				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
-				serviceReference, properties);
+				serviceReference, overridingProperties);
 		if (endpointId == null)
 			endpointId = containerID.getName();
 		endpointDescriptionProperties
@@ -219,7 +222,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		// ENDPOINT_SERVICE_ID
 		Long serviceId = (Long) getPropertyValue(
 				org.osgi.framework.Constants.SERVICE_ID, serviceReference,
-				properties);
+				overridingProperties);
 		endpointDescriptionProperties.put(
 				org.osgi.framework.Constants.SERVICE_ID, serviceId);
 		// ENDPOINT_FRAMEWORK_ID
@@ -253,7 +256,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		// ENDPOINT_CONNECTTARGET_ID
 		Object connectTarget = getPropertyValue(
 				RemoteConstants.ENDPOINT_CONNECTTARGET_ID, serviceReference,
-				properties);
+				overridingProperties);
 		ID connectTargetID = null;
 		if (connectTarget != null) {
 			// Then we get the host container connected ID
@@ -264,26 +267,36 @@ public abstract class AbstractRemoteServiceAdmin {
 		// ENDPOINT_IDFILTER_IDS
 		ID[] idFilter = (ID[]) getPropertyValue(
 				RemoteConstants.ENDPOINT_IDFILTER_IDS, serviceReference,
-				properties);
+				overridingProperties);
 		// ENDPOINT_REMOTESERVICE_FILTER
 		String rsFilter = (String) getPropertyValue(
 				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
-				serviceReference, properties);
+				serviceReference, overridingProperties);
 
-		// fill out all other properties
-		getNonStandardProperties(serviceReference, properties,
+		// copy remote registration properties
+		PropertiesUtil.copyProperties(rsRegistration,
 				endpointDescriptionProperties);
+		// Remove ecf.robjectClass
+		endpointDescriptionProperties
+				.remove(org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS);
 		// finally create an ECF EndpointDescription
 		return new EndpointDescription(endpointDescriptionProperties,
-				containerID.getNamespace().getName(), rsRegistration.getID()
-						.getContainerRelativeID(), connectTargetID, idFilter,
-				rsFilter);
+				containerID.getNamespace().getName(), connectTargetID,
+				idFilter, rsFilter);
+	}
+
+	protected Map<String, Object> copyNonReservedProperties(
+			ServiceReference serviceReference,
+			Map<String, Object> overridingProperties, Map<String, Object> target) {
+		// copy all other properties...from service reference
+		PropertiesUtil.copyNonReservedProperties(serviceReference, target);
+		// And override with overridingProperties
+		PropertiesUtil.copyNonReservedProperties(overridingProperties, target);
+		return target;
 	}
 
 	protected ContainerTypeDescription getContainerTypeDescription(
 			IContainer container) {
-		if (container == null)
-			return null;
 		IContainerManager containerManager = Activator.getDefault()
 				.getContainerManager();
 		if (containerManager == null)
@@ -299,31 +312,6 @@ public abstract class AbstractRemoteServiceAdmin {
 	protected String[] getSupportedIntents(IContainer container) {
 		ContainerTypeDescription ctd = getContainerTypeDescription(container);
 		return (ctd == null) ? null : ctd.getSupportedIntents();
-	}
-
-	protected void getNonStandardProperties(ServiceReference serviceReference,
-			Map<String, Object> properties, Map result) {
-		String[] srKeys = serviceReference.getPropertyKeys();
-		if (srKeys != null) {
-			for (int i = 0; i < srKeys.length; i++) {
-				if (!PropertiesUtil.isStandardProperty(srKeys[i]))
-					result.put(srKeys[i],
-							serviceReference.getProperty(srKeys[i]));
-			}
-		}
-		for (String key : properties.keySet()) {
-			if (!PropertiesUtil.isStandardProperty(key))
-				result.put(key, properties.get(key));
-		}
-	}
-
-	protected Dictionary createRemoteServiceProperties(
-			ServiceReference serviceReference, Map<String, Object> properties,
-			IRemoteServiceContainer rsContainer) {
-		Map<String, Object> result = new TreeMap<String, Object>(
-				String.CASE_INSENSITIVE_ORDER);
-		getNonStandardProperties(serviceReference, properties, result);
-		return PropertiesUtil.createDictionaryFromMap(result);
 	}
 
 	public void close() {

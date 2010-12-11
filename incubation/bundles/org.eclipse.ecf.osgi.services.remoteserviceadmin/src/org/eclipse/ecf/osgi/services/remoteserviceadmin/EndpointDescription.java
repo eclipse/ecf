@@ -18,8 +18,9 @@ import org.osgi.framework.ServiceReference;
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
 
-	private String containerIDNamespace;
 	private long remoteServiceId;
+
+	private String containerIDNamespace;
 	private ID connectTargetID;
 	private ID[] idFilter;
 	private String rsFilter;
@@ -27,11 +28,11 @@ public class EndpointDescription extends
 	private int hashCode;
 
 	public EndpointDescription(ServiceReference reference, Map osgiProperties,
-			String containerIDNamespace, long remoteServiceId,
-			ID connectTargetID, ID[] idFilter, String rsFilter) {
+			String containerIDNamespace, ID connectTargetID, ID[] idFilter,
+			String rsFilter) {
 		super(reference, osgiProperties);
+		this.remoteServiceId = verifyLongProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
 		this.containerIDNamespace = containerIDNamespace;
-		this.remoteServiceId = remoteServiceId;
 		this.connectTargetID = connectTargetID;
 		this.idFilter = idFilter;
 		this.rsFilter = rsFilter;
@@ -39,19 +40,34 @@ public class EndpointDescription extends
 	}
 
 	public EndpointDescription(Map osgiProperties, String containerIDNamespace,
-			long remoteServiceId, ID connectTargetID, ID[] idFilter,
-			String rsFilter) {
+			ID connectTargetID, ID[] idFilter, String rsFilter) {
 		super(osgiProperties);
+		this.remoteServiceId = verifyLongProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
 		this.containerIDNamespace = containerIDNamespace;
-		this.remoteServiceId = remoteServiceId;
 		this.connectTargetID = connectTargetID;
 		this.idFilter = idFilter;
 		this.rsFilter = rsFilter;
 		computeHashCode();
 	}
 
+	private long verifyLongProperty(String propName) {
+		Object r = getProperties().get(propName);
+		if (r == null) {
+			return 0l;
+		}
+		try {
+			return ((Long) r).longValue();
+		} catch (ClassCastException e) {
+			IllegalArgumentException iae = new IllegalArgumentException(
+					"property value is not a Long: " + propName);
+			iae.initCause(e);
+			throw iae;
+		}
+	}
+
 	private void computeHashCode() {
 		this.hashCode = super.hashCode();
+		long remoteServiceId = getRemoteServiceId();
 		this.hashCode = 31 * hashCode
 				+ (int) (remoteServiceId ^ (remoteServiceId >>> 32));
 	}
@@ -65,7 +81,7 @@ public class EndpointDescription extends
 			return false;
 		EndpointDescription o = (EndpointDescription) other;
 		return super.equals(other)
-				&& (o.remoteServiceId == this.remoteServiceId);
+				&& (o.getRemoteServiceId() == this.getRemoteServiceId());
 	}
 
 	public int hashCode() {
@@ -95,9 +111,10 @@ public class EndpointDescription extends
 	public String toString() {
 		return "ECFEndpointDescription[properties=" + super.toString()
 				+ ",containerIDNamespace=" + containerIDNamespace
-				+ ", remoteServiceId=" + remoteServiceId + ", connectTargetID="
-				+ connectTargetID + ", idFilter=" + Arrays.toString(idFilter)
-				+ ", rsFilter=" + rsFilter + ", hashCode=" + hashCode + "]";
+				+ ", remoteServiceId=" + getRemoteServiceId()
+				+ ", connectTargetID=" + connectTargetID + ", idFilter="
+				+ Arrays.toString(idFilter) + ", rsFilter=" + rsFilter
+				+ ", hashCode=" + hashCode + "]";
 	}
 
 }

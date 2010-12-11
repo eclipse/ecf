@@ -177,11 +177,14 @@ public abstract class AbstractMetadataFactory {
 		Map osgiProperties = new HashMap();
 		decodeOSGiProperties(discoveredServiceProperties, osgiProperties);
 
-		String containerIDNamespace = decodeString(discoveredServiceProperties,
-				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		// remote service id
 		Long remoteServiceId = decodeLong(discoveredServiceProperties,
-				RemoteConstants.ENDPOINT_REMOTESERVICE_ID);
+				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		osgiProperties.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+				remoteServiceId);
+		// container id namespace
+		String containerIDNamespace = decodeString(discoveredServiceProperties,
+				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		// target ID
 		String targetName = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
@@ -206,8 +209,7 @@ public abstract class AbstractMetadataFactory {
 				osgiProperties);
 
 		return new EndpointDescription(osgiProperties, containerIDNamespace,
-				remoteServiceId.longValue(), targetID, idFilter,
-				remoteServiceFilter);
+				targetID, idFilter, remoteServiceFilter);
 	}
 
 	protected void encodeServiceProperties(
@@ -267,8 +269,8 @@ public abstract class AbstractMetadataFactory {
 				containerIDNamespace);
 		// ECF remote service id = endpointDescription.getRemoteServiceId()
 		long remoteServiceId = endpointDescription.getRemoteServiceId();
-		encodeLong(result, RemoteConstants.ENDPOINT_REMOTESERVICE_ID, new Long(
-				remoteServiceId));
+		encodeLong(result, org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+				new Long(remoteServiceId));
 		// ECF connectTargetID = endpointDescription.getConnectTargetID()
 		ID connectTargetID = endpointDescription.getConnectTargetID();
 		if (connectTargetID != null) {
@@ -301,7 +303,7 @@ public abstract class AbstractMetadataFactory {
 	protected void encodeNonStandardServiceProperties(
 			Map<String, Object> properties, IServiceProperties result) {
 		for (String key : properties.keySet()) {
-			if (!PropertiesUtil.isStandardProperty(key)) {
+			if (!PropertiesUtil.isReservedProperty(key)) {
 				Object val = properties.get(key);
 				if (val instanceof byte[]) {
 					result.setPropertyBytes(key, (byte[]) val);
@@ -319,7 +321,7 @@ public abstract class AbstractMetadataFactory {
 		for (Enumeration keys = props.getPropertyNames(); keys
 				.hasMoreElements();) {
 			String key = (String) keys.nextElement();
-			if (!PropertiesUtil.isStandardProperty(key)) {
+			if (!PropertiesUtil.isReservedProperty(key)) {
 				byte[] bytes = props.getPropertyBytes(key);
 				if (bytes != null) {
 					result.put(key, bytes);
