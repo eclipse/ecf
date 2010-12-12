@@ -34,7 +34,7 @@ public class ConsumerContainerSelector extends
 		List<String> remoteSupportedConfigsList = endpointDescription
 				.getConfigurationTypes();
 		String[] remoteSupportedConfigs = (String[]) remoteSupportedConfigsList
-				.toArray();
+				.toArray(new String[remoteSupportedConfigsList.size()]);
 		// Get connect targetID
 		ID connectTargetID = endpointDescription.getConnectTargetID();
 

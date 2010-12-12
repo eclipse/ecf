@@ -315,7 +315,7 @@ public class Discovery {
 	}
 
 	private void openLocator(IDiscoveryLocator locator) {
-		if (locator == null || context == null)
+		if (context == null)
 			return;
 		synchronized (locatorListeners) {
 			LocatorServiceListener locatorListener = new LocatorServiceListener(
@@ -331,8 +331,7 @@ public class Discovery {
 		synchronized (locatorListeners) {
 			LocatorServiceListener locatorListener = locatorListeners
 					.remove(locator);
-			if (locatorListener != null)
-				locatorListener.close();
+			if (locatorListener != null) locatorListener.close();
 		}
 	}
 
@@ -459,7 +458,7 @@ public class Discovery {
 		public Object addingService(ServiceReference reference) {
 			IDiscoveryLocator locator = (IDiscoveryLocator) context
 					.getService(reference);
-			openLocator(locator);
+			if (locator != null) openLocator(locator);
 			return locator;
 		}
 

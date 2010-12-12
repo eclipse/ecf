@@ -102,6 +102,8 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// set the container factory arguments to the server identity (e.g. ecftcp://localhost:3282/server)
 		props.put(org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS, new String[] { getServerIdentity() } );
 		
+		props.put("customsvcprop1","foo");
+		props.put("customsvcprop2", "bar");
 		registerWaitAndUnregister(props, true);
 	}
 

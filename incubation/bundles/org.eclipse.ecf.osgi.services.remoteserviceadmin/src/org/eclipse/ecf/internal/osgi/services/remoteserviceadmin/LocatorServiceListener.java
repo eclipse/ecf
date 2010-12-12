@@ -38,6 +38,9 @@ class LocatorServiceListener implements IServiceListener {
 	public LocatorServiceListener(Discovery discovery, IDiscoveryLocator locator) {
 		this.discovery = discovery;
 		this.locator = locator;
+		if (locator != null) {
+			this.locator.addServiceListener(this);
+		}
 	}
 
 	public void serviceDiscovered(IServiceEvent anEvent) {
@@ -151,8 +154,11 @@ class LocatorServiceListener implements IServiceListener {
 		}
 	}
 
-	public void close() {
-		locator = null;
+	public synchronized void close() {
+		if (locator != null) {
+			locator.removeServiceListener(this);
+			locator = null;
+		}
 		discovery = null;
 		discoveredEndpointDescriptions.clear();
 	}

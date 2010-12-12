@@ -222,7 +222,7 @@ public abstract class AbstractTopologyManager {
 		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser();
 		if (advertiser == null) {
 			logError(
-					"advertiseExportedRegistration",
+					"unadvertiseEndpointDescription",
 					"No endpoint description advertiser available to unadvertise endpointDescription="
 							+ endpointDescription);
 			return;
@@ -231,7 +231,7 @@ public abstract class AbstractTopologyManager {
 		// advertiser
 		IStatus result = advertiser.unadvertise(endpointDescription);
 		if (!result.isOK())
-			logError("advertiseExportedRegistration",
+			logError("unadvertiseEndpointDescription",
 					"Unadvertise of endpointDescription=" + endpointDescription
 							+ " FAILED", result);
 	}

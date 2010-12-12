@@ -21,7 +21,6 @@ import java.util.StringTokenizer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
@@ -33,15 +32,11 @@ public abstract class AbstractMetadataFactory {
 
 	protected void encodeString(IServiceProperties props, String name,
 			String value) {
-		byte[] bytes = value.getBytes();
-		props.setPropertyBytes(name, bytes);
+		props.setPropertyString(name, value);
 	}
 
 	protected String decodeString(IServiceProperties props, String name) {
-		byte[] bytes = props.getPropertyBytes(name);
-		if (bytes == null)
-			return null;
-		return new String(bytes);
+		return props.getPropertyString(name);
 	}
 
 	protected void encodeLong(IServiceProperties result, String name, Long value) {
@@ -214,6 +209,9 @@ public abstract class AbstractMetadataFactory {
 
 	protected void encodeServiceProperties(
 			EndpointDescription endpointDescription, IServiceProperties result) {
+		// OSGi objectClass = endpointDescription.getInterfaces();
+		List<String> interfaces = endpointDescription.getInterfaces();
+		encodeList(result, org.osgi.framework.Constants.OBJECTCLASS, interfaces);
 		// OSGi service properties
 		// endpoint.id == endpointDescription.getId()
 		String endpointId = endpointDescription.getId();
@@ -221,23 +219,14 @@ public abstract class AbstractMetadataFactory {
 				result,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 				endpointId);
-
 		// OSGi endpoint.service.id = endpointDescription.getServiceId()
 		long endpointServiceId = endpointDescription.getServiceId();
 		encodeLong(
 				result,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
 				new Long(endpointServiceId));
-
-		// OSGi objectClass = endpointDescription.getInterfaces();
-		List<String> interfaces = endpointDescription.getInterfaces();
-		encodeList(result, org.osgi.framework.Constants.OBJECTCLASS, interfaces);
-
 		// OSGi frameworkUUID = endpointDescription.getFrameworkUUID()
 		String frameworkUUID = endpointDescription.getFrameworkUUID();
-		if (frameworkUUID == null) {
-			frameworkUUID = Activator.getDefault().getFrameworkUUID();
-		}
 		if (frameworkUUID != null)
 			encodeString(
 					result,
@@ -247,21 +236,27 @@ public abstract class AbstractMetadataFactory {
 		// endpointDescription.getConfigurationTypes();
 		List<String> configurationTypes = endpointDescription
 				.getConfigurationTypes();
-		if (configurationTypes.size() > 0) {
+		if (configurationTypes.size() > 0) 
 			encodeList(
 					result,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
 					configurationTypes);
-		}
 		// OSGI service intents = endpointDescription.getIntents()
 		List<String> serviceIntents = endpointDescription.getIntents();
-		if (serviceIntents.size() > 0) {
+		if (serviceIntents.size() > 0) 
 			encodeList(
 					result,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
 					serviceIntents);
-		}
-
+		Map endpointDescriptionProperties = endpointDescription.getProperties();
+		List<String> remoteConfigsSupported = PropertiesUtil.getStringPlusProperty(endpointDescriptionProperties,org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
+		if (remoteConfigsSupported.size() > 0) 
+			encodeList(result,org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,remoteConfigsSupported);
+		
+		List<String> remoteIntentsSupported = PropertiesUtil.getStringPlusProperty(endpointDescriptionProperties, org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED);
+		if (remoteIntentsSupported.size() > 0) 
+			encodeList(result,org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED,remoteIntentsSupported);
+		
 		// namespace
 		String containerIDNamespace = endpointDescription
 				.getContainerIDNamespace();

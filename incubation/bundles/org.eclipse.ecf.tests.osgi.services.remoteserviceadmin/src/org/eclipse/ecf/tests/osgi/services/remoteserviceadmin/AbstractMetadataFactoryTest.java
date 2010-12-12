@@ -95,10 +95,10 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		// Add required OSGi properties
 		addRequiredOSGiProperties(props);
 		ID containerID = createECFContainerID(props);
-		Long remoteServiceId = createECFRemoteServiceId(props);
+		createECFRemoteServiceId(props);
 		// Add extra properties
 		addExtraProperties(props);
-		return new EndpointDescription(props,containerID.getNamespace().getName(),remoteServiceId,null,null,null);
+		return new EndpointDescription(props,containerID.getNamespace().getName(),null,null,null);
 	}
 	
 	protected EndpointDescription createFullEndpointDescription() {
@@ -109,13 +109,13 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		addOptionalOSGiProperties(props);
 		// required ECF properties
 		ID containerID = createECFContainerID(props);
-		Long remoteServiceId = createECFRemoteServiceId(props);
+		createECFRemoteServiceId(props);
 		ID targetID = createECFTargetID(props);
 		ID[] idFilter = createECFIDFilterIDs(props);
 		String rsFilter = createECFRSFilter(props);
 		// Add extra properties
 		addExtraProperties(props);
-		return new EndpointDescription(props,containerID.getNamespace().getName(), remoteServiceId,targetID,idFilter,rsFilter);
+		return new EndpointDescription(props,containerID.getNamespace().getName(), targetID,idFilter,rsFilter);
 	}
 
 	protected void addExtraProperties(Map<String, Object> props) {
@@ -128,9 +128,9 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		// Add only ECF properties
 		// no OSGi properties
 		ID containerID = createECFContainerID(props);
-		Long remoteServiceId = createECFRemoteServiceId(props);
+		createECFRemoteServiceId(props);
 		// This should throw a runtime exception 
-		return new EndpointDescription(props,containerID.getNamespace().getName(),remoteServiceId.longValue(),null,null,null);
+		return new EndpointDescription(props,containerID.getNamespace().getName(),null,null,null);
 	}
 	
 	protected EndpointDescription createBadECFEndpointDescrption() throws Exception {
@@ -142,7 +142,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		
 		// No ECF required properties
 		// This should throw a runtime exception 
-		return new EndpointDescription(props,null,0,null,null,null);
+		return new EndpointDescription(props,null,null,null,null);
 	}
 
 	protected String createOSGiServiceImportedConfig() {
@@ -157,8 +157,8 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		return getIDFactory().createStringID(DEFAULT_ECF_TARGET_ID);
 	}
 
-	protected Long createECFRemoteServiceId(Map<String,Object> props) {
-		return new Long(101);
+	protected void createECFRemoteServiceId(Map<String,Object> props) {
+		props.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID, new Long(101));
 	}
 	
 	protected void addRequiredOSGiProperties(Map<String,Object> props) {

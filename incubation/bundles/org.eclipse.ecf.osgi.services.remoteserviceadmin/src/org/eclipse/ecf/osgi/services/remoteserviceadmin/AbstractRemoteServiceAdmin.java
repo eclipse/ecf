@@ -280,7 +280,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		endpointDescriptionProperties
 				.remove(org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS);
 		// finally create an ECF EndpointDescription
-		return new EndpointDescription(endpointDescriptionProperties,
+		return new EndpointDescription(serviceReference,endpointDescriptionProperties,
 				containerID.getNamespace().getName(), connectTargetID,
 				idFilter, rsFilter);
 	}
