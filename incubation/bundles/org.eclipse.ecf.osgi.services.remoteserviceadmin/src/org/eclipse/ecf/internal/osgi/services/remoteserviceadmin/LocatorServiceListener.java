@@ -61,7 +61,7 @@ class LocatorServiceListener implements IServiceListener {
 	void handleService(IServiceInfo serviceInfo, boolean discovered) {
 		IServiceID serviceID = serviceInfo.getServiceID();
 		if (matchServiceID(serviceID))
-			handleOSGiServiceEndpoint(serviceID, serviceInfo, true);
+			handleOSGiServiceEndpoint(serviceID, serviceInfo, discovered);
 	}
 
 	private void handleOSGiServiceEndpoint(IServiceID serviceId,

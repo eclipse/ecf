@@ -39,10 +39,12 @@ public class ConsumerContainerSelector extends
 						.get(0)
 						.equals(RemoteConstants.ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE)) {
 			remoteSupportedConfigs = (String[]) endpointDescription
-			.getProperties()
-			.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
-		} else remoteSupportedConfigs = edConfigurationTypes.toArray(new String[edConfigurationTypes.size()]);
-		
+					.getProperties()
+					.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
+		} else
+			remoteSupportedConfigs = edConfigurationTypes
+					.toArray(new String[edConfigurationTypes.size()]);
+
 		// Get connect targetID
 		ID connectTargetID = endpointDescription.getConnectTargetID();
 

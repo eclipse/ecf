@@ -331,7 +331,8 @@ public class Discovery {
 		synchronized (locatorListeners) {
 			LocatorServiceListener locatorListener = locatorListeners
 					.remove(locator);
-			if (locatorListener != null) locatorListener.close();
+			if (locatorListener != null)
+				locatorListener.close();
 		}
 	}
 
@@ -458,7 +459,8 @@ public class Discovery {
 		public Object addingService(ServiceReference reference) {
 			IDiscoveryLocator locator = (IDiscoveryLocator) context
 					.getService(reference);
-			if (locator != null) openLocator(locator);
+			if (locator != null)
+				openLocator(locator);
 			return locator;
 		}
 

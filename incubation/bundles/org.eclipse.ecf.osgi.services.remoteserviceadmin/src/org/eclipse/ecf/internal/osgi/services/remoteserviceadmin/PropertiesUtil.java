@@ -78,7 +78,8 @@ public class PropertiesUtil {
 	}
 
 	public static Object getStringPlusValue(List<String> values) {
-		if (values == null) return null;
+		if (values == null)
+			return null;
 		int valuesSize = values.size();
 		switch (valuesSize) {
 		case 0:
@@ -89,7 +90,7 @@ public class PropertiesUtil {
 			return values.toArray(new String[valuesSize]);
 		}
 	}
-	
+
 	public static List getStringPlusProperty(Map properties, String key) {
 		Object value = properties.get(key);
 		if (value == null) {
@@ -142,7 +143,8 @@ public class PropertiesUtil {
 	}
 
 	public static Map createMapFromDictionary(Dictionary input) {
-		if (input == null) return null;
+		if (input == null)
+			return null;
 		Map result = new HashMap();
 		for (Enumeration e = input.keys(); e.hasMoreElements();) {
 			Object key = e.nextElement();
@@ -153,7 +155,8 @@ public class PropertiesUtil {
 	}
 
 	public static Dictionary createDictionaryFromMap(Map propMap) {
-		if (propMap == null) return null;
+		if (propMap == null)
+			return null;
 		Dictionary result = new Properties();
 		for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
 			Object key = i.next();
@@ -251,7 +254,8 @@ public class PropertiesUtil {
 		return target;
 	}
 
-	public static Map<String, Object> copyNonReservedProperties(IRemoteServiceReference rsReference, Map<String, Object> target) {
+	public static Map<String, Object> copyNonReservedProperties(
+			IRemoteServiceReference rsReference, Map<String, Object> target) {
 		String[] keys = rsReference.getPropertyKeys();
 		for (int i = 0; i < keys.length; i++)
 			if (!isReservedProperty(keys[i]))
