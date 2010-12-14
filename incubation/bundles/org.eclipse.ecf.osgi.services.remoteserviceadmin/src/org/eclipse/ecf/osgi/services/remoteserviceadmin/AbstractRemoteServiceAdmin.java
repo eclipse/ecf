@@ -24,6 +24,7 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -295,6 +296,10 @@ public abstract class AbstractRemoteServiceAdmin {
 		return target;
 	}
 
+	protected Map<String, Object> copyNonReservedProperties(IRemoteServiceReference rsReference, Map<String, Object> target) {
+		return PropertiesUtil.copyNonReservedProperties(rsReference, target);
+	}
+	
 	protected ContainerTypeDescription getContainerTypeDescription(
 			IContainer container) {
 		IContainerManager containerManager = Activator.getDefault()
@@ -308,7 +313,12 @@ public abstract class AbstractRemoteServiceAdmin {
 		ContainerTypeDescription ctd = getContainerTypeDescription(container);
 		return (ctd == null) ? null : ctd.getSupportedConfigs();
 	}
-
+	
+	protected String[] getImportedConfigs(IContainer container, String[] exporterSupportedConfigs) {
+		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+		return (ctd == null) ? null : ctd.getImportedConfigs(exporterSupportedConfigs);
+	}
+	
 	protected String[] getSupportedIntents(IContainer container) {
 		ContainerTypeDescription ctd = getContainerTypeDescription(container);
 		return (ctd == null) ? null : ctd.getSupportedIntents();

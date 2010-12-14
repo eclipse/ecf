@@ -39,7 +39,7 @@ public class RemoteConstants {
 	// Value of
 	// org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS
 	// For ECF providers this is a constant, and receivers of
-	public static final String ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE = "ecf.default";
+	public static final String ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE = "org.eclipse.ecf.config";
 
 	// Value of type String,ID,or Object[]
 	public static final String SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS = "ecf.exported.containerfactoryargs";

@@ -156,7 +156,7 @@ public abstract class AbstractMetadataFactory {
 		if (configTypes != null && configTypes.size() > 0)
 			osgiProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
-							(String[]) configTypes.toArray(new String[] {}));
+							(String[]) configTypes.toArray(new String[configTypes.size()]));
 		// service intents
 		List<String> intents = decodeList(
 				props,
@@ -164,7 +164,20 @@ public abstract class AbstractMetadataFactory {
 		if (intents != null && intents.size() > 0)
 			osgiProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
-							(String[]) intents.toArray(new String[] {}));
+							(String[]) intents.toArray(new String[intents.size()]));
+		
+		// remote supported configs
+		List<String> remoteConfigsSupported = decodeList(props, org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
+		if (remoteConfigsSupported != null && remoteConfigsSupported.size() > 0) 			osgiProperties
+		.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
+				(String[]) remoteConfigsSupported.toArray(new String[remoteConfigsSupported.size()]));
+
+		// remote supported configs
+		List<String> remoteIntentsSupported = decodeList(props, org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED);
+		if (remoteIntentsSupported != null && remoteIntentsSupported.size() > 0) 			osgiProperties
+		.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED,
+				(String[]) remoteIntentsSupported.toArray(new String[remoteIntentsSupported.size()]));
+
 	}
 
 	protected EndpointDescription decodeEndpointDescription(

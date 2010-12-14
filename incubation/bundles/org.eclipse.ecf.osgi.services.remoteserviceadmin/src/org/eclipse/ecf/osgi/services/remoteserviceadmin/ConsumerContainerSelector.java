@@ -30,11 +30,19 @@ public class ConsumerContainerSelector extends
 
 		// Get the endpointID
 		ID endpointID = IDUtil.createContainerID(endpointDescription);
-		// Get the remote supported configs
-		List<String> remoteSupportedConfigsList = endpointDescription
+
+		String[] remoteSupportedConfigs = null;
+		List<String> edConfigurationTypes = endpointDescription
 				.getConfigurationTypes();
-		String[] remoteSupportedConfigs = (String[]) remoteSupportedConfigsList
-				.toArray(new String[remoteSupportedConfigsList.size()]);
+		if (edConfigurationTypes.size() >= 1
+				&& edConfigurationTypes
+						.get(0)
+						.equals(RemoteConstants.ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE)) {
+			remoteSupportedConfigs = (String[]) endpointDescription
+			.getProperties()
+			.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
+		} else remoteSupportedConfigs = edConfigurationTypes.toArray(new String[edConfigurationTypes.size()]);
+		
 		// Get connect targetID
 		ID connectTargetID = endpointDescription.getConnectTargetID();
 

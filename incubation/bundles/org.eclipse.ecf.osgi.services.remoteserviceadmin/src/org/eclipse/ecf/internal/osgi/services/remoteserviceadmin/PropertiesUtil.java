@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
+import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.ServiceReference;
 
@@ -76,6 +77,19 @@ public class PropertiesUtil {
 		}
 	}
 
+	public static Object getStringPlusValue(List<String> values) {
+		if (values == null) return null;
+		int valuesSize = values.size();
+		switch (valuesSize) {
+		case 0:
+			return null;
+		case 1:
+			return values.get(0);
+		default:
+			return values.toArray(new String[valuesSize]);
+		}
+	}
+	
 	public static List getStringPlusProperty(Map properties, String key) {
 		Object value = properties.get(key);
 		if (value == null) {
@@ -128,6 +142,7 @@ public class PropertiesUtil {
 	}
 
 	public static Map createMapFromDictionary(Dictionary input) {
+		if (input == null) return null;
 		Map result = new HashMap();
 		for (Enumeration e = input.keys(); e.hasMoreElements();) {
 			Object key = e.nextElement();
@@ -138,6 +153,7 @@ public class PropertiesUtil {
 	}
 
 	public static Dictionary createDictionaryFromMap(Map propMap) {
+		if (propMap == null) return null;
 		Dictionary result = new Properties();
 		for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
 			Object key = i.next();
@@ -232,6 +248,14 @@ public class PropertiesUtil {
 		for (int i = 0; i < keys.length; i++)
 			if (!isReservedProperty(keys[i]))
 				target.put(keys[i], serviceReference.getProperty(keys[i]));
+		return target;
+	}
+
+	public static Map<String, Object> copyNonReservedProperties(IRemoteServiceReference rsReference, Map<String, Object> target) {
+		String[] keys = rsReference.getPropertyKeys();
+		for (int i = 0; i < keys.length; i++)
+			if (!isReservedProperty(keys[i]))
+				target.put(keys[i], rsReference.getProperty(keys[i]));
 		return target;
 	}
 
