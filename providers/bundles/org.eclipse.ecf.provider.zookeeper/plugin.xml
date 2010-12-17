@@ -8,6 +8,16 @@
             description="Discovery Container"
             name="ecf.discovery.zoodiscovery">
       </containerFactory>
+      <containerFactory
+            class="org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator"
+            description="Discovery Container"
+            name="ecf.discovery.zoodiscovery.advertiser">
+      </containerFactory>
+      <containerFactory
+            class="org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator"
+            description="Discovery Container"
+            name="ecf.discovery.zoodiscovery.locator">
+      </containerFactory>
    </extension>
    <extension
          point="org.eclipse.ecf.identity.namespace">
