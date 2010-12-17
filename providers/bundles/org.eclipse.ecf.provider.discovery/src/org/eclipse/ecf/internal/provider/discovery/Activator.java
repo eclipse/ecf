@@ -78,7 +78,7 @@ public class Activator implements BundleActivator {
 						 * @see org.osgi.framework.ServiceListener#serviceChanged(org.osgi.framework.ServiceEvent)
 						 */
 						public void serviceChanged(final ServiceEvent arg0) {
-							final IDiscoveryService anIDS = (IDiscoveryService) context.getService(arg0.getServiceReference());
+							final Object anIDS = context.getService(arg0.getServiceReference());
 							switch (arg0.getType()) {
 								case ServiceEvent.REGISTERED :
 									cdc.addContainer(anIDS);
