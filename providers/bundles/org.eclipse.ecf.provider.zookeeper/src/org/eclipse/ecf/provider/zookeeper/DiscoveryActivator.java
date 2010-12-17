@@ -39,7 +39,15 @@ public class DiscoveryActivator implements BundleActivator {
 
 	public void start(final BundleContext ctxt) {
 		context = ctxt;
+		//spawn asynchronously to avoid deadlocks during OSGi bundle startup
+		new Thread(new Runnable() {
+			public void run() {
+				startup(ctxt);
+			}
+		}).start();
+	}
 
+	private void startup(final BundleContext ctxt) {
 		Properties props = new Properties();
 		props.put(IDiscoveryLocator.CONTAINER_NAME,
 				ZooDiscoveryContainerInstantiator.NAME);
