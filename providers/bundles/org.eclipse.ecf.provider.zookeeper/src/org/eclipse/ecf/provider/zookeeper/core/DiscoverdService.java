@@ -59,8 +59,9 @@ public class DiscoverdService extends ServiceInfo implements IService, INode {
 				ZooDiscoveryContainer.getSingleton().getConnectNamespace(),
 				services, scopes, protocols, na);
 		super.serviceID = new ZooDiscoveryServiceID(ZooDiscoveryContainer
-				.getSingleton().getConnectNamespace(), serviceTypeID,
+				.getSingleton().getConnectNamespace(), this, serviceTypeID,
 				this.location);
+		super.serviceName = propMap.getProperty("component.name", location.toASCIIString());
 	}
 
 	private ServiceProperties createServiceProperties(Properties props) {

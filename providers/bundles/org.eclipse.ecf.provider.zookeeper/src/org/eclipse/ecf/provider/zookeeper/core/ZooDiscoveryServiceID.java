@@ -25,4 +25,11 @@ public class ZooDiscoveryServiceID extends ServiceID {
 			URI anURI) {
 		super(namespace, type, anURI);
 	}
+
+	public ZooDiscoveryServiceID(Namespace namespace,
+			DiscoverdService discoverdService, IServiceTypeID type,
+			URI anURI) {
+		this(namespace, type, anURI);
+		setServiceInfo(discoverdService);
+	}
 }
