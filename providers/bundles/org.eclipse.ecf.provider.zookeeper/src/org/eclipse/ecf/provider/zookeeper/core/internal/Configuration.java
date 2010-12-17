@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
@@ -45,8 +46,7 @@ public class Configuration extends DefaultDiscoveryConfig {
 		Set<String> legalKeys = getConfigProperties().keySet();
 		for (String key : reference.getPropertyKeys()) {
 			if (legalKeys.contains(key)
-					|| key
-							.startsWith(DefaultDiscoveryConfig.ZOODISCOVERY_PREFIX))
+					|| key.startsWith(DefaultDiscoveryConfig.ZOODISCOVERY_PREFIX))
 				getConfigProperties().put(key, reference.getProperty(key));
 		}
 	}
@@ -68,12 +68,21 @@ public class Configuration extends DefaultDiscoveryConfig {
 		PrintWriter writer = null;
 		boolean isNewZookeeperData = false;
 		try {
+			String dataDirName = (String) getConfigProperties().get(
+					ZOOKEEPER_DATADIR);
+			// if no data directory name is specified, we randomly pick one.
+			if (DATADIR_DEFAULT.equals(dataDirName)) {
+				dataDirName = randomDirName();
+			}
 			this.zookeeperDataFile = new File(new File(getConfigProperties()
-					.get(ZOOKEEPER_TEMPDIR).toString()),
-					(String) getConfigProperties().get(ZOOKEEPER_DATADIR));
+					.get(ZOOKEEPER_TEMPDIR).toString()), dataDirName);
 			isNewZookeeperData = this.zookeeperDataFile.mkdir();
 			this.zookeeperDataFile.deleteOnExit();
 			if (!isNewZookeeperData) {
+				/*
+				 * the same data directory is being reused, we try emptying it
+				 * to avoid data corruption
+				 */
 				clean();
 			}
 			this.zooConfFile = new File(this.zookeeperDataFile, "zoo.cfg");//$NON-NLS-1$
@@ -89,7 +98,6 @@ public class Configuration extends DefaultDiscoveryConfig {
 							+ " must contain exactly one IP address designating the location of the ZooDiscovery instance playing this central role.";
 					Logger.log(LogService.LOG_ERROR, msg, null);
 					throw new ServiceException(msg);
-
 				}
 
 			} else if (getConfigProperties().containsKey(
@@ -105,7 +113,6 @@ public class Configuration extends DefaultDiscoveryConfig {
 							+ " must contain at least one IP address which is not localhost.";
 					Logger.log(LogService.LOG_ERROR, msg, null);
 					throw new ServiceException(msg);
-
 				}
 
 			} else if (getConfigProperties().containsKey(
@@ -133,7 +140,6 @@ public class Configuration extends DefaultDiscoveryConfig {
 							+ this.serverIps.get(i) + ":"//$NON-NLS-1$
 							+ getServerPort() + ":"//$NON-NLS-1$
 							+ getElectionPort());
-
 				}
 			}
 			for (String k : getConfigProperties().keySet()) {
@@ -156,6 +162,12 @@ public class Configuration extends DefaultDiscoveryConfig {
 				writer.close();
 		}
 		return this;
+	}
+
+	private String randomDirName() {
+		String name = UUID.randomUUID() + "";
+		name = name.replaceAll("-", "");
+		return "zdd" + name;
 	}
 
 	public int getElectionPort() {
@@ -220,7 +232,7 @@ public class Configuration extends DefaultDiscoveryConfig {
 				}
 				file.delete();
 			} catch (Throwable t) {
-				continue;
+				Logger.log(LogService.LOG_ERROR, t.getMessage(), null);
 			}
 		}
 	}
@@ -254,5 +266,4 @@ public class Configuration extends DefaultDiscoveryConfig {
 		return Integer.parseInt((String) getConfigProperties().get(
 				ZOOKEEPER_SERVER_PORT));
 	}
-
 }
