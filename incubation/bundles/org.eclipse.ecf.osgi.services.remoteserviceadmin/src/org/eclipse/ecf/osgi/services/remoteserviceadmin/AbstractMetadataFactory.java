@@ -28,7 +28,9 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 
 public abstract class AbstractMetadataFactory {
 
-	protected static final String COLLECTION_SEPARATOR = ",";
+	protected static final String LIST_PREFIX = "{ ";
+	protected static final String LIST_SUFFIX = " }";
+	protected static final String LIST_SEPARATOR = ",";
 
 	protected void encodeString(IServiceProperties props, String name,
 			String value) {
@@ -51,29 +53,36 @@ public abstract class AbstractMetadataFactory {
 	}
 
 	protected void encodeList(IServiceProperties props, String name,
-			List<String> value) {
-		final StringBuffer result = new StringBuffer();
-		for (final Iterator<String> i = value.iterator(); i.hasNext();) {
-			final String item = (String) i.next();
-			result.append(item);
-			if (i.hasNext()) {
-				result.append(COLLECTION_SEPARATOR);
+			List<String> list) {
+		if (list == null) return;
+		if (list.size() == 1) {
+			props.setPropertyString(name, list.get(0));
+		} else {
+			final StringBuffer result = new StringBuffer(LIST_PREFIX);
+			for (Iterator<String> i = list.iterator(); i.hasNext(); ) {
+				result.append(i.next());
+				if (i.hasNext())
+					result.append(LIST_SEPARATOR);
 			}
+			result.append(LIST_SUFFIX);
+			// Now add to props
+			props.setPropertyString(name, result.toString());
 		}
-		// Now add to props
-		props.setPropertyString(name, result.toString());
 	}
 
-	protected List decodeList(IServiceProperties props, String name) {
+	protected List<String> decodeList(IServiceProperties props, String name) {
 		String value = props.getPropertyString(name);
 		if (value == null)
 			return Collections.EMPTY_LIST;
-		List result = new ArrayList();
-		final StringTokenizer t = new StringTokenizer(value,
-				COLLECTION_SEPARATOR);
-		while (t.hasMoreTokens()) {
-			result.add(t.nextToken());
-		}
+		List<String> result = new ArrayList<String>();
+		if (value.startsWith(LIST_PREFIX)) {
+			// trim prefix
+			value = value.substring(LIST_PREFIX.length());
+			// trim suffix
+			value = value.substring(0, value.length() - LIST_SUFFIX.length());
+			final StringTokenizer t = new StringTokenizer(value, LIST_SEPARATOR);
+			while (t.hasMoreTokens()) result.add(t.nextToken());
+		} else result.add(value);
 		return result;
 	}
 
