@@ -84,7 +84,7 @@ public abstract class AbstractMetadataFactory {
 		for (int i = 0; i < idFilter.length; i++) {
 			encodeString(result,
 					RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_ + i,
-					idFilter[i].toExternalForm());
+					idFilter[i].getName());
 			result.setPropertyString(
 					RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_ + i,
 					idFilter[i].getNamespace().getName());
