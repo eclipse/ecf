@@ -10,11 +10,11 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 
 public interface IEndpointDescriptionWriter {
 
-	public void writeEndpointDescriptions(OutputStream outs,
+	public void writeEndpointDescriptions(Writer writer,
 			EndpointDescription[] endpointDescriptions) throws IOException;
 
 }
