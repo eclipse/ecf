@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
+ * Copyright (c) 2010-2011 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -7,7 +7,7 @@
  * Contributors:
  *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
+package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,12 +19,14 @@ import java.util.TreeMap;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionParseException;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.EndpointDescriptionParser;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.osgi.framework.Constants;
 
-public class EndpointDescriptionReader {
+public class EndpointDescriptionReader implements IEndpointDescriptionReader {
 
 	public org.osgi.service.remoteserviceadmin.EndpointDescription[] readEndpointDescriptions(
 			InputStream input) throws IOException {
@@ -35,7 +37,7 @@ public class EndpointDescriptionReader {
 		// Get possible endpoint descriptions
 		List<EndpointDescriptionParser.EndpointDescription> parsedDescriptions = parser
 				.getEndpointDescriptions();
-		List<org.osgi.service.remoteserviceadmin.EndpointDescription> results = new ArrayList();
+		List<org.osgi.service.remoteserviceadmin.EndpointDescription> results = new ArrayList<org.osgi.service.remoteserviceadmin.EndpointDescription>();
 		// For each one parsed, get properties and
 		for (EndpointDescriptionParser.EndpointDescription ed : parsedDescriptions) {
 			Map parsedProperties = ed.getProperties();
@@ -115,8 +117,7 @@ public class EndpointDescriptionReader {
 						"Exception parsing endpoint description properties", e);
 			}
 		}
-		return (org.osgi.service.remoteserviceadmin.EndpointDescription[]) results
-				.toArray(new org.osgi.service.remoteserviceadmin.EndpointDescription[] {});
+		return results.toArray(new EndpointDescription[results.size()]);
 	}
 
 	private org.osgi.service.remoteserviceadmin.EndpointDescription createECFEndpointDescription(

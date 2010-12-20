@@ -9,11 +9,15 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import java.io.IOException;
+import java.io.OutputStream;
 
-public interface IConsumerContainerSelector {
+public class EndpointDescriptionWriter implements IEndpointDescriptionWriter {
 
-	public IRemoteServiceContainer selectConsumerContainer(
-			EndpointDescription endpointDescription);
+	public void writeEndpointDescriptions(OutputStream outs,
+			EndpointDescription[] endpointDescriptions) throws IOException {
+		// TODO Auto-generated method stub
+
+	}
 
 }

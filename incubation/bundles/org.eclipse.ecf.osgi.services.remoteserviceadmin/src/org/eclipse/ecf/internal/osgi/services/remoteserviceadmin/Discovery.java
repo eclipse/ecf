@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
+ * Copyright (c) 2010-2011 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -23,7 +23,9 @@ import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionReader;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionReader;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
 import org.eclipse.equinox.concurrent.future.IExecutor;
@@ -62,6 +64,8 @@ public class Discovery {
 	// endpoint description factory tracker
 	private Object endpointDescriptionFactoryTrackerLock = new Object();
 	private ServiceTracker endpointDescriptionFactoryTracker;
+	// endpointDescriptionReader default
+	private ServiceRegistration defaultEndpointDescriptionReaderRegistration;
 
 	// For processing synchronous notifications asynchronously
 	private EventManager eventManager;
@@ -104,6 +108,10 @@ public class Discovery {
 						IDiscoveredEndpointDescriptionFactory.class.getName(),
 						defaultEndpointDescriptionFactory,
 						(Dictionary) properties);
+		// setup/register default endpointDescriptionReader
+		defaultEndpointDescriptionReaderRegistration = context.registerService(
+				IEndpointDescriptionReader.class.getName(),
+				new EndpointDescriptionReader(), properties);
 
 		// Create thread group, event manager, and eventQueue, and setup to
 		// dispatch EndpointListenerEvents
@@ -188,7 +196,7 @@ public class Discovery {
 		// Create bundle tracker for reading local/xml-file endpoint
 		// descriptions
 		bundleTrackerCustomizer = new EndpointDescriptionBundleTrackerCustomizer(
-				localLocatorServiceListener);
+				context, localLocatorServiceListener);
 		bundleTracker = new BundleTracker(context, Bundle.ACTIVE
 				| Bundle.STARTING, bundleTrackerCustomizer);
 		// This may trigger local endpoint description discovery
@@ -279,6 +287,10 @@ public class Discovery {
 		if (serviceInfoFactory != null) {
 			serviceInfoFactory.close();
 			serviceInfoFactory = null;
+		}
+		if (defaultEndpointDescriptionReaderRegistration != null) {
+			defaultEndpointDescriptionReaderRegistration.unregister();
+			defaultEndpointDescriptionReaderRegistration = null;
 		}
 		if (locatorServiceTracker != null) {
 			locatorServiceTracker.close();

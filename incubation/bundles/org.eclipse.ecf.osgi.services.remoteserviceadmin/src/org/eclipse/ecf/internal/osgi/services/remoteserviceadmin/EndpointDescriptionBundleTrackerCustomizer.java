@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 Composent, Inc. and others. All rights reserved. This
+ * Copyright (c) 2010-2011 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,10 +21,12 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionReader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
+import org.osgi.util.tracker.ServiceTracker;
 
 public class EndpointDescriptionBundleTrackerCustomizer implements
 		BundleTrackerCustomizer {
@@ -32,13 +36,31 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 
 	private Map<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>> bundleDescriptionMap = Collections
 			.synchronizedMap(new HashMap<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>>());
-	private EndpointDescriptionReader builder = new EndpointDescriptionReader();
 
+	private BundleContext bundleContext;
 	private LocatorServiceListener endpointDescriptionHandler;
 
+	private Object endpointDescriptionReaderTrackerLock = new Object();
+	private ServiceTracker endpointDescriptionReaderTracker;
+
 	public EndpointDescriptionBundleTrackerCustomizer(
+			BundleContext bundleContext,
 			LocatorServiceListener endpointDescriptionHandler) {
+		this.bundleContext = bundleContext;
 		this.endpointDescriptionHandler = endpointDescriptionHandler;
+	}
+
+	private IEndpointDescriptionReader getEndpointDescriptionReader() {
+		synchronized (endpointDescriptionReaderTrackerLock) {
+			if (endpointDescriptionReaderTracker == null) {
+				endpointDescriptionReaderTracker = new ServiceTracker(
+						bundleContext,
+						IEndpointDescriptionReader.class.getName(), null);
+				endpointDescriptionReaderTracker.open();
+			}
+		}
+		return (IEndpointDescriptionReader) endpointDescriptionReaderTracker
+				.getService();
 	}
 
 	public Object addingBundle(Bundle bundle, BundleEvent event) {
@@ -105,30 +127,43 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 		if (endpointDescriptions.size() > 0) {
 			bundleDescriptionMap.put(new Long(bundle.getBundleId()),
 					endpointDescriptions);
-			for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions) {
+			for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions)
 				endpointDescriptionHandler.handleEndpointDescription(ed, true);
-			}
 		}
 	}
 
 	private org.osgi.service.remoteserviceadmin.EndpointDescription[] handleEndpointDescriptionFile(
 			Bundle bundle, URL fileURL) {
+		InputStream ins = null;
 		try {
-			return builder.readEndpointDescriptions(fileURL.openStream());
+			IEndpointDescriptionReader endpointDescriptionReader = getEndpointDescriptionReader();
+			if (endpointDescriptionReader == null)
+				throw new NullPointerException(
+						"No endpointDescriptionReader available for handleEndpointDescriptionFile fileURL="
+								+ fileURL);
+			ins = fileURL.openStream();
+			return endpointDescriptionReader.readEndpointDescriptions(ins);
 		} catch (Exception e) {
-			LogUtility
-					.logError(
-							"handleEndpointDescriptionFile",
-							DebugOptions.DISCOVERY,
-							this.getClass(),
-							new Status(
-									IStatus.ERROR,
-									Activator.PLUGIN_ID,
-									IStatus.ERROR,
-									("Exception creating endpoint descriptions from fileURL=" + fileURL),
-									e));
+			logError("handleEndpointDescriptionFile",
+					"Exception creating endpoint descriptions from fileURL="
+							+ fileURL, e);
 			return null;
+		} finally {
+			if (ins != null)
+				try {
+					ins.close();
+				} catch (IOException e) {
+					logError("handleEndpointDescriptionFile",
+							"Exception closing endpointDescription input fileURL="
+									+ fileURL, e);
+				}
 		}
+	}
+
+	private void logError(String method, String message, Throwable t) {
+		LogUtility.logError(method, DebugOptions.DISCOVERY, this.getClass(),
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
+						message, t));
 	}
 
 	public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
@@ -141,14 +176,19 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 	private void handleRemovedBundle(Bundle bundle) {
 		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptions = bundleDescriptionMap
 				.remove(new Long(bundle.getBundleId()));
-		if (endpointDescriptions != null) {
-			for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions) {
+		if (endpointDescriptions != null)
+			for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions)
 				endpointDescriptionHandler.handleEndpointDescription(ed, false);
-			}
-		}
 	}
 
 	public void close() {
+		synchronized (endpointDescriptionReaderTrackerLock) {
+			if (endpointDescriptionReaderTracker != null) {
+				endpointDescriptionReaderTracker.close();
+				endpointDescriptionReaderTracker = null;
+			}
+		}
 		bundleDescriptionMap.clear();
+		bundleContext = null;
 	}
 }
