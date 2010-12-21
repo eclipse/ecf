@@ -124,13 +124,17 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			synchronized (importedRegistrations) {
 				try {
 					importRegistration = doImportService(ed, rsContainer);
-
 				} catch (Exception e) {
-					importRegistration = handleImportServiceException(ed,
-							rsContainer, e);
+					logError("importService",
+							"Exception importing endpointDescription=" + ed
+									+ rsContainer.getContainer().getID(), e);
+					importRegistration = new ImportRegistration(rsContainer, e);
 				} catch (NoClassDefFoundError e) {
-					importRegistration = handleImportServiceException(ed,
-							rsContainer, e);
+					logError("importService",
+							"NoClassDefFoundError importing endpointDescription="
+									+ ed + rsContainer.getContainer().getID(),
+							e);
+					importRegistration = new ImportRegistration(rsContainer, e);
 				}
 				// If we actually created an importRegistration...whether
 				// successful or not, add it to the
@@ -148,13 +152,16 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 		}
 	}
 
-	public Collection<ImportRegistration> unimportService(IRemoteServiceID remoteServiceID) {
+	public Collection<ImportRegistration> unimportService(
+			IRemoteServiceID remoteServiceID) {
 		trace("unimport", "remoteServiceID=" + remoteServiceID);
 		List<ImportRegistration> removedRegistrations = new ArrayList<ImportRegistration>();
 		synchronized (importedRegistrations) {
-			for(Iterator<ImportRegistration> i=importedRegistrations.iterator(); i.hasNext(); ) {
+			for (Iterator<ImportRegistration> i = importedRegistrations
+					.iterator(); i.hasNext();) {
 				ImportRegistration importRegistration = i.next();
-				IRemoteServiceReference rsReference = importRegistration.getRemoteServiceReference();
+				IRemoteServiceReference rsReference = importRegistration
+						.getRemoteServiceReference();
 				if (rsReference != null) {
 					IRemoteServiceID regID = rsReference.getID();
 					if (regID.equals(remoteServiceID)) {
@@ -173,13 +180,16 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 	protected IRemoteServiceListener createRemoteServiceListener() {
 		return new RemoteServiceListener();
 	}
-	
+
 	class RemoteServiceListener implements IRemoteServiceListener {
 
 		public void handleServiceEvent(IRemoteServiceEvent event) {
 			if (event instanceof IRemoteServiceUnregisteredEvent) {
-				Collection<ImportRegistration> removedRegistrations = unimportService(event.getReference().getID());
-				trace("RemoteServiceListener.handleServiceEvent","Removed importRegistrations="+removedRegistrations+" via event="+event);
+				Collection<ImportRegistration> removedRegistrations = unimportService(event
+						.getReference().getID());
+				trace("RemoteServiceListener.handleServiceEvent",
+						"Removed importRegistrations=" + removedRegistrations
+								+ " via event=" + event);
 			}
 		}
 	}
@@ -192,15 +202,21 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			for (Iterator<ImportRegistration> i = importedRegistrations
 					.iterator(); i.hasNext();) {
 				ImportRegistration reg = i.next();
-				ImportReference importReference = reg.getImportReference();
-				if (importReference != null) {
-					org.osgi.service.remoteserviceadmin.EndpointDescription importedDescription = importReference
-							.getImportedEndpoint();
-					if (importedDescription != null
-							&& importedDescription.equals(endpointDescription)) {
-						removedRegistrations.add(reg);
-						i.remove();
+				ImportReference importReference = null;
+				try {
+					importReference = reg.getImportReference();
+					if (importReference != null) {
+						org.osgi.service.remoteserviceadmin.EndpointDescription importedDescription = importReference
+								.getImportedEndpoint();
+						if (importedDescription != null
+								&& importedDescription
+										.equals(endpointDescription)) {
+							removedRegistrations.add(reg);
+							i.remove();
+						}
 					}
+				} catch (IllegalStateException e) {
+					// Import Registration not properly initialized
 				}
 			}
 		}
@@ -208,13 +224,6 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 		for (ImportRegistration removedReg : removedRegistrations)
 			removedReg.close();
 		return removedRegistrations;
-	}
-
-	private ImportRegistration handleImportServiceException(
-			EndpointDescription endpoint,
-			IRemoteServiceContainer iRemoteServiceContainer, Throwable e) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ExportRegistration> getExportedRegistrations() {
@@ -279,19 +288,24 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			ExportRegistration[] exportRegs = findExportRegistrations(serviceReference);
 			if (exportRegs != null) {
 				for (int i = 0; i < exportRegs.length; i++) {
-					org.osgi.service.remoteserviceadmin.ExportReference exportRef = exportRegs[i]
-							.getExportReference();
-					if (exportRef != null) {
-						org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription = exportRef
-								.getExportedEndpoint();
-						if (endpointDescription != null
-								&& endpointDescription instanceof EndpointDescription) {
-							endpointDescriptions
-									.add((EndpointDescription) endpointDescription);
+					org.osgi.service.remoteserviceadmin.ExportReference exportRef = null;
+					try {
+						exportRef = exportRegs[i].getExportReference();
+						if (exportRef != null) {
+							org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription = exportRef
+									.getExportedEndpoint();
+							if (endpointDescription != null
+									&& endpointDescription instanceof EndpointDescription) {
+								endpointDescriptions
+										.add((EndpointDescription) endpointDescription);
+							}
 						}
+						exportRegs[i].close();
+						exportedRegistrations.remove(exportRegs[i]);
+					} catch (IllegalStateException e) {
+						// no export ref because ExportRegistration not
+						// initialized properly
 					}
-					exportRegs[i].close();
-					exportedRegistrations.remove(exportRegs[i]);
 				}
 			}
 		}

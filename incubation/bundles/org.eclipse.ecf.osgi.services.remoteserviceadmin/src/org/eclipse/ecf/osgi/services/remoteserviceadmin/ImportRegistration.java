@@ -47,6 +47,11 @@ public class ImportRegistration implements
 		rsContainer.getContainerAdapter().addRemoteServiceListener(rsListener);
 	}
 
+	protected ImportRegistration(IRemoteServiceContainer rsContainer, Throwable t) {
+		this.rsContainer = rsContainer;
+		this.throwable = t;
+	}
+	
 	public IRemoteServiceReference getRemoteServiceReference() {
 		synchronized (closeLock) {
 			return rsReference;
