@@ -36,7 +36,6 @@ public class ExportReference implements
 		this.endpointDescription = null;
 	}
 
-	@Override
 	public synchronized String toString() {
 		return "ExportReference[serviceReference=" + serviceReference
 				+ ", endpointDescription=" + endpointDescription + "]";

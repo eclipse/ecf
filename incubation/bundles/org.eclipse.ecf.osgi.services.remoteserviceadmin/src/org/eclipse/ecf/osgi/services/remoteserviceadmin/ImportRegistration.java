@@ -25,9 +25,8 @@ public class ImportRegistration implements
 	private ServiceRegistration importRegistration;
 	private ImportReference importReference;
 	private Throwable throwable;
-	private final Object closeLock = new Object();
 
-	protected ImportRegistration(IRemoteServiceContainer rsContainer,
+	public ImportRegistration(IRemoteServiceContainer rsContainer,
 			IRemoteServiceListener rsListener,
 			IRemoteServiceReference rsReference,
 			EndpointDescription endpointDescription,
@@ -47,36 +46,29 @@ public class ImportRegistration implements
 		rsContainer.getContainerAdapter().addRemoteServiceListener(rsListener);
 	}
 
-	protected ImportRegistration(IRemoteServiceContainer rsContainer, Throwable t) {
+	public ImportRegistration(IRemoteServiceContainer rsContainer, Throwable t) {
 		this.rsContainer = rsContainer;
 		this.throwable = t;
 	}
 	
-	public IRemoteServiceReference getRemoteServiceReference() {
-		synchronized (closeLock) {
+	public synchronized IRemoteServiceReference getRemoteServiceReference() {
 			return rsReference;
-		}
 	}
 
-	public IRemoteServiceContainer getRemoteServiceContainer() {
-		synchronized (closeLock) {
+	public synchronized IRemoteServiceContainer getRemoteServiceContainer() {
 			return rsContainer;
-		}
 	}
 
-	public ImportReference getImportReference() {
-		synchronized (closeLock) {
+	public synchronized ImportReference getImportReference() {
 			Throwable t = getException();
 			if (t != null)
 				throw new IllegalStateException(
 						"Cannot get import reference as registration not properly initialized",
 						t);
 			return importReference;
-		}
 	}
 
-	public void close() {
-		synchronized (closeLock) {
+	public synchronized void close() {
 			if (importRegistration != null) {
 				importRegistration.unregister();
 				importRegistration = null;
@@ -95,20 +87,16 @@ public class ImportRegistration implements
 				importReference = null;
 			}
 			throwable = null;
-		}
 	}
 
-	public Throwable getException() {
-		synchronized (closeLock) {
+	public synchronized Throwable getException() {
 			return throwable;
-		}
 	}
 
-	@Override
-	public String toString() {
+	public synchronized String toString() {
 		return "ImportRegistration [rsReference=" + rsReference
 				+ ", importReference=" + importReference + ", throwable="
-				+ throwable + ", closeLock=" + closeLock + "]";
+				+ throwable + "]";
 	}
 
 }

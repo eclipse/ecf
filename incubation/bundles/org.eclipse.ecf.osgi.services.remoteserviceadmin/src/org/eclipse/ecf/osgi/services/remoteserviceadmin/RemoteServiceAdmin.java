@@ -83,7 +83,7 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 									+ serviceReference + " with properties="
 									+ properties + " rsContainerID="
 									+ rsContainers[i].getContainer().getID(), e);
-					rsRegistration = new ExportRegistration(e);
+					rsRegistration = new ExportRegistration(serviceReference,e);
 				}
 				results.add(rsRegistration);
 				exportedRegistrations.add(rsRegistration);
@@ -300,12 +300,13 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 										.add((EndpointDescription) endpointDescription);
 							}
 						}
-						exportRegs[i].close();
-						exportedRegistrations.remove(exportRegs[i]);
 					} catch (IllegalStateException e) {
 						// no export ref because ExportRegistration not
 						// initialized properly
 					}
+					// close and remove the export registration no matter what
+					exportRegs[i].close();
+					exportedRegistrations.remove(exportRegs[i]);
 				}
 			}
 		}

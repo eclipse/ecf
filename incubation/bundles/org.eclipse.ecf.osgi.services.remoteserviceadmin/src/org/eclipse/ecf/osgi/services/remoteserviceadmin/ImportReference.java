@@ -36,8 +36,7 @@ public class ImportReference implements
 		this.endpointDescription = null;
 	}
 
-	@Override
-	public String toString() {
+	public synchronized String toString() {
 		return "ImportReference[importedServiceReference="
 				+ importedServiceReference + ", endpointDescription="
 				+ endpointDescription + "]";

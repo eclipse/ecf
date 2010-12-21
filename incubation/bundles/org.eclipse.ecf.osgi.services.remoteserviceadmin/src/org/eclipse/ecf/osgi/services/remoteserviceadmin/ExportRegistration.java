@@ -19,78 +19,65 @@ public class ExportRegistration implements
 	private IRemoteServiceRegistration rsRegistration;
 	private ExportReference exportReference;
 
-	private Throwable throwable;
-
-	private final Object closeLock = new Object();
+	private ServiceReference serviceReference;
+	private Throwable exception;
 
 	public ExportRegistration(IRemoteServiceRegistration rsRegistration,
-			ServiceReference serviceReference,
+			ServiceReference proxyServiceReference,
 			EndpointDescription endpointDescription) {
 		Assert.isNotNull(rsRegistration);
 		this.rsRegistration = rsRegistration;
-		this.exportReference = new ExportReference(serviceReference,
+		this.serviceReference = proxyServiceReference;
+		this.exportReference = new ExportReference(proxyServiceReference,
 				endpointDescription);
 	}
 
-	public ExportRegistration(Throwable t) {
-		this.throwable = t;
+	public ExportRegistration(ServiceReference serviceReference, Throwable t) {
+		this.serviceReference = serviceReference;
+		this.exception = t;
 	}
 
-	public org.osgi.service.remoteserviceadmin.ExportReference getExportReference() {
-		synchronized (closeLock) {
-			Throwable t = getException();
-			if (t != null)
-				throw new IllegalStateException(
-						"Cannot get export reference as registration not properly initialized",
-						t);
-			return exportReference;
-		}
+	public synchronized org.osgi.service.remoteserviceadmin.ExportReference getExportReference() {
+		Throwable t = getException();
+		if (t != null)
+			throw new IllegalStateException(
+					"Cannot get export reference as registration not properly initialized",
+					t);
+		return exportReference;
 	}
 
-	public boolean matchesServiceReference(ServiceReference serviceReference) {
+	public synchronized boolean matchesServiceReference(
+			ServiceReference serviceReference) {
 		if (serviceReference == null)
 			return false;
-		synchronized (closeLock) {
-			if (exportReference == null)
-				return false;
-			ServiceReference sr = exportReference.getExportedService();
-			if (sr.equals(serviceReference))
-				return true;
-			else
-				return false;
-		}
+		return (this.serviceReference.equals(serviceReference));
 	}
 
-	public IRemoteServiceRegistration getRemoteServiceRegistration() {
+	public synchronized IRemoteServiceRegistration getRemoteServiceRegistration() {
 		return rsRegistration;
 	}
 
-	public void close() {
-		synchronized (closeLock) {
-			if (rsRegistration != null) {
-				rsRegistration.unregister();
-				rsRegistration = null;
-			}
-			if (exportReference != null) {
-				exportReference.close();
-				exportReference = null;
-			}
-			throwable = null;
+	public synchronized void close() {
+		if (rsRegistration != null) {
+			rsRegistration.unregister();
+			rsRegistration = null;
 		}
+		if (exportReference != null) {
+			exportReference.close();
+			exportReference = null;
+		}
+		exception = null;
 	}
 
-	public Throwable getException() {
-		synchronized (closeLock) {
-			return throwable;
-		}
+	public synchronized Throwable getException() {
+		return exception;
 	}
 
-	public String toString() {
-		synchronized (closeLock) {
-			return "ExportRegistration[rsRegistration=" + rsRegistration
-					+ ", exportReference=" + exportReference + ", throwable="
-					+ throwable + "]";
-		}
+	public synchronized String toString() {
+		return "ExportRegistration[rsRegistration=" + rsRegistration
+				+ ", exportReference=" + exportReference
+				+ ", serviceReference=" + serviceReference + ", exception="
+				+ exception + "]";
 	}
 
 }
