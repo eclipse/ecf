@@ -12,10 +12,16 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceID;
+import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
+import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
+import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -118,6 +124,7 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 			synchronized (importedRegistrations) {
 				try {
 					importRegistration = doImportService(ed, rsContainer);
+
 				} catch (Exception e) {
 					importRegistration = handleImportServiceException(ed,
 							rsContainer, e);
@@ -139,6 +146,68 @@ public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
 					+ " is not ECFEndpointDescription...ignoring");
 			return null;
 		}
+	}
+
+	public Collection<ImportRegistration> unimportService(IRemoteServiceID remoteServiceID) {
+		trace("unimport", "remoteServiceID=" + remoteServiceID);
+		List<ImportRegistration> removedRegistrations = new ArrayList<ImportRegistration>();
+		synchronized (importedRegistrations) {
+			for(Iterator<ImportRegistration> i=importedRegistrations.iterator(); i.hasNext(); ) {
+				ImportRegistration importRegistration = i.next();
+				IRemoteServiceReference rsReference = importRegistration.getRemoteServiceReference();
+				if (rsReference != null) {
+					IRemoteServiceID regID = rsReference.getID();
+					if (regID.equals(remoteServiceID)) {
+						removedRegistrations.add(importRegistration);
+						i.remove();
+					}
+				}
+			}
+		}
+		// Now close all of them
+		for (ImportRegistration removedReg : removedRegistrations)
+			removedReg.close();
+		return removedRegistrations;
+	}
+
+	protected IRemoteServiceListener createRemoteServiceListener() {
+		return new RemoteServiceListener();
+	}
+	
+	class RemoteServiceListener implements IRemoteServiceListener {
+
+		public void handleServiceEvent(IRemoteServiceEvent event) {
+			if (event instanceof IRemoteServiceUnregisteredEvent) {
+				Collection<ImportRegistration> removedRegistrations = unimportService(event.getReference().getID());
+				trace("RemoteServiceListener.handleServiceEvent","Removed importRegistrations="+removedRegistrations+" via event="+event);
+			}
+		}
+	}
+
+	public Collection<ImportRegistration> unimportService(
+			EndpointDescription endpointDescription) {
+		trace("unimportService", "endpointDescription=" + endpointDescription);
+		List<ImportRegistration> removedRegistrations = new ArrayList<ImportRegistration>();
+		synchronized (importedRegistrations) {
+			for (Iterator<ImportRegistration> i = importedRegistrations
+					.iterator(); i.hasNext();) {
+				ImportRegistration reg = i.next();
+				ImportReference importReference = reg.getImportReference();
+				if (importReference != null) {
+					org.osgi.service.remoteserviceadmin.EndpointDescription importedDescription = importReference
+							.getImportedEndpoint();
+					if (importedDescription != null
+							&& importedDescription.equals(endpointDescription)) {
+						removedRegistrations.add(reg);
+						i.remove();
+					}
+				}
+			}
+		}
+		// Now close all of them
+		for (ImportRegistration removedReg : removedRegistrations)
+			removedReg.close();
+		return removedRegistrations;
 	}
 
 	private ImportRegistration handleImportServiceException(

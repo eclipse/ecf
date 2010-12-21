@@ -9,7 +9,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
@@ -17,6 +20,7 @@ public class ImportRegistration implements
 		org.osgi.service.remoteserviceadmin.ImportRegistration {
 
 	private IRemoteServiceContainer rsContainer;
+	private IRemoteServiceListener rsListener;
 	private IRemoteServiceReference rsReference;
 	private ServiceRegistration importRegistration;
 	private ImportReference importReference;
@@ -24,22 +28,35 @@ public class ImportRegistration implements
 	private final Object closeLock = new Object();
 
 	protected ImportRegistration(IRemoteServiceContainer rsContainer,
+			IRemoteServiceListener rsListener,
 			IRemoteServiceReference rsReference,
 			EndpointDescription endpointDescription,
 			ServiceRegistration importRegistration) {
 		this.rsContainer = rsContainer;
+		Assert.isNotNull(rsContainer);
+		this.rsListener = rsListener;
+		Assert.isNotNull(rsListener);
 		this.rsReference = rsReference;
+		Assert.isNotNull(rsReference);
 		this.importRegistration = importRegistration;
 		this.importReference = new ImportReference(
 				importRegistration.getReference(), endpointDescription);
+		// Add the remoteservice listener to the container adapter, so that the rsListener
+		// notified asynchronously if our underlying remote service reference is unregistered locally
+		// due to disconnect or remote ejection
+		rsContainer.getContainerAdapter().addRemoteServiceListener(rsListener);
 	}
 
 	public IRemoteServiceReference getRemoteServiceReference() {
-		return rsReference;
+		synchronized (closeLock) {
+			return rsReference;
+		}
 	}
 
 	public IRemoteServiceContainer getRemoteServiceContainer() {
-		return rsContainer;
+		synchronized (closeLock) {
+			return rsContainer;
+		}
 	}
 
 	public ImportReference getImportReference() {
@@ -59,10 +76,13 @@ public class ImportRegistration implements
 				importRegistration.unregister();
 				importRegistration = null;
 			}
-			if (rsReference != null) {
-				rsContainer.getContainerAdapter().ungetRemoteService(
-						rsReference);
+			if (rsContainer != null) {
+				IRemoteServiceContainerAdapter containerAdapter = rsContainer.getContainerAdapter();
+				if (rsReference != null) containerAdapter.ungetRemoteService(rsReference);
 				rsReference = null;
+				// remove remote service listener
+				if (rsListener != null) containerAdapter.removeRemoteServiceListener(rsListener);
+				rsListener = null;
 				rsContainer = null;
 			}
 			if (importReference != null) {

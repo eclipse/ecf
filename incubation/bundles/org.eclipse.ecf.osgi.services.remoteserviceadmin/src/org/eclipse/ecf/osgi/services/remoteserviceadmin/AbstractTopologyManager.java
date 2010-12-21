@@ -126,7 +126,16 @@ public abstract class AbstractTopologyManager {
 		}
 	}
 
-	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectImportRemoteServiceAdmin(
+	protected RemoteServiceAdmin selectImportRemoteServiceAdmin(
+			EndpointDescription endpoint) {
+		synchronized (remoteServiceAdminLock) {
+			if (remoteServiceAdmin == null)
+				remoteServiceAdmin = new RemoteServiceAdmin(getContext());
+		}
+		return remoteServiceAdmin;
+	}
+
+	protected RemoteServiceAdmin selectUnimportRemoteServiceAdmin(
 			EndpointDescription endpoint) {
 		synchronized (remoteServiceAdminLock) {
 			if (remoteServiceAdmin == null)

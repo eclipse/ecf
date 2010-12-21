@@ -88,24 +88,36 @@ public class TopologyManager extends AbstractTopologyManager implements
 							+ endpoint + ",matchedFilter=" + matchedFilter);
 	}
 
-	private void handleEndpointAdded(EndpointDescription endpoint) {
-		trace("handleEndpointAdded", "endpoint=" + endpoint);
-		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectImportRemoteServiceAdmin(endpoint);
+	private void handleEndpointAdded(EndpointDescription endpointDescription) {
+		trace("handleEndpointAdded", "endpointDescription=" + endpointDescription);
+		// First, select importing remote service admin
+		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectImportRemoteServiceAdmin(endpointDescription);
 
+		if (rsa == null) {
+			logError("handleEndpointAdded","RemoteServiceAdmin not found for importing endpointDescription="+endpointDescription);
+			return;
+		}
 		// now call rsa.import
-		ImportRegistration importRegistration = rsa.importService(endpoint);
+		ImportRegistration importRegistration = rsa.importService(endpointDescription);
 		if (importRegistration == null) {
 			logError("handleEndpointAdded",
-					"Import registration is null for endpoint=" + endpoint
+					"Import registration is null for endpointDescription=" + endpointDescription
 							+ " and rsa=" + rsa);
 		} else
 			trace("handleEndpointAdded", "Import registration="
-					+ importRegistration + " for endpoint=" + endpoint);
+					+ importRegistration + " for endpointDescription=" + endpointDescription);
 	}
 
-	private void handleEndpointRemoved(EndpointDescription endpoint) {
-		// TODO Auto-generated method stub
-		trace("handleEndpointRemoved", "endpoint=" + endpoint);
+	private void handleEndpointRemoved(EndpointDescription endpointDescription) {
+		trace("handleEndpointRemoved", "endpointDescription=" + endpointDescription);
+		// First, select importing remote service admin
+		RemoteServiceAdmin rsa = selectUnimportRemoteServiceAdmin(endpointDescription);
+		if (rsa == null) {
+			logError("handleEndpointRemoved","RemoteServiceAdmin not found for importing endpointDescription="+endpointDescription);
+			return;
+		}
+		Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ImportRegistration> unimportRegistrations = rsa.unimportService(endpointDescription);
+		trace("handleEndpointRemoved","importRegistration="+unimportRegistrations+" removed for endpointDescription="+endpointDescription);
 	}
 
 	private Map<String, Object> prepareExportProperties(

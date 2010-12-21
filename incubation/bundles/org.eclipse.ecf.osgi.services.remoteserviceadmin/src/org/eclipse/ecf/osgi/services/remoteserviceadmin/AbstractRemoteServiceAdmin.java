@@ -35,6 +35,7 @@ import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.BundleContext;
@@ -444,11 +445,14 @@ public abstract class AbstractRemoteServiceAdmin {
 				(Dictionary) PropertiesUtil
 						.createDictionaryFromMap(proxyProperties));
 
-		// Now create import registration for newly registered proxy
-		return new ImportRegistration(rsContainer, selectedRsReference,
+		IRemoteServiceListener rsListener = createRemoteServiceListener();
+		
+		return new ImportRegistration(rsContainer,rsListener,selectedRsReference,
 				endpointDescription, proxyRegistration);
 	}
 
+	protected abstract IRemoteServiceListener createRemoteServiceListener();
+	
 	protected IRemoteServiceReference selectRemoteServiceReference(
 			Collection<IRemoteServiceReference> rsRefs, ID targetID,
 			ID[] idFilter, Collection<String> interfaces, String rsFilter,

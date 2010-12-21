@@ -12,4 +12,15 @@ org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/exceptions/throwing=true
 
 org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/remoteserviceadmin=true
 
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/topologymanager=true
+
 org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/containerselector=true
+
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/discovery=true
+
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/endpointdescriptionreader=true
+
+
+
+
+
