@@ -101,7 +101,7 @@ public abstract class AbstractServicePublicationTest extends TestCase implements
 		// prepare a service tracker
 		final ServiceTracker tracker = new ServiceTracker(context,
 				TestServiceInterface1.class.getName(), null);
-		tracker.open();
+		tracker.open(true);
 	
 		// register the (remote-enabled) service
 		registration = context.registerService(TestServiceInterface1.class.getName(),
