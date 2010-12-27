@@ -36,7 +36,14 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	protected abstract IRemoteServiceReference getRemoteServiceReference();
 
 	protected Class loadInterfaceClass(String className) throws ClassNotFoundException {
-		return Class.forName(className);
+		return loadInterfaceClass(this.getClass().getClassLoader(), className);
+	}
+
+	/**
+	 * @since 6.0
+	 */
+	protected Class loadInterfaceClass(ClassLoader cl, String className) throws ClassNotFoundException {
+		return Class.forName(className, true, cl);
 	}
 
 	protected IRemoteService getRemoteService() {
@@ -58,21 +65,44 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 
 	@SuppressWarnings("unchecked")
 	public Object getProxy() throws ECFException {
+		List classes = new ArrayList();
+		ClassLoader cl = this.getClass().getClassLoader();
 		try {
 			// Get clazz from reference
 			final String[] clazzes = getInterfaceClassNames();
-			List classes = new ArrayList();
-			for (int i = 0; i < clazzes.length; i++) {
-				Class c = loadInterfaceClass(clazzes[i]);
-				classes.add(c);
-				// check to see if async remote service proxy interface is defined
-				Class asyncRemoteServiceProxyClass = findAsyncRemoteServiceProxyClass(c);
-				if (asyncRemoteServiceProxyClass != null && asyncRemoteServiceProxyClass.isInterface())
-					classes.add(asyncRemoteServiceProxyClass);
-			}
-			// add IRemoteServiceProxy interface to set of interfaces supported by this proxy
-			classes.add(IRemoteServiceProxy.class);
-			return createProxy((Class[]) classes.toArray(new Class[] {}));
+			for (int i = 0; i < clazzes.length; i++)
+				classes.add(loadInterfaceClass(cl, clazzes[i]));
+		} catch (final Exception e) {
+			ECFException except = new ECFException("Failed to create proxy", e); //$NON-NLS-1$
+			logWarning("Exception in remote service getProxy", except); //$NON-NLS-1$
+			throw except;
+		} catch (final NoClassDefFoundError e) {
+			ECFException except = new ECFException("Failed to load proxy interface class", e); //$NON-NLS-1$
+			logWarning("Could not load class for getProxy", except); //$NON-NLS-1$
+			throw except;
+		}
+		return getProxy(cl, (Class[]) classes.toArray(new Class[classes.size()]));
+	}
+
+	/**
+	 * @since 6.0
+	 */
+	@SuppressWarnings("unchecked")
+	public Object getProxy(ClassLoader cl, Class[] interfaces) throws ECFException {
+		// Add asych classes
+		// for all interfaces, add async classes
+		List classes = new ArrayList();
+		for (int i = 0; i < interfaces.length; i++) {
+			// add interface to classes
+			classes.add(interfaces[i]);
+			Class asyncClass = findAsyncRemoteServiceProxyClass(cl, interfaces[i]);
+			if (asyncClass != null)
+				classes.add(asyncClass);
+		}
+		// add IRemoteServiceProxy interface to set of interfaces supported by this proxy
+		classes.add(IRemoteServiceProxy.class);
+		try {
+			return createProxy(cl, (Class[]) classes.toArray(new Class[classes.size()]));
 		} catch (final Exception e) {
 			ECFException except = new ECFException("Failed to create proxy", e); //$NON-NLS-1$
 			logWarning("Exception in remote service getProxy", except); //$NON-NLS-1$
@@ -84,8 +114,15 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		}
 	}
 
+	/**
+	 * @since 6.0
+	 */
+	protected Object createProxy(ClassLoader cl, Class[] classes) {
+		return Proxy.newProxyInstance(cl, classes, this);
+	}
+
 	protected Object createProxy(Class[] classes) {
-		return Proxy.newProxyInstance(this.getClass().getClassLoader(), classes, this);
+		return createProxy(this.getClass().getClassLoader(), classes);
 	}
 
 	/**
@@ -95,6 +132,22 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		String proxyClassName = convertInterfaceNameToAsyncInterfaceName(c.getName());
 		try {
 			return Class.forName(proxyClassName);
+		} catch (Exception e) {
+			logWarning("No async remote service interface found with name=" + proxyClassName + " for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
+			return null;
+		} catch (NoClassDefFoundError e) {
+			logWarning("Async remote service interface with name=" + proxyClassName + " could not be loaded for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
+			return null;
+		}
+	}
+
+	/**
+	 * @since 6.0
+	 */
+	protected Class findAsyncRemoteServiceProxyClass(ClassLoader cl, Class c) {
+		String proxyClassName = convertInterfaceNameToAsyncInterfaceName(c.getName());
+		try {
+			return Class.forName(proxyClassName, true, cl);
 		} catch (Exception e) {
 			logWarning("No async remote service interface found with name=" + proxyClassName + " for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;

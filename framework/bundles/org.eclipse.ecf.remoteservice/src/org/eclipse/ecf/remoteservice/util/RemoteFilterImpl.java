@@ -34,7 +34,7 @@ public class RemoteFilterImpl implements IRemoteFilter {
 
 	/**
 	 * @param createFilter
-	 * @since 5.1
+	 * @since 6.0
 	 */
 	public RemoteFilterImpl(BundleContext context, String createFilter) throws InvalidSyntaxException {
 		if (createFilter == null)
@@ -70,7 +70,8 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteFilter#match(java.util.Dictionary)
 	 */
-	@SuppressWarnings("unchecked") // DO NOT REMOVE!!!
+	@SuppressWarnings("unchecked")
+	// DO NOT REMOVE!!!
 	public boolean match(Dictionary dictionary) {
 		return filter.match(dictionary);
 	}
@@ -78,7 +79,8 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteFilter#matchCase(java.util.Dictionary)
 	 */
-	@SuppressWarnings("unchecked") // DO NOT REMOVE!!!
+	@SuppressWarnings("unchecked")
+	// DO NOT REMOVE!!!
 	public boolean matchCase(Dictionary dictionary) {
 		return filter.matchCase(dictionary);
 	}
@@ -121,7 +123,7 @@ public class RemoteFilterImpl implements IRemoteFilter {
 
 	/**
 	 * @see org.osgi.framework.Filter#matches(java.util.Map)
-	 * @since 5.1
+	 * @since 6.0
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean matches(Map map) {

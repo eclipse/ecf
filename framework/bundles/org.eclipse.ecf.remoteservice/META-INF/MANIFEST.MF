@@ -2,17 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice;singleton:=true
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 6.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.remoteservice.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.remoteservice;x-internal:=true,
- org.eclipse.ecf.remoteservice,
- org.eclipse.ecf.remoteservice.client,
- org.eclipse.ecf.remoteservice.events,
- org.eclipse.ecf.remoteservice.util,
- org.eclipse.ecf.remoteservice.util.tracker
+ org.eclipse.ecf.remoteservice;version="6.0.0",
+ org.eclipse.ecf.remoteservice.client;version="6.0.0",
+ org.eclipse.ecf.remoteservice.events;version="6.0.0",
+ org.eclipse.ecf.remoteservice.util;version="6.0.0",
+ org.eclipse.ecf.remoteservice.util.tracker;version="6.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5,
  J2SE-1.4,
  CDC-1.0/Foundation-1.0

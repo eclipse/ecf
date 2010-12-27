@@ -116,12 +116,29 @@ public interface IRemoteService {
 	 * @return Object that implements the interface specified in the
 	 *         IRemoteServiceReference instance used to retrieve the
 	 *         IRemoteService object. The result may then be cast to the
-	 *         appropriate type. The getProxy() contract guarantees that if a
-	 *         non-null Object is returned, that it will implement the interface
-	 *         specified for the IRemoteServiceReference. Will not be
-	 *         <code>null</code> .
+	 *         appropriate type. Will not be <code>null</code>.
 	 * @throws ECFException
-	 *             if not currently connected to remote service
+	 *             If some problem in creating the proxy.  The underlying problem is 
+	 *             conveyed in the nested exception.
 	 */
 	public Object getProxy() throws ECFException;
+
+	/**
+	 * Get local proxy for remote interface. The local proxy may then be used to
+	 * make remote method calls transparently by invoking the local proxy method
+	 * 
+	 * @param cl ClassLoader to use to create the proxy class.  
+	 *         Must not be <code>null</code>. 
+	 * @param interfaceClasses array of Class that has the loaded interface classes.  
+	 *         Must not be <code>null</code> and should have dimension of one or more.
+	 * @return Object that implements the given interfaceClasses.  The result may then 
+	 *         be cast to the one of the types given in interfaceClasses. Will not be
+	 *         <code>null</code>
+	 * @throws ECFException
+	 *             If some problem in creating the proxy.  The underlying problem is 
+	 *             conveyed in the nested exception.
+	 * @since 6.0
+	 */
+	public Object getProxy(ClassLoader cl, Class[] interfaceClasses) throws ECFException;
+
 }
