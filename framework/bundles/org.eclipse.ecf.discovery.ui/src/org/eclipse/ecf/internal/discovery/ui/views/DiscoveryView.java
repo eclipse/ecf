@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2008 Versant Corp. and others.
+ * Copyright (c) 2010 Remain Software, Versant Corp. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Versant Corp. - initial API and implementation
+ *    Remain Software - 333137 - Show In menu implementation
  *****************************************************************************/
 package org.eclipse.ecf.internal.discovery.ui.views;
 
@@ -17,36 +18,21 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.celleditor.AdapterFactoryTreeEditor;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.util.LocalSelectionTransfer;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.StructuredViewer;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DragSourceAdapter;
-import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
 import org.eclipse.ui.handlers.CollapseAllHandler;
 import org.eclipse.ui.handlers.IHandlerService;
-import org.eclipse.ui.part.DrillDownAdapter;
-import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.part.*;
 
+public class DiscoveryView extends ViewPart implements IShowInSource, ISelectionListener {
 
-public class DiscoveryView extends ViewPart {
-
-	public static final String ID = "org.eclipse.ecf.discovery.ui.DiscoveryView";
+	public static final String ID = "org.eclipse.ecf.discovery.ui.DiscoveryView"; //$NON-NLS-1$
 
 	private DrillDownAdapter drillDownAdapter;
 
@@ -54,6 +40,9 @@ public class DiscoveryView extends ViewPart {
 
 	private CollapseAllHandler collapseHandler;
 
+	private IWorkbenchPart selectedPart;
+
+	private ISelection currentSelection;
 
 	private void contributeToActionBars() {
 		IActionBars bars = getViewSite().getActionBars();
@@ -62,8 +51,9 @@ public class DiscoveryView extends ViewPart {
 	}
 
 	/**
-	 * This creates a context menu for the viewer and adds a listener as well registering the menu for extension. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This creates a context menu for the viewer and adds a listener as well
+	 * registering the menu for extension. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 */
 	protected void createContextMenuFor(StructuredViewer viewer) {
 		MenuManager contextMenu = new MenuManager("#PopUp"); //$NON-NLS-1$
@@ -72,64 +62,67 @@ public class DiscoveryView extends ViewPart {
 		Menu menu = contextMenu.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
 		getSite().registerContextMenu(contextMenu, viewer);
-    }
+	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets
+	 * .Composite)
 	 */
 	public void createPartControl(Composite parent) {
 		ComposedAdapterFactory adapterFactory = DiscoveryEditingDomainProvider.eINSTANCE.getAdapterFactory();
-		
+
 		// create the viewer
-		selectionViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		selectionViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
-		selectionViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
-		selectionViewer.setComparator(new ViewerComparator());
-		selectionViewer.setFilters(getViewerFilters());
-		getSite().setSelectionProvider(selectionViewer);
+		setSelectionViewer(new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL));
+		getSelectionViewer().setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
+		getSelectionViewer().setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
+		getSelectionViewer().setComparator(new ViewerComparator());
+		getSelectionViewer().setFilters(getViewerFilters());
+		getSite().setSelectionProvider(getSelectionViewer());
 
 		// populate the viewer with the model if available
-		EList resources = DiscoveryEditingDomainProvider.eINSTANCE.getEditingDomain().getResourceSet()
-				.getResources();
+		EList resources = DiscoveryEditingDomainProvider.eINSTANCE.getEditingDomain().getResourceSet().getResources();
 		if (resources != null) {
-			selectionViewer.setInput(resources.get(0));
-			selectionViewer.setSelection(new StructuredSelection(resources.get(0)), true);
+			getSelectionViewer().setInput(resources.get(0));
+			getSelectionViewer().setSelection(new StructuredSelection(resources.get(0)), true);
 		}
 
-		new AdapterFactoryTreeEditor(selectionViewer.getTree(), adapterFactory);
-		selectionViewer.addPostSelectionChangedListener(new AdapterFactoryStatuslineProvider(adapterFactory,
-				getViewSite().getActionBars().getStatusLineManager()));
-		
-		drillDownAdapter = new DrillDownAdapter(selectionViewer);
-		createContextMenuFor(selectionViewer);
+		new AdapterFactoryTreeEditor(getSelectionViewer().getTree(), adapterFactory);
+		getSelectionViewer().addPostSelectionChangedListener(new AdapterFactoryStatuslineProvider(adapterFactory, getViewSite().getActionBars().getStatusLineManager()));
+
+		drillDownAdapter = new DrillDownAdapter(getSelectionViewer());
+		createContextMenuFor(getSelectionViewer());
 		hookContextMenu();
 		contributeToActionBars();
-		
+
 		// add collapse handler
 		IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
-		collapseHandler = new CollapseAllHandler(selectionViewer);
+		collapseHandler = new CollapseAllHandler(getSelectionViewer());
 		handlerService.activateHandler(CollapseAllHandler.COMMAND_ID, collapseHandler);
-		
+
 		// add DND support
-		Transfer[] supportedTransfers = { LocalSelectionTransfer.getTransfer() };
-		selectionViewer.addDragSupport(DND.DROP_DEFAULT | DND.DROP_COPY | DND.DROP_MOVE, supportedTransfers, new DragSourceAdapter() {
+		Transfer[] supportedTransfers = {LocalSelectionTransfer.getTransfer()};
+		getSelectionViewer().addDragSupport(DND.DROP_DEFAULT | DND.DROP_COPY | DND.DROP_MOVE, supportedTransfers, new DragSourceAdapter() {
 			public void dragSetData(DragSourceEvent event) {
-				LocalSelectionTransfer.getTransfer().setSelection(selectionViewer.getSelection());
+				LocalSelectionTransfer.getTransfer().setSelection(getSelectionViewer().getSelection());
 			}
 		});
-		
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.eclipse.ecf.discovery.ui.ServiceView");
+
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.eclipse.ecf.discovery.ui.ServiceView"); //$NON-NLS-1$
+
+		getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(this);
 	}
 
 	/**
-	 * @return
+	 * @return a new empty ViewerFilter
 	 */
 	private ViewerFilter[] getViewerFilters() {
-		//TODO lookup view filters via EP
 		return new ViewerFilter[0];
 	}
 
-	private void fillContextMenu(IMenuManager manager) {
+	void fillContextMenu(IMenuManager manager) {
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 
@@ -146,41 +139,77 @@ public class DiscoveryView extends ViewPart {
 	}
 
 	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.jface.action.IMenuListener#menuAboutToShow(org.eclipse.jface.action.IMenuManager)
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * org.eclipse.jface.action.IMenuListener#menuAboutToShow(org.eclipse
+			 * .jface.action.IMenuManager)
 			 */
 			public void menuAboutToShow(IMenuManager manager) {
-				//TODO https://bugs.eclipse.org/bugs/show_bug.cgi?id=151604
-				// add a menu listener 
-		        // that will fire a selection changed event, in order
-		        // to update the selection in contributed actions
-				selectionViewer.setSelection(selectionViewer.getSelection());
-				
-				DiscoveryView.this.fillContextMenu(manager);
+				// TODO https://bugs.eclipse.org/bugs/show_bug.cgi?id=151604
+				// add a menu listener
+				// that will fire a selection changed event, in order
+				// to update the selection in contributed actions
+				getSelectionViewer().setSelection(getSelectionViewer().getSelection());
+
+				fillContextMenu(manager);
 			}
 		});
-		Menu menu = menuMgr.createContextMenu(selectionViewer.getControl());
-		selectionViewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, selectionViewer);
+		Menu menu = menuMgr.createContextMenu(getSelectionViewer().getControl());
+		getSelectionViewer().getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, getSelectionViewer());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
 	 */
 	public void setFocus() {
-		selectionViewer.getControl().setFocus();
+		getSelectionViewer().getControl().setFocus();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
 	public void dispose() {
 		super.dispose();
-		if(collapseHandler != null) {
+		if (collapseHandler != null) {
 			collapseHandler.dispose();
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.part.IShowInSource#getShowInContext()
+	 */
+	public ShowInContext getShowInContext() {
+		return new ShowInContext(selectedPart, currentSelection);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.ISelectionListener#selectionChanged(org.eclipse.ui.
+	 * IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
+	 */
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		this.selectedPart = part;
+		this.currentSelection = selection;
+	}
+
+	public void setSelectionViewer(TreeViewer selectionViewer) {
+		this.selectionViewer = selectionViewer;
+	}
+
+	public TreeViewer getSelectionViewer() {
+		return selectionViewer;
 	}
 }

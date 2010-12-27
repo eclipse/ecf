@@ -23,4 +23,24 @@
             type="org.eclipse.ecf.discovery.ui.model.IServiceInfo">
       </propertyTester>
    </extension>
+  <extension
+        point="org.eclipse.ui.menus">
+     <menuContribution
+           locationURI="popup:org.eclipse.ecf.discovery.ui.DiscoveryView">
+        <menu
+              commandId="org.eclipse.ui.navigate.showInQuickMenu"
+              id="org.eclipse.ecf.discovery.ui.DiscoveryView.showInMenu"
+              label="%menu.showIn.label"
+              mnemonic="%menu.showIn.mnemonic">
+           <dynamic
+                 class="org.eclipse.ui.ExtensionFactory:showInContribution"
+                 id="org.eclipse.ui.menus.dynamicShowInMenu">
+           </dynamic>
+        </menu>
+        <separator
+              name="additions"
+              visible="true">
+        </separator>
+     </menuContribution>
+  </extension>
 </plugin>
