@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.rest;singleton:=true
-Bundle-Version: 2.0.100.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.remoteservice.rest.Activator
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
@@ -19,7 +19,7 @@ Import-Package: org.apache.commons.httpclient;version="3.0.1",
  org.apache.commons.httpclient.methods;version="3.0.1",
  org.apache.commons.httpclient.params;version="3.0.1",
  org.apache.commons.httpclient.util,
- org.eclipse.ecf.remoteservice,
+ org.eclipse.ecf.remoteservice;version="6.0.0",
  org.eclipse.ecf.remoteservice.client,
  org.eclipse.ecf.remoteservice.events,
  org.eclipse.ecf.remoteservice.util,

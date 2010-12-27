@@ -11,8 +11,7 @@ package org.eclipse.ecf.remoteservice.rest.client;
 
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.remoteservice.IRemoteCall;
-import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rest.identity.RestID;
 import org.eclipse.ecf.remoteservice.rest.identity.RestNamespace;
@@ -60,6 +59,12 @@ public class RestClientContainer extends AbstractClientContainer implements IRem
 		} else if (lastChar[0] != '/' && firstMethodChar[0] != '/')
 			return baseUriString + "/" + resourcePath; //$NON-NLS-1$
 		return null;
+	}
+
+	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
+		// REST clients don't have way to invoke call policy by default,
+		// so return false
+		return false;
 	}
 
 }

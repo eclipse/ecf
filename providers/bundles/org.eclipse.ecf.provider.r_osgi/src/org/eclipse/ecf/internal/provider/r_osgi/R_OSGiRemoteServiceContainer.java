@@ -746,4 +746,9 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 		this.connectContext = connectContext;
 	}
 
+	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
+		// XXX...we need to see if r-OSGi has a means to implement this
+		return false;
+	}
+
 }

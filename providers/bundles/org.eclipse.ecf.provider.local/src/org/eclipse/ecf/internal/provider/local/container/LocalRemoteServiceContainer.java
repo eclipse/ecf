@@ -99,6 +99,10 @@ public class LocalRemoteServiceContainer extends AbstractContainer implements IR
 		registry.setConnectContextForAuthentication(connectContext);
 	}
 
+	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
+		return registry.setRemoteServiceCallPolicy(policy);
+	}
+
 	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException {
 		if (targetID.equals(targetID))
 			return;

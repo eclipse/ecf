@@ -517,4 +517,13 @@ public interface IRemoteServiceContainerAdapter extends IRemoteServiceHost, IRem
 	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext);
 
+	/**
+	 * Set the remote service call policy to enable authorization on remote service method calls
+	 * @param policy Implementation of <code>IRemoteServiceCallPolicy</code> containing authorization specific code
+	 * @return <code>true</code> if the underlying provider supports using the policy, <code>false</code> if
+	 * it does not support using the policy.
+	 * @since 6.0
+	 */
+	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy);
+
 }

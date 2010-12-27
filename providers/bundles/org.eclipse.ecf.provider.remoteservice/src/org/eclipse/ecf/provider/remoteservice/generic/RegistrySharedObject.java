@@ -125,6 +125,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private IExecutor requestExecutor;
 
+	private Object remoteServiceCallPolicyLock = new Object();
+	private IRemoteServiceCallPolicy remoteServiceCallPolicy;
+
 	public RegistrySharedObject() {
 		//
 	}
@@ -1420,6 +1423,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				Response response = null;
 				Object result = null;
 				try {
+					// Get remote service call policy
+					IRemoteServiceCallPolicy callPolicy = getRemoteServiceCallPolicy();
+					// If it's set, then check remote call *before* actual invocation
+					if (callPolicy != null)
+						callPolicy.checkRemoteCall(responseTarget, localRegistration, call);
+
 					result = localRegistration.callService(call);
 					response = new Response(request.getRequestId(), result);
 					// Invocation target exception happens if the local method being invoked throws (cause)
@@ -1850,6 +1859,25 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			logException(MSG_INVOKE_ERROR_CODE, "Exception invoking shared object message=" + msg, e); //$NON-NLS-1$
 		}
 		return false;
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	protected IRemoteServiceCallPolicy getRemoteServiceCallPolicy() {
+		synchronized (remoteServiceCallPolicyLock) {
+			return remoteServiceCallPolicy;
+		}
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
+		synchronized (remoteServiceCallPolicyLock) {
+			this.remoteServiceCallPolicy = policy;
+			return true;
+		}
 	}
 
 }

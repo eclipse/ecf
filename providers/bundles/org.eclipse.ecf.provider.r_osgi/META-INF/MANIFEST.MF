@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.r_osgi;singleton:=true
-Bundle-Version: 3.1.0.qualifier
+Bundle-Version: 3.2.0.qualifier
 Import-Package: org.eclipse.ecf.core.util.reflection,
  org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.osgi.framework;version="1.3.0",

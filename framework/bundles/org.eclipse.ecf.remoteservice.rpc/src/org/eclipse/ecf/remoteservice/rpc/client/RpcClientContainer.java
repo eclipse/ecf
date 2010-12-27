@@ -10,8 +10,7 @@ package org.eclipse.ecf.remoteservice.rpc.client;
 
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.remoteservice.IRemoteCall;
-import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rpc.identity.RpcId;
 import org.eclipse.ecf.remoteservice.rpc.identity.RpcNamespace;
@@ -37,6 +36,12 @@ public class RpcClientContainer extends AbstractClientContainer implements IRemo
 	protected String prepareEndpointAddress(IRemoteCall call, IRemoteCallable callable) {
 		// TODO
 		return callable.getResourcePath();
+	}
+
+	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
+		// By default, rpc client's cannot set the call policy, so
+		// return false
+		return false;
 	}
 
 }
