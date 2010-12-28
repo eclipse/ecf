@@ -10,10 +10,13 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Version;
 
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
@@ -72,6 +75,20 @@ public class EndpointDescription extends
 				+ (int) (remoteServiceId ^ (remoteServiceId >>> 32));
 	}
 
+	public Map<String,Version> getInterfaceVersions() {
+		List<String> interfaces = getInterfaces();
+		Map<String,Version> result = new HashMap<String,Version>();
+		for(String intf: interfaces) {
+			int index = intf.lastIndexOf('.');
+			if (index == -1) {
+				continue;
+			}
+			String packageName = intf.substring(0, index);
+			result.put(intf, getPackageVersion(packageName));
+		}
+		return result;
+	}
+	
 	public boolean equals(Object other) {
 		if (other == null)
 			return false;

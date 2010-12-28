@@ -127,6 +127,18 @@ public class PropertiesUtil {
 		return Collections.EMPTY_LIST;
 	}
 
+	public static Object getPropertyValue(String propertyName, ServiceReference serviceReference) {
+		return (serviceReference == null)?null:serviceReference.getProperty(propertyName);
+	}
+	
+	public static Object getPropertyValue(String propertyName,
+			ServiceReference serviceReference, Map<String, Object> overridingProperties) {
+		Object result = null;
+		if (overridingProperties != null) result = overridingProperties.get(propertyName);
+		return (result != null)?result:getPropertyValue(propertyName,serviceReference);
+	}
+
+
 	public static boolean isOSGiProperty(String key) {
 		return osgiProperties.contains(key)
 				&& !key.startsWith(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_);

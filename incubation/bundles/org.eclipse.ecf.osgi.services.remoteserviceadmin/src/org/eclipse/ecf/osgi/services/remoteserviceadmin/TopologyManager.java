@@ -103,15 +103,13 @@ public class TopologyManager extends AbstractTopologyManager implements
 			logError("handleEndpointAdded",
 					"Import registration is null for endpointDescription=" + endpointDescription
 							+ " and rsa=" + rsa);
-		} else
-			trace("handleEndpointAdded", "Import registration="
-					+ importRegistration + " for endpointDescription=" + endpointDescription);
+		}
 	}
 
 	private void handleEndpointRemoved(EndpointDescription endpointDescription) {
 		trace("handleEndpointRemoved", "endpointDescription=" + endpointDescription);
 		// First, select importing remote service admin
-		RemoteServiceAdmin rsa = selectUnimportRemoteServiceAdmin(endpointDescription);
+		AbstractRemoteServiceAdmin rsa = selectUnimportRemoteServiceAdmin(endpointDescription);
 		if (rsa == null) {
 			logError("handleEndpointRemoved","RemoteServiceAdmin not found for importing endpointDescription="+endpointDescription);
 			return;
@@ -218,7 +216,7 @@ public class TopologyManager extends AbstractTopologyManager implements
 	}
 
 	private void handleServiceUnregistering(ServiceReference serviceReference) {
-		RemoteServiceAdmin rsa = selectUnexportRemoteServiceAdmin(serviceReference);
+		AbstractRemoteServiceAdmin rsa = selectUnexportRemoteServiceAdmin(serviceReference);
 		if (rsa == null) {
 			logError("handleServiceUnregistering",
 					"No RemoteServiceAdmin found for serviceReference="

@@ -18,6 +18,9 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.equinox.concurrent.future.IFuture;
+import org.osgi.framework.AllServiceListener;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.remoteserviceadmin.RemoteConstants;
@@ -46,7 +49,6 @@ public abstract class AbstractRemoteServiceAccessTest extends
 			st = null;
 		}
 		Thread.sleep(REGISTER_WAIT);
-
 		super.tearDown();
 	}
 

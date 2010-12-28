@@ -119,7 +119,7 @@ public abstract class AbstractTopologyManager {
 		return remoteServiceAdmin;
 	}
 
-	protected RemoteServiceAdmin selectUnexportRemoteServiceAdmin(
+	protected AbstractRemoteServiceAdmin selectUnexportRemoteServiceAdmin(
 			ServiceReference serviceReference) {
 		synchronized (remoteServiceAdminLock) {
 			return remoteServiceAdmin;
@@ -135,7 +135,7 @@ public abstract class AbstractTopologyManager {
 		return remoteServiceAdmin;
 	}
 
-	protected RemoteServiceAdmin selectUnimportRemoteServiceAdmin(
+	protected AbstractRemoteServiceAdmin selectUnimportRemoteServiceAdmin(
 			EndpointDescription endpoint) {
 		synchronized (remoteServiceAdminLock) {
 			if (remoteServiceAdmin == null)

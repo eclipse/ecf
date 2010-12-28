@@ -11,7 +11,9 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class EndpointDescriptionWriter implements IEndpointDescriptionWriter {
 
@@ -76,7 +78,7 @@ public class EndpointDescriptionWriter implements IEndpointDescriptionWriter {
 		indent(indentLevel, writer);
 		writer.append("<property name=\"").append(name)
 				.append("\" value-type=\"").append(valueType)
-				.append("\" value=").append(value.toString()).append("\"/>");
+				.append("\" value=\"").append(value.toString()).append("\"/>");
 		newLine(writer);
 	}
 
@@ -87,6 +89,11 @@ public class EndpointDescriptionWriter implements IEndpointDescriptionWriter {
 	}
 
 	private String getMultiValueType(Object value) {
+		if (value instanceof Set) {
+			
+		} else if (value instanceof List) {
+			
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -124,14 +131,14 @@ public class EndpointDescriptionWriter implements IEndpointDescriptionWriter {
 	private void writeEndpointDescriptionsElementClose(int indentLevel,
 			Writer writer) throws IOException {
 		indent(indentLevel, writer);
-		writer.append("<endpoint-descriptions xmlns=\"http://www.osgi.org/xmlns/rsa/v1.0.0\">");
+		writer.append("</endpoint-descriptions>");
 		newLine(writer);
 	}
 
 	private void writeEndpointDescriptionsElementOpen(int indentLevel,
 			Writer writer) throws IOException {
 		indent(indentLevel, writer);
-		writer.append("</endpoint-descriptions>");
+		writer.append("<endpoint-descriptions xmlns=\"http://www.osgi.org/xmlns/rsa/v1.0.0\">");
 		newLine(writer);
 	}
 

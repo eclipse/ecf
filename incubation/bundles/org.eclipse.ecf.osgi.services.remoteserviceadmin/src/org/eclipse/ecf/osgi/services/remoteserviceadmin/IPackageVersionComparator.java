@@ -9,13 +9,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.Version;
 
-public class RemoteServiceAdmin extends AbstractRemoteServiceAdmin implements
-		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin {
+public interface IPackageVersionComparator {
 
-	public RemoteServiceAdmin(BundleContext context) {
-		super(context);
-	}
-
+	public void comparePackageVersions(String packageName,
+			Version remotePackageVersion, Version localPackageVersion)
+			throws RuntimeException;
 }

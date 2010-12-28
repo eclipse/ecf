@@ -20,6 +20,7 @@ org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/discovery=true
 
 org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/endpointdescriptionreader=true
 
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/packageversioncomparator=true
 
 
 

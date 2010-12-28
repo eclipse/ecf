@@ -32,6 +32,8 @@ public interface DebugOptions {
 
 	public static final String DISCOVERY = DEBUG + "/discovery"; //$NON-NLS-1$
 
-	public static final String ENDPOINTDESCRIPTIONREADER = "/endpointdescriptionreader";
+	public static final String ENDPOINTDESCRIPTIONREADER = DEBUG + "/endpointdescriptionreader";
+
+	public static final String PACKAGEVERSIONCOMPARATOR = DEBUG + "/packageversioncomparator";
 
 }
