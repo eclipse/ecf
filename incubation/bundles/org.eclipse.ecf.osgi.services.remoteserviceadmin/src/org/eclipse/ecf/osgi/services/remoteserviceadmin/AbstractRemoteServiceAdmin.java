@@ -298,7 +298,6 @@ public abstract class AbstractRemoteServiceAdmin {
 		// ENDPOINT_ID
 		String endpointId = (String) PropertiesUtil
 				.getPropertyValue(
-
 						serviceReference,
 						overridingProperties,
 						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
@@ -318,7 +317,6 @@ public abstract class AbstractRemoteServiceAdmin {
 		// ENDPOINT_FRAMEWORK_ID
 		String frameworkId = (String) PropertiesUtil
 				.getPropertyValue(
-
 						serviceReference,
 						overridingProperties,
 						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID);
@@ -361,6 +359,10 @@ public abstract class AbstractRemoteServiceAdmin {
 							remoteConfigsSupported);
 
 		// ECF properties
+		// ID namespace
+		String idNamespace = containerID.getNamespace().getName();
+		endpointDescriptionProperties.put(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE, idNamespace);
+		
 		// ENDPOINT_CONNECTTARGET_ID
 		String connectTarget = (String) PropertiesUtil.getPropertyValue(
 				serviceReference, overridingProperties,
@@ -384,10 +386,8 @@ public abstract class AbstractRemoteServiceAdmin {
 
 		// ENDPOINT_REMOTESERVICE_FILTER
 		String rsFilter = (String) PropertiesUtil.getPropertyValue(
-
 		serviceReference, overridingProperties,
 				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
-
 		if (rsFilter != null)
 			endpointDescriptionProperties.put(
 					RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, rsFilter);
