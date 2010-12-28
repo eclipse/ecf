@@ -21,7 +21,7 @@ public class EndpointDescriptionWriter {
 	protected String indent = "  ";
 
 	public void writeEndpointDescriptions(Writer writer,
-			EndpointDescription[] endpointDescriptions) throws IOException {
+			org.osgi.service.remoteserviceadmin.EndpointDescription[] endpointDescriptions) throws IOException {
 
 		writeEndpointDescriptionsElementOpen(0, writer);
 		for (int i = 0; i < endpointDescriptions.length; i++) {
@@ -41,7 +41,7 @@ public class EndpointDescriptionWriter {
 	}
 
 	private void writeEndpointDescription(int indentLevel, Writer writer,
-			EndpointDescription endpointDescription) throws IOException {
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) throws IOException {
 		writeEndpointDescriptionElementOpen(indentLevel, writer);
 		writeProperties(indentLevel, writer, endpointDescription);
 		writeEndpointDescriptionElementClose(indentLevel, writer);
@@ -55,7 +55,7 @@ public class EndpointDescriptionWriter {
 	}
 
 	private void writeProperties(int indentLevel, Writer writer,
-			EndpointDescription endpointDescription) throws IOException {
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) throws IOException {
 		Map<String, Object> properties = endpointDescription.getProperties();
 		for (String name : properties.keySet())
 			writeProperty(indentLevel + 1, name, properties.get(name), writer);
