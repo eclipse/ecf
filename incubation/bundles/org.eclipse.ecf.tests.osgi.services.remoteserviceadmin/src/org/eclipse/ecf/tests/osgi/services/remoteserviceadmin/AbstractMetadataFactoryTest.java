@@ -98,7 +98,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		createECFRemoteServiceId(props);
 		// Add extra properties
 		addExtraProperties(props);
-		return new EndpointDescription(props,containerID.getNamespace().getName(),null,null,null);
+		return new EndpointDescription(props);
 	}
 	
 	protected EndpointDescription createFullEndpointDescription() {
@@ -115,7 +115,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		String rsFilter = createECFRSFilter(props);
 		// Add extra properties
 		addExtraProperties(props);
-		return new EndpointDescription(props,containerID.getNamespace().getName(), targetID,idFilter,rsFilter);
+		return new EndpointDescription(props);
 	}
 
 	protected void addExtraProperties(Map<String, Object> props) {
@@ -130,7 +130,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		ID containerID = createECFContainerID(props);
 		createECFRemoteServiceId(props);
 		// This should throw a runtime exception 
-		return new EndpointDescription(props,containerID.getNamespace().getName(),null,null,null);
+		return new EndpointDescription(props);
 	}
 	
 	protected EndpointDescription createBadECFEndpointDescrption() throws Exception {
@@ -142,7 +142,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		
 		// No ECF required properties
 		// This should throw a runtime exception 
-		return new EndpointDescription(props,null,null,null,null);
+		return new EndpointDescription(props);
 	}
 
 	protected String createOSGiServiceImportedConfig() {

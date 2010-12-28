@@ -11,7 +11,6 @@ package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
@@ -42,11 +41,7 @@ public class IDUtil {
 		String scheme = idName.substring(0, colonIndex);
 		// First try to find the Namespace using the protocol directly
 		Namespace ns = getNamespaceByName(scheme);
-		if (ns == null) {
-			// Then try to find by comparing to all Namespace.getScheme()
-			ns = findNamespaceByScheme(scheme);
-		}
-		return ns;
+		return (ns == null) ? findNamespaceByScheme(scheme) : ns;
 	}
 
 	public static Namespace findNamespaceByScheme(String scheme) {
@@ -57,32 +52,15 @@ public class IDUtil {
 		List namespaces = getIDFactory().getNamespaces();
 		for (Iterator i = namespaces.iterator(); i.hasNext();) {
 			Namespace ns = (Namespace) i.next();
-			if (scheme.equals(ns.getScheme())) {
-				// found it...so return
+			if (scheme.equals(ns.getScheme()))
 				return ns;
-			}
 		}
-		// If the scheme is "ecftcp" then we use StringID
 		return null;
-	}
-
-	public static ID createID(Map<String, Object> osgiProperties,
-			String namespaceName) throws IDCreateException {
-		// We try to get the ID from the OSGi id
-		String osgiIdName = PropertiesUtil
-				.verifyStringProperty(
-						osgiProperties,
-						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
-		if (osgiIdName == null)
-			throw new IDCreateException(
-					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID
-							+ " must not be null");
-		return createID(namespaceName, osgiIdName);
 	}
 
 	public static ID createID(String namespaceName, String idName)
 			throws IDCreateException {
-		Namespace ns = (namespaceName == null) ? getNamespaceByName(namespaceName)
+		Namespace ns = (namespaceName != null) ? getNamespaceByName(namespaceName)
 				: findNamespaceByIdName(idName);
 		if (ns == null)
 			throw new IDCreateException(
@@ -96,9 +74,9 @@ public class IDUtil {
 		return getIDFactory().createID(namespace, idName);
 	}
 
-	public static ID createContainerID(EndpointDescription endpointDescription)
+	public static ID createID(EndpointDescription endpointDescription)
 			throws IDCreateException {
-		return createID(endpointDescription.getContainerIDNamespace(),
+		return createID(endpointDescription.getIdNamespace(),
 				endpointDescription.getId());
 	}
 

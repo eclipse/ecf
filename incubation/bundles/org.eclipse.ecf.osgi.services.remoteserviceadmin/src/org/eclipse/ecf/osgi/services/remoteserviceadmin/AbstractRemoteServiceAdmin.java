@@ -108,18 +108,18 @@ public abstract class AbstractRemoteServiceAdmin {
 		// IHostContainerSelector implementer
 		hostContainerSelector = new HostContainerSelector(
 				hostDefaultConfigTypes, hostAutoCreateContainer);
-		hostContainerSelectorRegistration = getContext()
-				.registerService(IHostContainerSelector.class.getName(),
-						hostContainerSelector, (Dictionary) properties);
+		hostContainerSelectorRegistration = getContext().registerService(
+				IHostContainerSelector.class.getName(), hostContainerSelector,
+				(Dictionary) properties);
 		// create and register default consumer container selector. Since this
 		// is registered with minimum service ranking
 		// others can override this default simply by registering a
 		// IConsumerContainerSelector implementer
 		consumerContainerSelector = new ConsumerContainerSelector(
 				consumerAutoCreateContainer);
-		consumerContainerSelectorRegistration = getContext()
-				.registerService(IConsumerContainerSelector.class.getName(),
-						consumerContainerSelector, (Dictionary) properties);
+		consumerContainerSelectorRegistration = getContext().registerService(
+				IConsumerContainerSelector.class.getName(),
+				consumerContainerSelector, (Dictionary) properties);
 
 		// create and register a default package version comparator
 		packageVersionComparator = new PackageVersionComparator();
@@ -262,9 +262,8 @@ public abstract class AbstractRemoteServiceAdmin {
 
 		// OSGi properties
 		// OBJECTCLASS
-		String[] interfaces = (String[]) PropertiesUtil.getPropertyValue(
-				org.osgi.framework.Constants.OBJECTCLASS, null,
-				overridingProperties);
+		String[] interfaces = (String[]) PropertiesUtil.getPropertyValue(null,
+				overridingProperties, org.osgi.framework.Constants.OBJECTCLASS);
 		if (interfaces == null)
 			interfaces = exportedInterfaces;
 		endpointDescriptionProperties.put(
@@ -278,7 +277,7 @@ public abstract class AbstractRemoteServiceAdmin {
 			// If it's pre-set...by registration or by overridingProperties,
 			// then use that value
 			String packageVersion = (String) PropertiesUtil.getPropertyValue(
-					packageVersionKey, serviceReference, overridingProperties);
+					serviceReference, overridingProperties, packageVersionKey);
 			if (packageVersion == null) {
 				Version version = getPackageVersion(
 						serviceReference.getBundle(), packageName);
@@ -299,8 +298,10 @@ public abstract class AbstractRemoteServiceAdmin {
 		// ENDPOINT_ID
 		String endpointId = (String) PropertiesUtil
 				.getPropertyValue(
-						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
-						serviceReference, overridingProperties);
+
+						serviceReference,
+						overridingProperties,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
 		if (endpointId == null)
 			endpointId = containerID.getName();
 		endpointDescriptionProperties
@@ -309,16 +310,18 @@ public abstract class AbstractRemoteServiceAdmin {
 
 		// ENDPOINT_SERVICE_ID
 		Long serviceId = (Long) PropertiesUtil.getPropertyValue(
-				org.osgi.framework.Constants.SERVICE_ID, serviceReference,
-				overridingProperties);
+				serviceReference, overridingProperties,
+				org.osgi.framework.Constants.SERVICE_ID);
 		endpointDescriptionProperties.put(
 				org.osgi.framework.Constants.SERVICE_ID, serviceId);
 
 		// ENDPOINT_FRAMEWORK_ID
 		String frameworkId = (String) PropertiesUtil
 				.getPropertyValue(
-						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
-						serviceReference, overridingProperties);
+
+						serviceReference,
+						overridingProperties,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID);
 		if (frameworkId == null)
 			frameworkId = Activator.getDefault().getFrameworkUUID();
 		endpointDescriptionProperties
@@ -333,8 +336,9 @@ public abstract class AbstractRemoteServiceAdmin {
 		// SERVICE_INTENTS
 		String[] intents = (String[]) PropertiesUtil
 				.getPropertyValue(
-						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
-						null, overridingProperties);
+						null,
+						overridingProperties,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS);
 		if (intents == null)
 			intents = serviceIntents;
 		if (intents != null)
@@ -358,24 +362,35 @@ public abstract class AbstractRemoteServiceAdmin {
 
 		// ECF properties
 		// ENDPOINT_CONNECTTARGET_ID
-		Object connectTarget = PropertiesUtil.getPropertyValue(
-				RemoteConstants.ENDPOINT_CONNECTTARGET_ID, serviceReference,
-				overridingProperties);
-		ID connectTargetID = null;
-		if (connectTarget != null) {
-			// Then we get the host container connected ID
+		String connectTarget = (String) PropertiesUtil.getPropertyValue(
+				serviceReference, overridingProperties,
+				RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
+		if (connectTarget == null) {
 			ID connectedID = rsContainer.getContainer().getConnectedID();
 			if (connectedID != null && !connectedID.equals(containerID))
-				connectTargetID = connectedID;
+				connectTarget = connectedID.getName();
 		}
+		if (connectTarget != null)
+			endpointDescriptionProperties.put(
+					RemoteConstants.ENDPOINT_CONNECTTARGET_ID, connectTarget);
+
 		// ENDPOINT_IDFILTER_IDS
-		ID[] idFilter = (ID[]) PropertiesUtil.getPropertyValue(
-				RemoteConstants.ENDPOINT_IDFILTER_IDS, serviceReference,
-				overridingProperties);
+		String[] idFilter = (String[]) PropertiesUtil.getPropertyValue(
+				serviceReference, overridingProperties,
+				RemoteConstants.ENDPOINT_IDFILTER_IDS);
+		if (idFilter != null && idFilter.length > 0)
+			endpointDescriptionProperties.put(
+					RemoteConstants.ENDPOINT_IDFILTER_IDS, idFilter);
+
 		// ENDPOINT_REMOTESERVICE_FILTER
 		String rsFilter = (String) PropertiesUtil.getPropertyValue(
-				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
-				serviceReference, overridingProperties);
+
+		serviceReference, overridingProperties,
+				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
+
+		if (rsFilter != null)
+			endpointDescriptionProperties.put(
+					RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, rsFilter);
 
 		// copy remote registration properties
 		PropertiesUtil.copyProperties(rsRegistration,
@@ -385,8 +400,7 @@ public abstract class AbstractRemoteServiceAdmin {
 				.remove(org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS);
 		// finally create an ECF EndpointDescription
 		return new EndpointDescription(serviceReference,
-				endpointDescriptionProperties, containerID.getNamespace()
-						.getName(), connectTargetID, idFilter, rsFilter);
+				endpointDescriptionProperties);
 	}
 
 	protected Map<String, Object> copyNonReservedProperties(
@@ -436,7 +450,7 @@ public abstract class AbstractRemoteServiceAdmin {
 	}
 
 	protected ID getEndpointID(EndpointDescription endpointDescription) {
-		return IDUtil.createContainerID(endpointDescription);
+		return IDUtil.createID(endpointDescription);
 	}
 
 	protected ID getConnectTargetID(EndpointDescription endpointDescription) {
@@ -660,20 +674,26 @@ public abstract class AbstractRemoteServiceAdmin {
 		}
 	}
 
-	private ExportedPackage getExportedPackageForClass(PackageAdmin packageAdmin, Class clazz) {
+	private ExportedPackage getExportedPackageForClass(
+			PackageAdmin packageAdmin, Class clazz) {
 		String packageName = getPackageName(clazz.getName());
 		// Get all exported packages with given package name
 		ExportedPackage[] exportedPackagesWithName = packageAdmin
 				.getExportedPackages(packageName);
 		// If none then we return null
-		if (exportedPackagesWithName == null) return null;
+		if (exportedPackagesWithName == null)
+			return null;
 		// Get the bundle for the previously loaded interface class
 		Bundle classBundle = packageAdmin.getBundle(clazz);
-		if (classBundle == null) return null;
+		if (classBundle == null)
+			return null;
 		for (int i = 0; i < exportedPackagesWithName.length; i++) {
-			Bundle packageBundle = exportedPackagesWithName[i].getExportingBundle();
-			if (packageBundle == null) continue;
-			if (packageBundle.equals(classBundle)) return exportedPackagesWithName[i];
+			Bundle packageBundle = exportedPackagesWithName[i]
+					.getExportingBundle();
+			if (packageBundle == null)
+				continue;
+			if (packageBundle.equals(classBundle))
+				return exportedPackagesWithName[i];
 		}
 		return null;
 	}
@@ -699,7 +719,8 @@ public abstract class AbstractRemoteServiceAdmin {
 		for (Class clazz : classes) {
 			String className = clazz.getName();
 			String packageName = getPackageName(className);
-			ExportedPackage exportedPackage = getExportedPackageForClass(getPackageAdmin(), clazz);
+			ExportedPackage exportedPackage = getExportedPackageForClass(
+					getPackageAdmin(), clazz);
 			if (exportedPackage == null)
 				throw new NullPointerException(
 						"No exported package found for class=" + className);
@@ -752,7 +773,7 @@ public abstract class AbstractRemoteServiceAdmin {
 				.remove(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
 		// Set intents if there are intents
 		Object intentsValue = PropertiesUtil
-				.getStringPlusValue(endpointDescription.getIntents());
+				.convertToStringPlusValue(endpointDescription.getIntents());
 		if (intentsValue != null)
 			resultProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
@@ -948,16 +969,22 @@ public abstract class AbstractRemoteServiceAdmin {
 				+ ",properties=" + overridingProperties);
 		String[] exportedInterfaces = (String[]) PropertiesUtil
 				.getPropertyValue(
-						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
-						serviceReference, overridingProperties);
+
+						serviceReference,
+						overridingProperties,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
 		String[] exportedConfigs = (String[]) PropertiesUtil
 				.getPropertyValue(
-						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS,
-						serviceReference, overridingProperties);
+
+						serviceReference,
+						overridingProperties,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS);
 		String[] serviceIntents = (String[]) PropertiesUtil
 				.getPropertyValue(
-						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
-						serviceReference, overridingProperties);
+
+						serviceReference,
+						overridingProperties,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS);
 		// Get a host container selector
 		IHostContainerSelector hostContainerSelector = getHostContainerSelector();
 		if (hostContainerSelector == null) {
@@ -1126,7 +1153,9 @@ public abstract class AbstractRemoteServiceAdmin {
 				} catch (IllegalStateException e) {
 					// no export ref because ExportRegistration not
 					// initialized properly
-					logWarning("unimportService", "IllegalStateException accessing export reference for importRegistration="+reg);
+					logWarning("unimportService",
+							"IllegalStateException accessing export reference for importRegistration="
+									+ reg);
 				}
 			}
 		}
@@ -1205,7 +1234,9 @@ public abstract class AbstractRemoteServiceAdmin {
 					} catch (IllegalStateException e) {
 						// no export ref because ExportRegistration not
 						// initialized properly
-						logWarning("unexportService", "IllegalStateException accessing export reference for exportRegistration="+exportRegs[i]);
+						logWarning("unexportService",
+								"IllegalStateException accessing export reference for exportRegistration="
+										+ exportRegs[i]);
 					}
 				}
 			}

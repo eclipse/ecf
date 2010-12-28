@@ -90,33 +90,43 @@ public class TopologyManager extends AbstractTopologyManager implements
 	}
 
 	private void handleEndpointAdded(EndpointDescription endpointDescription) {
-		trace("handleEndpointAdded", "endpointDescription=" + endpointDescription);
+		trace("handleEndpointAdded", "endpointDescription="
+				+ endpointDescription);
 		// First, select importing remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectImportRemoteServiceAdmin(endpointDescription);
 
 		if (rsa == null) {
-			logError("handleEndpointAdded","RemoteServiceAdmin not found for importing endpointDescription="+endpointDescription);
+			logError("handleEndpointAdded",
+					"RemoteServiceAdmin not found for importing endpointDescription="
+							+ endpointDescription);
 			return;
 		}
 		// now call rsa.import
-		ImportRegistration importRegistration = rsa.importService(endpointDescription);
+		ImportRegistration importRegistration = rsa
+				.importService(endpointDescription);
 		if (importRegistration == null) {
 			logError("handleEndpointAdded",
-					"Import registration is null for endpointDescription=" + endpointDescription
-							+ " and rsa=" + rsa);
+					"Import registration is null for endpointDescription="
+							+ endpointDescription + " and rsa=" + rsa);
 		}
 	}
 
 	private void handleEndpointRemoved(EndpointDescription endpointDescription) {
-		trace("handleEndpointRemoved", "endpointDescription=" + endpointDescription);
+		trace("handleEndpointRemoved", "endpointDescription="
+				+ endpointDescription);
 		// First, select importing remote service admin
 		AbstractRemoteServiceAdmin rsa = selectUnimportRemoteServiceAdmin(endpointDescription);
 		if (rsa == null) {
-			logError("handleEndpointRemoved","RemoteServiceAdmin not found for importing endpointDescription="+endpointDescription);
+			logError("handleEndpointRemoved",
+					"RemoteServiceAdmin not found for importing endpointDescription="
+							+ endpointDescription);
 			return;
 		}
-		Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ImportRegistration> unimportRegistrations = rsa.unimportService(endpointDescription);
-		trace("handleEndpointRemoved","importRegistration="+unimportRegistrations+" removed for endpointDescription="+endpointDescription);
+		Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ImportRegistration> unimportRegistrations = rsa
+				.unimportService(endpointDescription);
+		trace("handleEndpointRemoved", "importRegistration="
+				+ unimportRegistrations + " removed for endpointDescription="
+				+ endpointDescription);
 	}
 
 	private Map<String, Object> prepareExportProperties(
@@ -160,18 +170,21 @@ public class TopologyManager extends AbstractTopologyManager implements
 	private void handleServiceRegistering(ServiceReference serviceReference) {
 		// Using OSGI 4.2 Chap 13 Remote Services spec, get the specified remote
 		// interfaces for the given service reference
-		String[] exportedInterfaces = PropertiesUtil.getExportedInterfaces(serviceReference);
+		String[] exportedInterfaces = PropertiesUtil
+				.getExportedInterfaces(serviceReference);
 		// If no remote interfaces set, then we don't do anything with it
 		if (exportedInterfaces == null)
 			return;
 
 		// Get optional service property for exported configs
-		String[] exportedConfigs = PropertiesUtil.getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
+		String[] exportedConfigs = PropertiesUtil
+				.getStringArrayFromPropertyValue(serviceReference
+						.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
 
 		// Get all intents (service.intents, service.exported.intents,
 		// service.exported.intents.extra)
-		String[] serviceIntents = PropertiesUtil.getServiceIntents(serviceReference);
+		String[] serviceIntents = PropertiesUtil
+				.getServiceIntents(serviceReference);
 
 		// Select remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectExportRemoteServiceAdmin(

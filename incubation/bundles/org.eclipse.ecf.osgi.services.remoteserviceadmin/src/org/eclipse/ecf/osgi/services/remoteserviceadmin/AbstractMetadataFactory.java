@@ -19,10 +19,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 
@@ -77,50 +75,6 @@ public abstract class AbstractMetadataFactory {
 		while (t.hasMoreTokens())
 			result.add(t.nextToken());
 		return result;
-	}
-
-	protected void encodeIDArray(IServiceProperties result, ID[] idFilter) {
-		// First, for every id, setup prop name with index suffix
-		for (int i = 0; i < idFilter.length; i++) {
-			encodeString(result,
-					RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_ + i,
-					idFilter[i].getName());
-			result.setPropertyString(
-					RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_ + i,
-					idFilter[i].getNamespace().getName());
-		}
-		// Now add count
-		result.setPropertyString(
-				RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT, new Integer(
-						idFilter.length).toString());
-	}
-
-	protected ID[] decodeIDArray(IServiceProperties props) {
-		// First, get the count
-		String countValue = props
-				.getPropertyString(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT);
-		if (countValue == null)
-			return null;
-		int count = new Integer(countValue).intValue();
-		if (count <= 0)
-			return null;
-		List result = new ArrayList();
-		for (int i = 0; i < count; i++) {
-			// decode string as name
-			String idName = decodeString(props,
-					RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_ + i);
-			if (idName == null)
-				continue;
-			String nsName = props
-					.getPropertyString(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_
-							+ i);
-			Namespace ns = (nsName != null) ? IDUtil.getNamespaceByName(nsName)
-					: IDUtil.findNamespaceByIdName(idName);
-			if (ns == null)
-				continue;
-			result.add(IDUtil.createID(ns, idName));
-		}
-		return (ID[]) result.toArray(new ID[] {});
 	}
 
 	protected void decodeOSGiProperties(IServiceProperties props,
@@ -204,34 +158,42 @@ public abstract class AbstractMetadataFactory {
 				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
 		osgiProperties.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
 				remoteServiceId);
+
 		// container id namespace
 		String containerIDNamespace = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-		// target ID
-		String targetName = decodeString(discoveredServiceProperties,
+		if (containerIDNamespace != null)
+			osgiProperties.put(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
+					containerIDNamespace);
+
+		// connect target ID
+		String connectTargetIDName = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
-		String targetNamespace = decodeString(discoveredServiceProperties,
-				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-		ID targetID = null;
-		if (targetName != null) {
-			Namespace ns = (targetNamespace != null) ? IDUtil
-					.getNamespaceByName(targetNamespace) : IDUtil
-					.findNamespaceByIdName(targetName);
-			if (ns != null)
-				targetID = IDUtil.createID(ns, targetName);
-		}
+		if (connectTargetIDName != null)
+			osgiProperties.put(RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
+					connectTargetIDName);
+
 		// ID filter
-		ID[] idFilter = decodeIDArray(discoveredServiceProperties);
+		List<String> idFilterNames = decodeList(discoveredServiceProperties,
+				RemoteConstants.ENDPOINT_IDFILTER_IDS);
+		Object idFilterNamesval = PropertiesUtil
+				.convertToStringPlusValue(idFilterNames);
+		if (idFilterNamesval != null)
+			osgiProperties.put(RemoteConstants.ENDPOINT_IDFILTER_IDS,
+					idFilterNamesval);
+
 		// remote service filter
 		String remoteServiceFilter = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
+		if (remoteServiceFilter != null)
+			osgiProperties.put(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
+					remoteServiceFilter);
 
 		// Finally, fill out other properties
 		decodeNonStandardServiceProperties(discoveredServiceProperties,
 				osgiProperties);
 
-		return new EndpointDescription(osgiProperties, containerIDNamespace,
-				targetID, idFilter, remoteServiceFilter);
+		return new EndpointDescription(osgiProperties);
 	}
 
 	protected void encodeServiceProperties(
@@ -297,32 +259,33 @@ public abstract class AbstractMetadataFactory {
 					remoteIntentsSupported);
 
 		// namespace
-		String containerIDNamespace = endpointDescription
-				.getContainerIDNamespace();
-		encodeString(result, RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
-				containerIDNamespace);
-		// ECF remote service id = endpointDescription.getRemoteServiceId()
+		String containerIDNamespace = endpointDescription.getIdNamespace();
+		if (containerIDNamespace != null)
+			encodeString(result,
+					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
+					containerIDNamespace);
+
+		// remote service id = endpointDescription.getRemoteServiceId()
 		long remoteServiceId = endpointDescription.getRemoteServiceId();
 		encodeLong(result, org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
 				new Long(remoteServiceId));
-		// ECF connectTargetID = endpointDescription.getConnectTargetID()
+
+		// connectTargetID = endpointDescription.getConnectTargetID()
 		ID connectTargetID = endpointDescription.getConnectTargetID();
-		if (connectTargetID != null) {
-			// external form of ID
+		if (connectTargetID != null)
 			encodeString(result, RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
-					connectTargetID.toExternalForm());
-			// namespace
-			encodeString(result,
-					RemoteConstants.ENDPOINT_CONNECTTARGET_ID_NAMESPACE,
-					connectTargetID.getNamespace().getName());
-		}
-		// ECF idFilter = endpointDescription.getIDFilter();
+					connectTargetID.getName());
+
+		// idFilter = endpointDescription.getIDFilter();
 		ID[] idFilter = endpointDescription.getIDFilter();
 		if (idFilter != null && idFilter.length > 0) {
-			encodeIDArray(result, idFilter);
+			List<String> idNames = new ArrayList<String>();
+			for (int i = 0; i < idFilter.length; i++)
+				idNames.add(idFilter[i].getName());
+			encodeList(result, RemoteConstants.ENDPOINT_IDFILTER_IDS, idNames);
 		}
 
-		// ECF remote service filter =
+		// remote service filter =
 		// endpointDescription.getRemoteServiceFilter()
 		String remoteFilter = endpointDescription.getRemoteServiceFilter();
 		if (remoteFilter != null) {

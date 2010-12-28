@@ -29,7 +29,7 @@ public class ConsumerContainerSelector extends
 		trace("selectConsumerContainers", "endpointDescription=" + endpointDescription); //$NON-NLS-1$
 
 		// Get the endpointID
-		ID endpointID = IDUtil.createContainerID(endpointDescription);
+		ID endpointID = IDUtil.createID(endpointDescription);
 
 		String[] remoteSupportedConfigs = null;
 		List<String> edConfigurationTypes = endpointDescription

@@ -40,8 +40,10 @@ public class ImportRegistration implements
 		this.importRegistration = importRegistration;
 		this.importReference = new ImportReference(
 				importRegistration.getReference(), endpointDescription);
-		// Add the remoteservice listener to the container adapter, so that the rsListener
-		// notified asynchronously if our underlying remote service reference is unregistered locally
+		// Add the remoteservice listener to the container adapter, so that the
+		// rsListener
+		// notified asynchronously if our underlying remote service reference is
+		// unregistered locally
 		// due to disconnect or remote ejection
 		rsContainer.getContainerAdapter().addRemoteServiceListener(rsListener);
 	}
@@ -50,47 +52,50 @@ public class ImportRegistration implements
 		this.rsContainer = rsContainer;
 		this.throwable = t;
 	}
-	
+
 	public synchronized IRemoteServiceReference getRemoteServiceReference() {
-			return rsReference;
+		return rsReference;
 	}
 
 	public synchronized IRemoteServiceContainer getRemoteServiceContainer() {
-			return rsContainer;
+		return rsContainer;
 	}
 
 	public synchronized ImportReference getImportReference() {
-			Throwable t = getException();
-			if (t != null)
-				throw new IllegalStateException(
-						"Cannot get import reference as registration not properly initialized",
-						t);
-			return importReference;
+		Throwable t = getException();
+		if (t != null)
+			throw new IllegalStateException(
+					"Cannot get import reference as registration not properly initialized",
+					t);
+		return importReference;
 	}
 
 	public synchronized void close() {
-			if (importRegistration != null) {
-				importRegistration.unregister();
-				importRegistration = null;
-			}
-			if (rsContainer != null) {
-				IRemoteServiceContainerAdapter containerAdapter = rsContainer.getContainerAdapter();
-				if (rsReference != null) containerAdapter.ungetRemoteService(rsReference);
-				rsReference = null;
-				// remove remote service listener
-				if (rsListener != null) containerAdapter.removeRemoteServiceListener(rsListener);
-				rsListener = null;
-				rsContainer = null;
-			}
-			if (importReference != null) {
-				importReference.close();
-				importReference = null;
-			}
-			throwable = null;
+		if (importRegistration != null) {
+			importRegistration.unregister();
+			importRegistration = null;
+		}
+		if (rsContainer != null) {
+			IRemoteServiceContainerAdapter containerAdapter = rsContainer
+					.getContainerAdapter();
+			if (rsReference != null)
+				containerAdapter.ungetRemoteService(rsReference);
+			rsReference = null;
+			// remove remote service listener
+			if (rsListener != null)
+				containerAdapter.removeRemoteServiceListener(rsListener);
+			rsListener = null;
+			rsContainer = null;
+		}
+		if (importReference != null) {
+			importReference.close();
+			importReference = null;
+		}
+		throwable = null;
 	}
 
 	public synchronized Throwable getException() {
-			return throwable;
+		return throwable;
 	}
 
 	public synchronized String toString() {

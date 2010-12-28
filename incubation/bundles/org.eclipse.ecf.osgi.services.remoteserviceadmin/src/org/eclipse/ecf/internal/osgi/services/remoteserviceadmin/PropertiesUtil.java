@@ -54,10 +54,8 @@ public class PropertiesUtil {
 			RemoteConstants.DISCOVERY_SCOPE,
 			RemoteConstants.DISCOVERY_SERVICE_NAME,
 			RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
-			RemoteConstants.ENDPOINT_CONNECTTARGET_ID_NAMESPACE,
 			RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
 			RemoteConstants.ENDPOINT_IDFILTER_IDS,
-			RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_COUNT,
 			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 			RemoteConstants.ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT,
@@ -77,7 +75,7 @@ public class PropertiesUtil {
 		}
 	}
 
-	public static Object getStringPlusValue(List<String> values) {
+	public static Object convertToStringPlusValue(List<String> values) {
 		if (values == null)
 			return null;
 		int valuesSize = values.size();
@@ -104,7 +102,8 @@ public class PropertiesUtil {
 			return null;
 	}
 
-	public static String[] getExportedInterfaces(ServiceReference serviceReference) {
+	public static String[] getExportedInterfaces(
+			ServiceReference serviceReference) {
 		// Get the OSGi 4.2 specified required service property value
 		Object propValue = serviceReference
 				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
@@ -112,19 +111,19 @@ public class PropertiesUtil {
 		// as a remote service so we return null
 		if (propValue == null)
 			return null;
-		boolean wildcard = propValue
-				.equals("*");
+		boolean wildcard = propValue.equals("*");
 		if (wildcard)
 			return (String[]) serviceReference
 					.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
 		else {
 			final String[] stringValue = getStringArrayFromPropertyValue(propValue);
-			if (stringValue != null
-					&& stringValue.length == 1
-					&& stringValue[0]
-							.equals("*")) {
-				LogUtility.logWarning("getExportedInterfaces", DebugOptions.TOPOLOGY_MANAGER,
-						PropertiesUtil.class, "Service Exported Interfaces Wildcard does not accept String[\"*\"]");
+			if (stringValue != null && stringValue.length == 1
+					&& stringValue[0].equals("*")) {
+				LogUtility
+						.logWarning("getExportedInterfaces",
+								DebugOptions.TOPOLOGY_MANAGER,
+								PropertiesUtil.class,
+								"Service Exported Interfaces Wildcard does not accept String[\"*\"]");
 			}
 			return stringValue;
 		}
@@ -148,7 +147,6 @@ public class PropertiesUtil {
 			return null;
 		return (String[]) results.toArray(new String[] {});
 	}
-
 
 	public static List getStringPlusProperty(Map properties, String key) {
 		Object value = properties.get(key);
@@ -186,17 +184,20 @@ public class PropertiesUtil {
 		return Collections.EMPTY_LIST;
 	}
 
-	public static Object getPropertyValue(String propertyName, ServiceReference serviceReference) {
-		return (serviceReference == null)?null:serviceReference.getProperty(propertyName);
-	}
-	
-	public static Object getPropertyValue(String propertyName,
-			ServiceReference serviceReference, Map<String, Object> overridingProperties) {
-		Object result = null;
-		if (overridingProperties != null) result = overridingProperties.get(propertyName);
-		return (result != null)?result:getPropertyValue(propertyName,serviceReference);
+	public static Object getPropertyValue(ServiceReference serviceReference,
+			String key) {
+		return (serviceReference == null) ? null : serviceReference
+				.getProperty(key);
 	}
 
+	public static Object getPropertyValue(ServiceReference serviceReference,
+			Map<String, Object> overridingProperties, String key) {
+		Object result = null;
+		if (overridingProperties != null)
+			result = overridingProperties.get(key);
+		return (result != null) ? result : getPropertyValue(serviceReference,
+				key);
+	}
 
 	public static boolean isOSGiProperty(String key) {
 		return osgiProperties.contains(key)
@@ -204,9 +205,7 @@ public class PropertiesUtil {
 	}
 
 	public static boolean isECFProperty(String key) {
-		return ecfProperties.contains(key)
-				&& !key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAME_)
-				&& !key.startsWith(RemoteConstants.ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_);
+		return ecfProperties.contains(key);
 	}
 
 	public static boolean isReservedProperty(String key) {

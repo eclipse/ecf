@@ -9,12 +9,16 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
@@ -23,33 +27,30 @@ public class EndpointDescription extends
 
 	private long remoteServiceId;
 
-	private String containerIDNamespace;
+	private String idNamespace;
 	private ID connectTargetID;
 	private ID[] idFilter;
 	private String rsFilter;
 
 	private int hashCode;
 
-	public EndpointDescription(ServiceReference reference, Map osgiProperties,
-			String containerIDNamespace, ID connectTargetID, ID[] idFilter,
-			String rsFilter) {
+	public EndpointDescription(ServiceReference reference, Map osgiProperties) {
 		super(reference, osgiProperties);
 		this.remoteServiceId = verifyLongProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-		this.containerIDNamespace = containerIDNamespace;
-		this.connectTargetID = connectTargetID;
-		this.idFilter = idFilter;
-		this.rsFilter = rsFilter;
+		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
+		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
+		this.idFilter = verifyIDFilter();
+		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
 		computeHashCode();
 	}
 
-	public EndpointDescription(Map osgiProperties, String containerIDNamespace,
-			ID connectTargetID, ID[] idFilter, String rsFilter) {
+	public EndpointDescription(Map osgiProperties) {
 		super(osgiProperties);
 		this.remoteServiceId = verifyLongProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-		this.containerIDNamespace = containerIDNamespace;
-		this.connectTargetID = connectTargetID;
-		this.idFilter = idFilter;
-		this.rsFilter = rsFilter;
+		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
+		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
+		this.idFilter = verifyIDFilter();
+		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
 		computeHashCode();
 	}
 
@@ -68,6 +69,53 @@ public class EndpointDescription extends
 		}
 	}
 
+	private String verifyStringProperty(String propName) {
+		Object r = getProperties().get(propName);
+		try {
+			return (String) r;
+		} catch (ClassCastException e) {
+			IllegalArgumentException iae = new IllegalArgumentException(
+					"property value is not a String: " + propName);
+			iae.initCause(e);
+			throw iae;
+		}
+	}
+
+	private ID verifyIDProperty(String namePropName) {
+		String idName = verifyStringProperty(namePropName);
+		if (idName == null)
+			return null;
+		try {
+			return IDUtil.createID(idNamespace, idName);
+		} catch (IDCreateException e) {
+			IllegalArgumentException iae = new IllegalArgumentException(
+					"property value is not an ID: " + namePropName);
+			iae.initCause(e);
+			throw iae;
+		}
+	}
+
+	private ID[] verifyIDFilter() {
+		List<String> idNames = PropertiesUtil.getStringPlusProperty(
+				getProperties(), RemoteConstants.ENDPOINT_IDFILTER_IDS);
+		if (idNames.size() == 0)
+			return null;
+		List<ID> results = new ArrayList();
+		String idNamespace = getIdNamespace();
+		try {
+			for (String idName : idNames)
+				results.add(IDUtil.createID(idNamespace, idName));
+		} catch (IDCreateException e) {
+			IllegalArgumentException iae = new IllegalArgumentException(
+					"property value is not an ID[]: "
+							+ RemoteConstants.ENDPOINT_IDFILTER_IDS);
+			iae.initCause(e);
+			throw iae;
+
+		}
+		return (ID[]) results.toArray(new ID[results.size()]);
+	}
+
 	private void computeHashCode() {
 		this.hashCode = super.hashCode();
 		long remoteServiceId = getRemoteServiceId();
@@ -75,10 +123,10 @@ public class EndpointDescription extends
 				+ (int) (remoteServiceId ^ (remoteServiceId >>> 32));
 	}
 
-	public Map<String,Version> getInterfaceVersions() {
+	public Map<String, Version> getInterfaceVersions() {
 		List<String> interfaces = getInterfaces();
-		Map<String,Version> result = new HashMap<String,Version>();
-		for(String intf: interfaces) {
+		Map<String, Version> result = new HashMap<String, Version>();
+		for (String intf : interfaces) {
 			int index = intf.lastIndexOf('.');
 			if (index == -1) {
 				continue;
@@ -88,7 +136,7 @@ public class EndpointDescription extends
 		}
 		return result;
 	}
-	
+
 	public boolean equals(Object other) {
 		if (other == null)
 			return false;
@@ -105,8 +153,8 @@ public class EndpointDescription extends
 		return hashCode;
 	}
 
-	public String getContainerIDNamespace() {
-		return containerIDNamespace;
+	public String getIdNamespace() {
+		return idNamespace;
 	}
 
 	public ID getConnectTargetID() {
@@ -127,11 +175,10 @@ public class EndpointDescription extends
 
 	public String toString() {
 		return "ECFEndpointDescription[properties=" + super.toString()
-				+ ",containerIDNamespace=" + containerIDNamespace
-				+ ", remoteServiceId=" + getRemoteServiceId()
-				+ ", connectTargetID=" + connectTargetID + ", idFilter="
-				+ Arrays.toString(idFilter) + ", rsFilter=" + rsFilter
-				+ ", hashCode=" + hashCode + "]";
+				+ ",idNamespace=" + idNamespace + ", remoteServiceId="
+				+ getRemoteServiceId() + ", connectTargetID=" + connectTargetID
+				+ ", idFilter=" + Arrays.toString(idFilter) + ", rsFilter="
+				+ rsFilter + ", hashCode=" + hashCode + "]";
 	}
 
 }

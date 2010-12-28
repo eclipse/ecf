@@ -28,12 +28,15 @@ public interface DebugOptions {
 
 	public static final String TOPOLOGY_MANAGER = DEBUG + "/topologymanager"; //$NON-NLS-1$
 
-	public static final String CONTAINER_SELECTOR = DEBUG + "/containerselector"; //$NON-NLS-1$
+	public static final String CONTAINER_SELECTOR = DEBUG
+			+ "/containerselector"; //$NON-NLS-1$
 
 	public static final String DISCOVERY = DEBUG + "/discovery"; //$NON-NLS-1$
 
-	public static final String ENDPOINT_DESCRIPTION_READER = DEBUG + "/endpointdescriptionreader";
+	public static final String ENDPOINT_DESCRIPTION_READER = DEBUG
+			+ "/endpointdescriptionreader";
 
-	public static final String PACKAGE_VERSION_COMPARATOR = DEBUG + "/packageversioncomparator";
+	public static final String PACKAGE_VERSION_COMPARATOR = DEBUG
+			+ "/packageversioncomparator";
 
 }

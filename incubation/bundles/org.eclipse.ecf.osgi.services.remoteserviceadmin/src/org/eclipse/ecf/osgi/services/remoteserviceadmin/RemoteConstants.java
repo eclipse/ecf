@@ -23,16 +23,8 @@ public class RemoteConstants {
 	public static final String ENDPOINT_CONTAINER_ID_NAMESPACE = "ecf.endpoint.id.ns";
 	// target id. Value of type String
 	public static final String ENDPOINT_CONNECTTARGET_ID = "ecf.endpoint.connecttarget.id";
-	// target namespace. Value of type String
-	public static final String ENDPOINT_CONNECTTARGET_ID_NAMESPACE = "ecf.endpoint.connecttarget.id.ns";
-	// id filter. Value of type ID[]
+	// id filter. Value of type String+
 	public static final String ENDPOINT_IDFILTER_IDS = "ecf.endpoint.idfilter.ids";
-	// id filter array length count. Value of type String (representing Integer)
-	public static final String ENDPOINT_IDFILTER_IDARRAY_COUNT = "ecf.endpoint.idfilter.id.n";
-	// id filter external form. Value of type String
-	public static final String ENDPOINT_IDFILTER_IDARRAY_NAME_ = "ecf.endpoint.idfilter.id.name.";
-	// id filter namespaces. Value of type String.
-	public static final String ENDPOINT_IDFILTER_IDARRAY_NAMESPACE_ = "ecf.endpoint.idfilter.id.ns.";
 	// remote service filter. Value of type String
 	public static final String ENDPOINT_REMOTESERVICE_FILTER = "ecf.endpoint.rsfilter";
 
