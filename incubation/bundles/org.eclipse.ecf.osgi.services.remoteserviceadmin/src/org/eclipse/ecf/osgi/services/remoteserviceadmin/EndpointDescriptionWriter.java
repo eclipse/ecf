@@ -20,8 +20,174 @@ public class EndpointDescriptionWriter {
 
 	protected String indent = "  ";
 
-	public void writeEndpointDescriptions(Writer writer,
-			org.osgi.service.remoteserviceadmin.EndpointDescription[] endpointDescriptions) throws IOException {
+	protected List<String> xmlNames;
+
+	public EndpointDescriptionWriter() {
+		this(null);
+	}
+
+	public EndpointDescriptionWriter(List<String> xmlNames) {
+		this.xmlNames = xmlNames;
+	}
+
+	protected abstract class ComplexProperty {
+		private String name;
+		private Object value;
+
+		public ComplexProperty(String name, Object value) {
+			this.name = name;
+			this.value = value;
+		}
+
+		public abstract void writeProperty(int indentLevel, Writer writer)
+				throws IOException;
+
+		protected String getName() {
+			return name;
+		}
+
+		protected Object getValue() {
+			return value;
+		}
+	}
+
+	protected class XmlProperty extends ComplexProperty {
+		public XmlProperty(String name, String xml) {
+			super(name, xml);
+		}
+
+		void writeXml(int indentLevel, Writer writer) throws IOException {
+			indent(indentLevel, writer);
+			writer.append("<xml>");
+			newLine(writer);
+			indent(indentLevel + 1, writer);
+			writer.append((String) getValue());
+			newLine(writer);
+			indent(indentLevel, writer);
+			writer.append("</xml>");
+			newLine(writer);
+		}
+
+		public void writeProperty(int indentLevel, Writer writer)
+				throws IOException {
+			indent(indentLevel, writer);
+			writer.append("<property name=\"").append(getName()).append("\">");
+			newLine(writer);
+			writeXml(indentLevel + 1, writer);
+			writer.append("</property>");
+			newLine(writer);
+		}
+	}
+
+	protected abstract class MultiValueProperty extends ComplexProperty {
+		public MultiValueProperty(String name, Object value) {
+			super(name, value);
+		}
+
+		abstract String getValueType();
+
+		abstract void writePropertyValues(int indentLevel, Writer writer)
+				throws IOException;
+
+		public void writeProperty(int indentLevel, Writer writer)
+				throws IOException {
+			indent(indentLevel, writer);
+			writer.append("<property name=\"").append(getName())
+					.append("\" value-type=\"").append(getValueType())
+					.append("\">");
+			newLine(writer);
+			writePropertyValues(indentLevel + 1, writer);
+			indent(indentLevel, writer);
+			writer.append("</property>");
+			newLine(writer);
+		}
+
+		void writePropertyValue(int indentLevel, Object value, Writer writer)
+				throws IOException {
+			indent(indentLevel, writer);
+			writer.append("<value>").append(value.toString())
+					.append("</value>");
+			newLine(writer);
+		}
+
+	}
+
+	protected class SetProperty extends MultiValueProperty {
+		public SetProperty(String key, Set value) {
+			super(key, value);
+		}
+
+		public String getValueType() {
+			return EndpointDescriptionWriter.this
+					.getValueType(((Set) getValue()).iterator().next());
+		}
+
+		void writePropertyValues(int indentLevel, Writer writer)
+				throws IOException {
+			Set s = (Set) getValue();
+			indent(indentLevel, writer);
+			writer.append("<set>");
+			newLine(writer);
+			for (Iterator i = s.iterator(); i.hasNext();)
+				writePropertyValue(indentLevel + 1, i.next(), writer);
+			indent(indentLevel, writer);
+			writer.append("</set>");
+		}
+
+	}
+
+	protected class ListProperty extends MultiValueProperty {
+		public ListProperty(String key, List value) {
+			super(key, value);
+		}
+
+		public String getValueType() {
+			return EndpointDescriptionWriter.this
+					.getValueType(((List) getValue()).iterator().next());
+		}
+
+		void writePropertyValues(int indentLevel, Writer writer)
+				throws IOException {
+			List l = (List) getValue();
+			indent(indentLevel, writer);
+			writer.append("<list>");
+			newLine(writer);
+			for (Iterator i = l.iterator(); i.hasNext();)
+				writePropertyValue(indentLevel + 1, i.next(), writer);
+			indent(indentLevel, writer);
+			writer.append("</list>");
+			newLine(writer);
+		}
+	}
+
+	protected class ArrayProperty extends MultiValueProperty {
+		public ArrayProperty(String key, Object[] value) {
+			super(key, value);
+		}
+
+		public String getValueType() {
+			return EndpointDescriptionWriter.this
+					.getValueType(((Object[]) getValue())[0]);
+		}
+
+		void writePropertyValues(int indentLevel, Writer writer)
+				throws IOException {
+			Object[] a = (Object[]) getValue();
+			indent(indentLevel, writer);
+			writer.append("<array>");
+			newLine(writer);
+			for (int i = 0; i < a.length; i++)
+				writePropertyValue(indentLevel + 1, a[i], writer);
+			indent(indentLevel, writer);
+			writer.append("</array>");
+			newLine(writer);
+		}
+	}
+
+	public void writeEndpointDescriptions(
+			Writer writer,
+			org.osgi.service.remoteserviceadmin.EndpointDescription[] endpointDescriptions)
+			throws IOException {
 
 		writeEndpointDescriptionsElementOpen(0, writer);
 		for (int i = 0; i < endpointDescriptions.length; i++) {
@@ -30,145 +196,59 @@ public class EndpointDescriptionWriter {
 		writeEndpointDescriptionsElementClose(0, writer);
 	}
 
-	private Writer newLine(Writer writer) throws IOException {
-		return writer.append("\n");
-	}
-
-	private Writer indent(int indentLevel, Writer writer) throws IOException {
-		for (int i = 0; i < indentLevel; i++)
-			writer.append(indent);
-		return writer;
-	}
-
-	private void writeEndpointDescription(int indentLevel, Writer writer,
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) throws IOException {
+	protected void writeEndpointDescription(
+			int indentLevel,
+			Writer writer,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription)
+			throws IOException {
 		writeEndpointDescriptionElementOpen(indentLevel, writer);
 		writeProperties(indentLevel, writer, endpointDescription);
 		writeEndpointDescriptionElementClose(indentLevel, writer);
 	}
 
-	private void writeEndpointDescriptionElementClose(int indentLevel,
-			Writer writer) throws IOException {
-		indent(indentLevel, writer);
-		writer.append("</endpoint-description>");
-		newLine(writer);
-	}
-
-	private void writeProperties(int indentLevel, Writer writer,
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) throws IOException {
+	protected void writeProperties(
+			int indentLevel,
+			Writer writer,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription)
+			throws IOException {
 		Map<String, Object> properties = endpointDescription.getProperties();
 		for (String name : properties.keySet())
-			writeProperty(indentLevel + 1, name, properties.get(name), writer);
+			writeProperty(indentLevel + 1, writer, name, properties.get(name));
 	}
 
-	private void writeProperty(int indentLevel, String name, Object value,
-			Writer writer) throws IOException {
+	protected void writeProperty(int indentLevel, Writer writer, String name,
+			Object value) throws IOException {
 		if (value != null) {
-			MultiValueProperty multiValueProperty = getMultiValueProperty(name, value);
-			if (multiValueProperty != null) {
-				multiValueProperty.writeProperty(indentLevel, writer);
+			ComplexProperty complexProperty = getComplexProperty(name, value);
+			if (complexProperty != null) {
+				complexProperty.writeProperty(indentLevel, writer);
 				return;
 			}
 			String valueType = getValueType(value);
-			if (valueType != null) writeValueProperty(indentLevel, name, valueType, value, writer);
+			if (valueType != null) {
+				writeValueProperty(indentLevel, name, valueType, value, writer);
+				return;
+			} else writeUnknownProperty(indentLevel, writer, name, value);
 		}
 	}
 
-	abstract class MultiValueProperty {
-		private String key;
-		private Object value;
-		
-		public MultiValueProperty(String key, Object value) {
-			this.key = key;
-			this.value = value;
-		}
-		
-		abstract String getValueType();
-		abstract void writePropertyValues(int indentLevel, Writer writer) throws IOException;
-		
-		public void writeProperty(int indentLevel, Writer writer) throws IOException {
-			indent(indentLevel, writer);
-			writer.append("<property name=\"").append(key)
-					.append("\" value-type=\"").append(getValueType()).append("\">");
-			newLine(writer);
-			writePropertyValues(indentLevel+1,writer);
-			indent(indentLevel,writer);
-			writer.append("</property>");
-			newLine(writer);
-		}
-		
-		void writePropertyValue(int indentLevel, Object value, Writer writer) throws IOException {
-			indent(indentLevel,writer);
-			writer.append("<value>").append(value.toString()).append("</value>");
-			newLine(writer);
-		}
-		
-		protected Object getValue() {
-			return value;
-		}
-	}
-	
-	class SetProperty extends MultiValueProperty {
-		public SetProperty(String key, Set value) {
-			super(key,value);
-		}
-
-		public String getValueType() {
-			return EndpointDescriptionWriter.this.getValueType(((Set) getValue()).iterator().next());
-		}
-
-		void writePropertyValues(int indentLevel, Writer writer) throws IOException {
-			Set s = (Set) getValue();
-			indent(indentLevel,writer);
-			writer.append("<set>");
-			newLine(writer);
-			for(Iterator i=s.iterator(); i.hasNext(); ) writePropertyValue(indentLevel+1,i.next(),writer);
-			indent(indentLevel,writer);
-			writer.append("</set>");
-		}
-		
-	}
-	
-	class ListProperty extends MultiValueProperty {
-		public ListProperty(String key, List value) {
-			super(key,value);
-		}
-		public String getValueType() {
-			return EndpointDescriptionWriter.this.getValueType(((List) getValue()).iterator().next());
-		}
-		void writePropertyValues(int indentLevel, Writer writer) throws IOException {
-			List l = (List) getValue();
-			indent(indentLevel,writer);
-			writer.append("<list>");
-			newLine(writer);
-			for(Iterator i=l.iterator(); i.hasNext(); ) writePropertyValue(indentLevel+1,i.next(),writer);
-			indent(indentLevel,writer);
-			writer.append("</list>");
-			newLine(writer);
-		}
+	protected void writeUnknownProperty(int indentLevel, Writer writer,
+			String name, Object value) {
 	}
 
-	class ArrayProperty extends MultiValueProperty {
-		public ArrayProperty(String key, Object[] value) {
-			super(key,value);
-		}
-
-		public String getValueType() {
-			return EndpointDescriptionWriter.this.getValueType(((Object[]) getValue())[0]);
-		}
-		void writePropertyValues(int indentLevel, Writer writer) throws IOException {
-			Object[] a = (Object[]) getValue();
-			indent(indentLevel,writer);
-			writer.append("<array>");
-			newLine(writer);
-			for(int i=0; i < a.length; i++) writePropertyValue(indentLevel+1,a[i],writer);
-			indent(indentLevel,writer);
-			writer.append("</array>");
-			newLine(writer);
-		}
+	protected ComplexProperty getComplexProperty(String name, Object value) {
+		XmlProperty xmlProperty = getXmlProperty(name, value);
+		return (xmlProperty == null) ? getMultiValueProperty(name, value)
+				: xmlProperty;
 	}
 
-	private void writeValueProperty(int indentLevel, String name,
+	protected XmlProperty getXmlProperty(String name, Object value) {
+		if (xmlNames != null && xmlNames.contains(name))
+			return new XmlProperty(name, (String) value);
+		return null;
+	}
+
+	protected void writeValueProperty(int indentLevel, String name,
 			String valueType, Object value, Writer writer) throws IOException {
 		indent(indentLevel, writer);
 		writer.append("<property name=\"").append(name)
@@ -177,26 +257,29 @@ public class EndpointDescriptionWriter {
 		newLine(writer);
 	}
 
-	private MultiValueProperty getMultiValueProperty(String key, Object value) {
+	protected MultiValueProperty getMultiValueProperty(String key, Object value) {
 		if (value instanceof Set) {
 			Set s = (Set) value;
 			Object first = s.iterator().next();
-			if (first == null) return null;
-			return new SetProperty(key,s);
+			if (first == null)
+				return null;
+			return new SetProperty(key, s);
 		} else if (value instanceof List) {
 			List l = (List) value;
 			Object first = l.get(0);
-			if (first == null) return null;
-			return new ListProperty(key,l);
+			if (first == null)
+				return null;
+			return new ListProperty(key, l);
 		} else if (value.getClass().isArray()) {
 			Object[] a = (Object[]) value;
-			if (a.length == 0 || a[0] == null) return null;
-			return new ArrayProperty(key,a);
+			if (a.length == 0 || a[0] == null)
+				return null;
+			return new ArrayProperty(key, a);
 		}
 		return null;
 	}
 
-	String getValueType(Object value) {
+	protected String getValueType(Object value) {
 		// first determine if is array
 		if (value instanceof String)
 			return "String";
@@ -219,24 +302,41 @@ public class EndpointDescriptionWriter {
 		return null;
 	}
 
-	private void writeEndpointDescriptionElementOpen(int indentLevel,
+	protected Writer newLine(Writer writer) throws IOException {
+		return writer.append("\n");
+	}
+
+	protected Writer indent(int indentLevel, Writer writer) throws IOException {
+		for (int i = 0; i < indentLevel; i++)
+			writer.append(indent);
+		return writer;
+	}
+
+	protected void writeEndpointDescriptionsElementOpen(int indentLevel,
 			Writer writer) throws IOException {
 		indent(indentLevel, writer);
-		writer.append("<endpoint-description>");
+		writer.append("<endpoint-descriptions xmlns=\"http://www.osgi.org/xmlns/rsa/v1.0.0\">");
 		newLine(writer);
 	}
 
-	private void writeEndpointDescriptionsElementClose(int indentLevel,
+	protected void writeEndpointDescriptionsElementClose(int indentLevel,
 			Writer writer) throws IOException {
 		indent(indentLevel, writer);
 		writer.append("</endpoint-descriptions>");
 		newLine(writer);
 	}
 
-	private void writeEndpointDescriptionsElementOpen(int indentLevel,
+	protected void writeEndpointDescriptionElementOpen(int indentLevel,
 			Writer writer) throws IOException {
 		indent(indentLevel, writer);
-		writer.append("<endpoint-descriptions xmlns=\"http://www.osgi.org/xmlns/rsa/v1.0.0\">");
+		writer.append("<endpoint-description>");
+		newLine(writer);
+	}
+
+	protected void writeEndpointDescriptionElementClose(int indentLevel,
+			Writer writer) throws IOException {
+		indent(indentLevel, writer);
+		writer.append("</endpoint-description>");
 		newLine(writer);
 	}
 
