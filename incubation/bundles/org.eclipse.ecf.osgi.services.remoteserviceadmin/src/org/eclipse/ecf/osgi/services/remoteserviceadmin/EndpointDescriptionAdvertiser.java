@@ -140,6 +140,7 @@ public class EndpointDescriptionAdvertiser implements
 	}
 
 	public void close() {
+		this.discovery = null;
 	}
 
 }

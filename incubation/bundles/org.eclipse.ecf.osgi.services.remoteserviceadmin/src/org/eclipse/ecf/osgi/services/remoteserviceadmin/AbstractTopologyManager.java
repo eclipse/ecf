@@ -9,11 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Dictionary;
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.IStatus;
@@ -142,64 +138,6 @@ public abstract class AbstractTopologyManager {
 				remoteServiceAdmin = new RemoteServiceAdmin(getContext());
 		}
 		return remoteServiceAdmin;
-	}
-
-	protected String[] getStringArrayFromPropertyValue(Object value) {
-		if (value == null)
-			return null;
-		else if (value instanceof String)
-			return new String[] { (String) value };
-		else if (value instanceof String[])
-			return (String[]) value;
-		else if (value instanceof Collection)
-			return (String[]) ((Collection) value).toArray(new String[] {});
-		else
-			return null;
-	}
-
-	protected String[] getExportedInterfaces(ServiceReference serviceReference) {
-		// Get the OSGi 4.2 specified required service property value
-		Object propValue = serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
-		// If the required property is not set then it's not being registered
-		// as a remote service so we return null
-		if (propValue == null)
-			return null;
-		boolean wildcard = propValue
-				.equals(SERVICE_EXPORTED_INTERFACES_WILDCARD);
-		if (wildcard)
-			return (String[]) serviceReference
-					.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
-		else {
-			final String[] stringValue = getStringArrayFromPropertyValue(propValue);
-			if (stringValue != null
-					&& stringValue.length == 1
-					&& stringValue[0]
-							.equals(SERVICE_EXPORTED_INTERFACES_WILDCARD)) {
-				logWarning(
-						"getExportedInterfaces", "Service Exported Interfaces Wildcard does not accept String[\"*\"]"); //$NON-NLS-1$
-			}
-			return stringValue;
-		}
-	}
-
-	protected String[] getServiceIntents(ServiceReference serviceReference) {
-		List results = new ArrayList();
-		String[] intents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS));
-		if (intents != null)
-			results.addAll(Arrays.asList(intents));
-		String[] exportedIntents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS));
-		if (exportedIntents != null)
-			results.addAll(Arrays.asList(exportedIntents));
-		String[] extraIntents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS_EXTRA));
-		if (extraIntents != null)
-			results.addAll(Arrays.asList(extraIntents));
-		if (results.size() == 0)
-			return null;
-		return (String[]) results.toArray(new String[] {});
 	}
 
 	protected void logWarning(String methodName, String message) {

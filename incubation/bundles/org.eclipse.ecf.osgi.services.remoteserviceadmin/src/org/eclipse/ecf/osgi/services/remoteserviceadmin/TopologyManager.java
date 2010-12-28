@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
@@ -159,18 +160,18 @@ public class TopologyManager extends AbstractTopologyManager implements
 	private void handleServiceRegistering(ServiceReference serviceReference) {
 		// Using OSGI 4.2 Chap 13 Remote Services spec, get the specified remote
 		// interfaces for the given service reference
-		String[] exportedInterfaces = getExportedInterfaces(serviceReference);
+		String[] exportedInterfaces = PropertiesUtil.getExportedInterfaces(serviceReference);
 		// If no remote interfaces set, then we don't do anything with it
 		if (exportedInterfaces == null)
 			return;
 
 		// Get optional service property for exported configs
-		String[] exportedConfigs = getStringArrayFromPropertyValue(serviceReference
+		String[] exportedConfigs = PropertiesUtil.getStringArrayFromPropertyValue(serviceReference
 				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
 
 		// Get all intents (service.intents, service.exported.intents,
 		// service.exported.intents.extra)
-		String[] serviceIntents = getServiceIntents(serviceReference);
+		String[] serviceIntents = PropertiesUtil.getServiceIntents(serviceReference);
 
 		// Select remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectExportRemoteServiceAdmin(

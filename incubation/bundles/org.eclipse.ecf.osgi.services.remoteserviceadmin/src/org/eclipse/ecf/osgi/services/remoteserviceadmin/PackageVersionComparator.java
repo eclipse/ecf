@@ -19,7 +19,7 @@ public class PackageVersionComparator implements IPackageVersionComparator {
 			Version remoteVersion, Version localVersion)
 			throws RuntimeException {
 		LogUtility.trace("comparePackageVersions",
-				DebugOptions.PACKAGEVERSIONCOMPARATOR, this.getClass(),
+				DebugOptions.PACKAGE_VERSION_COMPARATOR, this.getClass(),
 				"packageName=" + packageName + ",remoteVersion="
 						+ remoteVersion + ",localVersion=" + localVersion);
 		// By default we do strict comparison of remote with local...they must

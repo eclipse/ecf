@@ -152,7 +152,7 @@ public abstract class AbstractContainerSelector {
 	}
 
 	protected void trace(String methodName, String message) {
-		LogUtility.trace(methodName, DebugOptions.CONTAINERSELECTOR,
+		LogUtility.trace(methodName, DebugOptions.CONTAINER_SELECTOR,
 				this.getClass(), message);
 	}
 
@@ -162,17 +162,17 @@ public abstract class AbstractContainerSelector {
 	}
 
 	protected void logError(String methodName, String message, Throwable t) {
-		LogUtility.logError(methodName, DebugOptions.CONTAINERSELECTOR,
+		LogUtility.logError(methodName, DebugOptions.CONTAINER_SELECTOR,
 				this.getClass(), message, t);
 	}
 
 	protected void logError(String methodName, String message) {
-		LogUtility.logError(methodName, DebugOptions.CONTAINERSELECTOR,
+		LogUtility.logError(methodName, DebugOptions.CONTAINER_SELECTOR,
 				this.getClass(), message);
 	}
 
 	protected void logWarning(String methodName, String message) {
-		LogUtility.logWarning(methodName, DebugOptions.CONTAINERSELECTOR,
+		LogUtility.logWarning(methodName, DebugOptions.CONTAINER_SELECTOR,
 				this.getClass(), message);
 	}
 
