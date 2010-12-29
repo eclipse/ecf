@@ -23,6 +23,7 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
+import org.osgi.framework.Version;
 
 public abstract class AbstractMetadataFactory {
 
@@ -79,33 +80,40 @@ public abstract class AbstractMetadataFactory {
 
 	protected void decodeOSGiProperties(IServiceProperties props,
 			Map osgiProperties) {
-		// OSGI
-		// endpoint.id
+		// org.osgi.framework.Constants.OBJECTCLASS
+		List<String> interfaces = decodeList(props,
+				org.osgi.framework.Constants.OBJECTCLASS);
+		osgiProperties.put(org.osgi.framework.Constants.OBJECTCLASS,
+				(String[]) interfaces.toArray(new String[interfaces.size()]));
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_
+		for (String intf : interfaces) {
+			String packageKey = org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_
+					+ getPackageName(intf);
+			String intfVersion = decodeString(props, packageKey);
+			if (intfVersion != null)
+				osgiProperties.put(packageKey, intfVersion);
+		}
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID
 		String endpointId = decodeString(props,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
 		osgiProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 						endpointId);
-		// endpoint.service.id
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID
 		Long endpointServiceId = decodeLong(
 				props,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID);
 		osgiProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
 						endpointServiceId);
-		// objectClass
-		List<String> interfaces = decodeList(props,
-				org.osgi.framework.Constants.OBJECTCLASS);
-		osgiProperties.put(org.osgi.framework.Constants.OBJECTCLASS,
-				(String[]) interfaces.toArray(new String[] {}));
-		// framework uuid
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID
 		String fwkuuid = decodeString(
 				props,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID);
 		osgiProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
 						fwkuuid);
-		// configuration types
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS
 		List<String> configTypes = decodeList(
 				props,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS);
@@ -114,7 +122,7 @@ public abstract class AbstractMetadataFactory {
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
 							(String[]) configTypes
 									.toArray(new String[configTypes.size()]));
-		// service intents
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS
 		List<String> intents = decodeList(
 				props,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS);
@@ -123,8 +131,7 @@ public abstract class AbstractMetadataFactory {
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
 							(String[]) intents.toArray(new String[intents
 									.size()]));
-
-		// remote supported configs
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED
 		List<String> remoteConfigsSupported = decodeList(
 				props,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
@@ -134,8 +141,7 @@ public abstract class AbstractMetadataFactory {
 							(String[]) remoteConfigsSupported
 									.toArray(new String[remoteConfigsSupported
 											.size()]));
-
-		// remote supported configs
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED
 		List<String> remoteIntentsSupported = decodeList(
 				props,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED);
@@ -196,33 +202,56 @@ public abstract class AbstractMetadataFactory {
 		return new EndpointDescription(osgiProperties);
 	}
 
-	protected void encodeServiceProperties(
-			EndpointDescription endpointDescription, IServiceProperties result) {
-		// OSGi objectClass = endpointDescription.getInterfaces();
+	private String getPackageName(String className) {
+		int lastDotIndex = className.lastIndexOf(".");
+		if (lastDotIndex == -1)
+			return "";
+		return className.substring(0, lastDotIndex);
+	}
+	
+	protected void encodeOSGiServiceProperties(EndpointDescription endpointDescription, IServiceProperties result) {
+		// org.osgi.framework.Constants.OBJECTCLASS =
+		// endpointDescription.getInterfaces();
 		List<String> interfaces = endpointDescription.getInterfaces();
 		encodeList(result, org.osgi.framework.Constants.OBJECTCLASS, interfaces);
-		// OSGi service properties
-		// endpoint.id == endpointDescription.getId()
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_
+		// version every interface package, make sure to encode package version
+		// (if specified)
+		for (String intf : interfaces) {
+			String intfPackageName = getPackageName(intf);
+			Version intfVersion = endpointDescription
+					.getPackageVersion(intfPackageName);
+			if (intfVersion != null
+					&& !Version.emptyVersion.equals(intfVersion))
+				encodeString(
+						result,
+						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_
+								+ intfPackageName, intfVersion.toString());
+		}
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID ==
+		// endpointDescription.getId()
 		String endpointId = endpointDescription.getId();
 		encodeString(
 				result,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 				endpointId);
-		// OSGi endpoint.service.id = endpointDescription.getServiceId()
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID
+		// = endpointDescription.getServiceId()
 		long endpointServiceId = endpointDescription.getServiceId();
 		encodeLong(
 				result,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
 				new Long(endpointServiceId));
-		// OSGi frameworkUUID = endpointDescription.getFrameworkUUID()
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID
+		// = endpointDescription.getFrameworkUUID()
 		String frameworkUUID = endpointDescription.getFrameworkUUID();
 		if (frameworkUUID != null)
 			encodeString(
 					result,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
 					frameworkUUID);
-		// OSGi configuration types =
-		// endpointDescription.getConfigurationTypes();
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS
+		// = endpointDescription.getConfigurationTypes();
 		List<String> configurationTypes = endpointDescription
 				.getConfigurationTypes();
 		if (configurationTypes.size() > 0)
@@ -230,13 +259,15 @@ public abstract class AbstractMetadataFactory {
 					result,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
 					configurationTypes);
-		// OSGI service intents = endpointDescription.getIntents()
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS =
+		// endpointDescription.getIntents()
 		List<String> serviceIntents = endpointDescription.getIntents();
 		if (serviceIntents.size() > 0)
 			encodeList(
 					result,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
 					serviceIntents);
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED
 		Map endpointDescriptionProperties = endpointDescription.getProperties();
 		List<String> remoteConfigsSupported = PropertiesUtil
 				.getStringPlusProperty(
@@ -247,7 +278,7 @@ public abstract class AbstractMetadataFactory {
 					result,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
 					remoteConfigsSupported);
-
+		// org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED
 		List<String> remoteIntentsSupported = PropertiesUtil
 				.getStringPlusProperty(
 						endpointDescriptionProperties,
@@ -258,25 +289,36 @@ public abstract class AbstractMetadataFactory {
 					org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED,
 					remoteIntentsSupported);
 
-		// namespace
+	}
+	
+	protected void encodeServiceProperties(
+			EndpointDescription endpointDescription, IServiceProperties result) {
+
+		encodeOSGiServiceProperties(endpointDescription, result);
+		
+		// org.eclipse.ecf.remoteservice.Constants.SERVICE_ID =
+		// endpointDescription.getRemoteServiceId()
+		long remoteServiceId = endpointDescription.getRemoteServiceId();
+		encodeLong(result, org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+				new Long(remoteServiceId));
+
+		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE
+		// = endpointDescription.getIdNamespace()
 		String containerIDNamespace = endpointDescription.getIdNamespace();
 		if (containerIDNamespace != null)
 			encodeString(result,
 					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
 					containerIDNamespace);
 
-		// remote service id = endpointDescription.getRemoteServiceId()
-		long remoteServiceId = endpointDescription.getRemoteServiceId();
-		encodeLong(result, org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
-				new Long(remoteServiceId));
-
-		// connectTargetID = endpointDescription.getConnectTargetID()
+		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_CONNECTTARGET_ID
+		// = endpointDescription.getRemoteServiceId()
 		ID connectTargetID = endpointDescription.getConnectTargetID();
 		if (connectTargetID != null)
 			encodeString(result, RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
 					connectTargetID.getName());
 
-		// idFilter = endpointDescription.getIDFilter();
+		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_IDFILTER_IDS
+		// = endpointDescription.getIDFilter();
 		ID[] idFilter = endpointDescription.getIDFilter();
 		if (idFilter != null && idFilter.length > 0) {
 			List<String> idNames = new ArrayList<String>();
@@ -285,14 +327,14 @@ public abstract class AbstractMetadataFactory {
 			encodeList(result, RemoteConstants.ENDPOINT_IDFILTER_IDS, idNames);
 		}
 
-		// remote service filter =
-		// endpointDescription.getRemoteServiceFilter()
+		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER
+		// = endpointDescription.getRemoteServiceFilter()
 		String remoteFilter = endpointDescription.getRemoteServiceFilter();
 		if (remoteFilter != null) {
 			encodeString(result, RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 					remoteFilter);
 		}
-		// encode non standar properties
+		// encode non standard properties
 		encodeNonStandardServiceProperties(endpointDescription.getProperties(),
 				result);
 	}

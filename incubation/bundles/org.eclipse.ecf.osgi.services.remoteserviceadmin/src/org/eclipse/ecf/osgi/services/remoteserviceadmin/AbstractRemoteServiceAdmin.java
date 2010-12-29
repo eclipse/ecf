@@ -292,7 +292,6 @@ public abstract class AbstractRemoteServiceAdmin {
 			if (packageVersion != null)
 				endpointDescriptionProperties.put(packageVersionKey,
 						packageVersion);
-
 		}
 
 		// ENDPOINT_ID
