@@ -129,25 +129,6 @@ public class TopologyManager extends AbstractTopologyManager implements
 				+ endpointDescription);
 	}
 
-	private Map<String, Object> prepareExportProperties(
-			ServiceReference serviceReference, String[] exportedInterfaces,
-			String[] exportedConfigs, String[] serviceIntents,
-			org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa) {
-		Map<String, Object> result = new HashMap<String, Object>();
-		result.put(
-				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
-				exportedInterfaces);
-		if (exportedConfigs != null)
-			result.put(
-					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS,
-					exportedConfigs);
-		if (serviceIntents != null)
-			result.put(
-					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
-					serviceIntents);
-		return result;
-	}
-
 	public void event(ServiceEvent event, Collection contexts) {
 		switch (event.getType()) {
 		case ServiceEvent.MODIFIED:
@@ -176,25 +157,9 @@ public class TopologyManager extends AbstractTopologyManager implements
 		if (exportedInterfaces == null)
 			return;
 
-		// Get optional service property for exported configs
-		String[] exportedConfigs = PropertiesUtil
-				.getStringArrayFromPropertyValue(serviceReference
-						.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
-
-		// Get all intents (service.intents, service.exported.intents,
-		// service.exported.intents.extra)
-		String[] serviceIntents = PropertiesUtil
-				.getServiceIntents(serviceReference);
-
 		// Select remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = selectExportRemoteServiceAdmin(
-				serviceReference, exportedInterfaces, exportedConfigs,
-				serviceIntents);
-
-		// prepare export properties
-		Map<String, Object> exportProperties = prepareExportProperties(
-				serviceReference, exportedInterfaces, exportedConfigs,
-				serviceIntents, rsa);
+				serviceReference, exportedInterfaces);
 
 		// if no remote service admin available, then log error and return
 		if (rsa == null) {
@@ -204,6 +169,13 @@ public class TopologyManager extends AbstractTopologyManager implements
 							+ ".  Remote service NOT EXPORTED");
 			return;
 		}
+		
+		// prepare export properties
+		Map<String, Object> exportProperties = new HashMap<String, Object>();
+		exportProperties.put(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
+				exportedInterfaces);
+		
 		// Export the remote service using the selected remote service admin
 		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> registrations = rsa
 				.exportService(serviceReference, exportProperties);

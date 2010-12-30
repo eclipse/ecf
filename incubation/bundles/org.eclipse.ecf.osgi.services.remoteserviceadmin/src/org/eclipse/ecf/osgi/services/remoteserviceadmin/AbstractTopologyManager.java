@@ -106,8 +106,7 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectExportRemoteServiceAdmin(
-			ServiceReference serviceReference, String[] exportedInterfaces,
-			String[] exportedConfigs, String[] serviceIntents) {
+			ServiceReference serviceReference, String[] exportedInterfaces) {
 		synchronized (remoteServiceAdminLock) {
 			if (remoteServiceAdmin == null)
 				remoteServiceAdmin = new RemoteServiceAdmin(getContext());

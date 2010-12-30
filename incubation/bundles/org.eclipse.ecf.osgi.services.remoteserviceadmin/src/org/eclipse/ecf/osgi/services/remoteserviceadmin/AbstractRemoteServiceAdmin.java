@@ -360,8 +360,9 @@ public abstract class AbstractRemoteServiceAdmin {
 		// ECF properties
 		// ID namespace
 		String idNamespace = containerID.getNamespace().getName();
-		endpointDescriptionProperties.put(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE, idNamespace);
-		
+		endpointDescriptionProperties.put(
+				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE, idNamespace);
+
 		// ENDPOINT_CONNECTTARGET_ID
 		String connectTarget = (String) PropertiesUtil.getPropertyValue(
 				serviceReference, overridingProperties,
@@ -385,7 +386,7 @@ public abstract class AbstractRemoteServiceAdmin {
 
 		// ENDPOINT_REMOTESERVICE_FILTER
 		String rsFilter = (String) PropertiesUtil.getPropertyValue(
-		serviceReference, overridingProperties,
+				serviceReference, overridingProperties,
 				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
 		if (rsFilter != null)
 			endpointDescriptionProperties.put(
@@ -964,26 +965,32 @@ public abstract class AbstractRemoteServiceAdmin {
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
 			ServiceReference serviceReference,
 			Map<String, Object> overridingProperties) {
+
 		trace("exportService", "serviceReference=" + serviceReference
 				+ ",properties=" + overridingProperties);
-		String[] exportedInterfaces = (String[]) PropertiesUtil
-				.getPropertyValue(
 
-						serviceReference,
-						overridingProperties,
-						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
-		String[] exportedConfigs = (String[]) PropertiesUtil
-				.getPropertyValue(
-
-						serviceReference,
-						overridingProperties,
-						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS);
-		String[] serviceIntents = (String[]) PropertiesUtil
-				.getPropertyValue(
-
-						serviceReference,
-						overridingProperties,
-						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS);
+		// First get exported interfaces...try overriding properties first...or from serviceReference second
+		String[] exportedInterfaces = null;
+		if (overridingProperties != null)
+			exportedInterfaces = (String[]) overridingProperties
+					.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
+		if (exportedInterfaces == null)
+			exportedInterfaces = PropertiesUtil
+					.getExportedInterfaces(serviceReference);
+		// If null, we don't have anything to export (log warning and return empty Collection)
+		if (exportedInterfaces == null) {
+			logWarning("exportService", "serviceReference=" + serviceReference
+					+ " does not expose any exported interfaces");
+			return Collections.EMPTY_LIST;
+		}
+		// Get optional service property for exported configs
+		String[] exportedConfigs = PropertiesUtil
+				.getStringArrayFromPropertyValue(serviceReference
+						.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
+		// Get all intents (service.intents, service.exported.intents,
+		// service.exported.intents.extra)
+		String[] serviceIntents = PropertiesUtil
+				.getServiceIntents(serviceReference);
 		// Get a host container selector
 		IHostContainerSelector hostContainerSelector = getHostContainerSelector();
 		if (hostContainerSelector == null) {
