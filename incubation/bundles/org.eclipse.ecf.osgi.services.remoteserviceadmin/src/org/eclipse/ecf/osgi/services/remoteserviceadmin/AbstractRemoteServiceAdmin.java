@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -413,11 +414,6 @@ public abstract class AbstractRemoteServiceAdmin {
 		return target;
 	}
 
-	protected Map<String, Object> copyNonReservedProperties(
-			IRemoteServiceReference rsReference, Map<String, Object> target) {
-		return PropertiesUtil.copyNonReservedProperties(rsReference, target);
-	}
-
 	protected ContainerTypeDescription getContainerTypeDescription(
 			IContainer container) {
 		IContainerManager containerManager = Activator.getDefault()
@@ -442,19 +438,6 @@ public abstract class AbstractRemoteServiceAdmin {
 	protected String[] getSupportedIntents(IContainer container) {
 		ContainerTypeDescription ctd = getContainerTypeDescription(container);
 		return (ctd == null) ? null : ctd.getSupportedIntents();
-	}
-
-	protected Collection<String> getInterfaces(
-			EndpointDescription endpointDescription) {
-		return endpointDescription.getInterfaces();
-	}
-
-	protected ID getEndpointID(EndpointDescription endpointDescription) {
-		return IDUtil.createID(endpointDescription);
-	}
-
-	protected ID getConnectTargetID(EndpointDescription endpointDescription) {
-		return endpointDescription.getConnectTargetID();
 	}
 
 	protected ID[] getIDFilter(EndpointDescription endpointDescription,
@@ -575,6 +558,7 @@ public abstract class AbstractRemoteServiceAdmin {
 
 		public void ungetService(Bundle bundle,
 				ServiceRegistration registration, Object service) {
+			ungetProxyClassLoader(bundle);
 			this.remoteService = null;
 			this.interfaceVersions = null;
 		}
@@ -606,8 +590,7 @@ public abstract class AbstractRemoteServiceAdmin {
 
 		// Now create/get class loader for proxy. This will typically
 		// be an instance of ProxyClassLoader
-		ClassLoader cl = getClassLoaderForProxy(requestingBundle,
-				serviceInterfaceClasses);
+		ClassLoader cl = getProxyClassLoader(requestingBundle);
 		try {
 			return remoteService.getProxy(cl, (Class[]) serviceInterfaceClasses
 					.toArray(new Class[serviceInterfaceClasses.size()]));
@@ -620,20 +603,59 @@ public abstract class AbstractRemoteServiceAdmin {
 
 	}
 
-	protected ClassLoader getClassLoaderForProxy(Bundle bundle,
-			Collection<Class> serviceInterfaceClasses) {
-		return new ProxyClassLoader(bundle);
+	private Map<Bundle,ProxyClassLoader> proxyClassLoaders = new HashMap<Bundle,ProxyClassLoader>();
+	
+	private void closeProxyClassLoaderCache() {
+		synchronized (proxyClassLoaders) {
+			proxyClassLoaders.clear();
+		}
+	}
+	
+	protected ClassLoader getProxyClassLoader(Bundle bundle) {
+		ProxyClassLoader proxyClassLoaderForBundle = null;
+		synchronized (proxyClassLoaders) {
+			proxyClassLoaderForBundle = proxyClassLoaders.get(bundle);
+			if (proxyClassLoaderForBundle == null) {
+				proxyClassLoaderForBundle = new ProxyClassLoader(bundle);
+				proxyClassLoaders.put(bundle,proxyClassLoaderForBundle);
+			} else proxyClassLoaderForBundle.addServiceUseCount();
+		}
+		return proxyClassLoaderForBundle;
 	}
 
+	protected void ungetProxyClassLoader(Bundle bundle) {
+		synchronized (proxyClassLoaders) {
+			ProxyClassLoader proxyClassLoaderForBundle = proxyClassLoaders.get(bundle);
+			if (proxyClassLoaderForBundle != null) {
+				int useCount = proxyClassLoaderForBundle.getServiceUseCount();
+				if (useCount == 0) proxyClassLoaders.remove(bundle);
+				else proxyClassLoaderForBundle.removeServiceUseCount();
+			}
+		}
+	}
+	
 	protected class ProxyClassLoader extends ClassLoader {
 		private Bundle loadingBundle;
-
+		private int serviceUseCount = 0;
+		
 		public ProxyClassLoader(Bundle loadingBundle) {
 			this.loadingBundle = loadingBundle;
 		}
 
 		public Class loadClass(String name) throws ClassNotFoundException {
 			return loadingBundle.loadClass(name);
+		}
+		
+		public int getServiceUseCount() {
+			return serviceUseCount;
+		}
+		
+		public void addServiceUseCount() {
+			serviceUseCount++;
+		}
+		
+		public void removeServiceUseCount() {
+			serviceUseCount--;
 		}
 	}
 
@@ -764,7 +786,7 @@ public abstract class AbstractRemoteServiceAdmin {
 
 		Map resultProperties = new TreeMap<String, Object>(
 				String.CASE_INSENSITIVE_ORDER);
-		copyNonReservedProperties(rsReference, resultProperties);
+		PropertiesUtil.copyNonReservedProperties(rsReference, resultProperties);
 		// remove OBJECTCLASS
 		resultProperties
 				.remove(org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS);
@@ -795,7 +817,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		return resultProperties;
 	}
 
-	protected ExportRegistration doExportService(
+	public ExportRegistration exportService(
 			ServiceReference serviceReference,
 			Map<String, Object> overridingProperties,
 			String[] exportedInterfaces, String[] serviceIntents,
@@ -868,7 +890,7 @@ public abstract class AbstractRemoteServiceAdmin {
 				endpointDescription);
 	}
 
-	protected ImportRegistration doImportService(
+	public ImportRegistration importService(
 			EndpointDescription endpointDescription,
 			IRemoteServiceContainer rsContainer) throws Exception {
 		trace("doImportService", "endpointDescription=" + endpointDescription
@@ -877,7 +899,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		if (osgiServiceId == 0)
 			return handleNonOSGiService(endpointDescription, rsContainer);
 		// Get interfaces from endpoint description
-		Collection<String> interfaces = getInterfaces(endpointDescription);
+		Collection<String> interfaces = endpointDescription.getInterfaces();
 		Assert.isNotNull(interfaces);
 		Assert.isTrue(interfaces.size() > 0);
 		// Get ECF endpoint ID...if this throws IDCreateException (because the
@@ -885,10 +907,10 @@ public abstract class AbstractRemoteServiceAdmin {
 		// namespace for creating ID, or no namespace is present in
 		// endpointDescription or endpoint id,
 		// then it will be caught by the caller
-		ID endpointID = getEndpointID(endpointDescription);
+		ID endpointID = IDUtil.createID(endpointDescription);
 		Assert.isNotNull(endpointID);
 		// Get connect target ID. May be null
-		ID targetID = getConnectTargetID(endpointDescription);
+		ID targetID = endpointDescription.getConnectTargetID();
 		if (targetID == null)
 			targetID = endpointID;
 		// Get idFilter...also may be null
@@ -949,6 +971,7 @@ public abstract class AbstractRemoteServiceAdmin {
 	}
 
 	public void close() {
+		closeProxyClassLoaderCache();
 		closePackageVersionComparatorTracker();
 		closeConsumerContainerSelector();
 		closeHostContainerSelector();
@@ -1016,7 +1039,7 @@ public abstract class AbstractRemoteServiceAdmin {
 			for (int i = 0; i < rsContainers.length; i++) {
 				ExportRegistration rsRegistration = null;
 				try {
-					rsRegistration = doExportService(serviceReference,
+					rsRegistration = exportService(serviceReference,
 							overridingProperties, exportedInterfaces,
 							serviceIntents, rsContainers[i]);
 				} catch (Exception e) {
@@ -1036,7 +1059,9 @@ public abstract class AbstractRemoteServiceAdmin {
 
 	public org.osgi.service.remoteserviceadmin.ImportRegistration importService(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		
 		trace("importService", "endpointDescription=" + endpointDescription);
+		
 		// First check to see whether it's one of ECF's endpoint descriptions
 		if (endpointDescription instanceof EndpointDescription) {
 			EndpointDescription ed = (EndpointDescription) endpointDescription;
@@ -1065,7 +1090,7 @@ public abstract class AbstractRemoteServiceAdmin {
 			ImportRegistration importRegistration = null;
 			synchronized (importedRegistrations) {
 				try {
-					importRegistration = doImportService(ed, rsContainer);
+					importRegistration = importService(ed, rsContainer);
 				} catch (Exception e) {
 					logError("importService",
 							"Exception importing endpointDescription=" + ed
