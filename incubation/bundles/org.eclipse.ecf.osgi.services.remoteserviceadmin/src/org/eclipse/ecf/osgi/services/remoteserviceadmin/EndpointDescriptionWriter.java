@@ -228,7 +228,8 @@ public class EndpointDescriptionWriter {
 			if (valueType != null) {
 				writeValueProperty(indentLevel, name, valueType, value, writer);
 				return;
-			} else writeUnknownProperty(indentLevel, writer, name, value);
+			} else
+				writeUnknownProperty(indentLevel, writer, name, value);
 		}
 	}
 

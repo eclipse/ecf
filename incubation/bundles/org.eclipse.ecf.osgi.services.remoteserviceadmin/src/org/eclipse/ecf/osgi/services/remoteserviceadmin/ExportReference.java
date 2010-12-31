@@ -17,7 +17,7 @@ public class ExportReference implements
 	private ServiceReference serviceReference;
 	private EndpointDescription endpointDescription;
 
-	protected ExportReference(ServiceReference serviceReference,
+	ExportReference(ServiceReference serviceReference,
 			EndpointDescription endpointDescription) {
 		this.serviceReference = serviceReference;
 		this.endpointDescription = endpointDescription;
@@ -31,7 +31,7 @@ public class ExportReference implements
 		return endpointDescription;
 	}
 
-	public synchronized void close() {
+	synchronized void close() {
 		this.serviceReference = null;
 		this.endpointDescription = null;
 	}

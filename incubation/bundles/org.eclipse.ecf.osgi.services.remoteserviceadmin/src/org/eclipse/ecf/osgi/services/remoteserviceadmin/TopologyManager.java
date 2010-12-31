@@ -11,9 +11,9 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Collection;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
@@ -169,13 +169,14 @@ public class TopologyManager extends AbstractTopologyManager implements
 							+ ".  Remote service NOT EXPORTED");
 			return;
 		}
-		
+
 		// prepare export properties
-		Map<String, Object> exportProperties = new HashMap<String, Object>();
-		exportProperties.put(
-				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
-				exportedInterfaces);
-		
+		Map<String, Object> exportProperties = new TreeMap<String, Object>(
+				String.CASE_INSENSITIVE_ORDER);
+		exportProperties
+				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
+						exportedInterfaces);
+
 		// Export the remote service using the selected remote service admin
 		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> registrations = rsa
 				.exportService(serviceReference, exportProperties);

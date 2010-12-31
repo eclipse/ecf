@@ -12,11 +12,11 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.IServiceProperties;
@@ -156,27 +156,34 @@ public abstract class AbstractMetadataFactory {
 
 	protected EndpointDescription decodeEndpointDescription(
 			IServiceProperties discoveredServiceProperties) {
-		Map osgiProperties = new HashMap();
-		decodeOSGiProperties(discoveredServiceProperties, osgiProperties);
+
+		Map<String, Object> endpointDescriptionProperties = new TreeMap<String, Object>(
+				String.CASE_INSENSITIVE_ORDER);
+
+		decodeOSGiProperties(discoveredServiceProperties,
+				endpointDescriptionProperties);
 
 		// remote service id
 		Long remoteServiceId = decodeLong(discoveredServiceProperties,
 				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-		osgiProperties.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+		endpointDescriptionProperties.put(
+				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
 				remoteServiceId);
 
 		// container id namespace
 		String containerIDNamespace = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		if (containerIDNamespace != null)
-			osgiProperties.put(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
+			endpointDescriptionProperties.put(
+					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
 					containerIDNamespace);
 
 		// connect target ID
 		String connectTargetIDName = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		if (connectTargetIDName != null)
-			osgiProperties.put(RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
+			endpointDescriptionProperties.put(
+					RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
 					connectTargetIDName);
 
 		// ID filter
@@ -185,21 +192,22 @@ public abstract class AbstractMetadataFactory {
 		Object idFilterNamesval = PropertiesUtil
 				.convertToStringPlusValue(idFilterNames);
 		if (idFilterNamesval != null)
-			osgiProperties.put(RemoteConstants.ENDPOINT_IDFILTER_IDS,
-					idFilterNamesval);
+			endpointDescriptionProperties.put(
+					RemoteConstants.ENDPOINT_IDFILTER_IDS, idFilterNamesval);
 
 		// remote service filter
 		String remoteServiceFilter = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
 		if (remoteServiceFilter != null)
-			osgiProperties.put(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
+			endpointDescriptionProperties.put(
+					RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 					remoteServiceFilter);
 
 		// Finally, fill out other properties
 		decodeNonStandardServiceProperties(discoveredServiceProperties,
-				osgiProperties);
+				endpointDescriptionProperties);
 
-		return new EndpointDescription(osgiProperties);
+		return new EndpointDescription(endpointDescriptionProperties);
 	}
 
 	private String getPackageName(String className) {
@@ -208,8 +216,9 @@ public abstract class AbstractMetadataFactory {
 			return "";
 		return className.substring(0, lastDotIndex);
 	}
-	
-	protected void encodeOSGiServiceProperties(EndpointDescription endpointDescription, IServiceProperties result) {
+
+	protected void encodeOSGiServiceProperties(
+			EndpointDescription endpointDescription, IServiceProperties result) {
 		// org.osgi.framework.Constants.OBJECTCLASS =
 		// endpointDescription.getInterfaces();
 		List<String> interfaces = endpointDescription.getInterfaces();
@@ -290,12 +299,12 @@ public abstract class AbstractMetadataFactory {
 					remoteIntentsSupported);
 
 	}
-	
+
 	protected void encodeServiceProperties(
 			EndpointDescription endpointDescription, IServiceProperties result) {
 
 		encodeOSGiServiceProperties(endpointDescription, result);
-		
+
 		// org.eclipse.ecf.remoteservice.Constants.SERVICE_ID =
 		// endpointDescription.getRemoteServiceId()
 		long remoteServiceId = endpointDescription.getRemoteServiceId();

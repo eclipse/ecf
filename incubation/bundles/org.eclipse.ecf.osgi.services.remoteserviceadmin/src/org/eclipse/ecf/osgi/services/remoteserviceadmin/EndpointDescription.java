@@ -153,6 +153,15 @@ public class EndpointDescription extends
 		return hashCode;
 	}
 
+	public boolean isSameService(
+			org.osgi.service.remoteserviceadmin.EndpointDescription other) {
+		if (!(other instanceof EndpointDescription))
+			return false;
+		EndpointDescription o = (EndpointDescription) other;
+		return (super.isSameService(other) && o.getRemoteServiceId() == this
+				.getRemoteServiceId());
+	}
+
 	public String getIdNamespace() {
 		return idNamespace;
 	}

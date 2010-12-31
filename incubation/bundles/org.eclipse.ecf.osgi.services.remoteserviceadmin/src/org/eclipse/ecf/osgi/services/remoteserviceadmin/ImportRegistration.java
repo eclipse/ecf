@@ -10,55 +10,36 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
-import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
-import org.osgi.framework.ServiceRegistration;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 
 public class ImportRegistration implements
 		org.osgi.service.remoteserviceadmin.ImportRegistration {
 
-	private IRemoteServiceContainer rsContainer;
-	private IRemoteServiceListener rsListener;
-	private IRemoteServiceReference rsReference;
-	private ServiceRegistration importRegistration;
-	private ImportReference importReference;
+	private ImportEndpoint importEndpoint;
+
+	private ID containerID;
 	private Throwable throwable;
 
-	public ImportRegistration(IRemoteServiceContainer rsContainer,
-			IRemoteServiceListener rsListener,
-			IRemoteServiceReference rsReference,
-			EndpointDescription endpointDescription,
-			ServiceRegistration importRegistration) {
-		this.rsContainer = rsContainer;
-		Assert.isNotNull(rsContainer);
-		this.rsListener = rsListener;
-		Assert.isNotNull(rsListener);
-		this.rsReference = rsReference;
-		Assert.isNotNull(rsReference);
-		this.importRegistration = importRegistration;
-		this.importReference = new ImportReference(
-				importRegistration.getReference(), endpointDescription);
-		// Add the remoteservice listener to the container adapter, so that the
-		// rsListener
-		// notified asynchronously if our underlying remote service reference is
-		// unregistered locally
-		// due to disconnect or remote ejection
-		rsContainer.getContainerAdapter().addRemoteServiceListener(rsListener);
+	public ImportRegistration(ImportEndpoint importEndpoint) {
+		Assert.isNotNull(importEndpoint);
+		this.importEndpoint = importEndpoint;
+		this.importEndpoint.add(this);
 	}
 
-	public ImportRegistration(IRemoteServiceContainer rsContainer, Throwable t) {
-		this.rsContainer = rsContainer;
+	public ImportRegistration(ID containerID, Throwable t) {
+		this.containerID = containerID;
 		this.throwable = t;
 	}
 
-	public synchronized IRemoteServiceReference getRemoteServiceReference() {
-		return rsReference;
+	public ID getContainerID() {
+		return containerID;
 	}
 
-	public synchronized IRemoteServiceContainer getRemoteServiceContainer() {
-		return rsContainer;
+	synchronized boolean match(IRemoteServiceID remoteServiceID) {
+		if (importEndpoint == null)
+			return false;
+		return importEndpoint.match(remoteServiceID);
 	}
 
 	public synchronized ImportReference getImportReference() {
@@ -67,29 +48,14 @@ public class ImportRegistration implements
 			throw new IllegalStateException(
 					"Cannot get import reference as registration not properly initialized",
 					t);
-		return importReference;
+		return importEndpoint == null ? null : importEndpoint
+				.getImportReference();
 	}
 
 	public synchronized void close() {
-		if (importRegistration != null) {
-			importRegistration.unregister();
-			importRegistration = null;
-		}
-		if (rsContainer != null) {
-			IRemoteServiceContainerAdapter containerAdapter = rsContainer
-					.getContainerAdapter();
-			if (rsReference != null)
-				containerAdapter.ungetRemoteService(rsReference);
-			rsReference = null;
-			// remove remote service listener
-			if (rsListener != null)
-				containerAdapter.removeRemoteServiceListener(rsListener);
-			rsListener = null;
-			rsContainer = null;
-		}
-		if (importReference != null) {
-			importReference.close();
-			importReference = null;
+		if (importEndpoint != null) {
+			importEndpoint.close(this);
+			importEndpoint = null;
 		}
 		throwable = null;
 	}
@@ -99,8 +65,8 @@ public class ImportRegistration implements
 	}
 
 	public synchronized String toString() {
-		return "ImportRegistration [rsReference=" + rsReference
-				+ ", importReference=" + importReference + ", throwable="
+		return "ImportRegistration [containerID=" + containerID
+				+ ", importEndpoint=" + importEndpoint + ", exception="
 				+ throwable + "]";
 	}
 

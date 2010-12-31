@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -378,7 +379,8 @@ public class EndpointDescriptionParser {
 		public EndpointDescriptionHandler(ContentHandler parentHandler,
 				Attributes attributes, List<EndpointDescription> descriptions) {
 			super(parentHandler, ENDPOINT_DESCRIPTION);
-			this.properties = new HashMap<String, Object>();
+			this.properties = new TreeMap<String, Object>(
+					String.CASE_INSENSITIVE_ORDER);
 			this.descriptions = descriptions;
 		}
 

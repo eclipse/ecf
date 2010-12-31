@@ -53,12 +53,15 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 import org.osgi.service.packageadmin.ExportedPackage;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.remoteserviceadmin.ImportReference;
 import org.osgi.util.tracker.ServiceTracker;
 
-public abstract class AbstractRemoteServiceAdmin {
+public abstract class AbstractRemoteServiceAdmin implements
+		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin {
 
 	private BundleContext context;
 
@@ -95,7 +98,6 @@ public abstract class AbstractRemoteServiceAdmin {
 	private ServiceTracker packageVersionComparatorTracker;
 
 	protected Collection<ExportRegistration> exportedRegistrations = new ArrayList<ExportRegistration>();
-
 	protected Collection<ImportRegistration> importedRegistrations = new ArrayList<ImportRegistration>();
 
 	public AbstractRemoteServiceAdmin(BundleContext context) {
@@ -127,6 +129,40 @@ public abstract class AbstractRemoteServiceAdmin {
 		packageVersionComparatorRegistration = getContext().registerService(
 				IPackageVersionComparator.class.getName(),
 				packageVersionComparator, (Dictionary) properties);
+
+	}
+
+	private Object eventAdminTrackerLock = new Object();
+	private ServiceTracker eventAdminTracker;
+
+	private EventAdmin getEventAdmin() {
+		synchronized (eventAdminTrackerLock) {
+			eventAdminTracker = new ServiceTracker(getContext(),
+					EventAdmin.class.getName(), null);
+			eventAdminTracker.open(true);
+		}
+		return (EventAdmin) eventAdminTracker.getService();
+	}
+
+	protected void postRemoteServiceAdminEvent(String topic,
+			Dictionary eventProperties) {
+		EventAdmin eventAdmin = getEventAdmin();
+		if (eventAdmin == null) {
+			logError("postRemoteServiceAdminEvent",
+					"No EventAdmin service available to send eventTopic="
+							+ topic + " eventProperties=" + eventProperties);
+			return;
+		}
+		eventAdmin.postEvent(new Event(topic, eventProperties));
+	}
+
+	private void closeEventAdminTracker() {
+		synchronized (eventAdminTrackerLock) {
+			if (eventAdminTracker != null) {
+				eventAdminTracker.close();
+				eventAdminTracker = null;
+			}
+		}
 	}
 
 	protected BundleContext getContext() {
@@ -262,13 +298,9 @@ public abstract class AbstractRemoteServiceAdmin {
 				String.CASE_INSENSITIVE_ORDER);
 
 		// OSGi properties
-		// OBJECTCLASS
-		String[] interfaces = (String[]) PropertiesUtil.getPropertyValue(null,
-				overridingProperties, org.osgi.framework.Constants.OBJECTCLASS);
-		if (interfaces == null)
-			interfaces = exportedInterfaces;
+		// OBJECTCLASS set to exportedInterfaces
 		endpointDescriptionProperties.put(
-				org.osgi.framework.Constants.OBJECTCLASS, interfaces);
+				org.osgi.framework.Constants.OBJECTCLASS, exportedInterfaces);
 
 		// Service interface versions
 		for (int i = 0; i < exportedInterfaces.length; i++) {
@@ -308,9 +340,9 @@ public abstract class AbstractRemoteServiceAdmin {
 						endpointId);
 
 		// ENDPOINT_SERVICE_ID
-		Long serviceId = (Long) PropertiesUtil.getPropertyValue(
-				serviceReference, overridingProperties,
-				org.osgi.framework.Constants.SERVICE_ID);
+		// This is always set to the value from serviceReference as per 122.5.1
+		Long serviceId = (Long) serviceReference
+				.getProperty(org.osgi.framework.Constants.SERVICE_ID);
 		endpointDescriptionProperties.put(
 				org.osgi.framework.Constants.SERVICE_ID, serviceId);
 
@@ -326,10 +358,18 @@ public abstract class AbstractRemoteServiceAdmin {
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
 						frameworkId);
 
-		// SERVICE_IMPORTED_CONFIGS...set to ECF constant
+		// REMOTE_CONFIGS_SUPPORTED
+		String[] remoteConfigsSupported = getSupportedConfigs(container);
+		if (remoteConfigsSupported != null)
+			endpointDescriptionProperties
+					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
+							remoteConfigsSupported);
+		// SERVICE_IMPORTED_CONFIGS...set to same value as remote configs
+		// supported (which is computed
+		// for the exporting ECF container
 		endpointDescriptionProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
-						RemoteConstants.ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE);
+						remoteConfigsSupported);
 
 		// SERVICE_INTENTS
 		String[] intents = (String[]) PropertiesUtil
@@ -350,13 +390,6 @@ public abstract class AbstractRemoteServiceAdmin {
 			endpointDescriptionProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED,
 							remoteIntentsSupported);
-
-		// REMOTE_CONFIGS_SUPPORTED
-		String[] remoteConfigsSupported = getSupportedConfigs(container);
-		if (remoteConfigsSupported != null)
-			endpointDescriptionProperties
-					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
-							remoteConfigsSupported);
 
 		// ECF properties
 		// ID namespace
@@ -467,18 +500,17 @@ public abstract class AbstractRemoteServiceAdmin {
 		}
 	}
 
-	protected ImportRegistration handleNonOSGiService(
-			EndpointDescription endpointDescription,
-			IRemoteServiceContainer rsContainer) {
+	protected org.osgi.service.remoteserviceadmin.ImportRegistration handleNonOSGiService(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		// With non-OSGi service id (service id=0), we log a warning and return
 		// null;
-		logWarning("doImportService",
+		logWarning("handleNonOSGiService",
 				"OSGi remote service id is 0 for endpointDescription="
 						+ endpointDescription);
 		return null;
 	}
 
-	protected ImportRegistration createAndRegisterProxy(
+	protected ImportEndpoint createAndRegisterProxy(
 			EndpointDescription endpointDescription,
 			IRemoteServiceContainer rsContainer,
 			IRemoteServiceReference selectedRsReference) throws Exception {
@@ -508,8 +540,8 @@ public abstract class AbstractRemoteServiceAdmin {
 				(Dictionary) PropertiesUtil
 						.createDictionaryFromMap(proxyProperties));
 
-		return new ImportRegistration(rsContainer, rsListener,
-				selectedRsReference, endpointDescription, proxyRegistration);
+		return new ImportEndpoint(containerAdapter, selectedRsReference,
+				rsListener, proxyRegistration, endpointDescription);
 	}
 
 	protected ServiceFactory createProxyServiceFactory(
@@ -541,7 +573,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		return result;
 	}
 
-	class ProxyServiceFactory implements ServiceFactory {
+	protected class ProxyServiceFactory implements ServiceFactory {
 		private IRemoteService remoteService;
 		private Map<String, Version> interfaceVersions;
 
@@ -603,41 +635,45 @@ public abstract class AbstractRemoteServiceAdmin {
 
 	}
 
-	private Map<Bundle,ProxyClassLoader> proxyClassLoaders = new HashMap<Bundle,ProxyClassLoader>();
-	
+	private Map<Bundle, ProxyClassLoader> proxyClassLoaders = new HashMap<Bundle, ProxyClassLoader>();
+
 	private void closeProxyClassLoaderCache() {
 		synchronized (proxyClassLoaders) {
 			proxyClassLoaders.clear();
 		}
 	}
-	
+
 	protected ClassLoader getProxyClassLoader(Bundle bundle) {
 		ProxyClassLoader proxyClassLoaderForBundle = null;
 		synchronized (proxyClassLoaders) {
 			proxyClassLoaderForBundle = proxyClassLoaders.get(bundle);
 			if (proxyClassLoaderForBundle == null) {
 				proxyClassLoaderForBundle = new ProxyClassLoader(bundle);
-				proxyClassLoaders.put(bundle,proxyClassLoaderForBundle);
-			} else proxyClassLoaderForBundle.addServiceUseCount();
+				proxyClassLoaders.put(bundle, proxyClassLoaderForBundle);
+			} else
+				proxyClassLoaderForBundle.addServiceUseCount();
 		}
 		return proxyClassLoaderForBundle;
 	}
 
 	protected void ungetProxyClassLoader(Bundle bundle) {
 		synchronized (proxyClassLoaders) {
-			ProxyClassLoader proxyClassLoaderForBundle = proxyClassLoaders.get(bundle);
+			ProxyClassLoader proxyClassLoaderForBundle = proxyClassLoaders
+					.get(bundle);
 			if (proxyClassLoaderForBundle != null) {
 				int useCount = proxyClassLoaderForBundle.getServiceUseCount();
-				if (useCount == 0) proxyClassLoaders.remove(bundle);
-				else proxyClassLoaderForBundle.removeServiceUseCount();
+				if (useCount == 0)
+					proxyClassLoaders.remove(bundle);
+				else
+					proxyClassLoaderForBundle.removeServiceUseCount();
 			}
 		}
 	}
-	
+
 	protected class ProxyClassLoader extends ClassLoader {
 		private Bundle loadingBundle;
 		private int serviceUseCount = 0;
-		
+
 		public ProxyClassLoader(Bundle loadingBundle) {
 			this.loadingBundle = loadingBundle;
 		}
@@ -645,15 +681,15 @@ public abstract class AbstractRemoteServiceAdmin {
 		public Class loadClass(String name) throws ClassNotFoundException {
 			return loadingBundle.loadClass(name);
 		}
-		
+
 		public int getServiceUseCount() {
 			return serviceUseCount;
 		}
-		
+
 		public void addServiceUseCount() {
 			serviceUseCount++;
 		}
-		
+
 		public void removeServiceUseCount() {
 			serviceUseCount--;
 		}
@@ -817,11 +853,11 @@ public abstract class AbstractRemoteServiceAdmin {
 		return resultProperties;
 	}
 
-	public ExportRegistration exportService(
-			ServiceReference serviceReference,
+	protected ExportEndpoint exportService(ServiceReference serviceReference,
 			Map<String, Object> overridingProperties,
 			String[] exportedInterfaces, String[] serviceIntents,
 			IRemoteServiceContainer rsContainer) throws Exception {
+		ID containerID = rsContainer.getContainer().getID();
 		trace("doExportService",
 				"serviceReference="
 						+ serviceReference
@@ -832,7 +868,7 @@ public abstract class AbstractRemoteServiceAdmin {
 						+ ",serviceIntents="
 						+ ((serviceIntents == null) ? "null" : Arrays.asList(
 								serviceIntents).toString()) + ",rsContainerID="
-						+ rsContainer.getContainer().getID());
+						+ containerID);
 		IRemoteServiceRegistration remoteRegistration = null;
 		try {
 			// Create remote service properties
@@ -870,9 +906,9 @@ public abstract class AbstractRemoteServiceAdmin {
 			EndpointDescription endpointDescription = createExportEndpointDescription(
 					serviceReference, overridingProperties, exportedInterfaces,
 					serviceIntents, remoteRegistration, rsContainer);
-			// Create ExportRegistration
-			return createExportRegistration(remoteRegistration,
-					serviceReference, endpointDescription);
+			// Create ExportEndpoint/ExportRegistration
+			return new ExportEndpoint(serviceReference, containerID,
+					remoteRegistration, endpointDescription);
 		} catch (Exception e) {
 			// If we actually created an IRemoteRegistration then unregister
 			if (remoteRegistration != null)
@@ -882,22 +918,11 @@ public abstract class AbstractRemoteServiceAdmin {
 		}
 	}
 
-	protected ExportRegistration createExportRegistration(
-			IRemoteServiceRegistration remoteRegistration,
-			ServiceReference serviceReference,
-			EndpointDescription endpointDescription) {
-		return new ExportRegistration(remoteRegistration, serviceReference,
-				endpointDescription);
-	}
-
-	public ImportRegistration importService(
+	protected ImportEndpoint importService(
 			EndpointDescription endpointDescription,
 			IRemoteServiceContainer rsContainer) throws Exception {
 		trace("doImportService", "endpointDescription=" + endpointDescription
 				+ ",rsContainerID=" + rsContainer.getContainer().getID());
-		long osgiServiceId = endpointDescription.getServiceId();
-		if (osgiServiceId == 0)
-			return handleNonOSGiService(endpointDescription, rsContainer);
 		// Get interfaces from endpoint description
 		Collection<String> interfaces = endpointDescription.getInterfaces();
 		Assert.isNotNull(interfaces);
@@ -976,6 +1001,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		closeConsumerContainerSelector();
 		closeHostContainerSelector();
 		closePackageAdminTracker();
+		closeEventAdminTracker();
 		synchronized (exportedRegistrations) {
 			exportedRegistrations.clear();
 		}
@@ -992,20 +1018,23 @@ public abstract class AbstractRemoteServiceAdmin {
 		trace("exportService", "serviceReference=" + serviceReference
 				+ ",properties=" + overridingProperties);
 
-		// First get exported interfaces...try overriding properties first...or from serviceReference second
-		String[] exportedInterfaces = null;
-		if (overridingProperties != null)
-			exportedInterfaces = (String[]) overridingProperties
-					.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
+		overridingProperties = (overridingProperties == null) ? Collections.EMPTY_MAP
+				: overridingProperties;
+
+		// First get exported interfaces
+		String[] exportedInterfaces = (String[]) overridingProperties
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
+		// As per 122.5.1 we only use the OBJECTCLASS value from the
+		// serviceReference, not from the overridingProperties map
 		if (exportedInterfaces == null)
 			exportedInterfaces = PropertiesUtil
 					.getExportedInterfaces(serviceReference);
-		// If null, we don't have anything to export (log warning and return empty Collection)
-		if (exportedInterfaces == null) {
-			logWarning("exportService", "serviceReference=" + serviceReference
-					+ " does not expose any exported interfaces");
-			return Collections.EMPTY_LIST;
-		}
+		// If exportedInterfaces is still null, we throw
+		if (exportedInterfaces == null)
+			throw new IllegalArgumentException(
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES
+							+ " not set");
+
 		// Get optional service property for exported configs
 		String[] exportedConfigs = PropertiesUtil
 				.getStringArrayFromPropertyValue(serviceReference
@@ -1014,6 +1043,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		// service.exported.intents.extra)
 		String[] serviceIntents = PropertiesUtil
 				.getServiceIntents(serviceReference);
+
 		// Get a host container selector
 		IHostContainerSelector hostContainerSelector = getHostContainerSelector();
 		if (hostContainerSelector == null) {
@@ -1037,31 +1067,58 @@ public abstract class AbstractRemoteServiceAdmin {
 		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>();
 		synchronized (exportedRegistrations) {
 			for (int i = 0; i < rsContainers.length; i++) {
+				ID containerID = rsContainers[i].getContainer().getID();
+				// If we've already got an export endpoint
+				// for this service reference/containerID combination,
+				// then create an ExportRegistration that uses the endpoint
+				ExportEndpoint exportEndpoint = findExistingExportEndpoint(
+						serviceReference, containerID);
+
 				ExportRegistration rsRegistration = null;
-				try {
-					rsRegistration = exportService(serviceReference,
-							overridingProperties, exportedInterfaces,
-							serviceIntents, rsContainers[i]);
-				} catch (Exception e) {
-					logError("exportService",
-							"Exception exporting serviceReference="
-									+ serviceReference + " with properties="
-									+ overridingProperties + " rsContainerID="
-									+ rsContainers[i].getContainer().getID(), e);
-					rsRegistration = new ExportRegistration(serviceReference, e);
+				if (exportEndpoint != null)
+					rsRegistration = new ExportRegistration(exportEndpoint);
+				else {
+					try {
+						rsRegistration = new ExportRegistration(exportService(
+								serviceReference, overridingProperties,
+								exportedInterfaces, serviceIntents,
+								rsContainers[i]));
+						exportedRegistrations.add(rsRegistration);
+					} catch (Exception e) {
+						logError("exportService",
+								"Exception exporting serviceReference="
+										+ serviceReference
+										+ " with properties="
+										+ overridingProperties
+										+ " rsContainerID=" + containerID, e);
+						rsRegistration = new ExportRegistration(
+								serviceReference, containerID, e);
+					}
 				}
 				results.add(rsRegistration);
-				exportedRegistrations.add(rsRegistration);
 			}
 		}
 		return results;
 	}
 
+	private ExportEndpoint findExistingExportEndpoint(
+			ServiceReference serviceReference, ID containerID) {
+		for (ExportRegistration eReg : exportedRegistrations) {
+			ExportEndpoint exportEndpoint = eReg.getExportEndpoint(
+					serviceReference, containerID);
+			if (exportEndpoint != null)
+				return exportEndpoint;
+		}
+		return null;
+	}
+
 	public org.osgi.service.remoteserviceadmin.ImportRegistration importService(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		
 		trace("importService", "endpointDescription=" + endpointDescription);
-		
+
+		if (endpointDescription.getServiceId() == 0)
+			return handleNonOSGiService(endpointDescription);
+
 		// First check to see whether it's one of ECF's endpoint descriptions
 		if (endpointDescription instanceof EndpointDescription) {
 			EndpointDescription ed = (EndpointDescription) endpointDescription;
@@ -1088,38 +1145,37 @@ public abstract class AbstractRemoteServiceAdmin {
 			// If one selected then import the service to create an import
 			// registration
 			ImportRegistration importRegistration = null;
+			ID containerID = rsContainer.getContainer().getID();
 			synchronized (importedRegistrations) {
 				try {
-					importRegistration = importService(ed, rsContainer);
+					ImportEndpoint importEndpoint = importService(ed,
+							rsContainer);
+					importRegistration = new ImportRegistration(importEndpoint);
+					importedRegistrations.add(importRegistration);
 				} catch (Exception e) {
 					logError("importService",
 							"Exception importing endpointDescription=" + ed
-									+ rsContainer.getContainer().getID(), e);
-					importRegistration = new ImportRegistration(rsContainer, e);
+									+ " with containerID=" + containerID, e);
+					importRegistration = new ImportRegistration(containerID, e);
 				} catch (NoClassDefFoundError e) {
 					logError("importService",
 							"NoClassDefFoundError importing endpointDescription="
-									+ ed + rsContainer.getContainer().getID(),
+									+ ed + " with containerID=" + containerID,
 							e);
-					importRegistration = new ImportRegistration(rsContainer, e);
+					importRegistration = new ImportRegistration(containerID, e);
 				}
-				// If we actually created an importRegistration...whether
-				// successful or not, add it to the
-				// set of imported registrations
-				if (importRegistration != null)
-					importedRegistrations.add(importRegistration);
 			}
 			// Finally, return the importRegistration. It may be null or not.
 			return importRegistration;
 		} else {
 			logWarning("importService", "endpointDescription="
 					+ endpointDescription
-					+ " is not ECFEndpointDescription...ignoring");
+					+ " is not ECF EndpointDescription...ignoring");
 			return null;
 		}
 	}
 
-	public Collection<ImportRegistration> unimportService(
+	protected Collection<ImportRegistration> unimportService(
 			IRemoteServiceID remoteServiceID) {
 		trace("unimport", "remoteServiceID=" + remoteServiceID);
 		List<ImportRegistration> removedRegistrations = new ArrayList<ImportRegistration>();
@@ -1127,11 +1183,8 @@ public abstract class AbstractRemoteServiceAdmin {
 			for (Iterator<ImportRegistration> i = importedRegistrations
 					.iterator(); i.hasNext();) {
 				ImportRegistration importRegistration = i.next();
-				IRemoteServiceReference rsReference = importRegistration
-						.getRemoteServiceReference();
-				if (rsReference != null) {
-					IRemoteServiceID regID = rsReference.getID();
-					if (regID.equals(remoteServiceID)) {
+				if (importRegistration != null) {
+					if (importRegistration.match(remoteServiceID)) {
 						removedRegistrations.add(importRegistration);
 						i.remove();
 					}
@@ -1160,7 +1213,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		return new RemoteServiceListener();
 	}
 
-	public Collection<ImportRegistration> unimportService(
+	protected Collection<ImportRegistration> unimportService(
 			EndpointDescription endpointDescription) {
 		trace("unimportService", "endpointDescription=" + endpointDescription);
 		List<ImportRegistration> removedRegistrations = new ArrayList<ImportRegistration>();
@@ -1196,7 +1249,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		return removedRegistrations;
 	}
 
-	public Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ExportRegistration> getExportedRegistrations() {
+	protected Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ExportRegistration> getExportedRegistrations() {
 		Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ExportRegistration> results = new ArrayList<org.eclipse.ecf.osgi.services.remoteserviceadmin.ExportRegistration>();
 		synchronized (exportedRegistrations) {
 			results.addAll(exportedRegistrations);
@@ -1214,7 +1267,7 @@ public abstract class AbstractRemoteServiceAdmin {
 		return results;
 	}
 
-	public Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ImportRegistration> getImportedRegistrations() {
+	protected Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ImportRegistration> getImportedRegistrations() {
 		Collection<org.eclipse.ecf.osgi.services.remoteserviceadmin.ImportRegistration> results = new ArrayList<org.eclipse.ecf.osgi.services.remoteserviceadmin.ImportRegistration>();
 		synchronized (importedRegistrations) {
 			results.addAll(importedRegistrations);
@@ -1236,12 +1289,12 @@ public abstract class AbstractRemoteServiceAdmin {
 			ServiceReference serviceReference) {
 		List<ExportRegistration> results = new ArrayList<ExportRegistration>();
 		for (ExportRegistration exportReg : exportedRegistrations)
-			if (exportReg.matchesServiceReference(serviceReference))
+			if (exportReg.match(serviceReference))
 				results.add(exportReg);
 		return results.toArray(new ExportRegistration[results.size()]);
 	}
 
-	public EndpointDescription[] unexportService(
+	protected EndpointDescription[] unexportService(
 			ServiceReference serviceReference) {
 		List<EndpointDescription> endpointDescriptions = new ArrayList<EndpointDescription>();
 		synchronized (exportedRegistrations) {

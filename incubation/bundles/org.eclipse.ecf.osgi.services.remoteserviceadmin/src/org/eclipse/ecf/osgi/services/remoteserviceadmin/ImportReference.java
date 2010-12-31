@@ -31,7 +31,7 @@ public class ImportReference implements
 		return endpointDescription;
 	}
 
-	public synchronized void close() {
+	synchronized void close() {
 		this.importedServiceReference = null;
 		this.endpointDescription = null;
 	}

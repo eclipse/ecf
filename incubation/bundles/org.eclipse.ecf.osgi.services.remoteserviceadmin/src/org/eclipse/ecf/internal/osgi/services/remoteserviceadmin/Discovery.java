@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
@@ -582,7 +583,8 @@ public class Discovery {
 	}
 
 	private Map getMapFromProperties(ServiceReference ref) {
-		Map results = new HashMap();
+		Map<String, Object> results = new TreeMap<String, Object>(
+				String.CASE_INSENSITIVE_ORDER);
 		String[] keys = ref.getPropertyKeys();
 		if (keys != null) {
 			for (int i = 0; i < keys.length; i++) {

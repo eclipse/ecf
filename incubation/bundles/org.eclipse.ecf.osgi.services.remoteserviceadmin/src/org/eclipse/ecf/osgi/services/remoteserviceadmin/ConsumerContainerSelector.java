@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import java.util.List;
-
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
@@ -31,19 +29,9 @@ public class ConsumerContainerSelector extends
 		// Get the endpointID
 		ID endpointID = IDUtil.createID(endpointDescription);
 
-		String[] remoteSupportedConfigs = null;
-		List<String> edConfigurationTypes = endpointDescription
-				.getConfigurationTypes();
-		if (edConfigurationTypes.size() >= 1
-				&& edConfigurationTypes
-						.get(0)
-						.equals(RemoteConstants.ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE)) {
-			remoteSupportedConfigs = (String[]) endpointDescription
-					.getProperties()
-					.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
-		} else
-			remoteSupportedConfigs = edConfigurationTypes
-					.toArray(new String[edConfigurationTypes.size()]);
+		String[] remoteSupportedConfigs = (String[]) endpointDescription
+				.getProperties()
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
 
 		// Get connect targetID
 		ID connectTargetID = endpointDescription.getConnectTargetID();

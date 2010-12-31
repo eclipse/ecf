@@ -10,61 +10,77 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.osgi.framework.ServiceReference;
 
 public class ExportRegistration implements
 		org.osgi.service.remoteserviceadmin.ExportRegistration {
 
-	private IRemoteServiceRegistration rsRegistration;
-	private ExportReference exportReference;
-
+	// these members are set whether this ExportRegistration
+	// is valid or not
 	private ServiceReference serviceReference;
+	private ID containerID;
+	// This is only null if this ExportRegistration is invalid
+	private ExportEndpoint exportEndpoint;
+	// This is only non-null if this ExportRegistration is invalid
 	private Throwable exception;
 
-	public ExportRegistration(IRemoteServiceRegistration rsRegistration,
-			ServiceReference proxyServiceReference,
-			EndpointDescription endpointDescription) {
-		Assert.isNotNull(rsRegistration);
-		this.rsRegistration = rsRegistration;
-		this.serviceReference = proxyServiceReference;
-		this.exportReference = new ExportReference(proxyServiceReference,
-				endpointDescription);
+	public ExportRegistration(ExportEndpoint exportEndpoint) {
+		Assert.isNotNull(exportEndpoint);
+		this.exportEndpoint = exportEndpoint;
+		this.serviceReference = exportEndpoint.getServiceReference();
+		this.containerID = exportEndpoint.getContainerID();
+		// Add ourselves to this exported endpoint
+		this.exportEndpoint.add(this);
 	}
 
-	public ExportRegistration(ServiceReference serviceReference, Throwable t) {
+	public ExportRegistration(ServiceReference serviceReference,
+			ID containerID, Throwable t) {
 		this.serviceReference = serviceReference;
+		this.containerID = containerID;
 		this.exception = t;
+	}
+
+	public ID getContainerID() {
+		return containerID;
 	}
 
 	public synchronized org.osgi.service.remoteserviceadmin.ExportReference getExportReference() {
 		Throwable t = getException();
 		if (t != null)
 			throw new IllegalStateException(
-					"Cannot get export reference as registration not properly initialized",
+					"Cannot get export reference as export registration is invalid",
 					t);
-		return exportReference;
+		return (exportEndpoint == null) ? null : exportEndpoint
+				.getExportReference();
 	}
 
-	public synchronized boolean matchesServiceReference(
-			ServiceReference serviceReference) {
-		if (serviceReference == null)
-			return false;
-		return (this.serviceReference.equals(serviceReference));
+	synchronized boolean match(ServiceReference serviceReference) {
+		return match(serviceReference, null);
 	}
 
-	public synchronized IRemoteServiceRegistration getRemoteServiceRegistration() {
-		return rsRegistration;
+	synchronized boolean match(ServiceReference serviceReference, ID containerID) {
+		boolean containerIDMatch = (containerID == null) ? true
+				: this.containerID.equals(containerID);
+		return containerIDMatch
+				&& this.serviceReference.equals(serviceReference);
+	}
+
+	synchronized ExportEndpoint getExportEndpoint(
+			ServiceReference serviceReference, ID containerID) {
+		return match(serviceReference, containerID) ? exportEndpoint : null;
+	}
+
+	synchronized IRemoteServiceRegistration getRemoteServiceRegistration() {
+		return (exportEndpoint == null) ? null : exportEndpoint
+				.getRemoteServiceRegistration();
 	}
 
 	public synchronized void close() {
-		if (rsRegistration != null) {
-			rsRegistration.unregister();
-			rsRegistration = null;
-		}
-		if (exportReference != null) {
-			exportReference.close();
-			exportReference = null;
+		if (exportEndpoint != null) {
+			exportEndpoint.close(this);
+			exportEndpoint = null;
 		}
 		exception = null;
 	}
@@ -74,9 +90,9 @@ public class ExportRegistration implements
 	}
 
 	public synchronized String toString() {
-		return "ExportRegistration[rsRegistration=" + rsRegistration
-				+ ", exportReference=" + exportReference
-				+ ", serviceReference=" + serviceReference + ", exception="
+		return "ExportRegistration[containerID=" + containerID
+				+ ", serviceReference=" + serviceReference
+				+ ", exportEndpoint=" + exportEndpoint + ", exception="
 				+ exception + "]";
 	}
 

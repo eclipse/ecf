@@ -267,14 +267,6 @@ public class PropertiesUtil {
 	}
 
 	public static Map<String, Object> copyProperties(
-			ServiceReference serviceReference, Map<String, Object> target) {
-		String[] keys = serviceReference.getPropertyKeys();
-		for (int i = 0; i < keys.length; i++)
-			target.put(keys[i], serviceReference.getProperty(keys[i]));
-		return target;
-	}
-
-	public static Map<String, Object> copyProperties(
 			IRemoteServiceRegistration rsRegistration,
 			Map<String, Object> target) {
 		String[] keys = rsRegistration.getPropertyKeys();
