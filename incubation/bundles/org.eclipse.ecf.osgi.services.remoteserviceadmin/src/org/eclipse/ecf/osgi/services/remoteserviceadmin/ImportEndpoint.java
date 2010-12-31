@@ -94,4 +94,14 @@ public class ImportEndpoint {
 				+ ", importReference=" + importReference + "]";
 	}
 
+	synchronized boolean match(EndpointDescription ed) {
+		if (importReference == null)
+			return false;
+		EndpointDescription importedEndpoint = (EndpointDescription) importReference
+				.getImportedEndpoint();
+		if (importedEndpoint == null)
+			return false;
+		return importedEndpoint.isSameService(ed);
+	}
+
 }

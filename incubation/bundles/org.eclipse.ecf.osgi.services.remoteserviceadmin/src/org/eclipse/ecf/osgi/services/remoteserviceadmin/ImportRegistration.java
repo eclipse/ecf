@@ -42,6 +42,14 @@ public class ImportRegistration implements
 		return importEndpoint.match(remoteServiceID);
 	}
 
+	synchronized ImportEndpoint getImportEndpoint(EndpointDescription ed) {
+		if (importEndpoint == null)
+			return null;
+		if (importEndpoint.match(ed))
+			return importEndpoint;
+		return null;
+	}
+
 	public synchronized ImportReference getImportReference() {
 		Throwable t = getException();
 		if (t != null)

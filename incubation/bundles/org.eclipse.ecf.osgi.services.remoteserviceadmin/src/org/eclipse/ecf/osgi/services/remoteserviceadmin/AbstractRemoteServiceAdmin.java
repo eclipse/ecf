@@ -1147,22 +1147,29 @@ public abstract class AbstractRemoteServiceAdmin implements
 			ImportRegistration importRegistration = null;
 			ID containerID = rsContainer.getContainer().getID();
 			synchronized (importedRegistrations) {
-				try {
-					ImportEndpoint importEndpoint = importService(ed,
-							rsContainer);
+				ImportEndpoint importEndpoint = findImportEndpoint(ed);
+				if (importEndpoint != null) {
 					importRegistration = new ImportRegistration(importEndpoint);
-					importedRegistrations.add(importRegistration);
-				} catch (Exception e) {
-					logError("importService",
-							"Exception importing endpointDescription=" + ed
-									+ " with containerID=" + containerID, e);
-					importRegistration = new ImportRegistration(containerID, e);
-				} catch (NoClassDefFoundError e) {
-					logError("importService",
-							"NoClassDefFoundError importing endpointDescription="
-									+ ed + " with containerID=" + containerID,
-							e);
-					importRegistration = new ImportRegistration(containerID, e);
+				} else {
+					try {
+						importEndpoint = importService(ed, rsContainer);
+						importRegistration = new ImportRegistration(
+								importEndpoint);
+						importedRegistrations.add(importRegistration);
+					} catch (Exception e) {
+						logError("importService",
+								"Exception importing endpointDescription=" + ed
+										+ " with containerID=" + containerID, e);
+						importRegistration = new ImportRegistration(
+								containerID, e);
+					} catch (NoClassDefFoundError e) {
+						logError("importService",
+								"NoClassDefFoundError importing endpointDescription="
+										+ ed + " with containerID="
+										+ containerID, e);
+						importRegistration = new ImportRegistration(
+								containerID, e);
+					}
 				}
 			}
 			// Finally, return the importRegistration. It may be null or not.
@@ -1173,6 +1180,15 @@ public abstract class AbstractRemoteServiceAdmin implements
 					+ " is not ECF EndpointDescription...ignoring");
 			return null;
 		}
+	}
+
+	private ImportEndpoint findImportEndpoint(EndpointDescription ed) {
+		for (ImportRegistration reg : importedRegistrations) {
+			ImportEndpoint endpoint = reg.getImportEndpoint(ed);
+			if (endpoint != null)
+				return endpoint;
+		}
+		return null;
 	}
 
 	protected Collection<ImportRegistration> unimportService(
