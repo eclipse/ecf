@@ -570,7 +570,7 @@ public class Discovery {
 						matchingFilter));
 		}
 		return (EndpointListenerHolder[]) results
-				.toArray(new EndpointListenerHolder[] {});
+				.toArray(new EndpointListenerHolder[results.size()]);
 	}
 
 	private String isMatch(EndpointDescription description, List filters) {

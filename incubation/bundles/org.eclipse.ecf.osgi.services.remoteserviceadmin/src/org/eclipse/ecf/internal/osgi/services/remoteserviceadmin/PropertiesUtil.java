@@ -145,7 +145,7 @@ public class PropertiesUtil {
 			results.addAll(Arrays.asList(extraIntents));
 		if (results.size() == 0)
 			return null;
-		return (String[]) results.toArray(new String[] {});
+		return (String[]) results.toArray(new String[results.size()]);
 	}
 
 	public static List getStringPlusProperty(Map properties, String key) {
