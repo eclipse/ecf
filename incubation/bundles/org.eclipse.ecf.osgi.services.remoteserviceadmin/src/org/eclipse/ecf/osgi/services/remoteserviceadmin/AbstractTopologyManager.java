@@ -9,17 +9,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import java.util.Dictionary;
-import java.util.Properties;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractTopologyManager {
@@ -27,43 +21,22 @@ public abstract class AbstractTopologyManager {
 	public static final String SERVICE_EXPORTED_INTERFACES_WILDCARD = "*";
 
 	private BundleContext context;
-	private Discovery discovery;
 
-	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
-	private ServiceRegistration defaultEndpointDescriptionAdvertiserRegistration;
 	private ServiceTracker endpointDescriptionAdvertiserTracker;
 	private Object endpointDescriptionAdvertiserTrackerLock = new Object();
 
 	private RemoteServiceAdmin remoteServiceAdmin;
 	private Object remoteServiceAdminLock = new Object();
 
-	public AbstractTopologyManager(BundleContext context, Discovery discovery) {
+	public AbstractTopologyManager(BundleContext context) {
 		this.context = context;
-		this.discovery = discovery;
 	}
 
 	public void start() throws Exception {
-		final Properties properties = new Properties();
-		properties.put(Constants.SERVICE_RANKING,
-				new Integer(Integer.MIN_VALUE));
-		// create and register default endpoint description advertiser. Since
-		// this is registered with minimum service ranking
-		// others can override this default simply by registering a
-		// IEndpointDescriptionAdvertiser implementer
-		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
-				getDiscovery());
-		defaultEndpointDescriptionAdvertiserRegistration = getContext()
-				.registerService(
-						IEndpointDescriptionAdvertiser.class.getName(),
-						endpointDescriptionAdvertiser, (Dictionary) properties);
 	}
 
 	protected BundleContext getContext() {
 		return context;
-	}
-
-	protected Discovery getDiscovery() {
-		return discovery;
 	}
 
 	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser() {
@@ -79,29 +52,13 @@ public abstract class AbstractTopologyManager {
 				.getService();
 	}
 
-	private void closeEndpointDescriptionAdvertiser() {
-		// tracker
+	public void close() {
 		synchronized (endpointDescriptionAdvertiserTrackerLock) {
 			if (endpointDescriptionAdvertiserTracker != null) {
 				endpointDescriptionAdvertiserTracker.close();
 				endpointDescriptionAdvertiserTracker = null;
 			}
 		}
-		// registration
-		if (defaultEndpointDescriptionAdvertiserRegistration != null) {
-			defaultEndpointDescriptionAdvertiserRegistration.unregister();
-			defaultEndpointDescriptionAdvertiserRegistration = null;
-		}
-		// default
-		if (endpointDescriptionAdvertiser != null) {
-			endpointDescriptionAdvertiser.close();
-			endpointDescriptionAdvertiser = null;
-		}
-	}
-
-	public void close() {
-		closeEndpointDescriptionAdvertiser();
-		discovery = null;
 		context = null;
 	}
 
@@ -114,7 +71,7 @@ public abstract class AbstractTopologyManager {
 		return remoteServiceAdmin;
 	}
 
-	protected AbstractRemoteServiceAdmin selectUnexportRemoteServiceAdmin(
+	protected RemoteServiceAdmin selectUnexportRemoteServiceAdmin(
 			ServiceReference serviceReference) {
 		synchronized (remoteServiceAdminLock) {
 			return remoteServiceAdmin;
@@ -130,7 +87,7 @@ public abstract class AbstractTopologyManager {
 		return remoteServiceAdmin;
 	}
 
-	protected AbstractRemoteServiceAdmin selectUnimportRemoteServiceAdmin(
+	protected RemoteServiceAdmin selectUnimportRemoteServiceAdmin(
 			EndpointDescription endpoint) {
 		synchronized (remoteServiceAdminLock) {
 			if (remoteServiceAdmin == null)

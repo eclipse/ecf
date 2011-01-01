@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
+import java.util.Dictionary;
+import java.util.Properties;
 import java.util.UUID;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -17,10 +19,15 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionAdvertiser;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionAdvertiser;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.TopologyManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -39,7 +46,10 @@ public class Activator implements BundleActivator {
 		return instance;
 	}
 
-	private Discovery discovery;
+	private EndpointDescriptionLocator endpointDescriptionLocator;
+	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
+	private ServiceRegistration endpointDescriptionAdvertiserRegistration;
+	
 	private TopologyManager topologyManager;
 
 	/*
@@ -52,14 +62,37 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
-		discovery = new Discovery(context);
-		topologyManager = new TopologyManager(context, discovery);
+		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
+		startEndpointDescriptionAdvertiser();
+		topologyManager = new TopologyManager(context);
 		// start topology manager
 		topologyManager.start();
-		// start discovery
-		discovery.start();
+		// start endpointDescriptionLocator
+		endpointDescriptionLocator.start();
 	}
 
+	private void startEndpointDescriptionAdvertiser() {
+		final Properties properties = new Properties();
+		properties.put(Constants.SERVICE_RANKING,
+				new Integer(Integer.MIN_VALUE));
+		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
+				endpointDescriptionLocator);
+		endpointDescriptionAdvertiserRegistration = getContext()
+				.registerService(
+						IEndpointDescriptionAdvertiser.class.getName(),
+						endpointDescriptionAdvertiser, (Dictionary) properties);
+	}
+	
+	private void stopEndpointDescriptionAdvertiser() {
+		if (endpointDescriptionAdvertiserRegistration != null) {
+			endpointDescriptionAdvertiserRegistration.unregister();
+			endpointDescriptionAdvertiserRegistration = null;
+		}
+		if (endpointDescriptionAdvertiser != null) {
+			endpointDescriptionAdvertiser.close();
+			endpointDescriptionAdvertiser = null;
+		}
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -67,14 +100,15 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
-		if (discovery != null) {
-			discovery.close();
-			discovery = null;
+		if (endpointDescriptionLocator != null) {
+			endpointDescriptionLocator.close();
+			endpointDescriptionLocator = null;
 		}
 		if (topologyManager != null) {
 			topologyManager.close();
 			topologyManager = null;
 		}
+		stopEndpointDescriptionAdvertiser();
 		stopSAXParserTracker();
 		stopLogServiceTracker();
 		stopContainerManagerTracker();

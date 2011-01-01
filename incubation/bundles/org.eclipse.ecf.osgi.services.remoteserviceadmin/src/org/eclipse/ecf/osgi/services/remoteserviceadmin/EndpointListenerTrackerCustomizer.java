@@ -7,10 +7,11 @@
  * Contributors:
  *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
+package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Collection;
 
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -18,26 +19,29 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public class EndpointListenerTrackerCustomizer implements
 		ServiceTrackerCustomizer {
 
-	private Discovery discovery;
+	private BundleContext context;
+	private EndpointDescriptionLocator endpointDescriptionLocator;
 
-	public EndpointListenerTrackerCustomizer(Discovery discovery) {
-		this.discovery = discovery;
+	public EndpointListenerTrackerCustomizer(BundleContext context, EndpointDescriptionLocator endpointDescriptionLocator) {
+		this.context = context;
+		this.endpointDescriptionLocator = endpointDescriptionLocator;
 	}
 
 	public Object addingService(ServiceReference reference) {
-		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = discovery
+		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = endpointDescriptionLocator
 				.getAllDiscoveredEndpointDescriptions();
-		EndpointListener listener = (EndpointListener) Activator.getContext()
+		if (context == null) return null;
+		EndpointListener listener = (EndpointListener) context
 				.getService(reference);
 		if (listener == null)
 			return null;
 		for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
-			Discovery.EndpointListenerHolder[] endpointListenerHolders = discovery
+			EndpointDescriptionLocator.EndpointListenerHolder[] endpointListenerHolders = endpointDescriptionLocator
 					.getMatchingEndpointListenerHolders(
 							new ServiceReference[] { reference }, ed);
 			if (endpointListenerHolders != null) {
 				for (int i = 0; i < endpointListenerHolders.length; i++) {
-					discovery.queueEndpointDescription(
+					endpointDescriptionLocator.queueEndpointDescription(
 							endpointListenerHolders[i].getListener(),
 							endpointListenerHolders[i].getDescription(),
 							endpointListenerHolders[i].getMatchingFilter(),

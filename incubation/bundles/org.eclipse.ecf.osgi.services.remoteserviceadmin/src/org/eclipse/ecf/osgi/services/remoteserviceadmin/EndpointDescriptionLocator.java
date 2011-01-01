@@ -7,7 +7,7 @@
  * Contributors:
  *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
+package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,12 +23,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescriptionFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionReader;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionReader;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.eclipse.equinox.concurrent.future.IExecutor;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
@@ -47,7 +44,7 @@ import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-public class Discovery {
+public class EndpointDescriptionLocator {
 
 	private BundleContext context;
 	private IExecutor executor;
@@ -87,7 +84,7 @@ public class Discovery {
 	private BundleTracker bundleTracker;
 	private EndpointDescriptionBundleTrackerCustomizer bundleTrackerCustomizer;
 
-	public Discovery(BundleContext context) {
+	public EndpointDescriptionLocator(BundleContext context) {
 		this.context = context;
 		this.executor = new ThreadsExecutor();
 	}
@@ -117,7 +114,7 @@ public class Discovery {
 		// Create thread group, event manager, and eventQueue, and setup to
 		// dispatch EndpointListenerEvents
 		ThreadGroup eventGroup = new ThreadGroup(
-				"EventAdmin Discovery EndpointListener Dispatcher"); //$NON-NLS-1$
+				"EventAdmin EndpointDescriptionLocator EndpointListener Dispatcher"); //$NON-NLS-1$
 		eventGroup.setDaemon(true);
 		eventManager = new EventManager(
 				"EventAdmin EndpointListener Dispatcher", eventGroup); //$NON-NLS-1$
@@ -170,7 +167,7 @@ public class Discovery {
 		// Register the endpoint listener tracker, so that endpoint listeners
 		// that are subsequently added
 		// will then be notified of discovered endpoints
-		endpointListenerTrackerCustomizer = new EndpointListenerTrackerCustomizer(
+		endpointListenerTrackerCustomizer = new EndpointListenerTrackerCustomizer(context,
 				this);
 		endpointListenerTracker = new ServiceTracker(context,
 				EndpointListener.class.getName(),

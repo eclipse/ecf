@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
@@ -32,8 +31,8 @@ public class TopologyManager extends AbstractTopologyManager implements
 
 	private ServiceRegistration eventHookRegistration;
 
-	public TopologyManager(BundleContext context, Discovery discovery) {
-		super(context, discovery);
+	public TopologyManager(BundleContext context) {
+		super(context);
 	}
 
 	public void start() throws Exception {
@@ -115,7 +114,7 @@ public class TopologyManager extends AbstractTopologyManager implements
 		trace("handleEndpointRemoved", "endpointDescription="
 				+ endpointDescription);
 		// First, select importing remote service admin
-		AbstractRemoteServiceAdmin rsa = selectUnimportRemoteServiceAdmin(endpointDescription);
+		RemoteServiceAdmin rsa = selectUnimportRemoteServiceAdmin(endpointDescription);
 		if (rsa == null) {
 			logError("handleEndpointRemoved",
 					"RemoteServiceAdmin not found for importing endpointDescription="
@@ -203,7 +202,7 @@ public class TopologyManager extends AbstractTopologyManager implements
 	}
 
 	private void handleServiceUnregistering(ServiceReference serviceReference) {
-		AbstractRemoteServiceAdmin rsa = selectUnexportRemoteServiceAdmin(serviceReference);
+		RemoteServiceAdmin rsa = selectUnexportRemoteServiceAdmin(serviceReference);
 		if (rsa == null) {
 			logError("handleServiceUnregistering",
 					"No RemoteServiceAdmin found for serviceReference="

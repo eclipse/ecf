@@ -7,7 +7,7 @@
  * Contributors:
  *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
+package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +21,9 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionReader;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -69,8 +71,7 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 	}
 
 	private void handleAddingBundle(Bundle bundle) {
-		BundleContext context = Activator.getContext();
-		if (context == null)
+		if (bundleContext == null)
 			return;
 		String remoteServicesHeaderValue = (String) bundle.getHeaders().get(
 				REMOTESERVICE_MANIFESTHEADER);

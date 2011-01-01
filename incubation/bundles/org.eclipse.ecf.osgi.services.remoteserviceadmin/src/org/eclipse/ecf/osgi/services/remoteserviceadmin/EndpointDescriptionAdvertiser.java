@@ -19,16 +19,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Discovery;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
 public class EndpointDescriptionAdvertiser implements
 		IEndpointDescriptionAdvertiser {
 
-	private Discovery discovery;
+	private EndpointDescriptionLocator endpointDescriptionLocator;
 
-	public EndpointDescriptionAdvertiser(Discovery discovery) {
-		this.discovery = discovery;
+	public EndpointDescriptionAdvertiser(EndpointDescriptionLocator endpointDescriptionLocator) {
+		this.endpointDescriptionLocator = endpointDescriptionLocator;
 	}
 
 	public IStatus advertise(EndpointDescription endpointDescription) {
@@ -55,11 +54,11 @@ public class EndpointDescriptionAdvertiser implements
 	}
 
 	protected IServiceInfoFactory getServiceInfoFactory() {
-		return discovery.getServiceInfoFactory();
+		return endpointDescriptionLocator.getServiceInfoFactory();
 	}
 
 	protected IDiscoveryAdvertiser[] getDiscoveryAdvertisers() {
-		return discovery.getDiscoveryAdvertisers();
+		return endpointDescriptionLocator.getDiscoveryAdvertisers();
 	}
 
 	protected IStatus createErrorStatus(String message) {
@@ -91,7 +90,7 @@ public class EndpointDescriptionAdvertiser implements
 				return createErrorStatus(messagePrefix
 						+ " endpointDescription="
 						+ endpointDescription
-						+ ".  No discovery advertisers available.  Cannot unpublish endpointDescription="
+						+ ".  No endpointDescriptionLocator advertisers available.  Cannot unpublish endpointDescription="
 						+ eed);
 			for (int i = 0; i < discoveryAdvertisers.length; i++) {
 				IServiceInfo serviceInfo = (advertise ? serviceInfoFactory
@@ -140,7 +139,7 @@ public class EndpointDescriptionAdvertiser implements
 	}
 
 	public void close() {
-		this.discovery = null;
+		this.endpointDescriptionLocator = null;
 	}
 
 }

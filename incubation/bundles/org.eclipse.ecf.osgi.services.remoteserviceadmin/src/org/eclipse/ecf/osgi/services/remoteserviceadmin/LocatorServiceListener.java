@@ -7,7 +7,7 @@
  * Contributors:
  *   Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
+package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,24 +19,23 @@ import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescription;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 
 class LocatorServiceListener implements IServiceListener {
 
 	private Object listenerLock = new Object();
 	private IDiscoveryLocator locator;
-	private Discovery discovery;
+	private EndpointDescriptionLocator endpointDescriptionLocator;
 
 	private List<org.osgi.service.remoteserviceadmin.EndpointDescription> discoveredEndpointDescriptions = new ArrayList();
 
-	public LocatorServiceListener(Discovery discovery) {
-		this(discovery, null);
+	public LocatorServiceListener(EndpointDescriptionLocator endpointDescriptionLocator) {
+		this(endpointDescriptionLocator, null);
 	}
 
-	public LocatorServiceListener(Discovery discovery, IDiscoveryLocator locator) {
-		this.discovery = discovery;
+	public LocatorServiceListener(EndpointDescriptionLocator endpointDescriptionLocator, IDiscoveryLocator locator) {
+		this.endpointDescriptionLocator = endpointDescriptionLocator;
 		this.locator = locator;
 		if (locator != null) {
 			this.locator.addServiceListener(this);
@@ -90,7 +89,7 @@ class LocatorServiceListener implements IServiceListener {
 			else
 				discoveredEndpointDescriptions.remove(endpointDescription);
 
-			discovery.queueEndpointDescription(endpointDescription, discovered);
+			endpointDescriptionLocator.queueEndpointDescription(endpointDescription, discovered);
 		}
 	}
 
@@ -120,7 +119,7 @@ class LocatorServiceListener implements IServiceListener {
 			IServiceID serviceId, IServiceInfo serviceInfo, boolean discovered) {
 		// Get IEndpointDescriptionFactory
 		final String methodName = "getDiscoveredEndpointDescription";
-		IDiscoveredEndpointDescriptionFactory factory = discovery
+		IDiscoveredEndpointDescriptionFactory factory = endpointDescriptionLocator
 				.getDiscoveredEndpointDescriptionFactory();
 		if (factory == null) {
 			logError(
@@ -159,7 +158,7 @@ class LocatorServiceListener implements IServiceListener {
 			locator.removeServiceListener(this);
 			locator = null;
 		}
-		discovery = null;
+		endpointDescriptionLocator = null;
 		discoveredEndpointDescriptions.clear();
 	}
 }
