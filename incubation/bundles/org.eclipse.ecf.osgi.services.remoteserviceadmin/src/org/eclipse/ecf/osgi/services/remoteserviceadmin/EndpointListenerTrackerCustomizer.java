@@ -22,7 +22,8 @@ public class EndpointListenerTrackerCustomizer implements
 	private BundleContext context;
 	private EndpointDescriptionLocator endpointDescriptionLocator;
 
-	public EndpointListenerTrackerCustomizer(BundleContext context, EndpointDescriptionLocator endpointDescriptionLocator) {
+	public EndpointListenerTrackerCustomizer(BundleContext context,
+			EndpointDescriptionLocator endpointDescriptionLocator) {
 		this.context = context;
 		this.endpointDescriptionLocator = endpointDescriptionLocator;
 	}
@@ -30,7 +31,8 @@ public class EndpointListenerTrackerCustomizer implements
 	public Object addingService(ServiceReference reference) {
 		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = endpointDescriptionLocator
 				.getAllDiscoveredEndpointDescriptions();
-		if (context == null) return null;
+		if (context == null)
+			return null;
 		EndpointListener listener = (EndpointListener) context
 				.getService(reference);
 		if (listener == null)

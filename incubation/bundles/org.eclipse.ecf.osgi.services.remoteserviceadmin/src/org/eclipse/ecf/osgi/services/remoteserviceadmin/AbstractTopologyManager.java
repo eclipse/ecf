@@ -13,7 +13,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Filter;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractTopologyManager {
@@ -25,14 +26,11 @@ public abstract class AbstractTopologyManager {
 	private ServiceTracker endpointDescriptionAdvertiserTracker;
 	private Object endpointDescriptionAdvertiserTrackerLock = new Object();
 
-	private RemoteServiceAdmin remoteServiceAdmin;
-	private Object remoteServiceAdminLock = new Object();
+	private ServiceTracker remoteServiceAdminTracker;
+	private Object remoteServiceAdminTrackerLock = new Object();
 
 	public AbstractTopologyManager(BundleContext context) {
 		this.context = context;
-	}
-
-	public void start() throws Exception {
 	}
 
 	protected BundleContext getContext() {
@@ -59,41 +57,13 @@ public abstract class AbstractTopologyManager {
 				endpointDescriptionAdvertiserTracker = null;
 			}
 		}
+		synchronized (remoteServiceAdminTrackerLock) {
+			if (remoteServiceAdminTracker != null) {
+				remoteServiceAdminTracker.close();
+				remoteServiceAdminTracker = null;
+			}
+		}
 		context = null;
-	}
-
-	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin selectExportRemoteServiceAdmin(
-			ServiceReference serviceReference, String[] exportedInterfaces) {
-		synchronized (remoteServiceAdminLock) {
-			if (remoteServiceAdmin == null)
-				remoteServiceAdmin = new RemoteServiceAdmin(getContext());
-		}
-		return remoteServiceAdmin;
-	}
-
-	protected RemoteServiceAdmin selectUnexportRemoteServiceAdmin(
-			ServiceReference serviceReference) {
-		synchronized (remoteServiceAdminLock) {
-			return remoteServiceAdmin;
-		}
-	}
-
-	protected RemoteServiceAdmin selectImportRemoteServiceAdmin(
-			EndpointDescription endpoint) {
-		synchronized (remoteServiceAdminLock) {
-			if (remoteServiceAdmin == null)
-				remoteServiceAdmin = new RemoteServiceAdmin(getContext());
-		}
-		return remoteServiceAdmin;
-	}
-
-	protected RemoteServiceAdmin selectUnimportRemoteServiceAdmin(
-			EndpointDescription endpoint) {
-		synchronized (remoteServiceAdminLock) {
-			if (remoteServiceAdmin == null)
-				remoteServiceAdmin = new RemoteServiceAdmin(getContext());
-		}
-		return remoteServiceAdmin;
 	}
 
 	protected void logWarning(String methodName, String message) {
@@ -101,13 +71,41 @@ public abstract class AbstractTopologyManager {
 				this.getClass(), message);
 	}
 
+	protected Filter createRSAFilter() {
+		String filterString = "(&("
+				+ org.osgi.framework.Constants.OBJECTCLASS
+				+ "="
+				+ org.osgi.service.remoteserviceadmin.RemoteServiceAdmin.class
+						.getName()
+				+ ")("
+				+ org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.SERVICE_PROP
+				+ "=*))";
+		try {
+			return getContext().createFilter(filterString);
+		} catch (InvalidSyntaxException e) {
+			// Should never happen
+			return null;
+		}
+	}
+
+	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin getRemoteServiceAdmin() {
+		synchronized (remoteServiceAdminTrackerLock) {
+			if (remoteServiceAdminTracker == null) {
+				remoteServiceAdminTracker = new ServiceTracker(getContext(),
+						createRSAFilter(), null);
+				remoteServiceAdminTracker.open(true);
+			}
+		}
+		return (org.osgi.service.remoteserviceadmin.RemoteServiceAdmin) remoteServiceAdminTracker
+				.getService();
+	}
+
 	protected void advertiseEndpointDescription(
 			EndpointDescription endpointDescription) {
 		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser();
 		if (advertiser == null) {
-			logError(
-					"advertiseExportedRegistration",
-					"No endpoint description advertiser available to advertise endpointDescription="
+			logWarning("advertiseExportedRegistration",
+					"No endpoint description advertiser available for endpointDescription="
 							+ endpointDescription);
 			return;
 		}

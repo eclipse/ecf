@@ -12,6 +12,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
@@ -45,6 +46,10 @@ public class ImportEndpoint {
 		// due to disconnect or remote ejection
 		this.rsContainerAdapter.addRemoteServiceListener(this.rsListener);
 		this.importRegistrations = new HashSet<ImportRegistration>();
+	}
+
+	synchronized ID getContainerID() {
+		return (rsReference == null) ? null : rsReference.getContainerID();
 	}
 
 	synchronized boolean add(ImportRegistration importRegistration) {

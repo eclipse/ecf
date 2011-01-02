@@ -30,11 +30,14 @@ class LocatorServiceListener implements IServiceListener {
 
 	private List<org.osgi.service.remoteserviceadmin.EndpointDescription> discoveredEndpointDescriptions = new ArrayList();
 
-	public LocatorServiceListener(EndpointDescriptionLocator endpointDescriptionLocator) {
+	public LocatorServiceListener(
+			EndpointDescriptionLocator endpointDescriptionLocator) {
 		this(endpointDescriptionLocator, null);
 	}
 
-	public LocatorServiceListener(EndpointDescriptionLocator endpointDescriptionLocator, IDiscoveryLocator locator) {
+	public LocatorServiceListener(
+			EndpointDescriptionLocator endpointDescriptionLocator,
+			IDiscoveryLocator locator) {
 		this.endpointDescriptionLocator = endpointDescriptionLocator;
 		this.locator = locator;
 		if (locator != null) {
@@ -89,7 +92,8 @@ class LocatorServiceListener implements IServiceListener {
 			else
 				discoveredEndpointDescriptions.remove(endpointDescription);
 
-			endpointDescriptionLocator.queueEndpointDescription(endpointDescription, discovered);
+			endpointDescriptionLocator.queueEndpointDescription(
+					endpointDescription, discovered);
 		}
 	}
 

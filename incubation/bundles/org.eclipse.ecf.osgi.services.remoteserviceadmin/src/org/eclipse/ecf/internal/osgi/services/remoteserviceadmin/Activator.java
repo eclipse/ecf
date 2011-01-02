@@ -10,7 +10,10 @@
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
 import java.util.Dictionary;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -19,13 +22,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionAdvertiser;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionAdvertiser;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.TopologyManager;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
@@ -46,10 +52,13 @@ public class Activator implements BundleActivator {
 		return instance;
 	}
 
+	private Map<Bundle, RemoteServiceAdmin> remoteServiceAdmins = new TreeMap<Bundle, RemoteServiceAdmin>();
+	private ServiceRegistration remoteServiceAdminRegistration;
+
 	private EndpointDescriptionLocator endpointDescriptionLocator;
 	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
 	private ServiceRegistration endpointDescriptionAdvertiserRegistration;
-	
+
 	private TopologyManager topologyManager;
 
 	/*
@@ -62,37 +71,19 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
+		startRemoteServiceAdmin();
+
 		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
+
 		startEndpointDescriptionAdvertiser();
+
 		topologyManager = new TopologyManager(context);
-		// start topology manager
+		// start topology manager first
 		topologyManager.start();
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();
 	}
 
-	private void startEndpointDescriptionAdvertiser() {
-		final Properties properties = new Properties();
-		properties.put(Constants.SERVICE_RANKING,
-				new Integer(Integer.MIN_VALUE));
-		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
-				endpointDescriptionLocator);
-		endpointDescriptionAdvertiserRegistration = getContext()
-				.registerService(
-						IEndpointDescriptionAdvertiser.class.getName(),
-						endpointDescriptionAdvertiser, (Dictionary) properties);
-	}
-	
-	private void stopEndpointDescriptionAdvertiser() {
-		if (endpointDescriptionAdvertiserRegistration != null) {
-			endpointDescriptionAdvertiserRegistration.unregister();
-			endpointDescriptionAdvertiserRegistration = null;
-		}
-		if (endpointDescriptionAdvertiser != null) {
-			endpointDescriptionAdvertiser.close();
-			endpointDescriptionAdvertiser = null;
-		}
-	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -108,12 +99,82 @@ public class Activator implements BundleActivator {
 			topologyManager.close();
 			topologyManager = null;
 		}
+		stopRemoteServiceAdmin();
 		stopEndpointDescriptionAdvertiser();
 		stopSAXParserTracker();
 		stopLogServiceTracker();
 		stopContainerManagerTracker();
 		Activator.context = null;
 		Activator.instance = null;
+	}
+
+	private void startRemoteServiceAdmin() {
+		Properties rsaProps = new Properties();
+		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
+		remoteServiceAdminRegistration = context.registerService(
+				org.osgi.service.remoteserviceadmin.RemoteServiceAdmin.class
+						.getName(), new ServiceFactory() {
+					public Object getService(Bundle bundle,
+							ServiceRegistration registration) {
+						RemoteServiceAdmin rsa = new RemoteServiceAdmin(
+								getContext());
+						synchronized (remoteServiceAdmins) {
+							remoteServiceAdmins.put(bundle, rsa);
+						}
+						return rsa;
+					}
+
+					public void ungetService(Bundle bundle,
+							ServiceRegistration registration, Object service) {
+
+						RemoteServiceAdmin rsa = null;
+						synchronized (remoteServiceAdmins) {
+							rsa = remoteServiceAdmins.get(bundle);
+						}
+						if (rsa != null)
+							rsa.close();
+					}
+				}, rsaProps);
+	}
+
+	private void stopRemoteServiceAdmin() {
+		if (remoteServiceAdminRegistration != null) {
+			remoteServiceAdminRegistration.unregister();
+			remoteServiceAdminRegistration = null;
+		}
+		synchronized (remoteServiceAdmins) {
+			for (Iterator<Bundle> i = remoteServiceAdmins.keySet().iterator(); i
+					.hasNext();) {
+				RemoteServiceAdmin rsa = remoteServiceAdmins.get(i.next());
+				if (rsa != null) {
+					rsa.close();
+					i.remove();
+				}
+			}
+		}
+	}
+
+	private void startEndpointDescriptionAdvertiser() {
+		final Properties properties = new Properties();
+		properties.put(Constants.SERVICE_RANKING,
+				new Integer(Integer.MIN_VALUE));
+		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
+				endpointDescriptionLocator);
+		endpointDescriptionAdvertiserRegistration = getContext()
+				.registerService(
+						IEndpointDescriptionAdvertiser.class.getName(),
+						endpointDescriptionAdvertiser, (Dictionary) properties);
+	}
+
+	private void stopEndpointDescriptionAdvertiser() {
+		if (endpointDescriptionAdvertiserRegistration != null) {
+			endpointDescriptionAdvertiserRegistration.unregister();
+			endpointDescriptionAdvertiserRegistration = null;
+		}
+		if (endpointDescriptionAdvertiser != null) {
+			endpointDescriptionAdvertiser.close();
+			endpointDescriptionAdvertiser = null;
+		}
 	}
 
 	public String getFrameworkUUID() {

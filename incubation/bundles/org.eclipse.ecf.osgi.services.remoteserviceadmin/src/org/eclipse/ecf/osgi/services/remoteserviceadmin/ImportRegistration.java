@@ -23,6 +23,7 @@ public class ImportRegistration implements
 
 	public ImportRegistration(ImportEndpoint importEndpoint) {
 		Assert.isNotNull(importEndpoint);
+		this.containerID = importEndpoint.getContainerID();
 		this.importEndpoint = importEndpoint;
 		this.importEndpoint.add(this);
 	}

@@ -167,8 +167,8 @@ public class EndpointDescriptionLocator {
 		// Register the endpoint listener tracker, so that endpoint listeners
 		// that are subsequently added
 		// will then be notified of discovered endpoints
-		endpointListenerTrackerCustomizer = new EndpointListenerTrackerCustomizer(context,
-				this);
+		endpointListenerTrackerCustomizer = new EndpointListenerTrackerCustomizer(
+				context, this);
 		endpointListenerTracker = new ServiceTracker(context,
 				EndpointListener.class.getName(),
 				endpointListenerTrackerCustomizer);

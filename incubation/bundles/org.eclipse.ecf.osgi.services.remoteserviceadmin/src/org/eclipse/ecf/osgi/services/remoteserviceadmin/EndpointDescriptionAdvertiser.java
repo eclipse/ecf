@@ -26,7 +26,8 @@ public class EndpointDescriptionAdvertiser implements
 
 	private EndpointDescriptionLocator endpointDescriptionLocator;
 
-	public EndpointDescriptionAdvertiser(EndpointDescriptionLocator endpointDescriptionLocator) {
+	public EndpointDescriptionAdvertiser(
+			EndpointDescriptionLocator endpointDescriptionLocator) {
 		this.endpointDescriptionLocator = endpointDescriptionLocator;
 	}
 
