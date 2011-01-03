@@ -116,8 +116,7 @@ public class Activator implements BundleActivator {
 						.getName(), new ServiceFactory() {
 					public Object getService(Bundle bundle,
 							ServiceRegistration registration) {
-						RemoteServiceAdmin rsa = new RemoteServiceAdmin(
-								getContext());
+						RemoteServiceAdmin rsa = new RemoteServiceAdmin(bundle);
 						synchronized (remoteServiceAdmins) {
 							remoteServiceAdmins.put(bundle, rsa);
 						}

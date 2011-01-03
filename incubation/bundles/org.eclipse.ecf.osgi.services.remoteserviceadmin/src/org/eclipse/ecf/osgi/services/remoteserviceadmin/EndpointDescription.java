@@ -25,9 +25,9 @@ import org.osgi.framework.Version;
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
 
-	private long remoteServiceId;
-
 	private String idNamespace;
+	private ID containerID;
+	private long remoteServiceId;
 	private ID connectTargetID;
 	private ID[] idFilter;
 	private String rsFilter;
@@ -36,22 +36,23 @@ public class EndpointDescription extends
 
 	public EndpointDescription(ServiceReference reference, Map osgiProperties) {
 		super(reference, osgiProperties);
-		this.remoteServiceId = verifyLongProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
-		this.idFilter = verifyIDFilter();
-		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
+		verifyECFProperties();
 		computeHashCode();
 	}
 
 	public EndpointDescription(Map osgiProperties) {
 		super(osgiProperties);
-		this.remoteServiceId = verifyLongProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		verifyECFProperties();
+		computeHashCode();
+	}
+
+	private void verifyECFProperties() {
 		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
+		this.containerID = verifyIDProperty(idNamespace, getId());
+		this.remoteServiceId = verifyLongProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
 		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		this.idFilter = verifyIDFilter();
 		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
-		computeHashCode();
 	}
 
 	private long verifyLongProperty(String propName) {
@@ -81,18 +82,21 @@ public class EndpointDescription extends
 		}
 	}
 
-	private ID verifyIDProperty(String namePropName) {
-		String idName = verifyStringProperty(namePropName);
+	private ID verifyIDProperty(String idNamespace, String idName) {
 		if (idName == null)
 			return null;
 		try {
 			return IDUtil.createID(idNamespace, idName);
 		} catch (IDCreateException e) {
 			IllegalArgumentException iae = new IllegalArgumentException(
-					"property value is not an ID: " + namePropName);
+					"idName is not an ID: " + idName);
 			iae.initCause(e);
 			throw iae;
 		}
+	}
+
+	private ID verifyIDProperty(String namePropName) {
+		return verifyIDProperty(idNamespace, verifyStringProperty(namePropName));
 	}
 
 	private ID[] verifyIDFilter() {
@@ -162,6 +166,10 @@ public class EndpointDescription extends
 				.getRemoteServiceId());
 	}
 
+	public ID getContainerID() {
+		return containerID;
+	}
+
 	public String getIdNamespace() {
 		return idNamespace;
 	}
@@ -183,11 +191,11 @@ public class EndpointDescription extends
 	}
 
 	public String toString() {
-		return "ECFEndpointDescription[properties=" + super.toString()
-				+ ",idNamespace=" + idNamespace + ", remoteServiceId="
-				+ getRemoteServiceId() + ", connectTargetID=" + connectTargetID
-				+ ", idFilter=" + Arrays.toString(idFilter) + ", rsFilter="
-				+ rsFilter + ", hashCode=" + hashCode + "]";
+		return "ECFEndpointDescription[containerID=" + containerID
+				+ ", remoteServiceId=" + getRemoteServiceId()
+				+ ", connectTargetID=" + connectTargetID + ", idFilter="
+				+ Arrays.toString(idFilter) + ", rsFilter=" + rsFilter
+				+ ", hashCode=" + hashCode + "]";
 	}
 
 }

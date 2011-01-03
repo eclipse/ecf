@@ -75,7 +75,6 @@ public class EndpointDescriptionLocator {
 	// Locator listeners
 	private Map<IDiscoveryLocator, LocatorServiceListener> locatorListeners;
 
-	private EndpointListenerTrackerCustomizer endpointListenerTrackerCustomizer;
 	private ServiceTracker endpointListenerTracker;
 
 	private ServiceTracker advertiserTracker;
@@ -167,11 +166,22 @@ public class EndpointDescriptionLocator {
 		// Register the endpoint listener tracker, so that endpoint listeners
 		// that are subsequently added
 		// will then be notified of discovered endpoints
-		endpointListenerTrackerCustomizer = new EndpointListenerTrackerCustomizer(
-				context, this);
 		endpointListenerTracker = new ServiceTracker(context,
 				EndpointListener.class.getName(),
-				endpointListenerTrackerCustomizer);
+				new ServiceTrackerCustomizer() {
+					public Object addingService(ServiceReference reference) {
+						return addingEndpointListener(reference);
+					}
+
+					public void modifiedService(ServiceReference reference,
+							Object service) {
+					}
+
+					public void removedService(ServiceReference reference,
+							Object service) {
+					}
+				});
+
 		endpointListenerTracker.open();
 
 		locatorListeners = new HashMap();
@@ -199,6 +209,31 @@ public class EndpointDescriptionLocator {
 				| Bundle.STARTING, bundleTrackerCustomizer);
 		// This may trigger local endpoint description discovery
 		bundleTracker.open();
+	}
+
+	private EndpointListener addingEndpointListener(
+			ServiceReference serviceReference) {
+		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getAllDiscoveredEndpointDescriptions();
+		if (context == null)
+			return null;
+		EndpointListener listener = (EndpointListener) context
+				.getService(serviceReference);
+		if (listener == null)
+			return null;
+		for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
+			EndpointDescriptionLocator.EndpointListenerHolder[] endpointListenerHolders = getMatchingEndpointListenerHolders(
+					new ServiceReference[] { serviceReference }, ed);
+			if (endpointListenerHolders != null) {
+				for (int i = 0; i < endpointListenerHolders.length; i++) {
+					queueEndpointDescription(
+							endpointListenerHolders[i].getListener(),
+							endpointListenerHolders[i].getDescription(),
+							endpointListenerHolders[i].getMatchingFilter(),
+							true);
+				}
+			}
+		}
+		return listener;
 	}
 
 	private void logError(String methodName, String message, Throwable e) {
@@ -246,11 +281,6 @@ public class EndpointDescriptionLocator {
 			endpointListenerTracker.close();
 			endpointListenerTracker = null;
 		}
-		if (endpointListenerTrackerCustomizer != null) {
-			endpointListenerTrackerCustomizer.close();
-			endpointListenerTrackerCustomizer = null;
-		}
-
 		// Shutdown asynchronous event manager
 		if (eventManager != null) {
 			eventManager.close();

@@ -129,7 +129,7 @@ public class TopologyManager extends AbstractTopologyManager implements
 							+ endpointDescription);
 			return;
 		}
-		Collection<ImportRegistration> unimportRegistrations = unimportService(endpointDescription);
+		Collection<RemoteServiceAdmin.ImportRegistration> unimportRegistrations = unimportService(endpointDescription);
 		trace("handleEndpointRemoved", "importRegistration="
 				+ unimportRegistrations + " removed for endpointDescription="
 				+ endpointDescription);
@@ -227,22 +227,24 @@ public class TopologyManager extends AbstractTopologyManager implements
 		}
 	}
 
-	protected ExportRegistration[] findExportRegistrations(
+	protected RemoteServiceAdmin.ExportRegistration[] findExportRegistrations(
 			ServiceReference serviceReference) {
-		List<ExportRegistration> results = new ArrayList<ExportRegistration>();
+		List<RemoteServiceAdmin.ExportRegistration> results = new ArrayList<RemoteServiceAdmin.ExportRegistration>();
 		for (org.osgi.service.remoteserviceadmin.ExportRegistration reg : exportedRegistrations) {
-			ExportRegistration exportReg = (ExportRegistration) reg;
+			RemoteServiceAdmin.ExportRegistration exportReg = (RemoteServiceAdmin.ExportRegistration) reg;
 			if (exportReg.match(serviceReference))
 				results.add(exportReg);
 		}
-		return results.toArray(new ExportRegistration[results.size()]);
+		return results
+				.toArray(new RemoteServiceAdmin.ExportRegistration[results
+						.size()]);
 	}
 
 	protected EndpointDescription[] unexportService(
 			ServiceReference serviceReference) {
 		List<EndpointDescription> endpointDescriptions = new ArrayList<EndpointDescription>();
 		synchronized (exportedRegistrations) {
-			ExportRegistration[] exportRegs = findExportRegistrations(serviceReference);
+			RemoteServiceAdmin.ExportRegistration[] exportRegs = findExportRegistrations(serviceReference);
 			if (exportRegs != null) {
 				for (int i = 0; i < exportRegs.length; i++) {
 					org.osgi.service.remoteserviceadmin.ExportReference exportRef = null;
@@ -273,15 +275,16 @@ public class TopologyManager extends AbstractTopologyManager implements
 				.toArray(new EndpointDescription[endpointDescriptions.size()]);
 	}
 
-	protected Collection<ImportRegistration> unimportService(
+	protected Collection<RemoteServiceAdmin.ImportRegistration> unimportService(
 			EndpointDescription endpointDescription) {
 		trace("unimportService", "endpointDescription=" + endpointDescription);
-		List<ImportRegistration> removedRegistrations = new ArrayList<ImportRegistration>();
+		List<RemoteServiceAdmin.ImportRegistration> removedRegistrations = new ArrayList<RemoteServiceAdmin.ImportRegistration>();
 		synchronized (importedRegistrations) {
 			for (Iterator<org.osgi.service.remoteserviceadmin.ImportRegistration> i = importedRegistrations
 					.iterator(); i.hasNext();) {
-				ImportRegistration reg = (ImportRegistration) i.next();
-				ImportReference importReference = null;
+				RemoteServiceAdmin.ImportRegistration reg = (RemoteServiceAdmin.ImportRegistration) i
+						.next();
+				org.osgi.service.remoteserviceadmin.ImportReference importReference = null;
 				try {
 					importReference = reg.getImportReference();
 					if (importReference != null) {
@@ -304,7 +307,7 @@ public class TopologyManager extends AbstractTopologyManager implements
 			}
 		}
 		// Now close all of them
-		for (ImportRegistration removedReg : removedRegistrations)
+		for (RemoteServiceAdmin.ImportRegistration removedReg : removedRegistrations)
 			removedReg.close();
 		return removedRegistrations;
 	}
