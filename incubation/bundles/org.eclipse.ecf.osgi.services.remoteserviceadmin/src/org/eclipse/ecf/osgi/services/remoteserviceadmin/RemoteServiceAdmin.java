@@ -84,8 +84,6 @@ public class RemoteServiceAdmin implements
 					"org.eclipse.ecf.osgi.services.remoteserviceadmin.consumerAutoCreateContainer",
 					"true")).booleanValue();
 
-	private HostContainerSelector hostContainerSelector;
-	private ConsumerContainerSelector consumerContainerSelector;
 	private PackageVersionComparator packageVersionComparator;
 
 	private ServiceTracker packageAdminTracker;
@@ -108,6 +106,7 @@ public class RemoteServiceAdmin implements
 	public RemoteServiceAdmin(Bundle bundle) {
 		this.bundle = bundle;
 		Assert.isNotNull(bundle);
+		setupDefaultContainerSelectors();
 		hostContainerSelector = new HostContainerSelector(
 				hostDefaultConfigTypes, hostAutoCreateContainer);
 		consumerContainerSelector = new ConsumerContainerSelector(
@@ -115,7 +114,61 @@ public class RemoteServiceAdmin implements
 		// create and register a default package version comparator
 		packageVersionComparator = new PackageVersionComparator();
 	}
+	
+	private HostContainerSelector hostContainerSelector;
+	private ServiceRegistration hostContainerSelectorRegistration;
+	
+	private ConsumerContainerSelector consumerContainerSelector;
+	private ServiceRegistration consumerContainerSelectorRegistration;
 
+	private void setupDefaultContainerSelectors() {
+		// Only setup defaults if it hasn't already been done by some other Remote Service Admin instance
+		Properties props = new Properties();
+		props.put(org.osgi.framework.Constants.SERVICE_RANKING, new Integer(Integer.MIN_VALUE));
+		// host container selector.  register default only if none exist
+		ServiceReference[] hostContainerSelectorRefs = null;
+		try {
+			hostContainerSelectorRefs = getContext().getServiceReferences(IHostContainerSelector.class.getName(), null);
+		} catch (InvalidSyntaxException e) {
+			// will not happen
+		}
+		if (hostContainerSelectorRefs == null || hostContainerSelectorRefs.length == 0) {
+			hostContainerSelector = new HostContainerSelector(
+					hostDefaultConfigTypes, hostAutoCreateContainer);
+			hostContainerSelectorRegistration = getContext().registerService(IHostContainerSelector.class.getName(), hostContainerSelector, props);
+		}
+		// consumer container selector.  register default only if none exist
+		ServiceReference[] consumerContainerSelectorRefs = null;
+		try {
+			consumerContainerSelectorRefs = getContext().getServiceReferences(IConsumerContainerSelector.class.getName(), null);
+		} catch (InvalidSyntaxException e) {
+			// will not happen
+		}
+		if (consumerContainerSelectorRefs == null || consumerContainerSelectorRefs.length == 0) {
+			consumerContainerSelector = new ConsumerContainerSelector(consumerAutoCreateContainer);
+			consumerContainerSelectorRegistration = getContext().registerService(IConsumerContainerSelector.class.getName(), consumerContainerSelector, props);
+		}
+	}
+
+	private void closeDefaultContainerSelectors() {
+		if (hostContainerSelectorRegistration != null) {
+			hostContainerSelectorRegistration.unregister();
+			hostContainerSelectorRegistration = null;
+		}
+		if (hostContainerSelector != null) {
+			hostContainerSelector.close();
+			hostContainerSelector = null;
+		}
+		if (consumerContainerSelectorRegistration != null) {
+			consumerContainerSelectorRegistration.unregister();
+			consumerContainerSelectorRegistration = null;
+		}
+		if (consumerContainerSelector != null) {
+			consumerContainerSelector.close();
+			consumerContainerSelector = null;
+		}
+	}
+	
 	// RemoteServiceAdmin service interface impl methods
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
 			ServiceReference serviceReference,
@@ -943,14 +996,33 @@ public class RemoteServiceAdmin implements
 		}
 	}
 
-	private void closeConsumerContainerSelector() {
+	private Object consumerContainerSelectorTrackerLock = new Object();
+	private ServiceTracker consumerContainerSelectorTracker;
+	
+
+	private void closeConsumerContainerSelectorTracker() {
+		synchronized (consumerContainerSelectorTrackerLock) {
+			if (consumerContainerSelectorTracker != null) {
+				consumerContainerSelectorTracker.close();
+				consumerContainerSelectorTracker = null;
+			}
+		}
 		if (consumerContainerSelector != null) {
 			consumerContainerSelector.close();
 			consumerContainerSelector = null;
 		}
 	}
 
-	private void closeHostContainerSelector() {
+	private Object hostContainerSelectorTrackerLock = new Object();
+	private ServiceTracker hostContainerSelectorTracker;
+	
+	private void closeHostContainerSelectorTracker() {
+		synchronized (hostContainerSelectorTrackerLock) {
+			if (hostContainerSelectorTracker != null) {
+				hostContainerSelectorTracker.close();
+				hostContainerSelectorTracker = null;
+			}
+		}
 		if (hostContainerSelector != null) {
 			hostContainerSelector.close();
 			hostContainerSelector = null;
@@ -958,11 +1030,23 @@ public class RemoteServiceAdmin implements
 	}
 
 	protected IHostContainerSelector getHostContainerSelector() {
-		return hostContainerSelector;
+		synchronized (hostContainerSelectorTrackerLock) {
+			if (hostContainerSelectorTracker == null) {
+				hostContainerSelectorTracker = new ServiceTracker(getContext(),IHostContainerSelector.class.getName(),null);
+				hostContainerSelectorTracker.open();
+			}
+		}
+		return (IHostContainerSelector) hostContainerSelectorTracker.getService();
 	}
 
 	protected IConsumerContainerSelector getConsumerContainerSelector() {
-		return consumerContainerSelector;
+		synchronized (consumerContainerSelectorTrackerLock) {
+			if (consumerContainerSelectorTracker == null) {
+				consumerContainerSelectorTracker = new ServiceTracker(getContext(),IConsumerContainerSelector.class.getName(),null);
+				consumerContainerSelectorTracker.open();
+			}
+		}
+		return (IConsumerContainerSelector) consumerContainerSelectorTracker.getService();
 	}
 
 	private Version getPackageVersion(Bundle registeringBundle,
@@ -1667,8 +1751,9 @@ public class RemoteServiceAdmin implements
 		closeEventAdminTracker();
 		closePackageAdminTracker();
 		closeProxyClassLoaderCache();
-		closeConsumerContainerSelector();
-		closeHostContainerSelector();
+		closeConsumerContainerSelectorTracker();
+		closeHostContainerSelectorTracker();
+		closeDefaultContainerSelectors();
 		synchronized (exportedRegistrations) {
 			exportedRegistrations.clear();
 		}
