@@ -79,6 +79,12 @@ public abstract class AbstractTopologyManager {
 				remoteServiceAdminTracker = null;
 			}
 		}
+		synchronized (exportedRegistrations) {
+			exportedRegistrations.clear();
+		}
+		synchronized (importedRegistrations) {
+			importedRegistrations.clear();
+		}
 		context = null;
 	}
 
@@ -109,7 +115,7 @@ public abstract class AbstractTopologyManager {
 			if (remoteServiceAdminTracker == null) {
 				remoteServiceAdminTracker = new ServiceTracker(getContext(),
 						createRSAFilter(), null);
-				remoteServiceAdminTracker.open(true);
+				remoteServiceAdminTracker.open();
 			}
 		}
 		return (org.osgi.service.remoteserviceadmin.RemoteServiceAdmin) remoteServiceAdminTracker
@@ -376,10 +382,12 @@ public abstract class AbstractTopologyManager {
 			}
 		}
 		// Now close all of them
-		for (org.osgi.service.remoteserviceadmin.ImportRegistration removedReg : removedRegistrations) {
-			trace("unimportService", "closing importRegistration=" + removedReg);
-			removedReg.close();
-		}
+		if (removedRegistrations != null)
+			for (org.osgi.service.remoteserviceadmin.ImportRegistration removedReg : removedRegistrations) {
+				trace("unimportService", "closing importRegistration="
+						+ removedReg);
+				removedReg.close();
+			}
 	}
 
 }

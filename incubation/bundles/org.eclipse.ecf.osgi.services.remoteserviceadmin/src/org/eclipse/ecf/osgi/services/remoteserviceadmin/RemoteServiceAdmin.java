@@ -710,7 +710,7 @@ public class RemoteServiceAdmin implements
 
 	}
 
-	class ImportReference implements
+	public class ImportReference implements
 			org.osgi.service.remoteserviceadmin.ImportReference {
 
 		private ServiceReference importedServiceReference;
@@ -916,8 +916,10 @@ public class RemoteServiceAdmin implements
 	public Collection<org.osgi.service.remoteserviceadmin.ExportReference> getExportedServices() {
 		Collection<org.osgi.service.remoteserviceadmin.ExportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportReference>();
 		synchronized (exportedRegistrations) {
-			for (ExportRegistration reg : exportedRegistrations)
-				results.add(reg.getExportReference());
+			for (ExportRegistration reg : exportedRegistrations) {
+				org.osgi.service.remoteserviceadmin.ExportReference eRef = reg.getExportReference();
+				if (eRef != null) results.add(eRef);
+			}
 		}
 		return results;
 	}
@@ -925,8 +927,10 @@ public class RemoteServiceAdmin implements
 	public Collection<org.osgi.service.remoteserviceadmin.ImportReference> getImportedEndpoints() {
 		Collection<org.osgi.service.remoteserviceadmin.ImportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ImportReference>();
 		synchronized (importedRegistrations) {
-			for (ImportRegistration reg : importedRegistrations)
-				results.add(reg.getImportReference());
+			for (ImportRegistration reg : importedRegistrations) {
+				org.osgi.service.remoteserviceadmin.ImportReference iRef = reg.getImportReference();
+				if (iRef != null) results.add(iRef);
+			}
 		}
 		return results;
 	}
@@ -1784,7 +1788,26 @@ public class RemoteServiceAdmin implements
 				intf, rsFilter);
 	}
 
+	private void closeExportRegistrations() {
+		List<ExportRegistration> toClose = null;
+		synchronized (exportedRegistrations) {
+			toClose = new ArrayList<ExportRegistration>(exportedRegistrations);
+			exportedRegistrations.clear();
+		}
+		for(ExportRegistration reg: toClose) reg.close();
+	}
+	
+	private void closeImportRegistrations() {
+		List<ImportRegistration> toClose = null;
+		synchronized (importedRegistrations) {
+			toClose = new ArrayList<ImportRegistration>(importedRegistrations);
+			importedRegistrations.clear();
+		}
+		for(ImportRegistration reg: toClose) reg.close();
+	}
+
 	public void close() {
+		trace("close","closing importedRegistrations="+importedRegistrations+" exportedRegistrations="+exportedRegistrations);
 		closeRemoteServiceAdminListenerTracker();
 		closeEventAdminTracker();
 		closePackageAdminTracker();
@@ -1792,12 +1815,8 @@ public class RemoteServiceAdmin implements
 		closeConsumerContainerSelectorTracker();
 		closeHostContainerSelectorTracker();
 		closeDefaultContainerSelectors();
-		synchronized (exportedRegistrations) {
-			exportedRegistrations.clear();
-		}
-		synchronized (importedRegistrations) {
-			importedRegistrations.clear();
-		}
+		closeImportRegistrations();
+		closeExportRegistrations();
 		this.bundle = null;
 	}
 

@@ -10,10 +10,7 @@
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
 import java.util.Dictionary;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
-import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -52,7 +49,6 @@ public class Activator implements BundleActivator {
 		return instance;
 	}
 
-	private Map<Bundle, RemoteServiceAdmin> remoteServiceAdmins = new TreeMap<Bundle, RemoteServiceAdmin>();
 	private ServiceRegistration remoteServiceAdminRegistration;
 
 	private EndpointDescriptionLocator endpointDescriptionLocator;
@@ -116,22 +112,12 @@ public class Activator implements BundleActivator {
 						.getName(), new ServiceFactory() {
 					public Object getService(Bundle bundle,
 							ServiceRegistration registration) {
-						RemoteServiceAdmin rsa = new RemoteServiceAdmin(bundle);
-						synchronized (remoteServiceAdmins) {
-							remoteServiceAdmins.put(bundle, rsa);
-						}
-						return rsa;
+						return new RemoteServiceAdmin(bundle);
 					}
 
 					public void ungetService(Bundle bundle,
 							ServiceRegistration registration, Object service) {
-
-						RemoteServiceAdmin rsa = null;
-						synchronized (remoteServiceAdmins) {
-							rsa = remoteServiceAdmins.get(bundle);
-						}
-						if (rsa != null)
-							rsa.close();
+						if (service != null) ((RemoteServiceAdmin) service).close();
 					}
 				}, rsaProps);
 	}
@@ -140,16 +126,6 @@ public class Activator implements BundleActivator {
 		if (remoteServiceAdminRegistration != null) {
 			remoteServiceAdminRegistration.unregister();
 			remoteServiceAdminRegistration = null;
-		}
-		synchronized (remoteServiceAdmins) {
-			for (Iterator<Bundle> i = remoteServiceAdmins.keySet().iterator(); i
-					.hasNext();) {
-				RemoteServiceAdmin rsa = remoteServiceAdmins.get(i.next());
-				if (rsa != null) {
-					rsa.close();
-					i.remove();
-				}
-			}
 		}
 	}
 
