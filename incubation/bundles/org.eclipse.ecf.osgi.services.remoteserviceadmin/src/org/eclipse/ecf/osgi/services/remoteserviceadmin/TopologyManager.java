@@ -63,9 +63,9 @@ public class TopologyManager extends AbstractTopologyManager implements
 	public void endpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (endpoint instanceof EndpointDescription) {
+		if (endpoint instanceof EndpointDescription)
 			handleEndpointAdded((EndpointDescription) endpoint);
-		} else
+		else
 			logWarning("endpointAdded",
 					"ECF Topology Manager:  Ignoring Non-ECF endpointAdded="
 							+ endpoint + ",matchedFilter=" + matchedFilter);
@@ -74,9 +74,9 @@ public class TopologyManager extends AbstractTopologyManager implements
 	public void endpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (endpoint instanceof EndpointDescription) {
+		if (endpoint instanceof EndpointDescription)
 			handleEndpointRemoved((EndpointDescription) endpoint);
-		} else
+		else
 			logWarning("endpointRemoved",
 					"ECF Topology Manager:  Ignoring Non-ECF endpointRemoved="
 							+ endpoint + ",matchedFilter=" + matchedFilter);

@@ -153,7 +153,8 @@ public abstract class AbstractTopologyManager {
 							+ " FAILED", result);
 	}
 
-	protected void logError(String methodName, String message, Throwable exception) {
+	protected void logError(String methodName, String message,
+			Throwable exception) {
 		LogUtility.logError(methodName, DebugOptions.TOPOLOGY_MANAGER,
 				this.getClass(), message, exception);
 	}
@@ -176,20 +177,20 @@ public abstract class AbstractTopologyManager {
 	protected void handleEndpointAdded(EndpointDescription endpointDescription) {
 		// First, select importing remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
-	
+
 		if (rsa == null) {
 			logError("handleEndpointAdded",
 					"RemoteServiceAdmin not found for importing endpointDescription="
 							+ endpointDescription);
 			return;
 		}
-		
+
 		trace("handleEndpointAdded", "endpointDescription="
-				+ endpointDescription+" rsa="+rsa);
+				+ endpointDescription + " rsa=" + rsa);
 
 		// now call rsa.import
 		org.osgi.service.remoteserviceadmin.ImportRegistration importRegistration = rsa
-		.importService(endpointDescription);
+				.importService(endpointDescription);
 
 		if (importRegistration == null) {
 			logError("handleEndpointAdded",
@@ -197,9 +198,12 @@ public abstract class AbstractTopologyManager {
 							+ endpointDescription + " and rsa=" + rsa);
 		} else {
 			Throwable t = importRegistration.getException();
-			if (t != null) handleInvalidImportRegistration(importRegistration,t);
+			if (t != null)
+				handleInvalidImportRegistration(importRegistration, t);
 			else {
-				trace("handleEndpointAdded","service imported.  importRegistration="+importRegistration);
+				trace("handleEndpointAdded",
+						"service imported.  importRegistration="
+								+ importRegistration);
 				synchronized (importedRegistrations) {
 					importedRegistrations.add(importRegistration);
 				}
@@ -209,7 +213,8 @@ public abstract class AbstractTopologyManager {
 
 	protected void handleInvalidImportRegistration(
 			ImportRegistration importRegistration, Throwable t) {
-		logError("handleInvalidImportRegistration","importRegistration="+importRegistration,t);
+		logError("handleInvalidImportRegistration", "importRegistration="
+				+ importRegistration, t);
 	}
 
 	protected void handleEndpointRemoved(EndpointDescription endpointDescription) {
@@ -226,10 +231,10 @@ public abstract class AbstractTopologyManager {
 		// If no remote interfaces set, then we don't do anything with it
 		if (exportedInterfaces == null)
 			return;
-	
+
 		// Select remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
-	
+
 		// if no remote service admin available, then log error and return
 		if (rsa == null) {
 			logError("handleServiceRegistered",
@@ -238,47 +243,54 @@ public abstract class AbstractTopologyManager {
 							+ ".  Remote service NOT EXPORTED");
 			return;
 		}
-	
+
 		// prepare export properties
 		Map<String, Object> exportProperties = new TreeMap<String, Object>(
 				String.CASE_INSENSITIVE_ORDER);
 		exportProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
 						exportedInterfaces);
-		trace("handleServiceRegistering","serviceReference="+serviceReference+" exportProperties="+exportProperties);
-		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> registrations = 
-			rsa.exportService(serviceReference,
-					exportProperties);
+		trace("handleServiceRegistering", "serviceReference="
+				+ serviceReference + " exportProperties=" + exportProperties);
+		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> registrations = rsa
+				.exportService(serviceReference, exportProperties);
 
 		if (registrations == null || registrations.size() == 0) {
 			logError("handleServiceRegistered",
 					"No export registrations created by RemoteServiceAdmin="
-							+ rsa + ".  ServiceReference="
-							+ serviceReference + " NOT EXPORTED");
+							+ rsa + ".  ServiceReference=" + serviceReference
+							+ " NOT EXPORTED");
 			return;
 		}
 
 		List<EndpointDescription> endpointDescriptions = new ArrayList<EndpointDescription>();
-		
-		for(org.osgi.service.remoteserviceadmin.ExportRegistration exportRegistration: registrations) {
+
+		for (org.osgi.service.remoteserviceadmin.ExportRegistration exportRegistration : registrations) {
 			// If they are invalid report as such
 			Throwable t = exportRegistration.getException();
-			if (t != null) 
-				handleInvalidExportRegistration(exportRegistration,t);
+			if (t != null)
+				handleInvalidExportRegistration(exportRegistration, t);
 			else {
-				trace("handleServiceRegistering","service exported.  exportRegistration="+exportRegistration);
-				endpointDescriptions.add((EndpointDescription) exportRegistration.getExportReference().getExportedEndpoint());
+				trace("handleServiceRegistering",
+						"service exported.  exportRegistration="
+								+ exportRegistration);
+				endpointDescriptions
+						.add((EndpointDescription) exportRegistration
+								.getExportReference().getExportedEndpoint());
 				synchronized (exportedRegistrations) {
 					exportedRegistrations.add(exportRegistration);
 				}
 			}
 		}
 		// adversitise valid exported registrations
-		for (EndpointDescription ed : endpointDescriptions) advertiseEndpointDescription(ed);
+		for (EndpointDescription ed : endpointDescriptions)
+			advertiseEndpointDescription(ed);
 	}
 
-	protected void handleInvalidExportRegistration(ExportRegistration exportRegistration, Throwable t) {
-		logError("handleInvalidExportRegistration","exportRegistration="+exportRegistration,t);
+	protected void handleInvalidExportRegistration(
+			ExportRegistration exportRegistration, Throwable t) {
+		logError("handleInvalidExportRegistration", "exportRegistration="
+				+ exportRegistration, t);
 	}
 
 	protected void handleServiceModifying(ServiceReference serviceReference) {
@@ -293,19 +305,28 @@ public abstract class AbstractTopologyManager {
 				unadvertiseEndpointDescription(ed);
 	}
 
-	protected Collection<EndpointDescription> unexportService(ServiceReference serviceReference) {
+	protected Collection<EndpointDescription> unexportService(
+			ServiceReference serviceReference) {
 		Map<org.osgi.service.remoteserviceadmin.ExportRegistration, EndpointDescription> matchingExportRegistrations = null;
 		synchronized (exportedRegistrations) {
-			for(Iterator<org.osgi.service.remoteserviceadmin.ExportRegistration> i=exportedRegistrations.iterator(); i.hasNext(); ) {
-				if (matchingExportRegistrations == null) matchingExportRegistrations = new HashMap<org.osgi.service.remoteserviceadmin.ExportRegistration, EndpointDescription>();
-				org.osgi.service.remoteserviceadmin.ExportRegistration exportRegistration = i.next();
+			for (Iterator<org.osgi.service.remoteserviceadmin.ExportRegistration> i = exportedRegistrations
+					.iterator(); i.hasNext();) {
+				if (matchingExportRegistrations == null)
+					matchingExportRegistrations = new HashMap<org.osgi.service.remoteserviceadmin.ExportRegistration, EndpointDescription>();
+				org.osgi.service.remoteserviceadmin.ExportRegistration exportRegistration = i
+						.next();
 				// Only check valid registrations (no exceptions)
 				if (exportRegistration.getException() == null) {
-					org.osgi.service.remoteserviceadmin.ExportReference exportRef = exportRegistration.getExportReference();
+					org.osgi.service.remoteserviceadmin.ExportReference exportRef = exportRegistration
+							.getExportReference();
 					if (exportRef != null) {
-						ServiceReference exportReference = exportRef.getExportedService();
-						if (exportReference != null && serviceReference.equals(exportReference)) {
-							matchingExportRegistrations.put(exportRegistration, (EndpointDescription) exportRef.getExportedEndpoint());
+						ServiceReference exportReference = exportRef
+								.getExportedService();
+						if (exportReference != null
+								&& serviceReference.equals(exportReference)) {
+							matchingExportRegistrations.put(exportRegistration,
+									(EndpointDescription) exportRef
+											.getExportedEndpoint());
 						}
 					}
 					// remove no matter what
@@ -322,7 +343,8 @@ public abstract class AbstractTopologyManager {
 				.keySet().iterator(); i.hasNext();) {
 			org.osgi.service.remoteserviceadmin.ExportRegistration exportRegistration = i
 					.next();
-			trace("unexportService", "closing exportRegistration=" + exportRegistration);
+			trace("unexportService", "closing exportRegistration="
+					+ exportRegistration);
 			exportRegistration.close();
 		}
 		// And return endpointDescriptions for matching registrations
@@ -334,12 +356,16 @@ public abstract class AbstractTopologyManager {
 		synchronized (importedRegistrations) {
 			for (Iterator<org.osgi.service.remoteserviceadmin.ImportRegistration> i = importedRegistrations
 					.iterator(); i.hasNext();) {
-				if (removedRegistrations == null) removedRegistrations = new ArrayList<org.osgi.service.remoteserviceadmin.ImportRegistration>();
-				org.osgi.service.remoteserviceadmin.ImportRegistration importRegistration = i.next();
+				if (removedRegistrations == null)
+					removedRegistrations = new ArrayList<org.osgi.service.remoteserviceadmin.ImportRegistration>();
+				org.osgi.service.remoteserviceadmin.ImportRegistration importRegistration = i
+						.next();
 				if (importRegistration.getException() == null) {
-					org.osgi.service.remoteserviceadmin.ImportReference importRef = importRegistration.getImportReference();
+					org.osgi.service.remoteserviceadmin.ImportReference importRef = importRegistration
+							.getImportReference();
 					if (importRef != null) {
-						EndpointDescription ed = (EndpointDescription) importRef.getImportedEndpoint();
+						EndpointDescription ed = (EndpointDescription) importRef
+								.getImportedEndpoint();
 						if (ed != null && ed.isSameService(endpointDescription)) {
 							removedRegistrations.add(importRegistration);
 						}
@@ -351,7 +377,7 @@ public abstract class AbstractTopologyManager {
 		}
 		// Now close all of them
 		for (org.osgi.service.remoteserviceadmin.ImportRegistration removedReg : removedRegistrations) {
-			trace("unimportService", "closing importRegistration="+removedReg);
+			trace("unimportService", "closing importRegistration=" + removedReg);
 			removedReg.close();
 		}
 	}
