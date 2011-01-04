@@ -26,4 +26,12 @@ public class RemoteServiceAdminEvent extends
 		return containerID;
 	}
 
+	public String toString() {
+		return "RemoteServiceAdminEvent[containerID=" + containerID
+				+ ", getType()=" + getType() + ", getSource()=" + getSource()
+				+ ", getException()=" + getException()
+				+ ", getImportReference()=" + getImportReference()
+				+ ", getExportReference()=" + getExportReference() + "]";
+	}
+
 }

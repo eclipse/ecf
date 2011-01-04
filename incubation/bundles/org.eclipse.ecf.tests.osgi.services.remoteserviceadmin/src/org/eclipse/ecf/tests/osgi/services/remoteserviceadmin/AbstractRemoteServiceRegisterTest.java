@@ -10,6 +10,7 @@
 package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
 import java.util.Properties;
+import java.util.Vector;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -20,16 +21,20 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.remoteserviceadmin.RemoteConstants;
+import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
+import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
 public abstract class AbstractRemoteServiceRegisterTest extends
 		AbstractDistributionTest {
 
 	protected static final int REGISTER_WAIT = 2000;
 	private ServiceRegistration registration;
-
+	protected Vector<RemoteServiceAdminEvent> remoteServiceAdminEvents = new Vector<RemoteServiceAdminEvent>();
+	
 	protected abstract String getServerContainerTypeName();
 	
 	protected void tearDown() throws Exception {
+		remoteServiceAdminEvents.clear();
 		// Then unregister
 		if(registration != null) {
 			registration.unregister();
@@ -192,6 +197,46 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		Properties props = getServiceProperties();
 		
 		registerWaitAndUnregister(props, true);
+	}
+	
+	protected boolean containsEventType(int eventType) {
+		for(RemoteServiceAdminEvent event: remoteServiceAdminEvents) if (event.getType() == eventType) return true;
+		return false;
+	}
+	
+	protected RemoteServiceAdminListener createRemoteServiceAdminListener() {
+		return new RemoteServiceAdminListener() {
+			public void remoteAdminEvent(RemoteServiceAdminEvent event) {
+				System.out.println("remoteAdminEvent event="+event);
+				remoteServiceAdminEvents.add(event);
+			}
+		};
+	}
+	
+	public void testRemoteServiceAdminListener() throws Exception {
+		RemoteServiceAdminListener listener = createRemoteServiceAdminListener();
+		ServiceRegistration listenerReg = getContext().registerService(RemoteServiceAdminListener.class.getName(), listener, null);
+		
+		Properties props = getServiceProperties();
+		registration = registerDefaultService(props);
+		// Wait a while
+		Thread.sleep(REGISTER_WAIT);
+
+		assertTrue(remoteServiceAdminEvents.size() > 0);
+		assertTrue(containsEventType(RemoteServiceAdminEvent.EXPORT_REGISTRATION));
+		
+		// Now bring down
+		registration.unregister();
+		registration = null;
+		
+		// Wait a while
+		Thread.sleep(REGISTER_WAIT);
+
+		assertTrue(remoteServiceAdminEvents.size() > 2);
+		assertTrue(containsEventType(RemoteServiceAdminEvent.EXPORT_UNREGISTRATION));
+		
+		// finally unregister the listenerReg
+		listenerReg.unregister();
 	}
 
 }

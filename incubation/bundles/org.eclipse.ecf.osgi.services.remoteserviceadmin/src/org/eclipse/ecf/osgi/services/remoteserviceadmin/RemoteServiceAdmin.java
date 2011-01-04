@@ -103,6 +103,28 @@ public class RemoteServiceAdmin implements
 		return bundle;
 	}
 
+	private boolean removeExportRegistration(
+			ExportRegistration exportRegistration) {
+		synchronized (exportedRegistrations) {
+			boolean removed = exportedRegistrations.remove(exportRegistration);
+			trace("removeExportRegistration", "exportRegistration="
+					+ exportRegistration + " exportedRegistrations="
+					+ exportedRegistrations + " removed=" + removed);
+			return removed;
+		}
+	}
+
+	private boolean removeImportRegistration(
+			ImportRegistration importRegistration) {
+		synchronized (importedRegistrations) {
+			boolean removed = importedRegistrations.remove(importRegistration);
+			trace("removeImportRegistration", "importRegistration="
+					+ importRegistration + " importedRegistrations="
+					+ importedRegistrations + " removed=" + removed);
+			return removed;
+		}
+	}
+
 	public RemoteServiceAdmin(Bundle bundle) {
 		this.bundle = bundle;
 		Assert.isNotNull(bundle);
@@ -114,39 +136,51 @@ public class RemoteServiceAdmin implements
 		// create and register a default package version comparator
 		packageVersionComparator = new PackageVersionComparator();
 	}
-	
+
 	private HostContainerSelector hostContainerSelector;
 	private ServiceRegistration hostContainerSelectorRegistration;
-	
+
 	private ConsumerContainerSelector consumerContainerSelector;
 	private ServiceRegistration consumerContainerSelectorRegistration;
 
 	private void setupDefaultContainerSelectors() {
-		// Only setup defaults if it hasn't already been done by some other Remote Service Admin instance
+		// Only setup defaults if it hasn't already been done by some other
+		// Remote Service Admin instance
 		Properties props = new Properties();
-		props.put(org.osgi.framework.Constants.SERVICE_RANKING, new Integer(Integer.MIN_VALUE));
-		// host container selector.  register default only if none exist
+		props.put(org.osgi.framework.Constants.SERVICE_RANKING, new Integer(
+				Integer.MIN_VALUE));
+		// host container selector. register default only if none exist
 		ServiceReference[] hostContainerSelectorRefs = null;
 		try {
-			hostContainerSelectorRefs = getContext().getServiceReferences(IHostContainerSelector.class.getName(), null);
+			hostContainerSelectorRefs = getContext().getServiceReferences(
+					IHostContainerSelector.class.getName(), null);
 		} catch (InvalidSyntaxException e) {
 			// will not happen
 		}
-		if (hostContainerSelectorRefs == null || hostContainerSelectorRefs.length == 0) {
+		if (hostContainerSelectorRefs == null
+				|| hostContainerSelectorRefs.length == 0) {
 			hostContainerSelector = new HostContainerSelector(
 					hostDefaultConfigTypes, hostAutoCreateContainer);
-			hostContainerSelectorRegistration = getContext().registerService(IHostContainerSelector.class.getName(), hostContainerSelector, props);
+			hostContainerSelectorRegistration = getContext().registerService(
+					IHostContainerSelector.class.getName(),
+					hostContainerSelector, props);
 		}
-		// consumer container selector.  register default only if none exist
+		// consumer container selector. register default only if none exist
 		ServiceReference[] consumerContainerSelectorRefs = null;
 		try {
-			consumerContainerSelectorRefs = getContext().getServiceReferences(IConsumerContainerSelector.class.getName(), null);
+			consumerContainerSelectorRefs = getContext().getServiceReferences(
+					IConsumerContainerSelector.class.getName(), null);
 		} catch (InvalidSyntaxException e) {
 			// will not happen
 		}
-		if (consumerContainerSelectorRefs == null || consumerContainerSelectorRefs.length == 0) {
-			consumerContainerSelector = new ConsumerContainerSelector(consumerAutoCreateContainer);
-			consumerContainerSelectorRegistration = getContext().registerService(IConsumerContainerSelector.class.getName(), consumerContainerSelector, props);
+		if (consumerContainerSelectorRefs == null
+				|| consumerContainerSelectorRefs.length == 0) {
+			consumerContainerSelector = new ConsumerContainerSelector(
+					consumerAutoCreateContainer);
+			consumerContainerSelectorRegistration = getContext()
+					.registerService(
+							IConsumerContainerSelector.class.getName(),
+							consumerContainerSelector, props);
 		}
 	}
 
@@ -168,7 +202,7 @@ public class RemoteServiceAdmin implements
 			consumerContainerSelector = null;
 		}
 	}
-	
+
 	// RemoteServiceAdmin service interface impl methods
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
 			ServiceReference serviceReference,
@@ -259,7 +293,7 @@ public class RemoteServiceAdmin implements
 				exportRegistrations);
 	}
 
-	class ExportEndpoint {
+	public class ExportEndpoint {
 
 		private ServiceReference serviceReference;
 		private EndpointDescription endpointDescription;
@@ -344,7 +378,7 @@ public class RemoteServiceAdmin implements
 
 	}
 
-	class ExportRegistration implements
+	public class ExportRegistration implements
 			org.osgi.service.remoteserviceadmin.ExportRegistration {
 
 		private ExportEndpoint exportEndpoint;
@@ -382,12 +416,20 @@ public class RemoteServiceAdmin implements
 
 		synchronized boolean match(ServiceReference serviceReference,
 				ID containerID) {
+			ServiceReference ourServiceReference = getServiceReference();
+			if (ourServiceReference == null)
+				return false;
+			boolean serviceReferenceCompare = ourServiceReference
+					.equals(serviceReference);
+			// If the second parameter is null, then we compare only on service
+			// references
+			if (containerID == null)
+				return serviceReferenceCompare;
 			ID ourContainerID = getContainerID();
 			if (ourContainerID == null)
 				return false;
-			ServiceReference ourServiceReference = getServiceReference();
-			return ourContainerID.equals(containerID)
-					&& ourServiceReference.equals(serviceReference);
+			return serviceReferenceCompare
+					&& ourContainerID.equals(containerID);
 		}
 
 		synchronized ExportEndpoint getExportEndpoint(
@@ -419,13 +461,15 @@ public class RemoteServiceAdmin implements
 					exportEndpoint = null;
 				}
 			}
-			if (closed)
+			if (closed) {
+				removeExportRegistration(this);
 				publishEvent(
 						new RemoteServiceAdminEvent(
 								endpointDescription.getContainerID(),
 								RemoteServiceAdminEvent.EXPORT_UNREGISTRATION,
 								getBundle(), exportReference, t),
 						endpointDescription);
+			}
 		}
 
 		public synchronized Throwable getException() {
@@ -439,7 +483,7 @@ public class RemoteServiceAdmin implements
 
 	}
 
-	class ExportReference implements
+	public class ExportReference implements
 			org.osgi.service.remoteserviceadmin.ExportReference {
 
 		private ServiceReference serviceReference;
@@ -471,7 +515,7 @@ public class RemoteServiceAdmin implements
 
 	}
 
-	class ImportEndpoint {
+	public class ImportEndpoint {
 
 		private IRemoteServiceContainerAdapter rsContainerAdapter;
 		private EndpointDescription endpointDescription;
@@ -585,7 +629,7 @@ public class RemoteServiceAdmin implements
 
 	}
 
-	class ImportRegistration implements
+	public class ImportRegistration implements
 			org.osgi.service.remoteserviceadmin.ImportRegistration {
 
 		private ImportEndpoint importEndpoint;
@@ -644,13 +688,15 @@ public class RemoteServiceAdmin implements
 					importEndpoint = null;
 				}
 			}
-			if (closed)
+			if (closed) {
+				removeImportRegistration(this);
 				publishEvent(
 						new RemoteServiceAdminEvent(
 								endpointDescription.getContainerID(),
 								RemoteServiceAdminEvent.IMPORT_UNREGISTRATION,
 								getBundle(), importReference, t),
 						endpointDescription);
+			}
 		}
 
 		public synchronized Throwable getException() {
@@ -998,7 +1044,6 @@ public class RemoteServiceAdmin implements
 
 	private Object consumerContainerSelectorTrackerLock = new Object();
 	private ServiceTracker consumerContainerSelectorTracker;
-	
 
 	private void closeConsumerContainerSelectorTracker() {
 		synchronized (consumerContainerSelectorTrackerLock) {
@@ -1015,7 +1060,7 @@ public class RemoteServiceAdmin implements
 
 	private Object hostContainerSelectorTrackerLock = new Object();
 	private ServiceTracker hostContainerSelectorTracker;
-	
+
 	private void closeHostContainerSelectorTracker() {
 		synchronized (hostContainerSelectorTrackerLock) {
 			if (hostContainerSelectorTracker != null) {
@@ -1032,21 +1077,26 @@ public class RemoteServiceAdmin implements
 	protected IHostContainerSelector getHostContainerSelector() {
 		synchronized (hostContainerSelectorTrackerLock) {
 			if (hostContainerSelectorTracker == null) {
-				hostContainerSelectorTracker = new ServiceTracker(getContext(),IHostContainerSelector.class.getName(),null);
+				hostContainerSelectorTracker = new ServiceTracker(getContext(),
+						IHostContainerSelector.class.getName(), null);
 				hostContainerSelectorTracker.open();
 			}
 		}
-		return (IHostContainerSelector) hostContainerSelectorTracker.getService();
+		return (IHostContainerSelector) hostContainerSelectorTracker
+				.getService();
 	}
 
 	protected IConsumerContainerSelector getConsumerContainerSelector() {
 		synchronized (consumerContainerSelectorTrackerLock) {
 			if (consumerContainerSelectorTracker == null) {
-				consumerContainerSelectorTracker = new ServiceTracker(getContext(),IConsumerContainerSelector.class.getName(),null);
+				consumerContainerSelectorTracker = new ServiceTracker(
+						getContext(),
+						IConsumerContainerSelector.class.getName(), null);
 				consumerContainerSelectorTracker.open();
 			}
 		}
-		return (IConsumerContainerSelector) consumerContainerSelectorTracker.getService();
+		return (IConsumerContainerSelector) consumerContainerSelectorTracker
+				.getService();
 	}
 
 	private Version getPackageVersion(Bundle registeringBundle,
@@ -1603,19 +1653,6 @@ public class RemoteServiceAdmin implements
 			Map<String, Object> overridingProperties,
 			String[] exportedInterfaces, String[] serviceIntents,
 			IRemoteServiceContainer rsContainer) {
-		ID containerID = rsContainer.getContainer().getID();
-		trace("exportService",
-				"serviceReference="
-						+ serviceReference
-						+ ",overridingProperties="
-						+ overridingProperties
-						+ ",exportedInterfaces="
-						+ Arrays.asList(exportedInterfaces)
-						+ ",serviceIntents="
-						+ ((serviceIntents == null) ? "null" : Arrays.asList(
-								serviceIntents).toString()) + ",rsContainerID="
-						+ containerID);
-		IRemoteServiceRegistration remoteRegistration = null;
 
 		Map endpointDescriptionProperties = createExportEndpointDescriptionProperties(
 				serviceReference, overridingProperties, exportedInterfaces,
@@ -1627,9 +1664,10 @@ public class RemoteServiceAdmin implements
 
 		IRemoteServiceContainerAdapter containerAdapter = rsContainer
 				.getContainerAdapter();
-		Throwable exception = null;
 		// Register remote service via ECF container adapter to create
 		// remote service registration
+		IRemoteServiceRegistration remoteRegistration = null;
+		Throwable exception = null;
 		try {
 			if (containerAdapter instanceof IOSGiRemoteServiceContainerAdapter) {
 				IOSGiRemoteServiceContainerAdapter osgiContainerAdapter = (IOSGiRemoteServiceContainerAdapter) containerAdapter;
@@ -1772,37 +1810,28 @@ public class RemoteServiceAdmin implements
 		return null;
 	}
 
-	protected Collection<ImportRegistration> unimportService(
-			IRemoteServiceID remoteServiceID) {
-		trace("unimport", "remoteServiceID=" + remoteServiceID);
+	protected void unimportService(IRemoteServiceID remoteServiceID) {
 		List<ImportRegistration> removedRegistrations = new ArrayList<ImportRegistration>();
 		synchronized (importedRegistrations) {
 			for (Iterator<ImportRegistration> i = importedRegistrations
 					.iterator(); i.hasNext();) {
 				ImportRegistration importRegistration = i.next();
-				if (importRegistration != null) {
-					if (importRegistration.match(remoteServiceID)) {
-						removedRegistrations.add(importRegistration);
-						i.remove();
-					}
-				}
+				if (importRegistration != null
+						&& importRegistration.match(remoteServiceID))
+					removedRegistrations.add(importRegistration);
 			}
 		}
 		// Now close all of them
-		for (ImportRegistration removedReg : removedRegistrations)
+		for (ImportRegistration removedReg : removedRegistrations) {
+			trace("unimportService", "closing importRegistration=" + removedReg);
 			removedReg.close();
-		return removedRegistrations;
+		}
 	}
 
 	protected class RemoteServiceListener implements IRemoteServiceListener {
 		public void handleServiceEvent(IRemoteServiceEvent event) {
-			if (event instanceof IRemoteServiceUnregisteredEvent) {
-				Collection<ImportRegistration> removedRegistrations = unimportService(event
-						.getReference().getID());
-				trace("RemoteServiceListener.handleServiceEvent",
-						"Removed importRegistrations=" + removedRegistrations
-								+ " via event=" + event);
-			}
+			if (event instanceof IRemoteServiceUnregisteredEvent)
+				unimportService(event.getReference().getID());
 		}
 	}
 
