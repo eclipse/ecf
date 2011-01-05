@@ -24,6 +24,7 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.remoteserviceadmin.ExportRegistration;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
@@ -180,7 +181,18 @@ public abstract class AbstractTopologyManager {
 				this.getClass(), message);
 	}
 
-	protected void handleEndpointAdded(EndpointDescription endpointDescription) {
+	protected void handleEndpointAdded(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		if (endpoint instanceof EndpointDescription)
+			handleEndpointAdded((EndpointDescription) endpoint, matchedFilter);
+		else
+			logWarning("endpointAdded",
+					"ECF Topology Manager:  Ignoring Non-ECF endpointAdded="
+							+ endpoint + ",matchedFilter=" + matchedFilter);
+	}
+	
+	protected void handleEndpointAdded(EndpointDescription endpointDescription, String matchedFilter) {
 		// First, select importing remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
 
@@ -223,7 +235,35 @@ public abstract class AbstractTopologyManager {
 				+ importRegistration, t);
 	}
 
-	protected void handleEndpointRemoved(EndpointDescription endpointDescription) {
+	protected void handleEndpointRemoved(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		if (endpoint instanceof EndpointDescription)
+			handleEndpointRemoved((EndpointDescription) endpoint, matchedFilter);
+		else
+			logWarning("endpointRemoved",
+					"ECF Topology Manager:  Ignoring Non-ECF endpointRemoved="
+							+ endpoint + ",matchedFilter=" + matchedFilter);
+	}
+
+	protected void handleEvent(ServiceEvent event, Collection contexts) {
+		switch (event.getType()) {
+		case ServiceEvent.MODIFIED:
+			handleServiceModifying(event.getServiceReference());
+			break;
+		case ServiceEvent.MODIFIED_ENDMATCH:
+			break;
+		case ServiceEvent.REGISTERED:
+			handleServiceRegistering(event.getServiceReference());
+			break;
+		case ServiceEvent.UNREGISTERING:
+			handleServiceUnregistering(event.getServiceReference());
+			break;
+		default:
+			break;
+		}
+	}
+	
+	protected void handleEndpointRemoved(EndpointDescription endpointDescription, String matchedFilter) {
 		trace("handleEndpointRemoved", "endpointDescription="
 				+ endpointDescription);
 		unimportService(endpointDescription);

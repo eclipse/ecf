@@ -19,14 +19,14 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 
-public class TopologyManager extends AbstractTopologyManager implements
+public class BasicTopologyManager extends AbstractTopologyManager implements
 		EventHook, EndpointListener {
 
 	private ServiceRegistration endpointListenerRegistration;
 
 	private ServiceRegistration eventHookRegistration;
 
-	public TopologyManager(BundleContext context) {
+	public BasicTopologyManager(BundleContext context) {
 		super(context);
 	}
 
@@ -48,6 +48,22 @@ public class TopologyManager extends AbstractTopologyManager implements
 				EventHook.class.getName(), this, null);
 	}
 
+	public void endpointAdded(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		handleEndpointAdded(endpoint,matchedFilter);
+	}
+
+	public void endpointRemoved(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		handleEndpointRemoved(endpoint,matchedFilter);
+	}
+
+	public void event(ServiceEvent event, Collection contexts) {
+		handleEvent(event,contexts);
+	}
+
 	public void close() {
 		if (eventHookRegistration != null) {
 			eventHookRegistration.unregister();
@@ -58,47 +74,6 @@ public class TopologyManager extends AbstractTopologyManager implements
 			endpointListenerRegistration = null;
 		}
 		super.close();
-	}
-
-	public void endpointAdded(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
-			String matchedFilter) {
-		if (endpoint instanceof EndpointDescription)
-			handleEndpointAdded((EndpointDescription) endpoint);
-		else
-			logWarning("endpointAdded",
-					"ECF Topology Manager:  Ignoring Non-ECF endpointAdded="
-							+ endpoint + ",matchedFilter=" + matchedFilter);
-	}
-
-	public void endpointRemoved(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
-			String matchedFilter) {
-		if (endpoint instanceof EndpointDescription)
-			handleEndpointRemoved((EndpointDescription) endpoint);
-		else
-			logWarning("endpointRemoved",
-					"ECF Topology Manager:  Ignoring Non-ECF endpointRemoved="
-							+ endpoint + ",matchedFilter=" + matchedFilter);
-	}
-
-	public void event(ServiceEvent event, Collection contexts) {
-		switch (event.getType()) {
-		case ServiceEvent.MODIFIED:
-			handleServiceModifying(event.getServiceReference());
-			break;
-		case ServiceEvent.MODIFIED_ENDMATCH:
-			break;
-		case ServiceEvent.REGISTERED:
-			handleServiceRegistering(event.getServiceReference());
-			break;
-		case ServiceEvent.UNREGISTERING:
-			handleServiceUnregistering(event.getServiceReference());
-			break;
-		default:
-			break;
-		}
-
 	}
 
 }

@@ -23,7 +23,7 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionAdver
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionAdvertiser;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.TopologyManager;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.BasicTopologyManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -55,7 +55,7 @@ public class Activator implements BundleActivator {
 	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
 	private ServiceRegistration endpointDescriptionAdvertiserRegistration;
 
-	private TopologyManager topologyManager;
+	private BasicTopologyManager basicTopologyManager;
 
 	/*
 	 * (non-Javadoc)
@@ -73,9 +73,9 @@ public class Activator implements BundleActivator {
 
 		startEndpointDescriptionAdvertiser();
 
-		topologyManager = new TopologyManager(context);
+		basicTopologyManager = new BasicTopologyManager(context);
 		// start topology manager first
-		topologyManager.start();
+		basicTopologyManager.start();
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();
 	}
@@ -91,9 +91,9 @@ public class Activator implements BundleActivator {
 			endpointDescriptionLocator.close();
 			endpointDescriptionLocator = null;
 		}
-		if (topologyManager != null) {
-			topologyManager.close();
-			topologyManager = null;
+		if (basicTopologyManager != null) {
+			basicTopologyManager.close();
+			basicTopologyManager = null;
 		}
 		stopRemoteServiceAdmin();
 		stopEndpointDescriptionAdvertiser();
