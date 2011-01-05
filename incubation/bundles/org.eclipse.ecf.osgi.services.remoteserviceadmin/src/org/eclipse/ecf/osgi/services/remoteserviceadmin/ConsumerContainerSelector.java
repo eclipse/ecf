@@ -10,7 +10,6 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
 public class ConsumerContainerSelector extends
@@ -27,7 +26,7 @@ public class ConsumerContainerSelector extends
 		trace("selectConsumerContainers", "endpointDescription=" + endpointDescription); //$NON-NLS-1$
 
 		// Get the endpointID
-		ID endpointID = IDUtil.createID(endpointDescription);
+		ID endpointContainerID = endpointDescription.getContainerID();
 
 		String[] remoteSupportedConfigs = (String[]) endpointDescription
 				.getProperties()
@@ -37,7 +36,7 @@ public class ConsumerContainerSelector extends
 		ID connectTargetID = endpointDescription.getConnectTargetID();
 
 		IRemoteServiceContainer rsContainer = selectExistingConsumerContainer(
-				endpointID, remoteSupportedConfigs, connectTargetID);
+				endpointContainerID, remoteSupportedConfigs, connectTargetID);
 
 		// If we haven't found any existing containers then we create one
 		// from the remoteSupportedConfigs...*iff* autoCreateContainer is

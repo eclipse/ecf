@@ -18,7 +18,6 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 
 public class IDUtil {
 
@@ -72,12 +71,6 @@ public class IDUtil {
 	public static ID createID(Namespace namespace, String idName)
 			throws IDCreateException {
 		return getIDFactory().createID(namespace, idName);
-	}
-
-	public static ID createID(EndpointDescription endpointDescription)
-			throws IDCreateException {
-		return createID(endpointDescription.getIdNamespace(),
-				endpointDescription.getId());
 	}
 
 	public static ID createID(Namespace namespace, Object[] args)

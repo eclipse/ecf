@@ -89,7 +89,8 @@ public class EndpointDescription extends
 			return IDUtil.createID(idNamespace, idName);
 		} catch (IDCreateException e) {
 			IllegalArgumentException iae = new IllegalArgumentException(
-					"idName is not an ID: " + idName);
+					"cannot create a valid ID: idNamespace=" + idNamespace
+							+ ", idName=" + idName);
 			iae.initCause(e);
 			throw iae;
 		}
@@ -106,16 +107,16 @@ public class EndpointDescription extends
 			return null;
 		List<ID> results = new ArrayList();
 		String idNamespace = getIdNamespace();
-		try {
-			for (String idName : idNames)
+		for (String idName : idNames) {
+			try {
 				results.add(IDUtil.createID(idNamespace, idName));
-		} catch (IDCreateException e) {
-			IllegalArgumentException iae = new IllegalArgumentException(
-					"property value is not an ID[]: "
-							+ RemoteConstants.ENDPOINT_IDFILTER_IDS);
-			iae.initCause(e);
-			throw iae;
-
+			} catch (IDCreateException e) {
+				IllegalArgumentException iae = new IllegalArgumentException(
+						"cannot create ID[]: idNamespace=" + idNamespace
+								+ " idName=" + idName);
+				iae.initCause(e);
+				throw iae;
+			}
 		}
 		return (ID[]) results.toArray(new ID[results.size()]);
 	}

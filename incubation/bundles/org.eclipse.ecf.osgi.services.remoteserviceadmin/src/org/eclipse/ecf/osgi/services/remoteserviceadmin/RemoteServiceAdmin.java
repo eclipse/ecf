@@ -34,7 +34,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
@@ -1719,14 +1718,14 @@ public class RemoteServiceAdmin implements
 		// namespace for creating ID, or no namespace is present in
 		// endpointDescription or endpoint id,
 		// then it will be caught by the caller
-		ID endpointID = IDUtil.createID(endpointDescription);
-		Assert.isNotNull(endpointID);
+		ID endpointContainerID = endpointDescription.getContainerID();
+		Assert.isNotNull(endpointContainerID);
 		// Get connect target ID. May be null
 		ID targetID = endpointDescription.getConnectTargetID();
 		if (targetID == null)
-			targetID = endpointID;
+			targetID = endpointContainerID;
 		// Get idFilter...also may be null
-		ID[] idFilter = getIDFilter(endpointDescription, endpointID);
+		ID[] idFilter = getIDFilter(endpointDescription, endpointContainerID);
 		// Get remote service filter
 		String rsFilter = getRemoteServiceFilter(endpointDescription);
 		// IRemoteServiceReferences from query
