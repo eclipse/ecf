@@ -1102,16 +1102,18 @@ public class RemoteServiceAdmin implements
 				.getService();
 	}
 
-	private Version getPackageVersion(Bundle registeringBundle,
-			String packageName) {
-		ExportedPackage[] exportedPackages = getPackageAdmin()
-				.getExportedPackages(registeringBundle);
-		if (exportedPackages == null)
-			return null;
-		for (int i = 0; i < exportedPackages.length; i++)
-			if (exportedPackages[i].getName().equals(packageName))
-				return exportedPackages[i].getVersion();
-		return null;
+	private Version getPackageVersion(ServiceReference serviceReference, String serviceInterface, String packageName) {
+		Object service = getContext().getService(serviceReference);
+		if (service == null) return null;
+		Class[] interfaceClasses = service.getClass().getInterfaces();
+		if (interfaceClasses == null) return null;
+		Class interfaceClass = null;
+		for(int i=0; i < interfaceClasses.length; i++) {
+			if (interfaceClasses[i].getName().equals(serviceInterface)) interfaceClass = interfaceClasses[i];
+		}
+		if (interfaceClass == null) return null;
+		ExportedPackage exportedPackage = getExportedPackageForClass(getPackageAdmin(), interfaceClass);
+		return (exportedPackage == null)?null:exportedPackage.getVersion();
 	}
 
 	protected Map<String, Object> createExportEndpointDescriptionProperties(
@@ -1140,8 +1142,7 @@ public class RemoteServiceAdmin implements
 			String packageVersion = (String) PropertiesUtil.getPropertyValue(
 					serviceReference, overridingProperties, packageVersionKey);
 			if (packageVersion == null) {
-				Version version = getPackageVersion(
-						serviceReference.getBundle(), packageName);
+				Version version = getPackageVersion(serviceReference, exportedInterfaces[i], packageName);
 				if (version != null && !version.equals(Version.emptyVersion))
 					packageVersion = version.toString();
 				else
