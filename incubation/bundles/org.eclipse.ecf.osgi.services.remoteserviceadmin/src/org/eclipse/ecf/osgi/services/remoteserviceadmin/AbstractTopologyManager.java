@@ -54,7 +54,7 @@ public abstract class AbstractTopologyManager {
 		return context;
 	}
 
-	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser() {
+	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser(EndpointDescription endpointDescription) {
 		synchronized (endpointDescriptionAdvertiserTrackerLock) {
 			if (endpointDescriptionAdvertiserTracker == null) {
 				endpointDescriptionAdvertiserTracker = new ServiceTracker(
@@ -125,7 +125,7 @@ public abstract class AbstractTopologyManager {
 
 	protected void advertiseEndpointDescription(
 			EndpointDescription endpointDescription) {
-		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser();
+		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
 		if (advertiser == null) {
 			logWarning("advertiseExportedRegistration",
 					"No endpoint description advertiser available for endpointDescription="
@@ -143,7 +143,7 @@ public abstract class AbstractTopologyManager {
 
 	protected void unadvertiseEndpointDescription(
 			EndpointDescription endpointDescription) {
-		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser();
+		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
 		if (advertiser == null) {
 			logError(
 					"unadvertiseEndpointDescription",
@@ -328,7 +328,12 @@ public abstract class AbstractTopologyManager {
 				}
 			}
 		}
-		// adversitise valid exported registrations
+		// advertise valid exported registrations
+		advertiseEndpointDescriptions(endpointDescriptions);
+	}
+
+	protected void advertiseEndpointDescriptions(
+			List<EndpointDescription> endpointDescriptions) {
 		for (EndpointDescription ed : endpointDescriptions)
 			advertiseEndpointDescription(ed);
 	}
