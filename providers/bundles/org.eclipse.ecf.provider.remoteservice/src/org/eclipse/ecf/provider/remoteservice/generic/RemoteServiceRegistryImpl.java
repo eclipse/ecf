@@ -138,9 +138,6 @@ public class RemoteServiceRegistryImpl implements Serializable {
 
 			final IRemoteServiceReference reference = registration.getReference();
 			if ((filter == null) || filter.match(reference)) {
-				// Must be RemoteServiceReferenceImpl
-				final RemoteServiceReferenceImpl impl = (RemoteServiceReferenceImpl) reference;
-				impl.setRemoteClass(clazz);
 				references.add(reference);
 			}
 		}

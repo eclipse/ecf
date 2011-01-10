@@ -805,8 +805,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	// generic
 	private Request createRequest(RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call, IRemoteCallListener listener) {
-		final RemoteServiceReferenceImpl refImpl = (RemoteServiceReferenceImpl) remoteRegistration.getReference();
-		return new Request(this.getLocalContainerID(), remoteRegistration.getServiceId(), RemoteCallImpl.createRemoteCall(refImpl.getRemoteClass(), call.getMethod(), call.getParameters(), call.getTimeout()), listener);
+		return new Request(this.getLocalContainerID(), remoteRegistration.getServiceId(), RemoteCallImpl.createRemoteCall(null, call.getMethod(), call.getParameters(), call.getTimeout()), listener);
 	}
 
 	void doFireRemoteServiceListeners(IRemoteServiceEvent event) {
@@ -1862,7 +1861,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.5
+	 * @since 4.0
 	 */
 	protected IRemoteServiceCallPolicy getRemoteServiceCallPolicy() {
 		synchronized (remoteServiceCallPolicyLock) {
@@ -1871,7 +1870,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 3.5
+	 * @since 4.0
 	 */
 	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
 		synchronized (remoteServiceCallPolicyLock) {

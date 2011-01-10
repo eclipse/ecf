@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -181,7 +182,7 @@ public abstract class AbstractDistributionTest extends
 				.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
 		assertTrue(classes != null);
 		// Check object class
-		assertTrue(classname.equals(classes[0]));
+		assertTrue(Arrays.asList(classes).contains(classname));
 	}
 
 	protected void assertReferencesValidAndFirstHasCorrectType(

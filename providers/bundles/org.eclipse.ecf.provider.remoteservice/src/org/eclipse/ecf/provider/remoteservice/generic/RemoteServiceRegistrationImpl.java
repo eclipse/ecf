@@ -12,6 +12,8 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
+import org.eclipse.ecf.core.util.reflection.ClassUtil;
 import org.eclipse.ecf.remoteservice.*;
 
 /**
@@ -339,7 +341,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 	}
 
 	public Object callService(RemoteCallImpl call) throws Exception {
-		return call.invoke(service);
+		return ClassUtil.getMethod(service.getClass(), call.getMethod(), SharedObjectMsg.getTypesForParameters(call.getParameters())).invoke(service, call.getParameters());
 	}
 
 	public String toString() {

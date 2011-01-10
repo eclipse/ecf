@@ -19,16 +19,11 @@ public class RemoteCallImpl extends SharedObjectMsg implements IRemoteCall, Seri
 
 	long timeout = IRemoteCall.DEFAULT_TIMEOUT;
 
+	/**
+	 * @since 4.0
+	 */
 	public static RemoteCallImpl createRemoteCall(String clazz, String method, Object[] parameters, long timeout) {
 		return new RemoteCallImpl(clazz, method, parameters, timeout);
-	}
-
-	public static RemoteCallImpl createRemoteCall(String clazz, String method, Object[] parameters) {
-		return RemoteCallImpl.createRemoteCall(clazz, method, parameters, IRemoteCall.DEFAULT_TIMEOUT);
-	}
-
-	public static RemoteCallImpl createRemoteCall(String clazz, String method) {
-		return RemoteCallImpl.createRemoteCall(clazz, method, null, IRemoteCall.DEFAULT_TIMEOUT);
 	}
 
 	protected RemoteCallImpl(String clazz, String method, Object[] parameters, long timeout) {

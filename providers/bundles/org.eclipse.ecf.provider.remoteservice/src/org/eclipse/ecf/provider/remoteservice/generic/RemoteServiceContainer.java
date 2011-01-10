@@ -139,7 +139,7 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements IRem
 	}
 
 	/**
-	 * @since 3.5
+	 * @since 4.0
 	 */
 	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
 		return registry.setRemoteServiceCallPolicy(policy);

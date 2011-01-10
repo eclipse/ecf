@@ -94,7 +94,6 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		Map<String,Object> props = new HashMap<String,Object>();
 		// Add required OSGi properties
 		addRequiredOSGiProperties(props);
-		ID containerID = createECFContainerID(props);
 		createECFRemoteServiceId(props);
 		// Add extra properties
 		addExtraProperties(props);
@@ -108,11 +107,6 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		// Add full OSGi properties
 		addOptionalOSGiProperties(props);
 		// required ECF properties
-		ID containerID = createECFContainerID(props);
-		createECFRemoteServiceId(props);
-		ID targetID = createECFTargetID(props);
-		ID[] idFilter = createECFIDFilterIDs(props);
-		String rsFilter = createECFRSFilter(props);
 		// Add extra properties
 		addExtraProperties(props);
 		return new EndpointDescription(props);
@@ -127,7 +121,6 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 		Map<String,Object> props = new HashMap<String,Object>();
 		// Add only ECF properties
 		// no OSGi properties
-		ID containerID = createECFContainerID(props);
 		createECFRemoteServiceId(props);
 		// This should throw a runtime exception 
 		return new EndpointDescription(props);

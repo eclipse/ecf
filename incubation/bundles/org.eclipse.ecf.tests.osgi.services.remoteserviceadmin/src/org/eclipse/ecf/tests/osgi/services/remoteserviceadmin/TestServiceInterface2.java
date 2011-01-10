@@ -10,8 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
-public interface TestServiceInterface2 {
+public interface TestServiceInterface2 extends TestServiceInterface1 {
 
-	void doStuff2();
+	public static final String TEST_SERVICE_STRING2 = "TestService2";
+	
+
+	String doStuff2();
 	
 }
