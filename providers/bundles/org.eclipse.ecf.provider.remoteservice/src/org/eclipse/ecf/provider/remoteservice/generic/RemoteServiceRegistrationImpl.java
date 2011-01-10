@@ -10,6 +10,9 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
 import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
@@ -341,7 +344,16 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 	}
 
 	public Object callService(RemoteCallImpl call) throws Exception {
-		return ClassUtil.getMethod(service.getClass(), call.getMethod(), SharedObjectMsg.getTypesForParameters(call.getParameters())).invoke(service, call.getParameters());
+		Object[] args = (call.getParameters() == null) ? SharedObjectMsg.nullArgs : call.getParameters();
+		final Method method = ClassUtil.getMethod(service.getClass(), call.getMethod(), SharedObjectMsg.getTypesForParameters(args));
+		AccessController.doPrivileged(new PrivilegedExceptionAction() {
+			public Object run() throws Exception {
+				if (!method.isAccessible())
+					method.setAccessible(true);
+				return null;
+			}
+		});
+		return method.invoke(service, args);
 	}
 
 	public String toString() {
