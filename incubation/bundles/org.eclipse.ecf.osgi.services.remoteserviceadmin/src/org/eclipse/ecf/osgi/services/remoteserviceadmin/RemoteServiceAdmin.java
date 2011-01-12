@@ -162,7 +162,7 @@ public class RemoteServiceAdmin implements
 					hostDefaultConfigTypes, hostAutoCreateContainer);
 			hostContainerSelectorRegistration = getContext().registerService(
 					IHostContainerSelector.class.getName(),
-					hostContainerSelector, props);
+					hostContainerSelector, (Dictionary) props);
 		}
 		// consumer container selector. register default only if none exist
 		ServiceReference[] consumerContainerSelectorRefs = null;
@@ -179,7 +179,7 @@ public class RemoteServiceAdmin implements
 			consumerContainerSelectorRegistration = getContext()
 					.registerService(
 							IConsumerContainerSelector.class.getName(),
-							consumerContainerSelector, props);
+							consumerContainerSelector, (Dictionary) props);
 		}
 	}
 

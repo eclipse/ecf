@@ -119,7 +119,7 @@ public class Activator implements BundleActivator {
 							ServiceRegistration registration, Object service) {
 						if (service != null) ((RemoteServiceAdmin) service).close();
 					}
-				}, rsaProps);
+				}, (Dictionary) rsaProps);
 	}
 
 	private void stopRemoteServiceAdmin() {

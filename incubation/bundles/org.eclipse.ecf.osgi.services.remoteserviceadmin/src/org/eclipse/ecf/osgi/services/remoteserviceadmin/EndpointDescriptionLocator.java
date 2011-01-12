@@ -108,7 +108,7 @@ public class EndpointDescriptionLocator {
 		// setup/register default endpointDescriptionReader
 		defaultEndpointDescriptionReaderRegistration = context.registerService(
 				IEndpointDescriptionReader.class.getName(),
-				new EndpointDescriptionReader(), properties);
+				new EndpointDescriptionReader(), (Dictionary) properties);
 
 		// Create thread group, event manager, and eventQueue, and setup to
 		// dispatch EndpointListenerEvents
