@@ -1,5 +1,6 @@
 package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
+import java.util.Dictionary;
 import java.util.Properties;
 
 import org.osgi.framework.ServiceRegistration;
@@ -30,7 +31,7 @@ public class EndpointListenerTest extends TestCase {
 	public void testEndpointListenerNotification() throws Exception {
 		Properties props = new Properties();
 		props.put(org.osgi.service.remoteserviceadmin.EndpointListener.ENDPOINT_LISTENER_SCOPE,"("+RemoteConstants.ENDPOINT_ID+"=*)");
-		ServiceRegistration endpointListenerRegistration = Activator.getDefault().getContext().registerService(EndpointListener.class.getName(), createEndpointListener(), props);
+		ServiceRegistration endpointListenerRegistration = Activator.getDefault().getContext().registerService(EndpointListener.class.getName(), createEndpointListener(), (Dictionary) props);
 		Thread.sleep(5000);
 		endpointListenerRegistration.unregister();
 	}
