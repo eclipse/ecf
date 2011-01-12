@@ -30,7 +30,10 @@ public class DefaultHostContainerFinder extends AbstractHostContainerFinder
 		this.autoCreateContainer = autoCreateContainer;
 	}
 
-	public IRemoteServiceContainer[] findHostContainers(
+	// Adding synchronized to make the host container finding
+	// thread safe to deal with bug
+	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=331836
+	public synchronized IRemoteServiceContainer[] findHostContainers(
 			ServiceReference serviceReference,
 			String[] serviceExportedInterfaces,
 			String[] serviceExportedConfigs, String[] serviceIntents) {

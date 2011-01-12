@@ -27,7 +27,10 @@ public class HostContainerSelector extends AbstractHostContainerSelector
 		this.autoCreateContainer = autoCreateContainer;
 	}
 
-	public IRemoteServiceContainer[] selectHostContainers(
+	// Adding synchronized to make the host container finding
+	// thread safe to deal with bug
+	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=331836
+	public synchronized IRemoteServiceContainer[] selectHostContainers(
 			ServiceReference serviceReference,
 			String[] serviceExportedInterfaces,
 			String[] serviceExportedConfigs, String[] serviceIntents) {
