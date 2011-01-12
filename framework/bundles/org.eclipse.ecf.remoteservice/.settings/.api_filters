@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.ecf.remoteservice" version="2">
+    <resource path="src/org/eclipse/ecf/remoteservice/util/RemoteFilterImpl.java" type="org.eclipse.ecf.remoteservice.util.RemoteFilterImpl">
+        <filter comment="remote service filter can implement osgi Filter" id="574660632">
+            <message_arguments>
+                <message_argument value="IRemoteFilter"/>
+                <message_argument value="Filter"/>
+                <message_argument value="RemoteFilterImpl"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

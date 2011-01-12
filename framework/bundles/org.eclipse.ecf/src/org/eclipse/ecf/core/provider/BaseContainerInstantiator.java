@@ -44,9 +44,8 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 
 	protected Set getInterfacesForClass(Class clazz) {
 		Set clazzes = getInterfacesForClass(new HashSet(), clazz);
-		int index = 0;
 		Set result = new HashSet();
-		for (Iterator i = clazzes.iterator(); i.hasNext(); index++)
+		for (Iterator i = clazzes.iterator(); i.hasNext();)
 			result.add(((Class) i.next()).getName());
 		return result;
 	}

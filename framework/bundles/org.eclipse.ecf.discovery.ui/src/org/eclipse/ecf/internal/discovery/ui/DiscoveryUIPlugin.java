@@ -26,8 +26,8 @@ public final class DiscoveryUIPlugin extends EMFPlugin {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public static final String copyright = "";
-	
+	public static final String copyright = ""; //$NON-NLS-1$
+
 	/**
 	 * Keep track of the singleton.
 	 * <!-- begin-user-doc -->
@@ -35,14 +35,14 @@ public final class DiscoveryUIPlugin extends EMFPlugin {
 	 * @generated
 	 */
 	public static final DiscoveryUIPlugin INSTANCE = new DiscoveryUIPlugin();
-	
+
 	/**
 	 * Keep track of the singleton.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static Implementation plugin;
+	static Implementation plugin;
 
 	/**
 	 * Create the instance.
@@ -51,9 +51,7 @@ public final class DiscoveryUIPlugin extends EMFPlugin {
 	 * @generated
 	 */
 	public DiscoveryUIPlugin() {
-		super
-			(new ResourceLocator [] {
-			});
+		super(new ResourceLocator[] {});
 	}
 
 	/**
@@ -66,7 +64,7 @@ public final class DiscoveryUIPlugin extends EMFPlugin {
 	public ResourceLocator getPluginResourceLocator() {
 		return plugin;
 	}
-	
+
 	/**
 	 * Returns the singleton instance of the Eclipse plugin.
 	 * <!-- begin-user-doc -->
@@ -77,7 +75,7 @@ public final class DiscoveryUIPlugin extends EMFPlugin {
 	public static Implementation getPlugin() {
 		return plugin;
 	}
-	
+
 	/**
 	 * The actual implementation of the Eclipse <b>Plugin</b>.
 	 * <!-- begin-user-doc -->
@@ -93,7 +91,7 @@ public final class DiscoveryUIPlugin extends EMFPlugin {
 		 */
 		public Implementation() {
 			super();
-	
+
 			// Remember the static instance.
 			//
 			plugin = this;

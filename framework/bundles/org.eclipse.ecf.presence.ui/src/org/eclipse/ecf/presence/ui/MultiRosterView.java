@@ -1008,7 +1008,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		private String getRosterEntryChildrenFromPresence(IRosterEntry entry) {
 			IPresence presence = entry.getPresence();
 			Map properties = presence.getProperties();
-			int fixedEntries = 4;
 			String resourceName = getResourceName(entry.getUser().getID());
 			StringBuffer buffer = new StringBuffer();
 			buffer.append("<form>"); //$NON-NLS-1$
@@ -1024,7 +1023,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			buffer.append("<p>"); //$NON-NLS-1$
 			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Resource, ((resourceName == null) ? "" : resourceName))); //$NON-NLS-1$
 			buffer.append("</p>"); //$NON-NLS-1$
-			for (Iterator i = properties.keySet().iterator(); i.hasNext(); fixedEntries++) {
+			for (Iterator i = properties.keySet().iterator(); i.hasNext();) {
 				buffer.append("<p>"); //$NON-NLS-1$
 				Object key = i.next();
 				buffer.append(key).append(": ").append(properties.get(key)); //$NON-NLS-1$

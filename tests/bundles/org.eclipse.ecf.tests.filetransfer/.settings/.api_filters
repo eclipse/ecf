@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.ecf.tests.filetransfer" version="2">
+    <resource path="src/org/eclipse/ecf/tests/filetransfer/AbstractRetrieveTestCase.java" type="org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase">
+        <filter comment="test code" id="574619656">
+            <message_arguments>
+                <message_argument value="IProxyData"/>
+                <message_argument value="AbstractRetrieveTestCase"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/org/eclipse/ecf/tests/filetransfer/Activator.java" type="org.eclipse.ecf.tests.filetransfer.Activator">
         <filter comment="protocol mapper is provisional so marked as internal" id="643842064">
             <message_arguments>

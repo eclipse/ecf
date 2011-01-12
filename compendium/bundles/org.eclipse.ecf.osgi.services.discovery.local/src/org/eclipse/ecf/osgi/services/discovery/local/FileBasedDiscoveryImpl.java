@@ -31,7 +31,6 @@ import org.eclipse.ecf.osgi.services.discovery.ServiceEndpointDescription;
 import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.log.LogService;
@@ -447,10 +446,6 @@ public class FileBasedDiscoveryImpl {
 							}
 						}
 					} catch (InvalidSyntaxException e) {
-						String errMsg = "A filter provided by a DiscoveredServiceTracker is invalid.";
-						errMsg += " Filter = " + currentFilter;
-						errMsg += "; DiscoveredServiceTracker service.id = "
-								+ trackerProperties.get(Constants.SERVICE_ID);
 						throw new RuntimeException(e.getMessage());
 					} catch (IllegalStateException isex) {
 						// TODO: check whether this catch block is needed.

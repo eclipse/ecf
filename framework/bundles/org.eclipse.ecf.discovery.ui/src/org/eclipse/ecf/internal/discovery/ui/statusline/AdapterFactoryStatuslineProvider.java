@@ -15,11 +15,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.jface.action.IStatusLineManager;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-
+import org.eclipse.jface.viewers.*;
 
 public class AdapterFactoryStatuslineProvider implements ISelectionChangedListener {
 	private ComposedAdapterFactory adapterFactory;
@@ -44,8 +40,7 @@ public class AdapterFactoryStatuslineProvider implements ISelectionChangedListen
 			IStructuredSelection ss = (IStructuredSelection) selection;
 			EObject object = (EObject) ss.getFirstElement();
 			if (object != null) { // do we really have a selection?
-				IItemStatusLineProvider itemStatusLineProvider = (IItemStatusLineProvider) adapterFactory
-						.adapt(object, IItemStatusLineProvider.class);
+				IItemStatusLineProvider itemStatusLineProvider = (IItemStatusLineProvider) adapterFactory.adapt(object, IItemStatusLineProvider.class);
 				if (itemStatusLineProvider != null) {
 					statusline.setMessage(itemStatusLineProvider.getStatusLineText(object));
 				} else {
@@ -58,7 +53,7 @@ public class AdapterFactoryStatuslineProvider implements ISelectionChangedListen
 
 			}
 		} else {
-			statusline.setMessage("");
+			statusline.setMessage(""); //$NON-NLS-1$
 		}
 	}
 }

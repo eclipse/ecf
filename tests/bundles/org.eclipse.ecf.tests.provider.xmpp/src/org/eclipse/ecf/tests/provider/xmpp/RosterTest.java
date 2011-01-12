@@ -3,10 +3,7 @@ package org.eclipse.ecf.tests.provider.xmpp;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
@@ -108,11 +105,11 @@ public class RosterTest extends AbstractPresenceTestCase {
 	/**
 	 * Counts the entries that match the username in the roster.
 	 */
-	private int countMatchingEntries(IRoster roster, String username) {
+	protected int countMatchingEntries(IRoster roster, String username) {
 		return countMatchingItems(roster.getItems(), username);
 	}
 	
-	private int countMatchingItems(Collection items, String username) {
+	protected int countMatchingItems(Collection items, String username) {
 		int sum = 0;
 		for (Iterator i = items.iterator(); i.hasNext();) {
 			IRosterItem item = (IRosterItem) i.next();

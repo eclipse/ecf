@@ -25,23 +25,23 @@ public class DiscoveryHandlerUtil {
 	public static IServiceInfo getActiveIServiceInfoChecked(ExecutionEvent event) throws ExecutionException {
 		ISelection selection = HandlerUtil.getCurrentSelectionChecked(event);
 		org.eclipse.ecf.discovery.ui.model.IServiceInfo serviceInfo = toIServiceInfo(selection);
-		if(serviceInfo == null) {
+		if (serviceInfo == null) {
 			return null;
-		} else {
-			return serviceInfo.getEcfServiceInfo();
 		}
+		return serviceInfo.getEcfServiceInfo();
 	}
+
 	public static IServiceInfo getActiveIServiceInfo(ExecutionEvent event) {
 		ISelection selection = HandlerUtil.getCurrentSelection(event);
 		org.eclipse.ecf.discovery.ui.model.IServiceInfo serviceInfo = toIServiceInfo(selection);
-		if(serviceInfo == null) {
+		if (serviceInfo == null) {
 			return null;
-		} else {
-			return serviceInfo.getEcfServiceInfo();
 		}
+		return serviceInfo.getEcfServiceInfo();
 	}
+
 	private static org.eclipse.ecf.discovery.ui.model.IServiceInfo toIServiceInfo(ISelection selection) {
-		if(selection instanceof IStructuredSelection) {
+		if (selection instanceof IStructuredSelection) {
 			return (org.eclipse.ecf.discovery.ui.model.IServiceInfo) ((IStructuredSelection) selection).getFirstElement();
 		}
 		return null;
