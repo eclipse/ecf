@@ -33,9 +33,6 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
-import org.osgi.framework.Constants;
-
-import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import ch.ethz.iks.r_osgi.RemoteServiceReference;
 import ch.ethz.iks.r_osgi.URI;
 
@@ -88,16 +85,9 @@ final class RemoteServiceReferenceImpl implements RemoteServiceReference {
 			final String serviceID, final Dictionary properties,
 			final ChannelEndpointImpl channel) {
 		this.serviceInterfaces = serviceInterfaces;
-		uri = channel.getRemoteAddress().resolve("#" + serviceID); //$NON-NLS-1$
+		this.properties =  properties;
+		this.uri = channel.getRemoteAddress().resolve("#" + serviceID); //$NON-NLS-1$
 		this.properties = properties;
-		// adjust the properties
-		this.properties.put(RemoteOSGiService.SERVICE_URI, uri.toString());
-		// remove the service PID, if set
-		this.properties.remove(Constants.SERVICE_PID);
-		// remove the R-OSGi registration property
-		this.properties.remove(RemoteOSGiService.R_OSGi_REGISTRATION);
-		// also remote the ECF registration property
-		this.properties.remove("org.eclipse.ecf.serviceRegistrationRemote"); //$NON-NLS-1$
 		this.channel = channel;
 	}
 

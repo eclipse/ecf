@@ -68,15 +68,15 @@ import ch.ethz.iks.r_osgi.channels.NetworkChannel;
 import ch.ethz.iks.r_osgi.channels.NetworkChannelFactory;
 import ch.ethz.iks.r_osgi.messages.DeliverBundlesMessage;
 import ch.ethz.iks.r_osgi.messages.DeliverServiceMessage;
-import ch.ethz.iks.r_osgi.messages.RequestBundleMessage;
-import ch.ethz.iks.r_osgi.messages.RequestDependenciesMessage;
-import ch.ethz.iks.r_osgi.messages.RequestServiceMessage;
-import ch.ethz.iks.r_osgi.messages.RemoteCallMessage;
 import ch.ethz.iks.r_osgi.messages.LeaseMessage;
 import ch.ethz.iks.r_osgi.messages.LeaseUpdateMessage;
+import ch.ethz.iks.r_osgi.messages.RemoteCallMessage;
 import ch.ethz.iks.r_osgi.messages.RemoteCallResultMessage;
 import ch.ethz.iks.r_osgi.messages.RemoteEventMessage;
 import ch.ethz.iks.r_osgi.messages.RemoteOSGiMessage;
+import ch.ethz.iks.r_osgi.messages.RequestBundleMessage;
+import ch.ethz.iks.r_osgi.messages.RequestDependenciesMessage;
+import ch.ethz.iks.r_osgi.messages.RequestServiceMessage;
 import ch.ethz.iks.r_osgi.messages.StreamRequestMessage;
 import ch.ethz.iks.r_osgi.messages.StreamResultMessage;
 import ch.ethz.iks.r_osgi.messages.TimeOffsetMessage;
@@ -1043,6 +1043,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			final String serviceID = suMsg.getServiceID();
 			final short stateUpdate = suMsg.getType();
 
+			final String serviceURI = getRemoteAddress()
+					.resolve("#" + serviceID).toString();
+
 			switch (stateUpdate) {
 			case LeaseUpdateMessage.TOPIC_UPDATE: {
 				updateTopics((String[]) suMsg.getPayload()[0], (String[]) suMsg
@@ -1050,12 +1053,13 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				return null;
 			}
 			case LeaseUpdateMessage.SERVICE_ADDED: {
+				final Dictionary properties = (Dictionary) suMsg.getPayload()[1];
+				sanitizeServiceProperties(properties, serviceURI);
 				final RemoteServiceReferenceImpl ref = new RemoteServiceReferenceImpl(
 						(String[]) suMsg.getPayload()[0], serviceID,
-						(Dictionary) suMsg.getPayload()[1], this);
+						properties, this);
 
-				remoteServices.put(getRemoteAddress().resolve("#" + serviceID) //$NON-NLS-1$
-						.toString(), ref);
+				remoteServices.put(serviceURI, ref);
 
 				RemoteOSGiServiceImpl
 						.notifyRemoteServiceListeners(new RemoteServiceEvent(
@@ -1064,16 +1068,16 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				return null;
 			}
 			case LeaseUpdateMessage.SERVICE_MODIFIED: {
-				final Dictionary newProps = (Dictionary) suMsg.getPayload()[1];
+				final Dictionary properties = (Dictionary) suMsg.getPayload()[1];
+				sanitizeServiceProperties(properties, serviceURI);
 				final ServiceRegistration reg = (ServiceRegistration) proxiedServices
 						.get(serviceID);
 				if (reg != null) {
-					reg.setProperties(newProps);
+					reg.setProperties(properties);
 				}
 
-				final RemoteServiceReferenceImpl ref = getRemoteReference(getRemoteAddress()
-						.resolve("#" + serviceID).toString()); //$NON-NLS-1$
-				ref.setProperties(newProps);
+				final RemoteServiceReferenceImpl ref = getRemoteReference(serviceURI); //$NON-NLS-1$
+				ref.setProperties(properties);
 				RemoteOSGiServiceImpl
 						.notifyRemoteServiceListeners(new RemoteServiceEvent(
 								RemoteServiceEvent.MODIFIED, ref));
@@ -1084,8 +1088,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 					return null;
 				}
 				final RemoteServiceReference ref = (RemoteServiceReference) remoteServices
-						.remove(getRemoteAddress().resolve("#" + serviceID) //$NON-NLS-1$
-								.toString());
+						.remove(serviceURI);
 				if (ref != null) {
 					RemoteOSGiServiceImpl
 							.notifyRemoteServiceListeners(new RemoteServiceEvent(
@@ -1100,8 +1103,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 						be.printStackTrace();
 					}
 					proxiedServices.remove(serviceID);
-					remoteServices.remove(getRemoteAddress().resolve(
-							"#" + serviceID).toString()); //$NON-NLS-1$
+					remoteServices.remove(serviceURI); //$NON-NLS-1$
 				}
 				return null;
 			}
@@ -1393,11 +1395,16 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		final String[] serviceIDs = lease.getServiceIDs();
 		final String[][] serviceInterfaces = lease.getServiceInterfaces();
 		final Dictionary[] serviceProperties = lease.getServiceProperties();
+		
 
 		final RemoteServiceReferenceImpl[] refs = new RemoteServiceReferenceImpl[serviceIDs.length];
 		for (short i = 0; i < serviceIDs.length; i++) {
+			final String serviceID = serviceIDs[i];
+			final String serviceURI = getRemoteAddress().resolve("#" + serviceID).toString();
+			final Dictionary properties = serviceProperties[i];
+			sanitizeServiceProperties(properties, serviceURI);
 			refs[i] = new RemoteServiceReferenceImpl(serviceInterfaces[i],
-					serviceIDs[i], serviceProperties[i], this);
+					serviceID, properties, this);
 
 			remoteServices.put(refs[i].getURI().toString(), refs[i]);
 			RemoteOSGiServiceImpl
@@ -1406,6 +1413,18 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		}
 		updateTopics(lease.getTopics(), new String[0]);
 		return refs;
+	}
+
+	private void sanitizeServiceProperties(
+			final Dictionary properties, final String serviceURI) {
+		// adjust the properties
+		properties.put(RemoteOSGiService.SERVICE_URI, serviceURI);
+		// remove the service PID, if set
+		properties.remove(Constants.SERVICE_PID);
+		// remove the R-OSGi registration property
+		properties.remove(RemoteOSGiService.R_OSGi_REGISTRATION);
+		// also remote the ECF registration property
+		properties.remove("org.eclipse.ecf.serviceRegistrationRemote"); //$NON-NLS-1$
 	}
 
 	/**
