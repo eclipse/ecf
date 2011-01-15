@@ -295,13 +295,6 @@ public class ServicePublicationHandler implements ServiceTrackerCustomizer,
 					targetNamespace);
 		}
 
-		// add remote service namespace
-		String rsnamespace = ServicePropertyUtils.getStringProperty(reference,
-				Constants.SERVICE_NAMESPACE);
-		if (rsnamespace != null)
-			discoveryServiceProperties.setPropertyString(
-					Constants.SERVICE_NAMESPACE, rsnamespace);
-
 		// and remote service id
 		final byte[] remoteServiceIDAsBytes = (byte[]) reference
 				.getProperty(Constants.SERVICE_ID);

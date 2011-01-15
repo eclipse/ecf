@@ -15,12 +15,7 @@ import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.ui.DiscoveryPropertyTesterUtil;
 import org.eclipse.ecf.internal.remoteservices.ui.Activator;
-import org.eclipse.ecf.remoteservice.Constants;
 
 public class ConnectedTester extends PropertyTester {
 	
@@ -51,6 +46,8 @@ public class ConnectedTester extends PropertyTester {
 	}
 
 	private boolean hasContainer(Object receiver) {
+		return false;
+		/*
 		// get the container instance
 		IServiceInfo serviceInfo = DiscoveryPropertyTesterUtil.getIServiceInfoReceiver(receiver);
 		final String connectNamespace = getConnectNamespace(serviceInfo);
@@ -62,6 +59,7 @@ public class ConnectedTester extends PropertyTester {
 			//Trace.trace(...);
 			return false;
 		}
+		*/
 	}
 
 
@@ -86,11 +84,4 @@ public class ConnectedTester extends PropertyTester {
 	}
 
 	
-	private String getConnectNamespace(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_CONNECT_ID_NAMESPACE);
-	}
-
-	private String getConnectID(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_CONNECT_ID);
-	}
 }

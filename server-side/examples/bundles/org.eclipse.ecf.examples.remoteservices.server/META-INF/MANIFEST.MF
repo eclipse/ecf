@@ -2,17 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.examples.remoteservices.server;singleton:=true
-Bundle-Version: 1.0.100.qualifier
+Bundle-Version: 2.0.0.qualifier
 Bundle-Localization: plugin
-Bundle-Activator: org.eclipse.ecf.internal.examples.remoteservices.server.Activator
 Bundle-Vendor: %plugin.provider
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ecf.examples.remoteservices.common,
- org.eclipse.ecf,
- org.eclipse.ecf.discovery,
- org.eclipse.ecf.remoteservice
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
 Eclipse-LazyStart: true
-Export-Package: org.eclipse.ecf.internal.examples.remoteservices.server;x-friends:="org.eclipse.ecf.examples.remoteservices.server.transparent"
 Bundle-ActivationPolicy: lazy

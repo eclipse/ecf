@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +25,6 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
@@ -35,6 +32,7 @@ import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.osgi.services.distribution.IHostContainerFinder;
 import org.eclipse.ecf.osgi.services.distribution.IHostDistributionListener;
 import org.eclipse.ecf.remoteservice.Constants;
+import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
@@ -233,12 +231,6 @@ public class EventHookImpl implements EventHook {
 			// put the target ID into the properties
 			result.put(RemoteServicePublication.TARGET_CONTAINERID, targetID);
 		}
-
-		// Set remote service namespace (String)
-		Namespace rsnamespace = rsContainer.getContainerAdapter()
-				.getRemoteServiceNamespace();
-		if (rsnamespace != null)
-			result.put(Constants.SERVICE_NAMESPACE, rsnamespace.getName());
 
 		// Set the actual remote service id (Long)
 		Long serviceId = (Long) remoteRegistration

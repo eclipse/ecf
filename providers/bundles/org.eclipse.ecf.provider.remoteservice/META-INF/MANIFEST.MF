@@ -11,14 +11,12 @@ Eclipse-BuddyPolicy: global
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
 Export-Package: org.eclipse.ecf.internal.provider.remoteservice;x-internal:=true,
- org.eclipse.ecf.provider.remoteservice,
- org.eclipse.ecf.provider.remoteservice.generic
+ org.eclipse.ecf.provider.remoteservice.generic;version="4.0.0"
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf,
  org.eclipse.ecf.sharedobject,
  org.eclipse.ecf.provider,
- org.eclipse.ecf.remoteservice;bundle-version="6.0.0",
- org.eclipse.ecf.discovery
+ org.eclipse.ecf.remoteservice;bundle-version="6.0.0"
 Import-Package: org.eclipse.core.runtime.jobs,
  org.eclipse.equinox.concurrent.future,
  org.eclipse.osgi.framework.eventmgr,
