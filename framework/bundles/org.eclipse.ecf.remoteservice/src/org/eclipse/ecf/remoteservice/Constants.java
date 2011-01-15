@@ -102,4 +102,12 @@ public interface Constants {
 	 */
 	public static final String SERVICE_REGISTER_PROXY = "ecf.rsvc.proxy"; //$NON-NLS-1$
 
+	/**
+	 * Remote service property used to prevent the automatic addition of the IRemoteServiceProxy
+	 * interface to the proxy returned from IRemoteService.getProxy.  If this service
+	 * property is set (to any value), it will prevent the the IRemoteServiceProxy from
+	 * being added to the set of interfaces exposed by the proxy returned from IRemoteService.getProxy.
+	 * @since 6.0
+	 */
+	public static final String SERVICE_PREVENT_RSPROXY = "ecf.rsvc.norsproxy"; //$NON-NLS-1$
 }

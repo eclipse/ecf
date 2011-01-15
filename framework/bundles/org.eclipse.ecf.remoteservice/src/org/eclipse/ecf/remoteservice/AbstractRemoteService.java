@@ -87,9 +87,19 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	/**
 	 * @since 6.0
 	 */
+	protected void addRemoteServiceProxyToProxy(List classes) {
+		IRemoteServiceReference rsReference = getRemoteServiceReference();
+		// add IRemoteServiceProxy interface to set of interfaces supported by this proxy
+		if (rsReference != null && rsReference.getProperty(Constants.SERVICE_PREVENT_RSPROXY) == null)
+			classes.add(IRemoteServiceProxy.class);
+	}
+
+	/**
+	 * @since 6.0
+	 */
 	@SuppressWarnings("unchecked")
 	public Object getProxy(ClassLoader cl, Class[] interfaces) throws ECFException {
-		// Add asych classes
+		// Add async classes
 		// for all interfaces, add async classes
 		List classes = new ArrayList();
 		for (int i = 0; i < interfaces.length; i++) {
@@ -99,8 +109,9 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 			if (asyncClass != null)
 				classes.add(asyncClass);
 		}
-		// add IRemoteServiceProxy interface to set of interfaces supported by this proxy
-		classes.add(IRemoteServiceProxy.class);
+		// Add IRemoteServiceProxy to classes, if not restricted via service properties
+		addRemoteServiceProxyToProxy(classes);
+		// create and return proxy
 		try {
 			return createProxy(cl, (Class[]) classes.toArray(new Class[classes.size()]));
 		} catch (final Exception e) {

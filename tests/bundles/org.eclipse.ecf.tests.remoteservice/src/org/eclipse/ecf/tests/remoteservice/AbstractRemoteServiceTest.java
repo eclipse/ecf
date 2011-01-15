@@ -19,12 +19,14 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
+import org.eclipse.ecf.remoteservice.IRemoteServiceProxy;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
@@ -299,10 +301,28 @@ public abstract class AbstractRemoteServiceTest extends
 
 	public void testGetService() throws Exception {
 		final IRemoteService service = registerAndGetRemoteService();
-
-		if (service == null)
-			return;
 		assertNotNull(service);
+		Thread.sleep(SLEEPTIME);
+	}
+
+	public void testGetProxy() throws Exception {
+		final IRemoteService service = registerAndGetRemoteService();
+		assertNotNull(service);
+		Object proxy = service.getProxy();
+		assertTrue(proxy instanceof IRemoteServiceProxy);
+		Thread.sleep(SLEEPTIME);
+	}
+
+	public void testGetProxyNoRemoteServiceProxy() throws Exception {
+		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
+		Properties props = new Properties();
+		props.put(Constants.SERVICE_PREVENT_RSPROXY,"true");
+		final IRemoteService service = registerAndGetRemoteService(adapters[0], adapters[1],
+				getClient(0).getConnectedID(), getIDFilter(),
+				IConcatService.class.getName(), customizeProperties(props), SLEEPTIME);
+		assertNotNull(service);
+		Object proxy = service.getProxy();
+		assertTrue(!(proxy instanceof IRemoteServiceProxy));
 		Thread.sleep(SLEEPTIME);
 	}
 
