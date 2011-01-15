@@ -22,17 +22,24 @@ import org.eclipse.ecf.internal.remoteservices.ui.RemoteServiceHandlerUtil;
 import org.eclipse.osgi.util.NLS;
 
 public class DisonnectRemoteServicehandler extends ConnectionHandler {
-	
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.internal.remoteservices.ui.handlers.ConnectionHandler#getJob()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.internal.remoteservices.ui.handlers.ConnectionHandler
+	 * #getJob()
 	 */
 	protected Job getJob(final ExecutionEvent event) throws ExecutionException {
-		final ID createConnectId = RemoteServiceHandlerUtil.getActiveConnectIDChecked(event);
-		final IContainer container = RemoteServiceHandlerUtil.getActiveIRemoteServiceContainerChecked(event);
+		final ID createConnectId = RemoteServiceHandlerUtil
+				.getActiveConnectIDChecked(event);
+		final IContainer container = RemoteServiceHandlerUtil
+				.getActiveIRemoteServiceContainerChecked(event);
 		// decouple the long running connect call from the ui thread
 		return new Job(NLS.bind("Connecting {0}", createConnectId.getName())) {
 			protected IStatus run(IProgressMonitor monitor) {
-				if (container == null) return Status.OK_STATUS;
+				if (container == null)
+					return Status.OK_STATUS;
 				container.disconnect();
 				return Status.OK_STATUS;
 			}

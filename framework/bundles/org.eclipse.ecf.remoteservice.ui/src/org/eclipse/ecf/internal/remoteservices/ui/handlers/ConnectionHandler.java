@@ -21,8 +21,12 @@ import org.eclipse.swt.widgets.Display;
 
 public abstract class ConnectionHandler extends AbstractHandler {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.
+	 * ExecutionEvent)
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Job job = getJob(event);
@@ -30,9 +34,10 @@ public abstract class ConnectionHandler extends AbstractHandler {
 		job.schedule();
 		return null;
 	}
-	
-	protected abstract Job getJob(ExecutionEvent event) throws ExecutionException;
-	
+
+	protected abstract Job getJob(ExecutionEvent event)
+			throws ExecutionException;
+
 	protected void showException(final Throwable t) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -40,7 +45,8 @@ public abstract class ConnectionHandler extends AbstractHandler {
 				if (t.getCause() != null) {
 					msg += t.getCause().toString();
 				}
-				MessageDialog.openError(null, t.getLocalizedMessage(), NLS.bind("Exception: {0}", msg));
+				MessageDialog.openError(null, t.getLocalizedMessage(),
+						NLS.bind("Exception: {0}", msg));
 			}
 		});
 	}

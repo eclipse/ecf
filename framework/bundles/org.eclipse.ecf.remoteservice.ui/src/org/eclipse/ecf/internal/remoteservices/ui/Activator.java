@@ -21,7 +21,7 @@ public class Activator extends AbstractUIPlugin {
 	private volatile ServiceTracker containerManagerTracker;
 	// The shared instance
 	private volatile static Activator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -29,21 +29,25 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
+	 * )
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
-		if(containerManagerTracker != null) {
+		if (containerManagerTracker != null) {
 			containerManagerTracker.close();
 			containerManagerTracker = null;
 		}
 		super.stop(context);
 	}
-	
+
 	/**
 	 * Returns the shared instance
-	 *
+	 * 
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
@@ -53,7 +57,8 @@ public class Activator extends AbstractUIPlugin {
 	public IContainerManager getContainerManager() {
 		BundleContext context = getBundle().getBundleContext();
 		if (containerManagerTracker == null) {
-			containerManagerTracker = new ServiceTracker(context, IContainerManager.class.getName(), null);
+			containerManagerTracker = new ServiceTracker(context,
+					IContainerManager.class.getName(), null);
 			containerManagerTracker.open();
 		}
 		return (IContainerManager) containerManagerTracker.getService();

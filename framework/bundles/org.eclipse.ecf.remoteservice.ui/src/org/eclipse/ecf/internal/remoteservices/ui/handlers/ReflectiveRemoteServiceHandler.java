@@ -42,41 +42,51 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands
 	 * .ExecutionEvent)
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		final String clazz = event.getParameter("org.eclipse.ecf.remoteservices.ui.commands.reflectiveMethodDialogParameter"); //$NON-NLS-1$
+		final String clazz = event
+				.getParameter("org.eclipse.ecf.remoteservices.ui.commands.reflectiveMethodDialogParameter"); //$NON-NLS-1$
 
-		final IRemoteServiceContainerAdapter adapter = RemoteServiceHandlerUtil.getActiveIRemoteServiceContainerAdapterChecked(event);
+		final IRemoteServiceContainerAdapter adapter = RemoteServiceHandlerUtil
+				.getActiveIRemoteServiceContainerAdapterChecked(event);
 		if (adapter == null) {
-			MessageDialog.openError(null, "Handler invocation failed", "No container found");
+			MessageDialog.openError(null, "Handler invocation failed",
+					"No container found");
 			return null;
 		}
 
-		final IRemoteServiceReference[] references = RemoteServiceHandlerUtil.getActiveIRemoteServiceReferencesChecked(event);
+		final IRemoteServiceReference[] references = RemoteServiceHandlerUtil
+				.getActiveIRemoteServiceReferencesChecked(event);
 		if (references == null || references.length == 0) {
-			MessageDialog.openError(null, "Handler invocation failed", "No remote service reference found");
+			MessageDialog.openError(null, "Handler invocation failed",
+					"No remote service reference found");
 			return null;
 		}
 
-		final IRemoteService remoteService = adapter.getRemoteService(references[0]);
-		if(remoteService == null) {
-			MessageDialog.openError(null, "Handler invocation failed", "No remote service found");
+		final IRemoteService remoteService = adapter
+				.getRemoteService(references[0]);
+		if (remoteService == null) {
+			MessageDialog.openError(null, "Handler invocation failed",
+					"No remote service found");
 			return null;
 		}
-		
+
 		try {
 			executeMethodInvocationDialog(Class.forName(clazz), remoteService);
 		} catch (ClassNotFoundException e) {
-			MessageDialog.openError(null, "Handler invocation failed", e.getLocalizedMessage());
+			MessageDialog.openError(null, "Handler invocation failed",
+					e.getLocalizedMessage());
 			throw new ExecutionException(e.getMessage(), e);
-		} 
+		}
 		return null;
 	}
 
-	protected void executeMethodInvocationDialog(final Class cls, final IRemoteService remoteService) {
+	protected void executeMethodInvocationDialog(final Class cls,
+			final IRemoteService remoteService) {
 		final MethodInvocationDialog mid = new MethodInvocationDialog(
 				(Shell) null, cls);
 		if (mid.open() == Window.OK) {
@@ -137,8 +147,8 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 				if (t.getCause() != null) {
 					msg += t.getCause().toString();
 				}
-				MessageDialog.openInformation(null, "Received Exception", NLS
-						.bind("Exception: {0}", msg));
+				MessageDialog.openInformation(null, "Received Exception",
+						NLS.bind("Exception: {0}", msg));
 				container.disconnect();
 			}
 		});
@@ -170,8 +180,8 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 		});
 	}
 
-	private void invokeSync(final Class interfaceClass, final IRemoteService remoteService,
-			final IRemoteCall remoteCall) {
+	private void invokeSync(final Class interfaceClass,
+			final IRemoteService remoteService, final IRemoteCall remoteCall) {
 		try {
 			Object callSync = remoteService.callSync(remoteCall);
 			showResult(interfaceClass.getName(), remoteCall, callSync);
@@ -187,8 +197,8 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 				if (t.getCause() != null) {
 					msg += t.getCause().toString();
 				}
-				MessageDialog.openInformation(null, "Received Exception", NLS
-						.bind("Exception: {0}", msg));
+				MessageDialog.openInformation(null, "Received Exception",
+						NLS.bind("Exception: {0}", msg));
 			}
 		});
 	}
@@ -196,21 +206,18 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 	protected void showResult(final String serviceInterface,
 			final IRemoteCall remoteCall, final Object result) {
 		final Object display = (result != null && result.getClass().isArray()) ? Arrays
-				.asList((Object[]) result)
-				: result;
+				.asList((Object[]) result) : result;
 		final Object[] bindings = new Object[] { serviceInterface,
 				remoteCall.getMethod(),
 				Arrays.asList(remoteCall.getParameters()), display };
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MessageDialog
-						.openInformation(
-								null,
-								"Received Response",
-								NLS
-										.bind(
-												"Service Interface:\n{0}\n\nMethod: {1}\nParameters: {2}\n\nResult:  {3}",
-												bindings));
+				MessageDialog.openInformation(
+						null,
+						"Received Response",
+						NLS.bind(
+								"Service Interface:\n{0}\n\nMethod: {1}\nParameters: {2}\n\nResult:  {3}",
+								bindings));
 			}
 		});
 	}

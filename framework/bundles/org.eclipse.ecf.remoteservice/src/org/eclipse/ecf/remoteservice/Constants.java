@@ -110,4 +110,39 @@ public interface Constants {
 	 * @since 6.0
 	 */
 	public static final String SERVICE_PREVENT_RSPROXY = "ecf.rsvc.norsproxy"; //$NON-NLS-1$
+
+	/**
+	 * @deprecated
+	 */
+	public static final String SERVICE_CONNECT_ID = "ecf.rsvc.cnct.id"; //$NON-NLS-1$
+
+	/**
+	 * @deprecated
+	 */
+	public static final String SERVICE_CONNECT_ID_NAMESPACE = "ecf.rsvc.cnct.id.ns"; //$NON-NLS-1$
+
+	/**
+	 * @deprecated
+	 */
+	public static final String SERVICE_IDFILTER_NAMESPACE = "ecf.rsvc.idfltr.ns"; //$NON-NLS-1$
+
+	/**
+	 * @deprecated
+	 */
+	public static final String SERVICE_IDFILTER_ID = "ecf.rsvc.idfltr.id"; //$NON-NLS-1$
+
+	/**
+	 * @deprecated
+	 */
+	public static final String SERVICE_OBJECTCLASS = "ecf.rsvc.robjectclass"; //$NON-NLS-1$
+
+	/**
+	 * @deprecated
+	 */
+	public static final String SERVICE_FILTER_PROPERTY = "ecf.rsvc.fltr"; //$NON-NLS-1$
+
+	/**
+	 * @deprecated
+	 */
+	public static final String SERVICE_CONTAINER_FACTORY_NAME = "ecf.rsvc.cfn"; //$NON-NLS-1$
 }
