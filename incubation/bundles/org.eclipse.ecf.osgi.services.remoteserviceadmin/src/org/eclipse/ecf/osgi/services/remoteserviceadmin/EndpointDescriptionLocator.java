@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -113,10 +112,10 @@ public class EndpointDescriptionLocator {
 		// Create thread group, event manager, and eventQueue, and setup to
 		// dispatch EndpointListenerEvents
 		ThreadGroup eventGroup = new ThreadGroup(
-				"EventAdmin EndpointDescriptionLocator EndpointListener Dispatcher"); //$NON-NLS-1$
+				"RSA EndpointDescriptionLocator ThreadGroup"); //$NON-NLS-1$
 		eventGroup.setDaemon(true);
 		eventManager = new EventManager(
-				"EventAdmin EndpointListener Dispatcher", eventGroup); //$NON-NLS-1$
+				"RSA EndpointDescriptionLocator Dispatcher", eventGroup); //$NON-NLS-1$
 		eventQueue = new ListenerQueue(eventManager);
 		CopyOnWriteIdentityMap listeners = new CopyOnWriteIdentityMap();
 		listeners.put(this, this);
@@ -170,7 +169,29 @@ public class EndpointDescriptionLocator {
 				EndpointListener.class.getName(),
 				new ServiceTrackerCustomizer() {
 					public Object addingService(ServiceReference reference) {
-						return addingEndpointListener(reference);
+						if (context == null)
+							return null;
+						EndpointListener listener = (EndpointListener) context
+								.getService(reference);
+						if (listener == null)
+							return null;
+						Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getAllDiscoveredEndpointDescriptions();
+						for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
+							EndpointDescriptionLocator.EndpointListenerHolder[] endpointListenerHolders = getMatchingEndpointListenerHolders(
+									new ServiceReference[] { reference }, ed);
+							if (endpointListenerHolders != null) {
+								for (int i = 0; i < endpointListenerHolders.length; i++) {
+									queueEndpointDescription(
+											endpointListenerHolders[i]
+													.getListener(),
+											endpointListenerHolders[i]
+													.getDescription(),
+											endpointListenerHolders[i]
+													.getMatchingFilter(), true);
+								}
+							}
+						}
+						return listener;
 					}
 
 					public void modifiedService(ServiceReference reference,
@@ -209,31 +230,6 @@ public class EndpointDescriptionLocator {
 				| Bundle.STARTING, bundleTrackerCustomizer);
 		// This may trigger local endpoint description discovery
 		bundleTracker.open();
-	}
-
-	private EndpointListener addingEndpointListener(
-			ServiceReference serviceReference) {
-		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getAllDiscoveredEndpointDescriptions();
-		if (context == null)
-			return null;
-		EndpointListener listener = (EndpointListener) context
-				.getService(serviceReference);
-		if (listener == null)
-			return null;
-		for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
-			EndpointDescriptionLocator.EndpointListenerHolder[] endpointListenerHolders = getMatchingEndpointListenerHolders(
-					new ServiceReference[] { serviceReference }, ed);
-			if (endpointListenerHolders != null) {
-				for (int i = 0; i < endpointListenerHolders.length; i++) {
-					queueEndpointDescription(
-							endpointListenerHolders[i].getListener(),
-							endpointListenerHolders[i].getDescription(),
-							endpointListenerHolders[i].getMatchingFilter(),
-							true);
-				}
-			}
-		}
-		return listener;
 	}
 
 	private void logError(String methodName, String message, Throwable e) {
@@ -588,7 +584,7 @@ public class EndpointDescriptionLocator {
 					.getService(refs[i]);
 			if (listener == null)
 				continue;
-			List filters = PropertiesUtil.getStringPlusProperty(
+			List<String> filters = PropertiesUtil.getStringPlusProperty(
 					getMapFromProperties(refs[i]),
 					EndpointListener.ENDPOINT_LISTENER_SCOPE);
 			String matchingFilter = isMatch(description, filters);
@@ -600,12 +596,10 @@ public class EndpointDescriptionLocator {
 				.toArray(new EndpointListenerHolder[results.size()]);
 	}
 
-	private String isMatch(EndpointDescription description, List filters) {
-		for (Iterator j = filters.iterator(); j.hasNext();) {
-			String filter = (String) j.next();
+	private String isMatch(EndpointDescription description, List<String> filters) {
+		for (String filter : filters)
 			if (description.matches(filter))
 				return filter;
-		}
 		return null;
 	}
 

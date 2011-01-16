@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
 
-public class ServiceInfoFactoryTest extends AbstractMetadataFactoryTest {
+public abstract class ServiceInfoFactoryTest extends AbstractMetadataFactoryTest {
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -41,13 +41,4 @@ public class ServiceInfoFactoryTest extends AbstractMetadataFactoryTest {
 		}
 	}
 	
-	public void testCreateBadECFEndpointDescription() throws Exception {
-		try{
-			createBadECFEndpointDescrption();
-			fail();
-		} catch (Exception e) {
-			// this is test success
-		}
-	}
-
 }
