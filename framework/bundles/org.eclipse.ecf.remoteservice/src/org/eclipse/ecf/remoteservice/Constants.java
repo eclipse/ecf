@@ -17,7 +17,7 @@ package org.eclipse.ecf.remoteservice;
 public interface Constants {
 
 	/**
-	 * Remote service property identifying all
+	 * Remote service property identifying all (named &quot;ecf.robjectClass&quot;) 
 	 * of the class names under which a service was registered in the remote
 	 * services API (of type <code>java.lang.String[]</code>).
 	 * 
@@ -41,7 +41,7 @@ public interface Constants {
 	public static final String SERVICE_ID = "ecf.rsvc.id"; //$NON-NLS-1$
 
 	/**
-	 * Service property (named &quot;remote.service.ranking&quot;) identifying a
+	 * Service property (named &quot;ecf.rsvc.ranking&quot;) identifying a
 	 * service's ranking number (of type <code>java.lang.Integer</code>).
 	 * 
 	 * <p>
