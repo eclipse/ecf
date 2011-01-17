@@ -916,8 +916,10 @@ public class RemoteServiceAdmin implements
 		Collection<org.osgi.service.remoteserviceadmin.ExportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportReference>();
 		synchronized (exportedRegistrations) {
 			for (ExportRegistration reg : exportedRegistrations) {
-				org.osgi.service.remoteserviceadmin.ExportReference eRef = reg.getExportReference();
-				if (eRef != null) results.add(eRef);
+				org.osgi.service.remoteserviceadmin.ExportReference eRef = reg
+						.getExportReference();
+				if (eRef != null)
+					results.add(eRef);
 			}
 		}
 		return results;
@@ -927,8 +929,10 @@ public class RemoteServiceAdmin implements
 		Collection<org.osgi.service.remoteserviceadmin.ImportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ImportReference>();
 		synchronized (importedRegistrations) {
 			for (ImportRegistration reg : importedRegistrations) {
-				org.osgi.service.remoteserviceadmin.ImportReference iRef = reg.getImportReference();
-				if (iRef != null) results.add(iRef);
+				org.osgi.service.remoteserviceadmin.ImportReference iRef = reg
+						.getImportReference();
+				if (iRef != null)
+					results.add(iRef);
 			}
 		}
 		return results;
@@ -1102,18 +1106,24 @@ public class RemoteServiceAdmin implements
 				.getService();
 	}
 
-	private Version getPackageVersion(ServiceReference serviceReference, String serviceInterface, String packageName) {
+	private Version getPackageVersion(ServiceReference serviceReference,
+			String serviceInterface, String packageName) {
 		Object service = getContext().getService(serviceReference);
-		if (service == null) return null;
+		if (service == null)
+			return null;
 		Class[] interfaceClasses = service.getClass().getInterfaces();
-		if (interfaceClasses == null) return null;
+		if (interfaceClasses == null)
+			return null;
 		Class interfaceClass = null;
-		for(int i=0; i < interfaceClasses.length; i++) {
-			if (interfaceClasses[i].getName().equals(serviceInterface)) interfaceClass = interfaceClasses[i];
+		for (int i = 0; i < interfaceClasses.length; i++) {
+			if (interfaceClasses[i].getName().equals(serviceInterface))
+				interfaceClass = interfaceClasses[i];
 		}
-		if (interfaceClass == null) return null;
-		ExportedPackage exportedPackage = getExportedPackageForClass(getPackageAdmin(), interfaceClass);
-		return (exportedPackage == null)?null:exportedPackage.getVersion();
+		if (interfaceClass == null)
+			return null;
+		ExportedPackage exportedPackage = getExportedPackageForClass(
+				getPackageAdmin(), interfaceClass);
+		return (exportedPackage == null) ? null : exportedPackage.getVersion();
 	}
 
 	protected Map<String, Object> createExportEndpointDescriptionProperties(
@@ -1142,7 +1152,8 @@ public class RemoteServiceAdmin implements
 			String packageVersion = (String) PropertiesUtil.getPropertyValue(
 					serviceReference, overridingProperties, packageVersionKey);
 			if (packageVersion == null) {
-				Version version = getPackageVersion(serviceReference, exportedInterfaces[i], packageName);
+				Version version = getPackageVersion(serviceReference,
+						exportedInterfaces[i], packageName);
 				if (version != null && !version.equals(Version.emptyVersion))
 					packageVersion = version.toString();
 				else
@@ -1636,10 +1647,21 @@ public class RemoteServiceAdmin implements
 			resultProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS,
 							intentsValue);
-		// Set service.imported to IRemoteService
-		resultProperties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED,
-						remoteService);
+		
+		// Set service.imported to IRemoteService unless SERVICE_IMPORTED_VALUETYPE is
+		// set
+		String serviceImportedType = (String) endpointDescription
+				.getProperties()
+				.get(org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_VALUETYPE);
+		if (serviceImportedType == null
+				|| serviceImportedType.equals(IRemoteService.class.getName()))
+			resultProperties
+					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED,
+							remoteService);
+		else
+			resultProperties
+					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED,
+							new Boolean(true));
 
 		String[] exporterSupportedConfigs = (String[]) endpointDescription
 				.getProperties()
@@ -1794,20 +1816,23 @@ public class RemoteServiceAdmin implements
 			toClose = new ArrayList<ExportRegistration>(exportedRegistrations);
 			exportedRegistrations.clear();
 		}
-		for(ExportRegistration reg: toClose) reg.close();
+		for (ExportRegistration reg : toClose)
+			reg.close();
 	}
-	
+
 	private void closeImportRegistrations() {
 		List<ImportRegistration> toClose = null;
 		synchronized (importedRegistrations) {
 			toClose = new ArrayList<ImportRegistration>(importedRegistrations);
 			importedRegistrations.clear();
 		}
-		for(ImportRegistration reg: toClose) reg.close();
+		for (ImportRegistration reg : toClose)
+			reg.close();
 	}
 
 	public void close() {
-		trace("close","closing importedRegistrations="+importedRegistrations+" exportedRegistrations="+exportedRegistrations);
+		trace("close", "closing importedRegistrations=" + importedRegistrations
+				+ " exportedRegistrations=" + exportedRegistrations);
 		closeRemoteServiceAdminListenerTracker();
 		closeEventAdminTracker();
 		closePackageAdminTracker();

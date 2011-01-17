@@ -11,6 +11,10 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 public class RemoteConstants {
 
+	private RemoteConstants() {
+		// not instantiable
+	}
+	
 	public static final String SERVICE_TYPE = "osgirsvc";
 
 	public static final String DISCOVERY_SCOPE = "ecf.endpoint.discovery.scope";
@@ -30,7 +34,7 @@ public class RemoteConstants {
 
 	// Value of
 	// org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS
-	// For ECF providers this is a constant, and receivers of
+	// For ECF providers this is a constant
 	public static final String ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE = "org.eclipse.ecf.config";
 
 	// Value of type String,ID,or Object[]
@@ -40,4 +44,5 @@ public class RemoteConstants {
 	// Value of type ID
 	public static final String SERVICE_EXPORTED_CONTAINER_ID = "ecf.exported.containerid";
 
+	public static final String SERVICE_IMPORTED_VALUETYPE = "ecf.imported.valuetype";
 }
