@@ -89,15 +89,17 @@ public class Activator implements BundleActivator {
 		final Properties properties = new Properties();
 		properties.put(Constants.SERVICE_RANKING,
 				new Integer(Integer.MIN_VALUE));
+		// create endpoint description locator
+		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
+		// create endpoint description advertiser
 		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
 				endpointDescriptionLocator);
+		// register the advertiser
 		endpointDescriptionAdvertiserRegistration = getContext()
 				.registerService(
 						IEndpointDescriptionAdvertiser.class.getName(),
 						endpointDescriptionAdvertiser, (Dictionary) properties);
 
-		// create endpoint description locator
-		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
 		// create basic topology manager
 		basicTopologyManager = new BasicTopologyManager(context);
 		// start topology manager first
