@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
-import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
 public class EndpointDescriptionAdvertiser implements
 		IEndpointDescriptionAdvertiser {
@@ -75,8 +74,6 @@ public class EndpointDescriptionAdvertiser implements
 		Assert.isNotNull(endpointDescription);
 		String messagePrefix = advertise ? "Advertise" : "Unadvertise";
 		List<IStatus> statuses = new ArrayList<IStatus>();
-		if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
-			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription eed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpointDescription;
 			// First get serviceInfoFactory
 			IServiceInfoFactory serviceInfoFactory = getServiceInfoFactory();
 			if (serviceInfoFactory == null)
@@ -84,7 +81,7 @@ public class EndpointDescriptionAdvertiser implements
 						+ " endpointDescription="
 						+ endpointDescription
 						+ ".  No IServiceInfoFactory is available.  Cannot unpublish endpointDescription="
-						+ eed);
+						+ endpointDescription);
 			IDiscoveryAdvertiser[] discoveryAdvertisers = getDiscoveryAdvertisers();
 			if (discoveryAdvertisers == null
 					|| discoveryAdvertisers.length == 0)
@@ -92,31 +89,25 @@ public class EndpointDescriptionAdvertiser implements
 						+ " endpointDescription="
 						+ endpointDescription
 						+ ".  No endpointDescriptionLocator advertisers available.  Cannot unpublish endpointDescription="
-						+ eed);
+						+ endpointDescription);
 			for (int i = 0; i < discoveryAdvertisers.length; i++) {
 				IServiceInfo serviceInfo = (advertise ? serviceInfoFactory
 						.createServiceInfoForDiscovery(discoveryAdvertisers[i],
-								eed) : serviceInfoFactory
+								endpointDescription) : serviceInfoFactory
 						.removeServiceInfoForUndiscovery(
-								discoveryAdvertisers[i], eed));
+								discoveryAdvertisers[i], endpointDescription));
 				if (serviceInfo == null) {
 					statuses.add(createErrorStatus(messagePrefix
 							+ " endpointDescription="
 							+ endpointDescription
 							+ ".  Service Info is null.  Cannot publish endpointDescription="
-							+ eed));
+							+ endpointDescription));
 					continue;
 				}
 				// Now actually unregister with advertiser
 				statuses.add(doDiscovery(discoveryAdvertisers[i], serviceInfo,
 						advertise));
 			}
-		} else {
-			statuses.add(createErrorStatus(messagePrefix
-					+ " endpointDescription="
-					+ endpointDescription
-					+ " is not of understood EndpointDescription type.  Not advertising."));
-		}
 		return createResultStatus(statuses, messagePrefix
 				+ " endpointDesription=" + endpointDescription
 				+ ".  Problem in unadvertise");
