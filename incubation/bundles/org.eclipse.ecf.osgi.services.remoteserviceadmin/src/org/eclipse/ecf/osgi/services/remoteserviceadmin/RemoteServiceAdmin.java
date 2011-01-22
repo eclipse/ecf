@@ -863,7 +863,7 @@ public class RemoteServiceAdmin implements
 		RemoteServiceAdminEvent rsaEvent = new RemoteServiceAdminEvent(
 				exportRegistration.getContainerID(),
 				(exception == null) ? RemoteServiceAdminEvent.EXPORT_REGISTRATION
-						: RemoteServiceAdminEvent.IMPORT_ERROR,
+						: RemoteServiceAdminEvent.EXPORT_ERROR,
 				getClientBundle(), exportReference, exception);
 		publishEvent(rsaEvent, exportRegistration.getEndpointDescription());
 	}
