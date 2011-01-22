@@ -134,7 +134,8 @@ public class EndpointDescriptionAdvertiser implements
 				errorStatuses.add(status);
 		if (errorStatuses.size() > 0)
 			return new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR,
-					(IStatus[]) statuses.toArray(new IStatus[statuses.size()]), errorMessage, null);
+					(IStatus[]) statuses.toArray(new IStatus[statuses.size()]),
+					errorMessage, null);
 		else
 			return Status.OK_STATUS;
 	}

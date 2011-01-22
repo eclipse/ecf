@@ -51,17 +51,17 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 	public void endpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		handleEndpointAdded(endpoint,matchedFilter);
+		handleEndpointAdded(endpoint, matchedFilter);
 	}
 
 	public void endpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		handleEndpointRemoved(endpoint,matchedFilter);
+		handleEndpointRemoved(endpoint, matchedFilter);
 	}
 
 	public void event(ServiceEvent event, Collection contexts) {
-		handleEvent(event,contexts);
+		handleEvent(event, contexts);
 	}
 
 	public void close() {
