@@ -54,7 +54,8 @@ public abstract class AbstractTopologyManager {
 		return context;
 	}
 
-	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser(EndpointDescription endpointDescription) {
+	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser(
+			EndpointDescription endpointDescription) {
 		synchronized (endpointDescriptionAdvertiserTrackerLock) {
 			if (endpointDescriptionAdvertiserTracker == null) {
 				endpointDescriptionAdvertiserTracker = new ServiceTracker(
@@ -191,8 +192,9 @@ public abstract class AbstractTopologyManager {
 					"ECF Topology Manager:  Ignoring Non-ECF endpointAdded="
 							+ endpoint + ",matchedFilter=" + matchedFilter);
 	}
-	
-	protected void handleEndpointAdded(EndpointDescription endpointDescription, String matchedFilter) {
+
+	protected void handleEndpointAdded(EndpointDescription endpointDescription,
+			String matchedFilter) {
 		// First, select importing remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
 
@@ -235,7 +237,8 @@ public abstract class AbstractTopologyManager {
 				+ importRegistration, t);
 	}
 
-	protected void handleEndpointRemoved(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+	protected void handleEndpointRemoved(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
 		if (endpoint instanceof EndpointDescription)
 			handleEndpointRemoved((EndpointDescription) endpoint, matchedFilter);
@@ -262,8 +265,9 @@ public abstract class AbstractTopologyManager {
 			break;
 		}
 	}
-	
-	protected void handleEndpointRemoved(EndpointDescription endpointDescription, String matchedFilter) {
+
+	protected void handleEndpointRemoved(
+			EndpointDescription endpointDescription, String matchedFilter) {
 		trace("handleEndpointRemoved", "endpointDescription="
 				+ endpointDescription);
 		unimportService(endpointDescription);

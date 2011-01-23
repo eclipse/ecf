@@ -67,12 +67,40 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
-		startRemoteServiceAdmin();
+		// Setup remote service admin as service factory
+		Properties rsaProps = new Properties();
+		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
+		remoteServiceAdminRegistration = context.registerService(
+				org.osgi.service.remoteserviceadmin.RemoteServiceAdmin.class
+						.getName(), new ServiceFactory() {
+					public Object getService(Bundle bundle,
+							ServiceRegistration registration) {
+						return new RemoteServiceAdmin(bundle);
+					}
 
+					public void ungetService(Bundle bundle,
+							ServiceRegistration registration, Object service) {
+						if (service != null)
+							((RemoteServiceAdmin) service).close();
+					}
+				}, (Dictionary) rsaProps);
+
+		// create and register default endpoint description advertiser
+		final Properties properties = new Properties();
+		properties.put(Constants.SERVICE_RANKING,
+				new Integer(Integer.MIN_VALUE));
+		// create endpoint description locator
 		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
+		// create endpoint description advertiser
+		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
+				endpointDescriptionLocator);
+		// register the advertiser
+		endpointDescriptionAdvertiserRegistration = getContext()
+				.registerService(
+						IEndpointDescriptionAdvertiser.class.getName(),
+						endpointDescriptionAdvertiser, (Dictionary) properties);
 
-		startEndpointDescriptionAdvertiser();
-
+		// create basic topology manager
 		basicTopologyManager = new BasicTopologyManager(context);
 		// start topology manager first
 		basicTopologyManager.start();
@@ -95,53 +123,12 @@ public class Activator implements BundleActivator {
 			basicTopologyManager.close();
 			basicTopologyManager = null;
 		}
-		stopRemoteServiceAdmin();
-		stopEndpointDescriptionAdvertiser();
-		stopSAXParserTracker();
-		stopLogServiceTracker();
-		stopContainerManagerTracker();
-		Activator.context = null;
-		Activator.instance = null;
-	}
-
-	private void startRemoteServiceAdmin() {
-		Properties rsaProps = new Properties();
-		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
-		remoteServiceAdminRegistration = context.registerService(
-				org.osgi.service.remoteserviceadmin.RemoteServiceAdmin.class
-						.getName(), new ServiceFactory() {
-					public Object getService(Bundle bundle,
-							ServiceRegistration registration) {
-						return new RemoteServiceAdmin(bundle);
-					}
-
-					public void ungetService(Bundle bundle,
-							ServiceRegistration registration, Object service) {
-						if (service != null) ((RemoteServiceAdmin) service).close();
-					}
-				}, (Dictionary) rsaProps);
-	}
-
-	private void stopRemoteServiceAdmin() {
+		// unregister remote service admin
 		if (remoteServiceAdminRegistration != null) {
 			remoteServiceAdminRegistration.unregister();
 			remoteServiceAdminRegistration = null;
 		}
-	}
-
-	private void startEndpointDescriptionAdvertiser() {
-		final Properties properties = new Properties();
-		properties.put(Constants.SERVICE_RANKING,
-				new Integer(Integer.MIN_VALUE));
-		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
-				endpointDescriptionLocator);
-		endpointDescriptionAdvertiserRegistration = getContext()
-				.registerService(
-						IEndpointDescriptionAdvertiser.class.getName(),
-						endpointDescriptionAdvertiser, (Dictionary) properties);
-	}
-
-	private void stopEndpointDescriptionAdvertiser() {
+		// unregister and stop endpoint description advertiser
 		if (endpointDescriptionAdvertiserRegistration != null) {
 			endpointDescriptionAdvertiserRegistration.unregister();
 			endpointDescriptionAdvertiserRegistration = null;
@@ -150,6 +137,28 @@ public class Activator implements BundleActivator {
 			endpointDescriptionAdvertiser.close();
 			endpointDescriptionAdvertiser = null;
 		}
+		// close sax parser factory tracker
+		synchronized (saxParserFactoryTrackerLock) {
+			if (saxParserFactoryTracker != null) {
+				saxParserFactoryTracker.close();
+				saxParserFactoryTracker = null;
+			}
+		}
+		// close log service tracker
+		synchronized (logServiceTrackerLock) {
+			if (logServiceTracker != null) {
+				logServiceTracker.close();
+				logServiceTracker = null;
+				logService = null;
+			}
+		}
+		// Close container manager service tracker
+		if (containerManagerTracker != null) {
+			containerManagerTracker.close();
+			containerManagerTracker = null;
+		}
+		Activator.context = null;
+		Activator.instance = null;
 	}
 
 	public String getFrameworkUUID() {
@@ -169,8 +178,8 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	// Sax parser
-
+	// Sax parser factory access for parsing endpoint description extender
+	// format
 	private Object saxParserFactoryTrackerLock = new Object();
 	private ServiceTracker saxParserFactoryTracker;
 
@@ -187,17 +196,7 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	private void stopSAXParserTracker() {
-		synchronized (saxParserFactoryTrackerLock) {
-			if (saxParserFactoryTracker != null) {
-				saxParserFactoryTracker.close();
-				saxParserFactoryTracker = null;
-			}
-		}
-	}
-
 	// Logging
-
 	private ServiceTracker logServiceTracker = null;
 	private LogService logService = null;
 	private Object logServiceTrackerLock = new Object();
@@ -238,16 +237,7 @@ public class Activator implements BundleActivator {
 			logService.log(sr, level, message, t);
 	}
 
-	private void stopLogServiceTracker() {
-		synchronized (logServiceTrackerLock) {
-			if (logServiceTracker != null) {
-				logServiceTracker.close();
-				logServiceTracker = null;
-				logService = null;
-			}
-		}
-	}
-
+	// container manager access
 	private ServiceTracker containerManagerTracker;
 
 	public IContainerManager getContainerManager() {
@@ -259,10 +249,4 @@ public class Activator implements BundleActivator {
 		return (IContainerManager) containerManagerTracker.getService();
 	}
 
-	private void stopContainerManagerTracker() {
-		if (containerManagerTracker != null) {
-			containerManagerTracker.close();
-			containerManagerTracker = null;
-		}
-	}
 }

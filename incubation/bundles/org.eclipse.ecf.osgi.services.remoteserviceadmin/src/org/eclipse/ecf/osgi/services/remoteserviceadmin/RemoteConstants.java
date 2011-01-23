@@ -14,7 +14,7 @@ public class RemoteConstants {
 	private RemoteConstants() {
 		// not instantiable
 	}
-	
+
 	public static final String SERVICE_TYPE = "osgirsvc";
 
 	public static final String DISCOVERY_SCOPE = "ecf.endpoint.discovery.scope";

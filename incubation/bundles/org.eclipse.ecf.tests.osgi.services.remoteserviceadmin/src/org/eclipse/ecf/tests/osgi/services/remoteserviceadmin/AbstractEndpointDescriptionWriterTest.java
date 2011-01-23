@@ -31,8 +31,7 @@ public abstract class AbstractEndpointDescriptionWriterTest extends
 		return new IEndpointDescriptionAdvertiser() {
 
 			@Override
-			public IStatus advertise(
-					org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+			public IStatus advertise(EndpointDescription endpointDescription) {
 				// TODO Auto-generated method stub
 				try {
 					StringWriter sr = new StringWriter();
@@ -48,8 +47,7 @@ public abstract class AbstractEndpointDescriptionWriterTest extends
 			}
 
 			@Override
-			public IStatus unadvertise(
-					org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+			public IStatus unadvertise(EndpointDescription endpointDescription) {
 				// TODO Auto-generated method stub
 				return Status.OK_STATUS;
 			}

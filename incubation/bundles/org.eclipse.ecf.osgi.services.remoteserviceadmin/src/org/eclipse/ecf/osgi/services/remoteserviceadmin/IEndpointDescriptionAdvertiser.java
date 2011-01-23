@@ -13,10 +13,8 @@ import org.eclipse.core.runtime.IStatus;
 
 public interface IEndpointDescriptionAdvertiser {
 
-	public IStatus advertise(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
+	public IStatus advertise(EndpointDescription endpointDescription);
 
-	public IStatus unadvertise(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
+	public IStatus unadvertise(EndpointDescription endpointDescription);
 
 }
