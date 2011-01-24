@@ -120,7 +120,8 @@ public class PropertiesUtil {
 			if (stringValue != null && stringValue.length == 1
 					&& stringValue[0].equals("*")) { //$NON-NLS-1$
 				LogUtility
-						.logWarning("getExportedInterfaces", //$NON-NLS-1$
+						.logWarning(
+								"getExportedInterfaces", //$NON-NLS-1$
 								DebugOptions.TOPOLOGY_MANAGER,
 								PropertiesUtil.class,
 								"Service Exported Interfaces Wildcard does not accept String[\"*\"]"); //$NON-NLS-1$
@@ -129,20 +130,37 @@ public class PropertiesUtil {
 		}
 	}
 
-	public static String[] getServiceIntents(ServiceReference serviceReference) {
+	public static String[] getServiceIntents(ServiceReference serviceReference,
+			Map overridingProperties) {
 		List results = new ArrayList();
-		String[] intents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS));
+
+		String[] intents = getStringArrayFromPropertyValue(overridingProperties
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS));
+		if (intents == null) {
+			intents = getStringArrayFromPropertyValue(serviceReference
+					.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS));
+		}
 		if (intents != null)
 			results.addAll(Arrays.asList(intents));
-		String[] exportedIntents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS));
+
+		String[] exportedIntents = getStringArrayFromPropertyValue(overridingProperties
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS));
+		if (exportedIntents == null) {
+			exportedIntents = getStringArrayFromPropertyValue(serviceReference
+					.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS));
+		}
 		if (exportedIntents != null)
 			results.addAll(Arrays.asList(exportedIntents));
-		String[] extraIntents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS_EXTRA));
+
+		String[] extraIntents = getStringArrayFromPropertyValue(overridingProperties
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS_EXTRA));
+		if (extraIntents == null) {
+			extraIntents = getStringArrayFromPropertyValue(serviceReference
+					.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS_EXTRA));
+		}
 		if (extraIntents != null)
 			results.addAll(Arrays.asList(extraIntents));
+
 		if (results.size() == 0)
 			return null;
 		return (String[]) results.toArray(new String[results.size()]);
