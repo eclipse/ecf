@@ -8,8 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteservice.rpc.client;
 
+import java.io.NotSerializableException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rpc.identity.RpcId;
@@ -29,8 +31,14 @@ public class RpcClientContainer extends AbstractClientContainer implements IRemo
 	}
 
 	protected IRemoteService createRemoteService(RemoteServiceClientRegistration registration) {
-		// TODO
-		return null;
+		IRemoteService service = null;
+		try {
+			service = new RpcClientService(this, registration);
+		} catch (ECFException e) {
+			logException(e.getMessage(), e);
+		}
+
+		return service;
 	}
 
 	protected String prepareEndpointAddress(IRemoteCall call, IRemoteCallable callable) {
@@ -38,8 +46,29 @@ public class RpcClientContainer extends AbstractClientContainer implements IRemo
 		return callable.getResourcePath();
 	}
 
+	/**
+	 * All parameters will be serialized in the Apache XML-RPC library. We shouldn't serialize any parameters. 
+	 * 
+	 * @return the parameter
+	 * @see IRemoteCallParameterSerializer#serializeParameter(String, IRemoteCall, IRemoteCallable, IRemoteCallParameter, Object)
+	 * @since 4.1
+	 */
+	protected IRemoteCallParameter serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable,
+			final IRemoteCallParameter defaultParameter, final Object parameterValue) throws NotSerializableException {
+		// Just return a parameter		
+		return new IRemoteCallParameter() {
+			public Object getValue() {
+				return parameterValue == null ? defaultParameter.getValue() : parameterValue;
+			}
+
+			public String getName() {
+				return defaultParameter.getName();
+			}
+		};
+	}
+
 	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
-		// By default, rpc client's cannot set the call policy, so
+		// By default, XML-RPC client cannot set the call policy, so
 		// return false
 		return false;
 	}

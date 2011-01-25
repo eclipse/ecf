@@ -16,7 +16,8 @@ public class Messages extends NLS {
 
 	public static String RPC_INVALID_PARAMETERS_TO_ID_CREATION;
 	public static String RPC_COULD_NOT_CREATE_ID;
-	public static String PRC_COULD_NOT_CREATE_CONTAINER;
+	public static String RPC_COULD_NOT_CREATE_CONTAINER;
+	public static String RPC_EXCEPTION_WHILE_EXECUTION_METHOD;
 
 	static {
 		// initialize resource bundle

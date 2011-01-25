@@ -32,7 +32,7 @@ public class RpcClientContainerInstantiator extends BaseContainerInstantiator im
 				ID = (RpcId) IDFactory.getDefault().createID(RpcNamespace.NAME, parameters);
 			return new RpcClientContainer(ID);
 		} catch (Exception e) {
-			throw new ContainerCreateException(Messages.PRC_COULD_NOT_CREATE_CONTAINER, e);
+			throw new ContainerCreateException(Messages.RPC_COULD_NOT_CREATE_CONTAINER, e);
 		}
 	}
 
