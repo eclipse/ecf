@@ -8,9 +8,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.tests.remoteservice.rpc;
 
+import org.eclipse.ecf.tests.remoteservice.rpc.common.IEcho;
+
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.tests.remoteservice.rpc.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -32,6 +35,8 @@ public class RpcRemoteServiceTest extends AbstractRpcTestCase {
 	
 	IRemoteServiceRegistration registrationEcho;
 	
+	IRemoteServiceRegistration registrationEchoProxy;
+	
 	IRemoteServiceRegistration registrationCalc;
 	
 	protected void setUp() throws Exception {
@@ -40,6 +45,9 @@ public class RpcRemoteServiceTest extends AbstractRpcTestCase {
 		IRemoteCallable callableEcho = RemoteCallableFactory.createCallable(RpcConstants.TEST_ECHO_METHOD_NAME, RpcConstants.TEST_ECHO_METHOD, 
 				new IRemoteCallParameter[]{new RemoteCallParameter(RpcConstants.TEST_ECHO_METHOD_PARAM)});
 		registrationEcho = registerCallable(container, callableEcho, null);
+		
+		IRemoteCallable callableEchoProxy = RemoteCallableFactory.createCallable(IEcho.class.getName());
+		registrationEchoProxy = registerCallable(container, callableEchoProxy, null);
 		
 		IRemoteCallable callableCalc = RemoteCallableFactory.createCallable(RpcConstants.TEST_CALC_PLUS_METHOD_NAME, RpcConstants.TEST_CALC_PLUS_METHOD, 
 				new IRemoteCallParameter[]{
@@ -50,22 +58,51 @@ public class RpcRemoteServiceTest extends AbstractRpcTestCase {
 
 	protected void tearDown() throws Exception {
 		registrationEcho.unregister();
+		registrationEchoProxy.unregister();
 		registrationCalc.unregister();
 		container.disconnect();
 	}
 
+	public void testCallViaProxy() {
+		IRemoteService rpcClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registrationEchoProxy.getReference());
+		try {
+			IEcho echo = (IEcho) rpcClientService.getProxy(Activator.class.getClassLoader(), new Class[]{IEcho.class});
+			assertNotNull(echo);
+			Object result = echo.echo(ECHO_TEST_DATA);
+			assertNotNull(result);
+			assertEquals(result, ECHO_TEST_DATA);
+		}
+		catch (ECFException e) {
+			e.printStackTrace();
+			fail("Could not contact the service");
+		}
+	}
+	
+	public void testCallViaProxy2() {
+		IRemoteService rpcClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registrationEchoProxy.getReference());
+		try {
+			IEcho echo = (IEcho) rpcClientService.getProxy();
+			assertNotNull(echo);
+			Object result = echo.echo(ECHO_TEST_DATA);
+			assertNotNull(result);
+			assertEquals(result, ECHO_TEST_DATA);
+		}
+		catch (ECFException e) {
+			e.printStackTrace();
+			fail("Could not contact the service");
+		}
+	}
+	
 	public void testSyncCall() {
-		IRemoteService rpcClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registrationEcho.getReference());
+		IRemoteService rpcClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registrationEcho.getReference());		
 		try {
 			Object result = rpcClientService.callSync(getEchoCall());
 			assertNotNull(result);
 			assertTrue(ECHO_TEST_DATA.equals(result));
 		} catch (ECFException e) {
-			e.printStackTrace();
 			fail("Could not contact the service");
 		}
 	}
-
 
 	public void testAsynCall() {
 		IRemoteService rpcClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registrationCalc.getReference());

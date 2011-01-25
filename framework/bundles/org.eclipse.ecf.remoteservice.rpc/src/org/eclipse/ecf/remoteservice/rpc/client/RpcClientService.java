@@ -11,6 +11,7 @@ package org.eclipse.ecf.remoteservice.rpc.client;
 import java.io.NotSerializableException;
 import java.net.MalformedURLException;
 import org.apache.xmlrpc.client.*;
+import org.apache.xmlrpc.client.util.ClientFactory;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.ECFException;
@@ -55,6 +56,30 @@ public class RpcClientService extends AbstractClientService {
 		xmlRpcClient.setTransportFactory(new XmlRpcCommonsTransportFactory(xmlRpcClient));
 
 		return xmlRpcClient;
+	}
+
+	/**
+	 * Create a Dynamic Proxy for using XML-RPC servers, which builded on Apache XML-RPC.
+	 * See the <a href="http://ws.apache.org/xmlrpc/advanced.html">Dynamic proxies</a> section.    
+	 */
+	public Object createProxy(ClassLoader cl, Class[] classes) {
+		if (classes == null || classes.length < 1)
+			return null;
+
+		ClientFactory factory = new ClientFactory(client);
+		return factory.newInstance(classes[0]);
+	}
+
+	/**
+	 * Create a Dynamic Proxy for using XML-RPC servers, which builded on Apache XML-RPC.
+	 * See the <a href="http://ws.apache.org/xmlrpc/advanced.html">Dynamic proxies</a> section.    
+	 */
+	protected Object createProxy(Class[] classes) {
+		if (classes == null || classes.length < 1)
+			return null;
+
+		ClientFactory factory = new ClientFactory(client);
+		return factory.newInstance(classes[0]);
 	}
 
 	/**

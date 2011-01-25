@@ -16,6 +16,10 @@ Import-Package: org.apache.commons.httpclient;version="3.1.0",
  org.apache.commons.httpclient.util;version="3.1.0",
  org.apache.xmlrpc,
  org.apache.xmlrpc.client,
+ org.apache.xmlrpc.client.util,
+ org.apache.xmlrpc.common,
+ org.apache.xmlrpc.parser,
+ org.apache.xmlrpc.serializer,
  org.eclipse.ecf.core;version="3.0.0",
  org.eclipse.ecf.core.identity;version="3.0.0",
  org.eclipse.ecf.core.provider,
@@ -27,3 +31,4 @@ Export-Package: org.eclipse.ecf.internal.remoteservice.rpc;x-internal:=true,
  org.eclipse.ecf.remoteservice.rpc.client,
  org.eclipse.ecf.remoteservice.rpc.identity
 Bundle-Localization: plugin
+DynamicImport-Package: *
