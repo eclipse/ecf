@@ -12,7 +12,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
-	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.remoteservice.rpc"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.remoteservice.rpc.messages"; //$NON-NLS-1$
 
 	public static String RPC_INVALID_PARAMETERS_TO_ID_CREATION;
 	public static String RPC_COULD_NOT_CREATE_ID;

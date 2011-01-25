@@ -42,7 +42,7 @@ public class RpcClientContainer extends AbstractClientContainer implements IRemo
 	}
 
 	protected String prepareEndpointAddress(IRemoteCall call, IRemoteCallable callable) {
-		// TODO
+		// For XML-RPC, endpoint == resource.path
 		return callable.getResourcePath();
 	}
 
@@ -56,15 +56,8 @@ public class RpcClientContainer extends AbstractClientContainer implements IRemo
 	protected IRemoteCallParameter serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable,
 			final IRemoteCallParameter defaultParameter, final Object parameterValue) throws NotSerializableException {
 		// Just return a parameter		
-		return new IRemoteCallParameter() {
-			public Object getValue() {
-				return parameterValue == null ? defaultParameter.getValue() : parameterValue;
-			}
-
-			public String getName() {
-				return defaultParameter.getName();
-			}
-		};
+		return new RemoteCallParameter(defaultParameter.getName(), parameterValue == null ? defaultParameter.getValue()
+				: parameterValue);
 	}
 
 	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
@@ -72,5 +65,4 @@ public class RpcClientContainer extends AbstractClientContainer implements IRemo
 		// return false
 		return false;
 	}
-
 }
