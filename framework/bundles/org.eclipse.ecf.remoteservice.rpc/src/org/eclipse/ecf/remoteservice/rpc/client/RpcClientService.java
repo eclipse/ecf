@@ -69,16 +69,11 @@ public class RpcClientService extends AbstractClientService {
 		String operation = prepareEndpointAddress(call, callable);
 		Object result = null;
 		try {
-			// TODO add invoke with dynamic proxy
-			// TODO ClientFactory factory = new ClientFactory(client);
-			// TODO ICalculator calc = (ICalculator) factory.newInstance(ICalculator.class);
 			result = client.execute(operation, toObjectsArray(operation, call, callable));
 		} catch (Exception e) {
 			handleException(Messages.RPC_EXCEPTION_WHILE_EXECUTION_METHOD + operation, e);
 		}
 
-		// TODO may be we should add result processing. But may be user should do it on upper 
-		// level (where he use an XML-RPC provider)
 		return result;
 	}
 
