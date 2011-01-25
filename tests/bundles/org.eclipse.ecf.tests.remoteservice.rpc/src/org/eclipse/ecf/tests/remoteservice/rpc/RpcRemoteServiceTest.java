@@ -1,14 +1,13 @@
-/*******************************************************************************
- * Copyright (c) 2009-2010 Naumen. All rights reserved. This
+/******************************************************************************* 
+ * Copyright (c) 2010-2011 Naumen. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors: Pavel Samolisov - initial API and implementation
- ******************************************************************************/
+ * Contributors:
+ *   Pavel Samolisov - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.ecf.tests.remoteservice.rpc;
-
-import org.eclipse.ecf.tests.remoteservice.rpc.common.IEcho;
 
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainer;
@@ -25,6 +24,7 @@ import org.eclipse.ecf.remoteservice.client.RemoteCallParameter;
 import org.eclipse.ecf.remoteservice.client.RemoteCallableFactory;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
+import org.eclipse.ecf.tests.remoteservice.rpc.common.IEcho;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
 public class RpcRemoteServiceTest extends AbstractRpcTestCase {
