@@ -1,3 +1,27 @@
+/*******************************************************************************
+ * Copyright (c) 2009-2010 Naumen. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: Pavel Samolisov - initial API and implementation
+ ******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2009-2010 Naumen. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: Pavel Samolisov - initial API and implementation
+ ******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2009-2010 Naumen. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: Pavel Samolisov - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.tests.remoteservice.rpc;
 
 import java.util.Date;
@@ -8,17 +32,15 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 
-public class RPCContainerInstantiatorTest extends ECFAbstractTestCase {
-
-	private static final String RPC_CONTAINER_TYPE = "ecf.xmlrpc.client";
-	
+public class RpcContainerInstantiatorTest extends ECFAbstractTestCase {
+		
 	private IContainerFactory containerFactory;
     
     private ContainerTypeDescription description;
 
     protected void setUp() throws Exception {
         containerFactory = getContainerFactory();
-        description = containerFactory.getDescriptionByName(RPC_CONTAINER_TYPE);
+        description = containerFactory.getDescriptionByName(RpcConstants.RPC_CONTAINER_TYPE);
     }
     
     public void testSupportedParameterTypes() {     
