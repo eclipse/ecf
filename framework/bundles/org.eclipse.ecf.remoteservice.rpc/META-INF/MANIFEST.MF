@@ -26,3 +26,4 @@ Export-Package: org.eclipse.ecf.internal.remoteservice.rpc;x-internal:=true,
  org.eclipse.ecf.remoteservice.rpc,
  org.eclipse.ecf.remoteservice.rpc.client,
  org.eclipse.ecf.remoteservice.rpc.identity
+Bundle-Localization: plugin
