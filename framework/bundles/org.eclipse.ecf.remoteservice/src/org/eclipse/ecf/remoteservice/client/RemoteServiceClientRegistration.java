@@ -72,10 +72,15 @@ public class RemoteServiceClientRegistration implements IRemoteServiceRegistrati
 	}
 
 	public Object getProperty(String key) {
+		if (properties == null)
+			return null;
 		return properties.get(key);
 	}
 
 	public String[] getPropertyKeys() {
+		if (properties == null)
+			return new String[] {};
+
 		int length = properties.size();
 		Enumeration keys = properties.keys();
 		String[] result = new String[length];
