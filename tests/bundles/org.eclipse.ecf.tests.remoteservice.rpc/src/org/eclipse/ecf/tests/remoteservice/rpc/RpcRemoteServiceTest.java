@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
+import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.RemoteCallFactory;
@@ -19,10 +20,14 @@ import org.eclipse.ecf.remoteservice.client.IRemoteCallParameter;
 import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.client.RemoteCallParameter;
 import org.eclipse.ecf.remoteservice.client.RemoteCallableFactory;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
 public class RpcRemoteServiceTest extends AbstractRpcTestCase {
 
+	private static final String ECHO_TEST_DATA = "Hello, world";
+	
 	IContainer container;
 	
 	IRemoteServiceRegistration registrationEcho;
@@ -54,6 +59,7 @@ public class RpcRemoteServiceTest extends AbstractRpcTestCase {
 		try {
 			Object result = rpcClientService.callSync(getEchoCall());
 			assertNotNull(result);
+			assertTrue(ECHO_TEST_DATA.equals(result));
 		} catch (ECFException e) {
 			e.printStackTrace();
 			fail("Could not contact the service");
@@ -74,8 +80,23 @@ public class RpcRemoteServiceTest extends AbstractRpcTestCase {
 		}
 	}
 	
+	public void testAsyncCallWithListener() throws Exception {
+		IRemoteService rpcClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registrationCalc.getReference());
+		rpcClientService.callAsync(getCalcPlusCall(), new IRemoteCallListener() {
+			public void handleEvent(IRemoteCallEvent event) {
+				if (event instanceof IRemoteCallCompleteEvent) {
+					IRemoteCallCompleteEvent cce = (IRemoteCallCompleteEvent) event;
+					Object response = cce.getResponse();
+					assertTrue(response instanceof Integer);
+					syncNotify();
+				}
+			}
+		});
+		syncWaitForNotify(10000);
+	}
+	
 	private IRemoteCall getEchoCall() {
-		return RemoteCallFactory.createRemoteCall(RpcConstants.TEST_ECHO_METHOD_NAME, new Object[]{"Hello, world!"});
+		return RemoteCallFactory.createRemoteCall(RpcConstants.TEST_ECHO_METHOD_NAME, new Object[]{ECHO_TEST_DATA});
 	}
 	
 	private IRemoteCall getCalcPlusCall() {
