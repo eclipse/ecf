@@ -16,11 +16,7 @@ import java.util.Properties;
 
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.examples.remoteservices.hello.impl.Hello;
-import org.eclipse.ecf.osgi.services.discovery.IHostDiscoveryListener;
-import org.eclipse.ecf.osgi.services.discovery.LoggingHostDiscoveryListener;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
-import org.eclipse.ecf.osgi.services.distribution.IHostDistributionListener;
-import org.eclipse.ecf.osgi.services.distribution.LoggingHostDistributionListener;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -49,8 +45,6 @@ public class HelloHostApplication implements IApplication,
 		bundleContext = Activator.getContext();
 		// Process Arguments
 		processArgs(appContext);
-		// Register osgi discovery and distribution listeners
-		registerRemoteServiceListeners();
 		// Finally, register the actual remote service
 		registerHelloRemoteService();
 		// Register console provider. This adds 'start' and 'stop' commands to
@@ -119,30 +113,6 @@ public class HelloHostApplication implements IApplication,
 				Integer.MAX_VALUE - 100));
 		bundleContext.registerService(CommandProvider.class.getName(),
 				helloCommandProvider, props);
-	}
-
-	private void registerRemoteServiceListeners() {
-		// Register host discovery listener to log the publish/unpublish of
-		// remote services.
-		// This LoggingHostDiscoveryListener logs the publication of OSGi remote
-		// services...so
-		// that the discovery can be more easily debugged.
-		// Note that other IHostDiscoveryListener may be created and registered,
-		// and
-		// all will be notified of publish/unpublish events
-		discoveryListenerRegistration = bundleContext.registerService(IHostDiscoveryListener.class.getName(),
-				new LoggingHostDiscoveryListener(), null);
-		// Register host distribution listener to log the register/unregister of
-		// remote services.
-		// This LoggingHostDistributionListener logs the register/unregister of
-		// OSGi remote services...so
-		// that the distribution can be more easily debugged.
-		// Note that other IHostDistributionListener may be created and
-		// registered, and
-		// all will be notified of register/unregister events
-		distributionListenerRegistration = bundleContext.registerService(
-				IHostDistributionListener.class.getName(),
-				new LoggingHostDistributionListener(), null);
 	}
 
 	private void processArgs(IApplicationContext appContext) {

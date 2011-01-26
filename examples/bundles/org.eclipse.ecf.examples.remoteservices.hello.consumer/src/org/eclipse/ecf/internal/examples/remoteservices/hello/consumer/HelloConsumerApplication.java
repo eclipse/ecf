@@ -16,11 +16,7 @@ import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.examples.remoteservices.hello.HelloMessage;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.examples.remoteservices.hello.IHelloAsync;
-import org.eclipse.ecf.osgi.services.discovery.IProxyDiscoveryListener;
-import org.eclipse.ecf.osgi.services.discovery.LoggingProxyDiscoveryListener;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
-import org.eclipse.ecf.osgi.services.distribution.IProxyDistributionListener;
-import org.eclipse.ecf.osgi.services.distribution.LoggingProxyDistributionListener;
 import org.eclipse.ecf.remoteservice.IAsyncCallback;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceProxy;
@@ -65,35 +61,17 @@ public class HelloConsumerApplication implements IApplication,
 		// upon discovery via the IProxyContainerFinder/DefaultProxyContainerFinder.  
 		getContainerFactory().createContainer(containerType);
 
-		// Register osgi discovery and distribution listeners
-		registerRemoteServiceListeners();
-
 		// Create service tracker to track IHello instances that have the 'service.imported'
 		// property set (as defined by OSGi 4.2 remote services spec).
 		helloServiceTracker = new ServiceTracker(bundleContext,
 				createRemoteFilter(), this);
-		helloServiceTracker.open();
+		helloServiceTracker.open(true);
 
 		startLocalDiscoveryIfPresent();
 		
 		waitForDone();
 
 		return IApplication.EXIT_OK;
-	}
-
-	private void registerRemoteServiceListeners() {
-		// Register proxy discovery listener to log the publish/unpublish of remote services.  
-		// This LoggingProxyDiscoveryListener logs the publication of OSGi remote services...so 
-		// that the discovery can be more easily debugged.
-		// Note that other IProxyDiscoveryListeners may be created and registered, and
-		// all will be notified of publish/unpublish events
-		discoveryListenerRegistration = bundleContext.registerService(IProxyDiscoveryListener.class.getName(), new LoggingProxyDiscoveryListener(), null);
-		// Register proxy distribution listener to log the register/unregister of remote services.  
-		// This LoggingProxyDistributionListener logs the register/unregister of OSGi remote services...so 
-		// that the distribution can be more easily debugged.
-		// Note that other IProxyDistributionListener may be created and registered, and
-		// all will be notified of register/unregister events
-		distributionListenerRegistration = bundleContext.registerService(IProxyDistributionListener.class.getName(), new LoggingProxyDistributionListener(), null);
 	}
 
 	private void startLocalDiscoveryIfPresent() {
