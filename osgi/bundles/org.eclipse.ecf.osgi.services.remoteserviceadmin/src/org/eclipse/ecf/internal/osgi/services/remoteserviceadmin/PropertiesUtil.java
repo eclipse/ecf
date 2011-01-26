@@ -48,6 +48,8 @@ public class PropertiesUtil {
 
 	protected static final List ecfProperties = Arrays.asList(new String[] {
 			// ECF properties
+			org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS,
+			org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
 			RemoteConstants.DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX,
 			RemoteConstants.DISCOVERY_NAMING_AUTHORITY,
 			RemoteConstants.DISCOVERY_PROTOCOLS,
@@ -61,6 +63,7 @@ public class PropertiesUtil {
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_ID,
+			RemoteConstants.SERVICE_IMPORTED_VALUETYPE,
 			RemoteConstants.SERVICE_TYPE });
 
 	public static String verifyStringProperty(Map properties, String propName) {
@@ -219,7 +222,7 @@ public class PropertiesUtil {
 
 	public static boolean isOSGiProperty(String key) {
 		return osgiProperties.contains(key)
-				&& !key.startsWith(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_);
+				|| key.startsWith(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_);
 	}
 
 	public static boolean isECFProperty(String key) {

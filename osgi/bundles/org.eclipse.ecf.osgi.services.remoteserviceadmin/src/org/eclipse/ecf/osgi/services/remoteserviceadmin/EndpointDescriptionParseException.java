@@ -9,10 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.ecf.core.util.ECFException;
-
-public class EndpointDescriptionParseException extends ECFException {
+public class EndpointDescriptionParseException extends Exception {
 
 	private static final long serialVersionUID = -4481979787400184664L;
 
@@ -29,10 +26,6 @@ public class EndpointDescriptionParseException extends ECFException {
 
 	public EndpointDescriptionParseException(String message, Throwable cause) {
 		super(message, cause);
-	}
-
-	public EndpointDescriptionParseException(IStatus status) {
-		super(status);
 	}
 
 }

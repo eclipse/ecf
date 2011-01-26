@@ -18,7 +18,8 @@ public class PackageVersionComparator implements IPackageVersionComparator {
 	public void comparePackageVersions(String packageName,
 			Version remoteVersion, Version localVersion)
 			throws RuntimeException {
-		LogUtility.trace("comparePackageVersions", //$NON-NLS-1$
+		LogUtility.trace(
+				"comparePackageVersions", //$NON-NLS-1$
 				DebugOptions.PACKAGE_VERSION_COMPARATOR, this.getClass(),
 				"packageName=" + packageName + ",remoteVersion=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ remoteVersion + ",localVersion=" + localVersion); //$NON-NLS-1$
