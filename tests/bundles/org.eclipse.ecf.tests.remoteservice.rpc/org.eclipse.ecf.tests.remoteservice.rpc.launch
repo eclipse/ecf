@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.pde.ui.JunitLaunchConfig">
+<booleanAttribute key="append.args" value="true"/>
+<stringAttribute key="application" value="org.eclipse.pde.junit.runtime.coretestapplication"/>
+<booleanAttribute key="askclear" value="false"/>
+<booleanAttribute key="automaticAdd" value="true"/>
+<booleanAttribute key="automaticValidate" value="false"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="true"/>
+<booleanAttribute key="clearws" value="true"/>
+<booleanAttribute key="clearwslog" value="false"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/pde-junit"/>
+<booleanAttribute key="default" value="false"/>
+<stringAttribute key="deselected_workspace_plugins" value="org.eclipse.ecf.examples.remoteservices.client,org.eclipse.ecf.provider.zookeeper,ch.ethz.iks.r_osgi.remote,org.eclipse.ecf.discovery.ui,org.eclipse.ecf.tests.discovery,org.eclipse.ecf.examples.loadbalancing.consumer,org.eclipse.ecf.examples.datashare.app,org.eclipse.ecf.osgi.services.discovery.local,org.eclipse.ecf.example.clients,org.eclipse.ecf.presence.ui,org.eclipse.ecf.provider.ui,org.eclipse.ecf.discovery.ui.edit,org.eclipse.ecf.discovery.ui.browser,org.eclipse.ecf.provider.datashare.nio,org.eclipse.ecf.provider.remoteservice,org.eclipse.ecf.provider.filetransfer.httpclient.ssl,org.eclipse.ecf.provider.xmpp,org.jivesoftware.smack,org.eclipse.ecf.discovery.ui.properties,org.eclipse.ecf.examples.provider.trivial,org.eclipse.ecf.provider.datashare,org.eclipse.ecf.examples.loadbalancing.server,org.eclipse.ecf.remoteservice.eventadmin,org.eclipse.ecf.examples.remoteservices.hello.ds.host,org.eclipse.ecf.provider.xmpp.datashare,org.eclipse.ecf.provider.r_osgi,org.eclipse.ecf.osgi.services.remoteserviceadmin,org.eclipse.ecf.remoteservice.ui,org.eclipse.ecf.tests.presence,org.eclipse.ecf.server.generic,org.eclipse.ecf.remoteservice.rest.synd,org.eclipse.ecf.examples.remoteservices.common,org.eclipse.ecf.osgi.services.discovery,org.eclipse.ecf.springframework,org.eclipse.ecf.datashare,org.eclipse.ecf.examples.remoteservices.hello.consumer,org.eclipse.ecf.tests.osgi.services.discovery,org.eclipse.ecf.server,org.eclipse.ecf.examples.remoteservices.hello,org.eclipse.ecf.examples.remoteservices.rest.rss,org.eclipse.ecf.tests.httpservice.util,org.eclipse.ecf.osgi.services.distribution,org.eclipse.ecf.discovery,org.apache.zookeeper,org.eclipse.ecf.provider.xmpp.ui,org.eclipse.ecf.filetransfer.ui,org.eclipse.ecf.examples.loadbalancing.servicehost,org.eclipse.ecf.tests.apache.httpclient.server,org.eclipse.ecf.discovery.ui.userinput,org.eclipse.ecf.provider.filetransfer.httpclient,org.eclipse.ecf.tests.server.generic,org.eclipse.ecf.provider.xmpp.remoteservice,org.eclipse.ecf.discovery.ui.model,org.eclipse.ecf.remoteservice.rest,org.eclipse.ecf.tests.filetransfer.jreprovider,org.eclipse.ecf.examples.eventadmin.app,org.eclipse.ecf.examples.remoteservices.hello.consumer.rs,org.eclipse.ecf.docshare,org.eclipse.ecf.tests.discovery.all,org.eclipse.ecf.provider.jslp,org.eclipse.ecf.sharedobject,org.eclipse.ecf.tests.discovery.remote_extender,org.eclipse.ecf.provider,org.eclipse.ecf.tests.datashare,org.eclipse.ecf.filetransfer,org.eclipse.ecf.examples.remoteservices.hello.ds.consumer,org.eclipse.ecf.examples.loadbalancing,org.eclipse.ecf.tests.remoteservice.rest,org.eclipse.ecf.provider.discovery,org.eclipse.ecf.presence,ch.ethz.iks.slp,org.eclipse.ecf.tests.filetransfer,org.eclipse.ecf.provider.jmdns,org.eclipse.ecf.remoteservice.ui.dosgi,org.eclipse.ecf.examples.loadbalancing.ds.consumer,org.eclipse.ecf.provider.local,org.eclipse.ecf.ui,org.eclipse.ecf.tests.filetransfer.httpserver,org.eclipse.ecf.examples.remoteservices.server,org.eclipse.ecf.examples.remoteservices.hello.host,org.eclipse.ecf.console,org.eclipse.ecf.provider.localdiscovery,org.eclipse.ecf.provider.filetransfer,org.eclipse.ecf.tests.sharedobject,org.eclipse.ecf.examples.remoteservices.hello.host.rs,org.eclipse.ecf.discovery.ui.properties.tabbed,org.eclipse.ecf.tests.provider.xmpp"/>
+<booleanAttribute key="includeOptional" value="true"/>
+<stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/org.eclipse.ecf.tests.remoteservice.rpc"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="4"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=org.eclipse.ecf.tests.remoteservice.rpc"/>
+<booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.ecf.tests.remoteservice.rpc"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dosgi.requiredJavaVersion=1.5 -Xms128m -Xmx512m"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<stringAttribute key="product" value="org.eclipse.epp.package.rcp.product"/>
+<booleanAttribute key="run_in_ui_thread" value="true"/>
+<stringAttribute key="selected_target_plugins" value="org.eclipse.equinox.registry@default:default,org.eclipse.equinox.concurrent@default:default,org.eclipse.core.contenttype@default:default,org.eclipse.equinox.common@2:true,org.eclipse.equinox.http.servlet@default:default,org.apache.commons.logging*1.0.4.v201005080501@default:default,org.eclipse.core.runtime@default:true,org.eclipse.core.runtime.compatibility.registry@default:false,org.apache.ws.commons.util@default:default,org.eclipse.osgi.services@default:default,org.eclipse.equinox.app@default:default,org.apache.commons.codec*1.3.0.v20100518-1140@default:default,org.hamcrest.core@default:default,org.mortbay.jetty.server@default:default,org.eclipse.equinox.http.jetty@default:default,org.apache.jasper@default:default,org.apache.commons.httpclient*3.1.0.v201005080502@default:default,org.eclipse.equinox.preferences@default:default,javax.servlet.jsp@default:default,javax.xml@default:default,javax.xml.bind@default:default,org.eclipse.osgi@-1:true,org.junit*4.8.1.v4_8_1_v20100427-1100@default:default,org.eclipse.ecf.ssl@default:false,org.mortbay.jetty.util@default:default,javax.servlet@default:default,org.apache.ant@default:default,org.eclipse.core.runtime.compatibility.auth@default:default,org.apache.commons.el@default:default,org.apache.xmlrpc@default:default,org.eclipse.core.jobs@default:default,javax.activation@default:default"/>
+<stringAttribute key="selected_workspace_plugins" value="org.eclipse.ecf.identity@default:default,org.eclipse.ecf.tests@default:default,org.eclipse.ecf.remoteservice@default:default,org.eclipse.ecf.remoteservice.rpc@default:default,org.eclipse.ecf.tests.remoteservice@default:default,org.eclipse.ecf@default:default,org.eclipse.ecf.tests.remoteservice.rpc@default:default"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useCustomFeatures" value="false"/>
+<booleanAttribute key="useDefaultConfig" value="true"/>
+<booleanAttribute key="useDefaultConfigArea" value="false"/>
+<booleanAttribute key="useProduct" value="false"/>
+</launchConfiguration>
