@@ -46,10 +46,8 @@ public class EndpointDescriptionAdvertiser implements
 			return createErrorStatus((advertise ? "registerService" //$NON-NLS-1$
 					: "unregisterService") //$NON-NLS-1$
 					+ " with serviceInfo=" //$NON-NLS-1$
-					+ serviceInfo
-					+ " for discoveryAdvertiser=" //$NON-NLS-1$
-					+ discoveryAdvertiser
-					+ " failed", e); //$NON-NLS-1$
+					+ serviceInfo + " for discoveryAdvertiser=" //$NON-NLS-1$
+					+ discoveryAdvertiser + " failed", e); //$NON-NLS-1$
 		}
 	}
 

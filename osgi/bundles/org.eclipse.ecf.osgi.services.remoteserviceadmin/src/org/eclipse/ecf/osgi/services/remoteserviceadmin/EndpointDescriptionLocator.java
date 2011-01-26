@@ -9,9 +9,15 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +25,15 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
+import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceListener;
+import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
@@ -34,12 +46,14 @@ import org.eclipse.osgi.framework.eventmgr.EventManager;
 import org.eclipse.osgi.framework.eventmgr.ListenerQueue;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -145,18 +159,14 @@ public class EndpointDescriptionLocator {
 					logError(logMethodName, message, e);
 				} catch (LinkageError e) {
 					String message = "LinkageError in EndpointListener listener=" //$NON-NLS-1$
-							+ endpointListener
-							+ " description=" //$NON-NLS-1$
-							+ endpointDescription
-							+ " matchingFilter=" //$NON-NLS-1$
+							+ endpointListener + " description=" //$NON-NLS-1$
+							+ endpointDescription + " matchingFilter=" //$NON-NLS-1$
 							+ matchingFilter;
 					logError(logMethodName, message, e);
 				} catch (AssertionError e) {
 					String message = "AssertionError in EndpointListener listener=" //$NON-NLS-1$
-							+ endpointListener
-							+ " description=" //$NON-NLS-1$
-							+ endpointDescription
-							+ " matchingFilter=" //$NON-NLS-1$
+							+ endpointListener + " description=" //$NON-NLS-1$
+							+ endpointDescription + " matchingFilter=" //$NON-NLS-1$
 							+ matchingFilter;
 					logError(logMethodName, message, e);
 				}
@@ -206,7 +216,7 @@ public class EndpointDescriptionLocator {
 		endpointListenerTracker.open();
 
 		locatorListeners = new HashMap();
-		localLocatorServiceListener = new LocatorServiceListener(this);
+		localLocatorServiceListener = new LocatorServiceListener(null);
 		// Create locator service tracker, so new IDiscoveryLocators can
 		// be used to discover endpoint descriptions
 		locatorServiceTracker = new ServiceTracker(context,
@@ -224,8 +234,7 @@ public class EndpointDescriptionLocator {
 		}
 		// Create bundle tracker for reading local/xml-file endpoint
 		// descriptions
-		bundleTrackerCustomizer = new EndpointDescriptionBundleTrackerCustomizer(
-				context, localLocatorServiceListener);
+		bundleTrackerCustomizer = new EndpointDescriptionBundleTrackerCustomizer();
 		bundleTracker = new BundleTracker(context, Bundle.ACTIVE
 				| Bundle.STARTING, bundleTrackerCustomizer);
 		// This may trigger local endpoint description discovery
@@ -355,7 +364,7 @@ public class EndpointDescriptionLocator {
 			return;
 		synchronized (locatorListeners) {
 			LocatorServiceListener locatorListener = new LocatorServiceListener(
-					this, locator);
+					locator);
 			locatorListeners.put(locator, locatorListener);
 			processInitialLocatorServices(locator, locatorListener);
 		}
@@ -416,7 +425,8 @@ public class EndpointDescriptionLocator {
 
 			}
 		} else {
-			LogUtility.logWarning("queueEndpointDescription", //$NON-NLS-1$
+			LogUtility.logWarning(
+					"queueEndpointDescription", //$NON-NLS-1$
 					DebugOptions.DISCOVERY, this.getClass(),
 					"No matching EndpointListeners found for " //$NON-NLS-1$
 							+ (discovered ? "discovered" : "undiscovered") //$NON-NLS-1$ //$NON-NLS-2$
@@ -615,4 +625,295 @@ public class EndpointDescriptionLocator {
 		return results;
 	}
 
+	class EndpointDescriptionBundleTrackerCustomizer implements
+			BundleTrackerCustomizer {
+
+		private static final String REMOTESERVICE_MANIFESTHEADER = "Remote-Service"; //$NON-NLS-1$
+		private static final String XML_FILE_PATTERN = "*.xml"; //$NON-NLS-1$
+
+		private Map<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>> bundleDescriptionMap = Collections
+				.synchronizedMap(new HashMap<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>>());
+
+		private Object endpointDescriptionReaderTrackerLock = new Object();
+		private ServiceTracker endpointDescriptionReaderTracker;
+
+		private IEndpointDescriptionReader getEndpointDescriptionReader() {
+			synchronized (endpointDescriptionReaderTrackerLock) {
+				if (endpointDescriptionReaderTracker == null) {
+					endpointDescriptionReaderTracker = new ServiceTracker(
+							context,
+							IEndpointDescriptionReader.class.getName(), null);
+					endpointDescriptionReaderTracker.open();
+				}
+			}
+			return (IEndpointDescriptionReader) endpointDescriptionReaderTracker
+					.getService();
+		}
+
+		public Object addingBundle(Bundle bundle, BundleEvent event) {
+			handleAddingBundle(bundle);
+			return bundle;
+		}
+
+		private void handleAddingBundle(Bundle bundle) {
+			if (context == null)
+				return;
+			String remoteServicesHeaderValue = (String) bundle.getHeaders()
+					.get(REMOTESERVICE_MANIFESTHEADER);
+			if (remoteServicesHeaderValue != null) {
+				// First parse into comma-separated values
+				String[] paths = remoteServicesHeaderValue.split(","); //$NON-NLS-1$
+				if (paths != null)
+					for (int i = 0; i < paths.length; i++)
+						handleEndpointDescriptionPath(bundle, paths[i]);
+			}
+		}
+
+		private void handleEndpointDescriptionPath(Bundle bundle,
+				String remoteServicesHeaderValue) {
+			// if it's empty, ignore
+			if ("".equals(remoteServicesHeaderValue)) //$NON-NLS-1$
+				return;
+			Enumeration<URL> e = null;
+			// if it endswith a '/', then scan for *.xml files
+			if (remoteServicesHeaderValue.endsWith("/")) { //$NON-NLS-1$
+				e = bundle.findEntries(remoteServicesHeaderValue,
+						XML_FILE_PATTERN, false);
+			} else {
+				// Break into path and filename/pattern
+				int lastSlashIndex = remoteServicesHeaderValue.lastIndexOf('/');
+				if (lastSlashIndex == -1) {
+					// no slash...might be a file name or pattern, assumed to be
+					// at root of bundle
+					e = bundle.findEntries(
+							"/", remoteServicesHeaderValue, false); //$NON-NLS-1$
+				} else {
+					String path = remoteServicesHeaderValue.substring(0,
+							lastSlashIndex);
+					if ("".equals(path)) { //$NON-NLS-1$
+						// path is empty so assume it's root
+						path = "/"; //$NON-NLS-1$
+					}
+					String filePattern = remoteServicesHeaderValue
+							.substring(lastSlashIndex + 1);
+					e = bundle.findEntries(path, filePattern, false);
+				}
+			}
+			// Now process any found
+			Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptions = new ArrayList<org.osgi.service.remoteserviceadmin.EndpointDescription>();
+			if (e != null) {
+				while (e.hasMoreElements()) {
+					org.osgi.service.remoteserviceadmin.EndpointDescription[] eps = handleEndpointDescriptionFile(
+							bundle, e.nextElement());
+					if (eps != null)
+						for (int i = 0; i < eps.length; i++)
+							endpointDescriptions.add(eps[i]);
+				}
+			}
+			// finally, handle them
+			if (endpointDescriptions.size() > 0) {
+				bundleDescriptionMap.put(new Long(bundle.getBundleId()),
+						endpointDescriptions);
+				for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions)
+					localLocatorServiceListener.handleEndpointDescription(ed,
+							true);
+			}
+		}
+
+		private org.osgi.service.remoteserviceadmin.EndpointDescription[] handleEndpointDescriptionFile(
+				Bundle bundle, URL fileURL) {
+			InputStream ins = null;
+			try {
+				IEndpointDescriptionReader endpointDescriptionReader = getEndpointDescriptionReader();
+				if (endpointDescriptionReader == null)
+					throw new NullPointerException(
+							"No endpointDescriptionReader available for handleEndpointDescriptionFile fileURL=" //$NON-NLS-1$
+									+ fileURL);
+				ins = fileURL.openStream();
+				return endpointDescriptionReader.readEndpointDescriptions(ins);
+			} catch (Exception e) {
+				logError("handleEndpointDescriptionFile", //$NON-NLS-1$
+						"Exception creating endpoint descriptions from fileURL=" //$NON-NLS-1$
+								+ fileURL, e);
+				return null;
+			} finally {
+				if (ins != null)
+					try {
+						ins.close();
+					} catch (IOException e) {
+						logError("handleEndpointDescriptionFile", //$NON-NLS-1$
+								"Exception closing endpointDescription input fileURL=" //$NON-NLS-1$
+										+ fileURL, e);
+					}
+			}
+		}
+
+		private void logError(String method, String message, Throwable t) {
+			LogUtility.logError(method, DebugOptions.DISCOVERY,
+					this.getClass(), new Status(IStatus.ERROR,
+							Activator.PLUGIN_ID, IStatus.ERROR, message, t));
+		}
+
+		public void modifiedBundle(Bundle bundle, BundleEvent event,
+				Object object) {
+		}
+
+		public void removedBundle(Bundle bundle, BundleEvent event,
+				Object object) {
+			handleRemovedBundle(bundle);
+		}
+
+		private void handleRemovedBundle(Bundle bundle) {
+			Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptions = bundleDescriptionMap
+					.remove(new Long(bundle.getBundleId()));
+			if (endpointDescriptions != null)
+				for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions)
+					localLocatorServiceListener.handleEndpointDescription(ed,
+							false);
+		}
+
+		public void close() {
+			synchronized (endpointDescriptionReaderTrackerLock) {
+				if (endpointDescriptionReaderTracker != null) {
+					endpointDescriptionReaderTracker.close();
+					endpointDescriptionReaderTracker = null;
+				}
+			}
+			bundleDescriptionMap.clear();
+		}
+	}
+
+	class LocatorServiceListener implements IServiceListener {
+
+		private Object listenerLock = new Object();
+		private IDiscoveryLocator locator;
+
+		private List<org.osgi.service.remoteserviceadmin.EndpointDescription> discoveredEndpointDescriptions = new ArrayList();
+
+		public LocatorServiceListener(IDiscoveryLocator locator) {
+			this.locator = locator;
+			if (locator != null)
+				this.locator.addServiceListener(this);
+		}
+
+		public void serviceDiscovered(IServiceEvent anEvent) {
+			handleService(anEvent.getServiceInfo(), true);
+		}
+
+		public void serviceUndiscovered(IServiceEvent anEvent) {
+			handleService(anEvent.getServiceInfo(), false);
+		}
+
+		private boolean matchServiceID(IServiceID serviceId) {
+			if (Arrays.asList(serviceId.getServiceTypeID().getServices())
+					.contains(RemoteConstants.SERVICE_TYPE))
+				return true;
+			return false;
+		}
+
+		void handleService(IServiceInfo serviceInfo, boolean discovered) {
+			IServiceID serviceID = serviceInfo.getServiceID();
+			if (matchServiceID(serviceID))
+				handleOSGiServiceEndpoint(serviceID, serviceInfo, discovered);
+		}
+
+		private void handleOSGiServiceEndpoint(IServiceID serviceId,
+				IServiceInfo serviceInfo, boolean discovered) {
+			if (locator == null)
+				return;
+			DiscoveredEndpointDescription discoveredEndpointDescription = getDiscoveredEndpointDescription(
+					serviceId, serviceInfo, discovered);
+			if (discoveredEndpointDescription != null) {
+				handleEndpointDescription(
+						discoveredEndpointDescription.getEndpointDescription(),
+						discovered);
+			} else {
+				logWarning("handleOSGiServiceEvent", //$NON-NLS-1$
+						"discoveredEndpointDescription is null for service info=" //$NON-NLS-1$
+								+ serviceInfo + ",discovered=" + discovered); //$NON-NLS-1$
+			}
+		}
+
+		public void handleEndpointDescription(
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+				boolean discovered) {
+			synchronized (listenerLock) {
+				if (discovered)
+					discoveredEndpointDescriptions.add(endpointDescription);
+				else
+					discoveredEndpointDescriptions.remove(endpointDescription);
+
+				queueEndpointDescription(endpointDescription, discovered);
+			}
+		}
+
+		public Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> getEndpointDescriptions() {
+			synchronized (listenerLock) {
+				Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> result = new ArrayList<org.osgi.service.remoteserviceadmin.EndpointDescription>();
+				result.addAll(discoveredEndpointDescriptions);
+				return result;
+			}
+		}
+
+		private void logWarning(String methodName, String message) {
+			LogUtility.logWarning(methodName, DebugOptions.DISCOVERY,
+					this.getClass(), message);
+		}
+
+		private void logError(String methodName, String message) {
+			logError(methodName, message, null);
+		}
+
+		private void logError(String methodName, String message, Throwable t) {
+			LogUtility.logError(methodName, DebugOptions.DISCOVERY,
+					this.getClass(), message, t);
+		}
+
+		private DiscoveredEndpointDescription getDiscoveredEndpointDescription(
+				IServiceID serviceId, IServiceInfo serviceInfo,
+				boolean discovered) {
+			// Get IEndpointDescriptionFactory
+			final String methodName = "getDiscoveredEndpointDescription"; //$NON-NLS-1$
+			IDiscoveredEndpointDescriptionFactory factory = getDiscoveredEndpointDescriptionFactory();
+			if (factory == null) {
+				logError(
+						methodName,
+						"No IEndpointDescriptionFactory found, could not create EndpointDescription for " //$NON-NLS-1$
+								+ (discovered ? "discovered" : "undiscovered") //$NON-NLS-1$ //$NON-NLS-2$
+								+ " serviceInfo=" + serviceInfo); //$NON-NLS-1$
+				return null;
+			}
+			try {
+				// Else get endpoint description factory to create
+				// EndpointDescription
+				// for given serviceID and serviceInfo
+				return (discovered) ? factory
+						.createDiscoveredEndpointDescription(locator,
+								serviceInfo) : factory
+						.getUndiscoveredEndpointDescription(locator, serviceId);
+			} catch (Exception e) {
+				logError(
+						methodName,
+						"Exception calling IEndpointDescriptionFactory." //$NON-NLS-1$
+								+ ((discovered) ? "createDiscoveredEndpointDescription" //$NON-NLS-1$
+										: "getUndiscoveredEndpointDescription"), e); //$NON-NLS-1$
+				return null;
+			} catch (NoClassDefFoundError e) {
+				logError(
+						methodName,
+						"NoClassDefFoundError calling IEndpointDescriptionFactory." //$NON-NLS-1$
+								+ ((discovered) ? "createDiscoveredEndpointDescription" //$NON-NLS-1$
+										: "getUndiscoveredEndpointDescription"), e); //$NON-NLS-1$
+				return null;
+			}
+		}
+
+		public synchronized void close() {
+			if (locator != null) {
+				locator.removeServiceListener(this);
+				locator = null;
+			}
+			discoveredEndpointDescriptions.clear();
+		}
+	}
 }
