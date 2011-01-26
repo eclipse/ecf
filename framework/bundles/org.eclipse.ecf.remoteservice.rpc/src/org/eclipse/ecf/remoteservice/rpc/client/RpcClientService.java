@@ -60,8 +60,7 @@ public class RpcClientService extends AbstractClientService {
 	}
 
 	/**
-	 * Create a Dynamic Proxy for using XML-RPC servers, which builded on Apache XML-RPC.
-	 * See the <a href="http://ws.apache.org/xmlrpc/advanced.html">Dynamic proxies</a> section.    
+	 * Create a Dynamic Proxy for using XML-RPC servers, which builded on Apache XML-RPC.	   
 	 */
 	public Object createProxy(ClassLoader cl, Class[] classes) {
 		if (classes == null || classes.length < 1)
