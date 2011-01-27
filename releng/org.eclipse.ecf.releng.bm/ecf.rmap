@@ -105,7 +105,7 @@
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.team\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.jivesoftware\.smack$" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.zookeeper$" />
-	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.osgi\.services(\..+)?" />
+	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.osgi(\..+)?" />
 	
 	<!-- EMF -->
 	<locator searchPathRef="org.eclipse.emf" pattern="^org\.eclipse\.emf(\..+)?" />
