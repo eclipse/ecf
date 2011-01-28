@@ -9,7 +9,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rpc.client;
 
-import java.io.NotSerializableException;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.client.*;
 
@@ -27,7 +26,7 @@ public class TrivialParameterServializer implements IRemoteCallParameterSerializ
 	 * @return the parameter value
 	 */
 	public IRemoteCallParameter serializeParameter(String endpoint, IRemoteCall call, IRemoteCallable callable,
-			IRemoteCallParameter paramDefault, Object paramToSerialize) throws NotSerializableException {
+			IRemoteCallParameter paramDefault, Object paramToSerialize) {
 		// Just return a parameter		
 		return new RemoteCallParameter(paramDefault.getName(), paramToSerialize == null ? paramDefault.getValue()
 				: paramToSerialize);

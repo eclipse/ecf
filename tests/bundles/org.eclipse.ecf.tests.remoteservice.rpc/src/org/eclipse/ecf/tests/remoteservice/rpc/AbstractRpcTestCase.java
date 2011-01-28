@@ -37,11 +37,11 @@ public abstract class AbstractRpcTestCase extends ECFAbstractTestCase {
 		return (IRemoteServiceClientContainerAdapter) container.getAdapter(IRemoteServiceClientContainerAdapter.class);
 	}
 	
-	protected IRemoteServiceRegistration registerCallable(IContainer container, IRemoteCallable callable, Dictionary properties) {
+	protected IRemoteServiceRegistration registerCallable(IContainer container, IRemoteCallable callable, Dictionary<String, Object> properties) {
 		return getRemoteServiceClientContainerAdapter(container).registerCallables(new IRemoteCallable[] { callable }, properties);
 	}
 
-	protected IRemoteServiceRegistration registerCallable(IContainer container, IRemoteCallable[] callables, Dictionary properties) {
+	protected IRemoteServiceRegistration registerCallable(IContainer container, IRemoteCallable[] callables, Dictionary<String, Object> properties) {
 		return getRemoteServiceClientContainerAdapter(container).registerCallables(callables, properties);
 	}
 }
