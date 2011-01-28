@@ -23,7 +23,7 @@ public class ConsumerContainerSelector extends
 
 	public IRemoteServiceContainer selectConsumerContainer(
 			EndpointDescription endpointDescription) {
-		trace("selectConsumerContainers", "endpointDescription=" + endpointDescription); //$NON-NLS-1$
+		trace("selectConsumerContainers", "endpointDescription=" + endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// Get the endpointID
 		ID endpointContainerID = endpointDescription.getContainerID();

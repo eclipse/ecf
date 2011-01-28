@@ -27,7 +27,7 @@ import org.osgi.framework.Version;
 
 public abstract class AbstractMetadataFactory {
 
-	protected static final String LIST_SEPARATOR = " ";
+	protected static final String LIST_SEPARATOR = " "; //$NON-NLS-1$
 
 	protected void encodeString(IServiceProperties props, String name,
 			String value) {
@@ -211,9 +211,9 @@ public abstract class AbstractMetadataFactory {
 	}
 
 	private String getPackageName(String className) {
-		int lastDotIndex = className.lastIndexOf(".");
+		int lastDotIndex = className.lastIndexOf("."); //$NON-NLS-1$
 		if (lastDotIndex == -1)
-			return "";
+			return ""; //$NON-NLS-1$
 		return className.substring(0, lastDotIndex);
 	}
 

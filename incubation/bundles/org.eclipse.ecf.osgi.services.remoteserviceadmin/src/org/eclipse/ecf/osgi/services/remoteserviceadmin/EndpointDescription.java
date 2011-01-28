@@ -64,7 +64,7 @@ public class EndpointDescription extends
 			return ((Long) r).longValue();
 		} catch (ClassCastException e) {
 			IllegalArgumentException iae = new IllegalArgumentException(
-					"property value is not a Long: " + propName);
+					"property value is not a Long: " + propName); //$NON-NLS-1$
 			iae.initCause(e);
 			throw iae;
 		}
@@ -76,7 +76,7 @@ public class EndpointDescription extends
 			return (String) r;
 		} catch (ClassCastException e) {
 			IllegalArgumentException iae = new IllegalArgumentException(
-					"property value is not a String: " + propName);
+					"property value is not a String: " + propName); //$NON-NLS-1$
 			iae.initCause(e);
 			throw iae;
 		}
@@ -89,8 +89,8 @@ public class EndpointDescription extends
 			return IDUtil.createID(idNamespace, idName);
 		} catch (IDCreateException e) {
 			IllegalArgumentException iae = new IllegalArgumentException(
-					"cannot create a valid ID: idNamespace=" + idNamespace
-							+ ", idName=" + idName);
+					"cannot create a valid ID: idNamespace=" + idNamespace //$NON-NLS-1$
+							+ ", idName=" + idName); //$NON-NLS-1$
 			iae.initCause(e);
 			throw iae;
 		}
@@ -112,8 +112,8 @@ public class EndpointDescription extends
 				results.add(IDUtil.createID(idNamespace, idName));
 			} catch (IDCreateException e) {
 				IllegalArgumentException iae = new IllegalArgumentException(
-						"cannot create ID[]: idNamespace=" + idNamespace
-								+ " idName=" + idName);
+						"cannot create ID[]: idNamespace=" + idNamespace //$NON-NLS-1$
+								+ " idName=" + idName); //$NON-NLS-1$
 				iae.initCause(e);
 				throw iae;
 			}
@@ -192,11 +192,11 @@ public class EndpointDescription extends
 	}
 
 	public String toString() {
-		return "ECFEndpointDescription[containerID=" + containerID
-				+ ", remoteServiceId=" + getRemoteServiceId()
-				+ ", connectTargetID=" + connectTargetID + ", idFilter="
-				+ Arrays.toString(idFilter) + ", rsFilter=" + rsFilter
-				+ ", hashCode=" + hashCode + "]";
+		return "ECFEndpointDescription[containerID=" + containerID //$NON-NLS-1$
+				+ ", remoteServiceId=" + getRemoteServiceId() //$NON-NLS-1$
+				+ ", connectTargetID=" + connectTargetID + ", idFilter=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ Arrays.toString(idFilter) + ", rsFilter=" + rsFilter //$NON-NLS-1$
+				+ ", hashCode=" + hashCode + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 }

@@ -77,9 +77,9 @@ class LocatorServiceListener implements IServiceListener {
 					discoveredEndpointDescription.getEndpointDescription(),
 					discovered);
 		} else {
-			logWarning("handleOSGiServiceEvent",
-					"discoveredEndpointDescription is null for service info="
-							+ serviceInfo + ",discovered=" + discovered);
+			logWarning("handleOSGiServiceEvent", //$NON-NLS-1$
+					"discoveredEndpointDescription is null for service info=" //$NON-NLS-1$
+							+ serviceInfo + ",discovered=" + discovered); //$NON-NLS-1$
 		}
 	}
 
@@ -122,15 +122,15 @@ class LocatorServiceListener implements IServiceListener {
 	private DiscoveredEndpointDescription getDiscoveredEndpointDescription(
 			IServiceID serviceId, IServiceInfo serviceInfo, boolean discovered) {
 		// Get IEndpointDescriptionFactory
-		final String methodName = "getDiscoveredEndpointDescription";
+		final String methodName = "getDiscoveredEndpointDescription"; //$NON-NLS-1$
 		IDiscoveredEndpointDescriptionFactory factory = endpointDescriptionLocator
 				.getDiscoveredEndpointDescriptionFactory();
 		if (factory == null) {
 			logError(
 					methodName,
-					"No IEndpointDescriptionFactory found, could not create EndpointDescription for "
-							+ (discovered ? "discovered" : "undiscovered")
-							+ " serviceInfo=" + serviceInfo);
+					"No IEndpointDescriptionFactory found, could not create EndpointDescription for " //$NON-NLS-1$
+							+ (discovered ? "discovered" : "undiscovered") //$NON-NLS-1$ //$NON-NLS-2$
+							+ " serviceInfo=" + serviceInfo); //$NON-NLS-1$
 			return null;
 		}
 		try {
@@ -143,16 +143,16 @@ class LocatorServiceListener implements IServiceListener {
 		} catch (Exception e) {
 			logError(
 					methodName,
-					"Exception calling IEndpointDescriptionFactory."
-							+ ((discovered) ? "createDiscoveredEndpointDescription"
-									: "getUndiscoveredEndpointDescription"), e);
+					"Exception calling IEndpointDescriptionFactory." //$NON-NLS-1$
+							+ ((discovered) ? "createDiscoveredEndpointDescription" //$NON-NLS-1$
+									: "getUndiscoveredEndpointDescription"), e); //$NON-NLS-1$
 			return null;
 		} catch (NoClassDefFoundError e) {
 			logError(
 					methodName,
-					"NoClassDefFoundError calling IEndpointDescriptionFactory."
-							+ ((discovered) ? "createDiscoveredEndpointDescription"
-									: "getUndiscoveredEndpointDescription"), e);
+					"NoClassDefFoundError calling IEndpointDescriptionFactory." //$NON-NLS-1$
+							+ ((discovered) ? "createDiscoveredEndpointDescription" //$NON-NLS-1$
+									: "getUndiscoveredEndpointDescription"), e); //$NON-NLS-1$
 			return null;
 		}
 	}

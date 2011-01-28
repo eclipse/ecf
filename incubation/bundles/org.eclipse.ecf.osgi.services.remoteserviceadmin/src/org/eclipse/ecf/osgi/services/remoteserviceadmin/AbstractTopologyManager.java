@@ -32,7 +32,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractTopologyManager {
 
-	public static final String SERVICE_EXPORTED_INTERFACES_WILDCARD = "*";
+	public static final String SERVICE_EXPORTED_INTERFACES_WILDCARD = "*"; //$NON-NLS-1$
 
 	private BundleContext context;
 
@@ -96,14 +96,14 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected Filter createRSAFilter() {
-		String filterString = "(&("
+		String filterString = "(&(" //$NON-NLS-1$
 				+ org.osgi.framework.Constants.OBJECTCLASS
-				+ "="
+				+ "=" //$NON-NLS-1$
 				+ org.osgi.service.remoteserviceadmin.RemoteServiceAdmin.class
 						.getName()
-				+ ")("
+				+ ")(" //$NON-NLS-1$
 				+ org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.SERVICE_PROP
-				+ "=*))";
+				+ "=*))"; //$NON-NLS-1$
 		try {
 			return getContext().createFilter(filterString);
 		} catch (InvalidSyntaxException e) {
@@ -128,8 +128,8 @@ public abstract class AbstractTopologyManager {
 			EndpointDescription endpointDescription) {
 		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
 		if (advertiser == null) {
-			logWarning("advertiseExportedRegistration",
-					"No endpoint description advertiser available for endpointDescription="
+			logWarning("advertiseExportedRegistration", //$NON-NLS-1$
+					"No endpoint description advertiser available for endpointDescription=" //$NON-NLS-1$
 							+ endpointDescription);
 			return;
 		}
@@ -137,9 +137,9 @@ public abstract class AbstractTopologyManager {
 		// advertiser
 		IStatus result = advertiser.advertise(endpointDescription);
 		if (!result.isOK())
-			logError("advertiseExportedRegistration",
-					"Advertise of endpointDescription=" + endpointDescription
-							+ " FAILED", result);
+			logError("advertiseExportedRegistration", //$NON-NLS-1$
+					"Advertise of endpointDescription=" + endpointDescription //$NON-NLS-1$
+							+ " FAILED", result); //$NON-NLS-1$
 	}
 
 	protected void unadvertiseEndpointDescription(
@@ -147,8 +147,8 @@ public abstract class AbstractTopologyManager {
 		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
 		if (advertiser == null) {
 			logError(
-					"unadvertiseEndpointDescription",
-					"No endpoint description advertiser available to unadvertise endpointDescription="
+					"unadvertiseEndpointDescription", //$NON-NLS-1$
+					"No endpoint description advertiser available to unadvertise endpointDescription=" //$NON-NLS-1$
 							+ endpointDescription);
 			return;
 		}
@@ -156,9 +156,9 @@ public abstract class AbstractTopologyManager {
 		// advertiser
 		IStatus result = advertiser.unadvertise(endpointDescription);
 		if (!result.isOK())
-			logError("unadvertiseEndpointDescription",
-					"Unadvertise of endpointDescription=" + endpointDescription
-							+ " FAILED", result);
+			logError("unadvertiseEndpointDescription", //$NON-NLS-1$
+					"Unadvertise of endpointDescription=" + endpointDescription //$NON-NLS-1$
+							+ " FAILED", result); //$NON-NLS-1$
 	}
 
 	protected void logError(String methodName, String message,
@@ -188,9 +188,9 @@ public abstract class AbstractTopologyManager {
 		if (endpoint instanceof EndpointDescription)
 			handleEndpointAdded((EndpointDescription) endpoint, matchedFilter);
 		else
-			logWarning("endpointAdded",
-					"ECF Topology Manager:  Ignoring Non-ECF endpointAdded="
-							+ endpoint + ",matchedFilter=" + matchedFilter);
+			logWarning("endpointAdded", //$NON-NLS-1$
+					"ECF Topology Manager:  Ignoring Non-ECF endpointAdded=" //$NON-NLS-1$
+							+ endpoint + ",matchedFilter=" + matchedFilter); //$NON-NLS-1$
 	}
 
 	protected void handleEndpointAdded(EndpointDescription endpointDescription,
@@ -199,30 +199,30 @@ public abstract class AbstractTopologyManager {
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
 
 		if (rsa == null) {
-			logError("handleEndpointAdded",
-					"RemoteServiceAdmin not found for importing endpointDescription="
+			logError("handleEndpointAdded", //$NON-NLS-1$
+					"RemoteServiceAdmin not found for importing endpointDescription=" //$NON-NLS-1$
 							+ endpointDescription);
 			return;
 		}
 
-		trace("handleEndpointAdded", "endpointDescription="
-				+ endpointDescription + " rsa=" + rsa);
+		trace("handleEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ endpointDescription + " rsa=" + rsa); //$NON-NLS-1$
 
 		// now call rsa.import
 		org.osgi.service.remoteserviceadmin.ImportRegistration importRegistration = rsa
 				.importService(endpointDescription);
 
 		if (importRegistration == null) {
-			logError("handleEndpointAdded",
-					"Import registration is null for endpointDescription="
-							+ endpointDescription + " and rsa=" + rsa);
+			logError("handleEndpointAdded", //$NON-NLS-1$
+					"Import registration is null for endpointDescription=" //$NON-NLS-1$
+							+ endpointDescription + " and rsa=" + rsa); //$NON-NLS-1$
 		} else {
 			Throwable t = importRegistration.getException();
 			if (t != null)
 				handleInvalidImportRegistration(importRegistration, t);
 			else {
-				trace("handleEndpointAdded",
-						"service imported.  importRegistration="
+				trace("handleEndpointAdded", //$NON-NLS-1$
+						"service imported.  importRegistration=" //$NON-NLS-1$
 								+ importRegistration);
 				synchronized (importedRegistrations) {
 					importedRegistrations.add(importRegistration);
@@ -233,7 +233,7 @@ public abstract class AbstractTopologyManager {
 
 	protected void handleInvalidImportRegistration(
 			ImportRegistration importRegistration, Throwable t) {
-		logError("handleInvalidImportRegistration", "importRegistration="
+		logError("handleInvalidImportRegistration", "importRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ importRegistration, t);
 	}
 
@@ -243,9 +243,9 @@ public abstract class AbstractTopologyManager {
 		if (endpoint instanceof EndpointDescription)
 			handleEndpointRemoved((EndpointDescription) endpoint, matchedFilter);
 		else
-			logWarning("endpointRemoved",
-					"ECF Topology Manager:  Ignoring Non-ECF endpointRemoved="
-							+ endpoint + ",matchedFilter=" + matchedFilter);
+			logWarning("endpointRemoved", //$NON-NLS-1$
+					"ECF Topology Manager:  Ignoring Non-ECF endpointRemoved=" //$NON-NLS-1$
+							+ endpoint + ",matchedFilter=" + matchedFilter); //$NON-NLS-1$
 	}
 
 	protected void handleEvent(ServiceEvent event, Collection contexts) {
@@ -268,7 +268,7 @@ public abstract class AbstractTopologyManager {
 
 	protected void handleEndpointRemoved(
 			EndpointDescription endpointDescription, String matchedFilter) {
-		trace("handleEndpointRemoved", "endpointDescription="
+		trace("handleEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ endpointDescription);
 		unimportService(endpointDescription);
 	}
@@ -287,10 +287,10 @@ public abstract class AbstractTopologyManager {
 
 		// if no remote service admin available, then log error and return
 		if (rsa == null) {
-			logError("handleServiceRegistered",
-					"No RemoteServiceAdmin found for serviceReference="
+			logError("handleServiceRegistered", //$NON-NLS-1$
+					"No RemoteServiceAdmin found for serviceReference=" //$NON-NLS-1$
 							+ serviceReference
-							+ ".  Remote service NOT EXPORTED");
+							+ ".  Remote service NOT EXPORTED"); //$NON-NLS-1$
 			return;
 		}
 
@@ -300,16 +300,16 @@ public abstract class AbstractTopologyManager {
 		exportProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES,
 						exportedInterfaces);
-		trace("handleServiceRegistering", "serviceReference="
-				+ serviceReference + " exportProperties=" + exportProperties);
+		trace("handleServiceRegistering", "serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ serviceReference + " exportProperties=" + exportProperties); //$NON-NLS-1$
 		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> registrations = rsa
 				.exportService(serviceReference, exportProperties);
 
 		if (registrations == null || registrations.size() == 0) {
-			logError("handleServiceRegistered",
-					"No export registrations created by RemoteServiceAdmin="
-							+ rsa + ".  ServiceReference=" + serviceReference
-							+ " NOT EXPORTED");
+			logError("handleServiceRegistered", //$NON-NLS-1$
+					"No export registrations created by RemoteServiceAdmin=" //$NON-NLS-1$
+							+ rsa + ".  ServiceReference=" + serviceReference //$NON-NLS-1$
+							+ " NOT EXPORTED"); //$NON-NLS-1$
 			return;
 		}
 
@@ -321,8 +321,8 @@ public abstract class AbstractTopologyManager {
 			if (t != null)
 				handleInvalidExportRegistration(exportRegistration, t);
 			else {
-				trace("handleServiceRegistering",
-						"service exported.  exportRegistration="
+				trace("handleServiceRegistering", //$NON-NLS-1$
+						"service exported.  exportRegistration=" //$NON-NLS-1$
 								+ exportRegistration);
 				endpointDescriptions
 						.add((EndpointDescription) exportRegistration
@@ -344,7 +344,7 @@ public abstract class AbstractTopologyManager {
 
 	protected void handleInvalidExportRegistration(
 			ExportRegistration exportRegistration, Throwable t) {
-		logError("handleInvalidExportRegistration", "exportRegistration="
+		logError("handleInvalidExportRegistration", "exportRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ exportRegistration, t);
 	}
 
@@ -398,7 +398,7 @@ public abstract class AbstractTopologyManager {
 				.keySet().iterator(); i.hasNext();) {
 			org.osgi.service.remoteserviceadmin.ExportRegistration exportRegistration = i
 					.next();
-			trace("unexportService", "closing exportRegistration="
+			trace("unexportService", "closing exportRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
 					+ exportRegistration);
 			exportRegistration.close();
 		}
@@ -433,7 +433,7 @@ public abstract class AbstractTopologyManager {
 		// Now close all of them
 		if (removedRegistrations != null)
 			for (org.osgi.service.remoteserviceadmin.ImportRegistration removedReg : removedRegistrations) {
-				trace("unimportService", "closing importRegistration="
+				trace("unimportService", "closing importRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ removedReg);
 				removedReg.close();
 			}

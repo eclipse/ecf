@@ -23,7 +23,6 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionAdver
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionAdvertiser;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.BasicTopologyManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -36,7 +35,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 
-	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin"; //$NON-NLS-1$
 
 	private static BundleContext context;
 	private static Activator instance;
@@ -55,7 +54,14 @@ public class Activator implements BundleActivator {
 	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
 	private ServiceRegistration endpointDescriptionAdvertiserRegistration;
 
-	private BasicTopologyManager basicTopologyManager;
+	private ServiceTracker containerManagerTracker;
+	// Logging
+	private ServiceTracker logServiceTracker = null;
+	private LogService logService = null;
+	private Object logServiceTrackerLock = new Object();
+	// Sax parser
+	private Object saxParserFactoryTrackerLock = new Object();
+	private ServiceTracker saxParserFactoryTracker;
 
 	/*
 	 * (non-Javadoc)
@@ -67,7 +73,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
-		// Setup remote service admin as service factory
+		// make remote service admin available
 		Properties rsaProps = new Properties();
 		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
 		remoteServiceAdminRegistration = context.registerService(
@@ -77,7 +83,7 @@ public class Activator implements BundleActivator {
 							ServiceRegistration registration) {
 						return new RemoteServiceAdmin(bundle);
 					}
-
+		
 					public void ungetService(Bundle bundle,
 							ServiceRegistration registration, Object service) {
 						if (service != null)
@@ -85,25 +91,19 @@ public class Activator implements BundleActivator {
 					}
 				}, (Dictionary) rsaProps);
 
-		// create and register default endpoint description advertiser
+		// create endpoint description locator
+		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
+		// create and register endpoint description advertiser
 		final Properties properties = new Properties();
 		properties.put(Constants.SERVICE_RANKING,
 				new Integer(Integer.MIN_VALUE));
-		// create endpoint description locator
-		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
-		// create endpoint description advertiser
 		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
 				endpointDescriptionLocator);
-		// register the advertiser
 		endpointDescriptionAdvertiserRegistration = getContext()
 				.registerService(
 						IEndpointDescriptionAdvertiser.class.getName(),
 						endpointDescriptionAdvertiser, (Dictionary) properties);
 
-		// create basic topology manager
-		basicTopologyManager = new BasicTopologyManager(context);
-		// start topology manager first
-		basicTopologyManager.start();
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();
 	}
@@ -119,16 +119,10 @@ public class Activator implements BundleActivator {
 			endpointDescriptionLocator.close();
 			endpointDescriptionLocator = null;
 		}
-		if (basicTopologyManager != null) {
-			basicTopologyManager.close();
-			basicTopologyManager = null;
-		}
-		// unregister remote service admin
 		if (remoteServiceAdminRegistration != null) {
 			remoteServiceAdminRegistration.unregister();
 			remoteServiceAdminRegistration = null;
 		}
-		// unregister and stop endpoint description advertiser
 		if (endpointDescriptionAdvertiserRegistration != null) {
 			endpointDescriptionAdvertiserRegistration.unregister();
 			endpointDescriptionAdvertiserRegistration = null;
@@ -137,14 +131,12 @@ public class Activator implements BundleActivator {
 			endpointDescriptionAdvertiser.close();
 			endpointDescriptionAdvertiser = null;
 		}
-		// close sax parser factory tracker
 		synchronized (saxParserFactoryTrackerLock) {
 			if (saxParserFactoryTracker != null) {
 				saxParserFactoryTracker.close();
 				saxParserFactoryTracker = null;
 			}
 		}
-		// close log service tracker
 		synchronized (logServiceTrackerLock) {
 			if (logServiceTracker != null) {
 				logServiceTracker.close();
@@ -152,7 +144,6 @@ public class Activator implements BundleActivator {
 				logService = null;
 			}
 		}
-		// Close container manager service tracker
 		if (containerManagerTracker != null) {
 			containerManagerTracker.close();
 			containerManagerTracker = null;
@@ -166,22 +157,17 @@ public class Activator implements BundleActivator {
 			return null;
 		// code get and set the framework uuid property as specified in
 		// r2.enterprise.pdf pg 297
-		synchronized ("org.osgi.framework.uuid") {
-			String result = context.getProperty("org.osgi.framework.uuid");
+		synchronized ("org.osgi.framework.uuid") { //$NON-NLS-1$
+			String result = context.getProperty("org.osgi.framework.uuid"); //$NON-NLS-1$
 			if (result == null) {
 				UUID newUUID = UUID.randomUUID();
 				result = newUUID.toString();
-				System.setProperty("org.osgi.framework.uuid",
+				System.setProperty("org.osgi.framework.uuid", //$NON-NLS-1$
 						newUUID.toString());
 			}
 			return result;
 		}
 	}
-
-	// Sax parser factory access for parsing endpoint description extender
-	// format
-	private Object saxParserFactoryTrackerLock = new Object();
-	private ServiceTracker saxParserFactoryTracker;
 
 	public SAXParserFactory getSAXParserFactory() {
 		if (instance == null)
@@ -195,11 +181,6 @@ public class Activator implements BundleActivator {
 			return (SAXParserFactory) saxParserFactoryTracker.getService();
 		}
 	}
-
-	// Logging
-	private ServiceTracker logServiceTracker = null;
-	private LogService logService = null;
-	private Object logServiceTrackerLock = new Object();
 
 	public LogService getLogService() {
 		if (context == null)
@@ -237,9 +218,6 @@ public class Activator implements BundleActivator {
 			logService.log(sr, level, message, t);
 	}
 
-	// container manager access
-	private ServiceTracker containerManagerTracker;
-
 	public IContainerManager getContainerManager() {
 		if (containerManagerTracker == null) {
 			containerManagerTracker = new ServiceTracker(context,
@@ -248,5 +226,4 @@ public class Activator implements BundleActivator {
 		}
 		return (IContainerManager) containerManagerTracker.getService();
 	}
-
 }

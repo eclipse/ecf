@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class EndpointDescriptionWriter {
 
-	protected String indent = "  ";
+	protected String indent = "  "; //$NON-NLS-1$
 
 	protected List<String> xmlNames;
 
@@ -58,23 +58,23 @@ public class EndpointDescriptionWriter {
 
 		void writeXml(int indentLevel, Writer writer) throws IOException {
 			indent(indentLevel, writer);
-			writer.append("<xml>");
+			writer.append("<xml>"); //$NON-NLS-1$
 			newLine(writer);
 			indent(indentLevel + 1, writer);
 			writer.append((String) getValue());
 			newLine(writer);
 			indent(indentLevel, writer);
-			writer.append("</xml>");
+			writer.append("</xml>"); //$NON-NLS-1$
 			newLine(writer);
 		}
 
 		public void writeProperty(int indentLevel, Writer writer)
 				throws IOException {
 			indent(indentLevel, writer);
-			writer.append("<property name=\"").append(getName()).append("\">");
+			writer.append("<property name=\"").append(getName()).append("\">"); //$NON-NLS-1$ //$NON-NLS-2$
 			newLine(writer);
 			writeXml(indentLevel + 1, writer);
-			writer.append("</property>");
+			writer.append("</property>"); //$NON-NLS-1$
 			newLine(writer);
 		}
 	}
@@ -92,21 +92,21 @@ public class EndpointDescriptionWriter {
 		public void writeProperty(int indentLevel, Writer writer)
 				throws IOException {
 			indent(indentLevel, writer);
-			writer.append("<property name=\"").append(getName())
-					.append("\" value-type=\"").append(getValueType())
-					.append("\">");
+			writer.append("<property name=\"").append(getName()) //$NON-NLS-1$
+					.append("\" value-type=\"").append(getValueType()) //$NON-NLS-1$
+					.append("\">"); //$NON-NLS-1$
 			newLine(writer);
 			writePropertyValues(indentLevel + 1, writer);
 			indent(indentLevel, writer);
-			writer.append("</property>");
+			writer.append("</property>"); //$NON-NLS-1$
 			newLine(writer);
 		}
 
 		void writePropertyValue(int indentLevel, Object value, Writer writer)
 				throws IOException {
 			indent(indentLevel, writer);
-			writer.append("<value>").append(value.toString())
-					.append("</value>");
+			writer.append("<value>").append(value.toString()) //$NON-NLS-1$
+					.append("</value>"); //$NON-NLS-1$
 			newLine(writer);
 		}
 
@@ -126,12 +126,12 @@ public class EndpointDescriptionWriter {
 				throws IOException {
 			Set s = (Set) getValue();
 			indent(indentLevel, writer);
-			writer.append("<set>");
+			writer.append("<set>"); //$NON-NLS-1$
 			newLine(writer);
 			for (Iterator i = s.iterator(); i.hasNext();)
 				writePropertyValue(indentLevel + 1, i.next(), writer);
 			indent(indentLevel, writer);
-			writer.append("</set>");
+			writer.append("</set>"); //$NON-NLS-1$
 		}
 
 	}
@@ -150,12 +150,12 @@ public class EndpointDescriptionWriter {
 				throws IOException {
 			List l = (List) getValue();
 			indent(indentLevel, writer);
-			writer.append("<list>");
+			writer.append("<list>"); //$NON-NLS-1$
 			newLine(writer);
 			for (Iterator i = l.iterator(); i.hasNext();)
 				writePropertyValue(indentLevel + 1, i.next(), writer);
 			indent(indentLevel, writer);
-			writer.append("</list>");
+			writer.append("</list>"); //$NON-NLS-1$
 			newLine(writer);
 		}
 	}
@@ -174,12 +174,12 @@ public class EndpointDescriptionWriter {
 				throws IOException {
 			Object[] a = (Object[]) getValue();
 			indent(indentLevel, writer);
-			writer.append("<array>");
+			writer.append("<array>"); //$NON-NLS-1$
 			newLine(writer);
 			for (int i = 0; i < a.length; i++)
 				writePropertyValue(indentLevel + 1, a[i], writer);
 			indent(indentLevel, writer);
-			writer.append("</array>");
+			writer.append("</array>"); //$NON-NLS-1$
 			newLine(writer);
 		}
 	}
@@ -189,11 +189,14 @@ public class EndpointDescriptionWriter {
 			org.osgi.service.remoteserviceadmin.EndpointDescription[] endpointDescriptions)
 			throws IOException {
 
-		writeEndpointDescriptionsElementOpen(0, writer);
-		for (int i = 0; i < endpointDescriptions.length; i++) {
+		indent(0, writer);
+		writer.append("<endpoint-descriptions xmlns=\"http://www.osgi.org/xmlns/rsa/v1.0.0\">"); //$NON-NLS-1$
+		newLine(writer);
+		for (int i = 0; i < endpointDescriptions.length; i++)
 			writeEndpointDescription(1, writer, endpointDescriptions[i]);
-		}
-		writeEndpointDescriptionsElementClose(0, writer);
+		indent(0, writer);
+		writer.append("</endpoint-descriptions>"); //$NON-NLS-1$
+		newLine(writer);
 	}
 
 	protected void writeEndpointDescription(
@@ -201,9 +204,13 @@ public class EndpointDescriptionWriter {
 			Writer writer,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription)
 			throws IOException {
-		writeEndpointDescriptionElementOpen(indentLevel, writer);
+		indent(indentLevel, writer);
+		writer.append("<endpoint-description>"); //$NON-NLS-1$
+		newLine(writer);
 		writeProperties(indentLevel, writer, endpointDescription);
-		writeEndpointDescriptionElementClose(indentLevel, writer);
+		indent(indentLevel, writer);
+		writer.append("</endpoint-description>"); //$NON-NLS-1$
+		newLine(writer);
 	}
 
 	protected void writeProperties(
@@ -235,6 +242,7 @@ public class EndpointDescriptionWriter {
 
 	protected void writeUnknownProperty(int indentLevel, Writer writer,
 			String name, Object value) {
+		// By default, do nothing
 	}
 
 	protected ComplexProperty getComplexProperty(String name, Object value) {
@@ -252,9 +260,9 @@ public class EndpointDescriptionWriter {
 	protected void writeValueProperty(int indentLevel, String name,
 			String valueType, Object value, Writer writer) throws IOException {
 		indent(indentLevel, writer);
-		writer.append("<property name=\"").append(name)
-				.append("\" value-type=\"").append(valueType)
-				.append("\" value=\"").append(value.toString()).append("\"/>");
+		writer.append("<property name=\"").append(name) //$NON-NLS-1$
+				.append("\" value-type=\"").append(valueType) //$NON-NLS-1$
+				.append("\" value=\"").append(value.toString()).append("\"/>"); //$NON-NLS-1$ //$NON-NLS-2$
 		newLine(writer);
 	}
 
@@ -283,62 +291,34 @@ public class EndpointDescriptionWriter {
 	protected String getValueType(Object value) {
 		// first determine if is array
 		if (value instanceof String)
-			return "String";
+			return "String"; //$NON-NLS-1$
 		else if (value instanceof Long)
-			return "Long";
+			return "Long"; //$NON-NLS-1$
 		else if (value instanceof Double)
-			return "Double";
+			return "Double"; //$NON-NLS-1$
 		else if (value instanceof Float)
-			return "Float";
+			return "Float"; //$NON-NLS-1$
 		else if (value instanceof Integer)
-			return "Integer";
+			return "Integer"; //$NON-NLS-1$
 		else if (value instanceof Byte)
-			return "Byte";
+			return "Byte"; //$NON-NLS-1$
 		else if (value instanceof Character)
-			return "Character";
+			return "Character"; //$NON-NLS-1$
 		else if (value instanceof Boolean)
-			return "Boolean";
+			return "Boolean"; //$NON-NLS-1$
 		else if (value instanceof Short)
-			return "Short";
+			return "Short"; //$NON-NLS-1$
 		return null;
 	}
 
 	protected Writer newLine(Writer writer) throws IOException {
-		return writer.append("\n");
+		return writer.append("\n"); //$NON-NLS-1$
 	}
 
 	protected Writer indent(int indentLevel, Writer writer) throws IOException {
 		for (int i = 0; i < indentLevel; i++)
 			writer.append(indent);
 		return writer;
-	}
-
-	protected void writeEndpointDescriptionsElementOpen(int indentLevel,
-			Writer writer) throws IOException {
-		indent(indentLevel, writer);
-		writer.append("<endpoint-descriptions xmlns=\"http://www.osgi.org/xmlns/rsa/v1.0.0\">");
-		newLine(writer);
-	}
-
-	protected void writeEndpointDescriptionsElementClose(int indentLevel,
-			Writer writer) throws IOException {
-		indent(indentLevel, writer);
-		writer.append("</endpoint-descriptions>");
-		newLine(writer);
-	}
-
-	protected void writeEndpointDescriptionElementOpen(int indentLevel,
-			Writer writer) throws IOException {
-		indent(indentLevel, writer);
-		writer.append("<endpoint-description>");
-		newLine(writer);
-	}
-
-	protected void writeEndpointDescriptionElementClose(int indentLevel,
-			Writer writer) throws IOException {
-		indent(indentLevel, writer);
-		writer.append("</endpoint-description>");
-		newLine(writer);
 	}
 
 }

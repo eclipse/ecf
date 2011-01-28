@@ -46,7 +46,7 @@ public class IDUtil {
 	public static Namespace findNamespaceByScheme(String scheme) {
 		if (scheme == null)
 			return null;
-		if (scheme.equals("ecftcp"))
+		if (scheme.equals("ecftcp")) //$NON-NLS-1$
 			return getIDFactory().getNamespaceByName(StringID.class.getName());
 		List namespaces = getIDFactory().getNamespaces();
 		for (Iterator i = namespaces.iterator(); i.hasNext();) {
@@ -63,8 +63,8 @@ public class IDUtil {
 				: findNamespaceByIdName(idName);
 		if (ns == null)
 			throw new IDCreateException(
-					"Cannot find Namespace for namespaceName=" + namespaceName
-							+ " and idName=" + idName);
+					"Cannot find Namespace for namespaceName=" + namespaceName //$NON-NLS-1$
+							+ " and idName=" + idName); //$NON-NLS-1$
 		return createID(ns, idName);
 	}
 

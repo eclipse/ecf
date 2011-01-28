@@ -37,10 +37,11 @@ public class EndpointDescriptionReader implements IEndpointDescriptionReader {
 			try {
 				results.add(new EndpointDescription(parsedProperties));
 			} catch (Exception e) {
-				LogUtility.logError("readEndpointDescriptions",
+				LogUtility.logError(
+						"readEndpointDescriptions", //$NON-NLS-1$
 						DebugOptions.ENDPOINT_DESCRIPTION_READER,
 						this.getClass(),
-						"Exception parsing endpoint description properties", e);
+						"Exception parsing endpoint description properties", e); //$NON-NLS-1$
 			}
 		}
 		return results.toArray(new EndpointDescription[results.size()]);

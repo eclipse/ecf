@@ -72,8 +72,8 @@ public class DiscoveredEndpointDescriptionFactory extends
 				}
 			}
 		} catch (Exception e) {
-			logError("createDiscoveredEndpointDescription",
-					"Exception creating discovered endpoint description", e);
+			logError("createDiscoveredEndpointDescription", //$NON-NLS-1$
+					"Exception creating discovered endpoint description", e); //$NON-NLS-1$
 			return null;
 		}
 	}

@@ -59,31 +59,35 @@ import org.osgi.service.remoteserviceadmin.EndpointPermission;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
 
+@SuppressWarnings("deprecation")
 public class RemoteServiceAdmin implements
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin {
 
-	public static final String SERVICE_PROP = "org.eclipse.ecf.rsa";
+	public static final String SERVICE_PROP = "org.eclipse.ecf.rsa"; //$NON-NLS-1$
 
 	private Bundle clientBundle;
 
 	private boolean hostAutoCreateContainer = new Boolean(
 			System.getProperty(
-					"org.eclipse.ecf.osgi.services.remoteserviceadmin.hostAutoCreateContainer",
-					"true")).booleanValue();
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.hostAutoCreateContainer", //$NON-NLS-1$
+					"true")).booleanValue(); //$NON-NLS-1$
 	private String[] hostDefaultConfigTypes = new String[] { System
 			.getProperty(
-					"org.eclipse.ecf.osgi.services.remoteserviceadmin.hostDefaultConfigType",
-					"ecf.generic.server") };
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.hostDefaultConfigType", //$NON-NLS-1$
+					"ecf.generic.server") }; //$NON-NLS-1$
 
 	private boolean consumerAutoCreateContainer = new Boolean(
 			System.getProperty(
-					"org.eclipse.ecf.osgi.services.remoteserviceadmin.consumerAutoCreateContainer",
-					"true")).booleanValue();
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.consumerAutoCreateContainer", //$NON-NLS-1$
+					"true")).booleanValue(); //$NON-NLS-1$
 
 	private PackageVersionComparator packageVersionComparator;
 
 	private ServiceTracker packageAdminTracker;
 	private Object packageAdminTrackerLock = new Object();
+
+	private Object eventAdminTrackerLock = new Object();
+	private ServiceTracker eventAdminTracker;
 
 	private Object remoteServiceAdminListenerTrackerLock = new Object();
 	private ServiceTracker remoteServiceAdminListenerTracker;
@@ -97,39 +101,11 @@ public class RemoteServiceAdmin implements
 	private Collection<ExportRegistration> exportedRegistrations = new ArrayList<ExportRegistration>();
 	private Collection<ImportRegistration> importedRegistrations = new ArrayList<ImportRegistration>();
 
-	private BundleContext getClientBundleContext() {
-		return clientBundle.getBundleContext();
-	}
-
-	private Bundle getClientBundle() {
-		return clientBundle;
-	}
-
-	private boolean removeExportRegistration(
-			ExportRegistration exportRegistration) {
-		synchronized (exportedRegistrations) {
-			boolean removed = exportedRegistrations.remove(exportRegistration);
-			trace("removeExportRegistration", "exportRegistration="
-					+ exportRegistration + " exportedRegistrations="
-					+ exportedRegistrations + " removed=" + removed);
-			return removed;
-		}
-	}
-
-	private boolean removeImportRegistration(
-			ImportRegistration importRegistration) {
-		synchronized (importedRegistrations) {
-			boolean removed = importedRegistrations.remove(importRegistration);
-			trace("removeImportRegistration", "importRegistration="
-					+ importRegistration + " importedRegistrations="
-					+ importedRegistrations + " removed=" + removed);
-			return removed;
-		}
-	}
-
 	public RemoteServiceAdmin(Bundle clientBundle) {
 		this.clientBundle = clientBundle;
 		Assert.isNotNull(this.clientBundle);
+		trace("RemoteServiceAdmin<init>",
+				"clientBundle=" + clientBundle.getSymbolicName());
 		// Only setup defaults if it hasn't already been done by some other
 		// Remote Service Admin instance
 		Properties props = new Properties();
@@ -177,6 +153,242 @@ public class RemoteServiceAdmin implements
 		packageVersionComparator = new PackageVersionComparator();
 	}
 
+	// RemoteServiceAdmin service interface impl methods
+	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
+			ServiceReference serviceReference,
+			Map<String, Object> overridingProperties) {
+
+		trace("exportService", "serviceReference=" + serviceReference //$NON-NLS-1$ //$NON-NLS-2$
+				+ ",properties=" + overridingProperties); //$NON-NLS-1$
+
+		overridingProperties = (overridingProperties == null) ? Collections.EMPTY_MAP
+				: overridingProperties;
+
+		// First get exported interfaces
+		String[] exportedInterfaces = (String[]) overridingProperties
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
+		// As per 122.5.1 we only use the OBJECTCLASS value from the
+		// serviceReference, not from the overridingProperties map
+		if (exportedInterfaces == null)
+			exportedInterfaces = PropertiesUtil
+					.getExportedInterfaces(serviceReference);
+		// If exportedInterfaces is still null, we throw
+		if (exportedInterfaces == null)
+			throw new IllegalArgumentException(
+					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES
+							+ " not set"); //$NON-NLS-1$
+
+		// Get optional exported configs
+		String[] exportedConfigs = PropertiesUtil
+				.getStringArrayFromPropertyValue(overridingProperties
+						.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
+		if (exportedConfigs == null) {
+			exportedConfigs = PropertiesUtil
+					.getStringArrayFromPropertyValue(serviceReference
+							.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
+		}
+		// Get all intents (service.intents, service.exported.intents,
+		// service.exported.intents.extra)
+		String[] serviceIntents = PropertiesUtil.getServiceIntents(
+				serviceReference, overridingProperties);
+
+		// Get a host container selector, and use it to
+		IHostContainerSelector hostContainerSelector = getHostContainerSelector();
+		if (hostContainerSelector == null) {
+			logError("handleServiceRegistering", //$NON-NLS-1$
+					"No defaultHostContainerSelector available"); //$NON-NLS-1$
+			return Collections.EMPTY_LIST;
+		}
+		// select ECF remote service containers that match given exported
+		// interfaces, configs, and intents
+		IRemoteServiceContainer[] rsContainers = hostContainerSelector
+				.selectHostContainers(serviceReference, exportedInterfaces,
+						exportedConfigs, serviceIntents);
+		// If none found, log a warning and we're done
+		if (rsContainers == null || rsContainers.length == 0) {
+			logWarning(
+					"handleServiceRegistered", "No remote service containers found for serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ serviceReference
+							+ ". Remote service NOT EXPORTED"); //$NON-NLS-1$
+			return Collections.EMPTY_LIST;
+		}
+		Collection<ExportRegistration> exportRegistrations = new ArrayList<ExportRegistration>();
+		synchronized (exportedRegistrations) {
+			for (int i = 0; i < rsContainers.length; i++) {
+				ExportRegistration exportRegistration = null;
+				// If we've already got an export endpoint
+				// for this service reference/containerID combination,
+				// then create an ExportRegistration that uses the endpoint
+				ExportEndpoint exportEndpoint = findExistingExportEndpoint(
+						serviceReference, rsContainers[i].getContainer()
+								.getID());
+				// If we've already got one, then create a new
+				// ExportRegistration for it and we're done
+				if (exportEndpoint != null)
+					exportRegistration = new ExportRegistration(exportEndpoint);
+				else {
+					// otherwise, actually export the service to create a new
+					// ExportEndpoint
+					// and use it to create a new ExportRegistration
+					exportRegistration = new ExportRegistration(
+							exportService(serviceReference,
+									overridingProperties, exportedInterfaces,
+									serviceIntents, rsContainers[i]));
+					// If no exception, we add it to our known set of exported
+					// registrations
+					if (exportRegistration.getException() == null)
+						exportedRegistrations.add(exportRegistration);
+				}
+				// We add it to the results in either case
+				exportRegistrations.add(exportRegistration);
+			}
+		}
+		// publish all exportRegistrations
+		for (ExportRegistration exportReg : exportRegistrations)
+			publishExportEvent(exportReg);
+		// and return
+		return new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>(
+				exportRegistrations);
+	}
+
+	public org.osgi.service.remoteserviceadmin.ImportRegistration importService(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+
+		trace("importService", "endpointDescription=" + endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$
+
+		// First, make sure that the client bundle has the IMPORT endpoint
+		// permission
+		checkEndpointPermission(endpointDescription, EndpointPermission.IMPORT);
+
+		if (endpointDescription.getServiceId() == 0)
+			return handleNonOSGiService(endpointDescription);
+
+		// First check to see whether it's one of ECF's endpoint descriptions
+		if (endpointDescription instanceof EndpointDescription) {
+			EndpointDescription ed = (EndpointDescription) endpointDescription;
+			// Now get IConsumerContainerSelector, to select the ECF container
+			// for the given endpointDescription
+			IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
+			// If there is none, then we can go no further
+			if (consumerContainerSelector == null) {
+				logError("importService", //$NON-NLS-1$
+						"No defaultConsumerContainerSelector available"); //$NON-NLS-1$
+				return null;
+			}
+			// Select the rsContainer to handle the endpoint description
+			IRemoteServiceContainer rsContainer = consumerContainerSelector
+					.selectConsumerContainer(ed);
+			// If none found, log a warning and we're done
+			if (rsContainer == null) {
+				logWarning(
+						"importService", "No remote service container selected for endpoint=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ endpointDescription
+								+ ". Remote service NOT IMPORTED"); //$NON-NLS-1$
+				return null;
+			}
+			// If one selected then import the service to create an import
+			// registration
+			ImportRegistration importRegistration = null;
+			synchronized (importedRegistrations) {
+				ImportEndpoint importEndpoint = findImportEndpoint(ed);
+				if (importEndpoint != null)
+					importRegistration = new ImportRegistration(importEndpoint);
+				else {
+					importEndpoint = importService(ed, rsContainer);
+					importRegistration = new ImportRegistration(importEndpoint);
+					if (importRegistration.getException() == null)
+						importedRegistrations.add(importRegistration);
+				}
+			}
+			// publish import event
+			publishImportEvent(importRegistration);
+			// Finally, return the importRegistration. It may be null or not.
+			return importRegistration;
+		} else {
+			logWarning("importService", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ endpointDescription
+					+ " is not ECF EndpointDescription...ignoring"); //$NON-NLS-1$
+			return null;
+		}
+	}
+
+	public Collection<org.osgi.service.remoteserviceadmin.ExportReference> getExportedServices() {
+		Collection<org.osgi.service.remoteserviceadmin.ExportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportReference>();
+		synchronized (exportedRegistrations) {
+			for (ExportRegistration reg : exportedRegistrations) {
+				org.osgi.service.remoteserviceadmin.ExportReference eRef = reg
+						.getExportReference();
+				if (eRef != null
+						&& checkEndpointPermissionRead("getExportedServices", //$NON-NLS-1$
+								eRef.getExportedEndpoint()))
+					results.add(eRef);
+			}
+		}
+		return results;
+	}
+
+	public Collection<org.osgi.service.remoteserviceadmin.ImportReference> getImportedEndpoints() {
+		Collection<org.osgi.service.remoteserviceadmin.ImportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ImportReference>();
+		synchronized (importedRegistrations) {
+			for (ImportRegistration reg : importedRegistrations) {
+				org.osgi.service.remoteserviceadmin.ImportReference iRef = reg
+						.getImportReference();
+				if (iRef != null
+						&& checkEndpointPermissionRead("getImportedEndpoints", //$NON-NLS-1$
+								iRef.getImportedEndpoint()))
+					results.add(iRef);
+			}
+		}
+		return results;
+	}
+
+	// end RemoteServiceAdmin service interface impl methods
+
+	private boolean checkEndpointPermissionRead(
+			String methodName,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		try {
+			checkEndpointPermission(endpointDescription,
+					EndpointPermission.READ);
+			return true;
+		} catch (SecurityException e) {
+			logError(methodName,
+					"permission check failed for read access to endpointDescription=" //$NON-NLS-1$
+							+ endpointDescription, e);
+			return false;
+		}
+	}
+
+	private BundleContext getClientBundleContext() {
+		return clientBundle.getBundleContext();
+	}
+
+	private Bundle getClientBundle() {
+		return clientBundle;
+	}
+
+	private boolean removeExportRegistration(
+			ExportRegistration exportRegistration) {
+		synchronized (exportedRegistrations) {
+			boolean removed = exportedRegistrations.remove(exportRegistration);
+			trace("removeExportRegistration", "exportRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ exportRegistration + " exportedRegistrations=" //$NON-NLS-1$
+					+ exportedRegistrations + " removed=" + removed); //$NON-NLS-1$
+			return removed;
+		}
+	}
+
+	private boolean removeImportRegistration(
+			ImportRegistration importRegistration) {
+		synchronized (importedRegistrations) {
+			boolean removed = importedRegistrations.remove(importRegistration);
+			trace("removeImportRegistration", "importRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ importRegistration + " importedRegistrations=" //$NON-NLS-1$
+					+ importedRegistrations + " removed=" + removed); //$NON-NLS-1$
+			return removed;
+		}
+	}
+
 	private void closeDefaultContainerSelectors() {
 		if (defaultHostContainerSelectorRegistration != null) {
 			defaultHostContainerSelectorRegistration.unregister();
@@ -206,96 +418,7 @@ public class RemoteServiceAdmin implements
 				Activator.getDefault().getFrameworkUUID(), permissionType));
 	}
 
-	// RemoteServiceAdmin service interface impl methods
-	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
-			ServiceReference serviceReference,
-			Map<String, Object> overridingProperties) {
-
-		trace("exportService", "serviceReference=" + serviceReference
-				+ ",properties=" + overridingProperties);
-
-		overridingProperties = (overridingProperties == null) ? Collections.EMPTY_MAP
-				: overridingProperties;
-
-		// First get exported interfaces
-		String[] exportedInterfaces = (String[]) overridingProperties
-				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
-		// As per 122.5.1 we only use the OBJECTCLASS value from the
-		// serviceReference, not from the overridingProperties map
-		if (exportedInterfaces == null)
-			exportedInterfaces = PropertiesUtil
-					.getExportedInterfaces(serviceReference);
-		// If exportedInterfaces is still null, we throw
-		if (exportedInterfaces == null)
-			throw new IllegalArgumentException(
-					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES
-							+ " not set");
-		// Get optional service property for exported configs
-		String[] exportedConfigs = PropertiesUtil
-				.getStringArrayFromPropertyValue(serviceReference
-						.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
-		// Get all intents (service.intents, service.exported.intents,
-		// service.exported.intents.extra)
-		String[] serviceIntents = PropertiesUtil
-				.getServiceIntents(serviceReference);
-
-		// Get a host container selector
-		IHostContainerSelector hostContainerSelector = getHostContainerSelector();
-		if (hostContainerSelector == null) {
-			logError("handleServiceRegistering",
-					"No defaultHostContainerSelector available");
-			return Collections.EMPTY_LIST;
-		}
-		// select ECF remote service containers that match given exported
-		// interfaces, configs, and intents
-		IRemoteServiceContainer[] rsContainers = hostContainerSelector
-				.selectHostContainers(serviceReference, exportedInterfaces,
-						exportedConfigs, serviceIntents);
-		// If none found, log a warning and we're done
-		if (rsContainers == null || rsContainers.length == 0) {
-			logWarning(
-					"handleServiceRegistered", "No remote service containers found for serviceReference=" //$NON-NLS-1$
-							+ serviceReference
-							+ ". Remote service NOT EXPORTED"); //$NON-NLS-1$
-			return Collections.EMPTY_LIST;
-		}
-		Collection<ExportRegistration> exportRegistrations = new ArrayList<ExportRegistration>();
-		synchronized (exportedRegistrations) {
-			for (int i = 0; i < rsContainers.length; i++) {
-				ExportRegistration exportRegistration = null;
-				// If we've already got an export endpoint
-				// for this service reference/containerID combination,
-				// then create an ExportRegistration that uses the endpoint
-				ExportEndpoint exportEndpoint = findExistingExportEndpoint(
-						serviceReference, rsContainers[i].getContainer()
-								.getID());
-				// If we've already got one, then create a new
-				// ExportRegistration for it
-				if (exportEndpoint != null)
-					exportRegistration = new ExportRegistration(exportEndpoint);
-				else {
-					exportRegistration = new ExportRegistration(
-							exportService(serviceReference,
-									overridingProperties, exportedInterfaces,
-									serviceIntents, rsContainers[i]));
-					// If no exception, we add it to our known set of exported
-					// registrations
-					if (exportRegistration.getException() == null)
-						exportedRegistrations.add(exportRegistration);
-				}
-				// We add it to the results in either case
-				exportRegistrations.add(exportRegistration);
-			}
-		}
-		// publish all exportRegistrations
-		for (ExportRegistration exportReg : exportRegistrations)
-			publishExportEvent(exportReg);
-		// and return
-		return new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>(
-				exportRegistrations);
-	}
-
-	public class ExportEndpoint {
+	class ExportEndpoint {
 
 		private ServiceReference serviceReference;
 		private EndpointDescription endpointDescription;
@@ -374,13 +497,13 @@ public class RemoteServiceAdmin implements
 		}
 
 		public synchronized String toString() {
-			return "ExportEndpoint[rsRegistration=" + rsRegistration
-					+ ", exportReference=" + exportReference + "]";
+			return "ExportEndpoint[rsRegistration=" + rsRegistration //$NON-NLS-1$
+					+ ", exportReference=" + exportReference + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
 
-	public class ExportRegistration implements
+	class ExportRegistration implements
 			org.osgi.service.remoteserviceadmin.ExportRegistration {
 
 		private ExportEndpoint exportEndpoint;
@@ -406,7 +529,7 @@ public class RemoteServiceAdmin implements
 			Throwable t = getException();
 			if (t != null)
 				throw new IllegalStateException(
-						"Cannot get export reference as export registration is invalid",
+						"Cannot get export reference as export registration is invalid", //$NON-NLS-1$
 						t);
 			return (exportEndpoint == null) ? null : exportEndpoint
 					.getExportReference();
@@ -480,12 +603,12 @@ public class RemoteServiceAdmin implements
 		}
 
 		public synchronized String toString() {
-			return "ExportRegistration[exportEndpoint=" + exportEndpoint + "]";
+			return "ExportRegistration[exportEndpoint=" + exportEndpoint + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
 
-	public class ExportReference implements
+	class ExportReference implements
 			org.osgi.service.remoteserviceadmin.ExportReference {
 
 		private ServiceReference serviceReference;
@@ -511,13 +634,13 @@ public class RemoteServiceAdmin implements
 		}
 
 		public synchronized String toString() {
-			return "ExportReference[serviceReference=" + serviceReference
-					+ ", endpointDescription=" + endpointDescription + "]";
+			return "ExportReference[serviceReference=" + serviceReference //$NON-NLS-1$
+					+ ", endpointDescription=" + endpointDescription + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
 
-	public class ImportEndpoint {
+	class ImportEndpoint {
 
 		private IRemoteServiceContainerAdapter rsContainerAdapter;
 		private EndpointDescription endpointDescription;
@@ -614,9 +737,9 @@ public class RemoteServiceAdmin implements
 		}
 
 		public synchronized String toString() {
-			return "ImportEndpoint[rsReference=" + rsReference
-					+ ", proxyRegistration=" + proxyRegistration
-					+ ", importReference=" + importReference + "]";
+			return "ImportEndpoint[rsReference=" + rsReference //$NON-NLS-1$
+					+ ", proxyRegistration=" + proxyRegistration //$NON-NLS-1$
+					+ ", importReference=" + importReference + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		synchronized boolean match(EndpointDescription ed) {
@@ -631,7 +754,7 @@ public class RemoteServiceAdmin implements
 
 	}
 
-	public class ImportRegistration implements
+	class ImportRegistration implements
 			org.osgi.service.remoteserviceadmin.ImportRegistration {
 
 		private ImportEndpoint importEndpoint;
@@ -670,7 +793,7 @@ public class RemoteServiceAdmin implements
 			Throwable t = getException();
 			if (t != null)
 				throw new IllegalStateException(
-						"Cannot get import reference as registration not properly initialized",
+						"Cannot get import reference as registration not properly initialized", //$NON-NLS-1$
 						t);
 			return importEndpoint == null ? null : importEndpoint
 					.getImportReference();
@@ -707,12 +830,12 @@ public class RemoteServiceAdmin implements
 		}
 
 		public synchronized String toString() {
-			return "ImportRegistration[importEndpoint=" + importEndpoint + "]";
+			return "ImportRegistration[importEndpoint=" + importEndpoint + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
 
-	public class ImportReference implements
+	class ImportReference implements
 			org.osgi.service.remoteserviceadmin.ImportReference {
 
 		private ServiceReference importedServiceReference;
@@ -738,9 +861,9 @@ public class RemoteServiceAdmin implements
 		}
 
 		public synchronized String toString() {
-			return "ImportReference[importedServiceReference="
-					+ importedServiceReference + ", endpointDescription="
-					+ endpointDescription + "]";
+			return "ImportReference[importedServiceReference=" //$NON-NLS-1$
+					+ importedServiceReference + ", endpointDescription=" //$NON-NLS-1$
+					+ endpointDescription + "]"; //$NON-NLS-1$
 		}
 
 	}
@@ -765,8 +888,8 @@ public class RemoteServiceAdmin implements
 			EndpointDescription endpointDescription) {
 		EventAdmin eventAdmin = getEventAdmin();
 		if (eventAdmin == null) {
-			logWarning("postEvent", "No event admin available to post event="
-					+ event + " with endpointDescription="
+			logWarning("postEvent", "No event admin available to post event=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ event + " with endpointDescription=" //$NON-NLS-1$
 					+ endpointDescription);
 			return;
 		}
@@ -774,48 +897,48 @@ public class RemoteServiceAdmin implements
 		String eventTypeName = null;
 		switch (eventType) {
 		case (RemoteServiceAdminEvent.EXPORT_REGISTRATION):
-			eventTypeName = "EXPORT_REGISTRATION";
+			eventTypeName = "EXPORT_REGISTRATION"; //$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.EXPORT_ERROR):
-			eventTypeName = "EXPORT_ERROR";
+			eventTypeName = "EXPORT_ERROR"; //$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.EXPORT_UNREGISTRATION):
-			eventTypeName = "EXPORT_UNREGISTRATION";
+			eventTypeName = "EXPORT_UNREGISTRATION"; //$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.EXPORT_WARNING):
-			eventTypeName = "EXPORT_WARNING";
+			eventTypeName = "EXPORT_WARNING"; //$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.IMPORT_REGISTRATION):
-			eventTypeName = "IMPORT_REGISTRATION";
+			eventTypeName = "IMPORT_REGISTRATION"; //$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.IMPORT_ERROR):
-			eventTypeName = "IMPORT_ERROR";
+			eventTypeName = "IMPORT_ERROR"; //$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.IMPORT_UNREGISTRATION):
-			eventTypeName = "IMPORT_UNREGISTRATION";
+			eventTypeName = "IMPORT_UNREGISTRATION"; //$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.IMPORT_WARNING):
-			eventTypeName = "IMPORT_WARNING";
+			eventTypeName = "IMPORT_WARNING"; //$NON-NLS-1$
 			break;
 		}
 		if (eventTypeName == null)
-			logError("postEvent", "Event type=" + eventType
-					+ " not understood for event=" + event + ".  Not posting");
-		String topic = "org/osgi/service/remoteserviceadmin/" + eventTypeName;
+			logError("postEvent", "Event type=" + eventType //$NON-NLS-1$ //$NON-NLS-2$
+					+ " not understood for event=" + event + ".  Not posting"); //$NON-NLS-1$ //$NON-NLS-2$
+		String topic = "org/osgi/service/remoteserviceadmin/" + eventTypeName; //$NON-NLS-1$
 		Bundle rsaBundle = getClientBundle();
 		Dictionary eventProperties = new Properties();
-		eventProperties.put("clientBundle", rsaBundle);
-		eventProperties.put("clientBundle.id",
+		eventProperties.put("clientBundle", rsaBundle); //$NON-NLS-1$
+		eventProperties.put("clientBundle.id", //$NON-NLS-1$
 				new Long(rsaBundle.getBundleId()));
-		eventProperties.put("clientBundle.symbolicname",
+		eventProperties.put("clientBundle.symbolicname", //$NON-NLS-1$
 				rsaBundle.getSymbolicName());
-		eventProperties.put("clientBundle.version", rsaBundle.getVersion());
+		eventProperties.put("clientBundle.version", rsaBundle.getVersion()); //$NON-NLS-1$
 		String[] signers = getSignersForBundle(clientBundle);
 		if (signers != null && signers.length > 0)
-			eventProperties.put("clientBundle.signer", signers);
+			eventProperties.put("clientBundle.signer", signers); //$NON-NLS-1$
 		Throwable t = event.getException();
 		if (t != null)
-			eventProperties.put("cause", t);
+			eventProperties.put("cause", t); //$NON-NLS-1$
 		long serviceId = endpointDescription.getServiceId();
 		if (serviceId != 0)
 			eventProperties
@@ -842,8 +965,8 @@ public class RemoteServiceAdmin implements
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
 							importedConfigs.toArray(new String[importedConfigs
 									.size()]));
-		eventProperties.put("timestamp", new Long(new Date().getTime()));
-		eventProperties.put("event", event);
+		eventProperties.put("timestamp", new Long(new Date().getTime())); //$NON-NLS-1$
+		eventProperties.put("event", event); //$NON-NLS-1$
 		postRemoteServiceAdminEvent(topic, eventProperties);
 
 	}
@@ -917,53 +1040,6 @@ public class RemoteServiceAdmin implements
 		return results.toArray(new RemoteServiceAdminListener[results.size()]);
 	}
 
-	public Collection<org.osgi.service.remoteserviceadmin.ExportReference> getExportedServices() {
-		Collection<org.osgi.service.remoteserviceadmin.ExportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportReference>();
-		synchronized (exportedRegistrations) {
-			for (ExportRegistration reg : exportedRegistrations) {
-				org.osgi.service.remoteserviceadmin.ExportReference eRef = reg
-						.getExportReference();
-				if (eRef != null
-						&& checkEndpointPermissionRead("getExportedServices",
-								eRef.getExportedEndpoint()))
-					results.add(eRef);
-			}
-		}
-		return results;
-	}
-
-	private boolean checkEndpointPermissionRead(
-			String methodName,
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		try {
-			checkEndpointPermission(endpointDescription,
-					EndpointPermission.READ);
-			return true;
-		} catch (SecurityException e) {
-			logError(methodName,
-					"permission check failed for read access to endpointDescription="
-							+ endpointDescription, e);
-			return false;
-		}
-	}
-
-	public Collection<org.osgi.service.remoteserviceadmin.ImportReference> getImportedEndpoints() {
-		Collection<org.osgi.service.remoteserviceadmin.ImportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ImportReference>();
-		synchronized (importedRegistrations) {
-			for (ImportRegistration reg : importedRegistrations) {
-				org.osgi.service.remoteserviceadmin.ImportReference iRef = reg
-						.getImportReference();
-				if (iRef != null
-						&& checkEndpointPermissionRead("getImportedEndpoints",
-								iRef.getImportedEndpoint()))
-					results.add(iRef);
-			}
-		}
-		return results;
-	}
-
-	// RemoteServiceAdmin service interface impl methods
-
 	private ExportEndpoint findExistingExportEndpoint(
 			ServiceReference serviceReference, ID containerID) {
 		for (ExportRegistration eReg : exportedRegistrations) {
@@ -974,67 +1050,6 @@ public class RemoteServiceAdmin implements
 		}
 		return null;
 	}
-
-	public org.osgi.service.remoteserviceadmin.ImportRegistration importService(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		trace("importService", "endpointDescription=" + endpointDescription);
-
-		checkEndpointPermission(endpointDescription, EndpointPermission.IMPORT);
-
-		if (endpointDescription.getServiceId() == 0)
-			return handleNonOSGiService(endpointDescription);
-
-		// First check to see whether it's one of ECF's endpoint descriptions
-		if (endpointDescription instanceof EndpointDescription) {
-			EndpointDescription ed = (EndpointDescription) endpointDescription;
-			// Now get IConsumerContainerSelector, to select the ECF container
-			// for the given endpointDescription
-			IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
-			// If there is none, then we can go no further
-			if (consumerContainerSelector == null) {
-				logError("importService",
-						"No defaultConsumerContainerSelector available");
-				return null;
-			}
-			// Select the rsContainer to handle the endpoint description
-			IRemoteServiceContainer rsContainer = consumerContainerSelector
-					.selectConsumerContainer(ed);
-			// If none found, log a warning and we're done
-			if (rsContainer == null) {
-				logWarning(
-						"importService", "No remote service container selected for endpoint=" //$NON-NLS-1$
-								+ endpointDescription
-								+ ". Remote service NOT IMPORTED"); //$NON-NLS-1$
-				return null;
-			}
-			// If one selected then import the service to create an import
-			// registration
-			ImportRegistration importRegistration = null;
-			synchronized (importedRegistrations) {
-				ImportEndpoint importEndpoint = findImportEndpoint(ed);
-				if (importEndpoint != null)
-					importRegistration = new ImportRegistration(importEndpoint);
-				else {
-					importEndpoint = importService(ed, rsContainer);
-					importRegistration = new ImportRegistration(importEndpoint);
-					if (importRegistration.getException() == null)
-						importedRegistrations.add(importRegistration);
-				}
-			}
-			// publish import event
-			publishImportEvent(importRegistration);
-			// Finally, return the importRegistration. It may be null or not.
-			return importRegistration;
-		} else {
-			logWarning("importService", "endpointDescription="
-					+ endpointDescription
-					+ " is not ECF EndpointDescription...ignoring");
-			return null;
-		}
-	}
-
-	private Object eventAdminTrackerLock = new Object();
-	private ServiceTracker eventAdminTracker;
 
 	private EventAdmin getEventAdmin() {
 		synchronized (eventAdminTrackerLock) {
@@ -1049,9 +1064,9 @@ public class RemoteServiceAdmin implements
 			Dictionary eventProperties) {
 		EventAdmin eventAdmin = getEventAdmin();
 		if (eventAdmin == null) {
-			logError("postRemoteServiceAdminEvent",
-					"No EventAdmin service available to send eventTopic="
-							+ topic + " eventProperties=" + eventProperties);
+			logError("postRemoteServiceAdminEvent", //$NON-NLS-1$
+					"No EventAdmin service available to send eventTopic=" //$NON-NLS-1$
+							+ topic + " eventProperties=" + eventProperties); //$NON-NLS-1$
 			return;
 		}
 		eventAdmin.postEvent(new Event(topic, eventProperties));
@@ -1107,7 +1122,7 @@ public class RemoteServiceAdmin implements
 		}
 	}
 
-	private IHostContainerSelector getHostContainerSelector() {
+	protected IHostContainerSelector getHostContainerSelector() {
 		synchronized (hostContainerSelectorTrackerLock) {
 			if (hostContainerSelectorTracker == null) {
 				hostContainerSelectorTracker = new ServiceTracker(
@@ -1120,7 +1135,7 @@ public class RemoteServiceAdmin implements
 				.getService();
 	}
 
-	private IConsumerContainerSelector getConsumerContainerSelector() {
+	protected IConsumerContainerSelector getConsumerContainerSelector() {
 		synchronized (consumerContainerSelectorTrackerLock) {
 			if (consumerContainerSelectorTracker == null) {
 				consumerContainerSelectorTracker = new ServiceTracker(
@@ -1184,8 +1199,8 @@ public class RemoteServiceAdmin implements
 				if (version != null && !version.equals(Version.emptyVersion))
 					packageVersion = version.toString();
 				else
-					logWarning("createExportEndpointDescription",
-							"No or empty version specified for exported service interface="
+					logWarning("createExportEndpointDescription", //$NON-NLS-1$
+							"No or empty version specified for exported service interface=" //$NON-NLS-1$
 									+ exportedInterfaces[i]);
 			}
 			// Only set the package version if we have a non-null value
@@ -1364,8 +1379,8 @@ public class RemoteServiceAdmin implements
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		// With non-OSGi service id (service id=0), we log a warning and return
 		// null;
-		logWarning("handleNonOSGiService",
-				"OSGi remote service id is 0 for endpointDescription="
+		logWarning("handleNonOSGiService", //$NON-NLS-1$
+				"OSGi remote service id is 0 for endpointDescription=" //$NON-NLS-1$
 						+ endpointDescription);
 		return null;
 	}
@@ -1383,8 +1398,8 @@ public class RemoteServiceAdmin implements
 				.getRemoteService(selectedRsReference);
 		if (rs == null)
 			throw new NullPointerException(
-					"getRemoteService returned null for selectedRsReference="
-							+ selectedRsReference + ",rsContainerID="
+					"getRemoteService returned null for selectedRsReference=" //$NON-NLS-1$
+							+ selectedRsReference + ",rsContainerID=" //$NON-NLS-1$
 							+ rsContainerID);
 
 		Map proxyProperties = createProxyProperties(endpointDescription,
@@ -1419,16 +1434,16 @@ public class RemoteServiceAdmin implements
 			try {
 				result.add(bundle.loadClass(interfaces[i]));
 			} catch (ClassNotFoundException e) {
-				logError("loadInterfacesViaBundle", "interface="
-						+ interfaces[i] + " cannot be loaded by clientBundle="
+				logError("loadInterfacesViaBundle", "interface=" //$NON-NLS-1$ //$NON-NLS-2$
+						+ interfaces[i] + " cannot be loaded by clientBundle=" //$NON-NLS-1$
 						+ bundle.getSymbolicName(), e);
 				continue;
 			} catch (IllegalStateException e) {
 				logError(
-						"loadInterfacesViaBundle",
-						"interface="
+						"loadInterfacesViaBundle", //$NON-NLS-1$
+						"interface=" //$NON-NLS-1$
 								+ interfaces[i]
-								+ " cannot be loaded since clientBundle is in illegal state",
+								+ " cannot be loaded since clientBundle is in illegal state", //$NON-NLS-1$
 						e);
 				continue;
 			}
@@ -1436,7 +1451,7 @@ public class RemoteServiceAdmin implements
 		return result;
 	}
 
-	protected class ProxyServiceFactory implements ServiceFactory {
+	class ProxyServiceFactory implements ServiceFactory {
 		private IRemoteService remoteService;
 		private Map<String, Version> interfaceVersions;
 
@@ -1475,10 +1490,10 @@ public class RemoteServiceAdmin implements
 		// load...otherwise the service can't be accessed
 		if (serviceInterfaceClasses.size() < 1)
 			throw new RuntimeException(
-					"ProxyServiceFactory cannot load any serviceInterfaces="
+					"ProxyServiceFactory cannot load any serviceInterfaces=" //$NON-NLS-1$
 							+ serviceInterfaceClasses
-							+ " for serviceReference=" + serviceReference
-							+ " via clientBundle=" + bundleSymbolicName);
+							+ " for serviceReference=" + serviceReference //$NON-NLS-1$
+							+ " via clientBundle=" + bundleSymbolicName); //$NON-NLS-1$
 
 		// Now verify that the classes are of valid versions
 		verifyServiceInterfaceVersionsForProxy(requestingBundle,
@@ -1492,8 +1507,8 @@ public class RemoteServiceAdmin implements
 					.toArray(new Class[serviceInterfaceClasses.size()]));
 		} catch (ECFException e) {
 			throw new ServiceException(
-					"ProxyServiceFactory cannot create proxy for clientBundle="
-							+ bundleSymbolicName + " from serviceReference="
+					"ProxyServiceFactory cannot create proxy for clientBundle=" //$NON-NLS-1$
+							+ bundleSymbolicName + " from serviceReference=" //$NON-NLS-1$
 							+ serviceReference, e);
 		}
 
@@ -1600,9 +1615,9 @@ public class RemoteServiceAdmin implements
 	}
 
 	private String getPackageName(String className) {
-		int lastDotIndex = className.lastIndexOf(".");
+		int lastDotIndex = className.lastIndexOf("."); //$NON-NLS-1$
 		if (lastDotIndex == -1)
-			return "";
+			return ""; //$NON-NLS-1$
 		return className.substring(0, lastDotIndex);
 	}
 
@@ -1611,8 +1626,8 @@ public class RemoteServiceAdmin implements
 		IPackageVersionComparator packageVersionComparator = getPackageVersionComparator();
 		if (packageVersionComparator == null) {
 			logError(
-					"verifyServiceInterfaceVersionsForProxy",
-					"No package version comparator available, skipping package version comparison for service classes="
+					"verifyServiceInterfaceVersionsForProxy", //$NON-NLS-1$
+					"No package version comparator available, skipping package version comparison for service classes=" //$NON-NLS-1$
 							+ classes);
 			return;
 		}
@@ -1624,16 +1639,16 @@ public class RemoteServiceAdmin implements
 					getPackageAdmin(), clazz);
 			if (exportedPackage == null)
 				throw new NullPointerException(
-						"No exported package found for class=" + className);
+						"No exported package found for class=" + className); //$NON-NLS-1$
 			// Now lookup version from specification
 			Version remotePackageVersion = interfaceVersions.get(className);
 			if (remotePackageVersion == null)
-				throw new NullPointerException("Remote package=" + packageName
-						+ " has no Version");
+				throw new NullPointerException("Remote package=" + packageName //$NON-NLS-1$
+						+ " has no Version"); //$NON-NLS-1$
 			Version localPackageVersion = exportedPackage.getVersion();
 			if (localPackageVersion == null)
-				throw new NullPointerException("Local package=" + packageName
-						+ " has no Version");
+				throw new NullPointerException("Local package=" + packageName //$NON-NLS-1$
+						+ " has no Version"); //$NON-NLS-1$
 
 			// Now do compare via package version comparator service
 			packageVersionComparator.comparePackageVersions(packageName,
@@ -1648,12 +1663,12 @@ public class RemoteServiceAdmin implements
 		if (rsRefs.size() == 0)
 			return null;
 		if (rsRefs.size() > 1) {
-			logWarning("selectRemoteServiceReference", "rsRefs=" + rsRefs
-					+ ",targetID=" + targetID + ",idFilter=" + idFilter
-					+ ",interfaces=" + interfaces + ",rsFilter=" + rsFilter
-					+ ",rsContainer=" + rsContainer.getContainer().getID()
-					+ " has " + rsRefs.size()
-					+ " values.  Selecting the first element");
+			logWarning("selectRemoteServiceReference", "rsRefs=" + rsRefs //$NON-NLS-1$ //$NON-NLS-2$
+					+ ",targetID=" + targetID + ",idFilter=" + idFilter //$NON-NLS-1$ //$NON-NLS-2$
+					+ ",interfaces=" + interfaces + ",rsFilter=" + rsFilter //$NON-NLS-1$ //$NON-NLS-2$
+					+ ",rsContainer=" + rsContainer.getContainer().getID() //$NON-NLS-1$
+					+ " has " + rsRefs.size() //$NON-NLS-1$
+					+ " values.  Selecting the first element"); //$NON-NLS-1$
 		}
 		return rsRefs.iterator().next();
 	}
@@ -1729,7 +1744,7 @@ public class RemoteServiceAdmin implements
 		IRemoteServiceRegistration remoteRegistration = null;
 		Throwable exception = null;
 		try {
-			// Check security access
+			// Check security access for export
 			checkEndpointPermission(new EndpointDescription(serviceReference,
 					endpointDescriptionProperties), EndpointPermission.EXPORT);
 
@@ -1769,8 +1784,8 @@ public class RemoteServiceAdmin implements
 	private ImportEndpoint importService(
 			EndpointDescription endpointDescription,
 			IRemoteServiceContainer rsContainer) {
-		trace("doImportService", "endpointDescription=" + endpointDescription
-				+ ",rsContainerID=" + rsContainer.getContainer().getID());
+		trace("doImportService", "endpointDescription=" + endpointDescription //$NON-NLS-1$ //$NON-NLS-2$
+				+ ",rsContainerID=" + rsContainer.getContainer().getID()); //$NON-NLS-1$
 		// Get interfaces from endpoint description
 		Collection<String> interfaces = endpointDescription.getInterfaces();
 		Assert.isNotNull(interfaces);
@@ -1805,11 +1820,11 @@ public class RemoteServiceAdmin implements
 						.getRemoteServiceReferences(targetID, idFilter, intf,
 								rsFilter);
 				if (refs == null) {
-					logWarning("doImportService",
-							"getRemoteServiceReferences return null for targetID="
-									+ targetID + ",idFilter=" + idFilter
-									+ ",intf=" + intf + ",rsFilter=" + rsFilter
-									+ " on rsContainerID=" + rsContainerID);
+					logWarning("doImportService", //$NON-NLS-1$
+							"getRemoteServiceReferences return null for targetID=" //$NON-NLS-1$
+									+ targetID + ",idFilter=" + idFilter //$NON-NLS-1$
+									+ ",intf=" + intf + ",rsFilter=" + rsFilter //$NON-NLS-1$ //$NON-NLS-2$
+									+ " on rsContainerID=" + rsContainerID); //$NON-NLS-1$
 					continue;
 				}
 				for (int i = 0; i < refs.length; i++)
@@ -1818,22 +1833,21 @@ public class RemoteServiceAdmin implements
 			IRemoteServiceReference selectedRsReference = selectRemoteServiceReference(
 					rsRefs, targetID, idFilter, interfaces, rsFilter,
 					rsContainer);
-
-			if (selectedRsReference == null) {
-				logWarning("doImportService",
-						"selectRemoteServiceReference returned null for rsRefs="
-								+ rsRefs + ",targetID=" + targetID
-								+ ",idFilter=" + idFilter + ",interfaces="
-								+ interfaces + ",rsFilter=" + rsFilter
-								+ ",rsContainerID=" + rsContainerID);
-				return null;
-			}
+			// If none found, we obviously can't continue
+			if (selectedRsReference == null)
+				throw new RemoteReferenceNotFoundException(targetID, idFilter,
+						interfaces, rsFilter);
 
 			return createAndRegisterProxy(endpointDescription, rsContainer,
 					selectedRsReference);
 		} catch (Exception e) {
-			return new ImportEndpoint(rsContainer.getContainerAdapter(),
-					endpointDescription, e);
+			logError(
+					"importService", "selectRemoteServiceReference returned null for rsRefs=" //$NON-NLS-1$
+							+ rsRefs + ",targetID=" + targetID //$NON-NLS-1$
+							+ ",idFilter=" + idFilter + ",interfaces=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ interfaces + ",rsFilter=" + rsFilter //$NON-NLS-1$
+							+ ",rsContainerID=" + rsContainerID, e);
+			return new ImportEndpoint(containerAdapter, endpointDescription, e);
 		}
 	}
 
@@ -1858,8 +1872,8 @@ public class RemoteServiceAdmin implements
 	}
 
 	public void close() {
-		trace("close", "closing importedRegistrations=" + importedRegistrations
-				+ " exportedRegistrations=" + exportedRegistrations);
+		trace("close", "closing importedRegistrations=" + importedRegistrations //$NON-NLS-1$ //$NON-NLS-2$
+				+ " exportedRegistrations=" + exportedRegistrations); //$NON-NLS-1$
 		closeRemoteServiceAdminListenerTracker();
 		closeEventAdminTracker();
 		closePackageAdminTracker();
@@ -1894,7 +1908,7 @@ public class RemoteServiceAdmin implements
 		}
 		// Now close all of them
 		for (ImportRegistration removedReg : removedRegistrations) {
-			trace("unimportService", "closing importRegistration=" + removedReg);
+			trace("unimportService", "closing importRegistration=" + removedReg); //$NON-NLS-1$ //$NON-NLS-2$
 			removedReg.close();
 		}
 	}
@@ -1923,6 +1937,45 @@ public class RemoteServiceAdmin implements
 
 	private void logError(String methodName, String message) {
 		logError(methodName, message, (Throwable) null);
+	}
+
+	public class RemoteServiceAdminEvent extends
+			org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent {
+
+		private ID containerID;
+
+		public RemoteServiceAdminEvent(
+				ID containerID,
+				int type,
+				Bundle source,
+				org.osgi.service.remoteserviceadmin.ExportReference exportReference,
+				Throwable exception) {
+			super(type, source, exportReference, exception);
+			this.containerID = containerID;
+		}
+
+		public RemoteServiceAdminEvent(
+				ID containerID,
+				int type,
+				Bundle source,
+				org.osgi.service.remoteserviceadmin.ImportReference importReference,
+				Throwable exception) {
+			super(type, source, importReference, exception);
+			this.containerID = containerID;
+		}
+
+		public ID getContainerID() {
+			return containerID;
+		}
+
+		public String toString() {
+			return "RemoteServiceAdminEvent[containerID=" + containerID //$NON-NLS-1$
+					+ ", getType()=" + getType() + ", getSource()=" + getSource() //$NON-NLS-1$ //$NON-NLS-2$
+					+ ", getException()=" + getException() //$NON-NLS-1$
+					+ ", getImportReference()=" + getImportReference() //$NON-NLS-1$
+					+ ", getExportReference()=" + getExportReference() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+		}
+
 	}
 
 }

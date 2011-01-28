@@ -90,9 +90,9 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 			}
 		} catch (Exception e) {
 			logError(
-					"createServiceInfoForDiscovery",
-					"Exception creating service info for endpointDescription="
-							+ endpointDescription + ",advertiser=" + advertiser,
+					"createServiceInfoForDiscovery", //$NON-NLS-1$
+					"Exception creating service info for endpointDescription=" //$NON-NLS-1$
+							+ endpointDescription + ",advertiser=" + advertiser, //$NON-NLS-1$
 					e);
 			return null;
 		}
@@ -116,7 +116,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 	protected URI createURI(EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID,
 			String serviceName) throws URISyntaxException {
-		String path = "/" + serviceName;
+		String path = "/" + serviceName; //$NON-NLS-1$
 		String str = endpointDescription.getId();
 		URI uri = null;
 		while (true) {

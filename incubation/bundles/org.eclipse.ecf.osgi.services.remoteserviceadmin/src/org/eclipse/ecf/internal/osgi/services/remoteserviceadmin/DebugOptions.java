@@ -34,9 +34,9 @@ public interface DebugOptions {
 	public static final String DISCOVERY = DEBUG + "/discovery"; //$NON-NLS-1$
 
 	public static final String ENDPOINT_DESCRIPTION_READER = DEBUG
-			+ "/endpointdescriptionreader";
+			+ "/endpointdescriptionreader"; //$NON-NLS-1$
 
 	public static final String PACKAGE_VERSION_COMPARATOR = DEBUG
-			+ "/packageversioncomparator";
+			+ "/packageversioncomparator"; //$NON-NLS-1$
 
 }

@@ -48,6 +48,8 @@ public class PropertiesUtil {
 
 	protected static final List ecfProperties = Arrays.asList(new String[] {
 			// ECF properties
+			org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS,
+			org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
 			RemoteConstants.DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX,
 			RemoteConstants.DISCOVERY_NAMING_AUTHORITY,
 			RemoteConstants.DISCOVERY_PROTOCOLS,
@@ -61,6 +63,7 @@ public class PropertiesUtil {
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_ID,
+			RemoteConstants.SERVICE_IMPORTED_VALUETYPE,
 			RemoteConstants.SERVICE_TYPE });
 
 	public static String verifyStringProperty(Map properties, String propName) {
@@ -69,7 +72,7 @@ public class PropertiesUtil {
 			return (String) r;
 		} catch (ClassCastException e) {
 			IllegalArgumentException iae = new IllegalArgumentException(
-					"property value is not a String: " + propName);
+					"property value is not a String: " + propName); //$NON-NLS-1$
 			iae.initCause(e);
 			throw iae;
 		}
@@ -111,38 +114,56 @@ public class PropertiesUtil {
 		// as a remote service so we return null
 		if (propValue == null)
 			return null;
-		boolean wildcard = propValue.equals("*");
+		boolean wildcard = propValue.equals("*"); //$NON-NLS-1$
 		if (wildcard)
 			return (String[]) serviceReference
 					.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
 		else {
 			final String[] stringValue = getStringArrayFromPropertyValue(propValue);
 			if (stringValue != null && stringValue.length == 1
-					&& stringValue[0].equals("*")) {
+					&& stringValue[0].equals("*")) { //$NON-NLS-1$
 				LogUtility
-						.logWarning("getExportedInterfaces",
+						.logWarning(
+								"getExportedInterfaces", //$NON-NLS-1$
 								DebugOptions.TOPOLOGY_MANAGER,
 								PropertiesUtil.class,
-								"Service Exported Interfaces Wildcard does not accept String[\"*\"]");
+								"Service Exported Interfaces Wildcard does not accept String[\"*\"]"); //$NON-NLS-1$
 			}
 			return stringValue;
 		}
 	}
 
-	public static String[] getServiceIntents(ServiceReference serviceReference) {
+	public static String[] getServiceIntents(ServiceReference serviceReference,
+			Map overridingProperties) {
 		List results = new ArrayList();
-		String[] intents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS));
+
+		String[] intents = getStringArrayFromPropertyValue(overridingProperties
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS));
+		if (intents == null) {
+			intents = getStringArrayFromPropertyValue(serviceReference
+					.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_INTENTS));
+		}
 		if (intents != null)
 			results.addAll(Arrays.asList(intents));
-		String[] exportedIntents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS));
+
+		String[] exportedIntents = getStringArrayFromPropertyValue(overridingProperties
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS));
+		if (exportedIntents == null) {
+			exportedIntents = getStringArrayFromPropertyValue(serviceReference
+					.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS));
+		}
 		if (exportedIntents != null)
 			results.addAll(Arrays.asList(exportedIntents));
-		String[] extraIntents = getStringArrayFromPropertyValue(serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS_EXTRA));
+
+		String[] extraIntents = getStringArrayFromPropertyValue(overridingProperties
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS_EXTRA));
+		if (extraIntents == null) {
+			extraIntents = getStringArrayFromPropertyValue(serviceReference
+					.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTENTS_EXTRA));
+		}
 		if (extraIntents != null)
 			results.addAll(Arrays.asList(extraIntents));
+
 		if (results.size() == 0)
 			return null;
 		return (String[]) results.toArray(new String[results.size()]);
@@ -201,7 +222,7 @@ public class PropertiesUtil {
 
 	public static boolean isOSGiProperty(String key) {
 		return osgiProperties.contains(key)
-				&& !key.startsWith(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_);
+				|| key.startsWith(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_PACKAGE_VERSION_);
 	}
 
 	public static boolean isECFProperty(String key) {

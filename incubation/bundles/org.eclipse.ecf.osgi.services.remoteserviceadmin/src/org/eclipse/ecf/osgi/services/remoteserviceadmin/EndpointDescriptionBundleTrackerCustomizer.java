@@ -33,8 +33,8 @@ import org.osgi.util.tracker.ServiceTracker;
 public class EndpointDescriptionBundleTrackerCustomizer implements
 		BundleTrackerCustomizer {
 
-	private static final String REMOTESERVICE_MANIFESTHEADER = "Remote-Service";
-	private static final String XML_FILE_PATTERN = "*.xml";
+	private static final String REMOTESERVICE_MANIFESTHEADER = "Remote-Service"; //$NON-NLS-1$
+	private static final String XML_FILE_PATTERN = "*.xml"; //$NON-NLS-1$
 
 	private Map<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>> bundleDescriptionMap = Collections
 			.synchronizedMap(new HashMap<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>>());
@@ -77,7 +77,7 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 				REMOTESERVICE_MANIFESTHEADER);
 		if (remoteServicesHeaderValue != null) {
 			// First parse into comma-separated values
-			String[] paths = remoteServicesHeaderValue.split(",");
+			String[] paths = remoteServicesHeaderValue.split(","); //$NON-NLS-1$
 			if (paths != null)
 				for (int i = 0; i < paths.length; i++)
 					handleEndpointDescriptionPath(bundle, paths[i]);
@@ -87,11 +87,11 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 	private void handleEndpointDescriptionPath(Bundle bundle,
 			String remoteServicesHeaderValue) {
 		// if it's empty, ignore
-		if ("".equals(remoteServicesHeaderValue))
+		if ("".equals(remoteServicesHeaderValue)) //$NON-NLS-1$
 			return;
 		Enumeration<URL> e = null;
 		// if it endswith a '/', then scan for *.xml files
-		if (remoteServicesHeaderValue.endsWith("/")) {
+		if (remoteServicesHeaderValue.endsWith("/")) { //$NON-NLS-1$
 			e = bundle.findEntries(remoteServicesHeaderValue, XML_FILE_PATTERN,
 					false);
 		} else {
@@ -100,13 +100,13 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 			if (lastSlashIndex == -1) {
 				// no slash...might be a file name or pattern, assumed to be
 				// at root of bundle
-				e = bundle.findEntries("/", remoteServicesHeaderValue, false);
+				e = bundle.findEntries("/", remoteServicesHeaderValue, false); //$NON-NLS-1$
 			} else {
 				String path = remoteServicesHeaderValue.substring(0,
 						lastSlashIndex);
-				if ("".equals(path)) {
+				if ("".equals(path)) { //$NON-NLS-1$
 					// path is empty so assume it's root
-					path = "/";
+					path = "/"; //$NON-NLS-1$
 				}
 				String filePattern = remoteServicesHeaderValue
 						.substring(lastSlashIndex + 1);
@@ -140,13 +140,13 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 			IEndpointDescriptionReader endpointDescriptionReader = getEndpointDescriptionReader();
 			if (endpointDescriptionReader == null)
 				throw new NullPointerException(
-						"No endpointDescriptionReader available for handleEndpointDescriptionFile fileURL="
+						"No endpointDescriptionReader available for handleEndpointDescriptionFile fileURL=" //$NON-NLS-1$
 								+ fileURL);
 			ins = fileURL.openStream();
 			return endpointDescriptionReader.readEndpointDescriptions(ins);
 		} catch (Exception e) {
-			logError("handleEndpointDescriptionFile",
-					"Exception creating endpoint descriptions from fileURL="
+			logError("handleEndpointDescriptionFile", //$NON-NLS-1$
+					"Exception creating endpoint descriptions from fileURL=" //$NON-NLS-1$
 							+ fileURL, e);
 			return null;
 		} finally {
@@ -154,8 +154,8 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 				try {
 					ins.close();
 				} catch (IOException e) {
-					logError("handleEndpointDescriptionFile",
-							"Exception closing endpointDescription input fileURL="
+					logError("handleEndpointDescriptionFile", //$NON-NLS-1$
+							"Exception closing endpointDescription input fileURL=" //$NON-NLS-1$
 									+ fileURL, e);
 				}
 		}

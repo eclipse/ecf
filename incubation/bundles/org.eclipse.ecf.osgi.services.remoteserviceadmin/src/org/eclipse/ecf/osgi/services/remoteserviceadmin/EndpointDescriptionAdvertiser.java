@@ -43,13 +43,11 @@ public class EndpointDescriptionAdvertiser implements
 				discoveryAdvertiser.unregisterService(serviceInfo);
 			return Status.OK_STATUS;
 		} catch (Exception e) {
-			return createErrorStatus((advertise ? "registerService"
-					: "unregisterService")
-					+ " with serviceInfo="
-					+ serviceInfo
-					+ " for discoveryAdvertiser="
-					+ discoveryAdvertiser
-					+ " failed", e);
+			return createErrorStatus((advertise ? "registerService" //$NON-NLS-1$
+					: "unregisterService") //$NON-NLS-1$
+					+ " with serviceInfo=" //$NON-NLS-1$
+					+ serviceInfo + " for discoveryAdvertiser=" //$NON-NLS-1$
+					+ discoveryAdvertiser + " failed", e); //$NON-NLS-1$
 		}
 	}
 
@@ -72,45 +70,44 @@ public class EndpointDescriptionAdvertiser implements
 	protected IStatus doDiscovery(EndpointDescription endpointDescription,
 			boolean advertise) {
 		Assert.isNotNull(endpointDescription);
-		String messagePrefix = advertise ? "Advertise" : "Unadvertise";
+		String messagePrefix = advertise ? "Advertise" : "Unadvertise"; //$NON-NLS-1$ //$NON-NLS-2$
 		List<IStatus> statuses = new ArrayList<IStatus>();
-			// First get serviceInfoFactory
-			IServiceInfoFactory serviceInfoFactory = getServiceInfoFactory();
-			if (serviceInfoFactory == null)
-				return createErrorStatus(messagePrefix
-						+ " endpointDescription="
+		// First get serviceInfoFactory
+		IServiceInfoFactory serviceInfoFactory = getServiceInfoFactory();
+		if (serviceInfoFactory == null)
+			return createErrorStatus(messagePrefix
+					+ " endpointDescription=" //$NON-NLS-1$
+					+ endpointDescription
+					+ ".  No IServiceInfoFactory is available.  Cannot unpublish endpointDescription=" //$NON-NLS-1$
+					+ endpointDescription);
+		IDiscoveryAdvertiser[] discoveryAdvertisers = getDiscoveryAdvertisers();
+		if (discoveryAdvertisers == null || discoveryAdvertisers.length == 0)
+			return createErrorStatus(messagePrefix
+					+ " endpointDescription=" //$NON-NLS-1$
+					+ endpointDescription
+					+ ".  No endpointDescriptionLocator advertisers available.  Cannot unpublish endpointDescription=" //$NON-NLS-1$
+					+ endpointDescription);
+		for (int i = 0; i < discoveryAdvertisers.length; i++) {
+			IServiceInfo serviceInfo = (advertise ? serviceInfoFactory
+					.createServiceInfoForDiscovery(discoveryAdvertisers[i],
+							endpointDescription) : serviceInfoFactory
+					.removeServiceInfoForUndiscovery(discoveryAdvertisers[i],
+							endpointDescription));
+			if (serviceInfo == null) {
+				statuses.add(createErrorStatus(messagePrefix
+						+ " endpointDescription=" //$NON-NLS-1$
 						+ endpointDescription
-						+ ".  No IServiceInfoFactory is available.  Cannot unpublish endpointDescription="
-						+ endpointDescription);
-			IDiscoveryAdvertiser[] discoveryAdvertisers = getDiscoveryAdvertisers();
-			if (discoveryAdvertisers == null
-					|| discoveryAdvertisers.length == 0)
-				return createErrorStatus(messagePrefix
-						+ " endpointDescription="
-						+ endpointDescription
-						+ ".  No endpointDescriptionLocator advertisers available.  Cannot unpublish endpointDescription="
-						+ endpointDescription);
-			for (int i = 0; i < discoveryAdvertisers.length; i++) {
-				IServiceInfo serviceInfo = (advertise ? serviceInfoFactory
-						.createServiceInfoForDiscovery(discoveryAdvertisers[i],
-								endpointDescription) : serviceInfoFactory
-						.removeServiceInfoForUndiscovery(
-								discoveryAdvertisers[i], endpointDescription));
-				if (serviceInfo == null) {
-					statuses.add(createErrorStatus(messagePrefix
-							+ " endpointDescription="
-							+ endpointDescription
-							+ ".  Service Info is null.  Cannot publish endpointDescription="
-							+ endpointDescription));
-					continue;
-				}
-				// Now actually unregister with advertiser
-				statuses.add(doDiscovery(discoveryAdvertisers[i], serviceInfo,
-						advertise));
+						+ ".  Service Info is null.  Cannot publish endpointDescription=" //$NON-NLS-1$
+						+ endpointDescription));
+				continue;
 			}
+			// Now actually unregister with advertiser
+			statuses.add(doDiscovery(discoveryAdvertisers[i], serviceInfo,
+					advertise));
+		}
 		return createResultStatus(statuses, messagePrefix
-				+ " endpointDesription=" + endpointDescription
-				+ ".  Problem in unadvertise");
+				+ " endpointDesription=" + endpointDescription //$NON-NLS-1$
+				+ ".  Problem in unadvertise"); //$NON-NLS-1$
 	}
 
 	public IStatus unadvertise(EndpointDescription endpointDescription) {

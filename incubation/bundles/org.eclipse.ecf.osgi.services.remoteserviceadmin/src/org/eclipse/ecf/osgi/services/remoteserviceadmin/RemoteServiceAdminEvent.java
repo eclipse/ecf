@@ -27,11 +27,11 @@ public class RemoteServiceAdminEvent extends
 	}
 
 	public String toString() {
-		return "RemoteServiceAdminEvent[containerID=" + containerID
-				+ ", getType()=" + getType() + ", getSource()=" + getSource()
-				+ ", getException()=" + getException()
-				+ ", getImportReference()=" + getImportReference()
-				+ ", getExportReference()=" + getExportReference() + "]";
+		return "RemoteServiceAdminEvent[containerID=" + containerID //$NON-NLS-1$
+				+ ", getType()=" + getType() + ", getSource()=" + getSource() //$NON-NLS-1$ //$NON-NLS-2$
+				+ ", getException()=" + getException() //$NON-NLS-1$
+				+ ", getImportReference()=" + getImportReference() //$NON-NLS-1$
+				+ ", getExportReference()=" + getExportReference() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 }
