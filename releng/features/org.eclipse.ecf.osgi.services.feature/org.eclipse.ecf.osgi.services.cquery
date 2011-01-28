@@ -7,6 +7,7 @@
     <cq:property key="target.ws" value="*"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.osgi(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.osgi(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false"/>

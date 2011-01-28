@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Generic Zookeeper Hello Host" uid="org.eclipse.ecf.examples.remoteservices.genericzookeeperhellohost" application="org.eclipse.ecf.examples.remoteservices.hello.host.HelloHost" version="1.0.0" useFeatures="false" includeLaunchers="false">
+<product name="Generic Zookeeper Hello Host" uid="org.eclipse.ecf.examples.remoteservices.genericzookeeperhellohost" application="org.eclipse.ecf.examples.remoteservices.hello.host.HelloHost" version="2.0.0" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -19,7 +19,6 @@
    </launcherArgs>
 
    <windowImages/>
-
 
    <launcher>
       <solaris/>
@@ -44,6 +43,7 @@
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services.discovery"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.provider.zookeeper"/>
@@ -56,6 +56,7 @@
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.services"/>
+      <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
    </plugins>
 
    <configurations>

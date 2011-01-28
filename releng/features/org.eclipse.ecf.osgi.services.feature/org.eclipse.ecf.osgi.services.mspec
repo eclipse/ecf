@@ -5,6 +5,7 @@
     url="org.eclipse.ecf.osgi.services.cquery">
     
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.osgi(\..+)?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.osgi(\..+)?" materializer="workspace"/>
 
     <md:mspecNode namePattern=".*" installLocation="${targetPlatformPath}"/>

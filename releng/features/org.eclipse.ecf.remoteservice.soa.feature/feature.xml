@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.soa.feature"
       label="ECF Service-Oriented Architecture"
-      version="1.0.0.qualifier">
+      version="2.0.0.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -54,10 +54,6 @@
 
    <includes
          id="org.eclipse.ecf.discovery.jmdns.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.discovery.local.feature"
          version="0.0.0"/>
 
    <includes

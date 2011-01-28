@@ -1,18 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2010-2011 Composent, Inc. and others. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *   Composent, Inc. - initial API and implementation
- ******************************************************************************/
-package org.eclipse.ecf.osgi.services.remoteserviceadmin;
+package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Properties;
-
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceRegistration;

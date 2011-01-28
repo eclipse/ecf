@@ -16,7 +16,6 @@ import java.util.Properties;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
@@ -36,8 +35,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public abstract class AbstractDistributionTest extends
-		ContainerAbstractTestCase implements IDistributionConstants,
-		RemoteServicePublication {
+		ContainerAbstractTestCase implements IDistributionConstants {
 
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 

@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.discovery.local.feature"
       label="ECF Discovery Local File Provider"
-      version="1.0.0.qualifier"
+      version="2.0.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
@@ -28,19 +28,5 @@
    <requires>
       <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0"/>
    </requires>
-
-   <plugin
-         id="org.eclipse.ecf.osgi.services.discovery.local"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.localdiscovery"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
 </feature>
