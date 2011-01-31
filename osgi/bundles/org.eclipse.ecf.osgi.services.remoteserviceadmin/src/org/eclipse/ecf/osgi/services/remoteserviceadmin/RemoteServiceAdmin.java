@@ -1813,23 +1813,24 @@ public class RemoteServiceAdmin implements
 		// rsContainerID
 		ID rsContainerID = rsContainer.getContainer().getID();
 		try {
-			// For all given interfaces
-			for (String intf : interfaces) {
-				// Get/lookup remote service references
-				IRemoteServiceReference[] refs = containerAdapter
-						.getRemoteServiceReferences(targetID, idFilter, intf,
-								rsFilter);
-				if (refs == null) {
-					logWarning("doImportService", //$NON-NLS-1$
-							"getRemoteServiceReferences return null for targetID=" //$NON-NLS-1$
-									+ targetID + ",idFilter=" + idFilter //$NON-NLS-1$
-									+ ",intf=" + intf + ",rsFilter=" + rsFilter //$NON-NLS-1$ //$NON-NLS-2$
-									+ " on rsContainerID=" + rsContainerID); //$NON-NLS-1$
-					continue;
-				}
+			// Get first interface name for service reference
+			// lookup
+			String intf = interfaces.iterator().next();
+			// Get/lookup remote service references
+			IRemoteServiceReference[] refs = containerAdapter
+					.getRemoteServiceReferences(targetID, idFilter, intf,
+							rsFilter);
+			if (refs == null) {
+				logWarning("doImportService", //$NON-NLS-1$
+						"getRemoteServiceReferences return null for targetID=" //$NON-NLS-1$
+								+ targetID + ",idFilter=" + idFilter //$NON-NLS-1$
+								+ ",intf=" + intf + ",rsFilter=" + rsFilter //$NON-NLS-1$ //$NON-NLS-2$
+								+ " on rsContainerID=" + rsContainerID); //$NON-NLS-1$
+			} else
 				for (int i = 0; i < refs.length; i++)
 					rsRefs.add(refs[i]);
-			}
+			// If there are several refs resulting (should not be)
+			// we select the one to use
 			IRemoteServiceReference selectedRsReference = selectRemoteServiceReference(
 					rsRefs, targetID, idFilter, interfaces, rsFilter,
 					rsContainer);
