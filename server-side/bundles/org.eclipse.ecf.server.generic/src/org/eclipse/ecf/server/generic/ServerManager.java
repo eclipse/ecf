@@ -66,7 +66,7 @@ public class ServerManager {
 	public ServerManager() {
 		final IExtensionRegistry reg = Activator.getDefault().getExtensionRegistry();
 		try {
-			if (reg != null) {
+			if (reg != null && reg.getExtensionPoint(EXTENSION_POINT) != null) {
 				createServersFromExtensionRegistry(reg);
 			} else {
 				createServersFromConfigurationFile(Activator.getDefault().getBundle().getEntry("server.xml").openStream()); //$NON-NLS-1$
