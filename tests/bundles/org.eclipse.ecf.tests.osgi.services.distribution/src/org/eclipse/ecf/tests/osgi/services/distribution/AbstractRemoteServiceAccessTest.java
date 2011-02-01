@@ -93,6 +93,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 
 
 	public void testGetRemoteServiceReference() throws Exception {
+		startTest("testGetRemoteServiceReference");
 		createServiceTrackerAndRegister();
 		
 		// Service Consumer - Get (remote) ervice references
@@ -100,9 +101,11 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		assertReferencesValidAndFirstHasCorrectType(remoteReferences, classname);
 		// Spec requires that the 'service.imported' property be set
 		assertTrue(remoteReferences[0].getProperty(SERVICE_IMPORTED) != null);
+		endTest("testGetRemoteServiceReference");
 	}
 	
 	public void testGetRemoteServiceReferenceWithExtraProperties() throws Exception {
+		startTest("testGetRemoteServiceReferenceWithExtraProperties");
 		final String TESTPROP1_VALUE = "baz";
 		final String TESTPROP_VALUE = "foobar";
 		final String TESTPROP1_NAME = "org.eclipse.ecf.testprop1";
@@ -124,10 +127,12 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		final String testProp1 = (String) remoteReferences[0].getProperty(TESTPROP1_NAME);
 		assertTrue(TESTPROP_VALUE.equals(testProp));
 		assertTrue(TESTPROP1_VALUE.equals(testProp1));
+		endTest("testGetRemoteServiceReferenceWithExtraProperties");
 	}
 
 
 	public void testProxy() throws Exception {
+		startTest("testProxy");
 		createServiceTrackerAndRegister();
 		
 		// Client - Get service references from service tracker
@@ -142,9 +147,11 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		final String result = proxy.doStuff1();
 		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result=" + result);
 		assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
+		endTest("testProxy");
 	}
 
 	public void testCallSyncFromProxy() throws Exception {
+		startTest("testCallSyncFromProxy");
 		createServiceTrackerAndRegister();
 		
 		// Client - Get service references from service tracker
@@ -164,9 +171,11 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		final Object result = remoteService.callSync(createRemoteCall());
 		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result=" + result);
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
+		endTest("testCallSyncFromProxy");
 	}
 
 	public void testCallSync() throws Exception {
+		startTest("testCallSync");
 		createServiceTrackerAndRegister();
 		
 		// Client - Get service references from service tracker
@@ -182,9 +191,11 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		final Object result = rs.callSync(createRemoteCall());
 		Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result=" + result);
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
+		endTest("testCallSync");
 	}
 
 	public void testCallAsync() throws Exception {
+		startTest("testCallAsync");
 		createServiceTrackerAndRegister();
 		
 		// Client - Get service references from service tracker
@@ -210,9 +221,11 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		});
 
 		syncWaitForNotify(REGISTER_WAIT);
+		endTest("testCallAsync");
 	}
 
 	public void testCallFuture() throws Exception {
+		startTest("testCallFuture");
 		createServiceTrackerAndRegister();
 		
 		// Client - Get service references from service tracker
@@ -230,9 +243,11 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		final Object result = futureResult.get();
 		Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result=" + result);
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
+		endTest("testCallFuture");
 	}
 
 	public void testFireAsync() throws Exception {
+		startTest("testFireAsync");
 		createServiceTrackerAndRegister();
 		
 		// Client - Get service references from service tracker
@@ -246,5 +261,6 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		// Call asynchronously
 		rs.fireAsync(createRemoteCall());
 		Thread.sleep(REGISTER_WAIT);
+		endTest("testFireAsync");
 	}
 }

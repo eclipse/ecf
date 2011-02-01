@@ -223,15 +223,6 @@ public class EndpointDescriptionLocator {
 				IDiscoveryLocator.class.getName(),
 				new LocatorTrackerCustomizer());
 		locatorServiceTracker.open();
-		// Get any existing locators
-		Object[] locators = locatorServiceTracker.getServices();
-		if (locators != null) {
-			// for all of them
-			for (int i = 0; i < locators.length; i++) {
-				// Add service listener to locator
-				openLocator((IDiscoveryLocator) locators[i]);
-			}
-		}
 		// Create bundle tracker for reading local/xml-file endpoint
 		// descriptions
 		bundleTrackerCustomizer = new EndpointDescriptionBundleTrackerCustomizer();
@@ -242,8 +233,14 @@ public class EndpointDescriptionLocator {
 	}
 
 	private void logError(String methodName, String message, Throwable e) {
-		LogUtility.logError(methodName, DebugOptions.DISCOVERY,
-				this.getClass(), message, e);
+		LogUtility.logError(methodName,
+				DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
+				message, e);
+	}
+
+	private void trace(String methodName, String message) {
+		LogUtility.trace(methodName, DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR,
+				this.getClass(), message);
 	}
 
 	public void close() {
@@ -387,6 +384,8 @@ public class EndpointDescriptionLocator {
 			String matchingFilters, boolean discovered) {
 		if (eventQueue == null)
 			return;
+		trace("queueEndpointDescription", "endpointDescription="
+				+ endpointDescription);
 		synchronized (eventQueue) {
 			eventQueue
 					.dispatchEventAsynchronous(0, new EndpointListenerEvent(
@@ -427,7 +426,7 @@ public class EndpointDescriptionLocator {
 		} else {
 			LogUtility.logWarning(
 					"queueEndpointDescription", //$NON-NLS-1$
-					DebugOptions.DISCOVERY, this.getClass(),
+					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
 					"No matching EndpointListeners found for " //$NON-NLS-1$
 							+ (discovered ? "discovered" : "undiscovered") //$NON-NLS-1$ //$NON-NLS-2$
 							+ " endpointDescription=" + endpointDescription); //$NON-NLS-1$
@@ -749,9 +748,10 @@ public class EndpointDescriptionLocator {
 		}
 
 		private void logError(String method, String message, Throwable t) {
-			LogUtility.logError(method, DebugOptions.DISCOVERY,
-					this.getClass(), new Status(IStatus.ERROR,
-							Activator.PLUGIN_ID, IStatus.ERROR, message, t));
+			LogUtility.logError(method,
+					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
+					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							IStatus.ERROR, message, t));
 		}
 
 		public void modifiedBundle(Bundle bundle, BundleEvent event,
@@ -856,8 +856,9 @@ public class EndpointDescriptionLocator {
 		}
 
 		private void logWarning(String methodName, String message) {
-			LogUtility.logWarning(methodName, DebugOptions.DISCOVERY,
-					this.getClass(), message);
+			LogUtility.logWarning(methodName,
+					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
+					message);
 		}
 
 		private void logError(String methodName, String message) {
@@ -865,8 +866,9 @@ public class EndpointDescriptionLocator {
 		}
 
 		private void logError(String methodName, String message, Throwable t) {
-			LogUtility.logError(methodName, DebugOptions.DISCOVERY,
-					this.getClass(), message, t);
+			LogUtility.logError(methodName,
+					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
+					message, t);
 		}
 
 		private DiscoveredEndpointDescription getDiscoveredEndpointDescription(

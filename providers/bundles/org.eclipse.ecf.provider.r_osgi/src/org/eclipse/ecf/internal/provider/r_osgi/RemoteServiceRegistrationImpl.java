@@ -105,7 +105,11 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceRegistration#unregister()
 	 */
 	public void unregister() {
-		reg.unregister();
+		try {
+			reg.unregister();
+		} catch (IllegalStateException e) {
+			// underlying service registration already unregistered
+		}
 	}
 
 	public IRemoteServiceID getID() {

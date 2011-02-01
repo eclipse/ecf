@@ -47,6 +47,14 @@ public abstract class AbstractDistributionTest extends
 	 */
 	protected abstract String getClientContainerName();
 
+	protected void startTest(String testname) {
+		System.out.println("====starting "+this.getClass().getName()+"."+testname+"====");
+	}
+
+	protected void endTest(String testname) {
+		System.out.println("====ending "+this.getClass().getName()+"."+testname+"====");
+	}
+
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		if (adapters != null) {

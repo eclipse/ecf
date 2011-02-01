@@ -237,7 +237,7 @@ public class RemoteServiceAdmin implements
 					// If no exception, we add it to our known set of exported
 					// registrations
 					if (exportRegistration.getException() == null)
-						exportedRegistrations.add(exportRegistration);
+						addExportRegistration(exportRegistration);
 				}
 				// We add it to the results in either case
 				exportRegistrations.add(exportRegistration);
@@ -297,7 +297,7 @@ public class RemoteServiceAdmin implements
 					importEndpoint = importService(ed, rsContainer);
 					importRegistration = new ImportRegistration(importEndpoint);
 					if (importRegistration.getException() == null)
-						importedRegistrations.add(importRegistration);
+						addImportRegistration(importRegistration);
 				}
 			}
 			// publish import event
@@ -365,6 +365,24 @@ public class RemoteServiceAdmin implements
 
 	private Bundle getClientBundle() {
 		return clientBundle;
+	}
+
+	private void addImportRegistration(ImportRegistration importRegistration) {
+		synchronized (importedRegistrations) {
+			importedRegistrations.add(importRegistration);
+			trace("addImportRegistration", "importRegistration="
+					+ importRegistration + " importedRegistrations="
+					+ importedRegistrations);
+		}
+	}
+
+	private void addExportRegistration(ExportRegistration exportRegistration) {
+		synchronized (exportedRegistrations) {
+			exportedRegistrations.add(exportRegistration);
+			trace("addExportRegistration", "exportRegistration="
+					+ exportRegistration + " exportedRegistrations="
+					+ exportedRegistrations);
+		}
 	}
 
 	private boolean removeExportRegistration(
@@ -889,8 +907,7 @@ public class RemoteServiceAdmin implements
 		EventAdmin eventAdmin = getEventAdmin();
 		if (eventAdmin == null) {
 			logWarning("postEvent", "No event admin available to post event=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ event + " with endpointDescription=" //$NON-NLS-1$
-					+ endpointDescription);
+					+ event);
 			return;
 		}
 		int eventType = event.getType();
@@ -1198,10 +1215,6 @@ public class RemoteServiceAdmin implements
 						exportedInterfaces[i], packageName);
 				if (version != null && !version.equals(Version.emptyVersion))
 					packageVersion = version.toString();
-				else
-					logWarning("createExportEndpointDescription", //$NON-NLS-1$
-							"No or empty version specified for exported service interface=" //$NON-NLS-1$
-									+ exportedInterfaces[i]);
 			}
 			// Only set the package version if we have a non-null value
 			if (packageVersion != null)

@@ -193,10 +193,10 @@ public class EndpointDescription extends
 
 	public String toString() {
 		return "ECFEndpointDescription[containerID=" + containerID //$NON-NLS-1$
-				+ ", remoteServiceId=" + getRemoteServiceId() //$NON-NLS-1$
-				+ ", connectTargetID=" + connectTargetID + ", idFilter=" //$NON-NLS-1$ //$NON-NLS-2$
-				+ Arrays.toString(idFilter) + ", rsFilter=" + rsFilter //$NON-NLS-1$
-				+ ", hashCode=" + hashCode + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+				+ ",remoteServiceId=" + getRemoteServiceId() //$NON-NLS-1$
+				+ ",connectTargetID=" + connectTargetID + ",idFilter=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ Arrays.toString(idFilter) + ",rsFilter=" + rsFilter //$NON-NLS-1$
+				+ ",properties=" + getProperties() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 }

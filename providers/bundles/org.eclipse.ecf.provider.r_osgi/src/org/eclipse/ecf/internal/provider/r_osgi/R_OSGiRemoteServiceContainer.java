@@ -267,10 +267,10 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 		}
 		IRemoteFilter remoteFilter = (filter == null) ? null : createRemoteFilter(filter);
 		if (getConnectedID() != null) {
-			final RemoteServiceReference[] refs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, remoteFilter);
-			if (refs != null)
-				for (int i = 0; i < refs.length; i++)
-					results.add(new RemoteServiceReferenceImpl(createRemoteServiceID(refs[i]), refs[i]));
+			final RemoteServiceReference[] rrefs = remoteService.getRemoteServiceReferences(connectedID.getURI(), clazz, remoteFilter);
+			if (rrefs != null)
+				for (int i = 0; i < rrefs.length; i++)
+					results.add(getCachedRemoteServiceReference(rrefs[i]));
 		}
 		return (IRemoteServiceReference[]) results.toArray(new IRemoteServiceReference[] {});
 	}
@@ -296,9 +296,23 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 			if (rrefs == null)
 				return results;
 			for (int i = 0; i < rrefs.length; i++)
-				results.add(new RemoteServiceReferenceImpl(createRemoteServiceID(rrefs[i]), rrefs[i]));
+				results.add(getCachedRemoteServiceReference(rrefs[i]));
 		}
 		return results;
+	}
+
+	private Map cachedRemoteServiceReferences = new HashMap();
+
+	private IRemoteServiceReference getCachedRemoteServiceReference(RemoteServiceReference rref) {
+		IRemoteServiceReference result = null;
+		synchronized (cachedRemoteServiceReferences) {
+			result = (IRemoteServiceReference) cachedRemoteServiceReferences.get(rref);
+			if (result == null) {
+				result = new RemoteServiceReferenceImpl(createRemoteServiceID(rref), rref);
+				cachedRemoteServiceReferences.put(rref, result);
+			}
+		}
+		return result;
 	}
 
 	IRemoteServiceID createRemoteServiceID(R_OSGiID cID, Long l) {
@@ -512,6 +526,9 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 	}
 
 	private void doDisconnect(R_OSGiID targetID) {
+		synchronized (cachedRemoteServiceReferences) {
+			cachedRemoteServiceReferences.clear();
+		}
 		remoteService.disconnect(targetID.getURI());
 	}
 
@@ -732,7 +749,7 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 					// There should be either zero or 1 remote service reference
 					if (refs == null || refs.length == 0)
 						return null;
-					return new RemoteServiceReferenceImpl(createRemoteServiceID(refs[0]), refs[0]);
+					return getCachedRemoteServiceReference(refs[0]);
 				} catch (InvalidSyntaxException e) {
 					// shouldn't happen as filter better be well formed
 					return null;

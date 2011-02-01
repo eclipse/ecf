@@ -87,31 +87,35 @@ public abstract class AbstractTwoRemoteServiceAccessTest extends
 		};
 	}
 
-
 	public void testGetRemoteService1Reference() throws Exception {
+		startTest("testGetRemoteService1Reference");
 		String lookupClass = TestServiceInterface1.class.getName();
 		createServiceTrackerAndRegister(lookupClass);
 		
-		// Service Consumer - Get (remote) ervice references
+		// Service Consumer - Get (remote) service references
 		final ServiceReference[] remoteReferences = st.getServiceReferences();
 		assertReferencesValidAndFirstHasCorrectType(remoteReferences, lookupClass);
 		// Spec requires that the 'service.imported' property be set
 		assertTrue(remoteReferences[0].getProperty(SERVICE_IMPORTED) != null);
+		endTest("testGetRemoteService1Reference");
 	}
 
 	public void testGetRemoteService2Reference() throws Exception {
+		startTest("testGetRemoteService2Reference");
 		String lookupClass = TestServiceInterface2.class.getName();
 		createServiceTrackerAndRegister(lookupClass);
 		
-		// Service Consumer - Get (remote) ervice references
+		// Service Consumer - Get (remote) service references
 		final ServiceReference[] remoteReferences = st.getServiceReferences();
 		assertReferencesValidAndFirstHasCorrectType(remoteReferences, lookupClass);
 		// Spec requires that the 'service.imported' property be set
 		assertTrue(remoteReferences[0].getProperty(SERVICE_IMPORTED) != null);
+		endTest("testGetRemoteService2Reference");
 	}
 	
 
 	public void testProxyWithService1() throws Exception {
+		startTest("testProxyWithService1");
 		String lookupClass = TestServiceInterface1.class.getName();
 		createServiceTrackerAndRegister(lookupClass);
 		
@@ -127,10 +131,11 @@ public abstract class AbstractTwoRemoteServiceAccessTest extends
 		final String result = proxy.doStuff1();
 		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result=" + result);
 		assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
+		endTest("testProxyWithService1");
 	}
 
 	public void testProxyWithService2() throws Exception {
-		
+		startTest("testProxyWithService2");
 		String lookupClass = TestServiceInterface2.class.getName();
 		
 		createServiceTrackerAndRegister(lookupClass);
@@ -152,7 +157,7 @@ public abstract class AbstractTwoRemoteServiceAccessTest extends
 		result = proxy.doStuff2();
 		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff2 result=" + result);
 		assertTrue(TestServiceInterface2.TEST_SERVICE_STRING2.equals(result));
-
+		endTest("testProxyWithService2");
 	}
 
 }

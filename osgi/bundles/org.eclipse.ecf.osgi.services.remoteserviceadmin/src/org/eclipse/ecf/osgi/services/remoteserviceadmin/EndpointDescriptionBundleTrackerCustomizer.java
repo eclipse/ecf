@@ -40,14 +40,14 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 			.synchronizedMap(new HashMap<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>>());
 
 	private BundleContext bundleContext;
-	private LocatorServiceListener endpointDescriptionHandler;
+	private EndpointDescriptionLocator.LocatorServiceListener endpointDescriptionHandler;
 
 	private Object endpointDescriptionReaderTrackerLock = new Object();
 	private ServiceTracker endpointDescriptionReaderTracker;
 
 	public EndpointDescriptionBundleTrackerCustomizer(
 			BundleContext bundleContext,
-			LocatorServiceListener endpointDescriptionHandler) {
+			EndpointDescriptionLocator.LocatorServiceListener endpointDescriptionHandler) {
 		this.bundleContext = bundleContext;
 		this.endpointDescriptionHandler = endpointDescriptionHandler;
 	}
@@ -162,9 +162,9 @@ public class EndpointDescriptionBundleTrackerCustomizer implements
 	}
 
 	private void logError(String method, String message, Throwable t) {
-		LogUtility.logError(method, DebugOptions.DISCOVERY, this.getClass(),
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-						message, t));
+		LogUtility.logError(method, DebugOptions.ENDPOINT_DESCRIPTION_READER,
+				this.getClass(), new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+						IStatus.ERROR, message, t));
 	}
 
 	public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {

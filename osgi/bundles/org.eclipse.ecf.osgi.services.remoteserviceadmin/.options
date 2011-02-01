@@ -16,7 +16,11 @@ org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/topologymanager=true
 
 org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/containerselector=true
 
-org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/discovery=true
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/metadatafactory=true
+
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/endpointdescriptionadvertiser=true
+
+org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/endpointdescriptionlocator=true
 
 org.eclipse.ecf.osgi.services.remoteserviceadmin/debug/endpointdescriptionreader=true
 

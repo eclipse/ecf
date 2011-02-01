@@ -83,8 +83,10 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 	}
 
 	public void testRegisterOnCreatedServer() throws Exception {
+		startTest("testRegisterOnCreatedServer");
 		Properties props = getServiceProperties();
 		registerWaitAndUnregister(props, true);
+		endTest("testRegisterOnCreatedServer");
 	}
 
 	private Properties getServiceProperties() {
@@ -97,23 +99,28 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 	}
 
 	public void testRegisterOnCreatedServerWithIdentity() throws Exception {
+		startTest("testRegisterOnCreatedServerWithIdentity");
 		Properties props = getServiceProperties();
 		// set the container factory arguments to the server identity (e.g. ecftcp://localhost:3282/server)
 		props.put(SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS, new String[] { getServerIdentity() } );
 		
 		registerWaitAndUnregister(props, true);
+		endTest("testRegisterOnCreatedServerWithIdentity");
 	}
 
 	public void testRegisterOnExistingServer() throws Exception {
+		startTest("testRegisterOnExistingServer");
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
 		Properties props = getServiceProperties();
 		
 		registerWaitAndUnregister(props, true);
+		endTest("testRegisterOnExistingServer");
 	}
 
 	public void testRegisterOnExistingServerWithIntents() throws Exception {
+		startTest("testRegisterOnExistingServerWithIntents");
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
@@ -121,9 +128,11 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Add intents
 		props.put(SERVICE_INTENTS, "passByValue");
 		registerWaitAndUnregister(props, true);
+		endTest("testRegisterOnExistingServerWithIntents");
 	}
 
 	public void testRegisterOnExistingServerWithMissingIntents() throws Exception {
+		startTest("testRegisterOnExistingServerWithMissingIntents");
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
@@ -131,9 +140,11 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Add intent that no one actually exposes
 		props.put(SERVICE_INTENTS, "foobar");
 		registerWaitAndUnregister(props, false);
+		endTest("testRegisterOnExistingServerWithMissingIntents");
 	}
 
 	public void testRegisterOnExistingServerWithExportedIntents() throws Exception {
+		startTest("testRegisterOnExistingServerWithExportedIntents");
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
@@ -141,9 +152,11 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Add intents
 		props.put(SERVICE_EXPORTED_INTENTS, "passByValue");
 		registerWaitAndUnregister(props, true);
+		endTest("testRegisterOnExistingServerWithExportedIntents");
 	}
 
 	public void testRegisterOnExistingServerWithMissingExportedIntents() throws Exception {
+		startTest("testRegisterOnExistingServerWithMissingExportedIntents");
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
@@ -151,9 +164,11 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Add intent that no one actually exposes
 		props.put(SERVICE_EXPORTED_INTENTS, "foobar");
 		registerWaitAndUnregister(props, false);
+		endTest("testRegisterOnExistingServerWithMissingExportedIntents");
 	}
 
 	public void testRegisterOnExistingServerWithExportedExtraIntents() throws Exception {
+		startTest("testRegisterOnExistingServerWithExportedExtraIntents");
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
@@ -161,9 +176,11 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Add intents
 		props.put(SERVICE_EXPORTED_INTENTS_EXTRA, "passByValue");
 		registerWaitAndUnregister(props, true);
+		endTest("testRegisterOnExistingServerWithExportedExtraIntents");
 	}
 
 	public void testRegisterOnExistingServerWithMissingExportedExtraIntents() throws Exception {
+		startTest("testRegisterOnExistingServerWithMissingExportedExtraIntents");
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
@@ -171,24 +188,29 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Add intent that no one actually exposes
 		props.put(SERVICE_EXPORTED_INTENTS_EXTRA, "foobar");
 		registerWaitAndUnregister(props, false);
+		endTest("testRegisterOnExistingServerWithMissingExportedExtraIntents");
 	}
 
 	public void testRegisterOnExistingServerWithContainerID() throws Exception {
+		startTest("testRegisterOnExistingServerWithContainerID");
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
 		
 		final Properties props = getServiceProperties();
 		props.put(SERVICE_EXPORTED_CONTAINER_ID, this.server.getID());
 		registerWaitAndUnregister(props, true);
+		endTest("testRegisterOnExistingServerWithContainerID");
 	}
 
 	public void testRegisterOnExistingServerWithIdentity() throws Exception {
+		startTest("testRegisterOnExistingServerWithIdentity");
 		// Create server container
 		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),getServerIdentity());
 		
 		Properties props = getServiceProperties();
 		
 		registerWaitAndUnregister(props, true);
+		endTest("testRegisterOnExistingServerWithIdentity");
 	}
 
 }

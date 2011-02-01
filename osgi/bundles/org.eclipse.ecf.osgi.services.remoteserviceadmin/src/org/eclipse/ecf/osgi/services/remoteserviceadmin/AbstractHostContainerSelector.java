@@ -67,20 +67,20 @@ public abstract class AbstractHostContainerSelector extends
 					serviceIntents)) {
 				trace("selectExistingHostContainers", "INCLUDING containerID=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ containers[i].getID()
-						+ "configs=" //$NON-NLS-1$
+						+ " configs=" //$NON-NLS-1$
 						+ ((serviceExportedConfigs == null) ? "null" : Arrays //$NON-NLS-1$
 								.asList(serviceExportedConfigs).toString())
-						+ "intents=" //$NON-NLS-1$
+						+ " intents=" //$NON-NLS-1$
 						+ ((serviceIntents == null) ? "null" : Arrays.asList( //$NON-NLS-1$
 								serviceIntents).toString()));
 				results.add(new RemoteServiceContainer(containers[i], adapter));
 			} else {
 				trace("selectExistingHostContainers", "EXCLUDING containerID=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ containers[i].getID()
-						+ "configs=" //$NON-NLS-1$
+						+ " configs=" //$NON-NLS-1$
 						+ ((serviceExportedConfigs == null) ? "null" : Arrays //$NON-NLS-1$
 								.asList(serviceExportedConfigs).toString())
-						+ "intents=" //$NON-NLS-1$
+						+ " intents=" //$NON-NLS-1$
 						+ ((serviceIntents == null) ? "null" : Arrays.asList( //$NON-NLS-1$
 								serviceIntents).toString()));
 			}

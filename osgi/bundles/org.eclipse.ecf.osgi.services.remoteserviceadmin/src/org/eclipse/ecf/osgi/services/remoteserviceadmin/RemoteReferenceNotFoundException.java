@@ -22,7 +22,7 @@ public class RemoteReferenceNotFoundException extends Exception {
 	private ID[] idFilter;
 	private Collection<String> interfaces;
 	private String rsFilter;
-	
+
 	public RemoteReferenceNotFoundException(ID targetID, ID[] idFilter,
 			Collection<String> interfaces, String rsFilter) {
 		this.targetID = targetID;
@@ -52,5 +52,5 @@ public class RemoteReferenceNotFoundException extends Exception {
 				+ ", idFilter=" + Arrays.toString(idFilter) + ", interfaces="
 				+ interfaces + ", rsFilter=" + rsFilter + "]";
 	}
-	
+
 }

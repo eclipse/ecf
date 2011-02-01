@@ -135,6 +135,9 @@ public abstract class AbstractTopologyManager {
 		}
 		// Now advertise endpoint description using endpoint description
 		// advertiser
+		trace("advertiseEndpointDescription", //$NON-NLS-1$
+				"advertising endpointDescription=" + endpointDescription //$NON-NLS-1$
+						+ " with advertiser=" + advertiser); //$NON-NLS-1$
 		IStatus result = advertiser.advertise(endpointDescription);
 		if (!result.isOK())
 			logError("advertiseExportedRegistration", //$NON-NLS-1$
@@ -195,6 +198,7 @@ public abstract class AbstractTopologyManager {
 
 	protected void handleEndpointAdded(EndpointDescription endpointDescription,
 			String matchedFilter) {
+
 		// First, select importing remote service admin
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
 
@@ -221,9 +225,6 @@ public abstract class AbstractTopologyManager {
 			if (t != null)
 				handleInvalidImportRegistration(importRegistration, t);
 			else {
-				trace("handleEndpointAdded", //$NON-NLS-1$
-						"service imported.  importRegistration=" //$NON-NLS-1$
-								+ importRegistration);
 				synchronized (importedRegistrations) {
 					importedRegistrations.add(importRegistration);
 				}
@@ -321,9 +322,6 @@ public abstract class AbstractTopologyManager {
 			if (t != null)
 				handleInvalidExportRegistration(exportRegistration, t);
 			else {
-				trace("handleServiceRegistering", //$NON-NLS-1$
-						"service exported.  exportRegistration=" //$NON-NLS-1$
-								+ exportRegistration);
 				endpointDescriptions
 						.add((EndpointDescription) exportRegistration
 								.getExportReference().getExportedEndpoint());
@@ -349,8 +347,6 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected void handleServiceModifying(ServiceReference serviceReference) {
-		handleServiceUnregistering(serviceReference);
-		handleServiceRegistering(serviceReference);
 	}
 
 	protected void handleServiceUnregistering(ServiceReference serviceReference) {
@@ -382,10 +378,9 @@ public abstract class AbstractTopologyManager {
 							matchingExportRegistrations.put(exportRegistration,
 									(EndpointDescription) exportRef
 											.getExportedEndpoint());
+							i.remove();
 						}
 					}
-					// remove no matter what
-					i.remove();
 				}
 			}
 		}
@@ -423,10 +418,9 @@ public abstract class AbstractTopologyManager {
 								.getImportedEndpoint();
 						if (ed != null && ed.isSameService(endpointDescription)) {
 							removedRegistrations.add(importRegistration);
+							i.remove();
 						}
 					}
-					// remove no matter what
-					i.remove();
 				}
 			}
 		}

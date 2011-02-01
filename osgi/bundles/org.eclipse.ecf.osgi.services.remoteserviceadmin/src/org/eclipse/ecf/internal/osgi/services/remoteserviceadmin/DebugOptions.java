@@ -31,8 +31,12 @@ public interface DebugOptions {
 	public static final String CONTAINER_SELECTOR = DEBUG
 			+ "/containerselector"; //$NON-NLS-1$
 
-	public static final String DISCOVERY = DEBUG + "/discovery"; //$NON-NLS-1$
+	public static final String METADATA_FACTORY = DEBUG +"/metadatafactory"; //$NON-NLS-1$
+	
+	public static final String ENDPOINT_DESCRIPTION_ADVERTISER = DEBUG + "/endpointdescriptionadvertiser"; //$NON-NLS-1$
 
+	public static final String ENDPOINT_DESCRIPTION_LOCATOR = DEBUG + "/endpointdescriptionlocator"; //$NON-NLS-1$
+	
 	public static final String ENDPOINT_DESCRIPTION_READER = DEBUG
 			+ "/endpointdescriptionreader"; //$NON-NLS-1$
 
