@@ -465,13 +465,7 @@ public class EndpointDescriptionParser {
 				return null;
 			if (valueType.equals("String")) //$NON-NLS-1$
 				return characters;
-			int startIndex = 0;
-			while (Character.isWhitespace(characters.charAt(startIndex)))
-				startIndex++;
-			int endIndex = characters.length() - 1;
-			while (Character.isWhitespace(characters.charAt(endIndex)))
-				endIndex--;
-			return characters.substring(startIndex, endIndex + 1);
+			return characters.trim();
 		}
 
 		protected abstract void addValue(Object value);
