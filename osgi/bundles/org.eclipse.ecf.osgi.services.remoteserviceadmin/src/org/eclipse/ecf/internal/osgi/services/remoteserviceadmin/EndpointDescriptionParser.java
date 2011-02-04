@@ -28,7 +28,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
@@ -58,11 +57,8 @@ public class EndpointDescriptionParser {
 	public static String[] noAttributes = new String[0];
 
 	private XMLReader xmlReader;
-	protected Locator locator = null; // document locator, if supported by the
-										// parser
 
 	class IgnoringHandler extends AbstractHandler {
-
 		public IgnoringHandler(AbstractHandler parent) {
 			super(parent);
 			this.elementHandled = "IgnoringAll"; //$NON-NLS-1$
@@ -71,7 +67,6 @@ public class EndpointDescriptionParser {
 		public void startElement(String name, Attributes attributes) {
 			noSubElements(name, attributes);
 		}
-
 	}
 
 	/**
@@ -99,15 +94,6 @@ public class EndpointDescriptionParser {
 			this.parentHandler = parentHandler;
 			xmlReader.setContentHandler(this);
 			this.elementHandled = elementHandled;
-		}
-
-		/**
-		 * Set the document locator for the parser
-		 * 
-		 * @see org.xml.sax.ContentHandler#setDocumentLocator
-		 */
-		public void setDocumentLocator(Locator docLocator) {
-			locator = docLocator;
 		}
 
 		public void startElement(String uri, String localName, String qName,
@@ -185,18 +171,15 @@ public class EndpointDescriptionParser {
 
 		// Method to override in the handler of an element with CDATA.
 		protected void processCharacters(String data) {
-			if (data.length() > 0) {
+			if (data.length() > 0)
 				unexpectedCharacterData(this, data);
-			}
 		}
 
 		private boolean allWhiteSpace(StringBuffer sb) {
 			int length = sb.length();
-			for (int i = 0; i < length; i += 1) {
-				if (!Character.isWhitespace(sb.charAt(i))) {
+			for (int i = 0; i < length; i += 1)
+				if (!Character.isWhitespace(sb.charAt(i)))
 					return false;
-				}
-			}
 			return true;
 		}
 
@@ -245,17 +228,15 @@ public class EndpointDescriptionParser {
 				String name = attributes.getLocalName(i);
 				String value = attributes.getValue(i).trim();
 				int j;
-				if ((j = indexOf(required, name)) >= 0) {
+				if ((j = indexOf(required, name)) >= 0)
 					result[j] = value;
-				} else if ((j = indexOf(optional, name)) >= 0) {
+				else if ((j = indexOf(optional, name)) >= 0)
 					result[required.length + j] = value;
-				} else {
+				else
 					unexpectedAttribute(elementHandled, name, value);
-				}
 			}
-			for (int i = 0; i < required.length; i += 1) {
+			for (int i = 0; i < required.length; i += 1)
 				checkRequiredAttribute(elementHandled, required[i], result[i]);
-			}
 			return result;
 		}
 
@@ -267,9 +248,8 @@ public class EndpointDescriptionParser {
 			return null;
 
 		SAXParserFactory factory = a.getSAXParserFactory();
-		if (factory == null) {
+		if (factory == null)
 			throw new SAXException("Unable to acquire sax parser"); //$NON-NLS-1$
-		}
 		factory.setNamespaceAware(true);
 		factory.setValidating(false);
 		try {
@@ -316,9 +296,8 @@ public class EndpointDescriptionParser {
 			if (name.equals(elementHandled)) {
 				rootHandler.initialize(this, name, attributes);
 				xmlReader.setContentHandler(rootHandler);
-			} else {
-				this.noSubElements(name, attributes);
-			}
+			} else
+				noSubElements(name, attributes);
 		}
 
 	}
@@ -350,12 +329,10 @@ public class EndpointDescriptionParser {
 				if (endpointDescriptionHandler == null) {
 					endpointDescriptionHandler = new EndpointDescriptionHandler(
 							this, attributes, endpointDescriptions);
-				} else {
+				} else
 					duplicateElement(this, name, attributes);
-				}
-			} else {
+			} else
 				invalidElement(name, attributes);
-			}
 		}
 
 		public void endElement(String namespaceURI, String localName,
@@ -401,6 +378,35 @@ public class EndpointDescriptionParser {
 
 	}
 
+	private Object createValue(String valueType, String value) {
+		if (value == null)
+			return null;
+		if (valueType.equals("String")) { //$NON-NLS-1$
+			return value;
+		} else if (valueType.equals("long") || valueType.equals("Long")) { //$NON-NLS-1$ //$NON-NLS-2$
+			return Long.valueOf(value);
+		} else if (valueType.equals("double") || valueType.equals("Double")) { //$NON-NLS-1$ //$NON-NLS-2$
+			return Double.valueOf(value);
+		} else if (valueType.equals("float") || valueType.equals("Float")) { //$NON-NLS-1$ //$NON-NLS-2$
+			return Float.valueOf(value);
+		} else if (valueType.equals("int") || valueType.equals("Integer")) { //$NON-NLS-1$ //$NON-NLS-2$
+			return Integer.valueOf(value);
+		} else if (valueType.equals("byte") || valueType.equals("Byte")) { //$NON-NLS-1$ //$NON-NLS-2$
+			return Byte.valueOf(value);
+		} else if (valueType.equals("char") //$NON-NLS-1$
+				|| valueType.equals("Character")) { //$NON-NLS-1$
+			char[] chars = new char[1];
+			value.getChars(0, 1, chars, 0);
+			return Character.valueOf(chars[0]);
+		} else if (valueType.equals("boolean") //$NON-NLS-1$
+				|| valueType.equals("Boolean")) { //$NON-NLS-1$
+			return Boolean.valueOf(value);
+		} else if (valueType.equals("short") || valueType.equals("Short")) { //$NON-NLS-1$ //$NON-NLS-2$
+			return Short.valueOf(value);
+		}
+		return null;
+	}
+
 	abstract class MultiValueHandler extends AbstractHandler {
 
 		protected String valueType;
@@ -411,53 +417,24 @@ public class EndpointDescriptionParser {
 			this.valueType = valueType;
 		}
 
-		protected Object createValue(String value) {
-			if (value == null)
-				return null;
-			if (valueType.equals("String")) { //$NON-NLS-1$
-				return value;
-			} else if (valueType.equals("long") || valueType.equals("Long")) { //$NON-NLS-1$ //$NON-NLS-2$
-				return Long.valueOf(value);
-			} else if (valueType.equals("double") || valueType.equals("Double")) { //$NON-NLS-1$ //$NON-NLS-2$
-				return Double.valueOf(value);
-			} else if (valueType.equals("float") || valueType.equals("Float")) { //$NON-NLS-1$ //$NON-NLS-2$
-				return Float.valueOf(value);
-			} else if (valueType.equals("int") || valueType.equals("Integer")) { //$NON-NLS-1$ //$NON-NLS-2$
-				return Integer.valueOf(value);
-			} else if (valueType.equals("byte") || valueType.equals("Byte")) { //$NON-NLS-1$ //$NON-NLS-2$
-				return Byte.valueOf(value);
-			} else if (valueType.equals("char") //$NON-NLS-1$
-					|| valueType.equals("Character")) { //$NON-NLS-1$
-				char[] chars = new char[1];
-				value.getChars(0, 1, chars, 0);
-				return Character.valueOf(chars[0]);
-			} else if (valueType.equals("boolean") //$NON-NLS-1$
-					|| valueType.equals("Boolean")) { //$NON-NLS-1$
-				return Boolean.valueOf(value);
-			} else if (valueType.equals("short") || valueType.equals("Short")) { //$NON-NLS-1$ //$NON-NLS-2$
-				return Short.valueOf(value);
-			}
-			return null;
-		}
-
 		public void startElement(String name, Attributes attributes)
 				throws SAXException {
-			if (ENDPOINT_PROPERTY_VALUE.equals(name)) {
+			if (ENDPOINT_PROPERTY_VALUE.equals(name))
 				characters = new StringBuffer();
-			}
 		}
 
 		public void endElement(String namespaceURI, String localName,
 				String qName) {
 			if (ENDPOINT_PROPERTY_VALUE.equals(localName)) {
-				Object value = createValue(processValue((characters == null) ? null
-						: characters.toString()));
+				Object value = createValue(
+						valueType,
+						processValue((characters == null) ? null : characters
+								.toString()));
 				if (value != null)
 					addValue(value);
 				characters = null;
-			} else if (elementHandled.equals(localName)) {
+			} else if (elementHandled.equals(localName))
 				super.endElement(namespaceURI, localName, qName);
-			}
 		}
 
 		private String processValue(String characters) {
@@ -483,27 +460,27 @@ public class EndpointDescriptionParser {
 		}
 
 		protected Object[] createEmptyArrayOfType() {
-			if (valueType.equals("String")) { //$NON-NLS-1$
+			if (valueType.equals("String")) //$NON-NLS-1$
 				return new String[] {};
-			} else if (valueType.equals("long") || valueType.equals("Long")) { //$NON-NLS-1$ //$NON-NLS-2$
+			else if (valueType.equals("long") || valueType.equals("Long")) //$NON-NLS-1$ //$NON-NLS-2$
 				return new Long[] {};
-			} else if (valueType.equals("double") || valueType.equals("Double")) { //$NON-NLS-1$ //$NON-NLS-2$
+			else if (valueType.equals("double") || valueType.equals("Double")) //$NON-NLS-1$ //$NON-NLS-2$
 				return new Double[] {};
-			} else if (valueType.equals("float") || valueType.equals("Float")) { //$NON-NLS-1$ //$NON-NLS-2$
+			else if (valueType.equals("float") || valueType.equals("Float")) //$NON-NLS-1$ //$NON-NLS-2$
 				return new Double[] {};
-			} else if (valueType.equals("int") || valueType.equals("Integer")) { //$NON-NLS-1$ //$NON-NLS-2$
+			else if (valueType.equals("int") || valueType.equals("Integer")) //$NON-NLS-1$ //$NON-NLS-2$
 				return new Integer[] {};
-			} else if (valueType.equals("byte") || valueType.equals("Byte")) { //$NON-NLS-1$ //$NON-NLS-2$
+			else if (valueType.equals("byte") || valueType.equals("Byte")) //$NON-NLS-1$ //$NON-NLS-2$
 				return new Byte[] {};
-			} else if (valueType.equals("char") //$NON-NLS-1$
-					|| valueType.equals("Character")) { //$NON-NLS-1$
+			else if (valueType.equals("char") //$NON-NLS-1$
+					|| valueType.equals("Character")) //$NON-NLS-1$
 				return new Character[] {};
-			} else if (valueType.equals("boolean") //$NON-NLS-1$
-					|| valueType.equals("Boolean")) { //$NON-NLS-1$
+			else if (valueType.equals("boolean") //$NON-NLS-1$
+					|| valueType.equals("Boolean")) //$NON-NLS-1$
 				return new Boolean[] {};
-			} else if (valueType.equals("short") || valueType.equals("Short")) { //$NON-NLS-1$ //$NON-NLS-2$
+			else if (valueType.equals("short") || valueType.equals("Short")) //$NON-NLS-1$ //$NON-NLS-2$
 				return new Short[] {};
-			} else
+			else
 				return null;
 		}
 
@@ -618,7 +595,7 @@ public class EndpointDescriptionParser {
 		private Map<String, Object> properties;
 		private String name;
 		private String valueType = "String"; //$NON-NLS-1$
-		private String value;
+		private Object value;
 		private MultiValueHandler multiValueHandler;
 		private XMLValueHandler xmlValueHandler;
 
@@ -628,7 +605,8 @@ public class EndpointDescriptionParser {
 			super(parentHandler, ENDPOINT_PROPERTY);
 			name = parseRequiredAttributes(attributes,
 					new String[] { ENDPOINT_PROPERTY_NAME })[0];
-			value = parseOptionalAttribute(attributes, ENDPOINT_PROPERTY_VALUE);
+			String strValue = parseOptionalAttribute(attributes,
+					ENDPOINT_PROPERTY_VALUE);
 			String vt = parseOptionalAttribute(attributes,
 					ENDPOINT_PROPERTY_VALUETYPE);
 			if (vt != null) {
@@ -638,11 +616,10 @@ public class EndpointDescriptionParser {
 				this.valueType = vt;
 			}
 			this.properties = properties;
-			if (value != null) {
-				String[] property = new String[] { name, value };
-				if (isValidProperty(property)) {
-					this.properties.put(property[0], property[1]);
-				}
+			if (strValue != null) {
+				value = createValue(this.valueType, strValue);
+				if (isValidProperty(name, value))
+					this.properties.put(name, value);
 			}
 		}
 
@@ -653,36 +630,33 @@ public class EndpointDescriptionParser {
 				throw new SAXException(
 						"property element has both value attribute and sub-element"); //$NON-NLS-1$
 			if (ENDPOINT_PROPERTY_ARRAY.equals(name)) {
-				if (multiValueHandler == null) {
+				if (multiValueHandler == null)
 					multiValueHandler = new ArrayMultiValueHandler(this,
 							ENDPOINT_PROPERTY_ARRAY, valueType);
-				} else {
+				else
 					duplicateElement(this, name, attributes);
-				}
+
 			} else if (ENDPOINT_PROPERTY_LIST.equals(name)) {
-				if (multiValueHandler == null) {
+				if (multiValueHandler == null)
 					multiValueHandler = new ListMultiValueHandler(this,
 							ENDPOINT_PROPERTY_LIST, valueType);
-				} else {
+				else
 					duplicateElement(this, name, attributes);
-				}
 			} else if (ENDPOINT_PROPERTY_SET.equals(name)) {
-				if (multiValueHandler == null) {
+				if (multiValueHandler == null)
 					multiValueHandler = new SetMultiValueHandler(this,
 							ENDPOINT_PROPERTY_SET, valueType);
-				} else {
+				else
 					duplicateElement(this, name, attributes);
-				}
 			} else if (ENDPOINT_PROPERTY_XML.equals(name)) {
 				// xml
-				if (xmlValueHandler == null) {
+				if (xmlValueHandler == null)
 					xmlValueHandler = new XMLValueHandler(this);
-				} else {
+				else
 					duplicateElement(this, name, attributes);
-				}
-			} else {
+
+			} else
 				invalidElement(name, attributes);
-			}
 		}
 
 		public void endElement(String namespaceURI, String localName,
@@ -699,8 +673,8 @@ public class EndpointDescriptionParser {
 			}
 		}
 
-		private boolean isValidProperty(String[] property) {
-			return (property.length == 2 && property[0] != null && property[1] != null);
+		private boolean isValidProperty(String name, Object value) {
+			return (name != null && value != null);
 		}
 	}
 
@@ -745,9 +719,8 @@ public class EndpointDescriptionParser {
 	}
 
 	public static String makeSimpleName(String localName, String qualifiedName) {
-		if (localName != null && localName.length() > 0) {
+		if (localName != null && localName.length() > 0)
 			return localName;
-		}
 		int nameSpaceIndex = qualifiedName.indexOf(":"); //$NON-NLS-1$
 		return (nameSpaceIndex == -1 ? qualifiedName : qualifiedName
 				.substring(nameSpaceIndex + 1));
