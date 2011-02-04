@@ -42,6 +42,7 @@ public class EndpointDescriptionReader implements IEndpointDescriptionReader {
 						DebugOptions.ENDPOINT_DESCRIPTION_READER,
 						this.getClass(),
 						"Exception parsing endpoint description properties", e); //$NON-NLS-1$
+				throw new IOException("Error creating endpoint description: "+e.getMessage());
 			}
 		}
 		return results.toArray(new EndpointDescription[results.size()]);
