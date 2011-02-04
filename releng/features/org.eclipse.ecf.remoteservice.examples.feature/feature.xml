@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.examples.feature"
       label="ECF OSGi 4.2 Remote Services Examples"
-      version="1.0.0.qualifier"
+      version="1.1.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
@@ -66,6 +66,13 @@
 
    <plugin
          id="org.eclipse.ecf.examples.remoteservices.rest.rss"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.examples.remoteservices.hello.consumer.edef"
          download-size="0"
          install-size="0"
          version="0.0.0"

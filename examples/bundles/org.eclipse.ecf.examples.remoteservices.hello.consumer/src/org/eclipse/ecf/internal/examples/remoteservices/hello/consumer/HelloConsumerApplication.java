@@ -24,7 +24,6 @@ import org.eclipse.ecf.remoteservice.RemoteServiceHelper;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.equinox.concurrent.future.IFuture;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
@@ -67,24 +66,9 @@ public class HelloConsumerApplication implements IApplication,
 				createRemoteFilter(), this);
 		helloServiceTracker.open(true);
 
-		startLocalDiscoveryIfPresent();
-		
 		waitForDone();
 
 		return IApplication.EXIT_OK;
-	}
-
-	private void startLocalDiscoveryIfPresent() {
-		Bundle[] bundles = bundleContext.getBundles();
-		for(int i=0; i < bundles.length; i++) {
-			if (bundles[i].getSymbolicName().equals("org.eclipse.ecf.osgi.services.discovery.local")) {
-				try {
-					bundles[i].start();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 
 	private Filter createRemoteFilter() throws InvalidSyntaxException {
