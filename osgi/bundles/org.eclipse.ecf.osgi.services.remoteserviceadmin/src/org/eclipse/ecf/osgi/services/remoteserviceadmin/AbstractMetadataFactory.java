@@ -305,12 +305,9 @@ public abstract class AbstractMetadataFactory {
 
 		encodeOSGiServiceProperties(endpointDescription, result);
 
-		// org.eclipse.ecf.remoteservice.Constants.SERVICE_ID =
-		// endpointDescription.getRemoteServiceId()
-		long remoteServiceId = endpointDescription.getRemoteServiceId();
-		encodeLong(result, org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
-				new Long(remoteServiceId));
-
+		Long rsId = (Long) endpointDescription.getProperties().get(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		if (rsId != null) encodeLong(result,org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,rsId);
+		
 		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE
 		// = endpointDescription.getIdNamespace()
 		String containerIDNamespace = endpointDescription.getIdNamespace();

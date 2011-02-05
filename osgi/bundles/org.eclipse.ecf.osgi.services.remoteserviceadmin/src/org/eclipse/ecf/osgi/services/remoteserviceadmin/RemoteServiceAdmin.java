@@ -255,7 +255,6 @@ public class RemoteServiceAdmin implements
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 
 		trace("importService", "endpointDescription=" + endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$
-
 		// First, make sure that the client bundle has the IMPORT endpoint
 		// permission
 		checkEndpointPermission(endpointDescription, EndpointPermission.IMPORT);
@@ -263,53 +262,48 @@ public class RemoteServiceAdmin implements
 		if (endpointDescription.getServiceId() == 0)
 			return handleNonOSGiService(endpointDescription);
 
-		// First check to see whether it's one of ECF's endpoint descriptions
-		if (endpointDescription instanceof EndpointDescription) {
-			EndpointDescription ed = (EndpointDescription) endpointDescription;
-			// Now get IConsumerContainerSelector, to select the ECF container
-			// for the given endpointDescription
-			IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
-			// If there is none, then we can go no further
-			if (consumerContainerSelector == null) {
-				logError("importService", //$NON-NLS-1$
-						"No defaultConsumerContainerSelector available"); //$NON-NLS-1$
-				return null;
-			}
-			// Select the rsContainer to handle the endpoint description
-			IRemoteServiceContainer rsContainer = consumerContainerSelector
-					.selectConsumerContainer(ed);
-			// If none found, log a warning and we're done
-			if (rsContainer == null) {
-				logWarning(
-						"importService", "No remote service container selected for endpoint=" //$NON-NLS-1$ //$NON-NLS-2$
-								+ endpointDescription
-								+ ". Remote service NOT IMPORTED"); //$NON-NLS-1$
-				return null;
-			}
-			// If one selected then import the service to create an import
-			// registration
-			ImportRegistration importRegistration = null;
-			synchronized (importedRegistrations) {
-				ImportEndpoint importEndpoint = findImportEndpoint(ed);
-				if (importEndpoint != null)
-					importRegistration = new ImportRegistration(importEndpoint);
-				else {
-					importEndpoint = importService(ed, rsContainer);
-					importRegistration = new ImportRegistration(importEndpoint);
-					if (importRegistration.getException() == null)
-						addImportRegistration(importRegistration);
-				}
-			}
-			// publish import event
-			publishImportEvent(importRegistration);
-			// Finally, return the importRegistration. It may be null or not.
-			return importRegistration;
-		} else {
-			logWarning("importService", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ endpointDescription
-					+ " is not ECF EndpointDescription...ignoring"); //$NON-NLS-1$
+		EndpointDescription ed = null;
+		if (endpointDescription instanceof EndpointDescription) ed = (EndpointDescription) endpointDescription;
+		else ed = new EndpointDescription(endpointDescription.getProperties());
+		
+		// Now get IConsumerContainerSelector, to select the ECF container
+		// for the given endpointDescription
+		IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
+		// If there is none, then we can go no further
+		if (consumerContainerSelector == null) {
+			logError("importService", //$NON-NLS-1$
+					"No defaultConsumerContainerSelector available"); //$NON-NLS-1$
 			return null;
 		}
+		// Select the rsContainer to handle the endpoint description
+		IRemoteServiceContainer rsContainer = consumerContainerSelector
+				.selectConsumerContainer(ed);
+		// If none found, log a warning and we're done
+		if (rsContainer == null) {
+			logWarning(
+					"importService", "No remote service container selected for endpoint=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ endpointDescription
+							+ ". Remote service NOT IMPORTED"); //$NON-NLS-1$
+			return null;
+		}
+		// If one selected then import the service to create an import
+		// registration
+		ImportRegistration importRegistration = null;
+		synchronized (importedRegistrations) {
+			ImportEndpoint importEndpoint = findImportEndpoint(ed);
+			if (importEndpoint != null)
+				importRegistration = new ImportRegistration(importEndpoint);
+			else {
+				importEndpoint = importService(ed, rsContainer);
+				importRegistration = new ImportRegistration(importEndpoint);
+				if (importRegistration.getException() == null)
+					addImportRegistration(importRegistration);
+			}
+		}
+		// publish import event
+		publishImportEvent(importRegistration);
+		// Finally, return the importRegistration. It may be null or not.
+		return importRegistration;
 	}
 
 	public Collection<org.osgi.service.remoteserviceadmin.ExportReference> getExportedServices() {
@@ -1370,7 +1364,19 @@ public class RemoteServiceAdmin implements
 
 	private String getRemoteServiceFilter(
 			EndpointDescription endpointDescription) {
-		long rsId = endpointDescription.getRemoteServiceId();
+
+		long rsId = 0;
+		// if the ECF remote service id is present in properties, allow it to
+		// override
+		Long l = (Long) endpointDescription.getProperties().get(
+				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		if (l != null)
+			rsId = l.longValue();
+		// if rsId is still zero, use the endpoint.service.id from
+		// endpoint description
+		if (rsId == 0)
+			rsId = endpointDescription.getServiceId();
+		// If it's *still* zero, then just use the raw filter
 		if (rsId == 0) {
 			// It's not known...so we just return the 'raw' remote service
 			// filter
@@ -1778,7 +1784,7 @@ public class RemoteServiceAdmin implements
 								PropertiesUtil
 										.createDictionaryFromMap(remoteServiceProperties));
 			endpointDescriptionProperties
-					.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
 							remoteRegistration
 									.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID));
 		} catch (Exception e) {

@@ -27,47 +27,26 @@ public class EndpointDescription extends
 
 	private String idNamespace;
 	private ID containerID;
-	private long remoteServiceId;
 	private ID connectTargetID;
 	private ID[] idFilter;
 	private String rsFilter;
 
-	private int hashCode;
-
 	public EndpointDescription(ServiceReference reference, Map osgiProperties) {
 		super(reference, osgiProperties);
 		verifyECFProperties();
-		computeHashCode();
 	}
 
 	public EndpointDescription(Map osgiProperties) {
 		super(osgiProperties);
 		verifyECFProperties();
-		computeHashCode();
 	}
 
 	private void verifyECFProperties() {
 		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		this.containerID = verifyIDProperty(idNamespace, getId());
-		this.remoteServiceId = verifyLongProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
 		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		this.idFilter = verifyIDFilter();
 		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
-	}
-
-	private long verifyLongProperty(String propName) {
-		Object r = getProperties().get(propName);
-		if (r == null) {
-			return 0l;
-		}
-		try {
-			return ((Long) r).longValue();
-		} catch (ClassCastException e) {
-			IllegalArgumentException iae = new IllegalArgumentException(
-					"property value is not a Long: " + propName); //$NON-NLS-1$
-			iae.initCause(e);
-			throw iae;
-		}
 	}
 
 	private String verifyStringProperty(String propName) {
@@ -121,13 +100,6 @@ public class EndpointDescription extends
 		return (ID[]) results.toArray(new ID[results.size()]);
 	}
 
-	private void computeHashCode() {
-		this.hashCode = super.hashCode();
-		long remoteServiceId = getRemoteServiceId();
-		this.hashCode = 31 * hashCode
-				+ (int) (remoteServiceId ^ (remoteServiceId >>> 32));
-	}
-
 	public Map<String, Version> getInterfaceVersions() {
 		List<String> interfaces = getInterfaces();
 		Map<String, Version> result = new HashMap<String, Version>();
@@ -142,31 +114,6 @@ public class EndpointDescription extends
 		return result;
 	}
 
-	public boolean equals(Object other) {
-		if (other == null)
-			return false;
-		if (other == this)
-			return true;
-		if (!(other instanceof EndpointDescription))
-			return false;
-		EndpointDescription o = (EndpointDescription) other;
-		return super.equals(other)
-				&& (o.getRemoteServiceId() == this.getRemoteServiceId());
-	}
-
-	public int hashCode() {
-		return hashCode;
-	}
-
-	public boolean isSameService(
-			org.osgi.service.remoteserviceadmin.EndpointDescription other) {
-		if (!(other instanceof EndpointDescription))
-			return false;
-		EndpointDescription o = (EndpointDescription) other;
-		return (super.isSameService(other) && o.getRemoteServiceId() == this
-				.getRemoteServiceId());
-	}
-
 	public ID getContainerID() {
 		return containerID;
 	}
@@ -179,10 +126,6 @@ public class EndpointDescription extends
 		return connectTargetID;
 	}
 
-	public long getRemoteServiceId() {
-		return remoteServiceId;
-	}
-
 	public ID[] getIDFilter() {
 		return idFilter;
 	}
@@ -193,7 +136,6 @@ public class EndpointDescription extends
 
 	public String toString() {
 		return "ECFEndpointDescription[containerID=" + containerID //$NON-NLS-1$
-				+ ",remoteServiceId=" + getRemoteServiceId() //$NON-NLS-1$
 				+ ",connectTargetID=" + connectTargetID + ",idFilter=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ Arrays.toString(idFilter) + ",rsFilter=" + rsFilter //$NON-NLS-1$
 				+ ",properties=" + getProperties() + "]"; //$NON-NLS-1$ //$NON-NLS-2$

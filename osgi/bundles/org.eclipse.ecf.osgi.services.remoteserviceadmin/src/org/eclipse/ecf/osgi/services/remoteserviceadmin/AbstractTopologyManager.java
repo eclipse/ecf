@@ -185,18 +185,7 @@ public abstract class AbstractTopologyManager {
 				this.getClass(), message);
 	}
 
-	protected void handleEndpointAdded(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
-			String matchedFilter) {
-		if (endpoint instanceof EndpointDescription)
-			handleEndpointAdded((EndpointDescription) endpoint, matchedFilter);
-		else
-			logWarning("endpointAdded", //$NON-NLS-1$
-					"ECF Topology Manager:  Ignoring Non-ECF endpointAdded=" //$NON-NLS-1$
-							+ endpoint + ",matchedFilter=" + matchedFilter); //$NON-NLS-1$
-	}
-
-	protected void handleEndpointAdded(EndpointDescription endpointDescription,
+	protected void handleEndpointAdded(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			String matchedFilter) {
 
 		// First, select importing remote service admin
@@ -238,17 +227,6 @@ public abstract class AbstractTopologyManager {
 				+ importRegistration, t);
 	}
 
-	protected void handleEndpointRemoved(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
-			String matchedFilter) {
-		if (endpoint instanceof EndpointDescription)
-			handleEndpointRemoved((EndpointDescription) endpoint, matchedFilter);
-		else
-			logWarning("endpointRemoved", //$NON-NLS-1$
-					"ECF Topology Manager:  Ignoring Non-ECF endpointRemoved=" //$NON-NLS-1$
-							+ endpoint + ",matchedFilter=" + matchedFilter); //$NON-NLS-1$
-	}
-
 	protected void handleEvent(ServiceEvent event, Collection contexts) {
 		switch (event.getType()) {
 		case ServiceEvent.MODIFIED:
@@ -268,7 +246,7 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected void handleEndpointRemoved(
-			EndpointDescription endpointDescription, String matchedFilter) {
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription, String matchedFilter) {
 		trace("handleEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ endpointDescription);
 		unimportService(endpointDescription);
@@ -401,7 +379,7 @@ public abstract class AbstractTopologyManager {
 		return matchingExportRegistrations.values();
 	}
 
-	protected void unimportService(EndpointDescription endpointDescription) {
+	protected void unimportService(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		List<org.osgi.service.remoteserviceadmin.ImportRegistration> removedRegistrations = null;
 		synchronized (importedRegistrations) {
 			for (Iterator<org.osgi.service.remoteserviceadmin.ImportRegistration> i = importedRegistrations
@@ -414,7 +392,7 @@ public abstract class AbstractTopologyManager {
 					org.osgi.service.remoteserviceadmin.ImportReference importRef = importRegistration
 							.getImportReference();
 					if (importRef != null) {
-						EndpointDescription ed = (EndpointDescription) importRef
+						org.osgi.service.remoteserviceadmin.EndpointDescription ed = importRef
 								.getImportedEndpoint();
 						if (ed != null && ed.isSameService(endpointDescription)) {
 							removedRegistrations.add(importRegistration);
