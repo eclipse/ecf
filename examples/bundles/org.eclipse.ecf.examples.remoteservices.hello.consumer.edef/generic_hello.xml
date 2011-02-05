@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <endpoint-descriptions xmlns="http://www.osgi.org/xmlns/rsa/v1.0.0">
   <endpoint-description>
     <property name="ecf.endpoint.id.ns" value-type="String" value="org.eclipse.ecf.core.identity.StringID"/>
-    <property name="ecf.rsvc.id" value-type="Long" value="1"/>
-    <property name="endpoint.framework.uuid" value-type="String" value="d0a612ca-0330-0010-1546-f9c8c134fcf8"/>
-    <property name="endpoint.id" value-type="String" value="ecftcp://127.0.0.1:3282/server"/>
+    <property name="endpoint.framework.uuid" value-type="String" value="70cd3d4b-4931-0010-1b63-d64101cefd5e"/>
+    <property name="endpoint.id" value-type="String" value="ecftcp://VAIO:3282/server"/>
     <property name="endpoint.package.version.org.eclipse.ecf.tests.remoteservice" value-type="String" value="2.0.0"/>
-    <property name="endpoint.service.id" value-type="Long" value="64"/>
+    <property name="endpoint.service.id" value-type="Long" value="1"/>
     <property name="objectClass" value-type="String">
       <array>
         <value>org.eclipse.ecf.tests.remoteservice.IConcatService</value>
