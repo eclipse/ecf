@@ -185,7 +185,8 @@ public abstract class AbstractTopologyManager {
 				this.getClass(), message);
 	}
 
-	protected void handleEndpointAdded(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+	protected void handleEndpointAdded(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			String matchedFilter) {
 
 		// First, select importing remote service admin
@@ -246,7 +247,8 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected void handleEndpointRemoved(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription, String matchedFilter) {
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+			String matchedFilter) {
 		trace("handleEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ endpointDescription);
 		unimportService(endpointDescription);
@@ -379,7 +381,8 @@ public abstract class AbstractTopologyManager {
 		return matchingExportRegistrations.values();
 	}
 
-	protected void unimportService(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+	protected void unimportService(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		List<org.osgi.service.remoteserviceadmin.ImportRegistration> removedRegistrations = null;
 		synchronized (importedRegistrations) {
 			for (Iterator<org.osgi.service.remoteserviceadmin.ImportRegistration> i = importedRegistrations

@@ -263,9 +263,11 @@ public class RemoteServiceAdmin implements
 			return handleNonOSGiService(endpointDescription);
 
 		EndpointDescription ed = null;
-		if (endpointDescription instanceof EndpointDescription) ed = (EndpointDescription) endpointDescription;
-		else ed = new EndpointDescription(endpointDescription.getProperties());
-		
+		if (endpointDescription instanceof EndpointDescription)
+			ed = (EndpointDescription) endpointDescription;
+		else
+			ed = new EndpointDescription(endpointDescription.getProperties());
+
 		// Now get IConsumerContainerSelector, to select the ECF container
 		// for the given endpointDescription
 		IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();

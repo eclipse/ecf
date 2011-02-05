@@ -83,7 +83,7 @@ public class Activator implements BundleActivator {
 							ServiceRegistration registration) {
 						return new RemoteServiceAdmin(bundle);
 					}
-		
+
 					public void ungetService(Bundle bundle,
 							ServiceRegistration registration, Object service) {
 						if (service != null)

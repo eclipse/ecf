@@ -13,6 +13,10 @@ import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
+/**
+ * Factory for creating {@link DiscoveredEndpointDescription}s.
+ * 
+ */
 public interface IDiscoveredEndpointDescriptionFactory {
 
 	/**
@@ -55,8 +59,23 @@ public interface IDiscoveredEndpointDescriptionFactory {
 	public DiscoveredEndpointDescription getUndiscoveredEndpointDescription(
 			IDiscoveryLocator locator, IServiceID serviceID);
 
+	/**
+	 * Remove the DiscoveredEndpointDescription associated with the given
+	 * endpointDescription.
+	 * 
+	 * @param endpointDescription
+	 *            that was previously associated with a
+	 *            DiscoveredEndpointDescription (via
+	 *            {@link #createDiscoveredEndpointDescription(IDiscoveryLocator, IServiceInfo)}
+	 *            to be removed. Must not be <code>null</code>.
+	 * @return <code>true</code> if actually removed, <code>false</code> if
+	 *         nothing was removed.
+	 */
 	public boolean removeEndpointDescription(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 
+	/**
+	 * Remove all DiscoveredEndpointDescription from this factory.
+	 */
 	public void removeAllEndpointDescriptions();
 }
