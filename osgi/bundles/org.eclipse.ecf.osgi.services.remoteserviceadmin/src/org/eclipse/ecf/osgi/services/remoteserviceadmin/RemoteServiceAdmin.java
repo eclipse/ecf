@@ -81,8 +81,6 @@ public class RemoteServiceAdmin implements
 					"org.eclipse.ecf.osgi.services.remoteserviceadmin.consumerAutoCreateContainer", //$NON-NLS-1$
 					"true")).booleanValue(); //$NON-NLS-1$
 
-	private PackageVersionComparator packageVersionComparator;
-
 	private ServiceTracker packageAdminTracker;
 	private Object packageAdminTrackerLock = new Object();
 
@@ -149,8 +147,6 @@ public class RemoteServiceAdmin implements
 							defaultConsumerContainerSelector,
 							(Dictionary) props);
 		}
-		// create package version comparator
-		packageVersionComparator = new PackageVersionComparator();
 	}
 
 	// RemoteServiceAdmin service interface impl methods
@@ -1607,10 +1603,6 @@ public class RemoteServiceAdmin implements
 		return (PackageAdmin) packageAdminTracker.getService();
 	}
 
-	private IPackageVersionComparator getPackageVersionComparator() {
-		return packageVersionComparator;
-	}
-
 	private ExportedPackage getExportedPackageForClass(
 			PackageAdmin packageAdmin, Class clazz) {
 		String packageName = getPackageName(clazz.getName());
@@ -1642,16 +1634,36 @@ public class RemoteServiceAdmin implements
 		return className.substring(0, lastDotIndex);
 	}
 
+	private void comparePackageVersions(String packageName,
+			Version remoteVersion, Version localVersion)
+			throws RuntimeException {
+		
+		if (remoteVersion == null)
+			throw new NullPointerException("Remote package=" + packageName //$NON-NLS-1$
+					+ " has no Version"); //$NON-NLS-1$
+		if (localVersion == null)
+			throw new NullPointerException("Local package=" + packageName //$NON-NLS-1$
+					+ " has no Version"); //$NON-NLS-1$
+
+		LogUtility.trace(
+				"comparePackageVersions", //$NON-NLS-1$
+				DebugOptions.PACKAGE_VERSION_COMPARATOR, this.getClass(),
+				"packageName=" + packageName + ",remoteVersion=" //$NON-NLS-1$ //$NON-NLS-2$
+						+ remoteVersion + ",localVersion=" + localVersion); //$NON-NLS-1$
+		// By default we do strict comparison of remote with local...they must
+		// be exactly the same, or we thrown a runtime exception
+		int compareResult = localVersion.compareTo(remoteVersion);
+		// Now check compare result, and throw exception to fail compare
+		if (compareResult != 0)
+			throw new RuntimeException(
+					"Package version compare failed with compareResult=" //$NON-NLS-1$
+							+ compareResult + " for package=" + packageName //$NON-NLS-1$
+							+ " localVersion=" + localVersion //$NON-NLS-1$
+							+ " remoteVersion=" + remoteVersion); //$NON-NLS-1$
+	}
+	
 	private void verifyServiceInterfaceVersionsForProxy(Bundle bundle,
 			Collection<Class> classes, Map<String, Version> interfaceVersions) {
-		IPackageVersionComparator packageVersionComparator = getPackageVersionComparator();
-		if (packageVersionComparator == null) {
-			logError(
-					"verifyServiceInterfaceVersionsForProxy", //$NON-NLS-1$
-					"No package version comparator available, skipping package version comparison for service classes=" //$NON-NLS-1$
-							+ classes);
-			return;
-		}
 		// For all service interface classes
 		for (Class clazz : classes) {
 			String className = clazz.getName();
@@ -1661,19 +1673,9 @@ public class RemoteServiceAdmin implements
 			if (exportedPackage == null)
 				throw new NullPointerException(
 						"No exported package found for class=" + className); //$NON-NLS-1$
-			// Now lookup version from specification
-			Version remotePackageVersion = interfaceVersions.get(className);
-			if (remotePackageVersion == null)
-				throw new NullPointerException("Remote package=" + packageName //$NON-NLS-1$
-						+ " has no Version"); //$NON-NLS-1$
-			Version localPackageVersion = exportedPackage.getVersion();
-			if (localPackageVersion == null)
-				throw new NullPointerException("Local package=" + packageName //$NON-NLS-1$
-						+ " has no Version"); //$NON-NLS-1$
-
 			// Now do compare via package version comparator service
-			packageVersionComparator.comparePackageVersions(packageName,
-					remotePackageVersion, localPackageVersion);
+			comparePackageVersions(packageName,
+					interfaceVersions.get(className), exportedPackage.getVersion());
 		}
 	}
 
