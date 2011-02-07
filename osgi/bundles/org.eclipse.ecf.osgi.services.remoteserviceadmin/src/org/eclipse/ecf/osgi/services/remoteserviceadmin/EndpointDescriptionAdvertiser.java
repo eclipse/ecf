@@ -89,9 +89,9 @@ public class EndpointDescriptionAdvertiser implements
 					+ endpointDescription);
 		for (int i = 0; i < discoveryAdvertisers.length; i++) {
 			IServiceInfo serviceInfo = (advertise ? serviceInfoFactory
-					.createServiceInfoForDiscovery(discoveryAdvertisers[i],
+					.createServiceInfo(discoveryAdvertisers[i],
 							endpointDescription) : serviceInfoFactory
-					.removeServiceInfoForUndiscovery(discoveryAdvertisers[i],
+					.removeServiceInfo(discoveryAdvertisers[i],
 							endpointDescription));
 			if (serviceInfo == null) {
 				statuses.add(createErrorStatus(messagePrefix

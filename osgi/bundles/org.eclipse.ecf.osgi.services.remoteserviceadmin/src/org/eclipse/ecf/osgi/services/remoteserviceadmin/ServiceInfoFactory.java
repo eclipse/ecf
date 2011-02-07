@@ -60,7 +60,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		}
 	}
 
-	public IServiceInfo createServiceInfoForDiscovery(
+	public IServiceInfo createServiceInfo(
 			IDiscoveryAdvertiser advertiser,
 			EndpointDescription endpointDescription) {
 		try {
@@ -200,7 +200,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 				protocols, namingAuthority);
 	}
 
-	public IServiceInfo removeServiceInfoForUndiscovery(
+	public IServiceInfo removeServiceInfo(
 			IDiscoveryAdvertiser advertiser,
 			EndpointDescription endpointDescription) {
 		Namespace advertiserNamespace = advertiser.getServicesNamespace();
@@ -216,12 +216,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		super.close();
 	}
 
-	public boolean removeServiceInfo(IDiscoveryAdvertiser advertiser,
-			EndpointDescription endpointDescription) {
-		return removeServiceInfoForUndiscovery(advertiser, endpointDescription) != null;
-	}
-
-	public void removeAllServiceInfos() {
+	private void removeAllServiceInfos() {
 		synchronized (serviceInfos) {
 			serviceInfos.clear();
 		}
