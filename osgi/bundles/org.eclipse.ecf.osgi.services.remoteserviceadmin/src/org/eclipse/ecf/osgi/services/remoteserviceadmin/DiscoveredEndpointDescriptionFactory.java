@@ -78,7 +78,7 @@ public class DiscoveredEndpointDescriptionFactory extends
 		}
 	}
 
-	public DiscoveredEndpointDescription getUndiscoveredEndpointDescription(
+	public DiscoveredEndpointDescription removeDiscoveredEndpointDescription(
 			IDiscoveryLocator locator, IServiceID serviceID) {
 		synchronized (discoveredEndpointDescriptions) {
 			DiscoveredEndpointDescription ded = findUniscoveredEndpointDescription(
@@ -110,11 +110,11 @@ public class DiscoveredEndpointDescriptionFactory extends
 	}
 
 	public void close() {
-		removeAllEndpointDescriptions();
+		removeAllDiscoveredEndpointDescriptions();
 		super.close();
 	}
 
-	public boolean removeEndpointDescription(
+	public boolean removeDiscoveredEndpointDescription(
 			EndpointDescription endpointDescription) {
 		synchronized (discoveredEndpointDescriptions) {
 			DiscoveredEndpointDescription d = findDiscoveredEndpointDescription(endpointDescription);
@@ -126,7 +126,7 @@ public class DiscoveredEndpointDescriptionFactory extends
 		return false;
 	}
 
-	public void removeAllEndpointDescriptions() {
+	public void removeAllDiscoveredEndpointDescriptions() {
 		synchronized (discoveredEndpointDescriptions) {
 			discoveredEndpointDescriptions.clear();
 		}

@@ -892,7 +892,7 @@ public class EndpointDescriptionLocator {
 				return (discovered) ? factory
 						.createDiscoveredEndpointDescription(locator,
 								serviceInfo) : factory
-						.getUndiscoveredEndpointDescription(locator, serviceId);
+						.removeDiscoveredEndpointDescription(locator, serviceId);
 			} catch (Exception e) {
 				logError(
 						methodName,

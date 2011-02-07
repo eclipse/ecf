@@ -14,7 +14,35 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
 /**
- * Factory for creating {@link DiscoveredEndpointDescription}s.
+ * Factory for creating {@link DiscoveredEndpointDescription}s. A discovered
+ * endpoint description factory is used by a {@link EndpointDescriptionLocator}
+ * to convert a service info (discovered by the locator) into a discovered
+ * endpoint description (instance of DiscoveredEndpointDescription). This
+ * discovered endpoint description is then used by the
+ * {@link EndpointDescriptionLocator} to notify endpoint description listeners
+ * as per section 122.6 of the <a
+ * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGi Enterprise
+ * Specification</a> OSGi enterprise specification.
+ * 
+ * <p>
+ * If no other instances of this service have been registered, a default
+ * instance of {@link DiscoveredEndpointDescriptionFactory} will be used by the
+ * {@link EndpointDescriptionLocator}. Note that this default instance is
+ * registered with the lowest possible priority, so that if other
+ * {@link IDiscoveredEndpointDescriptionFactory} instances are registered, they will be
+ * preferred/used over the default. This means that those wishing to
+ * customize/control this process of converting {@link IServiceInfo}s to
+ * {@link DiscoveredEndpointDescription} must
+ * <ul>
+ * <li>create their own implementation of {@link IDiscoveredEndpointDescriptionFactory}</li>
+ * <li>register it with the OSGi service registry with a priority
+ * ({org.osgi.framework.Constants#SERVICE_RANKING}) higher than
+ * {@link Integer#MIN_VALUE}</li>
+ * <ul>
+ * Then at runtime, when needed by the {@link EndpointDescriptionLocator},
+ * the new discovered endpoint description factory will be used.
+ * 
+ * @see IServiceInfoFactory
  * 
  */
 public interface IDiscoveredEndpointDescriptionFactory {
@@ -40,7 +68,7 @@ public interface IDiscoveredEndpointDescriptionFactory {
 			IDiscoveryLocator locator, IServiceInfo discoveredServiceInfo);
 
 	/**
-	 * Get an EndpointDescription for an undiscovered remote service.
+	 * Remove an EndpointDescription for a previously discovered remote service.
 	 * Implementers of this factory service may return the type of
 	 * EndpointDescription appropriate for the associated distribution system
 	 * (e.g. ECFEndpointDescription). Implementers should return
@@ -56,7 +84,7 @@ public interface IDiscoveredEndpointDescriptionFactory {
 	 *         is returned, no notification should be performed by the calling
 	 *         code.
 	 */
-	public DiscoveredEndpointDescription getUndiscoveredEndpointDescription(
+	public DiscoveredEndpointDescription removeDiscoveredEndpointDescription(
 			IDiscoveryLocator locator, IServiceID serviceID);
 
 	/**
@@ -71,11 +99,11 @@ public interface IDiscoveredEndpointDescriptionFactory {
 	 * @return <code>true</code> if actually removed, <code>false</code> if
 	 *         nothing was removed.
 	 */
-	public boolean removeEndpointDescription(
+	public boolean removeDiscoveredEndpointDescription(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 
 	/**
 	 * Remove all DiscoveredEndpointDescription from this factory.
 	 */
-	public void removeAllEndpointDescriptions();
+	public void removeAllDiscoveredEndpointDescriptions();
 }
