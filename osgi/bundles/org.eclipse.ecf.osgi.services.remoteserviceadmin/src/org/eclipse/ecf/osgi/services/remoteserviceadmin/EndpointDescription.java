@@ -19,9 +19,52 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
+/**
+ * ECF endpoint description. This endpoint description extends the OSGi
+ * {@link org.osgi.service.remoteserviceadmin.EndpointDescription} class to
+ * provide access to meta-data for accessing an ECF remote services endpoint.
+ * <p>
+ * <p>
+ * ECF remote service containers have some extra capabilities, that add endpoint
+ * description meta-data. Specifically, the methods {@link #getContainerID()},
+ * {@link #getIDFilter()}, {@link #getRemoteServiceFilter()} provide access
+ * (respectively) to the target remote service container {@link ID}, an array of
+ * {@link ID}s used to filter the lookup/search for remote service references,
+ * and a remote service properties filter. These values are used in a call to
+ * the consumer container adapter
+ * {@link IRemoteServiceContainerAdapter#getRemoteServiceReferences(ID, ID[], String, String)}
+ * with the containerID, idFilter, and remote service filter used as the 1st,
+ * 2nd, and fourth parameters respectively.
+ * <p>
+ * <p>
+ * UNDER CONSTRUCTION 
+ * <p>
+ * This meta-data is:
+ * <ul>
+ * <li>Namespace name of endpoint container id (String) - This is the namespace
+ * name of the endpoint container ID. The id value is given by the OSGi
+ * EndointDescription endpoint id (which is accessed via
+ * {@link org.osgi.service.remoteserviceadmin.EndpointDescription#getId()}. The
+ * namespace name is optional, as in many cases it can/will be dynamically
+ * determined by examining the protocol for the endpoint id...i.e. the value
+ * returned from
+ * {@link org.osgi.service.remoteserviceadmin.EndpointDescription#getId()} (e.g.
+ * 'ecftcp' in 'ecftcp://localhost:3282/server'). The value is read from the
+ * initial properties, with name RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE
+ * and type String</li>
+ * <li>connectTargetID (String) - This is an optional target ID to connect to,
+ * that is not necessarily the same as the endpoint id. For example, if the ECF
+ * consumer container should connect to 'ecftcp://foo:3282/server' (a group
+ * manager) and the host endpoint is a client group member that has id
+ * 'ecftcp:A4rgterr8hyJJ99==' then the container can connect to the group, but
+ * access the remote service that is exposed by one of the other group members.</li>
+ * <li></li>
+ * </ul>
+ */
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
 

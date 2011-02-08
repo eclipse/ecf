@@ -19,6 +19,11 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
+/**
+ * Default implementation of {@link IDiscoveredEndpointDescriptionFactory} service.
+ * 
+ * @see IDiscoveredEndpointDescriptionFactory
+ */
 public class DiscoveredEndpointDescriptionFactory extends
 		AbstractMetadataFactory implements
 		IDiscoveredEndpointDescriptionFactory {
