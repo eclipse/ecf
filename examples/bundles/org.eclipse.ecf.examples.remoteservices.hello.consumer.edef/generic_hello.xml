@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml version="1.0" encoding="UTF-8"?>
 <endpoint-descriptions xmlns="http://www.osgi.org/xmlns/rsa/v1.0.0">
   <endpoint-description>
     <property name="ecf.endpoint.id.ns" value-type="String" value="org.eclipse.ecf.core.identity.StringID"/>
