@@ -49,23 +49,19 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 	private ServiceReference serviceReference;
 
 	public AdvertisedService(ServiceReference ref) {
+
 		Assert.isNotNull(ref);
+
 		this.serviceReference = ref;
 		this.uuid = UUID.randomUUID().toString();
+		
 		String services[] = (String[]) this.serviceReference
 				.getProperty(Constants.OBJECTCLASS);
-		for (String k : this.serviceReference.getPropertyKeys()) {
-			Object value = this.serviceReference.getProperty(k);
-			if (value instanceof String
-					&& ((String) value).contains("localhost")) {//$NON-NLS-1$
-				this.internalProperties.put(k, ((String) value).replace(
-						"localhost",//$NON-NLS-1$
-						Geo.getHost()));
-				continue;
-			}
-			this.internalProperties
-					.put(k, this.serviceReference.getProperty(k));
+		for (String propertyKey : this.serviceReference.getPropertyKeys()) {
+			this.internalProperties.put(propertyKey,
+					this.serviceReference.getProperty(propertyKey));
 		}
+
 		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault()
 				.createServiceTypeID(
 						ZooDiscoveryContainer.getSingleton()
@@ -77,10 +73,11 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 				this.serviceReference.getProperty(Constants.SERVICE_ID)
 						.toString());
 		serviceID = new ZooDiscoveryServiceID(ZooDiscoveryContainer
-				.getSingleton().getConnectNamespace(), serviceTypeID, Geo
-				.getLocation());
+				.getSingleton().getConnectNamespace(), serviceTypeID,
+				Geo.getLocation());
 
 		super.properties = new ServiceProperties(this.internalProperties);
+
 		// internal properties
 		this.internalProperties.put(Constants.OBJECTCLASS,
 				arrayToString(services));
@@ -113,13 +110,14 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 					k);
 			if (value instanceof String
 					&& ((String) value).contains("localhost")) {//$NON-NLS-1$
-				this.internalProperties.put(k, ((String) value).replace(
-						"localhost",//$NON-NLS-1$
-						Geo.getHost()));
+				this.internalProperties.put(k,
+						((String) value).replace("localhost",//$NON-NLS-1$
+								Geo.getHost()));
 				continue;
 			}
 			if (bytes != null) {
-				this.internalProperties.put(INode._BYTES_ + k, new String(bytes));
+				this.internalProperties.put(INode._BYTES_ + k,
+						new String(bytes));
 			} else {
 				this.internalProperties.put(k, value);
 			}
@@ -173,8 +171,8 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 	public int compareTo(Object o) {
 		Assert.isTrue(o != null && o instanceof IServiceInfo,
 				"incompatible types for compare"); //$NON-NLS-1$
-		return this.getServiceID().getName().compareTo(
-				((IServiceInfo) o).getServiceID().getName());
+		return this.getServiceID().getName()
+				.compareTo(((IServiceInfo) o).getServiceID().getName());
 	}
 
 	/**
