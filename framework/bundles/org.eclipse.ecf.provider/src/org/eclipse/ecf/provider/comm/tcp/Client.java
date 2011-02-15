@@ -58,6 +58,7 @@ public final class Client implements ISynchAsynchConnection {
 	protected Object pingLock = new Object();
 	boolean disconnectHandled = false;
 	private final Object disconnectLock = new Object();
+	protected final Object outputStreamLock = new Object();
 
 	private String getHostNameForAddressWithoutLookup(InetAddress inetAddress) {
 		// First get InetAddress.toString(), which returns
@@ -239,7 +240,10 @@ public final class Client implements ISynchAsynchConnection {
 						// Successful...remove message from queue
 						queue.removeHead();
 						if (msgCount >= maxMsg) {
-							outputStream.reset();
+							// need to synchronize to avoid concurrent access to outputStream
+							synchronized (outputStreamLock) {
+								outputStream.reset();
+							}
 							msgCount = 0;
 						} else
 							msgCount++;
@@ -285,8 +289,11 @@ public final class Client implements ISynchAsynchConnection {
 
 	void send(Serializable snd) throws IOException {
 		//		debug("send(" + snd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		outputStream.writeObject(snd);
-		outputStream.flush();
+		// need to synchronize to avoid concurrent access to outputStream
+		synchronized (outputStreamLock) {
+			outputStream.writeObject(snd);
+			outputStream.flush();
+		}
 	}
 
 	private void handlePingResp() {
