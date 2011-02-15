@@ -19,30 +19,56 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
 /**
- * ECF endpoint description. This endpoint description extends the OSGi
- * {@link org.osgi.service.remoteserviceadmin.EndpointDescription} class to
- * provide access to meta-data for accessing an ECF remote services endpoint.
+ * ECF remote service endpoint description. Instances of this class, typically
+ * created via some discovery mechanism, allow the import an ECF remote service
+ * (represented externally by instances of this class).
  * <p>
  * <p>
- * ECF remote service containers have some extra capabilities, that add endpoint
- * description meta-data. Specifically, the methods {@link #getContainerID()},
- * {@link #getIDFilter()}, {@link #getRemoteServiceFilter()} provide access
- * (respectively) to the target remote service container {@link ID}, an array of
- * {@link ID}s used to filter the lookup/search for remote service references,
- * and a remote service properties filter. These values are used in a call to
- * the consumer container adapter
- * {@link IRemoteServiceContainerAdapter#getRemoteServiceReferences(ID, ID[], String, String)}
- * with the containerID, idFilter, and remote service filter used as the 1st,
- * 2nd, and fourth parameters respectively.
+ * ECF remote services have capabilities beyond typical OSGi remote services. To
+ * expose these capabilities, this class adds optional meta-data, that can be
+ * used by the remote service consumer to customize remote services import (i.e.
+ * the behavior of
+ * {@link RemoteServiceAdmin#importService(org.osgi.service.remoteserviceadmin.EndpointDescription)}.
  * <p>
  * <p>
- * UNDER CONSTRUCTION 
+ * Remote Service Import
  * <p>
+ * <p>
+ * The import of ECF remote services requires a container ID, and it can
+ * optionally use an id filter (ID[]) and a remote service properties filter
+ * (String) to restrict the retrieval of remote service references. The values
+ * of the containerID, idFilter, and remote service properties filter are used
+ * in the
+ * {@link RemoteServiceAdmin#importService(org.osgi.service.remoteserviceadmin.EndpointDescription)}
+ * to lookup/retrieve a remote service reference. Specifically, the ECF
+ * RemoteServiceAdmin has code similar to the following:
+ * 
+ * <pre>
+ * IRemoteServiceReference[] rsRefs = consumerRemoteServiceContainerAdapter.
+ *                                      getRemoteServiceReferences(containerID, 
+ *                                                                 idFilter, 
+ *                                                                 <service interface class>, 
+ *                                                                 remoteServicePropertiesFilter);
+ * </pre>
+ * 
+ * The values of containerID, idFilter, and remoteServicePropertiesFilter are
+ * determined by calling the {@link EndpointDescription#getContainerID()},
+ * {@link #EndpointDescription#getIDFilter()}, and
+ * {@link EndpointDescription#getRemoteServiceFilter()} methods on the
+ * discovered EndpointDescription.
+ * <p>
+ * <p>
+ * Remote Service Export
+ * <p>
+ * <p>
+ * On Remote Service export, the idFilter, and remoteServicePropertiesFilter can
+ * be set in order to customize the import process on receiving clients.
+ * 
+ * 
  * This meta-data is:
  * <ul>
  * <li>Namespace name of endpoint container id (String) - This is the namespace
