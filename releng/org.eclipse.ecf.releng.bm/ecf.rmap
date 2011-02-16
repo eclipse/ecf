@@ -87,6 +87,9 @@
 		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
 			<uri format="http://download.eclipse.org/tools/orbit/downloads/drops/S20100831105311/repository?importType=binary"/>
 		</provider>
+		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
+			<uri format="http://download.eclipse.org/tools/orbit/downloads/drops/S20110124210048/repository?importType=binary"/>
+		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
 			<uri format=":pserver:anonymous@dev.eclipse.org:/cvsroot/tools,org.eclipse.orbit/org.eclipse.orbit.releng/maps">
@@ -104,7 +107,6 @@
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.team\.ecf(\..+)?" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.jivesoftware\.smack$" />
-	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.apache\.zookeeper$" />
 	<locator searchPathRef="org.eclipse.ecf" pattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" />
 	
 	<!-- EMF -->

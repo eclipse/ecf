@@ -23,6 +23,6 @@ Export-Package: org.apache.jute,
  org.apache.zookeeper.version,
  org.apache.zookeeper.version.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.apache.log4j
 Eclipse-RegisterBuddy: org.apache.log4j
 Bundle-Vendor: Eclipse.org - ECF
+Import-Package: org.apache.log4j

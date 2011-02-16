@@ -8,7 +8,7 @@
     <repositories location="http://download.eclipse.org/rt/ecf/3.4/site.p2/"/>
   </contributions>
   <contacts name="Markus Alexander Kuppe" email="mkuppe@ecf-project.org"/>
-  <validationRepositories location="http://download.eclipse.org/tools/orbit/downloads/drops/S20101014084557/repository/"/>
+  <validationRepositories location="http://download.eclipse.org/tools/orbit/downloads/drops/S20110124210048/repository/"/>
   <validationRepositories location="http://download.eclipse.org/eclipse/updates/3.6/R-3.6.1-201009090800/"/>
   <validationRepositories location="http://download.eclipse.org/modeling/emf/emf/updates/2.6/"/>
 </aggregator:Aggregator>
