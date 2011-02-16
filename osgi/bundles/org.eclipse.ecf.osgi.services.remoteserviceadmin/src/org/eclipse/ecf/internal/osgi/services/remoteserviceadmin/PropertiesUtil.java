@@ -64,7 +64,7 @@ public class PropertiesUtil {
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS,
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_ID,
 			RemoteConstants.SERVICE_IMPORTED_VALUETYPE,
-			RemoteConstants.SERVICE_TYPE });
+			RemoteConstants.DISCOVERY_SERVICE_TYPE });
 
 	public static String verifyStringProperty(Map properties, String propName) {
 		Object r = properties.get(propName);

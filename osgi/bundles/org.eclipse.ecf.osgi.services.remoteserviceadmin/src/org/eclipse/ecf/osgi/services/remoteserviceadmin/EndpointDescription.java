@@ -24,72 +24,21 @@ import org.osgi.framework.Version;
 
 /**
  * ECF remote service endpoint description. Instances of this class, typically
- * created via some discovery mechanism, allow the import an ECF remote service
- * (represented externally by instances of this class).
+ * created via discovery, allow the import of an ECF remote service. The
+ * superclass of this class is the
+ * {@link org.osgi.service.remoteserviceadmin.EndpointDescription} class which
+ * is specified by the Remote Service Admin (chap 122) from the <a
+ * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGi 4.2
+ * Enterprise Specification</a>.
  * <p>
  * <p>
  * ECF remote services have capabilities beyond typical OSGi remote services. To
- * expose these capabilities, this class adds optional meta-data, that can be
- * used by the remote service consumer to customize remote services import (i.e.
- * the behavior of
+ * expose these capabilities, this EndpointDescription adds <b>optional</b>
+ * meta-data. This meta-data may then be used by the remote service consumer to
+ * customize ECF remote services import. Specifically, to customize the behavior
+ * of the ECF implementation of
  * {@link RemoteServiceAdmin#importService(org.osgi.service.remoteserviceadmin.EndpointDescription)}.
  * <p>
- * <p>
- * Remote Service Import
- * <p>
- * <p>
- * The import of ECF remote services requires a container ID, and it can
- * optionally use an id filter (ID[]) and a remote service properties filter
- * (String) to restrict the retrieval of remote service references. The values
- * of the containerID, idFilter, and remote service properties filter are used
- * in the
- * {@link RemoteServiceAdmin#importService(org.osgi.service.remoteserviceadmin.EndpointDescription)}
- * to lookup/retrieve a remote service reference. Specifically, the ECF
- * RemoteServiceAdmin has code similar to the following:
- * 
- * <pre>
- * IRemoteServiceReference[] rsRefs = consumerRemoteServiceContainerAdapter.
- *                                      getRemoteServiceReferences(containerID, 
- *                                                                 idFilter, 
- *                                                                 <service interface class>, 
- *                                                                 remoteServicePropertiesFilter);
- * </pre>
- * 
- * The values of containerID, idFilter, and remoteServicePropertiesFilter are
- * determined by calling the {@link EndpointDescription#getContainerID()},
- * {@link #EndpointDescription#getIDFilter()}, and
- * {@link EndpointDescription#getRemoteServiceFilter()} methods on the
- * discovered EndpointDescription.
- * <p>
- * <p>
- * Remote Service Export
- * <p>
- * <p>
- * On Remote Service export, the idFilter, and remoteServicePropertiesFilter can
- * be set in order to customize the import process on receiving clients.
- * 
- * 
- * This meta-data is:
- * <ul>
- * <li>Namespace name of endpoint container id (String) - This is the namespace
- * name of the endpoint container ID. The id value is given by the OSGi
- * EndointDescription endpoint id (which is accessed via
- * {@link org.osgi.service.remoteserviceadmin.EndpointDescription#getId()}. The
- * namespace name is optional, as in many cases it can/will be dynamically
- * determined by examining the protocol for the endpoint id...i.e. the value
- * returned from
- * {@link org.osgi.service.remoteserviceadmin.EndpointDescription#getId()} (e.g.
- * 'ecftcp' in 'ecftcp://localhost:3282/server'). The value is read from the
- * initial properties, with name RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE
- * and type String</li>
- * <li>connectTargetID (String) - This is an optional target ID to connect to,
- * that is not necessarily the same as the endpoint id. For example, if the ECF
- * consumer container should connect to 'ecftcp://foo:3282/server' (a group
- * manager) and the host endpoint is a client group member that has id
- * 'ecftcp:A4rgterr8hyJJ99==' then the container can connect to the group, but
- * access the remote service that is exposed by one of the other group members.</li>
- * <li></li>
- * </ul>
  */
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
@@ -100,13 +49,43 @@ public class EndpointDescription extends
 	private ID[] idFilter;
 	private String rsFilter;
 
-	public EndpointDescription(ServiceReference reference, Map osgiProperties) {
-		super(reference, osgiProperties);
+	/**
+	 * 
+	 * @param reference
+	 *            A service reference that can be exported.
+	 * @param properties
+	 *            Map of properties. This argument can be <code>null</code>. The
+	 *            keys in the map must be type <code>String</code> and, since
+	 *            the keys are case insensitive, there must be no duplicates
+	 *            with case variation.
+	 * @throws IllegalArgumentException
+	 *             When the properties are not proper for an Endpoint
+	 *             Description
+	 * 
+	 * @see org.osgi.service.remoteserviceadmin.EndpointDescription#EndpointDescription(ServiceReference,
+	 *      Map)
+	 */
+	public EndpointDescription(final ServiceReference reference,
+			final Map<String, Object> properties) {
+		super(reference, properties);
 		verifyECFProperties();
 	}
 
-	public EndpointDescription(Map osgiProperties) {
-		super(osgiProperties);
+	/**
+	 * 
+	 * @param properties
+	 *            The map from which to create the Endpoint Description. The
+	 *            keys in the map must be type <code>String</code> and, since
+	 *            the keys are case insensitive, there must be no duplicates
+	 *            with case variation.
+	 * @throws IllegalArgumentException
+	 *             When the properties are not proper for an Endpoint
+	 *             Description.
+	 * 
+	 * @see org.osgi.service.remoteserviceadmin.EndpointDescription#EndpointDescription(Map)
+	 */
+	public EndpointDescription(Map<String, Object> properties) {
+		super(properties);
 		verifyECFProperties();
 	}
 
@@ -169,6 +148,16 @@ public class EndpointDescription extends
 		return (ID[]) results.toArray(new ID[results.size()]);
 	}
 
+	/**
+	 * Get a map of the service interface name -> Version information for all
+	 * the service interfaces exposed by this endpoint description (i.e. those
+	 * returned by {@link #getInterfaces()} which have a
+	 * 
+	 * @return Map<String,Version> of interface versions for all our service
+	 *         interfaces. Every service interface returned by
+	 *         {@link #getInterfaces()} will have an associated Version, but it
+	 *         may have value {@value Version#emptyVersion}
+	 */
 	public Map<String, Version> getInterfaceVersions() {
 		List<String> interfaces = getInterfaces();
 		Map<String, Version> result = new HashMap<String, Version>();
@@ -204,7 +193,7 @@ public class EndpointDescription extends
 	}
 
 	public String toString() {
-		return "ECFEndpointDescription[containerID=" + containerID //$NON-NLS-1$
+		return "EndpointDescription[containerID=" + containerID //$NON-NLS-1$
 				+ ",connectTargetID=" + connectTargetID + ",idFilter=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ Arrays.toString(idFilter) + ",rsFilter=" + rsFilter //$NON-NLS-1$
 				+ ",properties=" + getProperties() + "]"; //$NON-NLS-1$ //$NON-NLS-2$

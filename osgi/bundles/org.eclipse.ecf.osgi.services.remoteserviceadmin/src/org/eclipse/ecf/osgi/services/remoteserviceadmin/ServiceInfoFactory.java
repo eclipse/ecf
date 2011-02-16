@@ -140,7 +140,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 				break;
 			}
 		}
-		String scheme = RemoteConstants.SERVICE_TYPE;
+		String scheme = RemoteConstants.DISCOVERY_SERVICE_TYPE;
 		int port = 32565;
 		if (uri != null) {
 			port = uri.getPort();
@@ -196,7 +196,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 				IServiceTypeID.DEFAULT_NA);
 		return ServiceIDFactory.getDefault().createServiceTypeID(
 				advertiser.getServicesNamespace(),
-				new String[] { RemoteConstants.SERVICE_TYPE }, scopes,
+				new String[] { RemoteConstants.DISCOVERY_SERVICE_TYPE }, scopes,
 				protocols, namingAuthority);
 	}
 

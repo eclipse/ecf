@@ -806,7 +806,7 @@ public class EndpointDescriptionLocator {
 
 		private boolean matchServiceID(IServiceID serviceId) {
 			if (Arrays.asList(serviceId.getServiceTypeID().getServices())
-					.contains(RemoteConstants.SERVICE_TYPE))
+					.contains(RemoteConstants.DISCOVERY_SERVICE_TYPE))
 				return true;
 			return false;
 		}
