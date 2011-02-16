@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.sdk.feature"
       label="ECF Remote Services Target Components"
-      version="3.4.0.qualifier"
+      version="3.5.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
@@ -83,6 +83,10 @@
 
    <includes
          id="org.eclipse.ecf.discovery.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.xmpp.feature"
          version="0.0.0"/>
 
 </feature>

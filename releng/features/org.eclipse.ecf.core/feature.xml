@@ -30,13 +30,6 @@ Contributors: Composent, Inc. - initial API and implementation
          version="0.0.0"/>
 
    <plugin
-         id="org.jivesoftware.smack"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.doc"
          download-size="0"
          install-size="0"
@@ -52,13 +45,6 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.provider.irc"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.xmpp"
          download-size="0"
          install-size="0"
          version="0.0.0"
