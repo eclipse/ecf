@@ -16,8 +16,8 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooDefs.Ids;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.provider.zookeeper.util.Logger;
@@ -39,7 +39,7 @@ class WriteRoot implements Watcher {
 		initWriteKeeper();
 	}
 
-	@SuppressWarnings( { "incomplete-switch" })
+	@SuppressWarnings({ "incomplete-switch" })
 	public void process(WatchedEvent event) {
 		switch (event.getState()) {
 		case Disconnected:
@@ -81,55 +81,61 @@ class WriteRoot implements Watcher {
 	}
 
 	private void initWriteKeeper() {
-		try {
-			if (watchManager.getConfig().isQuorum()
-					|| watchManager.getConfig().isStandAlone()) {
-				// we write nodes locally but we should check for client port.
-				int port = watchManager.getConfig().getClientPort();
-				if (port != 0)
-					ip += ":" + port;//$NON-NLS-1$
-			} else if (watchManager.getConfig().isCentralized()) {
-				// we write nodes to the machine with this specified IP address.
-				ip = watchManager.getConfig().getServerIps();
-			}
-			this.writeKeeper = new ZooKeeper(this.ip, 3000, this);
-			while (!this.isConnected) {
-				if (watchManager.isDisposed()) {
-					// no need for connecting, we're disposed.
-					try {
-						this.writeKeeper.close();
-					} catch (Throwable t) {
-						// ignore
-					}
-					break;
-				}
-				try {
-					Stat s = this.writeKeeper.exists(INode.ROOT, this);
-					this.isConnected = true;
-					if (s == null) {
-						this.writeKeeper.create(INode.ROOT, new byte[0],
-								Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-					}
 
-				} catch (KeeperException e) {
-					if (e.code().equals(KeeperException.Code.CONNECTIONLOSS)) {
-						this.isConnected = false;
-						PrettyPrinter.attemptingConnectionTo(this.ip);
-					} else
-						Logger
-								.log(
-										LogService.LOG_ERROR,
-										"Error while trying to connect to " + this.ip, e); //$NON-NLS-1$
-				}
-			}
-			synchronized (this) {
-				this.notifyAll();
-			}
-			this.watchManager.addZooKeeper(this.writeKeeper);
-
-		} catch (Exception e) {
-			Logger.log(LogService.LOG_DEBUG, e.getMessage(), e);
+		if (watchManager.getConfig().isQuorum()
+				|| watchManager.getConfig().isStandAlone()) {
+			// we write nodes locally but we should check for client port.
+			int port = watchManager.getConfig().getClientPort();
+			if (port != 0)
+				ip += ":" + port;//$NON-NLS-1$
+		} else if (watchManager.getConfig().isCentralized()) {
+			// we write nodes to the machine with this specified IP address.
+			ip = watchManager.getConfig().getServerIps();
 		}
+		try {
+			this.writeKeeper = new ZooKeeper(this.ip, 3000, this);
+		} catch (Exception e) {
+			// FATAL
+			Logger.log(LogService.LOG_ERROR,
+					"Fatal error while initializing a zookeeper client to write to: "
+							+ ip, e);
+			// halt here before the NPE's get out of house in
+			// Publisher.publish()
+			throw new IllegalStateException(e);
+		}
+		while (!this.isConnected) {
+			if (watchManager.isDisposed()) {
+				// no need for connecting, we're disposed.
+				try {
+					this.writeKeeper.close();
+				} catch (Throwable t) {
+					// ignore
+				}
+				break;
+			}
+			try {
+				Stat s = this.writeKeeper.exists(INode.ROOT, this);
+				this.isConnected = true;
+				if (s == null) {
+					this.writeKeeper.create(INode.ROOT, new byte[0],
+							Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+				}
+
+			} catch (KeeperException e) {
+				if (e.code().equals(KeeperException.Code.CONNECTIONLOSS)) {
+					this.isConnected = false;
+					PrettyPrinter.attemptingConnectionTo(this.ip);
+				} else
+					Logger.log(LogService.LOG_ERROR,
+							"Error while trying to connect to " + this.ip, e); //$NON-NLS-1$
+			} catch (InterruptedException e) {
+				// ignore
+			}
+		}
+		synchronized (this) {
+			this.notifyAll();
+		}
+		this.watchManager.addZooKeeper(this.writeKeeper);
 	}
 
 	public ZooKeeper getWriteKeeper() {

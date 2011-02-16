@@ -26,6 +26,8 @@ public interface INode {
 	String NODE_PROPERTY_NAME_SCOPE = "node.property.name.scope";//$NON-NLS-1$
 	String NODE_PROPERTY_NAME_NA = "node.property.name.na";//$NON-NLS-1$
 	String NODE_PROPERTY_SERVICES = "node.property.name.services";//$NON-NLS-1$
+	String NODE_SERVICE_PROPERTIES = "node.property.service.properties";//$NON-NLS-1$;
+	String NODE_PROPERTY_SERVICE_NAME = "node.property.service.name";//$NON-NLS-1$;
 	String STRING_DELIM = " ";//$NON-NLS-1$
 	// the id of this running ZooDiscovery
 	String _ZOODISCOVERYID_ = "_zdid_";//$NON-NLS-1$
@@ -41,5 +43,4 @@ public interface INode {
 	IServiceInfo getWrappedService();
 
 	void regenerateNodeId();
-
 }

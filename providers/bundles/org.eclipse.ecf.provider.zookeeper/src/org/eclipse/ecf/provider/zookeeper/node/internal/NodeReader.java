@@ -13,13 +13,14 @@ package org.eclipse.ecf.provider.zookeeper.node.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Properties;
+import java.io.ObjectInputStream;
+import java.util.Map;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.provider.zookeeper.core.DiscoverdService;
@@ -27,7 +28,6 @@ import org.eclipse.ecf.provider.zookeeper.core.internal.Localizer;
 import org.eclipse.ecf.provider.zookeeper.core.internal.Notification;
 import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
-import org.osgi.framework.Constants;
 import org.osgi.service.log.LogService;
 
 public class NodeReader implements Watcher,
@@ -64,44 +64,30 @@ public class NodeReader implements Watcher,
 		return INode.ROOT_SLASH + getPath();
 	}
 
-	public void processResult(int rc, String p, Object ctx, byte[] data,
-			Stat stat) {
+	public synchronized void processResult(int rc, String p, Object ctx,
+			byte[] data, Stat stat) {
 		if (p == null || !p.equals(getAbsolutePath()) || data == null) {
 			return;
 		}
-		ByteArrayInputStream bis = null;
-		Properties props = new Properties();
+		ObjectInputStream objin = null;
+		ByteArrayInputStream bain = null;
+		Map<String, Object> serviceData = null;
 		try {
-			bis = new ByteArrayInputStream(data);
-			props.load(bis);
-			if (props.isEmpty()) {
+			bain = new ByteArrayInputStream(data);
+			objin = new ObjectInputStream(bain);
+			try {
+				serviceData = (Map<String, Object>) objin.readObject();
+			} catch (ClassNotFoundException e) {
+				Logger.log(LogService.LOG_ERROR, "NodeReader.processResult: "
+						+ e.getMessage(), e);
+			}
+			if (serviceData == null || serviceData.isEmpty()) {
 				return;
 			}
-			if (props.containsKey(Constants.OBJECTCLASS)) {
-				props.put(Constants.OBJECTCLASS, ((String) props
-						.get(Constants.OBJECTCLASS)).split(INode.STRING_DELIM));
-			}
-			if (props.containsKey(INode.NODE_PROPERTY_NAME_SCOPE)) {
-				props.put(INode.NODE_PROPERTY_NAME_SCOPE, ((String) props
-						.get(INode.NODE_PROPERTY_NAME_SCOPE))
-						.split(INode.STRING_DELIM));
-			}
-			if (props.containsKey(INode.NODE_PROPERTY_NAME_PROTOCOLS)) {
-				props.put(INode.NODE_PROPERTY_NAME_PROTOCOLS, ((String) props
-						.get(INode.NODE_PROPERTY_NAME_PROTOCOLS))
-						.split(INode.STRING_DELIM));
-			}
-			if (props.containsKey(INode.NODE_PROPERTY_SERVICES)) {
-				props.put(INode.NODE_PROPERTY_SERVICES, ((String) props
-						.get(INode.NODE_PROPERTY_SERVICES))
-						.split(INode.STRING_DELIM));
-			}
-			bis.close();
-			this.discovered = new DiscoverdService(getPath(), props);
+			this.discovered = new DiscoverdService(getPath(), serviceData);
 			readRoot.getDiscoverdServices()
-					.put(
-							this.discovered.getServiceID().getServiceTypeID()
-									.getName(), this.discovered);
+					.put(this.discovered.getServiceID().getServiceTypeID()
+							.getName(), this.discovered);
 			PrettyPrinter.prompt(PrettyPrinter.REMOTE_AVAILABLE,
 					this.discovered);
 			Localizer.getSingleton().localize(
@@ -110,9 +96,16 @@ public class NodeReader implements Watcher,
 		} catch (IOException e) {
 			Logger.log(LogService.LOG_DEBUG, e.getMessage(), e);
 		} finally {
-			if (bis != null) {
+			if (objin != null) {
 				try {
-					bis.close();
+					objin.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
+			if (bain != null) {
+				try {
+					bain.close();
 				} catch (IOException e) {
 					// ignore
 				}

@@ -11,12 +11,13 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
@@ -30,8 +31,10 @@ import org.eclipse.ecf.provider.zookeeper.core.internal.Configurator;
 import org.eclipse.ecf.provider.zookeeper.core.internal.IService;
 import org.eclipse.ecf.provider.zookeeper.node.internal.INode;
 import org.eclipse.ecf.provider.zookeeper.util.Geo;
+import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogService;
 
 /**
  * Encapsulate a service to be advertised and made visible for discovery. An
@@ -44,24 +47,21 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 
 	private static final long serialVersionUID = 1001026250299416572L;
 	private String uuid;
-	private Properties internalProperties = new Properties();
+	private Map<String, Object> nodeProperties = new HashMap<String, Object>();
 	private static Map<String, IServiceInfo> publishedServices = new HashMap<String, IServiceInfo>();
 	private ServiceReference serviceReference;
 
 	public AdvertisedService(ServiceReference ref) {
-
 		Assert.isNotNull(ref);
-
 		this.serviceReference = ref;
 		this.uuid = UUID.randomUUID().toString();
-		
+		super.properties = new ServiceProperties();
 		String services[] = (String[]) this.serviceReference
 				.getProperty(Constants.OBJECTCLASS);
 		for (String propertyKey : this.serviceReference.getPropertyKeys()) {
-			this.internalProperties.put(propertyKey,
+			super.properties.setProperty(propertyKey,
 					this.serviceReference.getProperty(propertyKey));
 		}
-
 		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault()
 				.createServiceTypeID(
 						ZooDiscoveryContainer.getSingleton()
@@ -75,22 +75,7 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 		serviceID = new ZooDiscoveryServiceID(ZooDiscoveryContainer
 				.getSingleton().getConnectNamespace(), serviceTypeID,
 				Geo.getLocation());
-
-		super.properties = new ServiceProperties(this.internalProperties);
-
-		// internal properties
-		this.internalProperties.put(Constants.OBJECTCLASS,
-				arrayToString(services));
-		this.internalProperties.put(LOCATION, Geo.getLocation());
-		this.internalProperties.put(WEIGHT, getWeight());
-		this.internalProperties.put(PRIORITY, getPriority());
-		this.internalProperties.put(NODE_PROPERTY_NAME_PROTOCOLS,
-				arrayToString(IServiceTypeID.DEFAULT_PROTO));
-		this.internalProperties.put(NODE_PROPERTY_NAME_SCOPE,
-				arrayToString(IServiceTypeID.DEFAULT_SCOPE));
-		this.internalProperties.put(NODE_PROPERTY_NAME_NA,
-				IServiceTypeID.DEFAULT_NA);
-		publishedServices.put(serviceTypeID.getInternal(), this);
+		setNodeProperties();
 	}
 
 	public AdvertisedService(IServiceInfo serviceInfo) {
@@ -99,45 +84,25 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 						.getPriority(), serviceInfo.getWeight(), serviceInfo
 						.getServiceProperties());
 		this.uuid = UUID.randomUUID().toString();
-		// internal properties
+		setNodeProperties();
+	}
 
-		Enumeration enumm = serviceInfo.getServiceProperties()
-				.getPropertyNames();
-		while (enumm.hasMoreElements()) {
-			String k = (String) enumm.nextElement();
-			Object value = serviceInfo.getServiceProperties().getProperty(k);
-			byte[] bytes = serviceInfo.getServiceProperties().getPropertyBytes(
-					k);
-			if (value instanceof String
-					&& ((String) value).contains("localhost")) {//$NON-NLS-1$
-				this.internalProperties.put(k,
-						((String) value).replace("localhost",//$NON-NLS-1$
-								Geo.getHost()));
-				continue;
-			}
-			if (bytes != null) {
-				this.internalProperties.put(INode._BYTES_ + k,
-						new String(bytes));
-			} else {
-				this.internalProperties.put(k, value);
-			}
-
-		}
-
-		this.internalProperties
-				.put(NODE_PROPERTY_NAME_PROTOCOLS, arrayToString(getServiceID()
-						.getServiceTypeID().getProtocols()));
-		this.internalProperties.put(NODE_PROPERTY_NAME_SCOPE,
-				arrayToString(getServiceID().getServiceTypeID().getScopes()));
-		this.internalProperties.put(NODE_PROPERTY_SERVICES,
-				arrayToString(getServiceID().getServiceTypeID().getServices()));
-		this.internalProperties.put(NODE_PROPERTY_NAME_NA, getServiceID()
+	private void setNodeProperties() {
+		this.nodeProperties.put(NODE_PROPERTY_SERVICE_NAME, getServiceName());
+		this.nodeProperties.put(NODE_SERVICE_PROPERTIES, super.properties);
+		this.nodeProperties.put(NODE_PROPERTY_NAME_PROTOCOLS, getServiceID()
+				.getServiceTypeID().getProtocols());
+		this.nodeProperties.put(NODE_PROPERTY_NAME_SCOPE, getServiceID()
+				.getServiceTypeID().getScopes());
+		this.nodeProperties.put(NODE_PROPERTY_SERVICES, getServiceID()
+				.getServiceTypeID().getServices());
+		this.nodeProperties.put(NODE_PROPERTY_NAME_NA, getServiceID()
 				.getServiceTypeID().getNamingAuthority());
-		this.internalProperties.put(LOCATION, serviceInfo.getLocation());
-		this.internalProperties.put(WEIGHT, getWeight());
-		this.internalProperties.put(PRIORITY, getPriority());
-		publishedServices.put(serviceInfo.getServiceID().getServiceTypeID()
-				.getInternal(), this);
+		this.nodeProperties.put(LOCATION, getLocation());
+		this.nodeProperties.put(WEIGHT, getWeight());
+		this.nodeProperties.put(PRIORITY, getPriority());
+		publishedServices.put(getServiceID().getServiceTypeID().getInternal(),
+				this);
 	}
 
 	public static Map<String, IServiceInfo> getPublishedServices() {
@@ -146,10 +111,6 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 
 	public synchronized static IServiceInfo removePublished(String id) {
 		return publishedServices.remove(id);
-	}
-
-	public Properties getProperties() {
-		return this.internalProperties;
 	}
 
 	public String getNodeId() {
@@ -186,15 +147,34 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 	}
 
 	public byte[] getPropertiesAsBytes() {
-		return getPropertiesAsString().getBytes();
-	}
-
-	public String getPropertiesAsString() {
-		String props = "";
-		for (Object k : this.getProperties().keySet()) {
-			props += k + "=" + this.getProperties().get(k) + "\n";//$NON-NLS-1$//$NON-NLS-2$
+		ByteArrayOutputStream baout = new ByteArrayOutputStream();
+		ObjectOutputStream oout = null;
+		byte[] bytes = null;
+		try {
+			oout = new ObjectOutputStream(baout);
+			oout.writeObject(nodeProperties);
+			oout.flush();
+			bytes = baout.toByteArray();
+		} catch (IOException e) {
+			Logger.log(LogService.LOG_ERROR,
+					"Error while serializing node data ", e);//$NON-NLS-1$
+		} finally {
+			if (oout != null) {
+				try {
+					oout.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
+			if (baout != null) {
+				try {
+					baout.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
 		}
-		return props;
+		return bytes;
 	}
 
 	public String getPath() {
@@ -214,13 +194,4 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 	public IService getWrappedService() {
 		return this;
 	}
-
-	private String arrayToString(String[] arr) {
-		String s = "";//$NON-NLS-1$
-		for (String c : arr) {
-			s += c + " ";//$NON-NLS-1$
-		}
-		return s;
-	}
-
 }

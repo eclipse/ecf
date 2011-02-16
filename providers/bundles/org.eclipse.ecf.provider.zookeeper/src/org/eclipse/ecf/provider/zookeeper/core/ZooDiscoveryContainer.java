@@ -195,7 +195,6 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 					.setTxnLogFactory(fileTxnSnapLog);
 			ZooDiscoveryContainer.this.zooKeeperServer.setTickTime(conf
 					.getTickTime());
-
 			Factory cnxnFactory = new NIOServerCnxn.Factory(
 					new InetSocketAddress(conf.getClientPort()));
 			cnxnFactory.startup(ZooDiscoveryContainer.this.zooKeeperServer);

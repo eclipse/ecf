@@ -39,6 +39,10 @@ public class Logger {
 			return;
 		}
 		for (LogService ls : logServices) {
+			if (ls == null) {
+				System.err.println(message + ": " + e);
+				continue;
+			}
 			ls.log(DiscoveryActivator.getContext().getServiceReference(
 					ZooDiscoveryContainer.class.getName()), level, message, e);
 		}

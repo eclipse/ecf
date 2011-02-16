@@ -11,8 +11,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.core.internal;
 
-import java.util.Properties;
-
 import org.eclipse.ecf.discovery.IServiceInfo;
 
 public interface IService extends IServiceInfo {
@@ -21,8 +19,9 @@ public interface IService extends IServiceInfo {
 	String WEIGHT = "discovery.service.weight"; //$NON-NLS-1$
 	String PRIORITY = "discovery.service.priority"; //$NON-NLS-1$
 	String PROTOCOLS = "discovery.service.protocol"; //$NON-NLS-1$
+	Object SERVICE_NAME = "discovery.service.name";;
 
-	Properties getProperties();
+	// Properties getProperties();
 
 	/**
 	 * Stored as value of a zookeeper node
@@ -31,5 +30,5 @@ public interface IService extends IServiceInfo {
 	 */
 	byte[] getPropertiesAsBytes();
 
-	String getPropertiesAsString();
+	// String getPropertiesAsString();
 }

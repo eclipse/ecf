@@ -55,8 +55,7 @@ public class NodeWriter {
 					false);
 			if (stat == null) {
 				this.writeRoot.getWriteKeeper()
-						.create(
-								parentPath,
+						.create(parentPath,
 								((AdvertisedService) this.getNode()
 										.getWrappedService())
 										.getPropertiesAsBytes(),
@@ -66,13 +65,12 @@ public class NodeWriter {
 					.getWrappedService());
 		} catch (KeeperException e) {
 			if (e.code() == KeeperException.Code.CONNECTIONLOSS) {
-				Logger.log(LogService.LOG_DEBUG, "Can't connect to server! "
+				Logger.log(LogService.LOG_ERROR, "Can't connect to server! "
 						+ e.getMessage(), e);
 			}
 		} catch (InterruptedException e) {
-			Logger.log(LogService.LOG_DEBUG, e.getMessage(), e);
+			// ignore
 		}
-
 	}
 
 	public synchronized void remove() {
