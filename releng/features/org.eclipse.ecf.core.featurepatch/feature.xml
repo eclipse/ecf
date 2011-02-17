@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.core.featurepatch"
-      label="ECF 3.4 Patch for Eclipse 3.5-3.6"
-      version="3.4.0.qualifier"
+      label="ECF 3.5 Patch for Eclipse"
+      version="3.5.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">

@@ -8,3 +8,4 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.ecf.datashare;bundle-version="2.0.0",
  org.eclipse.ecf.provider.datashare;bundle-version="1.0.0"
+Bundle-Localization: plugin
