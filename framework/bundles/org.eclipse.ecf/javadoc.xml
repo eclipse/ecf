@@ -37,6 +37,10 @@
 	        	<exclude name="**/ch/**"/>
 	        	<exclude name="**/jmdns/**"/>
 	        	<exclude name="**/tests/**"/>
+	        	<exclude name="**/sdo/**"/>
+	        	<exclude name="**/tutorial/**"/>
+	        	<exclude name="**/twitter/**"/>
+	        	<exclude name="**/jivesoftware/**"/>
         	</fileset>
     	</javadoc>
     </target>
