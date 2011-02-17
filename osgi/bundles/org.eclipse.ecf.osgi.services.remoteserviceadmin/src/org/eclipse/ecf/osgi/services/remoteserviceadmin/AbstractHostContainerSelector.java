@@ -62,6 +62,11 @@ public abstract class AbstractHostContainerSelector extends
 			if (description == null)
 				continue;
 
+			// http://bugs.eclipse.org/331532
+			if (!description.isServer()) {
+				continue;
+			}
+			
 			if (matchExistingHostContainer(serviceReference, containers[i],
 					adapter, description, serviceExportedConfigs,
 					serviceIntents)) {
