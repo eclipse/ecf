@@ -29,8 +29,8 @@
 
    <plugins>
       <plugin id="ch.ethz.iks.r_osgi.remote"/>
+      <plugin id="org.apache.hadoop.zookeeper"/>
       <plugin id="org.apache.log4j"/>
-      <plugin id="org.apache.zookeeper"/>
       <plugin id="org.eclipse.core.contenttype"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.runtime"/>
