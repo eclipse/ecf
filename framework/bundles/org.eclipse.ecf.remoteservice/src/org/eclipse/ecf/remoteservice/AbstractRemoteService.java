@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.remoteservice.Activator;
 import org.eclipse.equinox.concurrent.future.IFuture;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceException;
 
 /**
@@ -125,11 +126,37 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		}
 	}
 
+	class ProxyClassLoader extends ClassLoader {
+
+		private ClassLoader cl;
+
+		public ProxyClassLoader(ClassLoader cl) {
+			this.cl = cl;
+		}
+
+		public Class loadClass(String name) throws ClassNotFoundException {
+			try {
+				return cl.loadClass(name);
+			} catch (ClassNotFoundException e) {
+				// If the classloader passed in upon construction cannot 
+				// find the class, then use this bundle's classloader to
+				// try to load the class
+				Activator a = Activator.getDefault();
+				if (a == null)
+					throw e;
+				BundleContext context = a.getContext();
+				if (context == null)
+					throw e;
+				return context.getBundle().loadClass(name);
+			}
+		}
+	}
+
 	/**
 	 * @since 6.0
 	 */
 	protected Object createProxy(ClassLoader cl, Class[] classes) {
-		return Proxy.newProxyInstance(cl, classes, this);
+		return Proxy.newProxyInstance(new ProxyClassLoader(cl), classes, this);
 	}
 
 	protected Object createProxy(Class[] classes) {
