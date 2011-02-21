@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
@@ -54,6 +55,10 @@ public abstract class AbstractTopologyManager {
 		return context;
 	}
 
+	protected String getFrameworkUUID() {
+		return Activator.getDefault().getFrameworkUUID();
+	}
+	
 	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser(
 			EndpointDescription endpointDescription) {
 		synchronized (endpointDescriptionAdvertiserTrackerLock) {

@@ -43,18 +43,16 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 		} else {
 			// filter so that local framework uuid is not the same as local
 			// value
-			String localFrameworkUUID = getContext().getProperty(
-					"org.osgi.framework.uuid"); //$NON-NLS-1$
-			if (localFrameworkUUID != null) {
-				elScope.append("!("); //$NON-NLS-1$
-				elScope.append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID);
-				elScope.append("="); //$NON-NLS-1$
-				elScope.append(localFrameworkUUID);
-				elScope.append(")"); //$NON-NLS-1$
-			}
+			elScope.append("!("); //$NON-NLS-1$
+			elScope.append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID);
+			elScope.append("="); //$NON-NLS-1$
+			elScope.append(getFrameworkUUID());
+			elScope.append(")"); //$NON-NLS-1$
 		}
 		elScope.append(")"); //$NON-NLS-1$
-		return elScope.toString();
+		String result = elScope.toString();
+		trace("getEndpointListenerScope", "endpointListenerScope=" + result); //$NON-NLS-1$ //$NON-NLS-2$
+		return result;
 	}
 
 	public void start() throws Exception {
