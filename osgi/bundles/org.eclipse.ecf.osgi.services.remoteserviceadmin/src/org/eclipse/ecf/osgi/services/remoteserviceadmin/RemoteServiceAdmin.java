@@ -1424,7 +1424,7 @@ public class RemoteServiceAdmin implements
 
 		List<String> interfaces = endpointDescription.getInterfaces();
 
-		ServiceRegistration proxyRegistration = getClientBundleContext()
+		ServiceRegistration proxyRegistration = Activator.getDefault().getProxyServiceFactoryBundleContext()
 				.registerService(
 						(String[]) interfaces.toArray(new String[interfaces
 								.size()]),

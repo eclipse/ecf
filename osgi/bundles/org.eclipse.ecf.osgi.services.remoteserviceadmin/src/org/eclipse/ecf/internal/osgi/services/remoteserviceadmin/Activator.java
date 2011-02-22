@@ -26,6 +26,7 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
@@ -63,6 +64,40 @@ public class Activator implements BundleActivator {
 	private Object saxParserFactoryTrackerLock = new Object();
 	private ServiceTracker saxParserFactoryTracker;
 
+	private static final String RSA_PROXY_BUNDLE_SYMBOLIC_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy";
+	
+	private BundleContext proxyServiceFactoryBundleContext;
+	
+	private void initializeProxyServiceFactoryBundle() throws Exception {
+		// First, find proxy bundle
+		for(Bundle b: context.getBundles()) {
+			if (b.getSymbolicName().equals(RSA_PROXY_BUNDLE_SYMBOLIC_ID)) {
+				// first start it
+				b.start();
+				// then get its bundle context
+				proxyServiceFactoryBundleContext = b.getBundleContext();
+			}
+		}
+		if (proxyServiceFactoryBundleContext == null) throw new IllegalStateException("RSA Proxy bundle (symbolic id=='"+RSA_PROXY_BUNDLE_SYMBOLIC_ID+"') cannot be found, so RSA cannot be started");
+	}
+	
+	private void stopProxyServiceFactoryBundle() {
+		if (proxyServiceFactoryBundleContext != null) {
+			// stop it
+			try {
+				proxyServiceFactoryBundleContext.getBundle().stop();
+			} catch (BundleException e) {
+				// print to error stream
+				e.printStackTrace(System.err);
+			}
+			proxyServiceFactoryBundleContext = null;
+		}
+	}
+	
+	public BundleContext getProxyServiceFactoryBundleContext() {
+		return proxyServiceFactoryBundleContext;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -73,6 +108,14 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
+		// initialize the RSA proxy service factory bundle...so that we
+		// can get/use *that bundle's BundleContext for registering the
+		// proxy ServiceFactory.
+		// See osgi-dev thread here for info about this 
+		// approach/using the ServiceFactory extender approach for this purpose:
+		// https://mail.osgi.org/pipermail/osgi-dev/2011-February/003000.html
+		initializeProxyServiceFactoryBundle();
+		
 		// make remote service admin available
 		Properties rsaProps = new Properties();
 		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
@@ -148,6 +191,7 @@ public class Activator implements BundleActivator {
 			containerManagerTracker.close();
 			containerManagerTracker = null;
 		}
+		stopProxyServiceFactoryBundle();
 		Activator.context = null;
 		Activator.instance = null;
 	}
