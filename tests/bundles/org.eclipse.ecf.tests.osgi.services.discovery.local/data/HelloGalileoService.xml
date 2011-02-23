@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<service-descriptions xmlns="http://www.osgi.org/xmlns/sd/v1.0.0">
-  <service-description>
-    <provide interface="org.eclipse.ecf.galileo.HelloGalileoService"/>
-    <property name="osgi.remote.configuration.type">pojo</property>
-    <property name="osgi.remote.configuration.pojo.address">jssoc://galileo:4712/hellogalileo</property>
-  </service-description>
-</service-descriptions>
