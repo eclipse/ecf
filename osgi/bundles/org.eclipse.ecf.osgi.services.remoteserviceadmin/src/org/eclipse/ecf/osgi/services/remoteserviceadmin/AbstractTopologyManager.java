@@ -56,7 +56,9 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected String getFrameworkUUID() {
-		return Activator.getDefault().getFrameworkUUID();
+		Activator a = Activator.getDefault();
+		if (a == null) return null;
+		return a.getFrameworkUUID();
 	}
 	
 	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser(
