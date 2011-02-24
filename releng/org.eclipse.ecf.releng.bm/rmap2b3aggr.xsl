@@ -39,8 +39,18 @@
     </xsl:template>
     
     <xsl:template match="bm:provider">
+    	<!-- only accept public http|ftp repositories -->
         <xsl:if test="starts-with(bm:uri/@format, 'http://') or starts-with(bm:uri/@format, 'ftp://')">
-            <validationRepositories location="{bm:uri/@format}"/>
+        
+        	<!-- remove dangling ?importType=binary -->
+        	<xsl:choose>
+        		<xsl:when test="contains(bm:uri/@format, '?importType=binary')">
+		        	<validationRepositories location="{substring-before(bm:uri/@format, '?importType=binary')}"/>
+        		</xsl:when>
+        		<xsl:otherwise>
+            		<validationRepositories location="{bm:uri/@format}"/>
+        		</xsl:otherwise>
+        	</xsl:choose>
         </xsl:if>
     </xsl:template>    
     
