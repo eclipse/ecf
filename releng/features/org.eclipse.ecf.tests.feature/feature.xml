@@ -332,7 +332,6 @@ limitations under the License.
       <import plugin="org.eclipse.ecf.osgi.services.distribution" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ecf.remoteservice" version="3.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ecf" version="3.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.osgi.services.discovery" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.equinox.common" version="3.5.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.equinox.concurrent" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ecf.provider.discovery"/>

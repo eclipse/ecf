@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
-Bundle-SymbolicName: org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted
-Bundle-Version: 1.0.0.qualifer
-Bundle-Activator: org.eclipse.ecf.tests.osgi.services.discovery.local.poststarted.Activator
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
-Bundle-Vendor: %pluginProvider
-Import-Package: org.osgi.framework;version="1.4.0"
