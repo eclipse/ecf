@@ -10,7 +10,7 @@
 	<!-- org.eclipse -->
 	<searchPath name="org.eclipse">
 		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/eclipse/updates/3.6/R-3.6.1-201009090800?importType=binary"/>
+			<uri format="ftp://ftp.osuosl.org/pub/eclipse/eclipse/updates/3.6/R-3.6.1-201009090800"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
@@ -23,7 +23,7 @@
 	<!-- emf -->
 	<searchPath name="org.eclipse.emf">
 		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/modeling/emf/updates/releases?importType=binary"/>
+			<uri format="ftp://ftp.osuosl.org/pub/eclipse/modeling/emf/updates/releases"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
@@ -48,13 +48,6 @@
 		</provider>
 	</searchPath>
 
-	<!-- org.xbill.dns -->
-	<searchPath name="org.xbill.dns">
-		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/tools/orbit/downloads/drops/S20101014084557/repository?importType=binary"/>
-		</provider>
-	</searchPath>
-
 	<!-- pluginbuilder -->
 	<searchPath name="org.pluginbuilder">
 		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
@@ -65,10 +58,7 @@
 	<!-- swtbot -->
 	<searchPath name="org.eclipse.swtbot">
 		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/technology/swtbot/galileo/dev-build/update-site?importType=binary"/>
-		</provider>
-		<provider readerType="p2" componentTypes="osgi.bundle,eclipse.feature,buckminster" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site?importType=binary"/>
+			<uri format="ftp://ftp.osuosl.org/pub/eclipse/technology/swtbot/helios/dev-build/update-site"/>
 		</provider>
 	</searchPath>
 
@@ -82,13 +72,10 @@
 	<!-- default -->
 	<searchPath name="default">
 		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/tools/orbit/downloads/drops/R20100519200754/updateSite?importType=binary"/>
+			<uri format="ftp://ftp.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20100519200754/repository"/>
 		</provider>
 		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/tools/orbit/downloads/drops/S20100831105311/repository?importType=binary"/>
-		</provider>
-		<provider readerType="p2" componentTypes="osgi.bundle" mutable="false" source="false">
-			<uri format="http://download.eclipse.org/tools/orbit/downloads/drops/S20110124210048/repository?importType=binary"/>
+			<uri format="ftp://ftp.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20110124210048/repository"/>
 		</provider>
 		<!-- dev.eclipse.org PDEMapProvider -->
 		<provider xsi:type="pmp:PDEMapProvider" readerType="cvs" componentTypes="osgi.bundle,eclipse.feature" mutable="false" source="true">
@@ -99,8 +86,6 @@
 	</searchPath>
 	
 	<!-- below order does matter!!! -->
-	
-	<locator searchPathRef="org.xbill.dns" pattern="^org\.xbill\.dns$" />
 	
 	<!-- ECF -->
 	<locator searchPathRef="org.eclipse.ecf" pattern="^ch\.ethz\.iks(\..+)?" />
