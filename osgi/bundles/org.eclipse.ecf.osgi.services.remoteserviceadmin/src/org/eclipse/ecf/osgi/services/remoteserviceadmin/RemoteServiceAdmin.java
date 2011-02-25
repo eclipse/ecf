@@ -1409,8 +1409,10 @@ public class RemoteServiceAdmin implements
 			IRemoteServiceReference selectedRsReference) throws Exception {
 
 		BundleContext proxyServiceFactoryContext = getProxyServiceFactoryContext(endpointDescription);
-		if (proxyServiceFactoryContext == null) throw new NullPointerException("getProxyServiceFactoryContext returned null.  Cannot register proxy service factory");
-		
+		if (proxyServiceFactoryContext == null)
+			throw new NullPointerException(
+					"getProxyServiceFactoryContext returned null.  Cannot register proxy service factory");
+
 		IRemoteServiceContainerAdapter containerAdapter = rsContainer
 				.getContainerAdapter();
 		ID rsContainerID = rsContainer.getContainer().getID();
@@ -1429,9 +1431,8 @@ public class RemoteServiceAdmin implements
 		List<String> serviceTypes = endpointDescription.getInterfaces();
 
 		ServiceRegistration proxyRegistration = proxyServiceFactoryContext
-				.registerService(
-						(String[]) serviceTypes.toArray(new String[serviceTypes
-								.size()]),
+				.registerService((String[]) serviceTypes
+						.toArray(new String[serviceTypes.size()]),
 						createProxyServiceFactory(endpointDescription, rs),
 						(Dictionary) PropertiesUtil
 								.createDictionaryFromMap(proxyProperties));
@@ -1441,36 +1442,49 @@ public class RemoteServiceAdmin implements
 				endpointDescription);
 	}
 
-	private BundleContext getProxyServiceFactoryContext(EndpointDescription endpointDescription) {
+	private BundleContext getProxyServiceFactoryContext(
+			EndpointDescription endpointDescription) throws Exception {
 		Activator a = Activator.getDefault();
-		if (a == null) return null;
+		if (a == null)
+			throw new NullPointerException(
+					"ECF RemoteServiceAdmin Activator cannot be null.");
 		if (a.isOldEquinox()) {
-			// In this case, we get the Bundle that exposes the first service interface class
+			PackageAdmin packageAdmin = getPackageAdmin();
+			if (packageAdmin == null)
+				throw new NullPointerException(
+						"PackageAdmin cannot be accessed by ECF RemoteServiceAdmin");
+			// In this case, we get the Bundle that exposes the first service
+			// interface class
 			BundleContext rsaContext = Activator.getContext();
-			if (rsaContext == null) return null;
+			if (rsaContext == null)
+				throw new NullPointerException(
+						"RSA BundleContext cannot be null");
 			List<String> interfaces = endpointDescription.getInterfaces();
 			Collection<Class> serviceInterfaceClasses = loadServiceInterfacesViaBundle(
-					rsaContext.getBundle(), interfaces.toArray(new String[interfaces.size()]));
-			if (serviceInterfaceClasses.size() == 0) return null;
-			PackageAdmin packageAdmin = getPackageAdmin();
-			if (packageAdmin == null) return null;
+					rsaContext.getBundle(),
+					interfaces.toArray(new String[interfaces.size()]));
+			if (serviceInterfaceClasses.size() == 0)
+				throw new NullPointerException(
+						"No interface classes loadable for endpointDescription="
+								+ endpointDescription);
 			// Get the bundle responsible for the first service interface class
-			Bundle bundle = packageAdmin.getBundle(serviceInterfaceClasses.iterator().next());
-			if (bundle == null) return null;
-			// Start this bundle it if needed
-			if (bundle.getState() == Bundle.RESOLVED) {
-				try {
-					bundle.start();
-				} catch (BundleException e) {
-					logError("getProxyServiceFactoryContext","Could not start bundle="+bundle.getSymbolicName()+" for creating proxy with interfaces="+interfaces);
-					return null;
-				}
-			}
-			return bundle.getBundleContext();
+			Class serviceInterfaceClass = serviceInterfaceClasses.iterator()
+					.next();
+			Bundle bundle = packageAdmin.getBundle(serviceInterfaceClass);
+			if (bundle == null)
+				throw new BundleException("Bundle for service interface class="
+						+ serviceInterfaceClass.getName() + " cannot be found");
+			int bundleState = bundle.getState();
+			BundleContext bundleContext = bundle.getBundleContext();
+			if (bundleContext == null)
+				throw new BundleException("Bundle=" + bundle.getSymbolicName()
+						+ " in wrong state (" + bundleState
+						+ ") for using BundleContext proxy service factory");
+			return bundleContext;
 		}
 		return a.getProxyServiceFactoryBundleContext();
 	}
-	
+
 	private ServiceFactory createProxyServiceFactory(
 			EndpointDescription endpointDescription,
 			IRemoteService remoteService) {
@@ -1671,7 +1685,7 @@ public class RemoteServiceAdmin implements
 	private void comparePackageVersions(String packageName,
 			Version remoteVersion, Version localVersion)
 			throws RuntimeException {
-		
+
 		if (remoteVersion == null)
 			throw new NullPointerException("Remote package=" + packageName //$NON-NLS-1$
 					+ " has no Version"); //$NON-NLS-1$
@@ -1695,7 +1709,7 @@ public class RemoteServiceAdmin implements
 							+ " localVersion=" + localVersion //$NON-NLS-1$
 							+ " remoteVersion=" + remoteVersion); //$NON-NLS-1$
 	}
-	
+
 	private void verifyServiceInterfaceVersionsForProxy(Bundle bundle,
 			Collection<Class> classes, Map<String, Version> interfaceVersions) {
 		// For all service interface classes
@@ -1709,7 +1723,8 @@ public class RemoteServiceAdmin implements
 						"No exported package found for class=" + className); //$NON-NLS-1$
 			// Now do compare via package version comparator service
 			comparePackageVersions(packageName,
-					interfaceVersions.get(className), exportedPackage.getVersion());
+					interfaceVersions.get(className),
+					exportedPackage.getVersion());
 		}
 	}
 
