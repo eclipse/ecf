@@ -27,3 +27,4 @@ Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.osgi.service.packageadmin,
  org.osgi.service.remoteserviceadmin;version="1.0.0",
  org.osgi.util.tracker
+DynamicImport-Package: *

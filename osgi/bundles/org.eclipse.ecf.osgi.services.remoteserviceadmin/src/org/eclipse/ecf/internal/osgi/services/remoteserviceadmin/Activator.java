@@ -31,6 +31,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.Version;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -41,7 +42,7 @@ public class Activator implements BundleActivator {
 	private static BundleContext context;
 	private static Activator instance;
 
-	static BundleContext getContext() {
+	public static BundleContext getContext() {
 		return context;
 	}
 
@@ -196,6 +197,19 @@ public class Activator implements BundleActivator {
 		Activator.instance = null;
 	}
 
+	public boolean isOldEquinox() {
+		if (context == null) return false;
+		Bundle systemBundle = context.getBundle(0);
+		String systemBSN = systemBundle.getSymbolicName();
+		if ("org.eclipse.osgi".equals(systemBSN)) {
+			Version fixedVersion = new Version("3.7.0");
+			// running on equinox; check the version
+			Version systemVersion = systemBundle.getVersion();
+			if (systemVersion.compareTo(fixedVersion) < 0) return true;
+		}
+		return false;
+	}
+	
 	public String getFrameworkUUID() {
 		if (context == null)
 			return null;

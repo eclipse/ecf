@@ -1407,6 +1407,9 @@ public class RemoteServiceAdmin implements
 			IRemoteServiceContainer rsContainer,
 			IRemoteServiceReference selectedRsReference) throws Exception {
 
+		BundleContext proxyServiceFactoryContext = getProxyServiceFactoryContext(endpointDescription);
+		if (proxyServiceFactoryContext == null) throw new NullPointerException("getProxyServiceFactoryContext returned null.  Cannot register proxy service factory");
+		
 		IRemoteServiceContainerAdapter containerAdapter = rsContainer
 				.getContainerAdapter();
 		ID rsContainerID = rsContainer.getContainer().getID();
@@ -1422,11 +1425,11 @@ public class RemoteServiceAdmin implements
 		Map proxyProperties = createProxyProperties(endpointDescription,
 				rsContainer, selectedRsReference, rs);
 
-		List<String> interfaces = endpointDescription.getInterfaces();
+		List<String> serviceTypes = endpointDescription.getInterfaces();
 
-		ServiceRegistration proxyRegistration = Activator.getDefault().getProxyServiceFactoryBundleContext()
+		ServiceRegistration proxyRegistration = proxyServiceFactoryContext
 				.registerService(
-						(String[]) interfaces.toArray(new String[interfaces
+						(String[]) serviceTypes.toArray(new String[serviceTypes
 								.size()]),
 						createProxyServiceFactory(endpointDescription, rs),
 						(Dictionary) PropertiesUtil
@@ -1437,6 +1440,25 @@ public class RemoteServiceAdmin implements
 				endpointDescription);
 	}
 
+	private BundleContext getProxyServiceFactoryContext(EndpointDescription endpointDescription) {
+		Activator a = Activator.getDefault();
+		if (a == null) return null;
+		if (a.isOldEquinox()) {
+			BundleContext rsaContext = Activator.getContext();
+			if (rsaContext == null) return null;
+			List<String> interfaces = endpointDescription.getInterfaces();
+			Collection<Class> serviceInterfaceClasses = loadServiceInterfacesViaBundle(
+					rsaContext.getBundle(), interfaces.toArray(new String[interfaces.size()]));
+			if (serviceInterfaceClasses.size() == 0) return null;
+			PackageAdmin packageAdmin = getPackageAdmin();
+			if (packageAdmin == null) return null;
+			Bundle bundle = packageAdmin.getBundle(serviceInterfaceClasses.iterator().next());
+			if (bundle == null) return null;
+			return bundle.getBundleContext();
+		}
+		else return a.getProxyServiceFactoryBundleContext();
+	}
+	
 	private ServiceFactory createProxyServiceFactory(
 			EndpointDescription endpointDescription,
 			IRemoteService remoteService) {
