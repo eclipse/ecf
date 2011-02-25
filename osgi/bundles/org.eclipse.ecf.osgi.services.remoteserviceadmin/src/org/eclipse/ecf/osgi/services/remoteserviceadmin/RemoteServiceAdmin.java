@@ -45,6 +45,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceFactory;
@@ -1444,6 +1445,7 @@ public class RemoteServiceAdmin implements
 		Activator a = Activator.getDefault();
 		if (a == null) return null;
 		if (a.isOldEquinox()) {
+			// In this case, we get the Bundle that exposes the first service interface class
 			BundleContext rsaContext = Activator.getContext();
 			if (rsaContext == null) return null;
 			List<String> interfaces = endpointDescription.getInterfaces();
@@ -1452,11 +1454,21 @@ public class RemoteServiceAdmin implements
 			if (serviceInterfaceClasses.size() == 0) return null;
 			PackageAdmin packageAdmin = getPackageAdmin();
 			if (packageAdmin == null) return null;
+			// Get the bundle responsible for the first service interface class
 			Bundle bundle = packageAdmin.getBundle(serviceInterfaceClasses.iterator().next());
 			if (bundle == null) return null;
+			// Start this bundle it if needed
+			if (bundle.getState() == Bundle.RESOLVED) {
+				try {
+					bundle.start();
+				} catch (BundleException e) {
+					logError("getProxyServiceFactoryContext","Could not start bundle="+bundle.getSymbolicName()+" for creating proxy with interfaces="+interfaces);
+					return null;
+				}
+			}
 			return bundle.getBundleContext();
 		}
-		else return a.getProxyServiceFactoryBundleContext();
+		return a.getProxyServiceFactoryBundleContext();
 	}
 	
 	private ServiceFactory createProxyServiceFactory(
