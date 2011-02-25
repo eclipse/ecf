@@ -1028,7 +1028,7 @@ public class RemoteServiceAdmin implements
 				remoteServiceAdminListenerTracker = new ServiceTracker(
 						getClientBundleContext(),
 						RemoteServiceAdminListener.class.getName(), null);
-				remoteServiceAdminListenerTracker.open(true);
+				remoteServiceAdminListenerTracker.open();
 			}
 		}
 		ServiceReference[] unfilteredRefs = remoteServiceAdminListenerTracker
@@ -1065,7 +1065,7 @@ public class RemoteServiceAdmin implements
 		synchronized (eventAdminTrackerLock) {
 			eventAdminTracker = new ServiceTracker(getClientBundleContext(),
 					EventAdmin.class.getName(), null);
-			eventAdminTracker.open(true);
+			eventAdminTracker.open();
 		}
 		return (EventAdmin) eventAdminTracker.getService();
 	}

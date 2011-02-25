@@ -233,7 +233,7 @@ public abstract class AbstractDistributionTest extends
 								+ reference + ",svc=" + service);
 					}
 				});
-		st.open(true);
+		st.open();
 		return st;
 	}
 
