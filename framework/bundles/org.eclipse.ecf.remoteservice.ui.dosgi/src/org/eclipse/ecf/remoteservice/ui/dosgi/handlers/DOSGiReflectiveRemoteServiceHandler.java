@@ -17,8 +17,6 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ui.DiscoveryHandlerUtil;
 import org.eclipse.ecf.internal.remoteservices.ui.Activator;
 import org.eclipse.ecf.internal.remoteservices.ui.handlers.ReflectiveRemoteServiceHandler;
-import org.eclipse.ecf.osgi.services.discovery.RemoteServicePublication;
-import org.eclipse.ecf.osgi.services.discovery.ServicePublication;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -28,6 +26,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.remoteserviceadmin.RemoteConstants;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class DOSGiReflectiveRemoteServiceHandler extends
@@ -46,13 +45,13 @@ public class DOSGiReflectiveRemoteServiceHandler extends
 				.getServiceProperties();
 
 		final String clazz = serviceProperties
-				.getPropertyString(ServicePublication.SERVICE_INTERFACE_NAME);
+				.getPropertyString(Constants.OBJECTCLASS);
 		final String serviceId = new String(
 				serviceProperties
-						.getPropertyBytes(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID));
+						.getPropertyString(RemoteConstants.ENDPOINT_SERVICE_ID));
 		final String containerId = new String(
 				serviceProperties
-						.getPropertyBytes(RemoteServicePublication.ENDPOINT_CONTAINERID));
+						.getPropertyString(RemoteConstants.ENDPOINT_ID));
 
 		// get the service via the osgi service registry
 		final BundleContext context = Activator.getDefault().getBundle()
@@ -61,8 +60,8 @@ public class DOSGiReflectiveRemoteServiceHandler extends
 		try {
 			filter = context.createFilter("(&(" + Constants.OBJECTCLASS + "=" //$NON-NLS-1$ //$NON-NLS-2$
 					+ clazz + ")" + "(" + IDistributionConstants.SERVICE_IMPORTED + "=*" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					+ ")" + "(" + ServicePublication.ENDPOINT_ID + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					+ containerId + "#" + serviceId + "))"); //$NON-NLS-1$ //$NON-NLS-2$
+					+ ")" + "(" + RemoteConstants.ENDPOINT_ID + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					+ containerId + ")(" + RemoteConstants.ENDPOINT_SERVICE_ID + "=" + serviceId + "))"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (InvalidSyntaxException e1) {
 			MessageDialog.openError(null, Messages.DOSGiReflectiveRemoteServiceHandler_HandlerInvocationFailed,
 					NLS.bind(Messages.DOSGiReflectiveRemoteServiceHandler_FilterCreationFailed, e1.getMessage()));

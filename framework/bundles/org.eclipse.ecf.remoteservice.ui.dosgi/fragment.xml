@@ -23,7 +23,7 @@
                         ifEmpty="false"
                         operator="and">
                         <test
-                              args="osgiservices"
+                              args="ecf.osgirsvc"
                               property="org.eclipse.ecf.discovery.isServiceType"
                               value="true">
                         </test>

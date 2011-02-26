@@ -59,7 +59,6 @@ import org.osgi.service.remoteserviceadmin.EndpointPermission;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
 
-@SuppressWarnings("deprecation")
 public class RemoteServiceAdmin implements
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin {
 
@@ -1764,6 +1763,19 @@ public class RemoteServiceAdmin implements
 		resultProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
 						importedConfigs);
+		
+		// Set endpoint.id and endpoint.service.id
+		resultProperties
+				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+						endpointDescription
+								.getProperties()
+								.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID));
+		resultProperties
+				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
+						endpointDescription
+								.getProperties()
+								.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID));
+		
 		return resultProperties;
 	}
 
