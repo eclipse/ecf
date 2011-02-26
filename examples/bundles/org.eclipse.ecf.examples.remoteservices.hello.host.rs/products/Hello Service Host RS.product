@@ -20,6 +20,7 @@
       <plugin id="org.eclipse.ecf.examples.remoteservices.hello"/>
       <plugin id="org.eclipse.ecf.examples.remoteservices.hello.host.rs"/>
       <plugin id="org.eclipse.ecf.identity"/>
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.r_osgi"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>

@@ -64,7 +64,7 @@ public class HelloConsumerApplication implements IApplication,
 		// property set (as defined by OSGi 4.2 remote services spec).
 		helloServiceTracker = new ServiceTracker(bundleContext,
 				createRemoteFilter(), this);
-		helloServiceTracker.open(true);
+		helloServiceTracker.open();
 
 		waitForDone();
 
