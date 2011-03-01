@@ -1793,12 +1793,12 @@ public class RemoteServiceAdmin implements
 		
 		// Set endpoint.id and endpoint.service.id
 		resultProperties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+				.put(org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_ENDPOINT_ID,
 						endpointDescription
 								.getProperties()
 								.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID));
 		resultProperties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
+				.put(org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_ENDPOINT_SERVICE_ID,
 						endpointDescription
 								.getProperties()
 								.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID));
