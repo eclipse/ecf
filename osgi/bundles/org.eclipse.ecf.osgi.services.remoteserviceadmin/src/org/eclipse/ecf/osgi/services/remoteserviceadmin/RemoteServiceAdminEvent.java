@@ -4,7 +4,16 @@ import org.eclipse.ecf.core.identity.ID;
 import org.osgi.framework.Bundle;
 import org.osgi.service.remoteserviceadmin.ExportReference;
 import org.osgi.service.remoteserviceadmin.ImportReference;
+import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
+/**
+ * ECF implementationm of
+ * {@link org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent}.
+ * Instances of this class are delivered to {@link RemoteServiceAdminListener}s
+ * via the ECF implemenation of {@link RemoteServiceAdmin} as per the OSGi 4.2
+ * Remote Service Admin specification (chap 122 of OSGi 4.2 specification).
+ * 
+ */
 public class RemoteServiceAdminEvent extends
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent {
 

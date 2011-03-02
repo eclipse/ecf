@@ -29,6 +29,11 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
 import org.osgi.framework.ServiceReference;
 
+/**
+ * Abstract superclass for host container selectors...i.e. implementers of
+ * {@link IHostContainerSelector}.
+ * 
+ */
 public abstract class AbstractHostContainerSelector extends
 		AbstractContainerSelector {
 
@@ -66,7 +71,7 @@ public abstract class AbstractHostContainerSelector extends
 			if (!description.isServer()) {
 				continue;
 			}
-			
+
 			if (matchExistingHostContainer(serviceReference, containers[i],
 					adapter, description, serviceExportedConfigs,
 					serviceIntents)) {

@@ -50,14 +50,16 @@ public class EndpointDescription extends
 	private String rsFilter;
 
 	private int hashCode = 7;
-	
+
 	private void computeHashCode() {
 		this.hashCode = 31 * this.hashCode + getId().hashCode();
-		this.hashCode = 31 * this.hashCode + new Long(getServiceId()).intValue();
+		this.hashCode = 31 * this.hashCode
+				+ new Long(getServiceId()).intValue();
 		String frameworkUUID = getFrameworkUUID();
-		this.hashCode = 31 * this.hashCode + (frameworkUUID==null?0:frameworkUUID.hashCode());
+		this.hashCode = 31 * this.hashCode
+				+ (frameworkUUID == null ? 0 : frameworkUUID.hashCode());
 	}
-	
+
 	/**
 	 * 
 	 * @param reference
@@ -206,7 +208,7 @@ public class EndpointDescription extends
 	public int hashCode() {
 		return hashCode;
 	}
-	
+
 	public boolean equals(Object other) {
 		if (other == null)
 			return false;
@@ -216,7 +218,7 @@ public class EndpointDescription extends
 			return false;
 		EndpointDescription o = (EndpointDescription) other;
 		String frameworkUUID = getFrameworkUUID();
-		// equals returns true:  1) if getId() returns same String
+		// equals returns true: 1) if getId() returns same String
 		return getId().equals(o.getId())
 		// 2) getServiceId() returns same value
 				&& getServiceId() == o.getServiceId()

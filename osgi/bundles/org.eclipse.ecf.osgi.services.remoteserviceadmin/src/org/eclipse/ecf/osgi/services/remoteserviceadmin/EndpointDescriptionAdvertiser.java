@@ -20,6 +20,10 @@ import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 
+/**
+ * Default implementation of {@link IEndpointDescriptionAdvertiser}.
+ * 
+ */
 public class EndpointDescriptionAdvertiser implements
 		IEndpointDescriptionAdvertiser {
 

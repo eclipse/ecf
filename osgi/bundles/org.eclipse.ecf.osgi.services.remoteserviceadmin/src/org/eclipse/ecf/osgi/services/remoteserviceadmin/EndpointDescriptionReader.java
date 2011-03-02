@@ -19,6 +19,10 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.EndpointDescriptionParser;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 
+/**
+ * Default implementation of {@link IEndpointDescriptionReader}.
+ * 
+ */
 public class EndpointDescriptionReader implements IEndpointDescriptionReader {
 
 	public org.osgi.service.remoteserviceadmin.EndpointDescription[] readEndpointDescriptions(

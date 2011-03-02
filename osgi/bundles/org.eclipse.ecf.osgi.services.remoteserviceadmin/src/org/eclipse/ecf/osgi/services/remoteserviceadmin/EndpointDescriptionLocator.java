@@ -57,6 +57,11 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
+/**
+ * Implementation of EndpointDescription discovery mechanism, using any/all ECF
+ * discovery providers (implementers if {@link IDiscoveryLocator}.
+ * 
+ */
 public class EndpointDescriptionLocator {
 
 	private BundleContext context;
@@ -891,8 +896,9 @@ public class EndpointDescriptionLocator {
 				// for given serviceID and serviceInfo
 				return (discovered) ? factory
 						.createDiscoveredEndpointDescription(locator,
-								serviceInfo) : factory
-						.removeDiscoveredEndpointDescription(locator, serviceId);
+								serviceInfo)
+						: factory.removeDiscoveredEndpointDescription(locator,
+								serviceId);
 			} catch (Exception e) {
 				logError(
 						methodName,

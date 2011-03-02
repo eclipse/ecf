@@ -29,18 +29,19 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
  * instance of {@link DiscoveredEndpointDescriptionFactory} will be used by the
  * {@link EndpointDescriptionLocator}. Note that this default instance is
  * registered with the lowest possible priority, so that if other
- * {@link IDiscoveredEndpointDescriptionFactory} instances are registered, they will be
- * preferred/used over the default. This means that those wishing to
+ * {@link IDiscoveredEndpointDescriptionFactory} instances are registered, they
+ * will be preferred/used over the default. This means that those wishing to
  * customize/control this process of converting {@link IServiceInfo}s to
  * {@link DiscoveredEndpointDescription} must
  * <ul>
- * <li>create their own implementation of {@link IDiscoveredEndpointDescriptionFactory}</li>
+ * <li>create their own implementation of
+ * {@link IDiscoveredEndpointDescriptionFactory}</li>
  * <li>register it with the OSGi service registry with a priority
  * ({org.osgi.framework.Constants#SERVICE_RANKING}) higher than
  * {@link Integer#MIN_VALUE}</li>
  * <ul>
- * Then at runtime, when needed by the {@link EndpointDescriptionLocator},
- * the new discovered endpoint description factory will be used.
+ * Then at runtime, when needed by the {@link EndpointDescriptionLocator}, the
+ * new discovered endpoint description factory will be used.
  * 
  * @see IServiceInfoFactory
  * 

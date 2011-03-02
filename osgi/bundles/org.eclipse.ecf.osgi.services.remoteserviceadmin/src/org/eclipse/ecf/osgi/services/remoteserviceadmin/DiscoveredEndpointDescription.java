@@ -15,7 +15,8 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 /**
  * Discovered endpoint description. Instances of this class represent discovered
  * endpoint descriptions that were discovered by a particular discovery locator
- * namespace.  Instances of this class are typically created via a {@link IDiscoveredEndpointDescriptionFactory}.
+ * namespace. Instances of this class are typically created via a
+ * {@link IDiscoveredEndpointDescriptionFactory}.
  * 
  * @see IDiscoveredEndpointDescriptionFactory
  */

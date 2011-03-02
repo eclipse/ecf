@@ -20,7 +20,8 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 
 /**
- * Default implementation of {@link IDiscoveredEndpointDescriptionFactory} service.
+ * Default implementation of {@link IDiscoveredEndpointDescriptionFactory}
+ * service.
  * 
  * @see IDiscoveredEndpointDescriptionFactory
  */

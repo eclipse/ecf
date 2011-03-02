@@ -9,6 +9,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+/**
+ * Exception class to represent endpoint description parse problems when
+ * performed by {@link IEndpointDescriptionReader}.
+ * 
+ * @see IEndpointDescriptionReader#readEndpointDescriptions(java.io.InputStream)
+ */
 public class EndpointDescriptionParseException extends Exception {
 
 	private static final long serialVersionUID = -4481979787400184664L;

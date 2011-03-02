@@ -66,12 +66,12 @@ public class Activator implements BundleActivator {
 	private ServiceTracker saxParserFactoryTracker;
 
 	private static final String RSA_PROXY_BUNDLE_SYMBOLIC_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy";
-	
+
 	private BundleContext proxyServiceFactoryBundleContext;
-	
+
 	private void initializeProxyServiceFactoryBundle() throws Exception {
 		// First, find proxy bundle
-		for(Bundle b: context.getBundles()) {
+		for (Bundle b : context.getBundles()) {
 			if (b.getSymbolicName().equals(RSA_PROXY_BUNDLE_SYMBOLIC_ID)) {
 				// first start it
 				b.start();
@@ -79,9 +79,12 @@ public class Activator implements BundleActivator {
 				proxyServiceFactoryBundleContext = b.getBundleContext();
 			}
 		}
-		if (proxyServiceFactoryBundleContext == null) throw new IllegalStateException("RSA Proxy bundle (symbolic id=='"+RSA_PROXY_BUNDLE_SYMBOLIC_ID+"') cannot be found, so RSA cannot be started");
+		if (proxyServiceFactoryBundleContext == null)
+			throw new IllegalStateException("RSA Proxy bundle (symbolic id=='"
+					+ RSA_PROXY_BUNDLE_SYMBOLIC_ID
+					+ "') cannot be found, so RSA cannot be started");
 	}
-	
+
 	private void stopProxyServiceFactoryBundle() {
 		if (proxyServiceFactoryBundleContext != null) {
 			// stop it
@@ -94,11 +97,11 @@ public class Activator implements BundleActivator {
 			proxyServiceFactoryBundleContext = null;
 		}
 	}
-	
+
 	public BundleContext getProxyServiceFactoryBundleContext() {
 		return proxyServiceFactoryBundleContext;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -112,11 +115,11 @@ public class Activator implements BundleActivator {
 		// initialize the RSA proxy service factory bundle...so that we
 		// can get/use *that bundle's BundleContext for registering the
 		// proxy ServiceFactory.
-		// See osgi-dev thread here for info about this 
+		// See osgi-dev thread here for info about this
 		// approach/using the ServiceFactory extender approach for this purpose:
 		// https://mail.osgi.org/pipermail/osgi-dev/2011-February/003000.html
 		initializeProxyServiceFactoryBundle();
-		
+
 		// make remote service admin available
 		Properties rsaProps = new Properties();
 		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
@@ -198,18 +201,20 @@ public class Activator implements BundleActivator {
 	}
 
 	public boolean isOldEquinox() {
-		if (context == null) return false;
+		if (context == null)
+			return false;
 		Bundle systemBundle = context.getBundle(0);
 		String systemBSN = systemBundle.getSymbolicName();
 		if ("org.eclipse.osgi".equals(systemBSN)) {
 			Version fixedVersion = new Version("3.7.0");
 			// running on equinox; check the version
 			Version systemVersion = systemBundle.getVersion();
-			if (systemVersion.compareTo(fixedVersion) < 0) return true;
+			if (systemVersion.compareTo(fixedVersion) < 0)
+				return true;
 		}
 		return false;
 	}
-	
+
 	public String getFrameworkUUID() {
 		if (context == null)
 			return null;

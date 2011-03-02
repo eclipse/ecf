@@ -32,6 +32,12 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
 import org.osgi.framework.ServiceReference;
 
+/**
+ * Abstract superclass for both host and consumer container selectors...i.e.
+ * implementers of {@link IHostContainerSelector} or
+ * {@link IConsumerContainerSelector}.
+ * 
+ */
 public abstract class AbstractContainerSelector {
 
 	public static final IRemoteServiceContainer[] EMPTY_REMOTE_SERVICE_CONTAINER_ARRAY = new IRemoteServiceContainer[] {};

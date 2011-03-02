@@ -26,6 +26,10 @@ import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 
+/**
+ * Default implementation of {@link IServiceInfoFactory}.
+ * 
+ */
 public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		IServiceInfoFactory {
 
@@ -60,8 +64,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		}
 	}
 
-	public IServiceInfo createServiceInfo(
-			IDiscoveryAdvertiser advertiser,
+	public IServiceInfo createServiceInfo(IDiscoveryAdvertiser advertiser,
 			EndpointDescription endpointDescription) {
 		try {
 			Namespace advertiserNamespace = advertiser.getServicesNamespace();
@@ -196,12 +199,11 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 				IServiceTypeID.DEFAULT_NA);
 		return ServiceIDFactory.getDefault().createServiceTypeID(
 				advertiser.getServicesNamespace(),
-				new String[] { RemoteConstants.DISCOVERY_SERVICE_TYPE }, scopes,
-				protocols, namingAuthority);
+				new String[] { RemoteConstants.DISCOVERY_SERVICE_TYPE },
+				scopes, protocols, namingAuthority);
 	}
 
-	public IServiceInfo removeServiceInfo(
-			IDiscoveryAdvertiser advertiser,
+	public IServiceInfo removeServiceInfo(IDiscoveryAdvertiser advertiser,
 			EndpointDescription endpointDescription) {
 		Namespace advertiserNamespace = advertiser.getServicesNamespace();
 		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,

@@ -60,6 +60,13 @@ import org.osgi.service.remoteserviceadmin.EndpointPermission;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
 
+/**
+ * ECF implementation of OSGI Remote Service Admin service...i.e.
+ * {@link org.osgi.service.remoteserviceadmin.RemoteServiceAdmin}. This
+ * implementation can be used to export and/or import remote services with any
+ * ECF container.
+ * 
+ */
 public class RemoteServiceAdmin implements
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin {
 
@@ -1790,7 +1797,7 @@ public class RemoteServiceAdmin implements
 		resultProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
 						importedConfigs);
-		
+
 		// Set endpoint.id and endpoint.service.id
 		resultProperties
 				.put(org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_ENDPOINT_ID,
@@ -1802,7 +1809,7 @@ public class RemoteServiceAdmin implements
 						endpointDescription
 								.getProperties()
 								.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID));
-		
+
 		return resultProperties;
 	}
 

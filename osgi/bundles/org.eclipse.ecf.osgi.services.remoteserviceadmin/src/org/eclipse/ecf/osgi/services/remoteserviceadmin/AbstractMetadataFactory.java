@@ -25,6 +25,12 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.osgi.framework.Version;
 
+/**
+ * Abstract superclass for metadata factories...i.e. implementers of
+ * {@link IServiceInfoFactory}.
+ * 
+ * 
+ */
 public abstract class AbstractMetadataFactory {
 
 	protected static final String LIST_SEPARATOR = " "; //$NON-NLS-1$

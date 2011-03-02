@@ -16,6 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Endpoint description writer class for writing {@link EndpointDescription}s to
+ * the OSGi 4.2 Remote Service Admin Endpoint Description Extender Format
+ * (section 122.8 of OSGi 4.2 enterprise specification). This class may be used
+ * or extended to write {@link EndpointDescription} instances to the format
+ * specified by OSGi 4.2 section 122.8.
+ * 
+ */
 public class EndpointDescriptionWriter {
 
 	protected String indent = "  "; //$NON-NLS-1$

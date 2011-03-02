@@ -26,6 +26,11 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
 
+/**
+ * Abstract superclass for consumer container selectors...i.e. implementers of
+ * {@link IConsumerContainerSelector}).
+ * 
+ */
 public class AbstractConsumerContainerSelector extends
 		AbstractContainerSelector {
 

@@ -31,6 +31,14 @@ import org.osgi.service.remoteserviceadmin.ExportRegistration;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
+/**
+ * Abstract superclass for topology managers. This abstract superclass provides
+ * basic functionality for topology managers to reuse. New topology managers can
+ * extend this class to get or customize desired functionality. Alternatively,
+ * they can use this class as a guide to implementing desired topology manager
+ * behavior.
+ * 
+ */
 public abstract class AbstractTopologyManager {
 
 	public static final String SERVICE_EXPORTED_INTERFACES_WILDCARD = "*"; //$NON-NLS-1$
@@ -57,10 +65,11 @@ public abstract class AbstractTopologyManager {
 
 	protected String getFrameworkUUID() {
 		Activator a = Activator.getDefault();
-		if (a == null) return null;
+		if (a == null)
+			return null;
 		return a.getFrameworkUUID();
 	}
-	
+
 	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser(
 			EndpointDescription endpointDescription) {
 		synchronized (endpointDescriptionAdvertiserTrackerLock) {

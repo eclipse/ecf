@@ -12,6 +12,10 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 
+/**
+ * Default implementation of {@link IConsumerContainerSelector}.
+ * 
+ */
 public class ConsumerContainerSelector extends
 		AbstractConsumerContainerSelector implements IConsumerContainerSelector {
 

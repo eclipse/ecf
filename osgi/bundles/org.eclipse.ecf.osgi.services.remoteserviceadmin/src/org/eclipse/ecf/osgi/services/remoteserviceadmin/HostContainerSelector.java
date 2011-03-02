@@ -16,6 +16,10 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.osgi.framework.ServiceReference;
 
+/**
+ * Default implementation of {@link IHostContainerSelector} service.
+ * 
+ */
 public class HostContainerSelector extends AbstractHostContainerSelector
 		implements IHostContainerSelector {
 
