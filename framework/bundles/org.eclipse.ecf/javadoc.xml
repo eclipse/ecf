@@ -43,6 +43,7 @@
 	        	<exclude name="**/jivesoftware/**"/>
 	        	<exclude name="**/pubsub/**"/>
 	        	<exclude name="**/collab/**"/>
+	        	<exclude name="**/osgi/services/discovery/**"/>
         	</fileset>
     	</javadoc>
     </target>
