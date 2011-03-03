@@ -41,6 +41,8 @@
 	        	<exclude name="**/tutorial/**"/>
 	        	<exclude name="**/twitter/**"/>
 	        	<exclude name="**/jivesoftware/**"/>
+	        	<exclude name="**/pubsub/**"/>
+	        	<exclude name="**/collab/**"/>
         	</fileset>
     	</javadoc>
     </target>
