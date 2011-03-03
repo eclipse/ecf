@@ -35,12 +35,10 @@ public class ClientApplication {
 
 	public static final int DEFAULT_TIMEOUT = TCPServerSOContainer.DEFAULT_KEEPALIVE;
 
-	public static final String CONTAINER_FACTORY_NAME = GenericContainerInstantiator.class
-			.getName();
+	public static final String CONTAINER_FACTORY_NAME = GenericContainerInstantiator.class.getName();
 	public static final String CONTAINER_FACTORY_CLASS = CONTAINER_FACTORY_NAME;
 
-	public static final String COMPOSENT_CONTAINER_NAME = GenericContainerInstantiator.class
-			.getName();
+	public static final String COMPOSENT_CONTAINER_NAME = GenericContainerInstantiator.class.getName();
 
 	// Number of clients to create
 	static int clientCount = 1;
@@ -73,8 +71,7 @@ public class ClientApplication {
 			}
 		}
 		// Setup factory descriptions since Eclipse does not do this for us
-		contd = new ContainerTypeDescription(CONTAINER_FACTORY_NAME,
-				CONTAINER_FACTORY_CLASS, null);
+		contd = new ContainerTypeDescription(CONTAINER_FACTORY_NAME, CONTAINER_FACTORY_CLASS, null);
 		ContainerFactory.getDefault().addDescription(contd);
 		for (int i = 0; i < clientCount; i++) {
 			sm[i] = createClient();
@@ -84,18 +81,13 @@ public class ClientApplication {
 	protected ISharedObjectContainer createClient() throws Exception {
 		// Make identity instance for the new container
 		ID newContainerID = IDFactory.getDefault().createGUID();
-		ISharedObjectContainer result = SharedObjectContainerFactory
-				.getDefault().createSharedObjectContainer(
-						contd,
-						new Object[] { newContainerID,
-								new Integer(DEFAULT_TIMEOUT) });
+		ISharedObjectContainer result = SharedObjectContainerFactory.getDefault().createSharedObjectContainer(contd, new Object[] {newContainerID, new Integer(DEFAULT_TIMEOUT)});
 		return result;
 	}
 
 	public void connect(ID server) throws Exception {
 		for (int i = 0; i < clientCount; i++) {
-			System.out
-					.print("ClientApplication " + sm[i].getID().getName() + " joining " + server.getName() + "..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			System.out.print("ClientApplication " + sm[i].getID().getName() + " joining " + server.getName() + "..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			sm[i].connect(server, null);
 			System.out.println("completed."); //$NON-NLS-1$
 		}
@@ -103,8 +95,7 @@ public class ClientApplication {
 
 	public void disconnect() {
 		for (int i = 0; i < clientCount; i++) {
-			System.out
-					.print("ClientApplication " + sm[i].getID().getName() + " leaving..."); //$NON-NLS-1$ //$NON-NLS-2$
+			System.out.print("ClientApplication " + sm[i].getID().getName() + " leaving..."); //$NON-NLS-1$ //$NON-NLS-2$
 			sm[i].disconnect();
 			System.out.println("completed."); //$NON-NLS-1$
 		}
@@ -116,16 +107,11 @@ public class ClientApplication {
 				ISharedObjectContainer scg = sm[j];
 				sharedObjects = new ID[sharedObjectClassNames.length];
 				for (int i = 0; i < sharedObjectClassNames.length; i++) {
-					System.out
-							.println("Creating sharedObject: " + sharedObjectClassNames[i] + " for client " + scg.getID().getName()); //$NON-NLS-1$ //$NON-NLS-2$
-					ISharedObject so = (ISharedObject) Class.forName(
-							sharedObjectClassNames[i]).newInstance();
-					sharedObjects[i] = IDFactory.getDefault().createStringID(
-							sharedObjectClassNames[i] + "_" + i); //$NON-NLS-1$
-					scg.getSharedObjectManager().addSharedObject(
-							sharedObjects[i], so, new HashMap());
-					System.out
-							.println("Created sharedObject for client " + scg.getID().getName()); //$NON-NLS-1$
+					System.out.println("Creating sharedObject: " + sharedObjectClassNames[i] + " for client " + scg.getID().getName()); //$NON-NLS-1$ //$NON-NLS-2$
+					ISharedObject so = (ISharedObject) Class.forName(sharedObjectClassNames[i]).newInstance();
+					sharedObjects[i] = IDFactory.getDefault().createStringID(sharedObjectClassNames[i] + "_" + i); //$NON-NLS-1$
+					scg.getSharedObjectManager().addSharedObject(sharedObjects[i], so, new HashMap());
+					System.out.println("Created sharedObject for client " + scg.getID().getName()); //$NON-NLS-1$
 				}
 			}
 		}
@@ -137,10 +123,8 @@ public class ClientApplication {
 			return;
 		for (int j = 0; j < clientCount; j++) {
 			for (int i = 0; i < sharedObjects.length; i++) {
-				System.out
-						.println("Removing sharedObject: " + sharedObjects[i].getName() + " for client " + sm[j].getID().getName()); //$NON-NLS-1$ //$NON-NLS-2$
-				sm[j].getSharedObjectManager().removeSharedObject(
-						sharedObjects[i]);
+				System.out.println("Removing sharedObject: " + sharedObjects[i].getName() + " for client " + sm[j].getID().getName()); //$NON-NLS-1$ //$NON-NLS-2$
+				sm[j].getSharedObjectManager().removeSharedObject(sharedObjects[i]);
 			}
 		}
 	}
