@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.core.featurepatch"
-      label="ECF 3.5 Patch for Eclipse"
+      label="ECF Filetransfer Patch for Eclipse"
       version="3.5.0.qualifier"
       provider-name="%providerName">
 
