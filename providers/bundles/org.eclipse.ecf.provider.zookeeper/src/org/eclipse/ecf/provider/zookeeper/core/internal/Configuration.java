@@ -60,7 +60,8 @@ public class Configuration extends DefaultDiscoveryConfig {
 		String ss[] = propsAsString.split(";");//$NON-NLS-1$
 		for (String s : ss) {
 			String key_value[] = s.split("=");//$NON-NLS-1$
-			defaultConfigProperties.put(key_value[0], key_value[1]);
+			if (key_value.length == 2)
+				defaultConfigProperties.put(key_value[0], key_value[1]);
 		}
 	}
 
