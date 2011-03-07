@@ -3,7 +3,7 @@
    <implementation class="org.eclipse.ecf.examples.internal.remoteservices.hello.ds.host.HelloComponent"/>
    <property name="service.exported.interfaces" type="String" value="*"/>
    <property name="service.exported.configs" type="String" value="ecf.generic.server"/>
-   <property name="org.eclipse.ecf.containerFactoryArgs" type="String" value="ecftcp://localhost:30001/server"/>
+   <property name="ecf.exported.containerfactoryargs" type="String" value="ecftcp://localhost:30001/server"/>
    <service>
       <provide interface="org.eclipse.ecf.examples.remoteservices.hello.IHello"/>
    </service>
