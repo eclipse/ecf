@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.eventadmin.feature"
-      label="ECF EventAdmin"
-      version="1.0.0.qualifier"
+      label="ECF Distributed EventAdmin"
+      version="2.0.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
@@ -10,7 +10,7 @@
    </description>
 
    <copyright>
-#################################################
+      #################################################
 # Copyright (c) 2010 Composent, Inc. and others. All rights reserved.
 # This program and the accompanying materials are made available under the 
 # terms of the Eclipse Public License v1.0 which accompanies this 

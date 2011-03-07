@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.discovery.slp.feature"
-      label="ECF Discovery SLP Provider"
+      label="ECF Discovery SLP (RFC 2608) Provider"
       version="1.0.0.qualifier"
       provider-name="%providerName">
 
