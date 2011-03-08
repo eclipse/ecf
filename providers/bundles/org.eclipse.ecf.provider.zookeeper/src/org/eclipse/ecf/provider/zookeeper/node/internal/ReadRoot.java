@@ -1,5 +1,5 @@
 /*******************************************************************************
- *  Copyright (c)2010 REMAIN B.V. The Netherlands. (http://www.remainsoftware.com).
+ *  Copyright (c)2011 REMAIN B.V. The Netherlands. (http://www.remainsoftware.com).
  *  All rights reserved. This program and the accompanying materials
  *  are made available under the terms of the Eclipse Public License v1.0
  *  which accompanies this distribution, and is available at
@@ -11,15 +11,16 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.zookeeper.node.internal;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.zookeeper.AsyncCallback.ChildrenCallback;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.AsyncCallback.ChildrenCallback;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.provider.zookeeper.core.DiscoverdService;
 import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainer;
@@ -36,6 +37,7 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 			.synchronizedMap(new HashMap<String, NodeReader>());
 	private Map<String, DiscoverdService> discoverdServices;
 	private Map<String, List<DiscoverdService>> perTypeDiscoverdServices;
+	private Object connectionLock = new Object();
 
 	ReadRoot(String ip, WatchManager watchManager) {
 		Assert.isNotNull(ip);
@@ -49,106 +51,119 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 		connect();
 	}
 
-	public synchronized void process(final WatchedEvent event) {
-		if (watchManager.isDisposed())
-			return;
+	public void process(final WatchedEvent event) {
 		ZooDiscoveryContainer.CACHED_THREAD_POOL.execute(new Runnable() {
 			public void run() {
-				switch (event.getState()) {
-				case Disconnected:
-					ReadRoot.this.isConnected = false;
-					connect();
-					break;
-				case Expired:
-					ReadRoot.this.isConnected = false;
-					connect();
-					break;
-				case SyncConnected:
-					if (!ReadRoot.this.isConnected) {
-						ReadRoot.this.isConnected = true;
-						ReadRoot.this.watchManager
-								.addZooKeeper(ReadRoot.this.readKeeper);
-						ReadRoot.this.readKeeper.exists(INode.ROOT,
-								ReadRoot.this, null, null);
-						ReadRoot.this.readKeeper.getChildren(INode.ROOT,
-								ReadRoot.this, ReadRoot.this, null);
-					}
-					break;
+				synchronized (connectionLock) {
+					if (watchManager.isDisposed())
+						return;
 
-				// ignore @deprecated cases
-				}
-				switch (event.getType()) {
-				case NodeDeleted:
-					if (event.getPath() == null
-							|| event.getPath().equals(INode.ROOT))
+					switch (event.getState()) {
+					case Disconnected:
+						ReadRoot.this.isConnected = false;
+						connect();
 						break;
-					ReadRoot.this.nodeReaders.remove(event.getPath());
-					break;
-				case NodeChildrenChanged:
-					if (ReadRoot.this.isConnected) {
-						ReadRoot.this.readKeeper.exists(INode.ROOT,
-								ReadRoot.this, null, null);
-						ReadRoot.this.readKeeper.getChildren(INode.ROOT,
-								ReadRoot.this, ReadRoot.this, null);
+					case Expired:
+						ReadRoot.this.isConnected = false;
+						connect();
+						break;
+					case SyncConnected:
+						if (!ReadRoot.this.isConnected) {
+							ReadRoot.this.isConnected = true;
+							ReadRoot.this.watchManager
+									.addZooKeeper(ReadRoot.this.readKeeper);
+							ReadRoot.this.readKeeper.exists(INode.ROOT,
+									ReadRoot.this, null, null);
+							ReadRoot.this.readKeeper.getChildren(INode.ROOT,
+									ReadRoot.this, ReadRoot.this, null);
+						}
+						break;
+
+					// ignore @deprecated cases
 					}
-					break;
+					switch (event.getType()) {
+					case NodeDeleted:
+						if (event.getPath() == null
+								|| event.getPath().equals(INode.ROOT))
+							break;
+						ReadRoot.this.nodeReaders.remove(event.getPath());
+						break;
+					case NodeChildrenChanged:
+						if (ReadRoot.this.isConnected) {
+							ReadRoot.this.readKeeper.exists(INode.ROOT,
+									ReadRoot.this, null, null);
+							ReadRoot.this.readKeeper.getChildren(INode.ROOT,
+									ReadRoot.this, ReadRoot.this, null);
+						}
+						break;
+					}
 				}
 			}
 		});
 	}
 
-	private synchronized void connect() {
-		if (this.isConnected || watchManager.isDisposed()) {
-			return;
-		}
-		try {
+	private void connect() {
+		synchronized (connectionLock) {
+			if (this.isConnected || watchManager.isDisposed())
+				return;
+
 			this.nodeReaders.clear();
 			if (this.readKeeper != null) {
 				// discard the current stale reader
-				this.readKeeper.close();
-				this.readKeeper = null;
+				try {
+					this.readKeeper.close();
+				} catch (InterruptedException e) {
+					Logger.log(
+							LogService.LOG_ERROR,
+							"Error while closing the current ZooKeeper: "
+									+ e.getMessage(), e);
+				}
 				this.watchManager.removeZooKeeper(this.readKeeper);
+				this.readKeeper = null;
 			}
-			// try reconnecting
-			this.readKeeper = new ZooKeeper(this.ip, 3000, this);
-
-		} catch (Exception e) {
-			Logger.log(LogService.LOG_DEBUG, e.getMessage(), e);
+			try {
+				// try reconnecting
+				this.readKeeper = new ZooKeeper(this.ip, 3000, this);
+			} catch (IOException ioe) {
+				Logger.log(LogService.LOG_ERROR,
+						"Cannot initiate a new ZooKeeper: " + ioe.getMessage(),
+						ioe);
+			}
 		}
 	}
 
-	public synchronized void processResult(int rc, final String path,
-			Object ctx, final List<String> children) {
-
-		if (watchManager.isDisposed()) {
-			return;
-		}
-
+	public void processResult(int rc, final String path, Object ctx,
+			final List<String> children) {
 		ZooDiscoveryContainer.CACHED_THREAD_POOL.execute(new Runnable() {
 			public void run() {
-				if (path == null || children == null || children.size() == 0) {
-					/* No children available yet, set a watch on it */
-					ReadRoot.this.readKeeper.getChildren(INode.ROOT,
-							ReadRoot.this, ReadRoot.this, null);
-					return;
-				}
-				for (String p : children) {
-					if (Geo.isOwnPublication(p)) {
-						/* own publications need not to be discovered */
-						continue;
+				synchronized (connectionLock) {
+					if (watchManager.isDisposed())
+						return;
+					if (path == null || children == null
+							|| children.size() == 0) {
+						/* No children available yet, set a watch on it */
+						ReadRoot.this.readKeeper.getChildren(INode.ROOT,
+								ReadRoot.this, ReadRoot.this, null);
+						return;
 					}
-					if (!ReadRoot.this.nodeReaders.containsKey(p)) {
-						/* launch a new reader to handle this node's data */
-						NodeReader nr = new NodeReader(p, ReadRoot.this);
-						/* watch this very path for deletion */
-						ReadRoot.this.readKeeper.exists(nr.getAbsolutePath(),
-								ReadRoot.this, null, null);
-						ReadRoot.this.nodeReaders.put(nr.getPath(), nr);
+					for (String p : children) {
+						if (Geo.isOwnPublication(p)) {
+							/* own publications need not to be discovered */
+							continue;
+						}
+						if (!ReadRoot.this.nodeReaders.containsKey(p)) {
+							/* launch a new reader to handle this node's data */
+							NodeReader nr = new NodeReader(p, ReadRoot.this);
+							/* watch this very path for deletion */
+							ReadRoot.this.readKeeper.exists(
+									nr.getAbsolutePath(), ReadRoot.this, null,
+									null);
+							ReadRoot.this.nodeReaders.put(nr.getPath(), nr);
+						}
 					}
 				}
 			}
 		});
-
 	}
 
 	public ZooKeeper getReadKeeper() {
@@ -166,5 +181,4 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 	public Map<String, List<DiscoverdService>> getPerTypeDiscoverdServices() {
 		return perTypeDiscoverdServices;
 	}
-
 }
