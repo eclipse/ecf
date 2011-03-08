@@ -262,9 +262,6 @@ public class RemoteServiceAdmin implements
 		// permission
 		checkEndpointPermission(endpointDescription, EndpointPermission.IMPORT);
 
-		if (endpointDescription.getServiceId() == 0)
-			return handleNonOSGiService(endpointDescription);
-
 		EndpointDescription ed = null;
 		if (endpointDescription instanceof EndpointDescription)
 			ed = (EndpointDescription) endpointDescription;
@@ -1397,16 +1394,6 @@ public class RemoteServiceAdmin implements
 			result.append(")"); //$NON-NLS-1$
 			return result.toString();
 		}
-	}
-
-	private org.osgi.service.remoteserviceadmin.ImportRegistration handleNonOSGiService(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		// With non-OSGi service id (service id=0), we log a warning and return
-		// null;
-		logWarning("handleNonOSGiService", //$NON-NLS-1$
-				"OSGi remote service id is 0 for endpointDescription=" //$NON-NLS-1$
-						+ endpointDescription);
-		return null;
 	}
 
 	private ImportEndpoint createAndRegisterProxy(

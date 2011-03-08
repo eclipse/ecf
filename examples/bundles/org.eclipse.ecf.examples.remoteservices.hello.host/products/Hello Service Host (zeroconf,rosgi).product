@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="R-OSGI Hello Host" uid="org.eclipse.ecf.examples.remoteservices.rosgihellohost" application="org.eclipse.ecf.examples.remoteservices.hello.host.HelloHost" version="2.0.0" useFeatures="false" includeLaunchers="false">
+<product name="R-OSGI Hello Host Zeroconf Discovery" uid="org.eclipse.ecf.examples.remoteservices.hello.host.zeroconf.rosgi" application="org.eclipse.ecf.examples.remoteservices.hello.host.HelloHost" version="1.0.0" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>

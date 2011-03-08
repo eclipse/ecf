@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Generic Hello Consumer" uid="org.eclipse.ecf.examples.remoteservices.generichelloconsumer.local" application="org.eclipse.ecf.examples.remoteservices.hello.consumer.HelloConsumer" version="1.0.0" useFeatures="false" includeLaunchers="false">
+<product name="Generic Hello Consumer EDEF Discovery" uid="org.eclipse.ecf.examples.remoteservices.hello.consumer.edef.generic" application="org.eclipse.ecf.examples.remoteservices.hello.consumer.HelloConsumer" version="1.0.0" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -48,5 +48,9 @@
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
    </plugins>
 
+   <configurations>
+      <plugin id="org.eclipse.ecf" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
+   </configurations>
 
 </product>

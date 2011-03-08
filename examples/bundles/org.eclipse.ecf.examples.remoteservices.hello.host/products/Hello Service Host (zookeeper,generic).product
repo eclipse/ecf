@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Generic Zookeeper Hello Host" uid="org.eclipse.ecf.examples.remoteservices.genericzookeeperhellohost" application="org.eclipse.ecf.examples.remoteservices.hello.host.HelloHost" version="2.0.0" useFeatures="false" includeLaunchers="false">
+<product name="Generic Hello Host Zookeeper Discovery" uid="org.eclipse.ecf.examples.remoteservices.hello.host.zookeeper.generic" application="org.eclipse.ecf.examples.remoteservices.hello.host.HelloHost" version="1.0.0" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -10,7 +10,7 @@
       <programArgs>-console 
 -consoleLog
 -containerType ecf.generic.server
--containerId ecftcp://localhost:5782/server</programArgs>
+-containerId ecftcp://localhost:3787/server</programArgs>
       <vmArgs>-Dzoodiscovery.dataDir=zookeeperdata2
 -Dzoodiscovery.flavor=zoodiscovery.flavor.standalone=localhost:2002;clientPort=2001
 -Xms40m

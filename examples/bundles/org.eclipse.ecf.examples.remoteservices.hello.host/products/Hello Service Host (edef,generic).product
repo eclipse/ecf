@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="R-OSGI Hello Host Zookeeper Discovery" uid="org.eclipse.ecf.examples.remoteservices.hello.host.zookeeper.rosgi" application="org.eclipse.ecf.examples.remoteservices.hello.host.HelloHost" version="1.0.0" useFeatures="false" includeLaunchers="false">
+<product name="Generic Hello Host EDEF Discovery" uid="org.eclipse.ecf.examples.remoteservices.hello.host.edef.generic" application="org.eclipse.ecf.examples.remoteservices.hello.host.HelloHost" version="1.0.0" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-console -consoleLog</programArgs>
-      <vmArgs>-Dzoodiscovery.dataDir=zookeeperdata2
--Dzoodiscovery.flavor=zoodiscovery.flavor.standalone=localhost:2002;clientPort=2001
--Xms40m
--Xmx512m</vmArgs>
+      <programArgs>-containerType ecf.generic.server
+-containerId ecftcp://localhost:3787/server
+-console
+-consoleLog</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
-
-   <windowImages/>
 
    <launcher>
       <solaris/>
@@ -28,9 +25,6 @@
    </vm>
 
    <plugins>
-      <plugin id="ch.ethz.iks.r_osgi.remote"/>
-      <plugin id="org.apache.hadoop.zookeeper"/>
-      <plugin id="org.apache.log4j"/>
       <plugin id="org.eclipse.core.contenttype"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.runtime"/>
@@ -43,8 +37,7 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
-      <plugin id="org.eclipse.ecf.provider.r_osgi"/>
-      <plugin id="org.eclipse.ecf.provider.zookeeper"/>
+      <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.app"/>
@@ -55,8 +48,12 @@
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
-      <plugin id="org.objectweb.asm"/>
    </plugins>
 
+   <configurations>
+      <plugin id="org.eclipse.ecf.examples.remoteservices.hello.host" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
+   </configurations>
 
 </product>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Generic Hello Consumer" uid="org.eclipse.ecf.examples.remoteservices.generichelloconsumer" application="org.eclipse.ecf.examples.remoteservices.hello.consumer.HelloConsumer" version="2.0.0" useFeatures="false" includeLaunchers="false">
+<product name="Generic Hello Consumer Zeroconf Discovery" uid="org.eclipse.ecf.examples.remoteservices.hello.consumer.zeroconf.generic" application="org.eclipse.ecf.examples.remoteservices.hello.consumer.HelloConsumer" version="1.0.0" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
