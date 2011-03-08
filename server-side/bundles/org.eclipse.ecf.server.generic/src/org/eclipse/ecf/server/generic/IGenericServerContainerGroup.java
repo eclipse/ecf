@@ -47,6 +47,33 @@ public interface IGenericServerContainerGroup {
 	public ISharedObjectContainer createContainer(String path, int keepAlive, Map properties) throws ContainerCreateException;
 
 	/**
+	 * Create a shared object container within this container group, given a path, a keepAlive value, and a Map of properties
+	 * that will be provided to the created container.
+	 * 
+	 * @param path the uri path suffix for defining the container's identity.  For example, if {@link #getGroupEndpoint()}
+	 * returns 'ecftcp://localhost:3282', and a path of '/server' is used to create a new container, then the container's id
+	 * will be 'ecftcp://localhost:3282/server'.  Must not be <code>null</code>.
+	 * @param keepAlive a value (in milliseconds) that defines the keepAlive for the resulting container.
+	 * @return shared object container.  Will not be <code>null</code>.
+	 * @throws ContainerCreateException if container with given path, keepAlive, and properties could not be created.
+	 * @since 5.0
+	 */
+	public ISharedObjectContainer createContainer(String path, int keepAlive) throws ContainerCreateException;
+
+	/**
+	 * Create a shared object container within this container group, given a path, a keepAlive value, and a Map of properties
+	 * that will be provided to the created container.
+	 * 
+	 * @param path the uri path suffix for defining the container's identity.  For example, if {@link #getGroupEndpoint()}
+	 * returns 'ecftcp://localhost:3282', and a path of '/server' is used to create a new container, then the container's id
+	 * will be 'ecftcp://localhost:3282/server'.  Must not be <code>null</code>.
+	 * @return shared object container.  Will not be <code>null</code>.
+	 * @throws ContainerCreateException if container with given path, keepAlive, and properties could not be created.
+	 * @since 5.0
+	 */
+	public ISharedObjectContainer createContainer(String path) throws ContainerCreateException;
+
+	/**
 	 * Get the container instance associated with the given path. 
 	 * 
 	 * @param path of the container to return.  Must not be <code>null</code>.
