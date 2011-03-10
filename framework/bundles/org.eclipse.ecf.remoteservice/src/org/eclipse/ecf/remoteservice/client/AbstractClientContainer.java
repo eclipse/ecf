@@ -246,6 +246,7 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	public IRemoteServiceRegistration registerCallables(IRemoteCallable[] callables, Dictionary properties) {
 		Assert.isNotNull(callables);
 		final RemoteServiceClientRegistration registration = createRestServiceRegistration(callables, properties);
+		this.registry.registerRegistration(registration);
 		// notify
 		fireRemoteServiceEvent(new IRemoteServiceRegisteredEvent() {
 
@@ -265,12 +266,12 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 				return registration.getClazzes();
 			}
 		});
-		this.registry.registerRegistration(registration);
 		return registration;
 	}
 
 	public IRemoteServiceRegistration registerCallables(String[] clazzes, IRemoteCallable[][] callables, Dictionary properties) {
 		final RemoteServiceClientRegistration registration = createRestServiceRegistration(clazzes, callables, properties);
+		this.registry.registerRegistration(registration);
 		// notify
 		fireRemoteServiceEvent(new IRemoteServiceRegisteredEvent() {
 
@@ -290,7 +291,6 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 				return registration.getClazzes();
 			}
 		});
-		this.registry.registerRegistration(registration);
 		return registration;
 	}
 
