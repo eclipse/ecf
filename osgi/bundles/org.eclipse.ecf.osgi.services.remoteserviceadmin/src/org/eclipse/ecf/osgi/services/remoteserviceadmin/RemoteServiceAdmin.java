@@ -61,11 +61,14 @@ import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * ECF implementation of OSGI Remote Service Admin service...i.e.
- * {@link org.osgi.service.remoteserviceadmin.RemoteServiceAdmin}. This
- * implementation can be used to export and/or import remote services with any
- * ECF container.
- * 
+ * ECF implementation of <a
+ * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGI 4.2 Remote
+ * Service Admin service</a>. This service can be used by topology managers to
+ * to export and/or import remote services with any <a
+ * href="http://wiki.eclipse.org/ECF_Connection_Creation_and_Management">ECF
+ * container</a> that implements the <a
+ * href="http://wiki.eclipse.org/ECF/API_Docs#Remote_Services_API">ECF remote
+ * service API</a>.
  */
 public class RemoteServiceAdmin implements
 		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin {

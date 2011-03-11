@@ -18,8 +18,10 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
 
 /**
  * ECF Remote Service Admin RemoteConstants. These are constants for ECF's RSA
- * implementation-specific meta-data.
- * 
+ * implementation-specific meta-data. For OSGi Remote constant see
+ * {@link org.osgi.service.remoteserviceadmin.RemoteConstants} and the <a
+ * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGI 4.2 Remote
+ * Service Admin specification (chap 122)</a>.
  */
 public class RemoteConstants {
 

@@ -16,8 +16,9 @@ import java.io.InputStream;
  * Service for reading endpoint descriptions from xml-files in the Endpoint
  * Description Extender Format (EDEF) specified in section 122.8 of the <a
  * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGi Enterprise
- * Specification</a>. The InputStream provided must be of the EDEF format,
- * otherwise an IOException or EndpointDescriptionParseException will be thrown.
+ * Specification (chapter 122)</a>. The InputStream provided must be of the EDEF
+ * format, otherwise an IOException or EndpointDescriptionParseException will be
+ * thrown.
  * 
  */
 public interface IEndpointDescriptionReader {

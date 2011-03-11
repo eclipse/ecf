@@ -36,7 +36,9 @@ import org.osgi.util.tracker.ServiceTracker;
  * basic functionality for topology managers to reuse. New topology managers can
  * extend this class to get or customize desired functionality. Alternatively,
  * they can use this class as a guide to implementing desired topology manager
- * behavior.
+ * behavior. For description of the role of topology managers see the <a
+ * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGI 4.2 Remote
+ * Service Admin specification (chap 122)</a>.
  * 
  */
 public abstract class AbstractTopologyManager {
