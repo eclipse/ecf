@@ -28,7 +28,7 @@ import org.eclipse.ecf.remoteservice.*;
 public class RemoteServiceClientRegistry implements Serializable {
 
 	private static final long serialVersionUID = -7002609161000008043L;
-	private static long nextServiceId = 0L;
+	private static long nextServiceId = 1L;
 	private ID containerId;
 	private List registrations;
 	private AbstractClientContainer container;
