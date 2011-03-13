@@ -8,5 +8,5 @@
 	<topic label="Distributed EventAdmin Service" href="http://wiki.eclipse.org/Distributed_EventAdmin_Service"/>
 	<topic label="Real-Time Shared Editing" href="http://wiki.eclipse.org/DocShare_Plugin"/>
 	<topic label="Create an IRC bot" href="html/tutorials/bot.html"/>
-	<topic label="Other Info" href="http://wiki.eclipse.org/Eclipse_Communication_Framework_Project"/>
+	<topic label="Other Info" href="http://wiki.eclipse.org/ECF"/>
 </toc>

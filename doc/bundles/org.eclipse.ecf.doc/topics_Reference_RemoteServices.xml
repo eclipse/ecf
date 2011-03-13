@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+<toc label="OSGi Remote Services"> 
+	<topic label="REST API" href="http://wiki.eclipse.org/REST_abstraction_for_ECF"/>
+    <topic label="Getting Started with OSGi Remote Services" href="http://wiki.eclipse.org/Getting_Started_with_ECF%27s_OSGi_Remote_Services_Implementation"/>
+    <topic label="Remote Services Admin" href="http://wiki.eclipse.org/Remote_Services_Admin"/>
+    <topic label="Asynchronous Proxies" href="http://wiki.eclipse.org/Asynchronous_Proxies_for_Remote_Services"/>
+    <topic label="OSGi Remote Services and ECF" href="http://wiki.eclipse.org/OSGi_4.2_Remote_Services_and_ECF"/>
+    <topic label="File-based Discovery of Remote Services" href="http://wiki.eclipse.org/File-based_Discovery"/>
+</toc>

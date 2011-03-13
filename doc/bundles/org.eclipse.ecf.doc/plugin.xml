@@ -14,6 +14,14 @@
       <toc file="topics_Reference.xml"/>
       <toc file="topics_Extpoint.xml"/>
       <toc file="topics_Tutorials.xml"/>
+      <toc
+            file="tocapi.xml"
+            primary="false">
+      </toc>
+      <toc
+            file="topics_Reference_RemoteServices.xml"
+            primary="false">
+      </toc>
     </extension>
    
    

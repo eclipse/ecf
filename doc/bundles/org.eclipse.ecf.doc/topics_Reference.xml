@@ -2,12 +2,19 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Reference" link_to="toc.xml#reference">
-	<topic label="Introduction" href="html/concepts/intro.html"/>
-    <topic label="OSGi 4.2 Remote Services" href="http://wiki.eclipse.org/ECF#OSGi_4.2_Remote_Services"/>
+    <topic label="What's New and Noteworthy" href="http://www.eclipse.org/ecf/NewAndNoteworthy.html"/>
 	<topic label="ECF Architecture" href="http://www.eclipse.org/ecf/documentation.php"/>
 	<topic label="ECF API" href="http://wiki.eclipse.org/index.php/ECF_API_Docs"/>
-	<topic label="JavaDoc" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/overview-summary.html"/>
-	<topic label="Project Wiki" href="http://wiki.eclipse.org/index.php/Eclipse_Communication_Framework_Project"/>
+	<topic label="API JavaDoc" href="http://download.eclipse.org/rt/ecf/3.5Test/javadoc">
+		<link toc="tocapi.xml"/>
+	</topic>
+	<topic label="Homepage" href="http://www.eclipse.org/ecf"/>
+	<topic label="Summary" href="http://www.eclipse.org/projects/project_summary.php?projectid=rt.ecf"/>
+	<topic label="Wiki" href="http://wiki.eclipse.org/ECF"/>
+	<topic label="Mailing List" href="https://dev.eclipse.org/mailman/listinfo/ecf-dev"/>
+	<topic label="Newsgroup" href="http://www.eclipse.org/forums/index.php"/>
+	<topic label="IP Log" href="http://www.eclipse.org/projects/ip_log.php?projectid=rt.ecf"/>
+    <topic label="Project Blog" href="http://eclipseecf.blogspot.com/"/>
 	<topic label="Extension Points">
 		<link toc="topics_Extpoint.xml"/>
 	</topic>

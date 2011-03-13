@@ -2,14 +2,14 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="ECF Developer Guide" link_to="toc.xml">
-   <topic label="Quick Start" href="html/gettingstarted/quickStart.html"/>
-   <topic label="OSGi 4.2 Remote Services" href="http://wiki.eclipse.org/ECF#OSGi_4.2_Remote_Services"/>
-   <topic label="System Requirements" href="html/gettingstarted/prerequisites.html"/>
-   <topic label="Overview" href="html/gettingstarted/ecf_overview.html"/>
-   <topic label="Tips and Tricks" href="http://wiki.eclipse.org/ECF_Tips_Tricks"/>
    <topic label="What's New and Noteworthy" href="http://www.eclipse.org/ecf/NewAndNoteworthy.html"/>
-   <topic label="Legal" href="notices.html"/>
-   <topic label="Programmer's Reference">
+    <topic label="Project Blog" href="http://eclipseecf.blogspot.com/"/>
+    <topic label="OSGi Remote Services" href="http://wiki.eclipse.org/ECF#OSGi_Remote_Services">
+		<link toc="topics_Reference_RemoteServices.xml"/>
+    </topic>
+    <topic label="Distributed Event Admin" href="http://wiki.eclipse.org/Distributed_EventAdmin_Service"/>
+    <topic label="Generic Servers" href="http://wiki.eclipse.org/ECF_Servers"/>
+   <topic label="Reference">
       <anchor id="reference"/>
    </topic>
    <topic label="Tutorials">

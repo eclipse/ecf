@@ -1,8 +1,6 @@
 <project default="toc" basedir=".">
 
 	<target name="init">
-		<property name="package-list.path" location="${basedir}/html/reference/api/package-list"/>
-		<uptodate property="BuildAPITOC.uptodate" srcfile="${package-list.path}" targetfile="BuildAPITOC.class"/>
 	</target>
 	
 	<target name="toc" depends="init,compile">
@@ -10,24 +8,26 @@
 <toc label="JavaDoc">
 ]]></echo>
 		<java classname="BuildAPITOC" classpath="." output="tocapi.xml" append="true">
-			<arg value="${package-list.path}"/>
+			<arg value="http://download.eclipse.org/rt/ecf/3.5Test/javadoc/package-list"/>
 		</java>
 		<echo file="tocapi.xml" append="true"><![CDATA[
 </toc>
 ]]></echo>
 	</target>
 
-	<target name="compile" unless="BuildAPITOC.uptodate">
+	<target name="compile">
 		<echo file="BuildAPITOC.java"><![CDATA[
 import java.io.*;
+import java.net.URL;
 public class BuildAPITOC {
 	public static void main(String[] args) throws Exception {
 	    System.out.println("args[0] is "+args[0]);
-		BufferedReader r = new BufferedReader(new FileReader(args[0]));
+	    URL url = new URL(args[0]);
+		BufferedReader r = new BufferedReader(new InputStreamReader(url.openStream()));
 		String line;
 		try {
 			while ((line = r.readLine()) != null)
-				System.out.println("<topic label=\"" + line + "\" href=\"http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/" + line.replace('.', '/') + "/package-summary.html\"/>");
+				System.out.println("<topic label=\"" + line + "\" href=\"http://download.eclipse.org/rt/ecf/3.5Test/javadoc/" + line.replace('.', '/') + "/package-summary.html\"/>");
 		} finally {
 			r.close();
 		}
