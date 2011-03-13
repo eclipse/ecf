@@ -29,8 +29,12 @@
         	<fileset dir="${source}" defaultexcludes="true">
 	        	<include name="**/*.java"/>
 	        	<exclude name="**/util/**"/>
+	        	<include name="**/core/util/**"/>
+	        	<include name="**/core/sharedobject/util/**"/>
 	        	<exclude name="**/ui/**"/>
 	        	<exclude name="**/provider/**"/>
+	        	<include name="**/core/provider/**"/>
+	        	<include name="**/core/sharedobject/provider/**"/>
 	        	<exclude name="**/smack/**"/>
 	        	<exclude name="**/incubation/**"/>
 	        	<exclude name="**/internal/**"/>
