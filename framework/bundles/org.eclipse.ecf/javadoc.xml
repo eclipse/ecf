@@ -35,6 +35,13 @@
 	        	<exclude name="**/provider/**"/>
 	        	<include name="**/core/provider/**"/>
 	        	<include name="**/core/sharedobject/provider/**"/>
+	        	<include name="**/provider/comm/**"/>
+	        	<include name="**/provider/datashare/**"/>
+	        	<include name="**/provider/discovery/**"/>
+	        	<include name="**/provider/filetransfer/**"/>
+	        	<include name="**/provider/generic/**"/>
+	        	<include name="**/provider/remoteservice/**"/>
+	        	<include name="**/provider/util/**"/>
 	        	<exclude name="**/smack/**"/>
 	        	<exclude name="**/incubation/**"/>
 	        	<exclude name="**/internal/**"/>
