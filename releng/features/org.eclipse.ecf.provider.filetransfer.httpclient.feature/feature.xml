@@ -6,7 +6,8 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides an ECF filetransfer provider based upon Apache HttpClient 3.0.1.
+      This feature provides an ECF filetransfer provider based upon
+Apache HttpClient 3.1.0.
    </description>
 
    <copyright url="http://www.example.com/copyright">

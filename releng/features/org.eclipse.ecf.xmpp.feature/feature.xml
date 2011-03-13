@@ -5,6 +5,10 @@
       version="1.0.0.qualifier"
       provider-name="%providerName">
 
+   <description url="http://www.eclipse.org/ecf">
+      This feature provides support for the XMPP protocol.
+   </description>
+
    <copyright>
       Copyright (c) 2011 Composent, Inc. and others. All rights
 reserved.

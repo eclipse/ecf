@@ -6,7 +6,7 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Discovery DNS-SD Provider
+      This feature provides the ECF Discovery DNS-SD Provider.
    </description>
 
    <copyright>

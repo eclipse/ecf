@@ -7,7 +7,7 @@
       plugin="org.eclipse.ecf.example.collab">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides ECF application functionality...e.g. instant messaging, real-time collaboration. This feature and the ECF Core API feature are required to run ECF applications.
+      This feature provides ECF example applications and providers.
    </description>
 
    <copyright>

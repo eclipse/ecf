@@ -2,15 +2,16 @@
 <feature
       id="org.eclipse.ecf.datashare.feature"
       label="ECF Datashare"
-      provider-name="%providerName"
-      version="1.0.0.qualifier">
+      version="1.0.0.qualifier"
+      provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Datashare API
+      This feature provides the ECF Datashare API for asynchronous
+messaging within a channel.
    </description>
 
    <copyright>
-#################################################
+      #################################################
 # Copyright (c) 2010 Composent, Inc. and others. All rights reserved.
 # This program and the accompanying materials are made available under the 
 # terms of the Eclipse Public License v1.0 which accompanies this 

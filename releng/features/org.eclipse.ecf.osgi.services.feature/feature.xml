@@ -6,7 +6,8 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Implementation of OSGi 4.2 Remote Services
+      This feature provides the ECF Implementation of OSGi 4.2 Remote
+Services.  Remote Services are specified in chapter 13 of the OSGi compendium specification.  See http://www.osgi.org/download/r4v42/r4.cmpn.pdf.
    </description>
 
    <copyright>

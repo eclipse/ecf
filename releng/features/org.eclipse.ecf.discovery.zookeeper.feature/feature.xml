@@ -6,8 +6,7 @@
       provider-name="%providerName">
 
    <description url="http://wiki.eclipse.org/Zookeeper_Based_ECF_Discovery">
-      This feature provides the Apache Zookeeper Discovery Provider
-implementation
+      This feature provides the Apache Zookeeper Discovery Provider.
    </description>
 
    <copyright url="http://www.eclipse.org/legal/epl-v10.html">

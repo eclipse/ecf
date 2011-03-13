@@ -6,7 +6,7 @@
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides a ECF reference server implementation
+      This feature provides a ECF server support.
    </description>
 
    <copyright url="http://www.eclipse.org/ecf">

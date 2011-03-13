@@ -6,7 +6,7 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides ECF Remote Service Examples
+      This feature provides ECF Remote Service Examples.  These are examples of the use of OSGi 4.2 Remote Services.  OSGi 4.2 Remote Services is specified in the OSGi 4.2 compendium.  See http://www.osgi.org/download/r4v42/r4.cmpn.pdf.
    </description>
 
    <copyright>

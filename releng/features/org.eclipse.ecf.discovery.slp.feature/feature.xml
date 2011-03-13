@@ -6,7 +6,8 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Discovery Service Location Protocol (SLP) Provider
+      This feature provides the ECF Discovery Service Location Protocol
+(RFC 2608) Provider.
    </description>
 
    <copyright>
