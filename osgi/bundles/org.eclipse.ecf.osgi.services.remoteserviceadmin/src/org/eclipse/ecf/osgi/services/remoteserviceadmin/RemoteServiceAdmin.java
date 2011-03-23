@@ -171,14 +171,7 @@ public class RemoteServiceAdmin implements
 				: overridingProperties;
 
 		// First get exported interfaces
-		String[] exportedInterfaces = (String[]) overridingProperties
-				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
-		// As per 122.5.1 we only use the OBJECTCLASS value from the
-		// serviceReference, not from the overridingProperties map
-		if (exportedInterfaces == null)
-			exportedInterfaces = PropertiesUtil
-					.getExportedInterfaces(serviceReference);
-		// If exportedInterfaces is still null, we throw
+		String[] exportedInterfaces = PropertiesUtil.getExportedInterfaces(serviceReference,overridingProperties);
 		if (exportedInterfaces == null)
 			throw new IllegalArgumentException(
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES

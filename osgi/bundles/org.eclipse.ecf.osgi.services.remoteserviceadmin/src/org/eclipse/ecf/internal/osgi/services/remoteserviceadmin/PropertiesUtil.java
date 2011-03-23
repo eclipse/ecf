@@ -106,12 +106,17 @@ public class PropertiesUtil {
 	}
 
 	public static String[] getExportedInterfaces(
-			ServiceReference serviceReference) {
-		// Get the OSGi 4.2 specified required service property value
-		Object propValue = serviceReference
-				.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
-		// If the required property is not set then it's not being registered
-		// as a remote service so we return null
+			ServiceReference serviceReference,
+			Map<String, Object> overridingProperties) {
+		Object overridingPropValue = overridingProperties
+				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
+		if (overridingPropValue != null)
+			return getExportedInterfaces(serviceReference, overridingPropValue);
+		return getExportedInterfaces(serviceReference);
+	}
+
+	private static String[] getExportedInterfaces(
+			ServiceReference serviceReference, Object propValue) {
 		if (propValue == null)
 			return null;
 		boolean wildcard = propValue.equals("*"); //$NON-NLS-1$
@@ -122,15 +127,20 @@ public class PropertiesUtil {
 			final String[] stringValue = getStringArrayFromPropertyValue(propValue);
 			if (stringValue != null && stringValue.length == 1
 					&& stringValue[0].equals("*")) { //$NON-NLS-1$
-				LogUtility
-						.logWarning(
-								"getExportedInterfaces", //$NON-NLS-1$
-								DebugOptions.TOPOLOGY_MANAGER,
-								PropertiesUtil.class,
-								"Service Exported Interfaces Wildcard does not accept String[\"*\"]"); //$NON-NLS-1$
+				// this will support the idiom:  new String[] { "*" }
+				return (String[]) serviceReference
+						.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
 			}
 			return stringValue;
 		}
+	}
+
+	public static String[] getExportedInterfaces(
+			ServiceReference serviceReference) {
+		return getExportedInterfaces(
+				serviceReference,
+				serviceReference
+						.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES));
 	}
 
 	public static String[] getServiceIntents(ServiceReference serviceReference,
