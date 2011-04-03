@@ -318,29 +318,23 @@ public class EndpointDescriptionParser {
 	class EndpointDescriptionsHandler extends RootHandler {
 
 		private List<EndpointDescription> endpointDescriptions = new ArrayList<EndpointDescription>();
-		private EndpointDescriptionHandler endpointDescriptionHandler;
 
 		protected void handleRootAttributes(Attributes attributes) {
 		}
 
 		public void startElement(String name, Attributes attributes)
 				throws SAXException {
-			if (ENDPOINT_DESCRIPTION.equals(name)) {
-				if (endpointDescriptionHandler == null) {
-					endpointDescriptionHandler = new EndpointDescriptionHandler(
-							this, attributes, endpointDescriptions);
-				} else
-					duplicateElement(this, name, attributes);
-			} else
+			if (ENDPOINT_DESCRIPTION.equals(name)) 
+				new EndpointDescriptionHandler(
+						this, attributes, endpointDescriptions);
+			else
 				invalidElement(name, attributes);
 		}
 
 		public void endElement(String namespaceURI, String localName,
 				String qName) {
-			if (elementHandled.equals(localName)) {
-				endpointDescriptionHandler = null;
+			if (elementHandled.equals(localName)) 
 				super.endElement(namespaceURI, localName, qName);
-			}
 		}
 
 		public List<EndpointDescription> getEndpointDescriptions() {
@@ -363,15 +357,14 @@ public class EndpointDescriptionParser {
 
 		public void startElement(String name, Attributes attributes)
 				throws SAXException {
-			if (ENDPOINT_PROPERTY.equals(name)) {
+			if (ENDPOINT_PROPERTY.equals(name)) 
 				new EndpointPropertyHandler(this, attributes, properties);
-			}
 		}
 
 		public void endElement(String namespaceURI, String localName,
 				String qName) {
 			if (elementHandled.equals(localName)) {
-				this.descriptions.add(new EndpointDescription(properties));
+				descriptions.add(new EndpointDescription(properties));
 				super.endElement(namespaceURI, localName, qName);
 			}
 		}
