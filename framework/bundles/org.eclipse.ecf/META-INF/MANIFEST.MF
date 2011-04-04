@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf;singleton:=true
-Bundle-Version: 3.1.200.qualifier
+Bundle-Version: 3.1.300.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.core.ECFPlugin
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin

@@ -10,7 +10,6 @@
 package org.eclipse.ecf.core.util;
 
 import org.eclipse.ecf.core.IContainerFactory;
-import org.eclipse.ecf.core.IContainerManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -22,7 +21,7 @@ import org.osgi.util.tracker.ServiceTracker;
 public class ContainerFactoryTracker extends ServiceTracker {
 
 	public ContainerFactoryTracker(BundleContext context) {
-		super(context, IContainerManager.class.getName(), null);
+		super(context, IContainerFactory.class.getName(), null);
 	}
 
 	public IContainerFactory getContainerFactory() {
