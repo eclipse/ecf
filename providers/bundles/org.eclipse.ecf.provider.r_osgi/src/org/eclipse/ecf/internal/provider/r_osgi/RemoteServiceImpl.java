@@ -83,12 +83,35 @@ final class RemoteServiceImpl extends AbstractRemoteService {
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsync(org.eclipse.ecf.remoteservice.IRemoteCall)
 	 */
 	public IFuture callAsync(final IRemoteCall call) {
-		final AbstractExecutor executor = new ThreadsExecutor();
-		return executor.execute(new IProgressRunnable() {
+		return getAsyncExecutor().execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
 				return callSync(call);
 			}
 		}, null);
+	}
+
+	private IExecutor asyncExecutor;
+	private IExecutor syncExecutor;
+	private final Object executorLock = new Object();
+
+	private IExecutor getAsyncExecutor() {
+		synchronized (executorLock) {
+			if (asyncExecutor == null) {
+				IExecutor executor = Activator.getDefault().getExecutor(false);
+				asyncExecutor = (executor == null) ? new ThreadsExecutor() : executor;
+			}
+			return asyncExecutor;
+		}
+	}
+
+	private IExecutor getSyncExecutor() {
+		synchronized (executorLock) {
+			if (syncExecutor == null) {
+				IExecutor executor = Activator.getDefault().getExecutor(true);
+				syncExecutor = (executor == null) ? new ImmediateExecutor() : executor;
+			}
+			return syncExecutor;
+		}
 	}
 
 	/**
@@ -106,8 +129,7 @@ final class RemoteServiceImpl extends AbstractRemoteService {
 		for (int i = 0; i < formalParams.length; i++) {
 			formalParams[i] = call.getParameters()[i].getClass();
 		}
-		IExecutor executor = new ThreadsExecutor();
-		IFuture future = executor.execute(new IProgressRunnable() {
+		IFuture future = getSyncExecutor().execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
 				final Method method = ClassUtil.getMethod(service.getClass(), call.getMethod(), formalParams);
 				return method.invoke(service, parameters);

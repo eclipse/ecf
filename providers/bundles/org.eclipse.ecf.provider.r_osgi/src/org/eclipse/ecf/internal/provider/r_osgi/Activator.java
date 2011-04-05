@@ -12,8 +12,8 @@
 package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.eclipse.equinox.concurrent.future.IExecutor;
+import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -22,6 +22,17 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author Jan S. Rellermeyer, ETH Zurich
  */
 public final class Activator implements BundleActivator {
+
+	// This is a service property that is used to find any IExecutor service instances
+	// to be used for synchronous or asynchronous execution.  The use of the IExecutor
+	// The type of the value for this property is String, and valid values are 'sync' or 'async'
+	// For example, to setup one's own executor implementation to use for async invocation
+	// on a consumer would look like this
+	// 
+	// props.put("org.eclipse.ecf.provider.r_osgi.consumerExecutor","async");
+	// bundleContext.registerService(IExecutor.class.getName(), new MyExecutor(), props);
+	// 
+	public static final String CONSUMER_SYNC_EXECUTOR_TYPE = "org.eclipse.ecf.provider.r_osgi.consumerExecutor"; //$NON-NLS-1$
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.r_osgi"; //$NON-NLS-1$
@@ -65,6 +76,12 @@ public final class Activator implements BundleActivator {
 	public void stop(final BundleContext bc) throws Exception {
 		r_osgi_tracker.close();
 		r_osgi_tracker = null;
+		synchronized (executorServiceTrackerLock) {
+			if (executorServiceTracker != null) {
+				executorServiceTracker.close();
+				executorServiceTracker = null;
+			}
+		}
 		this.context = null;
 		plugin = null;
 	}
@@ -100,5 +117,28 @@ public final class Activator implements BundleActivator {
 			plugin = new Activator();
 		}
 		return plugin;
+	}
+
+	private ServiceTracker executorServiceTracker;
+	private final Object executorServiceTrackerLock = new Object();
+
+	private Filter createExecutorFilter(boolean sync) {
+		try {
+			return getContext().createFilter("(&(" + Constants.OBJECTCLASS + "=" + IExecutor.class.getName() + ")(" + CONSUMER_SYNC_EXECUTOR_TYPE + "=" + ((sync) ? "sync" : "async") + "))"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+		} catch (InvalidSyntaxException e) {
+			// should not happen
+			return null;
+		}
+	}
+
+	public IExecutor getExecutor(boolean sync) {
+		synchronized (executorServiceTrackerLock) {
+			if (executorServiceTracker == null) {
+				Filter syncExecutorFilter = createExecutorFilter(sync);
+				executorServiceTracker = new ServiceTracker(getContext(), syncExecutorFilter, null);
+				executorServiceTracker.open();
+			}
+		}
+		return (IExecutor) executorServiceTracker.getService();
 	}
 }
