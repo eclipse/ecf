@@ -48,6 +48,11 @@ public class RestClientService extends AbstractClientService {
 		this.httpClient = new HttpClient();
 	}
 
+	private boolean isResponseOk(int httpResponseCode) {
+		int isOkCode = httpResponseCode - 200;
+		return (isOkCode >= 0 && isOkCode < 100);
+	}
+
 	/**
 	 * Calls the Rest service with given URL of IRestCall. The returned value is
 	 * the response body as an InputStream.
@@ -67,7 +72,7 @@ public class RestClientService extends AbstractClientService {
 		int responseCode = -1;
 		try {
 			responseCode = httpClient.executeMethod(httpMethod);
-			if (responseCode == HttpStatus.SC_OK) {
+			if (isResponseOk(responseCode)) {
 				// Get response bytes
 				byte[] responseBytes = httpMethod.getResponseBody();
 				String responseCharSet = null;
