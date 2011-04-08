@@ -13,7 +13,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.internal.remoteservice.rpc.Messages;
 import org.eclipse.ecf.remoteservice.rpc.client.RpcClientContainer;
 
 /**
@@ -80,9 +79,9 @@ public class RpcNamespace extends Namespace {
 				else if (parameters[0] instanceof RpcId)
 					return (ID) parameters[0];
 			}
-			throw new IllegalArgumentException(Messages.RPC_INVALID_PARAMETERS_TO_ID_CREATION);
+			throw new IllegalArgumentException("Invalid parameters to RPCID creation"); //$NON-NLS-1$
 		} catch (Exception e) {
-			throw new IDCreateException(Messages.RPC_COULD_NOT_CREATE_ID, e);
+			throw new IDCreateException("Could not create RPC ID", e); //$NON-NLS-1$
 		}
 	}
 

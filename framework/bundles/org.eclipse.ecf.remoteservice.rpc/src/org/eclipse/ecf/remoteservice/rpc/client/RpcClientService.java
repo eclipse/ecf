@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.remoteservice.rpc.Activator;
-import org.eclipse.ecf.internal.remoteservice.rpc.Messages;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rpc.RpcException;
@@ -96,7 +95,7 @@ public class RpcClientService extends AbstractClientService {
 		try {
 			result = client.execute(operation, toObjectsArray(operation, call, callable));
 		} catch (Exception e) {
-			handleException(Messages.RPC_EXCEPTION_WHILE_EXECUTION_METHOD + operation, e);
+			handleException("Exception while executing method:" + operation, e); //$NON-NLS-1$
 		}
 
 		return result;
