@@ -72,7 +72,7 @@ public class Activator implements BundleActivator {
 	private void initializeProxyServiceFactoryBundle() throws Exception {
 		// First, find proxy bundle
 		for (Bundle b : context.getBundles()) {
-			if (b.getSymbolicName().equals(RSA_PROXY_BUNDLE_SYMBOLIC_ID)) {
+			if (RSA_PROXY_BUNDLE_SYMBOLIC_ID.equals(b.getSymbolicName())) {
 				// first start it
 				b.start();
 				// then get its bundle context
