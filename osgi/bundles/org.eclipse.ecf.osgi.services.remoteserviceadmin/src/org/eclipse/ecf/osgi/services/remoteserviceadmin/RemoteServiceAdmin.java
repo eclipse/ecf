@@ -167,8 +167,9 @@ public class RemoteServiceAdmin implements
 		trace("exportService", "serviceReference=" + serviceReference //$NON-NLS-1$ //$NON-NLS-2$
 				+ ",properties=" + overridingProperties); //$NON-NLS-1$
 
-		overridingProperties = (overridingProperties == null) ? Collections.EMPTY_MAP
-				: overridingProperties;
+		overridingProperties = PropertiesUtil.mergeProperties(serviceReference,
+				overridingProperties == null ? Collections.EMPTY_MAP
+						: overridingProperties);
 
 		// First get exported interfaces
 		String[] exportedInterfaces = PropertiesUtil.getExportedInterfaces(serviceReference,overridingProperties);
@@ -1416,6 +1417,9 @@ public class RemoteServiceAdmin implements
 
 		Map proxyProperties = createProxyProperties(endpointDescription,
 				rsContainer, selectedRsReference, rs);
+
+		// sync sref props with endpoint props
+		endpointDescription.setPropertiesOverrides(proxyProperties);
 
 		List<String> serviceTypes = endpointDescription.getInterfaces();
 

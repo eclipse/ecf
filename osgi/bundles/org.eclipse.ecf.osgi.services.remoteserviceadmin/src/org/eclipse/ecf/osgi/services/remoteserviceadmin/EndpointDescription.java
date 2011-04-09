@@ -50,6 +50,7 @@ public class EndpointDescription extends
 	private String rsFilter;
 
 	private int hashCode = 7;
+	private Map overrides;
 
 	private void computeHashCode() {
 		this.hashCode = 31 * this.hashCode + getId().hashCode();
@@ -234,4 +235,18 @@ public class EndpointDescription extends
 				+ ",properties=" + getProperties() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
+	void setPropertiesOverrides(Map propertiesOverrides) {
+		this.overrides = PropertiesUtil.mergeProperties(super.getProperties(),
+				propertiesOverrides);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.osgi.service.remoteserviceadmin.EndpointDescription#getProperties()
+	 */
+	@Override
+	public Map<String, Object> getProperties() {
+		if(overrides != null) 
+			return overrides;
+		return super.getProperties();
+	}
 }

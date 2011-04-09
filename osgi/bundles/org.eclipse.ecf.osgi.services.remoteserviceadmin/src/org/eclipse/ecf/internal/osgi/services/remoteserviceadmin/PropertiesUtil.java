@@ -20,10 +20,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 
 public class PropertiesUtil {
@@ -318,6 +320,16 @@ public class PropertiesUtil {
 		return target;
 	}
 
+	public static Map<String, Object> copyProperties(
+			final ServiceReference serviceReference,
+			final Map<String, Object> target) {
+		final String[] keys = serviceReference.getPropertyKeys();
+		for (int i = 0; i < keys.length; i++) {
+			target.put(keys[i], serviceReference.getProperty(keys[i]));
+		}
+		return target;
+	}
+
 	public static Map<String, Object> copyNonECFProperties(
 			Map<String, Object> source, Map<String, Object> target) {
 		for (String key : source.keySet())
@@ -360,5 +372,31 @@ public class PropertiesUtil {
 				target.put(keys[i], rsReference.getProperty(keys[i]));
 		return target;
 	}
+	
+	public static Map mergeProperties(final ServiceReference serviceReference,
+			final Map<String, Object> overrides) {
+		return mergeProperties(copyProperties(serviceReference, new HashMap()),
+				overrides);
+	}
+	
+	public static Map mergeProperties(final Map<String, Object> source,
+			final Map<String, Object> overrides) {
 
+		// copy to target from service reference
+		final Map target = copyProperties(source, new HashMap());
+
+		// now do actual merge
+		final Set<String> keySet = overrides.keySet();
+		for (final String key : keySet) {
+			// skip keys not allowed
+			if (Constants.SERVICE_ID.equals(key)
+					|| Constants.OBJECTCLASS.equals(key)) {
+				continue;
+			}
+			target.remove(key.toLowerCase());
+			target.put(key, overrides.get(key));
+		}
+
+		return target;
+	}
 }
