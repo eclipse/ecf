@@ -238,9 +238,14 @@ public class PropertiesUtil {
 	public static boolean isECFProperty(String key) {
 		return ecfProperties.contains(key);
 	}
+	
+	// skip dotted (private) properties (R4.2 enterprise spec. table 122.1)
+	public static boolean isPrivateProperty(String key) {
+		return (key.startsWith(".")); //$NON-NLS-N$
+	}
 
 	public static boolean isReservedProperty(String key) {
-		return isOSGiProperty(key) || isECFProperty(key);
+		return isOSGiProperty(key) || isECFProperty(key) || isPrivateProperty(key);
 	}
 
 	public static Map createMapFromDictionary(Dictionary input) {
