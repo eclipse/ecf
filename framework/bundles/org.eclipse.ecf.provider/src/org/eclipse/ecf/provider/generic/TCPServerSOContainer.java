@@ -29,6 +29,11 @@ public class TCPServerSOContainer extends ServerSOContainer implements IConnectR
 
 	public static String DEFAULT_HOST = System.getProperty("org.eclipse.ecf.provider.generic.host", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
 
+	/**
+	 * @since 4.2
+	 */
+	public static final boolean DEFAULT_FALLBACK_PORT = Boolean.valueOf(System.getProperty("org.eclipse.ecf.provider.generic.port.fallback", "false")).booleanValue(); //$NON-NLS-1$//$NON-NLS-2$
+
 	static {
 		final Boolean useHostname = Boolean.valueOf(System.getProperty("org.eclipse.ecf.provider.generic.host.useHostName", "true")); //$NON-NLS-1$ //$NON-NLS-2$
 		if (useHostname.booleanValue()) {

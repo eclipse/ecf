@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
+import java.io.IOException;
+import java.net.BindException;
+import java.net.ServerSocket;
 import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
@@ -131,11 +134,52 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 			} else
 				newID = getIDFromArg(args[0]);
 		}
-		if (newID == null)
-			newID = IDFactory.getDefault().createStringID(TCPServerSOContainer.DEFAULT_PROTOCOL + "://" + TCPServerSOContainer.DEFAULT_HOST + ":" + TCPServerSOContainer.DEFAULT_PORT + TCPServerSOContainer.DEFAULT_NAME); //$NON-NLS-1$ //$NON-NLS-2$
+		if (newID == null) {
+			int defaultPort = TCPServerSOContainer.DEFAULT_PORT;
+			boolean useFallbackPort = TCPServerSOContainer.DEFAULT_FALLBACK_PORT;
+			if (useFallbackPort && !defaultPortIsFree(defaultPort)) {
+				defaultPort = getFreePort();
+			}
+			newID = IDFactory.getDefault().createStringID(TCPServerSOContainer.DEFAULT_PROTOCOL + "://" + TCPServerSOContainer.DEFAULT_HOST + ":" + defaultPort + TCPServerSOContainer.DEFAULT_NAME);//$NON-NLS-1$ //$NON-NLS-2$
+		}
 		if (ka == null)
 			ka = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
 		return new GenericContainerArgs(newID, ka);
+	}
+
+	private boolean defaultPortIsFree(int defaultPort) {
+		ServerSocket ss = null;
+		try {
+			ss = new ServerSocket(defaultPort);
+			ss.close();
+		} catch (BindException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			if (ss != null)
+				try {
+					ss.close();
+				} catch (IOException e) {
+					throw new IDCreateException(e);
+				}
+		}
+		return true;
+	}
+
+	/**
+	 * @return a free socket port
+	 */
+	private int getFreePort() {
+		int port = -1;
+		try {
+			ServerSocket ss = new ServerSocket(0);
+			port = ss.getLocalPort();
+			ss.close();
+		} catch (IOException e) {
+			return -1;
+		}
+		return port;
 	}
 
 	public IContainer createInstance(ContainerTypeDescription description, Object[] args) throws ContainerCreateException {
