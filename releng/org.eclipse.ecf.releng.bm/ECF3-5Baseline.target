@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target includeMode="feature" name="ECF3-4Baseline">
+<target includeMode="feature" name="ECF3-5Baseline">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.group" version="3.5.0.v20110313-1843"/>
