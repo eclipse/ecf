@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.Map;
+
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.ServiceReference;
@@ -64,5 +66,39 @@ public interface IHostContainerSelector {
 	 */
 	IRemoteServiceContainer[] selectHostContainers(
 			ServiceReference serviceReference, String[] exportedInterfaces,
+			String[] exportedConfigs, String[] serviceIntents);
+
+	/**
+	 * 
+	 * Select host containers to use to export a remote service.
+	 * 
+	 * @param serviceReference
+	 *            the service reference given by the
+	 *            {@link RemoteServiceAdmin#exportService(ServiceReference, java.util.Map)}
+	 * @param overridingProperties
+	 *            the map portion given by the
+	 *            {@link RemoteServiceAdmin#exportService(ServiceReference, java.util.Map)}
+	 * @param exportedInterfaces
+	 *            the exportedInterfaces (typically associated with
+	 *            {@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES}
+	 *            ). Will not be <code>null</code>.
+	 * @param exportedConfigs
+	 *            the exportedConfigs (typically associated with
+	 *            {@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_CONFIGS}
+	 *            ). May be <code>null</code>.
+	 * @param serviceIntents
+	 *            the service intents (typically associated with
+	 *            {@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTENTS}
+	 *            and
+	 *            {@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTENTS_EXTRA}
+	 *            ). May be <code>null</code>.
+	 * @return IRemoteServiceContainer[] of remote service containers that
+	 *         should be used to export the given remote service (typically via
+	 *         {@link IRemoteServiceContainerAdapter#registerRemoteService(String[], Object, java.util.Dictionary)}
+	 *         ). Will not be <code>null</code>, but may be empty array.
+	 * @since 2.0
+	 */
+	IRemoteServiceContainer[] selectHostContainers(
+			ServiceReference serviceReference, Map<String, Object> overridingProperties, String[] exportedInterfaces,
 			String[] exportedConfigs, String[] serviceIntents);
 }

@@ -11,6 +11,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -115,14 +116,17 @@ public abstract class AbstractContainerSelector {
 		return (supportedIntents == null) ? new String[0] : supportedIntents;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected IContainer createContainer(ServiceReference serviceReference,
-			ContainerTypeDescription containerTypeDescription)
+			Map<String, Object> properties, ContainerTypeDescription containerTypeDescription)
 			throws ContainerCreateException {
 
 		IContainerFactory containerFactory = getContainerFactory();
 
-		Object containerFactoryArguments = serviceReference
-				.getProperty(RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS);
+		final Object containerFactoryArguments = properties
+				.get(RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS);
 		if (containerFactoryArguments instanceof String) {
 			return containerFactory.createContainer(containerTypeDescription,
 					(String) containerFactoryArguments);
@@ -144,8 +148,11 @@ public abstract class AbstractContainerSelector {
 		container.disconnect();
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected IConnectContext createConnectContext(
-			ServiceReference serviceReference, IContainer container,
+			ServiceReference serviceReference, Map<String, Object> properties, IContainer container,
 			Object context) {
 		if (context instanceof IConnectContext)
 			return (IConnectContext) context;
