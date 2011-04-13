@@ -1260,7 +1260,7 @@ public class RemoteServiceAdmin implements
 						remoteConfigsSupported);
 
 		// SERVICE_INTENTS
-		String[] intents = (String[]) PropertiesUtil
+		Object intents = PropertiesUtil
 				.getPropertyValue(
 						null,
 						overridingProperties,
