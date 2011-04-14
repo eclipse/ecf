@@ -937,15 +937,15 @@ public class RemoteServiceAdmin implements
 		String topic = "org/osgi/service/remoteserviceadmin/" + eventTypeName; //$NON-NLS-1$
 		Bundle rsaBundle = getClientBundle();
 		Dictionary eventProperties = new Properties();
-		eventProperties.put("clientBundle", rsaBundle); //$NON-NLS-1$
-		eventProperties.put("clientBundle.id", //$NON-NLS-1$
+		eventProperties.put("bundle", rsaBundle); //$NON-NLS-1$
+		eventProperties.put("bundle.id", //$NON-NLS-1$
 				new Long(rsaBundle.getBundleId()));
-		eventProperties.put("clientBundle.symbolicname", //$NON-NLS-1$
+		eventProperties.put("bundle.symbolicname", //$NON-NLS-1$
 				rsaBundle.getSymbolicName());
-		eventProperties.put("clientBundle.version", rsaBundle.getVersion()); //$NON-NLS-1$
+		eventProperties.put("bundle.version", rsaBundle.getVersion()); //$NON-NLS-1$
 		String[] signers = getSignersForBundle(clientBundle);
 		if (signers != null && signers.length > 0)
-			eventProperties.put("clientBundle.signer", signers); //$NON-NLS-1$
+			eventProperties.put("bundle.signer", signers); //$NON-NLS-1$
 		Throwable t = event.getException();
 		if (t != null)
 			eventProperties.put("cause", t); //$NON-NLS-1$
