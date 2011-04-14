@@ -977,6 +977,7 @@ public class RemoteServiceAdmin implements
 									.size()]));
 		eventProperties.put("timestamp", new Long(new Date().getTime())); //$NON-NLS-1$
 		eventProperties.put("event", event); //$NON-NLS-1$
+		eventProperties.put("import.registration", endpointDescription);
 		postRemoteServiceAdminEvent(topic, eventProperties);
 
 	}
