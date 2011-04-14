@@ -10,7 +10,6 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -33,16 +32,6 @@ public class HostContainerSelector extends AbstractHostContainerSelector
 		this.autoCreateContainer = autoCreateContainer;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.osgi.services.remoteserviceadmin.IHostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, java.lang.String[], java.lang.String[], java.lang.String[])
-	 */
-	public IRemoteServiceContainer[] selectHostContainers(
-			ServiceReference serviceReference, String[] exportedInterfaces,
-			String[] exportedConfigs, String[] serviceIntents) {
-		return selectHostContainers(serviceReference, Collections.EMPTY_MAP,
-				exportedInterfaces, exportedConfigs, serviceIntents);
-	}
-	
 	// Adding synchronized to make the host container finding
 	// thread safe to deal with bug
 	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=331836

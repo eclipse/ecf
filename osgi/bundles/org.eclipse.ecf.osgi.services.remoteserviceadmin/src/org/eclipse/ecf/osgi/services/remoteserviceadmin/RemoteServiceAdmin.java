@@ -202,8 +202,8 @@ public class RemoteServiceAdmin implements
 		// select ECF remote service containers that match given exported
 		// interfaces, configs, and intents
 		IRemoteServiceContainer[] rsContainers = hostContainerSelector
-				.selectHostContainers(serviceReference, exportedInterfaces,
-						exportedConfigs, serviceIntents);
+				.selectHostContainers(serviceReference, overridingProperties,
+						exportedInterfaces, exportedConfigs, serviceIntents);
 		// If none found, log a warning and we're done
 		if (rsContainers == null || rsContainers.length == 0) {
 			logWarning(
