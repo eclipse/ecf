@@ -57,6 +57,7 @@ public class Messages extends NLS {
 	public static String XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE;
 	public static String XMPPConnectWizardPage_USERID_TEMPLATE;
 	public static String XMPPConnectWizardPage_WIZARD_PASSWORD;
+	public static String XMPPSConnectWizardPage_WIZARD_PAGE_KEYSTORE_PASSWORD;
 	public static String XMPPConnectWizardPage_WIZARD_ALT_SERVER;
 	public static String XMPPConnectWizardPage_WIZARD_ALT_SERVER_TEXT;
 	public static String XMPPConnectWizardPage_WIZARD_ALT_SERVER_INCOMPLETE;

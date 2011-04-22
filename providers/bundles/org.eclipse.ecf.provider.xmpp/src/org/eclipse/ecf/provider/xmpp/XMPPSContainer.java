@@ -13,6 +13,8 @@ package org.eclipse.ecf.provider.xmpp;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.CallbackHandler;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
@@ -48,7 +50,9 @@ public class XMPPSContainer extends XMPPContainer {
 	protected ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionCreateException {
 		boolean google = isGoogle(remoteSpace);
-		return new ECFConnection(google, getConnectNamespace(), receiver);
+		CallbackHandler ch = data instanceof IConnectContext ? ((IConnectContext) data)
+				.getCallbackHandler() : null;
+		return new ECFConnection(google, getConnectNamespace(), receiver, ch);
 	}
 
 }

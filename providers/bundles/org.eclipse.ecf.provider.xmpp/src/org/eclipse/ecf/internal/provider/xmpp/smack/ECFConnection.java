@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.comm.DisconnectEvent;
@@ -79,6 +80,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	private String jid;
 
+	private CallbackHandler callbackHandler;
+
 	private final PacketListener packetListener = new PacketListener() {
 		public void processPacket(Packet arg0) {
 			handlePacket(arg0);
@@ -133,9 +136,15 @@ public class ECFConnection implements ISynchAsynchConnection {
 	}
 
 	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h) {
+		this(google, ns, h, null);
+	}
+
+	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h,
+			CallbackHandler ch) {
 		this.handler = h;
 		this.namespace = ns;
 		this.google = google;
+		this.callbackHandler = ch;
 		if (DEBUG)
 			XMPPConnection.DEBUG_ENABLED = true;
 	}
@@ -214,6 +223,11 @@ public class ECFConnection implements ISynchAsynchConnection {
 				config = new ConnectionConfiguration(serviceName, serverPort);
 			}
 			config.setSendPresence(true);
+			// Handler is only used if server requires certificate for
+			// authentication; handler should provide keystore password:
+			if (callbackHandler instanceof javax.security.auth.callback.CallbackHandler) {
+				config.setCallbackHandler((javax.security.auth.callback.CallbackHandler) callbackHandler);
+			}
 			connection = new XMPPConnection(config);
 			connection.connect();
 

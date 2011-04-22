@@ -20,6 +20,8 @@ import org.eclipse.swt.widgets.*;
 
 final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 
+	private Text keystorePasswordText;
+
 	XMPPSConnectWizardPage() {
 		super();
 		setTitle(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_TITLE);
@@ -112,6 +114,12 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 
 		restoreCombo();
 
+		label = new Label(parent, SWT.LEFT);
+		label.setText(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_KEYSTORE_PASSWORD);
+		keystorePasswordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD
+				| SWT.BORDER);
+		keystorePasswordText.setLayoutData(fillData);
+
 		if (usernameAtHost != null) {
 			connectText.setText(usernameAtHost);
 			restorePassword(usernameAtHost);
@@ -130,4 +138,7 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		setControl(parent);
 	}
 
+	String getKeystorePassword() {
+		return keystorePasswordText.getText();
+	}
 }
