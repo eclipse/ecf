@@ -50,6 +50,7 @@
 
    <configurations>
       <plugin id="org.eclipse.ecf" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.examples.remoteservices.hello" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
    </configurations>
 
