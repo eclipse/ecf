@@ -75,7 +75,6 @@ public class DiscoveryActivator implements BundleActivator {
 			public void removedService(ServiceReference reference,
 					Object service) {
 				Logger.unbindLogService((LogService) service);
-				removedService(reference, service);
 				super.removedService(reference, service); 
 			}
 		};
