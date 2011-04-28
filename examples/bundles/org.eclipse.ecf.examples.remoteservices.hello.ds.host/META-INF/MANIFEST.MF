@@ -2,14 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.eclipse.ecf.examples.remoteservices.hello.ds.host;singleton:=true
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 3.0.0.qualifier
 Bundle-Vendor: %bundleProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5,
  J2SE-1.4,
  CDC-1.1/Foundation-1.1
-Import-Package: org.eclipse.ecf.core;version="3.0.0",
- org.eclipse.ecf.examples.remoteservices.hello;version="3.0.0",
- org.eclipse.equinox.app;version="1.0.0";resolution:=optional
+Import-Package: org.eclipse.ecf.examples.remoteservices.hello;version="3.0.0",
+ org.eclipse.equinox.app;version="1.1.0"
 Service-Component: OSGI-INF/hello.xml
 Bundle-Localization: bundle
-Export-Package: org.eclipse.ecf.examples.internal.remoteservices.hello.ds.host
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.0"

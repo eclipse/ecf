@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="ECF Remote Services Example Hello DS" uid="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer.product" application="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer.HelloConsumerDS" version="2.0.0" useFeatures="false" includeLaunchers="false">
+<product name="ECF Remote Services Example Hello DS" uid="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer.product" application="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer.HelloConsumerDS" version="3.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -25,7 +25,6 @@
       <plugin id="org.eclipse.core.contenttype"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.runtime"/>
-      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
       <plugin id="org.eclipse.ecf"/>
       <plugin id="org.eclipse.ecf.discovery"/>
       <plugin id="org.eclipse.ecf.examples.remoteservices.hello"/>
@@ -52,12 +51,15 @@
    </plugins>
 
    <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.ecf" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.distribution" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.app" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
    </configurations>

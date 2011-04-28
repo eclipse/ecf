@@ -25,4 +25,5 @@ public class HelloComponent implements IHello {
 		System.out.println("received HelloMessage="+message);
 		return "Server says 'Hi' back to "+message.getFrom();
 	}
+	
 }
