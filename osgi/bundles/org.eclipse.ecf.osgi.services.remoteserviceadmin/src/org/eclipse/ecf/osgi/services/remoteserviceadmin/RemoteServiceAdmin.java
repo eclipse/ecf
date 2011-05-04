@@ -357,10 +357,12 @@ public class RemoteServiceAdmin implements
 		return clientBundle.getBundleContext();
 	}
 
-	private Bundle getClientBundle() {
-		return clientBundle;
+	private Bundle getRSABundle() {
+		BundleContext bundleContext = Activator.getContext();
+		if (bundleContext == null) return null;
+		return bundleContext.getBundle();
 	}
-
+	
 	private void addImportRegistration(ImportRegistration importRegistration) {
 		synchronized (importedRegistrations) {
 			importedRegistrations.add(importRegistration);
@@ -592,14 +594,14 @@ public class RemoteServiceAdmin implements
 			}
 			exportReference.close();
 			removeExportRegistration(this);
-			Bundle clientBundle = getClientBundle();
+			Bundle rsaBundle = getRSABundle();
 			// Only publish events
-			if (publish && clientBundle != null)
+			if (publish && rsaBundle != null)
 				publishEvent(
 						new RemoteServiceAdminEvent(
 								endpointDescription.getContainerID(),
 								RemoteServiceAdminEvent.EXPORT_UNREGISTRATION,
-								clientBundle, exportReference, t),
+								rsaBundle, exportReference, t),
 						endpointDescription);
 		}
 
@@ -812,13 +814,13 @@ public class RemoteServiceAdmin implements
 			}
 			importReference.close();
 			removeImportRegistration(this);
-			Bundle clientBundle = getClientBundle();
-			if (publish && clientBundle != null)
+			Bundle rsaBundle = getRSABundle();
+			if (publish && rsaBundle != null)
 				publishEvent(
 						new RemoteServiceAdminEvent(
 								endpointDescription.getContainerID(),
 								RemoteServiceAdminEvent.IMPORT_UNREGISTRATION,
-								clientBundle, importReference, t),
+								rsaBundle, importReference, t),
 						endpointDescription);
 
 		}
@@ -920,11 +922,17 @@ public class RemoteServiceAdmin implements
 			eventTypeName = "IMPORT_WARNING"; //$NON-NLS-1$
 			break;
 		}
-		if (eventTypeName == null)
+		if (eventTypeName == null) {
 			logError("postEvent", "Event type=" + eventType //$NON-NLS-1$ //$NON-NLS-2$
 					+ " not understood for event=" + event + ".  Not posting"); //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		}
 		String topic = "org/osgi/service/remoteserviceadmin/" + eventTypeName; //$NON-NLS-1$
-		Bundle rsaBundle = getClientBundle();
+		Bundle rsaBundle = getRSABundle();
+		if (rsaBundle == null) {
+			logError("postEvent", "RSA Bundle is null.  Not posting remote service admin event="+event); //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		}
 		Dictionary eventProperties = new Properties();
 		eventProperties.put("bundle", rsaBundle); //$NON-NLS-1$
 		eventProperties.put("bundle.id", //$NON-NLS-1$
@@ -987,7 +995,7 @@ public class RemoteServiceAdmin implements
 				exportRegistration.getContainerID(),
 				(exception == null) ? RemoteServiceAdminEvent.EXPORT_REGISTRATION
 						: RemoteServiceAdminEvent.EXPORT_ERROR,
-				getClientBundle(), exportReference, exception);
+				getRSABundle(), exportReference, exception);
 		publishEvent(rsaEvent, exportRegistration.getEndpointDescription());
 	}
 
@@ -999,7 +1007,7 @@ public class RemoteServiceAdmin implements
 				importRegistration.getContainerID(),
 				(exception == null) ? RemoteServiceAdminEvent.IMPORT_REGISTRATION
 						: RemoteServiceAdminEvent.IMPORT_ERROR,
-				getClientBundle(), importReference, exception);
+				getRSABundle(), importReference, exception);
 		publishEvent(rsaEvent, importRegistration.getEndpointDescription());
 	}
 
