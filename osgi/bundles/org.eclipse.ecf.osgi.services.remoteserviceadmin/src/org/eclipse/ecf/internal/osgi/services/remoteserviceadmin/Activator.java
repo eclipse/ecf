@@ -128,13 +128,11 @@ public class Activator implements BundleActivator {
 						.getName(), new ServiceFactory() {
 					public Object getService(Bundle bundle,
 							ServiceRegistration registration) {
-						return new RemoteServiceAdmin(bundle);
+						return getRemoteServiceAdmin(bundle);
 					}
 
 					public void ungetService(Bundle bundle,
 							ServiceRegistration registration, Object service) {
-						if (service != null)
-							((RemoteServiceAdmin) service).close();
 					}
 				}, (Dictionary) rsaProps);
 
@@ -154,6 +152,15 @@ public class Activator implements BundleActivator {
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();
 	}
+	
+	private RemoteServiceAdmin remoteServiceAdmin;
+	
+	private RemoteServiceAdmin getRemoteServiceAdmin(Bundle bundle) {
+		if (remoteServiceAdmin == null) {
+			remoteServiceAdmin = new RemoteServiceAdmin(bundle);
+		}
+		return remoteServiceAdmin;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -169,6 +176,10 @@ public class Activator implements BundleActivator {
 		if (remoteServiceAdminRegistration != null) {
 			remoteServiceAdminRegistration.unregister();
 			remoteServiceAdminRegistration = null;
+		}
+		if (remoteServiceAdmin != null) {
+			remoteServiceAdmin.close();
+			remoteServiceAdmin = null;
 		}
 		if (endpointDescriptionAdvertiserRegistration != null) {
 			endpointDescriptionAdvertiserRegistration.unregister();

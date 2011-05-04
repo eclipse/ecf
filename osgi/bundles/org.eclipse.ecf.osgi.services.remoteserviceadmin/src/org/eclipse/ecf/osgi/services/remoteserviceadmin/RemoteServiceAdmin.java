@@ -172,7 +172,8 @@ public class RemoteServiceAdmin implements
 						: overridingProperties);
 
 		// First get exported interfaces
-		String[] exportedInterfaces = PropertiesUtil.getExportedInterfaces(serviceReference,overridingProperties);
+		String[] exportedInterfaces = PropertiesUtil.getExportedInterfaces(
+				serviceReference, overridingProperties);
 		if (exportedInterfaces == null)
 			throw new IllegalArgumentException(
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES
@@ -435,7 +436,6 @@ public class RemoteServiceAdmin implements
 		private EndpointDescription endpointDescription;
 
 		private IRemoteServiceRegistration rsRegistration;
-		private ExportReference exportReference;
 		private Set<ExportRegistration> exportRegistrations = new HashSet<ExportRegistration>();
 
 		private Throwable exception;
@@ -447,11 +447,8 @@ public class RemoteServiceAdmin implements
 			this.serviceReference = serviceReference;
 			Assert.isNotNull(endpointDescription);
 			this.endpointDescription = endpointDescription;
-
 			Assert.isNotNull(reg);
 			this.rsRegistration = reg;
-			this.exportReference = new ExportReference(serviceReference,
-					endpointDescription);
 		}
 
 		ExportEndpoint(ServiceReference serviceReference,
@@ -479,10 +476,6 @@ public class RemoteServiceAdmin implements
 			return endpointDescription;
 		}
 
-		synchronized ExportReference getExportReference() {
-			return exportReference;
-		}
-
 		synchronized IRemoteServiceRegistration getRemoteServiceRegistration() {
 			return rsRegistration;
 		}
@@ -499,17 +492,14 @@ public class RemoteServiceAdmin implements
 					rsRegistration.unregister();
 					rsRegistration = null;
 				}
-				if (exportReference != null) {
-					exportReference.close();
-					exportReference = null;
-				}
+				serviceReference = null;
+				endpointDescription = null;
 			}
 			return removed;
 		}
 
 		public synchronized String toString() {
-			return "ExportEndpoint[rsRegistration=" + rsRegistration //$NON-NLS-1$
-					+ ", exportReference=" + exportReference + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+			return "ExportEndpoint[rsRegistration=" + rsRegistration + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -518,12 +508,17 @@ public class RemoteServiceAdmin implements
 			org.osgi.service.remoteserviceadmin.ExportRegistration {
 
 		private ExportEndpoint exportEndpoint;
+		private ExportReference exportReference;
 
 		ExportRegistration(ExportEndpoint exportEndpoint) {
 			Assert.isNotNull(exportEndpoint);
 			this.exportEndpoint = exportEndpoint;
 			// Add ourselves to this exported endpoint
 			this.exportEndpoint.add(this);
+			ServiceReference sr = this.exportEndpoint.getServiceReference();
+			EndpointDescription ed = this.exportEndpoint
+					.getEndpointDescription();
+			this.exportReference = new ExportReference(sr, ed);
 		}
 
 		synchronized ID getContainerID() {
@@ -542,8 +537,7 @@ public class RemoteServiceAdmin implements
 				throw new IllegalStateException(
 						"Cannot get export reference as export registration is invalid", //$NON-NLS-1$
 						t);
-			return (exportEndpoint == null) ? null : exportEndpoint
-					.getExportReference();
+			return exportReference;
 		}
 
 		synchronized boolean match(ServiceReference serviceReference) {
@@ -584,28 +578,29 @@ public class RemoteServiceAdmin implements
 		}
 
 		public void close() {
-			boolean closed = false;
+			boolean publish = false;
 			Throwable t = null;
-			org.osgi.service.remoteserviceadmin.ExportReference exportReference = null;
 			EndpointDescription endpointDescription = null;
 			synchronized (this) {
 				if (exportEndpoint != null) {
 					t = getException();
-					exportReference = (t == null) ? getExportReference() : null;
 					endpointDescription = getEndpointDescription();
-					closed = exportEndpoint.close(this);
+					exportEndpoint.close(this);
 					exportEndpoint = null;
+					publish = true;
 				}
 			}
-			if (closed) {
-				removeExportRegistration(this);
+			exportReference.close();
+			removeExportRegistration(this);
+			Bundle clientBundle = getClientBundle();
+			// Only publish events
+			if (publish && clientBundle != null)
 				publishEvent(
 						new RemoteServiceAdminEvent(
 								endpointDescription.getContainerID(),
 								RemoteServiceAdminEvent.EXPORT_UNREGISTRATION,
-								getClientBundle(), exportReference, t),
+								clientBundle, exportReference, t),
 						endpointDescription);
-			}
 		}
 
 		public synchronized Throwable getException() {
@@ -658,7 +653,6 @@ public class RemoteServiceAdmin implements
 		private IRemoteServiceListener rsListener;
 		private IRemoteServiceReference rsReference;
 		private ServiceRegistration proxyRegistration;
-		private ImportReference importReference;
 		private Set<ImportRegistration> importRegistrations = new HashSet<ImportRegistration>();
 
 		private Throwable exception;
@@ -673,8 +667,6 @@ public class RemoteServiceAdmin implements
 			this.rsReference = rsReference;
 			this.rsListener = rsListener;
 			this.proxyRegistration = proxyRegistration;
-			this.importReference = new ImportReference(
-					proxyRegistration.getReference(), endpointDescription);
 			// Add the remoteservice listener to the container adapter, so that
 			// the
 			// rsListener
@@ -694,6 +686,10 @@ public class RemoteServiceAdmin implements
 
 		synchronized EndpointDescription getEndpointDescription() {
 			return endpointDescription;
+		}
+
+		synchronized ServiceRegistration getProxyRegistration() {
+			return proxyRegistration;
 		}
 
 		synchronized Throwable getException() {
@@ -729,16 +725,9 @@ public class RemoteServiceAdmin implements
 					}
 					rsContainerAdapter = null;
 				}
-				if (importReference != null) {
-					importReference.close();
-					importReference = null;
-				}
+				endpointDescription = null;
 			}
 			return removed;
-		}
-
-		synchronized ImportReference getImportReference() {
-			return importReference;
 		}
 
 		synchronized boolean match(IRemoteServiceID remoteServiceID) {
@@ -749,18 +738,13 @@ public class RemoteServiceAdmin implements
 
 		public synchronized String toString() {
 			return "ImportEndpoint[rsReference=" + rsReference //$NON-NLS-1$
-					+ ", proxyRegistration=" + proxyRegistration //$NON-NLS-1$
-					+ ", importReference=" + importReference + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+					+ ", proxyRegistration=" + proxyRegistration + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		synchronized boolean match(EndpointDescription ed) {
-			if (importReference == null)
+			if (importRegistrations.size() == 0)
 				return false;
-			EndpointDescription importedEndpoint = (EndpointDescription) importReference
-					.getImportedEndpoint();
-			if (importedEndpoint == null)
-				return false;
-			return importedEndpoint.isSameService(ed);
+			return this.endpointDescription.isSameService(ed);
 		}
 
 	}
@@ -769,11 +753,15 @@ public class RemoteServiceAdmin implements
 			org.osgi.service.remoteserviceadmin.ImportRegistration {
 
 		private ImportEndpoint importEndpoint;
+		private ImportReference importReference;
 
 		ImportRegistration(ImportEndpoint importEndpoint) {
-			Assert.isNotNull(importEndpoint);
 			this.importEndpoint = importEndpoint;
 			this.importEndpoint.add(this);
+			ServiceRegistration sr = this.importEndpoint.getProxyRegistration();
+			EndpointDescription ed = this.importEndpoint
+					.getEndpointDescription();
+			this.importReference = new ImportReference(sr.getReference(), ed);
 		}
 
 		synchronized ID getContainerID() {
@@ -806,33 +794,33 @@ public class RemoteServiceAdmin implements
 				throw new IllegalStateException(
 						"Cannot get import reference as registration not properly initialized", //$NON-NLS-1$
 						t);
-			return importEndpoint == null ? null : importEndpoint
-					.getImportReference();
+			return importReference;
 		}
 
 		public void close() {
-			boolean closed = false;
-			org.osgi.service.remoteserviceadmin.ImportReference importReference = null;
-			EndpointDescription endpointDescription = null;
 			Throwable t = null;
+			EndpointDescription endpointDescription = null;
+			boolean publish = false;
 			synchronized (this) {
 				if (importEndpoint != null) {
 					t = getException();
-					importReference = (t == null) ? getImportReference() : null;
 					endpointDescription = getEndpointDescription();
-					closed = importEndpoint.close(this);
+					importEndpoint.close(this);
 					importEndpoint = null;
+					publish = true;
 				}
 			}
-			if (closed) {
-				removeImportRegistration(this);
+			importReference.close();
+			removeImportRegistration(this);
+			Bundle clientBundle = getClientBundle();
+			if (publish && clientBundle != null)
 				publishEvent(
 						new RemoteServiceAdminEvent(
 								endpointDescription.getContainerID(),
 								RemoteServiceAdminEvent.IMPORT_UNREGISTRATION,
-								getClientBundle(), importReference, t),
+								clientBundle, importReference, t),
 						endpointDescription);
-			}
+
 		}
 
 		public synchronized Throwable getException() {
@@ -899,8 +887,9 @@ public class RemoteServiceAdmin implements
 			EndpointDescription endpointDescription) {
 		EventAdmin eventAdmin = getEventAdmin();
 		if (eventAdmin == null) {
-			logWarning("postEvent", "No event admin available to post event=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ event);
+			logError(
+					"RemoteServiceAdmin.postEvent", "No event admin service available to post event=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ event);
 			return;
 		}
 		int eventType = event.getType();
@@ -1253,12 +1242,13 @@ public class RemoteServiceAdmin implements
 			endpointDescriptionProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
 							remoteConfigsSupported);
-		// SERVICE_IMPORTED_CONFIGS...set to same value as remote configs
+		// SERVICE_IMPORTED_CONFIGS...set to constant value for all ECF
+		// providers
 		// supported (which is computed
 		// for the exporting ECF container
 		endpointDescriptionProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
-						remoteConfigsSupported);
+						RemoteConstants.ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE);
 
 		// SERVICE_INTENTS
 		Object intents = PropertiesUtil
@@ -1528,8 +1518,6 @@ public class RemoteServiceAdmin implements
 		public void ungetService(Bundle bundle,
 				ServiceRegistration registration, Object service) {
 			ungetProxyClassLoader(bundle);
-			this.remoteService = null;
-			this.interfaceVersions = null;
 		}
 	}
 
