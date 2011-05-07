@@ -10,6 +10,10 @@
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
 import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -102,6 +106,9 @@ public class Activator implements BundleActivator {
 		return proxyServiceFactoryBundleContext;
 	}
 
+	private Map<Bundle, RemoteServiceAdmin> remoteServiceAdmins = new HashMap<Bundle, RemoteServiceAdmin>(
+			1);
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -128,11 +135,27 @@ public class Activator implements BundleActivator {
 						.getName(), new ServiceFactory() {
 					public Object getService(Bundle bundle,
 							ServiceRegistration registration) {
-						return getRemoteServiceAdmin(bundle);
+						RemoteServiceAdmin result = null;
+						synchronized (remoteServiceAdmins) {
+							RemoteServiceAdmin rsa = remoteServiceAdmins
+									.get(bundle);
+							if (rsa == null) {
+								rsa = new RemoteServiceAdmin(bundle);
+								remoteServiceAdmins.put(bundle, rsa);
+							}
+							result = rsa;
+						}
+						return result;
 					}
 
 					public void ungetService(Bundle bundle,
 							ServiceRegistration registration, Object service) {
+						synchronized (remoteServiceAdmins) {
+							RemoteServiceAdmin rsa = remoteServiceAdmins
+									.remove(bundle);
+							if (rsa != null)
+								rsa.close();
+						}
 					}
 				}, (Dictionary) rsaProps);
 
@@ -152,14 +175,17 @@ public class Activator implements BundleActivator {
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();
 	}
-	
-	private RemoteServiceAdmin remoteServiceAdmin;
-	
-	private RemoteServiceAdmin getRemoteServiceAdmin(Bundle bundle) {
-		if (remoteServiceAdmin == null) {
-			remoteServiceAdmin = new RemoteServiceAdmin(bundle);
+
+	private void clearRSAs() {
+		synchronized (remoteServiceAdmins) {
+			for (Iterator<Entry<Bundle, RemoteServiceAdmin>> i = remoteServiceAdmins
+					.entrySet().iterator(); i.hasNext();) {
+				Entry<Bundle, RemoteServiceAdmin> entry = i.next();
+				RemoteServiceAdmin rsa = entry.getValue();
+				rsa.close();
+				i.remove();
+			}
 		}
-		return remoteServiceAdmin;
 	}
 
 	/*
@@ -177,10 +203,7 @@ public class Activator implements BundleActivator {
 			remoteServiceAdminRegistration.unregister();
 			remoteServiceAdminRegistration = null;
 		}
-		if (remoteServiceAdmin != null) {
-			remoteServiceAdmin.close();
-			remoteServiceAdmin = null;
-		}
+		clearRSAs();
 		if (endpointDescriptionAdvertiserRegistration != null) {
 			endpointDescriptionAdvertiserRegistration.unregister();
 			endpointDescriptionAdvertiserRegistration = null;

@@ -359,10 +359,11 @@ public class RemoteServiceAdmin implements
 
 	private Bundle getRSABundle() {
 		BundleContext bundleContext = Activator.getContext();
-		if (bundleContext == null) return null;
+		if (bundleContext == null)
+			return null;
 		return bundleContext.getBundle();
 	}
-	
+
 	private void addImportRegistration(ImportRegistration importRegistration) {
 		synchronized (importedRegistrations) {
 			importedRegistrations.add(importRegistration);
@@ -584,16 +585,17 @@ public class RemoteServiceAdmin implements
 			Throwable t = null;
 			EndpointDescription endpointDescription = null;
 			synchronized (this) {
+				// Only do this once
 				if (exportEndpoint != null) {
-					t = getException();
-					endpointDescription = getEndpointDescription();
-					exportEndpoint.close(this);
+					t = exportEndpoint.getException();
+					endpointDescription = exportEndpoint
+							.getEndpointDescription();
+					publish = exportEndpoint.close(this);
 					exportEndpoint = null;
-					publish = true;
+					exportReference.close();
+					removeExportRegistration(this);
 				}
 			}
-			exportReference.close();
-			removeExportRegistration(this);
 			Bundle rsaBundle = getRSABundle();
 			// Only publish events
 			if (publish && rsaBundle != null)
@@ -670,12 +672,10 @@ public class RemoteServiceAdmin implements
 			this.rsListener = rsListener;
 			this.proxyRegistration = proxyRegistration;
 			// Add the remoteservice listener to the container adapter, so that
-			// the
-			// rsListener
-			// notified asynchronously if our underlying remote service
-			// reference is
-			// unregistered locally
-			// due to disconnect or remote ejection
+			// the rsListener notified asynchronously if our underlying remote
+			// service
+			// reference is unregistered locally due to disconnect or remote
+			// ejection
 			this.rsContainerAdapter.addRemoteServiceListener(this.rsListener);
 		}
 
@@ -800,27 +800,27 @@ public class RemoteServiceAdmin implements
 		}
 
 		public void close() {
-			Throwable t = null;
+			Throwable exception = null;
 			EndpointDescription endpointDescription = null;
 			boolean publish = false;
 			synchronized (this) {
 				if (importEndpoint != null) {
-					t = getException();
-					endpointDescription = getEndpointDescription();
-					importEndpoint.close(this);
+					exception = importEndpoint.getException();
+					endpointDescription = importEndpoint
+							.getEndpointDescription();
+					publish = importEndpoint.close(this);
 					importEndpoint = null;
-					publish = true;
+					importReference.close();
+					removeImportRegistration(this);
 				}
 			}
-			importReference.close();
-			removeImportRegistration(this);
 			Bundle rsaBundle = getRSABundle();
 			if (publish && rsaBundle != null)
 				publishEvent(
 						new RemoteServiceAdminEvent(
 								endpointDescription.getContainerID(),
 								RemoteServiceAdminEvent.IMPORT_UNREGISTRATION,
-								rsaBundle, importReference, t),
+								rsaBundle, importReference, exception),
 						endpointDescription);
 
 		}
@@ -930,7 +930,8 @@ public class RemoteServiceAdmin implements
 		String topic = "org/osgi/service/remoteserviceadmin/" + eventTypeName; //$NON-NLS-1$
 		Bundle rsaBundle = getRSABundle();
 		if (rsaBundle == null) {
-			logError("postEvent", "RSA Bundle is null.  Not posting remote service admin event="+event); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(
+					"postEvent", "RSA Bundle is null.  Not posting remote service admin event=" + event); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 		Dictionary eventProperties = new Properties();
@@ -994,8 +995,8 @@ public class RemoteServiceAdmin implements
 		RemoteServiceAdminEvent rsaEvent = new RemoteServiceAdminEvent(
 				exportRegistration.getContainerID(),
 				(exception == null) ? RemoteServiceAdminEvent.EXPORT_REGISTRATION
-						: RemoteServiceAdminEvent.EXPORT_ERROR,
-				getRSABundle(), exportReference, exception);
+						: RemoteServiceAdminEvent.EXPORT_ERROR, getRSABundle(),
+				exportReference, exception);
 		publishEvent(rsaEvent, exportRegistration.getEndpointDescription());
 	}
 
@@ -1006,8 +1007,8 @@ public class RemoteServiceAdmin implements
 		RemoteServiceAdminEvent rsaEvent = new RemoteServiceAdminEvent(
 				importRegistration.getContainerID(),
 				(exception == null) ? RemoteServiceAdminEvent.IMPORT_REGISTRATION
-						: RemoteServiceAdminEvent.IMPORT_ERROR,
-				getRSABundle(), importReference, exception);
+						: RemoteServiceAdminEvent.IMPORT_ERROR, getRSABundle(),
+				importReference, exception);
 		publishEvent(rsaEvent, importRegistration.getEndpointDescription());
 	}
 
@@ -1551,8 +1552,9 @@ public class RemoteServiceAdmin implements
 							+ " via clientBundle=" + bundleSymbolicName); //$NON-NLS-1$
 
 		// Now verify that the classes are of valid versions
-		verifyServiceInterfaceVersionsForProxy(requestingBundle,
-				serviceInterfaceClasses, interfaceVersions);
+		if (!verifyServiceInterfaceVersionsForProxy(requestingBundle,
+				serviceInterfaceClasses, interfaceVersions))
+			return null;
 
 		// Now create/get class loader for proxy. This will typically
 		// be an instance of ProxyClassLoader
@@ -1672,7 +1674,7 @@ public class RemoteServiceAdmin implements
 		return className.substring(0, lastDotIndex);
 	}
 
-	private void comparePackageVersions(String packageName,
+	private boolean comparePackageVersions(String packageName,
 			Version remoteVersion, Version localVersion)
 			throws RuntimeException {
 
@@ -1692,17 +1694,13 @@ public class RemoteServiceAdmin implements
 		// be exactly the same, or we thrown a runtime exception
 		int compareResult = localVersion.compareTo(remoteVersion);
 		// Now check compare result, and throw exception to fail compare
-		if (compareResult != 0)
-			throw new RuntimeException(
-					"Package version compare failed with compareResult=" //$NON-NLS-1$
-							+ compareResult + " for package=" + packageName //$NON-NLS-1$
-							+ " localVersion=" + localVersion //$NON-NLS-1$
-							+ " remoteVersion=" + remoteVersion); //$NON-NLS-1$
+		return (compareResult != 0);
 	}
 
-	private void verifyServiceInterfaceVersionsForProxy(Bundle bundle,
+	private boolean verifyServiceInterfaceVersionsForProxy(Bundle bundle,
 			Collection<Class> classes, Map<String, Version> interfaceVersions) {
 		// For all service interface classes
+		boolean result = true;
 		for (Class clazz : classes) {
 			String className = clazz.getName();
 			String packageName = getPackageName(className);
@@ -1712,10 +1710,18 @@ public class RemoteServiceAdmin implements
 				throw new NullPointerException(
 						"No exported package found for class=" + className); //$NON-NLS-1$
 			// Now do compare via package version comparator service
-			comparePackageVersions(packageName,
-					interfaceVersions.get(className),
-					exportedPackage.getVersion());
+			Version remoteVersion = interfaceVersions.get(className);
+			Version localVersion = exportedPackage.getVersion();
+			if (comparePackageVersions(packageName, remoteVersion, localVersion)) {
+				logError("verifyServiceInterfaceVersionsForProxy",
+						"Failed version check for proxy creation.  clientBundle="
+								+ clientBundle + " interfaceType=" + className
+								+ " remoteVersion=" + remoteVersion
+								+ " localVersion=" + localVersion);
+				result = false;
+			}
 		}
+		return result;
 	}
 
 	private IRemoteServiceReference selectRemoteServiceReference(
