@@ -10,6 +10,7 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -159,6 +160,13 @@ public class RemoteServiceAdmin implements
 		}
 	}
 
+	private boolean validExportedInterfaces(ServiceReference serviceReference, String[] exportedInterfaces) {
+		if (exportedInterfaces == null || exportedInterfaces.length == 0) return false;
+		List<String> objectClassList = Arrays.asList((String[]) serviceReference.getProperty(org.osgi.framework.Constants.OBJECTCLASS));
+		for(int i=0; i < exportedInterfaces.length; i++) if (!objectClassList.contains(exportedInterfaces[i])) return false;
+		return true;
+	}
+	
 	// RemoteServiceAdmin service interface impl methods
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
 			ServiceReference serviceReference,
@@ -178,7 +186,10 @@ public class RemoteServiceAdmin implements
 			throw new IllegalArgumentException(
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES
 							+ " not set"); //$NON-NLS-1$
-
+		// verifyExportedInterfaces
+		if (!validExportedInterfaces(serviceReference, exportedInterfaces)) return Collections.EMPTY_LIST;
+		
+		
 		// Get optional exported configs
 		String[] exportedConfigs = PropertiesUtil
 				.getStringArrayFromPropertyValue(overridingProperties
@@ -235,11 +246,11 @@ public class RemoteServiceAdmin implements
 							exportService(serviceReference,
 									overridingProperties, exportedInterfaces,
 									serviceIntents, rsContainers[i]));
-					// If no exception, we add it to our known set of exported
-					// registrations
-					if (exportRegistration.getException() == null)
-						addExportRegistration(exportRegistration);
 				}
+				// If no exception, we add it to our known set of exported
+				// registrations
+				if (exportRegistration.getException() == null)
+					addExportRegistration(exportRegistration);
 				// We add it to the results in either case
 				exportRegistrations.add(exportRegistration);
 			}
@@ -896,30 +907,39 @@ public class RemoteServiceAdmin implements
 		}
 		int eventType = event.getType();
 		String eventTypeName = null;
+		String registrationTypeName = null;
 		switch (eventType) {
 		case (RemoteServiceAdminEvent.EXPORT_REGISTRATION):
 			eventTypeName = "EXPORT_REGISTRATION"; //$NON-NLS-1$
+			registrationTypeName = "export.registration";//$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.EXPORT_ERROR):
 			eventTypeName = "EXPORT_ERROR"; //$NON-NLS-1$
+			registrationTypeName = "export.registration";//$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.EXPORT_UNREGISTRATION):
 			eventTypeName = "EXPORT_UNREGISTRATION"; //$NON-NLS-1$
+			registrationTypeName = "export.registration";//$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.EXPORT_WARNING):
 			eventTypeName = "EXPORT_WARNING"; //$NON-NLS-1$
+			registrationTypeName = "export.registration";//$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.IMPORT_REGISTRATION):
 			eventTypeName = "IMPORT_REGISTRATION"; //$NON-NLS-1$
+			registrationTypeName = "import.registration";//$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.IMPORT_ERROR):
 			eventTypeName = "IMPORT_ERROR"; //$NON-NLS-1$
+			registrationTypeName = "import.registration";//$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.IMPORT_UNREGISTRATION):
 			eventTypeName = "IMPORT_UNREGISTRATION"; //$NON-NLS-1$
+			registrationTypeName = "import.registration";//$NON-NLS-1$
 			break;
 		case (RemoteServiceAdminEvent.IMPORT_WARNING):
 			eventTypeName = "IMPORT_WARNING"; //$NON-NLS-1$
+			registrationTypeName = "import.registration";//$NON-NLS-1$
 			break;
 		}
 		if (eventTypeName == null) {
@@ -975,7 +995,9 @@ public class RemoteServiceAdmin implements
 									.size()]));
 		eventProperties.put("timestamp", new Long(new Date().getTime())); //$NON-NLS-1$
 		eventProperties.put("event", event); //$NON-NLS-1$
-		eventProperties.put("import.registration", endpointDescription);
+		if (registrationTypeName != null) {
+			eventProperties.put(registrationTypeName, endpointDescription);
+		}
 		postRemoteServiceAdminEvent(topic, eventProperties);
 
 	}

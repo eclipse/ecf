@@ -120,19 +120,19 @@ public class PropertiesUtil {
 			ServiceReference serviceReference, Object propValue) {
 		if (propValue == null)
 			return null;
+		String[] objectClass = (String[]) serviceReference
+				.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
 		boolean wildcard = propValue.equals("*"); //$NON-NLS-1$
 		if (wildcard)
-			return (String[]) serviceReference
-					.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
+			return objectClass;
 		else {
-			final String[] stringValue = getStringArrayFromPropertyValue(propValue);
-			if (stringValue != null && stringValue.length == 1
-					&& stringValue[0].equals("*")) { //$NON-NLS-1$
+			final String[] stringArrayValue = getStringArrayFromPropertyValue(propValue);
+			if (stringArrayValue == null) return null;
+			else if (stringArrayValue.length == 1
+					&& stringArrayValue[0].equals("*")) { //$NON-NLS-1$
 				// this will support the idiom:  new String[] { "*" }
-				return (String[]) serviceReference
-						.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
-			}
-			return stringValue;
+				return objectClass;
+			} else return stringArrayValue;
 		}
 	}
 

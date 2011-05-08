@@ -12,6 +12,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -233,50 +234,35 @@ public abstract class AbstractHostContainerSelector extends
 		List results = new ArrayList();
 		ContainerTypeDescription[] descriptions = getContainerTypeDescriptions();
 		if (descriptions == null)
-			return results;
+			return Collections.EMPTY_LIST;
 		// If there are no required configs specified, then create any defaults
 		if (requiredConfigs == null || requiredConfigs.length == 0) {
-			ContainerTypeDescription[] ctds = getContainerTypeDescriptionsForDefaultConfigTypes(descriptions);
-			if (ctds != null) {
-				for (int i = 0; i < ctds.length; i++) {
-					IRemoteServiceContainer rsContainer = createRSContainer(
-							serviceReference, properties, ctds[i]);
-					if (rsContainer != null)
-						results.add(rsContainer);
-				}
-			}
+			createAndAddDefaultContainers(serviceReference, properties, serviceExportedInterfaces, requiredIntents, descriptions, results);
 		} else {
 			// See if we have a match
 			for (int i = 0; i < descriptions.length; i++) {
-				IRemoteServiceContainer rsContainer = createMatchingContainer(
+				IRemoteServiceContainer matchingContainer = createMatchingContainer(
 						descriptions[i], serviceReference, properties,
 						serviceExportedInterfaces, requiredConfigs,
 						requiredIntents);
-				if (rsContainer != null)
-					results.add(rsContainer);
-			}
-		}
-		// we still haven't created one then we check for no default and if
-		// not present then we
-		// create default ones
-		if (results.size() == 0 && requiredConfigs != null
-				&& requiredConfigs.length > 0) {
-			List requiredConfigsList = Arrays.asList(requiredConfigs);
-			if (!requiredConfigsList.contains(NODEFAULT)) {
-				ContainerTypeDescription[] ctds = getContainerTypeDescriptionsForDefaultConfigTypes(descriptions);
-				if (ctds != null) {
-					for (int i = 0; i < ctds.length; i++) {
-						IRemoteServiceContainer rsContainer = createRSContainer(
-								serviceReference, properties, ctds[i]);
-						if (rsContainer != null)
-							results.add(rsContainer);
-					}
-				}
+				if (matchingContainer != null)
+					results.add(matchingContainer);
 			}
 		}
 		return results;
 	}
 
+	private void createAndAddDefaultContainers(ServiceReference serviceReference, Map<String, Object> properties, String[] serviceExportedInterfaces, String[] requiredIntents, ContainerTypeDescription[] descriptions, Collection results) {
+		ContainerTypeDescription[] ctds = getContainerTypeDescriptionsForDefaultConfigTypes(descriptions);
+		if (ctds != null) {
+			for (int i = 0; i < ctds.length; i++) {
+				IRemoteServiceContainer matchingContainer = createMatchingContainer(ctds[i], serviceReference, properties, serviceExportedInterfaces, null, requiredIntents);
+				if (matchingContainer != null)
+					results.add(matchingContainer);
+			}
+		}
+	}
+	
 	protected ContainerTypeDescription[] getContainerTypeDescriptionsForDefaultConfigTypes(
 			ContainerTypeDescription[] descriptions) {
 		String[] defaultConfigTypes = getDefaultConfigTypes();
