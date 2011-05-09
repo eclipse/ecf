@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.osgi.services.feature"
       label="ECF OSGi 4.2 Remote Services Admin"
-      version="2.0.0.qualifier"
+      version="2.0.1.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
