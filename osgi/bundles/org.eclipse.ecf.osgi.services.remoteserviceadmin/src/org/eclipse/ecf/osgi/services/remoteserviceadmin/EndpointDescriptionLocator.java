@@ -613,9 +613,13 @@ public class EndpointDescriptionLocator {
 	}
 
 	private String isMatch(EndpointDescription description, List<String> filters) {
-		for (String filter : filters)
-			if (!"".equals(filter) && description.matches(filter))
-				return filter;
+		for (String filter : filters) {
+			try {
+				if (description.matches(filter)) return filter;
+			} catch (IllegalArgumentException e) {
+				logError("isMatch", "invalid endpoint listener filter="+filters, e);
+			}
+		}
 		return null;
 	}
 
