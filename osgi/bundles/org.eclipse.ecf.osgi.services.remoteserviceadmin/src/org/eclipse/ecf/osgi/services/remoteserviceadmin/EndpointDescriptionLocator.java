@@ -601,10 +601,12 @@ public class EndpointDescriptionLocator {
 			List<String> filters = PropertiesUtil.getStringPlusProperty(
 					getMapFromProperties(refs[i]),
 					EndpointListener.ENDPOINT_LISTENER_SCOPE);
-			String matchingFilter = isMatch(description, filters);
-			if (matchingFilter != null)
-				results.add(new EndpointListenerHolder(listener, description,
-						matchingFilter));
+			if (filters.size() > 0) {
+				String matchingFilter = isMatch(description, filters);
+				if (matchingFilter != null)
+					results.add(new EndpointListenerHolder(listener, description,
+							matchingFilter));
+			}
 		}
 		return (EndpointListenerHolder[]) results
 				.toArray(new EndpointListenerHolder[results.size()]);
@@ -612,7 +614,7 @@ public class EndpointDescriptionLocator {
 
 	private String isMatch(EndpointDescription description, List<String> filters) {
 		for (String filter : filters)
-			if (description.matches(filter))
+			if (!"".equals(filter) && description.matches(filter))
 				return filter;
 		return null;
 	}

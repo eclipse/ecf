@@ -39,7 +39,6 @@ import org.osgi.framework.ServiceReference;
 public abstract class AbstractHostContainerSelector extends
 		AbstractContainerSelector {
 
-	private static final String NODEFAULT = "<<nodefault>>"; //$NON-NLS-1$
 	protected String[] defaultConfigTypes;
 
 	public AbstractHostContainerSelector(String[] defaultConfigTypes) {
