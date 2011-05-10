@@ -26,7 +26,7 @@ import org.osgi.util.tracker.ServiceTracker;
 public abstract class AbstractRemoteServiceAccessTest extends
 		AbstractDistributionTest {
 
-	protected static final int REGISTER_WAIT = Integer.parseInt(System.getProperty("waittime","15000"));
+	protected static final int REGISTER_WAIT = Integer.parseInt(System.getProperty("waittime","30000"));
 
 	private final String classname = TestServiceInterface1.class.getName();
 	private ServiceTracker st;
