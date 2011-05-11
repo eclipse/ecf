@@ -10,6 +10,7 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -120,24 +121,65 @@ public abstract class AbstractContainerSelector {
 	 * @since 2.0
 	 */
 	protected IContainer createContainer(ServiceReference serviceReference,
-			Map<String, Object> properties, ContainerTypeDescription containerTypeDescription)
-			throws ContainerCreateException {
+			Map<String, Object> properties,
+			ContainerTypeDescription containerTypeDescription)
+			throws SelectContainerException {
 
 		IContainerFactory containerFactory = getContainerFactory();
 
+		final Object containerFactoryArguments = getContainerFactoryArguments(
+				serviceReference, properties, containerTypeDescription);
+
+		try {
+			if (containerFactoryArguments instanceof String) {
+				return containerFactory.createContainer(
+						containerTypeDescription,
+						(String) containerFactoryArguments);
+			} else if (containerFactoryArguments instanceof ID) {
+				return containerFactory.createContainer(
+						containerTypeDescription,
+						(ID) containerFactoryArguments);
+			} else if (containerFactoryArguments instanceof Object[]) {
+				return containerFactory.createContainer(
+						containerTypeDescription,
+						(Object[]) containerFactoryArguments);
+			} else if (containerFactoryArguments instanceof Map) {
+				return containerFactory.createContainer(
+						containerTypeDescription,
+						(Map) containerFactoryArguments);
+			}
+			return containerFactory.createContainer(containerTypeDescription);
+		} catch (ContainerCreateException e) {
+			throw new SelectContainerException(
+					"Exception creating or configuring container", e,
+					containerTypeDescription);
+		}
+	}
+
+	protected Object getContainerFactoryArguments(
+			ServiceReference serviceReference, Map<String, Object> properties,
+			ContainerTypeDescription containerTypeDescription) {
+		// If the RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS is set
+		// than use it.
 		final Object containerFactoryArguments = properties
 				.get(RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS);
-		if (containerFactoryArguments instanceof String) {
-			return containerFactory.createContainer(containerTypeDescription,
-					(String) containerFactoryArguments);
-		} else if (containerFactoryArguments instanceof ID) {
-			return containerFactory.createContainer(containerTypeDescription,
-					(ID) containerFactoryArguments);
-		} else if (containerFactoryArguments instanceof Object[]) {
-			return containerFactory.createContainer(containerTypeDescription,
-					(Object[]) containerFactoryArguments);
+		if (containerFactoryArguments != null)
+			return containerFactoryArguments;
+
+		String exportedConfig = containerTypeDescription.getName();
+		// If not, then we look through the properties that start with
+		// <containerTypeDescription.name>.
+		Map<String, Object> results = new HashMap<String, Object>();
+		for (String origKey : properties.keySet()) {
+			if (origKey.startsWith(exportedConfig + ".")) {
+				String key = origKey.substring(exportedConfig.length() + 1);
+				if (key != null)
+					results.put(key, properties.get(origKey));
+			}
 		}
-		return containerFactory.createContainer(containerTypeDescription);
+		if (results.size() == 0)
+			return null;
+		return results;
 	}
 
 	protected ID createTargetID(IContainer container, String target) {
@@ -152,8 +194,8 @@ public abstract class AbstractContainerSelector {
 	 * @since 2.0
 	 */
 	protected IConnectContext createConnectContext(
-			ServiceReference serviceReference, Map<String, Object> properties, IContainer container,
-			Object context) {
+			ServiceReference serviceReference, Map<String, Object> properties,
+			IContainer container, Object context) {
 		if (context instanceof IConnectContext)
 			return (IConnectContext) context;
 		return null;

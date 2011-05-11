@@ -29,50 +29,40 @@ public class ConsumerContainerSelector extends
 	}
 
 	public IRemoteServiceContainer selectConsumerContainer(
-			EndpointDescription endpointDescription) {
+			EndpointDescription endpointDescription)
+			throws SelectContainerException {
 		trace("selectConsumerContainers", "endpointDescription=" + endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// Get service.imported.configs
-		List<String> serviceImportedConfigs = PropertiesUtil
+		List<String> sic = PropertiesUtil
 				.getStringPlusProperty(
 						endpointDescription.getProperties(),
 						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS);
-		// For ECF providers this endpoint description property should always contain the constant 
-		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE
-		if (serviceImportedConfigs
-				.contains(RemoteConstants.ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE)) {
-			// Get the endpointID
-			ID endpointContainerID = endpointDescription.getContainerID();
+		String[] serviceImportedConfigs = sic.toArray(new String[sic.size()]);
+		// Get the endpointID
+		ID endpointContainerID = endpointDescription.getContainerID();
 
-			String[] remoteSupportedConfigs = (String[]) endpointDescription
-					.getProperties()
-					.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
+		// Get connect targetID
+		ID connectTargetID = endpointDescription.getConnectTargetID();
 
-			// Get connect targetID
-			ID connectTargetID = endpointDescription.getConnectTargetID();
+		IRemoteServiceContainer rsContainer = selectExistingConsumerContainer(
+				endpointContainerID, serviceImportedConfigs, connectTargetID);
 
-			IRemoteServiceContainer rsContainer = selectExistingConsumerContainer(
-					endpointContainerID, remoteSupportedConfigs,
-					connectTargetID);
+		// If we haven't found any existing containers then we create one
+		// from the remoteSupportedConfigs...*iff* autoCreateContainer is
+		// set to true
+		if (rsContainer == null && autoCreateContainer)
+			rsContainer = createAndConfigureConsumerContainer(
+					serviceImportedConfigs, endpointDescription.getProperties());
 
-			// If we haven't found any existing containers then we create one
-			// from the remoteSupportedConfigs...*iff* autoCreateContainer is
-			// set to true
-			if (rsContainer == null && autoCreateContainer)
-				rsContainer = createAndConfigureConsumerContainer(
-						remoteSupportedConfigs,
-						endpointDescription.getProperties());
+		// Get the connect target ID from the endpointDescription
+		// and connect the given containers to the connect targetID
+		// This is only needed when when the endpointID is different from
+		// the connect targetID, and the containers are not already
+		// connected
+		connectContainerToTarget(rsContainer, connectTargetID);
 
-			// Get the connect target ID from the endpointDescription
-			// and connect the given containers to the connect targetID
-			// This is only needed when when the endpointID is different from
-			// the connect targetID, and the containers are not already
-			// connected
-			connectContainerToTarget(rsContainer, connectTargetID);
-
-			return rsContainer;
-		}
-		return null;
+		return rsContainer;
 	}
 
 	public void close() {

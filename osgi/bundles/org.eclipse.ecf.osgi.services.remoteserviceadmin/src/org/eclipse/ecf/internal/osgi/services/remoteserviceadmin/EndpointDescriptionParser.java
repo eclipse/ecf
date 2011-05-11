@@ -324,16 +324,16 @@ public class EndpointDescriptionParser {
 
 		public void startElement(String name, Attributes attributes)
 				throws SAXException {
-			if (ENDPOINT_DESCRIPTION.equals(name)) 
-				new EndpointDescriptionHandler(
-						this, attributes, endpointDescriptions);
+			if (ENDPOINT_DESCRIPTION.equals(name))
+				new EndpointDescriptionHandler(this, attributes,
+						endpointDescriptions);
 			else
 				invalidElement(name, attributes);
 		}
 
 		public void endElement(String namespaceURI, String localName,
 				String qName) {
-			if (elementHandled.equals(localName)) 
+			if (elementHandled.equals(localName))
 				super.endElement(namespaceURI, localName, qName);
 		}
 
@@ -357,7 +357,7 @@ public class EndpointDescriptionParser {
 
 		public void startElement(String name, Attributes attributes)
 				throws SAXException {
-			if (ENDPOINT_PROPERTY.equals(name)) 
+			if (ENDPOINT_PROPERTY.equals(name))
 				new EndpointPropertyHandler(this, attributes, properties);
 		}
 

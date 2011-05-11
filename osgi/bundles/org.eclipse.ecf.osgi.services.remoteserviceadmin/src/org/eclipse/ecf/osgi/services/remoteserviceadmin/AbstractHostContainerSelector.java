@@ -50,7 +50,8 @@ public abstract class AbstractHostContainerSelector extends
 	 */
 	protected Collection selectExistingHostContainers(
 			ServiceReference serviceReference,
-			Map<String, Object> overridingProperties, String[] serviceExportedInterfaces,
+			Map<String, Object> overridingProperties,
+			String[] serviceExportedInterfaces,
 			String[] serviceExportedConfigs, String[] serviceIntents) {
 		List results = new ArrayList();
 		// Get all existing containers
@@ -76,9 +77,9 @@ public abstract class AbstractHostContainerSelector extends
 				continue;
 			}
 
-			if (matchExistingHostContainer(serviceReference, overridingProperties, containers[i],
-					adapter, description, serviceExportedConfigs,
-					serviceIntents)) {
+			if (matchExistingHostContainer(serviceReference,
+					overridingProperties, containers[i], adapter, description,
+					serviceExportedConfigs, serviceIntents)) {
 				trace("selectExistingHostContainers", "INCLUDING containerID=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ containers[i].getID()
 						+ " configs=" //$NON-NLS-1$
@@ -106,8 +107,8 @@ public abstract class AbstractHostContainerSelector extends
 	 * @since 2.0
 	 */
 	protected boolean matchHostContainerToConnectTarget(
-			ServiceReference serviceReference,
-			Map<String, Object> properties, IContainer container) {
+			ServiceReference serviceReference, Map<String, Object> properties,
+			IContainer container) {
 		String target = (String) properties
 				.get(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		if (target == null)
@@ -121,8 +122,8 @@ public abstract class AbstractHostContainerSelector extends
 		if (connectedID == null) {
 			// connect to the target and we have a match
 			try {
-				connectHostContainer(serviceReference, properties,
-						container, target);
+				connectHostContainer(serviceReference, properties, container,
+						target);
 			} catch (Exception e) {
 				logException("doConnectContainer containerID=" //$NON-NLS-1$
 						+ container.getID() + " target=" + target, e); //$NON-NLS-1$
@@ -143,17 +144,15 @@ public abstract class AbstractHostContainerSelector extends
 	 * @since 2.0
 	 */
 	protected boolean matchExistingHostContainer(
-			ServiceReference serviceReference,
-			Map<String, Object> properties, IContainer container,
-			IRemoteServiceContainerAdapter adapter,
+			ServiceReference serviceReference, Map<String, Object> properties,
+			IContainer container, IRemoteServiceContainerAdapter adapter,
 			ContainerTypeDescription description, String[] requiredConfigTypes,
 			String[] requiredServiceIntents) {
 
 		return matchHostSupportedConfigTypes(requiredConfigTypes, description)
 				&& matchHostSupportedIntents(requiredServiceIntents,
 						description)
-				&& matchHostContainerID(serviceReference, properties,
-						container)
+				&& matchHostContainerID(serviceReference, properties, container)
 				&& matchHostContainerToConnectTarget(serviceReference,
 						properties, container);
 	}
@@ -226,9 +225,9 @@ public abstract class AbstractHostContainerSelector extends
 	 * @since 2.0
 	 */
 	protected Collection createAndConfigureHostContainers(
-			ServiceReference serviceReference,
-			Map<String, Object> properties, String[] serviceExportedInterfaces, String[] requiredConfigs,
-			String[] requiredIntents) {
+			ServiceReference serviceReference, Map<String, Object> properties,
+			String[] serviceExportedInterfaces, String[] requiredConfigs,
+			String[] requiredIntents) throws SelectContainerException {
 
 		List results = new ArrayList();
 		ContainerTypeDescription[] descriptions = getContainerTypeDescriptions();
@@ -236,7 +235,9 @@ public abstract class AbstractHostContainerSelector extends
 			return Collections.EMPTY_LIST;
 		// If there are no required configs specified, then create any defaults
 		if (requiredConfigs == null || requiredConfigs.length == 0) {
-			createAndAddDefaultContainers(serviceReference, properties, serviceExportedInterfaces, requiredIntents, descriptions, results);
+			createAndAddDefaultContainers(serviceReference, properties,
+					serviceExportedInterfaces, requiredIntents, descriptions,
+					results);
 		} else {
 			// See if we have a match
 			for (int i = 0; i < descriptions.length; i++) {
@@ -251,17 +252,23 @@ public abstract class AbstractHostContainerSelector extends
 		return results;
 	}
 
-	private void createAndAddDefaultContainers(ServiceReference serviceReference, Map<String, Object> properties, String[] serviceExportedInterfaces, String[] requiredIntents, ContainerTypeDescription[] descriptions, Collection results) {
+	private void createAndAddDefaultContainers(
+			ServiceReference serviceReference, Map<String, Object> properties,
+			String[] serviceExportedInterfaces, String[] requiredIntents,
+			ContainerTypeDescription[] descriptions, Collection results)
+			throws SelectContainerException {
 		ContainerTypeDescription[] ctds = getContainerTypeDescriptionsForDefaultConfigTypes(descriptions);
 		if (ctds != null) {
 			for (int i = 0; i < ctds.length; i++) {
-				IRemoteServiceContainer matchingContainer = createMatchingContainer(ctds[i], serviceReference, properties, serviceExportedInterfaces, null, requiredIntents);
+				IRemoteServiceContainer matchingContainer = createMatchingContainer(
+						ctds[i], serviceReference, properties,
+						serviceExportedInterfaces, null, requiredIntents);
 				if (matchingContainer != null)
 					results.add(matchingContainer);
 			}
 		}
 	}
-	
+
 	protected ContainerTypeDescription[] getContainerTypeDescriptionsForDefaultConfigTypes(
 			ContainerTypeDescription[] descriptions) {
 		String[] defaultConfigTypes = getDefaultConfigTypes();
@@ -296,44 +303,41 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
+	 * @throws ContainerCreateException
 	 * @since 2.0
 	 */
 	protected IRemoteServiceContainer createMatchingContainer(
 			ContainerTypeDescription containerTypeDescription,
-			ServiceReference serviceReference,
-			Map<String, Object> properties, String[] serviceExportedInterfaces, String[] requiredConfigs,
-			String[] requiredIntents) {
+			ServiceReference serviceReference, Map<String, Object> properties,
+			String[] serviceExportedInterfaces, String[] requiredConfigs,
+			String[] requiredIntents) throws SelectContainerException {
 
 		if (matchHostSupportedConfigTypes(requiredConfigs,
 				containerTypeDescription)
 				&& matchHostSupportedIntents(requiredIntents,
 						containerTypeDescription)) {
-			return createRSContainer(serviceReference, properties, containerTypeDescription);
+			return createRSContainer(serviceReference, properties,
+					containerTypeDescription);
 		}
 		return null;
 	}
 
 	/**
+	 * @throws ContainerCreateException
 	 * @since 2.0
 	 */
 	protected IRemoteServiceContainer createRSContainer(
-			ServiceReference serviceReference,
-			Map<String, Object> properties, ContainerTypeDescription containerTypeDescription) {
-		try {
-			IContainer container = createContainer(serviceReference, properties,
-					containerTypeDescription);
-			IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container
-					.getAdapter(IRemoteServiceContainerAdapter.class);
-			if (adapter == null)
-				throw new ContainerCreateException(
-						"Container does not implement IRemoteServiceContainerAdapter"); //$NON-NLS-1$
-			return new RemoteServiceContainer(container, adapter);
-		} catch (Exception e) {
-			logException(
-					"Exception creating container from ContainerTypeDescription=" //$NON-NLS-1$
-							+ containerTypeDescription, e);
-			return null;
-		}
+			ServiceReference serviceReference, Map<String, Object> properties,
+			ContainerTypeDescription containerTypeDescription)
+			throws SelectContainerException {
+		IContainer container = createContainer(serviceReference, properties,
+				containerTypeDescription);
+		IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container
+				.getAdapter(IRemoteServiceContainerAdapter.class);
+		if (adapter == null)
+			throw new SelectContainerException(
+					"Container does not implement IRemoteServiceContainerAdapter", null, containerTypeDescription); //$NON-NLS-1$
+		return new RemoteServiceContainer(container, adapter);
 	}
 
 	/**
@@ -350,8 +354,8 @@ public abstract class AbstractHostContainerSelector extends
 				.get(RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT);
 		IConnectContext connectContext = null;
 		if (context != null) {
-			connectContext = createConnectContext(serviceReference, properties, container,
-					context);
+			connectContext = createConnectContext(serviceReference, properties,
+					container, context);
 		}
 		// connect the container
 		container.connect(targetID, connectContext);

@@ -36,14 +36,17 @@ public class HostContainerSelector extends AbstractHostContainerSelector
 	// thread safe to deal with bug
 	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=331836
 	/**
-	 * @see org.eclipse.ecf.osgi.services.remoteserviceadmin.IHostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, java.util.Map, java.lang.String[], java.lang.String[], java.lang.String[])
+	 * @see org.eclipse.ecf.osgi.services.remoteserviceadmin.IHostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference,
+	 *      java.util.Map, java.lang.String[], java.lang.String[],
+	 *      java.lang.String[])
 	 * @since 2.0
 	 */
 	public synchronized IRemoteServiceContainer[] selectHostContainers(
 			ServiceReference serviceReference,
 			Map<String, Object> overridingProperties,
 			String[] serviceExportedInterfaces,
-			String[] serviceExportedConfigs, String[] serviceIntents) {
+			String[] serviceExportedConfigs, String[] serviceIntents)
+			throws SelectContainerException {
 		// Find previously created containers that match the given
 		// serviceExportedConfigs and serviceIntents
 		Collection rsContainers = selectExistingHostContainers(

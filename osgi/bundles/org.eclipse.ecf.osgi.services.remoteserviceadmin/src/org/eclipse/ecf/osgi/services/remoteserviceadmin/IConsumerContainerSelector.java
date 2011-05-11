@@ -41,8 +41,12 @@ public interface IConsumerContainerSelector {
 	 * @return IRemoteServiceContainer to be used for importing the remote
 	 *         service. May be <code>null</code> if not container is available
 	 *         for use as a consumer for the given endpointDescription.
+	 * @throws SelectContainerException
+	 *             thrown if the host container selection or
+	 *             creation/configuration fails.
 	 */
 	public IRemoteServiceContainer selectConsumerContainer(
-			EndpointDescription endpointDescription);
+			EndpointDescription endpointDescription)
+			throws SelectContainerException;
 
 }

@@ -36,6 +36,10 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 
 	private static final int CREATE_INSTANCE_ERROR_CODE = 4441;
 
+	private static final String ID_PROP = "id"; //$NON-NLS-1$
+
+	private static final String KEEPALIVE_PROP = "keepAlive"; //$NON-NLS-1$
+
 	public GenericContainerInstantiator() {
 		super();
 	}
@@ -98,7 +102,14 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		ID newID = null;
 		Integer ka = null;
 		if (args != null && args.length > 0) {
-			if (args.length > 1) {
+			if (args[0] instanceof Map) {
+				Map map = (Map) args[0];
+				Object idVal = map.get(ID_PROP);
+				if (idVal == null)
+					throw new IDCreateException("Cannot create ID.  No property with key=" + ID_PROP + " found in configuration=" + map); //$NON-NLS-1$ //$NON-NLS-2$
+				newID = getIDFromArg(idVal);
+				ka = getIntegerFromArg(map.get(KEEPALIVE_PROP));
+			} else if (args.length > 1) {
 				if (args[0] instanceof String || args[0] instanceof ID)
 					newID = getIDFromArg(args[0]);
 				if (args[1] instanceof String || args[1] instanceof Integer)
@@ -126,7 +137,14 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		ID newID = null;
 		Integer ka = null;
 		if (args != null && args.length > 0) {
-			if (args.length > 1) {
+			if (args[0] instanceof Map) {
+				Map map = (Map) args[0];
+				Object idVal = map.get(ID_PROP);
+				if (idVal == null)
+					throw new IDCreateException("Cannot create ID.  No property with key=" + ID_PROP + " found in configuration=" + map); //$NON-NLS-1$ //$NON-NLS-2$
+				newID = getIDFromArg(idVal);
+				ka = getIntegerFromArg(map.get(KEEPALIVE_PROP));
+			} else if (args.length > 1) {
 				if (args[0] instanceof String || args[0] instanceof ID)
 					newID = getIDFromArg(args[0]);
 				if (args[1] instanceof String || args[1] instanceof Integer)
@@ -199,7 +217,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 			Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "createInstance", e); //$NON-NLS-1$
 			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, CREATE_INSTANCE_ERROR_CODE, "createInstance", e)); //$NON-NLS-1$
 			Trace.throwing(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_THROWING, this.getClass(), "createInstance", e); //$NON-NLS-1$
-			throw new ContainerCreateException("createInstance", e); //$NON-NLS-1$
+			throw new ContainerCreateException("Create of containerType=" + description.getName() + " failed.", e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

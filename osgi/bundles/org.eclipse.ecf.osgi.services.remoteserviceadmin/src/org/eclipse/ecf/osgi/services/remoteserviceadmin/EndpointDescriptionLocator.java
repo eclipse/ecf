@@ -604,8 +604,8 @@ public class EndpointDescriptionLocator {
 			if (filters.size() > 0) {
 				String matchingFilter = isMatch(description, filters);
 				if (matchingFilter != null)
-					results.add(new EndpointListenerHolder(listener, description,
-							matchingFilter));
+					results.add(new EndpointListenerHolder(listener,
+							description, matchingFilter));
 			}
 		}
 		return (EndpointListenerHolder[]) results
@@ -615,9 +615,11 @@ public class EndpointDescriptionLocator {
 	private String isMatch(EndpointDescription description, List<String> filters) {
 		for (String filter : filters) {
 			try {
-				if (description.matches(filter)) return filter;
+				if (description.matches(filter))
+					return filter;
 			} catch (IllegalArgumentException e) {
-				logError("isMatch", "invalid endpoint listener filter="+filters, e);
+				logError("isMatch", "invalid endpoint listener filter="
+						+ filters, e);
 			}
 		}
 		return null;
@@ -823,6 +825,8 @@ public class EndpointDescriptionLocator {
 		}
 
 		void handleService(IServiceInfo serviceInfo, boolean discovered) {
+			logInfo("handleService", "serviceInfo=" + serviceInfo
+					+ ",discovered=" + discovered);
 			IServiceID serviceID = serviceInfo.getServiceID();
 			if (matchServiceID(serviceID))
 				handleOSGiServiceEndpoint(serviceID, serviceInfo, discovered);
@@ -864,6 +868,12 @@ public class EndpointDescriptionLocator {
 				result.addAll(discoveredEndpointDescriptions);
 				return result;
 			}
+		}
+
+		private void logInfo(String methodName, String message) {
+			LogUtility.logWarning(methodName,
+					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
+					message);
 		}
 
 		private void logWarning(String methodName, String message) {

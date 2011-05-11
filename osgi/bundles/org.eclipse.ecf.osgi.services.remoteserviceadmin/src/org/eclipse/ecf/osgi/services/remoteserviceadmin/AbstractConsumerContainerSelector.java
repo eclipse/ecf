@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerFactory;
@@ -134,7 +135,8 @@ public class AbstractConsumerContainerSelector extends
 	}
 
 	protected IRemoteServiceContainer createAndConfigureConsumerContainer(
-			String[] remoteSupportedConfigs, Map remoteExportedProperties) {
+			String[] remoteSupportedConfigs, Map remoteExportedProperties)
+			throws SelectContainerException {
 		if (remoteSupportedConfigs == null
 				|| remoteSupportedConfigs.length == 0)
 			return null;
@@ -169,6 +171,7 @@ public class AbstractConsumerContainerSelector extends
 				// If we have one to use, then create the container
 				if (selectedConfig != null) {
 					IRemoteServiceContainer rsContainer = createContainer(
+							desc,
 							selectedConfig,
 							PropertiesUtil
 									.createMapFromDictionary(importedConfigProperties));
@@ -186,18 +189,26 @@ public class AbstractConsumerContainerSelector extends
 	}
 
 	protected IRemoteServiceContainer createContainer(
-			String containerTypeDescriptionName, Map properties) {
+			ContainerTypeDescription containerTypeDescription,
+			String containerTypeDescriptionName, Map properties)
+			throws SelectContainerException {
 		try {
 			IContainer container = (properties == null) ? getContainerFactory()
 					.createContainer(containerTypeDescriptionName)
 					: getContainerFactory().createContainer(
 							containerTypeDescriptionName, properties);
+			IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container
+					.getAdapter(IRemoteServiceContainerAdapter.class);
+			if (adapter == null)
+				throw new SelectContainerException(
+						"Container does not implement IRemoteServiceContainerAdapter", null, containerTypeDescription); //$NON-NLS-1$
 			return new RemoteServiceContainer(container);
-		} catch (Exception e) {
-			logException(
-					"Cannot create container with container type description name=" //$NON-NLS-1$
-							+ containerTypeDescriptionName, e);
-			return null;
+		} catch (ContainerCreateException e) {
+			String message = "Cannot create container with container type description name=" //$NON-NLS-1$
+					+ containerTypeDescriptionName;
+			logException(message, e);
+			throw new SelectContainerException(message, e,
+					containerTypeDescription);
 		}
 	}
 

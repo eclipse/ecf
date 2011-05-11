@@ -66,9 +66,14 @@ public interface IHostContainerSelector {
 	 *         should be used to export the given remote service (typically via
 	 *         {@link IRemoteServiceContainerAdapter#registerRemoteService(String[], Object, java.util.Dictionary)}
 	 *         ). Will not be <code>null</code>, but may be empty array.
+	 * @throws SelectContainerException
+	 *             thrown if the host container selection or
+	 *             creation/configuration fails.
 	 * @since 2.0
 	 */
 	IRemoteServiceContainer[] selectHostContainers(
-			ServiceReference serviceReference, Map<String, Object> overridingProperties, String[] exportedInterfaces,
-			String[] exportedConfigs, String[] serviceIntents);
+			ServiceReference serviceReference,
+			Map<String, Object> overridingProperties,
+			String[] exportedInterfaces, String[] exportedConfigs,
+			String[] serviceIntents) throws SelectContainerException;
 }

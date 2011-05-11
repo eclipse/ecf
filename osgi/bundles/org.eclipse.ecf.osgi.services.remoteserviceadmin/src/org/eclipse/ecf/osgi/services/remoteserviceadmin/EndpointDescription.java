@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.osgi.framework.ServiceReference;
@@ -129,11 +130,7 @@ public class EndpointDescription extends
 		try {
 			return IDUtil.createID(idNamespace, idName);
 		} catch (IDCreateException e) {
-			IllegalArgumentException iae = new IllegalArgumentException(
-					"cannot create a valid ID: idNamespace=" + idNamespace //$NON-NLS-1$
-							+ ", idName=" + idName); //$NON-NLS-1$
-			iae.initCause(e);
-			throw iae;
+			return IDFactory.getDefault().createStringID(idName);
 		}
 	}
 
@@ -240,12 +237,15 @@ public class EndpointDescription extends
 				propertiesOverrides);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.remoteserviceadmin.EndpointDescription#getProperties()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.remoteserviceadmin.EndpointDescription#getProperties()
 	 */
 	@Override
 	public Map<String, Object> getProperties() {
-		if(overrides != null) 
+		if (overrides != null)
 			return overrides;
 		return super.getProperties();
 	}

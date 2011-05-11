@@ -94,9 +94,8 @@ public class Activator implements BundleActivator {
 			// stop it
 			try {
 				proxyServiceFactoryBundleContext.getBundle().stop();
-			} catch (BundleException e) {
-				// print to error stream
-				e.printStackTrace(System.err);
+			} catch (Exception e) {
+				// we don't care
 			}
 			proxyServiceFactoryBundleContext = null;
 		}

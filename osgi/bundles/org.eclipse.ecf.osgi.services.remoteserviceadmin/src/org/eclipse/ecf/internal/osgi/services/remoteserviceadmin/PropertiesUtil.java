@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
@@ -127,12 +128,14 @@ public class PropertiesUtil {
 			return objectClass;
 		else {
 			final String[] stringArrayValue = getStringArrayFromPropertyValue(propValue);
-			if (stringArrayValue == null) return null;
+			if (stringArrayValue == null)
+				return null;
 			else if (stringArrayValue.length == 1
 					&& stringArrayValue[0].equals("*")) { //$NON-NLS-1$
-				// this will support the idiom:  new String[] { "*" }
+				// this will support the idiom: new String[] { "*" }
 				return objectClass;
-			} else return stringArrayValue;
+			} else
+				return stringArrayValue;
 		}
 	}
 
@@ -239,14 +242,15 @@ public class PropertiesUtil {
 	public static boolean isECFProperty(String key) {
 		return ecfProperties.contains(key);
 	}
-	
+
 	// skip dotted (private) properties (R4.2 enterprise spec. table 122.1)
 	public static boolean isPrivateProperty(String key) {
 		return (key.startsWith(".")); //$NON-NLS-N$
 	}
 
 	public static boolean isReservedProperty(String key) {
-		return isOSGiProperty(key) || isECFProperty(key) || isPrivateProperty(key);
+		return isOSGiProperty(key) || isECFProperty(key)
+				|| isPrivateProperty(key);
 	}
 
 	public static Map createMapFromDictionary(Dictionary input) {
@@ -371,18 +375,19 @@ public class PropertiesUtil {
 				target.put(keys[i], rsReference.getProperty(keys[i]));
 		return target;
 	}
-	
+
 	public static Map mergeProperties(final ServiceReference serviceReference,
 			final Map<String, Object> overrides) {
 		return mergeProperties(copyProperties(serviceReference, new HashMap()),
 				overrides);
 	}
-	
+
 	public static Map mergeProperties(final Map<String, Object> source,
 			final Map<String, Object> overrides) {
 
 		// copy to target from service reference
-		final Map target = copyProperties(source, new HashMap());
+		final Map target = copyProperties(source, new TreeMap<String, Object>(
+				String.CASE_INSENSITIVE_ORDER));
 
 		// now do actual merge
 		final Set<String> keySet = overrides.keySet();
@@ -393,7 +398,7 @@ public class PropertiesUtil {
 				continue;
 			}
 			target.remove(key.toLowerCase());
-			target.put(key, overrides.get(key));
+			target.put(key.toLowerCase(), overrides.get(key));
 		}
 
 		return target;
