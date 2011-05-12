@@ -118,8 +118,6 @@ public class RemoteConstants {
 	 */
 	public static final String ENDPOINT_REMOTESERVICE_FILTER = "ecf.endpoint.rsfilter"; //$NON-NLS-1$
 
-	public static final String ENDPOINT_SERVICE_IMPORTED_CONFIGS_VALUE = "org.eclipse.ecf.config"; //$NON-NLS-1$
-
 	/**
 	 * Container factory arguments for exported remote service hosts. If
 	 * specified as a service property upon remote service registration, this
