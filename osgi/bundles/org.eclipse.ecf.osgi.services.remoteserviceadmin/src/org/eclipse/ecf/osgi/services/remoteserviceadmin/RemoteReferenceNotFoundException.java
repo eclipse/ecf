@@ -60,9 +60,9 @@ public class RemoteReferenceNotFoundException extends Exception {
 	}
 
 	public String toString() {
-		return "RemoteReferenceNotFoundException[targetID=" + targetID
-				+ ", idFilter=" + Arrays.toString(idFilter) + ", interfaces="
-				+ interfaces + ", rsFilter=" + rsFilter + "]";
+		return "RemoteReferenceNotFoundException[targetID=" + targetID //$NON-NLS-1$
+				+ ", idFilter=" + Arrays.toString(idFilter) + ", interfaces=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ interfaces + ", rsFilter=" + rsFilter + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 }

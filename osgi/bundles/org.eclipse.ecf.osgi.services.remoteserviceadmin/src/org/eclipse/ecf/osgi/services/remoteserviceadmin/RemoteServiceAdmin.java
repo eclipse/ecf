@@ -113,8 +113,8 @@ public class RemoteServiceAdmin implements
 	public RemoteServiceAdmin(Bundle clientBundle) {
 		this.clientBundle = clientBundle;
 		Assert.isNotNull(this.clientBundle);
-		trace("RemoteServiceAdmin<init>",
-				"clientBundle=" + clientBundle.getSymbolicName());
+		trace("RemoteServiceAdmin<init>", //$NON-NLS-1$
+				"clientBundle=" + clientBundle.getSymbolicName()); //$NON-NLS-1$
 		// Only setup defaults if it hasn't already been done by some other
 		// Remote Service Admin instance
 		Properties props = new Properties();
@@ -222,8 +222,8 @@ public class RemoteServiceAdmin implements
 		} catch (SelectContainerException e) {
 			ExportRegistration errorRegistration = createErrorExportRegistration(
 					serviceReference, overridingProperties,
-					"Error selecting or creating host container for serviceReference="
-							+ serviceReference + " properties="
+					"Error selecting or creating host container for serviceReference=" //$NON-NLS-1$
+							+ serviceReference + " properties=" //$NON-NLS-1$
 							+ overridingProperties, e);
 			Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> result = new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>();
 			result.add(errorRegistration);
@@ -234,7 +234,7 @@ public class RemoteServiceAdmin implements
 		if (rsContainers == null || rsContainers.length == 0) {
 			String errorMessage = "No containers found for serviceReference=" //$NON-NLS-1$ 
 					+ serviceReference
-					+ " properties=" + overridingProperties + ". Remote service NOT EXPORTED";//$NON-NLS-2$
+					+ " properties=" + overridingProperties + ". Remote service NOT EXPORTED"; //$NON-NLS-1$//$NON-NLS-2$
 			logWarning("exportService", errorMessage); //$NON-NLS-1$
 			return Collections.EMPTY_LIST;
 		}
@@ -297,10 +297,10 @@ public class RemoteServiceAdmin implements
 		ContainerTypeDescription ctd = exception.getContainerTypeDescription();
 		overridingProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
-						"noendpoint");
+						"noendpoint"); //$NON-NLS-1$
 		overridingProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
-						(ctd == null) ? "noconfig" : ctd.getName());
+						(ctd == null) ? "noconfig" : ctd.getName()); //$NON-NLS-1$
 		return new ExportRegistration(exception, new EndpointDescription(
 				serviceReference, overridingProperties));
 	}
@@ -425,8 +425,8 @@ public class RemoteServiceAdmin implements
 	private void addImportRegistration(ImportRegistration importRegistration) {
 		synchronized (importedRegistrations) {
 			importedRegistrations.add(importRegistration);
-			trace("addImportRegistration", "importRegistration="
-					+ importRegistration + " importedRegistrations="
+			trace("addImportRegistration", "importRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ importRegistration + " importedRegistrations=" //$NON-NLS-1$
 					+ importedRegistrations);
 		}
 	}
@@ -434,8 +434,8 @@ public class RemoteServiceAdmin implements
 	private void addExportRegistration(ExportRegistration exportRegistration) {
 		synchronized (exportedRegistrations) {
 			exportedRegistrations.add(exportRegistration);
-			trace("addExportRegistration", "exportRegistration="
-					+ exportRegistration + " exportedRegistrations="
+			trace("addExportRegistration", "exportRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ exportRegistration + " exportedRegistrations=" //$NON-NLS-1$
 					+ exportedRegistrations);
 		}
 	}
@@ -1486,7 +1486,7 @@ public class RemoteServiceAdmin implements
 		BundleContext proxyServiceFactoryContext = getProxyServiceFactoryContext(endpointDescription);
 		if (proxyServiceFactoryContext == null)
 			throw new NullPointerException(
-					"getProxyServiceFactoryContext returned null.  Cannot register proxy service factory");
+					"getProxyServiceFactoryContext returned null.  Cannot register proxy service factory"); //$NON-NLS-1$
 
 		IRemoteServiceContainerAdapter containerAdapter = rsContainer
 				.getContainerAdapter();
@@ -1525,39 +1525,39 @@ public class RemoteServiceAdmin implements
 		Activator a = Activator.getDefault();
 		if (a == null)
 			throw new NullPointerException(
-					"ECF RemoteServiceAdmin Activator cannot be null.");
+					"ECF RemoteServiceAdmin Activator cannot be null."); //$NON-NLS-1$
 		if (a.isOldEquinox()) {
 			PackageAdmin packageAdmin = getPackageAdmin();
 			if (packageAdmin == null)
 				throw new NullPointerException(
-						"PackageAdmin cannot be accessed by ECF RemoteServiceAdmin");
+						"PackageAdmin cannot be accessed by ECF RemoteServiceAdmin"); //$NON-NLS-1$
 			// In this case, we get the Bundle that exposes the first service
 			// interface class
 			BundleContext rsaContext = Activator.getContext();
 			if (rsaContext == null)
 				throw new NullPointerException(
-						"RSA BundleContext cannot be null");
+						"RSA BundleContext cannot be null"); //$NON-NLS-1$
 			List<String> interfaces = endpointDescription.getInterfaces();
 			Collection<Class> serviceInterfaceClasses = loadServiceInterfacesViaBundle(
 					rsaContext.getBundle(),
 					interfaces.toArray(new String[interfaces.size()]));
 			if (serviceInterfaceClasses.size() == 0)
 				throw new NullPointerException(
-						"No interface classes loadable for endpointDescription="
+						"No interface classes loadable for endpointDescription=" //$NON-NLS-1$
 								+ endpointDescription);
 			// Get the bundle responsible for the first service interface class
 			Class serviceInterfaceClass = serviceInterfaceClasses.iterator()
 					.next();
 			Bundle bundle = packageAdmin.getBundle(serviceInterfaceClass);
 			if (bundle == null)
-				throw new BundleException("Bundle for service interface class="
-						+ serviceInterfaceClass.getName() + " cannot be found");
+				throw new BundleException("Bundle for service interface class=" //$NON-NLS-1$
+						+ serviceInterfaceClass.getName() + " cannot be found"); //$NON-NLS-1$
 			int bundleState = bundle.getState();
 			BundleContext bundleContext = bundle.getBundleContext();
 			if (bundleContext == null)
-				throw new BundleException("Bundle=" + bundle.getSymbolicName()
-						+ " in wrong state (" + bundleState
-						+ ") for using BundleContext proxy service factory");
+				throw new BundleException("Bundle=" + bundle.getSymbolicName() //$NON-NLS-1$
+						+ " in wrong state (" + bundleState //$NON-NLS-1$
+						+ ") for using BundleContext proxy service factory"); //$NON-NLS-1$
 			return bundleContext;
 		}
 		return a.getProxyServiceFactoryBundleContext();
@@ -1798,11 +1798,11 @@ public class RemoteServiceAdmin implements
 			Version remoteVersion = interfaceVersions.get(className);
 			Version localVersion = exportedPackage.getVersion();
 			if (comparePackageVersions(packageName, remoteVersion, localVersion)) {
-				logError("verifyServiceInterfaceVersionsForProxy",
-						"Failed version check for proxy creation.  clientBundle="
-								+ clientBundle + " interfaceType=" + className
-								+ " remoteVersion=" + remoteVersion
-								+ " localVersion=" + localVersion);
+				logError("verifyServiceInterfaceVersionsForProxy", //$NON-NLS-1$
+						"Failed version check for proxy creation.  clientBundle=" //$NON-NLS-1$
+								+ clientBundle + " interfaceType=" + className //$NON-NLS-1$
+								+ " remoteVersion=" + remoteVersion //$NON-NLS-1$
+								+ " localVersion=" + localVersion); //$NON-NLS-1$
 				result = false;
 			}
 		}
@@ -1988,11 +1988,11 @@ public class RemoteServiceAdmin implements
 					endpointDescription, rsContainer, selectedRsReference));
 		} catch (Exception e) {
 			logError(
-					"importService", "selectRemoteServiceReference returned null for rsRefs=" //$NON-NLS-1$
+					"importService", "selectRemoteServiceReference returned null for rsRefs=" //$NON-NLS-1$ //$NON-NLS-2$
 							+ rsRefs + ",targetID=" + targetID //$NON-NLS-1$
 							+ ",idFilter=" + idFilter + ",interfaces=" //$NON-NLS-1$ //$NON-NLS-2$
 							+ interfaces + ",rsFilter=" + rsFilter //$NON-NLS-1$
-							+ ",rsContainerID=" + rsContainerID, e);
+							+ ",rsContainerID=" + rsContainerID, e); //$NON-NLS-1$
 			return new ImportRegistration(endpointDescription, e);
 		}
 	}

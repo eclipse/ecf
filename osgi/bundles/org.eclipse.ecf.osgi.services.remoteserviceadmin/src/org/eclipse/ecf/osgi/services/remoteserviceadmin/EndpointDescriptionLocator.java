@@ -389,7 +389,7 @@ public class EndpointDescriptionLocator {
 			String matchingFilters, boolean discovered) {
 		if (eventQueue == null)
 			return;
-		trace("queueEndpointDescription", "endpointDescription="
+		trace("queueEndpointDescription", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ endpointDescription);
 		synchronized (eventQueue) {
 			eventQueue
@@ -618,7 +618,7 @@ public class EndpointDescriptionLocator {
 				if (description.matches(filter))
 					return filter;
 			} catch (IllegalArgumentException e) {
-				logError("isMatch", "invalid endpoint listener filter="
+				logError("isMatch", "invalid endpoint listener filter=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ filters, e);
 			}
 		}
@@ -825,8 +825,8 @@ public class EndpointDescriptionLocator {
 		}
 
 		void handleService(IServiceInfo serviceInfo, boolean discovered) {
-			logInfo("handleService", "serviceInfo=" + serviceInfo
-					+ ",discovered=" + discovered);
+			logInfo("handleService", "serviceInfo=" + serviceInfo //$NON-NLS-1$ //$NON-NLS-2$
+					+ ",discovered=" + discovered); //$NON-NLS-1$
 			IServiceID serviceID = serviceInfo.getServiceID();
 			if (matchServiceID(serviceID))
 				handleOSGiServiceEndpoint(serviceID, serviceInfo, discovered);

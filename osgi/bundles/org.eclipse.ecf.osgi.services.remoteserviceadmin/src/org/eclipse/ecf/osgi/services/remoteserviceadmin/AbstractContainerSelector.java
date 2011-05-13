@@ -151,7 +151,7 @@ public abstract class AbstractContainerSelector {
 			return containerFactory.createContainer(containerTypeDescription);
 		} catch (ContainerCreateException e) {
 			throw new SelectContainerException(
-					"Exception creating or configuring container", e,
+					"Exception creating or configuring container", e, //$NON-NLS-1$
 					containerTypeDescription);
 		}
 	}
@@ -171,7 +171,7 @@ public abstract class AbstractContainerSelector {
 		// <containerTypeDescription.name>.
 		Map<String, Object> results = new HashMap<String, Object>();
 		for (String origKey : properties.keySet()) {
-			if (origKey.startsWith(exportedConfig + ".")) {
+			if (origKey.startsWith(exportedConfig + ".")) { //$NON-NLS-1$
 				String key = origKey.substring(exportedConfig.length() + 1);
 				if (key != null)
 					results.put(key, properties.get(origKey));
