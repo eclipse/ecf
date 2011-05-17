@@ -33,7 +33,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 		IChatMessageSender, IChatRoomContainer {
 
 	private static final long CONNECT_TIMEOUT = new Long(System.getProperty(
-			"org.eclipse.ecf.provider.irc.connectTimeout", "30000"))
+			"org.eclipse.ecf.provider.irc.connectTimeout", "60000"))
 			.longValue();
 
 	protected List participantListeners = new ArrayList();
