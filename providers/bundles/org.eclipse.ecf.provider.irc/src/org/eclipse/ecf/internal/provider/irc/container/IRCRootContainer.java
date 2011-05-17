@@ -11,8 +11,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.container;
 
-import java.util.StringTokenizer;
-
 import java.net.InetSocketAddress;
 import java.util.*;
 import org.eclipse.ecf.core.*;
@@ -29,8 +27,8 @@ import org.eclipse.ecf.internal.provider.irc.identity.IRCNamespace;
 import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.history.IHistory;
 import org.eclipse.ecf.presence.history.IHistoryManager;
-import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.IChatMessage.Type;
+import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.equinox.concurrent.future.TimeoutException;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
@@ -49,7 +47,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		IChatRoomManager, IChatRoomContainer, IRCMessageChannel,
 		IChatRoomContainerOptionsAdapter {
 
-	private static final long CONNECT_TIMEOUT = 20000;
+	private static final long CONNECT_TIMEOUT = new Long(System.getProperty(
+			"org.eclipse.ecf.provider.irc.connectTimeout", "60000"))
+			.longValue();
 
 	protected IRCConnection connection = null;
 
@@ -73,7 +73,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	private IIRCDatashareContainer datashareContainer;
 
 	/**
-	 * Used for determining whether the USERHOST reply should be hijacked or not.
+	 * Used for determining whether the USERHOST reply should be hijacked or
+	 * not.
 	 */
 	private boolean retrieveUserhost;
 
@@ -89,7 +90,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	/**
 	 * Creates and returns a datashare container implementation.
 	 * 
-	 * @return a datashare container implementation for this container, or <code>null</code> if it could not be created
+	 * @return a datashare container implementation for this container, or
+	 *         <code>null</code> if it could not be created
 	 */
 	private IIRCDatashareContainer createDatashareContainer() {
 		if (hasDatashare() && hasNIO()) {
@@ -99,18 +101,25 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	}
 
 	/**
-	 * Checks and returns whether the datashare NIO APIs are available in the current OSGi environment.
-	 * @return <code>true</code> if the datashare NIO APIs are available, <code>false</code> otherwise
+	 * Checks and returns whether the datashare NIO APIs are available in the
+	 * current OSGi environment.
+	 * 
+	 * @return <code>true</code> if the datashare NIO APIs are available,
+	 *         <code>false</code> otherwise
 	 */
 	private boolean hasDatashare() {
 		PackageAdmin admin = Activator.getDefault().getPackageAdmin();
-		Bundle[] bundles = admin.getBundles("org.eclipse.ecf.provider.datashare.nio", null); //$NON-NLS-1$
+		Bundle[] bundles = admin.getBundles(
+				"org.eclipse.ecf.provider.datashare.nio", null); //$NON-NLS-1$
 		return bundles != null && bundles.length != 0;
 	}
 
 	/**
-	 * Checks and returns there is Java 1.4 NIO support in the current Java runtime environment.
-	 * @return <code>true</code> if the Java 1.4 NIO APIs are available, <code>false</code> otherwise
+	 * Checks and returns there is Java 1.4 NIO support in the current Java
+	 * runtime environment.
+	 * 
+	 * @return <code>true</code> if the Java 1.4 NIO APIs are available,
+	 *         <code>false</code> otherwise
 	 */
 	private boolean hasNIO() {
 		try {
@@ -183,8 +192,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 				if (connectWaiting)
 					throw new TimeoutException(NLS.bind(
-							Messages.IRCRootContainer_Connect_Timeout, tID
-									.getName()), CONNECT_TIMEOUT);
+							Messages.IRCRootContainer_Connect_Timeout,
+							tID.getName()), CONNECT_TIMEOUT);
 				if (connectException != null)
 					throw connectException;
 				this.targetID = tID;
@@ -196,7 +205,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					// message to the server so that we can attempt to retrieve
 					// our current IP
 					retrieveUserhost = true;
-					connection.doUserhost(nick);	
+					connection.doUserhost(nick);
 				}
 			} catch (Exception e) {
 				this.targetID = null;
@@ -249,30 +258,30 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 				if (targetID != null) {
 					showMessage(null, NLS.bind(
-							Messages.IRCRootContainer_Disconnected, targetID
-									.getName()));
+							Messages.IRCRootContainer_Disconnected,
+							targetID.getName()));
 					handleDisconnected();
 				}
 			}
 
 			public void onError(String arg0) {
 				trace("handleOnError(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-				showMessage(null, NLS.bind(Messages.IRCRootContainer_Error,
-						arg0));
+				showMessage(null,
+						NLS.bind(Messages.IRCRootContainer_Error, arg0));
 				handleErrorIfConnecting(arg0);
 			}
 
 			public void onError(int arg0, String arg1) {
 				String msg = arg0 + "," + arg1; //$NON-NLS-1$
 				trace("handleOnError(" + msg + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-				showMessage(null, NLS
-						.bind(Messages.IRCRootContainer_Error, msg));
+				showMessage(null,
+						NLS.bind(Messages.IRCRootContainer_Error, msg));
 				handleErrorIfConnecting(arg0 + msg);
 			}
 
 			public void onInvite(String arg0, IRCUser arg1, String arg2) {
-				handleInvite(createIDFromString(arg0), createIDFromString(arg1
-						.getNick()));
+				handleInvite(createIDFromString(arg0),
+						createIDFromString(arg1.getNick()));
 			}
 
 			public void onJoin(String arg0, IRCUser arg1) {
@@ -299,14 +308,12 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					// check if we are the ones that have been kicked
 					if (kicked.equals(((IRCID) targetID).getUsername())) {
 						// fire disconnection events for this channel container
-						channel
-								.fireContainerEvent(new ContainerDisconnectingEvent(
-										channel.getID(), channel.targetID));
+						channel.fireContainerEvent(new ContainerDisconnectingEvent(
+								channel.getID(), channel.targetID));
 						channel.firePresenceListeners(false,
 								new String[] { kicked });
-						channel
-								.fireContainerEvent(new ContainerDisconnectedEvent(
-										channel.getID(), channel.targetID));
+						channel.fireContainerEvent(new ContainerDisconnectedEvent(
+								channel.getID(), channel.targetID));
 					} else {
 						channel.firePresenceListeners(false,
 								new String[] { kicked });
@@ -362,9 +369,11 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						// remote peer and initiate a socket connection
 						String identifier = arg2
 								.substring(5, arg2.length() - 1);
-						StringTokenizer tokenizer = new StringTokenizer(identifier, ":"); //$NON-NLS-1$
-						datashareContainer.enqueue(new InetSocketAddress(tokenizer.nextToken(),
-								Integer.parseInt(tokenizer.nextToken())));
+						StringTokenizer tokenizer = new StringTokenizer(
+								identifier, ":"); //$NON-NLS-1$
+						datashareContainer.enqueue(new InetSocketAddress(
+								tokenizer.nextToken(), Integer
+										.parseInt(tokenizer.nextToken())));
 					}
 				} else {
 					showMessage(arg0, arg1.toString(), arg2);
@@ -430,7 +439,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			return null;
 		} else if (serviceType.isInstance(this)) {
 			return this;
-		} else if (datashareContainer != null && serviceType.isInstance(datashareContainer)) {
+		} else if (datashareContainer != null
+				&& serviceType.isInstance(datashareContainer)) {
 			return datashareContainer;
 		}
 		return null;
@@ -640,19 +650,17 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						commandMessage = commandMessage.substring(5);
 						int index = commandMessage.indexOf(COMMAND_DELIM);
 						if (index != -1) {
-							connection
-									.doPrivmsg(commandMessage.substring(0,
-											index), commandMessage
-											.substring(index + 1));
+							connection.doPrivmsg(
+									commandMessage.substring(0, index),
+									commandMessage.substring(index + 1));
 						}
 					} else if (lowerCase.startsWith("/privmsg ")) { //$NON-NLS-1$
 						commandMessage = commandMessage.substring(9);
 						int index = commandMessage.indexOf(COMMAND_DELIM);
 						if (index != -1) {
-							connection
-									.doPrivmsg(commandMessage.substring(0,
-											index), commandMessage
-											.substring(index + 1));
+							connection.doPrivmsg(
+									commandMessage.substring(0, index),
+									commandMessage.substring(index + 1));
 						}
 					} else if (lowerCase.startsWith("/op ")) { //$NON-NLS-1$
 						nextToken(command); // skip command
@@ -881,8 +889,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	protected void handle353Reply(String channel, String[] strings) {
 		IRCChannelContainer container = getChannel(channel);
 		if (container == null) {
-			showMessage(null, NLS.bind(Messages.IRCRootContainer_353_Error,
-					channel));
+			showMessage(null,
+					NLS.bind(Messages.IRCRootContainer_353_Error, channel));
 		} else
 			container.firePresenceListeners(true, strings);
 	}
@@ -895,8 +903,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				handle353Reply(users[2], parseUserNames(arg2));
 				break;
 			case 311:
-				showMessage(null, NLS.bind(Messages.IRCRootContainer_Whois,
-						users[1]));
+				showMessage(null,
+						NLS.bind(Messages.IRCRootContainer_Whois, users[1]));
 				showMessage(null, trimUsername(users[2]) + "@" + users[3]); //$NON-NLS-1$
 				break;
 			case 312:
@@ -904,15 +912,15 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						new Object[] { users[2], arg2 }));
 				break;
 			case 317:
-				showMessage(null, NLS.bind(Messages.IRCRootContainer_Idle,
-						users[2]));
+				showMessage(null,
+						NLS.bind(Messages.IRCRootContainer_Idle, users[2]));
 				break;
 			case 318:
 				showMessage(null, Messages.IRCRootContainer_Whois_End);
 				break;
 			case 319:
-				showMessage(null, NLS.bind(Messages.IRCRootContainer_Channels,
-						arg2));
+				showMessage(null,
+						NLS.bind(Messages.IRCRootContainer_Channels, arg2));
 				break;
 			case 320:
 				break;
@@ -927,7 +935,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			case 302:
 				if (retrieveUserhost) {
 					if (datashareContainer != null) {
-						// set the retrieved ip address from the 
+						// set the retrieved ip address from the
 						arg2 = arg2.trim();
 						String ip = arg2.substring(arg2.lastIndexOf('@') + 1);
 						datashareContainer.setIP(ip);
