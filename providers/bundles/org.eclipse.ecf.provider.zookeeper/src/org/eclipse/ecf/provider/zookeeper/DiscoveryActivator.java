@@ -23,8 +23,10 @@ import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator
 import org.eclipse.ecf.provider.zookeeper.core.internal.BundleStoppingListener;
 import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
@@ -35,36 +37,39 @@ public class DiscoveryActivator implements BundleActivator {
 	private static BundleContext context;
 	private ServiceRegistration discoveryRegistration;
 	private static Set<BundleStoppingListener> stopListeners = new HashSet<BundleStoppingListener>();
-	private ServiceTracker confTracker, logServiceTraker;
+	private ServiceTracker confTracker, logServiceTracker;
 
 	public void start(final BundleContext ctxt) {
 		context = ctxt;
-		//spawn asynchronously to avoid deadlocks during OSGi bundle startup
-		new Thread(new Runnable() {
-			public void run() {
-				startup(ctxt);
-			}
-		}).start();
-	}
-
-	private void startup(final BundleContext ctxt) {
-		Properties props = new Properties();
+		
+		final Properties props = new Properties();
 		props.put(IDiscoveryLocator.CONTAINER_NAME,
 				ZooDiscoveryContainerInstantiator.NAME);
 		props.put(IDiscoveryAdvertiser.CONTAINER_NAME,
 				ZooDiscoveryContainerInstantiator.NAME);
-		/*
-		 * Make us available as IDiscoveryLocator and IDiscoveryAdvertiser
-		 * services for OSGi trackers
-		 */
+		// register ourselves using a service factory 
 		discoveryRegistration = ctxt.registerService(new String[] {
 				IDiscoveryLocator.class.getName(),
-				IDiscoveryAdvertiser.class.getName() }, ZooDiscoveryContainer
-				.getSingleton(), (Dictionary) props);
-		ZooDiscoveryContainer.getSingleton().setDiscoveryProperties(props);
+				IDiscoveryAdvertiser.class.getName() }, new ServiceFactory() {
+					private volatile ZooDiscoveryContainer zdc;
+					
+					public Object getService(Bundle bundle,
+							ServiceRegistration registration) {
+						if (zdc == null) {
+							zdc = ZooDiscoveryContainer.getSingleton();
+							zdc.setDiscoveryProperties(props);
+						}
+						return zdc;
+					}
 
-		// track OSGi log services
-		DiscoveryActivator.this.logServiceTraker = new ServiceTracker(ctxt,
+					public void ungetService(Bundle bundle,
+							ServiceRegistration registration, Object service) {
+		                //TODO-slewis we later might want to dispose zoodiscovery when the last!!! consumer ungets the service
+		                //Though don't forget about the (ECF) Container which might still be in use
+					}}, (Dictionary) props);
+
+		// setup and open log service tracker
+		logServiceTracker = new ServiceTracker(ctxt,
 				org.osgi.service.log.LogService.class.getName(), null) {
 			public Object addingService(ServiceReference reference) {
 				Logger.bindLogService((LogService) context
@@ -78,7 +83,7 @@ public class DiscoveryActivator implements BundleActivator {
 				super.removedService(reference, service); 
 			}
 		};
-		logServiceTraker.open(true);
+		logServiceTracker.open(true);
 	}
 
 	public void stop(BundleContext c) throws Exception {
@@ -113,3 +118,4 @@ public class DiscoveryActivator implements BundleActivator {
 	}
 
 }
+
