@@ -81,8 +81,9 @@
     </rm:provider>
   </rm:searchPath>
   <rm:searchPath name="default">
-    <rm:provider componentTypes="osgi.bundle" readerType="p2" mutable="false">
+    <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.mutable" value="false"/>
+      <rm:property key="buckminster.source" value="false"/>
       <rm:uri format="http://ftp.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20100519200754/repository"/>
     </rm:provider>
     <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
