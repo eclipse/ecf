@@ -170,8 +170,8 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		String proxyClassName = convertInterfaceNameToAsyncInterfaceName(c.getName());
 		try {
 			return Class.forName(proxyClassName);
-		} catch (Exception e) {
-			logWarning("No async remote service interface found with name=" + proxyClassName + " for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
+		} catch (ClassNotFoundException e) {
+			logInfo("No async remote service interface found with name=" + proxyClassName + " for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		} catch (NoClassDefFoundError e) {
 			logWarning("Async remote service interface with name=" + proxyClassName + " could not be loaded for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
@@ -186,8 +186,8 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		String proxyClassName = convertInterfaceNameToAsyncInterfaceName(c.getName());
 		try {
 			return Class.forName(proxyClassName, true, cl);
-		} catch (Exception e) {
-			logWarning("No async remote service interface found with name=" + proxyClassName + " for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
+		} catch (ClassNotFoundException e) {
+			logInfo("No async remote service interface found with name=" + proxyClassName + " for remote service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		} catch (NoClassDefFoundError e) {
 			logWarning("Async remote service interface with name=" + proxyClassName + " could not be loaded for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
@@ -367,9 +367,15 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		return methodName.endsWith(IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX) ? methodName.substring(0, methodName.length() - IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX.length()) : methodName;
 	}
 
+	private void logInfo(String message, Throwable e) {
+		Activator a = Activator.getDefault();
+		if (a != null)
+			a.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, message, e));
+	}
+
 	protected void logWarning(String string, Throwable e) {
 		Activator a = Activator.getDefault();
 		if (a != null)
-			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string));
+			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string, e));
 	}
 }
