@@ -871,7 +871,7 @@ public class EndpointDescriptionLocator {
 		}
 
 		private void logInfo(String methodName, String message) {
-			LogUtility.logWarning(methodName,
+			LogUtility.logInfo(methodName,
 					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
 					message);
 		}

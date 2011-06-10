@@ -20,6 +20,18 @@ public class LogUtility {
 		logError(methodName, debugOption, clazz, message, null);
 		traceException(methodName, debugOption, clazz, message, null);
 	}
+	
+	public static void logInfo(String methodName, String debugOption,
+			Class clazz, String message) {
+		trace(methodName, debugOption, clazz, "INFO:" + message); //$NON-NLS-1$
+		Activator.getDefault().log(
+				new Status(IStatus.INFO, Activator.PLUGIN_ID,
+						IStatus.INFO, clazz.getName() + ":" //$NON-NLS-1$
+								+ ((methodName == null) ? "<unknown>" //$NON-NLS-1$
+										: methodName) + ":" //$NON-NLS-1$
+								+ ((message == null) ? "<empty>" : message), //$NON-NLS-1$
+						null));
+	}
 
 	public static void logWarning(String methodName, String debugOption,
 			Class clazz, String message) {
