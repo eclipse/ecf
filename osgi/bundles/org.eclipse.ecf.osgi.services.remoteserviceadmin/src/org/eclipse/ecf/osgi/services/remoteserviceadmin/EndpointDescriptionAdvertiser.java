@@ -89,7 +89,9 @@ public class EndpointDescriptionAdvertiser implements
 			return createErrorStatus(messagePrefix
 					+ " endpointDescription=" //$NON-NLS-1$
 					+ endpointDescription
-					+ ".  No endpointDescriptionLocator advertisers available.  Cannot unpublish endpointDescription=" //$NON-NLS-1$
+					+ ".  No endpointDescriptionLocator advertisers available.  Cannot "  //$NON-NLS-1$
+					+ (advertise ? "publish" : "unpublish")  //$NON-NLS-1$ //$NON-NLS-2$
+					+ " endpointDescription=" //$NON-NLS-1$ 
 					+ endpointDescription);
 		for (int i = 0; i < discoveryAdvertisers.length; i++) {
 			IServiceInfo serviceInfo = (advertise ? serviceInfoFactory
