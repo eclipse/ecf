@@ -47,20 +47,20 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	 */
 	public IContainer createInstance(final ContainerTypeDescription description, final Object[] parameters) throws ContainerCreateException {
 		try {
-			final RemoteOSGiService remoteOsGiService = Activator.getDefault().getRemoteOSGiService();
+			final RemoteOSGiService remoteOSGiService = Activator.getDefault().getRemoteOSGiService();
 			if (parameters == null) {
 				//TODO factor localHost and protocol out?
-				final String localHost = InetAddress.getLocalHost().getHostName();
+				final String localHost = InetAddress.getLocalHost().getCanonicalHostName();
 				final String protocol = "r-osgi"; //$NON-NLS-1$
 
-				final int port = remoteOsGiService.getListeningPort(protocol);
+				final int port = remoteOSGiService.getListeningPort(protocol);
 				final ID containerID = new R_OSGiID(protocol + "://" + localHost + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
-				return new R_OSGiRemoteServiceContainer(remoteOsGiService, containerID);
+				return new R_OSGiRemoteServiceContainer(remoteOSGiService, containerID);
 			} else if (parameters.length > 0) {
 				if (parameters[0] instanceof ID) {
-					return new R_OSGiRemoteServiceContainer(remoteOsGiService, (ID) parameters[0]);
+					return new R_OSGiRemoteServiceContainer(remoteOSGiService, (ID) parameters[0]);
 				} else if (parameters[0] instanceof String) {
-					return new R_OSGiRemoteServiceContainer(remoteOsGiService, new R_OSGiID((String) parameters[0]));
+					return new R_OSGiRemoteServiceContainer(remoteOSGiService, new R_OSGiID((String) parameters[0]));
 				}
 			}
 			throw new ContainerCreateException("Unsupported arguments " //$NON-NLS-1$
