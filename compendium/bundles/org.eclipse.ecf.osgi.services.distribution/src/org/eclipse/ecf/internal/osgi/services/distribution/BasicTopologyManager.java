@@ -5,7 +5,9 @@ import java.util.Dictionary;
 import java.util.Properties;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventHook;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
@@ -21,12 +23,34 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 	private static final String endpointListenerScope = System
 			.getProperty("org.eclipse.ecf.osgi.services.discovery.endpointListenerScope"); //$NON-NLS-1$
 
+	private boolean exportRegisteredSvcs = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcs", "true")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
+
+	private String exportRegisteredSvcsClassname = System
+			.getProperty("org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcsClassname"); //$NON-NLS-1$
+
+	private String exportRegisteredSvcsFilter = System
+			.getProperty("org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcsFilter"); //$NON-NLS-1$
+
 	private ServiceRegistration endpointListenerRegistration;
 
 	private ServiceRegistration eventHookRegistration;
 
 	public BasicTopologyManager(BundleContext context) {
 		super(context);
+	}
+
+	public void setExportRegisteredSvcs(boolean val) {
+		this.exportRegisteredSvcs = val;
+	}
+
+	public void setExportRegisteredSvcsClassname(String classname) {
+		this.exportRegisteredSvcsClassname = classname;
+	}
+
+	public void setExportRegisteredSvcsFilter(String filter) {
+		this.exportRegisteredSvcsFilter = filter;
 	}
 
 	private String getEndpointListenerScope() {
@@ -55,7 +79,38 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 		return result;
 	}
 
+	public void exportRegisteredServices(String exportRegisteredSvcsClassname,
+			String exportRegisteredSvcsFilter) {
+		ServiceReference[] existingServiceRefs = null;
+		try {
+			existingServiceRefs = getContext().getAllServiceReferences(
+					exportRegisteredSvcsClassname, exportRegisteredSvcsFilter);
+		} catch (InvalidSyntaxException e) {
+			logError(
+					"exportRegisteredServices", //$NON-NLS-1$
+					"Could not retrieve existing service references for exportRegisteredSvcsClassname=" //$NON-NLS-1$
+							+ exportRegisteredSvcsClassname
+							+ " and exportRegisteredSvcsFilter=" //$NON-NLS-1$
+							+ exportRegisteredSvcsFilter);
+		}
+		// Now export as if the service was registering right now...i.e. perform
+		// export
+		if (existingServiceRefs != null)
+			for (int i = 0; i < existingServiceRefs.length; i++)
+				// This method will check the service properties for
+				// remote service props. If previously registered as a
+				// remote service, it will export the remote
+				// service if not it will simply return/skip
+				handleServiceRegistering(existingServiceRefs[i]);
+	}
+
 	public void start() throws Exception {
+
+		// First export any previously registered remote services
+		if (exportRegisteredSvcs)
+			exportRegisteredServices(exportRegisteredSvcsClassname,
+					exportRegisteredSvcsFilter);
+
 		// Register as EndpointListener, so that it gets notified when Endpoints
 		// are discovered
 		Properties props = new Properties();
