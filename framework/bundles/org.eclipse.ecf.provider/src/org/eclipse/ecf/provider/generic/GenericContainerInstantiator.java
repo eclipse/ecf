@@ -154,10 +154,15 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		}
 		if (newID == null) {
 			int defaultPort = TCPServerSOContainer.DEFAULT_PORT;
+			// The default value for DEFAULT_FALLBACK_PORT is now true
 			boolean useFallbackPort = TCPServerSOContainer.DEFAULT_FALLBACK_PORT;
+			// if useFallbackPort and the DEFAULT_PORT is 
+			// not available, then a free port is selected
 			if (useFallbackPort && !defaultPortIsFree(defaultPort)) {
 				defaultPort = getFreePort();
 			}
+			if (defaultPort < 0)
+				throw new IDCreateException("Server port for server cannot be -1"); //$NON-NLS-1$
 			newID = IDFactory.getDefault().createStringID(TCPServerSOContainer.DEFAULT_PROTOCOL + "://" + TCPServerSOContainer.DEFAULT_HOST + ":" + defaultPort + TCPServerSOContainer.DEFAULT_NAME);//$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if (ka == null)
@@ -204,15 +209,16 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		boolean isClient = isClient(description);
 		try {
 			GenericContainerArgs gcargs = null;
-			if (isClient)
-				gcargs = getClientArgs(args);
-			else
-				gcargs = getServerArgs(args);
-			// new ID must not be null
 			if (isClient) {
+				gcargs = getClientArgs(args);
 				return new TCPClientSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
 			}
-			return new TCPServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
+			// This synchronized block is to prevent issues with
+			// multithreaded access to ServerPort (to find available port)
+			synchronized (this) {
+				gcargs = getServerArgs(args);
+				return new TCPServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
+			}
 		} catch (Exception e) {
 			Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "createInstance", e); //$NON-NLS-1$
 			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, CREATE_INSTANCE_ERROR_CODE, "createInstance", e)); //$NON-NLS-1$
