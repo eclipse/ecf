@@ -160,7 +160,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 				port = TCPServerSOContainer.DEFAULT_PORT;
 			}
 			if (port < 0)
-				throw new IDCreateException("Server port for generic server cannot be -1"); //$NON-NLS-1$
+				throw new IDCreateException("No server port is available for generic server creation.  org.eclipse.ecf.provider.generic.port.fallback=" + TCPServerSOContainer.DEFAULT_FALLBACK_PORT + " and org.eclipse.ecf.provider.generic.port=" + TCPServerSOContainer.DEFAULT_PORT); //$NON-NLS-1$ //$NON-NLS-2$
 			newID = IDFactory.getDefault().createStringID(TCPServerSOContainer.DEFAULT_PROTOCOL + "://" + TCPServerSOContainer.DEFAULT_HOST + ":" + port + TCPServerSOContainer.DEFAULT_NAME);//$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if (ka == null)
