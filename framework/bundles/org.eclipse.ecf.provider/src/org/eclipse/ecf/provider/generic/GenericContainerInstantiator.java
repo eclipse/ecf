@@ -153,27 +153,25 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 				newID = getIDFromArg(args[0]);
 		}
 		if (newID == null) {
-			int defaultPort = TCPServerSOContainer.DEFAULT_PORT;
-			// The default value for DEFAULT_FALLBACK_PORT is now true
-			boolean useFallbackPort = TCPServerSOContainer.DEFAULT_FALLBACK_PORT;
-			// if useFallbackPort and the DEFAULT_PORT is 
-			// not available, then a free port is selected
-			if (useFallbackPort && !defaultPortIsFree(defaultPort)) {
-				defaultPort = getFreePort();
+			int port = -1;
+			if (TCPServerSOContainer.DEFAULT_FALLBACK_PORT) {
+				port = getFreePort();
+			} else if (portIsFree(TCPServerSOContainer.DEFAULT_PORT)) {
+				port = TCPServerSOContainer.DEFAULT_PORT;
 			}
-			if (defaultPort < 0)
-				throw new IDCreateException("Server port for server cannot be -1"); //$NON-NLS-1$
-			newID = IDFactory.getDefault().createStringID(TCPServerSOContainer.DEFAULT_PROTOCOL + "://" + TCPServerSOContainer.DEFAULT_HOST + ":" + defaultPort + TCPServerSOContainer.DEFAULT_NAME);//$NON-NLS-1$ //$NON-NLS-2$
+			if (port < 0)
+				throw new IDCreateException("Server port for generic server cannot be -1"); //$NON-NLS-1$
+			newID = IDFactory.getDefault().createStringID(TCPServerSOContainer.DEFAULT_PROTOCOL + "://" + TCPServerSOContainer.DEFAULT_HOST + ":" + port + TCPServerSOContainer.DEFAULT_NAME);//$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if (ka == null)
 			ka = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
 		return new GenericContainerArgs(newID, ka);
 	}
 
-	private boolean defaultPortIsFree(int defaultPort) {
+	private boolean portIsFree(int port) {
 		ServerSocket ss = null;
 		try {
-			ss = new ServerSocket(defaultPort);
+			ss = new ServerSocket(port);
 			ss.close();
 		} catch (BindException e) {
 			return false;
