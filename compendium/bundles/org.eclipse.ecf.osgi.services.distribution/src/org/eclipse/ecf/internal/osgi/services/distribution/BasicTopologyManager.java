@@ -91,7 +91,7 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 					"Could not retrieve existing service references for exportRegisteredSvcsClassname=" //$NON-NLS-1$
 							+ exportRegisteredSvcsClassname
 							+ " and exportRegisteredSvcsFilter=" //$NON-NLS-1$
-							+ exportRegisteredSvcsFilter);
+							+ exportRegisteredSvcsFilter, e);
 		}
 		// Now export as if the service was registering right now...i.e. perform
 		// export
