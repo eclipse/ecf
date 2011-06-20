@@ -31,7 +31,8 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 			.getProperty("org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcsClassname"); //$NON-NLS-1$
 
 	private String exportRegisteredSvcsFilter = System
-			.getProperty("org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcsFilter"); //$NON-NLS-1$
+			.getProperty(
+					"org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcsFilter", "(service.exported.interfaces=*)"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private ServiceRegistration endpointListenerRegistration;
 
