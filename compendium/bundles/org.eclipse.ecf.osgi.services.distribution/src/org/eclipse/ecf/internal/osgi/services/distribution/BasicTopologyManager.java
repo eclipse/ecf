@@ -107,11 +107,6 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 
 	public void start() throws Exception {
 
-		// First export any previously registered remote services
-		if (exportRegisteredSvcs)
-			exportRegisteredServices(exportRegisteredSvcsClassname,
-					exportRegisteredSvcsFilter);
-
 		// Register as EndpointListener, so that it gets notified when Endpoints
 		// are discovered
 		Properties props = new Properties();
@@ -125,6 +120,11 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 		// are registered
 		eventHookRegistration = getContext().registerService(
 				EventHook.class.getName(), this, null);
+
+		// Lastly, export any previously registered remote services
+		if (exportRegisteredSvcs)
+			exportRegisteredServices(exportRegisteredSvcsClassname,
+					exportRegisteredSvcsFilter);
 	}
 
 	public void endpointAdded(
