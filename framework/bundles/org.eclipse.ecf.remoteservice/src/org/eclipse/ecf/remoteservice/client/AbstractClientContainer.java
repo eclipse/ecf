@@ -124,7 +124,9 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
-		remoteServiceListeners.add(listener);
+		synchronized (remoteServiceListeners) {
+			remoteServiceListeners.add(listener);
+		}
 	}
 
 	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
@@ -209,7 +211,9 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	public void removeRemoteServiceListener(IRemoteServiceListener listener) {
-		remoteServiceListeners.remove(listener);
+		synchronized (remoteServiceListeners) {
+			remoteServiceListeners.remove(listener);
+		}
 	}
 
 	public boolean ungetRemoteService(final IRemoteServiceReference reference) {
@@ -331,7 +335,9 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 
 	public void dispose() {
 		disconnect();
-		remoteServiceListeners.clear();
+		synchronized (remoteServiceListeners) {
+			remoteServiceListeners.clear();
+		}
 		super.dispose();
 	}
 
