@@ -14,20 +14,10 @@ package org.eclipse.ecf.examples.provider.trivial.identity;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 
-/**
- *
- */
 public class TrivialID extends StringID {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3656862045346223983L;
 
-	/**
-	 * @param n
-	 * @param s
-	 */
 	protected TrivialID(Namespace n, String s) {
 		super(n, s);
 	}

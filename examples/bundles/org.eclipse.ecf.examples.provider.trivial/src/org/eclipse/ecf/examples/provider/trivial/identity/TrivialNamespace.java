@@ -15,9 +15,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 
-/**
- *
- */
 public class TrivialNamespace extends Namespace {
 
 	private static final long serialVersionUID = 1235788855435011811L;

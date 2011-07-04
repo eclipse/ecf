@@ -19,9 +19,6 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.BaseContainerInstantiator;
 
-/**
- *
- */
 public class TrivialContainerInstantiator extends BaseContainerInstantiator {
 
 	/* (non-Javadoc)
