@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Trivial Provider
+Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.ecf.examples.provider.trivial;singleton:=true
 Bundle-Version: 1.0.200.provider
 Bundle-Activator: org.eclipse.ecf.internal.examples.provider.trivial.Activator
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %bundle.provider
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
 Eclipse-LazyStart: true
@@ -15,3 +15,4 @@ Export-Package: org.eclipse.ecf.examples.provider.trivial,
  org.eclipse.ecf.examples.provider.trivial.identity,
  org.eclipse.ecf.internal.examples.provider.trivial;x-internal:=true,
  org.eclipse.ecf.internal.examples.provider.trivial.container;x-internal:=true
+Bundle-Localization: bundle
