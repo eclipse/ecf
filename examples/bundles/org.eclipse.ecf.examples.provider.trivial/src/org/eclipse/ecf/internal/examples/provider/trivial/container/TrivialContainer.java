@@ -23,7 +23,7 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.internal.examples.provider.trivial.identity.TrivialNamespace;
+import org.eclipse.ecf.examples.provider.trivial.identity.TrivialNamespace;
 
 /**
  * Trivial container implementation. Note that container adapter implementations can be

@@ -11,3 +11,7 @@ Eclipse-LazyStart: true
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
+Export-Package: org.eclipse.ecf.examples.provider.trivial,
+ org.eclipse.ecf.examples.provider.trivial.identity,
+ org.eclipse.ecf.internal.examples.provider.trivial;x-internal:=true,
+ org.eclipse.ecf.internal.examples.provider.trivial.container;x-internal:=true
