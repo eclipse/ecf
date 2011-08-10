@@ -1,27 +1,30 @@
-/*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: Composent, Inc. - initial API and implementation
- ******************************************************************************/
+/****************************************************************************
+ * Copyright (c) 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
+
 package org.eclipse.ecf.core.sharedobject.util;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class SimpleFIFOQueue implements ISimpleFIFOQueue {
-	List list;
+	private final List list;
 
-	boolean stopped;
+	private boolean stopped;
 
 	public SimpleFIFOQueue() {
 		list = new LinkedList();
 		stopped = false;
 	}
 
-	public synchronized boolean enqueue(Object obj) {
+	public synchronized boolean enqueue(final Object obj) {
 		if (isStopped() || obj == null) {
 			return false;
 		}
@@ -35,7 +38,7 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 	}
 
 	public synchronized Object dequeue() {
-		Object val = peekQueue();
+		final Object val = peekQueue();
 		if (val != null) {
 			removeHead();
 		}
@@ -48,14 +51,14 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 				return null;
 			try {
 				wait();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				return null;
 			}
 		}
 		return list.get(0);
 	}
 
-	public synchronized Object peekQueue(long waitMS) {
+	public synchronized Object peekQueue(final long waitMS) {
 		if (waitMS == 0)
 			return peekQueue();
 		if (stopped) {
@@ -63,7 +66,7 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 		}
 		try {
 			wait(waitMS);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 		if (isEmpty())
@@ -94,7 +97,7 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 	}
 
 	public synchronized Object[] flush() {
-		Object[] out = list.toArray();
+		final Object[] out = list.toArray();
 		list.clear();
 		close();
 		return out;
@@ -106,7 +109,7 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("SimpleFIFOQueue["); //$NON-NLS-1$
+		final StringBuffer sb = new StringBuffer("SimpleFIFOQueue["); //$NON-NLS-1$
 		sb.append(list).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
