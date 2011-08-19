@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 EclipseSource and others. All rights reserved. This
+ * Copyright (c) 2011 Composent and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -18,6 +18,49 @@ import org.eclipse.core.runtime.Assert;
  * @since 3.0
  */
 public class URIID extends BaseID implements IResourceID {
+
+	static class URIIDNamespace extends Namespace {
+
+		private static final long serialVersionUID = 115165512542491014L;
+
+		public URIIDNamespace(String name, String desc) {
+			super(name, desc);
+		}
+
+		public URIIDNamespace() {
+			super(URIID.class.getName(), "URIID Namespace"); //$NON-NLS-1$
+		}
+
+		public ID createInstance(Object[] parameters) throws IDCreateException {
+			try {
+				String init = getInitStringFromExternalForm(parameters);
+				if (init != null)
+					return new URIID(this, new URI(init));
+				if (parameters[0] instanceof URI)
+					return new URIID(this, (URI) parameters[0]);
+				if (parameters[0] instanceof String)
+					return new URIID(this, new URI((String) parameters[0]));
+				throw new IDCreateException("Cannot create URIID");
+			} catch (Exception e) {
+				throw new IDCreateException(URIIDNamespace.this.getName()
+						+ " createInstance()", e); //$NON-NLS-1$
+			}
+		}
+
+		public String getScheme() {
+			return "uri";
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @seeorg.eclipse.ecf.core.identity.Namespace#
+		 * getSupportedParameterTypesForCreateInstance()
+		 */
+		public Class[][] getSupportedParameterTypes() {
+			return new Class[][] { { String.class }, { URI.class } };
+		}
+	}
 
 	private static final long serialVersionUID = 7328962407044918278L;
 	private final URI uri;
@@ -54,6 +97,10 @@ public class URIID extends BaseID implements IResourceID {
 
 	public URI toURI() {
 		return uri;
+	}
+
+	public String toString() {
+		return "URIID [uri=" + uri + "]";
 	}
 
 }
