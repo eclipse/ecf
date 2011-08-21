@@ -245,7 +245,7 @@ public class PropertiesUtil {
 
 	// skip dotted (private) properties (R4.2 enterprise spec. table 122.1)
 	public static boolean isPrivateProperty(String key) {
-		return (key.startsWith(".")); //$NON-NLS-N$
+		return (key.startsWith(".")); //$NON-NLS-1$
 	}
 
 	public static boolean isReservedProperty(String key) {

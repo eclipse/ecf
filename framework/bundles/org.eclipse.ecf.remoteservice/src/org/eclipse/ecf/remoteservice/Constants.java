@@ -111,6 +111,8 @@ public interface Constants {
 	 */
 	public static final String SERVICE_PREVENT_RSPROXY = "ecf.rsvc.norsproxy"; //$NON-NLS-1$
 
+	public static final String SERVICE_ASYNC_PROXY = "ecf.rsvc.async.proxy_"; //$NON-NLS-1$
+
 	/**
 	 * @deprecated
 	 */

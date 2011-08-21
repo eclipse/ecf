@@ -30,7 +30,6 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
@@ -69,7 +68,7 @@ public class Activator implements BundleActivator {
 	private Object saxParserFactoryTrackerLock = new Object();
 	private ServiceTracker saxParserFactoryTracker;
 
-	private static final String RSA_PROXY_BUNDLE_SYMBOLIC_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy";
+	private static final String RSA_PROXY_BUNDLE_SYMBOLIC_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"; //$NON-NLS-1$
 
 	private BundleContext proxyServiceFactoryBundleContext;
 
@@ -84,9 +83,9 @@ public class Activator implements BundleActivator {
 			}
 		}
 		if (proxyServiceFactoryBundleContext == null)
-			throw new IllegalStateException("RSA Proxy bundle (symbolic id=='"
+			throw new IllegalStateException("RSA Proxy bundle (symbolic id=='" //$NON-NLS-1$
 					+ RSA_PROXY_BUNDLE_SYMBOLIC_ID
-					+ "') cannot be found, so RSA cannot be started");
+					+ "') cannot be found, so RSA cannot be started"); //$NON-NLS-1$
 	}
 
 	private void stopProxyServiceFactoryBundle() {
@@ -238,8 +237,8 @@ public class Activator implements BundleActivator {
 			return false;
 		Bundle systemBundle = context.getBundle(0);
 		String systemBSN = systemBundle.getSymbolicName();
-		if ("org.eclipse.osgi".equals(systemBSN)) {
-			Version fixedVersion = new Version("3.7.0");
+		if ("org.eclipse.osgi".equals(systemBSN)) { //$NON-NLS-1$
+			Version fixedVersion = new Version("3.7.0"); //$NON-NLS-1$
 			// running on equinox; check the version
 			Version systemVersion = systemBundle.getVersion();
 			if (systemVersion.compareTo(fixedVersion) < 0)
