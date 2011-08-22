@@ -22,7 +22,7 @@
     <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
-      <rm:uri format="http://ftp.osuosl.org/pub/eclipse/eclipse/updates/3.6/R-3.6.2-201102101200/"/>
+      <rm:uri format="http://download.eclipse.org/tools/orbit/downloads/drops/R20110523182458/repository/"/>
     </rm:provider>
     <rm:provider xsi:type="pde:PDEMapProvider" componentTypes="osgi.bundle,eclipse.feature" readerType="cvs" mutable="false">
       <rm:property key="buckminster.mutable" value="false"/>
