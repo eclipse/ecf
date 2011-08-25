@@ -36,6 +36,7 @@ public class IDFactory implements IIDFactory {
 		addNamespace0(new StringID.StringIDNamespace());
 		addNamespace0(new GUID.GUIDNamespace());
 		addNamespace0(new LongID.LongNamespace());
+		addNamespace0(new URIID.URIIDNamespace());
 	}
 
 	private synchronized static void initialize() {

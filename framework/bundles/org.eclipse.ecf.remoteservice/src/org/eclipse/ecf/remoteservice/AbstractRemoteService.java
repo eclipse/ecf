@@ -187,7 +187,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		try {
 			return Class.forName(proxyClassName, true, cl);
 		} catch (ClassNotFoundException e) {
-			logInfo("No async remote service interface found with name=" + proxyClassName + " for remote service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
+			//logInfo("No async remote service interface found with name=" + proxyClassName + " for remote service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		} catch (NoClassDefFoundError e) {
 			logWarning("Async remote service interface with name=" + proxyClassName + " could not be loaded for proxy service class=" + c.getName(), e); //$NON-NLS-1$ //$NON-NLS-2$
@@ -196,6 +196,12 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	}
 
 	protected String convertInterfaceNameToAsyncInterfaceName(String interfaceName) {
+		if (interfaceName == null)
+			return null;
+		String asyncProxyName = (String) getRemoteServiceReference().getProperty(Constants.SERVICE_ASYNC_PROXY + interfaceName);
+		if (asyncProxyName != null)
+			return asyncProxyName;
+		// If a value has been specified by the ServiceProperty
 		return interfaceName + IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX;
 	}
 

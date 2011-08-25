@@ -962,9 +962,8 @@ public class RemoteServiceAdmin implements
 			EndpointDescription endpointDescription) {
 		EventAdmin eventAdmin = getEventAdmin();
 		if (eventAdmin == null) {
-			logError(
-					"RemoteServiceAdmin.postEvent", "No event admin service available to post event=" //$NON-NLS-1$ //$NON-NLS-2$
-							+ event);
+			//logWarning("RemoteServiceAdmin.postEvent", "No event admin service available to post event=" //$NON-NLS-1$ //$NON-NLS-2$
+			//		+ event);
 			return;
 		}
 		int eventType = event.getType();
