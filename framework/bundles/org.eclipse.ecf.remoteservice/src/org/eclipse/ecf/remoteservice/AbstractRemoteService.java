@@ -198,7 +198,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	protected String convertInterfaceNameToAsyncInterfaceName(String interfaceName) {
 		if (interfaceName == null)
 			return null;
-		String asyncProxyName = (String) getRemoteServiceReference().getProperty(Constants.SERVICE_ASYNC_PROXY + interfaceName);
+		String asyncProxyName = (String) getRemoteServiceReference().getProperty(Constants.SERVICE_ASYNC_RSPROXY_CLASS_ + interfaceName);
 		if (asyncProxyName != null)
 			return asyncProxyName;
 		// If a value has been specified by the ServiceProperty
