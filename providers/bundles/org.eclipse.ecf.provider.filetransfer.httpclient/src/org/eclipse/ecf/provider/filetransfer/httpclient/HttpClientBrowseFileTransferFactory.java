@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 IBM, Composent Inc. and others.
+ * Copyright (c) 2007, 2011 IBM, Composent Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,13 +7,13 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Henrich Kraemer - Bug 297742 - [transport] Investigate how to maintain HTTP session 
  *****************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -50,7 +50,7 @@ public class HttpClientBrowseFileTransferFactory implements IRemoteFileSystemBro
 					throw new RemoteFileSystemException(NLS.bind("Exception creating URL for {0}", directoryOrFileId)); //$NON-NLS-1$
 				}
 
-				HttpClientFileSystemBrowser browser = new HttpClientFileSystemBrowser(new HttpClient(new MultiThreadedHttpConnectionManager()), directoryOrFileId, listener, url, connectContext, proxy);
+				HttpClientFileSystemBrowser browser = new HttpClientFileSystemBrowser(new HttpClient(), directoryOrFileId, listener, url, connectContext, proxy);
 				return browser.sendBrowseRequest();
 			}
 

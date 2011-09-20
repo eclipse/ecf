@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2008, 2010 Composent, Inc., IBM and others.
+ * Copyright (c) 2008, 2011 Composent, Inc., IBM and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *    Henrich Kraemer - bug 263869, testHttpsReceiveFile fails using HTTP proxy
+ *    Henrich Kraemer - Bug 297742 - [transport] Investigate how to maintain HTTP session     
  *****************************************************************************/
 
 package org.eclipse.ecf.provider.filetransfer.httpclient;
@@ -17,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.Map;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -152,7 +154,6 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 				}
 			}
 		}
-
 	}
 
 	protected boolean hasForceNTLMProxyOption() {
@@ -179,6 +180,11 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			setupProxy(proxy);
 	}
 
+	private void initHttpClientConnectionManager() {
+		Map options = null; //Currently there is no API to pass in options to browse request
+		Activator.getDefault().getConnectionManagerHelper().initConnectionManager(httpClient, options);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser#runRequest()
 	 */
@@ -186,9 +192,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, this.getClass(), "runRequest"); //$NON-NLS-1$
 		setupProxies();
 		// set timeout
-		httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_CONNECTION_TIMEOUT);
-		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
-		httpClient.getParams().setConnectionManagerTimeout(DEFAULT_CONNECTION_TIMEOUT);
+		initHttpClientConnectionManager();
 
 		String urlString = directoryOrFile.toString();
 		CredentialsProvider credProvider = new HttpClientProxyCredentialProvider() {
@@ -216,6 +220,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		headMethod.getParams().setParameter(CredentialsProvider.PROVIDER, credProvider);
 		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		headMethod.addRequestHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		headMethod.addRequestHeader("Connection", "Keep-Alive"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		long lastModified = 0;
 		long fileLength = -1;
