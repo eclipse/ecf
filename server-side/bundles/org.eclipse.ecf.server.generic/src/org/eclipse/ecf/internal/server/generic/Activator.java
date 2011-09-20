@@ -102,7 +102,6 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
-		plugin = null;
 		if (serverManager != null) {
 			serverManager.closeServers();
 			serverManager = null;
@@ -127,6 +126,7 @@ public class Activator implements BundleActivator {
 				gscgFactory = null;
 			}
 		}
+		plugin = null;
 		this.context = null;
 	}
 
@@ -136,9 +136,8 @@ public class Activator implements BundleActivator {
 	 * @return the shared instance
 	 */
 	public synchronized static Activator getDefault() {
-		if (plugin == null) {
-			plugin = new Activator();
-		}
+		if (plugin == null)
+			throw new NullPointerException("Default Activator is null"); //$NON-NLS-1$
 		return plugin;
 	}
 
