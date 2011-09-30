@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 IBM, Composent Inc. and others.
+ * Copyright (c) 2007, 2011 IBM, Composent Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Chris Aniszczyk - initial API and implementation
+ *    Henrich Kraemer - Bug 297742 - [transport] Investigate how to maintain HTTP session 
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient;
 
@@ -37,6 +38,8 @@ public class Activator implements BundleActivator {
 
 	private ISSLSocketFactoryModifier sslSocketFactoryModifier;
 
+	private ConnectionManagerHelper cmHelper;
+
 	/**
 	 * The constructor
 	 */
@@ -64,6 +67,13 @@ public class Activator implements BundleActivator {
 
 	}
 
+	public ConnectionManagerHelper getConnectionManagerHelper() {
+		if (cmHelper == null) {
+			cmHelper = new ConnectionManagerHelper();
+		}
+		return cmHelper;
+	}
+
 	public ISSLSocketFactoryModifier getSSLSocketFactoryModifier() {
 		return sslSocketFactoryModifier;
 	}
@@ -80,6 +90,9 @@ public class Activator implements BundleActivator {
 
 		if (logServiceTracker != null) {
 			logServiceTracker.close();
+		}
+		if (cmHelper != null) {
+			cmHelper.shutdown();
 		}
 		this.context = null;
 		plugin = null;

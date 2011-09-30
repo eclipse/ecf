@@ -111,7 +111,54 @@ public interface Constants {
 	 */
 	public static final String SERVICE_PREVENT_RSPROXY = "ecf.rsvc.norsproxy"; //$NON-NLS-1$
 
-	public static final String SERVICE_ASYNC_PROXY = "ecf.rsvc.async.proxy_"; //$NON-NLS-1$
+	/**
+	 * This constant allows the fully qualified async remote service proxy to be specified
+	 * as a service property.  For example, if the remote service interface is as so:
+	 * <pre>
+	 * package foo;
+	 * 
+	 * public interface Bar {
+	 *    String doStuff();
+	 * }
+	 * </pre>
+	 * then by default, the async remote service proxy interface class would be expected 
+	 * to be the following:
+	 * <pre>
+	 * package foo;
+	 * import org.eclipse.ecf.remoteservice.IAsyncRemoteServiceProxy;
+	 * import org.eclipse.equinox.concurrent.future.IFuture;
+	 *
+	 * public interface BarAsync extends IAsyncRemoteServiceProxy {
+	 *    IFuture doStuffAsync();
+	 * }
+	 * </pre>
+	 * This property allows a new class to be associated with the
+	 * original service interface, so that rather than looking for the foo.BarAsync class
+	 * when a proxy is created, the class specified by the value of the property will
+	 * be used instead.  For example, assume the existance of another async
+	 * remote service interface:
+	 * <pre>
+	 * package gogo;
+	 * import org.eclipse.ecf.remoteservice.IAsyncRemoteServiceProxy;
+	 * import org.eclipse.equinox.concurrent.future.IFuture;
+	 * 
+	 * public interface MyBar extends IAsyncRemoteServiceProxy {
+	 *    IFuture doStuffAsync();
+	 * }
+	 * </pre>
+	 * Further assume that when the remote service was registered, that a service property 
+	 * was specified:
+	 * <pre>
+	 * serviceProps.put("ecf.rsvc.async.proxy_&lt;fq classname&gt;","&lt;fq substitute&gt;");
+	 * </pre>
+	 * <pre>
+	 * serviceProps.put("ecf.rsvc.async.proxy_foo.Bar","gogo.MyBar");
+	 * </pre>
+	 * Then, when a Bar proxy is created, if the 'gogo.MyBar' interface is available on 
+	 * the client, an async remote service proxy will be added to the proxy, and
+	 * client will be able to asynchronously call MyBar.doStuffAsync() on the proxy.
+	 */
+	public static final String SERVICE_ASYNC_RSPROXY_CLASS_ = "ecf.rsvc.async.proxy_"; //$NON-NLS-1$
 
 	/**
 	 * @deprecated

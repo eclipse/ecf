@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer.httpclient;singleton:=true
-Bundle-Version: 4.0.0.qualifier
+Bundle-Version: 4.0.1.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.ecf.internal.provider.filetransfer.httpclient.Activator
 Require-Bundle: org.eclipse.equinox.common,
@@ -25,6 +25,5 @@ Import-Package: org.apache.commons.httpclient;version="[3.0.1,3.1.0]",
 Export-Package: org.eclipse.ecf.internal.provider.filetransfer.httpclient;x-internal:=true,
  org.eclipse.ecf.provider.filetransfer.httpclient
 Bundle-Vendor: %plugin.provider
-Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
- J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Bundle-ActivationPolicy: lazy
