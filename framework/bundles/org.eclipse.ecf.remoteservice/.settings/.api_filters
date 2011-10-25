@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.ecf.remoteservice" version="2">
     <resource path="src/org/eclipse/ecf/remoteservice/Constants.java" type="org.eclipse.ecf.remoteservice.Constants">
+        <filter comment="Added SERVICE_ASYNC_RSPROXY_CLASS constant" id="403767336">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.remoteservice.Constants"/>
+                <message_argument value="SERVICE_ASYNC_RSPROXY_CLASS_"/>
+            </message_arguments>
+        </filter>
+        <filter id="405864542">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.remoteservice.Constants"/>
+                <message_argument value="SERVICE_ASYNC_PROXY"/>
+            </message_arguments>
+        </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="SERVICE_ASYNC_RSPROXY_CLASS_"/>
