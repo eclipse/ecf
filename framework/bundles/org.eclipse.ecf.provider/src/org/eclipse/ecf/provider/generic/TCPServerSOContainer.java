@@ -70,7 +70,7 @@ public class TCPServerSOContainer extends ServerSOContainer implements IConnectR
 		// Make sure URI syntax is followed.
 		URI actualURI = new URI(getID().getName());
 		int urlPort = actualURI.getPort();
-		if (group == null) {
+		if (grp == null) {
 			isSingle = true;
 			this.group = new TCPServerSOContainerGroup(urlPort);
 			this.group.putOnTheAir();
