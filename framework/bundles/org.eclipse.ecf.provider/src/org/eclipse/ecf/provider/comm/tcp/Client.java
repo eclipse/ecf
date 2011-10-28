@@ -109,12 +109,12 @@ public final class Client implements ISynchAsynchConnection {
 		setupThreads();
 	}
 
-	public Client(ISynchAsynchEventHandler handler, int maxmsgs) {
+	public Client(ISynchAsynchEventHandler handler, int keepAlive) {
 		if (handler == null)
 			throw new NullPointerException("event handler cannot be null"); //$NON-NLS-1$
 		this.handler = handler;
+		this.keepAlive = keepAlive;
 		containerID = handler.getEventHandlerID();
-		maxMsg = maxmsgs;
 		this.properties = new HashMap();
 	}
 
@@ -179,8 +179,7 @@ public final class Client implements ISynchAsynchConnection {
 			fact = SocketFactory.getDefaultSocketFactory();
 		ConnectResultMessage res = null;
 		try {
-			keepAlive = timeout;
-			final Socket s = fact.createSocket(anURI.getHost(), anURI.getPort(), keepAlive);
+			final Socket s = fact.createSocket(anURI.getHost(), anURI.getPort(), timeout);
 			// Set socket options
 			setSocketOptions(s);
 			// Now we've got a connection so set our socket
