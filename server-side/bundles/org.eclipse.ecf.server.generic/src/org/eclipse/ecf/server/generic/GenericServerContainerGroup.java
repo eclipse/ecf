@@ -104,9 +104,16 @@ public class GenericServerContainerGroup implements IGenericServerContainerGroup
 		return createContainer(path, IGenericServerContainerGroup.DEFAULT_KEEPALIVE);
 	}
 
+	/**
+	 * @since 5.1
+	 */
+	protected GenericServerSOContainerGroup getServerGroup() {
+		return serverGroup;
+	}
+
 	protected TCPServerSOContainer createGenericServerContainer(String path, int keepAlive, Map properties) throws ContainerCreateException {
 		try {
-			return new TCPServerSOContainer(new SOContainerConfig(createGenericServerID(path, properties), createGenericServerProperties(path, properties)), serverGroup, path, keepAlive);
+			return new TCPServerSOContainer(new SOContainerConfig(createGenericServerID(path, properties), createGenericServerProperties(path, properties)), getServerGroup(), path, keepAlive);
 		} catch (Exception e) {
 			throw new ContainerCreateException("Unexpected exception creating generic server container path=" + path, e); //$NON-NLS-1$
 		}
