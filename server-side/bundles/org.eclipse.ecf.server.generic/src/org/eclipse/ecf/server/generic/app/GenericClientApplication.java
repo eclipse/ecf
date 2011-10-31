@@ -9,11 +9,13 @@
 ******************************************************************************/
 package org.eclipse.ecf.server.generic.app;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.security.IConnectInitiatorPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.internal.server.generic.Activator;
+import org.eclipse.ecf.provider.generic.ClientSOContainer;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
@@ -21,6 +23,8 @@ import org.eclipse.equinox.app.IApplicationContext;
  * @since 3.0
  */
 public class GenericClientApplication extends AbstractGenericClientApplication implements IApplication {
+
+	private static final String GENERIC_CLIENT_CONTAINER_TYPE = "ecf.generic.client"; //$NON-NLS-1$
 
 	protected final Object appLock = new Object();
 	protected boolean done = false;
@@ -47,7 +51,24 @@ public class GenericClientApplication extends AbstractGenericClientApplication i
 	}
 
 	protected ISharedObjectContainer createContainer() throws ContainerCreateException {
-		return (ISharedObjectContainer) Activator.getDefault().getContainerManager().getContainerFactory().createContainer("ecf.generic.client"); //$NON-NLS-1$
+		IContainerFactory f = Activator.getDefault().getContainerManager().getContainerFactory();
+		ClientSOContainer client = (ClientSOContainer) ((clientId == null) ? f.createContainer(GENERIC_CLIENT_CONTAINER_TYPE) : f.createContainer(GENERIC_CLIENT_CONTAINER_TYPE, clientId));
+		if (password != null) {
+			client.setConnectInitiatorPolicy(new IConnectInitiatorPolicy() {
+				public void refresh() {
+					//nothing
+				}
+
+				public Object createConnectData(IContainer container, ID targetID, IConnectContext context) {
+					return password;
+				}
+
+				public int getConnectTimeout() {
+					return 30000;
+				}
+			});
+		}
+		return client;
 	}
 
 	protected void waitForDone() {
@@ -64,14 +85,7 @@ public class GenericClientApplication extends AbstractGenericClientApplication i
 	}
 
 	protected String[] getArguments(IApplicationContext context) {
-		String[] originalArgs = (String[]) context.getArguments().get("application.args"); //$NON-NLS-1$
-		if (originalArgs == null)
-			return new String[0];
-		final List l = new ArrayList();
-		for (int i = 0; i < originalArgs.length; i++)
-			if (!originalArgs[i].equals("-pdelaunch")) //$NON-NLS-1$
-				l.add(originalArgs[i]);
-		return (String[]) l.toArray(new String[] {});
+		return (String[]) context.getArguments().get("application.args"); //$NON-NLS-1$
 	}
 
 }
