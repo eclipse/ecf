@@ -23,6 +23,14 @@ public abstract class AbstractGenericClientApplication {
 	protected String connectTarget;
 	protected ISharedObjectContainer clientContainer;
 	protected int waitTime = 40000;
+	/**
+	 * @since 5.1
+	 */
+	protected String clientId = null;
+	/**
+	 * @since 5.1
+	 */
+	protected String password = null;
 
 	protected abstract ISharedObjectContainer createContainer() throws ContainerCreateException;
 
@@ -36,6 +44,12 @@ public abstract class AbstractGenericClientApplication {
 			if (args[i].equals("-waitTime")) { //$NON-NLS-1$
 				waitTime = new Integer(args[i + 1]).intValue();
 				i++;
+			}
+			if (args[i].equals("-clientId")) { //$NON-NLS-1$
+				clientId = args[i + 1];
+			}
+			if (args[i].equals("-connectPassword")) { //$NON-NLS-1$
+				password = args[i + 1];
 			}
 		}
 	}

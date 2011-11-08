@@ -35,5 +35,16 @@
                class="org.eclipse.ecf.server.generic.app.GenericClientApplication"/>
       </application>
    </extension>
+   <extension
+         id="GenericClientApplication"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            thread="any"
+            visible="true">
+         <run
+               class="org.eclipse.ecf.server.generic.app.GenericClientApplication">
+         </run>
+      </application>
+   </extension>
 
 </plugin>
