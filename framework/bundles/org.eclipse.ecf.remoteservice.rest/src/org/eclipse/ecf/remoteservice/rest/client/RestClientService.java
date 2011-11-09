@@ -73,17 +73,16 @@ public class RestClientService extends AbstractClientService {
 		try {
 			responseCode = httpClient.executeMethod(httpMethod);
 			if (isResponseOk(responseCode)) {
-				// Get response bytes
-				byte[] responseBytes = httpMethod.getResponseBody();
-				String responseCharSet = null;
-				if (httpMethod instanceof HttpMethodBase) {
-					HttpMethodBase methodBase = (HttpMethodBase) httpMethod;
-					responseCharSet = methodBase.getRequestCharSet();
-				}
 				// Get responseBody as String
-				responseBody = getResponseAsString(responseBytes, responseCharSet);
-			} else
-				handleException("Http response not OK.  URL=" + uri + " responseCode=" + new Integer(responseCode), null, responseCode); //$NON-NLS-1$ //$NON-NLS-2$
+				responseBody = getResponseAsString(httpMethod);
+			} else {
+				// If this method returns true, we should retrieve the response body
+				if (retrieveErrorResponseBody(responseCode)) {
+					responseBody = getResponseAsString(httpMethod);
+				}
+				// Now pass to the exception handler
+				handleException("Http response not OK.  URL=" + uri + " responseCode=" + new Integer(responseCode), null, responseCode, responseBody); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 		} catch (HttpException e) {
 			handleException("Transport HttpException", e, responseCode); //$NON-NLS-1$
 		} catch (IOException e) {
@@ -98,15 +97,35 @@ public class RestClientService extends AbstractClientService {
 		return result;
 	}
 
+	protected boolean retrieveErrorResponseBody(int responseCode) {
+		// XXX this needs to be defined differently for 
+		return false;
+	}
+
+	protected String getResponseAsString(HttpMethod httpMethod) throws IOException {
+		// Get response bytes
+		byte[] responseBytes = httpMethod.getResponseBody();
+		String responseCharSet = null;
+		if (httpMethod instanceof HttpMethodBase) {
+			HttpMethodBase methodBase = (HttpMethodBase) httpMethod;
+			responseCharSet = methodBase.getRequestCharSet();
+		}
+		return getResponseAsString(responseBytes, responseCharSet);
+	}
+
 	protected String getResponseAsString(byte[] bytes, String responseCharSet) {
 		if (bytes == null)
 			return null;
 		return EncodingUtil.getString(bytes, responseCharSet);
 	}
 
-	protected void handleException(String message, Throwable e, int responseCode) throws RestException {
+	protected void handleException(String message, Throwable e, int responseCode, String responseBody) throws RestException {
 		logException(message, e);
-		throw new RestException(message, e, responseCode);
+		throw new RestException(message, e, responseCode, responseBody);
+	}
+
+	protected void handleException(String message, Throwable e, int responseCode) throws RestException {
+		handleException(message, e, responseCode, null);
 	}
 
 	protected void setupTimeouts(HttpClient httpClient, IRemoteCall call, IRemoteCallable callable) {
