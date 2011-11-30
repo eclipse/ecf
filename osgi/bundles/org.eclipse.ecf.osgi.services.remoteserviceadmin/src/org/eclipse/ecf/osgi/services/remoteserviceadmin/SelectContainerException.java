@@ -11,6 +11,9 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import org.eclipse.ecf.core.ContainerTypeDescription;
 
+/**
+ * @since 2.0
+ */
 public class SelectContainerException extends Exception {
 
 	private static final long serialVersionUID = -5507248105370677422L;

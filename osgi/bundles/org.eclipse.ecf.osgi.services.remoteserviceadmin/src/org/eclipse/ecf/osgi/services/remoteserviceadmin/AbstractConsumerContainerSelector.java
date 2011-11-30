@@ -188,6 +188,9 @@ public class AbstractConsumerContainerSelector extends
 		return null;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected IRemoteServiceContainer createContainer(
 			ContainerTypeDescription containerTypeDescription,
 			String containerTypeDescriptionName, Map properties)

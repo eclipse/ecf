@@ -156,6 +156,9 @@ public abstract class AbstractContainerSelector {
 		}
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	protected Object getContainerFactoryArguments(
 			ServiceReference serviceReference, Map<String, Object> properties,
 			ContainerTypeDescription containerTypeDescription) {
