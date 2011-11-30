@@ -11,13 +11,26 @@
 package org.eclipse.ecf.core.util.reflection;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * @since 2.2
  *
  */
 public class ClassUtil {
+
+	private static Map convertor = new HashMap();
+
+	static {
+		convertor.put(boolean.class, Boolean.class);
+		convertor.put(byte.class, Byte.class);
+		convertor.put(char.class, Character.class);
+		convertor.put(double.class, Double.class);
+		convertor.put(float.class, Float.class);
+		convertor.put(int.class, Integer.class);
+		convertor.put(long.class, Long.class);
+		convertor.put(short.class, Short.class);
+	}
 
 	/**
 	 * @param aClass The Class providing method under question (Must not be null)
@@ -54,25 +67,63 @@ public class ClassUtil {
 		final int parameterCount = someParameterTypes.length;
 		aMethodName = aMethodName.intern();
 
+		final TreeSet matches = new TreeSet(new MethodComparator(someParameterTypes));
 		OUTER: for (int i = 0; i < candidates.length; i++) {
-			Method candidate = candidates[i];
-			String candidateMethodName = candidate.getName().intern();
-			Class[] candidateParameterTypes = candidate.getParameterTypes();
-			int candidateParameterCount = candidateParameterTypes.length;
+			final Method candidate = candidates[i];
+			final String candidateMethodName = candidate.getName().intern();
+			final Class[] candidateParameterTypes = candidate.getParameterTypes();
+			final int candidateParameterCount = candidateParameterTypes.length;
 			if (candidateParameterCount == parameterCount && aMethodName == candidateMethodName) {
 				for (int j = 0; j < candidateParameterCount; j++) {
-					Class clazzA = candidateParameterTypes[j];
-					Class clazzB = someParameterTypes[j];
-					// clazzA must be non-null, but clazzB could be null (null given as parameter value)
-					// so in that case we consider it a match and continue
-					if (!(clazzB == null || clazzA.isAssignableFrom(clazzB))) {
+					final Class clazzA = candidateParameterTypes[j];
+					final Class clazzB = someParameterTypes[j];
+					if (clazzB != null && !isAssignableFrom(clazzA, clazzB)) {
 						continue OUTER;
 					}
 				}
-				return candidate;
+				matches.add(candidate);
 			}
 		}
+
 		// if no match has been found, fail with NSME
-		throw new NoSuchMethodException("No such method: " + aMethodName + "(" + Arrays.asList(someParameterTypes) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		if (matches.size() == 0) {
+			throw new NoSuchMethodException("No such method: " + aMethodName + "(" + Arrays.asList(someParameterTypes) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+		return (Method) matches.first();
+	}
+
+	// extends Class.isAssingable(Class) with autoboxing
+	private static boolean isAssignableFrom(Class clazzA, Class clazzB) {
+		if (!(clazzA.isPrimitive() ^ clazzB.isPrimitive())) {
+			return clazzA.isAssignableFrom(clazzB);
+		} else if (clazzA.isPrimitive()) {
+			final Class oClazzA = (Class) convertor.get(clazzA);
+			return oClazzA.isAssignableFrom(clazzB);
+		} else {
+			final Class oClazzB = (Class) convertor.get(clazzB);
+			return clazzA.isAssignableFrom(oClazzB);
+		}
+	}
+
+	private static class MethodComparator implements Comparator {
+
+		private final Class[] parameterTypes;
+
+		public MethodComparator(Class[] someParameterTypes) {
+			parameterTypes = someParameterTypes;
+		}
+
+		public int compare(Object object1, Object object2) {
+			final Class[] pt1 = ((Method) object1).getParameterTypes();
+			final Class[] pt2 = ((Method) object2).getParameterTypes();
+
+			if (Arrays.equals(pt1, pt2)) {
+				return 0;
+			} else if (Arrays.equals(parameterTypes, pt1)) {
+				return -1;
+			} else {
+				return 1;
+			}
+		}
 	}
 }

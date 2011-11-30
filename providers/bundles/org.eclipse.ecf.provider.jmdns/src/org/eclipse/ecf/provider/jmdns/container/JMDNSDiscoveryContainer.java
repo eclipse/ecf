@@ -130,8 +130,6 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 						}
 					}
 				}
-				System.err.println("thread exited");
-				return;
 			}
 		}, "JMDNS Discovery Thread"); //$NON-NLS-1$
 		notificationThread.start();
