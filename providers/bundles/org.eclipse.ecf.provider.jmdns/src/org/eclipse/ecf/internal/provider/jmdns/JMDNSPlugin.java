@@ -77,36 +77,46 @@ public class JMDNSPlugin implements BundleActivator {
 		props.put(IDiscoveryService.CONTAINER_NAME, NAME);
 		props.put(Constants.SERVICE_RANKING, new Integer(750));
 		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
-		serviceRegistration = context.registerService(clazzes, new ServiceFactory() {
-			private volatile JMDNSDiscoveryContainer jdc;
+		serviceRegistration = context.registerService(clazzes, serviceFactory, props);
+	}
 
-			/* (non-Javadoc)
-			 * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration)
-			 */
-			public Object getService(final Bundle bundle, final ServiceRegistration registration) {
-				if (jdc == null) {
-					try {
-						jdc = new JMDNSDiscoveryContainer();
-						jdc.connect(null, null);
-					} catch (final IDCreateException e) {
-						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
-					} catch (final ContainerConnectException e) {
-						Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
-						jdc = null;
-					}
+	private final DiscoveryServiceFactory serviceFactory = new DiscoveryServiceFactory();
+
+	class DiscoveryServiceFactory implements ServiceFactory {
+		private volatile JMDNSDiscoveryContainer jdc;
+
+		/* (non-Javadoc)
+		 * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration)
+		 */
+		public Object getService(final Bundle bundle, final ServiceRegistration registration) {
+			if (jdc == null) {
+				try {
+					jdc = new JMDNSDiscoveryContainer();
+					jdc.connect(null, null);
+				} catch (final IDCreateException e) {
+					Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
+				} catch (final ContainerConnectException e) {
+					Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
+					jdc = null;
 				}
-				return jdc;
 			}
+			return jdc;
+		}
 
-			/* (non-Javadoc)
-			 * @see org.osgi.framework.ServiceFactory#ungetService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration, java.lang.Object)
-			 */
-			public void ungetService(final Bundle bundle, final ServiceRegistration registration, final Object service) {
-				//TODO-mkuppe we later might want to dispose jSLP when the last!!! consumer ungets the service 
-				//Though don't forget about the (ECF) Container which might still be in use
-			}
-		}, props);
+		/**
+		 * @return false if this factory has never created a service instance, true otherwise
+		 */
+		public boolean isActive() {
+			return jdc != null;
+		}
 
+		/* (non-Javadoc)
+		 * @see org.osgi.framework.ServiceFactory#ungetService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration, java.lang.Object)
+		 */
+		public void ungetService(final Bundle bundle, final ServiceRegistration registration, final Object service) {
+			//TODO-mkuppe we later might want to dispose jmDNS when the last!!! consumer ungets the service 
+			//Though don't forget about the (ECF) Container which might still be in use
+		}
 	}
 
 	protected Bundle getBundle() {
@@ -120,7 +130,7 @@ public class JMDNSPlugin implements BundleActivator {
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(final BundleContext ctxt) throws Exception {
-		if (serviceRegistration != null) {
+		if (serviceRegistration != null && serviceFactory.isActive()) {
 			ServiceReference reference = serviceRegistration.getReference();
 			IDiscoveryLocator aLocator = (IDiscoveryLocator) ctxt.getService(reference);
 

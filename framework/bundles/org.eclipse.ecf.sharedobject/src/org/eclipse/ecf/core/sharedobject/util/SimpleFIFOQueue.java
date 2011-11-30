@@ -17,7 +17,7 @@ import java.util.List;
 public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 	private final List list;
 
-	private boolean stopped;
+	private volatile boolean stopped;
 
 	public SimpleFIFOQueue() {
 		list = new LinkedList();

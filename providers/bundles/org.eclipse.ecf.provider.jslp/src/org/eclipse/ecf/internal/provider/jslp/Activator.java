@@ -94,33 +94,44 @@ public class Activator implements BundleActivator {
 		props.put(Constants.SERVICE_RANKING, new Integer(500));
 
 		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
-		serviceRegistration = context.registerService(clazzes, new ServiceFactory() {
-			private volatile JSLPDiscoveryContainer jdc;
+		serviceRegistration = context.registerService(clazzes, serviceFactory, props);
+	}
 
-			/* (non-Javadoc)
-			 * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration)
-			 */
-			public Object getService(final Bundle bundle, final ServiceRegistration registration) {
-				if (jdc == null) {
-					try {
-						jdc = new JSLPDiscoveryContainer();
-						jdc.connect(null, null);
-					} catch (final ContainerConnectException e) {
-						Trace.catching(Activator.PLUGIN_ID, Activator.PLUGIN_ID + "/debug/methods/tracing", this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
-						jdc = null;
-					}
+	private final DiscoveryServiceFactory serviceFactory = new DiscoveryServiceFactory();
+
+	class DiscoveryServiceFactory implements ServiceFactory {
+		private volatile JSLPDiscoveryContainer jdc;
+
+		/* (non-Javadoc)
+		 * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration)
+		 */
+		public Object getService(final Bundle bundle, final ServiceRegistration registration) {
+			if (jdc == null) {
+				try {
+					jdc = new JSLPDiscoveryContainer();
+					jdc.connect(null, null);
+				} catch (final ContainerConnectException e) {
+					Trace.catching(Activator.PLUGIN_ID, Activator.PLUGIN_ID + "/debug/methods/tracing", this.getClass(), "getService(Bundle, ServiceRegistration)", e); //$NON-NLS-1$ //$NON-NLS-2$
+					jdc = null;
 				}
-				return jdc;
 			}
+			return jdc;
+		}
 
-			/* (non-Javadoc)
-			 * @see org.osgi.framework.ServiceFactory#ungetService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration, java.lang.Object)
-			 */
-			public void ungetService(final Bundle bundle, final ServiceRegistration registration, final Object service) {
-				//TODO-mkuppe we later might want to dispose jSLP when the last!!! consumer ungets the service 
-				//Though don't forget about the (ECF) Container which might still be in use
-			}
-		}, props);
+		/**
+		 * @return false if this factory has never created a service instance, true otherwise
+		 */
+		public boolean isActive() {
+			return jdc != null;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.osgi.framework.ServiceFactory#ungetService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration, java.lang.Object)
+		 */
+		public void ungetService(final Bundle bundle, final ServiceRegistration registration, final Object service) {
+			//TODO-mkuppe we later might want to dispose jSLP when the last!!! consumer ungets the service 
+			//Though don't forget about the (ECF) Container which might still be in use
+		}
 	}
 
 	/*
@@ -130,7 +141,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(final BundleContext context) throws Exception {
 		//TODO-mkuppe here we should do something like a deregisterAll(), but see ungetService(...);
-		if (serviceRegistration != null) {
+		if (serviceRegistration != null && serviceFactory.isActive()) {
 			ServiceReference reference = serviceRegistration.getReference();
 			IDiscoveryLocator aLocator = (IDiscoveryLocator) context.getService(reference);
 

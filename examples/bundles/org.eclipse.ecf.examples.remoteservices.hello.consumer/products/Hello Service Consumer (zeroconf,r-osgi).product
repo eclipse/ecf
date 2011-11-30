@@ -3,6 +3,7 @@
 
 <product name="R-OSGi Hello Consumer Zeroconf Discovery" uid="org.eclipse.ecf.examples.remoteservices.hello.consumer.zeroconf.rosgi" application="org.eclipse.ecf.examples.remoteservices.hello.consumer.HelloConsumer" version="1.0.0" useFeatures="false" includeLaunchers="false">
 
+
    <configIni use="default">
    </configIni>
 
@@ -11,6 +12,9 @@
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
+   <windowImages/>
+
+
    <launcher>
       <solaris/>
       <win useIco="false">
@@ -18,8 +22,10 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="ch.ethz.iks.r_osgi.remote"/>
@@ -37,7 +43,6 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
-      <plugin id="org.eclipse.ecf.provider.jslp"/>
       <plugin id="org.eclipse.ecf.provider.r_osgi"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
