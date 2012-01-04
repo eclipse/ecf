@@ -29,7 +29,8 @@ public class URIIDTest extends IDAbstractTestCase {
 	}
 
 	protected ID createID(String val) throws IDCreateException {
-		return IDFactory.getDefault().createID(URIIDNAMESPACE,val);
+		//return IDFactory.getDefault().createID(URIIDNAMESPACE,val);
+		return IDFactory.getDefault().createStringID(val);
 	}
 
 	// The tests below are commented out because the Platform is using an older version of ECF
