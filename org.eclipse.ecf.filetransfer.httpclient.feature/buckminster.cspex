@@ -9,6 +9,8 @@
 		<dependency name="org.apache.commons.httpclient" componentType="osgi.bundle"/>
 		<dependency name="org.apache.commons.logging" componentType="osgi.bundle"/>
 		<dependency name="org.apache.commons.codec" componentType="osgi.bundle"/>
+		<!-- Add filetransfer tests -->
+		<dependency name="org.eclipse.ecf.tests.filetransfer.feature" componentType="eclipse.feature"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
