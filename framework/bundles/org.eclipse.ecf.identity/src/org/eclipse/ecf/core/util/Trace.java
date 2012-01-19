@@ -409,7 +409,9 @@ public class Trace {
 					.append(SEPARATOR_METHOD);
 			buf.append(methodName).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
-			throwable.printStackTrace(System.err);
+			if(throwable != null) {
+			    throwable.printStackTrace(System.err);
+			}
 		}
 	}
 
