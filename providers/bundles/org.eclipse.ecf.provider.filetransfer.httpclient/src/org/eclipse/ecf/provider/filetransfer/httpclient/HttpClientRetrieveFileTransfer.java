@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -394,13 +395,30 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
 	 */
 	protected void hardClose() {
-		super.hardClose();
+		// changed for addressing bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=370801
 		if (getMethod != null) {
+			// First, if !isDone and paused
+			if (!isDone() && isPaused())
+				getMethod.abort();
+			// release in any case
 			getMethod.releaseConnection();
+			// and set to null
 			getMethod = null;
 		}
+		// Close output stream...if we're supposed to
+		try {
+			if (localFileContents != null && closeOutputStream)
+				localFileContents.close();
+		} catch (final IOException e) {
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+		}
+		// clear input and output streams
+		remoteFileContents = null;
+		localFileContents = null;
+		// reset response code
 		responseCode = -1;
-		if (proxyHelper != null) {
+		// If we're done and proxy helper still exists, then dispose
+		if (proxyHelper != null && isDone()) {
 			proxyHelper.dispose();
 			proxyHelper = null;
 		}
@@ -594,7 +612,20 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	protected InputStream wrapTransferReadInputStream(InputStream inputStream, IProgressMonitor monitor) {
-		return inputStream;
+		// Added to address bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=370801
+		return new NoCloseWrapperInputStream(inputStream);
+	}
+
+	// Added to address bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=370801
+	class NoCloseWrapperInputStream extends FilterInputStream {
+
+		protected NoCloseWrapperInputStream(InputStream in) {
+			super(in);
+		}
+
+		public void close() {
+			// do nothing
+		}
 	}
 
 	protected boolean hasForceNTLMProxyOption() {

@@ -30,11 +30,13 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 public class URLRetrievePauseResumeTest extends ContainerAbstractTestCase {
 
-	private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/rt/ecf/3.2/3.6/site.p2/features/org.eclipse.ecf.core_3.2.0.v20100219-1253.jar";
+	private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/rt/ecf/3.5.4/site.p2/plugins/org.eclipse.ecf.doc_1.3.0.v20111230-0120.jar";
+
+	//private static final String HTTP_RETRIEVE = "http://mirror.csclub.uwaterloo.ca/eclipse/eclipse/downloads/drops/R-3.7.1-201109091335/eclipse-platform-3.7.1-win32.zip";
 
 	private static final String FILENAME = "foo.zip";
 
-	private static final int PAUSE_TIME = 4000;
+	private static final int PAUSE_TIME = 10000;
 
 	private IRetrieveFileTransfer transferInstance;
 
