@@ -101,9 +101,9 @@ public class WatchManager implements BundleStoppingListener {
 			return;
 		}
 		NodeWriter nw = getNodeWriters().remove(id);
-		allKnownServices.remove(nw.getNode().getWrappedService().getServiceID()
-				.getName());
 		if (nw != null) {
+			allKnownServices.remove(nw.getNode().getWrappedService().getServiceID()
+					.getName());
 			nw.remove();
 		}
 		nw = null;
