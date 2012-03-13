@@ -1,11 +1,16 @@
 package org.eclipse.ecf.tests.remoteservice.rest;
 
+import java.io.NotSerializableException;
+import java.util.Map;
+
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
+import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.client.IRemoteCallParameter;
 import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
+import org.eclipse.ecf.remoteservice.client.IRemoteResponseDeserializer;
 import org.eclipse.ecf.remoteservice.client.IRemoteServiceClientContainerAdapter;
 import org.eclipse.ecf.remoteservice.client.RemoteCallParameter;
 import org.eclipse.ecf.remoteservice.rest.RestCallFactory;
@@ -18,8 +23,8 @@ public class RestPutServiceTest extends AbstractRestTestCase {
 	private String username = System.getProperty("rest.test.username","p126371rw");
 	private String password = System.getProperty("rest.test.password","demo");
 	private String uri = System.getProperty("rest.test.uri","http://phprestsql.sourceforge.net");
-	private String resourcePath = System.getProperty("rest.test.resourcePath","/tutorial/user/1.xml");
-	private String method = System.getProperty("rest.test.method","doPut");
+	private String resourcePath = System.getProperty("rest.test.resourcePath","/tutorial/user/7");
+	private String method = System.getProperty("rest.test.method","putUser");
 	
 	private IContainer container;
 	private IRemoteServiceRegistration registration;
@@ -27,27 +32,45 @@ public class RestPutServiceTest extends AbstractRestTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		// Create container for service URI
 		container = createRestContainer(uri);
+		// Get adapter and set authentication info
+		IRemoteServiceClientContainerAdapter adapter = (IRemoteServiceClientContainerAdapter) getRemoteServiceClientContainerAdapter(container);
+		
+		// Setup authentication
+		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(username, password));
+		// Setup response deserializer to do absolutely nothing (return null).  Note this is specific to this service.
+		adapter.setResponseDeserializer(new IRemoteResponseDeserializer() {
+			public Object deserializeResponse(String endpoint,
+					IRemoteCall call, IRemoteCallable callable,
+					Map responseHeaders, String responseBody)
+					throws NotSerializableException {
+				return null;
+			}});
+
+		// Create callable and register
 		IRemoteCallable callable = RestCallableFactory.createCallable(method,resourcePath,
 				new IRemoteCallParameter[] { new RemoteCallParameter("body")} ,
 				new HttpPutRequestType(HttpPutRequestType.STRING_REQUEST_ENTITY,"application/xml",-1,"UTF-8"));
-		// Get adapter
-		IRemoteServiceClientContainerAdapter adapter = (IRemoteServiceClientContainerAdapter) getRemoteServiceClientContainerAdapter(container);
-		// Setup authentication info
-		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(username, password));
+		// register callable
 		registration = adapter.registerCallables(new IRemoteCallable[] { callable } , null);
+		
 	}
 	
 	/*
 	public void testPutCallSync() throws Exception {
 		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
-		Object result = restClientService.callSync(RestCallFactory.createRestCall(method, new String[] { getPutBody() }));
-		System.out.println("result="+result);
+		System.out.println("put uri="+uri+resourcePath);
+		String body = createBody();
+		System.out.println("body="+body);
+		System.out.print("making remote method call="+method+"...");
+		Object result = restClientService.callSync(RestCallFactory.createRestCall(method, new String[] { body }));
+		System.out.println("received result="+result);
 	}
 	*/
 	
-	private String getPutBody() {
-		return "<row xmlns:xlink=\"http://www.w3.org/1999/xlink\"><uid>1</uid><firstname>Scott</firstname><surname>Example</surname><email>jim@example.org</email><company_uid xlink:href=\"/tutorial/company/1.xml\">1</company_uid></row>";
+	private String createBody() {
+		return "firstname=Scott\nsurname=Example\nemail=slewis@example.org\ncompany_uid=1";
 	}
 	
 	@Override
