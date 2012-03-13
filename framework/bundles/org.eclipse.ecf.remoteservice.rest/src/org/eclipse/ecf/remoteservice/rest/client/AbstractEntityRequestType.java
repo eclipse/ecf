@@ -116,7 +116,7 @@ public abstract class AbstractEntityRequestType extends AbstractRequestType {
 		if (defaultParameters != null) {
 			for (int i = 0; i < defaultParameters.length; i++) {
 				if (CHARSET_PARAM_NAME.equals(defaultParameters[i].getName())) {
-					Object o = (parameters != null && parameters.length > i) ? parameters[i] : defaultParameters[i];
+					Object o = (parameters != null && parameters.length > i) ? parameters[i] : defaultParameters[i].getValue();
 					if (o instanceof String) {
 						return (String) o;
 					}
@@ -132,7 +132,7 @@ public abstract class AbstractEntityRequestType extends AbstractRequestType {
 		if (defaultParameters != null) {
 			for (int i = 0; i < defaultParameters.length; i++) {
 				if (CONTENT_LENGTH_PARAM_NAME.equals(defaultParameters[i].getName())) {
-					Object o = (parameters != null && parameters.length > i) ? parameters[i] : defaultParameters[i];
+					Object o = (parameters != null && parameters.length > i) ? parameters[i] : defaultParameters[i].getValue();
 					if (o instanceof Number) {
 						return ((Number) o).longValue();
 					} else if (o instanceof String) {
@@ -154,7 +154,7 @@ public abstract class AbstractEntityRequestType extends AbstractRequestType {
 		if (defaultParameters != null) {
 			for (int i = 0; i < defaultParameters.length; i++) {
 				if (CONTENT_TYPE_PARAM_NAME.equals(defaultParameters[i].getName())) {
-					Object o = (parameters != null && parameters.length > i) ? parameters[i] : defaultParameters[i];
+					Object o = (parameters != null && parameters.length > i) ? parameters[i] : defaultParameters[i].getValue();
 					if (o instanceof String) {
 						return (String) o;
 					}
