@@ -57,17 +57,17 @@ public class RestPutServiceTest extends AbstractRestTestCase {
 		
 	}
 	
-	/*
+	
 	public void testPutCallSync() throws Exception {
-		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
-		System.out.println("put uri="+uri+resourcePath);
-		String body = createBody();
-		System.out.println("body="+body);
-		System.out.print("making remote method call="+method+"...");
-		Object result = restClientService.callSync(RestCallFactory.createRestCall(method, new String[] { body }));
-		System.out.println("received result="+result);
+//		IRemoteService restClientService = getRemoteServiceClientContainerAdapter(container).getRemoteService(registration.getReference());
+//		System.out.println("put uri="+uri+resourcePath);
+//		String body = createBody();
+//		System.out.println("body="+body);
+//		System.out.print("making remote method call="+method+"...");
+//		Object result = restClientService.callSync(RestCallFactory.createRestCall(method, new String[] { body }));
+//		System.out.println("received result="+result);
 	}
-	*/
+	
 	
 	private String createBody() {
 		return "firstname=Scott\nsurname=Example\nemail=slewis@example.org\ncompany_uid=1";
