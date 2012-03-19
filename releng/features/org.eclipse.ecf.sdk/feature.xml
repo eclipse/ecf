@@ -319,4 +319,8 @@ limitations under the License.
          id="org.eclipse.ecf.core.featurepatch"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.ecf.filetransfer.httpclient.feature"
+         version="0.0.0"/>
+
 </feature>

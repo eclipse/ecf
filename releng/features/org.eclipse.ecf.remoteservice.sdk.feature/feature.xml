@@ -89,8 +89,4 @@
          id="org.eclipse.ecf.xmpp.feature"
          version="0.0.0"/>
 
-   <includes
-         id="org.eclipse.ecf.filetransfer.httpclient.feature"
-         version="0.0.0"/>
-
 </feature>
