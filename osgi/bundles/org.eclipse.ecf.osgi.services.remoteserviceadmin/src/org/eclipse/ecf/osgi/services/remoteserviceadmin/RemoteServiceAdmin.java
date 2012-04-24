@@ -47,16 +47,20 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
-import org.osgi.service.packageadmin.ExportedPackage;
-import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.remoteserviceadmin.EndpointPermission;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
@@ -1249,15 +1253,14 @@ public class RemoteServiceAdmin implements
 		if (interfaceClasses == null)
 			return null;
 		Class interfaceClass = null;
-		for (int i = 0; i < interfaceClasses.length; i++) {
+		for (int i = 0; i < interfaceClasses.length; i++) 
 			if (interfaceClasses[i].getName().equals(serviceInterface))
 				interfaceClass = interfaceClasses[i];
-		}
 		if (interfaceClass == null)
 			return null;
-		ExportedPackage exportedPackage = getExportedPackageForClass(
-				getPackageAdmin(), interfaceClass);
-		return (exportedPackage == null) ? null : exportedPackage.getVersion();
+		Bundle providingBundle = FrameworkUtil.getBundle(interfaceClass);
+		if (providingBundle == null) return null;
+		return getVersionForPackage(providingBundle, packageName);
 	}
 
 	private Map<String, Object> createExportEndpointDescriptionProperties(
@@ -1526,10 +1529,6 @@ public class RemoteServiceAdmin implements
 			throw new NullPointerException(
 					"ECF RemoteServiceAdmin Activator cannot be null."); //$NON-NLS-1$
 		if (a.isOldEquinox()) {
-			PackageAdmin packageAdmin = getPackageAdmin();
-			if (packageAdmin == null)
-				throw new NullPointerException(
-						"PackageAdmin cannot be accessed by ECF RemoteServiceAdmin"); //$NON-NLS-1$
 			// In this case, we get the Bundle that exposes the first service
 			// interface class
 			BundleContext rsaContext = Activator.getContext();
@@ -1547,7 +1546,7 @@ public class RemoteServiceAdmin implements
 			// Get the bundle responsible for the first service interface class
 			Class serviceInterfaceClass = serviceInterfaceClasses.iterator()
 					.next();
-			Bundle bundle = packageAdmin.getBundle(serviceInterfaceClass);
+			Bundle bundle = FrameworkUtil.getBundle(serviceInterfaceClass);
 			if (bundle == null)
 				throw new BundleException("Bundle for service interface class=" //$NON-NLS-1$
 						+ serviceInterfaceClass.getName() + " cannot be found"); //$NON-NLS-1$
@@ -1715,42 +1714,6 @@ public class RemoteServiceAdmin implements
 		}
 	}
 
-	private PackageAdmin getPackageAdmin() {
-		synchronized (packageAdminTrackerLock) {
-			if (packageAdminTracker == null) {
-				packageAdminTracker = new ServiceTracker(
-						getClientBundleContext(), PackageAdmin.class.getName(),
-						null);
-				packageAdminTracker.open();
-			}
-		}
-		return (PackageAdmin) packageAdminTracker.getService();
-	}
-
-	private ExportedPackage getExportedPackageForClass(
-			PackageAdmin packageAdmin, Class clazz) {
-		String packageName = getPackageName(clazz.getName());
-		// Get all exported packages with given package name
-		ExportedPackage[] exportedPackagesWithName = packageAdmin
-				.getExportedPackages(packageName);
-		// If none then we return null
-		if (exportedPackagesWithName == null)
-			return null;
-		// Get the clientBundle for the previously loaded interface class
-		Bundle classBundle = packageAdmin.getBundle(clazz);
-		if (classBundle == null)
-			return null;
-		for (int i = 0; i < exportedPackagesWithName.length; i++) {
-			Bundle packageBundle = exportedPackagesWithName[i]
-					.getExportingBundle();
-			if (packageBundle == null)
-				continue;
-			if (packageBundle.equals(classBundle))
-				return exportedPackagesWithName[i];
-		}
-		return null;
-	}
-
 	private String getPackageName(String className) {
 		int lastDotIndex = className.lastIndexOf("."); //$NON-NLS-1$
 		if (lastDotIndex == -1)
@@ -1788,14 +1751,9 @@ public class RemoteServiceAdmin implements
 		for (Class clazz : classes) {
 			String className = clazz.getName();
 			String packageName = getPackageName(className);
-			ExportedPackage exportedPackage = getExportedPackageForClass(
-					getPackageAdmin(), clazz);
-			if (exportedPackage == null)
-				throw new NullPointerException(
-						"No exported package found for class=" + className); //$NON-NLS-1$
-			// Now do compare via package version comparator service
+			// Now get remoteVersion, localVersion and do compare via package version comparator service
 			Version remoteVersion = interfaceVersions.get(className);
-			Version localVersion = exportedPackage.getVersion();
+			Version localVersion = getPackageVersionViaRequestingBundle(packageName, bundle);
 			if (comparePackageVersions(packageName, remoteVersion, localVersion)) {
 				logError("verifyServiceInterfaceVersionsForProxy", //$NON-NLS-1$
 						"Failed version check for proxy creation.  clientBundle=" //$NON-NLS-1$
@@ -1808,6 +1766,73 @@ public class RemoteServiceAdmin implements
 		return result;
 	}
 
+	private Version getVersionForMatchingCapability(String packageName,
+			BundleCapability capability) {
+		// If it's a package namespace (Import-Package)
+		Map<String, Object> attributes = capability.getAttributes();
+		// Then we get the package attribute
+		String p = (String) attributes.get(BundleRevision.PACKAGE_NAMESPACE);
+		// And compare it to the package name
+		if (p != null && packageName.equals(p))
+			return (Version) attributes.get(Constants.VERSION_ATTRIBUTE);
+		return null;
+	}
+
+	private Version getPackageVersionForMatchingWire(String packageName,
+			List<BundleWire> bundleWires, String namespace) {
+		Version result = null;
+		for (BundleWire wire : bundleWires) {
+			if (namespace.equals(BundleRevision.PACKAGE_NAMESPACE))
+				result = getVersionForMatchingCapability(packageName,
+						wire.getCapability());
+			else if (namespace.equals(BundleRevision.BUNDLE_NAMESPACE))
+				// If it's a bundle namespace (Require-Bundle), then we get the
+				// version for package
+				// of the providing bundle
+				result = getVersionForPackage(wire.getProvider().getBundle(),
+						packageName);
+
+			if (result != null)
+				return result;
+
+		}
+		return result;
+	}
+
+	private Version getVersionForPackage(Bundle providingBundle,
+			String packageName) {
+		Version result = null;
+		BundleRevision providingBundleRevision = providingBundle
+				.adapt(BundleRevision.class);
+		if (providingBundleRevision == null)
+			return null;
+		List<BundleCapability> providerCapabilities = providingBundleRevision
+				.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
+		for (BundleCapability c : providerCapabilities) {
+			result = getVersionForMatchingCapability(packageName, c);
+			if (result != null)
+				return result;
+		}
+		return result;
+	}
+	
+	private Version getPackageVersionViaRequestingBundle(String packageName, Bundle requestingBundle) {
+		BundleWiring requestingBundleWiring = requestingBundle
+				.adapt(BundleWiring.class);
+		if (requestingBundleWiring == null) return null;
+		// First look for the Version specified via Import-Package
+		Version result = getPackageVersionForMatchingWire(packageName,
+				requestingBundleWiring
+						.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE),
+				BundleRevision.PACKAGE_NAMESPACE);
+		if (result == null)
+			result = getPackageVersionForMatchingWire(packageName,
+					requestingBundleWiring
+							.getRequiredWires(BundleRevision.BUNDLE_NAMESPACE),
+					BundleRevision.BUNDLE_NAMESPACE);
+		return result;
+	}
+	
 	private IRemoteServiceReference selectRemoteServiceReference(
 			Collection<IRemoteServiceReference> rsRefs, ID targetID,
 			ID[] idFilter, Collection<String> interfaces, String rsFilter,
