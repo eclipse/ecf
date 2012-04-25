@@ -180,7 +180,7 @@ public class RemoteServiceAdmin implements
 	// RemoteServiceAdmin service interface impl methods
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
 			ServiceReference serviceReference,
-			Map<String, Object> overridingProperties) {
+			Map<String, ?> overridingProperties) {
 
 		trace("exportService", "serviceReference=" + serviceReference //$NON-NLS-1$ //$NON-NLS-2$
 				+ ",properties=" + overridingProperties); //$NON-NLS-1$
@@ -221,11 +221,11 @@ public class RemoteServiceAdmin implements
 		IRemoteServiceContainer[] rsContainers = null;
 		try {
 			rsContainers = hostContainerSelector.selectHostContainers(
-					serviceReference, overridingProperties, exportedInterfaces,
+					serviceReference, (Map<String,Object>) overridingProperties, exportedInterfaces,
 					exportedConfigs, serviceIntents);
 		} catch (SelectContainerException e) {
 			ExportRegistration errorRegistration = createErrorExportRegistration(
-					serviceReference, overridingProperties,
+					serviceReference, (Map<String,Object>) overridingProperties,
 					"Error selecting or creating host container for serviceReference=" //$NON-NLS-1$
 							+ serviceReference + " properties=" //$NON-NLS-1$
 							+ overridingProperties, e);
@@ -258,7 +258,7 @@ public class RemoteServiceAdmin implements
 					exportRegistration = new ExportRegistration(exportEndpoint);
 				else {
 					Map endpointDescriptionProperties = createExportEndpointDescriptionProperties(
-							serviceReference, overridingProperties,
+							serviceReference, (Map<String,Object>) overridingProperties,
 							exportedInterfaces, serviceIntents, rsContainers[i]);
 					// otherwise, actually export the service to create a new
 					// ExportEndpoint and use it to create a new
@@ -1913,13 +1913,13 @@ public class RemoteServiceAdmin implements
 	}
 
 	private ExportRegistration exportService(ServiceReference serviceReference,
-			Map<String, Object> overridingProperties,
+			Map<String, ?> overridingProperties,
 			String[] exportedInterfaces, IRemoteServiceContainer rsContainer,
 			Map<String, Object> endpointDescriptionProperties) throws Exception {
 
 		// Create remote service properties
 		Map remoteServiceProperties = copyNonReservedProperties(
-				serviceReference, overridingProperties,
+				serviceReference, (Map<String,Object>) overridingProperties,
 				new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER));
 
 		IRemoteServiceContainerAdapter containerAdapter = rsContainer

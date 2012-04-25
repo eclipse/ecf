@@ -109,7 +109,7 @@ public class PropertiesUtil {
 
 	public static String[] getExportedInterfaces(
 			ServiceReference serviceReference,
-			Map<String, Object> overridingProperties) {
+			Map<String, ?> overridingProperties) {
 		Object overridingPropValue = overridingProperties
 				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES);
 		if (overridingPropValue != null)
