@@ -4,7 +4,7 @@
   <rm:locator pattern="^org\.eclipse\.ecf(\..+)?" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.eclipse\.team\.ecf(\..+)?" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.jivesoftware\.smack$" searchPathRef="org.eclipse.ecf"/>
-  <rm:locator pattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" searchPathRef="org.eclipse.ecf"/>
+  <rm:locator pattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" searchPathRef="org.eclipse.ecf.rsa"/>
   <rm:locator pattern="^org\.eclipse\.emf(\..+)?" searchPathRef="org.eclipse.emf"/>
   <rm:locator pattern="^org\.eclipse\.net4j(\..+)?" searchPathRef="org.eclipse.emf"/>
   <rm:locator pattern="^org\.eclipse\.xsd(\..+)?" searchPathRef="org.eclipse.emf"/>
@@ -44,20 +44,29 @@
       </rm:uri>
     </rm:provider>
   </rm:searchPath>
-  <rm:searchPath name="org.eclipse.ecf">
+  <rm:searchPath name="org.eclipse.ecf.rsa">
     <rm:provider componentTypes="osgi.bundle,eclipse.feature" readerType="local">
       <rm:uri format="file:{0}/{1}/">
         <bc:propertyRef key="projectsPath"/>
         <bc:propertyRef key="buckminster.component"/>
       </rm:uri>
     </rm:provider>
-<!--    <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
+   </rm:searchPath>
+    
+   <rm:searchPath name="org.eclipse.ecf">
+    <rm:provider componentTypes="osgi.bundle,eclipse.feature" readerType="local">
+      <rm:uri format="file:{0}/{1}/">
+        <bc:propertyRef key="projectsPath"/>
+        <bc:propertyRef key="buckminster.component"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
       <rm:uri format="{0}?importType=binary">
         <bc:propertyRef key="ecf.p2.repository"/>
       </rm:uri>
-    </rm:provider> -->
+    </rm:provider>
   </rm:searchPath>
   <rm:searchPath name="org.pluginbuilder">
     <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
