@@ -45,7 +45,7 @@
     </rm:provider>
   </rm:searchPath>
   <rm:searchPath name="org.eclipse.ecf.rsa">
-    <rm:provider componentTypes="osgi.bundle,eclipse.feature" readerType="local">
+    <rm:provider componentTypes="osgi.bundle,eclipse.feature" source="false" mutable="false" readerType="local">
       <rm:uri format="file:{0}/{1}/">
         <bc:propertyRef key="projectsPath"/>
         <bc:propertyRef key="buckminster.component"/>
