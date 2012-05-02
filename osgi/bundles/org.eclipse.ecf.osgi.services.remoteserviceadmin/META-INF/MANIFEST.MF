@@ -10,7 +10,8 @@ Bundle-Localization: bundle
 Export-Package: org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;x-internal:=true,
  org.eclipse.ecf.osgi.services.remoteserviceadmin;version="1.0.0"
 Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.0",
- org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy;bundle-version="1.0.0"
+ org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy;bundle-version="1.0.0",
+ org.eclipse.osgi.services.remoteserviceadmin;bundle-version="1.5.0"
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.eclipse.ecf.core.identity,
@@ -26,6 +27,5 @@ Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.osgi.framework.wiring;version="[1.0,2.0)",
  org.osgi.service.event,
  org.osgi.service.log,
- org.osgi.service.remoteserviceadmin;version="5.0.0",
  org.osgi.util.tracker
 DynamicImport-Package: *
