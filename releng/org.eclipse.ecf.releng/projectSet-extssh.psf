@@ -101,7 +101,6 @@
 	<!-- protocol support -->
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/protocols/bundles/ch.ethz.iks.r_osgi.remote,ch.ethz.iks.r_osgi.remote"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/protocols/bundles/ch.ethz.iks.slp,ch.ethz.iks.slp"/>
-	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/protocols/bundles/org.apache.zookeeper,org.apache.zookeeper"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/protocols/bundles/org.eclipse.ecf.protocol.bittorrent,org.eclipse.ecf.protocol.bittorrent"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/protocols/bundles/org.eclipse.ecf.protocol.msn,org.eclipse.ecf.protocol.msn"/>
 	<project reference="1.0,:extssh:dev.eclipse.org:/cvsroot/rt,org.eclipse.ecf/protocols/bundles/org.jivesoftware.smack,org.jivesoftware.smack"/>

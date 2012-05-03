@@ -44,7 +44,7 @@
        Skip Component is not checked.</cq:documentation>
     </cq:advisorNode>
     
-    <cq:advisorNode namePattern="^org\.apache\.zookeeper?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.json$" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false">
     

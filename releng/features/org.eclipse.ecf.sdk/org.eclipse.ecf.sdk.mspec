@@ -8,7 +8,7 @@
     <md:mspecNode namePattern="^org\.eclipse\.team\.ecf(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.jivesoftware\.smack$" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.apache\.zookeeper(\..+)?" materializer="workspace"/>
+    <md:mspecNode namePattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.json$" materializer="workspace"/>
 
     <!-- commented out for sdk when comparing to platform
