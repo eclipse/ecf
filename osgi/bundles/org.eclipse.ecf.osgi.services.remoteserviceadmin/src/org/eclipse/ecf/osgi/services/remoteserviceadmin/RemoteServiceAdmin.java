@@ -1721,22 +1721,23 @@ public class RemoteServiceAdmin implements
 		return className.substring(0, lastDotIndex);
 	}
 
-	private boolean comparePackageVersions(String packageName,
+	/**
+	 * @since 2.1
+	 */
+	protected boolean comparePackageVersions(String packageName,
 			Version remoteVersion, Version localVersion)
 			throws RuntimeException {
-
-		if (remoteVersion == null)
-			throw new NullPointerException("Remote package=" + packageName //$NON-NLS-1$
-					+ " has no Version"); //$NON-NLS-1$
-		if (localVersion == null)
-			throw new NullPointerException("Local package=" + packageName //$NON-NLS-1$
-					+ " has no Version"); //$NON-NLS-1$
 
 		LogUtility.trace(
 				"comparePackageVersions", //$NON-NLS-1$
 				DebugOptions.PACKAGE_VERSION_COMPARATOR, this.getClass(),
 				"packageName=" + packageName + ",remoteVersion=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ remoteVersion + ",localVersion=" + localVersion); //$NON-NLS-1$
+
+		// If no remote version info, then set it to empty
+		if (remoteVersion == null) remoteVersion = Version.emptyVersion;
+		if (localVersion == null) localVersion = Version.emptyVersion;
+
 		// By default we do strict comparison of remote with local...they must
 		// be exactly the same, or we thrown a runtime exception
 		int compareResult = localVersion.compareTo(remoteVersion);
@@ -1751,9 +1752,11 @@ public class RemoteServiceAdmin implements
 		for (Class clazz : classes) {
 			String className = clazz.getName();
 			String packageName = getPackageName(className);
-			// Now get remoteVersion, localVersion and do compare via package version comparator service
+			// Now get remoteVersion, localVersion and do compare via package
+			// version comparator service
 			Version remoteVersion = interfaceVersions.get(className);
-			Version localVersion = getPackageVersionViaRequestingBundle(packageName, bundle);
+			Version localVersion = getPackageVersionViaRequestingBundle(
+					packageName, bundle);
 			if (comparePackageVersions(packageName, remoteVersion, localVersion)) {
 				logError("verifyServiceInterfaceVersionsForProxy", //$NON-NLS-1$
 						"Failed version check for proxy creation.  clientBundle=" //$NON-NLS-1$
@@ -1816,20 +1819,46 @@ public class RemoteServiceAdmin implements
 		return result;
 	}
 	
-	private Version getPackageVersionViaRequestingBundle(String packageName, Bundle requestingBundle) {
-		BundleWiring requestingBundleWiring = requestingBundle
-				.adapt(BundleWiring.class);
-		if (requestingBundleWiring == null) return null;
-		// First look for the Version specified via Import-Package
-		Version result = getPackageVersionForMatchingWire(packageName,
-				requestingBundleWiring
-						.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE),
-				BundleRevision.PACKAGE_NAMESPACE);
-		if (result == null)
-			result = getPackageVersionForMatchingWire(packageName,
-					requestingBundleWiring
-							.getRequiredWires(BundleRevision.BUNDLE_NAMESPACE),
-					BundleRevision.BUNDLE_NAMESPACE);
+	private Version getPackageVersionViaRequestingBundle(String packageName,
+			Bundle requestingBundle) {
+		Version result = null;
+		// First check the requesting bundle for the desired export package
+		// capability
+		BundleRevision requestingBundleRevision = (BundleRevision) requestingBundle
+				.adapt(BundleRevision.class);
+		if (requestingBundleRevision != null) {
+			List<BundleCapability> requestingBundleCapabilities = requestingBundleRevision
+					.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
+			for (BundleCapability requestingBundleCapability : requestingBundleCapabilities) {
+				Version version = getVersionForMatchingCapability(packageName,
+						requestingBundleCapability);
+				// If found, set our result
+				if (version != null)
+					result = version;
+			}
+		}
+		// If not found in requestingBundle export package, then
+		// look in exported package that are wired to the requesting bundle
+		if (result == null) {
+			// look for wired exported packages
+			BundleWiring requestingBundleWiring = requestingBundle
+					.adapt(BundleWiring.class);
+			if (requestingBundleWiring != null) {
+				result = getPackageVersionForMatchingWire(
+						packageName,
+						requestingBundleWiring
+								.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE),
+						BundleRevision.PACKAGE_NAMESPACE);
+				// If not found in wired exported packages, then look
+				// in wired require bundles
+				if (result == null)
+					result = getPackageVersionForMatchingWire(
+							packageName,
+							requestingBundleWiring
+									.getRequiredWires(BundleRevision.BUNDLE_NAMESPACE),
+							BundleRevision.BUNDLE_NAMESPACE);
+			}
+		}
 		return result;
 	}
 	
