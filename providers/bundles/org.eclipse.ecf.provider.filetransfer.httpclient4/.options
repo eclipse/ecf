@@ -1,0 +1,16 @@
+# Debugging options for the org.eclipse.ecf.provider.filetransfer.httpclient4 plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.provider.filetransfer.httpclient4 plug-in
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug=false
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/filter = *
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/flag = false
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/methods/exiting=false
