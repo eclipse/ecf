@@ -116,51 +116,45 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 
 	protected void fireTransferReceiveDoneEvent() {
 		if (listener != null)
-			listener
-					.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
+			listener.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
 
-						private static final long serialVersionUID = 6925524078226825710L;
+				public IIncomingFileTransfer getSource() {
+					return XMPPIncomingFileTransfer.this;
+				}
 
-						public IIncomingFileTransfer getSource() {
-							return XMPPIncomingFileTransfer.this;
-						}
+				public Exception getException() {
+					return XMPPIncomingFileTransfer.this.getException();
+				}
 
-						public Exception getException() {
-							return XMPPIncomingFileTransfer.this.getException();
-						}
-
-						public String toString() {
-							final StringBuffer sb = new StringBuffer(
-									"IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
-							sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-							sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-									.append("]"); //$NON-NLS-1$
-							return sb.toString();
-						}
-					});
+				public String toString() {
+					final StringBuffer sb = new StringBuffer(
+							"IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
+					sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+					sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+							.append("]"); //$NON-NLS-1$
+					return sb.toString();
+				}
+			});
 	}
 
 	protected void fireTransferReceiveDataEvent() {
 		if (listener != null)
-			listener
-					.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
-						private static final long serialVersionUID = -5656328374614130161L;
+			listener.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
+				public IIncomingFileTransfer getSource() {
+					return XMPPIncomingFileTransfer.this;
+				}
 
-						public IIncomingFileTransfer getSource() {
-							return XMPPIncomingFileTransfer.this;
-						}
-
-						public String toString() {
-							final StringBuffer sb = new StringBuffer(
-									"IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
-							sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-							sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-									.append(";"); //$NON-NLS-1$
-							sb.append("percentComplete=").append( //$NON-NLS-1$
-									getPercentComplete() * 100).append("]"); //$NON-NLS-1$
-							return sb.toString();
-						}
-					});
+				public String toString() {
+					final StringBuffer sb = new StringBuffer(
+							"IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
+					sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+					sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+							.append(";"); //$NON-NLS-1$
+					sb.append("percentComplete=").append( //$NON-NLS-1$
+							getPercentComplete() * 100).append("]"); //$NON-NLS-1$
+					return sb.toString();
+				}
+			});
 	}
 
 	/**
@@ -187,7 +181,8 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getBytesReceived()
+	 * @see
+	 * org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getBytesReceived()
 	 */
 	public long getBytesReceived() {
 		return bytesReceived;
@@ -264,8 +259,12 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 		return threadID;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getFileRangeSpecification()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getFileRangeSpecification
+	 * ()
 	 */
 	public IFileRangeSpecification getFileRangeSpecification() {
 		return null;
@@ -275,15 +274,22 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 		return fileLength;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getRemoteFileName()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getRemoteFileName()
 	 */
 	public String getRemoteFileName() {
 		return fileName;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getRemoteLastModified()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getRemoteLastModified
+	 * ()
 	 */
 	public Date getRemoteLastModified() {
 		// Not supported

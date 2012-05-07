@@ -15,21 +15,21 @@ import org.jivesoftware.smack.packet.Presence;
  *
  */
 public class PresenceEvent implements Event {
-    
-	private static final long serialVersionUID = -8207158000504357229L;
+
 	protected Presence presence = null;
-    
-    public PresenceEvent(Presence presence) {
-        this.presence = presence;
-    }
-    
-    public Presence getPresence() {
-        return presence;
-    }
-    
-    public String toString() {
-        StringBuffer buf = new StringBuffer("PresenceEvent[");
-        buf.append(presence).append(";").append((presence==null)?"":presence.toXML()).append("]");
-        return buf.toString();
-    }
+
+	public PresenceEvent(Presence presence) {
+		this.presence = presence;
+	}
+
+	public Presence getPresence() {
+		return presence;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("PresenceEvent[");
+		buf.append(presence).append(";")
+				.append((presence == null) ? "" : presence.toXML()).append("]");
+		return buf.toString();
+	}
 }

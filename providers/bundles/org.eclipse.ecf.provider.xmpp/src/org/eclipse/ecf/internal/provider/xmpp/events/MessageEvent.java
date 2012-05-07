@@ -9,37 +9,36 @@
 package org.eclipse.ecf.internal.provider.xmpp.events;
 
 import java.util.Iterator;
-
 import org.eclipse.ecf.core.util.Event;
 import org.jivesoftware.smack.packet.Message;
 
 public class MessageEvent implements Event {
-    
-	private static final long serialVersionUID = 6940577888021931351L;
+
 	protected Message message = null;
-    
+
 	protected Iterator xhtmlbodies = null;
-	
+
 	public MessageEvent(Message message) {
 		this(message, null);
 	}
-	
-    public MessageEvent(Message message, Iterator xhtmlbodies) {
-        this.message = message;
-        this.xhtmlbodies = xhtmlbodies;
-    }
-    
-    public Message getMessage() {
-        return message;
-    }
-    
-    public Iterator getXHTMLBodies() {
-    	return xhtmlbodies;
-    }
-    
-    public String toString() {
-        StringBuffer buf = new StringBuffer("MessageEvent[");
-        buf.append(message).append(";").append((message==null)?"":message.toXML()).append("]");
-        return buf.toString();
-    }
+
+	public MessageEvent(Message message, Iterator xhtmlbodies) {
+		this.message = message;
+		this.xhtmlbodies = xhtmlbodies;
+	}
+
+	public Message getMessage() {
+		return message;
+	}
+
+	public Iterator getXHTMLBodies() {
+		return xhtmlbodies;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("MessageEvent[");
+		buf.append(message).append(";")
+				.append((message == null) ? "" : message.toXML()).append("]");
+		return buf.toString();
+	}
 }

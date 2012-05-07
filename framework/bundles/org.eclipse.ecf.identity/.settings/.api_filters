@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.ecf.identity" version="2">
+    <resource path="src/org/eclipse/ecf/core/util/SystemLogService.java" type="org.eclipse.ecf.core.util.SystemLogService">
+        <filter id="574619656">
+            <message_arguments>
+                <message_argument value="LogService"/>
+                <message_argument value="SystemLogService"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

@@ -15,8 +15,6 @@ package org.eclipse.ecf.provider.comm;
  * 
  */
 public class DisconnectEvent extends ConnectionEvent {
-	private static final long serialVersionUID = 3545519491132832050L;
-
 	Throwable exception = null;
 
 	public DisconnectEvent(IAsynchConnection conn, Throwable e, Object data) {

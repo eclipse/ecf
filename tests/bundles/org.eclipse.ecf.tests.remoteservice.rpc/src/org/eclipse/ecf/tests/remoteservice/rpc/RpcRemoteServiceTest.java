@@ -27,6 +27,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.tests.remoteservice.rpc.common.IEcho;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
+@SuppressWarnings("restriction")
 public class RpcRemoteServiceTest extends AbstractRpcTestCase {
 
 	private static final String ECHO_TEST_DATA = "Hello, world";

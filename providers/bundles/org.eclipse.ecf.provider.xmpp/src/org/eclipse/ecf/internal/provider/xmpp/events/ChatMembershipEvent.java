@@ -10,30 +10,27 @@ package org.eclipse.ecf.internal.provider.xmpp.events;
 
 import org.eclipse.ecf.core.util.Event;
 
-/**
- * @author slewis
- *
- */
 public class ChatMembershipEvent implements Event {
-    
-	private static final long serialVersionUID = 8293255412415864623L;
+
 	String id;
 	boolean add;
-	
-    public ChatMembershipEvent(String id, boolean add) {
-    	this.id = id;
-    	this.add = add;
-    }
-    
-    public String getFrom() {
-        return id;
-    }
-    public boolean isAdd() {
-    	return add;
-    }
-    public String toString() {
-        StringBuffer buf = new StringBuffer("ChatMembershipEvent[");
-        buf.append(id).append(";").append(add).append("]");
-        return buf.toString();
-    }
+
+	public ChatMembershipEvent(String id, boolean add) {
+		this.id = id;
+		this.add = add;
+	}
+
+	public String getFrom() {
+		return id;
+	}
+
+	public boolean isAdd() {
+		return add;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ChatMembershipEvent[");
+		buf.append(id).append(";").append(add).append("]");
+		return buf.toString();
+	}
 }

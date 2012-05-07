@@ -15,16 +15,15 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
 
 public class InvitationReceivedEvent implements Event {
-	private static final long serialVersionUID = 916275866023754310L;
-
 	XMPPConnection connection;
 	String room;
 	String inviter;
 	String reason;
 	String password;
 	Message message;
-	
-	public InvitationReceivedEvent(XMPPConnection conn, String room, String inviter, String reason, String password, Message message) {
+
+	public InvitationReceivedEvent(XMPPConnection conn, String room,
+			String inviter, String reason, String password, Message message) {
 		super();
 		this.connection = conn;
 		this.room = room;
@@ -57,12 +56,13 @@ public class InvitationReceivedEvent implements Event {
 	public String getRoom() {
 		return room;
 	}
-	
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer("InvitationReceivedEvent[");
-		buf.append("conn="+getConnection()).append(";room="+getRoom());
-		buf.append(";inviter="+getInviter()).append(";reason="+reason);
-		buf.append(";pw="+password).append(";msg="+getMessage()).append("]");
+		buf.append("conn=" + getConnection()).append(";room=" + getRoom());
+		buf.append(";inviter=" + getInviter()).append(";reason=" + reason);
+		buf.append(";pw=" + password).append(";msg=" + getMessage())
+				.append("]");
 		return buf.toString();
 	}
 }

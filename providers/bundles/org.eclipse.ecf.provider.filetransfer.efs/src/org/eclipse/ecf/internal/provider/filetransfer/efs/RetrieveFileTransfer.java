@@ -78,8 +78,6 @@ public class RetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 			setLastModifiedTime(info.getLastModified());
 			fileName = info.getName();
 			listener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
-				private static final long serialVersionUID = 590077256618427122L;
-
 				public IIncomingFileTransfer getSource() {
 					return RetrieveFileTransfer.this;
 				}

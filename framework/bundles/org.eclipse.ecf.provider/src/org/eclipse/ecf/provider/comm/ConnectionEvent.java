@@ -17,8 +17,6 @@ import org.eclipse.ecf.core.util.Event;
  * 
  */
 public class ConnectionEvent implements Event {
-	private static final long serialVersionUID = 3257290214476362291L;
-
 	private final Object data;
 
 	private final IConnection connection;

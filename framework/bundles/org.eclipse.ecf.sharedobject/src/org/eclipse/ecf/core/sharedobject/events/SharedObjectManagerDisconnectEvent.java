@@ -19,16 +19,12 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
  * is called.
  * 
  */
-public class SharedObjectManagerDisconnectEvent implements
-		ISharedObjectManagerConnectionEvent {
-	private static final long serialVersionUID = 3257008743777448761L;
-
+public class SharedObjectManagerDisconnectEvent implements ISharedObjectManagerConnectionEvent {
 	ID localContainerID = null;
 
 	ISharedObjectConnector connector = null;
 
-	public SharedObjectManagerDisconnectEvent(ID localContainerID,
-			ISharedObjectConnector connector) {
+	public SharedObjectManagerDisconnectEvent(ID localContainerID, ISharedObjectConnector connector) {
 		this.localContainerID = localContainerID;
 		this.connector = connector;
 	}
@@ -61,8 +57,7 @@ public class SharedObjectManagerDisconnectEvent implements
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer(
-				"SharedObjectManagerDisconnectEvent["); //$NON-NLS-1$
+		StringBuffer buf = new StringBuffer("SharedObjectManagerDisconnectEvent["); //$NON-NLS-1$
 		buf.append(getLocalContainerID()).append(";"); //$NON-NLS-1$
 		buf.append(getSharedObjectID()).append(";"); //$NON-NLS-1$
 		buf.append(getConnector()).append("]"); //$NON-NLS-1$

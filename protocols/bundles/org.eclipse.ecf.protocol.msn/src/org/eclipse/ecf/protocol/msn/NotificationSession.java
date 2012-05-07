@@ -275,7 +275,7 @@ final class NotificationSession extends DispatchSession {
 		} else if (input.indexOf("CHL") != -1) { //$NON-NLS-1$
 			// the read input is a challenge string
 			//			String query = Challenge.createQuery(StringUtils.splitSubstring(input, " ", 2)); //$NON-NLS-1$
-			String query = MD5HashImpl.getMD5(StringUtils.splitSubstring(input, " ", 2));
+			String query = MD5HashImpl.getMD5(StringUtils.splitSubstring(input, " ", 2)); //$NON-NLS-1$
 			//			Even this is wrong. we need to create a 64bit hash out of 128bit hash according to http://bit.ly/wdzdkd
 			write("QRY", Challenge.PRODUCT_ID + ' ' + query.length() + "\r\n" //$NON-NLS-1$ //$NON-NLS-2$
 					+ query, false);

@@ -179,8 +179,6 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	protected void fireTransferSendDoneEvent() {
 		listener.handleTransferEvent(new IOutgoingFileTransferSendDoneEvent() {
 
-			private static final long serialVersionUID = -2686266564645210722L;
-
 			public IOutgoingFileTransfer getSource() {
 				return AbstractOutgoingFileTransfer.this;
 			}
@@ -201,8 +199,6 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 
 	protected void fireTransferSendDataEvent() {
 		listener.handleTransferEvent(new IOutgoingFileTransferSendDataEvent() {
-
-			private static final long serialVersionUID = -2916500675859842392L;
 
 			public IOutgoingFileTransfer getSource() {
 				return AbstractOutgoingFileTransfer.this;
@@ -316,8 +312,6 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 
 	protected void fireSendStartEvent() {
 		listener.handleTransferEvent(new IOutgoingFileTransferResponseEvent() {
-
-			private static final long serialVersionUID = 2171381825030082432L;
 
 			public String toString() {
 				final StringBuffer sb = new StringBuffer("IOutgoingFileTransferResponseEvent["); //$NON-NLS-1$

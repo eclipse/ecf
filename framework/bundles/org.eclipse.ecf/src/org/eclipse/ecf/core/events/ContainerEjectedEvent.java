@@ -12,8 +12,6 @@ import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 
 public class ContainerEjectedEvent implements IContainerEjectedEvent {
-	private static final long serialVersionUID = 3257567299946033970L;
-
 	private final ID localContainerID;
 
 	private final ID groupID;

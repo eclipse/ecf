@@ -113,8 +113,6 @@ public final class BitTorrentContainer implements IContainer, IRetrieveFileTrans
 
 		transferListener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
 
-			private static final long serialVersionUID = 5195806924769910246L;
-
 			private IIncomingFileTransfer transfer;
 
 			private boolean cancelled = false;

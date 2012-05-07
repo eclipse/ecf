@@ -16,10 +16,7 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
  * from a container via {@link ISharedObjectManager#removeSharedObject(ID)} is
  * called
  */
-public class SharedObjectManagerRemoveEvent implements
-		ISharedObjectManagerEvent {
-	private static final long serialVersionUID = 3256728389754106931L;
-
+public class SharedObjectManagerRemoveEvent implements ISharedObjectManagerEvent {
 	ID sharedObjectID = null;
 
 	ID localContainerID = null;

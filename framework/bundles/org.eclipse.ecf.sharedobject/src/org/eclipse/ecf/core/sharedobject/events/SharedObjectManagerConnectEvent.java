@@ -19,16 +19,12 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
  * is called.
  * 
  */
-public class SharedObjectManagerConnectEvent implements
-		ISharedObjectManagerConnectionEvent {
-	private static final long serialVersionUID = 3544670676712633650L;
-
+public class SharedObjectManagerConnectEvent implements ISharedObjectManagerConnectionEvent {
 	ID localContainerID = null;
 
 	ISharedObjectConnector connector = null;
 
-	public SharedObjectManagerConnectEvent(ID localContainerID,
-			ISharedObjectConnector connector) {
+	public SharedObjectManagerConnectEvent(ID localContainerID, ISharedObjectConnector connector) {
 		this.localContainerID = localContainerID;
 		this.connector = connector;
 	}

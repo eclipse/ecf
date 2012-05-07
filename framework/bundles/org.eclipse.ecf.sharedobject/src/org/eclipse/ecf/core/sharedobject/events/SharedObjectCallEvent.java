@@ -16,8 +16,6 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
 public class SharedObjectCallEvent implements ISharedObjectCallEvent {
-	private static final long serialVersionUID = 3904674977264250933L;
-
 	ID sender;
 
 	Event event;

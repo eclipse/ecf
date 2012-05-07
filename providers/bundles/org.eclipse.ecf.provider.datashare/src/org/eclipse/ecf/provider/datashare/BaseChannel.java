@@ -129,8 +129,6 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 
 	IChannelConnectEvent createChannelGroupJoinEvent(final boolean hasJoined, final ID targetID) {
 		return new IChannelConnectEvent() {
-			private static final long serialVersionUID = -1085237280463725283L;
-
 			public ID getTargetID() {
 				return targetID;
 			}
@@ -149,8 +147,6 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 
 	IChannelDisconnectEvent createChannelGroupDepartEvent(final boolean hasJoined, final ID targetID) {
 		return new IChannelDisconnectEvent() {
-			private static final long serialVersionUID = -1085237280463725283L;
-
 			public ID getTargetID() {
 				return targetID;
 			}
@@ -178,8 +174,6 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 				if (l == null)
 					return event;
 				listener.handleChannelEvent(new IChannelMessageEvent() {
-					private static final long serialVersionUID = -2270885918818160970L;
-
 					public ID getFromContainerID() {
 						return event.getRemoteContainerID();
 					}

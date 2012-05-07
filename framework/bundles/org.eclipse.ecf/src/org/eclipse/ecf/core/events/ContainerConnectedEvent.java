@@ -15,8 +15,6 @@ import org.eclipse.ecf.core.identity.ID;
  * 
  */
 public class ContainerConnectedEvent implements IContainerConnectedEvent {
-	private static final long serialVersionUID = 3833467322827617078L;
-
 	private final ID joinedContainerID;
 
 	private final ID localContainerID;

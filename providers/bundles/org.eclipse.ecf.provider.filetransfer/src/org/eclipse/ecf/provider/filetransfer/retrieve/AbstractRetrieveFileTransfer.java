@@ -346,8 +346,6 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	protected void fireTransferReceivePausedEvent() {
 		listener.handleTransferEvent(new IIncomingFileTransferReceivePausedEvent() {
 
-			private static final long serialVersionUID = -1317411290525985140L;
-
 			public IIncomingFileTransfer getSource() {
 				return AbstractRetrieveFileTransfer.this;
 			}
@@ -363,8 +361,6 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected void fireTransferReceiveDoneEvent() {
 		listener.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
-
-			private static final long serialVersionUID = 6925524078226825710L;
 
 			public IIncomingFileTransfer getSource() {
 				return AbstractRetrieveFileTransfer.this;
@@ -386,8 +382,6 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected void fireTransferReceiveDataEvent() {
 		listener.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
-			private static final long serialVersionUID = -5656328374614130161L;
-
 			public IIncomingFileTransfer getSource() {
 				return AbstractRetrieveFileTransfer.this;
 			}
@@ -669,8 +663,6 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected void fireReceiveStartEvent() {
 		listener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
-			private static final long serialVersionUID = -513800598918052184L;
-
 			/*
 			 * (non-Javadoc)
 			 * 
@@ -769,8 +761,6 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	protected void fireReceiveResumedEvent() {
 		listener.handleTransferEvent(new IIncomingFileTransferReceiveResumedEvent() {
-
-			private static final long serialVersionUID = 7111739642849612839L;
 
 			public IIncomingFileTransfer getSource() {
 				return AbstractRetrieveFileTransfer.this;

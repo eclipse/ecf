@@ -55,8 +55,6 @@ final class TorrentFileTransfer implements IFileTransferPausable, IFileTransferR
 			public void blockDownloaded(int piece, int index, int blockLength) {
 				TorrentFileTransfer.this.listener.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
 
-					private static final long serialVersionUID = -7666111308704272599L;
-
 					public IIncomingFileTransfer getSource() {
 						return TorrentFileTransfer.this;
 					}
@@ -89,8 +87,6 @@ final class TorrentFileTransfer implements IFileTransferPausable, IFileTransferR
 		torrent.removeTorrentStateListener(stateListener);
 
 		listener.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
-
-			private static final long serialVersionUID = -6685158329789351560L;
 
 			public Exception getException() {
 				return TorrentFileTransfer.this.exception;

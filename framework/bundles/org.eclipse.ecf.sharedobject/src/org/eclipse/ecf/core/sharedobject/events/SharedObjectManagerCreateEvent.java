@@ -16,10 +16,7 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
  * {@link ISharedObjectManager#createSharedObject(org.eclipse.ecf.core.sharedobject.SharedObjectDescription)}
  * is called
  */
-public class SharedObjectManagerCreateEvent implements
-		ISharedObjectManagerEvent {
-	private static final long serialVersionUID = 3905527103070878006L;
-
+public class SharedObjectManagerCreateEvent implements ISharedObjectManagerEvent {
 	ID localContainerID = null;
 
 	ID sharedObjectID = null;

@@ -11,8 +11,6 @@ package org.eclipse.ecf.core.events;
 import org.eclipse.ecf.core.identity.ID;
 
 public class ContainerDisposeEvent implements IContainerDisposeEvent {
-	private static final long serialVersionUID = 3618138961349062706L;
-
 	private final ID localContainerID;
 
 	public ContainerDisposeEvent(ID localContainerID) {

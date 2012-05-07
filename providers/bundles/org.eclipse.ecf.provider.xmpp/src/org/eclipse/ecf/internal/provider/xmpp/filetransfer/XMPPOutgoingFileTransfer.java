@@ -29,9 +29,9 @@ import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.osgi.util.NLS;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.filetransfer.FileTransfer;
+import org.jivesoftware.smackx.filetransfer.FileTransfer.Status;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
-import org.jivesoftware.smackx.filetransfer.FileTransfer.Status;
 
 public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 
@@ -139,8 +139,6 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 								|| s.equals(Status.error)
 								|| s.equals(Status.refused)) {
 							fireTransferListenerEvent(new IOutgoingFileTransferResponseEvent() {
-								private static final long serialVersionUID = -5940612388464073240L;
-
 								public boolean requestAccepted() {
 									return negotiated;
 								}
@@ -152,8 +150,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 								public String toString() {
 									final StringBuffer buf = new StringBuffer(
 											"OutgoingFileTransferResponseEvent["); //$NON-NLS-1$
-									buf
-											.append("requestAccepted=").append(requestAccepted()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+									buf.append("requestAccepted=").append(requestAccepted()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 									return buf.toString();
 								}
 
@@ -189,8 +186,6 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 					}
 					// Then notify that the sending is done
 					fireTransferListenerEvent(new IOutgoingFileTransferSendDoneEvent() {
-						private static final long serialVersionUID = -6315336868737148845L;
-
 						public IOutgoingFileTransfer getSource() {
 							return XMPPOutgoingFileTransfer.this;
 						}
@@ -199,10 +194,8 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 							final StringBuffer buf = new StringBuffer(
 									"IOutgoingFileTransferSendDoneEvent["); //$NON-NLS-1$
 							buf.append("isDone=" + getSource().isDone()); //$NON-NLS-1$
-							buf
-									.append(";bytesSent=").append(getSource().getBytesSent()); //$NON-NLS-1$
-							buf
-									.append(";exception=").append(getException()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+							buf.append(";bytesSent=").append(getSource().getBytesSent()); //$NON-NLS-1$
+							buf.append(";exception=").append(getException()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 							return buf.toString();
 						}
 					});

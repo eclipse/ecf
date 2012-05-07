@@ -16,18 +16,14 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Event class implementing {@link IContainerSharedObjectMessageSendingEvent}.
  */
-public class ContainerSharedObjectMessageSendingEvent implements
-		IContainerSharedObjectMessageSendingEvent {
-
-	private static final long serialVersionUID = 3500128303573538068L;
+public class ContainerSharedObjectMessageSendingEvent implements IContainerSharedObjectMessageSendingEvent {
 
 	protected ID localContainerID;
 	protected ID targetContainerID;
 	protected ID sharedObjectID;
 	protected Object message;
 
-	public ContainerSharedObjectMessageSendingEvent(ID localContainerID,
-			ID targetContainerID, ID sharedObjectID, Object message) {
+	public ContainerSharedObjectMessageSendingEvent(ID localContainerID, ID targetContainerID, ID sharedObjectID, Object message) {
 		this.localContainerID = localContainerID;
 		this.targetContainerID = targetContainerID;
 		this.sharedObjectID = sharedObjectID;
@@ -71,8 +67,7 @@ public class ContainerSharedObjectMessageSendingEvent implements
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer(
-				"ContainerSharedObjectMessageSendingEvent["); //$NON-NLS-1$
+		StringBuffer buf = new StringBuffer("ContainerSharedObjectMessageSendingEvent["); //$NON-NLS-1$
 		buf.append("localContainerID=").append(localContainerID); //$NON-NLS-1$
 		buf.append(";targetContainerID=").append(targetContainerID); //$NON-NLS-1$
 		buf.append(";sharedObjectID=").append(sharedObjectID); //$NON-NLS-1$

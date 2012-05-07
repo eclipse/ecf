@@ -31,8 +31,6 @@ import org.eclipse.ecf.presence.im.IChatMessage.Type;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.equinox.concurrent.future.TimeoutException;
 import org.eclipse.osgi.util.NLS;
-import org.osgi.framework.Bundle;
-import org.osgi.service.packageadmin.PackageAdmin;
 import org.schwering.irc.lib.*;
 import org.schwering.irc.lib.ssl.SSLIRCConnection;
 
@@ -108,10 +106,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 *         <code>false</code> otherwise
 	 */
 	private boolean hasDatashare() {
-		PackageAdmin admin = Activator.getDefault().getPackageAdmin();
-		Bundle[] bundles = admin.getBundles(
-				"org.eclipse.ecf.provider.datashare.nio", null); //$NON-NLS-1$
-		return bundles != null && bundles.length != 0;
+		return Activator.getDefault().hasDatashare();
 	}
 
 	/**
@@ -1083,12 +1078,10 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 
 		public void setActive(boolean active) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public Object getAdapter(Class adapter) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 

@@ -16,13 +16,15 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
+@SuppressWarnings("rawtypes")
 public class HttpServiceConnector extends ServiceTracker implements ServiceTrackerCustomizer {
 
 	private String path;
 
     private HttpServlet servlet;
 
-    public HttpServiceConnector(BundleContext context, String path, HttpServlet servlet) {
+    @SuppressWarnings("unchecked")
+	public HttpServiceConnector(BundleContext context, String path, HttpServlet servlet) {
         super(context, HttpService.class.getName(), null);
         this.path = path;
         this.servlet = servlet;
@@ -31,7 +33,8 @@ public class HttpServiceConnector extends ServiceTracker implements ServiceTrack
     }
 
     public Object addingService(ServiceReference reference) {
-        HttpService httpService = (HttpService) super.addingService(reference);
+        @SuppressWarnings("unchecked")
+		HttpService httpService = (HttpService) super.addingService(reference);
         if (httpService == null)
           return null;
 
@@ -45,7 +48,8 @@ public class HttpServiceConnector extends ServiceTracker implements ServiceTrack
         return httpService;
     }
 
-    public void removedService(ServiceReference reference, Object service) {
+    @SuppressWarnings("unchecked")
+	public void removedService(ServiceReference reference, Object service) {
         HttpService httpService = (HttpService) service;
         httpService.unregister(path);
 

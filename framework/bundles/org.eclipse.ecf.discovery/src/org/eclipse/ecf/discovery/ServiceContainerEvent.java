@@ -12,12 +12,10 @@ package org.eclipse.ecf.discovery;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Base event implementation of {@link IServiceEvent}.  Subclasses
- * may be created as appropriate.
+ * Base event implementation of {@link IServiceEvent}. Subclasses may be created
+ * as appropriate.
  */
 public class ServiceContainerEvent implements IServiceEvent {
-
-	private static final long serialVersionUID = -2704247495748252242L;
 
 	protected IServiceInfo info;
 
@@ -28,21 +26,27 @@ public class ServiceContainerEvent implements IServiceEvent {
 		this.containerID = containerID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.discovery.IServiceEvent#getServiceInfo()
 	 */
 	public IServiceInfo getServiceInfo() {
 		return info;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.events.IContainerEvent#getLocalContainerID()
 	 */
 	public ID getLocalContainerID() {
 		return containerID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {

@@ -16,8 +16,6 @@ import org.eclipse.ecf.core.identity.ID;
  * Container disconnected event.
  */
 public class ContainerDisconnectedEvent implements IContainerDisconnectedEvent {
-	private static final long serialVersionUID = 3256437002059527733L;
-
 	private final ID departedContainerID;
 
 	private final ID localContainerID;

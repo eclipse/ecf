@@ -85,8 +85,6 @@ final class MSNContainer implements IContainer, IChatManager,
 		IChatMessageSender, IPresenceService, IPresenceSender, IRoster,
 		IRosterManager, IRosterSubscriptionSender, ITypingMessageSender {
 
-	private static final long serialVersionUID = 1676711994010767942L;
-
 	private final Map chatSessions;
 
 	private final List containerListeners;

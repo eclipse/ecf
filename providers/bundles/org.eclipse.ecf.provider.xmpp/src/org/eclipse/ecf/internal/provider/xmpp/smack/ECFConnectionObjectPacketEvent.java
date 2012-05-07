@@ -14,21 +14,23 @@ import org.jivesoftware.smack.packet.Packet;
 
 public class ECFConnectionObjectPacketEvent extends AsynchEvent {
 
-	private static final long serialVersionUID = -1618091206033717358L;
 	Object value;
-	public ECFConnectionObjectPacketEvent(IAsynchConnection source, Packet p, Object obj) {
-		super(source,p);
+
+	public ECFConnectionObjectPacketEvent(IAsynchConnection source, Packet p,
+			Object obj) {
+		super(source, p);
 		this.value = obj;
 	}
-	
+
 	public Object getObjectValue() {
-	    return value;
+		return value;
 	}
+
 	public String toString() {
-	    StringBuffer sb = new StringBuffer("ECFConnectionPacketEvent[");
-	    sb.append(getData()).append(";");
-	    sb.append(getConnection()).append(";");
-	    sb.append(getObjectValue()).append("]");
-	    return sb.toString();
+		StringBuffer sb = new StringBuffer("ECFConnectionPacketEvent[");
+		sb.append(getData()).append(";");
+		sb.append(getConnection()).append(";");
+		sb.append(getObjectValue()).append("]");
+		return sb.toString();
 	}
 }

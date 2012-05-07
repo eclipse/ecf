@@ -11,24 +11,20 @@ package org.eclipse.ecf.internal.provider.xmpp.events;
 import org.eclipse.ecf.core.util.Event;
 import org.jivesoftware.smack.packet.IQ;
 
-/**
- * @author slewis
- *
- */
 public class IQEvent implements Event {
-    
-	private static final long serialVersionUID = 8136148813492923513L;
+
 	protected IQ iq = null;
-    
-    public IQEvent(IQ iq) {
-        this.iq = iq;
-    }
-    
-    public IQ getIQ() {
-        return iq;
-    }
-    public String toString() {
-        StringBuffer buf = new StringBuffer("IQEvent[]");
-        return buf.toString();
-    }
+
+	public IQEvent(IQ iq) {
+		this.iq = iq;
+	}
+
+	public IQ getIQ() {
+		return iq;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("IQEvent[]");
+		return buf.toString();
+	}
 }

@@ -15,8 +15,6 @@ package org.eclipse.ecf.provider.comm;
  * 
  */
 public class SynchEvent extends ConnectionEvent {
-	private static final long serialVersionUID = 3257288019714324532L;
-
 	public SynchEvent(ISynchConnection conn, Object data) {
 		super(conn, data);
 	}

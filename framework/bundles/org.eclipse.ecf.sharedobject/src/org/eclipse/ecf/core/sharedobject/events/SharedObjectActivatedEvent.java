@@ -11,8 +11,6 @@ package org.eclipse.ecf.core.sharedobject.events;
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
-	private static final long serialVersionUID = 6880286157835412766L;
-
 	private final ID activatedID;
 
 	private final ID localContainerID;
