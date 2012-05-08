@@ -1721,10 +1721,7 @@ public class RemoteServiceAdmin implements
 		return className.substring(0, lastDotIndex);
 	}
 
-	/**
-	 * @since 2.1
-	 */
-	protected boolean comparePackageVersions(String packageName,
+	private boolean comparePackageVersions(String packageName,
 			Version remoteVersion, Version localVersion)
 			throws RuntimeException {
 
