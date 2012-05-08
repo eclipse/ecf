@@ -19,8 +19,6 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public class ChatRoomMessageEvent implements IChatRoomMessageEvent {
 
-	private static final long serialVersionUID = 241668017694136249L;
-
 	protected ID fromID;
 
 	protected IChatRoomMessage chatMessage;

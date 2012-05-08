@@ -15,10 +15,6 @@ package org.eclipse.ecf.presence.search;
  */
 public class UserSearchCompleteEvent implements IUserSearchCompleteEvent {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1563126741187575435L;
 	private ISearch search;
 
 	public UserSearchCompleteEvent(ISearch search) {

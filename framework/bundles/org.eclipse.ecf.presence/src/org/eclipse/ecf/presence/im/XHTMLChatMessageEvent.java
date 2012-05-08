@@ -13,10 +13,7 @@ package org.eclipse.ecf.presence.im;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class XHTMLChatMessageEvent extends ChatMessageEvent implements
-		IXHTMLChatMessageEvent {
-
-	private static final long serialVersionUID = -1936360806544087276L;
+public class XHTMLChatMessageEvent extends ChatMessageEvent implements IXHTMLChatMessageEvent {
 
 	/**
 	 * @param fromID

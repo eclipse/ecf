@@ -10,11 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.roster;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.*;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 
@@ -25,18 +21,15 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
  */
 public class Roster extends RosterItem implements IRoster {
 
-	private static final long serialVersionUID = 5600691290032864241L;
-
 	protected List rosteritems;
 
 	protected IUser rosterUser;
 
 	protected IPresenceContainerAdapter presenceContainer;
-	
+
 	public Roster(IPresenceContainerAdapter pc, IUser user) {
 		super(null, (user == null) ? "<unknown>" //$NON-NLS-1$
-				: ((user.getName() == null) ? user.getID().getName() : user
-						.getName()));
+				: ((user.getName() == null) ? user.getID().getName() : user.getName()));
 		this.presenceContainer = pc;
 		this.rosterUser = user;
 		this.rosteritems = Collections.synchronizedList(new ArrayList());

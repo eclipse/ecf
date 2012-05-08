@@ -15,8 +15,6 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class TypingMessageEvent implements ITypingMessageEvent {
 
-	private static final long serialVersionUID = 6612754945575950442L;
-
 	protected ID fromID;
 
 	protected ITypingMessage typingMessage;
