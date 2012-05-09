@@ -132,10 +132,6 @@ public abstract class AbstractRetrieveTestCase extends AbstractFileTransferTestC
 	 */
 	protected void tearDown() throws Exception {
 		retrieveAdapter = null;
-		startConnectEvents = null;
-		startEvents = null;
-		dataEvents = null;
-		doneEvents = null;
 		super.tearDown();
 	}
 
