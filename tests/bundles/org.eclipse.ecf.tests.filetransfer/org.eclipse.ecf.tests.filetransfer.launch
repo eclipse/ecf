@@ -30,7 +30,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consolelog"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.ecf.tests.filetransfer"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout=90000&#13;&#10;-Dorg.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout=80000"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.eclipse.ecf.provider.filetransfer.httpclient.retrieve.readTimeout=90000&#13;&#10;-Dorg.eclipse.ecf.provider.filetransfer.httpclient.retrieve.connectTimeout=80000&#13;&#10;-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog&#13;&#10;-Dorg.apache.commons.logging.simplelog.showdatetime=true &#13;&#10;-Dorg.apache.commons.logging.simplelog.log.httpclient.wire.header=debug&#13;&#10;-Dorg.apache.commons.logging.simplelog.log.org.apache.commons.httpclient=debug&#13;&#10;-Dorg.apache.commons.logging.simplelog.log.httpclient.wire=debug"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="org.eclipse.sdk.ide"/>
 <booleanAttribute key="run_in_ui_thread" value="true"/>
