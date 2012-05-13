@@ -68,20 +68,24 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 		}
 		assertHasEventCount(events, IRemoteFileSystemBrowseEvent.class, 3);
 		for (Iterator iterator = events.iterator(); iterator.hasNext();) {
-			IRemoteFileSystemBrowseEvent event = (IRemoteFileSystemBrowseEvent) iterator.next();
+			IRemoteFileSystemBrowseEvent event = (IRemoteFileSystemBrowseEvent) iterator
+					.next();
 			assertNotNull(event);
 			final IRemoteFile[] remoteFiles = event.getRemoteFiles();
-			assertNotNull(remoteFiles);
-			assertEquals(1, remoteFiles.length);
-			if (event.getFileID().getName().equals("https://www.verisign.com/index.html") ||
-			    event.getFileID().getName().equals("http://google.com:80")
-					) {
-				verifyRemoteFilesWithoutLastModifiedAndContentLength(remoteFiles);
-			} else {
-				verifyRemoteFiles(remoteFiles);
+			if (remoteFiles != null) {
+				assertNotNull(remoteFiles);
+				assertEquals(1, remoteFiles.length);
+				if (event.getFileID().getName()
+						.equals("https://www.verisign.com/index.html")
+						|| event.getFileID().getName()
+								.equals("http://google.com:80")) {
+					verifyRemoteFilesWithoutLastModifiedAndContentLength(remoteFiles);
+				} else {
+					verifyRemoteFiles(remoteFiles);
+				}
 			}
 		}
-		
+
 	}
 	
 	public void testBrowseUnknownHost() throws Exception {
