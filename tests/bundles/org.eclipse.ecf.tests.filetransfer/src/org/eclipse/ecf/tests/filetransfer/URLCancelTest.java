@@ -79,7 +79,8 @@ public class URLCancelTest extends AbstractRetrieveTestCase {
 	 */
 	protected void handleDoneEvent(IIncomingFileTransferReceiveDoneEvent event) {
 		super.handleDoneEvent(event);
-		assertTrue(incomingFileTransfer.getException() != null);
+		if (incomingFileTransfer != null)
+			assertTrue(incomingFileTransfer.getException() != null);
 	}
 
 	protected void testReceive(String url) throws Exception {
