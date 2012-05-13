@@ -28,6 +28,7 @@ public class ConnectionManagerHelper {
 	private MultiThreadedHttpConnectionManager connectionManager;
 
 	public ConnectionManagerHelper() {
+		// Nothing
 	}
 
 	private static int getIntegerProperty(String prop, int intDefault) {
