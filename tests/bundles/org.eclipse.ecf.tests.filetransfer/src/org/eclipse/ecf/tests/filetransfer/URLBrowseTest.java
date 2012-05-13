@@ -72,17 +72,15 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 					.next();
 			assertNotNull(event);
 			final IRemoteFile[] remoteFiles = event.getRemoteFiles();
-			if (remoteFiles != null) {
-				assertNotNull(remoteFiles);
-				assertEquals(1, remoteFiles.length);
-				if (event.getFileID().getName()
-						.equals("https://www.verisign.com/index.html")
-						|| event.getFileID().getName()
-								.equals("http://google.com:80")) {
-					verifyRemoteFilesWithoutLastModifiedAndContentLength(remoteFiles);
-				} else {
-					verifyRemoteFiles(remoteFiles);
-				}
+			assertNotNull(remoteFiles);
+			assertEquals(1, remoteFiles.length);
+			if (event.getFileID().getName()
+					.equals("https://www.verisign.com/index.html")
+					|| event.getFileID().getName()
+							.equals("http://google.com:80")) {
+				verifyRemoteFilesWithoutLastModifiedAndContentLength(remoteFiles);
+			} else {
+				verifyRemoteFiles(remoteFiles);
 			}
 		}
 
