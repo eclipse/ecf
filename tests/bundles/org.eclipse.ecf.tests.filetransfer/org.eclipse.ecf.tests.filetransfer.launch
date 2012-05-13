@@ -12,7 +12,7 @@
 <booleanAttribute key="clearws" value="true"/>
 <booleanAttribute key="clearwslog" value="false"/>
 <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/org.eclipse.ecf.tests.filetransfer"/>
-<booleanAttribute key="default" value="true"/>
+<booleanAttribute key="default" value="false"/>
 <booleanAttribute key="includeOptional" value="false"/>
 <stringAttribute key="location" value="${workspace_loc}/../runtime-workspace-tests"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
