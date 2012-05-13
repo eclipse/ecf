@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.provider.filetransfer.httpclient.feature"
       label="%featureName"
-      version="2.1.0.qualifier"
+      version="2.1.1.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
@@ -24,6 +24,10 @@ Contributors: Composent, Inc. - initial API and implementation
    <license url="%licenseURL">
       %license
    </license>
+
+   <includes
+         id="org.eclipse.ecf.filetransfer.feature"
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.provider.filetransfer.httpclient"
@@ -59,14 +63,6 @@ Contributors: Composent, Inc. - initial API and implementation
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.ssl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
          unpack="false"/>
 
 </feature>
