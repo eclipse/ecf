@@ -23,7 +23,12 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 
-	public  static final String HTTP_UNKNOWN_HOST_URL = "http://unknown-abcdefghi.eclipse.org/foo";
+	public static final String HTTP_UNKNOWN_HOST_URL = "http://unknown-abcdefghi.eclipse.org/foo";
+
+	private boolean CANCEL_SUPPORTED_ON_CONNECT = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.tests.filetransfer.cancelSupportedOnConnect",
+					"true")).booleanValue();
 
 	/*
 	 * (non-Javadoc)
@@ -33,6 +38,7 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -41,7 +47,7 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+
 	protected void testReceive(String url, IFileTransferListener listener)
 			throws Exception {
 		assertNotNull(retrieveAdapter);
@@ -55,8 +61,10 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 		try {
 			// path does not matter as server does not respond.
 			testReceive(HTTP_UNKNOWN_HOST_URL, listener);
-			assertHasEvent(startConnectEvents,
-					IFileTransferConnectStartEvent.class);
+			if (CANCEL_SUPPORTED_ON_CONNECT) {
+				assertHasEvent(startConnectEvents,
+						IFileTransferConnectStartEvent.class);
+			}
 			assertHasNoEvent(startEvents,
 					IIncomingFileTransferReceiveStartEvent.class);
 			assertHasNoEvent(dataEvents,
@@ -70,7 +78,7 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 			fail(e.toString());
 		}
 	}
-	
+
 	public void testReceiveFile_unknownHostWithConnectJob() throws Exception {
 		final IFileTransferListener listener = createFileTransferListener();
 		final FileTransferListenerWrapper lw = new FileTransferListenerWrapper(
@@ -90,8 +98,11 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 			// path does not matter as server does not respond.
 			testReceive(HTTP_UNKNOWN_HOST_URL, lw);
 
-			assertHasEvent(startConnectEvents,
-					IFileTransferConnectStartEvent.class);
+			if (CANCEL_SUPPORTED_ON_CONNECT) {
+				assertHasEvent(startConnectEvents,
+						IFileTransferConnectStartEvent.class);
+			}
+
 			assertHasNoEvent(startEvents,
 					IIncomingFileTransferReceiveStartEvent.class);
 			assertHasNoEvent(dataEvents,
@@ -103,6 +114,5 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 			fail(e.toString());
 		}
 	}
-
 
 }

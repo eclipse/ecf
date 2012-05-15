@@ -43,6 +43,10 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 	private TrackSocketEvents socketEvents;
 	private SocketInReadWrapper socketInReadWrapper;
 
+	private boolean CANCEL_SUPPORTED_ON_CONNECT = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.tests.filetransfer.cancelSupportedOnConnect",
+					"true")).booleanValue();
 
 	/*
 	 * (non-Javadoc)
@@ -68,25 +72,31 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 			tmpFile.delete();
 		tmpFile = null;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase#handleStartConnectEvent(org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.tests.filetransfer.AbstractRetrieveTestCase#
+	 * handleStartConnectEvent
+	 * (org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent)
 	 */
 	protected void handleStartConnectEvent(IFileTransferConnectStartEvent event) {
 		super.handleStartConnectEvent(event);
 		this.socketEvents = SocketEventTestUtil.observeSocketEvents(event);
-		ISocketEventSource source = (ISocketEventSource) event.getAdapter(ISocketEventSource.class);
+		ISocketEventSource source = (ISocketEventSource) event
+				.getAdapter(ISocketEventSource.class);
 		source.addListener(new ISocketListener() {
 
 			public void handleSocketEvent(ISocketEvent event) {
 				if (event instanceof ISocketConnectedEvent) {
 					ISocketConnectedEvent connectedEvent = (ISocketConnectedEvent) event;
-					socketInReadWrapper = new SocketInReadWrapper(connectedEvent.getSocket(), startTime);
+					socketInReadWrapper = new SocketInReadWrapper(
+							connectedEvent.getSocket(), startTime);
 					connectedEvent.setSocket(socketInReadWrapper);
 				}
 			}
 		});
-		
+
 	}
 
 	protected void handleDoneEvent(IIncomingFileTransferReceiveDoneEvent event) {
@@ -104,6 +114,10 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 	}
 
 	public void testReceiveFile_cancelOnConnectEvent() throws Exception {
+		if (!CANCEL_SUPPORTED_ON_CONNECT) {
+			trace("WARNING:  Cancel not supported by this provider.  testReceiveFile_cancelOnConnectEvent cannot be used");
+			return;
+		}
 		final IFileTransferListener listener = createFileTransferListener();
 		final FileTransferListenerWrapper lw = new FileTransferListenerWrapper(
 				listener) {
@@ -112,6 +126,7 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 				assertNotNull(event.getFileID());
 				assertNotNull(event.getFileID().getFilename());
 				assertNull(socketInReadWrapper);
+				setDone(true);
 				event.cancel();
 			}
 		};
@@ -125,7 +140,7 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 		assertDoneCancelled();
 
 		assertNull(tmpFile);
-		
+
 		socketEvents.validateNoSocketCreated();
 
 	}
@@ -133,6 +148,10 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 	// TODO: add test that cancel without connect job, when server does not
 	// respond
 	public void testReceiveFile_cancelConnectJob() throws Exception {
+		if (!CANCEL_SUPPORTED_ON_CONNECT) {
+			trace("WARNING:  Cancel not supported by this provider.  testReceiveFile_cancelConnectJob cannot be used");
+			return;
+		}
 		final Object[] doCancel = new Object[1];
 
 		final IFileTransferListener listener = createFileTransferListener();
@@ -183,8 +202,8 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 			assertHasNoEvent(dataEvents,
 					IIncomingFileTransferReceiveDataEvent.class);
 			IIncomingFileTransferReceiveDoneEvent doneEvent = getDoneEvent();
-			assertTrue(doneEvent.getException().toString(), doneEvent
-					.getException() instanceof UserCancelledException);
+			assertTrue(doneEvent.getException().toString(),
+					doneEvent.getException() instanceof UserCancelledException);
 			assertTrue(doneEvent.getSource().isDone());
 			assertSame(doneEvent.getException(), doneEvent.getSource()
 					.getException());
@@ -193,7 +212,7 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 
 			assertFalse(socketInReadWrapper.inRead);
 			socketEvents.validateOneSocketCreatedAndClosed();
-			
+
 		} finally {
 			server.shutdown();
 		}
@@ -207,6 +226,10 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 	}
 
 	public void testReceiveFile_cancelTransferJob() throws Exception {
+		if (!CANCEL_SUPPORTED_ON_CONNECT) {
+			trace("WARNING:  Cancel not supported by this provider.  testReceiveFile_cancelTransferJob cannot be used");
+			return;
+		}
 		final Object[] doCancel = new Object[1];
 
 		final IFileTransferListener listener = createFileTransferListener();
@@ -260,9 +283,9 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 				synchronized (doCancel) {
 					doCancel[0] = Boolean.TRUE;
 				}
-				
+
 				conn.setKeepAlive(true);
-				// 
+				//
 				return stalledInRequestHandler(doCancel);
 			}
 
@@ -298,16 +321,31 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 		}
 		assertTrue(socketInReadWrapper.inRead);
 	}
-	
-	public void testReceiveFile_cancelTransferJobAfterOneBlock() throws Exception {
-		testReceiveFile_cancelTransferJobInMiddle(AbstractRetrieveFileTransfer.DEFAULT_BUF_LENGTH*2, false);
+
+	public void testReceiveFile_cancelTransferJobAfterOneBlock()
+			throws Exception {
+		if (!CANCEL_SUPPORTED_ON_CONNECT) {
+			trace("WARNING:  Cancel not supported by this provider.  testReceiveFile_cancelTransferJobAfterOneBlock cannot be used");
+			return;
+		}
+		testReceiveFile_cancelTransferJobInMiddle(
+				AbstractRetrieveFileTransfer.DEFAULT_BUF_LENGTH * 2, false);
 	}
-	
+
 	public void testReceiveFile_cancelTransferJobInMiddle() throws Exception {
+		if (!CANCEL_SUPPORTED_ON_CONNECT) {
+			trace("WARNING:  Cancel not supported by this provider.  testReceiveFile_cancelTransferJobInMiddle cannot be used");
+			return;
+		}
 		testReceiveFile_cancelTransferJobInMiddle(20000, true);
 	}
-	
-	public void testReceiveFile_cancelTransferJobInMiddle(final long len, final boolean expectedSocketInRead) throws Exception {
+
+	public void testReceiveFile_cancelTransferJobInMiddle(final long len,
+			final boolean expectedSocketInRead) throws Exception {
+		if (!CANCEL_SUPPORTED_ON_CONNECT) {
+			trace("WARNING:  Cancel not supported by this provider.  testReceiveFile_cancelTransferJobInMiddle cannot be used");
+			return;
+		}
 		final Object[] doCancel = new Object[1];
 
 		final IFileTransferListener listener = createFileTransferListener();
@@ -358,7 +396,7 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 						"Content-Length: " + len,
 						"Content-Type: text/plain; charset=UTF-8", "" });
 				w.flush();
-				for (int i = 0; i < len/2; i++) {
+				for (int i = 0; i < len / 2; i++) {
 					w.write("x");
 				}
 				w.flush();
@@ -386,11 +424,11 @@ public class URLRetrieveTestCancelConnectJob extends AbstractRetrieveTestCase {
 
 			assertNotNull(tmpFile);
 			assertTrue(tmpFile.exists());
-			assertEquals(len/2, tmpFile.length());
+			assertEquals(len / 2, tmpFile.length());
 
 			assertFalse(socketInReadWrapper.inRead);
 			socketEvents.validateOneSocketCreatedAndClosed();
-			
+
 		} finally {
 			server.shutdown();
 		}

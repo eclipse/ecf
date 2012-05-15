@@ -88,9 +88,7 @@ public abstract class AbstractRetrieveTestCase extends AbstractFileTransferTestC
 	protected void handleDoneEvent(IIncomingFileTransferReceiveDoneEvent event) {
 		trace("handleDoneEvent(" + event + ")");
 		doneEvents.add(event);
-		synchronized (lock) {
-			done = true;
-		}
+		setDone(true);
 	}
 
 	protected IFileTransferListener createFileTransferListener() {
@@ -140,6 +138,12 @@ public abstract class AbstractRetrieveTestCase extends AbstractFileTransferTestC
 		retrieveAdapter.sendRetrieveRequest(createFileID(fileToRetrieve), createFileTransferListener(), null);
 	}
 
+	protected void setDone(boolean val) {
+		synchronized (lock) {
+			this.done = true;
+		}
+	}
+	
 	protected void waitForDone(int timeout) throws Exception {
 		final long start = System.currentTimeMillis();
 		synchronized (lock) {
