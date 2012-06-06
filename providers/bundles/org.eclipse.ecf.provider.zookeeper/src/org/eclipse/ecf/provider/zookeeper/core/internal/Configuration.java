@@ -172,7 +172,8 @@ public class Configuration extends DefaultDiscoveryConfig {
 	}
 
 	public int getElectionPort() {
-		return ((Integer) getConfigProperties().get(ZOOKEEPER_ELECTION_PORT));
+		return Integer.parseInt((String) getConfigProperties().get(
+				ZOOKEEPER_ELECTION_PORT));
 	}
 
 	public String getConfFile() {
