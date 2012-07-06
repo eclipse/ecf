@@ -447,7 +447,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 					try {
 						connection.sendSynch(groupID, serialize(ContainerMessage.createLeaveGroupMessage(getID(), groupID, getNextSequenceNumber(), getLeaveData(groupID))));
 					} catch (final Exception e) {
-						ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, IStatus.ERROR, "disconnect.sendSynch", e)); //$NON-NLS-1$
+						ProviderPlugin.getDefault().log(new Status(IStatus.WARNING, ProviderPlugin.PLUGIN_ID, IStatus.WARNING, "disconnect.sendSynch", e)); //$NON-NLS-1$
 					}
 					synchronized (getGroupMembershipLock()) {
 						handleLeave(groupID, connection);
