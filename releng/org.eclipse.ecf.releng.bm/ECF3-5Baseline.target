@@ -4,8 +4,8 @@
 <target includeMode="feature" name="ECF3-5Baseline">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" type="InstallableUnit">
-<unit id="org.eclipse.ecf.core.feature.group" version="3.5.0.v20110313-1843"/>
-<repository location="http://rsync.osuosl.org/pub/eclipse/rt/ecf/3.5/site.p2/"/>
+<unit id="org.eclipse.ecf.core.feature.group" version="3.5.5.v20120319-0616"/>
+<repository location="http://archive.eclipse.org/rt/ecf/3.5.5/site.p2/"/>
 </location>
 </locations>
 <includeBundles>
