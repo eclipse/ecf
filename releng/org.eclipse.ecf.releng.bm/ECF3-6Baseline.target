@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.6"?>
+
+<target includeMode="feature" name="ECF3-6Baseline" sequenceNumber="1">
+<locations>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.ecf.core.feature.group" version="3.5.6.v20120610-1946"/>
+<repository location="http://download.eclipse.org/rt/ecf/3.5.6/site.p2/"/>
+</location>
+</locations>
+<includeBundles>
+<feature id="org.eclipse.ecf.core"/>
+</includeBundles>
+<launcherArgs>
+<vmArgs>-XX:PermSize=256M -XX:MaxPermSize=512M -XX:+UseParallelGC -Xms512m -Xmx1024m</vmArgs>
+</launcherArgs>
+</target>
