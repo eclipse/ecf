@@ -3,34 +3,30 @@
 <plugin>
    <extension
          point="org.eclipse.ecf.provider.filetransfer.retrieveFileTransferProtocolFactory">
-         <!--
       <retrieveFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransferFactory"
             protocol="http"
-            priority="55">
+            priority="45">
       </retrieveFileTransferProtocolFactory>
       <retrieveFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransferFactory"
             protocol="https"
-            priority="55">
+            priority="45">
       </retrieveFileTransferProtocolFactory>
-      -->
    </extension>
 
    <extension
          point="org.eclipse.ecf.provider.filetransfer.browseFileTransferProtocolFactory">
-         <!--
       <browseFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientBrowseFileTransferFactory"
             protocol="http"
-            priority="55">
+            priority="45">
       </browseFileTransferProtocolFactory>
       <browseFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientBrowseFileTransferFactory"
             protocol="https"
-            priority="55">
+            priority="45">
       </browseFileTransferProtocolFactory>
-      -->
-   </extension>
+    </extension>
 
 </plugin>

@@ -131,7 +131,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		final IFileID fileID = createFileID(new URL(url));
 		retrieveAdapter.sendRetrieveRequest(fileID, listener, null);
 
-		waitForDone(10000);
+		waitForDone(360000);
 
 		assertHasEvent(startEvents, IIncomingFileTransferReceiveStartEvent.class);
 		assertHasMoreThanEventCount(dataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);

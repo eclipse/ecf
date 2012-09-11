@@ -148,7 +148,7 @@ public abstract class AbstractRetrieveTestCase extends AbstractFileTransferTestC
 		final long start = System.currentTimeMillis();
 		synchronized (lock) {
 			while (!done && ((System.currentTimeMillis() - start) < timeout)) {
-				lock.wait(timeout / 20);
+				lock.wait(500);
 			}
 			if (!done)
 				throw new TimeoutException(timeout);
