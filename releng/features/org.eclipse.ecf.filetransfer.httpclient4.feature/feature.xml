@@ -56,7 +56,7 @@ Contributors: Composent, Inc. - initial API and implementation
          id="org.apache.commons.logging"
          download-size="0"
          install-size="0"
-         version=""
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
