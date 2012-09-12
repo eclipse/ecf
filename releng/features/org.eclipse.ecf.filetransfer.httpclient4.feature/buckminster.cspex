@@ -8,7 +8,7 @@
 		<dependency name="org.eclipse.equinox.concurrent" componentType="osgi.bundle"/>
 		<dependency name="org.apache.commons.httpclient" componentType="osgi.bundle"/>
 		<!-- Explicitly reflect the import-package dependency as defined by -->
-		<!-- org.apache.httpcomponents.httpclient 4.1.2, because Buckminster 
+		<!-- org.apache.httpcomponents.httpclient 4.1.2, because Buckminster -->
 		<!-- does not handle import-package definitions and thus needs a little -->
 		<!-- help figuring out what bundle to select -->
 		<dependency name="org.apache.commons.logging" versionDesignator="1.1.1" componentType="osgi.bundle"/>
