@@ -9,6 +9,9 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.remoteservice.generic;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -29,19 +32,32 @@ public class SimpleTest extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
+		int freePort = getFreePort();
+		if (freePort == -1) throw new Exception("could not run test because could not find open port for server");
 		server = new SimpleConcatServer();
-		server.start();
+		server.start(freePort);
 		client = new SimpleConcatClient();
-		client.start();
+		client.start(freePort);
 	}
 	
+	private int getFreePort() {
+		int port = -1;
+		try {
+			ServerSocket ss = new ServerSocket(0);
+			port = ss.getLocalPort();
+			ss.close();
+		} catch (IOException e) {
+			return -1;
+		}
+		return port;
+	}
+
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		client.stop();
 		client = null;
 		server.stop();
 		server = null;
-		Thread.sleep(1000);
 	}
 	
 	public void testSimpleClientAndServerWithProxy() throws Exception {

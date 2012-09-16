@@ -39,7 +39,7 @@ public class SimpleConcatClient {
 		return remoteService;
 	}
 	
-	public void start() throws Exception {
+	public void start(int port) throws Exception {
 		IContainer client = ContainerFactory.getDefault().createContainer(
 				CLIENT_TYPE);
 		// Get adapter for accessing remote services
@@ -51,7 +51,7 @@ public class SimpleConcatClient {
 		System.out.println("Client created with ID=" + client.getID());
 
 		ID connectTargetID = IDFactory.getDefault().createStringID(
-				NLS.bind(SERVER_ID, new Integer(SimpleConcatServer.PORT)));
+				NLS.bind(SERVER_ID, new Integer(port)));
 		
 		System.out.println("Attempting connect to id="+connectTargetID);
 		client.connect(connectTargetID, null);

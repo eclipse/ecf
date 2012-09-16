@@ -18,7 +18,6 @@ import org.eclipse.ecf.tests.remoteservice.IConcatService;
 
 public class SimpleConcatServer {
 
-	public static final int PORT = 9988;
 	public static final String PATH = "/server";
 	public static final String HOST = "localhost";
 	public static final int KEEPALIVE = 30000;
@@ -34,9 +33,9 @@ public class SimpleConcatServer {
 		}
 		
 	}
-	public void start() throws Exception {
+	public void start(int port) throws Exception {
 		// Start server
-		server = new SimpleGenericServer(HOST,PORT);
+		server = new SimpleGenericServer(HOST,port);
 		server.start(PATH, KEEPALIVE);
 		
 		GenericServerContainer serverContainer = server.getServerContainer(0);
