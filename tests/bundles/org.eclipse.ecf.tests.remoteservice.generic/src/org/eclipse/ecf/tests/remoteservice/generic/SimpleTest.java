@@ -41,6 +41,7 @@ public class SimpleTest extends TestCase {
 		client = null;
 		server.stop();
 		server = null;
+		Thread.sleep(1000);
 	}
 	
 	public void testSimpleClientAndServerWithProxy() throws Exception {
