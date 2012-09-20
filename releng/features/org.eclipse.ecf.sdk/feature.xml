@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.sdk"
       label="ECF Target Components Feature"
-      version="3.5.6.qualifier"
+      version="3.5.7.qualifier"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
@@ -313,10 +313,6 @@ limitations under the License.
 
    <includes
          id="org.eclipse.ecf.remoteservice.sdk.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.core.featurepatch"
          version="0.0.0"/>
 
    <includes
