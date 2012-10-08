@@ -825,12 +825,18 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
 		// This is wrong as if the url has no colonPort before '?' then it should return the default
 
-		final int colonPort = url.indexOf(':', colonSlashSlash + 1);
+		int colonPort = url.indexOf(':', colonSlashSlash + 1);
 		if (colonPort < 0)
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
 		// Make sure that the colonPort is not from some part of the rest of the URL
 		int nextSlash = url.indexOf('/', colonSlashSlash + 3);
 		if (nextSlash != -1 && colonPort > nextSlash)
+			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
+		// Make sure the colonPort is not part of the credentials in URI
+		final int atServer = url.indexOf('@', colonSlashSlash + 1);
+		if (atServer != -1 && colonPort < atServer && atServer < nextSlash)
+			colonPort = url.indexOf(':', atServer + 1);
+		if (colonPort < 0)
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
 
 		final int requestPath = url.indexOf('/', colonPort + 1);
