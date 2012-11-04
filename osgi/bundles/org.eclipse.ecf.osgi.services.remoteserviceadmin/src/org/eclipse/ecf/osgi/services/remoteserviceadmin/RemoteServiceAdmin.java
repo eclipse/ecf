@@ -906,7 +906,7 @@ public class RemoteServiceAdmin implements
 		}
 
 		synchronized boolean match(IRemoteServiceID remoteServiceID) {
-			return (importEndpoint == null) ? null : importEndpoint
+			return (importEndpoint == null) ? false : importEndpoint
 					.match(remoteServiceID);
 		}
 
