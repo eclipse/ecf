@@ -27,7 +27,6 @@ import java.util.TreeMap;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
@@ -1244,6 +1243,18 @@ public class RemoteServiceAdmin implements
 				.getService();
 	}
 
+	private ContainerTypeDescription getContainerTypeDescription(
+			IContainer container) {
+		return Activator.getDefault().getContainerManager().getContainerTypeDescription(
+				container.getID());
+	}
+
+	private boolean isClient(IContainer container) {
+		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+		if (ctd == null) return false;
+		else return !ctd.isServer();
+	}
+	
 	private Version getPackageVersion(ServiceReference serviceReference,
 			String serviceInterface, String packageName) {
 		Object service = getClientBundleContext().getService(serviceReference);
@@ -1375,8 +1386,8 @@ public class RemoteServiceAdmin implements
 		String connectTarget = (String) PropertiesUtil.getPropertyValue(
 				serviceReference, overridingProperties,
 				RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
-		if (connectTarget == null) {
-			ID connectedID = rsContainer.getContainer().getConnectedID();
+		if (connectTarget == null && isClient(container)) {
+			ID connectedID = container.getConnectedID();
 			if (connectedID != null && !connectedID.equals(containerID))
 				connectTarget = connectedID.getName();
 		}
@@ -1413,15 +1424,6 @@ public class RemoteServiceAdmin implements
 		// And override with overridingProperties
 		PropertiesUtil.copyNonReservedProperties(overridingProperties, target);
 		return target;
-	}
-
-	private ContainerTypeDescription getContainerTypeDescription(
-			IContainer container) {
-		IContainerManager containerManager = Activator.getDefault()
-				.getContainerManager();
-		if (containerManager == null)
-			return null;
-		return containerManager.getContainerTypeDescription(container.getID());
 	}
 
 	private String[] getSupportedConfigs(IContainer container) {
