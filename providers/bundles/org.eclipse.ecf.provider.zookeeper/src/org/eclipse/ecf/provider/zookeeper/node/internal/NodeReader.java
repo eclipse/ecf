@@ -88,8 +88,7 @@ public class NodeReader implements Watcher,
 			readRoot.getDiscoverdServices()
 					.put(this.discovered.getServiceID().getServiceTypeID()
 							.getName(), this.discovered);
-			PrettyPrinter.prompt(PrettyPrinter.REMOTE_AVAILABLE,
-					this.discovered);
+			Logger.log(LogService.LOG_DEBUG, PrettyPrinter.prompt(PrettyPrinter.REMOTE_AVAILABLE, this.discovered), null);
 			Localizer.getSingleton().localize(
 					new Notification(this.discovered, Notification.AVAILABLE));
 
