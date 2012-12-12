@@ -29,6 +29,7 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.*;
 import org.eclipse.ecf.internal.presence.ui.preferences.PreferenceConstants;
+import org.eclipse.ecf.internal.ui.actions.SelectProviderAction;
 import org.eclipse.ecf.presence.*;
 import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.im.IChatID;
@@ -55,6 +56,8 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitationListener {
+	public ChatRoomManagerView() {
+	}
 
 	private static final String ATSIGN = "@"; //$NON-NLS-1$
 
@@ -105,6 +108,10 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	private String localUserName = Messages.ChatRoomManagerView_DEFAULT_USER;
 
 	private String hostName = Messages.ChatRoomManagerView_DEFAULT_HOST;
+
+	private CTabItem infoTab;
+
+	private boolean fClearInfoTab = true;
 
 	class ChatRoomTab {
 		private SashForm fullChat;
@@ -444,10 +451,14 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	public void createPartControl(Composite parent) {
 		Composite rootComposite = new Composite(parent, SWT.NONE);
 		rootComposite.setLayout(new FillLayout());
+
 		boolean useTraditionalTabFolder = PlatformUI.getPreferenceStore().getBoolean(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS);
 		rootTabFolder = new CTabFolder(rootComposite, SWT.NORMAL | SWT.CLOSE);
 		rootTabFolder.setUnselectedCloseVisible(false);
 		rootTabFolder.setSimple(useTraditionalTabFolder);
+
+		populateInfoTab(getInfoTabControl(SWT.NONE, "Info", true));
+
 		PlatformUI.getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
 				if (event.getProperty().equals(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS) && !rootTabFolder.isDisposed()) {
@@ -462,6 +473,53 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				event.doit = closeTabItem((CTabItem) event.item);
 			}
 		});
+	}
+
+	/**
+	 * This enables IM providers to provide additional information about the provider by asking the creation of a separate information tab. This information is displayed in a separate info tab.
+	 * 
+	 * @param style with additional information about the provider
+	 * @param title
+	 * @param clearInfoTab set to true if the tab must be cleared when population of the view begins.
+	 * @return the Composite to draw on
+	 */
+	public Composite getInfoTabControl(int style, String title, boolean clearInfoTab) {
+		// dispose old tab
+		if (infoTab != null)
+			infoTab.dispose();
+
+		CTabItem tab = new CTabItem(rootTabFolder, style);
+		tab.setText(title);
+
+		// assign new tab
+		this.infoTab = tab;
+		this.fClearInfoTab = clearInfoTab;
+
+		Composite parent = new Composite(rootTabFolder, SWT.NONE);
+		parent.setLayout(new FillLayout());
+		tab.setControl(parent);
+
+		rootTabFolder.setSelection(tab);
+
+		return parent;
+	}
+
+	/**
+	 * Creates a tab with view information. This view does nothing when it is opened manually. This tab is used to provide that information.
+	 */
+	private void populateInfoTab(Composite parent) {
+
+		Link link = new Link(parent, SWT.NONE);
+		link.setText("\n   This view is not intended to be opened as a standalone view. Please select one of the <a>IM Providers</a> to open a populated view.");
+		link.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				SelectProviderAction action = new SelectProviderAction();
+				action.init(ChatRoomManagerView.this.getSite().getWorkbenchWindow());
+				action.run(null);
+
+			}
+		});
+
 	}
 
 	private boolean closeTabItem(CTabItem tabItem) {
@@ -537,6 +595,14 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	}
 
 	public void initializeWithManager(String localUserName1, String hostName1, final IChatRoomContainer rootChatRoomContainer, final IChatRoomCommandListener commandListener1, final IChatRoomViewCloseListener closeListener) {
+
+		// We get populated, remove the info tab if requested
+		if (infoTab != null && fClearInfoTab && !(infoTab.isDisposed())) {
+			infoTab.getControl().dispose();
+			infoTab.dispose();
+			infoTab = null;
+		}
+
 		ChatRoomManagerView.this.localUserName = (localUserName1 == null) ? Messages.ChatRoomManagerView_DEFAULT_USER : localUserName1;
 		ChatRoomManagerView.this.hostName = (hostName1 == null) ? Messages.ChatRoomManagerView_DEFAULT_HOST : hostName1;
 		ChatRoomManagerView.this.rootCloseListener = closeListener;
@@ -1487,6 +1553,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		outputPaste.setToolTipText(Messages.ChatRoomManagerView_PASTE_TOOLTIP);
 		outputPaste.setAccelerator(SWT.CTRL | 'V');
 		outputPaste.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
