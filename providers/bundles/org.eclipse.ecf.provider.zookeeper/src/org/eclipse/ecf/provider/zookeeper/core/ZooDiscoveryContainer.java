@@ -55,13 +55,12 @@ import org.osgi.service.log.LogService;
 public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 
 	private static ZooDiscoveryContainer discovery;
-	public static ExecutorService CACHED_THREAD_POOL = Executors
-			.newCachedThreadPool();
+	public static ExecutorService CACHED_THREAD_POOL = Executors.newCachedThreadPool();
 	private QuorumPeer quorumPeer;
 	private Properties DiscoveryProperties;
 	protected Advertiser advertiser;
 	protected Localizer localizer;
-	private ZooKeeperServer zooKeeperServer;
+	private static ZooKeeperServer zooKeeperServer;
 	private ID targetId;
 	protected boolean isQuorumPeerReady;
 	private ZooDiscoveryNamespace namespace;
@@ -86,22 +85,32 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	}
 
 	private ZooDiscoveryContainer() {
+		
 		super(ZooDiscoveryNamespace.NAME, Configurator.INSTANCE);
+		
+		CACHED_THREAD_POOL=Executors.newCachedThreadPool();
 		DiscoveryProperties = new Properties();
 		this.namespace = new ZooDiscoveryNamespace();
-		if (System.getProperty(DefaultDiscoveryConfig.ZOODISCOVERY_PREFIX
-				+ DefaultDiscoveryConfig.ZOOKEEPER_AUTOSTART) != null) {
+
+		if (autoStart()) {
 			try {
-				this.targetId = this.getConnectNamespace().createInstance(
-						new String[] { DefaultDiscoveryConfig
-								.getDefaultTarget() });
+				this.targetId = this.getConnectNamespace().createInstance(new String[] { DefaultDiscoveryConfig.getDefaultTarget() });
 				init(targetId);
 
 			} catch (Exception e) {
 				Logger.log(LogService.LOG_ERROR, e.getMessage(), e);
 			}
 		}
-		PrettyPrinter.prompt(PrettyPrinter.ACTIVATED, null);
+
+		Logger.log(LogService.LOG_INFO, PrettyPrinter.prompt(PrettyPrinter.ACTIVATED, null), null);
+
+	}
+
+	/**
+	 * @return true if the service is in autoStart mode.
+	 */
+	public static boolean autoStart() {
+		return System.getProperty(DefaultDiscoveryConfig.ZOODISCOVERY_PREFIX + DefaultDiscoveryConfig.ZOOKEEPER_AUTOSTART) != null;
 	}
 
 	public synchronized static ZooDiscoveryContainer getSingleton() {
@@ -113,14 +122,12 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	}
 
 	public void init(ServiceReference reference) {
-		Configuration conf = Configurator.INSTANCE.createConfig(reference)
-				.configure();
+		Configuration conf = Configurator.INSTANCE.createConfig(reference).configure();
 		doStart(conf);
 	}
 
 	private void init(ID targetID) {
-		Configuration conf = Configurator.INSTANCE.createConfig(targetID)
-				.configure();
+		Configuration conf = Configurator.INSTANCE.createConfig(targetID).configure();
 		doStart(conf);
 	}
 
@@ -177,33 +184,24 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 
 		if (this.zooKeeperServer != null && this.zooKeeperServer.isRunning())
 			return;
-		else if (this.zooKeeperServer != null
-				&& !this.zooKeeperServer.isRunning())
+		else if (this.zooKeeperServer != null && !this.zooKeeperServer.isRunning())
 			try {
 				this.zooKeeperServer.startup();
 				return;
 			} catch (Exception e) {
-				Logger.log(LogService.LOG_DEBUG,
-						"Zookeeper server cannot be started! ", e);//$NON-NLS-1$				
+				Logger.log(LogService.LOG_DEBUG, "Zookeeper server cannot be started! ", e);//$NON-NLS-1$				
 			}
 
 		try {
 			ZooDiscoveryContainer.this.zooKeeperServer = new ZooKeeperServer();
-			FileTxnSnapLog fileTxnSnapLog = new FileTxnSnapLog(conf
-					.getZookeeperDataFile(), conf.getZookeeperDataFile());
-			ZooDiscoveryContainer.this.zooKeeperServer
-					.setTxnLogFactory(fileTxnSnapLog);
-			ZooDiscoveryContainer.this.zooKeeperServer.setTickTime(conf
-					.getTickTime());
-			Factory cnxnFactory = new NIOServerCnxn.Factory(
-					new InetSocketAddress(conf.getClientPort()));
+			FileTxnSnapLog fileTxnSnapLog = new FileTxnSnapLog(conf.getZookeeperDataFile(), conf.getZookeeperDataFile());
+			ZooDiscoveryContainer.this.zooKeeperServer.setTxnLogFactory(fileTxnSnapLog);
+			ZooDiscoveryContainer.this.zooKeeperServer.setTickTime(conf.getTickTime());
+			Factory cnxnFactory = new NIOServerCnxn.Factory(new InetSocketAddress(conf.getClientPort()));
 			cnxnFactory.startup(ZooDiscoveryContainer.this.zooKeeperServer);
 		} catch (Exception e) {
-			Logger
-					.log(
-							LogService.LOG_ERROR,
-							"Zookeeper server cannot be started! Possibly another instance is already running on the same port. ",
-							e);
+			Logger.log(LogService.LOG_ERROR,
+					"Zookeeper server cannot be started! Possibly another instance is already running on the same port. ", e);
 		}
 
 	}
@@ -226,27 +224,19 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 			final QuorumPeerConfig quorumPeerConfig = new QuorumPeerConfig();
 			quorumPeerConfig.parse(conf.getConfFile());
 			QuorumPeer.Factory qpFactory = new QuorumPeer.Factory() {
-				public QuorumPeer create(NIOServerCnxn.Factory cnxnFactory)
-						throws IOException {
+				public QuorumPeer create(NIOServerCnxn.Factory cnxnFactory) throws IOException {
 					ServerConfig serverConfig = new ServerConfig();
 					serverConfig.readFrom(quorumPeerConfig);
-					QuorumPeer peer = new QuorumPeer(quorumPeerConfig
-							.getServers(), new File(serverConfig.getDataDir()),
-							new File(serverConfig.getDataLogDir()),
-							quorumPeerConfig.getElectionAlg(), quorumPeerConfig
-									.getServerId(), quorumPeerConfig
-									.getTickTime(), quorumPeerConfig
-									.getInitLimit(), quorumPeerConfig
-									.getSyncLimit(), cnxnFactory,
+					QuorumPeer peer = new QuorumPeer(quorumPeerConfig.getServers(), new File(serverConfig.getDataDir()), new File(
+							serverConfig.getDataLogDir()), quorumPeerConfig.getElectionAlg(), quorumPeerConfig.getServerId(),
+							quorumPeerConfig.getTickTime(), quorumPeerConfig.getInitLimit(), quorumPeerConfig.getSyncLimit(), cnxnFactory,
 							quorumPeerConfig.getQuorumVerifier());
 					ZooDiscoveryContainer.this.quorumPeer = peer;
 					return peer;
 				}
 
-				public NIOServerCnxn.Factory createConnectionFactory()
-						throws IOException {
-					return new NIOServerCnxn.Factory(quorumPeerConfig
-							.getClientPortAddress());
+				public NIOServerCnxn.Factory createConnectionFactory() throws IOException {
+					return new NIOServerCnxn.Factory(quorumPeerConfig.getClientPortAddress());
 				}
 			};
 			quorumPeer = qpFactory.create(qpFactory.createConnectionFactory());
@@ -254,8 +244,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 			quorumPeer.setDaemon(true);
 			isQuorumPeerReady = true;
 		} catch (Exception e) {
-			Logger.log(LogService.LOG_ERROR,
-					"Zookeeper quorum cannot be started! ", e); //$NON-NLS-1$
+			Logger.log(LogService.LOG_ERROR, "Zookeeper quorum cannot be started! ", e); //$NON-NLS-1$
 			isQuorumPeerReady = false;
 		}
 	}
@@ -282,15 +271,13 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 			}
 			if (this.zooKeeperServer != null) {
 				// purge snaps and logs. Keep only last three of each
-				PurgeTxnLog.purge(this.zooKeeperServer.getTxnLogFactory()
-						.getDataDir(), this.zooKeeperServer.getTxnLogFactory()
+				PurgeTxnLog.purge(this.zooKeeperServer.getTxnLogFactory().getDataDir(), this.zooKeeperServer.getTxnLogFactory()
 						.getSnapDir(), 3);
 				this.zooKeeperServer.shutdown();
 			}
 			if (this.quorumPeer != null) {
 				// purge snaps and logs. Keep only last three of each
-				PurgeTxnLog.purge(this.quorumPeer.getTxnFactory().getDataDir(),
-						this.quorumPeer.getTxnFactory().getSnapDir(), 3);
+				PurgeTxnLog.purge(this.quorumPeer.getTxnFactory().getDataDir(), this.quorumPeer.getTxnFactory().getSnapDir(), 3);
 				// shut down server
 				if (this.quorumPeer.isAlive()) {
 					this.quorumPeer.shutdown();
@@ -306,22 +293,21 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		targetId = null;
 		isConnected = false;
 		isDisposed = true;
+		discovery = null;
 	}
 
 	public ZooKeeperServer getLocalServer() {
 		return this.zooKeeperServer;
 	}
 
-	public void connect(ID id, IConnectContext connectContext)
-			throws ContainerConnectException {
+	public void connect(ID id, IConnectContext connectContext) throws ContainerConnectException {
 		if (isDisposed)
 			throw new ContainerConnectException("Container already disposed!");
 		if (this.isConnected)
 			throw new ContainerConnectException("Container already connected!");
 		this.targetId = id;
 		if (this.targetId == null) {
-			this.targetId = this.getConnectNamespace().createInstance(
-					new String[] { DefaultDiscoveryConfig.getDefaultTarget() });
+			this.targetId = this.getConnectNamespace().createInstance(new String[] { DefaultDiscoveryConfig.getDefaultTarget() });
 		}
 		init(this.targetId);
 		isConnected = true;
@@ -364,8 +350,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		if (watchManager == null) {
 			return new IServiceInfo[0];
 		}
-		return watchManager.getAllKnownServices().values().toArray(
-				new IServiceInfo[watchManager.getAllKnownServices().size()]);
+		return watchManager.getAllKnownServices().values().toArray(new IServiceInfo[watchManager.getAllKnownServices().size()]);
 	}
 
 	public IServiceInfo[] getServices(IServiceTypeID type) {
@@ -375,8 +360,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		}
 		List<IServiceInfo> services = new ArrayList<IServiceInfo>();
 		for (IServiceInfo sinfo : watchManager.getAllKnownServices().values()) {
-			if (sinfo.getServiceID().getServiceTypeID().getInternal() == type
-					.getInternal())
+			if (sinfo.getServiceID().getServiceTypeID().getInternal() == type.getInternal())
 				services.add(sinfo);
 		}
 		return services.toArray(new IServiceInfo[services.size()]);
@@ -389,8 +373,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	public synchronized void registerService(IServiceInfo serviceInfo) {
 		Assert.isNotNull(serviceInfo);
 		if (targetId == null) {
-			this.targetId = this.getConnectNamespace().createInstance(
-					new String[] { DefaultDiscoveryConfig.getDefaultTarget() });
+			this.targetId = this.getConnectNamespace().createInstance(new String[] { DefaultDiscoveryConfig.getDefaultTarget() });
 			init(this.targetId);
 		}
 
@@ -399,8 +382,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		} else {
 			watchManager.publish(new AdvertisedService(serviceInfo));
 		}
-		Localizer.getSingleton().localize(
-				new Notification(serviceInfo, Notification.AVAILABLE));
+		Localizer.getSingleton().localize(new Notification(serviceInfo, Notification.AVAILABLE));
 
 	}
 
@@ -410,19 +392,16 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 
 	public void unregisterService(IServiceInfo serviceInfo) {
 		Assert.isNotNull(serviceInfo);
-		watchManager.unpublish(serviceInfo.getServiceID().getServiceTypeID()
-				.getInternal());
+		watchManager.unpublish(serviceInfo.getServiceID().getServiceTypeID().getInternal());
 
-		Localizer.getSingleton().localize(
-				new Notification(serviceInfo, Notification.UNAVAILABLE));
+		Localizer.getSingleton().localize(new Notification(serviceInfo, Notification.UNAVAILABLE));
 	}
 
 	public Collection<IServiceListener> getAllServiceListeners() {
 		return super.allServiceListeners;
 	}
 
-	public Collection<IServiceListener> getServiceListenersForType(
-			IServiceTypeID type) {
+	public Collection<IServiceListener> getServiceListenersForType(IServiceTypeID type) {
 		return super.getListeners(type);
 	}
 
@@ -443,8 +422,12 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		return this.isDisposed;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getContainerName()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#getContainerName
+	 * ()
 	 */
 	public String getContainerName() {
 		return ZooDiscoveryContainerInstantiator.NAME;

@@ -17,7 +17,8 @@ import java.util.Calendar;
 import org.eclipse.ecf.discovery.IServiceInfo;
 
 public class PrettyPrinter {
-	private static final String prompt = "ZooDiscovery> ";//$NON-NLS-1$ 
+//	private static final String prompt = "ZooDiscovery> ";//$NON-NLS-1$ 
+	private static final String prompt = "";//$NON-NLS-1$ 
 
 	public static final int PUBLISHED = 1;
 	public static final int UNPUBLISHED = 2;
@@ -28,48 +29,45 @@ public class PrettyPrinter {
 	public static final int PUBLISH_DELAYED = 7;
 	public static final int UNPUBLISH_DELAYED = 8;
 
-	public static void prompt(int type, IServiceInfo serviceInfo) {
+	public static String prompt(int type, IServiceInfo serviceInfo) {
 		String token = ""; //$NON-NLS-1$
-		String time = DateFormat.getDateTimeInstance().format(
-				Calendar.getInstance().getTime())
-				+ ". ";//$NON-NLS-1$
+//		String time = DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()) + ". ";//$NON-NLS-1$
+		String time = "";
 		switch (type) {
 		case PUBLISHED:
-			token = "Service Published: ";//$NON-NLS-1$ 
+			token = "Service Published: "; 
 			break;
 		case UNPUBLISHED:
-			token = "Service Unpublished: ";//$NON-NLS-1$ 
+			token = "Service Unpublished: "; 
 			break;
 		case ACTIVATED:
-			token = "Discovery Service Activated. ";//$NON-NLS-1$ 
+			token = "Discovery Service Activated. "; 
 			break;
 		case DEACTIVATED:
-			token = "Discovery Service Deactivated.";//$NON-NLS-1$ 
+			token = "Discovery Service Deactivated."; 
 			break;
 		case PUBLISH_DELAYED:
-			token = "Service Publication Delayed: ";//$NON-NLS-1$ 
+			token = "Service Publication Delayed: "; 
 			break;
 		case UNPUBLISH_DELAYED:
-			token = "Service Unpublication Delayed: ";//$NON-NLS-1$ 
+			token = "Service Unpublication Delayed: "; 
 			break;
 		case REMOTE_AVAILABLE:
-			token = "Service Discovered: ";//$NON-NLS-1$ 
+			token = "Service Discovered: ";
 			break;
 		case REMOTE_UNAVAILABLE:
-			token = "Service Undiscovered: ";//$NON-NLS-1$ 
+			token = "Service Undiscovered: ";
 			break;
 
 		}
-		System.out.println(prompt + token + time
-				+ ((serviceInfo != null) ? serviceInfo : ""));//$NON-NLS-1$ 
+		return (prompt + token + time + ((serviceInfo != null) ? serviceInfo : ""));//$NON-NLS-1$ 
 	}
 
-	public static void attemptingConnectionTo(String ip) {
-		System.out.println(prompt
-				+ "INFO - Attempting connection to server: /" + ip);//$NON-NLS-1$ 
+	public static String attemptingConnectionTo(String ip) {
+		return (prompt + "INFO - Attempting connection to server: /" + ip);
 	}
 
-	public static void connectionLost(String ip) {
-		System.out.println(prompt + "INFO - Connection Lost: /" + ip);//$NON-NLS-1$ 
+	public static String connectionLost(String ip) {
+		return (prompt + "INFO - Connection Lost: /" + ip);
 	}
 }

@@ -61,8 +61,7 @@ public class NodeWriter {
 										.getPropertiesAsBytes(),
 								Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
 			}
-			PrettyPrinter.prompt(PrettyPrinter.PUBLISHED, this.getNode()
-					.getWrappedService());
+			Logger.log(LogService.LOG_INFO, PrettyPrinter.prompt(PrettyPrinter.PUBLISHED, this.getNode().getWrappedService()), null);
 		} catch (KeeperException e) {
 			if (e.code() == KeeperException.Code.CONNECTIONLOSS) {
 				Logger.log(LogService.LOG_ERROR, "Can't connect to server! "
@@ -88,8 +87,7 @@ public class NodeWriter {
 				Localizer.getSingleton().localize(
 						new Notification(this.getNode().getWrappedService(),
 								Notification.UNAVAILABLE));
-				PrettyPrinter.prompt(PrettyPrinter.UNPUBLISHED, this.getNode()
-						.getWrappedService());
+				Logger.log(LogService.LOG_INFO, PrettyPrinter.prompt(PrettyPrinter.UNPUBLISHED, this.getNode().getWrappedService()), null);
 
 			} catch (KeeperException e) {
 				// ignore
@@ -102,8 +100,7 @@ public class NodeWriter {
 			 * connection lost to the central ZooDiscovery where our services
 			 * are published to.
 			 */
-			PrettyPrinter.prompt(PrettyPrinter.UNPUBLISHED, this.getNode()
-					.getWrappedService());
+			Logger.log(LogService.LOG_INFO, PrettyPrinter.prompt(PrettyPrinter.UNPUBLISHED, this.getNode().getWrappedService()), null);
 		}
 
 	}

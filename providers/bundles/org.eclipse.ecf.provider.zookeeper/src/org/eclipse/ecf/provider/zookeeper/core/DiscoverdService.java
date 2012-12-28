@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
@@ -26,6 +27,7 @@ import org.eclipse.ecf.provider.zookeeper.core.internal.Localizer;
 import org.eclipse.ecf.provider.zookeeper.core.internal.Notification;
 import org.eclipse.ecf.provider.zookeeper.node.internal.INode;
 import org.eclipse.ecf.provider.zookeeper.util.Geo;
+import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
 
 public class DiscoverdService extends ServiceInfo implements IService, INode {
@@ -42,27 +44,20 @@ public class DiscoverdService extends ServiceInfo implements IService, INode {
 		super.priority = (Integer) serviceData.remove(IService.PRIORITY);
 		super.weight = (Integer) serviceData.remove(IService.WEIGHT);
 		super.serviceName = (String) serviceData.get(IService.SERVICE_NAME);
-		super.properties = (IServiceProperties) serviceData
-				.remove(INode.NODE_SERVICE_PROPERTIES);
-		String[] services = (String[]) serviceData
-				.remove(INode.NODE_PROPERTY_SERVICES);
+		super.properties = (IServiceProperties) serviceData.remove(INode.NODE_SERVICE_PROPERTIES);
+		String[] services = (String[]) serviceData.remove(INode.NODE_PROPERTY_SERVICES);
 		String na = (String) serviceData.remove(INode.NODE_PROPERTY_NAME_NA);
-		String[] protocols = (String[]) serviceData
-				.remove(INode.NODE_PROPERTY_NAME_PROTOCOLS);
-		String[] scopes = (String[]) serviceData
-				.remove(INode.NODE_PROPERTY_NAME_SCOPE);
-		this.serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(
-				ZooDiscoveryContainer.getSingleton().getConnectNamespace(),
+		String[] protocols = (String[]) serviceData.remove(INode.NODE_PROPERTY_NAME_PROTOCOLS);
+		String[] scopes = (String[]) serviceData.remove(INode.NODE_PROPERTY_NAME_SCOPE);
+		this.serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(ZooDiscoveryContainer.getSingleton().getConnectNamespace(),
 				services, scopes, protocols, na);
-		super.serviceID = new ZooDiscoveryServiceID(ZooDiscoveryContainer
-				.getSingleton().getConnectNamespace(), this, serviceTypeID,
+		super.serviceID = new ZooDiscoveryServiceID(ZooDiscoveryContainer.getSingleton().getConnectNamespace(), this, serviceTypeID,
 				this.location);
 	}
 
 	public void dispose() {
-		PrettyPrinter.prompt(PrettyPrinter.REMOTE_UNAVAILABLE, this);
-		Localizer.getSingleton().localize(
-				new Notification(this, Notification.UNAVAILABLE));
+		Logger.log(SystemLogService.LOG_DEBUG, PrettyPrinter.prompt(PrettyPrinter.REMOTE_UNAVAILABLE, this), null);
+		Localizer.getSingleton().localize(new Notification(this, Notification.UNAVAILABLE));
 	}
 
 	public String getNodeId() {
@@ -86,10 +81,8 @@ public class DiscoverdService extends ServiceInfo implements IService, INode {
 	}
 
 	public int compareTo(Object o) {
-		Assert.isTrue(o != null && o instanceof DiscoverdService,
-				"incompatible types for compare"); //$NON-NLS-1$
-		return this.getServiceID().getName()
-				.compareTo(((DiscoverdService) o).getServiceID().getName());
+		Assert.isTrue(o != null && o instanceof DiscoverdService, "incompatible types for compare"); //$NON-NLS-1$
+		return this.getServiceID().getName().compareTo(((DiscoverdService) o).getServiceID().getName());
 	}
 
 	public byte[] getPropertiesAsBytes() {

@@ -38,6 +38,8 @@ public interface IDiscoveryConfig {
 	String ZOODISCOVERY_FLAVOR_CENTRALIZED = "zoodiscovery.flavor.centralized"; //$NON-NLS-1$	
 	String ZOODISCOVERY_FLAVOR_REPLICATED = "zoodiscovery.flavor.replicated"; //$NON-NLS-1$
 
+	String ZOODISCOVERY_CONSOLELOG = "consoleLog"; //$NON-NLS-1$
+
 	/** The number of milliseconds of each tick. OPTIONAL **/
 	String ZOOKEEPER_TICKTIME = "tickTime"; //$NON-NLS-1$
 

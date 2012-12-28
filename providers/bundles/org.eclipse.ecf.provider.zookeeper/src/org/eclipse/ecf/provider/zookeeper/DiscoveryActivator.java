@@ -26,6 +26,7 @@ import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -43,18 +44,14 @@ public class DiscoveryActivator implements BundleActivator {
 		context = ctxt;
 		
 		final Properties props = new Properties();
-		props.put(IDiscoveryLocator.CONTAINER_NAME,
-				ZooDiscoveryContainerInstantiator.NAME);
-		props.put(IDiscoveryAdvertiser.CONTAINER_NAME,
-				ZooDiscoveryContainerInstantiator.NAME);
-		// register ourselves using a service factory 
-		discoveryRegistration = ctxt.registerService(new String[] {
-				IDiscoveryLocator.class.getName(),
-				IDiscoveryAdvertiser.class.getName() }, new ServiceFactory() {
+		props.put(IDiscoveryLocator.CONTAINER_NAME, ZooDiscoveryContainerInstantiator.NAME);
+		props.put(IDiscoveryAdvertiser.CONTAINER_NAME, ZooDiscoveryContainerInstantiator.NAME);
+		// register ourselves using a service factory
+		discoveryRegistration = ctxt.registerService(
+				new String[] { IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName() }, new ServiceFactory() {
 					private volatile ZooDiscoveryContainer zdc;
-					
-					public Object getService(Bundle bundle,
-							ServiceRegistration registration) {
+
+					public Object getService(Bundle bundle, ServiceRegistration registration) {
 						if (zdc == null) {
 							zdc = ZooDiscoveryContainer.getSingleton();
 							zdc.setDiscoveryProperties(props);
@@ -62,34 +59,36 @@ public class DiscoveryActivator implements BundleActivator {
 						return zdc;
 					}
 
-					public void ungetService(Bundle bundle,
-							ServiceRegistration registration, Object service) {
-		                //TODO-slewis we later might want to dispose zoodiscovery when the last!!! consumer ungets the service
-		                //Though don't forget about the (ECF) Container which might still be in use
-					}}, (Dictionary) props);
+					public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+
+					}
+				}, (Dictionary) props);
 
 		// setup and open log service tracker
-		logServiceTracker = new ServiceTracker(ctxt,
-				org.osgi.service.log.LogService.class.getName(), null) {
+		logServiceTracker = new ServiceTracker(ctxt, org.osgi.service.log.LogService.class.getName(), null) {
 			public Object addingService(ServiceReference reference) {
-				Logger.bindLogService((LogService) context
-						.getService(reference));
+				Logger.bindLogService((LogService) context.getService(reference));
 				return super.addingService(reference);
 			}
 
-			public void removedService(ServiceReference reference,
-					Object service) {
+			public void removedService(ServiceReference reference, Object service) {
 				Logger.unbindLogService((LogService) service);
-				super.removedService(reference, service); 
+				super.removedService(reference, service);
 			}
 		};
+
 		logServiceTracker.open(true);
+
+		// Autostart by consuming our own service
+		if (ZooDiscoveryContainer.autoStart()) {
+			ctxt.getService(discoveryRegistration.getReference());
+		}
+
 	}
 
 	public void stop(BundleContext c) throws Exception {
 		dispose();
-		// prompt we'r gone!
-		PrettyPrinter.prompt(PrettyPrinter.DEACTIVATED, null);
+		Logger.log(LogService.LOG_INFO, PrettyPrinter.prompt(PrettyPrinter.DEACTIVATED, null), null);
 	}
 
 	private void dispose() {
@@ -118,4 +117,3 @@ public class DiscoveryActivator implements BundleActivator {
 	}
 
 }
-

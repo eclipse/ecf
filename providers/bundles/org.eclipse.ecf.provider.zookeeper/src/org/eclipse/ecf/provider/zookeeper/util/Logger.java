@@ -16,13 +16,13 @@ import java.util.Set;
 
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.provider.zookeeper.DiscoveryActivator;
+import org.eclipse.ecf.provider.zookeeper.core.DefaultDiscoveryConfig;
 import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainer;
 import org.osgi.service.log.LogService;
 
 public class Logger {
 
-	private static SystemLogService nativeLogger = new SystemLogService(
-			"org.eclipse.ecf.provider.zookeeper");
+	private static SystemLogService nativeLogger = new SystemLogService("org.eclipse.ecf.provider.zookeeper");
 
 	private static Set<LogService> logServices = new HashSet<LogService>();
 
@@ -35,36 +35,35 @@ public class Logger {
 	}
 
 	public static void log(int level, String message, Exception e) {
-		if (logServices.isEmpty()) {
-			if (e == null)
-				nativeLogger.log(level, message);
-			else
-				nativeLogger.log(level, message, e);
+		nativeLog(level, message, e);
 
-			return;
-		}
 		for (LogService ls : logServices) {
 			if (ls == null) {
-				nativeLogger.log(level, message, e);
+				nativeLog(level, message, e);
 				continue;
 			}
-			ls.log(DiscoveryActivator.getContext().getServiceReference(
-					ZooDiscoveryContainer.class.getName()), level, message, e);
+			ls.log(DiscoveryActivator.getContext().getServiceReference(ZooDiscoveryContainer.class.getName()), level, message, e);
+		}
+	}
+
+	private static void nativeLog(int level, String message, Throwable e) {
+
+		if (DefaultDiscoveryConfig.getConsoleLog()) {
+			if (e == null) {
+				nativeLogger.log(level, message);
+			} else {
+				nativeLogger.log(level, message, e);
+			}
 		}
 	}
 
 	public static void log(int level, String message, Throwable t) {
-		if (logServices.isEmpty()) {
-			nativeLogger.log(level, message, t);
-			return;
-		}
+		nativeLog(level, message, t);
 		for (LogService ls : logServices) {
 			if (ls == null) {
-				nativeLogger.log(level, message, t);
 				continue;
 			}
-			ls.log(DiscoveryActivator.getContext().getServiceReference(
-					ZooDiscoveryContainer.class.getName()), level, message, t);
+			ls.log(DiscoveryActivator.getContext().getServiceReference(ZooDiscoveryContainer.class.getName()), level, message, t);
 		}
 	}
 }

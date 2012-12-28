@@ -185,6 +185,7 @@ public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 
 		defaultConfigProperties.put("preAllocSize", 1); //$NON-NLS-1$		
 
+		defaultConfigProperties.put(ZOODISCOVERY_CONSOLELOG, System.getProperty(ZOODISCOVERY_PREFIX + ZOODISCOVERY_CONSOLELOG, null));
 	}
 
 	public DefaultDiscoveryConfig() {
@@ -201,5 +202,19 @@ public class DefaultDiscoveryConfig implements IDiscoveryConfig {
 		}
 
 		return f;
+	}
+	
+	/**
+	 * 
+	 * @return true if consoleLogging was specified.
+	 */
+	public static boolean getConsoleLog() {
+		Map<String, Object> props = new DefaultDiscoveryConfig().getConfigProperties();
+		Object f = props.get(ZOODISCOVERY_CONSOLELOG);
+		if (f == null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }

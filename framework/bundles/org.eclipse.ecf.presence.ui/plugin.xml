@@ -122,32 +122,6 @@
       </perspectiveExtension>
    </extension>
 
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.ecf.ui.perspective.communications">
-         <!--
-         <view
-               id="org.eclipse.ecf.presence.ui.MultiRosterView"
-               relationship="stack"
-               relative="org.eclipse.ui.views.ResourceNavigator"
-               visible="true">
-         </view>
-         <view
-               id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
-               relationship="stack"
-               relative="org.eclipse.ui.views.ProblemView"
-               visible="true">
-         </view>
-         <view
-               id="org.eclipse.ecf.presence.ui.MessagesView"
-               relationship="stack"
-               relative="org.eclipse.ui.views.ProblemView"
-               visible="true">
-         </view>
-         -->
-      </perspectiveExtension>
-   </extension>
     <extension
          point="org.eclipse.ui.commands">
       <command
