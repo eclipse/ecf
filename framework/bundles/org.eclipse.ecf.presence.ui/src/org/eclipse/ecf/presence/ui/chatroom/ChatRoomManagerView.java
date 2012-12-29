@@ -457,7 +457,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		rootTabFolder.setUnselectedCloseVisible(false);
 		rootTabFolder.setSimple(useTraditionalTabFolder);
 
-		populateInfoTab(getInfoTabControl(SWT.NONE, "Info", true));
+		populateInfoTab(getInfoTabControl(SWT.NONE, "Info", true)); //$NON-NLS-1$
 
 		PlatformUI.getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
@@ -482,6 +482,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	 * @param title
 	 * @param clearInfoTab set to true if the tab must be cleared when population of the view begins.
 	 * @return the Composite to draw on
+	 * @since 2.2
 	 */
 	public Composite getInfoTabControl(int style, String title, boolean clearInfoTab) {
 		// dispose old tab
@@ -510,7 +511,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	private void populateInfoTab(Composite parent) {
 
 		Link link = new Link(parent, SWT.NONE);
-		link.setText("\n   This view is not intended to be opened as a standalone view. Please select one of the <a>IM Providers</a> to open a populated view.");
+		link.setText("\n   This view is not intended to be opened as a standalone view. Please select one of the <a>IM Providers</a> to open a populated view."); //$NON-NLS-1$
 		link.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				SelectProviderAction action = new SelectProviderAction();
