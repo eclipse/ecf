@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.ssl
-Bundle-Version: 1.0.100.qualifier
+Bundle-Version: 1.1.0.qualifier
 Fragment-Host: org.eclipse.ecf
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Import-Package: javax.net,
