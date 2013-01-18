@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.internal.provider;
 
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.util.*;
 import org.osgi.framework.BundleActivator;
@@ -35,6 +37,9 @@ public class ProviderPlugin implements BundleActivator {
 	private ServiceTracker logServiceTracker = null;
 
 	private ServiceTracker adapterManagerTracker = null;
+
+	private ServiceTracker sslServerSocketFactoryTracker;
+	private ServiceTracker sslSocketFactoryTracker;
 
 	public IAdapterManager getAdapterManager() {
 		if (context == null)
@@ -81,6 +86,15 @@ public class ProviderPlugin implements BundleActivator {
 			adapterManagerTracker.close();
 			adapterManagerTracker = null;
 		}
+
+		if (sslServerSocketFactoryTracker != null) {
+			sslServerSocketFactoryTracker.close();
+			sslServerSocketFactoryTracker = null;
+		}
+		if (sslSocketFactoryTracker != null) {
+			sslSocketFactoryTracker.close();
+			sslSocketFactoryTracker = null;
+		}
 		this.context = null;
 	}
 
@@ -119,4 +133,25 @@ public class ProviderPlugin implements BundleActivator {
 	public String getNamespaceIdentifier() {
 		return NAMESPACE_IDENTIFIER;
 	}
+
+	public SSLServerSocketFactory getSSLServerSocketFactory() {
+		if (context == null)
+			return null;
+		if (sslServerSocketFactoryTracker == null) {
+			sslServerSocketFactoryTracker = new ServiceTracker(this.context, SSLServerSocketFactory.class.getName(), null);
+			sslServerSocketFactoryTracker.open();
+		}
+		return (SSLServerSocketFactory) sslServerSocketFactoryTracker.getService();
+	}
+
+	public SSLSocketFactory getSSLSocketFactory() {
+		if (context == null)
+			return null;
+		if (sslSocketFactoryTracker == null) {
+			sslSocketFactoryTracker = new ServiceTracker(this.context, SSLSocketFactory.class.getName(), null);
+			sslSocketFactoryTracker.open();
+		}
+		return (SSLSocketFactory) sslSocketFactoryTracker.getService();
+	}
+
 }

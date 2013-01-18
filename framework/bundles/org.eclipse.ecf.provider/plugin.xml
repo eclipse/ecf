@@ -19,4 +19,22 @@
             name="ecf.generic.client">
       </containerFactory>
    </extension>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.generic.SSLGenericContainerInstantiator"
+            description="ECF Generic Secure Server"
+            name="ecf.generic.secure.server"
+            server="true">
+      </containerFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.generic.SSLGenericContainerInstantiator"
+            description="ECF Generic Secure Client"
+            hidden="true"
+            name="ecf.generic.secure.client">
+      </containerFactory>
+   </extension>
 </plugin>

@@ -986,6 +986,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ByteArrayOutputStream bouts = new ByteArrayOutputStream();
 		final IdentifiableObjectOutputStream ioos = new IdentifiableObjectOutputStream(sharedObjectID.getName(), bouts);
 		ioos.writeObject(message);
+		ioos.close();
 		return bouts.toByteArray();
 	}
 
@@ -1026,6 +1027,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 				}
 			}, bins);
 			obj = iins.readObject();
+			iins.close();
 		}
 		return obj;
 	}
