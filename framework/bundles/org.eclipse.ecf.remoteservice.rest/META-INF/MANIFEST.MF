@@ -16,7 +16,7 @@ Export-Package: org.eclipse.ecf.internal.remoteservice.rest;x-internal:=true,
  org.eclipse.ecf.remoteservice.rest.util
 Import-Package: org.apache.commons.httpclient;version="3.0.1",
  org.apache.commons.httpclient.auth;version="3.0.1",
- org.apache.commons.httpclient.methods;version="3.0.1",
+ org.apache.commons.httpclient.methods;version="3.1.0",
  org.apache.commons.httpclient.params;version="3.0.1",
  org.apache.commons.httpclient.util,
  org.eclipse.ecf.remoteservice;version="6.0.0",
