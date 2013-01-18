@@ -13,7 +13,7 @@ import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.server.generic.*;
 
-public class GenericServerContainerGroupFactory implements IGenericServerContainerGroupFactory {
+public class SSLGenericServerContainerGroupFactory implements IGenericServerContainerGroupFactory {
 
 	class SCGData {
 		private String hostname;
@@ -65,7 +65,7 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 	 * @throws GenericServerContainerGroupCreateException  
 	 */
 	protected IGenericServerContainerGroup createGenericServerContainerGroup(SCGData scgdata, Map defaultContainerProperties) throws GenericServerContainerGroupCreateException {
-		return new GenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), defaultContainerProperties);
+		return new SSLGenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), defaultContainerProperties);
 	}
 
 	public IGenericServerContainerGroup createContainerGroup(String hostname, int port) throws GenericServerContainerGroupCreateException {
@@ -73,7 +73,7 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 	}
 
 	public IGenericServerContainerGroup createContainerGroup(String hostname) throws GenericServerContainerGroupCreateException {
-		return createContainerGroup(hostname, DEFAULT_PORT);
+		return createContainerGroup(hostname, DEFAULT_SECURE_PORT);
 	}
 
 	public void close() {
@@ -120,6 +120,6 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 	}
 
 	public boolean isSecureTransport() {
-		return false;
+		return true;
 	}
 }
