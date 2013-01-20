@@ -17,7 +17,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 /**
  * @since 6.0
  */
-public class SSLGenericServerApplication extends AbstractSSLGenericServerApplication implements IApplication {
+public class SSLGenericServerApplication extends SSLAbstractGenericServerApplication implements IApplication {
 
 	protected final Object appLock = new Object();
 	protected boolean done = false;

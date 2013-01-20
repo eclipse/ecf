@@ -24,7 +24,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.generic.SSLGenericContainerInstantiator"
             description="ECF Generic Secure Server"
-            name="ecf.generic.secure.server"
+            name="ecf.generic.ssl.server"
             server="true">
       </containerFactory>
    </extension>
@@ -34,7 +34,7 @@
             class="org.eclipse.ecf.provider.generic.SSLGenericContainerInstantiator"
             description="ECF Generic Secure Client"
             hidden="true"
-            name="ecf.generic.secure.client">
+            name="ecf.generic.ssl.client">
       </containerFactory>
    </extension>
 </plugin>

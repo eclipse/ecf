@@ -31,9 +31,9 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 
 	protected static final String[] genericProviderIntents = {"passByValue", "exactlyOnce", "ordered",}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-	public static final String SSLCLIENT_NAME = "ecf.generic.secure.client"; //$NON-NLS-1$
+	public static final String SSLCLIENT_NAME = "ecf.generic.ssl.client"; //$NON-NLS-1$
 
-	public static final String SSLSERVER_NAME = "ecf.generic.secure.server"; //$NON-NLS-1$
+	public static final String SSLSERVER_NAME = "ecf.generic.ssl.server"; //$NON-NLS-1$
 
 	private static final int CREATE_INSTANCE_ERROR_CODE = 4441;
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2009 EclipseSource and others. All rights reserved. This
+* Copyright (c) 2013 Composent, Inc. and others. All rights reserved. This
 * program and the accompanying materials are made available under the terms of
 * the Eclipse Public License v1.0 which accompanies this distribution, and is
 * available at http://www.eclipse.org/legal/epl-v10.html
@@ -20,12 +20,12 @@ import org.eclipse.ecf.provider.generic.SSLServerSOContainerGroup;
 
 /**
  * 
- * @since 5.2
+ * @since 6.0
  *
  */
 public class SSLGenericServerContainer extends SSLServerSOContainer {
 
-	final AbstractSSLGenericServer abstractGenericServer;
+	final SSLAbstractGenericServer abstractGenericServer;
 
 	private IContainerListener departedListener = new IContainerListener() {
 		public void handleEvent(IContainerEvent event) {
@@ -39,7 +39,7 @@ public class SSLGenericServerContainer extends SSLServerSOContainer {
 		}
 	};
 
-	public SSLGenericServerContainer(AbstractSSLGenericServer abstractGenericServer, ISharedObjectContainerConfig config, SSLServerSOContainerGroup listener, String path, int keepAlive) {
+	public SSLGenericServerContainer(SSLAbstractGenericServer abstractGenericServer, ISharedObjectContainerConfig config, SSLServerSOContainerGroup listener, String path, int keepAlive) {
 		super(config, listener, path, keepAlive);
 		this.abstractGenericServer = abstractGenericServer;
 		addListener(departedListener);

@@ -22,9 +22,9 @@ import org.eclipse.equinox.app.IApplicationContext;
 /**
  * @since 6.0
  */
-public class SSLGenericClientApplication extends AbstractSSLGenericClientApplication implements IApplication {
+public class SSLGenericClientApplication extends SSLAbstractGenericClientApplication implements IApplication {
 
-	private static final String GENERIC_CLIENT_CONTAINER_TYPE = "ecf.generic.client.secure"; //$NON-NLS-1$
+	private static final String GENERIC_CLIENT_CONTAINER_TYPE = "ecf.generic.ssl.client"; //$NON-NLS-1$
 
 	protected final Object appLock = new Object();
 	protected boolean done = false;

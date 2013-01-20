@@ -12,7 +12,7 @@ package org.eclipse.ecf.server.generic.app;
 /**
  * @since 6.0
  */
-public class SSLGenericServerJavaApplication extends AbstractSSLGenericServerApplication {
+public class SSLGenericServerJavaApplication extends SSLAbstractGenericServerApplication {
 
 	/**
 	 * @param args

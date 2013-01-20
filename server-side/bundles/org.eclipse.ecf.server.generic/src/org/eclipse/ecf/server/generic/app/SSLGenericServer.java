@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007 Composent, Inc. and others.
+ * Copyright (c) 2013 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -187,7 +187,7 @@ public class SSLGenericServer implements IApplication {
 				System.out.println("Taking " + serverGroup.getName() + ":" + serverGroup.getPort() + " off the air"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				final Iterator iter = serverGroup.elements();
 				for (; iter.hasNext();) {
-					final TCPServerSOContainer container = (TCPServerSOContainer) iter.next();
+					final SSLServerSOContainer container = (SSLServerSOContainer) iter.next();
 					container.dispose();
 				}
 			}
