@@ -61,10 +61,26 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 		}
 	}
 
+	boolean isSSLTransportSpecified(Map defaultContainerProperties) {
+		boolean sslTransport = false;
+		if (defaultContainerProperties != null) {
+			Object sslTransportPropValue = defaultContainerProperties.get(IGenericServerContainerGroupFactory.SSL_TRANSPORT_PROPERTY);
+			if (sslTransportPropValue instanceof Boolean)
+				sslTransport = ((Boolean) sslTransportPropValue).booleanValue();
+			else if (sslTransportPropValue instanceof String)
+				sslTransport = Boolean.parseBoolean((String) sslTransportPropValue);
+
+		}
+		return sslTransport;
+	}
+
 	/**
 	 * @throws GenericServerContainerGroupCreateException  
 	 */
 	protected IGenericServerContainerGroup createGenericServerContainerGroup(SCGData scgdata, Map defaultContainerProperties) throws GenericServerContainerGroupCreateException {
+		boolean sslTransport = isSSLTransportSpecified(defaultContainerProperties);
+		if (sslTransport)
+			return new SSLGenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), defaultContainerProperties);
 		return new GenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), defaultContainerProperties);
 	}
 
@@ -119,7 +135,4 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 		}
 	}
 
-	public boolean isSecureTransport() {
-		return false;
-	}
 }

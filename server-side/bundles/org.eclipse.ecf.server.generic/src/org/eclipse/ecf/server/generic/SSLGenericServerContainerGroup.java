@@ -183,4 +183,8 @@ public class SSLGenericServerContainerGroup implements IGenericServerContainerGr
 		}
 	}
 
+	public boolean isSSLTransport() {
+		return true;
+	}
+
 }

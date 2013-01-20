@@ -130,4 +130,10 @@ public interface IGenericServerContainerGroup {
 	 * </ol>
 	 */
 	public void close();
+
+	/**
+	 * @since 6.0
+	 */
+	public boolean isSSLTransport();
+
 }

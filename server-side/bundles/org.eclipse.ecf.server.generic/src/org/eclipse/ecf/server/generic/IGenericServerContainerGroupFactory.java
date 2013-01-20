@@ -30,6 +30,11 @@ public interface IGenericServerContainerGroupFactory {
 	public int DEFAULT_SECURE_PORT = 4282;
 
 	/**
+	 * @since 6.0
+	 */
+	public static final String SSL_TRANSPORT_PROPERTY = "org.eclipse.ecf.server.generic.sslTransport"; //$NON-NLS-1$
+
+	/**
 	 * Create a new container group given a hostname, port, and a Map of default container properties.
 	 * @param hostname the hostname associated with the new container group.  Must not be <code>null</code>.
 	 * @param port the port that the new container group will listen on (once {@link IGenericServerContainerGroup#startListening()}
@@ -93,8 +98,4 @@ public interface IGenericServerContainerGroupFactory {
 	 */
 	public IGenericServerContainerGroup removeContainerGroup(String hostname, int port);
 
-	/**
-	 * @since 6.0
-	 */
-	public boolean isSecureTransport();
 }
