@@ -18,7 +18,7 @@ import org.eclipse.ecf.provider.generic.SSLServerSOContainer;
 /**
  * @since 6.0
  */
-public abstract class AbstractSSLGenericClientApplication {
+public abstract class SSLAbstractGenericClientApplication {
 
 	protected String connectTarget;
 	protected ISharedObjectContainer clientContainer;

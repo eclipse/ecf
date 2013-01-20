@@ -16,12 +16,12 @@ import org.eclipse.ecf.provider.generic.SSLGenericContainerInstantiator;
 /**
  * @since 6.0
  */
-public class SSLGenericClientJavaApplication extends AbstractSSLGenericClientApplication {
+public class SSLGenericClientJavaApplication extends SSLAbstractGenericClientApplication {
 
 	protected ISharedObjectContainer createContainer() throws ContainerCreateException {
 		IContainerFactory containerFactory = ContainerFactory.getDefault();
-		containerFactory.addDescription(new ContainerTypeDescription("ecf.generic.client.secure", new SSLGenericContainerInstantiator(), null)); //$NON-NLS-1$
-		return (ISharedObjectContainer) containerFactory.createContainer("ecf.generic.client.secure"); //$NON-NLS-1$
+		containerFactory.addDescription(new ContainerTypeDescription("ecf.generic.secure.client", new SSLGenericContainerInstantiator(), null)); //$NON-NLS-1$
+		return (ISharedObjectContainer) containerFactory.createContainer("ecf.generic.secure.client"); //$NON-NLS-1$
 	}
 
 	public static void main(String[] args) throws Exception {

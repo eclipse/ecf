@@ -24,7 +24,7 @@ import org.eclipse.ecf.provider.generic.*;
 /**
  * @since 6.0
  */
-public abstract class AbstractSSLGenericServerApplication {
+public abstract class SSLAbstractGenericServerApplication {
 
 	protected SSLServerSOContainerGroup[] serverGroups;
 

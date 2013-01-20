@@ -1,3 +1,12 @@
+/*******************************************************************************
+* Copyright (c) 2013 Composent, Inc. and others. All rights reserved. This
+* program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0 which accompanies this distribution, and is
+* available at http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Composent, Inc. - initial API and implementation
+******************************************************************************/
 package org.eclipse.ecf.server.generic;
 
 import java.io.IOException;
@@ -13,11 +22,11 @@ import org.eclipse.ecf.provider.generic.*;
 /**
  * @since 6.0
  */
-public abstract class AbstractSSLGenericServer {
+public abstract class SSLAbstractGenericServer {
 
 	protected SSLServerSOContainerGroup serverGroup;
 
-	public AbstractSSLGenericServer(String host, int port) {
+	public SSLAbstractGenericServer(String host, int port) {
 		this.serverGroup = new SSLServerSOContainerGroup(host, port);
 	}
 
@@ -64,7 +73,7 @@ public abstract class AbstractSSLGenericServer {
 		}
 		List servers = getServerContainers();
 		for (Iterator i = servers.iterator(); i.hasNext();) {
-			GenericServerContainer s = (GenericServerContainer) i.next();
+			SSLGenericServerContainer s = (SSLGenericServerContainer) i.next();
 			s.ejectAllGroupMembers("Shutting down immediately"); //$NON-NLS-1$
 			s.dispose();
 		}
@@ -80,7 +89,7 @@ public abstract class AbstractSSLGenericServer {
 		SSLGenericServerContainer s = new SSLGenericServerContainer(this, createServerConfig(path), serverGroup, path, keepAlive);
 		IContainerManager containerManager = Activator.getDefault().getContainerManager();
 		if (containerManager != null) {
-			ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.server.secure"); //$NON-NLS-1$
+			ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.secure.server"); //$NON-NLS-1$
 			containerManager.addContainer(s, ctd);
 		}
 		IConnectHandlerPolicy policy = createConnectHandlerPolicy(s, path);
@@ -102,7 +111,7 @@ public abstract class AbstractSSLGenericServer {
 	protected IConnectHandlerPolicy createConnectHandlerPolicy(SSLGenericServerContainer s, String path) {
 		return new IConnectHandlerPolicy() {
 			public PermissionCollection checkConnect(Object address, ID fromID, ID targetID, String targetGroup, Object connectData) throws Exception {
-				return AbstractSSLGenericServer.this.checkConnect(address, fromID, targetID, targetGroup, connectData);
+				return SSLAbstractGenericServer.this.checkConnect(address, fromID, targetID, targetGroup, connectData);
 			}
 
 			public void refresh() {
