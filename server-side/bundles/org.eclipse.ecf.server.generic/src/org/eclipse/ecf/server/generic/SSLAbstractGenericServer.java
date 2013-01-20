@@ -37,7 +37,7 @@ public abstract class SSLAbstractGenericServer {
 		return getServerContainer(0);
 	}
 
-	public List /* GenericServerContainer */getServerContainers() {
+	public List /* SSLGenericServerContainer */getServerContainers() {
 		List result = new ArrayList();
 		for (Iterator i = serverGroup.elements(); i.hasNext();) {
 			result.add(i.next());
@@ -80,7 +80,7 @@ public abstract class SSLAbstractGenericServer {
 	}
 
 	protected void createAndInitializeServer(String path) throws IDCreateException {
-		createAndInitializeServer(path, TCPServerSOContainer.DEFAULT_KEEPALIVE);
+		createAndInitializeServer(path, SSLServerSOContainer.DEFAULT_KEEPALIVE);
 	}
 
 	protected void createAndInitializeServer(String path, int keepAlive) throws IDCreateException {
@@ -89,7 +89,7 @@ public abstract class SSLAbstractGenericServer {
 		SSLGenericServerContainer s = new SSLGenericServerContainer(this, createServerConfig(path), serverGroup, path, keepAlive);
 		IContainerManager containerManager = Activator.getDefault().getContainerManager();
 		if (containerManager != null) {
-			ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.ssl.server"); //$NON-NLS-1$
+			ContainerTypeDescription ctd = containerManager.getContainerFactory().getDescriptionByName("ecf.generic.server"); //$NON-NLS-1$
 			containerManager.addContainer(s, ctd);
 		}
 		IConnectHandlerPolicy policy = createConnectHandlerPolicy(s, path);
