@@ -17,11 +17,11 @@ import org.eclipse.core.runtime.Assert;
  */
 public class GenericServerContainerGroupFactory implements IGenericServerContainerGroupFactory {
 
-	class SCGData {
+	protected class SCGData {
 		private String hostname;
 		private int port;
 
-		SCGData(String hostname, int port) {
+		public SCGData(String hostname, int port) {
 			Assert.isNotNull(hostname);
 			Assert.isTrue(port > 0);
 			this.hostname = hostname;
