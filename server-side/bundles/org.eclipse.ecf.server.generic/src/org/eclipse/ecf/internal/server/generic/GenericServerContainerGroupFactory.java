@@ -64,7 +64,7 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 	boolean isSSLTransportSpecified(Map defaultContainerProperties) {
 		boolean sslTransport = false;
 		if (defaultContainerProperties != null) {
-			Object sslTransportPropValue = defaultContainerProperties.get(IGenericServerContainerGroupFactory.SSL_TRANSPORT_PROPERTY);
+			Object sslTransportPropValue = defaultContainerProperties.get(IGenericServerContainerGroupFactory.SSLTRANSPORT_CONTAINER_PROP);
 			if (sslTransportPropValue instanceof Boolean)
 				sslTransport = ((Boolean) sslTransportPropValue).booleanValue();
 			else if (sslTransportPropValue instanceof String)

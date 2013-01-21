@@ -32,7 +32,7 @@ public interface IGenericServerContainerGroupFactory {
 	/**
 	 * @since 6.0
 	 */
-	public static final String SSL_TRANSPORT_PROPERTY = "org.eclipse.ecf.server.generic.sslTransport"; //$NON-NLS-1$
+	public static final String SSLTRANSPORT_CONTAINER_PROP = "org.eclipse.ecf.server.generic.containerProp.sslTransport"; //$NON-NLS-1$
 
 	/**
 	 * Create a new container group given a hostname, port, and a Map of default container properties.
