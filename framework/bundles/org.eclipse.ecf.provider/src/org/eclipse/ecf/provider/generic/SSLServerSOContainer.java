@@ -22,7 +22,7 @@ import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
  * @since 4.3
  */
 public class SSLServerSOContainer extends ServerSOContainer implements IConnectRequestHandler {
-	public static final String DEFAULT_PROTOCOL = System.getProperty("org.eclipse.ecf.provider.generic.secure.scheme", "ecfssl"); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final String DEFAULT_PROTOCOL = "ecfssl"; //$NON-NLS-1$
 
 	public static final int DEFAULT_PORT = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.generic.secure.port", "4282")); //$NON-NLS-1$ //$NON-NLS-2$;
 

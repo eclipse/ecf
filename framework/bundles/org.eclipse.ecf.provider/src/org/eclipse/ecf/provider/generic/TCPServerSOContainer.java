@@ -19,7 +19,7 @@ import org.eclipse.ecf.provider.comm.IConnectRequestHandler;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 
 public class TCPServerSOContainer extends ServerSOContainer implements IConnectRequestHandler {
-	public static final String DEFAULT_PROTOCOL = System.getProperty("org.eclipse.ecf.provider.generic.scheme", "ecftcp"); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final String DEFAULT_PROTOCOL = "ecftcp"; //$NON-NLS-1$ 
 
 	public static final int DEFAULT_PORT = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.generic.port", "3282")); //$NON-NLS-1$ //$NON-NLS-2$;
 
