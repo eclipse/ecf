@@ -7,12 +7,14 @@
 * Contributors:
 *   Composent, Inc. - initial API and implementation
 ******************************************************************************/
-package org.eclipse.ecf.internal.server.generic;
+package org.eclipse.ecf.server.generic;
 
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.server.generic.*;
 
+/**
+ * @since 6.0
+ */
 public class GenericServerContainerGroupFactory implements IGenericServerContainerGroupFactory {
 
 	class SCGData {
@@ -61,7 +63,7 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 		}
 	}
 
-	boolean isSSLTransportSpecified(Map defaultContainerProperties) {
+	protected boolean isSSLTransportSpecified(Map defaultContainerProperties) {
 		boolean sslTransport = false;
 		if (defaultContainerProperties != null) {
 			Object sslTransportPropValue = defaultContainerProperties.get(IGenericServerContainerGroupFactory.SSLTRANSPORT_CONTAINER_PROP);
@@ -78,8 +80,7 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 	 * @throws GenericServerContainerGroupCreateException  
 	 */
 	protected IGenericServerContainerGroup createGenericServerContainerGroup(SCGData scgdata, Map defaultContainerProperties) throws GenericServerContainerGroupCreateException {
-		boolean sslTransport = isSSLTransportSpecified(defaultContainerProperties);
-		if (sslTransport)
+		if (isSSLTransportSpecified(defaultContainerProperties))
 			return new SSLGenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), defaultContainerProperties);
 		return new GenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), defaultContainerProperties);
 	}

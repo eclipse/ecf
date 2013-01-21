@@ -1,5 +1,7 @@
 package org.eclipse.ecf.internal.server.generic;
 
+import org.eclipse.ecf.server.generic.GenericServerContainerGroupFactory;
+
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
