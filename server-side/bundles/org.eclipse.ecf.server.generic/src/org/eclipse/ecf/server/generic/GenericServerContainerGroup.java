@@ -105,9 +105,9 @@ public class GenericServerContainerGroup implements IGenericServerContainerGroup
 	}
 
 	/**
-	 * @since 5.1
+	 * @since 6.0
 	 */
-	protected GenericServerSOContainerGroup getServerGroup() {
+	protected TCPServerSOContainerGroup getServerGroup() {
 		return serverGroup;
 	}
 

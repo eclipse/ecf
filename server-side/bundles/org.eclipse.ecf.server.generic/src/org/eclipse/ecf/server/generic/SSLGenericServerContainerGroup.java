@@ -107,7 +107,7 @@ public class SSLGenericServerContainerGroup implements IGenericServerContainerGr
 	/**
 	 * @since 5.1
 	 */
-	protected SSLGenericServerSOContainerGroup getServerGroup() {
+	protected SSLServerSOContainerGroup getServerGroup() {
 		return serverGroup;
 	}
 
