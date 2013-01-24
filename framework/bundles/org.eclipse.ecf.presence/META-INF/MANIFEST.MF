@@ -7,14 +7,14 @@ Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.presence;x-internal:=true,
- org.eclipse.ecf.presence,
- org.eclipse.ecf.presence.chatroom,
- org.eclipse.ecf.presence.history,
- org.eclipse.ecf.presence.im,
- org.eclipse.ecf.presence.roster,
- org.eclipse.ecf.presence.search,
- org.eclipse.ecf.presence.search.message,
- org.eclipse.ecf.presence.service
+ org.eclipse.ecf.presence;version="2.1.0",
+ org.eclipse.ecf.presence.chatroom;version="2.1.0",
+ org.eclipse.ecf.presence.history;version="2.1.0",
+ org.eclipse.ecf.presence.im;version="2.1.0",
+ org.eclipse.ecf.presence.roster;version="2.1.0",
+ org.eclipse.ecf.presence.search;version="2.1.0",
+ org.eclipse.ecf.presence.search.message;version="2.1.0",
+ org.eclipse.ecf.presence.service;version="2.1.0"
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: CDC-1.0/Foundation-1.0,
  J2SE-1.3

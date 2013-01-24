@@ -18,8 +18,8 @@ Import-Package: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
-Export-Package: org.eclipse.ecf.internal.sync;x-internal:=true,
- org.eclipse.ecf.internal.sync.doc.cola;x-internal:=true,
- org.eclipse.ecf.internal.sync.doc.identity;x-internal:=true,
- org.eclipse.ecf.sync,
- org.eclipse.ecf.sync.doc
+Export-Package: org.eclipse.ecf.internal.sync;version="2.0.0";x-internal:=true,
+ org.eclipse.ecf.internal.sync.doc.cola;version="2.0.0";x-internal:=true,
+ org.eclipse.ecf.internal.sync.doc.identity;version="2.0.0";x-internal:=true,
+ org.eclipse.ecf.sync;version="2.0.0",
+ org.eclipse.ecf.sync.doc;version="2.0.0"

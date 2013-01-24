@@ -6,7 +6,7 @@ Bundle-Version: 0.9.100.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
-Export-Package: org.eclipse.ecf.provider.datashare.nio;x-friends:="org.eclipse.ecf.provider.irc"
+Export-Package: org.eclipse.ecf.provider.datashare.nio;version="1.0.0";x-friends:="org.eclipse.ecf.provider.irc"
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf,
  org.eclipse.ecf.datashare

@@ -10,10 +10,10 @@ Eclipse-BuddyPolicy: global
 DynamicImport-Package: *
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Export-Package: org.eclipse.ecf.internal.remoteservice.rest;x-internal:=true,
- org.eclipse.ecf.remoteservice.rest,
- org.eclipse.ecf.remoteservice.rest.client,
- org.eclipse.ecf.remoteservice.rest.identity,
- org.eclipse.ecf.remoteservice.rest.util
+ org.eclipse.ecf.remoteservice.rest;version="2.2.200",
+ org.eclipse.ecf.remoteservice.rest.client;version="2.2.200",
+ org.eclipse.ecf.remoteservice.rest.identity;version="2.2.200",
+ org.eclipse.ecf.remoteservice.rest.util;version="2.2.200"
 Import-Package: org.apache.commons.httpclient;version="3.0.1",
  org.apache.commons.httpclient.auth;version="3.0.1",
  org.apache.commons.httpclient.methods;version="3.1.0",

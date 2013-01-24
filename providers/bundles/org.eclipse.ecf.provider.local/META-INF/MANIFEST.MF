@@ -20,7 +20,7 @@ Import-Package: org.eclipse.ecf.core,
  org.osgi.framework
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: bundle
-Export-Package: org.eclipse.ecf.internal.provider.local,
- org.eclipse.ecf.internal.provider.local.container,
- org.eclipse.ecf.provider.local.identity
+Export-Package: org.eclipse.ecf.internal.provider.local;x-internal:=true,
+ org.eclipse.ecf.internal.provider.local.container;x-internal:=true,
+ org.eclipse.ecf.provider.local.identity;version="1.1.0"
 Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.0"

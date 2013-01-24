@@ -16,4 +16,4 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf;bundle-version="2.0.0"
 Bundle-Localization: plugin
-Export-Package: org.eclipse.ecf.storage
+Export-Package: org.eclipse.ecf.storage;version="2.0.0"

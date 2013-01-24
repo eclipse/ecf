@@ -11,11 +11,8 @@
 package org.eclipse.ecf.provider.ui.wizards;
 
 import java.net.URI;
-
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.ui.IConnectWizard;
@@ -25,6 +22,9 @@ import org.eclipse.ecf.ui.wizards.AbstractConnectWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 
+/**
+ * @since 1.4
+ */
 public class GenericClientContainerConnectWizard extends Wizard implements
 		IConnectWizard {
 
@@ -39,11 +39,11 @@ public class GenericClientContainerConnectWizard extends Wizard implements
 	private IConnectContext connectContext;
 
 	private URI uri;
-	
+
 	public GenericClientContainerConnectWizard() {
 		super();
 	}
-	
+
 	public GenericClientContainerConnectWizard(URI uri) {
 		super();
 		this.uri = uri;
@@ -71,8 +71,8 @@ public class GenericClientContainerConnectWizard extends Wizard implements
 			String password = wizardPage.getPassword();
 			if (wizardPage.shouldRequestUsername()) {
 				connectContext = ConnectContextFactory
-						.createUsernamePasswordConnectContext(wizardPage
-								.getUsername(), password);
+						.createUsernamePasswordConnectContext(
+								wizardPage.getUsername(), password);
 			} else {
 				connectContext = ConnectContextFactory
 						.createPasswordConnectContext(password);
@@ -83,7 +83,7 @@ public class GenericClientContainerConnectWizard extends Wizard implements
 			targetID = IDFactory.getDefault().createID(
 					container.getConnectNamespace(), wizardPage.getConnectID());
 		} catch (IDCreateException e) {
-			new IDCreateErrorDialog(null,wizardPage.getConnectID(),e).open();
+			new IDCreateErrorDialog(null, wizardPage.getConnectID(), e).open();
 			return false;
 		}
 

@@ -15,9 +15,9 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.remoteservice;bundle-version="3.0.0",
  org.eclipse.equinox.registry
 Eclipse-LazyStart: true
-Export-Package: org.eclipse.ecf.internal.server.generic;x-internal:=true,
- org.eclipse.ecf.server.generic,
- org.eclipse.ecf.server.generic.app
+Export-Package: org.eclipse.ecf.internal.server.generic;version="6.0.0";x-internal:=true,
+ org.eclipse.ecf.server.generic;version="6.0.0",
+ org.eclipse.ecf.server.generic.app;version="6.0.0"
 Import-Package: javax.xml.parsers,
  org.eclipse.equinox.app;version="1.0.0",
  org.osgi.framework,

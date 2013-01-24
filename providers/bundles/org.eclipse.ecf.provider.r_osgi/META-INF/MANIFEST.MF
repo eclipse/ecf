@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.ecf;bundle-version="3.1.0",
  ch.ethz.iks.r_osgi.remote
 Bundle-Activator: org.eclipse.ecf.internal.provider.r_osgi.Activator
 Eclipse-LazyStart: true
-Export-Package: org.eclipse.ecf.provider.r_osgi.identity
+Export-Package: org.eclipse.ecf.provider.r_osgi.identity;version="3.2.0"
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.3

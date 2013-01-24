@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.ecf.examples.loadbalancing
 Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: %bundleProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.ecf.examples.loadbalancing
+Export-Package: org.eclipse.ecf.examples.loadbalancing;version="1.1.0"
 Bundle-Localization: bundle
 Import-Package: org.eclipse.ecf.remoteservice
 Bundle-ActivationPolicy: lazy

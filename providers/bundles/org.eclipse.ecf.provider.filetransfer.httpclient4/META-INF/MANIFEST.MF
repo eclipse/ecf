@@ -30,7 +30,7 @@ Import-Package: org.apache.http;version="4.1.0",
  org.osgi.service.url;version="1.0.0",
  org.osgi.util.tracker;version="1.3.2"
 Export-Package: org.eclipse.ecf.internal.provider.filetransfer.httpclient4;x-internal:=true,
- org.eclipse.ecf.provider.filetransfer.httpclient4
+ org.eclipse.ecf.provider.filetransfer.httpclient4;version="1.0.0"
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy

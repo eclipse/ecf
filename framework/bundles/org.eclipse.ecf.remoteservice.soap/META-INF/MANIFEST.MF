@@ -11,8 +11,8 @@ Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.eclipse.ecf.remoteservice,
  org.eclipse.ecf.remoteservice.client
 Bundle-ClassPath: .
-Export-Package: org.eclipse.ecf.remoteservice.soap.client,
- org.eclipse.ecf.remoteservice.soap.identity
+Export-Package: org.eclipse.ecf.remoteservice.soap.client;version="1.0.0",
+ org.eclipse.ecf.remoteservice.soap.identity;version="1.0.0"
 DynamicImport-Package: *
 Eclipse-BuddyPolicy: global
 Require-Bundle: org.eclipse.equinox.common

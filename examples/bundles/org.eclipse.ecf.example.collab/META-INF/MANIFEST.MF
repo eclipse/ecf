@@ -5,9 +5,9 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.example.collab.ClientPlugin
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
-Export-Package: org.eclipse.ecf.example.collab.share,
- org.eclipse.ecf.example.collab.share.io,
- org.eclipse.ecf.example.collab.share.url,
+Export-Package: org.eclipse.ecf.example.collab.share;version="2.0.0",
+ org.eclipse.ecf.example.collab.share.io;version="2.0.0",
+ org.eclipse.ecf.example.collab.share.url;version="2.0.0",
  org.eclipse.ecf.internal.example.collab;x-internal:=true,
  org.eclipse.ecf.internal.example.collab.actions;x-internal:=true,
  org.eclipse.ecf.internal.example.collab.start;x-internal:=true,

@@ -12,9 +12,9 @@ Bundle-RequiredExecutionEnvironment: CDC-1.0/Foundation-1.0,
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf
 Import-Package: org.osgi.framework;version="1.3.0"
-Export-Package: org.eclipse.ecf.internal.telephony.call;x-internal:=true,
- org.eclipse.ecf.telephony.call,
- org.eclipse.ecf.telephony.call.dtmf,
- org.eclipse.ecf.telephony.call.events,
- org.eclipse.ecf.telephony.call.service
+Export-Package: org.eclipse.ecf.internal.telephony.call;version="2.0.0";x-internal:=true,
+ org.eclipse.ecf.telephony.call;version="2.0.0",
+ org.eclipse.ecf.telephony.call.dtmf;version="2.0.0",
+ org.eclipse.ecf.telephony.call.events;version="2.0.0",
+ org.eclipse.ecf.telephony.call.service;version="2.0.0"
 Bundle-ActivationPolicy: lazy

@@ -7,11 +7,11 @@ Bundle-Activator: org.eclipse.ecf.internal.provider.ProviderPlugin
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.provider;x-internal:=true,
- org.eclipse.ecf.provider.comm,
- org.eclipse.ecf.provider.comm.tcp,
- org.eclipse.ecf.provider.generic,
- org.eclipse.ecf.provider.generic.gmm,
- org.eclipse.ecf.provider.util
+ org.eclipse.ecf.provider.comm;version="4.3.0",
+ org.eclipse.ecf.provider.comm.tcp;version="4.3.0",
+ org.eclipse.ecf.provider.generic;version="4.3.0",
+ org.eclipse.ecf.provider.generic.gmm;version="4.3.0",
+ org.eclipse.ecf.provider.util;version="4.3.0"
 Eclipse-BuddyPolicy: global
 Bundle-ManifestVersion: 2
 Require-Bundle: org.eclipse.equinox.common,
