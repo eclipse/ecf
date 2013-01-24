@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.pde.ui.pluginContent">
+      <wizard
+            class="org.eclipse.ecf.remoteservices.internal.tooling.pde.RemoteServiceHostExample1Wizard"
+            icon="icons/newhost.gif"
+            id="org.eclipse.ecf.remoteservices.tooling.pde.helloRemoteServiceHostExample1"
+            java="true"
+            name="%pluginContent.helloHostService.name"
+            pureOSGi="true"
+            rcp="false"
+            requiresActivator="true"
+            ui-content="false">
+            <description>
+               %pluginContent.helloHostService.description
+            </description>
+      </wizard>
+      <wizard
+            class="org.eclipse.ecf.remoteservices.internal.tooling.pde.RemoteServiceConsumerExample1Wizard"
+            icon="icons/newconsumer.gif"
+            id="org.eclipse.ecf.remoteservices.tooling.pde.helloRemoteServiceConsumerExample1"
+            java="true"
+            name="%pluginContent.helloConsumerService.name"
+            pureOSGi="true"
+            rcp="false"
+            requiresActivator="true"
+            ui-content="false">
+            <description>
+               %pluginContent.helloConsumerService.description
+            </description>
+      </wizard>
+   </extension>
+
+</plugin>
