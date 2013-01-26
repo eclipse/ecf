@@ -17,15 +17,24 @@ public class AsynchMessage implements Serializable {
 	private static final long serialVersionUID = 3258689905679873075L;
 	Serializable data;
 
-	protected AsynchMessage() {
+	/**
+	 * @since 4.3
+	 */
+	public AsynchMessage() {
 		//
 	}
 
-	protected AsynchMessage(Serializable data) {
+	/**
+	 * @since 4.3
+	 */
+	public AsynchMessage(Serializable data) {
 		this.data = data;
 	}
 
-	Serializable getData() {
+	/**
+	 * @since 4.3
+	 */
+	public Serializable getData() {
 		return data;
 	}
 

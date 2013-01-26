@@ -16,17 +16,23 @@ import java.io.Serializable;
 public class SynchMessage extends AsynchMessage {
 	private static final long serialVersionUID = 3906091152452434226L;
 
-	protected SynchMessage(Serializable data) {
-        super(data);
-    }
+	/**
+	 * @since 4.3
+	 */
+	public SynchMessage(Serializable data) {
+		super(data);
+	}
 
-    protected SynchMessage() {
-        super();
-    }
+	/**
+	 * @since 4.3
+	 */
+	public SynchMessage() {
+		super();
+	}
 
-    public String toString() {
-        StringBuffer buf = new StringBuffer("SynchMessage["); //$NON-NLS-1$
-        buf.append(data).append("]"); //$NON-NLS-1$
-        return buf.toString();
-    }
+	public String toString() {
+		StringBuffer buf = new StringBuffer("SynchMessage["); //$NON-NLS-1$
+		buf.append(data).append("]"); //$NON-NLS-1$
+		return buf.toString();
+	}
 }

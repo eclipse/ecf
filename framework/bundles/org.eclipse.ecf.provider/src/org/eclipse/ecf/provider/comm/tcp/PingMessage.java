@@ -16,7 +16,10 @@ import java.io.Serializable;
 public class PingMessage implements Serializable {
 	private static final long serialVersionUID = 3258407318374004536L;
 
-	protected PingMessage() {
+	/**
+	 * @since 4.3
+	 */
+	public PingMessage() {
 		//
 	}
 
