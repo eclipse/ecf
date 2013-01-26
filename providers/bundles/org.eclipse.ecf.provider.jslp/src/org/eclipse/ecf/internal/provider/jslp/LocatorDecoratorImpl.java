@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.provider.jslp;
 import ch.ethz.iks.slp.*;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.util.Trace;
 
 /**
  * This decorator add additional methods which will eventually be moved to jSLP itself
@@ -77,10 +78,17 @@ public class LocatorDecoratorImpl implements LocatorDecorator {
 		final List result = new ArrayList();
 		for (final Iterator itr = aSet.iterator(); itr.hasNext();) {
 			final String type = (String) itr.next();
-			final ServiceLocationEnumeration services = findServices(new ServiceType(type), scopes, null);
-			while (services.hasMoreElements()) {
-				final ServiceURL url = (ServiceURL) services.next();
-				result.add(url);
+			try {
+				final ServiceLocationEnumeration services = findServices(new ServiceType(type), scopes, null);
+				while (services.hasMoreElements()) {
+					final ServiceURL url = (ServiceURL) services.next();
+					result.add(url);
+				}
+			} catch (IllegalArgumentException e) {
+				// Skipping an invalid service type
+				// @see https://bugs.eclipse.org/397877
+				Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServiceURLs(String, List)", e); //$NON-NLS-1$
+				continue;
 			}
 		}
 		return result;
@@ -108,10 +116,17 @@ public class LocatorDecoratorImpl implements LocatorDecorator {
 		final Map result = new HashMap();
 		for (final Iterator itr = aSet.iterator(); itr.hasNext();) {
 			final String type = (String) itr.next();
-			final ServiceLocationEnumeration services = findServices(new ServiceType(type), null, null);
-			while (services.hasMoreElements()) {
-				final ServiceURL url = (ServiceURL) services.next();
-				result.put(url, Collections.list(findAttributes(url, null, null)));
+			try {
+				final ServiceLocationEnumeration services = findServices(new ServiceType(type), null, null);
+				while (services.hasMoreElements()) {
+					final ServiceURL url = (ServiceURL) services.next();
+					result.put(url, Collections.list(findAttributes(url, null, null)));
+				}
+			} catch (IllegalArgumentException e) {
+				// Skipping an invalid service type
+				// @see https://bugs.eclipse.org/397877
+				Trace.catching(Activator.PLUGIN_ID, JSLPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "getServiceURLs()", e); //$NON-NLS-1$
+				continue;
 			}
 		}
 		return result;
