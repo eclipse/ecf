@@ -177,6 +177,7 @@ public class XMPPFileTransferRequestListener implements FileTransferListener {
 							throw new IncomingFileTransferException(
 									"outputStream cannot be null");
 						incoming = request.accept();
+						requestAccepted = true;
 						try {
 							return new XMPPIncomingFileTransfer(IDFactory
 									.getDefault().createStringID(
