@@ -11,11 +11,15 @@
 
 package org.eclipse.ecf.internal.remoteservice;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.eclipse.ecf.remoteservice.IRemoteServiceProxyCreator;
+import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -36,6 +40,8 @@ public class Activator implements BundleActivator {
 
 	private LogService logService = null;
 
+	private ServiceRegistration remoteServiceProxyCreator;
+
 	/**
 	 * The constructor
 	 */
@@ -55,6 +61,14 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext c) throws Exception {
 		// nothing to do
 		this.context = c;
+		// Register default IRemoteServiceProxyCreator
+		Dictionary props = new Hashtable();
+		props.put(Constants.SERVICE_RANKING, Integer.MIN_VALUE);
+		this.remoteServiceProxyCreator = this.context.registerService(new String[] {IRemoteServiceProxyCreator.class.getName()}, new IRemoteServiceProxyCreator() {
+			public Object createProxy(ClassLoader classloader, Class[] interfaces, InvocationHandler handler) {
+				return Proxy.newProxyInstance(classloader, interfaces, handler);
+			}
+		}, props);
 	}
 
 	/*
@@ -63,6 +77,10 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext c) throws Exception {
+		if (this.remoteServiceProxyCreator != null) {
+			this.remoteServiceProxyCreator.unregister();
+			this.remoteServiceProxyCreator = null;
+		}
 		if (logServiceTracker != null) {
 			logServiceTracker.close();
 			logServiceTracker = null;

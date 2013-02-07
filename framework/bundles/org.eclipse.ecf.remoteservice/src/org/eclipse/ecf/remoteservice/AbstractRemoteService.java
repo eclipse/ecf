@@ -19,6 +19,7 @@ import org.eclipse.equinox.concurrent.future.IFuture;
 import org.eclipse.equinox.concurrent.future.IProgressRunnable;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceException;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Abstract remote service implementation.  Clients may subclass to avoid re-implementing 
@@ -126,7 +127,10 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		}
 	}
 
-	class ProxyClassLoader extends ClassLoader {
+	/**
+	 * @since 7.0
+	 */
+	public class ProxyClassLoader extends ClassLoader {
 
 		private ClassLoader cl;
 
@@ -153,9 +157,23 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	}
 
 	/**
+	 * @since 7.0
+	 */
+	protected IRemoteServiceProxyCreator getRemoteServiceProxyCreator() {
+		ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(), IRemoteServiceProxyCreator.class, null);
+		st.open();
+		IRemoteServiceProxyCreator result = (IRemoteServiceProxyCreator) st.getService();
+		st.close();
+		return result;
+	}
+
+	/**
 	 * @since 6.0
 	 */
 	protected Object createProxy(ClassLoader cl, Class[] classes) {
+		IRemoteServiceProxyCreator proxyCreator = getRemoteServiceProxyCreator();
+		if (proxyCreator != null)
+			return proxyCreator.createProxy(new ProxyClassLoader(cl), classes, this);
 		return Proxy.newProxyInstance(new ProxyClassLoader(cl), classes, this);
 	}
 
