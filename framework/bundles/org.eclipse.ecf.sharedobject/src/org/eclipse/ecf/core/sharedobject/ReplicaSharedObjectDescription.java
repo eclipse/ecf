@@ -29,6 +29,20 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription impl
 
 	protected long identifier;
 
+	/**
+	 * @since 2.3
+	 */
+	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID soID, ID homeID) {
+		this(type, soID, homeID, null, getNextUniqueIdentifier());
+	}
+
+	/**
+	 * @since 2.3
+	 */
+	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID soID, ID homeID, Map props) {
+		this(type, soID, homeID, props, getNextUniqueIdentifier());
+	}
+
 	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID objectID, ID homeID, Map props, long ident) {
 		super(type, objectID, props);
 		this.homeID = homeID;

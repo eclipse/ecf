@@ -26,28 +26,37 @@ public class SharedObjectDescription implements Serializable {
 
 	protected Map properties = null;
 
-	protected SharedObjectDescription(
-			SharedObjectTypeDescription typeDescription, ID id, Map properties) {
+	/**
+	 * @since 2.3
+	 */
+	public SharedObjectDescription(SharedObjectTypeDescription typeDescription, ID id, Map properties) {
 		this.typeDescription = typeDescription;
 		this.id = id;
 		this.properties = (properties == null) ? new HashMap() : properties;
 	}
 
-	protected SharedObjectDescription(
-			SharedObjectTypeDescription typeDescription, ID id) {
+	/**
+	 * @since 2.3
+	 */
+	public SharedObjectDescription(SharedObjectTypeDescription typeDescription, ID id) {
 		this(typeDescription, id, null);
 	}
 
+	/**
+	 * @since 2.3
+	 */
+	public SharedObjectDescription(String typeName, ID id) {
+		this(typeName, id, null);
+	}
+
 	public SharedObjectDescription(String typeName, ID id, Map properties) {
-		this.typeDescription = new SharedObjectTypeDescription(typeName, null,
-				null, null);
+		this.typeDescription = new SharedObjectTypeDescription(typeName, null, null, null);
 		this.id = id;
 		this.properties = (properties == null) ? new HashMap() : properties;
 	}
 
 	public SharedObjectDescription(Class clazz, ID id, Map properties) {
-		this.typeDescription = new SharedObjectTypeDescription(clazz.getName(),
-				null);
+		this.typeDescription = new SharedObjectTypeDescription(clazz.getName(), null);
 		this.id = id;
 		this.properties = (properties == null) ? new HashMap() : properties;
 	}

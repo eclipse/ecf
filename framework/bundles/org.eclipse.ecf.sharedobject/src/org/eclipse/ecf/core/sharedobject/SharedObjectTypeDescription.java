@@ -10,7 +10,6 @@ package org.eclipse.ecf.core.sharedobject;
 
 import java.io.Serializable;
 import java.util.Map;
-
 import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
 
 /**
@@ -35,17 +34,30 @@ public class SharedObjectTypeDescription implements Serializable {
 
 	protected String className;
 
-	public SharedObjectTypeDescription(String name,
-			ISharedObjectInstantiator instantiator, String desc, Map props) {
+	public SharedObjectTypeDescription(String name, ISharedObjectInstantiator instantiator, String desc, Map props) {
 		this.name = name;
 		this.instantiator = instantiator;
 		this.description = desc;
 		this.typeProperties = props;
 	}
 
+	/**
+	 * @since 2.3
+	 */
+	public SharedObjectTypeDescription(String name, ISharedObjectInstantiator instantiator, String desc) {
+		this(name, instantiator, desc, null);
+	}
+
 	public SharedObjectTypeDescription(String className, Map props) {
 		this.className = className;
 		this.typeProperties = props;
+	}
+
+	/**
+	 * @since 2.3
+	 */
+	public SharedObjectTypeDescription(String className) {
+		this(className, null);
 	}
 
 	public String getClassName() {
