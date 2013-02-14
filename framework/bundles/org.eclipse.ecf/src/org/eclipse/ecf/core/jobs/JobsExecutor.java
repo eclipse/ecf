@@ -15,6 +15,9 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.equinox.concurrent.future.*;
 
+/**
+ * @since 3.2
+ */
 public class JobsExecutor extends AbstractExecutor {
 
 	protected int fJobCounter = 1;

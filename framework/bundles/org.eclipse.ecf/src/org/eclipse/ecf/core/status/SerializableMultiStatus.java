@@ -11,6 +11,9 @@ package org.eclipse.ecf.core.status;
 
 import org.eclipse.core.runtime.*;
 
+/**
+ * @since 3.2
+ */
 public class SerializableMultiStatus extends SerializableStatus {
 
 	private static final long serialVersionUID = 2971900808938367039L;

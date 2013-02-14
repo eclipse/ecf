@@ -13,6 +13,9 @@ import java.io.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 
+/**
+ * @since 3.2
+ */
 public class SerializableStatus implements IStatus, Serializable {
 
 	private static final long serialVersionUID = -1874392357776889683L;
