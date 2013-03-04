@@ -88,10 +88,10 @@ public abstract class TwitterRemoteServiceTest extends AbstractRestTestCase {
 	private IRemoteResponseDeserializer createRestResource() {
 		return new IRemoteResponseDeserializer() {
 
-			public Object deserializeResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody)
+			public Object deserializeResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, byte[] responseBody)
 					throws NotSerializableException {
 				try {
-					JSONArray timeline = new JSONArray(responseBody);
+					JSONArray timeline = new JSONArray(new String(responseBody));
 					List statuses = new ArrayList();
 					for (int i = 0; i < timeline.length(); i++) {
 						try {

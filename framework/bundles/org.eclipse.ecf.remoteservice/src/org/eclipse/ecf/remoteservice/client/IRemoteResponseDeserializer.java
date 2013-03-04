@@ -30,7 +30,8 @@ public interface IRemoteResponseDeserializer {
 	 * @param responseBody the actual response body to deserialize.  May be <code>null</code>.
 	 * @return Object the deserialized response.  May be <code>null</code>.
 	 * @throws NotSerializableException thrown if the responseBody cannot be deserialized.
+	 * @since 7.0
 	 */
-	public Object deserializeResponse(String endpoint, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException;
+	public Object deserializeResponse(String endpoint, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, byte[] responseBody) throws NotSerializableException;
 
 }

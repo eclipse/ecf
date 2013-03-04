@@ -429,7 +429,10 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		return val;
 	}
 
-	protected Object processResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException {
+	/**
+	 * @since 7.0
+	 */
+	protected Object processResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, byte[] responseBody) throws NotSerializableException {
 		IRemoteResponseDeserializer deserializer = getResponseDeserializer();
 		return (deserializer == null) ? null : deserializer.deserializeResponse(uri, call, callable, responseHeaders, responseBody);
 	}

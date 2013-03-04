@@ -202,7 +202,10 @@ public abstract class AbstractClientService extends AbstractRemoteService {
 		return getClientContainer().prepareParameters(uri, call, callable);
 	}
 
-	protected Object processResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException {
+	/**
+	 * @since 7.0
+	 */
+	protected Object processResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, byte[] responseBody) throws NotSerializableException {
 		return getClientContainer().processResponse(uri, call, callable, responseHeaders, responseBody);
 	}
 

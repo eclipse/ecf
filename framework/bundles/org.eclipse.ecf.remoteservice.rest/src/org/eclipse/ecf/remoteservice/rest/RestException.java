@@ -16,7 +16,7 @@ public class RestException extends ECFException {
 
 	private static final long serialVersionUID = -6565657473114300609L;
 	private int errorCode = -1;
-	private String response = null;
+	private byte[] response = null;
 
 	public RestException(IStatus status) {
 		super(status);
@@ -58,7 +58,7 @@ public class RestException extends ECFException {
 		this.errorCode = errorCode;
 	}
 
-	public RestException(String message, Throwable cause, int errorCode, String response) {
+	public RestException(String message, Throwable cause, int errorCode, byte[] response) {
 		super(message, cause);
 		this.errorCode = errorCode;
 		this.response = response;
@@ -68,7 +68,7 @@ public class RestException extends ECFException {
 		return errorCode;
 	}
 
-	public String getResponseBody() {
+	public byte[] getResponseBody() {
 		return response;
 	}
 }

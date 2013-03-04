@@ -43,7 +43,7 @@ public class RestPutServiceTest extends AbstractRestTestCase {
 		adapter.setResponseDeserializer(new IRemoteResponseDeserializer() {
 			public Object deserializeResponse(String endpoint,
 					IRemoteCall call, IRemoteCallable callable,
-					Map responseHeaders, String responseBody)
+					Map responseHeaders, byte[] responseBody)
 					throws NotSerializableException {
 				return null;
 			}});

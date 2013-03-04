@@ -17,7 +17,6 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.util.EncodingUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.security.*;
@@ -68,17 +67,17 @@ public class RestClientService extends AbstractClientService {
 		String uri = prepareEndpointAddress(call, callable);
 		HttpMethod httpMethod = createAndPrepareHttpMethod(uri, call, callable);
 		// execute method
-		String responseBody = null;
+		byte[] responseBody = null;
 		int responseCode = -1;
 		try {
 			responseCode = httpClient.executeMethod(httpMethod);
 			if (isResponseOk(responseCode)) {
 				// Get responseBody as String
-				responseBody = getResponseAsString(httpMethod);
+				responseBody = getResponseAsBytes(httpMethod);
 			} else {
 				// If this method returns true, we should retrieve the response body
 				if (retrieveErrorResponseBody(responseCode)) {
-					responseBody = getResponseAsString(httpMethod);
+					responseBody = getResponseAsBytes(httpMethod);
 				}
 				// Now pass to the exception handler
 				handleException("Http response not OK.  URL=" + uri + " responseCode=" + new Integer(responseCode), null, responseCode, responseBody); //$NON-NLS-1$ //$NON-NLS-2$
@@ -102,24 +101,11 @@ public class RestClientService extends AbstractClientService {
 		return false;
 	}
 
-	protected String getResponseAsString(HttpMethod httpMethod) throws IOException {
-		// Get response bytes
-		byte[] responseBytes = httpMethod.getResponseBody();
-		String responseCharSet = null;
-		if (httpMethod instanceof HttpMethodBase) {
-			HttpMethodBase methodBase = (HttpMethodBase) httpMethod;
-			responseCharSet = methodBase.getRequestCharSet();
-		}
-		return getResponseAsString(responseBytes, responseCharSet);
+	protected byte[] getResponseAsBytes(HttpMethod httpMethod) throws IOException {
+		return httpMethod.getResponseBody();
 	}
 
-	protected String getResponseAsString(byte[] bytes, String responseCharSet) {
-		if (bytes == null)
-			return null;
-		return EncodingUtil.getString(bytes, responseCharSet);
-	}
-
-	protected void handleException(String message, Throwable e, int responseCode, String responseBody) throws RestException {
+	protected void handleException(String message, Throwable e, int responseCode, byte[] responseBody) throws RestException {
 		logException(message, e);
 		throw new RestException(message, e, responseCode, responseBody);
 	}

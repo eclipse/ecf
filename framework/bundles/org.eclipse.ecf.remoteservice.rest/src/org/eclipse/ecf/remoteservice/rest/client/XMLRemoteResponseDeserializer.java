@@ -28,12 +28,12 @@ import org.xml.sax.InputSource;
  */
 public class XMLRemoteResponseDeserializer implements IRemoteResponseDeserializer {
 
-	public Object deserializeResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, String responseBody) throws NotSerializableException {
+	public Object deserializeResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, byte[] responseBody) throws NotSerializableException {
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 		String errorMsg = "XML response can't be parsed: "; //$NON-NLS-1$
 		try {
 			DocumentBuilder builder = documentFactory.newDocumentBuilder();
-			InputSource src = new InputSource(new StringReader(responseBody));
+			InputSource src = new InputSource(new StringReader(new String(responseBody)));
 			Document dom = builder.parse(src);
 			return dom;
 		} catch (Exception e) {
