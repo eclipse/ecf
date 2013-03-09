@@ -11,13 +11,14 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient4;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.core.util.Trace;
 
 public abstract class HttpClientProxyCredentialProvider implements CredentialsProvider {
@@ -29,25 +30,34 @@ public abstract class HttpClientProxyCredentialProvider implements CredentialsPr
 	private Map cachedCredentials;
 
 	public HttpClientProxyCredentialProvider() {
-		cachedCredentials = new HashMap();
+		cachedCredentials = new ConcurrentHashMap<AuthScope, Credentials>();
 	}
 
 	public void setCredentials(AuthScope authscope, Credentials credentials) {
+		if (authscope == null)
+			throw new IllegalArgumentException("Authentication scope may not be null"); //$NON-NLS-1$
 		this.cachedCredentials.put(authscope, credentials);
 	}
 
 	public Credentials getCredentials(AuthScope authscope) {
 		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, HttpClientProxyCredentialProvider.class, "getCredentials " + authscope); //$NON-NLS-1$
 
-		if (this.cachedCredentials.containsKey(authscope)) {
-			return (Credentials) this.cachedCredentials.get(authscope);
-		}
-
+		// First check to see whether given authscope matches any authscope 
+		// already cached.
+		Credentials result = matchCredentials(this.cachedCredentials, authscope);
+		// If we have a match, return credentials
+		if (result != null)
+			return result;
+		// If we don't have a match, first get ECF proxy, if any
 		Proxy proxy = getECFProxy();
-		if (proxy == null) {
+		if (proxy == null)
 			return null;
-		}
 
+		// Make sure that authscope and proxy host and port match
+		if (!matchAuthScopeAndProxy(authscope, proxy))
+			return null;
+
+		// Then match scheme, and get credentials from proxy (if it's scheme we know about)
 		Credentials credentials = null;
 		if ("ntlm".equalsIgnoreCase(authscope.getScheme())) { //$NON-NLS-1$
 			credentials = getNTLMCredentials(proxy);
@@ -55,6 +65,7 @@ public abstract class HttpClientProxyCredentialProvider implements CredentialsPr
 				"digest".equalsIgnoreCase(authscope.getScheme())) { //$NON-NLS-1$
 			final String proxyUsername = proxy.getUsername();
 			final String proxyPassword = proxy.getPassword();
+			// If credentials present for proxy then we're done
 			if (proxyUsername != null) {
 				credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
 			}
@@ -64,11 +75,38 @@ public abstract class HttpClientProxyCredentialProvider implements CredentialsPr
 			Trace.trace(Activator.PLUGIN_ID, "Unrecognized authentication scheme."); //$NON-NLS-1$
 		}
 
-		if (credentials != null) {
+		// Put found credentials in cache for next time
+		if (credentials != null)
 			cachedCredentials.put(authscope, credentials);
-		}
 
 		return credentials;
+	}
+
+	private boolean matchAuthScopeAndProxy(AuthScope authscope, Proxy proxy) {
+		ProxyAddress proxyAddress = proxy.getAddress();
+		return (authscope.getHost().equals(proxyAddress.getHostName()) && (authscope.getPort() == proxyAddress.getPort()));
+	}
+
+	private static Credentials matchCredentials(final Map<AuthScope, Credentials> map, final AuthScope authscope) {
+		// see if we get a direct hit
+		Credentials creds = map.get(authscope);
+		if (creds == null) {
+			// Nope.
+			// Do a full scan
+			int bestMatchFactor = -1;
+			AuthScope bestMatch = null;
+			for (AuthScope current : map.keySet()) {
+				int factor = authscope.match(current);
+				if (factor > bestMatchFactor) {
+					bestMatchFactor = factor;
+					bestMatch = current;
+				}
+			}
+			if (bestMatch != null) {
+				creds = map.get(bestMatch);
+			}
+		}
+		return creds;
 	}
 
 	public void clear() {
