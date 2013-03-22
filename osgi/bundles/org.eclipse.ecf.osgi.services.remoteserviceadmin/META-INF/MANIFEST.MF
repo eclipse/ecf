@@ -26,6 +26,6 @@ Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.osgi.framework.wiring;version="[1.0,2.0)",
  org.osgi.service.event,
  org.osgi.service.log,
- org.osgi.service.remoteserviceadmin;version="5.0.0",
+ org.osgi.service.remoteserviceadmin;version="1.0",
  org.osgi.util.tracker
 DynamicImport-Package: *
