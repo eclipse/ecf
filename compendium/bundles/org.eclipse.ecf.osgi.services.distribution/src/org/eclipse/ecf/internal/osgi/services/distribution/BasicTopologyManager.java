@@ -38,20 +38,8 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 
 	private ServiceRegistration eventHookRegistration;
 
-	public BasicTopologyManager(BundleContext context) {
+	BasicTopologyManager(BundleContext context) {
 		super(context);
-	}
-
-	public void setExportRegisteredSvcs(boolean val) {
-		this.exportRegisteredSvcs = val;
-	}
-
-	public void setExportRegisteredSvcsClassname(String classname) {
-		this.exportRegisteredSvcsClassname = classname;
-	}
-
-	public void setExportRegisteredSvcsFilter(String filter) {
-		this.exportRegisteredSvcsFilter = filter;
 	}
 
 	private String getEndpointListenerScope() {
@@ -80,12 +68,23 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 		return result;
 	}
 
-	public void exportRegisteredServices(String exportRegisteredSvcsClassname,
+	private void exportRegisteredServices(String exportRegisteredSvcsClassname,
 			String exportRegisteredSvcsFilter) {
-		ServiceReference[] existingServiceRefs = null;
 		try {
-			existingServiceRefs = getContext().getAllServiceReferences(
-					exportRegisteredSvcsClassname, exportRegisteredSvcsFilter);
+			final ServiceReference[] existingServiceRefs = getContext()
+					.getAllServiceReferences(exportRegisteredSvcsClassname,
+							exportRegisteredSvcsFilter);
+			// Now export as if the service was registering right now...i.e.
+			// perform
+			// export
+			if (existingServiceRefs != null && existingServiceRefs.length > 0)
+						for (int i = 0; i < existingServiceRefs.length; i++)
+							// This method will check the service properties for
+							// remote service props. If previously registered as
+							// a
+							// remote service, it will export the remote
+							// service if not it will simply return/skip
+							handleServiceRegistering(existingServiceRefs[i]);
 		} catch (InvalidSyntaxException e) {
 			logError(
 					"exportRegisteredServices", //$NON-NLS-1$
@@ -94,18 +93,9 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 							+ " and exportRegisteredSvcsFilter=" //$NON-NLS-1$
 							+ exportRegisteredSvcsFilter, e);
 		}
-		// Now export as if the service was registering right now...i.e. perform
-		// export
-		if (existingServiceRefs != null)
-			for (int i = 0; i < existingServiceRefs.length; i++)
-				// This method will check the service properties for
-				// remote service props. If previously registered as a
-				// remote service, it will export the remote
-				// service if not it will simply return/skip
-				handleServiceRegistering(existingServiceRefs[i]);
 	}
 
-	public void start() throws Exception {
+	void start() throws Exception {
 
 		// Register as EndpointListener, so that it gets notified when Endpoints
 		// are discovered
@@ -127,22 +117,50 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 					exportRegisteredSvcsFilter);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.remoteserviceadmin.EndpointListener#endpointAdded(org
+	 * .osgi.service.remoteserviceadmin.EndpointDescription, java.lang.String)
+	 */
 	public void endpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
 		handleEndpointAdded(endpoint, matchedFilter);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.remoteserviceadmin.EndpointListener#endpointRemoved(
+	 * org.osgi.service.remoteserviceadmin.EndpointDescription,
+	 * java.lang.String)
+	 */
 	public void endpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
 		handleEndpointRemoved(endpoint, matchedFilter);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.osgi.framework.hooks.service.EventHook#event(org.osgi.framework.
+	 * ServiceEvent, java.util.Collection)
+	 */
 	public void event(ServiceEvent event, Collection contexts) {
 		handleEvent(event, contexts);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager
+	 * #close()
+	 */
 	public void close() {
 		if (eventHookRegistration != null) {
 			eventHookRegistration.unregister();

@@ -14,7 +14,6 @@ Import-Package: org.eclipse.ecf.core.util,
  org.osgi.service.remoteserviceadmin;version="1.0",
  org.osgi.util.tracker
 Bundle-Localization: plugin
-Export-Package: org.eclipse.ecf.internal.osgi.services.distribution;version="2.0.0";x-internal:=true,
- org.eclipse.ecf.osgi.services.distribution;version="2.0.0";x-internal:=true
+Export-Package: org.eclipse.ecf.osgi.services.distribution;version="2.0.0";x-internal:=true
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.osgi.services.remoteserviceadmin;bundle-version="1.0.0"
