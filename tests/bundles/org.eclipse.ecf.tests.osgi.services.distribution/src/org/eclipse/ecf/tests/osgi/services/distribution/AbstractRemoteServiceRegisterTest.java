@@ -62,6 +62,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 	}
 
 	protected void verifyRemoteServiceRegistered(IRemoteServiceContainerAdapter adapter, String className) throws Exception {
+		assertNotNull(adapter);
 		IRemoteServiceReference [] refs = adapter.getRemoteServiceReferences((ID[]) null, className, null);
 		assertNotNull(refs);
 		assertTrue(refs.length > 0);
