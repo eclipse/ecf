@@ -215,27 +215,23 @@ public abstract class AbstractDistributionTest extends
 								.contains("org.eclipse.ecf.osgi.services.distribution")) {
 					switch (bundle.getState()) {
 					case Bundle.ACTIVE:
-						System.err.println("Bundle: " + symbolicName
-								+ " State: ACTIVE");
+						fail("No valid service reference found. Bundle state of the ECF distribution bundle is ACTIVE");
 						break;
 					case Bundle.RESOLVED:
-						System.err.println("Bundle: " + symbolicName
-								+ " State: RESOLVED");
+						fail("No valid service reference found. Bundle state of the ECF distribution bundle is RESOLVED");
 						break;
 					case Bundle.STARTING:
-						System.err.println("Bundle: " + symbolicName
-								+ " State: STARTING");
+						fail("No valid service reference found. Bundle state of the ECF distribution bundle is STARTING");
 						break;
 					case Bundle.START_ACTIVATION_POLICY:
-						System.err.println("Bundle: " + symbolicName
-								+ " State: START_ACTIVATION_POLICY");
+						fail("No valid service reference found. Bundle state of the ECF distribution bundle is START_ACTIVATION_POLICY");
 						break;
 					default:
 						break;
 					}
 				}
 			}
-			fail("No valid service reference found. Check the bundle state of the previosuly mentioned ECF bundles");
+			fail("No valid service reference found and no ECF bundle deployed");
 		}
 	}
 
