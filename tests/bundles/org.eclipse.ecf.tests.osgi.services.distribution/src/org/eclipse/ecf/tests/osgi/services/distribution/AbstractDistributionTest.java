@@ -212,7 +212,7 @@ public abstract class AbstractDistributionTest extends
 				String symbolicName = bundle.getSymbolicName();
 				if (symbolicName != null
 						&& symbolicName
-								.equals("org.eclipse.ecf.osgi.services.distribution")) {
+								.contains("org.eclipse.ecf.osgi.services.distribution")) {
 					switch (bundle.getState()) {
 					case Bundle.ACTIVE:
 						System.err.println("Bundle: " + symbolicName
