@@ -27,6 +27,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.eclipse.ecf.tests.remoteservice.IConcatService;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -202,8 +203,36 @@ public abstract class AbstractDistributionTest extends
 	}
 
 	protected void assertReferencesValid(ServiceReference[] references) {
-		assertTrue(references != null);
-		assertTrue(references.length > 0);
+		if (references != null && references.length > 0) {
+			return;
+		} else {
+			// Check if the ECF bundles are even started
+			Bundle[] bundles = Activator.getDefault().getContext().getBundles();
+			for (Bundle bundle : bundles) {
+				String symbolicName = bundle.getSymbolicName();
+				if (symbolicName != null
+						&& symbolicName
+								.contains("org.eclipse.ecf.osgi.services.distribution")) {
+					switch (bundle.getState()) {
+					case Bundle.ACTIVE:
+						fail("No valid service reference found. Bundle state of the ECF distribution bundle is ACTIVE");
+						break;
+					case Bundle.RESOLVED:
+						fail("No valid service reference found. Bundle state of the ECF distribution bundle is RESOLVED");
+						break;
+					case Bundle.STARTING:
+						fail("No valid service reference found. Bundle state of the ECF distribution bundle is STARTING");
+						break;
+					case Bundle.START_ACTIVATION_POLICY:
+						fail("No valid service reference found. Bundle state of the ECF distribution bundle is START_ACTIVATION_POLICY");
+						break;
+					default:
+						break;
+					}
+				}
+			}
+			fail("No valid service reference found and no ECF bundle deployed");
+		}
 	}
 
 	protected void assertStringResultValid(Object result, String compare) {
