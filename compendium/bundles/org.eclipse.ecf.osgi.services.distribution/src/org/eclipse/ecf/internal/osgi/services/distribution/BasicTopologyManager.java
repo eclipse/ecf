@@ -77,14 +77,25 @@ public class BasicTopologyManager extends AbstractTopologyManager implements
 			// Now export as if the service was registering right now...i.e.
 			// perform
 			// export
-			if (existingServiceRefs != null && existingServiceRefs.length > 0)
-						for (int i = 0; i < existingServiceRefs.length; i++)
+			if (existingServiceRefs != null && existingServiceRefs.length > 0) {
+				// After having collected all pre-registered services (with
+				// marker prop) we are going to asynchronously remote them.
+				// Registering potentially is a long-running operation (due to
+				// discovery I/O...) and thus should no be carried out in the
+				// OSGi FW thread. (https://bugs.eclipse.org/405027)
+				new Thread(new Runnable() {
+					public void run() {
+						for (int i = 0; i < existingServiceRefs.length; i++) {
 							// This method will check the service properties for
 							// remote service props. If previously registered as
 							// a
 							// remote service, it will export the remote
 							// service if not it will simply return/skip
 							handleServiceRegistering(existingServiceRefs[i]);
+						}
+					}
+				}, "BasicTopologyManagerPreRegSrvExporter").start(); //$NON-NLS-1$
+			}
 		} catch (InvalidSyntaxException e) {
 			logError(
 					"exportRegisteredServices", //$NON-NLS-1$
