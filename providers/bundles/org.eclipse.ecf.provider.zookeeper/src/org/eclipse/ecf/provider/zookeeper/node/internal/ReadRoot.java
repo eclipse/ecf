@@ -141,9 +141,6 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 						return;
 					if (path == null || children == null
 							|| children.size() == 0) {
-						/* No children available yet, set a watch on it.. */
-						ReadRoot.this.readKeeper.getChildren(INode.ROOT,
-								ReadRoot.this, ReadRoot.this, null);
 						return;
 					}
 					for (String p : children) {
