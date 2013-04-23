@@ -31,13 +31,13 @@ import org.osgi.service.log.LogService;
 public class ReadRoot implements Watcher, ChildrenCallback {
 	ZooKeeper readKeeper;
 	String ip;
-	private WatchManager watchManager;
+	private final WatchManager watchManager;
 	private boolean isConnected;
-	private Map<String, NodeReader> nodeReaders = Collections
+	private final Map<String, NodeReader> nodeReaders = Collections
 			.synchronizedMap(new HashMap<String, NodeReader>());
-	private Map<String, DiscoverdService> discoverdServices;
-	private Map<String, List<DiscoverdService>> perTypeDiscoverdServices;
-	private Object connectionLock = new Object();
+	private final Map<String, DiscoverdService> discoverdServices;
+	private final Map<String, List<DiscoverdService>> perTypeDiscoverdServices;
+	private final Object connectionLock = new Object();
 
 	ReadRoot(String ip, WatchManager watchManager) {
 		Assert.isNotNull(ip);
@@ -141,9 +141,6 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 						return;
 					if (path == null || children == null
 							|| children.size() == 0) {
-						/* No children available yet, set a watch on it */
-						ReadRoot.this.readKeeper.getChildren(INode.ROOT,
-								ReadRoot.this, ReadRoot.this, null);
 						return;
 					}
 					for (String p : children) {
