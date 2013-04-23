@@ -38,7 +38,6 @@ import org.eclipse.ecf.remoteservice.IAsyncRemoteServiceProxy;
 @SupportedAnnotationTypes({ "org.eclipse.ecf.remoteservice.AsyncService" }) 
 public class AsyncAnnotationProcessor extends AbstractProcessor {
 
-	@SuppressWarnings("restriction")
 	private static final String FUTURE_PACKAGE_IMPORT = org.eclipse.equinox.concurrent.future.IFuture.class.getName();
 	private static final String REMOTESERVICE_PACKAGE_IMPORT = org.eclipse.ecf.remoteservice.IAsyncCallback.class.getName();
 
