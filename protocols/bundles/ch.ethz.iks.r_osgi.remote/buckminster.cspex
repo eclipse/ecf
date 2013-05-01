@@ -4,7 +4,7 @@
 	xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0"
 	xmlns="http://www.eclipse.org/buckminster/CSpec-1.0">
 	<dependencies>
-		<dependency name="org.objectweb.asm" componentType="osgi.bundle" version="[3.1.0,4.0.0)"/>
+		<dependency name="org.objectweb.asm" componentType="osgi.bundle" versionDesignator="[3.1.0,4.0.0)" versionType="OSGi"/>
 		<!-- Place your Dependencies here -->
 	</dependencies>
 	<generators>
