@@ -9,13 +9,9 @@
   <rm:locator pattern="^org\.eclipse\.net4j(\..+)?" searchPathRef="org.eclipse.emf"/>
   <rm:locator pattern="^org\.eclipse\.xsd(\..+)?" searchPathRef="org.eclipse.emf"/>
   <rm:locator pattern="^org\.eclipse\.swtbot(\..+)?" searchPathRef="org.eclipse.swtbot"/>
-  <rm:locator pattern="^org\.hamcrest(\..+)?" searchPathRef="org.eclipse.swtbot"/>
-  <rm:locator pattern="^org\.apache\.log4j$" searchPathRef="org.eclipse.swtbot"/>
   <rm:locator pattern="^com\.mountainminds\.eclemma(\..+)?" searchPathRef="com.mountainminds.eclemma"/>
   <rm:locator pattern="^org\.eclipse(\..+)?" searchPathRef="org.eclipse"/>
-  <rm:locator pattern="^org\.junit4?" searchPathRef="org.eclipse"/>
   <rm:locator pattern="^org\.osgi(\..+)?" searchPathRef="org.eclipse"/>
-  <rm:locator pattern="^org\.apache\.ant?" searchPathRef="org.eclipse"/>
   <rm:locator pattern="^org\.pluginbuilder(\..+)?" searchPathRef="org.pluginbuilder"/>
   <rm:locator pattern=".*" searchPathRef="default"/>
   <rm:searchPath name="org.eclipse">
