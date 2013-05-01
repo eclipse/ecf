@@ -36,6 +36,21 @@
       <rm:property key="buckminster.mutable" value="false"/>
       <rm:uri format="http://ftp.osuosl.org/pub/eclipse/modeling/emf/updates/releases"/>
     </rm:provider>
+    <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="http://ftp.osuosl.org/pub/eclipse/modeling/emf/emf/updates/2.6/"/>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="http://ftp.osuosl.org/pub/eclipse/modeling/emf/emf/updates/2.7/"/>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="http://ftp.osuosl.org/pub/eclipse/modeling/emf/emf/updates/2.8/"/>
+    </rm:provider>
   </rm:searchPath>
   <rm:searchPath name="org.eclipse.ecf.rsa">
     <rm:provider componentTypes="osgi.bundle,eclipse.feature" source="false" mutable="false" readerType="local">
@@ -104,6 +119,11 @@
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
       <rm:uri format="http://ftp.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20130118183705/repository"/>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="http://ftp.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20130427215344/repository"/>
     </rm:provider>
     <rm:provider xsi:type="pde:PDEMapProvider" componentTypes="osgi.bundle,eclipse.feature" readerType="cvs" mutable="false">
       <rm:property key="buckminster.mutable" value="false"/>
