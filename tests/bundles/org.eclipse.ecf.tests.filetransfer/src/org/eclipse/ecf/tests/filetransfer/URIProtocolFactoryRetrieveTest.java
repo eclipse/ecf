@@ -79,7 +79,7 @@ public class URIProtocolFactoryRetrieveTest extends AbstractRetrieveTestCase {
 		// Call sendRetrieveRequest on retrieveAdapter...this should fail as the 
 		// protocol factory hasn't been set
 		retrieveAdapter.sendRetrieveRequest(createFileID(uri), createFileTransferListener(), null);
-		waitForDone(1000);
+		waitForDone(5000);
 		assertTrue(doneEvents.size() > 0);
 		IIncomingFileTransferReceiveDoneEvent doneEvent = (IIncomingFileTransferReceiveDoneEvent) doneEvents.get(0);
 		Exception e = doneEvent.getException();
