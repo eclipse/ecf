@@ -12,6 +12,8 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 import java.util.Dictionary;
 import java.util.Properties;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.osgi.framework.BundleActivator;
@@ -140,6 +142,9 @@ public class Activator implements BundleActivator {
 		// Always set plugin and context
 		plugin = this;
 		this.context = ctxt;
+		// Start ECF Core by
+		ContainerFactory.getDefault();
+		IDFactory.getDefault();
 		// Create basicTopologyManagerImpl
 		basicTopologyManagerImpl = new BasicTopologyManagerImpl(context);
 
