@@ -852,16 +852,13 @@ public class EndpointDescriptionLocator {
 		public void handleEndpointDescription(
 				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 				boolean discovered) {
-			
-			boolean previouslyAdded = false;
 			synchronized (listenerLock) {
-				if (discovered) {
-					previouslyAdded = discoveredEndpointDescriptions.contains(endpointDescription);
-					if (!previouslyAdded) discoveredEndpointDescriptions.add(endpointDescription);
-				} else
+				if (discovered)
+					discoveredEndpointDescriptions.add(endpointDescription);
+				else
 					discoveredEndpointDescriptions.remove(endpointDescription);
-				// only queue endpoint description if it wasn't previously added
-				if (!previouslyAdded) queueEndpointDescription(endpointDescription, discovered);
+
+				queueEndpointDescription(endpointDescription, discovered);
 			}
 		}
 
