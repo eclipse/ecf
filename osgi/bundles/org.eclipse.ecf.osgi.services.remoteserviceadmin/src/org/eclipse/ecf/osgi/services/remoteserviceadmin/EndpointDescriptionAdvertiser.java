@@ -173,6 +173,7 @@ public class EndpointDescriptionAdvertiser implements
 		if (endpointDescriptionLocator == null
 				|| endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription)
 			return;
+		System.out.println("endpointAdded endpointDescription="+endpointDescription+";matchedFilter="+matchedFilter);
 		// advertise it
 		IStatus status = doDiscovery(
 				createECFEndpointDescription(endpointDescription), true);
@@ -204,6 +205,7 @@ public class EndpointDescriptionAdvertiser implements
 				|| endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription)
 			return;
 		// discover it
+		System.out.println("endpointRemoved endpointDescription="+endpointDescription+";matchedFilter="+matchedFilter);
 		IStatus status = doDiscovery(
 				createECFEndpointDescription(endpointDescription), false);
 		if (!status.isOK())
