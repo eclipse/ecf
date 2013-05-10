@@ -1884,7 +1884,7 @@ public class RemoteServiceAdmin implements
 
 		Map resultProperties = new TreeMap<String, Object>(
 				String.CASE_INSENSITIVE_ORDER);
-		PropertiesUtil.copyNonReservedProperties(endpointDescription.getProperties(), resultProperties);
+		PropertiesUtil.copyNonReservedProperties(rsReference, resultProperties);
 		// remove OBJECTCLASS
 		resultProperties
 				.remove(org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS);
