@@ -10,28 +10,22 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
-import org.osgi.service.remoteserviceadmin.EndpointListener;
 
 /**
  * Default implementation of {@link IEndpointDescriptionAdvertiser}.
  * 
  */
 public class EndpointDescriptionAdvertiser implements
-		IEndpointDescriptionAdvertiser, EndpointListener {
+		IEndpointDescriptionAdvertiser {
 
 	private static String endpointListenerScope = System
 			.getProperty("org.eclipse.ecf.osgi.services.endpointdescriptionadvertiser.endpointListenerScope"); //$NON-NLS-1$
@@ -162,57 +156,6 @@ public class EndpointDescriptionAdvertiser implements
 
 	public void close() {
 		this.endpointDescriptionLocator = null;
-	}
-
-	/**
-	 * @since 2.2
-	 */
-	public void endpointAdded(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			String matchedFilter) {
-		if (endpointDescriptionLocator == null
-				|| endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription)
-			return;
-		System.out.println("endpointAdded endpointDescription="+endpointDescription+";matchedFilter="+matchedFilter);
-		// advertise it
-		IStatus status = doDiscovery(
-				createECFEndpointDescription(endpointDescription), true);
-		if (!status.isOK())
-			LogUtility.logError(
-					"endpointAdded", //$NON-NLS-1$
-					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR,
-					EndpointDescriptionAdvertiser.class, status);
-	}
-
-	private org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription createECFEndpointDescription(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		// Create ECF endpointDescription
-		Map<String, Object> newProps = new HashMap(
-				endpointDescription.getProperties());
-		newProps.put(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
-				StringID.class.getName());
-		return new org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription(
-				newProps);
-	}
-
-	/**
-	 * @since 2.2
-	 */
-	public void endpointRemoved(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			String matchedFilter) {
-		if (endpointDescriptionLocator == null
-				|| endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription)
-			return;
-		// discover it
-		System.out.println("endpointRemoved endpointDescription="+endpointDescription+";matchedFilter="+matchedFilter);
-		IStatus status = doDiscovery(
-				createECFEndpointDescription(endpointDescription), false);
-		if (!status.isOK())
-			LogUtility.logError(
-					"endpointRemoved", //$NON-NLS-1$
-					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR,
-					EndpointDescriptionAdvertiser.class, status);
 	}
 
 }

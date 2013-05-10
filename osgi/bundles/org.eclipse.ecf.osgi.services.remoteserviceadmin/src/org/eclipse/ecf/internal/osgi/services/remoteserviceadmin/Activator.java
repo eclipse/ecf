@@ -36,7 +36,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.service.log.LogService;
-import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
@@ -59,7 +58,6 @@ public class Activator implements BundleActivator {
 	private EndpointDescriptionLocator endpointDescriptionLocator;
 	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
 	private ServiceRegistration endpointDescriptionAdvertiserRegistration;
-	private ServiceRegistration endpointListenerProviderRegistration;
 	
 	private ServiceTracker containerManagerTracker;
 	// Logging
@@ -173,16 +171,8 @@ public class Activator implements BundleActivator {
 						IEndpointDescriptionAdvertiser.class.getName(),
 						endpointDescriptionAdvertiser, (Dictionary) properties);
 
-		final Properties elProps = new Properties();
-		elProps.put(org.osgi.service.remoteserviceadmin.EndpointListener.ENDPOINT_LISTENER_SCOPE,
-				endpointDescriptionAdvertiser.getEndpointListenerScope());
-		// Register endpointDescriptionAdvertiser as an EndpointListener so that it can handle all appropriate endpoint publishing
-		System.out.println("XXX Registering endpoint listener provider with props="+elProps);
-		endpointListenerProviderRegistration = getContext().registerService(EndpointListener.class, endpointDescriptionAdvertiser, (Dictionary) elProps);
-		System.out.println("XX starting endpointDescriptionLocator provider");
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();
-		System.out.println("XXX endpointDescription provider started");
 	}
 
 	private void clearRSAs() {
@@ -216,10 +206,6 @@ public class Activator implements BundleActivator {
 		if (endpointDescriptionAdvertiserRegistration != null) {
 			endpointDescriptionAdvertiserRegistration.unregister();
 			endpointDescriptionAdvertiserRegistration = null;
-		}
-		if (endpointListenerProviderRegistration != null) {
-			endpointListenerProviderRegistration.unregister();
-			endpointListenerProviderRegistration = null;
 		}
 		if (endpointDescriptionAdvertiser != null) {
 			endpointDescriptionAdvertiser.close();
