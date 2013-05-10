@@ -177,9 +177,12 @@ public class Activator implements BundleActivator {
 		elProps.put(org.osgi.service.remoteserviceadmin.EndpointListener.ENDPOINT_LISTENER_SCOPE,
 				endpointDescriptionAdvertiser.getEndpointListenerScope());
 		// Register endpointDescriptionAdvertiser as an EndpointListener so that it can handle all appropriate endpoint publishing
+		System.out.println("XXX Registering endpoint listener provider with props="+elProps);
 		endpointListenerProviderRegistration = getContext().registerService(EndpointListener.class, endpointDescriptionAdvertiser, (Dictionary) elProps);
+		System.out.println("XX starting endpointDescriptionLocator provider");
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();
+		System.out.println("XXX endpointDescription provider started");
 	}
 
 	private void clearRSAs() {
