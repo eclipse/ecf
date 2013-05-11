@@ -106,8 +106,9 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 				Map map = (Map) args[0];
 				Object idVal = map.get(ID_PROP);
 				if (idVal == null)
-					throw new IDCreateException("Cannot create ID.  No property with key=" + ID_PROP + " found in configuration=" + map); //$NON-NLS-1$ //$NON-NLS-2$
-				newID = getIDFromArg(idVal);
+					idVal = IDFactory.getDefault().createGUID();
+				else
+					newID = getIDFromArg(idVal);
 				ka = getIntegerFromArg(map.get(KEEPALIVE_PROP));
 			} else if (args.length > 1) {
 				if (args[0] instanceof String || args[0] instanceof ID)
@@ -120,7 +121,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		if (newID == null)
 			newID = IDFactory.getDefault().createStringID(IDFactory.getDefault().createGUID().getName());
 		if (ka == null)
-			ka = new Integer(0);
+			ka = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
 		return new GenericContainerArgs(newID, ka);
 	}
 
@@ -141,7 +142,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 				Map map = (Map) args[0];
 				Object idVal = map.get(ID_PROP);
 				if (idVal == null)
-					throw new IDCreateException("Cannot create ID.  No property with key=" + ID_PROP + " found in configuration=" + map); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new IDCreateException("id property must be present for server container creation"); //$NON-NLS-1$
 				newID = getIDFromArg(idVal);
 				ka = getIntegerFromArg(map.get(KEEPALIVE_PROP));
 			} else if (args.length > 1) {
