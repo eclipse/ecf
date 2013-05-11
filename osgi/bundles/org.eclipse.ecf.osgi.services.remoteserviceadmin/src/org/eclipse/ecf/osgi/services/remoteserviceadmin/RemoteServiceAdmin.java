@@ -583,10 +583,7 @@ public class RemoteServiceAdmin implements
 
 		public org.osgi.service.remoteserviceadmin.ExportReference getExportReference() {
 			Throwable t = getException();
-			if (t != null)
-				throw new IllegalStateException(
-						"Cannot get export reference as export registration is invalid", //$NON-NLS-1$
-						t);
+			if (t != null) return null;
 			return exportReference;
 		}
 
@@ -841,10 +838,7 @@ public class RemoteServiceAdmin implements
 
 		public org.osgi.service.remoteserviceadmin.ImportReference getImportReference() {
 			Throwable t = getException();
-			if (t != null)
-				throw new IllegalStateException(
-						"Cannot get import reference as registration not properly initialized", //$NON-NLS-1$
-						t);
+			if (t != null) return null;
 			return importReference;
 		}
 
